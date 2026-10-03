@@ -74,7 +74,9 @@
   ],
   "night_experiences": [
     {
+      "id": "noche_coliseo",
       "name": "Coliseo (noche)",
+      "muestra": ["coliseo"],
       "duration": 45,
       "description": "El anfiteatro iluminado sin las multitudes del día — una imagen que no olvidarás",
       "coordinates": [
@@ -111,7 +113,9 @@
       ]
     },
     {
+      "id": "noche_fontana_de_trevi",
       "name": "Fontana de Trevi (noche)",
+      "muestra": ["fontana_de_trevi"],
       "duration": 45,
       "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
       "coordinates": [
@@ -148,7 +152,9 @@
       ]
     },
     {
+      "id": "noche_plaza_de_espana",
       "name": "Plaza de España (noche)",
+      "muestra": ["plaza_de_espana"],
       "duration": 45,
       "description": "La escalinata iluminada con Roma a tus pies — sin las multitudes del día",
       "coordinates": [
@@ -186,7 +192,9 @@
       ]
     },
     {
+      "id": "noche_panteon",
       "name": "Panteón (noche)",
+      "muestra": ["panteon"],
       "duration": 45,
       "description": "El templo de los dioses iluminado y la plaza casi vacía — Roma eterna",
       "coordinates": [
@@ -224,7 +232,9 @@
       ]
     },
     {
+      "id": "noche_mirador_del_janiculo",
       "name": "Mirador del Janículo (noche)",
+      "muestra": ["mirador_del_janiculo"],
       "duration": 40,
       "description": "Vuelve al mismo mirador: Roma iluminada es otra ciudad. Las cúpulas encendidas, el rumor de la ciudad abajo y un silencio que de día no existe.",
       "coordinates": [
@@ -264,7 +274,9 @@
       ]
     },
     {
+      "id": "noche_terraza_del_pincio",
       "name": "Terraza del Pincio (noche)",
+      "muestra": ["terraza_del_pincio"],
       "duration": 30,
       "description": "La misma terraza, otra ciudad: las cúpulas y los tejados encendidos sobre la Piazza del Popolo.",
       "coordinates": [
@@ -301,7 +313,9 @@
       ]
     },
     {
+      "id": "noche_el_puente_y_el_castillo_de_santangelo",
       "name": "El Puente y el Castillo de Sant'Angelo (noche)",
+      "muestra": ["puente_santangelo","castillo_de_santangelo"],
       "titulo_parada": "El Puente y el Castillo de Sant'Angelo iluminados",
       "duration": 25,
       "description": "Los ángeles de Bernini iluminados y el castillo reflejándose en el Tíber. Se cruza despacio.",
@@ -339,7 +353,9 @@
       ]
     },
     {
+      "id": "noche_foro_romano_desde_el_campidoglio",
       "name": "Foro Romano desde el Campidoglio (noche)",
+      "muestra": ["foro_romano_y_palatino"],
       "duration": 30,
       "description": "Desde la terraza de detrás del Campidoglio, el Foro entero iluminado a tus pies: columnas, arcos y templos en silencio, con el Coliseo al fondo.",
       "coordinates": [
@@ -378,7 +394,9 @@
       ]
     },
     {
+      "id": "noche_piazza_navona",
       "name": "Piazza Navona (noche)",
+      "muestra": ["piazza_navona","mercadillo_de_navidad_de_piazza_navona"],
       "duration": 30,
       "description": "De noche Navona cambia: se van los grupos, se encienden las farolas sobre las fuentes y los artistas callejeros llenan la plaza. Date una vuelta entera despacio, empezando por la Fuente de los Cuatro Ríos de Bernini, y si te apetece, con un helado en la mano.",
       "coordinates": [
@@ -425,7 +443,9 @@
       ]
     },
     {
+      "id": "noche_trastevere",
       "name": "Trastevere de noche",
+      "muestra": ["trastevere","plaza_trilussa"],
       "duration": 40,
       "description": "La Plaza Trilussa llena de gente, la fuente iluminada y el Ponte Sisto con el río a los pies. El barrio con más ambiente de Roma después de cenar.",
       "coordinates": [
@@ -874,6 +894,7 @@
   },
   "places": [
     {
+      "id": "coliseo",
       "name": "Coliseo",
       "level": 1,
       "tier": "joya",
@@ -1013,6 +1034,7 @@
       }
     },
     {
+      "id": "foro_romano_y_palatino",
       "name": "Foro Romano y Palatino",
       "level": 1,
       "tier": "imprescindible",
@@ -1156,6 +1178,7 @@
       }
     },
     {
+      "id": "arco_de_constantino",
       "name": "Arco de Constantino",
       "level": 1,
       "tier": "imprescindible",
@@ -1187,6 +1210,7 @@
       ]
     },
     {
+      "id": "boca_de_la_verdad",
       "name": "Boca de la Verdad",
       "level": 2,
       "zone": "aventino",
@@ -1218,6 +1242,7 @@
       ]
     },
     {
+      "id": "circo_maximo",
       "name": "Circo Máximo",
       "level": 2,
       "zone": "roma_antigua",
@@ -1244,6 +1269,7 @@
       ]
     },
     {
+      "id": "fontana_de_trevi",
       "name": "Fontana de Trevi",
       "por_el_camino": [
         {"texto":"De camino, en Via del Corso, cerca de Trevi, está la tienda de Venchi: chocolate y helado artesanos si te apetece un capricho.","una_vez":"venchi"}
@@ -1283,6 +1309,7 @@
       }
     },
     {
+      "id": "panteon",
       "name": "Panteón",
       "level": 1,
       "tier": "joya",
@@ -1392,6 +1419,7 @@
       }
     },
     {
+      "id": "piazza_navona",
       "name": "Piazza Navona",
       "level": 1,
       "tier": "imprescindible",
@@ -1427,6 +1455,7 @@
       }
     },
     {
+      "id": "plaza_de_espana",
       "name": "Plaza de España",
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
@@ -1468,6 +1497,7 @@
       }
     },
     {
+      "id": "piazza_del_popolo",
       "name": "Piazza del Popolo",
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
@@ -1504,6 +1534,7 @@
       "group_order": 1
     },
     {
+      "id": "largo_di_torre_argentina",
       "name": "Largo di Torre Argentina",
       "level": 2,
       "zone": "centro_historico",
@@ -1531,6 +1562,7 @@
       ]
     },
     {
+      "id": "via_del_corso",
       "name": "Via del Corso",
       "level": 3,
       "zone": "centro_historico",
@@ -1556,6 +1588,7 @@
       ]
     },
     {
+      "id": "museos_vaticanos_y_capilla_sixtina",
       "name": "Museos Vaticanos y Capilla Sixtina",
       "level": 1,
       "tier": "joya",
@@ -1682,6 +1715,7 @@
       }
     },
     {
+      "id": "basilica_de_san_pedro",
       "name": "Basílica de San Pedro",
       "por_fuera": "Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.",
       "festivos_domingo": [
@@ -1835,6 +1869,7 @@
       ]
     },
     {
+      "id": "plaza_de_san_pedro",
       "name": "Plaza de San Pedro",
       "level": 1,
       "tier": "imprescindible",
@@ -1876,6 +1911,7 @@
       "coordinates_checked": true
     },
     {
+      "id": "via_della_conciliazione",
       "name": "Via della Conciliazione",
       "level": 3,
       "zone": "vaticano",
@@ -1901,6 +1937,7 @@
       ]
     },
     {
+      "id": "castillo_de_santangelo",
       "name": "Castillo de Sant'Angelo",
       "level": 2,
       "zone": "vaticano",
@@ -1973,6 +2010,7 @@
       }
     },
     {
+      "id": "mirador_del_janiculo",
       "name": "Mirador del Janículo",
       "level": 2,
       "zone": "trastevere",
@@ -2011,6 +2049,7 @@
       }
     },
     {
+      "id": "galeria_borghese",
       "name": "Galería Borghese",
       "level": 2,
       "zone": "villa_borghese",
@@ -2085,6 +2124,7 @@
       }
     },
     {
+      "id": "parque_de_villa_borghese",
       "name": "Parque de Villa Borghese",
       "level": 2,
       "zone": "villa_borghese",
@@ -2173,6 +2213,7 @@
       "comprobado": "2026-09-28"
     },
     {
+      "id": "bioparque_de_roma",
       "name": "Bioparque de Roma",
       "level": 3,
       "zone": "villa_borghese",
@@ -2262,6 +2303,7 @@
       "comprobado": "2026-09-28"
     },
     {
+      "id": "galeria_nacional_de_arte_moderno",
       "name": "Galería Nacional de Arte Moderno",
       "level": 3,
       "zone": "villa_borghese",
@@ -2304,6 +2346,7 @@
       ]
     },
     {
+      "id": "altar_de_la_patria",
       "name": "Altar de la Patria",
       "level": 1,
       "zone": "roma_antigua",
@@ -2368,6 +2411,7 @@
       ]
     },
     {
+      "id": "puente_santangelo",
       "name": "Puente Sant'Angelo",
       "level": 3,
       "zone": "vaticano",
@@ -2402,6 +2446,7 @@
       "group_order": 1
     },
     {
+      "id": "isla_tiberina",
       "name": "Isla Tiberina",
       "level": 2,
       "zone": "trastevere",
@@ -2429,6 +2474,7 @@
       ]
     },
     {
+      "id": "via_dei_fori_imperiali",
       "name": "Via dei Fori Imperiali",
       "level": 3,
       "zone": "roma_antigua",
@@ -2460,6 +2506,7 @@
       ]
     },
     {
+      "id": "campo_de_fiori",
       "name": "Campo de' Fiori",
       "level": 2,
       "zone": "centro_historico",
@@ -2490,6 +2537,7 @@
       "aperitivo_antes_de_cenar": true
     },
     {
+      "id": "borgo_pio",
       "name": "Borgo Pio",
       "level": 3,
       "zone": "vaticano",
@@ -2517,6 +2565,7 @@
       ]
     },
     {
+      "id": "plaza_venecia",
       "name": "Plaza Venecia",
       "duration_minutes": 10,
       "zone": "roma_antigua",
@@ -2551,6 +2600,7 @@
       ]
     },
     {
+      "id": "mercados_de_trajano",
       "name": "Mercados de Trajano",
       "duration_minutes": 60,
       "zone": "roma_antigua",
@@ -2598,6 +2648,7 @@
       ]
     },
     {
+      "id": "cupula_de_san_pedro",
       "name": "Cúpula de San Pedro",
       "por_fuera": "Hoy no se sube, pero se ve mejor de lejos: desde la plaza, la fachada la tapa en parte. Échate atrás por Via della Conciliazione y la verás entera.",
       "duration_minutes": 45,
@@ -2681,6 +2732,7 @@
       "comprobado": "2026-09-28"
     },
     {
+      "id": "iglesia_del_gesu",
       "name": "Iglesia del Gesù",
       "festivos_domingo": [
         "06-29"
@@ -2734,6 +2786,7 @@
       "por_fuera": "La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco."
     },
     {
+      "id": "iglesia_de_san_luigi_dei_francesi",
       "name": "Iglesia de San Luigi dei Francesi",
       "festivos_domingo": [
         "06-29"
@@ -2795,6 +2848,7 @@
       "por_fuera": "La iglesia de los franceses, a dos pasos de Navona. Dentro esconde tres Caravaggio: si está abierta, entra aunque sean cinco minutos."
     },
     {
+      "id": "ara_pacis",
       "name": "Ara Pacis",
       "duration_minutes": 45,
       "zone": "centro_historico",
@@ -2885,6 +2939,7 @@
       "por_fuera": "Hoy la ves por fuera, y ya merece la parada. El edificio blanco junto al Tíber es de Richard Meier y abrió en 2006. Rodéalo por el lado que mira al Mausoleo de Augusto: en la pared está copiado, en latín, el relato que el propio Augusto dejó escrito de todo lo que hizo en su vida."
     },
     {
+      "id": "barrio_judio",
       "name": "Barrio Judío",
       "duration_minutes": 30,
       "zone": "centro_historico",
@@ -2916,6 +2971,7 @@
       ]
     },
     {
+      "id": "iglesia_de_santa_maria_sopra_minerva",
       "name": "Iglesia de Santa Maria sopra Minerva",
       "por_fuera": "Hoy la ves por fuera: delante tienes el Elefantino de Bernini, un elefante que carga un obelisco egipcio. Detrás de esa fachada tan sencilla está la única iglesia gótica de Roma.",
       "festivos_domingo": [
@@ -2974,6 +3030,7 @@
       "is_free_access": true
     },
     {
+      "id": "iglesia_de_san_ignacio_de_loyola",
       "name": "Iglesia de San Ignacio de Loyola",
       "por_fuera": "Hoy la ves por fuera, y la plaza es lo mejor: Piazza di Sant'Ignazio parece un decorado de teatro, con sus edificios curvos del siglo XVIII mirando a la fachada.",
       "duration_minutes": 20,
@@ -3016,6 +3073,7 @@
       "is_free_access": true
     },
     {
+      "id": "elefantino_de_bernini",
       "name": "Elefantino de Bernini",
       "duration_minutes": 10,
       "zone": "centro_historico",
@@ -3050,6 +3108,7 @@
       ]
     },
     {
+      "id": "fuente_de_las_tortugas",
       "name": "Fuente de las Tortugas",
       "duration_minutes": 15,
       "zone": "centro_historico",
@@ -3078,6 +3137,7 @@
       "contained_in": "Barrio Judío"
     },
     {
+      "id": "fuente_del_triton",
       "name": "Fuente del Tritón",
       "duration_minutes": 10,
       "zone": "centro_historico",
@@ -3106,6 +3166,7 @@
       ]
     },
     {
+      "id": "plaza_colonna",
       "name": "Plaza Colonna",
       "duration_minutes": 15,
       "zone": "centro_historico",
@@ -3133,6 +3194,7 @@
       "coordinates_checked": true
     },
     {
+      "id": "via_condotti",
       "name": "Via Condotti",
       "duration_minutes": 20,
       "zone": "centro_historico",
@@ -3163,6 +3225,7 @@
       ]
     },
     {
+      "id": "plaza_farnese",
       "name": "Plaza Farnese",
       "duration_minutes": 10,
       "zone": "centro_historico",
@@ -3192,6 +3255,7 @@
       ]
     },
     {
+      "id": "plaza_del_campidoglio",
       "name": "Plaza del Campidoglio",
       "duration_minutes": 20,
       "zone": "roma_antigua",
@@ -3231,6 +3295,7 @@
       ]
     },
     {
+      "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
       "duration_minutes": 120,
       "zone": "roma_antigua",
@@ -3323,6 +3388,7 @@
       ]
     },
     {
+      "id": "basilica_de_san_clemente",
       "name": "Basílica de San Clemente",
       "festivos_domingo": [
         "06-29"
@@ -3401,6 +3467,7 @@
       }
     },
     {
+      "id": "iglesia_de_san_pietro_in_vincoli",
       "name": "Iglesia de San Pietro in Vincoli",
       "duration_minutes": 20,
       "schedule": "08:00-12:30, 15:00-18:00",
@@ -3493,6 +3560,7 @@
       "lo_mejor_dentro": "ver de cerca el Moisés de Miguel Ángel"
     },
     {
+      "id": "domus_aurea",
       "name": "Domus Aurea",
       "duration_minutes": 75,
       "zone": "roma_antigua",
@@ -3540,6 +3608,7 @@
       ]
     },
     {
+      "id": "termas_de_caracalla",
       "name": "Termas de Caracalla",
       "duration_minutes": 60,
       "zone": "aventino",
@@ -3697,6 +3766,7 @@
       ]
     },
     {
+      "id": "jardin_de_los_naranjos",
       "name": "Jardín de los Naranjos",
       "duration_minutes": 20,
       "zone": "aventino",
@@ -3798,6 +3868,7 @@
       "comprobado": "2026-09-28"
     },
     {
+      "id": "basilica_de_santa_maria_la_mayor",
       "name": "Basílica de Santa María la Mayor",
       "duration_minutes": 30,
       "schedule": "07:00-19:00",
@@ -3845,6 +3916,7 @@
       ]
     },
     {
+      "id": "columna_de_trajano",
       "name": "Columna de Trajano",
       "duration_minutes": 10,
       "zone": "roma_antigua",
@@ -3874,6 +3946,7 @@
       ]
     },
     {
+      "id": "teatro_de_marcelo",
       "name": "Teatro de Marcelo",
       "duration_minutes": 15,
       "zone": "roma_antigua",
@@ -3905,6 +3978,7 @@
       ]
     },
     {
+      "id": "ojo_de_la_cerradura_del_aventino",
       "name": "Ojo de la Cerradura del Aventino",
       "duration_minutes": 10,
       "zone": "aventino",
@@ -3942,6 +4016,7 @@
       }
     },
     {
+      "id": "piramide_cestia",
       "name": "Pirámide Cestia",
       "duration_minutes": 10,
       "zone": "testaccio",
@@ -3974,6 +4049,7 @@
       ]
     },
     {
+      "id": "iglesia_de_santa_maria_della_vittoria",
       "name": "Iglesia de Santa Maria della Vittoria",
       "festivos_domingo": [
         "06-29"
@@ -4028,6 +4104,7 @@
       ]
     },
     {
+      "id": "iglesia_de_santa_maria_in_trastevere",
       "name": "Iglesia de Santa Maria in Trastevere",
       "duration_minutes": 20,
       "zone": "trastevere",
@@ -4098,6 +4175,7 @@
       "verificar": "Horario de lazionascosto.it y scopriroma.com (todos los días 7:30-21:00; agosto 8:00-12:00 y 16:00-21:00). La web oficial (santamariaintrastevere.it/orari) daba error el 28-09-2026: verificar."
     },
     {
+      "id": "villa_farnesina",
       "name": "Villa Farnesina",
       "closed_dates": [
         "06-29"
@@ -4141,6 +4219,7 @@
       ]
     },
     {
+      "id": "ponte_sisto",
       "name": "Ponte Sisto",
       "level": 3,
       "zone": "centro_historico",
@@ -4172,6 +4251,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "plaza_trilussa",
       "name": "Plaza Trilussa",
       "duration_minutes": 15,
       "zone": "trastevere",
@@ -4204,6 +4284,7 @@
       ]
     },
     {
+      "id": "terraza_del_pincio",
       "name": "Terraza del Pincio",
       "duration_minutes": 20,
       "zone": "villa_borghese",
@@ -4253,6 +4334,7 @@
       }
     },
     {
+      "id": "basilica_de_san_juan_de_letran",
       "name": "Basílica de San Juan de Letrán",
       "level": 2,
       "zone": "san_giovanni",
@@ -4298,6 +4380,7 @@
       "lo_mejor_dentro": "recorrer la catedral de Roma y su claustro"
     },
     {
+      "id": "quartiere_coppede",
       "name": "Quartiere Coppedè",
       "level": 3,
       "zone": "nomentano",
@@ -4328,6 +4411,7 @@
       "coordinates_checked": true
     },
     {
+      "id": "mercado_de_testaccio",
       "name": "Mercado de Testaccio",
       "closed_dates": [
         "06-29"
@@ -4376,6 +4460,7 @@
       }
     },
     {
+      "id": "palazzo_doria_pamphilj",
       "name": "Palazzo Doria Pamphilj",
       "festivos_domingo": [
         "06-29"
@@ -4448,6 +4533,7 @@
       }
     },
     {
+      "id": "via_appia_antica",
       "name": "Via Appia Antica",
       "level": 3,
       "zone": "appia",
@@ -4481,6 +4567,7 @@
       "max_minutos_paseo": 150
     },
     {
+      "id": "catacumbas_de_san_calixto",
       "name": "Catacumbas de San Calixto",
       "level": 3,
       "zone": "appia",
@@ -4546,6 +4633,7 @@
       }
     },
     {
+      "id": "cementerio_protestante",
       "name": "Cementerio Protestante",
       "festivos_domingo": [
         "06-29"
@@ -4680,6 +4768,7 @@
       }
     },
     {
+      "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
       "duration_minutes": 20,
       "zone": "trastevere",
@@ -4732,6 +4821,7 @@
       "lo_mejor_dentro": "ver de cerca el Tempietto de Bramante"
     },
     {
+      "id": "fontana_dellacqua_paola",
       "name": "Fontana dell'Acqua Paola",
       "duration_minutes": 15,
       "zone": "trastevere",
@@ -4769,6 +4859,7 @@
       }
     },
     {
+      "id": "basilica_de_santa_cecilia_in_trastevere",
       "name": "Basílica de Santa Cecilia in Trastevere",
       "por_fuera": "Hoy la ves por fuera: desde la verja se ve el patio con su jardín y, detrás, el campanario románico. Es uno de los rincones más tranquilos de Trastevere.",
       "festivos_domingo": [
@@ -4831,6 +4922,7 @@
       ]
     },
     {
+      "id": "trastevere",
       "name": "Trastevere",
       "duration_minutes": 45,
       "zone": "trastevere",
@@ -4861,6 +4953,7 @@
       "aperitivo_antes_de_cenar": true
     },
     {
+      "id": "monti",
       "name": "Monti",
       "duration_minutes": 40,
       "zone": "roma_antigua",
@@ -4893,6 +4986,7 @@
       "aperitivo_antes_de_cenar": true
     },
     {
+      "id": "santa_maria_del_popolo",
       "name": "Santa Maria del Popolo",
       "festivos_domingo": [
         "06-29"
@@ -4960,6 +5054,7 @@
       "by_day_verificar": "La web oficial de la parroquia no carga (30-09-2026); el horario del domingo sale de su propia web el 28-09-2026 y de terceros: verificar."
     },
     {
+      "id": "testaccio",
       "name": "Testaccio",
       "duration_minutes": 40,
       "zone": "testaccio",
@@ -4991,6 +5086,7 @@
       "_fuente": "Coordenadas de la Piazza Testaccio (OpenStreetMap, 2026-09-26)"
     },
     {
+      "id": "trinita_dei_monti",
       "name": "Trinità dei Monti",
       "festivos_domingo": [
         "06-29"
@@ -5053,6 +5149,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "via_veneto",
       "name": "Via Veneto",
       "duration_minutes": 10,
       "zone": "centro_historico",
@@ -5083,6 +5180,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "via_del_babuino",
       "name": "Via del Babuino",
       "duration_minutes": 10,
       "zone": "centro_historico",
@@ -5114,6 +5212,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "via_margutta",
       "name": "Via Margutta",
       "duration_minutes": 10,
       "zone": "centro_historico",
@@ -5144,6 +5243,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "porta_pinciana",
       "name": "Porta Pinciana",
       "duration_minutes": 20,
       "zone": "villa_borghese",
@@ -5171,6 +5271,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "jardines_del_pincio",
       "name": "Jardines del Pincio",
       "duration_minutes": 30,
       "zone": "villa_borghese",
@@ -5202,6 +5303,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "mercadillo_de_navidad_de_piazza_navona",
       "name": "Mercadillo de Navidad de Piazza Navona",
       "capa_de": "Piazza Navona",
       "_nota": "Una capa, no una parada más (PROMPT_ROMA_NAVIDAD 2): con la experiencia de mercadillos elegida y en sus fechas, la parada de Piazza Navona pasa a llevar este título, este tiempo y este texto. Nunca salen dos paradas en el mismo sitio.",
@@ -5238,6 +5340,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha de esta parada lleva solo nuestro texto, sin el que escribe la IA bajo demanda (traía datos sin verificar)."
     },
     {
+      "id": "100_presepi_in_vaticano",
       "name": "100 Presepi in Vaticano",
       "duration_minutes": 20,
       "zone": "vaticano",
@@ -5269,6 +5372,7 @@
       "_texto_parada_antes": "Bajo la columnata de Bernini están los 100 Presepi: belenes llegados de todo el mundo. Se recorren en diez minutos y no hay que desviarse."
     },
     {
+      "id": "santo_bambino_de_aracoeli",
       "name": "Santo Bambino de Aracoeli",
       "duration_minutes": 10,
       "zone": "roma_antigua",
@@ -5300,6 +5404,7 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "luces_de_navidad_del_tridente",
       "name": "Luces de Navidad del Tridente",
       "titulo_parada": "Via del Corso, Condotti, Babuino y Margutta, con sus luces de Navidad",
       "duration_minutes": 40,
@@ -8253,6 +8358,7 @@
   },
   "zone_walks": [
     {
+      "id": "paseo_trastevere",
       "name": "Pasear por Trastevere",
       "zone": "trastevere",
       "is_filler": true,
@@ -8266,6 +8372,7 @@
       "tips": "Camina por Via della Lungaretta hasta Piazza di Santa Maria. Baja por Via del Moro y mira los grafitis. Si te apetece, cruza a Via della Scala — tiene las mejores tiendas vintage del barrio."
     },
     {
+      "id": "paseo_centro_historico",
       "name": "Pasear por el Centro Histórico",
       "zone": "centro_historico",
       "is_filler": true,
@@ -8279,6 +8386,7 @@
       "tips": "Via dei Coronari es la calle de los anticuarios — preciosa y tranquila. Desde ahí baja a Via del Governo Vecchio para tiendas con carácter. Si quieres un helado, busca la Gelateria del Teatro."
     },
     {
+      "id": "paseo_roma_antigua",
       "name": "Pasear por la Roma Antigua",
       "zone": "roma_antigua",
       "is_filler": true,
@@ -8292,6 +8400,7 @@
       "tips": "Via dei Fori Imperiali tiene las mejores vistas del Foro desde arriba. Si bajas por Via di San Gregorio llegas al Circo Máximo sin turistas."
     },
     {
+      "id": "paseo_villa_borghese",
       "name": "Pasear por Villa Borghese",
       "zone": "villa_borghese",
       "is_filler": true,
@@ -8305,6 +8414,7 @@
       "tips": "Entra por Porta Pinciana y sigue el paseo hasta el Lago. Si llevas niños, hay barcas de alquiler. El camino hacia la Terraza del Pincio tiene las mejores vistas sin subir escaleras."
     },
     {
+      "id": "paseo_prati_y_el_borgo",
       "name": "Pasear por Prati y el Borgo",
       "zone": "vaticano",
       "is_filler": true,
@@ -8318,6 +8428,7 @@
       "tips": "Via Cola di Rienzo es la calle comercial de los romanos, no de los turistas. Si caminas por Borgo Pio verás artesanos y cafeterías con terraza. El Lungotevere al atardecer es precioso."
     },
     {
+      "id": "paseo_aventino",
       "name": "Pasear por el Aventino",
       "zone": "aventino",
       "is_filler": true,
@@ -8331,6 +8442,7 @@
       "tips": "Sube por Via di Santa Sabina — las vistas desde el parque son las mejores de Roma después del Gianicolo. La Rosaleda municipal (Roseto Comunale) abre en primavera y es gratis."
     },
     {
+      "id": "paseo_testaccio",
       "name": "Pasear por Testaccio",
       "zone": "testaccio",
       "is_filler": true,
@@ -8344,6 +8456,7 @@
       "tips": "Monte Testaccio está hecho literalmente de trozos de ánforas romanas — 35 metros de cerámica acumulada. La calle de los bares (Via di Monte Testaccio) cobra vida por la noche."
     },
     {
+      "id": "paseo_via_appia_antica",
       "name": "Pasear por la Via Appia Antica",
       "zone": "appia",
       "is_filler": true,
@@ -8357,6 +8470,7 @@
       "tips": "El tramo bueno empieza en la Tumba de Cecilia Metella y sigue hacia el sur — allí los adoquines son los originales y casi no pasan coches. Los domingos cierran al tráfico y se llena de romanos en bici; hay alquiler junto a la entrada del parque."
     },
     {
+      "id": "paseo_san_giovanni",
       "name": "Pasear por San Giovanni",
       "zone": "san_giovanni",
       "is_filler": true,
@@ -8370,6 +8484,7 @@
       "tips": "Via Sannio tiene un mercado de ropa de segunda mano por las mañanas, debajo de la muralla. Camina por Viale Carlo Felice hasta Santa Croce in Gerusalemme y fíjate en los tramos de muralla Aureliana que todavía flanquean la calle."
     },
     {
+      "id": "paseo_esquilino",
       "name": "Pasear por el Esquilino",
       "zone": "esquilino",
       "is_filler": true,
@@ -8383,6 +8498,7 @@
       "tips": "El Mercato Esquilino, en Via Principe Amedeo, es el más internacional de la ciudad — especias, pescado y fruta que no verás en otro sitio. Piazza Vittorio tiene un jardín con ruinas romanas dentro y soportales alrededor, de los pocos que quedan en Roma."
     },
     {
+      "id": "paseo_nomentano",
       "name": "Pasear por el Nomentano",
       "zone": "nomentano",
       "is_filler": true,
@@ -8535,7 +8651,30 @@
     },
     "night_view_title": "Roma iluminada desde {desde}",
     "night_view_overrides": {
-      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo iluminados", "photo": "El Puente y el Castillo de Sant'Angelo (noche)" }
+      "Puente Sant'Angelo": { "title": "El Puente y el Castillo de Sant'Angelo iluminados", "photo": "El Puente y el Castillo de Sant'Angelo (noche)", "muestra": ["puente_santangelo", "castillo_de_santangelo"] }
+    },
+    "sitios_extra": {
+      "_nota": "Sitios que no son una ficha de `places` pero que una parada enseña (REGLAS_RUTAS regla 0 y 5). id → nombre. Dos sitios distintos tienen dos id aunque compartan ficha (el parque de Villa Borghese y su lago).",
+      "villa_borghese_lago_esculapio": "El lago y el Templo de Esculapio, en Villa Borghese",
+      "tridente": "El Tridente (Via del Corso, Via del Babuino y Via di Ripetta)"
+    },
+    "paseo_muestras": {
+      "_nota": "Qué sitios enseña cada paseo libre según el título con el que sale (paseo_libre.zonas): nombre, iluminado (con el sol puesto), navidad o si_visto (la otra zona). Regla 5: un paseo no repite lo que el día ya enseñó.",
+      "tridente": { "nombre": ["tridente"], "iluminado": ["tridente"], "navidad": ["tridente"], "si_visto": ["tridente"] },
+      "trevi": { "nombre": ["fontana_de_trevi", "via_del_corso"], "iluminado": ["fontana_de_trevi", "via_del_corso"] },
+      "centro_historico": { "nombre": ["campo_de_fiori", "plaza_farnese"], "iluminado": ["piazza_navona", "panteon"], "si_visto": ["campo_de_fiori", "plaza_farnese"] },
+      "monti": { "nombre": ["monti"], "iluminado": ["monti", "via_dei_fori_imperiali"] },
+      "coliseo": { "nombre": ["coliseo"], "iluminado": ["coliseo"] },
+      "trastevere": { "nombre": ["trastevere"], "iluminado": ["trastevere"] },
+      "testaccio": { "nombre": ["testaccio"], "iluminado": ["testaccio", "piramide_cestia"] },
+      "prati": { "nombre": ["borgo_pio"], "iluminado": ["via_della_conciliazione", "castillo_de_santangelo"] },
+      "vaticano": { "nombre": ["borgo_pio"], "iluminado": ["via_della_conciliazione", "castillo_de_santangelo"] }
+    },
+    "sitios_por_titulo": {
+      "_nota": "Paradas escritas cuyo título enseña otros sitios que los de su ficha: título → id de lo que muestra (regla 5).",
+      "El lago y el Templo de Esculapio, en Villa Borghese": ["villa_borghese_lago_esculapio"],
+      "El parque de Villa Borghese: el lago y el Templo de Esculapio": ["villa_borghese_lago_esculapio"],
+      "Pasea y piérdete por Via del Babuino y Via Margutta": ["via_del_babuino", "via_margutta"]
     },
     "night_view_names": {
       "Mirador del Janículo": "el Janículo",

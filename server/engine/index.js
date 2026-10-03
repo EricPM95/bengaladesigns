@@ -25,6 +25,7 @@ import { resolveFreeTime } from './freeTime.js'
 import { photosFor } from './writtenDays.js'
 import { ownPhotoFile } from './writtenDays.js'
 import { seasonNoteFor } from './seasonNote.js'
+import { attachSites } from '../../shared/routeEngine/sitios.js'
 import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip.js'
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
@@ -552,6 +553,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // Nunca la misma foto propia en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): la segunda pide la suya de siempre (la de
   // Unsplash o Wikipedia) en vez de la propia.
   markRepeatedOwnPhotos(day, photosFor(findPipelineV2Key(destData.destination ?? options.city ?? '') ?? ''), tripDay.hours?.dateIso ?? null)
+  // Un id por sitio y lo que enseña cada parada (reglas 0 y 5): lo escribe el motor, la prueba compara por ahí.
+  attachSites(destData, day)
   // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
   const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber
   if (tripDay.dayNumber === firstCityDay) day.context_banner = contextBannerFor(destData, trip, options)

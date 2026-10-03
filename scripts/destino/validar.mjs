@@ -112,6 +112,56 @@ const section = (title) => {
   for (const pair of D.destination_config?.unrelated_pairs ?? []) for (const name of pair) check('destination_config.unrelated_pairs', name)
 }
 
+// ── 1b. Ids de sitio y lo que enseña cada cosa (REGLAS_RUTAS, regla 31) ───────────────────────
+{
+  const s = section('Ids de sitio y muestras (regla 31)')
+  const config = D.destination_config ?? {}
+  const taken = new Map()
+  const claim = (id, where) => {
+    if (!id) return s.red.push(`${where}: sin id`)
+    if (!/^[a-z0-9_]+$/.test(id)) s.red.push(`${where}: id "${id}" no es minúsculas, números y _`)
+    if (taken.has(id)) s.red.push(`id repetido "${id}": ${taken.get(id)} y ${where}`)
+    else taken.set(id, where)
+  }
+  for (const place of places) claim(place.id, `places "${place.name}"`)
+  for (const entry of D.night_experiences ?? []) claim(entry.id, `night_experiences "${entry.name}"`)
+  for (const entry of D.zone_walks ?? []) claim(entry.id, `zone_walks "${entry.name}"`)
+  for (const id of Object.keys(config.sitios_extra ?? {})) if (!id.startsWith('_')) claim(id, `sitios_extra "${id}"`)
+  const known = new Set([...places.map((place) => place.id), ...Object.keys(config.sitios_extra ?? {})])
+  const check = (where, list) => {
+    if (!Array.isArray(list) || list.length === 0) return s.red.push(`${where}: sin muestra (qué sitios enseña)`)
+    for (const id of list) if (!known.has(id)) s.red.push(`${where}: el sitio "${id}" no existe`)
+  }
+  for (const entry of D.night_experiences ?? []) {
+    check(`night_experiences "${entry.name}".muestra`, entry.muestra)
+    // Lo que una nocturna enseña tiene que estar en lo que choca con el día (conflicts_with): si no, el motor no sabe que ya salió.
+    const conflicts = new Set((entry.conflicts_with ?? []).map((name) => byName.get(name)?.id))
+    for (const id of entry.muestra ?? []) if (!conflicts.has(id) && known.has(id) && !(entry.allow_same_day === false)) s.warn.push(`night_experiences "${entry.name}": enseña "${id}" pero su conflicts_with no lo nombra`)
+  }
+  for (const [name, override] of Object.entries(config.night_view_overrides ?? {})) {
+    if (!byName.has(name)) s.red.push(`night_view_overrides: "${name}" no existe`)
+    check(`night_view_overrides "${name}".muestra`, override.muestra)
+  }
+  for (const [zone, titles] of Object.entries(config.paseo_muestras ?? {})) {
+    if (zone.startsWith('_')) continue
+    if (!config.paseo_libre?.zonas?.[zone]) s.red.push(`paseo_muestras: la zona "${zone}" no está en paseo_libre.zonas`)
+    for (const [which, list] of Object.entries(titles)) check(`paseo_muestras.${zone}.${which}`, list)
+  }
+  for (const [zone, zoneConfig] of Object.entries(config.paseo_libre?.zonas ?? {})) {
+    if (!config.paseo_muestras?.[zone]) s.red.push(`paseo_libre.zonas.${zone}: sin paseo_muestras`)
+    else if (!config.paseo_muestras[zone].nombre) s.red.push(`paseo_muestras.${zone}: sin "nombre"`)
+    else {
+      if (zoneConfig.iluminado && !config.paseo_muestras[zone].iluminado) s.red.push(`paseo_muestras.${zone}: tiene título iluminado y no su muestra`)
+      if (zoneConfig.titulo_navidad && !config.paseo_muestras[zone].navidad) s.warn.push(`paseo_muestras.${zone}: tiene título de Navidad y no su muestra`)
+      if (zoneConfig.si_visto_nombre && !config.paseo_muestras[zone].si_visto) s.warn.push(`paseo_muestras.${zone}: tiene si_visto_nombre y no su muestra`)
+    }
+  }
+  for (const [title, list] of Object.entries(config.sitios_por_titulo ?? {})) if (!title.startsWith('_')) check(`sitios_por_titulo "${title}"`, list)
+  for (const name of D.default_free_tour?.covers ?? []) if (!byName.get(name)?.id) s.red.push(`Free Tour covers: "${name}" no tiene id`)
+  // Un título escrito en un día que no existe en ningún sitio de `sitios_por_titulo` no es un error: enseña su ficha.
+  s.info.push(`${taken.size} ids`)
+}
+
 // ── 2. Grupos coherentes ────────────────────────────────────────────────────────────────────
 {
   const s = section('Grupos')

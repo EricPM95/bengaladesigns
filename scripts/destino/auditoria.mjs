@@ -24,8 +24,10 @@ const endCoordsOf = (item) => (item?.end_latitude != null ? [item.end_latitude, 
 
 /** Los tipos, con el título que sale en el recuento (en este orden). */
 export const TIPOS_AUDITORIA = {
-  repetido_dia: 'Lugar repetido en el mismo día',
-  repetido_viaje: 'Lugar repetido otro día (salvo nocturnas y revisitas)',
+  repetido_dia: 'Sitio repetido en el mismo día (por id: paradas, nocturnas, paseos, «De camino» y «iluminado»)',
+  repetido_viaje: 'Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)',
+  nocturna_repite_viaje: 'La misma nocturna dos noches del mismo viaje',
+  paseo_repite_viaje: 'El mismo paseo libre dos días del mismo viaje (regla 7: solo si no queda otro; nunca el mismo día)',
   pool_fuera: 'Lugar del pool fuera de la ruta',
   fuera_de_horario: 'Parada fuera de su horario real de ese día',
   atardecer_tarde: 'Mirador de atardecer después del sol (o texto de atardecer de noche)',
@@ -50,7 +52,7 @@ export const TIPOS_AUDITORIA = {
   titulo_hora: 'Texto de hora que no coincide con la hora real',
   nota_promete: 'Nota de temporada que promete algo que la ruta no hace',
   atardecer_corto: 'Parada de atardecer que acaba antes de que se ponga el sol',
-  nocturna_repite: 'Lugar de una nocturna que ya salió de día ese mismo día',
+  nocturna_repite: 'Nocturna (o «iluminado») sobre un sitio que ya salió de día ese mismo día, si no fue por la mañana (antes de las 13:00)',
   fuera_mal: '"Quedó fuera" con un lugar por el que pasa la ruta o con "No te dio tiempo" por un cierre',
   plaza_despues: 'Iglesia o monumento antes que su plaza',
   texto_generico: 'Texto genérico en una nocturna o en "Roma iluminada"',
@@ -120,16 +122,40 @@ export function auditarViaje(D, days, options = {}) {
     if (D.default_free_tour && day.stops.some((stop) => nameOf(stop) === D.default_free_tour.name)) for (const name of D.default_free_tour.covers ?? []) allNames.add(name)
 
     // Repetidos.
+    // (Regla 0 y 5: por id de sitio, nunca por el nombre. Cada parada trae `muestra`, la lista de sitios que enseña: la nocturna del
+    // Puente enseña también el Castillo; el Free Tour, todo lo que recorre. El parque de Villa Borghese y su lago son dos sitios.)
+    const showsOf = (stop) => (stop.muestra?.length ? stop.muestra : stop.muestra ? [] : [nameOf(stop)])
+    const nameOfSite = (id) => D.destination_config?.sitios_extra?.[id] ?? (D.places ?? []).find((place) => place.id === id)?.name ?? id
+    const isNight = (stop) => Boolean(stop.is_night_experience || stop.night_view)
     const inDay = new Map()
-    for (const stop of dayStops) {
-      const name = nameOf(stop)
-      // (El mismo lugar con dos nombres escritos distintos, el parque de Villa Borghese de camino a la Galería y su lago y su templo por la
-      // tarde en D4, son dos paradas: PARA_CODE_TODO_2026-10-01, 5.5.)
-      if (inDay.has(name) && !(stop.display_title && inDay.get(name).title && stop.display_title !== inDay.get(name).title)) add('repetido_dia', n, stop.suggested_time, name, `también a las ${inDay.get(name).time}`)
-      else inDay.set(name, { time: stop.suggested_time, title: stop.display_title ?? null })
-      if (!stop.is_revisit && !stop.pass_through && !stop.is_pass_by && !stop.is_free_walk) {
-        if (seenOnDay.has(name) && seenOnDay.get(name) !== n) add('repetido_viaje', n, stop.suggested_time, name, `ya en el día ${seenOnDay.get(name)}`)
-        else seenOnDay.set(name, n)
+    for (const stop of day.stops) {
+      if (stop.is_break || stop.is_free_tour) continue
+      for (const id of showsOf(stop)) {
+        const before = inDay.get(id)
+        if (!before) {
+          inDay.set(id, stop)
+          continue
+        }
+        if (stop.is_revisit || before.is_revisit) continue
+        // Regla 20: una nocturna puede volver a un sitio que se vio por la mañana (antes de las 13:00), y solo a ese.
+        const nightPair = isNight(stop) !== isNight(before)
+        const dayStop = isNight(stop) ? before : stop
+        if (nightPair) {
+          if ((t2m(dayStop.suggested_time) ?? 0) < 13 * 60) continue
+          add('nocturna_repite', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)} ya salió a las ${before.suggested_time} (${nameOf(before)})`)
+        } else add('repetido_dia', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: también a las ${before.suggested_time} (${nameOf(before)})`)
+      }
+    }
+    for (const stop of day.stops) {
+      if (stop.is_break || stop.is_free_tour || stop.is_revisit) continue
+      // Una visita (ni nocturna, ni de paso, ni paseo): un sitio, una vez en el viaje. La nocturna y el paseo, aparte.
+      const kind = stop.is_night_experience ? 'nocturna' : stop.is_free_walk ? 'paseo' : stop.pass_through || stop.is_pass_by || stop.night_view ? null : 'visita'
+      if (!kind) continue
+      const key = kind === 'visita' ? showsOf(stop) : [stop.site_id ?? nameOf(stop)]
+      for (const id of key) {
+        const seen = seenOnDay.get(`${kind}:${id}`)
+        if (seen != null && seen !== n) add(kind === 'visita' ? 'repetido_viaje' : kind === 'nocturna' ? 'nocturna_repite_viaje' : 'paseo_repite_viaje', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: ya en el día ${seen}`)
+        else if (seen == null) seenOnDay.set(`${kind}:${id}`, n)
       }
     }
 
@@ -385,11 +411,7 @@ export function auditarViaje(D, days, options = {}) {
       const start = t2m(stop.suggested_time)
       // El atardecer acaba antes de que se ponga el sol.
       if (stop.sunset_minutes != null && sunset != null && start != null && start + (stop.duration_minutes ?? 0) < sunset - ROUNDING) add('atardecer_corto', n, stop.suggested_time, nameOf(stop), `acaba antes del sol (${Math.floor(sunset / 60)}:${String(sunset % 60).padStart(2, '0')})`)
-      // La nocturna repite lo que ya salió ese día.
-      if (stop.is_night_experience) {
-        const base = String(stop.name).replace(/\s*\(noche\)$/, '').replace(/\s+de noche$/, '')
-        if (dayNames.has(base)) add('nocturna_repite', n, stop.suggested_time, stop.name, `${base} ya salió de día`)
-      }
+      // (La nocturna que repite lo que ya salió ese día se mira arriba, por id de sitio: `nocturna_repite`.)
       // Textos genéricos en las nocturnas y en "Roma iluminada".
       if ((stop.is_night_experience || stop.night_view) && generic.has(stop.why)) add('texto_generico', n, stop.suggested_time, stop.night_view_title ?? stop.name, stop.why)
       // Un texto con condición que no se cumple (el motor pone el general; si no lo tiene, sale el condicionado).
