@@ -222,9 +222,9 @@ export function RouteView() {
               </>
             ) : mode === 'explore' && exploreMarkers === null ? (
               // EXPLORAR sin nada elegido todavía: el mapa es la ciudad limpia (sin la ruta), que se va llenando con los filtros.
-              <StopsMapView markers={[]} center={cityCenter} />
+              <StopsMapView markers={[]} center={cityCenter} persistKey="explore" />
             ) : mode === 'explore' && exploreMarkers !== null ? (
-              <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} />
+              <StopsMapView markers={exploreMarkers} activeStopId={exploreActiveId} onSelectStop={setExploreActiveId} persistKey="explore" />
             ) : dayDetailOpen && dayMap ? (
               <>
                 <StopsMapView markers={dayMap.markers} lines={dayMap.lines} center={dayMap.center} activeStopId={activeStopId} onSelectStop={setActiveStopId} />

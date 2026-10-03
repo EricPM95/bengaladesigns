@@ -16,6 +16,13 @@ function computeBounds(markers: { coordinates: Coordinates }[]): mapboxgl.LngLat
   )
 }
 
+/**
+ * Mapas que se conservan entre pantallas (`persistKey`): el mapa de EXPLORAR y el de dentro de «Explorar Atracciones…» son el MISMO mapa de Mapbox,
+ * que cambia de sitio en la pantalla sin volver a crearse. Así, al encender un filtro no se «recarga» el mapa: se quedan la cámara y los azulejos
+ * y solo entran los pines. Sin `persistKey`, cada mapa se crea y se destruye como siempre.
+ */
+const persistedMaps = new Map<string, { map: mapboxgl.Map; el: HTMLDivElement }>()
+
 export interface StopsMapMarker {
   id: string
   name: string
@@ -94,6 +101,8 @@ interface StopsMapViewProps {
   offsets?: Record<string, [number, number]>
   /** Vuela hasta ese punto (un baño, una fuente) cada vez que cambia `key`. */
   flyTo?: { coordinates: Coordinates; key: number } | null
+  /** Ver persistedMaps: los mapas con la misma clave comparten el mismo mapa de Mapbox. */
+  persistKey?: string
 }
 
 /**
@@ -106,7 +115,7 @@ interface StopsMapViewProps {
 /** Margen del encuadre: arriba deja sitio a la pastilla del destino y abajo al panel que monta sobre el mapa. */
 const FIT_PADDING = { top: 96, bottom: 48, left: 40, right: 40 }
 
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null, persistKey }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -134,14 +143,32 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     const origin = markers[0]?.coordinates ?? center
     if (!origin) return
 
-    const map = new mapboxgl.Map({
-      container: containerRef.current,
+    const host = containerRef.current
+    const persisted = persistKey ? persistedMaps.get(persistKey) : undefined
+    let mapContainer: HTMLElement = host
+    if (persistKey && !persisted) {
+      mapContainer = document.createElement('div')
+      mapContainer.style.cssText = 'width:100%;height:100%'
+      host.appendChild(mapContainer)
+    }
+    const map: mapboxgl.Map = persisted
+      ? persisted.map
+      : new mapboxgl.Map({
+      container: mapContainer,
       style: 'mapbox://styles/mapbox/streets-v12',
       // Los nombres del mapa en el idioma de la app (Roma, Coliseo), no en inglés.
       language: APP_LANGUAGE,
       center: [origin.lng, origin.lat],
       zoom: markers.length === 0 ? 12 : 14,
     })
+    if (persistKey && !persisted) persistedMaps.set(persistKey, { map, el: mapContainer as HTMLDivElement })
+    if (persisted) {
+      // El mismo mapa, ahora en esta pantalla: se cuelga aquí y se ajusta al hueco.
+      host.appendChild(persisted.el)
+      requestAnimationFrame(() => map.resize())
+    }
+    const addedMarkers: mapboxgl.Marker[] = []
+    const addedLineIds: string[] = []
     mapRef.current = map
     innerElsRef.current = new Map()
     // Un único popup vivo a la vez — reutilizado (nunca varios apilados) para que abrir uno nuevo
@@ -154,7 +181,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       openPinId = null
     })
 
-    map.on('load', () => {
+    const populate = () => {
       // Ronda 9 (Mejora 1A): líneas rectas de ruta, una capa por día — SIEMPRE debajo de los pines
       // (añadidas antes de los mapboxgl.Marker, que van en su propio overlay HTML por encima del
       // canvas del mapa base sin importar el orden de inserción, pero mantener el orden lógico
@@ -162,6 +189,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       lines.forEach((line) => {
         if (line.coordinates.length < 2) return
         const sourceId = `stops-line-${line.id}`
+        addedLineIds.push(sourceId)
         map.addSource(sourceId, {
           type: 'geojson',
           data: {
@@ -262,7 +290,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
         // se pierde solo. Encontrado de verdad: con la primera versión, los 67 pines filtrados se
         // quedaban con pointer-events:none —que Mapbox sí respeta— pero perfectamente visibles.
         inner.style.transition = 'opacity 180ms ease, transform 180ms ease'
-        new mapboxgl.Marker({ element: root }).setLngLat([marker.coordinates.lng, marker.coordinates.lat]).addTo(map)
+        addedMarkers.push(new mapboxgl.Marker({ element: root }).setLngLat([marker.coordinates.lng, marker.coordinates.lat]).addTo(map))
       })
 
       // El encuadre inicial mira solo los pines VISIBLES: quien llama puede tener cargado todo el
@@ -270,12 +298,18 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       // abriría el mapa a vista de ciudad entera en vez de sobre lo que el viajero está mirando.
       const visible = markers.filter((marker) => !hidden.has(marker.id))
       const toFit = visible.length > 1 ? visible : markers
+      // (En un mapa compartido entre pantallas la cámara no se toca: se queda donde está.)
+      if (persistKey) return
       if (focusCenter) {
         map.jumpTo({ center: [focusCenter.lng, focusCenter.lat], zoom: 15 })
       } else if (toFit.length > 1) {
         map.fitBounds(computeBounds(toFit), { padding: FIT_PADDING, maxZoom: 15 })
       }
-    })
+    }
+    // Un mapa nuevo pinta al cargar; uno que ya estaba cargado (compartido) pinta ya.
+    if (persisted && map.loaded()) populate()
+    else if (persisted) map.once('load', populate)
+    else map.on('load', populate)
 
     // Mapbox GL no detecta solo que su contenedor cambió de tamaño (p.ej. al arrastrar el tirador
     // del panel en móvil) — sin esto el canvas se queda fijo en el tamaño que tenía al crearse.
@@ -284,7 +318,20 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
 
     return () => {
       resizeObserver.disconnect()
-      map.remove()
+      if (persistKey) {
+        // El mapa compartido no se destruye: se le quitan SOLO los pines y líneas de esta pantalla y se descuelga (si otra pantalla no lo ha cogido ya).
+        popup.remove()
+        addedMarkers.forEach((marker) => marker.remove())
+        for (const id of addedLineIds) {
+          if (map.getLayer(id)) map.removeLayer(id)
+          if (map.getLayer(`${id}-casing`)) map.removeLayer(`${id}-casing`)
+          if (map.getSource(id)) map.removeSource(id)
+        }
+        const entry = persistedMaps.get(persistKey)
+        if (entry && entry.el.parentElement === host) host.removeChild(entry.el)
+      } else {
+        map.remove()
+      }
       mapRef.current = null
     }
   }, [markersKey, linesKey, centerKey])

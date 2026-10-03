@@ -885,6 +885,7 @@ export function PlaceExplorerScreen({
               fitToMarkerIds={fitIds}
               offsets={pinOffsets}
               flyTo={flyTarget}
+              persistKey="explore"
               focusCenter={focusCoordinates}
               activeStopId={selected ? poiId(selected) : selectedToilet}
               onSelectStop={(id) => {
