@@ -120,6 +120,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const mapRef = useRef<mapboxgl.Map | null>(null)
+  const syncPinsRef = useRef<() => void>(() => {})
   // Prompt 3 (bug 1): deliberadamente FUERA de markersKey. Cambiar qué pines se ven no puede
   // reconstruir el mapa — ver el comentario de hiddenMarkerIds en las props.
   const ringKey = (ringIds ?? []).join('|')
@@ -298,6 +299,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       // abriría el mapa a vista de ciudad entera en vez de sobre lo que el viajero está mirando.
       const visible = markers.filter((marker) => !hidden.has(marker.id))
       const toFit = visible.length > 1 ? visible : markers
+      syncPinsRef.current()
       // (En un mapa compartido entre pantallas la cámara no se toca: se queda donde está.)
       if (persistKey) return
       if (focusCenter) {
@@ -307,8 +309,8 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       }
     }
     // Un mapa nuevo pinta al cargar; uno que ya estaba cargado (compartido) pinta ya.
-    if (persisted && map.loaded()) populate()
-    else if (persisted) map.once('load', populate)
+    if (persisted && map.isStyleLoaded()) populate()
+    else if (persisted) map.once('style.load', populate)
     else map.on('load', populate)
 
     // Mapbox GL no detecta solo que su contenedor cambió de tamaño (p.ej. al arrastrar el tirador
@@ -338,7 +340,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
 
   // Un único efecto manda sobre el aspecto del pin — si el "activo" y el "oculto" escribieran cada
   // uno su propio transform sobre el mismo elemento, el último en correr borraría al otro.
-  useEffect(() => {
+  const syncPins = () => {
     for (const [stopId, el] of innerElsRef.current) {
       const isHidden = hidden.has(stopId)
       const marker = markers.find((candidate) => candidate.id === stopId)
@@ -355,6 +357,11 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     for (const [stopId, root] of rootElsRef.current) {
       root.style.pointerEvents = hidden.has(stopId) ? 'none' : ''
     }
+  }
+  // Siempre la última versión, para que el pintado de los pines (que puede llegar más tarde, al cargar el mapa) aplique ya los aros y los separados.
+  syncPinsRef.current = syncPins
+  useEffect(() => {
+    syncPins()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStopId, hidden, markersKey, ringKey, offsetsKey])
 
