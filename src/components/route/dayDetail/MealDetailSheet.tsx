@@ -65,7 +65,12 @@ interface CuratedCardProps {
 function CuratedCard({ restaurant, selectable, active, justHighlighted, onSelect, cardRef }: CuratedCardProps) {
   const content = (
     <div className="flex gap-3 rounded-xl border bg-white p-2.5" style={{ borderColor: GOLD_BORDER }}>
-      <img src={restaurant.foto} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+      {/* Los restaurantes van sin foto (color neutro): una foto de stock al azar no es del sitio. Las de antes, guardadas con una de picsum, tampoco se enseñan. */}
+      {restaurant.foto && !restaurant.foto.includes('picsum.photos') ? (
+        <img src={restaurant.foto} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+      ) : (
+        <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-lg bg-bg-hover" />
+      )}
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex items-start justify-between gap-2">
           <p className="min-w-0 truncate text-small font-semibold text-text">{restaurant.nombre}</p>
@@ -197,7 +202,7 @@ export function MealDetailSheet({ open, destino, city, coordinates, curatedZone,
       icon: RESTAURANT_ICON,
       bg: RESTAURANT_MARKER_BG,
       text: RESTAURANT_MARKER_TEXT,
-      photoUrl: restaurant.foto,
+      photoUrl: restaurant.foto && !restaurant.foto.includes('picsum.photos') ? restaurant.foto : undefined,
     }))
   const curatedMarkerIds = new Set(curatedMarkers.map((marker) => marker.id))
 

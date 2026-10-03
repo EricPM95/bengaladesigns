@@ -877,7 +877,8 @@ function sanitizeCuratedRestaurants(parsed) {
         nombre,
         motivo: entry.motivo.trim().slice(0, 300),
         presupuesto: validBudget.has(entry.presupuesto) ? entry.presupuesto : '€€',
-        foto: `https://picsum.photos/seed/${encodeURIComponent(nombre)}/400/280`,
+        // Sin foto (3-oct-2026): una imagen de stock al azar no es del restaurante. La tarjeta enseña el color neutro.
+        foto: '',
         // null si Claude no dio coordenadas válidas — el pin de ese restaurante simplemente se omite
         // del mapa (MealDetailSheet.tsx), nunca se inventa una posición aproximada.
         latitude,
@@ -926,7 +927,7 @@ function curatedRestaurantsNear(destino, zona, franja, coordinates) {
       nombre: place.name,
       motivo: [place.best_for, place.what_to_order ? `Pide: ${place.what_to_order}` : null, `A ${Math.max(1, Math.round(minutes))} min andando`].filter(Boolean).join(' · '),
       presupuesto: ['€', '€€', '€€€'].includes(place.price_range) ? place.price_range : '€€',
-      foto: `https://picsum.photos/seed/${encodeURIComponent(place.name)}/400/280`,
+      foto: '',
       latitude: place.coordinates.lat,
       longitude: place.coordinates.lng,
     }))
