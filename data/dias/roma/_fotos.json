@@ -429,6 +429,18 @@
       "autor": "Joris",
       "enlace": "https://commons.wikimedia.org/wiki/File:Porta_San_Paolo_-_Piramid_Cestius.JPG",
       "nota": "La pirámide con la Porta San Paolo (3-oct-2026). Es la que salía en el Mercado de Testaccio (venía de Wikipedia). Licencia CC BY-SA 3.0: pide crédito, y lleva el de Joris (autor «asumido» por Commons según los derechos reclamados). Sustituye a la de Unsplash, a contraluz y oscura."
+    },
+    {
+      "archivo": "noche_piazza_navona.jpg",
+      "lugares": [
+        "Piazza Navona (noche)"
+      ],
+      "cuando": "noche",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "La del usuario (3-oct-2026), de noche, para todo el año. En las fechas del mercadillo (12-01 a 01-05) sigue ganando la de Navidad."
     }
   ],
   "notas_revision": {
