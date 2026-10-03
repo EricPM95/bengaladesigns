@@ -90,6 +90,10 @@ interface StopsMapViewProps {
   userPosition?: Coordinates | null
   /** Cada vez que cambia, la cámara vuela a `userPosition` (el botón de localizarte). */
   recenterKey?: number
+  /** Cuánto se corre cada pin (en píxeles) para que dos pines del mismo sitio no se tapen. Aparte de los marcadores: no reconstruye el mapa. */
+  offsets?: Record<string, [number, number]>
+  /** Vuela hasta ese punto (un baño, una fuente) cada vez que cambia `key`. */
+  flyTo?: { coordinates: Coordinates; key: number } | null
 }
 
 /**
@@ -102,7 +106,7 @@ interface StopsMapViewProps {
 /** Margen del encuadre: arriba deja sitio a la pastilla del destino y abajo al panel que monta sobre el mapa. */
 const FIT_PADDING = { top: 96, bottom: 48, left: 40, right: 40 }
 
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, ringIds, userPosition = null, recenterKey = 0 }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
@@ -110,6 +114,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
   // Prompt 3 (bug 1): deliberadamente FUERA de markersKey. Cambiar qué pines se ven no puede
   // reconstruir el mapa — ver el comentario de hiddenMarkerIds en las props.
   const ringKey = (ringIds ?? []).join('|')
+  const offsetsKey = JSON.stringify(offsets ?? {})
   const hiddenKey = (hiddenMarkerIds ?? []).join('|')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hidden = useMemo(() => new Set(hiddenMarkerIds ?? []), [hiddenKey])
@@ -291,10 +296,12 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       const isHidden = hidden.has(stopId)
       const marker = markers.find((candidate) => candidate.id === stopId)
       el.style.opacity = isHidden ? '0' : String(marker?.opacity ?? 1)
-      el.style.transform = isHidden ? 'scale(0.6)' : stopId === activeStopId ? 'scale(1.2)' : ''
+      const shift = offsets?.[stopId]
+      const scale = isHidden ? 'scale(0.6)' : stopId === activeStopId ? 'scale(1.2)' : ''
+      el.style.transform = `${shift && !isHidden ? `translate(${shift[0]}px,${shift[1]}px) ` : ''}${scale}`.trim()
       el.style.zIndex = !isHidden && stopId === activeStopId ? '10' : ''
       // El aro dorado de «en tu ruta» (solo los pines con icono de trazo fino).
-      if (marker?.iconPath) el.style.boxShadow = `${ringKey && ringKey.split('|').includes(stopId) ? '0 0 0 2.5px oklch(0.74 0.16 65),' : ''}0 6px 14px -4px rgba(28,34,48,.5)`
+      if (marker?.iconPath) el.style.boxShadow = `${ringKey && ringKey.split('|').includes(stopId) ? '0 0 0 3.5px oklch(0.7 0.17 60),' : ''}0 6px 14px -4px rgba(28,34,48,.5)`
     }
     // El pointer-events sí va en el raíz (Mapbox no lo toca): un pin invisible no debe seguir
     // capturando clicks ni abriendo su popup.
@@ -302,7 +309,17 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       root.style.pointerEvents = hidden.has(stopId) ? 'none' : ''
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStopId, hidden, markersKey, ringKey])
+  }, [activeStopId, hidden, markersKey, ringKey, offsetsKey])
+
+  // El vuelo hasta un baño o una fuente (lo pide la lista de abajo).
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !flyTo) return
+    const go = () => map.flyTo({ center: [flyTo.coordinates.lng, flyTo.coordinates.lat], zoom: 17, duration: 700 })
+    if (map.loaded()) go()
+    else map.once('load', go)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flyTo?.key])
 
   // El punto azul de «dónde estás», y el vuelo hasta él cuando se pulsa el botón de localizarte.
   const userMarkerRef = useRef<mapboxgl.Marker | null>(null)

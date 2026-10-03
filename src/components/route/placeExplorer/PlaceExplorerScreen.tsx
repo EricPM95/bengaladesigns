@@ -23,7 +23,7 @@ import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { CATEGORY_STYLE, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
+import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 
 const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
@@ -340,6 +340,10 @@ export function PlaceExplorerScreen({
   const chipsRowRef = useRef<HTMLDivElement>(null)
   /** El mapa grande (por defecto) o pequeño: el tirador de la hoja lo cambia. */
   const [mapBig, setMapBig] = useState(true)
+  /** El mapa recogido a mano (como en Días): queda una franja para volver a abrirlo. */
+  const [mapCollapsed, setMapCollapsed] = useState(false)
+  /** Tocar un baño o una fuente de la lista acerca el mapa hasta él. */
+  const [flyTarget, setFlyTarget] = useState<{ coordinates: Coordinates; key: number } | null>(null)
   /** El botón de localizarte pide la ubicación (con el mismo permiso de «Cerca de ti») y centra el mapa. */
   const [locateRequested, setLocateRequested] = useState(false)
   const [recenterKey, setRecenterKey] = useState(0)
@@ -527,6 +531,7 @@ export function PlaceExplorerScreen({
   // dedo. Ahora la vista del viajero no se toca y los pines entran y salen con un fundido.
   // Más pequeños que los números de las paradas del día, para que la ruta siga destacando.
   const poiPlaces = useMemo(() => places.filter((place) => hasRealCoordinates(place.coordinates)), [places])
+  const ticketId = (place: DestinationPlace) => `${poiId(place)}#entrada`
   /** El id del pin de un lugar: los baños no tienen nombre propio, van por su id de OpenStreetMap. */
   const poiId = (place: DestinationPlace) => (isOsmPoint(place) ? `toilet-${place.osm_id ?? place.coordinates.lat}` : `poi-${place.name}`)
 
@@ -554,10 +559,10 @@ export function PlaceExplorerScreen({
           name: excursion.title,
           coordinates: excursion.destinationCoords as Coordinates,
           number: 0,
-          icon: EXCURSION_CHIP?.icon ?? '🚌',
-          bg: EXCURSION_CHIP?.color ?? '#00897B',
+          bg: solidOf(CARD_STYLE.excursiones.color),
           text: '#FFFFFF',
-          small: true,
+          iconPath: EXPLORE_ICONS.bus,
+          size: 28,
         })),
     [excursions],
   )
@@ -577,35 +582,83 @@ export function PlaceExplorerScreen({
         ...(closedToday(place) ? { opacity: 0.35 } : {}),
       }
     })
-    return [...dayMarkers, ...poiMarkers, ...excursionMarkers]
+    // Los sitios que cobran entrada llevan además su propio pin con el icono de entrada: se enciende con el filtro Entradas.
+    const ticketMarkers: StopsMapMarker[] = poiPlaces
+      .filter((place) => place.requires_ticket && !isOsmPoint(place))
+      .map((place) => ({
+        id: ticketId(place),
+        name: place.name,
+        coordinates: place.coordinates,
+        number: 0,
+        bg: solidOf(CARD_STYLE.entradas.color),
+        text: '#FFFFFF',
+        iconPath: EXPLORE_ICONS.ticket,
+        size: 28,
+        ...(closedToday(place) ? { opacity: 0.35 } : {}),
+      }))
+    return [...dayMarkers, ...poiMarkers, ...ticketMarkers, ...excursionMarkers]
   }, [dayMarkers, poiPlaces, excursionMarkers])
 
   /** Nombres que SÍ se ven en el mapa ahora mismo — mismo criterio que la lista: sin ningún filtro
       ni búsqueda, el mapa no enseña el catálogo entero, solo las paradas del día; durante una
       búsqueda enseña lo encontrado, aunque los chips activos no lo incluyan. */
-  const visiblePoiNames = useMemo(() => {
-    const shown = needle || placeFiltersActive ? results : []
-    return new Set(shown.map((place) => poiId(place)))
+  const visiblePinIds = useMemo(() => {
+    const ids = new Set<string>()
+    if (queryTooShort) return ids
+    if (needle) {
+      for (const place of results) ids.add(poiId(place))
+      return ids
+    }
+    // Cada filtro enciende SUS pines, aparte de la lista: Atracciones los de categoría, Entradas los del icono de entrada (un mismo sitio puede llevar los dos).
+    const categoryFilters = activeFilters.filter((id) => id !== 'entradas' && id !== 'excursiones')
+    const categoriesOn = categoryFilters.flatMap((id) => categoriesForFilters([id]))
+    for (const place of poiPlaces) {
+      const categoryOn = place.filter_category !== null && categoriesOn.includes(place.filter_category) && (place.kind !== 'restaurant' || activeSubCategory === null || place.sub_category === activeSubCategory)
+      if (categoryOn) ids.add(poiId(place))
+      if (ticketsActive && place.requires_ticket && !isOsmPoint(place)) ids.add(ticketId(place))
+    }
+    return ids
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, needle, placeFiltersActive])
+  }, [results, needle, queryTooShort, activeFilters, activeSubCategory, ticketsActive, poiPlaces])
+
+  /** Cuánto se corre cada pin cuando un sitio lleva dos a la vez (Coliseo con Atracciones y Entradas): uno a cada lado, sin taparse. */
+  const pinOffsets = useMemo(() => {
+    const offsets: Record<string, [number, number]> = {}
+    for (const place of poiPlaces) {
+      if (visiblePinIds.has(poiId(place)) && visiblePinIds.has(ticketId(place))) {
+        offsets[poiId(place)] = [-15, 0]
+        offsets[ticketId(place)] = [15, 0]
+      }
+    }
+    return offsets
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visiblePinIds, poiPlaces])
 
   const hiddenMarkerIds = useMemo(
     () => [
-      ...poiPlaces.filter((place) => !visiblePoiNames.has(poiId(place))).map((place) => poiId(place)),
+      ...poiPlaces.flatMap((place) => [poiId(place), ticketId(place)]).filter((id) => !visiblePinIds.has(id)),
       // Mismo truco que con los lugares (Prompt 3): los pines de excursión están SIEMPRE en el mapa
       // y lo que cambia al marcar el chip es solo cuáles se ven — así la cámara no se resetea.
       ...(excursionsActive ? [] : excursionMarkers.map((marker) => marker.id)),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [poiPlaces, visiblePoiNames, excursionsActive, excursionMarkers],
+    [poiPlaces, visiblePinIds, excursionsActive, excursionMarkers],
   )
   /** Los pines de lo que ya está en la ruta llevan el aro dorado (el contador «En tu ruta · n» de encima del mapa). */
   const inRouteIds = useMemo(
-    () => poiPlaces.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).map((place) => poiId(place)),
+    () => [
+      ...poiPlaces
+        .filter((place) => !isOsmPoint(place) && isNameAlreadyInRoute(place.name, stopEntries))
+        .flatMap((place) => [poiId(place), ticketId(place)]),
+      // Una excursión que ya está en la ruta (la elegida en su día) lleva el aro igual.
+      ...excursions.filter((excursion) => route?.days.some((day) => day.selectedExcursionId === excursion.id)).map((excursion) => `excursion-${excursion.id}`),
+    ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [poiPlaces, stopEntries],
+    [poiPlaces, stopEntries, excursions, route],
   )
-  const visibleMarkerCount = dayMarkers.length + visiblePoiNames.size + (excursionsActive ? excursionMarkers.length : 0)
+  const visibleMarkerCount = dayMarkers.length + visiblePinIds.size + (excursionsActive ? excursionMarkers.length : 0)
+  // Con Excursiones encendido el mapa se aleja lo justo para ver los destinos (a veces lejos de la ciudad); si hay más filtros, también sus pines.
+  const fitIds = excursionsActive ? [...excursionMarkers.map((marker) => marker.id), ...(placeFiltersActive ? [...visiblePinIds] : [])] : null
 
   const onToggleLike = async (place: DestinationPlace) => {
     const next = !likes.mine.has(place.name)
@@ -791,6 +844,19 @@ export function PlaceExplorerScreen({
           </div>
         )}
 
+        {mapCollapsed ? (
+          <button
+            type="button"
+            onClick={() => setMapCollapsed(false)}
+            aria-label="Mostrar mapa"
+            title="Mostrar mapa"
+            className="flex h-8 w-full shrink-0 items-center justify-center border-y border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        ) : (
         <div className="relative shrink-0" style={{ height: mapBig ? '38vh' : '20vh', transition: 'height .6s cubic-bezier(.2,.8,.2,1)' }}>
           {visibleMarkerCount > 0 ? (
             <StopsMapView
@@ -802,11 +868,13 @@ export function PlaceExplorerScreen({
               // Solo al mirar excursiones y nada más: los destinos están fuera de la ciudad y hay
               // que abrir el mapa para verlos. Con cualquier filtro de lugares activo la cámara se
               // queda donde el viajero la dejó, como siempre.
-              fitToMarkerIds={excursionsActive && !placeFiltersActive ? excursionMarkers.map((marker) => marker.id) : null}
+              fitToMarkerIds={fitIds}
+              offsets={pinOffsets}
+              flyTo={flyTarget}
               focusCenter={focusCoordinates}
               activeStopId={selected ? poiId(selected) : selectedToilet}
               onSelectStop={(id) => {
-                const place = places.find((candidate) => poiId(candidate) === id)
+                const place = places.find((candidate) => poiId(candidate) === id.replace(/#entrada$/, ''))
                 if (place) {
                   if (isOsmPoint(place)) setSelectedToilet(id)
                   else setSelected(place)
@@ -821,6 +889,17 @@ export function PlaceExplorerScreen({
               <p className="text-small text-text-soft">Activa una categoría para ver sus lugares en el mapa.</p>
             </div>
           )}
+          <button
+            type="button"
+            onClick={() => setMapCollapsed(true)}
+            aria-label="Ocultar mapa"
+            title="Ocultar mapa"
+            className="absolute right-3.5 top-3.5 z-[6] flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+          </button>
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-[4]" style={{ height: 22, background: 'linear-gradient(180deg,rgba(245,239,228,.9),rgba(245,239,228,0))' }} />
           {route && (
             <div
@@ -852,7 +931,9 @@ export function PlaceExplorerScreen({
           </button>
         </div>
 
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col bg-bg" style={{ marginTop: -22, borderRadius: '26px 26px 0 0', boxShadow: '0 -10px 30px -18px rgba(28,34,48,.3)' }}>
+        )}
+
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col bg-bg" style={{ marginTop: mapCollapsed ? 0 : -22, borderRadius: '26px 26px 0 0', boxShadow: '0 -10px 30px -18px rgba(28,34,48,.3)' }}>
           <button type="button" onClick={() => setMapBig((value) => !value)} aria-label="Arrastrar panel" className="flex h-[22px] shrink-0 items-center justify-center">
             <span className="h-1 w-[42px] rounded bg-text/20" />
           </button>
@@ -1032,7 +1113,13 @@ export function PlaceExplorerScreen({
                   >
                     <button
                       type="button"
-                      onClick={() => (toilet ? setSelectedToilet(poiId(place)) : setSelected(place))}
+                      onClick={() => {
+                        if (!toilet) return setSelected(place)
+                        setSelectedToilet(poiId(place))
+                        // Baños y fuentes no tienen ficha: el mapa se acerca hasta él (y se abre primero si estaba escondido).
+                        setMapCollapsed(false)
+                        setFlyTarget({ coordinates: place.coordinates, key: Date.now() })
+                      }}
                       className={`flex min-w-0 flex-1 text-left ${closedToday(place) ? 'opacity-50' : ''}`}
                     >
                       <PlacePhotoPanel place={place} city={destination} color={color} icon={style?.icon ?? 'temple'} />
@@ -1040,15 +1127,6 @@ export function PlaceExplorerScreen({
                         <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
                           {place.name}
                         </span>
-                        {alreadyInRoute && (
-                          <span
-                            className="inline-flex items-center gap-1 self-start rounded-full"
-                            style={{ height: 19, padding: '0 8px', background: 'oklch(0.74 0.16 65 / .18)', color: 'oklch(0.48 0.14 50)', font: "600 10.5px 'Geist'" }}
-                          >
-                            <span className="h-[5px] w-[5px] rounded-full" style={{ background: 'oklch(0.7 0.16 60)' }} />
-                            En tu ruta
-                          </span>
-                        )}
                         {(isRecommended(place) || closedToday(place)) && (
                           <span className="flex items-center gap-1.5">
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
