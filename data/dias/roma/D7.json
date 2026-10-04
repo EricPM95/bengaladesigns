@@ -182,13 +182,13 @@
         },
         {
           "lugar": "Piazza Navona",
-          "min": 50,
+          "min": 45,
           "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza.",
           "una_vez": true
         },
         {
           "lugar": "Campo de' Fiori",
-          "min": 60,
+          "min": 40,
           "elastica": 30,
           "titulo": "Pasea y piérdete por Campo de' Fiori",
           "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos.",

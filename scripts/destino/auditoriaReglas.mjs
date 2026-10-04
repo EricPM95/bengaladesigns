@@ -21,6 +21,10 @@ export const TIPOS_REGLAS = {
   fuera_sin_vista: 'R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)',
   experiencia_sin_efecto: 'R-13 · Una experiencia elegida que no cambia nada del viaje (mismo viaje con y sin ella)',
   sitio_dos_dias: 'R-5 · Un sitio que sale en dos días del viaje (por id y por muestra; sin nocturnas, De camino ni revisitas)',
+  cena_tarde: 'R-44 · Una cena que empieza después de la hora límite del destino (cena_limite)',
+  nocturna_antes_de_cenar: 'R-37 · Una nocturna antes de la cena',
+  aviso_de_llegada: 'R-2 · Un aviso de «llegarás más tarde» al viajero',
+  en_el_dia_y_no_incluido: 'R-3 · Un sitio a la vez en el día y en «No incluido»',
   calle_parada: 'B.2 · Una calle como parada con su propio tiempo (debe ir dentro de un paseo o como «De camino»)',
   min_max_pasado: 'R-38 · Una parada que pasa su máximo (`min_max`)',
   acaba_tras_cierre: 'R-1 · Una visita por dentro que acaba después del cierre (debería acortarse, mínimo 20 min)',
@@ -250,6 +254,21 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
       const first = dayOfSite.get(id)
       if (first == null) dayOfSite.set(id, n)
       else if (first !== n) add('sitio_dos_dias', n, stop.suggested_time, nameOf(stop), `${idToName.get(id) ?? id} ya salió el día ${first}`)
+    }
+  }
+  // R-44 · La cena no empieza después de `cena_limite`. R-37 · Ninguna nocturna antes de la cena. R-3 · Ningún sitio a la vez en el día y en «No incluido»; ningún aviso de llegada.
+  for (const { day, n, index } of real) {
+    const iso = dateOf(index)
+    const dinner = (day.meals ?? []).find((meal) => meal.time === 'dinner')
+    const cfg = config.cena_limite
+    const month = iso ? String(Number(iso.slice(5, 7))) : null
+    const dinnerAt = t2m(dinner?.suggested_time)
+    const limit = cfg ? t2m((month && cfg.meses?.[month]) || cfg.hora) : null
+    if (limit != null && dinnerAt != null && dinnerAt > limit) add('cena_tarde', n, dinner.suggested_time, dinner.restaurant ?? '', `límite ${cfg.hora}`)
+    if (dinnerAt != null) for (const stop of day.stops) if (stop.is_night_experience && t2m(stop.suggested_time) < dinnerAt) add('nocturna_antes_de_cenar', n, stop.suggested_time, nameOf(stop), `cena a las ${dinner.suggested_time}`)
+    for (const item of day.not_included ?? []) {
+      if (item.is_notice && /Llegarás/.test(item.reason ?? '')) add('aviso_de_llegada', n, '', item.name, item.reason)
+      else if (!item.is_notice && day.stops.some((stop) => nameOf(stop) === item.name && !stop.pass_through)) add('en_el_dia_y_no_incluido', n, '', item.name, 'sale en el día y en «No incluido»')
     }
   }
   // R-39 (A.5) · Nada de «No incluido» está en la `muestra` de una parada del viaje.

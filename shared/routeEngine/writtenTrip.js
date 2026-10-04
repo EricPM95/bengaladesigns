@@ -61,7 +61,7 @@ const LUNCH_MIN = 45
 /** A partir de aquí una visita es «de tarde» (para la nocturna del mismo sitio ese día). */
 const AFTERNOON_FROM = 13 * 60
 /** Con una entrada reservada, la comida se adapta a ella (3-oct-2026): algo rápido desde las 12:00 (30 min) o una comida tranquila, según la hora. */
-const LUNCH_EARLIEST_RESERVED = 12 * 60
+const LUNCH_EARLIEST_RESERVED = 11 * 60 + 30 // (REGLAS_RUTAS 2: con una entrada con hora detrás, la comida puede ir antes)
 const LUNCH_MIN_RESERVED = 30
 const isReservedDraft = (draft) => (draft?.applied ?? []).some((label) => String(label).startsWith('reserva:'))
 /** Una hora fija de verdad (REGLAS_RUTAS 2): reserva o turno. Una `orientativa` no lo es: llegar unos minutos tarde no es llegar tarde. */
@@ -91,7 +91,7 @@ const FILLER_WALK_MAX = 12
 const FILLER_MINUTES_MIN = 20
 const FILLER_MINUTES_MAX = 45
 const FILLER_DINNER_WALK = 10
-const REST_AFTER_LUNCH_MAX = 90 // en completo, el descanso después de comer, como mucho (REGLAS_RUTAS 16: así la espera al mirador no pasa de 90)
+const REST_AFTER_LUNCH_MAX = 90 // (por defecto; el dato del destino manda)
 const DINNER_WALK_MAX = 15 // y la de la cena, igual
 const NIGHT_DINNER_WALK_MAX = 20 // y de la cena a la nocturna (REGLAS_RUTAS 37)
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
@@ -100,7 +100,7 @@ const HALF_DAY_AFTERNOON = 16 * 60
 const HALF_DAY_BACK = 14 * 60 + 15
 const TRANSFER_NOTICE_MINUTES = 25
 const NIGHT_FALLBACK_METERS = 1200
-const NIGHT_REACH_METERS = 1500 // la nocturna, a unos 20 min andando de la cena (REGLAS_RUTAS 37)
+// (La nocturna a unos 20 min andando de la cena, el descanso, etc.: `destination_config.alcance`.)
 const LATE_VISIT_MINUTES = 17 * 60
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 const SPECIAL_HOURS_COST = 400
@@ -177,7 +177,7 @@ function dateKeyMatches(key, dateIso) {
  * @returns el plan (misma forma que planCuratedTrip), o null si falta algún día escrito
  */
 export function planWrittenTrip(args) {
-  const { destData, written, totalDays, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [], entradas = {}, freeTourDespues = null } = args
+  const { destData, written, totalDays, hasFreeTour = false, poolNames = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [], entradas = {}, freeTourDespues = null, dropTarde = [], recortesCena = 0 } = args
   if (!written?.days) return null
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
   const mode = MODE_V3
@@ -774,7 +774,7 @@ export function planWrittenTrip(args) {
       if (count > 0) {
         const half = item.franja ?? ((zonesOfDraft(draft, 'manana').get(zoneId) ?? 0) >= (zonesOfDraft(draft, 'tarde').get(zoneId) ?? 0) ? 'manana' : 'tarde')
         // (Cerca de verdad: un sitio de su zona a unos 1.500 m de lo que ya lleva esa mitad como mucho; nunca se mete lejos con un taxi. Lo del pool, sí.)
-        if (!item.pool && meters(draft, half) > 1500) continue
+        if (!item.pool && meters(draft, half) > (destData.destination_config?.alcance?.experiencia_cerca_m ?? 1200)) continue
         options.push({ draft, index, half, count, hard: oneDay && Boolean(item.pool) })
       } else if (oneDay && item.pool) {
         const half = item.franja ?? (meters(draft, 'manana') <= meters(draft, 'tarde') ? 'manana' : 'tarde')
@@ -913,6 +913,8 @@ export function planWrittenTrip(args) {
     return !source || source.minutos_fuera != null || Boolean(source.pass_by) || source.type === 'exterior'
   }
   const finishDraft = (draft) => {
+    // (Lo que se quitó de la tarde para que la cena no pase de su hora límite, REGLAS_RUTAS 44.)
+    if (dropTarde.length > 0) draft.tarde = draft.tarde.filter((stop) => !dropTarde.includes(`${draft.id}:${stop.lugar}`))
     if (insideAllowed) {
       for (const section of ['manana', 'tarde']) {
         const before = draft[section].length
@@ -1234,8 +1236,8 @@ export function planWrittenTrip(args) {
       // El mirador: se llega a su hora (el sol menos 25 min) y se queda hasta 15 min después del sol.
       if (place.sunset != null) {
         // (REGLAS_RUTAS 38: el mirador no se queda más que su máximo, `min_max`: si lo escrito llega antes, llega más tarde y el rato de antes lo llena la regla 20.)
-        const lead = Math.min(place.sunsetLead ?? SUNSET_LEAD, (source.min_max ?? Infinity) - SUNSET_STAY)
-        const target = place.sunset - lead - (ctx.earlyBy ?? 0)
+        const lead = Math.min((place.sunsetLead ?? SUNSET_LEAD) + (ctx.earlyBy ?? 0), (source.min_max ?? Infinity) - SUNSET_STAY)
+        const target = place.sunset - lead
         ctx.sunsetArrival = at
         if (at < target) at = target
         // El viajero manda (3-oct-2026): si su reserva se pisa con el atardecer, ese día va sin atardecer, sin forzarlo y sin aviso.
@@ -1945,7 +1947,7 @@ export function planWrittenTrip(args) {
       const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX
       // (Nunca si lo primero de la tarde es una hora fija: el descanso no la mueve, INVARIANTES 466; San Clemente a las 14:00.)
       if (spare > 20 && !summerRest && hourOf(firstRequiredOf(draft.tarde) ?? {}) == null) {
-        restAfterLunch = Math.floor(Math.min(spare, REST_AFTER_LUNCH_MAX) / 5) * 5
+        restAfterLunch = Math.floor(Math.min(spare, destData.destination_config?.alcance?.descanso_despues_comer_max_min ?? REST_AFTER_LUNCH_MAX) / 5) * 5
         // (El descanso no cierra ninguna puerta: si por empezar la tarde más tarde algo pasa a verse por fuera, el Panteón
         // del sábado, que deja de vender entradas a las 16:00, no hay descanso.)
         const outsideWith = (from) => {
@@ -2089,6 +2091,17 @@ export function planWrittenTrip(args) {
     // Nunca antes de las 19:30 (ni de la hora escrita) y, en verano (versión D), nunca antes de las 20:30.
     const dinnerFloor = Math.max(DINNER_EARLIEST, draft.version === 'D' ? DINNER_EARLIEST_SUMMER : 0, draft.cena?.hora ? toMin(draft.cena.hora) : 0)
     const dinnerStart = Math.max(roundUp15(readyAt), dinnerFloor)
+    // REGLAS_RUTAS 44: la cena empieza como tarde a la hora límite del destino (`cena_limite`). Si la tarde no cabe, se recorta en el orden de siempre:
+    // lo menos importante de la tarde (acortar ya está hecho antes). Lo protegido no se quita.
+    {
+      const cfg = destData.destination_config?.cena_limite
+      const monthNow = hours.dateIso ? String(Number(String(hours.dateIso).slice(5, 7))) : null
+      const limit = cfg ? toMin((monthNow && cfg.meses?.[monthNow]) || cfg.hora) : null
+      if (limit != null && dinnerStart > limit && recortesCena < 12) {
+        const candidate = cutOrder(draft.tarde, { hard: false })[0]
+        if (candidate) return planWrittenTrip({ ...args, dropTarde: [...dropTarde, `${draft.id}:${candidate.lugar}`], recortesCena: recortesCena + 1 })
+      }
+    }
     // Si la cena espera y lo último es el mirador, se queda más en el mirador (hasta SUNSET_STAY_EXTRA min): las luces.
     const lastVisit = afternoon.visits.at(-1)
     // (Solo un mirador: una avenida o un paseo tienen su máximo. Desde 10 min de espera, y deja 5.)
@@ -2211,7 +2224,7 @@ export function planWrittenTrip(args) {
       if (!entry || usedNights.has(entry.name) || visitedThisAfternoon(entry)) return false
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
       // (REGLAS_RUTAS 37: la nocturna, a unos 20 min andando de la cena; si no, pasa a la siguiente de su paseo.)
-      if (day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_REACH_METERS && !fallbackFar) return false
+      if (day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > (destData.destination_config?.alcance?.nocturna_desde_cena_m ?? 1500) && !fallbackFar) return false
       return true
     }
     // (Nochebuena y Nochevieja: un paseo corto, una sola parada cerca de la cena. PROMPT_REPASO_LOCAL_ROMA, 4.)

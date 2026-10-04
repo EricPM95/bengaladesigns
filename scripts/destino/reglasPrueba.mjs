@@ -4,7 +4,7 @@
 // Una regla con `tipos` vacío sale como «SIN COMPROBACIÓN».
 export const REGLAS_PRUEBA = [
   { id: 1, nombre: 'Nunca un sitio cerrado', tipos: ['fuera_de_horario', 'v4_fuera_de_horario', 'cerrada_a_su_hora', 'v4_cerrado_sin_solucion', 'acaba_tras_cierre', 'acortada_menos_20'], nota: 'La prueba mira también los viajes sin fechas (horario de laborable).' },
-  { id: 2, nombre: 'Una hora fija no se mueve ni se quita', tipos: ['v4_llega_tarde', 'hora_fija_movida'], nota: 'El orden de recorte y el aviso de la campana no se miran aquí.' },
+  { id: 2, nombre: 'Una hora fija no se mueve ni se quita', tipos: ['v4_llega_tarde', 'hora_fija_movida', 'aviso_de_llegada', 'en_el_dia_y_no_incluido'], nota: 'El orden de recorte y el aviso de la campana no se miran aquí.' },
   { id: 3, nombre: 'El viajero manda', tipos: ['hora_fija_movida'], nota: 'Una reserva por franja en la prueba; el empate pool/imprescindible sale como información (pago_cedido_al_pool).' },
   { id: 4, nombre: 'Los imprescindibles salen siempre', tipos: ['pago_sin_dentro', 'basilica_fuera', 'vaticano_sin_castillo', 'vaticano_sin_puente'] },
   { id: 5, nombre: 'Un sitio, una vez en el viaje y una vez al día (por id)', tipos: ['repetido_dia', 'repetido_viaje', 'sitio_dos_dias'] },
@@ -39,11 +39,12 @@ export const REGLAS_PRUEBA = [
   { id: 34, nombre: 'Lo del pool con entrada con hora va como entrada reservada', tipos: ['pool_fuera', 'cerrada_a_su_hora'] },
   { id: 35, nombre: 'En 1 día, lo del pool entra siempre', tipos: ['pool_fuera'] },
   { id: 36, nombre: 'La comida nunca se estira para llenar un hueco', tipos: ['comida_mas_90'] },
-  { id: 37, nombre: 'La noche: cena junto a la nocturna', tipos: ['cena_lejos_nocturna', 'hueco_cena', 'cena_espera'] },
+  { id: 37, nombre: 'La noche: cena junto a la nocturna', tipos: ['cena_lejos_nocturna', 'hueco_cena', 'cena_espera', 'nocturna_antes_de_cenar'] },
   { id: 38, nombre: 'Cada parada tiene un máximo (min_max)', tipos: ['min_max_pasado'] },
   { id: 39, nombre: 'Lo que enseña una nocturna cuenta como visto', tipos: ['no_incluido_pero_visto'] },
   { id: 40, nombre: '«De camino» no es una visita', tipos: ['camino_sin_nombre', 'camino_cierra_pool'] },
   { id: 41, nombre: 'Las nocturnas no están protegidas (hora límite)', tipos: ['noche_pasa_limite'] },
   { id: 42, nombre: 'La noche propia de una fecha (Nochebuena)', tipos: [], nota: 'Se mira en la revisión de los 20 viajes y en pruebaNavidad.mjs.' },
+  { id: 44, nombre: 'La cena tiene hora límite', tipos: ['cena_tarde'] },
   { id: 43, nombre: 'La zona de los restaurantes contra sus coordenadas', tipos: ['restaurante_zona'] },
 ]

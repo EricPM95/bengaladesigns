@@ -743,7 +743,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const firstNight = nightStops.find((stop) => !stop.before_dinner && Number.isFinite(stop.latitude))
     if (dinnerOut && firstNight && Number.isFinite(dinnerOut.latitude) && !firstNight.transit) {
       const meters = straightLineMeters([dinnerOut.latitude, dinnerOut.longitude], [firstNight.latitude, firstNight.longitude])
-      if (meters > 1500) {
+      if (meters > (destData.destination_config?.alcance?.taxi_desde_m ?? 1500)) {
         const minutes = Math.max(8, Math.round(meters / 350) + 6)
         firstNight.transit = { icon: '🚕', label: `Un taxi, unos ${minutes} min`, minutes, detail: null }
       }

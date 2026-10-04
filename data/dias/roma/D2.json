@@ -774,7 +774,7 @@
             "tipo": "fija",
             "hora": "11:30",
             "hora_tipo": "orientativa",
-            "min": 45,
+            "min": 30,
             "titulo": "Pasea y piérdete por Borgo Pio"
           }
         ],
@@ -877,7 +877,7 @@
           },
           {
             "lugar": "Basílica de San Pedro",
-            "min": 100,
+            "min": 90,
             "modo": "dentro",
             "si_cerrado": "fuera",
             "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar."

@@ -222,7 +222,7 @@
           },
           {
             "lugar": "Borgo Pio",
-            "min": 40,
+            "min": 30,
             "elastica": 30,
             "no_calle": true,
             "texto": "La calle del barrio pegado al Vaticano, con sus fachadas bajas y sus terrazas. A esta hora se llena de romanos: es buen sitio para un aperitivo sin prisa.",
@@ -455,7 +455,7 @@
         "paradas": [
           {
             "lugar": "Arco de Constantino",
-            "min": 15,
+            "min": 10,
             "traslado": {
               "como": "el metro A y el B (de Ottaviano a Colosseo, con cambio en Termini)",
               "min": 30
@@ -532,7 +532,7 @@
         "paradas": [
           {
             "lugar": "Arco de Constantino",
-            "min": 15,
+            "min": 10,
             "traslado": {
               "como": "el metro A y el B (de Ottaviano a Colosseo, con cambio en Termini)",
               "min": 30
@@ -586,7 +586,7 @@
           },
           {
             "lugar": "Basílica de San Pedro",
-            "min": 95,
+            "min": 90,
             "modo": "dentro",
             "si_cerrado": "fuera",
             "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar."

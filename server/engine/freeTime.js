@@ -280,6 +280,41 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       report.mid.push({ kind: 'alarga', name: nameOf(prev), minutes: extra, before: entry.before, after: entry.after })
       continue
     }
+    // REGLAS_RUTAS 20: más de 30 min, los rellenos de la zona (dato del destino, en orden): el primero que no se haya visto en el viaje, y los siguientes
+    // hasta llenar el hueco. Antes del atardecer, los de la zona del mirador.
+    {
+      const list = destData.destination_config?.rellenos_zona?.[walkZone] ?? []
+      const seenIds = new Set([...day.stops.flatMap((stop) => muestraOf(destData, stop).muestra), ...(trip?.days ?? []).filter((other) => other.dayNumber !== tripDay.dayNumber).flatMap((other) => (other.schedule?.visits ?? []).filter((visit) => !visit.place?.isNightExperience && !visit.place?.passThrough && !visit.place?.visitOutside).flatMap((visit) => muestraOf(destData, { name: visit.place.name }).muestra))])
+      let cursorEnd = fromEnd
+      let cursorCoords = fromCoords
+      let placed = 0
+      for (const name of list) {
+        const spot = placeByName.get(name)
+        if (!spot || !Array.isArray(spot.coordinates) || dayVisitedNames.has(name) || day.stops.some((stop) => nameOf(stop) === name)) continue
+        const ids = muestraOf(destData, { name }).muestra
+        if (ids.some((id) => seenIds.has(id))) continue
+        // (Andando, 15 min como mucho hasta el relleno y 20 desde él hasta lo que sigue: nada de cruzar la ciudad para llenar un hueco.)
+        if (leg(cursorCoords, spot.coordinates) > 15 || leg(spot.coordinates, toCoords) > 20) continue
+        const start = ceil5(cursorEnd + leg(cursorCoords, spot.coordinates))
+        let minutes = Math.min(floor5(toStart - start - leg(spot.coordinates, toCoords)), spot.min_max ?? 30, 45)
+        const closing = parseClosingMinutes(effectiveSchedule(spot, tripDay.hours ?? {}))
+        if (closing != null && closing < 24 * 60) minutes = Math.min(minutes, floor5(closing - start))
+        const lastEntry = lastEntryMinutes(spot, start, tripDay.hours ?? {})
+        if (lastEntry != null && start > lastEntry) continue
+        if (minutes < Math.min(minMinutes, 15)) continue
+        const stop = buildStop(spot, start, minutes, null)
+        stop.why = destData.por_que_lugares?.[spot.name] && typeof destData.por_que_lugares[spot.name] === 'string' ? destData.por_que_lugares[spot.name] : stop.why ?? ''
+        if (!(spot.ticket_info ?? []).some((line) => /de pago|se pagan?/i.test(line))) stop.free_access = true
+        insertAt(stop)
+        ids.forEach((id) => seenIds.add(id))
+        report.mid.push({ kind: 'relleno', name: spot.name, minutes, before: entry.before, after: entry.after })
+        cursorEnd = start + minutes
+        cursorCoords = spot.coordinates
+        placed++
+        if (toStart - cursorEnd - leg(cursorCoords, toCoords) <= 20) break
+      }
+      if (placed > 0) continue
+    }
     // Más de 30 min: un sitio que pille de camino y valga la pena; si no lo hay, el paseo de la zona. Antes del atardecer, directo al paseo del mirador.
     // 1. Un sitio de camino, como parada.
     // (Una calle no es una parada, REGLAS_RUTAS 24: no se usa para llenar un hueco.)
@@ -334,7 +369,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
     const dayShown = new Set(day.stops.flatMap((stop) => muestraOf(destData, stop).muestra))
     // (Y lo que enseñan los otros días del viaje: un sitio, una vez en el viaje, REGLAS_RUTAS 5. Un paseo no repite lo que otro día ya visita.)
     const tripShown = new Set((trip?.days ?? []).filter((other) => other.dayNumber !== tripDay.dayNumber).flatMap((other) => (other.schedule?.visits ?? []).filter((visit) => !visit.place?.isNightExperience && !visit.place?.passThrough && !visit.place?.visitOutside).flatMap((visit) => muestraOf(destData, { name: visit.place.name }).muestra)))
-    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle) && ![...walkShown].some((id) => dayShown.has(id)) && ![...walkShown].some((id) => tripShown.has(id))) {
+    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle) && (walkShown.size === 0 || [...walkShown].some((id) => !dayShown.has(id) && !tripShown.has(id)))) {
       const walkIn = leg(fromCoords, walk.coordinates)
       const walkOut = leg(walk.coordinates, toCoords)
       const start = ceil5(fromEnd + walkIn)

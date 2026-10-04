@@ -279,7 +279,7 @@ export function auditarViaje(D, days, options = {}) {
         const named = (day.free_times ?? []).some((entry) => entry.before === name)
         // (Cierre de Roma: antes de un mirador del atardecer o de una entrada con turno, hasta 30 min son margen, no hueco:
         // se llega a la hora dorada o a recoger la entrada.)
-        const margin = stop.reserved_entry || stop.hora_tipo === 'reserva' || stop.hora_tipo === 'turno' || stop.is_free_tour ? HUECO_MARGEN_RESERVA : stop.sunset_minutes != null || stop.night_view || byName.get(name)?.turnos ? HUECO_MARGEN_MAX : 20
+        const margin = stop.reserved_entry || stop.hora_tipo === 'reserva' || stop.hora_tipo === 'turno' || stop.is_free_tour ? HUECO_MARGEN_RESERVA : 20 // (REGLAS_RUTAS 20: cualquier espera de más de 20 min sale como hueco; solo la entrada con hora tiene su margen de hasta 60)
         if (!fromLunch && !named && start - prevEnd - (walk ?? 0) > margin) add('hueco', n, stop.suggested_time, name, `${Math.round(start - prevEnd - (walk ?? 0))} min`)
         // La hora de una parada es la anterior + su duración + el paseo (PROMPT_ROMA_V4_REPASO 1): con las horas de 5 en 5
         // pueden bailar hasta 4 min; más, no cuadra (el Arco acababa a las 10:20 y el Foro empezaba a las 10:20 con 9 min).
@@ -288,7 +288,7 @@ export function auditarViaje(D, days, options = {}) {
       // Nivel 1-2 "Por el camino".
       if (!viajeCorto && passing && !outside && levelOf(name) <= 2) add('nivel_camino', n, stop.suggested_time, name)
       // Duraciones.
-      if (levelOf(name) === 1 && !outside && !passing && (stop.duration_minutes ?? 0) < 20) add('duracion_corta', n, stop.suggested_time, name, `${stop.duration_minutes} min`)
+      if (levelOf(name) === 1 && !outside && !passing && (stop.duration_minutes ?? 0) < 20 && !((place?.min_max ?? 99) < 20)) add('duracion_corta', n, stop.suggested_time, name, `${stop.duration_minutes} min`)
       if (stop.visit_mode === 'fuera' && place?.minutos_fuera != null && stop.duration_minutes !== place.minutos_fuera) add('fuera_minutos', n, stop.suggested_time, name, `${stop.duration_minutes} min (JSON: ${place.minutos_fuera})`)
       // Zigzag (A → B → A): volver a menos de 300 m de una parada anterior después de haberse ido a más de 1,2 km
       // de ella (la cena aparte). Por distancia, no por zonas: el Teatro de Marcelo está pegado al Ghetto.

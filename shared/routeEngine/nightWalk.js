@@ -255,7 +255,8 @@ export function nightTiming(chain, timing = {}) {
   const nightStart = exactStart === null ? null : roundUpToFive(exactStart)
   const { lastEnd, lastCoords, dinnerStart, dinnerCoords } = timing
   // (Lo que sale en lugar de la nocturna del día, el centro iluminado, va después de cenar: antes, el rato con nombre.)
-  if (nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart && !chain[0]?.afterDinnerOnly) {
+  // REGLAS_RUTAS 37: el orden de la noche es siempre última parada de la tarde → cena → nocturna, también en invierno: ninguna nocturna antes de cenar.
+  if (timing.allowBeforeDinner === true && nightStart !== null && Number.isFinite(lastEnd) && Number.isFinite(dinnerStart) && nightStart < dinnerStart && !chain[0]?.afterDinnerOnly) {
     // Hacia la cena: al revés que después de cenar.
     let entries = [...chain].reverse()
     while (entries.length > 0) {

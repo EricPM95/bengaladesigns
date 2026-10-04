@@ -162,7 +162,7 @@
       "paradas": [
         {
           "lugar": "Via del Babuino",
-          "min": 30,
+          "min": 15,
           "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
           "no_calle": true,
           "elastica": 30,
@@ -214,7 +214,7 @@
       "paradas": [
         {
           "lugar": "Via del Babuino",
-          "min": 30,
+          "min": 15,
           "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
           "no_calle": true,
           "elastica": 30,

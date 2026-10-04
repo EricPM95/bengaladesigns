@@ -20,7 +20,7 @@
       },
       {
         "lugar": "Arco de Constantino",
-        "min": 20
+        "min": 10
       },
       {
         "lugar": "Foro Romano y Palatino",
@@ -160,7 +160,7 @@
         {
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio",
-          "min": 60,
+          "min": 30,
           "elastica": 45
         },
         {
@@ -205,7 +205,7 @@
         {
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio",
-          "min": 60,
+          "min": 30,
           "elastica": 45
         },
         {
