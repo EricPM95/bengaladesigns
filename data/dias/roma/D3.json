@@ -466,7 +466,8 @@
             "min": 65,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "recorta_al_cierre": 20
           },
           {
             "lugar": "Plaza del Campidoglio",
@@ -542,7 +543,8 @@
             "min": 65,
             "modo": "dentro",
             "entrada": true,
-            "si_cerrado": "fuera"
+            "si_cerrado": "fuera",
+            "recorta_al_cierre": 20
           },
           {
             "lugar": "Plaza del Campidoglio",

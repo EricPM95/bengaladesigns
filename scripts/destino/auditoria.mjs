@@ -336,7 +336,8 @@ export function auditarViaje(D, days, options = {}) {
       for (const idea of libre.ideas) if (levelOf(idea.name) <= 2) add('nivel_idea', n, '', idea.name, `idea de tiempo libre antes de ${libre.before}`)
     }
     // «Todavía no ha abierto» o «Ya ha cerrado» a su hora: con la regla de «junto a un imprescindible» va por fuera sin aviso rojo (5.4).
-    for (const stop of dayStops) if (stop.visit_mode === 'fuera' && (stop.outside_kind === 'no_abre' || stop.outside_kind === 'ya_cerrado')) add('cerrada_a_su_hora', n, stop.suggested_time, nameOf(stop), stop.outside_reason ?? '')
+    // (REGLAS_RUTAS 25: una parada «por fuera» no tiene hora de cierre, salvo que el sitio esté en un recinto que cierra: `recinto_cierra` en la ficha.)
+    for (const stop of dayStops) if (stop.visit_mode === 'fuera' && byName.get(nameOf(stop))?.recinto_cierra && (stop.outside_kind === 'no_abre' || stop.outside_kind === 'ya_cerrado')) add('cerrada_a_su_hora', n, stop.suggested_time, nameOf(stop), stop.outside_reason ?? '')
     // Nunca la misma foto en dos tarjetas del mismo día (PARA_CODE_TODO_2026-10-01, 5.2): con las fotos propias, aquí; con las de
     // Unsplash y Wikipedia, scripts/destino/fotosRepetidas.mjs (pide las fotos a la API).
     {

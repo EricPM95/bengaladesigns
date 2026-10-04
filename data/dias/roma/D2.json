@@ -230,6 +230,19 @@
       "empieza": "15:10",
       "paradas": [
         {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 60,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera",
+          "si_pool": "Castillo de Sant'Angelo"
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "min": 15,
+          "si_pool": "Castillo de Sant'Angelo"
+        },
+        {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "min": 20,
           "modo": "dentro",
@@ -268,13 +281,15 @@
         {
           "lugar": "Castillo de Sant'Angelo",
           "min": 20,
-          "modo": "fuera"
+          "modo": "fuera",
+          "no_si_pool": "Castillo de Sant'Angelo"
         },
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "lead": 55,
-          "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo."
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo.",
+          "no_si_pool": "Castillo de Sant'Angelo"
         }
       ],
       "cena": {
@@ -1232,6 +1247,19 @@
         "empieza": "12:00",
         "paradas": [
           {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 60,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "si_pool": "Castillo de Sant'Angelo"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 15,
+            "si_pool": "Castillo de Sant'Angelo"
+          },
+          {
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 20,
             "modo": "dentro",
@@ -1270,13 +1298,15 @@
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
-            "modo": "fuera"
+            "modo": "fuera",
+            "no_si_pool": "Castillo de Sant'Angelo"
           },
           {
             "lugar": "Puente Sant'Angelo",
             "modo": "atardecer",
             "lead": 55,
-            "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo."
+            "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo.",
+            "no_si_pool": "Castillo de Sant'Angelo"
           }
         ],
         "cena": {

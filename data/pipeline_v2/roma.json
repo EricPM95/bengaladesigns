@@ -8696,6 +8696,7 @@
     "sitios_por_titulo": {
       "_nota": "Paradas escritas cuyo título enseña otros sitios que los de su ficha: título → id de lo que muestra (regla 5).",
       "El lago y el Templo de Esculapio, en Villa Borghese": ["villa_borghese_lago_esculapio"],
+      "El lago y el Templo de Esculapio": ["villa_borghese_lago_esculapio"],
       "El parque de Villa Borghese: el lago y el Templo de Esculapio": ["villa_borghese_lago_esculapio"],
       "Pasea y piérdete por Via del Babuino y Via Margutta": ["via_del_babuino", "via_margutta"]
     },

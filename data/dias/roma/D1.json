@@ -368,7 +368,8 @@
         {
           "lugar": "Ponte Sisto",
           "modo": "atardecer",
-          "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
+          "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
+          "una_vez": true
         }
       ],
       "cena": {
@@ -462,7 +463,8 @@
             "parada": {
               "lugar": "Ponte Sisto",
               "modo": "atardecer",
-              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
+              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
+              "una_vez": true
             }
           }
         ]
@@ -478,7 +480,8 @@
             "parada": {
               "lugar": "Ponte Sisto",
               "modo": "atardecer",
-              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
+              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
+              "una_vez": true
             }
           }
         ],
@@ -761,7 +764,11 @@
           {
             "lugar": "Boca de la Verdad",
             "min": 20,
-            "tipo": "opcional"
+            "tipo": "opcional",
+            "no_si_dia": [
+              "D5C",
+              "D5"
+            ]
           },
           {
             "lugar": "Circo Máximo",

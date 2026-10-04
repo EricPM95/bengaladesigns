@@ -321,7 +321,8 @@
         {
           "lugar": "Ponte Sisto",
           "modo": "atardecer",
-          "texto": "El puente de peatones entre Trastevere y el centro. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos."
+          "texto": "El puente de peatones entre Trastevere y el centro. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
+          "una_vez": true
         }
       ],
       "cena": {

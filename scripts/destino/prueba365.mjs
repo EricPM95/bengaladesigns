@@ -13,7 +13,7 @@ import { TIPOS_REGLAS, auditarReglas } from './auditoriaReglas.mjs'
 import { REGLAS_PRUEBA } from './reglasPrueba.mjs'
 import { readFileSync, readdirSync } from 'node:fs'
 import { tituloQueNoSeCumple } from './textChecks.mjs'
-import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { enFechaClave, fechasClaveDe } from './fechasClave.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => (x.includes('=') ? x.split('=') : [x, true])))
@@ -202,7 +202,21 @@ for (const dias of [1, 2, 3, 4, 5, 6, 7]) for (const ft of [false, true]) grid.p
     const written = JSON.parse(readFileSync(`data/dias/roma/${file}`, 'utf8'))
     for (const [place, byFranja] of Object.entries(written.entradas ?? {})) for (const range of Object.values(byFranja)) franjas.push({ place, hour: range[0] })
   }
-  for (const fecha of starts.filter((_, i) => i % (quick ? 56 : 14) === 0)) for (const { place, hour } of franjas) grid.push({ fecha, dias: 4, ft: false, reservas: { [place]: hour } })
+  // (Solo reservas en horas que existen: el Coliseo el Viernes Santo cierra a las 14:00 y no se reserva a las 15:30. Si un viajero la mete a mano, se queda tal cual y sale un aviso.)
+  const WEEKDAYS_RES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+  const existe = (place, fecha, hour) => {
+    const source = (D.places ?? []).find((candidate) => candidate.name === place)
+    if (!source) return true
+    // (La reserva cae el día del viaje en que ese lugar va, que no sabemos aquí: tiene que existir cualquiera de los 4 días: se pide que exista los 4.)
+    return [0, 1, 2, 3].every((offset) => {
+      const iso = addDays(fecha, offset)
+      const weekday = WEEKDAYS_RES[new Date(`${iso}T12:00:00Z`).getUTCDay()]
+      if (closedOnDay(source, weekday, iso)) return false
+      const at = t2m(hour)
+      return parseHoursSessions(effectiveSchedule(source, { dateIso: iso, weekday })).some((session) => at >= session.open && at + 60 <= session.close)
+    })
+  }
+  for (const fecha of starts.filter((_, i) => i % (quick ? 56 : 14) === 0)) for (const { place, hour } of franjas) if (existe(place, fecha, hour)) grid.push({ fecha, dias: 4, ft: false, reservas: { [place]: hour } })
 }
 // 2. Cada experiencia (3 y 5 días, completo, sin Free Tour).
 for (const fecha of starts.filter((_, i) => i % (quick ? 14 : 2) === 0)) for (const exp of ['arte_museos', 'naturaleza_vistas', 'barrios_sabores']) for (const dias of [3, 5]) grid.push({ fecha, dias, ft: false, exps: [exp] })

@@ -19,7 +19,7 @@ import { PRIORITY } from './scheduleDay.js'
 import { recommendedRestaurant } from './dinnerZones.js'
 import { MODE_V3 } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
-import { closedOnDay, effectiveSchedule, lastEntryMinutes, matchesDateRange, matchesDateToken, parseHoursSessions } from './openingHours.js'
+import { closedOnDay, effectiveSchedule, lastEntryMinutes, massWeekday, matchesDateRange, matchesDateToken, parseHoursSessions } from './openingHours.js'
 import { specialHoursToAvoid } from './specialDates.js'
 import { anyTransitRuns, publicTransitKind, transitRuns } from './holidayTransit.js'
 import { sunsetFor } from './sunset.js'
@@ -478,7 +478,9 @@ export function planWrittenTrip(args) {
       applyOps(draft, ftHere, ftKey)
       for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour?.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora, hora_tipo: 'turno' })
     }
-    const weekdayKey = hours.weekday && calendar.hasDates ? norm(hours.weekday) : null
+    // (La víspera de un festivo con misa —el Panteón, 17:00— va como un sábado: el Panteón deja de vender entradas a las 16:00 y el día usa su variante «sabado», con el Panteón nada más comer.)
+    const eveAsSaturday = hours.weekday && calendar.hasDates && norm(hours.weekday) !== 'sabado' && (destData.places ?? []).some((place) => place.misas_festivos && massWeekday(place, hours) === 'sábado')
+    const weekdayKey = hours.weekday && calendar.hasDates ? (eveAsSaturday ? 'sabado' : norm(hours.weekday)) : null
     if (weekdayKey) {
       const own = entryKey && variants[`${entryKey}@${weekdayKey}`]
       if (own) applyOps(draft, own, `${entryKey}@${weekdayKey}`)
@@ -539,7 +541,7 @@ export function planWrittenTrip(args) {
     // (`o_si_pool`: o si el viajero marcó ese lugar en «Elige lugares».)
     // (`no_si_experiencia` / `no_si_pool`: al revés, la parada no va si el viajero eligió esa experiencia o marcó ese lugar: el
     // sábado, con los Museos Capitolinos por la mañana, el Largo Argentina y el Ghetto no caben antes del Panteón.)
-    const keep = (stop) => !(stop.si_entrada_desde && !(entryReserved && entryReserved.hour >= toMin(stop.si_entrada_desde))) && !(stop.no_si_experiencia && selected.includes(stop.no_si_experiencia)) && !(stop.no_si_pool && inPool(stop.no_si_pool)) && !(stop.si_experiencia && !selected.includes(stop.si_experiencia) && !(stop.o_si_pool && inPool(stop.lugar))) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
+    const keep = (stop) => !(stop.si_pool && !inPool(stop.si_pool)) && !(stop.si_entrada_desde && !(entryReserved && entryReserved.hour >= toMin(stop.si_entrada_desde))) && !(stop.no_si_experiencia && selected.includes(stop.no_si_experiencia)) && !(stop.no_si_pool && inPool(stop.no_si_pool)) && !(stop.si_experiencia && !selected.includes(stop.si_experiencia) && !(stop.o_si_pool && inPool(stop.lugar))) && byMonth(stop) && bySun(stop) && !(stop.no_si_dia ?? []).some((other) => order.includes(other)) && !(stop.si_dia && !stop.si_dia.some((other) => order.includes(other))) && !(stop.desde_dias && contentDays < stop.desde_dias)
     // Lo de temporada que está fuera de sus fechas ese día no va: un "de camino" (los 100 Presepi en febrero) o una parada
     // escrita con `si_cerrado: "quitar"` (el paseo de las luces de Navidad). Lo demás lo resuelve su `si_cerrado`.
     // (Sin margen: en los 15 días de antes o de después de una ventana aproximada, lo insertado no va; el aviso lo lleva la capa.)
@@ -608,7 +610,7 @@ export function planWrittenTrip(args) {
           draft.applied.push(`despues_de_la_reserva:${moved.map((stop) => stop.lugar).join('+')}`)
         }
       }
-      for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === entryReserved.place && stop.modo === 'dentro') Object.assign(stop, { tipo: 'fija', hora: toHHMM(entryReserved.hour), hora_tipo: 'reserva', llegar_antes: ENTRY_ARRIVAL_MARGIN, turno: true, recorta_al_cierre: true })
+      for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === entryReserved.place && stop.modo === 'dentro') Object.assign(stop, { tipo: 'fija', reserva_manda: true, hora: toHHMM(entryReserved.hour), hora_tipo: 'reserva', llegar_antes: ENTRY_ARRIVAL_MARGIN, turno: true, recorta_al_cierre: true })
       draft.applied.push(`reserva:${toHHMM(entryReserved.hour)}`)
     }
     return draft
@@ -629,7 +631,11 @@ export function planWrittenTrip(args) {
   /** Lo que ya va en la ruta y está en el pool: por dentro y no opcional. */
   const forceInside = (draft, name) => {
     for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === name && (stop.modo === 'fuera' || stop.tipo === 'opcional')) {
-      if (stop.modo === 'fuera') stop.modo = 'dentro'
+      if (stop.modo === 'fuera') {
+        stop.modo = 'dentro'
+        // (Lo que el viajero marca para entrar dura lo que dura por dentro: el Castillo, 1 h; el sitio de por fuera de 20 min no vale.)
+        stop.min = Math.max(stop.min ?? 0, 60)
+      }
       if (stop.tipo === 'opcional') stop.tipo = 'normal'
     }
   }
@@ -1033,7 +1039,11 @@ export function planWrittenTrip(args) {
         const writtenMin = stop.min ?? source.duration_minutes ?? 30
         while (original.elastica != null && duration - 5 >= writtenMin && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, writtenMin, ctx.hours).closed) duration -= 5
         // La entrada reservada se recorta hasta el cierre (la visita de las 17:30 acaba a las 20:00 si el sitio cierra a esa hora; nunca menos de 60 min).
-        if (stop.recorta_al_cierre) while (duration > 60 && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, 60, ctx.hours).closed) duration -= 5
+        if (stop.recorta_al_cierre) {
+          // (`recorta_al_cierre: 20`: se acorta hasta su cierre, con ese mínimo; `true`: hasta 60 min, como la entrada reservada.)
+          const shortest = typeof stop.recorta_al_cierre === 'number' ? stop.recorta_al_cierre : 60
+          while (duration > shortest && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, shortest, ctx.hours).closed) duration -= 5
+        }
         // Un imprescindible de entrada libre (la Basílica de San Pedro) que se pasaría de la hora de cierre se recorta hasta el cierre, no menos de 30 min, antes que verlo por fuera estando abierto.
         else if (source.level === 1 && source.is_free_access && source.type === 'interior' && !stop.entrada) while (duration > 30 && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, 30, ctx.hours).closed) duration -= 5
         // (Lo escrito «si está cerrado, por fuera» no espera más de lo de siempre, 20 min: es el plan B que quien escribe el día prefiere.)
@@ -1043,7 +1053,11 @@ export function planWrittenTrip(args) {
           if (stop.traslado) carry = stop.traslado
           return
         }
-        if (check.wait) at += check.wait
+        // El viajero manda (REGLAS_RUTAS 3): una entrada que reservó él con el sitio cerrado se queda tal cual, y sale un aviso con la hora de cierre.
+        if (check.closed && stop.reserva_manda) {
+          const closes = Math.max(0, ...parseHoursSessions(effectiveSchedule(place, ctx.hours)).map((session) => session.close))
+          if (!ctx.probe) ctx.problems.push({ tipo: 'reserva_cerrada', lugar: stop.lugar, hora: toHHMM(at), cierre: closes > 0 ? toHHMM(closes) : null, dayNumber: ctx.day.dayNumber })
+        } else if (check.wait) at += check.wait
         else if (check.closed) {
           const rule = stop.si_cerrado
           const reason = check.opensAt != null ? `Todavía no ha abierto (abre a las ${toHHMM(check.opensAt)})` : OUTSIDE_REASONS.ya_cerrado
@@ -2042,6 +2056,9 @@ export function planWrittenTrip(args) {
   // Basílica de San Pedro por fuera un día de Vaticanos (cierra pronto ese día: se dice a qué hora).
   const dayNotices = []
   for (const problem of problems) {
+    if (problem.tipo === 'reserva_cerrada' && problem.cierre && !dayNotices.some((item) => item.dayNumber === problem.dayNumber && item.name === problem.lugar)) {
+      dayNotices.push({ dayNumber: problem.dayNumber, name: problem.lugar, reason: `Ese día ${problem.lugar} cierra a las ${problem.cierre}`, suggestion: 'Elige otra hora o otro día para tu entrada' })
+    }
     if (problem.tipo === 'llega_tarde' && problem.reservada && !dayNotices.some((item) => item.dayNumber === problem.dayNumber && item.name === problem.lugar)) {
       dayNotices.push({ dayNumber: problem.dayNumber, name: problem.lugar, reason: `Llegarás ${problem.minutos} min más tarde de lo recomendado (30 min antes de tu entrada)`, suggestion: 'Come más deprisa o elige una entrada un poco más tarde' })
     }

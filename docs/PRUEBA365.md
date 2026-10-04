@@ -1,28 +1,15 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-7248 viajes (todas las fechas de 2027), en 487 s. **Total: 7224**.
+6987 viajes (todas las fechas de 2027), en 475 s. **Total: 6417**.
 
-- **Sitio repetido en el mismo día (por id: paradas, nocturnas, paseos, «De camino» y «iluminado»)**: 27
-  - 2027-01-01 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 A +entrada:mediodia+domingo+reserva:12:00]
-  - 2027-01-15 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 A +entrada:mediodia+domingo+reserva:12:00]
-  - 2027-01-29 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 A +entrada:mediodia+domingo+reserva:12:00]
-  - 2027-02-12 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 B +entrada:mediodia+domingo+reserva:12:00]
-  - 2027-02-26 · 4 días · reserva Galería Borghese 12:00, día 3, 15:20 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 B +entrada:mediodia+domingo+reserva:12:00]
-  - 2027-03-12 · 4 días · reserva Galería Borghese 12:00, día 3, 15:40 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 B +entrada:mediodia+domingo+reserva:12:00]
-- **Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)**: 103
-  - 2027-03-25 · 6 días, día 5, 19:05 Ponte Sisto — Ponte Sisto: ya en el día 2 [D1 D +luz:C→D]
-  - 2027-03-25 · 7 días, día 5, 19:05 Ponte Sisto — Ponte Sisto: ya en el día 2 [D1 D +luz:C→D]
-  - 2027-03-27 · 2 días, día 2, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +domingo+luz:C→D]
-  - 2027-03-27 · 3 días, día 2, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +domingo+luz:C→D]
-  - 2027-03-27 · 4 días, día 3, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +luz:C→D]
-  - 2027-03-27 · 5 días, día 3, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +luz:C→D]
+- **Sitio repetido en el mismo día (por id: paradas, nocturnas, paseos, «De camino» y «iluminado»)**: 0 ✅
+- **Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)**: 2
+  - 2027-08-27 · 4 días · reserva Coliseo 15:30, día 4, 19:00 Monti — Monti: ya en el día 1 [D5C D]
+  - 2027-09-24 · 4 días · reserva Coliseo 15:30, día 4, 18:10 Monti — Monti: ya en el día 1 [D5C C]
 - **La misma nocturna dos noches del mismo viaje**: 0 ✅
 - **El mismo paseo libre dos días del mismo viaje (regla 7: solo si no queda otro; nunca el mismo día)**: 0 ✅
 - **Lugar del pool fuera de la ruta**: 0 ✅
-- **Parada fuera de su horario real de ese día**: 3
-  - 2027-12-24 · 1 día, día 1, 14:35 Basílica de San Pedro — abierto 07:00-15:00 [D0 A]
-  - 2027-12-24 · 2 días · FT, día 1, 15:30 Foro Romano y Palatino — abierto 09:00-16:30 [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
-  - 2027-12-31 · 2 días · FT, día 1, 15:30 Foro Romano y Palatino — abierto 09:00-16:30 [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
+- **Parada fuera de su horario real de ese día**: 0 ✅
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅
 - **Tramo de más de 25 min andando sin transporte**: 361
   - 2027-01-02 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
@@ -31,46 +18,34 @@
   - 2027-01-05 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
   - 2027-01-07 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
   - 2027-01-08 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
-- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 122
-  - 2027-02-25 · 6 días, día 5, 17:35 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:25 y hay 16 min andando [D2 B +lunes]
-  - 2027-02-25 · 7 días, día 5, 17:35 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:25 y hay 16 min andando [D2 B +lunes]
-  - 2027-02-27 · 6 días, día 3, 17:35 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:25 y hay 16 min andando [D2 B +lunes]
-  - 2027-02-27 · 7 días, día 3, 17:35 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:25 y hay 16 min andando [D2 B +lunes]
-  - 2027-02-28 · 6 días, día 2, 17:35 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:25 y hay 16 min andando [D2 B +lunes]
-  - 2027-02-28 · 7 días, día 2, 17:35 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:25 y hay 16 min andando [D2 B +lunes]
-- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 491
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 81
+  - 2027-03-13 · 4 días · FT, día 3, 17:40 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:30 y hay 16 min andando [D1-FT B +lunes]
+  - 2027-03-13 · 5 días · FT, día 3, 17:40 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:30 y hay 16 min andando [D1-FT B +lunes]
+  - 2027-03-26 · 7 días, día 7, 19:10 Puente Sant'Angelo — acaba Plaza Farnese a las 19:00 y hay 15 min andando [D7 C]
+  - 2027-03-26 · 7 días · FT, día 7, 19:10 Puente Sant'Angelo — acaba Plaza Farnese a las 19:00 y hay 15 min andando [D7 C]
+  - 2027-03-30 · 7 días, día 7, 19:15 Puente Sant'Angelo — acaba Plaza Farnese a las 19:05 y hay 15 min andando [D7 C]
+  - 2027-03-30 · 7 días · FT, día 7, 19:15 Puente Sant'Angelo — acaba Plaza Farnese a las 19:05 y hay 15 min andando [D7 C]
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 469
   - 2027-01-01 · 6 días, día 1, 16:25 Terraza del Pincio — 43 min [D4 A +fecha:01-01]
   - 2027-01-01 · 6 días · FT, día 1, 16:25 Terraza del Pincio — 43 min [D4 A +con_free_tour+fecha:01-01]
   - 2027-01-01 · 7 días, día 1, 16:25 Terraza del Pincio — 43 min [D4 A +fecha:01-01]
   - 2027-01-01 · 7 días · FT, día 1, 16:25 Terraza del Pincio — 43 min [D4 A +con_free_tour+fecha:01-01]
   - 2027-01-23 · 1 día, día 1, 16:50 Puente Sant'Angelo — 33 min [D0 A]
   - 2027-01-24 · 1 día, día 1, 16:50 Puente Sant'Angelo — 33 min [D0 A]
-- **Parada con «Todavía no ha abierto» o «Ya ha cerrado» a su hora (junto a un imprescindible va «Por fuera» sin aviso; si no, se mueve a cuando está abierta)**: 13
-  - 2027-05-03 · 4 días · pool Castillo de Sant'Angelo, día 2, 18:50 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
-  - 2027-05-19 · 4 días · pool Castillo de Sant'Angelo, día 2, 18:55 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
-  - 2027-05-27 · 4 días · pool Castillo de Sant'Angelo, día 2, 18:55 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
-  - 2027-05-28 · 4 días · pool Castillo de Sant'Angelo, día 2, 18:55 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
-  - 2027-05-28 · 5 días · pool Galería Borghese+Castillo de Sant'Angelo, día 2, 18:55 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
-  - 2027-06-21 · 4 días · pool Castillo de Sant'Angelo, día 2, 19:15 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
+- **Parada con «Todavía no ha abierto» o «Ya ha cerrado» a su hora (junto a un imprescindible va «Por fuera» sin aviso; si no, se mueve a cuando está abierta)**: 0 ✅
 - **La misma foto propia en dos tarjetas del mismo día**: 0 ✅
 - **Sale un «Tiempo libre» o un «Aperitivo» (ya no existen)**: 0 ✅
 - **El paseo de «Pasea y piérdete por…» en el mismo sitio que la parada de antes (esa parada se alarga y no hay tarjeta aparte)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: 79
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: 12
   - 2027-05-02 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 80 min [D2 D +lunes]
   - 2027-05-09 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min [D2 D +lunes]
   - 2027-05-16 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min [D2 D +lunes]
-  - 2027-05-20 · 6 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 80 min [D2 D +lunes]
-  - 2027-05-20 · 7 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 80 min [D2 D +lunes]
-  - 2027-05-22 · 6 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 80 min [D2 D +lunes]
+  - 2027-05-23 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 100 min [D2 D +lunes]
+  - 2027-05-30 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 110 min [D2 D +lunes]
+  - 2027-06-06 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 115 min [D2 D +lunes]
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
-- **Zigzag: volver a una zona que ya se dejó ese día**: 10
-  - 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 17:20 Elefantino de Bernini — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
-  - 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 17:30 Iglesia de Santa Maria sopra Minerva — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
-  - 2027-01-01 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
-  - 2027-01-15 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
-  - 2027-01-29 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
-  - 2027-11-05 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
+- **Zigzag: volver a una zona que ya se dejó ese día**: 0 ✅
 - **Nivel 1-2 como "Por el camino"**: 0 ✅
 - **Nivel 1-2 como "idea" de tiempo libre**: 0 ✅
 - **Imprescindible de menos de 20 min**: 0 ✅
@@ -104,31 +79,20 @@
   - 2027-01-09 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas (salvo lo escrito «por fuera» a propósito, el Castillo)**: 0 ✅
 - **La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)**: 2
-  - 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
-  - 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
+  - 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
+  - 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
 - **"Por la mañana" en el texto de una parada que va por la tarde**: 0 ✅
-- **Imprescindible de pago que no sale nunca por dentro en el viaje**: 57
-  - 2027-01-05 · 3 días, todo el viaje Panteón — ningún día por dentro
-  - 2027-01-05 · 4 días, todo el viaje Panteón — ningún día por dentro
-  - 2027-01-05 · 5 días, todo el viaje Panteón — ningún día por dentro
-  - 2027-01-05 · 6 días, todo el viaje Panteón — ningún día por dentro
-  - 2027-01-05 · 7 días, todo el viaje Panteón — ningún día por dentro
-  - 2027-06-01 · 3 días, todo el viaje Panteón — ningún día por dentro
+- **Imprescindible de pago que no sale nunca por dentro en el viaje**: 1
+  - 2027-12-31 · 3 días · FT, todo el viaje Panteón — ningún día por dentro
 - **El día del Vaticano sin el Castillo de Sant'Angelo (ni por dentro ni por fuera)**: 0 ✅
 - **El día del Vaticano sin el Puente Sant'Angelo de día**: 0 ✅
 - **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: 0 ✅
 - **Un sitio del recorrido del Free Tour que sale suelto DESPUÉS del tour el mismo día (lo de antes, Trevi a las 8:00, está bien)**: 2
-  - 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
-  - 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
+  - 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
+  - 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
 - **El mismo barrio dos veces el mismo día, con otra cosa en medio (Trastevere a las 16:15 y otra vez al anochecer)**: 0 ✅
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: 0 ✅
-- **Parada fuera de su horario sin solución escrita**: 13
-  - 2027-05-03 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, martes) — Castillo de Sant'Angelo · 18:53
-  - 2027-05-19 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, jueves) — Castillo de Sant'Angelo · 18:58
-  - 2027-05-27 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, viernes) — Castillo de Sant'Angelo · 18:58
-  - 2027-05-28 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, sábado) — Castillo de Sant'Angelo · 18:58
-  - 2027-05-28 · 5 días · pool Galería Borghese+Castillo de Sant'Angelo, día 2 (D2 D, sábado) — Castillo de Sant'Angelo · 18:58
-  - 2027-06-21 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, martes) — Castillo de Sant'Angelo · 19:18
+- **Parada fuera de su horario sin solución escrita**: 0 ✅
 - **Cerrado ese día y sin nada escrito**: 0 ✅
 - **La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba**: 0 ✅
 - **Lugar escrito que no existe en las fichas**: 0 ✅
@@ -137,38 +101,44 @@
 - **Título del día que no se cumple**: 0 ✅
 - **El motor falla**: 0 ✅
 - **Comida de menos de 45 min en la ruta (30 si hay una hora fija de verdad justo detrás)**: 0 ✅
-- **Comida de más de 90 min en la ruta (regla 14)**: 0 ✅
+- **Comida de más de 90 min en la ruta (regla 14)**: 20
+  - 2027-01-01 · 4 días · reserva Coliseo 15:30, día 4 — 13:20: 120 min
+  - 2027-01-15 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
+  - 2027-01-29 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
+  - 2027-02-12 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
+  - 2027-02-26 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
+  - 2027-03-12 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
 - **(Información, regla 3) Imprescindible de pago por fuera porque entró un extra del pool y por fuera se ve bien (el Coliseo, el Panteón)**: 0 ✅
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: 3
   - 2027-08-14 · 3 días, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
   - 2027-08-14 · 3 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — ningún día por dentro
   - 2027-12-24 · 3 días · FT, todo el viaje Panteón — ningún día por dentro
-- **R-9 · Una joya que sale por primera vez después del día 3 (después del día 2 en viajes de 2 días)**: 481
-  - 2027-01-01 · 4 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- **R-9 · Una joya que sale por primera vez después del día 3 (después del día 2 en viajes de 2 días)**: 584
+  - 2027-01-01 · 4 días, todo el viaje Coliseo — sale por primera vez el día 4
+  - 2027-01-01 · 4 días, todo el viaje Panteón — sale por primera vez el día 4
   - 2027-01-01 · 4 días · FT, todo el viaje Coliseo — sale por primera vez el día 4
   - 2027-01-01 · 5 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
   - 2027-01-02 · 6 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
   - 2027-01-02 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
-  - 2027-01-07 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - **R-10 · Dos visitas grandes (grupo con más de 90 min por dentro) el mismo día**: 2
-  - 2027-12-24 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (140 min) —  [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
-  - 2027-12-31 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (140 min) —  [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
+  - 2027-12-24 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (130 min) —  [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
+  - 2027-12-31 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (130 min) —  [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
 - **R-10 · Un grupo que nunca se separa, partido entre dos días**: 0 ✅
-- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: 868
+- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: 760
   - 2027-01-01 · 3 días, día 1, 10:05 Plaza de España —  [D4M A]
   - 2027-01-01 · 6 días, día 1, 10:20 Plaza de España —  [D4 A +fecha:01-01]
   - 2027-01-01 · 6 días · FT, día 1, 10:20 Plaza de España —  [D4 A +con_free_tour+fecha:01-01]
   - 2027-01-01 · 7 días, día 1, 10:20 Plaza de España —  [D4 A +fecha:01-01]
   - 2027-01-01 · 7 días · FT, día 1, 10:20 Plaza de España —  [D4 A +con_free_tour+fecha:01-01]
-  - 2027-01-02 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +domingo]
-- **R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30**: 128
+  - 2027-01-02 · 3 días, día 3, 10:05 Plaza de España —  [D4M A +lunes]
+- **R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30**: 129
   - 2027-07-01 · 1 día · FT, día 1, 14:30 Arco de Constantino — al aire libre en las horas de calor [otro]
   - 2027-07-01 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
   - 2027-07-02 · 1 día · FT, día 1, 14:30 Arco de Constantino — al aire libre en las horas de calor [otro]
   - 2027-07-02 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
   - 2027-07-03 · 1 día · FT, día 1, 14:30 Arco de Constantino — al aire libre en las horas de calor [otro]
   - 2027-07-03 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
-- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: 3367
+- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: 2916
   - 2027-01-01 · 4 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
   - 2027-01-01 · 4 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+domingo]
   - 2027-01-01 · 5 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
@@ -177,66 +147,60 @@
   - 2027-01-01 · 6 días · FT, día 1, 18:35 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+fecha:01-01]
 - **R-22 · Una duración que no es de 5 en 5**: 0 ✅
 - **R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)**: 2
-  - 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
-  - 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
-- **R-13 · Una experiencia elegida que no cambia nada del viaje (mismo viaje con y sin ella)**: 568
+  - 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
+  - 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
+- **R-13 · Una experiencia elegida que no cambia nada del viaje (mismo viaje con y sin ella)**: 550
   - 2027-01-01 · 3 días · naturaleza_vistas — naturaleza_vistas
   - 2027-01-01 · 5 días · naturaleza_vistas — naturaleza_vistas
   - 2027-01-01 · 5 días · barrios_sabores — barrios_sabores
   - 2027-01-03 · 3 días · naturaleza_vistas — naturaleza_vistas
   - 2027-01-03 · 5 días · naturaleza_vistas — naturaleza_vistas
   - 2027-01-05 · 3 días · naturaleza_vistas — naturaleza_vistas
-- **R-2 · Una entrada reservada que no sale a su hora (o que ha desaparecido)**: 1
-  - 2027-03-26 · 4 días · reserva Coliseo 15:30, todo el viaje Coliseo — reservada a las 15:30 y no sale por dentro
+- **R-2 · Una entrada reservada que no sale a su hora (o que ha desaparecido)**: 0 ✅
 
 ## Dónde caen (día escrito, versión y variantes)
 
 - **Iglesia o monumento antes que su plaza**: D0 D ×144 · D0 A ×105 · D0 B ×58 · D0 C ×49 · D0 C +luz:B→C ×10 · otro ×8
-- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: D4M D ×148 · D4M A ×106 · D4M B ×75 · D4M D +domingo ×65 · D4M D +naturaleza_vistas ×49 · D4M A +naturaleza_vistas ×36 · D4M A +domingo ×35 · D4M B +domingo ×27 · D4M C ×27 · D4M B +naturaleza_vistas ×25 · D4M D +luz:C→D ×22 · D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis ×22 · D4M D +domingo+naturaleza_vistas ×22 · D4M C +domingo ×20
-- **R-9 · Una joya que sale por primera vez después del día 3 (después del día 2 en viajes de 2 días)**: viaje ×481
-- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: D4 A ×477 · D4 D ×474 · D4 B ×360 · D4 D +con_free_tour ×254 · D4 A +domingo ×242 · D4 A +con_free_tour ×241 · D4 D +domingo ×208 · D2 D +lunes ×202 · D4 B +domingo ×144 · D4 B +luz:A→B ×82 · D4 B +con_free_tour ×82 · D4 A +con_free_tour+domingo ×77 · D4 D +con_free_tour+domingo ×72 · D3 D ×70
-- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D0 D ×82 · D3 D ×81 · otro ×69 · D3 B ×54 · D2 D ×33 · D0 C ×32 · D0 A ×22 · D3 D +sabado ×12 · D3 B +sabado ×11 · D4 A +con_free_tour+fecha:01-01 ×10 · D5C A ×8 · D4 A +fecha:01-01+empieza:10:00 ×8 · D4 A +entrada:diez+domingo+reserva:10:00 ×8 · D1 D +entrada:tarde+reserva:15:30 ×7
+- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: D4M D ×121 · D4M A ×85 · D4M B ×61 · D4M D +lunes ×55 · D4M A +lunes ×43 · D4M D +naturaleza_vistas ×40 · D4M D +domingo ×37 · D4M A +naturaleza_vistas ×29 · D4M B +lunes ×27 · D4M C ×21 · D4M D +luz:C→D ×20 · D4M B +naturaleza_vistas ×20 · D4M A +domingo ×18 · D4M D +lunes+naturaleza_vistas ×18
+- **R-9 · Una joya que sale por primera vez después del día 3 (después del día 2 en viajes de 2 días)**: viaje ×584
+- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: D4 D ×378 · D4 A ×365 · D4 A +domingo ×326 · D4 B ×298 · D4 D +domingo ×282 · D4 D +con_free_tour ×254 · D4 A +con_free_tour ×241 · D4 B +domingo ×192 · D4 B +con_free_tour ×82 · D4 B +luz:A→B ×78 · D4 A +con_free_tour+domingo ×77 · D4 D +con_free_tour+domingo ×72 · D3 D ×67 · D4 B +con_free_tour+domingo ×40
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D0 D ×82 · D3 D ×78 · otro ×69 · D3 B ×54 · D2 D ×41 · D0 C ×32 · D0 A ×23 · D3 D +sabado ×15 · D3 B +sabado ×11 · D4 A +con_free_tour+fecha:01-01 ×10 · D5C A ×8 · D4 A +fecha:01-01+empieza:10:00 ×8 · D1 D +entrada:tarde+reserva:15:30 ×7 · D3 C ×4
 - **Tramo de más de 25 min andando sin transporte**: otro ×361
 - **El mismo restaurante dos veces en el viaje**: otro ×146
-- **Imprescindible de pago que no sale nunca por dentro en el viaje**: viaje ×57
-- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D2 B +lunes ×36 · D0 D ×34 · D7 C ×16 · D5 D ×16 · D1-FT C +sabado ×8 · D2 C +lunes ×6 · D1-FT B +lunes ×2 · D1-FT C +lunes ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D0 A ×1
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D0 D ×34 · D7 C ×16 · D5 D ×16 · D1-FT C +sabado ×8 · D1-FT B +lunes ×2 · D1-FT C +lunes ×2 · D0 A ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1
 - **Aviso de fecha que nombra un lugar que no está en el viaje**: otro ×1
-- **Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)**: D1 D +sabado ×21 · D1 D +domingo ×16 · D1 D +sabado+comida:sin Plaza del Campidoglio ×11 · D5C D ×11 · D5C A ×5 · D5C B ×5 · D1 D +sabado+arte_museos ×5 · D1 D +luz:C→D ×4 · D1 D +domingo+fecha:primer_domingo ×3 · D1 C +domingo ×3 · D5C C ×3 · D1 D +sabado+barrios_sabores+comida:sin Plaza del Campidoglio ×3 · D1 D +domingo+luz:C→D ×2 · D1 D +domingo+fecha:primer_domingo+luz:C→D ×2
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: D2 D +lunes ×46 · D2 D +entrada:primera_tarde+reserva:13:00 ×11 · D4 D +entrada:quince+domingo+reserva:15:00 ×5 · D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis ×5 · D4 D +entrada:diez+domingo+reserva:10:00+comida:sin Ara Pacis ×5 · D2 B +entrada:primera_tarde+reserva:13:00 ×4 · D2 C +entrada:primera_tarde+reserva:13:00 ×2 · D2 B +relleno_cena:Isla Tiberina ×1
-- **R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30**: otro ×124 · D1 D +domingo ×4
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: D2 D +lunes ×8 · D2 D +entrada:primera_tarde+reserva:13:00 ×2 · D2 B +relleno_cena:Isla Tiberina ×1 · D2 C +entrada:primera_tarde+reserva:13:00 ×1
+- **R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30**: otro ×124 · D1 D +domingo ×4 · D1 D +entrada:tarde+reserva:15:30 ×1
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×3
-- **Parada fuera de su horario real de ese día**: D0 A ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1
-- **R-10 · Dos visitas grandes (grupo con más de 90 min por dentro) el mismo día**: D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1
-- **Un sitio del recorrido del Free Tour que sale suelto DESPUÉS del tour el mismo día (lo de antes, Trevi a las 8:00, está bien)**: D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
-- **La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)**: D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
-- **R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)**: D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
-- **Zigzag: volver a una zona que ya se dejó ese día**: D4 A +entrada:quince+domingo+reserva:15:00 ×8 · D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori ×2
-- **Sitio repetido en el mismo día (por id: paradas, nocturnas, paseos, «De camino» y «iluminado»)**: D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis ×11 · D4 A +entrada:mediodia+domingo+reserva:12:00 ×8 · D4 B +entrada:mediodia+domingo+reserva:12:00 ×5 · D4 C +entrada:mediodia+domingo+reserva:12:00 ×3
-- **R-2 · Una entrada reservada que no sale a su hora (o que ha desaparecido)**: viaje ×1
-- **Parada fuera de su horario sin solución escrita**: D2 D martes ×4 · D2 D jueves ×4 · D2 D sábado ×3 · D2 D viernes ×2
-- **Parada con «Todavía no ha abierto» o «Ya ha cerrado» a su hora (junto a un imprescindible va «Por fuera» sin aviso; si no, se mueve a cuando está abierta)**: D2 D ×13
+- **R-10 · Dos visitas grandes (grupo con más de 90 min por dentro) el mismo día**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1
+- **Un sitio del recorrido del Free Tour que sale suelto DESPUÉS del tour el mismo día (lo de antes, Trevi a las 8:00, está bien)**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
+- **La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
+- **R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24 ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31 ×1
+- **Imprescindible de pago que no sale nunca por dentro en el viaje**: viaje ×1
+- **Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)**: D5C D ×1 · D5C C ×1
 
 ## Solo en las fechas clave de los viajeros españoles
 
-1301 viajes pisan alguna fecha clave. **Avisos de verdad: 1479** · informativos (algo cierra ese día y el aviso lo explica): 3.
+1230 viajes pisan alguna fecha clave. **Avisos de verdad: 1258** · informativos (algo cierra ese día y el aviso lo explica): 3.
 
 | Fecha clave | Fechas | Viajes | De verdad | Informativos |
 |---|---|---|---|---|
-| Navidad y Reyes (final) | 01-01 – 01-06 | 128 | 190 | 0 |
-| Semana Santa | 03-24 – 03-29 | 179 | 179 | 0 |
-| Puente de mayo | 04-30 – 05-02 | 99 | 171 | 0 |
-| Verano: fin de semana de julio | 07-16 – 07-18 | 143 | 87 | 0 |
-| Verano: el 15 de agosto | 08-13 – 08-16 | 132 | 114 | 2 |
-| Puente del Pilar | 10-09 – 10-12 | 132 | 84 | 0 |
-| Todos los Santos | 10-30 – 11-01 | 118 | 126 | 0 |
-| Puente de diciembre | 12-04 – 12-08 | 158 | 176 | 0 |
-| Navidad y Reyes | 12-24 – 12-31 | 212 | 352 | 1 |
+| Navidad y Reyes (final) | 01-01 – 01-06 | 118 | 163 | 0 |
+| Semana Santa | 03-24 – 03-29 | 168 | 157 | 0 |
+| Puente de mayo | 04-30 – 05-02 | 99 | 147 | 0 |
+| Verano: fin de semana de julio | 07-16 – 07-18 | 133 | 59 | 0 |
+| Verano: el 15 de agosto | 08-13 – 08-16 | 122 | 77 | 2 |
+| Puente del Pilar | 10-09 – 10-12 | 122 | 67 | 0 |
+| Todos los Santos | 10-30 – 11-01 | 118 | 125 | 0 |
+| Puente de diciembre | 12-04 – 12-08 | 148 | 151 | 0 |
+| Navidad y Reyes | 12-24 – 12-31 | 202 | 312 | 1 |
 
 - Navidad y Reyes (final): plaza_despues | 2027-01-01 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes (final): plaza_despues | 2027-01-01 · 1 día · FT, día 1 — Coliseo (08:00) antes que Arco de Constantino (08:25) [otro]
 - Navidad y Reyes (final): plaza_despues | 2027-01-01 · 1 día · FT, día 1 — Puente Sant'Angelo (16:45) antes que Castillo de Sant'Angelo (17:10), viniendo de Via della Conciliazione: el monumento va primero [otro]
 - Navidad y Reyes (final): se_llena_tarde | 2027-01-01 · 3 días, día 1, 10:05 Plaza de España —  [D4M A]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · FT, todo el viaje Coliseo — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+domingo]
@@ -258,7 +222,7 @@
 - Navidad y Reyes (final): plaza_despues | 2027-01-02 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes (final): tramo_largo | 2027-01-02 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Navidad y Reyes (final): restaurante_repetido | 2027-01-02 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-02 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +domingo]
+- Navidad y Reyes (final): se_llena_tarde | 2027-01-02 · 3 días, día 3, 10:05 Plaza de España —  [D4M A +lunes]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-02 · 4 días, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-02 · 4 días · FT, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-02 · 5 días, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
@@ -271,14 +235,14 @@
 - Navidad y Reyes (final): hora_no_10 | 2027-01-02 · 7 días · FT, día 5, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+fecha:01-06]
 - Navidad y Reyes (final): plaza_despues | 2027-01-03 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes (final): tramo_largo | 2027-01-03 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-03 · 3 días, día 3, 10:05 Plaza de España —  [D4M A]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 4 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
+- Navidad y Reyes (final): se_llena_tarde | 2027-01-03 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +lunes]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 4 días, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 4 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 6 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 6 días, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 6 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 7 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 7 días, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 7 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
 - Navidad y Reyes (final): plaza_despues | 2027-01-04 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes (final): tramo_largo | 2027-01-04 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
@@ -295,18 +259,13 @@
 - Navidad y Reyes (final): plaza_despues | 2027-01-05 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes (final): tramo_largo | 2027-01-05 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Navidad y Reyes (final): restaurante_repetido | 2027-01-05 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): se_llena_tarde | 2027-01-05 · 3 días, día 2, 10:35 Plaza de España —  [D4M A +fecha:01-06]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 4 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 4 días, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 4 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 5 días, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 5 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 6 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 6 días, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 6 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 7 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 7 días, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 7 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
 - Navidad y Reyes (final): plaza_despues | 2027-01-06 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
@@ -322,42 +281,13 @@
 - Navidad y Reyes (final): hora_no_10 | 2027-01-06 · 6 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-06 · 7 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-06 · 7 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Coliseo 08:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Coliseo 08:30, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Coliseo 08:30, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Coliseo 08:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): repetido_viaje | 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 13:20 Boca de la Verdad — Boca de la Verdad: ya en el día 1 [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
-- Navidad y Reyes (final): zigzag | 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 17:20 Elefantino de Bernini — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
-- Navidad y Reyes (final): zigzag | 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 17:30 Iglesia de Santa Maria sopra Minerva — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Coliseo 15:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): comida_mas_90 | 2027-01-01 · 4 días · reserva Coliseo 15:30, día 4 — 13:20: 120 min
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Coliseo 15:30, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Coliseo 15:30, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Coliseo 15:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 4, 12:15 Mirador del Janículo —  [D2 A +entrada:tarde+entrada:tarde@lunes+reserva:14:30]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 10:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 10:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo+reserva:10:30]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 09:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 09:00, día 3, 12:50 Fontana de Trevi —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 09:00, día 3, 13:40 Plaza de España —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 09:00, día 3, 18:05 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Navidad y Reyes (final): hueco | 2027-01-01 · 4 días · reserva Galería Borghese 10:00, día 3, 16:25 Terraza del Pincio — 53 min [D4 A +entrada:diez+domingo+reserva:10:00]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 10:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 10:00, día 3, 13:15 Plaza de España —  [D4 A +entrada:diez+domingo+reserva:10:00]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 10:00, día 3, 18:05 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:diez+domingo+reserva:10:00]
-- Navidad y Reyes (final): repetido_dia | 2027-01-01 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 12:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 12:00, día 3, 18:45 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Navidad y Reyes (final): zigzag | 2027-01-01 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 15:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 15:00, día 3, 12:55 Parque de Villa Borghese —  [D4 A +entrada:quince+domingo+reserva:15:00]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 15:00, día 3, 18:25 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:quince+domingo+reserva:15:00]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · reserva Galería Borghese 15:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · reserva Galería Borghese 15:30, día 3, 18:25 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:tarde+domingo+reserva:15:30]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 3 días · arte_museos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): joya_tarde | 2027-01-01 · 5 días · arte_museos, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 5 días · arte_museos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
@@ -370,60 +300,66 @@
 - Navidad y Reyes (final): joya_tarde | 2027-01-01 · 5 días · barrios_sabores, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 5 días · barrios_sabores, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-01 · 5 días · barrios_sabores — barrios_sabores
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 3 días · arte_museos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · arte_museos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-03 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M A +naturaleza_vistas]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 3 días · arte_museos, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · arte_museos, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
+- Navidad y Reyes (final): se_llena_tarde | 2027-01-03 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M A +lunes+naturaleza_vistas]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-03 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · naturaleza_vistas, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · naturaleza_vistas, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-03 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Navidad y Reyes (final): se_llena_tarde | 2027-01-03 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M A]
-- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · barrios_sabores, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Navidad y Reyes (final): se_llena_tarde | 2027-01-03 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M A +lunes]
+- Navidad y Reyes (final): hora_no_10 | 2027-01-03 · 5 días · barrios_sabores, día 1, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 3 días · arte_museos, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días · arte_museos, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 5 días · arte_museos, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): se_llena_tarde | 2027-01-05 · 3 días · naturaleza_vistas, día 2, 10:35 Plaza de España —  [D4M A +fecha:01-06+naturaleza_vistas]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-05 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 5 días · naturaleza_vistas, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-05 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 3 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): se_llena_tarde | 2027-01-05 · 3 días · barrios_sabores, día 2, 10:35 Plaza de España —  [D4M A +fecha:01-06]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-05 · 3 días · barrios_sabores — barrios_sabores
-- Navidad y Reyes (final): pago_sin_dentro | 2027-01-05 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes (final): hora_no_10 | 2027-01-05 · 5 días · barrios_sabores, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-06]
 - Navidad y Reyes (final): experiencia_sin_efecto | 2027-01-05 · 5 días · barrios_sabores — barrios_sabores
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Cúpula de San Pedro, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Cúpula de San Pedro, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Cúpula de San Pedro, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Cúpula de San Pedro, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Trastevere, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Trastevere, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Trastevere, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Trastevere, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Galería Borghese, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Galería Borghese, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Galería Borghese, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Galería Borghese, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Castillo de Sant'Angelo, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Castillo de Sant'Angelo, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Castillo de Sant'Angelo, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Castillo de Sant'Angelo, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Boca de la Verdad, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Boca de la Verdad, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Boca de la Verdad, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Boca de la Verdad, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Parque de Villa Borghese, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Parque de Villa Borghese, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Parque de Villa Borghese, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Parque de Villa Borghese, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Ojo de la Cerradura del Aventino, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Ojo de la Cerradura del Aventino, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Ojo de la Cerradura del Aventino, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Ojo de la Cerradura del Aventino, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Arco de Constantino, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Arco de Constantino, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Arco de Constantino, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Arco de Constantino, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Altar de la Patria, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Altar de la Patria, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Altar de la Patria, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Altar de la Patria, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Museos Capitolinos, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Museos Capitolinos, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Museos Capitolinos, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Museos Capitolinos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Termas de Caracalla, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Termas de Caracalla, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Termas de Caracalla, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Termas de Caracalla, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Basílica de San Juan de Letrán, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Basílica de San Juan de Letrán, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes (final): joya_tarde | 2027-01-01 · 4 días · pool Basílica de San Juan de Letrán, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 4 días · pool Basílica de San Juan de Letrán, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): joya_tarde | 2027-01-01 · 5 días · pool Cúpula de San Pedro+Trastevere, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 5 días · pool Cúpula de San Pedro+Trastevere, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes (final): joya_tarde | 2027-01-01 · 5 días · pool Ojo de la Cerradura del Aventino+Museos Capitolinos, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes (final): hora_no_10 | 2027-01-01 · 5 días · pool Ojo de la Cerradura del Aventino+Museos Capitolinos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Semana Santa: no_cuadra | 2027-03-18 · 7 días, día 5, 18:00 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:50 y hay 16 min andando [D2 B +lunes]
-- Semana Santa: joya_tarde | 2027-03-18 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Semana Santa: joya_tarde | 2027-03-18 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Semana Santa: joya_tarde | 2027-03-18 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-18 · 7 días, día 2, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
 - Semana Santa: joya_tarde | 2027-03-18 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-19 · 6 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
@@ -432,23 +368,19 @@
 - Semana Santa: hora_no_10 | 2027-03-19 · 7 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour+domingo]
 - Semana Santa: hora_no_10 | 2027-03-20 · 5 días, día 2, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: hora_no_10 | 2027-03-20 · 5 días · FT, día 2, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour+domingo]
-- Semana Santa: no_cuadra | 2027-03-20 · 6 días, día 3, 18:00 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:50 y hay 16 min andando [D2 B +lunes]
 - Semana Santa: joya_tarde | 2027-03-20 · 6 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-20 · 6 días, día 5, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
 - Semana Santa: hora_no_10 | 2027-03-20 · 6 días · FT, día 5, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Semana Santa: no_cuadra | 2027-03-20 · 7 días, día 3, 18:00 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:50 y hay 16 min andando [D2 B +lunes]
 - Semana Santa: joya_tarde | 2027-03-20 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-20 · 7 días, día 5, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
 - Semana Santa: hora_no_10 | 2027-03-20 · 7 días · FT, día 5, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Semana Santa: hora_no_10 | 2027-03-21 · 4 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
+- Semana Santa: hora_no_10 | 2027-03-21 · 4 días, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: hora_no_10 | 2027-03-21 · 4 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Semana Santa: hora_no_10 | 2027-03-21 · 5 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
+- Semana Santa: hora_no_10 | 2027-03-21 · 5 días, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: hora_no_10 | 2027-03-21 · 5 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Semana Santa: no_cuadra | 2027-03-21 · 6 días, día 2, 18:00 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:50 y hay 16 min andando [D2 B +lunes]
-- Semana Santa: hora_no_10 | 2027-03-21 · 6 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
+- Semana Santa: hora_no_10 | 2027-03-21 · 6 días, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: hora_no_10 | 2027-03-21 · 6 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Semana Santa: no_cuadra | 2027-03-21 · 7 días, día 2, 18:00 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:50 y hay 16 min andando [D2 B +lunes]
-- Semana Santa: hora_no_10 | 2027-03-21 · 7 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
+- Semana Santa: hora_no_10 | 2027-03-21 · 7 días, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: hora_no_10 | 2027-03-21 · 7 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Semana Santa: se_llena_tarde | 2027-03-22 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
 - Semana Santa: hora_no_10 | 2027-03-22 · 4 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
@@ -486,13 +418,11 @@
 - Semana Santa: se_llena_tarde | 2027-03-25 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
 - Semana Santa: hora_no_10 | 2027-03-25 · 4 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
 - Semana Santa: hora_no_10 | 2027-03-25 · 5 días, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
-- Semana Santa: repetido_viaje | 2027-03-25 · 6 días, día 5, 19:05 Ponte Sisto — Ponte Sisto: ya en el día 2 [D1 D +luz:C→D]
 - Semana Santa: joya_tarde | 2027-03-25 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Semana Santa: joya_tarde | 2027-03-25 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-25 · 6 días, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
 - Semana Santa: joya_tarde | 2027-03-25 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-25 · 6 días · FT, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Semana Santa: repetido_viaje | 2027-03-25 · 7 días, día 5, 19:05 Ponte Sisto — Ponte Sisto: ya en el día 2 [D1 D +luz:C→D]
 - Semana Santa: joya_tarde | 2027-03-25 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Semana Santa: joya_tarde | 2027-03-25 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-25 · 7 días, día 1, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
@@ -509,12 +439,8 @@
 - Semana Santa: plaza_despues | 2027-03-27 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 C +luz:B→C]
 - Semana Santa: tramo_largo | 2027-03-27 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Semana Santa: restaurante_repetido | 2027-03-27 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
-- Semana Santa: repetido_viaje | 2027-03-27 · 2 días, día 2, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +domingo+luz:C→D]
 - Semana Santa: hueco | 2027-03-27 · 2 días · FT, día 1, 18:05 Puente Sant'Angelo — 78 min [D3 B +sabado]
-- Semana Santa: repetido_viaje | 2027-03-27 · 3 días, día 2, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +domingo+luz:C→D]
 - Semana Santa: se_llena_tarde | 2027-03-27 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +lunes+luz:C→D]
-- Semana Santa: repetido_viaje | 2027-03-27 · 4 días, día 3, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +luz:C→D]
-- Semana Santa: repetido_viaje | 2027-03-27 · 5 días, día 3, 19:10 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +luz:C→D]
 - Semana Santa: joya_tarde | 2027-03-27 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Semana Santa: joya_tarde | 2027-03-27 · 6 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Semana Santa: joya_tarde | 2027-03-27 · 6 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
@@ -532,22 +458,10 @@
 - Semana Santa: tramo_largo | 2027-03-29 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Semana Santa: hora_no_10 | 2027-03-29 · 2 días · FT, día 2, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 C]
 - Semana Santa: se_llena_tarde | 2027-03-29 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +luz:C→D]
-- Semana Santa: repetido_viaje | 2027-03-26 · 4 días · reserva Coliseo 15:30, día 4, 09:30 Boca de la Verdad — Boca de la Verdad: ya en el día 1 [D5C C]
-- Semana Santa: pago_sin_dentro | 2027-03-26 · 4 días · reserva Coliseo 15:30, todo el viaje Coliseo — ningún día por dentro
-- Semana Santa: hora_fija_movida | 2027-03-26 · 4 días · reserva Coliseo 15:30, todo el viaje Coliseo — reservada a las 15:30 y no sale por dentro
-- Semana Santa: libre_largo | 2027-03-26 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 105 min [D2 B +entrada:primera_tarde+reserva:13:00]
-- Semana Santa: hueco | 2027-03-26 · 4 días · reserva Galería Borghese 09:00, día 3, 19:05 Terraza del Pincio — 188 min [D4 C +entrada:nueve+domingo+reserva:09:00]
-- Semana Santa: se_llena_tarde | 2027-03-26 · 4 días · reserva Galería Borghese 09:00, día 3, 12:50 Fontana de Trevi —  [D4 C +entrada:nueve+domingo+reserva:09:00]
-- Semana Santa: se_llena_tarde | 2027-03-26 · 4 días · reserva Galería Borghese 09:00, día 3, 13:40 Plaza de España —  [D4 C +entrada:nueve+domingo+reserva:09:00]
-- Semana Santa: hueco | 2027-03-26 · 4 días · reserva Galería Borghese 10:00, día 3, 19:05 Terraza del Pincio — 213 min [D4 C +entrada:diez+domingo+reserva:10:00]
-- Semana Santa: se_llena_tarde | 2027-03-26 · 4 días · reserva Galería Borghese 10:00, día 3, 13:15 Plaza de España —  [D4 C +entrada:diez+domingo+reserva:10:00]
-- Semana Santa: repetido_dia | 2027-03-26 · 4 días · reserva Galería Borghese 12:00, día 3, 16:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 C +entrada:mediodia+domingo+reserva:12:00]
-- Semana Santa: se_llena_tarde | 2027-03-26 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 C +entrada:mediodia+domingo+reserva:12:00]
 - Semana Santa: hora_no_10 | 2027-03-20 · 5 días · arte_museos, día 2, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: hora_no_10 | 2027-03-20 · 5 días · naturaleza_vistas, día 2, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Semana Santa: experiencia_sin_efecto | 2027-03-20 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Semana Santa: hora_no_10 | 2027-03-20 · 5 días · barrios_sabores, día 2, 19:35 Pasea y piérdete por el Tridente —  [D4 B +domingo]
-- Semana Santa: experiencia_sin_efecto | 2027-03-20 · 5 días · barrios_sabores — barrios_sabores
 - Semana Santa: hora_no_10 | 2027-03-22 · 3 días · arte_museos, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
 - Semana Santa: joya_tarde | 2027-03-22 · 5 días · arte_museos, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-22 · 5 días · arte_museos, día 5, 19:35 Pasea y piérdete por el Tridente —  [D4 B]
@@ -604,9 +518,9 @@
 - Puente de mayo: joya_tarde | 2027-04-24 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-24 · 7 días, día 5, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: hora_no_10 | 2027-04-24 · 7 días · FT, día 5, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: hora_no_10 | 2027-04-25 · 6 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
+- Puente de mayo: hora_no_10 | 2027-04-25 · 6 días, día 1, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-04-25 · 6 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: hora_no_10 | 2027-04-25 · 7 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
+- Puente de mayo: hora_no_10 | 2027-04-25 · 7 días, día 1, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-04-25 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
 - Puente de mayo: hora_no_10 | 2027-04-26 · 5 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: hora_no_10 | 2027-04-26 · 5 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
@@ -616,19 +530,16 @@
 - Puente de mayo: hora_no_10 | 2027-04-26 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
 - Puente de mayo: hora_no_10 | 2027-04-27 · 4 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: hora_no_10 | 2027-04-27 · 4 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: repetido_viaje | 2027-04-27 · 5 días, día 5, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 5 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 5 días · FT, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: repetido_viaje | 2027-04-27 · 6 días, día 5, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Puente de mayo: joya_tarde | 2027-04-27 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-27 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 6 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: joya_tarde | 2027-04-27 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 6 días · FT, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: repetido_viaje | 2027-04-27 · 7 días, día 5, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Puente de mayo: joya_tarde | 2027-04-27 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-27 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 7 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
@@ -648,12 +559,9 @@
 - Puente de mayo: hora_no_10 | 2027-04-28 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
 - Puente de mayo: hueco | 2027-04-29 · 2 días · FT, día 1, 19:40 Puente Sant'Angelo — 51 min [D3 D]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
-- Puente de mayo: repetido_viaje | 2027-04-29 · 3 días, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: se_llena_tarde | 2027-04-29 · 3 días, día 2, 10:05 Plaza de España —  [D4M D]
-- Puente de mayo: repetido_viaje | 2027-04-29 · 4 días, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 4 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 4 días · FT, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: repetido_viaje | 2027-04-29 · 5 días, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 5 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 5 días · FT, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
 - Puente de mayo: joya_tarde | 2027-04-29 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
@@ -671,21 +579,15 @@
 - Puente de mayo: hueco | 2027-04-30 · 1 día, día 1, 19:40 Puente Sant'Angelo — 83 min [D0 D]
 - Puente de mayo: plaza_despues | 2027-04-30 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Puente de mayo: tramo_largo | 2027-04-30 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
-- Puente de mayo: repetido_viaje | 2027-04-30 · 2 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
-- Puente de mayo: hueco | 2027-04-30 · 2 días · FT, día 1, 19:40 Puente Sant'Angelo — 51 min [D3 D]
-- Puente de mayo: hora_no_10 | 2027-04-30 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
-- Puente de mayo: repetido_viaje | 2027-04-30 · 3 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
+- Puente de mayo: hueco | 2027-04-30 · 2 días · FT, día 1, 19:40 Puente Sant'Angelo — 51 min [D3 D +sabado]
+- Puente de mayo: hora_no_10 | 2027-04-30 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D +sabado]
 - Puente de mayo: se_llena_tarde | 2027-04-30 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +domingo]
-- Puente de mayo: repetido_viaje | 2027-04-30 · 4 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 4 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 4 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour+domingo]
-- Puente de mayo: repetido_viaje | 2027-04-30 · 5 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 5 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 5 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour+domingo]
-- Puente de mayo: repetido_viaje | 2027-04-30 · 6 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 6 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 6 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour+domingo]
-- Puente de mayo: repetido_viaje | 2027-04-30 · 7 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 7 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour+domingo]
 - Puente de mayo: hueco | 2027-05-01 · 1 día, día 1, 19:45 Puente Sant'Angelo — 88 min [D0 D]
@@ -695,11 +597,11 @@
 - Puente de mayo: hueco | 2027-05-01 · 2 días · FT, día 1, 19:45 Puente Sant'Angelo — 51 min [D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina]
 - Puente de mayo: se_llena_tarde | 2027-05-01 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 3 días, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Puente de mayo: joya_tarde | 2027-05-01 · 4 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
 - Puente de mayo: hora_no_10 | 2027-05-01 · 4 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
-- Puente de mayo: hora_no_10 | 2027-05-01 · 4 días, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 4 días · FT, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour+domingo]
+- Puente de mayo: joya_tarde | 2027-05-01 · 5 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-05-01 · 5 días, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
-- Puente de mayo: hora_no_10 | 2027-05-01 · 5 días, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · FT, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour+domingo]
 - Puente de mayo: joya_tarde | 2027-05-01 · 6 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-05-01 · 6 días, día 5, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
@@ -714,63 +616,51 @@
 - Puente de mayo: hora_no_10 | 2027-05-02 · 2 días, día 2, 17:25 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Puente de mayo: hueco | 2027-05-02 · 2 días · FT, día 2, 19:45 Puente Sant'Angelo — 56 min [D3 D]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 2 días · FT, día 2, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
-- Puente de mayo: se_llena_tarde | 2027-05-02 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 3 días, día 2, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 4 días, día 2, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 4 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
+- Puente de mayo: se_llena_tarde | 2027-05-02 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +lunes]
+- Puente de mayo: hora_no_10 | 2027-05-02 · 4 días, día 1, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 4 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 5 días, día 2, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 5 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
+- Puente de mayo: hora_no_10 | 2027-05-02 · 5 días, día 1, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 5 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 6 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
+- Puente de mayo: hora_no_10 | 2027-05-02 · 6 días, día 1, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 6 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: hora_no_10 | 2027-05-02 · 7 días, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
+- Puente de mayo: hora_no_10 | 2027-05-02 · 7 días, día 1, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 D +con_free_tour]
-- Puente de mayo: repetido_viaje | 2027-04-27 · 5 días · arte_museos, día 5, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+arte_museos]
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · arte_museos, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · arte_museos, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 5 días · arte_museos, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
-- Puente de mayo: repetido_viaje | 2027-04-27 · 5 días · naturaleza_vistas, día 5, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · naturaleza_vistas, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · naturaleza_vistas, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 5 días · naturaleza_vistas, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: experiencia_sin_efecto | 2027-04-27 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Puente de mayo: repetido_viaje | 2027-04-27 · 5 días · barrios_sabores, día 5, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+barrios_sabores+comida:sin Plaza del Campidoglio]
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · barrios_sabores, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-27 · 5 días · barrios_sabores, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-04-27 · 5 días · barrios_sabores, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: experiencia_sin_efecto | 2027-04-27 · 5 días · barrios_sabores — barrios_sabores
-- Puente de mayo: repetido_viaje | 2027-04-29 · 3 días · arte_museos, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+arte_museos]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 3 días · arte_museos, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
-- Puente de mayo: repetido_viaje | 2027-04-29 · 5 días · arte_museos, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+arte_museos]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 5 días · arte_museos, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
-- Puente de mayo: repetido_viaje | 2027-04-29 · 3 días · naturaleza_vistas, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: se_llena_tarde | 2027-04-29 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
 - Puente de mayo: experiencia_sin_efecto | 2027-04-29 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Puente de mayo: repetido_viaje | 2027-04-29 · 5 días · naturaleza_vistas, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+comida:sin Plaza del Campidoglio]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 5 días · naturaleza_vistas, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: experiencia_sin_efecto | 2027-04-29 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Puente de mayo: repetido_viaje | 2027-04-29 · 3 días · barrios_sabores, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+barrios_sabores+comida:sin Plaza del Campidoglio]
 - Puente de mayo: se_llena_tarde | 2027-04-29 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M D]
 - Puente de mayo: experiencia_sin_efecto | 2027-04-29 · 3 días · barrios_sabores — barrios_sabores
-- Puente de mayo: repetido_viaje | 2027-04-29 · 5 días · barrios_sabores, día 3, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+barrios_sabores+comida:sin Plaza del Campidoglio]
 - Puente de mayo: hora_no_10 | 2027-04-29 · 5 días · barrios_sabores, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D]
 - Puente de mayo: experiencia_sin_efecto | 2027-04-29 · 5 días · barrios_sabores — barrios_sabores
 - Puente de mayo: hora_no_10 | 2027-05-01 · 3 días · arte_museos, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 3 días · arte_museos, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Puente de mayo: joya_tarde | 2027-05-01 · 5 días · arte_museos, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · arte_museos, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
-- Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · arte_museos, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Puente de mayo: se_llena_tarde | 2027-05-01 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 3 días · naturaleza_vistas, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes+naturaleza_vistas]
 - Puente de mayo: experiencia_sin_efecto | 2027-05-01 · 3 días · naturaleza_vistas — naturaleza_vistas
+- Puente de mayo: joya_tarde | 2027-05-01 · 5 días · naturaleza_vistas, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · naturaleza_vistas, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
-- Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · naturaleza_vistas, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes+naturaleza_vistas]
 - Puente de mayo: experiencia_sin_efecto | 2027-05-01 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Puente de mayo: se_llena_tarde | 2027-05-01 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M D +domingo]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 3 días · barrios_sabores, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes+barrios_sabores]
 - Puente de mayo: experiencia_sin_efecto | 2027-05-01 · 3 días · barrios_sabores — barrios_sabores
+- Puente de mayo: joya_tarde | 2027-05-01 · 5 días · barrios_sabores, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · barrios_sabores, día 2, 18:45 Pasea y piérdete por el Tridente —  [D4 D +domingo]
-- Puente de mayo: hora_no_10 | 2027-05-01 · 5 días · barrios_sabores, día 3, 18:15 Fontana dell'Acqua Paola —  [D2 D +lunes+barrios_sabores]
 - Puente de mayo: experiencia_sin_efecto | 2027-05-01 · 5 días · barrios_sabores — barrios_sabores
 - Verano: fin de semana de julio: joya_tarde | 2027-07-10 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: fin de semana de julio: no_cuadra | 2027-07-11 · 6 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
@@ -781,10 +671,12 @@
 - Verano: fin de semana de julio: no_cuadra | 2027-07-13 · 7 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-14 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-15 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Verano: fin de semana de julio: no_cuadra | 2027-07-15 · 6 días · FT, día 3, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Verano: fin de semana de julio: no_cuadra | 2027-07-15 · 7 días · FT, día 3, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Verano: fin de semana de julio: plaza_despues | 2027-07-16 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
@@ -798,11 +690,7 @@
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 1 día · FT, día 1, 20:20 Terraza del Pincio — 43 min [otro]
 - Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 1 día · FT, día 1, 14:30 Arco de Constantino — al aire libre en las horas de calor [otro]
 - Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
-- Verano: fin de semana de julio: repetido_viaje | 2027-07-17 · 2 días, día 2, 20:05 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +domingo]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-17 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +domingo]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 3 días, día 3, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 4 días, día 3, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 5 días, día 3, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: se_llena_tarde | 2027-07-17 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +lunes]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-17 · 6 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: fin de semana de julio: joya_tarde | 2027-07-17 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: fin de semana de julio: plaza_despues | 2027-07-18 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
@@ -811,24 +699,8 @@
 - Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 1 día · FT, día 1, 14:30 Arco de Constantino — al aire libre en las horas de calor [otro]
 - Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 2 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 4 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +lunes]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 15:30, día 1, 20:20 Piazza Navona — 74 min [D1 D +entrada:tarde+reserva:15:30]
-- Verano: fin de semana de julio: repetido_viaje | 2027-07-16 · 4 días · reserva Coliseo 15:30, día 4, 09:30 Boca de la Verdad — Boca de la Verdad: ya en el día 1 [D5C D]
-- Verano: fin de semana de julio: libre_largo | 2027-07-16 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 185 min [D2 D +entrada:primera_tarde+reserva:13:00]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 2, 19:50 Puente Sant'Angelo — 32 min [D2 D +entrada:tarde+reserva:14:30+una_vez:Puente Sant'Angelo:atardecer]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-16 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 2, 12:05 Mirador del Janículo —  [D2 D +entrada:tarde+reserva:14:30+una_vez:Puente Sant'Angelo:atardecer]
-- Verano: fin de semana de julio: libre_largo | 2027-07-16 · 4 días · reserva Galería Borghese 09:00, día 3 «Descanso después de comer» antes de Fontana de Trevi — 255 min [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 4 días · reserva Galería Borghese 09:00, día 3, 16:50 Fontana de Trevi —  [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 4 días · reserva Galería Borghese 09:00, día 3, 17:40 Plaza de España —  [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-16 · 4 días · reserva Galería Borghese 09:00, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: libre_largo | 2027-07-16 · 4 días · reserva Galería Borghese 10:00, día 3 «Descanso después de comer» antes de Via Condotti — 240 min [D4 D +entrada:diez+domingo+reserva:10:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 4 días · reserva Galería Borghese 10:00, día 3, 17:05 Plaza de España —  [D4 D +entrada:diez+domingo+reserva:10:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: repetido_dia | 2027-07-16 · 4 días · reserva Galería Borghese 12:00, día 3, 16:40 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-16 · 4 días · reserva Galería Borghese 12:00, día 3, 18:35 Pasea y piérdete por el Tridente —  [D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-12 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-12 · 5 días · barrios_sabores — barrios_sabores
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-14 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
@@ -843,31 +715,19 @@
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +domingo]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-16 · 3 días · barrios_sabores — barrios_sabores
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-16 · 5 días · barrios_sabores — barrios_sabores
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días · arte_museos, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días · arte_museos, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días · naturaleza_vistas, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes+naturaleza_vistas]
+- Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M D +lunes+naturaleza_vistas]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-18 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días · naturaleza_vistas, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes+naturaleza_vistas]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-18 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días · barrios_sabores, día 2, 18:45 Fontana dell'Acqua Paola —  [D2 D +lunes+barrios_sabores]
+- Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M D +lunes]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-18 · 3 días · barrios_sabores — barrios_sabores
-- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días · barrios_sabores, día 2, 18:45 Fontana dell'Acqua Paola —  [D2 D +lunes+barrios_sabores]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-18 · 5 días · barrios_sabores — barrios_sabores
-- Verano: fin de semana de julio: v4_fuera_de_horario | 2027-07-15 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, viernes) — Castillo de Sant'Angelo · 19:27
-- Verano: fin de semana de julio: cerrada_a_su_hora | 2027-07-15 · 4 días · pool Castillo de Sant'Angelo, día 2, 19:25 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
-- Verano: fin de semana de julio: v4_fuera_de_horario | 2027-07-16 · 4 días · pool Castillo de Sant'Angelo, día 2 (D2 D, sábado) — Castillo de Sant'Angelo · 19:27
-- Verano: fin de semana de julio: cerrada_a_su_hora | 2027-07-16 · 4 días · pool Castillo de Sant'Angelo, día 2, 19:25 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-07 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-11 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
 - Verano: el 15 de agosto: hueco | 2027-08-12 · 2 días · FT, día 1, 19:50 Puente Sant'Angelo — 43 min [D3 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-12 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-12 · 6 días, día 5, 19:45 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-12 · 7 días, día 5, 19:45 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
@@ -876,14 +736,8 @@
 - Verano: el 15 de agosto: tramo_largo | 2027-08-13 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Verano: el 15 de agosto: verano_al_sol | 2027-08-13 · 1 día · FT, día 1, 14:30 Arco de Constantino — al aire libre en las horas de calor [otro]
 - Verano: el 15 de agosto: verano_al_sol | 2027-08-13 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 2 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 2 días · FT, día 1, 19:50 Puente Sant'Angelo — 43 min [D3 D]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 3 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +domingo]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 5 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 6 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 7 días, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Verano: el 15 de agosto: no_cuadra | 2027-08-14 · 1 día, día 1, 19:55 Puente Sant'Angelo — acaba Castillo de Sant'Angelo a las 20:00 y hay 2 min andando [D0 D]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-14 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: el 15 de agosto: tramo_largo | 2027-08-14 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
@@ -923,28 +777,7 @@
 - Verano: el 15 de agosto: verano_al_sol | 2027-08-16 · 1 día · FT, día 1, 15:40 Plaza Venecia — al aire libre en las horas de calor [otro]
 - Verano: el 15 de agosto: hueco | 2027-08-16 · 2 días · FT, día 2, 19:45 Puente Sant'Angelo — 38 min [D3 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-16 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Coliseo 08:30, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+reserva:08:30]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días · reserva Coliseo 15:30, día 2, 19:45 Piazza Navona — 39 min [D1 D +entrada:tarde+entrada:tarde@sabado+reserva:15:30]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Coliseo 15:30, día 4, 09:30 Boca de la Verdad — Boca de la Verdad: ya en el día 2 [D5C D]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: libre_largo | 2027-08-13 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 155 min [D2 D +entrada:primera_tarde+reserva:13:00]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Galería Borghese 10:30, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Galería Borghese 09:00, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: libre_largo | 2027-08-13 · 4 días · reserva Galería Borghese 09:00, día 3 «Descanso después de comer» antes de Fontana de Trevi — 255 min [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 4 días · reserva Galería Borghese 09:00, día 3, 16:50 Fontana de Trevi —  [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 4 días · reserva Galería Borghese 09:00, día 3, 17:40 Plaza de España —  [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-13 · 4 días · reserva Galería Borghese 09:00, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 D +entrada:nueve+domingo+reserva:09:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Galería Borghese 10:00, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: libre_largo | 2027-08-13 · 4 días · reserva Galería Borghese 10:00, día 3 «Descanso después de comer» antes de Via Condotti — 240 min [D4 D +entrada:diez+domingo+reserva:10:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 4 días · reserva Galería Borghese 10:00, día 3, 17:05 Plaza de España —  [D4 D +entrada:diez+domingo+reserva:10:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Galería Borghese 12:00, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_dia | 2027-08-13 · 4 días · reserva Galería Borghese 12:00, día 3, 16:40 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-13 · 4 días · reserva Galería Borghese 12:00, día 3, 18:35 Pasea y piérdete por el Tridente —  [D4 D +entrada:mediodia+domingo+reserva:12:00+comida:sin Ara Pacis]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Galería Borghese 15:00, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 4 días · reserva Galería Borghese 15:30, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-09 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-09 · 5 días · barrios_sabores — barrios_sabores
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-11 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
@@ -953,17 +786,11 @@
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-11 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-11 · 3 días · barrios_sabores — barrios_sabores
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-11 · 5 días · barrios_sabores — barrios_sabores
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 3 días · arte_museos, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+arte_museos]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 5 días · arte_museos, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+arte_museos]
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 3 días · naturaleza_vistas, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-13 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 5 días · naturaleza_vistas, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-13 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 3 días · barrios_sabores, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+barrios_sabores]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +domingo]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-13 · 3 días · barrios_sabores — barrios_sabores
-- Verano: el 15 de agosto: repetido_viaje | 2027-08-13 · 5 días · barrios_sabores, día 2, 19:35 Ponte Sisto — Ponte Sisto: ya en el día 1 [D1 D +sabado+barrios_sabores]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-13 · 5 días · barrios_sabores — barrios_sabores
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-15 · 3 días · naturaleza_vistas, día 1, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-15 · 3 días · naturaleza_vistas — naturaleza_vistas
@@ -971,18 +798,16 @@
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-15 · 3 días · barrios_sabores, día 1, 10:05 Plaza de España —  [D4M D +domingo]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-15 · 3 días · barrios_sabores — barrios_sabores
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-15 · 5 días · barrios_sabores — barrios_sabores
-- Verano: el 15 de agosto: v4_fuera_de_horario | 2027-08-09 · 5 días · pool Castillo de Sant'Angelo+Parque de Villa Borghese, día 2 (D2 D, martes) — Castillo de Sant'Angelo · 19:02
-- Verano: el 15 de agosto: cerrada_a_su_hora | 2027-08-09 · 5 días · pool Castillo de Sant'Angelo+Parque de Villa Borghese, día 2, 19:00 Castillo de Sant'Angelo — A esta hora ya ha cerrado [D2 D]
 - Puente del Pilar: hora_no_10 | 2027-10-04 · 6 días, día 3, 19:15 Pasea y piérdete por el Tridente —  [D4 B]
 - Puente del Pilar: hora_no_10 | 2027-10-04 · 6 días · FT, día 3, 19:15 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Puente del Pilar: hora_no_10 | 2027-10-04 · 7 días, día 3, 19:15 Pasea y piérdete por el Tridente —  [D4 B]
 - Puente del Pilar: hora_no_10 | 2027-10-04 · 7 días · FT, día 3, 19:15 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Puente del Pilar: se_llena_tarde | 2027-10-07 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
-- Puente del Pilar: no_cuadra | 2027-10-07 · 6 días, día 5, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando [D2 B +lunes]
-- Puente del Pilar: joya_tarde | 2027-10-07 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Puente del Pilar: joya_tarde | 2027-10-07 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Puente del Pilar: joya_tarde | 2027-10-07 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente del Pilar: joya_tarde | 2027-10-07 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Puente del Pilar: no_cuadra | 2027-10-07 · 7 días, día 5, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando [D2 B +lunes]
-- Puente del Pilar: joya_tarde | 2027-10-07 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Puente del Pilar: joya_tarde | 2027-10-07 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Puente del Pilar: joya_tarde | 2027-10-07 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente del Pilar: joya_tarde | 2027-10-07 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente del Pilar: hueco | 2027-10-08 · 2 días · FT, día 1, 18:15 Puente Sant'Angelo — 88 min [D3 B]
 - Puente del Pilar: se_llena_tarde | 2027-10-08 · 3 días, día 3, 10:05 Plaza de España —  [D4M B +domingo]
@@ -995,25 +820,20 @@
 - Puente del Pilar: tramo_largo | 2027-10-09 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Puente del Pilar: restaurante_repetido | 2027-10-09 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
 - Puente del Pilar: hueco | 2027-10-09 · 2 días · FT, día 1, 18:15 Puente Sant'Angelo — 88 min [D3 B +sabado]
-- Puente del Pilar: se_llena_tarde | 2027-10-09 · 3 días, día 2, 10:05 Plaza de España —  [D4M B +domingo]
-- Puente del Pilar: hora_no_10 | 2027-10-09 · 3 días, día 2, 19:05 Pasea y piérdete por el Tridente —  [D4M B +domingo]
+- Puente del Pilar: se_llena_tarde | 2027-10-09 · 3 días, día 3, 10:05 Plaza de España —  [D4M B +lunes]
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 4 días · FT, día 2, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour+domingo]
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 5 días · FT, día 2, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour+domingo]
-- Puente del Pilar: no_cuadra | 2027-10-09 · 6 días, día 3, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando [D2 B +lunes]
 - Puente del Pilar: joya_tarde | 2027-10-09 · 6 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 6 días · FT, día 5, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Puente del Pilar: no_cuadra | 2027-10-09 · 7 días, día 3, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando [D2 B +lunes]
 - Puente del Pilar: joya_tarde | 2027-10-09 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 7 días · FT, día 5, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Puente del Pilar: plaza_despues | 2027-10-10 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 C +luz:B→C]
 - Puente del Pilar: tramo_largo | 2027-10-10 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Puente del Pilar: hueco | 2027-10-10 · 2 días · FT, día 2, 18:10 Puente Sant'Angelo — 83 min [D3 B]
-- Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
+- Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días, día 2, 10:05 Plaza de España —  [D4M B +lunes]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 4 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 5 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Puente del Pilar: no_cuadra | 2027-10-10 · 6 días, día 2, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando [D2 B +lunes]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 6 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Puente del Pilar: no_cuadra | 2027-10-10 · 7 días, día 2, 18:10 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 18:00 y hay 16 min andando [D2 B +lunes]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 7 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Puente del Pilar: plaza_despues | 2027-10-11 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 C +luz:B→C]
 - Puente del Pilar: tramo_largo | 2027-10-11 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
@@ -1029,19 +849,7 @@
 - Puente del Pilar: restaurante_repetido | 2027-10-12 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
 - Puente del Pilar: hueco | 2027-10-12 · 2 días · FT, día 1, 18:10 Puente Sant'Angelo — 83 min [D3 B]
 - Puente del Pilar: se_llena_tarde | 2027-10-12 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
-- Puente del Pilar: repetido_viaje | 2027-10-08 · 4 días · reserva Coliseo 15:30, día 4, 09:30 Boca de la Verdad — Boca de la Verdad: ya en el día 1 [D5C B]
-- Puente del Pilar: libre_largo | 2027-10-08 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 110 min [D2 B +entrada:primera_tarde+reserva:13:00]
-- Puente del Pilar: hueco | 2027-10-08 · 4 días · reserva Galería Borghese 09:00, día 3, 18:10 Terraza del Pincio — 133 min [D4 B +entrada:nueve+domingo+reserva:09:00]
-- Puente del Pilar: se_llena_tarde | 2027-10-08 · 4 días · reserva Galería Borghese 09:00, día 3, 12:50 Fontana de Trevi —  [D4 B +entrada:nueve+domingo+reserva:09:00]
-- Puente del Pilar: se_llena_tarde | 2027-10-08 · 4 días · reserva Galería Borghese 09:00, día 3, 13:40 Plaza de España —  [D4 B +entrada:nueve+domingo+reserva:09:00]
-- Puente del Pilar: hora_no_10 | 2027-10-08 · 4 días · reserva Galería Borghese 09:00, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B +entrada:nueve+domingo+reserva:09:00]
-- Puente del Pilar: hueco | 2027-10-08 · 4 días · reserva Galería Borghese 10:00, día 3, 18:10 Terraza del Pincio — 158 min [D4 B +entrada:diez+domingo+reserva:10:00]
-- Puente del Pilar: se_llena_tarde | 2027-10-08 · 4 días · reserva Galería Borghese 10:00, día 3, 13:15 Plaza de España —  [D4 B +entrada:diez+domingo+reserva:10:00]
-- Puente del Pilar: hora_no_10 | 2027-10-08 · 4 días · reserva Galería Borghese 10:00, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B +entrada:diez+domingo+reserva:10:00]
-- Puente del Pilar: repetido_dia | 2027-10-08 · 4 días · reserva Galería Borghese 12:00, día 3, 16:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 B +entrada:mediodia+domingo+reserva:12:00]
-- Puente del Pilar: se_llena_tarde | 2027-10-08 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 B +entrada:mediodia+domingo+reserva:12:00]
-- Puente del Pilar: hora_no_10 | 2027-10-08 · 4 días · reserva Galería Borghese 12:00, día 3, 19:35 Pasea y piérdete por el Tridente —  [D4 B +entrada:mediodia+domingo+reserva:12:00]
-- Puente del Pilar: hora_no_10 | 2027-10-08 · 4 días · reserva Galería Borghese 15:00, día 3, 12:55 Parque de Villa Borghese —  [D4 B +entrada:quince+domingo+reserva:15:00]
+- Puente del Pilar: comida_mas_90 | 2027-10-08 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
 - Puente del Pilar: experiencia_sin_efecto | 2027-10-06 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Puente del Pilar: se_llena_tarde | 2027-10-08 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M B +domingo+naturaleza_vistas]
 - Puente del Pilar: hora_no_10 | 2027-10-08 · 3 días · naturaleza_vistas, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4M B +domingo+naturaleza_vistas]
@@ -1049,16 +857,15 @@
 - Puente del Pilar: experiencia_sin_efecto | 2027-10-08 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Puente del Pilar: se_llena_tarde | 2027-10-08 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M B +domingo]
 - Puente del Pilar: hora_no_10 | 2027-10-08 · 3 días · barrios_sabores, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4M B +domingo]
-- Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M B +naturaleza_vistas]
+- Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M B +lunes+naturaleza_vistas]
 - Puente del Pilar: experiencia_sin_efecto | 2027-10-10 · 3 días · naturaleza_vistas — naturaleza_vistas
 - Puente del Pilar: experiencia_sin_efecto | 2027-10-10 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M B]
+- Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M B +lunes]
 - Puente del Pilar: se_llena_tarde | 2027-10-12 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M B +naturaleza_vistas]
 - Puente del Pilar: experiencia_sin_efecto | 2027-10-12 · 3 días · naturaleza_vistas — naturaleza_vistas
 - Puente del Pilar: experiencia_sin_efecto | 2027-10-12 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Puente del Pilar: se_llena_tarde | 2027-10-12 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M B]
-- Todos los Santos: no_cuadra | 2027-10-24 · 7 días, día 2, 17:50 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 17:40 y hay 16 min andando [D2 B +lunes]
-- Todos los Santos: hora_no_10 | 2027-10-24 · 7 días, día 3, 19:25 Pasea y piérdete por el Tridente —  [D4 B]
+- Todos los Santos: hora_no_10 | 2027-10-24 · 7 días, día 1, 19:25 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Todos los Santos: hora_no_10 | 2027-10-24 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Todos los Santos: hora_no_10 | 2027-10-25 · 6 días, día 3, 19:25 Pasea y piérdete por el Tridente —  [D4 B]
 - Todos los Santos: hora_no_10 | 2027-10-25 · 7 días, día 3, 19:25 Pasea y piérdete por el Tridente —  [D4 B]
@@ -1183,7 +990,7 @@
 - Todos los Santos: hora_no_10 | 2027-10-30 · 4 días · pool Termas de Caracalla, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Todos los Santos: hora_no_10 | 2027-10-30 · 4 días · pool Basílica de San Juan de Letrán, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Todos los Santos: hora_no_10 | 2027-10-30 · 5 días · pool Boca de la Verdad+Termas de Caracalla, día 2, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-11-28 · 7 días, día 3, 18:45 Pasea y piérdete por el Tridente iluminado —  [D4 A]
+- Puente de diciembre: hora_no_10 | 2027-11-28 · 7 días, día 1, 18:45 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-11-28 · 7 días · FT, día 3, 18:45 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour]
 - Puente de diciembre: hora_no_10 | 2027-11-29 · 6 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-11-29 · 6 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
@@ -1208,11 +1015,13 @@
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 4 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 5 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 5 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: joya_tarde | 2027-12-02 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Puente de diciembre: joya_tarde | 2027-12-02 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Puente de diciembre: joya_tarde | 2027-12-02 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 6 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: joya_tarde | 2027-12-02 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 6 días · FT, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: joya_tarde | 2027-12-02 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Puente de diciembre: joya_tarde | 2027-12-02 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Puente de diciembre: joya_tarde | 2027-12-02 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 7 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: joya_tarde | 2027-12-02 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Puente de diciembre: hora_no_10 | 2027-12-02 · 7 días · FT, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
@@ -1228,7 +1037,7 @@
 - Puente de diciembre: plaza_despues | 2027-12-04 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Puente de diciembre: tramo_largo | 2027-12-04 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Puente de diciembre: restaurante_repetido | 2027-12-04 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
-- Puente de diciembre: se_llena_tarde | 2027-12-04 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +domingo]
+- Puente de diciembre: se_llena_tarde | 2027-12-04 · 3 días, día 3, 10:05 Plaza de España —  [D4M A +lunes]
 - Puente de diciembre: hora_no_10 | 2027-12-04 · 4 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-04 · 4 días · FT, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour+domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-04 · 5 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
@@ -1241,14 +1050,14 @@
 - Puente de diciembre: hora_no_10 | 2027-12-04 · 7 días · FT, día 5, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Puente de diciembre: plaza_despues | 2027-12-05 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Puente de diciembre: tramo_largo | 2027-12-05 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
-- Puente de diciembre: se_llena_tarde | 2027-12-05 · 3 días, día 3, 10:05 Plaza de España —  [D4M A]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 4 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Puente de diciembre: se_llena_tarde | 2027-12-05 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +lunes]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 4 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-05 · 4 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 6 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 6 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-05 · 6 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 7 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 7 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-05 · 7 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Puente de diciembre: plaza_despues | 2027-12-06 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Puente de diciembre: tramo_largo | 2027-12-06 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
@@ -1265,18 +1074,13 @@
 - Puente de diciembre: plaza_despues | 2027-12-07 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Puente de diciembre: tramo_largo | 2027-12-07 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
 - Puente de diciembre: restaurante_repetido | 2027-12-07 · 1 día · FT, día 1 Armando al Pantheon — día 1 (comida), día 1 (cena) [otro]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: se_llena_tarde | 2027-12-07 · 3 días, día 2, 10:05 Plaza de España —  [D4M A]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 4 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 4 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 4 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 5 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 5 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 6 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 6 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 6 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 7 días, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 7 días, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 7 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Puente de diciembre: plaza_despues | 2027-12-08 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
@@ -1292,24 +1096,8 @@
 - Puente de diciembre: hora_no_10 | 2027-12-08 · 7 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-08 · 7 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Coliseo 08:30, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: repetido_viaje | 2027-12-03 · 4 días · reserva Coliseo 15:30, día 4, 09:30 Boca de la Verdad — Boca de la Verdad: ya en el día 1 [D5C A]
+- Puente de diciembre: comida_mas_90 | 2027-12-03 · 4 días · reserva Coliseo 15:30, día 1 — 13:20: 120 min
 - Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Coliseo 15:30, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Galería Borghese 10:30, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo+reserva:10:30]
-- Puente de diciembre: se_llena_tarde | 2027-12-03 · 4 días · reserva Galería Borghese 09:00, día 3, 12:50 Fontana de Trevi —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Puente de diciembre: se_llena_tarde | 2027-12-03 · 4 días · reserva Galería Borghese 09:00, día 3, 13:40 Plaza de España —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Puente de diciembre: hueco | 2027-12-03 · 4 días · reserva Galería Borghese 10:00, día 3, 16:15 Terraza del Pincio — 43 min [D4 A +entrada:diez+domingo+reserva:10:00]
-- Puente de diciembre: se_llena_tarde | 2027-12-03 · 4 días · reserva Galería Borghese 10:00, día 3, 13:15 Plaza de España —  [D4 A +entrada:diez+domingo+reserva:10:00]
-- Puente de diciembre: repetido_dia | 2027-12-03 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Puente de diciembre: se_llena_tarde | 2027-12-03 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Galería Borghese 12:00, día 3, 18:25 Pasea y piérdete entre las luces del Tridente —  [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Puente de diciembre: zigzag | 2027-12-03 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Galería Borghese 15:00, día 3, 12:55 Parque de Villa Borghese —  [D4 A +entrada:quince+domingo+reserva:15:00]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Galería Borghese 15:00, día 3, 18:25 Pasea y piérdete entre las luces del Tridente —  [D4 A +entrada:quince+domingo+reserva:15:00]
-- Puente de diciembre: hora_no_10 | 2027-12-03 · 4 días · reserva Galería Borghese 15:30, día 3, 18:25 Pasea y piérdete entre las luces del Tridente —  [D4 A +entrada:tarde+domingo+reserva:15:30]
 - Puente de diciembre: hora_no_10 | 2027-12-01 · 5 días · arte_museos, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: hora_no_10 | 2027-12-01 · 5 días · naturaleza_vistas, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-01 · 5 días · naturaleza_vistas — naturaleza_vistas
@@ -1322,28 +1110,22 @@
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-03 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Puente de diciembre: se_llena_tarde | 2027-12-03 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-03 · 5 días · barrios_sabores, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 3 días · arte_museos, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · arte_museos, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Puente de diciembre: se_llena_tarde | 2027-12-05 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M A +naturaleza_vistas]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 3 días · arte_museos, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · arte_museos, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Puente de diciembre: se_llena_tarde | 2027-12-05 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M A +lunes+naturaleza_vistas]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-05 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · naturaleza_vistas, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · naturaleza_vistas, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-05 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Puente de diciembre: se_llena_tarde | 2027-12-05 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M A]
-- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · barrios_sabores, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días · arte_museos, todo el viaje Panteón — ningún día por dentro
+- Puente de diciembre: se_llena_tarde | 2027-12-05 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M A +lunes]
+- Puente de diciembre: hora_no_10 | 2027-12-05 · 5 días · barrios_sabores, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 3 días · arte_museos, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · arte_museos, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 5 días · arte_museos, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: se_llena_tarde | 2027-12-07 · 3 días · naturaleza_vistas, día 2, 10:05 Plaza de España —  [D4M A +naturaleza_vistas]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-07 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 5 días · naturaleza_vistas, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-07 · 5 días · naturaleza_vistas — naturaleza_vistas
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 3 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: se_llena_tarde | 2027-12-07 · 3 días · barrios_sabores, día 2, 10:05 Plaza de España —  [D4M A]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-07 · 3 días · barrios_sabores — barrios_sabores
-- Puente de diciembre: pago_sin_dentro | 2027-12-07 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
 - Puente de diciembre: hora_no_10 | 2027-12-07 · 5 días · barrios_sabores, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Puente de diciembre: experiencia_sin_efecto | 2027-12-07 · 5 días · barrios_sabores — barrios_sabores
 - Puente de diciembre: hora_no_10 | 2027-12-01 · 4 días · pool Cúpula de San Pedro, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
@@ -1362,9 +1144,9 @@
 - Navidad y Reyes: joya_tarde | 2027-12-18 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-18 · 7 días, día 5, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Navidad y Reyes: hora_no_10 | 2027-12-18 · 7 días · FT, día 5, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Navidad y Reyes: hora_no_10 | 2027-12-19 · 6 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: hora_no_10 | 2027-12-19 · 6 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-19 · 6 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Navidad y Reyes: hora_no_10 | 2027-12-19 · 7 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: hora_no_10 | 2027-12-19 · 7 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-19 · 7 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Navidad y Reyes: hora_no_10 | 2027-12-20 · 5 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Navidad y Reyes: hora_no_10 | 2027-12-20 · 5 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
@@ -1396,22 +1178,24 @@
 - Navidad y Reyes: hueco | 2027-12-23 · 3 días · FT, día 3, 16:25 Via dei Fori Imperiali — 48 min [D5C A]
 - Navidad y Reyes: hora_no_10 | 2027-12-23 · 4 días, día 3, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: hora_no_10 | 2027-12-23 · 5 días, día 3, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
-- Navidad y Reyes: joya_tarde | 2027-12-23 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-23 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-23 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-23 · 6 días, día 3, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: joya_tarde | 2027-12-23 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Navidad y Reyes: joya_tarde | 2027-12-23 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-23 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-23 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-23 · 7 días, día 3, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: joya_tarde | 2027-12-23 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Navidad y Reyes: fuera_de_horario | 2027-12-24 · 1 día, día 1, 14:35 Basílica de San Pedro — abierto 07:00-15:00 [D0 A]
+- Navidad y Reyes: no_cuadra | 2027-12-24 · 1 día, día 1, 14:20 Basílica de San Pedro — acaba Plaza de San Pedro a las 14:35 y hay 3 min andando [D0 A]
+- Navidad y Reyes: hueco | 2027-12-24 · 1 día, día 1, 16:20 Puente Sant'Angelo — 38 min [D0 A]
 - Navidad y Reyes: plaza_despues | 2027-12-24 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes: plaza_despues | 2027-12-24 · 1 día · FT, día 1 — Coliseo (08:00) antes que Arco de Constantino (08:25) [otro]
-- Navidad y Reyes: fuera_de_horario | 2027-12-24 · 2 días · FT, día 1, 15:30 Foro Romano y Palatino — abierto 09:00-16:30 [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
-- Navidad y Reyes: dos_visitas_grandes | 2027-12-24 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (140 min) —  [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
+- Navidad y Reyes: dos_visitas_grandes | 2027-12-24 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (130 min) —  [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
 - Navidad y Reyes: se_llena_tarde | 2027-12-24 · 3 días, día 2, 10:05 Plaza de España —  [D4M A]
-- Navidad y Reyes: tour_repite | 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
-- Navidad y Reyes: basilica_fuera | 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
+- Navidad y Reyes: tour_repite | 2027-12-24 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
+- Navidad y Reyes: basilica_fuera | 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
 - Navidad y Reyes: hueco | 2027-12-24 · 3 días · FT, día 2, 16:25 Via dei Fori Imperiali — 48 min [D5C A]
-- Navidad y Reyes: fuera_sin_vista | 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
+- Navidad y Reyes: fuera_sin_vista | 2027-12-24 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24]
 - Navidad y Reyes: hora_no_10 | 2027-12-24 · 4 días, día 2, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: joya_tarde | 2027-12-24 · 4 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 4
 - Navidad y Reyes: joya_tarde | 2027-12-24 · 4 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
@@ -1438,30 +1222,29 @@
 - Navidad y Reyes: plaza_despues | 2027-12-25 · 1 día · FT, día 1 — Puente Sant'Angelo (17:30) antes que Castillo de Sant'Angelo (17:50), viniendo de Via della Conciliazione: el monumento va primero [otro]
 - Navidad y Reyes: se_llena_tarde | 2027-12-25 · 3 días, día 1, 10:05 Plaza de España —  [D4M A]
 - Navidad y Reyes: hueco | 2027-12-25 · 3 días · FT, día 1, 16:25 Via dei Fori Imperiali — 48 min [D5C A]
+- Navidad y Reyes: joya_tarde | 2027-12-25 · 4 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 4 días, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 4 días · FT, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour+fecha:12-25]
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 5 días, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 5 días · FT, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour+fecha:12-25]
-- Navidad y Reyes: joya_tarde | 2027-12-25 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
-- Navidad y Reyes: joya_tarde | 2027-12-25 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-25 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 6 días, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: joya_tarde | 2027-12-25 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 6 días · FT, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour+fecha:12-25]
-- Navidad y Reyes: joya_tarde | 2027-12-25 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
-- Navidad y Reyes: joya_tarde | 2027-12-25 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-25 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 7 días, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +fecha:12-25]
 - Navidad y Reyes: joya_tarde | 2027-12-25 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-25 · 7 días · FT, día 1, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour+fecha:12-25]
 - Navidad y Reyes: plaza_despues | 2027-12-26 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes: tramo_largo | 2027-12-26 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
-- Navidad y Reyes: se_llena_tarde | 2027-12-26 · 3 días, día 3, 10:05 Plaza de España —  [D4M A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: se_llena_tarde | 2027-12-26 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +lunes]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 5 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 5 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-26 · 5 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 6 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 6 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-26 · 6 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 7 días, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 7 días, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-26 · 7 días · FT, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +con_free_tour]
 - Navidad y Reyes: plaza_despues | 2027-12-27 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes: tramo_largo | 2027-12-27 · 1 día · FT, día 1, 17:30 Piazza del Popolo — 26 min andando [otro]
@@ -1527,11 +1310,13 @@
 - Navidad y Reyes: joya_tarde | 2027-12-30 · 4 días, todo el viaje Fontana de Trevi — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-30 · 4 días, día 4, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-30 · 4 días · FT, día 4, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+domingo]
-- Navidad y Reyes: joya_tarde | 2027-12-30 · 5 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-30 · 5 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-30 · 5 días, todo el viaje Panteón — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-30 · 5 días, día 2, 18:55 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Navidad y Reyes: joya_tarde | 2027-12-30 · 5 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Navidad y Reyes: hueco | 2027-12-30 · 6 días, día 3, 16:25 Terraza del Pincio — 38 min [D4 A +fecha:01-01+empieza:10:00]
-- Navidad y Reyes: joya_tarde | 2027-12-30 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-30 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-30 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
 - Navidad y Reyes: se_llena_tarde | 2027-12-30 · 6 días, día 3, 10:00 Fontana de Trevi —  [D4 A +fecha:01-01+empieza:10:00]
 - Navidad y Reyes: se_llena_tarde | 2027-12-30 · 6 días, día 3, 10:50 Plaza de España —  [D4 A +fecha:01-01+empieza:10:00]
 - Navidad y Reyes: hora_no_10 | 2027-12-30 · 6 días, día 3, 18:35 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-01+empieza:10:00]
@@ -1539,7 +1324,8 @@
 - Navidad y Reyes: joya_tarde | 2027-12-30 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Navidad y Reyes: se_llena_tarde | 2027-12-30 · 6 días · FT, día 3, 10:20 Plaza de España —  [D4 A +con_free_tour+fecha:01-01]
 - Navidad y Reyes: hueco | 2027-12-30 · 7 días, día 3, 16:25 Terraza del Pincio — 38 min [D4 A +fecha:01-01+empieza:10:00]
-- Navidad y Reyes: joya_tarde | 2027-12-30 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-30 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
+- Navidad y Reyes: joya_tarde | 2027-12-30 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
 - Navidad y Reyes: se_llena_tarde | 2027-12-30 · 7 días, día 3, 10:00 Fontana de Trevi —  [D4 A +fecha:01-01+empieza:10:00]
 - Navidad y Reyes: se_llena_tarde | 2027-12-30 · 7 días, día 3, 10:50 Plaza de España —  [D4 A +fecha:01-01+empieza:10:00]
 - Navidad y Reyes: hora_no_10 | 2027-12-30 · 7 días, día 3, 18:35 Pasea y piérdete por el Tridente iluminado —  [D4 A +fecha:01-01+empieza:10:00]
@@ -1549,22 +1335,20 @@
 - Navidad y Reyes: hueco | 2027-12-31 · 1 día, día 1, 16:25 Puente Sant'Angelo — 48 min [D0 A]
 - Navidad y Reyes: plaza_despues | 2027-12-31 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
 - Navidad y Reyes: plaza_despues | 2027-12-31 · 1 día · FT, día 1 — Coliseo (08:00) antes que Arco de Constantino (08:25) [otro]
-- Navidad y Reyes: fuera_de_horario | 2027-12-31 · 2 días · FT, día 1, 15:30 Foro Romano y Palatino — abierto 09:00-16:30 [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
-- Navidad y Reyes: dos_visitas_grandes | 2027-12-31 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (140 min) —  [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
+- Navidad y Reyes: dos_visitas_grandes | 2027-12-31 · 2 días · FT, día 1 vaticano_core (95 min) + roma_antigua_core (130 min) —  [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días, día 2, 10:00 Fontana de Trevi —  [D4M A +empieza:10:00]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días, día 2, 10:50 Plaza de España —  [D4M A +empieza:10:00]
-- Navidad y Reyes: tour_repite | 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
-- Navidad y Reyes: basilica_fuera | 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
+- Navidad y Reyes: tour_repite | 2027-12-31 · 3 días · FT, día 1, 15:50 Panteón — y el Free Tour pasa por ahí [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
+- Navidad y Reyes: basilica_fuera | 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola. [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
 - Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 3 días · FT, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: fuera_sin_vista | 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes: fuera_sin_vista | 2027-12-31 · 3 días · FT, día 1, 10:45 Basílica de San Pedro — a_proposito [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31]
+- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 4
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · FT, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+domingo]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 5 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 5 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 5 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 5
@@ -1591,52 +1375,13 @@
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 7 días · FT, todo el viaje Panteón — sale por primera vez el día 5
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 7 días · FT, día 2, 10:20 Plaza de España —  [D4 A +con_free_tour+fecha:01-01]
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 7 días · FT, día 2, 18:35 Pasea y piérdete por el Tridente iluminado —  [D4 A +con_free_tour+fecha:01-01]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Coliseo 08:30, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Coliseo 08:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Coliseo 08:30, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Coliseo 08:30, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Coliseo 08:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: repetido_viaje | 2027-12-31 · 4 días · reserva Coliseo 15:30, día 2, 10:00 Boca de la Verdad — Boca de la Verdad: ya en el día 1 [D5C A +empieza:10:00]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Coliseo 15:30, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Coliseo 15:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
+- Navidad y Reyes: comida_mas_90 | 2027-12-31 · 4 días · reserva Coliseo 15:30, día 4 — 13:20: 120 min
+- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Coliseo 15:30, todo el viaje Coliseo — sale por primera vez el día 4
+- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Coliseo 15:30, todo el viaje Panteón — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Coliseo 15:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 08:00, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 11:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 13:00, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Museos Vaticanos y Capilla Sixtina 14:30, día 4, 12:15 Mirador del Janículo —  [D2 A +entrada:tarde+entrada:tarde@lunes+reserva:14:30]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Galería Borghese 10:30, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 10:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 10:30, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo+reserva:10:30]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Galería Borghese 09:00, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 09:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: se_llena_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 09:00, día 3, 12:50 Fontana de Trevi —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Navidad y Reyes: se_llena_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 09:00, día 3, 13:40 Plaza de España —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 09:00, día 3, 18:05 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:nueve+domingo+reserva:09:00]
-- Navidad y Reyes: hueco | 2027-12-31 · 4 días · reserva Galería Borghese 10:00, día 3, 16:25 Terraza del Pincio — 53 min [D4 A +entrada:diez+domingo+reserva:10:00]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Galería Borghese 10:00, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 10:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: se_llena_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 10:00, día 3, 13:15 Plaza de España —  [D4 A +entrada:diez+domingo+reserva:10:00]
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 10:00, día 3, 18:05 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:diez+domingo+reserva:10:00]
-- Navidad y Reyes: repetido_dia | 2027-12-31 · 4 días · reserva Galería Borghese 12:00, día 3, 15:00 Parque de Villa Borghese — Parque de Villa Borghese: también a las 10:30 (Parque de Villa Borghese) [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Galería Borghese 12:00, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 12:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: se_llena_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 12:00, día 3, 09:45 Plaza de España —  [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 12:00, día 3, 18:45 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:mediodia+domingo+reserva:12:00]
-- Navidad y Reyes: zigzag | 2027-12-31 · 4 días · reserva Galería Borghese 15:00, día 3, 17:20 Jardines del Pincio — vuelve junto a Piazza del Popolo [D4 A +entrada:quince+domingo+reserva:15:00]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Galería Borghese 15:00, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 15:00, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 15:00, día 3, 12:55 Parque de Villa Borghese —  [D4 A +entrada:quince+domingo+reserva:15:00]
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 15:00, día 3, 18:25 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:quince+domingo+reserva:15:00]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 4 días · reserva Galería Borghese 15:30, todo el viaje Panteón — ningún día por dentro
-- Navidad y Reyes: joya_tarde | 2027-12-31 · 4 días · reserva Galería Borghese 15:30, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Navidad y Reyes: hora_no_10 | 2027-12-31 · 4 días · reserva Galería Borghese 15:30, día 3, 18:25 Pasea y piérdete por el Tridente iluminado —  [D4 A +entrada:tarde+domingo+reserva:15:30]
 - Navidad y Reyes: joya_tarde | 2027-12-21 · 5 días · arte_museos, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
 - Navidad y Reyes: hora_no_10 | 2027-12-21 · 5 días · arte_museos, día 2, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
 - Navidad y Reyes: hueco | 2027-12-21 · 5 días · naturaleza_vistas, día 5, 16:25 Via dei Fori Imperiali — 48 min [D5C A]
@@ -1682,60 +1427,57 @@
 - Navidad y Reyes: joya_tarde | 2027-12-29 · 5 días · barrios_sabores, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-29 · 5 días · barrios_sabores, día 5, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 3 días · arte_museos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días · arte_museos, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 5 días · arte_museos, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 5 días · arte_museos, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días · naturaleza_vistas, día 2, 10:00 Fontana de Trevi —  [D4M A +naturaleza_vistas+empieza:10:00]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días · naturaleza_vistas, día 2, 10:50 Plaza de España —  [D4M A +naturaleza_vistas+empieza:10:00]
 - Navidad y Reyes: experiencia_sin_efecto | 2027-12-31 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días · naturaleza_vistas, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 5 días · naturaleza_vistas, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 5 días · naturaleza_vistas, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: experiencia_sin_efecto | 2027-12-31 · 5 días · naturaleza_vistas — naturaleza_vistas
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días · barrios_sabores, día 2, 10:00 Fontana de Trevi —  [D4M A +empieza:10:00]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días · barrios_sabores, día 2, 10:50 Plaza de España —  [D4M A +empieza:10:00]
-- Navidad y Reyes: pago_sin_dentro | 2027-12-31 · 5 días · barrios_sabores, todo el viaje Panteón — ningún día por dentro
 - Navidad y Reyes: joya_tarde | 2027-12-31 · 5 días · barrios_sabores, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 5 días · barrios_sabores, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
 - Navidad y Reyes: experiencia_sin_efecto | 2027-12-31 · 5 días · barrios_sabores — barrios_sabores
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Cúpula de San Pedro, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Trastevere, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Galería Borghese, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Castillo de Sant'Angelo, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Boca de la Verdad, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Parque de Villa Borghese, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Ojo de la Cerradura del Aventino, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Arco de Constantino, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Altar de la Patria, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Museos Capitolinos, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Termas de Caracalla, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Basílica de San Juan de Letrán, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
-- Navidad y Reyes: hora_no_10 | 2027-12-26 · 5 días · pool Ojo de la Cerradura del Aventino+Arco de Constantino, día 3, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Cúpula de San Pedro, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Trastevere, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Galería Borghese, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Castillo de Sant'Angelo, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Boca de la Verdad, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Parque de Villa Borghese, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Ojo de la Cerradura del Aventino, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Arco de Constantino, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Altar de la Patria, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Museos Capitolinos, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Termas de Caracalla, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 4 días · pool Basílica de San Juan de Letrán, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
+- Navidad y Reyes: hora_no_10 | 2027-12-26 · 5 días · pool Ojo de la Cerradura del Aventino+Arco de Constantino, día 1, 18:45 Pasea y piérdete entre las luces del Tridente —  [D4 A +domingo]
 
 ## Una línea por regla
 
-- R-1: 29 fallos (fuera_de_horario 3, v4_fuera_de_horario 13, cerrada_a_su_hora 13) — Nunca un sitio cerrado. (La prueba mira también los viajes sin fechas (horario de laborable).)
-- R-2: 1 fallos (hora_fija_movida 1) — Una hora fija no se mueve ni se quita. (El orden de recorte y el aviso de la campana no se miran aquí.)
-- R-3: 1 fallos (hora_fija_movida 1) — El viajero manda. (Una reserva por franja en la prueba; el empate pool/imprescindible sale como información (pago_cedido_al_pool).)
-- R-4: 59 fallos (pago_sin_dentro 57, basilica_fuera 2) — Los imprescindibles salen siempre
-- R-5: 130 fallos (repetido_dia 27, repetido_viaje 103) — Un sitio, una vez en el viaje y una vez al día (por id)
+- R-1: 0 fallos — Nunca un sitio cerrado. (La prueba mira también los viajes sin fechas (horario de laborable).)
+- R-2: 0 fallos — Una hora fija no se mueve ni se quita. (El orden de recorte y el aviso de la campana no se miran aquí.)
+- R-3: 0 fallos — El viajero manda. (Una reserva por franja en la prueba; el empate pool/imprescindible sale como información (pago_cedido_al_pool).)
+- R-4: 3 fallos (pago_sin_dentro 1, basilica_fuera 2) — Los imprescindibles salen siempre
+- R-5: 2 fallos (repetido_viaje 2) — Un sitio, una vez en el viaje y una vez al día (por id)
 - R-6: 0 fallos — Las nocturnas. («Una nocturna cada noche» no se mira.)
 - R-7: 0 fallos — Un barrio, una vez al día
 - R-8: 2 fallos (tour_repite 2) — El Free Tour sustituye lo que enseña
-- R-9: 481 fallos (joya_tarde 481) — Lo mejor, primero
+- R-9: 584 fallos (joya_tarde 584) — Lo mejor, primero
 - R-10: 2 fallos (dos_visitas_grandes 2) — Cada día tiene un sentido
 - R-11: SIN COMPROBACIÓN en esta prueba — Según los días del viaje. Los viajes de 1 día y sin fechas ya están en la prueba, pero ninguna línea mira «1 día, todo por fuera».
 - R-12: 0 fallos — El pool entra primero. (El orden y el motivo de «No incluido» no se miran.)
-- R-13: 568 fallos (experiencia_sin_efecto 568) — Una experiencia añade algo que se nota
-- R-14: 146 fallos (restaurante_repetido 146) — La comida, siempre. (Los 15 min andando y «abierto ese día» no se miran aquí.)
+- R-13: 550 fallos (experiencia_sin_efecto 550) — Una experiencia añade algo que se nota
+- R-14: 166 fallos (comida_mas_90 20, restaurante_repetido 146) — La comida, siempre. (Los 15 min andando y «abierto ese día» no se miran aquí.)
 - R-15: 0 fallos — La tarde acaba donde se cena. (Los 15 min a la cena y la hora mínima (19:30 / 20:30) no se miran aquí.)
 - R-16: 0 fallos — La tarde va según la luz
-- R-17: 868 fallos (se_llena_tarde 868) — A primera hora, lo que luego se llena
+- R-17: 760 fallos (se_llena_tarde 760) — A primera hora, lo que luego se llena
 - R-18: 374 fallos (plaza_despues 374) — Primero el acceso, si se llega por su lado
-- R-19: 371 fallos (zigzag 10, tramo_largo 361) — Sin ir y volver
-- R-20: 570 fallos (hueco 491, libre_largo 79) — Los huecos
-- R-21: 128 fallos (verano_al_sol 128) — La época del año. (El «iluminado» solo con foto de noche se mira con la regla 5 y la 6.)
-- R-22: 3489 fallos (hora_no_10 3367, no_cuadra 122) — Horas de 10 en 10
+- R-19: 361 fallos (tramo_largo 361) — Sin ir y volver
+- R-20: 481 fallos (hueco 469, libre_largo 12) — Los huecos
+- R-21: 129 fallos (verano_al_sol 129) — La época del año. (El «iluminado» solo con foto de noche se mira con la regla 5 y la 6.)
+- R-22: 2997 fallos (hora_no_10 2916, no_cuadra 81) — Horas de 10 en 10
 - R-23: 0 fallos — Mínimos y máximos
 - R-24: 0 fallos — Qué es una parada
 - R-25: 2 fallos (fuera_sin_vista 2) — Por fuera, solo donde se ve algo

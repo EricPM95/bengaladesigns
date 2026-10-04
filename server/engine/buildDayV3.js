@@ -151,6 +151,11 @@ function quarterHourStops(stops) {
     }
     // (Y nunca después de la última entrada: el redondeo no manda un sitio de 17:30 a 17:40 si la última entrada es a las 17:30.)
     if (stop._last_entry != null && at > stop._last_entry && start <= stop._last_entry) at = Math.max(Math.floor(start / DURATION_STEP) * DURATION_STEP, Math.floor(stop._last_entry / DURATION_STEP) * DURATION_STEP)
+    // (Ni después de que cierre: el redondeo hacia arriba no manda un sitio de 15:18 a 15:30 si cierra a las 16:30 y dura 65 min.)
+    if (stop.visit_mode !== 'fuera' && stop.schedule && !(stop.fixed_start || stop._fixed)) {
+      const session = parseHoursSessions(stop.schedule).find((candidate) => start >= candidate.open && start <= candidate.close)
+      if (session && at + lengthOf(stop) > session.close && start + lengthOf(stop) <= session.close) at = Math.max(Math.floor(start / DURATION_STEP) * DURATION_STEP, Math.floor((session.close - lengthOf(stop)) / DURATION_STEP) * DURATION_STEP)
+    }
     shown.push(at)
   })
   return stops.map((stop, index) => {
