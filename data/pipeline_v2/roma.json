@@ -691,6 +691,7 @@
             12.4596
           ],
           "duration_minutes": 40,
+          "min_max": 45,
           "tip": "La mejor panorámica de Roma al atardecer. Llega 20 min antes de la puesta de sol. Hay un puesto de granita perfecto."
         },
         {
@@ -904,6 +905,7 @@
         12.4922
       ],
       "duration_minutes": 90,
+      "min_max": 120,
       "type": "interior",
       "group": "roma_antigua_core",
       "group_order": 2,
@@ -1044,6 +1046,7 @@
         12.4853
       ],
       "duration_minutes": 105,
+      "min_max": 150,
       "type": "interior",
       "group": "roma_antigua_core",
       "group_order": 3,
@@ -1188,6 +1191,7 @@
         12.4905
       ],
       "duration_minutes": 15,
+      "min_max": 25,
       "type": "exterior",
       "group": "roma_antigua_core",
       "group_order": 1,
@@ -1219,6 +1223,7 @@
         12.4815
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "type": "exterior",
       "tip": "Cola de 10-15 min habitual. Está en el pórtico de Santa Maria in Cosmedin — la iglesia merece un vistazo rápido.",
       "photo_tip": "Mete la mano en la boca y pon cara de susto — la foto clásica.",
@@ -1251,6 +1256,7 @@
         12.4853
       ],
       "duration_minutes": 20,
+      "min_max": 40,
       "type": "exterior",
       "tip": "Espacio abierto donde estaban las carreras de cuadrigas. Perfecto para un descanso si vienes del Palatino.",
       "photo_tip": "Panorámica del valle con el Palatino al fondo — se intuye la forma del antiguo circo.",
@@ -1282,6 +1288,7 @@
         12.4833
       ],
       "duration_minutes": 30,
+      "min_max": 45,
       "type": "exterior",
       "night_experience": true,
       "tip": "Ven a primera hora (07:30-08:00) o de noche (22:00+) para verla sin multitudes. De día es un caos. Tira la moneda con la mano derecha por encima del hombro izquierdo.",
@@ -1319,6 +1326,7 @@
         12.4769
       ],
       "duration_minutes": 30,
+      "min_max": 45,
       "type": "interior",
       "group": "centro_historico_walk",
       "group_order": 1,
@@ -1469,6 +1477,7 @@
         12.4825
       ],
       "duration_minutes": 30,
+      "min_max": 45,
       "type": "exterior",
       "night_experience": true,
       "tip": "Prohibido sentarse en los escalones: te pueden multar. Sube hasta Trinità dei Monti para la vista. En primavera los escalones se cubren de azaleas.",
@@ -1510,6 +1519,7 @@
         12.4764
       ],
       "duration_minutes": 30,
+      "min_max": 40,
       "type": "exterior",
       "tip": "Las iglesias gemelas enmarcan Via del Corso. Sube al Pincio para la mejor vista de la plaza con la cúpula de San Pedro al fondo.",
       "photo_tip": "Desde la terraza del Pincio al atardecer — la cúpula de San Pedro recortada contra el cielo dorado.",
@@ -1543,6 +1553,7 @@
         12.4767
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "type": "exterior",
       "tip": "Las ruinas donde asesinaron a Julio César. Colonia de gatos entre las columnas romanas — parada rápida pero fotogénica.",
       "photo_tip": "Los gatos tumbados entre las ruinas romanas — una imagen solo posible en Roma.",
@@ -1571,6 +1582,7 @@
         12.48
       ],
       "duration_minutes": 30,
+      "min_max": 30,
       "type": "exterior",
       "tip": "La calle comercial principal de Roma. Conéctala caminando entre Piazza del Popolo y el centro — paseo + shopping.",
       "tags": [
@@ -1598,6 +1610,7 @@
         12.4536
       ],
       "duration_minutes": 180,
+      "min_max": 240,
       "type": "interior",
       "group": "vaticano_core",
       "group_order": 1,
@@ -1729,6 +1742,7 @@
         12.4555
       ],
       "duration_minutes": 75,
+      "min_max": 90,
       "type": "interior",
       "is_free_access": true,
       "group": "vaticano_core",
@@ -1879,6 +1893,7 @@
         12.4573
       ],
       "duration_minutes": 30,
+      "min_max": 40,
       "type": "exterior",
       "group": "vaticano_core",
       "group_order": 2,
@@ -1920,6 +1935,7 @@
         12.4601
       ],
       "duration_minutes": 30,
+      "min_max": 30,
       "type": "exterior",
       "tip": "La avenida monumental que conecta Plaza de San Pedro con Castillo de Sant'Angelo. Paseo icónico con la cúpula de San Pedro enmarcada al fondo. Mussolini la mandó construir demoliendo el barrio medieval — hoy es la perspectiva más famosa del Vaticano.",
       "photo_tip": "Desde el extremo de Castillo de Sant'Angelo mirando hacia San Pedro — la cúpula centrada entre los edificios es la postal clásica.",
@@ -1946,6 +1962,7 @@
         12.4663
       ],
       "duration_minutes": 75,
+      "min_max": 90,
       "type": "interior",
       "tip": "La terraza superior tiene una de las mejores vistas de Roma. El puente de los ángeles (Puente Sant'Angelo) de Bernini es precioso — crúzalo sí o sí. Calcula 1h dentro + 15 min en el puente.",
       "photo_tip": "Desde Puente Sant'Angelo mirando al castillo al atardecer. Desde la terraza del castillo, panorámica del Tíber con San Pedro al fondo.",
@@ -2058,6 +2075,7 @@
         12.4921
       ],
       "duration_minutes": 120,
+      "min_max": 120,
       "type": "interior",
       "closed_on": [
         "lunes"
@@ -2133,6 +2151,7 @@
         12.4856
       ],
       "duration_minutes": 90,
+      "min_max": 120,
       "type": "exterior",
       "tip": "El pulmón verde de Roma — para recorrerlo con calma, no solo cruzarlo. Piazza di Siena (el hipódromo ovalado de arena) suele tener partidos de polo o carreras improvisadas. El lago con el Tempio di Esculapio (templete neoclásico en una islita) es la estampa más fotografiada del parque, con botes de remo. Piérdete por los senderos y jardines — hay rincones tranquilos lejos de las rutas turísticas. El Bioparco (zoo) está dentro del propio parque, ideal si viajas con niños. Desde la terraza del Pincio (también dentro del parque) tienes la vista clásica de Roma con San Pedro.",
       "tags": [
@@ -2222,6 +2241,7 @@
         12.4853
       ],
       "duration_minutes": 120,
+      "min_max": 180,
       "type": "exterior",
       "tip": "El zoo de Roma, dentro de Villa Borghese — más de 200 especies en un recorrido arbolado y tranquilo. Ideal con niños, pero también un buen respiro verde para cualquiera. Calcula bien el tiempo si lo combinas con el resto del parque, es su propia visita.",
       "tags": [
@@ -2312,6 +2332,7 @@
         12.4821
       ],
       "duration_minutes": 90,
+      "min_max": 120,
       "type": "interior",
       "tip": "Arte italiano moderno y contemporáneo (Canova, De Chirico, Modigliani, algún Van Gogh y Monet) en un palacio tranquilo al borde de Villa Borghese — mucho menos masificado que los Museos Vaticanos o la Galería Borghese, y sin reserva obligatoria.",
       "tags": [
@@ -2355,6 +2376,7 @@
         12.4833
       ],
       "duration_minutes": 60,
+      "min_max": 75,
       "schedule": "09:30-19:30",
       "last_entry": "18:45",
       "is_free_access": true,
@@ -2420,6 +2442,7 @@
         12.4657
       ],
       "duration_minutes": 15,
+      "min_max": 50,
       "type": "exterior",
       "tip": "El puente de los ángeles de Bernini, justo saliendo de Castillo de Sant'Angelo — crúzalo despacio, cada ángel lleva un símbolo de la Pasión.",
       "photo_tip": "Desde el centro del puente, el castillo detrás y la cúpula de San Pedro asomando a lo lejos.",
@@ -2462,6 +2485,7 @@
         12.4776
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "type": "exterior",
       "tip": "La única isla del Tíber en Roma, unida por dos de los puentes más antiguos de la ciudad (Ponte Fabricio y Ponte Cestio). Rincón tranquilo, poca gente.",
       "photo_tip": "Desde Ponte Fabricio (el puente más antiguo de Roma, año 62 a.C.) mirando hacia la basílica de San Bartolomeo en la isla.",
@@ -2490,6 +2514,7 @@
         12.4857
       ],
       "duration_minutes": 20,
+      "min_max": 45,
       "type": "exterior",
       "tip": "La avenida que conecta Plaza Venecia con el Coliseo, con los Foros Imperiales a ambos lados — el paseo que Mussolini abrió sobre las ruinas.",
       "photo_tip": "Mirando hacia el Coliseo al fondo de la avenida — la postal más repetida de Roma, y con razón.",
@@ -2522,6 +2547,7 @@
         12.4723
       ],
       "duration_minutes": 25,
+      "min_max": 40,
       "type": "exterior",
       "tip": "Plaza con mercado de flores y fruta por la mañana, terrazas y ambiente animado por la tarde/noche. Estatua de Giordano Bruno en el centro.",
       "photo_tip": "Desde una de las terrazas con la estatua de Bruno y las fachadas coloridas de fondo.",
@@ -2553,6 +2579,7 @@
         12.4602
       ],
       "duration_minutes": 20,
+      "min_max": 45,
       "type": "exterior",
       "tip": "La calle con más carácter del barrio del Vaticano — adoquines, macetas en los balcones y ambiente de pueblo a dos pasos de la plaza de San Pedro.",
       "photo_tip": "La propia calle, con sus fachadas bajas y colgantes de flores — el contraste con la grandiosidad de San Pedro a la vuelta de la esquina.",
@@ -2575,6 +2602,7 @@
       "id": "plaza_venecia",
       "name": "Plaza Venecia",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "roma_antigua",
       "coordinates": [
         41.8955,
@@ -2610,6 +2638,7 @@
       "id": "mercados_de_trajano",
       "name": "Mercados de Trajano",
       "duration_minutes": 60,
+      "min_max": 75,
       "zone": "roma_antigua",
       "coordinates": [
         41.8953,
@@ -2659,6 +2688,7 @@
       "name": "Cúpula de San Pedro",
       "por_fuera": "Hoy no se sube, pero se ve mejor de lejos: desde la plaza, la fachada la tapa en parte. Échate atrás por Via della Conciliazione y la verás entera.",
       "duration_minutes": 45,
+      "min_max": 60,
       "zone": "vaticano",
       "coordinates": [
         41.9021,
@@ -2745,6 +2775,7 @@
         "06-29"
       ],
       "duration_minutes": 30,
+      "min_max": 40,
       "zone": "centro_historico",
       "coordinates": [
         41.8958,
@@ -2799,6 +2830,7 @@
         "06-29"
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "centro_historico",
       "coordinates": [
         41.8997,
@@ -2858,6 +2890,7 @@
       "id": "ara_pacis",
       "name": "Ara Pacis",
       "duration_minutes": 45,
+      "min_max": 60,
       "zone": "centro_historico",
       "coordinates": [
         41.9061,
@@ -2949,6 +2982,7 @@
       "id": "barrio_judio",
       "name": "Barrio Judío",
       "duration_minutes": 30,
+      "min_max": 60,
       "zone": "centro_historico",
       "coordinates": [
         41.8922,
@@ -2985,6 +3019,7 @@
         "06-29"
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "centro_historico",
       "coordinates": [
         41.8977,
@@ -3041,6 +3076,7 @@
       "name": "Iglesia de San Ignacio de Loyola",
       "por_fuera": "Hoy la ves por fuera, y la plaza es lo mejor: Piazza di Sant'Ignazio parece un decorado de teatro, con sus edificios curvos del siglo XVIII mirando a la fachada.",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "centro_historico",
       "coordinates": [
         41.8989,
@@ -3083,6 +3119,7 @@
       "id": "elefantino_de_bernini",
       "name": "Elefantino de Bernini",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "centro_historico",
       "coordinates": [
         41.898,
@@ -3118,6 +3155,7 @@
       "id": "fuente_de_las_tortugas",
       "name": "Fuente de las Tortugas",
       "duration_minutes": 15,
+      "min_max": 20,
       "zone": "centro_historico",
       "coordinates": [
         41.8938,
@@ -3147,6 +3185,7 @@
       "id": "fuente_del_triton",
       "name": "Fuente del Tritón",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "centro_historico",
       "coordinates": [
         41.9036,
@@ -3176,6 +3215,7 @@
       "id": "plaza_colonna",
       "name": "Plaza Colonna",
       "duration_minutes": 15,
+      "min_max": 20,
       "zone": "centro_historico",
       "coordinates": [
         41.9011,
@@ -3204,6 +3244,7 @@
       "id": "via_condotti",
       "name": "Via Condotti",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "centro_historico",
       "coordinates": [
         41.9051,
@@ -3235,6 +3276,7 @@
       "id": "plaza_farnese",
       "name": "Plaza Farnese",
       "duration_minutes": 10,
+      "min_max": 20,
       "zone": "centro_historico",
       "coordinates": [
         41.8955,
@@ -3265,6 +3307,7 @@
       "id": "plaza_del_campidoglio",
       "name": "Plaza del Campidoglio",
       "duration_minutes": 20,
+      "min_max": 45,
       "zone": "roma_antigua",
       "coordinates": [
         41.8933,
@@ -3305,6 +3348,7 @@
       "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
       "duration_minutes": 120,
+      "min_max": 150,
       "zone": "roma_antigua",
       "coordinates": [
         41.8933,
@@ -3401,6 +3445,7 @@
         "06-29"
       ],
       "duration_minutes": 45,
+      "min_max": 60,
       "zone": "roma_antigua",
       "coordinates": [
         41.8894,
@@ -3477,6 +3522,7 @@
       "id": "iglesia_de_san_pietro_in_vincoli",
       "name": "Iglesia de San Pietro in Vincoli",
       "duration_minutes": 20,
+      "min_max": 30,
       "schedule": "08:00-12:30, 15:00-18:00",
       "is_free_access": true,
       "zone": "roma_antigua",
@@ -3570,6 +3616,7 @@
       "id": "domus_aurea",
       "name": "Domus Aurea",
       "duration_minutes": 75,
+      "min_max": 90,
       "zone": "roma_antigua",
       "coordinates": [
         41.8913,
@@ -3618,6 +3665,7 @@
       "id": "termas_de_caracalla",
       "name": "Termas de Caracalla",
       "duration_minutes": 60,
+      "min_max": 90,
       "zone": "aventino",
       "coordinates": [
         41.8794,
@@ -3776,6 +3824,7 @@
       "id": "jardin_de_los_naranjos",
       "name": "Jardín de los Naranjos",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "aventino",
       "coordinates": [
         41.8851,
@@ -3878,6 +3927,7 @@
       "id": "basilica_de_santa_maria_la_mayor",
       "name": "Basílica de Santa María la Mayor",
       "duration_minutes": 30,
+      "min_max": 40,
       "schedule": "07:00-19:00",
       "last_entry": "18:30",
       "is_free_access": true,
@@ -3926,6 +3976,7 @@
       "id": "columna_de_trajano",
       "name": "Columna de Trajano",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "roma_antigua",
       "coordinates": [
         41.8958,
@@ -3956,6 +4007,7 @@
       "id": "teatro_de_marcelo",
       "name": "Teatro de Marcelo",
       "duration_minutes": 15,
+      "min_max": 20,
       "zone": "roma_antigua",
       "coordinates": [
         41.8919,
@@ -3988,6 +4040,7 @@
       "id": "ojo_de_la_cerradura_del_aventino",
       "name": "Ojo de la Cerradura del Aventino",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "aventino",
       "coordinates": [
         41.8829,
@@ -4026,6 +4079,7 @@
       "id": "piramide_cestia",
       "name": "Pirámide Cestia",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "testaccio",
       "coordinates": [
         41.8764,
@@ -4062,6 +4116,7 @@
         "06-29"
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "schedule": "08:00-12:00, 16:00-18:00",
       "is_free_access": true,
       "zone": "roma_antigua",
@@ -4114,6 +4169,7 @@
       "id": "iglesia_de_santa_maria_in_trastevere",
       "name": "Iglesia de Santa Maria in Trastevere",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "trastevere",
       "coordinates": [
         41.8894,
@@ -4188,6 +4244,7 @@
         "06-29"
       ],
       "duration_minutes": 45,
+      "min_max": 60,
       "zone": "trastevere",
       "coordinates": [
         41.8935,
@@ -4235,6 +4292,7 @@
         12.4709
       ],
       "duration_minutes": 15,
+      "min_max": 50,
       "type": "exterior",
       "tip": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
       "photo_tip": "Desde el centro del puente, mirando río arriba: la cúpula de San Pedro al fondo.",
@@ -4261,6 +4319,7 @@
       "id": "plaza_trilussa",
       "name": "Plaza Trilussa",
       "duration_minutes": 15,
+      "min_max": 20,
       "zone": "trastevere",
       "coordinates": [
         41.8914,
@@ -4294,6 +4353,7 @@
       "id": "terraza_del_pincio",
       "name": "Terraza del Pincio",
       "duration_minutes": 20,
+      "min_max": 50,
       "zone": "villa_borghese",
       "coordinates": [
         41.9111,
@@ -4350,6 +4410,7 @@
         12.5057
       ],
       "duration_minutes": 30,
+      "min_max": 40,
       "type": "interior",
       "is_free_access": true,
       "tip": "Es la catedral de Roma, no San Pedro — aquí es donde el Papa oficia como obispo de la ciudad. Las doce estatuas colosales de los apóstoles flanquean la nave central. El claustro cosmatesco se visita aparte.",
@@ -4396,6 +4457,7 @@
         12.508
       ],
       "duration_minutes": 20,
+      "min_max": 30,
       "type": "exterior",
       "tip": "No es un barrio entero, son dos manzanas: entra por el arco de Via Dora y busca la Fuente de las Ranas. Se ve completo en veinte minutos y casi nunca hay nadie.",
       "description": "Un delirio arquitectónico de los años veinte — medieval, art nouveau y barroco mezclados en un conjunto que no se parece a nada más en Roma.",
@@ -4430,6 +4492,7 @@
         12.4751
       ],
       "duration_minutes": 40,
+      "min_max": 60,
       "type": "interior",
       "is_free_access": true,
       "tip": "Mercado de barrio de verdad, no de postal. Los puestos de comida preparada son el motivo real para venir — se come de pie y rápido. Cierra a media tarde.",
@@ -4479,6 +4542,7 @@
         12.4808
       ],
       "duration_minutes": 60,
+      "min_max": 90,
       "type": "interior",
       "tip": "Sigue siendo la casa de la familia y se nota: la audioguía la narra un descendiente. La Galería de los Espejos y el retrato de Inocencio X de Velázquez son la razón de venir.",
       "description": "Una colección privada intacta en pleno Via del Corso, con las salas tal como estaban — cuadros apilados del suelo al techo en vez de colgados de uno en uno.",
@@ -4549,6 +4613,7 @@
         12.5138
       ],
       "duration_minutes": 90,
+      "min_max": 180,
       "type": "exterior",
       "tip": "Ve en domingo si puedes: cierran al tráfico y el adoquinado original se queda para peatones y bicis. Hay alquiler de bicicletas junto a la entrada del parque.",
       "description": "La calzada romana mejor conservada, con su empedrado original entre pinos, tumbas y campo abierto. Empieza a las afueras y se aleja de la ciudad kilómetro a kilómetro.",
@@ -4583,6 +4648,7 @@
         12.5108
       ],
       "duration_minutes": 45,
+      "min_max": 60,
       "type": "interior",
       "tip": "Solo se entra con visita guiada y salen cada pocos minutos en varios idiomas. Hay veinte kilómetros de galerías en varios niveles; se recorre una parte pequeña. Lleva algo de abrigo, abajo hace fresco todo el año.",
       "description": "El cementerio subterráneo más grande de Roma y el lugar donde se enterró a buena parte de los primeros papas, excavado en toba blanda a lo largo de cuatro niveles.",
@@ -4652,6 +4718,7 @@
         12.48
       ],
       "duration_minutes": 25,
+      "min_max": 40,
       "type": "exterior",
       "is_free_access": true,
       "tip": "Aquí están las tumbas de Keats y Shelley, y una colonia de gatos que vive entre los cipreses. La Pirámide Cestia queda justo al lado, se ven juntos.",
@@ -4778,6 +4845,7 @@
       "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "trastevere",
       "coordinates": [
         41.8886,
@@ -4831,6 +4899,7 @@
       "id": "fontana_dellacqua_paola",
       "name": "Fontana dell'Acqua Paola",
       "duration_minutes": 15,
+      "min_max": 20,
       "zone": "trastevere",
       "coordinates": [
         41.8881,
@@ -4873,6 +4942,7 @@
         "06-29"
       ],
       "duration_minutes": 30,
+      "min_max": 40,
       "zone": "trastevere",
       "coordinates": [
         41.8876,
@@ -4932,6 +5002,7 @@
       "id": "trastevere",
       "name": "Trastevere",
       "duration_minutes": 45,
+      "min_max": 90,
       "zone": "trastevere",
       "coordinates": [
         41.8893,
@@ -4963,6 +5034,7 @@
       "id": "monti",
       "name": "Monti",
       "duration_minutes": 40,
+      "min_max": 90,
       "zone": "roma_antigua",
       "coordinates": [
         41.8953,
@@ -4999,6 +5071,7 @@
         "06-29"
       ],
       "duration_minutes": 30,
+      "min_max": 40,
       "zone": "villa_borghese",
       "coordinates": [
         41.9115,
@@ -5099,6 +5172,7 @@
         "06-29"
       ],
       "duration_minutes": 15,
+      "min_max": 20,
       "zone": "centro_historico",
       "coordinates": [
         41.9063,
@@ -5159,6 +5233,7 @@
       "id": "via_veneto",
       "name": "Via Veneto",
       "duration_minutes": 10,
+      "min_max": 20,
       "zone": "centro_historico",
       "coordinates": [
         41.9078,
@@ -5190,6 +5265,7 @@
       "id": "via_del_babuino",
       "name": "Via del Babuino",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "centro_historico",
       "coordinates": [
         41.908,
@@ -5222,6 +5298,7 @@
       "id": "via_margutta",
       "name": "Via Margutta",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "centro_historico",
       "coordinates": [
         41.9089,
@@ -5253,6 +5330,7 @@
       "id": "porta_pinciana",
       "name": "Porta Pinciana",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "villa_borghese",
       "coordinates": [
         41.9087,
@@ -5281,6 +5359,7 @@
       "id": "jardines_del_pincio",
       "name": "Jardines del Pincio",
       "duration_minutes": 30,
+      "min_max": 60,
       "zone": "villa_borghese",
       "coordinates": [
         41.9121,
@@ -5317,6 +5396,7 @@
       "titulo_parada": "Piazza Navona y su mercadillo navideño",
       "texto_parada": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa.",
       "duration_minutes": 45,
+      "min_max": 90,
       "zone": "centro_historico",
       "coordinates": [
         41.8992,
@@ -5350,6 +5430,7 @@
       "id": "100_presepi_in_vaticano",
       "name": "100 Presepi in Vaticano",
       "duration_minutes": 20,
+      "min_max": 30,
       "zone": "vaticano",
       "coordinates": [
         41.9022,
@@ -5382,6 +5463,7 @@
       "id": "santo_bambino_de_aracoeli",
       "name": "Santo Bambino de Aracoeli",
       "duration_minutes": 10,
+      "min_max": 15,
       "zone": "roma_antigua",
       "coordinates": [
         41.8939,
@@ -5415,6 +5497,7 @@
       "name": "Luces de Navidad del Tridente",
       "titulo_parada": "Via del Corso, Condotti, Babuino y Margutta, con sus luces de Navidad",
       "duration_minutes": 40,
+      "min_max": 60,
       "zone": "centro_historico",
       "coordinates": [
         41.9043,
@@ -8753,8 +8836,7 @@
         },
         {
           "lugar": "Quartiere Coppedè",
-          "min": 30,
-          "zona": "villa_borghese"
+          "min": 30
         }
       ],
       "naturaleza_vistas": [
@@ -8787,6 +8869,7 @@
         }
       ]
     },
+    "noche_especial": { "_nota": "Fechas con una noche propia (REGLAS_RUTAS 42): una sola parada. Nochebuena, la Fontana de Trevi; en Nochevieja, una sola, la que toque.", "12-24": { "noche": "Fontana de Trevi", "maximo": 1 }, "12-31": { "maximo": 1 } },
     "noche_limite": { "_nota": "La última nocturna empieza como tarde a esta hora (REGLAS_RUTAS 15); en julio y agosto, más tarde.", "hora": "23:00", "meses": { "7": "23:30", "8": "23:30" } },
     "se_llenan": ["Fontana de Trevi", "Plaza de España"],
     "sitios_extra": {

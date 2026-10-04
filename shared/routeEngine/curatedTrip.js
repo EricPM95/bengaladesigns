@@ -62,6 +62,8 @@ const FILL_LEG_MAX = 15
 /** El máximo de una parada de paseo: el suyo (`max_minutos_paseo`: la Via Appia), 45 una avenida, 90 un parque o un barrio. */
 export function paseoMaxOf(place) {
   const tags = new Set(place?.tags ?? [])
+  // (REGLAS_RUTAS 38: cada sitio tiene su máximo en los datos, `min_max`; estirarlo nunca lo pasa.)
+  if (place?.min_max != null) return place.min_max
   if (place?.max_minutos_paseo != null) return place.max_minutos_paseo
   if (tags.has('calle')) return 45
   if (tags.has('parque') || tags.has('barrio') || tags.has('paseo')) return 90

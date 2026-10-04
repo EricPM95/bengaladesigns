@@ -91,6 +91,8 @@ function stretchRoom(stop, place, hours, { ignoreWalkMax = false } = {}) {
   let room = Infinity
   const max = ignoreWalkMax ? null : paseoMaxOf(place)
   if (max != null) room = Math.min(room, max - (stop.duration_minutes ?? 0))
+  // (El máximo de cada sitio, `min_max`, no se pasa nunca, ni siquiera estirando para llenar un hueco: REGLAS_RUTAS 38.)
+  if (place?.min_max != null) room = Math.min(room, place.min_max - (stop.duration_minutes ?? 0))
   if (stop.max_minutes != null) room = Math.min(room, stop.max_minutes - (stop.duration_minutes ?? 0))
   const schedule = place ? effectiveSchedule(place, hours ?? {}) : null
   const close = schedule ? parseClosingMinutes(schedule) : null
@@ -280,14 +282,15 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
     }
     // Más de 30 min: un sitio que pille de camino y valga la pena; si no lo hay, el paseo de la zona. Antes del atardecer, directo al paseo del mirador.
     // 1. Un sitio de camino, como parada.
-    const idea = (entry.suggestions ?? []).find((item) => placeByName.has(item.name)) ?? null
+    // (Una calle no es una parada, REGLAS_RUTAS 24: no se usa para llenar un hueco.)
+    const idea = (entry.suggestions ?? []).find((item) => placeByName.has(item.name) && !(placeByName.get(item.name).tags ?? []).includes('calle')) ?? null
     const ideaPlace = idea ? placeByName.get(idea.name) : null
     if (ideaPlace && Array.isArray(ideaPlace.coordinates) && !sunsetNext) {
       const walkIn = leg(fromCoords, ideaPlace.coordinates)
       const walkOut = leg(ideaPlace.coordinates, toCoords)
       let start = ceil5(fromEnd + walkIn)
       // (Lo que sobra del hueco se lo lleva el sitio, hasta su máximo de paseo: una calle, 45 min.)
-      let minutes = Math.min(floor5(toStart - start - walkOut), Math.max(ideaPlace.duration_minutes ?? 30, paseoMaxOf(ideaPlace) ?? 30, 30))
+      let minutes = Math.min(floor5(toStart - start - walkOut), Math.min(Math.max(ideaPlace.duration_minutes ?? 30, paseoMaxOf(ideaPlace) ?? 30, 30), ideaPlace.min_max ?? Infinity))
       // Nunca pasada la hora de cierre de ese día (la Minerva, los sábados, cierra a las 19:00): se recorta hasta el cierre, y si no queda un mínimo, otro sitio.
       const closing = parseClosingMinutes(effectiveSchedule(ideaPlace, tripDay.hours ?? {}))
       if (closing != null && closing < 24 * 60) minutes = Math.min(minutes, floor5(closing - start))

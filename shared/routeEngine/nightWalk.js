@@ -297,8 +297,9 @@ export function timeChain(entries, start, maxMinutes = Infinity, lastStart = NIG
   let cursor = start
   for (const [index, entry] of entries.entries()) {
     const at = index === 0 ? cursor : roundUpToFive(cursor + walkMinutes(coordsOf(entries[index - 1]), coordsOf(entry)))
-    if (at > lastStart) break
     const duration = Math.min(durationOf(entry, index), maxMinutes)
+    // REGLAS_RUTAS 41: una nocturna que acabaría después de la hora límite de la noche (`noche_limite`) se quita; no se empuja ni se recorta otra cosa.
+    if (Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
     timed.push({ entry, start: at, duration })
     cursor = at + duration
   }

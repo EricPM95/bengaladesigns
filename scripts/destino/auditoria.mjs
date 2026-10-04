@@ -214,7 +214,7 @@ export function auditarViaje(D, days, options = {}) {
     if (tourCfg && tourStop) {
       for (const stop of dayStops) {
         const name = nameOf(stop)
-        if (!(tourCfg.covers ?? []).includes(name) || stop.pass_through) continue
+        if (!(tourCfg.covers ?? []).includes(name) || stop.pass_through || stop.is_night_experience || stop.night_view) continue
         if (t2m(stop.suggested_time) + (stop.duration_minutes ?? 0) <= t2m(tourStop.suggested_time)) continue
         const place = byName.get(name)
         const inside = place?.type === 'interior' && stop.visit_mode !== 'fuera'

@@ -9,7 +9,7 @@ import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
-import { TIPOS_REGLAS, auditarReglas } from './auditoriaReglas.mjs'
+import { TIPOS_REGLAS, auditarReglas, auditarRestaurantes } from './auditoriaReglas.mjs'
 import { REGLAS_PRUEBA } from './reglasPrueba.mjs'
 import { readFileSync, readdirSync } from 'node:fs'
 import { tituloQueNoSeCumple } from './textChecks.mjs'
@@ -72,6 +72,8 @@ const add = (tipo, where, detail) => {
   examples.set(tipo, list)
   if (args.volcar === tipo || args.volcar === 'todos') dumped.push(`${args.volcar === 'todos' ? `${tipo} | ` : ''}${where}${detail ? ` — ${detail}` : ''}`)
 }
+// B.4: la zona de cada restaurante contra sus coordenadas (una sola vez, no por viaje).
+for (const caso of auditarRestaurantes(D)) add(caso.tipo, caso.donde, caso.detalle)
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const hh = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 const t2m = (t) => {
@@ -132,7 +134,7 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null 
     tally(caso.tipo, n ? keyOf(n) : 'viaje')
   }
   // Las reglas 2, 9, 10, 17, 21, 22 y 25 (auditoriaReglas.mjs).
-  for (const caso of auditarReglas(D, days, { startIso: fecha, label, reservas })) {
+  for (const caso of auditarReglas(D, days, { startIso: fecha, label, reservas, poolNames: pool, leg: legBetween })) {
     const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
     // (La versión del día escrito va al final del detalle: «D3 D», para agrupar por día y versión.)
     add(caso.tipo, caso.donde, `${caso.detalle}${n ? ` [${keyOf(n)}]` : ''}`)

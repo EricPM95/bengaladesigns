@@ -91,14 +91,16 @@ const FILLER_WALK_MAX = 12
 const FILLER_MINUTES_MIN = 20
 const FILLER_MINUTES_MAX = 45
 const FILLER_DINNER_WALK = 10
-const REST_AFTER_LUNCH_MAX = 60 // en completo, el descanso después de comer, como mucho
+const REST_AFTER_LUNCH_MAX = 90 // en completo, el descanso después de comer, como mucho (REGLAS_RUTAS 16: así la espera al mirador no pasa de 90)
 const DINNER_WALK_MAX = 15 // y la de la cena, igual
+const NIGHT_DINNER_WALK_MAX = 20 // y de la cena a la nocturna (REGLAS_RUTAS 37)
 const LUNCH_WALK_MAX = 15 // el restaurante de la comida, a 15 min andando como mucho de la parada de antes
 const HALF_DAY_AFTERNOON = 16 * 60
 /** A qué hora se está de vuelta de la excursión de medio día (de 8:00 a 14:00), para comer. */
 const HALF_DAY_BACK = 14 * 60 + 15
 const TRANSFER_NOTICE_MINUTES = 25
 const NIGHT_FALLBACK_METERS = 1200
+const NIGHT_REACH_METERS = 1500 // la nocturna, a unos 20 min andando de la cena (REGLAS_RUTAS 37)
 const LATE_VISIT_MINUTES = 17 * 60
 const WINTER_SUNSET_BEFORE = 18 * 60 + 30
 const SPECIAL_HOURS_COST = 400
@@ -771,6 +773,8 @@ export function planWrittenTrip(args) {
       const count = zonesOfDraft(draft).get(zoneId) ?? 0
       if (count > 0) {
         const half = item.franja ?? ((zonesOfDraft(draft, 'manana').get(zoneId) ?? 0) >= (zonesOfDraft(draft, 'tarde').get(zoneId) ?? 0) ? 'manana' : 'tarde')
+        // (Cerca de verdad: un sitio de su zona a unos 1.500 m de lo que ya lleva esa mitad como mucho; nunca se mete lejos con un taxi. Lo del pool, sí.)
+        if (!item.pool && meters(draft, half) > 1500) continue
         options.push({ draft, index, half, count, hard: oneDay && Boolean(item.pool) })
       } else if (oneDay && item.pool) {
         const half = item.franja ?? (meters(draft, 'manana') <= meters(draft, 'tarde') ? 'manana' : 'tarde')
@@ -1229,7 +1233,9 @@ export function planWrittenTrip(args) {
       if (!ctx.probe && !place.visitOutside && !place.passThrough && place.sunset == null && duration < shrinkFloor(stop, stop.min ?? source.duration_minutes ?? duration, true)) ctx.problems.push({ tipo: 'parada_corta', lugar: stop.lugar, minutos: duration })
       // El mirador: se llega a su hora (el sol menos 25 min) y se queda hasta 15 min después del sol.
       if (place.sunset != null) {
-        const target = place.sunset - (place.sunsetLead ?? SUNSET_LEAD) - (ctx.earlyBy ?? 0)
+        // (REGLAS_RUTAS 38: el mirador no se queda más que su máximo, `min_max`: si lo escrito llega antes, llega más tarde y el rato de antes lo llena la regla 20.)
+        const lead = Math.min(place.sunsetLead ?? SUNSET_LEAD, (source.min_max ?? Infinity) - SUNSET_STAY)
+        const target = place.sunset - lead - (ctx.earlyBy ?? 0)
         ctx.sunsetArrival = at
         if (at < target) at = target
         // El viajero manda (3-oct-2026): si su reserva se pisa con el atardecer, ese día va sin atardecer, sin forzarlo y sin aviso.
@@ -1251,8 +1257,8 @@ export function planWrittenTrip(args) {
           const shortest = typeof stop.recorta_al_cierre === 'number' ? stop.recorta_al_cierre : 60
           while (duration > shortest && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, shortest, ctx.hours).closed) duration -= 5
         }
-        // Un imprescindible de entrada libre (la Basílica de San Pedro) que se pasaría de la hora de cierre se recorta hasta el cierre, no menos de 30 min, antes que verlo por fuera estando abierto.
-        else if (source.level === 1 && source.is_free_access && source.type === 'interior' && !stop.entrada) while (duration > 30 && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, 30, ctx.hours).closed) duration -= 5
+        // REGLAS_RUTAS 1 (orden ante un cierre: adelantar → acortar → por fuera → quitar): una visita por dentro que se pasaría de la hora de cierre se acorta hasta el cierre, no menos de 20 min.
+        else while (duration > 20 && openCheck(place, at, duration, ctx.hours).closed && !openCheck(place, at, 20, ctx.hours).closed) duration -= 5
         // (Lo escrito «si está cerrado, por fuera» no espera más de lo de siempre, 20 min: es el plan B que quien escribe el día prefiere.)
         const check = openCheck(place, at, duration, ctx.hours, stop.si_cerrado === 'fuera' && source.minutos_fuera != null ? OPEN_WAIT_AUTHORED : null)
         // Una parada opcional nunca crea una espera ni sale cerrada: si no está abierta a su hora, no entra (su tiempo lo recoge la parada que se estira).
@@ -2062,11 +2068,11 @@ export function planWrittenTrip(args) {
     const nightWalkDef = { ...(destData.night_walks?.[draft.noche] ?? {}), ...(written.destino?.noches?.[draft.noche] ?? {}) }
     const nightFirst = (destData.night_experiences ?? []).find((entry) => entry.name === nightWalkDef.recorrido?.[0])
     const nightCoords = Array.isArray(nightFirst?.coordinates) ? nightFirst.coordinates : null
-    const nearBoth = (spot) => nearDinner(spot) && (!nightCoords || walkLeg(spot.coordinates, nightCoords) <= DINNER_WALK_MAX)
+    const nearBoth = (spot) => nearDinner(spot) && (!nightCoords || walkLeg(spot.coordinates, nightCoords) <= NIGHT_DINNER_WALK_MAX)
     let dinnerByTaxi = false
     let dinnerRestaurant = writtenDinners.find(nearBoth) ?? (nearBoth(nearestDinner) ? nearestDinner : null)
     if (!dinnerRestaurant && nightCoords) {
-      const nearNight = (spot) => spot && walkLeg(spot.coordinates, nightCoords) <= DINNER_WALK_MAX
+      const nearNight = (spot) => spot && walkLeg(spot.coordinates, nightCoords) <= NIGHT_DINNER_WALK_MAX
       const byNight = recommendedRestaurant(destData, { names: null, meal: 'cena', near: nightCoords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
       dinnerRestaurant = writtenDinners.find(nearNight) ?? byNight ?? null
       dinnerByTaxi = Boolean(dinnerRestaurant) && !nearDinner(dinnerRestaurant)
@@ -2083,7 +2089,9 @@ export function planWrittenTrip(args) {
     // (Solo un mirador: una avenida o un paseo tienen su máximo. Desde 10 min de espera, y deja 5.)
     // (En C y D: en A y B ese rato es de la nocturna y de «luces y aperitivo».)
     if ((draft.version === 'C' || draft.version === 'D') && dinnerStart - readyAt > 10 && lastVisit?.place?.sunset != null && (lastVisit.place.tags ?? []).includes('mirador')) {
-      const extra = Math.min(SUNSET_STAY_EXTRA, dinnerStart - readyAt - 5)
+      // (REGLAS_RUTAS 38: nunca por encima del máximo del sitio, `min_max`.)
+      const roomLeft = (placeByName.get(lastVisit.place.name)?.min_max ?? Infinity) - (lastVisit.end - lastVisit.start)
+      const extra = Math.max(0, Math.min(SUNSET_STAY_EXTRA, dinnerStart - readyAt - 5, roomLeft))
       lastVisit.end += extra
       readyAt += extra
     }
@@ -2193,15 +2201,21 @@ export function planWrittenTrip(args) {
       const names = shownNames(entry)
       return day.schedule.visits.some((visit) => visit.start >= AFTERNOON_FROM && (names.has(visit.place.name) || (visit.place.outsideOf ?? []).some((name) => names.has(name))))
     }
+    let fallbackFar = false
     const allowed = (entry, { strictReach = false } = {}) => {
       if (!entry || usedNights.has(entry.name) || visitedThisAfternoon(entry)) return false
       if (strictReach && day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_FALLBACK_METERS) return false
+      // (REGLAS_RUTAS 37: la nocturna, a unos 20 min andando de la cena; si no, pasa a la siguiente de su paseo.)
+      if (day.dinnerCoords && metersBetween(day.dinnerCoords, entry.coordinates) > NIGHT_REACH_METERS && !fallbackFar) return false
       return true
     }
     // (Nochebuena y Nochevieja: un paseo corto, una sola parada cerca de la cena. PROMPT_REPASO_LOCAL_ROMA, 4.)
-    const shortNight = ['12-24', '12-31'].includes(String(day.hours?.dateIso ?? '').slice(5))
-    const max = shortNight ? 1 : walk.maximo ?? 2
+    const specialNight = destData.destination_config?.noche_especial?.[String(day.hours?.dateIso ?? '').slice(5)] ?? null
+    const shortNight = Boolean(specialNight)
+    const max = shortNight ? specialNight.maximo ?? 1 : walk.maximo ?? 2
     let chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
+    // (La noche propia de una fecha, de los datos del destino: el 24 de diciembre, la Fontana de Trevi.)
+    if (specialNight?.noche && allowed(catalogue.get(specialNight.noche))) chain = [catalogue.get(specialNight.noche)]
     let fromAlternative = false
     // (`sin_relevo`: esa noche no lleva paseo; el plan de la tarde ya es de noche, el mercadillo de Navona antes de cenar.)
     if (chain.length === 0 && !walk.sin_relevo) {
@@ -2209,7 +2223,7 @@ export function planWrittenTrip(args) {
       const byDistance = (a, b) => metersBetween(day.dinnerCoords, a.coordinates) - metersBetween(day.dinnerCoords, b.coordinates)
       if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry, { strictReach: true })).sort(byDistance)
       // (Si cerca no queda nada, el que quede, aunque haya que cruzar la ciudad: uno solo.)
-      if (chain.length === 0) chain = [...catalogue.values()].filter((entry) => allowed(entry)).sort(byDistance).slice(0, 1)
+      if (chain.length === 0) { fallbackFar = true; chain = [...catalogue.values()].filter((entry) => allowed(entry)).sort(byDistance).slice(0, 1) }
       fromAlternative = walk.recorrido.length > 0 || walk === NO_WALK
     }
     // (El relevo de lo que solo vale antes de cenar —Trastevere de noche, tras el Janículo— es otra nocturna: no vuelve si ya salió en el viaje ni si esa tarde se vio lo que enseña.)
@@ -2293,7 +2307,7 @@ export function planWrittenTrip(args) {
     const close = Math.max(0, ...parseHoursSessions(effectiveSchedule(source, day.hours)).map((session) => session.close))
     if (close > 0) dayNotices.push({ dayNumber: day.dayNumber, name: 'Basílica de San Pedro', reason: `Hoy la Basílica cierra a las ${toHHMM(close)}; si quieres entrar, ve otro día del viaje.`, suggestion: null })
   }
-  const seenAtNight = new Set([...nightsByDay.values()].flat().flatMap((entry) => entry.conflicts_with ?? []))
+  const seenAtNight = new Set([...nightsByDay.values()].flat().flatMap((entry) => [...(entry.conflicts_with ?? []), ...(entry.muestra ?? []).map((id) => placeNameById.get(id)).filter(Boolean)])) // (REGLAS_RUTAS 5 y 39: lo que enseña una nocturna cuenta como visto)
   const closedAllTrip = (name) => cityPlanned.length > 0 && cityPlanned.every((day) => closedThatDay(name, day))
   const unplacedEssentials = (destData.places ?? [])
     .filter((place) => place.level === 1 && !seen.has(place.name) && !tourCovers.has(place.name) && !seenAtNight.has(place.name))

@@ -489,6 +489,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // (La Via Appia Antica en D7 es el paseo del día, no una calle de paso: `no_calle`.)
     if ((isStreet(visit.place) && !visit.place.notStreet) || visit.place.passThrough) {
       stop.pass_through = true
+      // (REGLAS_RUTAS 40: un «De camino» no es una visita del sitio; lleva su propio nombre.)
+      stop.display_name = `De camino: ${stop.name}`
       stop.why = whyTexts.passThrough()
       delete stop.experience
     }
@@ -734,6 +736,18 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const dinnerOut = meals.find((meal) => meal.time === 'dinner')
     const free = toMinutes(lastNight.suggested_time) + (lastNight.duration_minutes ?? 0) + (dinnerMeal.walkMinutes ?? 10)
     if (dinnerOut) dinnerOut.suggested_time = toHHMM(Math.max(toMinutes(dinnerOut.suggested_time), Math.ceil(free / 15) * 15))
+  }
+  // REGLAS_RUTAS 37: la cena a unos 20 min andando de la nocturna; si no puede ser, la nocturna va con su transporte (un taxi) desde la cena.
+  {
+    const dinnerOut = meals.find((meal) => meal.time === 'dinner')
+    const firstNight = nightStops.find((stop) => !stop.before_dinner && Number.isFinite(stop.latitude))
+    if (dinnerOut && firstNight && Number.isFinite(dinnerOut.latitude) && !firstNight.transit) {
+      const meters = straightLineMeters([dinnerOut.latitude, dinnerOut.longitude], [firstNight.latitude, firstNight.longitude])
+      if (meters > 1500) {
+        const minutes = Math.max(8, Math.round(meters / 350) + 6)
+        firstNight.transit = { icon: '🚕', label: `Un taxi, unos ${minutes} min`, minutes, detail: null }
+      }
+    }
   }
   const lastNightBefore = nightStops.filter((stop) => stop.before_dinner).at(-1)
   // (Con días escritos, el restaurante escrito manda: no se vuelve a elegir junto a la nocturna.)

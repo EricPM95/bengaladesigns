@@ -288,7 +288,7 @@
   },
   "variantes": {
     "miercoles": {
-      "_nota": "Miércoles de audiencia: Museos Vaticanos → el Puente y el Castillo por dentro mientras la audiencia ocupa la plaza → comida a las 13:00 → Plaza de San Pedro, Cúpula y Basílica (reabre hacia las 12:30) → Trastevere. La Cúpula, ese día no (la Basílica abre tarde y no da tiempo).",
+      "_nota": "Miércoles de audiencia: la audiencia ocupa la plaza por la mañana y la Basílica abre hacia las 12:30. Museos Vaticanos → comida → Plaza de San Pedro y Basílica (a las 12:30) → el Castillo y el Puente → el resto de la tarde de siempre. Sin volver atrás (REGLAS_RUTAS 19). La Cúpula, ese día no.",
       "manana": {
         "paradas": [
           {
@@ -300,19 +300,6 @@
             "modo": "dentro",
             "entrada": true,
             "turno": true
-          },
-          {
-            "lugar": "Borgo Pio",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
           }
         ],
         "comida": {
@@ -321,12 +308,7 @@
         }
       },
       "tarde.*": {
-        "quitar": [
-          "Via della Conciliazione",
-          "Puente Sant'Angelo",
-          "Castillo de Sant'Angelo",
-          "Borgo Pio"
-        ],
+        "empieza": "12:30",
         "insertar": [
           {
             "al_principio": true,
@@ -345,115 +327,6 @@
             }
           }
         ]
-      },
-      "tarde.A": {
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "elastica": 20,
-            "min": 20,
-            "titulo": "Por Via della Conciliazione y el Borgo",
-            "no_calle": true
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
-          }
-        ],
-        "empieza": "14:25"
-      },
-      "tarde.B": {
-        "empieza": "14:20",
-        "ajustar": {
-          "Trastevere": {
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          }
-        }
-      },
-      "tarde.C": {
-        "empieza": "14:30",
-        "ajustar": {
-          "Iglesia de Santa Maria in Trastevere": {
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          }
-        }
-      },
-      "tarde.D": {
-        "_nota": "Miércoles con el sol tarde: la Plaza y la Basílica por la tarde (la audiencia ocupa la mañana). Se sube por el Tempietto mientras está abierto, el Janículo con la luz de la tarde, y se baja a Santa Maria in Trastevere y al barrio, con el aperitivo al atardecer y la cena allí: Trastevere una sola vez.",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 75,
-            "modo": "dentro"
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "min": 20,
-            "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 60
-          }
-        ],
-        "noche": "centro_iluminado"
       },
       "nombre": "Vaticano, Castillo y Trastevere al atardecer"
     },
