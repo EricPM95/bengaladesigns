@@ -762,9 +762,11 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     day_number: tripDay.dayNumber,
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
-    stops: quarterHourStops([...stops, ...nightStops]),
+    // (Un día escrito: las horas son las del documento, sin redondear.)
+    stops: tripDay.escrito ? [...stops, ...nightStops].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
     // (La cena es una hora fija: de 5 en 5, como siempre; la comida, de 10 en 10.)
     meals: meals.map((meal) => {
+      if (tripDay.escrito) return meal
       const end = meal.window_end ? toMinutes(nearestQuarter(meal.window_end, DURATION_STEP)) : null
       const exactStart = toMinutes(meal.suggested_time)
       // La comida, de 10 en 10, pero nunca más corta de lo que era (45 min como mínimo): si al redondear pierde minutos, se baja a la decena de antes.

@@ -1,650 +1,552 @@
 {
-  "_nota": "D3 escrito (2026-09-29): Free Tour a las 10:00, el Panteón por dentro al acabar (Navona a 5 min), comida a las 13:00 y los Museos Vaticanos a las 14:45 (bus 40 o taxi). Sin mirador: la tarde no cambia con el sol. (30-sep: el 24 y el 31 de diciembre, su variante: el Vaticano por la mañana y el Free Tour a las 16:00.)",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D3",
-  "nombre": "Free Tour y el Vaticano por la tarde",
-  "joyas": [
-    "Museos Vaticanos y Capilla Sixtina"
-  ],
-  "no_en": [
-    {
-      "dia_semana": "domingo"
-    },
-    {
-      "fecha": "12-24",
-      "evitar": true,
-      "nota": "El tour solo sale a las 12:00 y los Museos cierran pronto: mejor otro día."
-    },
-    {
-      "fecha": "12-31",
-      "evitar": true,
-      "nota": "El tour solo sale a las 12:00 y los Museos cierran pronto: mejor otro día."
-    }
-  ],
-  "barrio_cena": "vaticano",
-  "noche": "castillo_tiber",
-  "manana": {
-    "empieza": "08:00",
-    "paradas": [
-      {
-        "lugar": "Fontana de Trevi",
-        "tipo": "fija",
-        "hora": "08:00",
-        "hora_tipo": "orientativa",
-        "min": 45
-      },
-      {
-        "lugar": "Desayuno romano",
-        "tipo": "opcional",
-        "min": 35
-      },
-      {
-        "lugar": "Free Tour Centro Histórico",
-        "tipo": "fija",
-        "hora": "10:00",
-        "hora_tipo": "turno",
-        "min": 150,
-        "entrada": true
-      },
-      {
-        "lugar": "Panteón",
-        "min": 30,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "quitar",
-        "texto": "El Free Tour te ha enseñado el Panteón por fuera; ahora toca verlo por dentro. Levanta la vista: la cúpula tiene un agujero de nueve metros abierto al cielo desde hace casi dos mil años."
-      }
-    ],
-    "comida": {
-      "restaurante": "Armando al Pantheon",
-      "alternativa": "Supplizio"
-    }
-  },
-  "tarde": {
-    "empieza": "14:10",
-    "A": {
-      "_sol": "sin mirador: la tarde del Vaticano es igual todo el año",
-      "paradas": [
+  "nombre": "Día del Free Tour y el Vaticano por la tarde",
+  "versiones": {
+    "normal": {
+      "AB": [
         {
-          "lugar": "Museos Vaticanos y Capilla Sixtina",
-          "tipo": "fija",
-          "hora": "14:45",
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:45",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_en_piazza_della_rotonda_frente_al_panteon",
+          "hora": "08:25",
+          "min": 20,
+          "texto_documento": "Desayuno en Piazza della Rotonda, frente al Panteón",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno en Piazza della Rotonda, frente al Panteón"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Panteón (abre a las 9:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 9:00",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "tour_free_tour_centro_historico",
+          "hora": "10:00",
+          "min": 150,
+          "texto_documento": "**Free Tour Centro Histórico** (sale de la Plaza de España, acaba en Navona)",
+          "como_documento": "con guía",
+          "nota": "sale de la Plaza de España, acaba en Navona",
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
           "hora_tipo": "turno",
-          "min": 180,
-          "modo": "dentro",
-          "entrada": true,
+          "guia": true,
+          "modo": null
+        },
+        {
+          "id": "comida_armando_al_pantheon",
+          "hora": "12:50",
+          "min": 45,
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio)",
+          "como_documento": "",
+          "nota": "o Supplizio",
+          "tipo": "comida",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "traslado_el_bus_40_o_un_taxi",
+          "hora": "13:50",
+          "min": 25,
+          "texto_documento": "Bus 40 o taxi al Vaticano",
+          "como_documento": "",
+          "tipo": "traslado",
           "traslado": {
-            "como": "el bus 40 (desde Largo di Torre Argentina hasta el Borgo) o un taxi",
+            "como": "el bus 40 o un taxi",
             "min": 25
-          },
-          "turno": true
+          }
         },
         {
-          "lugar": "Plaza de San Pedro",
-          "min": 20
-        },
-        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "14:30",
+          "min": 45,
+          "texto_documento": "Basílica de San Pedro (con el control; se cruza la Plaza)",
+          "como_documento": "por dentro",
+          "nota": "con el control; se cruza la Plaza",
+          "tipo": "parada",
           "lugar": "Basílica de San Pedro",
-          "min": 60,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "modo": "dentro"
         },
         {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "16:00",
+          "min": 150,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 16:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "19:00",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro, ya iluminada (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "19:45",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
+          "como_documento": "",
+          "nota": "o Osteria dell'Angelo",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
+          "hora": "21:40",
+          "min": 30,
+          "texto_documento": "El Puente y el Castillo de Sant'Angelo iluminados",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
+        }
+      ],
+      "CD": [
+        {
+          "id": "traslado_el_bus_40_o_un_taxi",
+          "hora": "13:50",
+          "min": 25,
+          "texto_documento": "Bus 40 o taxi al Vaticano",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 40 o un taxi",
+            "min": 25
+          }
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "15:00",
+          "min": 150,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 15:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "18:00",
+          "min": 10,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "18:25",
+          "min": 45,
+          "texto_documento": "Basílica de San Pedro (con el control; cierra a las 20:00)",
+          "como_documento": "por dentro",
+          "nota": "con el control; cierra a las 20:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "19:15",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Via della Conciliazione",
           "modo": "camino"
         },
         {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "19:45",
+          "min": 10,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera",
-          "una_vez": true
+          "modo": "fuera"
         },
         {
+          "id": "parada_puente_sant_angelo",
+          "hora": "20:10",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-        }
-      ],
-      "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Osteria dell'Angelo",
-        "hora": "20:45"
-      },
-      "_vaticano": "El día del Vaticano lleva siempre el Castillo y el Puente (PARA_CODE_TARDE_VATICANO, 2 y 6): al salir de la Basílica, Via della Conciliazione, el Castillo por fuera y el Puente Sant'Angelo al atardecer (en invierno, ya iluminado), y la cena cerca.",
-      "noche": "centro_iluminado"
-    },
-    "B": "igual que A",
-    "C": {
-      "paradas": "igual que A",
-      "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Osteria dell'Angelo",
-        "hora": "19:30"
-      }
-    },
-    "D": "igual que C"
-  },
-  "variantes": {
-    "sabado": {
-      "_nota": "El sábado el Panteón vende entradas hasta las 16:00: al acabar el tour (12:30) cabe de sobra."
-    },
-    "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos): la tarde en el Castillo, la Plaza y la Basílica. La tarde empieza a las 14:30 para que la comida quepa holgada también en domingo (Armando cierra y se come más lejos).",
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25,
-            "traslado": {
-              "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
-              "min": 20
-            }
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "sol_desde": "17:40"
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Borgo Pio",
-            "titulo": "Pasea y piérdete por Borgo Pio",
-            "min": 20,
-            "elastica": 30
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "sol_desde": "17:40",
-            "una_vez": true
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "sol_hasta": "17:40",
-            "una_vez": true
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "modo": "atardecer",
-            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-          }
-        ],
-        "empieza": "14:30"
-      },
-      "tarde.D": {
-        "_nota": "Verano (el sol desde las 19:45): la tarde sin los Museos acaba pronto y la cena no es antes de las 20:30. Se llena con un paseo por Borgo Pio, que se estira, y el atardecer desde el Puente Sant'Angelo, con la cúpula de San Pedro al fondo; la cena, al lado. No va por Trastevere y el Janículo porque el otro día del viaje con Free Tour (D1-FT) ya acaba allí al atardecer.",
-        "empieza": "14:30",
-        "paradas": [
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "traslado": {
-              "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
-              "min": 20
-            },
-            "una_vez": true
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Borgo Pio",
-            "min": 30,
-            "elastica": 30,
-            "no_calle": true,
-            "texto": "La calle del barrio pegado al Vaticano, con sus fachadas bajas y sus terrazas. A esta hora se llena de romanos: es buen sitio para un aperitivo sin prisa.",
-            "titulo": "Pasea y piérdete por Borgo Pio"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "modo": "atardecer",
-            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-          }
-        ],
-        "cena": {
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "20:45",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "como_documento": "",
+          "tipo": "cena",
           "restaurante": "L'Arcangelo",
-          "alternativa": "Osteria dell'Angelo",
-          "hora": "20:30"
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:45",
+          "min": 15,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
-      },
-      "_vaticano": "Con los Museos cerrados: la Plaza, la Cúpula y la Basílica primero; bajando por Via della Conciliazione, el Castillo y el Puente Sant'Angelo al atardecer (PARA_CODE_TARDE_VATICANO, 6)."
+      ]
     },
-    "fecha:12-24": {
-      "_nota": "24 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial), la Basílica cierra antes a las visitas y ese día el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30). Si el viaje tiene otro día para este, ese (no_en). Si no: los Museos a las 8:00, la Plaza de San Pedro, el metro A a la Plaza de España y el tour a las 12:00; la Basílica se ve desde la plaza (no da tiempo a entrar antes del tour y por la tarde ya ha cerrado). Se come al acabar el tour, junto a Navona, y la tarde es el centro.",
-      "nombre": "Los Museos Vaticanos, Free Tour y el centro",
-      "barrio_cena": "centro_historico",
-      "noche": "fuentes",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "turno",
-            "min": 130,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "modo": "fuera",
-            "una_vez": true
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 5
-          },
-          {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "12:00",
-            "hora_tipo": "turno",
-            "min": 150,
-            "traslado": {
-              "como": "un taxi",
-              "min": 10
-            }
-          }
-        ],
-        "comida": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
-        }
-      },
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Iglesia de San Luigi dei Francesi",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Campo de' Fiori",
-            "min": 30
-          }
-        ],
-        "empieza": "15:45"
-      },
-      "_vaticano": "El día del Vaticano lleva el Castillo y el Puente (PARA_CODE_TARDE_VATICANO, 6): al salir de San Pedro, por Via della Conciliazione, el Castillo por fuera y el Puente, y en taxi al tour."
-    },
-    "fecha:12-31": {
-      "_nota": "31 de diciembre: los Museos Vaticanos cierran a las 15:00 (última entrada a las 13:00, calendario oficial), la Basílica cierra antes a las visitas y ese día el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30). Si el viaje tiene otro día para este, ese (no_en). Si no: los Museos a las 8:00, la Plaza de San Pedro, el metro A a la Plaza de España y el tour a las 12:00; la Basílica se ve desde la plaza (no da tiempo a entrar antes del tour y por la tarde ya ha cerrado). Se come al acabar el tour, junto a Navona, y la tarde es el centro.",
-      "nombre": "Los Museos Vaticanos, Free Tour y el centro",
-      "barrio_cena": "centro_historico",
-      "noche": "fuentes",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "turno",
-            "min": 130,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "modo": "fuera",
-            "una_vez": true
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 5
-          },
-          {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "12:00",
-            "hora_tipo": "turno",
-            "min": 150,
-            "traslado": {
-              "como": "un taxi",
-              "min": 10
-            }
-          }
-        ],
-        "comida": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
-        }
-      },
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Iglesia de San Luigi dei Francesi",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Campo de' Fiori",
-            "min": 30
-          }
-        ],
-        "empieza": "15:45"
-      },
-      "_vaticano": "El día del Vaticano lleva el Castillo y el Puente (PARA_CODE_TARDE_VATICANO, 6): al salir de San Pedro, por Via della Conciliazione, el Castillo por fuera y el Puente, y en taxi al tour."
-    },
-    "fecha:12-25|01-01|01-06": {
-      "_nota": "Navidad, Año Nuevo y Reyes: el Free Tour solo sale a las 12:00 (calendario de reserva de Civitatis, 2026-09-30) y los Museos Vaticanos cierran (la tarde es la de «cerrado»: el Castillo, la Plaza y la Basílica). La mañana empieza tarde (el desayuno y el tour, que ya pasa por Trevi); se come al acabar el tour y la tarde empieza a las 15:45.",
-      "manana": {
-        "ajustar": {
-          "Free Tour Centro Histórico": {
-            "hora": "12:00"
+    "domingo": {
+      "AB": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:45",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_en_piazza_della_rotonda_frente_al_panteon",
+          "hora": "08:25",
+          "min": 20,
+          "texto_documento": "Desayuno en Piazza della Rotonda, frente al Panteón",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno en Piazza della Rotonda, frente al Panteón"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Panteón (abre a las 9:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 9:00",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "tour_free_tour_centro_historico",
+          "hora": "10:00",
+          "min": 150,
+          "texto_documento": "**Free Tour Centro Histórico** (sale de la Plaza de España, acaba en Navona)",
+          "como_documento": "con guía",
+          "nota": "sale de la Plaza de España, acaba en Navona",
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "hora_tipo": "turno",
+          "guia": true,
+          "modo": null
+        },
+        {
+          "id": "comida_armando_al_pantheon",
+          "hora": "12:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio)",
+          "como_documento": "",
+          "nota": "o Supplizio",
+          "tipo": "comida",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "traslado_el_bus_40_o_un_taxi",
+          "hora": "14:05",
+          "min": 25,
+          "texto_documento": "Bus 40 o taxi al Vaticano",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 40 o un taxi",
+            "min": 25
           }
         },
-        "empieza": "11:00"
-      },
-      "tarde.*": {
-        "empieza": "15:45",
-        "quitar": [
-          "Borgo Pio"
-        ]
-      },
-      "nombre": "Free Tour y San Pedro por la tarde"
-    },
-    "fecha:12-24&D1-FT@12-25": {
-      "_nota": "24 de diciembre en un viaje en el que el otro día del Free Tour cae el 25 (los viajes de 2 días): el tour solo sale a las 12:00 y los Museos Vaticanos solo admiten hasta las 13:00. Aquí va el Vaticano entero por la mañana (Museos, Plaza y Basílica, antes de que cierre a las visitas) y, por la tarde, el Coliseo por dentro; el tour pasa al otro día, a las 12:00. Se pierde menos que con el tour aquí: así la Basílica y el Coliseo se ven por dentro (decisión del usuario, 2026-10-01). Día apretado a propósito: los Museos en 2 h 45, la comida en sus 45 min y el metro al Coliseo, para entrar también en el Foro antes de su última entrada (15:30).",
-      "nombre": "El Vaticano por la mañana y la Roma Antigua por la tarde",
-      "barrio_cena": "centro_historico",
-      "noche": "fuentes",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "turno",
-            "min": 165,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 50,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "comida": {
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "Ristorante Arlù"
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "14:45",
+          "min": 15,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "15:15",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "16:45",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "17:20",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "17:50",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "Puente Sant'Angelo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "19:05",
+          "min": 25,
+          "texto_documento": "Pasea y piérdete por Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "19:45",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "21:45",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
-      },
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10,
-            "traslado": {
-              "como": "el metro A y el B (de Ottaviano a Colosseo, con cambio en Termini)",
-              "min": 30
-            }
-          },
-          {
-            "lugar": "Coliseo",
-            "min": 70,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "min": 65,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "recorta_al_cierre": 20
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
+      ],
+      "CD": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:45",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_en_piazza_della_rotonda_frente_al_panteon",
+          "hora": "08:25",
+          "min": 20,
+          "texto_documento": "Desayuno en Piazza della Rotonda, frente al Panteón",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno en Piazza della Rotonda, frente al Panteón"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Panteón (abre a las 9:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 9:00",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "tour_free_tour_centro_historico",
+          "hora": "10:00",
+          "min": 150,
+          "texto_documento": "**Free Tour Centro Histórico** (sale de la Plaza de España, acaba en Navona)",
+          "como_documento": "con guía",
+          "nota": "sale de la Plaza de España, acaba en Navona",
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "hora_tipo": "turno",
+          "guia": true,
+          "modo": null
+        },
+        {
+          "id": "comida_armando_al_pantheon",
+          "hora": "12:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio)",
+          "como_documento": "",
+          "nota": "o Supplizio",
+          "tipo": "comida",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "traslado_el_bus_40_o_un_taxi",
+          "hora": "14:05",
+          "min": 25,
+          "texto_documento": "Bus 40 o taxi al Vaticano",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 40 o un taxi",
+            "min": 25
           }
-        ],
-        "empieza": "13:15"
-      },
-      "_vaticano": "Excepción a «el día del Vaticano lleva el Castillo y el Puente» (PARA_CODE_TARDE_VATICANO, 6): el 24 y el 31, en un viaje de 2 días con Free Tour, los Museos cierran pronto y por la tarde va la Roma Antigua, que también cierra antes; pasar por el Castillo y el Puente hacía perder el Foro por dentro."
-    },
-    "fecha:12-31&D1-FT@01-01": {
-      "_nota": "31 de diciembre en un viaje en el que el otro día del Free Tour cae el 1 de enero (los viajes de 2 días): el tour solo sale a las 12:00 y los Museos Vaticanos solo admiten hasta las 13:00. Aquí va el Vaticano entero por la mañana (Museos, Plaza y Basílica, antes de que cierre a las visitas) y, por la tarde, el Coliseo por dentro; el tour pasa al otro día, a las 12:00. Se pierde menos que con el tour aquí: así la Basílica y el Coliseo se ven por dentro (decisión del usuario, 2026-10-01). Día apretado a propósito: los Museos en 2 h 45, la comida en sus 45 min y el metro al Coliseo, para entrar también en el Foro antes de su última entrada (15:30).",
-      "nombre": "El Vaticano por la mañana y la Roma Antigua por la tarde",
-      "barrio_cena": "centro_historico",
-      "noche": "fuentes",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "turno",
-            "min": 165,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 50,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "comida": {
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "Ristorante Arlù"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "14:45",
+          "min": 15,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "15:15",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "16:45",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "17:20",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "17:50",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "18:30",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "19:55",
+          "min": 20,
+          "texto_documento": "Puente Sant'Angelo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "20:45",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:45",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
-      },
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10,
-            "traslado": {
-              "como": "el metro A y el B (de Ottaviano a Colosseo, con cambio en Termini)",
-              "min": 30
-            }
-          },
-          {
-            "lugar": "Coliseo",
-            "min": 70,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "min": 65,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "recorta_al_cierre": 20
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "empieza": "13:15"
-      },
-      "_vaticano": "Excepción a «el día del Vaticano lleva el Castillo y el Puente» (PARA_CODE_TARDE_VATICANO, 6): el 24 y el 31, en un viaje de 2 días con Free Tour, los Museos cierran pronto y por la tarde va la Roma Antigua, que también cierra antes; pasar por el Castillo y el Puente hacía perder el Foro por dentro."
-    },
-    "fecha:easter-2": {
-      "_nota": "Viernes Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Basílica cierra a las visitas a las 13:00 por la Pasión del Papa (lo prudente, 2024; verificar esa semana). Va a primera hora, antes del Free Tour, con 45-60 min más por la cola del control; por la tarde, los Museos y la Plaza.",
-      "manana": {
-        "empieza": "07:15",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": "07:15",
-            "hora_tipo": "orientativa",
-            "min": 15
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 90,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar."
-          },
-          {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "10:00",
-            "hora_tipo": "turno",
-            "min": 150,
-            "entrada": true,
-            "traslado": {
-              "como": "el metro A (de Ottaviano a Spagna)",
-              "min": 25
-            }
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "texto": "El Free Tour te ha enseñado el Panteón por fuera; ahora toca verlo por dentro. Levanta la vista: la cúpula tiene un agujero de nueve metros abierto al cielo desde hace casi dos mil años."
-          }
-        ]
-      },
-      "tarde.*": {
-        "quitar": [
-          "Basílica de San Pedro",
-          "Plaza de San Pedro"
-        ]
-      }
+      ]
     }
-  },
-  "experiencias": {
-    "mercadillos_navidenos": {
-      "_nota": "Navidad con Free Tour: el tour ya pasa por Piazza Navona de día y en la mañana no cabe nada más. Al salir de la Basílica se cruza el Puente Sant'Angelo hasta Navona (20 min), con el mercadillo iluminado antes de cenar, y se cena al lado. Solo los días en que hay mercadillo (`si_disponible`).",
-      "si_disponible": "Mercadillo de Navidad de Piazza Navona",
-      "barrio_cena": "centro_historico",
-      "tarde.*": {
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Mercadillo de Navidad de Piazza Navona",
-              "titulo": "Piazza Navona y su mercadillo navideño",
-              "texto_titulo": "Al caer la tarde, Navona con el mercadillo de la Befana encendido: puestos de dulces, figuritas para el belén y carbón de azúcar. Date una vuelta entre los puestos antes de cenar.",
-              "min": 40,
-              "si_cerrado": "quitar"
-            }
-          }
-        ],
-        "cena": {
-          "restaurante": "Pizzeria Da Baffetto",
-          "alternativa": "Dar Filettaro a Santa Barbara"
-        }
-      },
-      "noche": "sin_paseo"
-    }
-  },
-  "_nota_trevi": "Sin Trevi a primera hora (PROMPT_REPASO_LOCAL_ROMA, 1): el Free Tour ya pasa por Trevi a las 10:00."
+  }
 }

@@ -1,346 +1,307 @@
 {
-  "_nota": "D0: el viaje de UN día de Roma, escrito (4-oct-2026). En un día no da tiempo a entrar: todo lo que tiene entrada va por fuera (Coliseo, Foro desde la Via dei Fori Imperiali, Altar de la Patria, Panteón, Castillo). Mañana: Roma Antigua y Centro. Tarde: Vaticano (Plaza y Basílica de San Pedro, gratis), Via della Conciliazione, Castillo por fuera y Puente al atardecer. Cena por la zona de Navona y el Panteón (a 15 min de lo último y de Trevi); después, Trevi y la Plaza de España iluminadas. Con Free Tour: Trevi a las 8:00, el Panteón por dentro, el tour a las 10:00 y el Vaticano por la tarde; cena en Monti y, de noche, el Coliseo y el Foro iluminados. Con algo marcado en el pool, la regla 12 lo mete en la mitad del día más cercana a su zona.",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D0",
-  "nombre": "Roma en un día: la Roma Antigua, el Centro, el Vaticano y las fuentes",
-  "joyas": [
-    "Coliseo",
-    "Fontana de Trevi",
-    "Panteón"
-  ],
-  "barrio_cena": "centro_historico",
-  "noche": "fuentes",
-  "noche_despues_de_cenar": true,
-  "manana": {
-    "empieza": "08:30",
-    "paradas": [
-      {
-        "lugar": "Coliseo",
-        "min": 20,
-        "modo": "fuera"
-      },
-      {
-        "lugar": "Arco de Constantino",
-        "min": 10
-      },
-      {
-        "lugar": "Foro Romano y Palatino",
-        "modo": "fuera"
-      },
-      {
-        "lugar": "Altar de la Patria",
-        "modo": "fuera"
-      },
-      {
-        "lugar": "Plaza del Campidoglio",
-        "min": 20
-      },
-      {
-        "lugar": "Panteón",
-        "modo": "fuera"
-      },
-      {
-        "lugar": "Piazza Navona",
-        "min": 30
-      }
-    ],
-    "comida": {
-      "restaurante": "Armando al Pantheon",
-      "alternativa": "Supplizio"
-    }
-  },
-  "tarde": {
-    "empieza": "13:30",
-    "A": {
-      "_sol": "antes de las 17:40: el Vaticano por fuera, el paseo del Borgo llena lo que queda hasta el atardecer y el Puente se ve ya iluminado",
-      "paradas": [
+  "nombre": "Roma en un día (crucero)",
+  "versiones": {
+    "normal": {
+      "unica": [
         {
-          "lugar": "Plaza de San Pedro",
-          "min": 25,
-          "traslado": {
-            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
-            "min": 20
-          }
-        },
-        {
-          "lugar": "Basílica de San Pedro",
-          "min": 60,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio",
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:45",
           "min": 20,
-          "elastica": 45
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
         },
         {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "10:05",
+          "min": 5,
+          "texto_documento": "Basílica de San Pedro",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "10:15",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Via della Conciliazione",
           "modo": "camino"
         },
         {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "10:45",
+          "min": 15,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera",
-          "una_vez": true
+          "modo": "fuera"
         },
         {
+          "id": "parada_puente_sant_angelo",
+          "hora": "11:05",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-        }
-      ],
-      "cena": {
-        "restaurante": "Pizzeria Da Baffetto",
-        "alternativa": "Dar Filettaro a Santa Barbara",
-        "hora": "19:30"
-      }
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44: el Borgo antes del Castillo",
-      "paradas": [
-        {
-          "lugar": "Plaza de San Pedro",
-          "min": 25,
-          "traslado": {
-            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
-            "min": 20
-          }
-        },
-        {
-          "lugar": "Basílica de San Pedro",
-          "min": 60,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio",
-          "min": 30,
-          "elastica": 45
-        },
-        {
-          "lugar": "Via della Conciliazione",
           "modo": "camino"
         },
         {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera",
-          "una_vez": true
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-        }
-      ],
-      "cena": {
-        "restaurante": "Pizzeria Da Baffetto",
-        "alternativa": "Dar Filettaro a Santa Barbara",
-        "hora": "19:30"
-      }
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44: el Borgo con más calma antes del Castillo",
-      "paradas": [
-        {
-          "lugar": "Plaza de San Pedro",
+          "id": "parada_piazza_navona",
+          "hora": "11:30",
           "min": 25,
-          "traslado": {
-            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
-            "min": 20
-          }
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
         },
         {
-          "lugar": "Basílica de San Pedro",
+          "id": "parada_panteon",
+          "hora": "12:10",
+          "min": 15,
+          "texto_documento": "Panteón",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "fuera"
+        },
+        {
+          "id": "comida_armando_al_pantheon",
+          "hora": "12:40",
           "min": 60,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "texto_documento": "**Comida:** Armando al Pantheon",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Armando al Pantheon"
         },
         {
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio",
-          "min": 30,
-          "elastica": 45
+          "id": "parada_fontana_de_trevi",
+          "hora": "14:00",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
         },
         {
-          "lugar": "Via della Conciliazione",
+          "id": "parada_plaza_venecia",
+          "hora": "14:30",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
           "modo": "camino"
         },
         {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera",
-          "una_vez": true
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-        }
-      ],
-      "cena": {
-        "restaurante": "Pizzeria Da Baffetto",
-        "alternativa": "Dar Filettaro a Santa Barbara",
-        "hora": "20:00"
-      }
-    },
-    "D": {
-      "_sol": "desde las 19:45: el Vaticano, el Borgo, el Castillo y el Puente al atardecer; cena y la nocturna por las reglas",
-      "paradas": [
-        {
-          "lugar": "Plaza de San Pedro",
-          "min": 25,
-          "traslado": {
-            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
-            "min": 20
-          }
-        },
-        {
-          "lugar": "Basílica de San Pedro",
-          "min": 60,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio",
-          "min": 30,
-          "elastica": 45
-        },
-        {
-          "lugar": "Via della Conciliazione",
+          "id": "parada_altar_de_la_patria",
+          "hora": "14:40",
+          "min": 5,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
           "modo": "camino"
         },
         {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera",
-          "una_vez": true
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "14:50",
+          "min": 5,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": "camino"
         },
         {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
+          "hora": "15:10",
+          "min": 15,
+          "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_via_dei_fori_imperiali",
+          "hora": "15:30",
+          "min": 10,
+          "texto_documento": "Via dei Fori Imperiali",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_coliseo",
+          "hora": "15:55",
+          "min": 15,
+          "texto_documento": "Coliseo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "16:15",
+          "min": 5,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": "camino"
         }
-      ],
-      "cena": {
-        "restaurante": "Pizzeria Da Baffetto",
-        "alternativa": "Dar Filettaro a Santa Barbara",
-        "hora": "20:30"
-      }
-    }
-  },
-  "variantes": {
-    "con_free_tour": {
-      "_nota": "D0 con Free Tour: Trevi a las 8:00, el Panteón por dentro, el tour a las 10:00, comida, Vaticano por la tarde, cena en Monti (junto a la nocturna) y, de noche, el Coliseo y el Foro desde el Campidoglio iluminados.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "orientativa",
-            "min": 45
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "quitar",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "orientativa"
-          },
-          {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "10:00",
-            "hora_tipo": "turno",
-            "min": 150,
-            "entrada": true
-          }
-        ],
-        "comida": {
-          "restaurante": "Supplizio",
-          "alternativa": "Trattoria Dal Cavalier Gino"
-        }
-      },
-      "noche": "coliseo_y_foro",
-      "barrio_cena": "monti",
-      "tarde.*": {
-        "cena": {
-          "restaurante": "Trattoria Valentino",
-          "alternativa": "La Taverna dei Fori Imperiali"
-        }
-      }
-    },
-    "fecha:12-24": {
-      "manana": {
-        "ajustar": {
-          "Free Tour Centro Histórico": {
-            "hora": "12:00"
-          }
-        }
-      }
-    },
-    "fecha:12-31": {
-      "manana": {
-        "ajustar": {
-          "Free Tour Centro Histórico": {
-            "hora": "12:00"
-          }
-        }
-      }
-    },
-    "fecha:12-25": {
-      "manana": {
-        "ajustar": {
-          "Free Tour Centro Histórico": {
-            "hora": "12:00"
-          }
-        }
-      }
-    },
-    "fecha:01-01": {
-      "manana": {
-        "ajustar": {
-          "Free Tour Centro Histórico": {
-            "hora": "12:00"
-          }
-        }
-      }
-    },
-    "fecha:01-06": {
-      "manana": {
-        "ajustar": {
-          "Free Tour Centro Histórico": {
-            "hora": "12:00"
-          }
-        }
-      }
-    }
-  },
-  "entradas": {
-    "Museos Vaticanos y Capilla Sixtina": {
-      "tarde": [
-        "14:30",
-        "16:00"
-      ],
-      "manana": [
-        "08:00",
-        "11:00"
       ]
     },
-    "Galería Borghese": {
-      "manana": [
-        "09:00",
-        "11:00"
-      ],
-      "tarde": [
-        "15:00",
-        "16:00"
+    "reves": {
+      "unica": [
+        {
+          "id": "parada_coliseo",
+          "hora": "10:00",
+          "min": 60,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "11:20",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_via_dei_fori_imperiali",
+          "hora": "11:35",
+          "min": 15,
+          "texto_documento": "Via dei Fori Imperiali",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:00",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "12:10",
+          "min": 5,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "12:35",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "comida_armando_al_pantheon",
+          "hora": "13:15",
+          "min": 45,
+          "texto_documento": "**Comida:** Armando al Pantheon",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "14:15",
+          "min": 15,
+          "texto_documento": "Panteón",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "14:45",
+          "min": 20,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "15:15",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:25",
+          "min": 5,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "15:55",
+          "min": 15,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "16:10",
+          "min": 10,
+          "texto_documento": "Basílica de San Pedro",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "camino"
+        }
       ]
     }
   }

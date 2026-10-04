@@ -297,10 +297,12 @@ export function timeChain(entries, start, maxMinutes = Infinity, lastStart = NIG
   const timed = []
   let cursor = start
   for (const [index, entry] of entries.entries()) {
-    const at = index === 0 ? cursor : roundUpToFive(cursor + walkMinutes(coordsOf(entries[index - 1]), coordsOf(entry)))
-    const duration = Math.min(durationOf(entry, index), maxMinutes)
+    // (Un día escrito trae la hora y los minutos de cada nocturna: `fixedStart` y `fixedMinutes`.)
+    const at = Number.isFinite(entry.fixedStart) ? entry.fixedStart : index === 0 ? cursor : roundUpToFive(cursor + walkMinutes(coordsOf(entries[index - 1]), coordsOf(entry)))
+    const duration = Number.isFinite(entry.fixedMinutes) ? entry.fixedMinutes : Math.min(durationOf(entry, index), maxMinutes)
     // REGLAS_RUTAS 41: una nocturna que acabaría después de la hora límite de la noche (`noche_limite`) se quita; no se empuja ni se recorta otra cosa.
-    if (Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
+    // (Un día escrito: hasta 5 min de más sobre la hora límite, que es como están escritas las tablas.)
+    if (Number.isFinite(entry.fixedStart) ? at + duration > lastStart + 5 : Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
     timed.push({ entry, start: at, duration })
     cursor = at + duration
   }

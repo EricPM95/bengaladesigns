@@ -224,7 +224,7 @@ export async function buildDayBlockV3(
   const planner = curated ? planCuratedTrip : isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
   const destKey = findPipelineV2Key(destData.destination ?? options.city ?? '')
   const written = curated && useWrittenDays(options.engine) ? writtenDaysFor(destKey) : null
-  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder: options.forceOrder ?? null, entradas: options.entradas ?? {}, freeTourDespues: options.freeTourDespues ?? null }) : null
+  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder: options.forceOrder ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
@@ -543,7 +543,7 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   for (const entry of day.free_times ?? []) entry.minutes = step5(entry.minutes)
   // Sin «Aperitivo» ni «Tiempo libre» (paso 5, 2026-10-01): lo que sobra pasa a una parada con nombre, a «Pasea y piérdete por
   // {zona}» o a recolocar las horas (freeTime.js). Solo en lo que monta el motor: nunca en lo que pone el viajero.
-  const freeReport = resolveFreeTime(day, {
+  const freeReport = tripDay.escrito ? null : resolveFreeTime(day, {
     destData,
     tripDay,
     dayVisitedNames,
@@ -743,6 +743,7 @@ const SUGGESTION_MAX_DETOUR_MINUTES = 15
  * luego lo más cerca. Nunca algo ya visto en el viaje.
  */
 function freeAfternoonFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0) {
+  if (tripDay.escrito) return null // (Un día escrito no rellena huecos: el documento manda.)
   const idle = Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
@@ -799,6 +800,7 @@ function winterEveningTitle(destData, zoneId, tripDay, dayVisitedNames) {
 }
 
 function aperitivoFor(destData, trip, tripDay, options, dayVisitedNames, busyMinutes = 0, idleOverride = null) {
+  if (tripDay.escrito) return null
   const idle = idleOverride ?? Math.max(0, (tripDay.schedule?.idleBeforeDinner ?? 0) - busyMinutes)
   const visits = tripDay.schedule?.visits ?? []
   const last = visits[visits.length - 1]
@@ -851,6 +853,7 @@ const LUNCH_LABEL = 'la comida'
  * aperitivo o la tarde libre, aparte.
  */
 function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
+  if (tripDay.escrito) return []
   const visits = (tripDay.schedule?.visits ?? []).filter((visit) => !visit.place.isNightExperience)
   const lunch = (tripDay.schedule?.meals ?? []).find((meal) => meal.type === 'lunch')
   const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))

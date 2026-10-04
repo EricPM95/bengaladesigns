@@ -8609,7 +8609,7 @@
       "titulo": "¿Te apetece salir de Roma un día?",
       "texto": "Puedes cambiar este día por una excursión: Pompeya, Florencia, la Costa Amalfitana…"
     },
-    "max_auto_days": 7,
+    "max_auto_days": 6,
     "size": "grande",
     "category_cap_selected": 4,
     "category_cap_default": 2,

@@ -1,2016 +1,2310 @@
 {
-  "_nota": "D2 escrito (2026-09-29). El Castillo va siempre por dentro (con su entrada): así la tarde no cambia con los días del viaje y se cumple lo de 4 días o más. En invierno (A) el atardecer es desde la terraza del Castillo; desde B se sube al Janículo andando por el Tempietto si se llega antes de su última entrada (17:30); si no, por fuera.",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D2",
-  "nombre": "Vaticano, Castillo y Trastevere al atardecer",
-  "joyas": [
-    "Museos Vaticanos y Capilla Sixtina"
-  ],
-  "no_en": [
-    {
-      "dia_semana": "domingo"
-    },
-    {
-      "dia_semana": "miércoles",
-      "invierno": true,
-      "evitar": true,
-      "nota": "La audiencia retrasa la tarde. Si el viaje tiene otro día para D2, ese."
-    }
-  ],
-  "barrio_cena": "trastevere",
-  "noche": "trastevere",
-  "manana": {
-    "paradas": [
-      {
-        "lugar": "Museos Vaticanos y Capilla Sixtina",
-        "tipo": "fija",
-        "hora": "08:00",
-        "hora_tipo": "turno",
-        "min": 180,
-        "modo": "dentro",
-        "entrada": true,
-        "turno": true
-      },
-      {
-        "lugar": "Plaza de San Pedro",
-        "min": 20
-      },
-      {
-        "lugar": "Cúpula de San Pedro",
-        "tipo": "opcional",
-        "min": 45,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera"
-      },
-      {
-        "lugar": "Basílica de San Pedro",
-        "min": 60,
-        "modo": "dentro",
-        "si_cerrado": "fuera"
-      }
-    ],
-    "comida": {
-      "restaurante": "Borghiciana Pastificio Artigianale",
-      "alternativa": "200 Gradi"
-    }
-  },
-  "tarde": {
-    "empieza": "14:45",
-    "A": {
-      "_sol": "antes de las 17:40: el atardecer desde la terraza del Castillo; luego Trastevere, ya de noche",
-      "paradas": [
+  "nombre": "Día del Vaticano y Trastevere",
+  "versiones": {
+    "normal": {
+      "A": [
         {
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio",
-          "min": 20,
-          "elastica": 45
-        },
-        {
-          "lugar": "Via della Conciliazione",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera"
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10,
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
         },
         {
-          "lugar": "Trastevere",
-          "min": 45
-        }
-      ],
-      "cena": {
-        "restaurante": "Tonnarello",
-        "alternativa": "Trattoria Da Enzo al 29",
-        "hora": "20:00"
-      }
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44: se sube por el Tempietto (última entrada 17:30). Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
-      "paradas": [
-        {
-          "lugar": "Via della Conciliazione",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "11:30",
           "min": 20,
-          "modo": "fuera"
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
         },
         {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "12:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
         },
         {
-          "lugar": "Ponte Sisto",
-          "min": 10,
-          "una_vez": true,
-          "traslado_si_se_salta": {
-            "como": "el bus 23 por el Lungotevere",
-            "min": 15
-          }
-        },
-        {
-          "lugar": "Plaza Trilussa",
-          "min": 5,
-          "una_vez": true
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "quitar"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 10
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "modo": "atardecer",
-          "elastica": 30
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 30
-        }
-      ],
-      "cena": {
-        "restaurante": "Tonnarello",
-        "alternativa": "Trattoria Da Enzo al 29",
-        "hora": "20:30"
-      },
-      "empieza": "14:30"
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44: el Tempietto por dentro si aún está abierto (cierra a las 18:00). Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
-      "paradas": [
-        {
-          "lugar": "Via della Conciliazione",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera"
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "min": 10
-        },
-        {
-          "lugar": "Ponte Sisto",
-          "min": 10,
-          "una_vez": true,
-          "traslado_si_se_salta": {
-            "como": "el bus 23 por el Lungotevere",
-            "min": 15
-          }
-        },
-        {
-          "lugar": "Plaza Trilussa",
-          "min": 5,
-          "una_vez": true
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "quitar"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 15
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "modo": "atardecer",
-          "elastica": 30,
-          "lead": 45
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 30
-        }
-      ],
-      "cena": {
-        "restaurante": "Tonnarello",
-        "alternativa": "Trattoria Da Enzo al 29",
-        "hora": "19:30"
-      },
-      "empieza": "14:45"
-    },
-    "D": {
-      "_sol": "el Tempietto cierra a las 18:00 y el sol se pone después de las 20:00, así que no se puede entrar y ver el atardecer en el Janículo a la vez sin dos horas de espera. Se sube primero (el Tempietto por dentro, la Fontana dell'Acqua Paola y el mirador con la luz de la tarde), se baja andando hasta el Castillo, que abre hasta las 19:30, y el atardecer es desde el Puente Sant'Angelo, con los ángeles de Bernini y la cúpula de San Pedro al fondo. Trastevere, una sola vez: la cena y el paseo de noche (PROMPT_REPASO_LOCAL_ROMA, 3). La cena, cerca (en el Borgo o en Prati), y de noche el centro iluminado, al otro lado del puente.",
-      "nombre": "Vaticano, el Janículo y el Castillo al atardecer",
-      "empieza": "15:10",
-      "paradas": [
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "quitar"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 15
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "min": 20,
-          "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 45,
-          "titulo": "Pasea y piérdete por Trastevere",
-          "elastica": 30
-        },
-        {
-          "lugar": "Ponte Sisto",
-          "min": 10,
-          "una_vez": true,
-          "traslado_si_se_salta": {
-            "como": "el bus 23 por el Lungotevere",
-            "min": 15
-          }
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 20,
-          "modo": "fuera"
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "lead": 55,
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-        }
-      ],
-      "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Tonnarello",
-        "hora": "20:30"
-      },
-      "noche": "centro_iluminado",
-      "barrio_cena": "vaticano"
-    }
-  },
-  "variantes": {
-    "miercoles": {
-      "_nota": "Miércoles de audiencia: la audiencia ocupa la plaza por la mañana y la Basílica abre hacia las 12:30. Con Museos: Museos 8:00 → comida en el Borgo → Plaza y Basílica → el Castillo y el Puente → Trastevere → el Janículo al atardecer → cena en Trastevere. Sin Museos: por la mañana el Puente y el Castillo, el Borgo y Conciliazione → comida en el Borgo → Plaza y Basílica desde las 13:00 → Trastevere → el Janículo. Sin volver atrás.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Borgo Pio",
-            "min": 30,
-            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
-          }
-        ],
-        "comida": {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "13:40",
+          "min": 75,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "alternativa": "Pizzarium (Bonci)"
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "15:00",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:30",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "16:05",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:35",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "17:10",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "17:45",
+          "min": 75,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "19:20",
+          "min": 20,
+          "texto_documento": "Isla Tiberina (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello, en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:00",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
-      },
-      "nombre": "Vaticano, Castillo y Trastevere al atardecer",
-      "barrio_cena": "trastevere",
-      "tarde.A": {
-        "empieza": "13:00",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45,
-            "elastica": 30
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
+      ],
+      "B": [
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "11:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "12:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo",
+          "derivada": true
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "14:45",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino",
+          "derivada": true
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:15",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera",
+          "derivada": true
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:20",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
           }
-        ]
-      },
-      "tarde.B": {
-        "empieza": "13:00",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45,
-            "elastica": 30
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:55",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "17:35",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "17:55",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "18:25",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "19:20",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:15",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ],
+      "C": [
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "11:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "12:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo",
+          "derivada": true
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "14:45",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino",
+          "derivada": true
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:15",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera",
+          "derivada": true
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:20",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
           }
-        ]
-      },
-      "tarde.C": {
-        "empieza": "13:00",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45,
-            "elastica": 30
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:55",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "17:30",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:25",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "18:45",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:15",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:30",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "11:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "12:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo",
+          "derivada": true
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "14:45",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino",
+          "derivada": true
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:15",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera",
+          "derivada": true
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:20",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
           }
-        ]
-      },
-      "tarde.D": {
-        "empieza": "13:00",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 25
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "solo_con": "Museos Vaticanos y Capilla Sixtina"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45,
-            "elastica": 30
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
-          }
-        ]
-      }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:55",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "17:30",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Trastevere",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:45",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:05",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "paseo_la_passeggiata_del_gianicolo",
+          "hora": "19:25",
+          "min": 15,
+          "texto_documento": "La Passeggiata del Gianicolo (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Mirador del Janículo",
+          "titulo": "La Passeggiata del Gianicolo"
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "20:00",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "23:00",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ]
     },
-    "lunes": {
-      "_nota": "El Castillo y el Tempietto cierran los lunes: el Castillo por fuera desde el puente; en A, el atardecer en el Janículo (bus 115); en las demás, la Isla Tiberina y Santa Cecilia antes de subir y Santa Maria in Trastevere al bajar (Trastevere una sola vez). En D, con más luz, la tarde empieza por Borgo Pio.",
-      "tarde.A": {
-        "paradas": [
-          {
-            "lugar": "Borgo Pio",
-            "min": 30,
-            "elastica": 30,
-            "titulo": "Pasea y piérdete por Borgo Pio"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
+    "miercoles": {
+      "A": [
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio_y_prati",
+          "hora": "11:25",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio y Prati"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:20",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
+          "como_documento": "",
+          "nota": "abre tras la audiencia",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "13:55",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "15:15",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:45",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "16:20",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:50",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
           }
-        ]
-      },
-      "tarde.*": {
-        "cambiar": {
-          "Castillo de Sant'Angelo": {
-            "lugar": "Castillo de Sant'Angelo",
-            "modo": "fuera"
-          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "17:25",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:00",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello, en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:00",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
-      },
-      "tarde.D": {
-        "paradas": [
-          {
-            "lugar": "Borgo Pio",
-            "min": 30,
-            "titulo": "Pasea y piérdete por Borgo Pio"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Isla Tiberina",
-            "min": 20,
-            "traslado": {
-              "como": "un taxi",
-              "min": 15
-            },
-            "no_si_dia": [
-              "D5"
-            ]
-          },
-          {
-            "lugar": "Basílica de Santa Cecilia in Trastevere",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "elastica": 30,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "lead": 45
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
+      ],
+      "B": [
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio_y_prati",
+          "hora": "11:25",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio y Prati"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:20",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
+          "como_documento": "",
+          "nota": "abre tras la audiencia",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "13:55",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "15:15",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:45",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "16:20",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:50",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
           }
-        ]
-      },
-      "nombre": "Vaticano, Castillo y Trastevere al atardecer",
-      "tarde.B": {
-        "insertar": [
-          {
-            "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
-            "parada": {
-              "lugar": "Basílica de Santa Cecilia in Trastevere",
-              "min": 25,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "traslado": {
-                "como": "un taxi",
-                "min": 15
-              },
-              "elastica": 30,
-              "tipo": "opcional"
-            }
-          },
-          {
-            "antes_de": "Basílica de Santa Cecilia in Trastevere",
-            "parada": {
-              "lugar": "Isla Tiberina",
-              "min": 20,
-              "traslado": {
-                "como": "un taxi",
-                "min": 15
-              },
-              "no_si_dia": [
-                "D5"
-              ]
-            }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "17:25",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:05",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "18:25",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "18:55",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "19:50",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:45",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:45",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ],
+      "CD": [
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "08:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (turno de las 8:00)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio_y_prati",
+          "hora": "11:25",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio y Prati"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:20",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
+          "como_documento": "",
+          "nota": "abre tras la audiencia",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "13:55",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "15:15",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "15:45",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "16:20",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "16:50",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
           }
-        ]
-      },
-      "tarde.C": {
-        "insertar": [
-          {
-            "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
-            "parada": {
-              "lugar": "Basílica de Santa Cecilia in Trastevere",
-              "min": 25,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "traslado": {
-                "como": "un taxi",
-                "min": 15
-              },
-              "elastica": 30,
-              "tipo": "opcional"
-            }
-          },
-          {
-            "antes_de": "Basílica de Santa Cecilia in Trastevere",
-            "parada": {
-              "lugar": "Isla Tiberina",
-              "min": 20,
-              "traslado": {
-                "como": "un taxi",
-                "min": 15
-              },
-              "no_si_dia": [
-                "D5"
-              ]
-            }
-          }
-        ]
-      }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "17:25",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "18:00",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:55",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:15",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:45",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "23:00",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ]
     },
     "domingo": {
-      "_nota": "Los Museos Vaticanos cierran el domingo (el orden de los días ya evita D2 en domingo). Si no hay otro día: la Plaza, la Basílica (misa hasta las 13:00) y el Castillo por la mañana; la tarde de siempre.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "orientativa",
-            "min": 25
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Borgo Pio",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          }
-        ],
-        "comida": {
-          "restaurante": "200 Gradi",
-          "alternativa": "Pizzarium (Bonci)"
-        }
-      },
-      "tarde.*": {
-        "quitar": [
-          "Via della Conciliazione",
-          "Puente Sant'Angelo",
-          "Castillo de Sant'Angelo",
-          "Borgo Pio"
-        ]
-      }
-    },
-    "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos). Tres casos, con la MISMA condición en la mañana y en la tarde para que el Castillo vaya una sola vez: (1) con el sol antes de las 19:45, la Plaza, la Cúpula, la Basílica y el Castillo por la mañana, desde las 8:30;",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": "08:30",
-            "hora_tipo": "orientativa",
-            "min": 25,
-            "sol_hasta": "19:45"
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": "08:30",
-            "hora_tipo": "orientativa",
-            "min": 25,
-            "sol_desde": "19:45",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": "10:00",
-            "hora_tipo": "orientativa",
-            "min": 25,
-            "sol_desde": "19:45",
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "sol_hasta": "19:45"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "sol_hasta": "19:45"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_hasta": "19:45"
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "sol_desde": "19:45",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "sol_desde": "19:45",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_desde": "19:45",
-            "meses": [
-              7,
-              8
-            ]
-          }
-        ]
-      },
-      "tarde.*": {
-        "quitar": [
-          "Via della Conciliazione",
-          "Puente Sant'Angelo",
-          "Castillo de Sant'Angelo",
-          "Borgo Pio"
-        ],
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Basílica de Santa Cecilia in Trastevere",
-              "min": 25,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "tipo": "opcional"
-            }
-          }
-        ]
-      },
-      "tarde.D": {
-        "_nota": "Con el sol desde las 19:45. El resto (1 de mayo): el Castillo por la tarde, que hace que las iglesias ya estén abiertas.",
-        "paradas": [
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino",
-            "sol_desde": "19:45",
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera",
-            "sol_desde": "19:45",
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "sol_desde": "19:45",
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "orientativa",
-            "sol_desde": "19:45",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "sol_desde": "19:45",
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "sol_hasta": "19:45"
-          },
-          {
-            "lugar": "Basílica de Santa Cecilia in Trastevere",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 50,
-            "elastica": 30
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer"
-          }
-        ]
-      },
-      "nombre": "Vaticano, Castillo y Trastevere al atardecer"
-    },
-    "fecha:12-25": {
-      "_nota": "Navidad: los Museos y el Castillo cierran, y a mediodía la plaza es de la bendición del Papa. El día empieza tarde, por Borgo Pio; la Plaza y la Basílica, después de comer, cuando la plaza se ha vaciado y la Basílica vuelve a abrir. El Castillo cierra el 25: por fuera, desde el Puente, al salir de San Pedro (PARA_CODE_TARDE_VATICANO, 6).",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Borgo Pio",
-            "tipo": "fija",
-            "hora": "11:30",
-            "hora_tipo": "orientativa",
-            "min": 30,
-            "titulo": "Pasea y piérdete por Borgo Pio"
-          }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Ristorante Arlù"
-        }
-      },
-      "tarde.*": {
-        "quitar": [
-          "Borgo Pio"
-        ],
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Basílica de San Pedro",
-              "min": 60,
-              "modo": "dentro",
-              "si_cerrado": "fuera"
-            }
-          },
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza de San Pedro",
-              "min": 20
-            }
-          },
-          {
-            "despues_de": "Basílica de San Pedro",
-            "parada": {
-              "lugar": "Via della Conciliazione",
-              "modo": "camino"
-            }
-          },
-          {
-            "despues_de": "Via della Conciliazione",
-            "parada": {
-              "lugar": "Castillo de Sant'Angelo",
-              "min": 20,
-              "modo": "fuera"
-            }
-          },
-          {
-            "despues_de": "Castillo de Sant'Angelo",
-            "parada": {
-              "lugar": "Puente Sant'Angelo",
-              "min": 10
-            }
-          },
-          {
-            "antes_de": "Basílica de Santa Cecilia in Trastevere",
-            "parada": {
-              "lugar": "Isla Tiberina",
-              "min": 20,
-              "traslado": {
-                "como": "un taxi",
-                "min": 15
-              }
-            }
-          }
-        ],
-        "empieza": "13:45",
-        "ajustar": {
-          "Iglesia de Santa Maria in Trastevere": {
-            "min": 30
-          }
-        }
-      }
-    },
-    "fecha:easter-3": {
-      "_nota": "Jueves Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Misa Crismal del Papa por la mañana; la Basílica cierra a las visitas hasta las 12:00 (lo prudente, 2024; verificar en basilicasanpietro.va esa semana). La Cúpula, que se sube por dentro, tampoco; la Basílica, a partir de las 12:00, con 45-60 min más por la cola del control.",
-      "manana": {
-        "quitar": [
-          "Cúpula de San Pedro"
-        ],
-        "ajustar": {
-          "Basílica de San Pedro": {
-            "min": 100,
-            "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar.",
-            "hora": "12:00"
-          },
-          "Plaza de San Pedro": {
-            "min": 35
-          }
-        }
-      }
-    },
-    "fecha:easter-2": {
-      "_nota": "Viernes Santo (PROMPT_REPASO_LOCAL_ROMA, 5): la Pasión del Papa por la tarde; la Basílica cierra a las visitas a las 13:00 (lo prudente, 2024; verificar en basilicasanpietro.va esa semana). La Plaza y la Basílica, a primera hora (abre a las 7:00), con 45-60 min más por la cola del control; los Museos, después; la Cúpula, ese día no.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "tipo": "fija",
-            "hora": "07:30",
-            "hora_tipo": "orientativa",
-            "min": 15
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 90,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "texto": "La iglesia más grande del mundo, y entrar es gratis. Justo a la derecha nada más entrar está la Piedad de Miguel Ángel, que esculpió con 24 años. Lleva hombros y rodillas cubiertos, que lo miran en la puerta. Esta semana hay celebraciones del Papa en San Pedro: cuenta 45-60 min de cola en el control de seguridad antes de entrar."
-          },
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "10:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          }
-        ]
-      }
-    },
-    "entrada:mediodia": {
-      "_nota": "Orden 2 (entrada de 11:30 a 12:30): la Plaza, la Basílica y la Cúpula a primera hora, Borgo Pio que absorbe hasta llegar a los Museos, y comida al salir (puede ser a las 15:00 o las 15:30: la hora la eligió el viajero). Tarde: en A, el Puente Sant'Angelo al atardecer con el Castillo por fuera; en B, C y D, las de siempre.",
-      "manana": {
-        "empieza": "07:30",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "opcional",
-            "entrada": true
-          },
-          {
-            "lugar": "Borgo Pio",
-            "min": 20,
-            "titulo": "Pasea y piérdete por Borgo Pio",
-            "elastica": 90
-          },
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "12:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Borghiciana Pastificio Artigianale"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10,
-            "modo": "atardecer",
-            "lead": 30,
-            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "20:00"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Ponte Sisto",
-            "min": 10,
-            "una_vez": true,
-            "traslado_si_se_salta": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          },
-          {
-            "lugar": "Plaza Trilussa",
-            "min": 5,
-            "una_vez": true
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 10
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "elastica": 30
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 30
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "20:30"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Ponte Sisto",
-            "min": 10,
-            "una_vez": true,
-            "traslado_si_se_salta": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          },
-          {
-            "lugar": "Plaza Trilussa",
-            "min": 5,
-            "una_vez": true
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "elastica": 30,
-            "lead": 45
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 30
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "min": 20,
-            "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45,
-            "titulo": "Pasea y piérdete por Trastevere",
-            "elastica": 30
-          },
-          {
-            "lugar": "Ponte Sisto",
-            "min": 10,
-            "una_vez": true,
-            "traslado_si_se_salta": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "modo": "atardecer",
-            "lead": 55,
-            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
-          }
-        ],
-        "cena": {
-          "restaurante": "L'Arcangelo",
-          "alternativa": "Tonnarello",
-          "hora": "20:30"
+      "AB": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
         },
-        "noche": "centro_iluminado",
-        "barrio_cena": "vaticano"
-      }
-    },
-    "entrada:mediodia@lunes": {
-      "_nota": "Lunes: el Tempietto cierra (si cierra, se quita) y el Castillo ya va por fuera.",
-      "manana": {},
-      "tarde.*": {}
-    },
-    "entrada:mediodia@miercoles": {
-      "_nota": "Miércoles con el orden 2: la Plaza y la Basílica no abren hasta las 12:30. La mañana empieza a las 9:00 con el Puente Sant'Angelo, el Castillo por fuera y Borgo Pio (elástica); después, los Museos y la comida; la Plaza y la Basílica, después de comer. La Cúpula, ese día, no.",
-      "manana": {
-        "empieza": "09:00",
-        "paradas": [
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Borgo Pio",
-            "min": 20,
-            "titulo": "Pasea y piérdete por Borgo Pio",
-            "elastica": 90
-          },
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "12:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Borghiciana Pastificio Artigianale"
-        }
-      },
-      "tarde.*": {
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Basílica de San Pedro",
-              "min": 60,
-              "modo": "dentro",
-              "si_cerrado": "fuera"
-            }
-          },
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza de San Pedro",
-              "min": 25
-            }
-          }
-        ]
-      }
-    },
-    "entrada:mediodia@domingo": {
-      "_nota": "El último domingo de mes los Museos abren de 9:00 a 14:00 (última entrada 12:30): solo cabe el orden 2, tal cual."
-    },
-    "entrada:primera_tarde": {
-      "_nota": "Orden 3 (entrada de 13:00 a 14:00): por la mañana la Plaza, la Basílica, la Cúpula, el Puente y el Castillo por fuera y Borgo Pio (que absorbe); comida antes de la entrada (Borghiciana o 200 Gradi) y los Museos de tarde. Después, según la luz: en A, sin atardecer (sales de noche); en B, el Janículo al atardecer subiendo en bus; en C y D, el Tempietto, la Fontana y el Janículo. La comida, rápida (30 min) desde las 12:00 en Pizzarium (Bonci), a dos minutos de los Museos.",
-      "manana": {
-        "empieza": "07:30",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "opcional",
-            "entrada": true
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Borgo Pio",
-            "min": 20,
-            "titulo": "Pasea y piérdete por Borgo Pio",
-            "elastica": 60
-          }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Borghiciana Pastificio Artigianale"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "13:30",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "20:30"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "13:30",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer",
-            "traslado": {
-              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
-              "min": 20
-            }
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 20,
-            "modo": "fuera",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "20:30"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "13:30",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "20:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "13:30",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 15
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 45
-          }
-        ],
-        "cena": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29",
-          "hora": "21:00"
-        }
-      }
-    },
-    "entrada:primera_tarde@lunes": {
-      "_nota": "Lunes: el Tempietto cierra (si cierra, se quita) y el Castillo ya va por fuera.",
-      "manana": {},
-      "tarde.*": {}
-    },
-    "entrada:primera_tarde@miercoles": {
-      "_nota": "Miércoles con el orden 3 (entrada de 13:00 a 14:00): la mañana como la del orden 2 del miércoles: a las 9:00 el Puente Sant'Angelo, el Castillo por fuera y «Pasea y piérdete por Borgo Pio» (elástica); luego comida rápida en Pizzarium (Bonci), los Museos a su hora, y la Plaza y la Basílica de San Pedro después de los Museos (la Basílica, ese día, abre a las 12:30 y cierra a las 20:00; PARA_CODE_ROJOS, 5).",
-      "manana": {
-        "empieza": "09:00",
-        "paradas": [
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Borgo Pio",
-            "min": 20,
-            "titulo": "Pasea y piérdete por Borgo Pio",
-            "elastica": 90
-          }
-        ],
-        "comida": {
-          "restaurante": "Pizzarium (Bonci)",
-          "alternativa": "Borghiciana Pastificio Artigianale"
-        }
-      },
-      "tarde.*": {
-        "insertar": [
-          {
-            "despues_de": "Museos Vaticanos y Capilla Sixtina",
-            "parada": {
-              "lugar": "Basílica de San Pedro",
-              "min": 60,
-              "modo": "dentro",
-              "si_cerrado": "fuera"
-            }
-          },
-          {
-            "despues_de": "Museos Vaticanos y Capilla Sixtina",
-            "parada": {
-              "lugar": "Plaza de San Pedro",
-              "min": 25
-            }
-          }
-        ]
-      }
-    },
-    "entrada:tarde": {
-      "_nota": "Orden 4 (entrada de 14:30 a 18:00): la Plaza, la Basílica y la Cúpula a primera hora; el Janículo y Trastevere, de día; los Museos, por la tarde (hasta el cierre, 20:00, como mucho); y la cena en el Borgo. El atardecer solo en D, si sales antes de la puesta: el Puente Sant'Angelo. En A, B y C, el viajero manda: sin atardecer. Noche: el Castillo y el Puente iluminados.",
-      "manana": {
-        "empieza": "07:30",
-        "paradas": [
-          {
-            "lugar": "Plaza de San Pedro",
-            "min": 20
-          },
-          {
-            "lugar": "Basílica de San Pedro",
-            "min": 60,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Cúpula de San Pedro",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true
-          },
-          {
-            "lugar": "Via della Conciliazione",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Ponte Sisto",
-            "min": 10,
-            "una_vez": true,
-            "traslado_si_se_salta": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          },
-          {
-            "lugar": "Plaza Trilussa",
-            "min": 5,
-            "una_vez": true
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 10
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "min": 20,
-            "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
-          }
-        ],
-        "comida": {
-          "restaurante": "Tonnarello",
-          "alternativa": "Trattoria Da Enzo al 29"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere o andando",
-              "min": 30
-            }
-          }
-        ],
-        "cena": {
-          "restaurante": "L'Arcangelo",
-          "alternativa": "Tonnarello",
-          "hora": "20:30"
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:35",
+          "min": 90,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
         },
-        "noche": "centro_iluminado",
-        "barrio_cena": "vaticano"
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere o andando",
-              "min": 30
-            }
-          }
-        ],
-        "cena": {
-          "restaurante": "L'Arcangelo",
-          "alternativa": "Tonnarello",
-          "hora": "20:30"
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "11:20",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
         },
-        "noche": "centro_iluminado",
-        "barrio_cena": "vaticano"
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere o andando",
-              "min": 30
-            }
-          }
-        ],
-        "cena": {
-          "restaurante": "L'Arcangelo",
-          "alternativa": "Tonnarello",
-          "hora": "20:30"
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "11:55",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
         },
-        "noche": "centro_iluminado",
-        "barrio_cena": "vaticano"
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Museos Vaticanos y Capilla Sixtina",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 180,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "traslado": {
-              "como": "el bus 23 por el Lungotevere o andando",
-              "min": 30
-            }
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "modo": "atardecer",
-            "lead": 55,
-            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "L'Arcangelo",
-          "alternativa": "Tonnarello",
-          "hora": "20:30"
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "12:25",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
         },
-        "noche": "centro_iluminado",
-        "barrio_cena": "vaticano"
-      }
-    },
-    "entrada:tarde@lunes": {
-      "_nota": "Lunes: el Tempietto cierra (si cierra, se quita) y el Castillo ya va por fuera.",
-      "manana": {},
-      "tarde.*": {}
-    },
-    "entrada:tarde@miercoles": {
-      "_nota": "Miércoles con el orden 4: la mañana empieza por el Puente y el Castillo y sigue con Trastevere y el Janículo. La Plaza y la Basílica, después de comer y antes de los Museos, solo si la entrada es a las 15:30 o más tarde; si no, quedan fuera ese día.",
-      "manana": {
-        "empieza": "07:30",
-        "paradas": [
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 10
-          },
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 20,
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Ponte Sisto",
-            "min": 10,
-            "una_vez": true,
-            "traslado_si_se_salta": {
-              "como": "el bus 23 por el Lungotevere",
-              "min": 15
-            }
-          },
-          {
-            "lugar": "Plaza Trilussa",
-            "min": 5,
-            "una_vez": true
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Fontana dell'Acqua Paola",
-            "min": 10
-          },
-          {
-            "lugar": "Mirador del Janículo",
-            "min": 20,
-            "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
-          }
-        ]
-      },
-      "tarde.*": {
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Basílica de San Pedro",
-              "min": 60,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "si_entrada_desde": "15:30"
-            }
-          },
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza de San Pedro",
-              "min": 25,
-              "si_entrada_desde": "15:30"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "experiencias": {
-    "naturaleza_vistas": {
-      "_nota": "Naturaleza y vistas: la Cúpula no es opcional.",
-      "manana": {
-        "ajustar": {
-          "Cúpula de San Pedro": {
-            "tipo": "normal"
-          }
-        }
-      }
-    },
-    "barrios_sabores": {
-      "_nota": "Barrios: Borgo Pio de verdad, no de paso.",
-      "manana": {},
-      "tarde.*": {
-        "ajustar": {
-          "Borgo Pio": {
-            "modo": "parada",
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "13:00",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "13:35",
+          "min": 75,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
             "min": 20
           }
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "15:45",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:25",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "17:05",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "17:25",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "17:55",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:50",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:15",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
-      }
-    }
-  },
-  "entradas": {
-    "Museos Vaticanos y Capilla Sixtina": {
-      "manana": [
-        "08:00",
-        "11:00"
       ],
-      "mediodia": [
-        "11:30",
-        "12:30"
+      "CD": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:35",
+          "min": 90,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "11:20",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "11:55",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "12:25",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "13:00",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "13:35",
+          "min": 75,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "15:45",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:25",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "17:00",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Trastevere",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:00",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:30",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "23:00",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ]
+    },
+    "reserva_10_12": {
+      "AB": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "08:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
+          "hora": "10:35",
+          "min": 35,
+          "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "12:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "15:25",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "16:30",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "17:00",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "17:35",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "18:05",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "18:40",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "19:15",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:00",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
       ],
-      "primera_tarde": [
-        "13:00",
-        "14:00"
+      "CD": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "08:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
+          "hora": "10:35",
+          "min": 35,
+          "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "12:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "15:25",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "16:30",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "17:00",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "17:35",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "18:05",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "18:40",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "19:20",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:40",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "20:10",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "21:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "23:15",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ]
+    },
+    "reserva_13": {
+      "AB": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "08:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
+          "hora": "10:35",
+          "min": 50,
+          "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
+        },
+        {
+          "id": "comida_pizzarium_bonci",
+          "hora": "11:45",
+          "min": 25,
+          "texto_documento": "**Comida rápida:** Pizzarium, al lado de los Museos",
+          "como_documento": "",
+          "tipo": "comida",
+          "rapida": true,
+          "restaurante": "Pizzarium (Bonci)",
+          "zona": "al lado de los Museos"
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "13:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "16:05",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "16:35",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "17:10",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "17:40",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "18:15",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:50",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:15",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
       ],
-      "tarde": [
-        "14:30",
-        "16:00"
+      "CD": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "08:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
+          "hora": "10:35",
+          "min": 50,
+          "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
+        },
+        {
+          "id": "comida_pizzarium_bonci",
+          "hora": "11:45",
+          "min": 25,
+          "texto_documento": "**Comida rápida:** Pizzarium, al lado de los Museos",
+          "como_documento": "",
+          "tipo": "comida",
+          "rapida": true,
+          "restaurante": "Pizzarium (Bonci)",
+          "zona": "al lado de los Museos"
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "13:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "16:05",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "16:35",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "17:10",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "17:40",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "18:15",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:55",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:15",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:45",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "23:00",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ]
+    },
+    "reserva_14_16": {
+      "ABC": [
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "09:00",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "09:35",
+          "min": 25,
+          "texto_documento": "Pasea y piérdete por Trastevere",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "10:15",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "10:35",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "11:05",
+          "min": 25,
+          "texto_documento": "Mirador del Janículo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": null
+        },
+        {
+          "id": "paseo_la_passeggiata_del_gianicolo_bajando_hasta_san_pedro",
+          "hora": "11:40",
+          "min": 35,
+          "texto_documento": "La Passeggiata del Gianicolo, bajando hasta San Pedro",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Mirador del Janículo",
+          "titulo": "La Passeggiata del Gianicolo, bajando hasta San Pedro"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:35",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:55",
+          "min": 15,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "14:25",
+          "min": 45,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "16:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
+          "hora": "21:25",
+          "min": 30,
+          "texto_documento": "El Puente y el Castillo de Sant'Angelo iluminados",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "09:00",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "09:35",
+          "min": 25,
+          "texto_documento": "Pasea y piérdete por Trastevere",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "10:15",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "10:35",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "11:05",
+          "min": 25,
+          "texto_documento": "Mirador del Janículo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": null
+        },
+        {
+          "id": "paseo_la_passeggiata_del_gianicolo_bajando_hasta_san_pedro",
+          "hora": "11:40",
+          "min": 35,
+          "texto_documento": "La Passeggiata del Gianicolo, bajando hasta San Pedro",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Mirador del Janículo",
+          "titulo": "La Passeggiata del Gianicolo, bajando hasta San Pedro"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:35",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:55",
+          "min": 15,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "14:25",
+          "min": 45,
+          "texto_documento": "Basílica de San Pedro (con el control)",
+          "como_documento": "por dentro",
+          "nota": "con el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_museos_vaticanos_y_capilla_sixtina",
+          "hora": "16:00",
+          "min": 180,
+          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Museos Vaticanos y Capilla Sixtina",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "19:25",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "20:30",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
+          "hora": "22:25",
+          "min": 30,
+          "texto_documento": "El Puente y el Castillo de Sant'Angelo iluminados",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
+        }
       ]
     }
-  },
-  "_nota_entradas": "Entrada reservada a los Museos (3-oct-2026, PARA_CODE_D1_D2_D4_SEGUNDO_ORDEN): el orden de siempre sirve de 8:00 a 11:00; `entrada:mediodia` (11:30-12:30), `entrada:primera_tarde` (13:00-14:00) y `entrada:tarde` (14:30-18:00) son los órdenes nuevos. La hora de la parada de los Museos de cada variante es solo un ejemplo: la que vale es la reservada (siempre se llega 30 min antes). Lo que cambia en un día de la semana con cada orden va en `entrada:<franja>@<día>`."
+  }
 }

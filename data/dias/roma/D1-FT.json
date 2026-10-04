@@ -1,616 +1,827 @@
 {
-  "_nota": "D1-FT escrito (2026-09-29): Roma antigua por la mañana; por la tarde el Ghetto, la Isla Tiberina y Trastevere hasta el Janículo. Se sube andando por el Tempietto si se llega antes de su última entrada (17:30); si no, se ve por fuera. (30-sep: el 1 de enero el Coliseo y el Foro suelen abrir con horario corto, colosseo.it; fuera la variante del 1 de enero y su no_en: el reparto evita ese día si puede por el horario especial probable.)",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D1-FT",
-  "nombre": "Roma Antigua, el Ghetto y Trastevere al atardecer",
-  "joyas": [
-    "Coliseo"
-  ],
-  "no_en": [
-    {
-      "fecha": "12-25"
-    }
-  ],
-  "barrio_cena": "trastevere",
-  "noche": "trastevere",
-  "manana": {
-    "paradas": [
-      {
-        "lugar": "Coliseo",
-        "tipo": "fija",
-        "hora": "08:30",
-        "hora_tipo": "turno",
-        "min": 85,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera",
-        "turno": true
-      },
-      {
-        "lugar": "Arco de Constantino",
-        "min": 10
-      },
-      {
-        "lugar": "Foro Romano y Palatino",
-        "min": 100,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera"
-      },
-      {
-        "lugar": "Plaza del Campidoglio",
-        "tipo": "opcional",
-        "min": 15,
-        "no_si_dia": [
-          "D5"
-        ]
-      },
-      {
-        "lugar": "Plaza Venecia",
-        "modo": "camino"
-      },
-      {
-        "lugar": "Altar de la Patria",
-        "min": 30,
-        "modo": "dentro",
-        "si_cerrado": "fuera"
-      }
-    ],
-    "comida": {
-      "restaurante": "Giggetto al Portico d'Ottavia",
-      "alternativa": "Nonna Betta"
-    }
-  },
-  "tarde": {
-    "empieza": "15:00",
-    "A": {
-      "_sol": "antes de las 17:40: el Ghetto y la Isla sin prisas; se sube por el Tempietto y la Acqua Paola al Janículo para el atardecer y se baja a Santa Maria in Trastevere. Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
-      "paradas": [
+  "nombre": "Día de la Roma antigua, el Gueto y Trastevere",
+  "versiones": {
+    "normal": {
+      "A": [
         {
-          "lugar": "Barrio Judío",
-          "min": 20
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
         },
         {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_giggetto_al_portico_d_ottavia",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
+          "como_documento": "",
+          "nota": "o Nonna Betta",
+          "tipo": "comida",
+          "restaurante": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 25,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:30",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Fuente de las Tortugas",
           "modo": "camino"
         },
         {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "15:40",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Teatro de Marcelo",
           "modo": "camino"
         },
         {
-          "lugar": "Isla Tiberina",
-          "min": 15,
-          "elastica": 30
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "id": "parada_isla_tiberina",
+          "hora": "16:00",
           "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
         },
         {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "16:40",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "17:00",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "min": 10
+          "modo": null
         },
         {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "17:30",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
           "lugar": "Mirador del Janículo",
           "modo": "atardecer"
         },
         {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "modo": "dentro"
         },
         {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:55",
+          "min": 35,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
           "lugar": "Trastevere",
-          "min": 30
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Da Enzo al 29",
-        "alternativa": "Tonnarello",
-        "hora": "19:30"
-      },
-      "empieza": "14:10"
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44: Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
-      "paradas": [
-        {
-          "lugar": "Barrio Judío",
-          "min": 25
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
         },
         {
-          "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "19:45",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
+          "como_documento": "",
+          "nota": "o Tonnarello",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29"
         },
         {
-          "lugar": "Teatro de Marcelo",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Isla Tiberina",
-          "min": 20,
-          "elastica": 30
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 15
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 30
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Da Enzo al 29",
-        "alternativa": "Tonnarello",
-        "hora": "20:30"
-      },
-      "empieza": "14:40"
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44: Santa Cecilia antes de subir; el Tempietto por dentro si aún está abierto (cierra a las 18:00). Trastevere una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3): se sube andando por el Tempietto (por dentro si aún está abierto), la Fontana dell'Acqua Paola y el mirador para el atardecer, y se baja a Trastevere para Santa Maria in Trastevere, el aperitivo y la cena. Sin el paseo por Trastevere antes de subir.",
-      "empieza": "15:00",
-      "paradas": [
-        {
-          "lugar": "Barrio Judío",
-          "min": 35
-        },
-        {
-          "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Teatro de Marcelo",
-          "modo": "camino"
-        },
-        {
-          "lugar": "Isla Tiberina",
-          "min": 30,
-          "elastica": 30
-        },
-        {
-          "lugar": "Basílica de Santa Cecilia in Trastevere",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "tipo": "opcional"
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "dentro",
-          "min": 15,
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 15
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "modo": "atardecer",
-          "lead": 45
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 30
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Da Enzo al 29",
-        "alternativa": "Tonnarello",
-        "hora": "19:30"
-      }
-    },
-    "D": {
-      "_sol": "desde las 19:45 (de mayo a agosto): el Tempietto cierra a las 18:00, así que se sube antes, con el Janículo a la luz de la tarde; se baja a Santa Maria in Trastevere y al barrio, y el atardecer es en el Ponte Sisto, a dos pasos. Trastevere, una sola vez (PROMPT_REPASO_LOCAL_ROMA, 3).",
-      "empieza": "15:20",
-      "paradas": [
-        {
-          "lugar": "Barrio Judío",
-          "min": 25,
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Fuente de las Tortugas",
-          "modo": "camino",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Teatro de Marcelo",
-          "modo": "camino",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Isla Tiberina",
-          "min": 20,
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Basílica de Santa Cecilia in Trastevere",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ],
-          "tipo": "opcional"
-        },
-        {
-          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Fontana dell'Acqua Paola",
-          "min": 15
-        },
-        {
-          "lugar": "Mirador del Janículo",
-          "min": 20,
-          "texto": "Desde la balaustrada del Piazzale Garibaldi tienes Roma entera delante, cúpula a cúpula: con la luz de la tarde se distinguen el Panteón, Sant'Andrea della Valle y el Altar de la Patria. Aquí arriba se está fresco y sin prisa."
-        },
-        {
-          "lugar": "Basílica de Santa Cecilia in Trastevere",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ],
-          "tipo": "opcional"
-        },
-        {
-          "lugar": "Isla Tiberina",
-          "min": 20,
-          "meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Trastevere",
-          "min": 45,
-          "elastica": 45
-        },
-        {
-          "lugar": "Ponte Sisto",
-          "modo": "atardecer",
-          "texto": "El puente de peatones entre Trastevere y el centro. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
-          "una_vez": true
-        }
-      ],
-      "cena": {
-        "restaurante": "Dar Filettaro a Santa Barbara",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "20:30"
-      },
-      "_verano": "Julio y agosto: después de comer en el Ghetto, el Tempietto (a cubierto, en taxi) y el descanso hasta las 16:30; luego la Acqua Paola y el Janículo, se baja a Santa Cecilia (abre de 16:30 a 18:30), la Isla Tiberina, Santa Maria in Trastevere, el barrio y el Ponte Sisto al atardecer.",
-      "noche": "centro_iluminado",
-      "_noche": "La tarde ya es de Trastevere (el barrio, el Ponte Sisto y la cena): de noche, el centro iluminado al otro lado del puente, no otra vuelta por Trastevere.",
-      "barrio_cena": "centro_historico",
-      "_cena": "Después del atardecer en el Ponte Sisto se cruza al otro lado: la cena, junto a Campo de' Fiori, sin volver a Trastevere."
-    }
-  },
-  "variantes": {
-    "lunes": {
-      "_nota": "El Tempietto cierra los lunes: por fuera.",
-      "tarde.*": {
-        "cambiar": {
-          "San Pietro in Montorio y Tempietto de Bramante": {
-            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-            "modo": "fuera"
-          }
-        }
-      }
-    },
-    "domingo": {
-      "_nota": "Trattoria Da Enzo cierra el domingo.",
-      "tarde.*": {
-        "restaurante": {
-          "cena": "Tonnarello",
-          "alternativa": "Taverna Trilussa"
-        }
-      }
-    },
-    "fecha:primer_domingo": {
-      "_nota": "Primer domingo de mes: el Coliseo y el Foro son gratis y sin reserva, con mucha cola: se llega antes de que abra.",
-      "manana": {
-        "ajustar": {
-          "Coliseo": {
-            "hora": "08:15",
-            "texto": "El primer domingo de mes el Coliseo es gratis y es el día de más cola del mes: llega antes de que abra. No se reserva: las entradas se recogen en la taquilla (en la plaza del Coliseo, junto al Templo de Venus y Roma, o en Largo della Salara Vecchia), por orden de llegada, y solo valen para ese día. Ese día no se sube a los niveles de arriba ni se baja a la arena ni a los subterráneos."
-          }
-        }
-      },
-      "_fuente": "colosseo.it (#domenicalmuseo: «non si prenotano», «in ordine di arrivo», taquillas de la plaza del Coliseo y Largo della Salara Vecchia; sin nivel superior, arena ni subterráneos), consultado el 30-09-2026. Fuera «poca cola, casi vacío» ese día (PROMPT_REPASO_LOCAL_ROMA, 5)."
-    },
-    "fecha:12-25": {
-      "_nota": "Navidad (como en D1): el Coliseo y el Foro cierran y se ven por fuera. El día empieza más tarde y el Barrio Judío pasa a la mañana.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "10:15",
-            "hora_tipo": "orientativa",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Arco de Constantino",
+          "id": "traslado_un_taxi",
+          "hora": "21:25",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
             "min": 10
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Teatro de Marcelo",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Barrio Judío",
-            "min": 25
           }
-        ]
-      },
-      "tarde.*": {
-        "quitar": [
-          "Barrio Judío",
-          "Teatro de Marcelo"
-        ]
-      }
-    },
-    "empieza_tarde": {
-      "_nota": "El día empieza más tarde por una fecha especial (el 1 de enero tras la Nochevieja): el Campidoglio y el Altar de la Patria pasan a la tarde, no se quitan.",
-      "manana": {
-        "quitar": [
-          "Plaza del Campidoglio",
-          "Plaza Venecia",
-          "Altar de la Patria"
-        ]
-      },
-      "tarde.*": {
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Altar de la Patria",
-              "min": 30,
-              "modo": "dentro",
-              "si_cerrado": "fuera"
-            }
-          },
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza Venecia",
-              "modo": "camino"
-            }
-          },
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza del Campidoglio",
-              "min": 15
-            }
-          }
-        ]
-      }
-    },
-    "fecha:12-25&D3@12-24": {
-      "_nota": "25 de diciembre en un viaje en el que el día del Vaticano cae el 24 (los viajes de 2 días): el Free Tour va aquí, a las 12:00, que es la única hora a la que sale (calendario de reserva de Civitatis, 2026-09-30). La mañana empieza tarde, por Trevi; se come al acabar el tour, junto a Navona; y la tarde baja por el Ghetto y la Isla Tiberina hasta Trastevere. El Coliseo ya se vio el día anterior.",
-      "nombre": "Free Tour y Trastevere",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Desayuno romano",
-            "tipo": "opcional",
-            "min": 30
-          },
-          {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "12:00",
-            "hora_tipo": "turno",
-            "min": 150
-          }
-        ],
-        "comida": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
         },
-        "empieza": "11:10"
-      },
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Barrio Judío",
-            "min": 25
-          },
-          {
-            "lugar": "Isla Tiberina",
-            "min": 15
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 40
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "empieza": "15:45"
-      },
-      "_nota_trevi": "Sin Trevi suelto por la mañana: el Free Tour de las 12:00 ya pasa por Trevi (PROMPT_REPASO_LOCAL_ROMA, 1)."
-    },
-    "fecha:01-01&D3@12-31": {
-      "_nota": "1 de enero en un viaje en el que el día del Vaticano cae el 31 (los viajes de 2 días): el Free Tour va aquí, a las 12:00, que es la única hora a la que sale (calendario de reserva de Civitatis, 2026-09-30). La mañana empieza tarde, por Trevi; se come al acabar el tour, junto a Navona; y la tarde baja por el Ghetto y la Isla Tiberina hasta Trastevere. El Coliseo ya se vio el día anterior.",
-      "nombre": "Free Tour y Trastevere",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Desayuno romano",
-            "tipo": "opcional",
-            "min": 30
-          },
-          {
-            "lugar": "Free Tour Centro Histórico",
-            "tipo": "fija",
-            "hora": "12:00",
-            "hora_tipo": "turno",
-            "min": 150
-          }
-        ],
-        "comida": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "21:50",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
         },
-        "empieza": "11:10"
-      },
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "quitar"
-          },
-          {
-            "lugar": "Barrio Judío",
-            "min": 25
-          },
-          {
-            "lugar": "Isla Tiberina",
-            "min": 15
-          },
-          {
-            "lugar": "Trastevere",
-            "min": 40
-          },
-          {
-            "lugar": "Iglesia de Santa Maria in Trastevere",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "empieza": "15:45"
-      },
-      "_nota_trevi": "Sin Trevi suelto por la mañana: el Free Tour de las 12:00 ya pasa por Trevi (PROMPT_REPASO_LOCAL_ROMA, 1)."
-    },
-    "sabado": {
-      "_nota": "Sábado (PROMPT_REPASO_LOCAL_ROMA, 3): el Ghetto descansa y muchos negocios judíos cierran; la comida, fuera (el Antico Forno Roscioli, a cinco minutos) y el Barrio Judío con su texto de sábado, sin las alcachofas.",
-      "manana": {
-        "comida": {
-          "restaurante": "Antico Forno Roscioli",
-          "alternativa": "Supplizio"
+        {
+          "id": "noche_plaza_de_espana_noche",
+          "hora": "22:30",
+          "min": 20,
+          "texto_documento": "Plaza de España de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Plaza de España (noche)"
         }
-      },
-      "tarde.*": {
-        "ajustar": {
-          "Barrio Judío": {
-            "texto": "Es uno de los barrios judíos más antiguos de Europa. El sábado es su día de descanso: muchos comercios y restaurantes cierran y las calles se quedan tranquilas. Busca el Pórtico de Octavia, unas ruinas romanas en mitad de la calle, y la Gran Sinagoga, junto al río."
+      ],
+      "B": [
+        {
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_giggetto_al_portico_d_ottavia",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
+          "como_documento": "",
+          "nota": "o Nonna Betta",
+          "tipo": "comida",
+          "restaurante": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 25,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:30",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "15:40",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:40",
+          "min": 20,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "17:15",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "17:35",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "18:05",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "19:00",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "20:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
+          "como_documento": "",
+          "nota": "o Tonnarello",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:55",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "22:20",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
         }
-      }
-    }
-  },
-  "experiencias": {
-    "naturaleza_vistas": {
-      "_nota": "Naturaleza y vistas: al Janículo con tiempo para buscar sitio en la balaustrada.",
-      "tarde.*": {
-        "ajustar": {
-          "Mirador del Janículo": {
-            "lead": 40
+      ],
+      "C": [
+        {
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_giggetto_al_portico_d_ottavia",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
+          "como_documento": "",
+          "nota": "o Nonna Betta",
+          "tipo": "comida",
+          "restaurante": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 25,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:30",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "15:40",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:40",
+          "min": 20,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "17:10",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:25",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "18:45",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:15",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "20:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
+          "como_documento": "",
+          "nota": "o Tonnarello",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:55",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "22:20",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
         }
-      }
-    },
-    "mercadillos_navidenos": {
-      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas. Opcional: si la comida no cabe, es lo primero que se quita.",
-      "manana": {
-        "insertar": [
-          {
-            "antes_de": "Plaza Venecia",
-            "parada": {
-              "lugar": "Santo Bambino de Aracoeli",
-              "modo": "camino",
-              "tipo": "opcional"
-            }
+      ],
+      "D": [
+        {
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_giggetto_al_portico_d_ottavia",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
+          "como_documento": "",
+          "nota": "o Nonna Betta",
+          "tipo": "comida",
+          "restaurante": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 25,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:30",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "15:40",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:40",
+          "min": 20,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "17:10",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Trastevere",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:35",
+          "min": 20,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:10",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "paseo_la_passeggiata_del_gianicolo",
+          "hora": "19:30",
+          "min": 15,
+          "texto_documento": "La Passeggiata del Gianicolo (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Mirador del Janículo",
+          "titulo": "La Passeggiata del Gianicolo"
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "20:05",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "21:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
+          "como_documento": "",
+          "nota": "o Tonnarello",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "22:55",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi (en julio y agosto)",
+          "como_documento": "",
+          "nota": "en julio y agosto",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
-        ]
-      }
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "23:20",
+          "min": 15,
+          "texto_documento": "Fontana de Trevi iluminada (en julio y agosto)",
+          "como_documento": "de noche",
+          "nota": "en julio y agosto",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)",
+          "solo_meses": [
+            7,
+            8
+          ]
+        }
+      ]
     }
   }
 }

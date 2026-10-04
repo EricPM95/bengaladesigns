@@ -1,1132 +1,988 @@
 {
-  "_nota": "D1 escrito (2026-09-29), sacado de los días curados y corregido con las lecciones: el Gesù entra (abre a las 16:00), sin atardecer (la tarde del centro no depende del sol; (30-sep: el 1 de enero el Coliseo y el Foro suelen abrir con horario corto, colosseo.it; fuera la variante del 1 de enero y su no_en: el reparto evita ese día si puede por el horario especial probable.)",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D1",
-  "nombre": "Roma Antigua y el centro barroco",
-  "joyas": [
-    "Coliseo",
-    "Panteón"
-  ],
-  "no_en": [
-    {
-      "fecha": "12-25"
-    }
-  ],
-  "barrio_cena": "centro_historico",
-  "noche": "fuentes",
-  "manana": {
-    "paradas": [
-      {
-        "lugar": "Coliseo",
-        "tipo": "fija",
-        "hora": "08:30",
-        "hora_tipo": "turno",
-        "min": 85,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera",
-        "turno": true
-      },
-      {
-        "lugar": "Arco de Constantino",
-        "min": 10
-      },
-      {
-        "lugar": "Foro Romano y Palatino",
-        "min": 100,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera",
-        "no_meses": [
-          7,
-          8
-        ]
-      },
-      {
-        "lugar": "Foro Romano y Palatino",
-        "min": 90,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera",
-        "meses": [
-          7,
-          8
-        ]
-      },
-      {
-        "lugar": "Plaza del Campidoglio",
-        "tipo": "opcional",
-        "min": 15,
-        "no_si_dia": [
-          "D5"
-        ]
-      },
-      {
-        "lugar": "Plaza Venecia",
-        "modo": "camino",
-        "no_meses": [
-          7,
-          8
-        ]
-      },
-      {
-        "lugar": "Altar de la Patria",
-        "min": 40,
-        "modo": "dentro",
-        "si_cerrado": "fuera",
-        "no_meses": [
-          7,
-          8
-        ]
-      }
-    ],
-    "comida": {
-      "restaurante": "Nonna Betta",
-      "alternativa": "Giggetto al Portico d'Ottavia"
-    }
-  },
-  "tarde": {
-    "empieza": "14:45",
-    "A": {
-      "_sol": "sin mirador: el centro barroco; la noche de las fuentes va antes de cenar",
-      "paradas": [
+  "nombre": "Día de la Roma antigua",
+  "versiones": {
+    "normal": {
+      "AB": [
         {
-          "lugar": "Panteón",
-          "min": 30,
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
           "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
         },
         {
-          "lugar": "Elefantino de Bernini",
-          "modo": "camino",
-          "meses": [
-            7,
-            8
-          ]
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
         },
         {
-          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
           "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
         },
         {
-          "lugar": "Iglesia de San Luigi dei Francesi",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Barrio Judío",
-          "min": 30,
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Fuente de las Tortugas",
-          "modo": "camino",
-          "tipo": "opcional",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Largo di Torre Argentina",
-          "min": 15
-        },
-        {
-          "lugar": "Iglesia del Gesù",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "tipo": "opcional"
-        },
-        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino",
-          "meses": [
-            7,
-            8
-          ]
+          "modo": "camino"
         },
         {
-          "lugar": "Altar de la Patria",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Iglesia de Santa Maria sopra Minerva",
-          "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Elefantino de Bernini",
-          "modo": "camino",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Panteón",
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
           "min": 30,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ]
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
         },
         {
-          "lugar": "Iglesia de San Luigi dei Francesi",
+          "id": "comida_nonna_betta",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "nota": "o Giggetto",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:35",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:45",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "16:05",
           "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ]
+          "texto_documento": "Iglesia del Gesù (abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "dentro"
         },
         {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "16:35",
+          "min": 5,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "16:40",
+          "min": 5,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "17:00",
+          "min": 30,
+          "texto_documento": "Panteón",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:45",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "18:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
           "lugar": "Piazza Navona",
-          "min": 30
+          "modo": null
         },
         {
+          "id": "parada_campo_de_fiori",
+          "hora": "19:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "parada",
           "lugar": "Campo de' Fiori",
-          "min": 30
+          "modo": null
+        },
+        {
+          "id": "cena_armando_al_pantheon",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+          "como_documento": "",
+          "nota": "o Da Baffetto",
+          "tipo": "cena",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "21:50",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
+        },
+        {
+          "id": "noche_plaza_de_espana_noche",
+          "hora": "22:30",
+          "min": 20,
+          "texto_documento": "Plaza de España de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Plaza de España (noche)"
         }
       ],
-      "cena": {
-        "restaurante": "Armando al Pantheon",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "20:00"
-      }
-    },
-    "B": "igual que A",
-    "C": {
-      "empieza": "14:30",
-      "paradas": [
+      "C": [
         {
-          "lugar": "Panteón",
-          "min": 30,
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
           "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
         },
         {
-          "lugar": "Elefantino de Bernini",
-          "modo": "camino",
-          "meses": [
-            7,
-            8
-          ]
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
         },
         {
-          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
           "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
         },
         {
-          "lugar": "Iglesia de San Luigi dei Francesi",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Barrio Judío",
-          "min": 30,
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Fuente de las Tortugas",
-          "modo": "camino",
-          "tipo": "opcional",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Largo di Torre Argentina",
-          "min": 15
-        },
-        {
-          "lugar": "Iglesia del Gesù",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "tipo": "opcional"
-        },
-        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino",
-          "meses": [
-            7,
-            8
-          ]
+          "modo": "camino"
         },
         {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "meses": [
-            7,
-            8
-          ]
+          "modo": "dentro"
         },
         {
-          "lugar": "Iglesia de Santa Maria sopra Minerva",
-          "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ]
+          "id": "comida_nonna_betta",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "nota": "o Giggetto",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "zona": "en el Barrio Judío"
         },
         {
-          "lugar": "Elefantino de Bernini",
-          "modo": "camino",
-          "no_meses": [
-            7,
-            8
-          ]
-        },
-        {
-          "lugar": "Panteón",
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
           "min": 30,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ]
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
         },
         {
-          "lugar": "Iglesia de San Luigi dei Francesi",
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:35",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:45",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "16:05",
           "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "no_meses": [
-            7,
-            8
-          ]
+          "texto_documento": "Iglesia del Gesù (abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "dentro"
         },
         {
-          "lugar": "Piazza Navona",
-          "min": 30
+          "id": "parada_elefantino_de_bernini",
+          "hora": "16:35",
+          "min": 5,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
         },
         {
-          "lugar": "Campo de' Fiori",
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "16:40",
+          "min": 5,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "17:00",
           "min": 30,
-          "elastica": 30
+          "texto_documento": "Panteón",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
         },
         {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:45",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "18:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_campo_de_fiori",
+          "hora": "19:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Campo de' Fiori",
+          "modo": null
+        },
+        {
+          "id": "parada_ponte_sisto",
+          "hora": "19:50",
+          "min": 15,
+          "texto_documento": "Ponte Sisto al atardecer (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "parada",
           "lugar": "Ponte Sisto",
-          "modo": "atardecer",
-          "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
-          "una_vez": true
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_armando_al_pantheon",
+          "hora": "20:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+          "como_documento": "",
+          "nota": "o Da Baffetto",
+          "tipo": "cena",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "22:20",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
         }
       ],
-      "cena": {
-        "restaurante": "Armando al Pantheon",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "19:30"
-      },
-      "_sol": "la tarde empieza más tarde: San Luigi dei Francesi antes del Panteón (cierra a las 18:15); el atardecer en el Ponte Sisto, a 5 min de Campo de' Fiori, y la cena después"
-    },
-    "D": {
-      "empieza": "15:30",
-      "paradas": "igual que C",
-      "cena": {
-        "restaurante": "Armando al Pantheon",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "20:30"
-      }
-    }
-  },
-  "variantes": {
-    "sabado": {
-      "_nota": "Sábado (PROMPT_REPASO_LOCAL_ROMA, 3): el Panteón deja de vender entradas a las 16:00 (misa de las 17:00), así que va nada más comer; el Largo Argentina y el Ghetto pasan a la mañana, después del Altar, y la comida es fuera del Ghetto (el sábado es su día de descanso y muchos negocios judíos cierran). Por la tarde, sin volver atrás: el Panteón, la Minerva (el sábado abre a las 15:30) y el Gesù (reabre a las 16:00, cerca), San Luigi, Navona, Campo de' Fiori y, en C y D, el Ponte Sisto al atardecer. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio.",
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Elefantino de Bernini",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria sopra Minerva",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Iglesia del Gesù",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Iglesia de San Luigi dei Francesi",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Piazza Navona",
-            "min": 30
-          },
-          {
-            "lugar": "Campo de' Fiori",
-            "min": 30
-          }
-        ]
-      },
-      "tarde.C": {
-        "ajustar": {
-          "Campo de' Fiori": {
-            "elastica": 30
-          }
+      "D": [
+        {
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
         },
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Ponte Sisto",
-              "modo": "atardecer",
-              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
-              "una_vez": true
-            }
-          }
-        ]
-      },
-      "tarde.D": {
-        "ajustar": {
-          "Campo de' Fiori": {
-            "elastica": 30
-          }
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
         },
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Ponte Sisto",
-              "modo": "atardecer",
-              "texto": "El puente de peatones entre el centro y Trastevere. Al caer el sol, la cúpula de San Pedro se recorta al fondo sobre el Tíber: es la foto que buscan los romanos.",
-              "una_vez": true
-            }
-          }
-        ],
-        "empieza": "15:00"
-      },
-      "manana": {
-        "insertar": [
-          {
-            "despues_de": "Plaza del Campidoglio",
-            "parada": {
-              "lugar": "Museos Capitolinos",
-              "min": 60,
-              "modo": "dentro",
-              "entrada": true,
-              "si_cerrado": "quitar",
-              "si_experiencia": "arte_museos",
-              "no_si_dia": [
-                "D5"
-              ],
-              "o_si_pool": true
-            }
-          },
-          {
-            "despues_de": "Altar de la Patria",
-            "parada": {
-              "lugar": "Largo di Torre Argentina",
-              "min": 15,
-              "no_si_experiencia": "arte_museos",
-              "no_si_pool": "Museos Capitolinos"
-            }
-          },
-          {
-            "despues_de": "Largo di Torre Argentina",
-            "parada": {
-              "lugar": "Barrio Judío",
-              "min": 20,
-              "texto": "Es uno de los barrios judíos más antiguos de Europa. El sábado es su día de descanso: muchos comercios y restaurantes cierran y las calles se quedan tranquilas. Busca el Pórtico de Octavia, unas ruinas romanas en mitad de la calle, y la Gran Sinagoga, junto al río.",
-              "no_si_experiencia": "arte_museos",
-              "no_si_pool": "Museos Capitolinos"
-            }
-          }
-        ],
-        "comida": {
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Antico Forno Roscioli"
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "nota": "o Giggetto",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:35",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:45",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "16:05",
+          "min": 20,
+          "texto_documento": "Iglesia del Gesù (abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "16:35",
+          "min": 5,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "16:40",
+          "min": 5,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "17:00",
+          "min": 30,
+          "texto_documento": "Panteón",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:45",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "18:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_campo_de_fiori",
+          "hora": "19:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Campo de' Fiori",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_centro_historico",
+          "hora": "19:45",
+          "min": 10,
+          "texto_documento": "Pasea y piérdete por el Centro Histórico (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Campo de' Fiori",
+          "titulo": "Pasea y piérdete por el Centro Histórico"
+        },
+        {
+          "id": "parada_ponte_sisto",
+          "hora": "20:10",
+          "min": 25,
+          "texto_documento": "Ponte Sisto al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ponte Sisto",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_armando_al_pantheon",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+          "como_documento": "",
+          "nota": "o Da Baffetto",
+          "tipo": "cena",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "22:50",
+          "min": 15,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
         }
-      }
+      ]
     },
-    "domingo": {
-      "_nota": "Armando al Pantheon cierra el domingo.",
-      "tarde.*": {
-        "restaurante": {
-          "cena": "Pizzeria Da Baffetto",
-          "alternativa": "Tonnarello"
+    "free_tour_tarde": {
+      "unica": [
+        {
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:50",
+          "min": 45,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "nota": "o Giggetto",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "14:45",
+          "min": 20,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:10",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:20",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "15:35",
+          "min": 5,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "15:55",
+          "min": 25,
+          "texto_documento": "Panteón",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "tour_free_tour_centro_historico",
+          "hora": "17:00",
+          "min": 150,
+          "texto_documento": "**Free Tour Centro Histórico** (sale de la Plaza de España, acaba en Navona)",
+          "como_documento": "con guía",
+          "nota": "sale de la Plaza de España, acaba en Navona",
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "hora_tipo": "turno",
+          "guia": true,
+          "modo": null
+        },
+        {
+          "id": "cena_pizzeria_da_baffetto",
+          "hora": "19:50",
+          "min": 90,
+          "texto_documento": "**Cena:** Pizzeria Da Baffetto (o Armando al Pantheon)",
+          "como_documento": "",
+          "nota": "o Armando al Pantheon",
+          "tipo": "cena",
+          "restaurante": "Pizzeria Da Baffetto"
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:45",
+          "min": 25,
+          "texto_documento": "El Foro Romano desde el Campidoglio (noche)",
+          "como_documento": "de noche",
+          "nota": "noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
         }
-      }
+      ]
     },
-    "fecha:12-25": {
-      "_nota": "Navidad: el Coliseo, el Foro y el Panteón cierran y se ven por fuera. El día empieza más tarde (el transporte arranca a las 8:30) y el Barrio Judío pasa a la mañana.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "10:00",
-            "hora_tipo": "orientativa",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "modo": "fuera"
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 40,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Barrio Judío",
-            "min": 30
-          },
-          {
-            "lugar": "Fuente de las Tortugas",
-            "modo": "camino"
-          }
-        ]
-      },
-      "tarde.*": {
-        "quitar": [
-          "Barrio Judío",
-          "Fuente de las Tortugas"
-        ]
-      }
-    },
-    "fecha:primer_domingo": {
-      "_nota": "Primer domingo de mes: el Coliseo y el Foro son gratis y sin reserva, con mucha cola: se llega antes de que abra.",
-      "manana": {
-        "ajustar": {
-          "Coliseo": {
-            "hora": "08:15",
-            "texto": "El primer domingo de mes el Coliseo es gratis y es el día de más cola del mes: llega antes de que abra. No se reserva: las entradas se recogen en la taquilla (en la plaza del Coliseo, junto al Templo de Venus y Roma, o en Largo della Salara Vecchia), por orden de llegada, y solo valen para ese día. Ese día no se sube a los niveles de arriba ni se baja a la arena ni a los subterráneos."
-          }
+    "free_tour_noche": {
+      "unica": [
+        {
+          "id": "parada_coliseo",
+          "hora": "08:30",
+          "min": 75,
+          "texto_documento": "Coliseo",
+          "como_documento": "por dentro (turno)",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "dentro",
+          "turno": true,
+          "hora_tipo": "turno",
+          "guia": true
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "10:05",
+          "min": 10,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": null
+        },
+        {
+          "id": "parada_foro_romano_y_palatino",
+          "hora": "10:30",
+          "min": 90,
+          "texto_documento": "Foro Romano y Palatino",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "modo": "dentro",
+          "guia": true
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "12:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "12:40",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "13:00",
+          "min": 30,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "nota": "o Giggetto",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "15:00",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "15:35",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:45",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "16:00",
+          "min": 5,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "16:05",
+          "min": 5,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "16:25",
+          "min": 30,
+          "texto_documento": "Panteón",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:10",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_centro_historico_hacia_la_plaza_de_espana",
+          "hora": "17:40",
+          "min": 10,
+          "texto_documento": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Plaza Colonna",
+          "titulo": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España"
+        },
+        {
+          "id": "tour_free_tour_centro_historico",
+          "hora": "18:30",
+          "min": 150,
+          "texto_documento": "**Free Tour Centro Histórico** (sale de la Plaza de España, acaba en Navona)",
+          "como_documento": "con guía",
+          "nota": "sale de la Plaza de España, acaba en Navona",
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "hora_tipo": "turno",
+          "guia": true,
+          "modo": null
+        },
+        {
+          "id": "cena_pizzeria_da_baffetto",
+          "hora": "21:20",
+          "min": 90,
+          "texto_documento": "**Cena:** Pizzeria Da Baffetto (o Armando al Pantheon)",
+          "como_documento": "",
+          "nota": "o Armando al Pantheon",
+          "tipo": "cena",
+          "restaurante": "Pizzeria Da Baffetto"
         }
-      },
-      "_fuente": "colosseo.it (#domenicalmuseo: «non si prenotano», «in ordine di arrivo», taquillas de la plaza del Coliseo y Largo della Salara Vecchia; sin nivel superior, arena ni subterráneos), consultado el 30-09-2026. Fuera «poca cola, casi vacío» ese día (PROMPT_REPASO_LOCAL_ROMA, 5)."
-    },
-    "fecha:01-01": {
-      "_nota": "1 de enero: Como haría un romano (PROMPT_REPASO_LOCAL_ROMA, 3): el Coliseo, el Foro y el Campidoglio (con Arte, los Museos Capitolinos, que abren a las 11:00 ese día) por la mañana; después de comer, siempre hacia delante: el Altar de la Patria, el Panteón (antes de su última entrada), la Minerva, San Luigi y Navona, y a cenar. Sin el Largo Argentina, el Gesù ni el Ghetto por la tarde (salían dos veces y el Gesù, ya de noche, por fuera). Si el día empieza tarde (tras la Nochevieja), el Campidoglio va detrás del Altar y los Capitolinos no caben sin perder el Panteón.",
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Elefantino de Bernini",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria sopra Minerva",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Iglesia de San Luigi dei Francesi",
-            "min": 20,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Piazza Navona",
-            "min": 30
-          }
-        ],
-        "empieza": "14:15"
-      },
-      "manana": {
-        "quitar": [
-          "Plaza Venecia",
-          "Altar de la Patria",
-          "Largo di Torre Argentina",
-          "Barrio Judío"
-        ],
-        "insertar": [
-          {
-            "despues_de": "Plaza del Campidoglio",
-            "parada": {
-              "lugar": "Museos Capitolinos",
-              "min": 60,
-              "modo": "dentro",
-              "entrada": true,
-              "si_cerrado": "quitar",
-              "si_experiencia": "arte_museos",
-              "no_si_dia": [
-                "D5"
-              ],
-              "o_si_pool": true
-            }
-          }
-        ]
-      }
-    },
-    "empieza_tarde": {
-      "_nota": "El día empieza más tarde por una fecha especial (el 1 de enero tras la Nochevieja): el Campidoglio y el Altar de la Patria pasan a la tarde, no se quitan. Detrás de Piazza Navona y antes del Largo Argentina: el Altar, antes de que cierre; con Arte, los Museos Capitolinos quedan en la misma plaza. (Sin los Museos Capitolinos: detrás de Navona, a última hora, eran volver atrás; PROMPT_REPASO_LOCAL_ROMA, 3.)",
-      "manana": {
-        "quitar": [
-          "Plaza del Campidoglio",
-          "Plaza Venecia",
-          "Altar de la Patria",
-          "Museos Capitolinos"
-        ]
-      },
-      "tarde.*": {
-        "insertar": [
-          {
-            "despues_de": "Piazza Navona",
-            "parada": {
-              "lugar": "Plaza Venecia",
-              "modo": "camino"
-            }
-          },
-          {
-            "despues_de": "Plaza Venecia",
-            "parada": {
-              "lugar": "Altar de la Patria",
-              "min": 35,
-              "modo": "dentro",
-              "si_cerrado": "fuera"
-            }
-          },
-          {
-            "despues_de": "Altar de la Patria",
-            "parada": {
-              "lugar": "Plaza del Campidoglio",
-              "min": 15
-            }
-          }
-        ]
-      }
-    },
-    "entrada:tarde": {
-      "_nota": "Orden 2 (entrada desde las 15:30, propuesta del usuario): Campidoglio, Plaza Venecia, Altar de la Patria y Foro y Palatino (con la misma entrada) por la mañana; comida en Monti; después el Coliseo a su hora, el Arco, el Panteón, la Minerva y Navona (al atardecer en B, C y D; en A el sol se pone mientras estás en el Coliseo y Navona va ya de noche). Lo que no quepa del centro barroco se queda fuera ese día, sin aviso. La mañana empieza por el Foro y el Palatino a las 9:00 (abre a esa hora), sigue con el Campidoglio y el Altar de la Patria (ya abierto, hacia las 11:00). Piazza Navona no se cae: si no cabe por la tarde, va de noche, después de cenar. Con la entrada a las 15:30 o poco después sobra rato: la comida en Monti se alarga y «Pasea y piérdete por Monti» (elástica, una vez por viaje) llena lo que queda hasta la hora de la entrada.",
-      "manana": {
-        "empieza": "09:00",
-        "paradas": [
-          {
-            "lugar": "Foro Romano y Palatino",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "reserva",
-            "min": 100,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "no_meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Foro Romano y Palatino",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "reserva",
-            "min": 90,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "meses": [
-              7,
-              8
-            ]
-          },
-          {
-            "lugar": "Plaza del Campidoglio",
-            "min": 15,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Plaza Venecia",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Altar de la Patria",
-            "min": 40,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via dei Fori Imperiali",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Boca de la Verdad",
-            "min": 20,
-            "tipo": "opcional",
-            "no_si_dia": [
-              "D5C",
-              "D5"
-            ]
-          },
-          {
-            "lugar": "Circo Máximo",
-            "min": 20,
-            "tipo": "opcional"
-          }
-        ],
-        "comida": {
-          "restaurante": "Trattoria Monti",
-          "alternativa": "La Taverna dei Fori Imperiali"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Monti",
-            "min": 30,
-            "titulo": "Pasea y piérdete por Monti",
-            "elastica": 90,
-            "una_vez": true,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "turno": true
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true
-          },
-          {
-            "lugar": "Elefantino de Bernini",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria sopra Minerva",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Piazza Navona",
-            "min": 30
-          }
-        ],
-        "cena": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Pizzeria Da Baffetto",
-          "hora": "20:00"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Monti",
-            "min": 30,
-            "titulo": "Pasea y piérdete por Monti",
-            "elastica": 90,
-            "una_vez": true,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "turno": true
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true
-          },
-          {
-            "lugar": "Elefantino de Bernini",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria sopra Minerva",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Piazza Navona",
-            "min": 30,
-            "modo": "atardecer"
-          }
-        ],
-        "cena": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Pizzeria Da Baffetto",
-          "hora": "20:00"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Monti",
-            "min": 30,
-            "titulo": "Pasea y piérdete por Monti",
-            "elastica": 90,
-            "una_vez": true,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "turno": true
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true
-          },
-          {
-            "lugar": "Elefantino de Bernini",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria sopra Minerva",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Piazza Navona",
-            "min": 30,
-            "modo": "atardecer"
-          }
-        ],
-        "cena": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Pizzeria Da Baffetto",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Monti",
-            "min": 30,
-            "titulo": "Pasea y piérdete por Monti",
-            "elastica": 90,
-            "una_vez": true,
-            "tipo": "opcional"
-          },
-          {
-            "lugar": "Coliseo",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 75,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "turno": true
-          },
-          {
-            "lugar": "Arco de Constantino",
-            "min": 10
-          },
-          {
-            "lugar": "Panteón",
-            "min": 30,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "entrada": true
-          },
-          {
-            "lugar": "Elefantino de Bernini",
-            "modo": "camino"
-          },
-          {
-            "lugar": "Iglesia de Santa Maria sopra Minerva",
-            "min": 15,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Piazza Navona",
-            "min": 30,
-            "modo": "atardecer"
-          }
-        ],
-        "cena": {
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Pizzeria Da Baffetto",
-          "hora": "20:30"
-        }
-      },
-      "noche_si_cae": {
-        "lugar": "Piazza Navona",
-        "noche": "navona_y_fuentes"
-      }
-    },
-    "entrada:tarde@sabado": {
-      "_nota": "Sábado con el orden 2: el Panteón solo vende hasta las 16:00 (misa a las 17:00), así que va por la mañana, después del Foro y antes de comer; por la tarde, después del Coliseo, directos a Navona. (La ancla es la Plaza del Campidoglio y no el Foro:",
-      "manana": {
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Panteón",
-              "min": 30,
-              "modo": "dentro",
-              "si_cerrado": "fuera",
-              "entrada": true
-            },
-            "antes_de": "Plaza del Campidoglio"
-          }
-        ]
-      },
-      "tarde.*": {
-        "quitar": [
-          "Panteón"
-        ]
-      }
-    },
-    "free_tour_despues:tarde": {
-      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De tarde (17:00): el tour sustituye la tarde del centro barroco del día del Coliseo (Navona, San Luigi, Campo de' Fiori…); el Panteón, por dentro, justo antes (el tour no entra en los sitios).",
-      "tarde.*": {
-        "quitar": [
-          "Iglesia de San Luigi dei Francesi",
-          "Iglesia de San Luigi dei Francesi",
-          "Piazza Navona",
-          "Campo de' Fiori",
-          "Ponte Sisto",
-          "Iglesia del Gesù",
-          "Iglesia de Santa Maria sopra Minerva",
-          "Iglesia de Santa Maria sopra Minerva",
-          "Elefantino de Bernini",
-          "Elefantino de Bernini"
-        ],
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Free Tour Centro Histórico",
-              "tipo": "fija",
-              "hora": "17:00",
-              "hora_tipo": "turno",
-              "min": 150,
-              "modo": "parada"
-            }
-          }
-        ]
-      },
-      "noche": "sin_paseo"
-    },
-    "free_tour_despues:noche": {
-      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De noche: el tour sustituye la nocturna de ese día; el centro de día se queda y la cena va después del tour.",
-      "noche": "sin_paseo",
-      "tarde.*": {
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Free Tour Centro Histórico",
-              "tipo": "fija",
-              "hora": "18:30",
-              "hora_tipo": "turno",
-              "min": 150,
-              "modo": "parada"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "experiencias": {
-    "barrios_sabores": {
-      "_nota": "Barrios: más tiempo en el Ghetto.",
-      "tarde.*": {
-        "ajustar": {
-          "Barrio Judío": {
-            "min": 45
-          }
-        }
-      },
-      "tarde.C": {
-        "ajustar": {
-          "Campo de' Fiori": {
-            "min": 15
-          }
-        }
-      },
-      "tarde.D": {
-        "ajustar": {
-          "Campo de' Fiori": {
-            "min": 15
-          }
-        }
-      }
-    },
-    "mercadillos_navidenos": {
-      "_nota": "Navidad (mercadillos, belenes y luces): el Santo Bambino de Aracoeli, de camino entre el Campidoglio y la Plaza Venecia. Solo en sus fechas. Opcional: si la comida no cabe, es lo primero que se quita.",
-      "manana": {
-        "insertar": [
-          {
-            "antes_de": "Plaza Venecia",
-            "parada": {
-              "lugar": "Santo Bambino de Aracoeli",
-              "modo": "camino",
-              "tipo": "opcional"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "entradas": {
-    "Coliseo": {
-      "manana": [
-        "08:30",
-        "15:00"
-      ],
-      "tarde": [
-        "15:30",
-        "18:15"
       ]
     }
-  },
-  "_nota_entradas": "Entrada reservada al Coliseo (3-oct-2026, PARA_CODE_D1_D2_D4_SEGUNDO_ORDEN): el orden de siempre sirve de 8:30 a 15:00; `entrada:tarde` (desde las 15:30) es el orden nuevo: la Roma antigua por la mañana sin el Coliseo y el Coliseo a su hora, con el centro barroco después. La entrada vale para el Foro y el Palatino el mismo día, antes o después del Coliseo."
+  }
 }
