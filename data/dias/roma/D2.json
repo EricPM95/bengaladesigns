@@ -78,7 +78,7 @@
           "lugar": "Puente Sant'Angelo",
           "min": 10,
           "modo": "atardecer",
-          "texto": "Míralo desde el puente de los ángeles con la luz del atardecer: la fortaleza se vuelve naranja y el Tíber la refleja."
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
         },
         {
           "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -288,7 +288,7 @@
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "lead": 55,
-          "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo.",
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
           "no_si_pool": "Castillo de Sant'Angelo"
         }
       ],
@@ -1099,7 +1099,7 @@
             "min": 10,
             "modo": "atardecer",
             "lead": 30,
-            "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo."
+            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -1305,7 +1305,7 @@
             "lugar": "Puente Sant'Angelo",
             "modo": "atardecer",
             "lead": 55,
-            "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo.",
+            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
             "no_si_pool": "Castillo de Sant'Angelo"
           }
         ],
@@ -1821,7 +1821,7 @@
             "lugar": "Puente Sant'Angelo",
             "modo": "atardecer",
             "lead": 55,
-            "texto": "Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo.",
+            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
             "tipo": "opcional"
           }
         ],

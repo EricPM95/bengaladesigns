@@ -28,7 +28,8 @@
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
-          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
         },
         {
           "lugar": "Castillo de Sant'Angelo",
@@ -86,7 +87,8 @@
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
-          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
         },
         {
           "lugar": "Campo de' Fiori",
@@ -139,7 +141,8 @@
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
-          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
         }
       ],
       "cena": {
@@ -184,7 +187,8 @@
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
-          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente."
+          "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
         }
       ],
       "cena": {

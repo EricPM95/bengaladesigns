@@ -7,7 +7,7 @@ Para que los cures. **Dónde se escriben:** el texto de una parada sale, por est
 ### Castillo de Sant'Angelo
 
 - **por_que_lugares:** "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Desde el Vaticano sale un pasadizo elevado por el que huían los papas cuando Roma estaba en peligro. Sube hasta la terraza del ángel: las vistas son de las mejores de la ciudad."
-- **por_fuera:** "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Míralo por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante."
+- **por_fuera:** "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Busca el Passetto, el pasadizo elevado que llega desde el Vaticano: por él huían los papas cuando Roma estaba en peligro. La mejor foto la tienes en un momento, desde el puente."
 - **tip del lugar:** "La terraza superior tiene una de las mejores vistas de Roma. El puente de los ángeles (Puente Sant'Angelo) de Bernini es precioso — crúzalo sí o sí. Calcula 1h dentro + 15 min en el puente."
 - **night_view_texts:** null
 
@@ -20,20 +20,18 @@ Para que los cures. **Dónde se escriben:** el texto de una parada sale, por est
 
 ## Los `texto` escritos dentro de D2.json
 
-- Puente Sant'Angelo (atardecer): Míralo desde el puente de los ángeles con la luz del atardecer: la fortaleza se vuelve naranja y el Tíber la refleja.
-  - en: .tarde.A.paradas[3]
-- Puente Sant'Angelo (atardecer): Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo.
-  - en: .tarde.D.paradas[7] · .variantes.entrada:mediodia.tarde.A.paradas[2] · .variantes.entrada:mediodia.tarde.D.paradas[7] · .variantes.entrada:tarde.tarde.D.paradas[1]
+- Puente Sant'Angelo (atardecer): Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.
+  - en: .tarde.A.paradas[3] · .tarde.D.paradas[9] · .variantes.entrada:mediodia.tarde.A.paradas[2] · .variantes.entrada:mediodia.tarde.D.paradas[9] · .variantes.entrada:tarde.tarde.D.paradas[1]
 
 ## Lo que sale hoy en pantalla (campo «Por qué aquí»), por versión del día
 
 | Versión | Fecha de prueba | Parada | Cómo sale | Texto |
 |---|---|---|---|---|
-| A (invierno) | 2027-01-14 15:55 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Míralo por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
-| A (invierno) | 2027-01-14 16:40 | Puente Sant'Angelo | atardecer | Míralo desde el puente de los ángeles con la luz del atardecer: la fortaleza se vuelve naranja y el Tíber la refleja. |
-| B (entretiempo corto) | 2027-03-04 14:50 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Míralo por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
+| A (invierno) | 2027-01-14 15:55 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Busca el Passetto, el pasadizo elevado que llega desde el Vaticano: por él huían los papas cuando Roma estaba en peligro. La mejor foto la tienes en un momento, desde el puente. |
+| A (invierno) | 2027-01-14 16:40 | Puente Sant'Angelo | atardecer | Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo. |
+| B (entretiempo corto) | 2027-03-04 14:50 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Busca el Passetto, el pasadizo elevado que llega desde el Vaticano: por él huían los papas cuando Roma estaba en peligro. La mejor foto la tienes en un momento, desde el puente. |
 | B (entretiempo corto) | 2027-03-04 15:15 | Puente Sant'Angelo | parada | El puente de los ángeles de Bernini, con el Castillo delante. Es el mejor sitio para la foto del Castillo. |
-| C (entretiempo largo) | 2027-04-01 18:15 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Míralo por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
-| C (entretiempo largo) | 2027-04-01 18:40 | Puente Sant'Angelo | atardecer | Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo. |
-| D (verano) | 2027-06-17 19:15 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas, con un ángel en lo alto. Míralo por fuera: la mejor foto es desde el puente, con los ángeles de Bernini delante. |
-| D (verano) | 2027-06-17 19:55 | Puente Sant'Angelo | atardecer | Al caer el sol, el puente de los ángeles de Bernini se queda con el Castillo iluminado detrás y la cúpula de San Pedro recortada al fondo, río abajo. |
+| C (entretiempo largo) | 2027-04-01 18:15 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Busca el Passetto, el pasadizo elevado que llega desde el Vaticano: por él huían los papas cuando Roma estaba en peligro. La mejor foto la tienes en un momento, desde el puente. |
+| C (entretiempo largo) | 2027-04-01 18:40 | Puente Sant'Angelo | atardecer | Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo. |
+| D (verano) | 2027-06-17 19:15 | Castillo de Sant'Angelo | por fuera | Empezó siendo la tumba del emperador Adriano y acabó como fortaleza de los papas. Busca el Passetto, el pasadizo elevado que llega desde el Vaticano: por él huían los papas cuando Roma estaba en peligro. La mejor foto la tienes en un momento, desde el puente. |
+| D (verano) | 2027-06-17 19:55 | Puente Sant'Angelo | atardecer | Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo. |
