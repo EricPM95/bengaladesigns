@@ -78,7 +78,8 @@
           "como_documento": "",
           "nota": "o Nonna Betta",
           "tipo": "comida",
-          "restaurante": "Giggetto al Portico d'Ottavia"
+          "restaurante": "Giggetto al Portico d'Ottavia",
+          "alternativa": "Nonna Betta"
         },
         {
           "id": "parada_barrio_judio",
@@ -179,7 +180,8 @@
           "como_documento": "",
           "nota": "o Tonnarello",
           "tipo": "cena",
-          "restaurante": "Trattoria Da Enzo al 29"
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello"
         },
         {
           "id": "traslado_un_taxi",
@@ -285,7 +287,8 @@
           "como_documento": "",
           "nota": "o Nonna Betta",
           "tipo": "comida",
-          "restaurante": "Giggetto al Portico d'Ottavia"
+          "restaurante": "Giggetto al Portico d'Ottavia",
+          "alternativa": "Nonna Betta"
         },
         {
           "id": "parada_barrio_judio",
@@ -386,7 +389,8 @@
           "como_documento": "",
           "nota": "o Tonnarello",
           "tipo": "cena",
-          "restaurante": "Trattoria Da Enzo al 29"
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello"
         },
         {
           "id": "traslado_un_taxi",
@@ -483,7 +487,8 @@
           "como_documento": "",
           "nota": "o Nonna Betta",
           "tipo": "comida",
-          "restaurante": "Giggetto al Portico d'Ottavia"
+          "restaurante": "Giggetto al Portico d'Ottavia",
+          "alternativa": "Nonna Betta"
         },
         {
           "id": "parada_barrio_judio",
@@ -584,7 +589,8 @@
           "como_documento": "",
           "nota": "o Tonnarello",
           "tipo": "cena",
-          "restaurante": "Trattoria Da Enzo al 29"
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello"
         },
         {
           "id": "traslado_un_taxi",
@@ -681,7 +687,8 @@
           "como_documento": "",
           "nota": "o Nonna Betta",
           "tipo": "comida",
-          "restaurante": "Giggetto al Portico d'Ottavia"
+          "restaurante": "Giggetto al Portico d'Ottavia",
+          "alternativa": "Nonna Betta"
         },
         {
           "id": "parada_barrio_judio",
@@ -792,7 +799,8 @@
           "como_documento": "",
           "nota": "o Tonnarello",
           "tipo": "cena",
-          "restaurante": "Trattoria Da Enzo al 29"
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello"
         },
         {
           "id": "traslado_un_taxi",

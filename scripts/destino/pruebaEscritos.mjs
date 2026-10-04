@@ -76,6 +76,7 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
     const explica = () => {
       if (row.modo === 'atardecer') return 'atardecer'
       if (hayCierre && variantes.some((v) => /^adelantar/.test(v))) return 'cierre'
+      if (day.not_included?.some((n) => plain(n.name) === plain(row.lugar ?? ''))) return 'cierre'
       if (hayAtardecer && (row.colchon || filaIdx >= idxComida)) return 'atardecer'
       if (place && row.modo === 'dentro' && closedOnDay(place, hours.weekday, iso)) return 'cierre'
       return null

@@ -682,6 +682,11 @@ export function planWrittenTrip(args) {
     }
   }
   const drafts = order.map((id, index) => makeDraft(id, index, lightVersionOf(hoursOf(cityDays[index]).sunset, cuts)))
+  // Lo que un día escrito enseña no se repite en un día de los de siempre: se quita del viejo (nunca del escrito).
+  {
+    const escritos = new Set(drafts.filter((draft) => draft.escrito).flatMap((draft) => (draft.rows ?? []).filter((row) => row.lugar && row.modo !== 'camino').map((row) => row.lugar)))
+    if (escritos.size > 0) for (const draft of drafts) if (!draft.escrito) for (const key of ['manana', 'tarde']) if (Array.isArray(draft[key])) draft[key] = draft[key].filter((stop) => !escritos.has(stop.lugar) || stop.modo === 'camino')
+  }
   /** Lo que ya va en la ruta y está en el pool: por dentro y no opcional. */
   const forceInside = (draft, name) => {
     for (const list of [draft.manana, draft.tarde]) for (const stop of list) if (stop.lugar === name && (stop.modo === 'fuera' || stop.tipo === 'opcional')) {
@@ -2507,7 +2512,7 @@ export function planWrittenTrip(args) {
     const missing = centro.centro_dos_dias.filter((name) => !covered.has(name))
     const needed = centro.solo_si_falta ? missing.some((name) => centro.solo_si_falta.includes(name)) : missing.length > 0
     const host = cityPlanned.find((day) => day.curatedDay.id === 'D1') ?? cityPlanned.find((day) => day.curatedDay.id !== 'D3') ?? cityPlanned[0]
-    if (needed && host) {
+    if (needed && host && !host.escrito) { // (Un día escrito trae sus nocturnas: el reparto de «centro en dos días» no las cambia.)
       const current = nightsByDay.get(host.dayNumber) ?? []
       const wanted = new Set([...missing, ...current.flatMap((entry) => entry.conflicts_with ?? [])])
       const chain = centro.recorrido

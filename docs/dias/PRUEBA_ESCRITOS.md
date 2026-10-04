@@ -1,12 +1,9 @@
 # Prueba de los días escritos (parada a parada, 2027)
 
-1825 días comparados, 28755 filas del documento. Diferencias: 2541 (8 sin explicar).
+1825 días comparados, 28755 filas del documento. Diferencias: 2541 (2 sin explicar).
 
 ## Sin explicar
 
-- D3 · falta · SIN EXPLICAR · Basílica de San Pedro (con el control; se cruza la Plaza) ×2 — 2027-03-26 · 2027-12-31
-- D2 · falta · SIN EXPLICAR · Basílica de San Pedro (con el control) ×2 — 2027-12-25 · 2028-01-01
-- D3 · falta · SIN EXPLICAR · Museos Vaticanos y Capilla Sixtina ×2 — 2027-12-24 · 2027-12-31
 - D3 · sobra · SIN EXPLICAR · el puente y el castillo de sant'angelo ×1 — 2027-10-03
 - D3 · minutos · SIN EXPLICAR · Basílica de San Pedro (con el control; se cruza la Plaza) ×1 — 2027-12-24 45 → 30
 
@@ -53,16 +50,17 @@
 - D1-FT · cómo · cierre · San Pietro in Montorio y el Tempietto ×21 — 2027-04-12 dentro → fuera · 2027-04-19 dentro → fuera · 2027-04-26 dentro → fuera
 - D2 · falta · cierre · Piazza Navona de noche ×19 — 2027-03-28 · 2027-04-04 · 2027-04-11
 - D3 · hora · atardecer · Piazza Navona de noche ×16 — 2027-03-28 22:45 → 22:40 · 2027-04-04 22:45 → 22:40 · 2027-04-11 22:45 → 22:40
+- D3 · falta · cierre · Museos Vaticanos y Capilla Sixtina ×14 — 2027-01-01 · 2027-01-06 · 2027-02-11
 - D3 · minutos · atardecer · Pasea y piérdete por Prati (colchón) ×14 — 2027-03-28 60 → 11 · 2027-04-04 60 → 18 · 2027-04-11 60 → 26
 - D2 · falta · cierre · Museos Vaticanos y Capilla Sixtina ×12 — 2027-01-06 · 2027-02-11 · 2027-03-19
 - D1-FT · hora · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×9 — 2027-10-06 19:00 → 19:24 · 2027-10-07 19:00 → 19:22 · 2027-10-08 19:00 → 19:21
-- D3 · falta · cierre · Museos Vaticanos y Capilla Sixtina ×7 — 2027-01-01 · 2027-01-06 · 2027-02-11
 - D1 · falta · atardecer · Ponte Sisto al atardecer (colchón) ×6 — 2027-04-03 · 2027-09-04 · 2027-09-11
-- D3 · falta · atardecer · Museos Vaticanos y Capilla Sixtina ×5 — 2027-03-29 · 2027-05-01 · 2027-06-29
 - D1 · falta · cierre · Campo de' Fiori (colchón) ×4 — 2027-01-05 · 2027-12-07 · 2027-12-24
 - D2 · hora · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×3 — 2027-03-21 18:50 → 19:03 · 2027-10-10 18:50 → 19:17 · 2027-10-17 18:50 → 19:06
+- D3 · falta · cierre · Basílica de San Pedro (con el control; se cruza la Plaza) ×2 — 2027-03-26 · 2027-12-31
 - D3 · minutos · cierre · Panteón (abre a las 9:00) ×2 — 2027-08-15 20 → 15 · 2027-12-25 20 → 15
 - D3 · cómo · cierre · Panteón (abre a las 9:00) ×2 — 2027-08-15 dentro → fuera · 2027-12-25 dentro → fuera
+- D2 · falta · cierre · Basílica de San Pedro (con el control) ×2 — 2027-12-25 · 2028-01-01
 - D2 · hora · cierre · Plaza de San Pedro ×1 — 2027-03-26 11:30 → 13:00
 - D2 · hora · cierre · Basílica de San Pedro (con el control) ×1 — 2027-03-26 12:05 → 11:30
 - D2 · hora · cierre · Pasea y piérdete por Trastevere iluminado (colchón) ×1 — 2027-03-26 19:20 → 19:35

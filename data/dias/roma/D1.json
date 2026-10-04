@@ -79,7 +79,7 @@
           "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "zona": "en el Barrio Judío"
+          "alternativa": "Giggetto al Portico d'Ottavia"
         },
         {
           "id": "parada_barrio_judio",
@@ -191,7 +191,8 @@
           "como_documento": "",
           "nota": "o Da Baffetto",
           "tipo": "cena",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
@@ -286,7 +287,7 @@
           "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "zona": "en el Barrio Judío"
+          "alternativa": "Giggetto al Portico d'Ottavia"
         },
         {
           "id": "parada_barrio_judio",
@@ -408,7 +409,8 @@
           "como_documento": "",
           "nota": "o Da Baffetto",
           "tipo": "cena",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
@@ -494,7 +496,7 @@
           "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "zona": "en el Barrio Judío"
+          "alternativa": "Giggetto al Portico d'Ottavia"
         },
         {
           "id": "parada_barrio_judio",
@@ -626,7 +628,8 @@
           "como_documento": "",
           "nota": "o Da Baffetto",
           "tipo": "cena",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Pizzeria Da Baffetto"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
@@ -714,7 +717,7 @@
           "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "zona": "en el Barrio Judío"
+          "alternativa": "Giggetto al Portico d'Ottavia"
         },
         {
           "id": "parada_barrio_judio",
@@ -787,7 +790,8 @@
           "como_documento": "",
           "nota": "o Armando al Pantheon",
           "tipo": "cena",
-          "restaurante": "Pizzeria Da Baffetto"
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Armando al Pantheon"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
@@ -876,7 +880,7 @@
           "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "zona": "en el Barrio Judío"
+          "alternativa": "Giggetto al Portico d'Ottavia"
         },
         {
           "id": "parada_barrio_judio",
@@ -980,7 +984,8 @@
           "como_documento": "",
           "nota": "o Armando al Pantheon",
           "tipo": "cena",
-          "restaurante": "Pizzeria Da Baffetto"
+          "restaurante": "Pizzeria Da Baffetto",
+          "alternativa": "Armando al Pantheon"
         }
       ]
     }

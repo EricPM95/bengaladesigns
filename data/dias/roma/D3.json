@@ -58,7 +58,8 @@
           "como_documento": "",
           "nota": "o Supplizio",
           "tipo": "comida",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
         },
         {
           "id": "traslado_el_bus_40_o_un_taxi",
@@ -116,7 +117,7 @@
           "nota": "o Osteria dell'Angelo",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
-          "zona": "en Prati"
+          "alternativa": "Osteria dell'Angelo"
         },
         {
           "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
@@ -280,7 +281,8 @@
           "como_documento": "",
           "nota": "o Supplizio",
           "tipo": "comida",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
         },
         {
           "id": "traslado_el_bus_40_o_un_taxi",
@@ -440,7 +442,8 @@
           "como_documento": "",
           "nota": "o Supplizio",
           "tipo": "comida",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio"
         },
         {
           "id": "traslado_el_bus_40_o_un_taxi",

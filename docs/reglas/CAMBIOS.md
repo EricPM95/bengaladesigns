@@ -119,3 +119,6 @@ Pedido por el usuario a partir de `docs/INFORME_REGLAS_RUTAS.md`. La hoja es `do
 **Reglas de INVARIANTES que quedan sin efecto con estos cambios:** ver la línea «Sustituye a» de cada ficha de `REGLAS_RUTAS.md`. En particular la **416** (la nocturna puede volver a un sitio visto esa tarde): borrada de hecho; manda la **462**.
 
 **Cosas de la hoja que hoy no se cumplen o no se comprueban** (se dicen en cada ficha): vuelos, trenes y barcos (R-2, R-28, R-29); medio día (R-11); excursiones (R-27); «una nocturna cada noche» (R-6); los 15 min andando a la comida y la cena (R-14, R-15).
+
+## 2026-10-04 · Tanda 1 de días escritos
+- Los seis días de Roma de 1, 1,5 y 2 días pasan a `data/dias/roma/` tal cual el documento; el motor solo ajusta lo que dice «Lo que hará el motor». Prueba nueva: `scripts/destino/pruebaEscritos.mjs` (parada a parada contra el documento, 365 fechas).

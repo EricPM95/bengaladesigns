@@ -116,7 +116,7 @@ function fila(row) {
   const out = { ...base, ...(colchon ? { colchon: true } : {}), ...(nota.length ? { nota: nota.join('; ') } : {}) }
 
   // Comidas y cenas
-  const meal = /^(Comida rápida|Comida|Cena):\s*(.+)$/.exec(limpio)
+  const meal = /^(Comida rápida|Comida|Cena):\s*(.+)$/.exec(texto)
   if (meal) {
     const [first, ...rest] = meal[2].split(/\s+\(o\s+/)
     const alt = rest.length ? rest[0].replace(/\).*$/, '').trim() : null

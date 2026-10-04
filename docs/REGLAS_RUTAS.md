@@ -8,6 +8,7 @@
 - Cada regla lleva su **Texto**, sus **Datos** (dónde vive en el JSON) y su **Comprobación** (el nombre exacto de lo que cuenta la prueba).
 - La prueba (`node scripts/destino/prueba365.mjs`) imprime **una línea por cada una de las 15 reglas**: «R-8: 0 fallos» o «SIN COMPROBACIÓN». Cómo se comprueba, al final.
 - Dónde va lo demás: ver el final de esta hoja.
+- **Alcance desde la tanda 1 (4-oct-2026):** en los seis días escritos de Roma (D0, D0-medio, D1, D2, D3, D1-FT: viajes de 1, 1,5 y 2 días) el motor ya no guía. Las horas son las de `docs/dias/DIAS_ESCRITOS_ROMA.md`; solo se ajusta lo que ese documento dice en «Lo que hará el motor» (cierres, misas, festivos, miércoles, domingo, reservas, pool, experiencias, Free Tour) con la regla de márgenes. Estas 15 reglas siguen valiendo para lo que el motor todavía hace: cierres (adelantar, acortar hasta 20 min, por fuera o quitar), márgenes, hora límite de la noche, no repetir sitios entre días, el pool y la prueba. En esos seis días no se estiran paradas, no se rellenan huecos, no se reordena ni se eligen nocturnas, y no hay cena con hora límite. Lo que un día escrito enseña se quita siempre del día de los de siempre que lo repita.
 
 ---
 
