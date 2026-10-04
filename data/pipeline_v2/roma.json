@@ -8675,6 +8675,118 @@
       "Terraza del Pincio": { "title": "Terraza del Pincio iluminada", "photo": "Terraza del Pincio (noche)", "muestra": ["terraza_del_pincio"], "nocturna": "Terraza del Pincio (noche)" },
       "Plaza del Campidoglio": { "title": "Plaza del Campidoglio iluminada, con el Foro a sus pies", "photo": "Foro Romano desde el Campidoglio (noche)", "muestra": ["plaza_del_campidoglio", "foro_romano_y_palatino"], "nocturna": "Foro Romano desde el Campidoglio (noche)" }
     },
+    "experiencias_lista": {
+      "_nota": "REGLAS_RUTAS 13: para cada experiencia, lo que añade, en orden. El motor mete lo que cabe según los días (1 día, 1; 2 o 3, 2 o 3; más de 3, 3 o 4), cada cosa en el día de su zona (`zona` si la ficha no la da: Coppedè va en el día de Villa Borghese). dentro: por dentro. alarga: si el día ya lo lleva, más largo. atardecer: el atardecer del día es ese sitio. con: se mete junto.",
+      "arte_museos": [
+        {
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "dentro": true,
+          "min": 20
+        },
+        {
+          "lugar": "Iglesia de Santa Maria della Vittoria",
+          "dentro": true,
+          "min": 20
+        },
+        {
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "dentro": true,
+          "min": 20
+        },
+        {
+          "lugar": "Galería Borghese",
+          "dentro": true,
+          "min": 120,
+          "franja": "manana"
+        },
+        {
+          "lugar": "Domus Aurea",
+          "dentro": true,
+          "min": 75,
+          "franja": "manana"
+        },
+        {
+          "lugar": "Palazzo Doria Pamphilj",
+          "dentro": true,
+          "min": 60
+        },
+        {
+          "lugar": "Museos Capitolinos",
+          "dentro": true,
+          "min": 120,
+          "no_con_dia": [
+            "Coliseo"
+          ]
+        },
+        {
+          "lugar": "Villa Farnesina",
+          "dentro": true,
+          "min": 45,
+          "franja": "manana"
+        }
+      ],
+      "barrios_sabores": [
+        {
+          "lugar": "Trastevere",
+          "alarga": true,
+          "min": 90
+        },
+        {
+          "lugar": "Monti",
+          "alarga": true,
+          "min": 75
+        },
+        {
+          "lugar": "Barrio Judío",
+          "alarga": true,
+          "min": 45
+        },
+        {
+          "lugar": "Campo de' Fiori",
+          "min": 45,
+          "franja": "manana"
+        },
+        {
+          "lugar": "Mercado de Testaccio",
+          "dentro": true,
+          "min": 40
+        },
+        {
+          "lugar": "Quartiere Coppedè",
+          "min": 30,
+          "zona": "villa_borghese"
+        }
+      ],
+      "naturaleza_vistas": [
+        {
+          "lugar": "Jardín de los Naranjos",
+          "atardecer": true,
+          "min": 30,
+          "con": [
+            "Ojo de la Cerradura del Aventino"
+          ]
+        },
+        {
+          "lugar": "Parque de Villa Borghese",
+          "alarga": true,
+          "min": 90
+        },
+        {
+          "lugar": "Terraza del Pincio",
+          "atardecer": true,
+          "min": 30
+        },
+        {
+          "lugar": "Mirador del Janículo",
+          "atardecer": true,
+          "min": 40
+        },
+        {
+          "lugar": "Via Appia Antica",
+          "min": 120
+        }
+      ]
+    },
     "se_llenan": ["Fontana de Trevi", "Plaza de España"],
     "sitios_extra": {
       "_nota": "Sitios que no son una ficha de `places` pero que una parada enseña (REGLAS_RUTAS regla 0 y 5). id → nombre. Dos sitios distintos tienen dos id aunque compartan ficha (el parque de Villa Borghese y su lago).",

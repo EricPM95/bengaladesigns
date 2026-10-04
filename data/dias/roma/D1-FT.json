@@ -587,27 +587,6 @@
     }
   },
   "experiencias": {
-    "arte_museos": {
-      "_nota": "Arte: los Museos Capitolinos en lugar del paseo por el Ghetto.",
-      "tarde.*": {
-        "quitar": [
-          "Fuente de las Tortugas",
-          "Teatro de Marcelo"
-        ],
-        "insertar": [
-          {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Museos Capitolinos",
-              "min": 60,
-              "modo": "dentro",
-              "entrada": true,
-              "si_cerrado": "quitar"
-            }
-          }
-        ]
-      }
-    },
     "naturaleza_vistas": {
       "_nota": "Naturaleza y vistas: al Janículo con tiempo para buscar sitio en la balaustrada.",
       "tarde.*": {

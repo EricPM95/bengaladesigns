@@ -178,7 +178,7 @@ export async function buildDayBlockV3(
   // la del reparto (decisión del 2026-09-23: los viajes cortos se curan a mano; el motor solo pone
   // horas). 1,5 días llegará con los vuelos, que son los que dicen cuántas franjas quedan.
   // (Roma: el viaje de un día sin Free Tour y sin pool ya es un día escrito, D0; con algo marcado en el pool se queda el reparto de antes.)
-  const oneDayWritten = Boolean(useWrittenDays(options.engine) && destData.curated_routes?.por_dias_ciudad?.['1'] && (!(mustIncludePlaces ?? []).length || options.oneDayPool))
+  const oneDayWritten = Boolean(useWrittenDays(options.engine) && destData.curated_routes?.por_dias_ciudad?.['1'] && true)
   if (isV3 && destData.short_trips?.blocks && Math.max(1, totalDays - 1) === 1 && !oneDayWritten) {
     const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
     // En las fechas en que el tour solo sale a una hora que parte el día (`disponibilidad.horas_especiales`: a las 12:00

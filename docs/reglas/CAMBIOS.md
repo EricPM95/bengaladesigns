@@ -2,6 +2,20 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-04 (noche) — Reglas, no casos
+
+Encargo del usuario: cada fallo se arregla aplicando una regla de `REGLAS_RUTAS.md` o corrigiendo un dato; nada para una fecha, un día o un sitio concreto.
+
+| Regla nueva o aclarada | Dónde |
+|---|---|
+| Lo marcado en el pool va por dentro si se puede entrar (también el Castillo), antes de su última entrada; sin sitio escrito, en el día de su zona | 12 |
+| Por fuera no depende del horario del sitio (salvo recinto que cierra); la prueba no mira la última entrada ahí | 25 |
+| Choque con un cierre: adelantar, acortar, por fuera, quitar; un imprescindible nunca se quita; la reserva del viajero con el sitio cerrado se queda y avisa | 1 |
+| Un sitio va en el día de su zona; si otro día, un paseo o un «De camino» lo muestra, sale de ahí (por `muestra`) | 5 |
+| La cena, entre lo último de la tarde y la nocturna (a 15 min de las dos); en verano, «Descanso a la sombra» hasta las 16:30 | 15, 21 |
+| Experiencias: una lista ordenada por destino (`experiencias_lista`); el motor mete lo que cabe según los días, en el día de su zona | 13 |
+| Roma: el viaje de 1 día (D0) sale por las mismas reglas con y sin Free Tour y con y sin pool; el camino viejo (`short_trips`) deja de usarse en Roma | 11 |
+
 ## 2026-10-04 (tarde) — Respuesta del usuario al informe
 
 | Qué cambia | Reglas |

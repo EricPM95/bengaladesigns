@@ -1077,50 +1077,6 @@
     }
   },
   "experiencias": {
-    "arte_museos": {
-      "_nota": "Arte: los Museos Capitolinos nada más comer (a 10 min del Ghetto), en lugar del paseo por el Ghetto.",
-      "tarde.*": {
-        "quitar": [
-          "Barrio Judío",
-          "Fuente de las Tortugas"
-        ],
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Museos Capitolinos",
-              "min": 60,
-              "modo": "dentro",
-              "entrada": true,
-              "si_cerrado": "quitar",
-              "no_si_dia": [
-                "D5"
-              ]
-            },
-            "antes_de": "Largo di Torre Argentina"
-          }
-        ]
-      },
-      "tarde.C": {
-        "quitar": [
-          "Iglesia de Santa Maria sopra Minerva"
-        ],
-        "ajustar": {
-          "Campo de' Fiori": {
-            "min": 20
-          }
-        }
-      },
-      "tarde.D": {
-        "quitar": [
-          "Iglesia de Santa Maria sopra Minerva"
-        ],
-        "ajustar": {
-          "Campo de' Fiori": {
-            "min": 20
-          }
-        }
-      }
-    },
     "barrios_sabores": {
       "_nota": "Barrios: más tiempo en el Ghetto.",
       "tarde.*": {

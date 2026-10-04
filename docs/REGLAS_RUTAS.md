@@ -31,6 +31,7 @@
 
 ### R-1 · Nunca un sitio cerrado — OBLIGATORIA
 - **Texto:** ninguna parada empieza antes de que abra ni después de su última entrada. Cuentan los horarios partidos, la última entrada por día, el horario por época, los cierres semanales, las misas, los festivos y los horarios especiales de ese año, sacados de la fuente oficial. **Sin fechas de viaje:** horario de laborable, y aviso en la parada si ese sitio cierra algún día de la semana.
+- **Si una parada choca con un cierre** (cierre semanal, festivo, misa, horario especial) el motor hace, por este orden: 1) la adelanta dentro del mismo día; 2) la acorta hasta su mínimo (`recorta_al_cierre`); 3) la pasa a por fuera, si se ve algo desde la calle; 4) la quita, si solo vale por dentro. Un imprescindible nunca se quita: como mínimo, va por fuera. Una entrada que el viajero reserva con el sitio cerrado se queda tal cual (manda el viajero) y sale el aviso «Ese día {lugar} cierra a las {hora}». La víspera de un festivo con misa (el Panteón, 17:00) se lee como un sábado.
 - **Ejemplo:** el Foro y Palatino a las 15:30 el 24 de diciembre (abre hasta las 16:30) es un fallo si la parada dura más.
 - **Datos:** `places[].schedule`, `by_day`, `by_period`, `closed_on`, `closed_dates`, `special_hours`, `last_entry`.
 - **Comprobación:** `fuera_de_horario`, `v4_fuera_de_horario`, `cerrada_a_su_hora`, `v4_cerrado_sin_solucion`. La prueba incluye ya los viajes sin fechas.
@@ -63,6 +64,7 @@
 
 ### R-5 · Un sitio, una vez en el viaje y una vez al día — OBLIGATORIA
 - **Texto:** se compara por **`id` de sitio y por lo que cada parada muestra**, nunca por el nombre. Cuentan también las nocturnas, los paseos, los «De camino», el «iluminado» y el Free Tour. **Excepciones:** la revisita de paso de un nivel 1, por fuera, corta y con su texto («Ya lo viste el día 1…»); y la nocturna de la regla 6.
+- **Un sitio va en el día de su zona.** Si otro día, un paseo o un «De camino» también lo muestra, sale de ahí (se compara por `muestra`). Lo que no tiene sitio escrito (el pool, las experiencias) se mete en el día cuya zona es la suya, nunca en uno que ya lo muestra.
 - **Ejemplo:** el Castillo por fuera a las 19:50 y «El Puente y el Castillo iluminados» a las 20:15 repiten el Castillo: el motor los funde en una sola parada de noche. El parque de Villa Borghese y «el lago y el Templo de Esculapio» son dos sitios.
 - **Datos:** `places[].id`, `night_experiences[].muestra`, `destination_config.sitios_extra`, `sitios_por_titulo`, `paseo_muestras`, `night_view_overrides[].muestra`.
 - **Comprobación:** `repetido_dia`, `repetido_viaje` (por `id`; cuentan nocturnas, paseos, «De camino» y «iluminado»).
@@ -110,11 +112,13 @@
 
 ### R-12 · El pool entra primero — OBLIGATORIA
 - **Texto:** en el orden en que el viajero lo eligió, con su grupo y en el sitio escrito de cada lugar. Cada extra va en **el día más cercano a su zona** (la distancia media a las tres paradas más cercanas de cada día; a igual distancia, el orden del fichero). Los extras van según los días: 2 días, 2; 3 días, 3; 4 días, 4; 5 o más, 5. Nunca va en un día en que ese lugar cierra. Lo que no cabe sale en «No incluido», con su motivo.
+- **Lo marcado en el pool va por dentro si se puede entrar,** también en los sitios que normalmente van por fuera (el Castillo de Sant'Angelo, 1 h), y siempre antes de su última entrada. Un extra sin sitio escrito para ese viaje (el viaje de 1 día) va en el día de su zona; si ese día no está, sale en «No incluido».
 - **Datos:** `pool_lista`, `pool` de cada día escrito.
 - **Comprobación:** `pool_fuera`. Falta comprobar el orden y el aviso.
 
 ### R-13 · Una experiencia elegida siempre añade algo que se nota — PREFERENCIA
 - **Texto:** si no añade nada, no se ofrece.
+- **Cómo:** cada destino tiene, para cada experiencia, una lista ordenada de lo que añade, con su zona y si va por dentro (`destination_config.experiencias_lista`). El motor mete de esa lista lo que cabe según los días (1 día, 1; 2 o 3 días, 2 o 3; más de 3, 3 o 4), cada cosa en el día de su zona y con todas las reglas (nunca dos visitas grandes en un día, nunca quitar un imprescindible). Si para añadir hay que quitar algo, se quita un paseo, un «De camino» o algo de nivel 3: nunca una iglesia con arte ni un imprescindible.
 - **Comprobación:** `experiencia_sin_efecto` (el mismo viaje con y sin la experiencia).
 
 ---
@@ -129,6 +133,7 @@
 
 ### R-15 · La tarde acaba donde se cena — OBLIGATORIA
 - **Texto:** la cena, nunca antes de las 19:30 (20:30 en verano), y a 15 min andando o menos de lo último. El rato antes de cenar es «Pasea y piérdete por {zona}». No existe el «Tiempo libre».
+- **La cena va entre lo último de la tarde y la nocturna,** a 15 min o menos de las dos. En julio y agosto las horas de calor son «Descanso a la sombra» hasta las 16:30, nunca un hueco más largo.
 - **Comprobación:** `cena_espera`, `hueco_cena`, `tiempo_libre_sigue`. Faltan los 15 min y la hora mínima.
 - **Sustituye a:** la familia del «Tiempo libre» y la «Tarde libre» (44, 102, 122, 129, 139, 156, 183, 194, 222, 240, 246, 263, 311, 317, 321, 328, 351, 370, 373, 375 y 384). Se quedan 341, 342, 352 y 419.
 
@@ -165,6 +170,7 @@
 
 ### R-21 · La época del año — OBLIGATORIA
 - **Texto:** **julio y agosto:** de 14:00 a 16:30, solo sitios a cubierto o descanso; lo que va al aire libre, después. **Invierno:** anochece pronto, pero las paradas siguen siendo paradas normales, con su foto de día; la cena no se adelanta por el sol. **Un mirador al que se llega de noche:** si el destino tiene una buena foto de noche de ese mirador, se llama «{lugar} iluminado», lleva esa foto y cuenta como la nocturna de ese sitio (regla 6); si no la tiene, sigue como parada normal con su foto de día. Es la única parada que cambia por la luz. Un solo camino para «iluminado», no dos.
+- **Julio y agosto:** de 14:00 a 16:30 el rato es «Descanso a la sombra» (o en el alojamiento), no un hueco.
 - **Datos:** `destination_config.night_view_overrides` (`title`, `photo`, `muestra`, `nocturna`); en `writtenTrip.js`, `SUMMER_MONTHS = [7, 8]`.
 - **Comprobación:** `verano_al_sol`; el «iluminado» se mira con `repetido_dia` y `nocturna_repite_viaje`.
 - **Sustituye a:** 105, 186, 245, 290, 311, 315 y 328. De la 240 y la 246 se queda solo lo del mirador.
@@ -188,6 +194,7 @@
 
 ### R-25 · Por fuera, solo donde se ve algo desde la calle — OBLIGATORIA
 - **Texto:** va con su texto de `por_fuera`. Lo que solo vale por dentro, si cierra, se quita sin aviso. Lo que por fuera es un muro (los Museos Vaticanos) nunca va por fuera. Junto a un imprescindible, un sitio cerrado se ve por fuera. Lo que va por fuera a propósito (el Castillo de Sant'Angelo de día) no lleva «para llegar a todo» ni «Quiero entrar».
+- **Por fuera no depende del horario del sitio,** salvo que esté dentro de un recinto que cierra (`recinto_cierra` en la ficha). La prueba no mira la última entrada en lo que va por fuera.
 - **Datos:** `por_fuera`, `minutos_fuera`, `pass_by`.
 - **Comprobación:** `fuera_sin_vista`, `fuera_minutos`, `fuera_con_tiempo`.
 - **Sustituye a:** se quedan 421, 445, 452, 472 y 476.
