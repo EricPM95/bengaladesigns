@@ -689,6 +689,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     dinnerEnd: dinnerMeal?.end ?? null,
     dinnerCoords: asPoint(dinnerMeal?.coordinates),
     dateIso: tripDay.hours?.dateIso ?? null,
+    nightMinutes: tripDay.curatedDay?.nocheMinutos ?? null,
   }
   // Una nocturna que solo vale antes de cenar (el Janículo de noche: el bus 115 deja de subir a las 22:00): si el barrio
   // de la tarde se estiró hasta la cena, devuelve lo justo para que quepa antes (segundo repaso, 2026-09-28).
@@ -714,7 +715,15 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // aperitivo", justo antes de la cena y hasta la hora de cenar (hasta 90 min, ver index.js).
     if (nightTiming(chain, nightTimingInput).beforeDinner) chainForNight = chain
   }
-  const nightStops = chainForNight.length > 0 ? nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput) : []
+  // El paseo de noche ANTES de cenar y la cena detrás (`noche_antes_de_cenar`, el viaje de 1 día en verano): la cena se retrasa hasta que acaba el paseo.
+  const nightFirst = Boolean(tripDay.curatedDay?.nocheAntesDeCenar) && chainForNight.length > 0 && Boolean(dinnerMeal)
+  const nightStops = chainForNight.length > 0 ? (nightFirst ? nightStopsFor(chainForNight.map((entry) => ({ ...entry, afterDinnerOnly: false })), dayVisitedNames, { ...nightTimingInput, dinnerStart: 26 * 60, dinnerEnd: 27 * 60 }) : nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput)) : []
+  if (nightFirst && nightStops.length > 0) {
+    const lastNight = nightStops.at(-1)
+    const dinnerOut = meals.find((meal) => meal.time === 'dinner')
+    const free = toMinutes(lastNight.suggested_time) + (lastNight.duration_minutes ?? 0) + (dinnerMeal.walkMinutes ?? 10)
+    if (dinnerOut) dinnerOut.suggested_time = toHHMM(Math.max(toMinutes(dinnerOut.suggested_time), Math.ceil(free / 15) * 15))
+  }
   const lastNightBefore = nightStops.filter((stop) => stop.before_dinner).at(-1)
   // (Con días escritos, el restaurante escrito manda: no se vuelve a elegir junto a la nocturna.)
   if (lastNightBefore && lastNightBefore.latitude != null && !tripDay.written) {

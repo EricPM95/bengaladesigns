@@ -436,6 +436,9 @@ export function planWrittenTrip(args) {
       noche: tardeVersion.noche ?? w.noche ?? null,
       // (`noche_despues_de_cenar`: el paseo de noche va siempre después de cenar, aunque quepa antes: el viaje de 1 día, Trevi y la Plaza de España.)
       noche_despues_de_cenar: Boolean(tardeVersion.noche_despues_de_cenar ?? w.noche_despues_de_cenar),
+      // (`noche_antes_de_cenar`: en verano el paseo de noche va antes de cenar y la cena se retrasa a después: si no, la Plaza de España pasa de las 23:00.)
+      noche_antes_de_cenar: Boolean(tardeVersion.noche_antes_de_cenar ?? w.noche_antes_de_cenar),
+      noche_minutos: tardeVersion.noche_minutos ?? w.noche_minutos ?? null,
       noche_si_cae: null,
       barrio_cena: tardeVersion.barrio_cena ?? w.barrio_cena ?? null,
       manana: clone(w.manana?.paradas ?? []),
@@ -634,7 +637,7 @@ export function planWrittenTrip(args) {
       if (stop.modo === 'fuera') {
         stop.modo = 'dentro'
         // (Lo que el viajero marca para entrar dura lo que dura por dentro: el Castillo, 1 h; el sitio de por fuera de 20 min no vale.)
-        stop.min = Math.max(stop.min ?? 0, 60)
+        stop.min = Math.max(stop.min ?? 0, Math.min(placeByName.get(name)?.duration_minutes ?? 60, 60))
       }
       if (stop.tipo === 'opcional') stop.tipo = 'normal'
     }
@@ -693,7 +696,7 @@ export function planWrittenTrip(args) {
   const insideAllowed = (() => {
     if (!shortRule) return null
     const marked = Object.keys(shortRule.marcables ?? {}).filter((name) => inPool(name))
-    return new Set([...(shortRule.siempre_dentro ?? []), ...(marked.length > 0 ? marked.flatMap((name) => shortRule.marcables[name]) : shortRule.dentro_sin_marcar ?? []), ...poolNames, ...insideNames])
+    return new Set([...(shortRule.siempre_dentro ?? []), ...(hasFreeTour ? shortRule.siempre_dentro_con_free_tour ?? [] : []), ...(marked.length > 0 ? marked.flatMap((name) => shortRule.marcables[name]) : shortRule.dentro_sin_marcar ?? []), ...poolNames, ...insideNames])
   })()
   // Lo que no se ve desde la calle (los Museos Vaticanos: por fuera son un muro) no existe «por fuera»: si no se entra, la parada
   // desaparece y la visita de la zona son sus otros lugares (la Plaza y la Basílica).
@@ -1850,7 +1853,8 @@ export function planWrittenTrip(args) {
     const writtenDinners = [pickDinner([draft.cena?.restaurante].filter(Boolean)), pickDinner([draft.cena?.alternativa].filter(Boolean))].filter(Boolean)
     const nearDinner = (spot) => spot && walkLeg(last.coords, spot.coordinates) <= DINNER_WALK_MAX
     const nearestDinner = pickDinner(null)
-    const dinnerRestaurant = writtenDinners.find(nearDinner) ?? (nearDinner(nearestDinner) ? nearestDinner : null) ?? writtenDinners[0] ?? nearestDinner
+    // (`lejos_ok`: el usuario decidió la cena aunque quede a más de 15 min de lo último —D0 con Free Tour, cena en Monti—.)
+    const dinnerRestaurant = ((draft.cena?.lejos_ok && writtenDinners[0]) || writtenDinners.find(nearDinner)) ?? (nearDinner(nearestDinner) ? nearestDinner : null) ?? writtenDinners[0] ?? nearestDinner
     const dinnerWalk = dinnerRestaurant ? walkLeg(last.coords, dinnerRestaurant.coordinates) : 10
     let readyAt = last.t + dinnerWalk
     // Nunca antes de las 19:30 (ni de la hora escrita) y, en verano (versión D), nunca antes de las 20:30.
@@ -1865,7 +1869,7 @@ export function planWrittenTrip(args) {
       lastVisit.end += extra
       readyAt += extra
     }
-    meals.push({ type: 'dinner', start: dinnerStart, end: dinnerStart + DINNER_MINUTES, coordinates: dinnerRestaurant?.coordinates ?? last.coords, walkMinutes: dinnerWalk })
+    meals.push({ type: 'dinner', start: dinnerStart, end: dinnerStart + (draft.cena?.minutos ?? DINNER_MINUTES), coordinates: dinnerRestaurant?.coordinates ?? last.coords, walkMinutes: dinnerWalk })
     if (dinnerRestaurant) usedRestaurants.add(dinnerRestaurant.name)
     const otherRestaurants = [...usedRestaurants].filter((name) => name !== lunchName && name !== dinnerRestaurant?.name)
     const dayPlan = {
@@ -1896,7 +1900,7 @@ export function planWrittenTrip(args) {
       dinnerRestaurant,
       nightNames: [],
       blocks: null,
-      curatedDay: { id: draft.id, nombre: draft.nombre, variantes: draft.applied, noche: draft.noche, nocheDespuesDeCenar: draft.noche_despues_de_cenar, nocheSiCae: draft.noche_si_cae, version: draft.version },
+      curatedDay: { id: draft.id, nombre: draft.nombre, variantes: draft.applied, noche: draft.noche, nocheDespuesDeCenar: draft.noche_despues_de_cenar, nocheAntesDeCenar: draft.noche_antes_de_cenar, nocheMinutos: draft.noche_minutos, nocheSiCae: draft.noche_si_cae, version: draft.version },
       ...(draft.noTour ? { noTour: true } : {}),
       untypedAfternoon: false,
       reorderedBlocks: [],

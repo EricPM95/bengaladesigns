@@ -1,5 +1,5 @@
 {
-  "_nota": "D0: el viaje de UN día de Roma, escrito (4-oct-2026, INVARIANTES 453 pasada a día escrito). En un día no da tiempo a entrar: todo lo que tiene entrada va por fuera (Coliseo, Foro desde la Via dei Fori Imperiali, Altar de la Patria, Panteón, Castillo). Mañana: Roma Antigua y Centro. Tarde (desde las 14:30): Vaticano por fuera (Plaza y Basílica de San Pedro, gratis), Via della Conciliazione, Castillo por fuera y Puente. Noche: Trevi y Plaza de España iluminadas, después de cenar en el Borgo (a 15 min de lo último, regla 15; la 453 decía el Tridente). Comida y cena en restaurantes distintos. Solo sin Free Tour y sin pool: con cualquiera de los dos se queda el reparto de antes (short_trips).",
+  "_nota": "D0: el viaje de UN día de Roma, escrito (4-oct-2026). En un día no da tiempo a entrar: todo lo que tiene entrada va por fuera (Coliseo, Foro desde la Via dei Fori Imperiali, Altar de la Patria, Panteón, Castillo). Mañana: Roma Antigua y Centro. Tarde: Vaticano (Plaza y Basílica de San Pedro, gratis), Via della Conciliazione, Castillo por fuera y Puente al atardecer. Cena por la zona de Navona y el Panteón (a 15 min de lo último y de Trevi); después, Trevi y la Plaza de España iluminadas. En julio y agosto el paseo de noche va antes de cenar (si no, la Plaza de España pasa de las 23:00). Con Free Tour: Trevi a las 8:00, el Panteón por dentro, el tour a las 10:00 y el Vaticano por la tarde; cena en Monti y, de noche, el Coliseo y el Foro iluminados. Con algo marcado en el pool se queda el reparto de antes (short_trips) hasta que el usuario apruebe los sitios de D0.",
   "id": "D0",
   "nombre": "Roma en un día: la Roma Antigua, el Centro, el Vaticano y las fuentes",
   "joyas": [
@@ -7,7 +7,7 @@
     "Fontana de Trevi",
     "Panteón"
   ],
-  "barrio_cena": "vaticano",
+  "barrio_cena": "centro_historico",
   "noche": "fuentes",
   "noche_despues_de_cenar": true,
   "manana": {
@@ -41,6 +41,14 @@
       {
         "lugar": "Piazza Navona",
         "min": 30
+      },
+      {
+        "lugar": "Campo de' Fiori",
+        "min": 80,
+        "meses": [
+          7,
+          8
+        ]
       }
     ],
     "comida": {
@@ -51,7 +59,7 @@
   "tarde": {
     "empieza": "13:30",
     "A": {
-      "_sol": "antes de las 17:40: el Vaticano por fuera y, al caer el sol, el Puente con el Castillo ya iluminado",
+      "_sol": "antes de las 17:40: el Vaticano por fuera, el paseo del Borgo llena lo que queda hasta el atardecer y el Puente se ve ya iluminado",
       "paradas": [
         {
           "lugar": "Plaza de San Pedro",
@@ -66,6 +74,12 @@
           "min": 60,
           "modo": "dentro",
           "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "min": 20,
+          "elastica": 45
         },
         {
           "lugar": "Via della Conciliazione",
@@ -84,13 +98,13 @@
         }
       ],
       "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Osteria dell'Angelo",
+        "restaurante": "Pizzeria Da Baffetto",
+        "alternativa": "Dar Filettaro a Santa Barbara",
         "hora": "19:30"
       }
     },
     "B": {
-      "_sol": "de 17:40 a 18:44: un paseo por el Borgo antes del Castillo",
+      "_sol": "de 17:40 a 18:44: el Borgo antes del Castillo",
       "paradas": [
         {
           "lugar": "Plaza de San Pedro",
@@ -129,8 +143,8 @@
         }
       ],
       "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Osteria dell'Angelo",
+        "restaurante": "Pizzeria Da Baffetto",
+        "alternativa": "Dar Filettaro a Santa Barbara",
         "hora": "19:30"
       }
     },
@@ -174,13 +188,13 @@
         }
       ],
       "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Osteria dell'Angelo",
+        "restaurante": "Pizzeria Da Baffetto",
+        "alternativa": "Dar Filettaro a Santa Barbara",
         "hora": "20:00"
       }
     },
     "D": {
-      "_sol": "desde las 19:45 (verano): el Borgo, una pausa y el Puente al atardecer; la cena, más tarde",
+      "_sol": "desde las 19:45 (verano): comida a las 13:00, descanso a la sombra hasta las 16:30, la Basílica a cubierto, el Borgo, el Castillo y el Puente al atardecer; cena de 75 min y el paseo de noche (20 min cada parada) para que la Plaza de España entre antes de las 23:00",
       "paradas": [
         {
           "lugar": "Plaza de San Pedro",
@@ -219,9 +233,127 @@
         }
       ],
       "cena": {
-        "restaurante": "L'Arcangelo",
-        "alternativa": "Osteria dell'Angelo",
-        "hora": "20:30"
+        "restaurante": "Pizzeria Da Baffetto",
+        "alternativa": "Dar Filettaro a Santa Barbara",
+        "hora": "20:30",
+        "minutos": 75
+      },
+      "noche_minutos": 15
+    }
+  },
+  "variantes": {
+    "con_free_tour": {
+      "_nota": "D0 con Free Tour (4-oct-2026): Trevi a las 8:00, el Panteón por dentro, el tour a las 10:00, comida, Vaticano por la tarde, cena en Monti y, de noche, el Coliseo y el Foro desde el Campidoglio iluminados. La cena en Monti queda a más de 15 min de lo último: manda lo escrito (`lejos_ok`).",
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Fontana de Trevi",
+            "tipo": "fija",
+            "hora": "08:00",
+            "hora_tipo": "orientativa",
+            "min": 45
+          },
+          {
+            "lugar": "Panteón",
+            "min": 30,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "quitar",
+            "tipo": "fija",
+            "hora": "09:00",
+            "hora_tipo": "orientativa"
+          },
+          {
+            "lugar": "Free Tour Centro Histórico",
+            "tipo": "fija",
+            "hora": "10:00",
+            "hora_tipo": "turno",
+            "min": 150,
+            "entrada": true
+          }
+        ],
+        "comida": {
+          "restaurante": "Supplizio",
+          "alternativa": "Trattoria Dal Cavalier Gino"
+        }
+      },
+      "noche": "coliseo_y_foro",
+      "barrio_cena": "monti",
+      "tarde.*": {
+        "cena": {
+          "restaurante": "Trattoria Valentino",
+          "alternativa": "La Taverna dei Fori Imperiali",
+          "lejos_ok": true
+        }
+      }
+    },
+    "fecha:12-24": {
+      "_nota": "El 24 y el 31 de diciembre la Basílica cierra a las 15:00 (cierran pronto, INVARIANTES 456): la Plaza va con su árbol y su belén y la Basílica por fuera, con su texto.",
+      "tarde.*": {
+        "ajustar": {
+          "Plaza de San Pedro": {
+            "texto": "En Navidad la plaza lleva su gran árbol y el belén a los pies del obelisco: vienen a verlo desde toda Roma. Hoy la Basílica cierra a las 15:00, así que la ves desde aquí, por fuera."
+          },
+          "Basílica de San Pedro": {
+            "modo": "fuera",
+            "min": 20
+          }
+        }
+      },
+      "manana": {
+        "ajustar": {
+          "Free Tour Centro Histórico": {
+            "hora": "12:00"
+          }
+        }
+      }
+    },
+    "fecha:12-31": {
+      "_nota": "El 24 y el 31 de diciembre la Basílica cierra a las 15:00 (cierran pronto, INVARIANTES 456): la Plaza va con su árbol y su belén y la Basílica por fuera, con su texto.",
+      "tarde.*": {
+        "ajustar": {
+          "Plaza de San Pedro": {
+            "texto": "En Navidad la plaza lleva su gran árbol y el belén a los pies del obelisco: vienen a verlo desde toda Roma. Hoy la Basílica cierra a las 15:00, así que la ves desde aquí, por fuera."
+          },
+          "Basílica de San Pedro": {
+            "modo": "fuera",
+            "min": 20
+          }
+        }
+      },
+      "manana": {
+        "ajustar": {
+          "Free Tour Centro Histórico": {
+            "hora": "12:00"
+          }
+        }
+      }
+    },
+    "fecha:12-25": {
+      "manana": {
+        "ajustar": {
+          "Free Tour Centro Histórico": {
+            "hora": "12:00"
+          }
+        }
+      }
+    },
+    "fecha:01-01": {
+      "manana": {
+        "ajustar": {
+          "Free Tour Centro Histórico": {
+            "hora": "12:00"
+          }
+        }
+      }
+    },
+    "fecha:01-06": {
+      "manana": {
+        "ajustar": {
+          "Free Tour Centro Histórico": {
+            "hora": "12:00"
+          }
+        }
       }
     }
   }

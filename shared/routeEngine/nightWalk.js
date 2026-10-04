@@ -292,13 +292,13 @@ export const NIGHT_LAST_START = 23 * 60
  * las 23:30). Lo que empezaría después de las 23:00 se queda fuera.
  * @returns {{ entry: object, start: number, duration: number }[]}
  */
-export function timeChain(entries, start) {
+export function timeChain(entries, start, maxMinutes = Infinity) {
   const timed = []
   let cursor = start
   for (const [index, entry] of entries.entries()) {
     const at = index === 0 ? cursor : roundUpToFive(cursor + walkMinutes(coordsOf(entries[index - 1]), coordsOf(entry)))
     if (at > NIGHT_LAST_START) break
-    const duration = durationOf(entry, index)
+    const duration = Math.min(durationOf(entry, index), maxMinutes)
     timed.push({ entry, start: at, duration })
     cursor = at + duration
   }
@@ -312,7 +312,8 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   // Después de cenar, lo que solo vale antes (subir al Janículo a oscuras) deja paso a su relevo (decisión del usuario,
   // 2026-09-28).
   const entries = plan.beforeDinner ? plan.entries : [...new Map(plan.entries.map((entry) => (entry.solo_antes_de_cenar ? (entry.fallback ? { ...entry.fallback, replacedFrom: entry.name } : null) : entry)).filter(Boolean).map((entry) => [entry.name, entry])).values()]
-  for (const { entry, start, duration } of timeChain(entries, plan.start)) {
+  // (`timing.nightMinutes`: lo que dura cada parada de noche como mucho; el viaje de 1 día en verano, 20 min, para que la Plaza de España no pase de las 23:00.)
+  for (const { entry, start, duration } of timeChain(entries, plan.start, timing.nightMinutes ?? Infinity)) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
     void dayVisitedNames

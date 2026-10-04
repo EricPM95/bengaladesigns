@@ -23,10 +23,17 @@ export function writtenDaysFor(destinationKey) {
   if (existsSync(dir)) {
     const days = {}
     let destino = {}
+    let extraPool = null
     for (const file of readdirSync(dir).filter((name) => name.endsWith('.json')).sort()) {
       const data = JSON.parse(readFileSync(join(dir, file), 'utf8'))
       if (file === '_destino.json') destino = data
+      else if (file === '_pool_d0.json') extraPool = data
       else if (data?.id) days[data.id] = data
+    }
+    // (El sitio de cada extra del pool en el viaje de 1 día, D0: `_pool_d0.json` se suma a `_destino.json › pool`.)
+    if (extraPool) {
+      destino.pool = destino.pool ?? {}
+      for (const [name, site] of Object.entries(extraPool)) if (!name.startsWith('_')) destino.pool[name] = { ...(destino.pool[name] ?? {}), sitios: [...(destino.pool[name]?.sitios ?? []), site] }
     }
     value = Object.keys(days).length > 0 ? { destino, days } : null
   }

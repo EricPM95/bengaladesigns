@@ -12580,6 +12580,11 @@
       "alternativas_despues_de_cenar": true,
       "texto_despues_cenar": "Después de cenar, baja por Via Condotti hasta la escalinata iluminada, con la Barcaccia sonando y Trinità dei Monti encendida arriba."
     },
+    "coliseo_y_foro": {
+      "nombre": "El Coliseo y el Foro iluminados",
+      "recorrido": ["Coliseo (noche)", "Foro Romano desde el Campidoglio (noche)"],
+      "texto": "Después de cenar en Monti, a un paseo: el Coliseo iluminado, con los arcos encendidos y mucha menos gente, y detrás del Palacio Senatorio, en el Campidoglio, el Foro Romano iluminado a tus pies."
+    },
     "foro_a_tus_pies": {
       "nombre": "El Foro a tus pies",
       "recorrido": [

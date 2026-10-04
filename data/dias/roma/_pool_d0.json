@@ -1,0 +1,315 @@
+{
+  "_nota": "El sitio de cada extra del pool en el viaje de 1 día (D0). PROPUESTA del 4-oct-2026, pendiente de aprobación: hoy un viaje de 1 día con algo marcado en el pool sigue el reparto de antes (short_trips). Regla 10: una sola visita grande por día (hueco «grande»); lo pequeño puede ir de dos en dos.",
+  "Museos Vaticanos y Capilla Sixtina": {
+    "dia": "D0",
+    "hueco": "grande",
+    "cambios": {
+      "tarde.*": {
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Museos Vaticanos y Capilla Sixtina",
+              "tipo": "fija",
+              "hora": "14:45",
+              "hora_tipo": "turno",
+              "min": 180,
+              "modo": "dentro",
+              "entrada": true,
+              "turno": true,
+              "traslado": {
+                "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+                "min": 20
+              }
+            }
+          }
+        ],
+        "quitar": [
+          "Borgo Pio"
+        ]
+      },
+      "manana": {
+        "quitar": [
+          "Campo de' Fiori"
+        ]
+      }
+    }
+  },
+  "Cúpula de San Pedro": {
+    "dia": "D0",
+    "hueco": "pequeno_cupula",
+    "cambios": {
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Basílica de San Pedro",
+            "parada": {
+              "lugar": "Cúpula de San Pedro",
+              "min": 45,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera"
+            }
+          }
+        ],
+        "quitar": [
+          "Borgo Pio"
+        ]
+      }
+    }
+  },
+  "Galería Borghese": {
+    "dia": "D0",
+    "hueco": "grande",
+    "cambios": {
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Galería Borghese",
+            "tipo": "fija",
+            "hora": "09:00",
+            "hora_tipo": "turno",
+            "min": 120,
+            "modo": "dentro",
+            "entrada": true,
+            "turno": true
+          },
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 30
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30
+          }
+        ]
+      }
+    }
+  },
+  "Parque de Villa Borghese": {
+    "dia": "D0",
+    "hueco": "grande",
+    "cambios": {
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Parque de Villa Borghese",
+            "min": 60
+          },
+          {
+            "lugar": "Terraza del Pincio",
+            "min": 20
+          },
+          {
+            "lugar": "Piazza del Popolo",
+            "min": 15
+          },
+          {
+            "lugar": "Plaza de España",
+            "min": 20
+          },
+          {
+            "lugar": "Fontana de Trevi",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30
+          }
+        ]
+      }
+    }
+  },
+  "Museos Capitolinos": {
+    "dia": "D0",
+    "hueco": "grande",
+    "cambios": {
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Plaza del Campidoglio",
+            "parada": {
+              "lugar": "Museos Capitolinos",
+              "min": 90,
+              "modo": "dentro",
+              "entrada": true,
+              "si_cerrado": "fuera"
+            }
+          }
+        ],
+        "quitar": [
+          "Arco de Constantino"
+        ]
+      }
+    }
+  },
+  "Termas de Caracalla": {
+    "dia": "D0",
+    "hueco": "grande",
+    "cambios": {
+      "manana": {
+        "paradas": [
+          {
+            "lugar": "Termas de Caracalla",
+            "min": 60,
+            "modo": "dentro",
+            "entrada": true,
+            "si_cerrado": "fuera",
+            "tipo": "fija",
+            "hora": "09:00",
+            "hora_tipo": "reserva"
+          },
+          {
+            "lugar": "Coliseo",
+            "min": 20,
+            "modo": "fuera",
+            "traslado": {
+              "como": "un taxi",
+              "min": 15
+            }
+          },
+          {
+            "lugar": "Arco de Constantino",
+            "min": 20
+          },
+          {
+            "lugar": "Foro Romano y Palatino",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Plaza del Campidoglio",
+            "min": 20
+          },
+          {
+            "lugar": "Panteón",
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Piazza Navona",
+            "min": 30
+          }
+        ]
+      }
+    }
+  },
+  "Basílica de San Juan de Letrán": {
+    "dia": "D0",
+    "hueco": "pequeno_letran",
+    "cambios": {
+      "manana": {
+        "insertar": [
+          {
+            "al_principio": true,
+            "parada": {
+              "lugar": "Basílica de San Juan de Letrán",
+              "min": 30,
+              "modo": "dentro",
+              "si_cerrado": "fuera"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Boca de la Verdad": {
+    "dia": "D0",
+    "hueco": "pequeno_boca",
+    "cambios": {
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Altar de la Patria",
+            "parada": {
+              "lugar": "Boca de la Verdad",
+              "min": 15
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Ojo de la Cerradura del Aventino": {
+    "dia": "D0",
+    "hueco": "pequeno_ojo",
+    "cambios": {
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Altar de la Patria",
+            "parada": {
+              "lugar": "Ojo de la Cerradura del Aventino",
+              "min": 15
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Trastevere": {
+    "dia": "D0",
+    "hueco": "pequeno_trastevere",
+    "cambios": {
+      "tarde.*": {
+        "insertar": [
+          {
+            "despues_de": "Puente Sant'Angelo",
+            "parada": {
+              "lugar": "Trastevere",
+              "min": 45
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Fontana de Trevi": {
+    "dia": "D0",
+    "hueco": "pequeno_trevi",
+    "cambios": {
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Piazza Navona",
+            "parada": {
+              "lugar": "Fontana de Trevi",
+              "min": 20
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Plaza de España": {
+    "dia": "D0",
+    "hueco": "pequeno_espana",
+    "cambios": {
+      "manana": {
+        "insertar": [
+          {
+            "despues_de": "Piazza Navona",
+            "parada": {
+              "lugar": "Plaza de España",
+              "min": 20
+            }
+          }
+        ]
+      }
+    }
+  }
+}
