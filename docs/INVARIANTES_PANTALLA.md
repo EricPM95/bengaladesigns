@@ -92,24 +92,9 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
     - **Día abierto y cerrado.** Abierto, sin línea de color; cerrado, con su franja y el número neutro.
     - **Horas de los tramos.** Van de 5 en 5, como las de las paradas.
 
-364. **Nunca pasar por delante de un sitio para volver a él** (2026-09-29, PROMPT_ROMA_V4_REPASO 2): el orden escrito va
-    siempre hacia delante. D1: Minerva → Elefantino → Panteón → San Luigi → Navona (la plaza de la Minerva da al
-    Panteón; San Luigi queda camino de Navona).
-
 369. **Cada tramo hacia delante, también entre basílicas** (2026-09-29, PROMPT_ROMA_V4_REPASO 7): D4M con Letrán va en
     metro A de Spagna a San Giovanni y sigue Letrán → Santa María la Mayor → San Pietro in Vincoli → Mercados de Trajano
     → Monti (la comida queda cerca de Spagna). San Clemente sale del D4M, porque ahí sería de ida y vuelta; va en D5C.
-
-370. **Ningún rato de más de 20 min sin nombre** (2026-09-29, PROMPT_ROMA_V4_REPASO 8):
-    - **La nocturna antes de cenar**, de 5 en 5, nada más oscurecer o al llegar. Antes se redondeaba a la media hora y
-      quedaban 25-35 min sin nada (los Mercados de Trajano → 30 min → el Coliseo de noche).
-    - **Todo hueco de más de 20 min** sale con nombre (antes, de más de 30).
-    - **Antes del atardecer, viniendo de un barrio**, el rato es «Aperitivo en {barrio}» (Monti antes de los Foros en
-      verano).
-    - **El barrio elástico** crece hasta su máximo de paseo también en completo (90).
-    - **La «Tarde libre» de justo antes de cenar** es el aperitivo con su nombre, de 90 min como mucho. Si aun así
-      sobra, la cena se adelanta, nunca antes de las 19:30. Ejemplo: D5C de invierno en tranquilo, Coliseo de noche a
-      las 17:10, aperitivo de 90 min y cena a las 19:30, en vez de 135 min de tarde libre.
 
 371. **La comida cerca de la Galería Borghese** (2026-09-29, PROMPT_ROMA_V4_REPASO 9): la regla de siempre (la comida y su
     alternativa a 15 min andando como mucho de la parada de antes) no se cumplía porque no había ningún restaurante cerca.
@@ -120,9 +105,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 372. **La cena, también a 15 min andando como mucho de lo último** (2026-09-29, PROMPT_ROMA_V4_REPASO 10): la escrita o
     su alternativa si están a 15 min. Si no, la más cercana, y solo si ninguna está a 15 min, la escrita. En D4M, desde
     los Foros: La Boccaccia (8 min) o Trattoria Valentino (10), en Monti, en vez de Trattoria Monti (20).
-
-373. **Los ratos con nombre, también de 5 en 5** (2026-09-29, PROMPT_ROMA_V4_REPASO 11): aperitivo, tarde libre y tiempo
-    libre se redondean hacia abajo a 5 min al final del día (salían 43, 53 o 57 min), para no pisar lo siguiente.
 
 376. **Un aviso, un tema** (2026-09-29, PROMPT_UI_REPASO 1):
     - **Cada aviso habla de una sola cosa y su título dice exactamente esa cosa.**
@@ -170,11 +152,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
     con su icono y el número de línea («Bus 115 · 20 min», «Metro B · 20 min», «Taxi · 20 min»), el enlace «Rutas», que
     abre Maps en transporte público hasta la parada para ver dónde se coge, y «+ Añadir parada» a la derecha. Las
     alternativas («o el 870», «o un taxi») siguen en la ficha.
-
-384. **El aperitivo, como una tarjeta más** (2026-09-29, PROMPT_UI_REPASO 13): su franja con el icono de la copa, una
-    foto del barrio al anochecer (la misma búsqueda «de noche» que las nocturnas), la hora, el nombre, el tiempo («90
-    min») y la etiqueta «Aperitivo». Sin número de orden, como la comida. Las ideas de camino («Plaza Trilussa · 3
-    min») van dentro de su ficha (`AperitivoCard.tsx`).
 
 385. **Desde el bloque de justo antes** (2026-09-29, PROMPT_UI_REPASO 14): la comida y la cena dicen los minutos andando
     desde lo de justo antes (con aperitivo antes de cenar, «desde el aperitivo», no desde la última parada), y a menos
@@ -279,33 +256,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 426. **Una parada opcional nunca crea una espera ni sale cerrada: si no está abierta a su hora, no entra**
     (PARA_CODE_TODO_2026-10-01, ajuste final). Santa Cecilia in Trastevere es opcional en todos los días escritos: si a su
     hora está cerrada o habría que esperar a que abra, se quita, y su tiempo lo recoge la parada que se estira.
-
-427. **Una hora fija no se mueve ni un minuto: lo de antes se coloca hacia atrás desde ella** (PARA_CODE, 2026-10-01).
-    - Hora fija es todo lo que trae `hora` en lo escrito: el turno de la Galería, la entrada del Coliseo o de los Vaticanos, el Free
-      Tour, la recogida de una excursión y, cuando existan, las reservas del viajero con hora. A la entrada con turno se llega 10 min
-      antes (`TICKET_MARGIN`); las demás, a su hora.
-    - El motor encadena las paradas hacia delante; si la suma de lo de antes (duraciones + paseos + traslados) llega después de lo que
-      pide la hora fija, `compressToFixedHours` recorta hacia atrás desde ella: primero la parada más cercana, sin bajar de su mínimo
-      (el 75 % de lo escrito; si aun así no llega, hasta la mitad; nunca menos de 15 min, 20 un barrio), nunca un «por fuera», un paso, un mirador ni una nocturna; y
-      recoloca lo de detrás (respetando sus propias horas fijas y esperas de apertura). Si algo recolocado quedaría cerrado, se deja
-      como estaba y se avisa.
-    - Si la hora fija es lo primero de la tarde (San Clemente a las 14:00), primero acaba antes la comida (hasta su mínimo, 45 min) y, si no
-      basta, se recorta la mañana por el mismo camino.
-    - Ya no hay «parches» de minutos para que una cadena llegue (el Castillo de D4 con Free Tour o el 6 de enero): se escribe lo que
-      se quiere ver y el motor lo ajusta. Vale para cualquier destino y cualquier hora fija.
-    - La prueba de las 365 fechas no admite tolerancia: `v4_llega_tarde` salta en cuanto se llega después de lo que pide la hora.
-
-428. **Las excursiones se abren siempre desde el botón flotante del autobús, en todos los destinos, a partir de los días que marca cada destino**
-    (PARA_CODE_EXCURSIONES, 1 y 2).
-    - Botón redondo de 58 × 58, fondo crema, borde e icono terracota, abajo a la derecha justo encima de la barra oscura de Días; quieto, sin
-      animación; `aria-label` «Excursiones desde {destino}». Sale solo si el destino tiene excursiones y el viaje llega a los días que marca su
-      dato `excursions.excursiones_desde_dias` (Roma, 4). Sin excursiones, nunca. Con un día de excursión ya en el viaje, el botón sigue.
-    - Se quitó el enlace «¿Prefieres una excursión este día?» del final del día.
-    - La página («Un día fuera» / «Excursiones desde {destino}») es pantalla completa, en el body, con su cruz y sin mapa: la franja oscura con la
-      valoración media (el % sale solo de las notas reales de las excursiones del destino; sin notas reales, solo el texto), todas las excursiones
-      sin filtros (foto, nombre, «La más reservada desde {destino}» solo con el dato real `mas_reservada`, día entero o medio día + horas + dónde te
-      recogen, nota y opiniones si son reales, «desde {precio}», «Reservar» y «Añadir a mi viaje»). Todo sale de los datos del destino
-      (`/api/destination-excursions`); nada de Roma en el código.
 
 429. **«¿Dónde la ponemos?»: el viajero decide, sin avisos** (PARA_CODE_EXCURSIONES, 3).
     - «Sustituye uno de tus días» (nunca el de llegada ni el de vuelta; un día que ya es una excursión se puede cambiar por otra) u «O en un día

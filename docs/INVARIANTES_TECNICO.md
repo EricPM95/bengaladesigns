@@ -16,20 +16,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
    recorre (`covers`) no vuelve a salir suelto ese día. Motores anteriores: la regla en el prompt +
    `enforceFreeTourFirst` como red de seguridad.
 
-2. **Ninguna parada empieza antes de que el sitio abra.**
-   *El Coliseo programado a las 07:30 (abre 08:30) y anunciado como "Acceso libre" — una entrada de
-   18€ presentada como gratis.* Hoy: `validateStopHours` en el servidor + `parseOpeningMinutes` en
-   el cliente, con parser **multi-tramo** (un horario partido "07:30-12:30, 16:00-19:30" tiene que
-   leerse entero; leer solo el primer tramo cerraba iglesias a mediodía para siempre).
-
-3. **`closed_on` se respeta cuando el viaje tiene fechas exactas.**
-   8 lugares lo llevan (Vaticanos: domingo; Borghese, Mercados de Trajano, Ara Pacis, Capitolinos,
-   Caracalla, Domus Aurea: lunes; Villa Farnesina: domingo). Sin fechas, la regla no aplica.
-
-4. **Ningún lugar se repite entre días** salvo que sea una revisita explícita.
-   *Plaza Colonna salió los días 2 y 3 del mismo viaje.* Ojo: el nombre es la clave de unión en toda
-   la app (fichas, likes, caché de fotos), así que el deduplicado va por nombre exacto.
-
 5. **Las horas que se muestran son las que se usan.** Si el motor decide 09:30, la ficha, el mapa,
    RESERVAS y Modo Hoy dicen 09:30.
 
@@ -43,12 +29,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 ## B. Lo que manda sobre el algoritmo
 
 
-11. **El nivel 1 entra SIEMPRE, elija el viajero lo que elija.** "Imprescindibles" como tarjeta es
-    una promesa de la pantalla ("te hemos preparado lo esencial"), no un interruptor: apagarlo desde
-    el cuestionario dejaría sin Coliseo a un primerizo que solo quiso marcar tres temas. Quien repite
-    destino quita el Coliseo desde el menú de la parada, que ya funciona.
-    *Sustituye a la versión anterior de este invariante, en la que la tarjeta sí apagaba el nivel 1.*
-
 13. **Los restaurantes NUNCA son paradas de la ruta.** Hoy está garantizado por estructura: viven en
     su propio array `restaurants` y `routeAlgorithm.js` no lo menciona ni una vez. **Mantener esa
     separación física** es más seguro que cualquier condición.
@@ -58,12 +38,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 
 ## C. Relaciones entre lugares que el JSON ya codifica
 
-
-14. **Un grupo es UNA visita.** `roma_antigua_core` = Coliseo + Foro + Arco de Constantino;
-    `vaticano_core` = Vaticanos + San Pedro + Plaza de San Pedro (285 min juntos). El motor cuenta y
-    coloca GRUPOS, no lugares sueltos, con su `group_order` interno. Consecuencia: "Coliseo y Foro
-    van siempre el mismo día" **no necesita ser una excepción escrita** — es imposible separarlos. Y
-    "una visita larga por día" se mide por grupo, no por lugar.
 
 15. **El Free Tour no es una visita larga.** Recorre varios puntos a pie, no es un sitio en el que
     entras. No cuenta para "una visita larga por día": puede convivir con los Vaticanos o el Coliseo
@@ -97,16 +71,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
     cuando encaja mejor con los intereses, y en el motor v3 para que la pareja vaya SEGUIDA si cae
     el mismo día (preferencia, no regla: a diferencia de un grupo, se puede separar). Castillo ↔
     Puente se citaba aquí de ejemplo pero no estaba en el JSON hasta el 2026-09-23.
-
-17b. **Acceso + monumento (`approach_to`)**: la plaza, el puente o el parque va SIEMPRE antes del
-    monumento al que da acceso, y si caen el mismo día, JUSTO antes: es el camino de llegada (con
-    dos monumentos, justo antes del primero). Cada uno puede ir solo o en días distintos si no son
-    inseparables (el Parque de Villa Borghese sin la Galería). Se acepta un rodeo de 10-50 m. Y son un
-    grupo INSEPARABLE cuando el monumento se visita gratis (Basílica de San Pedro, Altar de la
-    Patria: lo de pago es la cúpula o la terraza) o se disfruta también desde fuera
-    (`visible_from_outside`: Castillo de Sant'Angelo, como el Coliseo). Si hay que entrar sí o sí
-    (Museos Capitolinos, Galería Borghese), no: la plaza o el parque se ven sin el museo. El acceso
-    no ocupa sitio propio: va encadenado y cuenta como una sola visita. Lo vigila verifyPlanTrip.
 
 18. **`search_aliases`**: la tabla de equivalencias que hace que un viaje guardado con nombres
     antiguos siga resolviendo. Si el motor nuevo cambia nombres, los alias se actualizan **en el
@@ -290,14 +254,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     deduce del mes (dic-feb invierno) y solo sirve para mostrarla y como reserva (`by_season`). Un viaje
     antiguo con solo temporada pasa a su mes central (abril, julio, octubre, enero). Sin fechas, el mes
     es obligatorio en el formulario; con fechas, sale de ellas.
-105. **El sol decide qué es tarde y qué es noche**: la puesta de sol se calcula (fecha real o día 15 del
-    mes; `sunset_by_season` solo sin coordenadas) y **la noche empieza 30 min después**. Si eso es antes
-    de la cena y el paseo cabe entre la última visita y la cena, las nocturnas van ANTES de cenar,
-    recorridas hacia el barrio de la cena (si no cabe entero, sin lo más lejano); si no, después, desde
-    las 21:30 o cuando ya sea de noche. No es una regla de invierno: sale de la hora del sol. Un
-    exterior con horario (jardín, parque) que cierra antes de que sea de noche no puede ser nocturna ese
-    día (lo que cierra en `sunset`, nunca); lo de interior se ve de noche desde fuera y no cuenta. La
-    cena no cambia de franja.
 106. **Disponibilidad por fechas** (`available: { from, to }` MM-DD, puede cruzar el año; en lugares,
     nocturnas, excursiones y, para experiencias, `destination_config.experience_availability[id]`).
     **Sin `aprox`, estricta**: con fechas, día a día (una experiencia, si algún día del viaje cae
@@ -428,9 +384,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     su compañero (la línea propia del monumento lleva su `minutos_fuera`, no 5 min), ni al quitarle a un monumento por
     fuera los minutos de lo que se ve desde él, ni con el redondeo al cuarto de hora (quarterHourStops). Si no cabe
     con su tiempo, el motor decide como con cualquier parada.
-285. **El pool manda: tiene que entrar** (decisión del usuario, 2026-09-28). En tranquilo, si lo del pool (o un nivel 1)
-    se queda fuera, el día madruga un poco (de 30 en 30 min) y, si ni así, madruga Y acorta la comida, lo justo (la
-    Galería de la ruta 20). La revisión cuenta "Lugares del pool fuera" (0).
 286. **Un imprescindible dura 20 min como mínimo** (salvo por fuera o de paso): la Plaza de España no se ve en 10.
     En unitOf (la parada corta de exterior y el `minutos` del día curado) y en quarterHourStops (`min_minutes`).
 287. **Cierres del 25/12 y el 1/1 comprobados** (2026-09-28): la Galería Borghese y el Castillo cierran los dos días;
@@ -447,30 +400,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     automático ya cuenta los cierres y lo movido (solo de lugares del viaje), el curado aporta su `contexto` (el mismo
     texto sin los cierres): sale uno y nunca nombra un lugar que no está en el viaje (el 1 de mayo ya no habla de
     Caracalla). También sin fechas ("Si tu viaje coincide con…" usa el `contexto`).
-305. **"+ Añadir día" y la pantalla de añadir** (decisión del usuario, 2026-09-28), general para todos los destinos:
-    - El día añadido va detrás del último día de ruta (el de vuelta se mueve un día), es `manual` con `userAdded` y el
-      motor no lo toca nunca: al rehacer el viaje se planifica sin él y vuelve igual, en su número de día. El semáforo,
-      la auditoría y el barrido no lo ven (solo vive en el cliente). Máximo 14 días por viaje.
-    - "+ Añadir" en cada sitio (desde el día o desde Explorar) pregunta a qué día. Hora sugerida: cuando acaba la
-      anterior más el paseo, al cuarto de hora (menos de 3 min andando, encadenada); en un día vacío, las 09:30; con
-      excursión de medio día, las 14:00. Avisos solo si pasan: cerrado a esa hora (con el horario de ese día y de esa
-      época, el mismo cálculo que el motor), se pisa con otra parada, reserva. Se puede añadir igual.
-    - Los restaurantes nunca son paradas: van como comida o cena (en un día nuestro la sustituyen; en uno libre, a las
-      13:30 o las 20:30). Las excursiones, solo en un día vacío; la de día entero lo ocupa.
-    - En un día libre: "Con horas / Sin horas" (al volver a "Con horas", horas seguidas desde las 09:30); arrastrar
-      reajusta desde la parada que cambia hacia abajo y la primera conserva su hora; "Mover a otro día" la pone al final
-      con su hora sugerida. Quitar un día, quitar una parada, moverla o cambiarle la hora dejan "Deshacer".
-
-306. **Días libres: solo paradas, y las horas las pone el viajero** (decisión del usuario, 2026-09-28; sustituye a lo
-    que la 305 decía de las horas en los días libres):
-    - Un día libre no tiene hora sugerida, ni "Sin hora", ni interruptor "Con horas / Sin horas". Las paradas salen en
-      el orden en que el viajero las pone, con los minutos andando entre una y otra, y sin hora (`time: ''`).
-    - Cada parada lleva "Poner hora" (luego "Cambiar hora" o "Quitar hora"). La app no calcula ni mueve esa hora, y no
-      reordena por ella; arrastrar o subir/bajar solo cambia el orden.
-    - En rojo, solo el dato de la parada: "Hoy cierra" y, si tiene hora, "Cerrado a esa hora", con el horario de ese
-      día y de esa época (la parada guarda los datos de horario del lugar, así que vale aunque el día cambie de fecha).
-    - Los días nuestros siguen igual: al añadir, hora sugerida y los avisos de siempre.
-
 307. **Comidas y cenas con restaurante recomendado, que el viajero puede cambiar** (decisión del usuario,
     2026-09-28; se descarta "solo la zona"):
     - El motor pone un restaurante curado en cada comida y en cada cena (`recommendedRestaurant` en
@@ -513,11 +442,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     del pool solo y en parejas, con las comprobaciones de `auditoria.mjs`, y lo que salga se arregla en el dato.
 
 
-328. **Días escritos: las cenas y la segunda elástica** (2026-09-29): en las tardes A y B, después del atardecer, primero la
-    nocturna (20-25 min) y luego «luces y aperitivo», 90 min como mucho: es la segunda elástica, y la cena lleva su hora para
-    que caiga ahí. En C y D la cena es al llegar (a partir de las 19:30). Con días escritos, el restaurante escrito manda: el
-    servidor no lo vuelve a elegir junto a la nocturna.
-
 329. **Días escritos: ninguna parada de paseo pasa de 90 min** (120 en tranquilo, 45 una avenida), ni en el borde de la
     elástica: la base de una elástica de parque o barrio es de 60 como mucho.
 
@@ -555,12 +479,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     quitan las Catacumbas y la Isla; el Parque en D4 A es el lago en lugar de los jardines), para que el mirador siga
     llegando a su hora.
 
-338. **La excursión, desde `excursion_desde_dias` días** (2026-09-29; Roma, 5): con menos días de contenido todo es
-    ciudad (Roma en 4 días: D1, D2, D4 y D5C; con Free Tour, D3, D1-FT, D4 y D5C) y la excursión se ofrece en un solo
-    día, el de `excursion_oferta.dia`, con su texto y sin precios; los demás días no llevan banner. Si el viajero la
-    elige, ese día pasa a ser la excursión (convertDayType) y nada más cambia. Con 5 días, los 4 y la excursión; con 6 y
-    7, D5 (Via Appia), D6 y D7.
-
 339. **Días escritos: toda parada lleva su «Por qué aquí»** (2026-09-29): el texto escrito en la parada; si no, el de los
     días curados; si no, el del destino (`_destino.json` → `textos`). Nunca el genérico «Te pilla de camino» en un día
     escrito. Y `engine: 'v4'` en una petición va al v3 con días escritos (antes caía en el motor «nuevo»).
@@ -586,10 +504,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 344. **Un aviso de fecha que nombra un lugar que no está en el viaje no sale** (2026-09-29): cualquier día, de día, de
     noche o en el Free Tour. Si el lugar está, el aviso sale como siempre.
 
-345. **Un extra del pool nunca le quita a un imprescindible de pago su visita por dentro** (2026-09-29): si el día de un
-    extra deja uno por fuera por la hora, el viaje se vuelve a montar con el extra en su siguiente sitio, y se queda así
-    solo si mejora.
-
 346. **Ningún tramo de más de 25 min andando va a pie** (2026-09-29): lleva su bus o taxi escrito y, si no lo trae, va en
     taxi con su tiempo estimado.
 
@@ -606,10 +520,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     20 min y la Isla 15, sin recortes. **D4 B en domingo**: Santa Maria del Popolo 20 min y el lago de 20, con la tarde
     desde las 14:45 (abre a las 16:30). El mirador solo se alarga si la cena espera en C y D: en A y B ese rato es de la
     nocturna y del aperitivo (la Terraza del Pincio de 70 min del 14 de marzo).
-
-351. **Nunca dos bloques seguidos del mismo barrio antes de cenar** (2026-09-29): el barrio de la tarde, su nocturna y el
-    aperitivo del mismo barrio («Trastevere» + «Trastevere de noche» + «Paseo por Trastevere iluminado y aperitivo») se
-    juntan en uno, «Trastevere al anochecer y aperitivo»; la nocturna de ese barrio va después de cenar.
 
 352. **El aperitivo, 90 min como mucho, siempre** (2026-09-29): si el rato hasta la cena es más largo, la cena se
     adelanta (nunca antes de las 19:30, ni de las 20:30 en verano) y lo de después de cenar se mueve con ella.
@@ -752,29 +662,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     - El día del tour evita esas fechas si el viaje tiene otro día para él (`no_en` con `fecha` y `evitar`).
     - **En un viaje de un día**, un tour que solo sale a mediodía parte la ruta en dos: el día va sin tour y lo dice.
 
-413. **Roma como un local** (PROMPT_REPASO_LOCAL_ROMA, 2026-10-01).
-    - **Un paseo nocturno todas las noches** mientras queden sitios que valgan la pena, aunque haya que cruzar la ciudad
-      (un día sin paseo escrito toma el mejor que quede). Si el viajero no quiere, no va. Es por destino: uno con pocas
-      nocturnas tendrá menos.
-    - ~~Nada de noche y otra vez a la mañana siguiente~~: **quitada** (regla 416). El día del Free Tour, nada suelto de lo
-      que el tour recorre (Trevi a las 8:30).
-    - **Un barrio, una vez al día**: se sube al Janículo por el Tempietto (por dentro mientras está abierto, cierra a las
-      18:00), la Acqua Paola y el mirador, y se baja a Trastevere una sola vez para el barrio, el aperitivo y la cena.
-      Con el sol después de las 19:45 (de mayo a agosto), el Janículo va con la luz de la tarde y el atardecer, en un
-      puente (el Ponte Sisto, el Puente Sant'Angelo). Monti, igual: al final, para el aperitivo y la cena.
-    - **Verano (julio y agosto)**: de 14:00 a 16:30, solo descanso o sitios a cubierto (el motor espera a las 16:30 antes
-      de lo que va al aire libre, y el rato sale como «Descanso a la sombra»). El Foro, más corto, y el Altar de la Patria,
-      a última hora.
-    - **Sábado**: sin comer en el Ghetto ni el texto de las alcachofas (es su día de descanso). **Domingo**: Santa Maria
-      del Popolo solo abre por la tarde.
-    - **Nochebuena y Nochevieja**: un paseo corto cerca de la cena, sin «terrazas hasta tarde», y cómo volver dicho claro;
-      el 25, que después de cenar se vuelve andando o en taxi. Ninguna excursión de día completo el 24, el 25, el 31 ni el
-      1 (`excursion_fechas_no`).
-    - Semana Santa: la Basílica de San Pedro cierra a las visitas el Jueves Santo por la mañana y el Viernes Santo por la
-      tarde (horario especial prudente, `verificar`), con 45-60 min de cola en el control. El cambio de hora dentro del
-      viaje se dice con sus dos horas de atardecer.
-    - Prueba: `auditoria.mjs` lleva `tour_repite` y `barrio_dos_veces` (de día).
-
 414. **La llegada y la vuelta, verdad en cada punto** (PARA_CODE_LLEGADAS, 2026-10-01).
     - **Ningún tip dice «ahora mismo» sin fecha de fin**: lo que dura unas semanas (los controles de frontera) lleva
       `hasta` y su fuente, y deja de salir solo pasada esa fecha (la del viaje o, sin ella, la de hoy). Lo que es verdad
@@ -798,20 +685,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
       mayoría de los días así; el descanso después de comer, con días de julio o agosto; la ciudad iluminada, con paseo
       nocturno.
     - Con «reducir movimiento», no cae nada.
-
-416. **Ver de noche lo que viste de día no es repetir; el día del Vaticano, con su Castillo y su Puente**
-    (PARA_CODE_TARDE_VATICANO, 2026-10-01).
-    - Fuera la regla de «no repetir de noche»: una nocturna puede volver a un sitio visto esa tarde o a la mañana
-      siguiente (el Puente Sant'Angelo al atardecer y otra vez de noche). Solo no se repite la misma nocturna en el viaje.
-      Las nocturnas nunca llevan «Revisita». Un atardecer escrito nunca lo sustituye la nocturna.
-    - El día del Vaticano lleva siempre el Castillo de Sant'Angelo (por dentro o por fuera) y el Puente Sant'Angelo de día:
-      al salir de la Basílica, Via della Conciliazione, el Castillo por fuera y el Puente al atardecer, y la cena cerca.
-      Si el Castillo cierra, por fuera. Excepción: el 24 y el 31 en los viajes de 2 días con Free Tour (se perdía el Foro
-      por dentro). La prueba lo comprueba (`vaticano_sin_castillo`, `vaticano_sin_puente`).
-    - Sin huecos antes de cenar: con más de 45 min libres después de lo último y un sitio del destino a un paseo (nivel 1
-      o 2, que el viaje no ve, abierto a esa hora, de la misma zona, sin volver junto a lo ya visto y ningún museo de
-      noche), va ese sitio (`relleno_cena`). La prueba: `hueco_cena`.
-    - Si la cena dice «desde el aperitivo», la tarjeta del aperitivo sale siempre.
 
 418. **Reservas manda en la llegada y la vuelta; cada aeropuerto, estación o puerto lleva sus textos**
     (PARA_CODE_TODO_2026-10-01, paso 2).
@@ -877,22 +750,7 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     corta de camino; Conciliazione, Via dei Fori Imperiali, Via Appia y las luces de Navidad del Tridente se quedan. Venchi: solo la tienda de Via del Corso (cerca de Trevi, en la web
     oficial de Venchi), como recomendación de camino en la ficha de Trevi o del paseo del Tridente, **una sola vez por viaje** (`una_vez`) y nunca como parada.
 
-447. **Un paseo con `una_vez_por_viaje` no se repite** (el del Tridente): si un día anterior del viaje ya cena en esa zona, el rato va a la parada que se estira. `minutos_max` por zona
-    sobre el máximo general (el Tridente, 120).
-
 448. **Borgo Pio pasa a paseo**: «Pasea y piérdete por Borgo Pio» (título de la parada, como los demás paseos escritos).
-
-449. **Viajes de 1 día: todo por fuera, salvo lo marcado en el pool** (3-oct-2026, todos los destinos con `short_trips`; en Roma `short_trips.todo_por_fuera`). En un día no da tiempo a
-    entrar: todo lo que tiene entrada va por fuera (con su `pass_by` o `minutos_fuera`; el Foro desde la Via dei Fori Imperiali). Solo va por dentro lo que el viajero marcó en el pool
-    (los Museos Vaticanos, el Coliseo…). Lo gratis sigue como estaba. Con fechas, si ese sitio cierra ese día sale el aviso y se cambia de bloque o se ve por fuera (el cierre manda); sin
-    fechas no se puede saber y se muestra igualmente. Con Free Tour, el tour enseña por fuera lo suyo y no se añade el Panteón por dentro. Una reserva que añada el viajero adapta la ruta
-    solo a esa reserva (en el cliente, `medirReservas`/`fitDayToTrip`): lo demás sigue por fuera. El texto de la parada dice «En un viaje de un día no da tiempo a entrar».
-
-450. **Viajes de 2 días (Roma): por dentro solo lo que dice `_destino.json › viajes_cortos.dos_dias`** (3-oct-2026). Sin nada marcado en el pool: el Coliseo (con el Foro y el Palatino) y el
-    Panteón por dentro, todo lo demás con entrada por fuera. Con algo marcado (`marcables`): lo marcado y sus acompañantes (Coliseo → Foro y Palatino; Museos Vaticanos solo ellos), y el
-    Panteón (`siempre_dentro`) en todos los casos. Si se marcan los dos: un día cada uno, y el centro (Trevi, Plaza de España…) por fuera. Un cierre siempre va por fuera. Lo que pasa a
-    fuera pierde su hora de entrada y su turno, y su razón es «En un viaje corto lo ves por fuera: no da tiempo a entrar» (`outsideKind: 'no_cabe'`: deja pedir «Quiero entrar»).
-    Una parada vista por fuera no cuenta como entrada en RESERVAS (`stopHasEntrance`).
 
 451. **Viajes de 2,5 días**: hoy el motor no conoce el medio día (los vuelos se recortan en el cliente con `fitDayToTrip`), así que un viaje de 3 días sale como 3 días enteros. La regla
     (medio día = regla de 1 día; días enteros = viaje de esos días; la entrada solo en los días enteros) queda escrita y pendiente de implementar cuando el motor reciba los vuelos.
@@ -918,9 +776,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 456. **`por_fuera` solo donde se ve algo desde la calle, `si_cerrado: "quitar"` donde vale por dentro** (3-oct-2026). Textos `por_fuera` de la Basílica y la Cúpula de San Pedro, Santa Cecilia, San Ignacio y Santa Maria sopra Minerva.
     San Clemente, las Catacumbas, la Domus Aurea, los Museos Capitolinos y el Palazzo Doria Pamphilj no tienen `por_fuera`: si están cerrados, `quitar` (su tiempo va al paseo de la zona o a la parada que se estira).
 
-457. **El viajero manda** (3-oct-2026, todos los destinos). Si su reserva coincide con el atardecer, la nocturna o cualquier otra cosa del día, ese día va sin ello, sin forzarlo y sin aviso. La ruta se adapta a sus horas, no al revés.
-    En las pruebas, un atardecer que no cabe por la hora de una reserva no cuenta como fallo. (Motor: con una entrada reservada, un mirador de atardecer al que se llega después de la puesta se quita, en vez de pasar a «vista nocturna».)
-
 458. **Entrada reservada: órdenes nuevos por franja** (3-oct-2026, D1 Coliseo, D2 Vaticano, D4 Galería). El día trae su orden de siempre y uno o dos órdenes nuevos según la hora de la entrada: `entradas` en el día (`{ lugar: { franja: [desde, hasta] } }`;
     la primera franja es la de siempre) y una variante `entrada:<franja>` por cada franja nueva, con `entrada:<franja>@<día de la semana>` para lo que cambia ese día con ese orden (si no existe, vale el del día de siempre).
     El motor las usa cuando recibe `entradas: { lugar: "HH:MM" }` (hoy, solo las pruebas: `scripts/destino/medirEntradas.mjs`). La parada de ese lugar sale a la hora reservada (la que trae la variante es solo un ejemplo), se llega 30 min antes
@@ -933,9 +788,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 460. **La comida se adapta a la entrada reservada** (3-oct-2026, todos los destinos). Con una reserva, la comida sustituye a la ventana fija y al mínimo de 45 min: algo rápido desde las 12:00 (una pizza al corte, unos 30 min) o una comida tranquila a las 14:30 o 15:00,
     según la hora elegida (`LUNCH_EARLIEST_RESERVED`, `LUNCH_MIN_RESERVED`; `reserva:<hora>` en el día). Sin reserva, todo como antes (12:30, 45 min).
 
-461. **Margen antes de una entrada reservada**: el tiempo de más antes de ella (hasta 60 min) no cuenta como hueco (imprevistos y llegar con calma; Trevi a las 8:00 y la Galería a las 10:00). La parada lleva `reserved_entry`; la auditoría usa
-    `HUECO_MARGEN_RESERVA = 60`. No hay que tener miedo a madrugar.
-
 462. **Nocturna el mismo día** (cambia la regla de «nunca de día y de noche el mismo día»): si la visita de día de un sitio fue **por la mañana** (antes de las 13:00), su nocturna puede ir ese mismo día (Trevi a las 8:00 y Trevi iluminada a las 22:00 son dos
     experiencias distintas); si fue **por la tarde**, la nocturna va en otro día (`visitedThisAfternoon`, `AFTERNOON_FROM`). Solo no se repite la misma nocturna en el viaje.
 
@@ -945,20 +797,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
     Trilussa (5) `una_vez`, y si se saltan, del Castillo a Santa Maria in Trastevere en el bus 23 (`traslado_si_se_salta`); el Castillo va siempre por fuera a propósito (no cuenta como «imprescindible de pago nunca por dentro»); D4 con entrada a las 9:00 (la Galería lo
     primero, Trevi, Plaza de España y Trinità por la tarde), a las 10:00 (Trevi a las 8:00 y a la Galería), a las 15:00 (solo comida y Parque antes; Jardines y Terraza del Pincio después, al atardecer); D4 C y D: el paseo de la tarde sale de Piazza del Popolo por Via del Babuino y
     Via Margutta (no vuelve a Via Condotti ni a la Plaza de España); D1 orden 2: la mañana empieza por el Foro a las 9:00, y **Piazza Navona no se cae**: si no cabe por la tarde, va de noche (`noche_si_cae`, paseo `navona_y_fuentes`).
-
-465. **Free Tour añadido después, en viajes de 3 días o más** (3-oct-2026). El tour sustituye la parte del día que enseña lo mismo (no se suma a un día lleno): **de mañana (10:00)** la mañana del centro (D4 y D4M; Trevi a las 8:00 antes del tour y la Galería con su orden de tarde, `usa_entrada`);
-    **de tarde (17:00)** la tarde del centro barroco de D1 (Navona, San Luigi, Campo de' Fiori…), con el Panteón por dentro justo antes (el tour no entra); **de noche** la nocturna de ese día (`sin_paseo`), con el centro de día y la cena después. Lo que el tour enseña no se repite ese día.
-    Variantes `free_tour_despues:<franja>` en los días escritos; el motor las usa con `freeTourDespues: { franja, hora }` (hoy, solo la prueba `medirFtDespues.mjs`). El tour de noche existe (Civitatis, 2 h, desde Santa Maria del Popolo hasta Navona, «antes de que se ponga el sol») pero la ficha no da
-    hora: la prueba supone 20 min antes de la puesta. Si de verdad no cabe, como una reserva más: aviso en la campana y ese tramo pasa a manos del viajero (cuando llegue el encargo del motor).
-
-466. **Una hora fija nunca se mueve ni se quita** (3-oct-2026, todos los destinos). Vale para las entradas reservadas y para el Free Tour. Si no cabe todo, se recorta lo que va antes, en este orden: primero salen las opcionales; luego se encoge la elástica
-    (y lo que se puede acortar, hasta su mínimo); luego se acorta la comida, hasta los 30 min de la comida flexible (INVARIANTES 460). Si aun así no cabe, se quita lo menor de lo que va antes (nivel 3, 2 y 1; el más cercano a la hora fija primero) y sale
-    en «Quedó fuera», la campana. La hora fija sigue donde estaba. La sombra de verano (nada al sol antes de las 16:30) también cede ante una hora fija de después. (Motor: `runList` → `dropCandidate`; en la comida, el bucle de `lateBy`.)
-
-467. **Un mismo sitio, una vez al día** (3-oct-2026, todos los destinos). La única excepción es la nocturna: un sitio visto de día puede volver iluminado esa noche (Trevi a las 8:00 y Trevi iluminada a las 22:00). Un atardecer no es una nocturna: un mirador visto de día
-    no vuelve al atardecer el mismo día. Si un sitio sirve para el atardecer, va al atardecer; si el atardecer no cuadra (la hora de una reserva, el sol), va de día, y solo una vez. (Motor: antes de montar la tarde se prueba el día sin la visita de día; si el
-    atardecer llega con sol, queda el atardecer y, si no, la visita de día. Un paseo de zona («Pasea y piérdete por…») tampoco sale dos veces el mismo día. La única salvedad que queda es el mismo lugar con dos nombres escritos distintos y ambos con título, el
-    parque de Villa Borghese en D4: de camino a la Galería y el lago.) Si una fecha especial trae el mismo lugar reservado en la mañana y en la tarde, queda el de la parte del día de la hora reservada.
 
 468. **D4 en verano con la entrada a la Galería de 15:00 a 17:45** (3-oct-2026). La regla de «nada al sol antes de las 16:30» (INVARIANTES 413) es para el parque, no para la Galería, que es por dentro. En julio y agosto, con esa entrada, el orden es: comida,
     la Galería en las horas de calor, el Parque de Villa Borghese (con elástica) cuando baja el sol y, al final, los Jardines y la Terraza del Pincio al atardecer (variantes `entrada:quince@verano` y `entrada:tarde@verano`; el motor las aplica después de
@@ -975,10 +813,6 @@ Reglas generales salidas de revisar en la app dos rutas de Roma de 3 días con e
 472. **El Castillo de Sant'Angelo, siempre por fuera; el Tempietto, quitado si cierra** (3-oct-2026). Lo escrito `modo: "fuera"` lleva `outside_authored` en la parada: no es «por fuera para llegar a todo» y la prueba no lo cuenta. El Tempietto de Bramante, si cierra, `si_cerrado: "quitar"`
     (nunca «por fuera» forzado). La Basílica de San Pedro no sale por fuera el día de los Vaticanos salvo que esté cerrada (`basilica_fuera` en la prueba). D2, miércoles con la entrada de 13:00 a 14:00: la mañana desde las 9:00 (Puente, Castillo por fuera, Borgo Pio), comida
     rápida en Pizzarium, los Museos y, después de ellos, la Plaza y la Basílica. Los Museos Vaticanos cierran los domingos (el último de cada mes, gratis de 9:00 a 14:00, última entrada a las 12:30, sin reserva: cola): no hay entradas reservadas en domingo.
-
-473. **El Free Tour añadido después se clasifica por su hora** (3-oct-2026, amplía 465): antes de las 13:00, de mañana; de las 13:00 a las 18:59, de tarde; a partir de las 19:00, de noche. El tour de «noche» de invierno (sale hacia las 16:30) cuenta como de tarde. La hora del tour no se mueve
-    nunca (466). Va en el primer día, por orden, cuyo día escrito trae esa franja y acaba llevando el tour; si lo que cambia ese día (un domingo, una fecha) reescribe las paradas y se lo lleva, el tour vuelve a ponerse. Si lo de antes no cabe, se quita lo menor y sale en la campana;
-    la sombra de verano no mueve el tour. Un atardecer se quita el último y sin aviso. (Motor: `freeTourDespues: { hora }`; `free_tour_info` en el día dice dónde quedó y, si no quedó, por qué.)
 
 474. **Avisos de la campana que no son «Quedó fuera»** (3-oct-2026): `dayNotices` en el plan y `is_notice` en `not_included`. Llegar tarde a una entrada reservada, y la Basílica de San Pedro por fuera un día de Vaticanos: «Hoy la Basílica cierra a las {hora}; si quieres entrar, ve otro día del viaje.»
     (con la hora de cierre de ese día sacada del dato; el 24 y el 31 de diciembre de D3 con Free Tour, que están escritos así a propósito: el viajero manda).

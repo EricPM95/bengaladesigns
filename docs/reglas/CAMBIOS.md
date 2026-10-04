@@ -2,6 +2,19 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-04 (tarde) — Respuesta del usuario al informe
+
+| Qué cambia | Reglas |
+|---|---|
+| Un paseo no enseña lo que el día ya es parada (se compara por `muestra`, también el de a mitad de día). «El Borgo iluminado» ya no nombra el Castillo ni Conciliazione. | 5, 7 |
+| El pool va en el día más cercano a su zona (las Termas de Caracalla, al día del Aventino, D5C). | 12 |
+| El texto de la Via dei Fori Imperiali sirve a cualquier hora. | 21 |
+| «Iluminado» de noche: el Puente y el Castillo (18-nov, 19:50) con su foto de noche. Ya estaba; comprobado. | 21 |
+| Los sitios que se llenan: solo Fontana de Trevi y Plaza de España. | 17 |
+| La prueba no cuenta como `hora_no_10` lo pegado en el tiempo (la parada que no puede ir antes de que acabe la anterior con su paseo, o la que va antes de una hora fija). | 22 |
+| El viaje de 1 día (sin Free Tour ni pool) es el día escrito `D0`: antes, `short_trips`. La noche (`noche_despues_de_cenar`) va siempre después de cenar. Cena junto a lo último (el Borgo), no en el Tridente (regla 15). | 11, 15 |
+| Las reglas sustituidas salen de los ficheros vivos y van a `docs/historico/INVARIANTES_V3.md` (que entra en git). | 30–32 |
+
 ## 2026-10-04 — La hoja de reglas aprobada (V2) y su puesta en marcha
 
 Pedido por el usuario a partir de `docs/INFORME_REGLAS_RUTAS.md`. La hoja es `docs/archivo/REGLAS_RUTAS_V2.md`; pasa a `docs/REGLAS_RUTAS.md` con la ficha de cada regla.
@@ -19,7 +32,7 @@ Pedido por el usuario a partir de `docs/INFORME_REGLAS_RUTAS.md`. La hoja es `do
 | 4.6 | La comida: de 45 a 90 min; unos 30 con una hora fija de verdad detrás. | 14 |
 | 4.7 | Verano solo en julio y agosto, de 14:00 a 16:30. | 21 |
 | 4.8 | Cada paseo, una vez por viaje si queda otro; si no queda, puede volver otro día, nunca el mismo. | 7 |
-| 5 | Ficheros: `REGLAS_RUTAS.md` manda; `INVARIANTES_MOTOR.md` en solo lectura; lo vivo, en `INVARIANTES_TECNICO`, `_PANTALLA` y `_DATOS`; lo muerto, en `archivo/INVARIANTES_V3.md`. | 30–32 |
+| 5 | Ficheros: `REGLAS_RUTAS.md` manda; `INVARIANTES_MOTOR.md` en solo lectura; lo vivo, en `INVARIANTES_TECNICO`, `_PANTALLA` y `_DATOS`; lo muerto, en `historico/INVARIANTES_V3.md`. | 30–32 |
 | 6 | La prueba imprime una línea por regla y mira lo que no miraba: viajes sin fechas, de 1 día y con una reserva por franja; reglas 2, 9, 10, 13, 17, 21, 22 y 25. | 30 |
 
 **Reglas de INVARIANTES que quedan sin efecto con estos cambios:** ver la línea «Sustituye a» de cada ficha de `REGLAS_RUTAS.md`. En particular la **416** (la nocturna puede volver a un sitio visto esa tarde): borrada de hecho; manda la **462**.

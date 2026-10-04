@@ -7,16 +7,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 
 ## J. Revisión de rutas (2026-09-24, PROMPT_REVISION_RUTAS_ROMA.md)
 
-51. **Un horario puede tener varios tramos por día** ("07:30-12:30, 16:00-19:30" o con "/"). El motor
-    los comprueba TODOS (`parseHoursSessions`). En pantalla se enseñan todos los tramos del día
-    ("07:30–12:30 / 16:00–19:30", `formatDaySessions`), nunca solo el primero, y el "abierto /
-    cerrado" de la ficha se calcula a la HORA DE LA VISITA, no a la del móvil. *Una iglesia visitada a
-    las 17:45 salía "10:00–12:30": era la tarjeta enseñando el primer tramo y la ficha mirando la hora
-    a la que se revisaba la ruta.*
-92. **Sin fechas manda el horario de laborables** (`windows` = la entrada de `by_day` que cubre más días de
-    lunes a viernes), con aviso en la parada de los días que a esa hora no se puede: "Domingos y
-    festivos, solo de 16:30 a 18:00." (y "Cierra los lunes." si cierra algún día).
-
 104. **Horario de un lugar un día concreto**, en este orden: cierres (`closed_on` por día de la semana
     y `closed_dates` MM-DD, este solo con fechas, en el reparto: un día curado cuyo imprescindible cierra
     esa fecha se cambia con otro) → `by_day` con fechas → `by_period` (la fecha real o el 15 del mes;
@@ -38,16 +28,6 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
    joyas, 10-12 en total), visitas largas frente a `core_days`, horarios, pares a menos de 150 m
    decididos (y propuestas hasta 300 m), coordenadas contra Wikipedia (rojo a más de 200 m),
    restaurantes con `meal` y barrios de cena que salen (y a qué zonas les falta uno).
-2. **Borradores de criterio** — `node scripts/destino/borradores.mjs <destino>`: joyas por
-   popularidad, recorrido de tarde por zona y rutas de 1 y 1,5 días, probadas con el motor. Se
-   revisan a mano y se copian al JSON; no se usan tal cual.
-3. **Matriz** — `node scripts/buildTravelMatrix.mjs <destino>`.
-4. **Semáforo** — `node server/engine/__tests__/medirDias.mjs --destino <destino> --motor v3
-   --semaforo`: las 112 variantes contra límites que salen de estas reglas. Los días por encima de
-   `core_days` (repaso, excursión de medio día) tienen sus propias reglas: no se les pide acabar
-   después de las 16:00, sí como mucho 3 revisitas. **Destino listo = datos
-   sin rojos + semáforo todo en verde.** Los límites no se aflojan para que un destino pase: si algo
-   sale en rojo, o el dato está mal o el motor tiene un fallo.
 5. **Estaciones** (PROMPT_ESTACIONES.md):
    - Horarios por periodo: rellenar `docs/kit/plantilla_horarios_por_periodo.json` (`by_period`,
      `closed_dates`, `confianza`, `fuente`, `_nota`, `fecha_auditoria`) e importarla con
@@ -173,7 +153,3 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
       buscada sola. El degradado naranja y rosa no sale en ninguna tarjeta que no sea de atardecer.
     - La hoja de contactos `docs/revision_fotos_roma.html` (`scripts/destino/revisionFotos.mjs`) enseña todas las fotos,
       cuándo salen y de dónde vienen; arriba, las buscadas solas que nadie ha visto.
-
-470. **Última entrada por día de la semana** (3-oct-2026): `last_entry_by_day` en la ficha del lugar (`{ "vie-dom": "19:00" }`). El Palazzo Doria Pamphilj abre de viernes a domingo de 10:00 a 20:00 con la última entrada a las 19:00 (el resto, 09:00-19:00 y 18:00):
-    doriapamphilj.it, «La Visita (Roma)», comprobado el 3-oct-2026. Antes, los sábados a las 19:00 salía «fuera de horario».
-

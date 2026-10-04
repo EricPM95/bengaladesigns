@@ -76,7 +76,7 @@
 - **Sustituye a:** 83, 96, 100 (el «o no sale»), 170, 190, 192, 204, 300 y **416**. Se queda la 462.
 
 ### R-7 · Un barrio, una vez al día — PREFERENCIA
-- **Texto:** cada paseo, una vez por viaje **si queda otro paseo**. Si no queda, puede volver otro día, pero nunca el mismo. Si la parada de antes admite más tiempo, el rato va a esa parada en vez de repetir el paseo.
+- **Texto:** un paseo no enseña lo que ese día ya es parada (se compara por `muestra`, sea cual sea el paseo). Cada paseo, una vez por viaje **si queda otro paseo**. Si no queda, puede volver otro día, pero nunca el mismo. Si la parada de antes admite más tiempo, el rato va a esa parada en vez de repetir el paseo.
 - **Datos:** `destination_config.paseo_libre.zonas`, `zone_walks`.
 - **Comprobación:** `barrio_dos_veces`, `paseo_repite_viaje`, `paseo_misma_zona`.
 - **Sustituye a:** 447, que pasa a valer para todos los paseos.
@@ -103,13 +103,13 @@
 - **Sustituye a:** 14 y 34.
 
 ### R-11 · Según los días del viaje — OBLIGATORIA
-- **Texto:** **1 día:** todo por fuera, salvo lo marcado en el pool. **2 días:** por dentro solo lo que dice el destino o lo marcado; si se marcan dos visitas grandes, un día cada una. **Medio día:** sigue la regla de 1 día (pendiente del encargo de vuelos). **3 días o más:** el viaje completo. Las excursiones se **ofrecen** desde los días que marca el destino (`excursion_desde_dias`), y el botón del autobús sale desde otro dato (`excursiones_desde_dias`). Pasado el máximo de días del destino (`max_auto_days`), los días van en blanco.
+- **Texto:** **1 día:** todo por fuera, salvo lo marcado en el pool. En Roma, sin Free Tour y sin pool, es un día escrito (`D0`): Roma Antigua y Centro por la mañana, Vaticano por fuera por la tarde y las fuentes iluminadas después de cenar; con Free Tour o con algo marcado en el pool se queda el reparto de antes (`short_trips`). **2 días:** por dentro solo lo que dice el destino o lo marcado; si se marcan dos visitas grandes, un día cada una. **Medio día:** sigue la regla de 1 día (pendiente del encargo de vuelos). **3 días o más:** el viaje completo. Las excursiones se **ofrecen** desde los días que marca el destino (`excursion_desde_dias`), y el botón del autobús sale desde otro dato (`excursiones_desde_dias`). Pasado el máximo de días del destino (`max_auto_days`), los días van en blanco.
 - **Datos:** `short_trips`, `core_days`, `max_auto_days`, `destination_config.excursion_desde_dias`, `excursions.excursiones_desde_dias`.
 - **Comprobación:** SIN COMPROBACIÓN propia. Los viajes de 1 día y sin fechas ya están en la prueba, pero ninguna línea mira «1 día, todo por fuera».
 - **Sustituye a:** 338, 428 (la parte de los días), 449 y 450.
 
 ### R-12 · El pool entra primero — OBLIGATORIA
-- **Texto:** en el orden en que el viajero lo eligió, con su grupo y en el sitio escrito de cada lugar. Los extras van según los días: 2 días, 2; 3 días, 3; 4 días, 4; 5 o más, 5. Nunca va en un día en que ese lugar cierra. Lo que no cabe sale en «No incluido», con su motivo.
+- **Texto:** en el orden en que el viajero lo eligió, con su grupo y en el sitio escrito de cada lugar. Cada extra va en **el día más cercano a su zona** (la distancia media a las tres paradas más cercanas de cada día; a igual distancia, el orden del fichero). Los extras van según los días: 2 días, 2; 3 días, 3; 4 días, 4; 5 o más, 5. Nunca va en un día en que ese lugar cierra. Lo que no cabe sale en «No incluido», con su motivo.
 - **Datos:** `pool_lista`, `pool` de cada día escrito.
 - **Comprobación:** `pool_fuera`. Falta comprobar el orden y el aviso.
 
@@ -143,7 +143,7 @@
 
 ### R-17 · A primera hora, lo que luego se llena — PREFERENCIA
 - **Texto:** madrugar está bien (Trevi a las 8:00).
-- **Datos:** `destination_config.se_llenan` (Trevi, Coliseo, Plaza de San Pedro).
+- **Datos:** `destination_config.se_llenan` (Fontana de Trevi y Plaza de España).
 - **Comprobación:** `se_llena_tarde`.
 
 ### R-18 · Primero el acceso, si se llega por su lado — OBLIGATORIA
@@ -242,10 +242,10 @@ docs/INVARIANTES_TECNICO.md   ← motor puro, un día por llamada, caché, API
 docs/INVARIANTES_PANTALLA.md  ← la pantalla (por poner al día con el rediseño)
 docs/INVARIANTES_DATOS.md     ← cómo es un destino: kit, validar.mjs, «comprobado», fotos, textos,
                                 «nada inventado», restaurantes sin foto, todo lo que lee el viajero curado en el JSON
-docs/archivo/INVARIANTES_V3.md ← lo muerto (ritmos, bloques, días curados v3), «no vigente»
+docs/historico/INVARIANTES_V3.md ← lo muerto (ritmos, bloques, días curados v3), «no vigente»
 ```
 
-`INVARIANTES_MOTOR.md` queda en solo lectura, con un aviso arriba que apunta aquí. No se borra nada: lo vivo se mueve y lo muerto se archiva. Las reglas que esta hoja «sustituye» siguen en esos ficheros hasta que su detalle se absorba en la ficha.
+`INVARIANTES_MOTOR.md` queda en solo lectura, con un aviso arriba que apunta aquí. No se borra nada: lo vivo se mueve y lo muerto se archiva. Las reglas que esta hoja «sustituye» ya no están en los ficheros vivos: van a `docs/historico/INVARIANTES_V3.md` (que sí entra en git), con su número de siempre.
 
 ---
 
