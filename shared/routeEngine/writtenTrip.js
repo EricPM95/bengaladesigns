@@ -641,15 +641,35 @@ export function planWrittenTrip(args) {
       }
       if (stop.tipo === 'opcional') stop.tipo = 'normal'
     }
+    // Lo marcado va por dentro SIEMPRE ANTES de su última entrada (REGLAS_RUTAS 12 y 1): si el sitio cierra pronto (última entrada antes de
+    // las 19:00) y el día lo lleva tarde en su mitad, se adelanta dentro del mismo día: delante de lo que va antes, o detrás de lo de su zona.
+    const place = placeByName.get(name)
+    if (place) {
+      const hours = hoursOf(draft.day)
+      const closes = Math.max(0, ...parseHoursSessions(effectiveSchedule(place, hours)).map((session) => session.close))
+      const lastEntry = lastEntryMinutes(place, 12 * 60, hours)
+      const limit = Math.min(lastEntry ?? Infinity, closes > 0 ? closes - 30 : Infinity)
+      if (limit < 19 * 60) {
+        for (const list of [draft.tarde]) {
+          const index = list.findIndex((stop) => stop.lugar === name && stop.modo === 'dentro')
+          if (index < 3) continue
+          const sameZone = list.slice(0, index).findIndex((stop) => placeByName.get(stop.lugar)?.zone === place.zone && stop.modo !== 'camino')
+          // (Solo la tarde, que empieza a las 13:30 o después: la mañana ya llega antes de cualquier última entrada.)
+          const [moved] = list.splice(index, 1)
+          list.splice(sameZone >= 0 ? sameZone : 0, 0, moved)
+        }
+      }
+    }
   }
 
   // El pool: cada lugar elegido en su sitio escrito (el primero cuyo día está en el viaje y cuyo hueco no ha cogido
   // otro antes; manda el orden de `pool_lista`). Lo que ya está en la ruta queda garantizado por dentro.
   // ── Un sitio en el día de su zona (REGLAS_RUTAS 4, 12 y 13) ─────────────────────────────────────
   // Lo que el viajero marca en el pool sin sitio escrito, y lo que añade una experiencia (la lista del destino), va en el día cuya
-  // zona es la del sitio, en la mitad donde más paradas tiene de esa zona, detrás de la última de esa zona. Nunca dos visitas
-  // grandes en un día, nunca en un día que ya lo muestra (por `muestra`), y si hay que quitar algo, un paseo, un «De camino» o algo
-  // de nivel 3: nunca una iglesia con arte ni un imprescindible.
+  // zona es la del sitio, en la mitad donde más paradas tiene de esa zona, detrás de la última de esa zona; nunca en un día que ya
+  // lo muestra (por \`muestra\`). ANTES de añadir se mira si cabe (regla 2 de las nuevas): se cuenta el tiempo de la mitad y solo se
+  // recorta lo que se puede recortar, en este orden: opcionales y «De camino», la elástica, nivel 3. Lo protegido nunca se recorta:
+  // imprescindibles, lo del pool, las horas fijas y lo que añade la experiencia. Si no cabe, se prueba el siguiente día de su zona.
   const stopsOfDraft = (draft) => [...draft.manana, ...draft.tarde]
   const zonesOfDraft = (draft, half) => {
     const counts = new Map()
@@ -660,71 +680,151 @@ export function planWrittenTrip(args) {
     return counts
   }
   const BIG_MINUTES = 90
+  const WALK_BETWEEN = 7
   const isBigStop = (stop) => stop.modo === 'dentro' && (stop.min ?? placeByName.get(stop.lugar)?.duration_minutes ?? 0) > BIG_MINUTES
   const shownInDraft = (draft, name) => {
     const id = placeByName.get(name)?.id
     return stopsOfDraft(draft).some((stop) => stop.lugar === name || (id && placeByName.get(stop.lugar)?.pass_by?.includes?.includes(name)))
   }
-  const removableStop = (stop) => {
-    const place = placeByName.get(stop.lugar)
-    if (!place || stop.tipo === 'fija' || stop.hora) return false
-    // (Lo que forma grupo o va junto a otro —el Puente con el Castillo— no se quita para hacer sitio.)
-    if (place.group || place.related_to || place.approach_to) return false
-    if (stop.modo === 'camino' || stop.tipo === 'opcional') return true
-    const tags = place.tags ?? []
-    if (tags.includes('iglesia') || tags.includes('museo')) return false
-    return (place.level ?? 3) >= 3 || tags.includes('paseo')
+  const stopMinutes = (stop) => (stop.modo === 'camino' ? 5 : stop.modo === 'fuera' ? stop.min ?? placeByName.get(stop.lugar)?.minutos_fuera ?? 15 : stop.min ?? placeByName.get(stop.lugar)?.duration_minutes ?? 30)
+  const usedMinutes = (list) => list.reduce((sum, stop) => sum + stopMinutes(stop) + (stop.modo === 'camino' ? 2 : WALK_BETWEEN), 0)
+  /** Los minutos que da una mitad del día: la mañana, de su hora de empezar a las 13:00; la tarde, de su hora de empezar a la puesta de sol más 45 min. */
+  const halfCapacity = (draft, half) => {
+    const hours = hoursOf(draft.day)
+    if (half === 'manana') return 13 * 60 - toMin(draft.manana_empieza ?? '08:30')
+    const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
+    const begins = Math.max(toMin(draft.empieza ?? '14:00'), SUMMER_MONTHS.includes(month) ? SUMMER_SHADE_UNTIL : 0)
+    return Math.min((hours.sunset ?? 18 * 60) + 45, 21 * 60 + 30) - begins
   }
-  /** Mete `item` ({ lugar, min, dentro, atardecer, franja, con, no_con_dia }) en el día de su zona. Devuelve true si lo mete. */
+  /** Lo que no se recorta para hacer sitio: imprescindibles, lo del pool, las horas fijas y lo que añade la experiencia. */
+  const protectedStop = (stop) => {
+    const place = placeByName.get(stop.lugar)
+    return Boolean(stop.protegido || stop.hora || stop.tipo === 'fija' || poolNames.includes(stop.lugar) || place?.level === 1 || place?.tier === 'joya')
+  }
+  /** Qué se puede quitar, en este orden: opcionales y «De camino», luego nivel 3 (nunca una iglesia con arte, ni lo que forma grupo). */
+  const cutOrder = (list, { hard = false } = {}) => {
+    const candidates = list.filter((stop) => !protectedStop(stop) || (hard && placeByName.get(stop.lugar)?.level === 1 && placeByName.get(stop.lugar)?.tier !== 'joya' && !stop.protegido && !stop.hora && !poolNames.includes(stop.lugar)))
+    const rank = (stop) => {
+      const place = placeByName.get(stop.lugar)
+      if (!place) return 9
+      // (Lo que forma una visita inseparable o es el acceso de otro sitio no se quita suelto.)
+      if (place.approach_to || (place.group && (destData.groups?.[place.group]?.inseparable ?? []).length > 0)) return 9
+      const tags = place.tags ?? []
+      if (stop.modo === 'camino' || stop.tipo === 'opcional') return 0
+      if (!hard && (tags.includes('iglesia') || tags.includes('museo'))) return 9
+      if (!hard) return (place.level ?? 3) >= 3 || tags.includes('paseo') ? 1 : 9
+      return (place.level ?? 3) >= 3 ? 1 : (place.level ?? 3) === 2 ? 2 : 3
+    }
+    return candidates.map((stop, index) => ({ stop, index, rank: rank(stop) })).filter((entry) => entry.rank < 9).sort((a, b) => a.rank - b.rank || b.index - a.index).map((entry) => entry.stop)
+  }
+  /** ¿Cabe \`minutes\` más en esa mitad? Devuelve los \`quitar\` que hacen falta (puede ser lista vacía) o null si no cabe. */
+  const fitCuts = (draft, half, minutes, options = {}) => {
+    const list = draft[half]
+    let free = halfCapacity(draft, half) - usedMinutes(list) - minutes - WALK_BETWEEN
+    if (free >= 0) return []
+    // (La elástica da hasta un cuarto de su tiempo.)
+    for (const stop of list) if (stop.elastica != null) free += Math.floor(stopMinutes(stop) * 0.25)
+    const cuts = []
+    for (const stop of cutOrder(list, options)) {
+      if (free >= 0) break
+      cuts.push(stop.lugar)
+      free += stopMinutes(stop) + (stop.modo === 'camino' ? 2 : WALK_BETWEEN)
+    }
+    // Si no basta, un grupo inseparable entero (la Plaza con la Basílica de San Pedro): solo en el viaje de 1 día, con lo marcado en el pool.
+    if (free < 0 && options.hard) {
+      for (const group of Object.values(destData.groups ?? {})) {
+        if (!(group.inseparable ?? []).length) continue
+        const members = list.filter((stop) => (group.places ?? []).includes(stop.lugar))
+        if (members.length < 2 || members.some((stop) => stop.protegido || stop.hora || poolNames.includes(stop.lugar) || placeByName.get(stop.lugar)?.tier === 'joya')) continue
+        for (const stop of members) if (!cuts.includes(stop.lugar)) { cuts.push(stop.lugar); free += stopMinutes(stop) + WALK_BETWEEN }
+        if (free >= 0) break
+      }
+    }
+    return free >= 0 ? cuts : null
+  }
+  /** La entrada que pide hora (Museos Vaticanos, Galería Borghese…) va como una entrada reservada en su mejor franja real (la primera del día escrito). */
+  const bestFranja = (draft, name) => {
+    const franjas = written.days[draft.id]?.entradas?.[name]
+    const first = franjas ? Object.values(franjas)[0] : null
+    return first ? { hora: first[0], franjas } : null
+  }
+  /** Mete \`item\` ({ lugar, min, dentro, atardecer, franja, con, no_con_dia, zona, pool }) en el día de su zona. Devuelve true si lo mete. */
   const insertByZone = (item, label) => {
     const place = placeByName.get(item.lugar)
-    if (!place || !(item.zona ?? place.zone) || drafts.some((draft) => shownInDraft(draft, item.lugar))) return false
+    const zoneId = item.zona ?? place?.zone
+    if (!place || !zoneId || drafts.some((draft) => shownInDraft(draft, item.lugar))) return false
     const minutes = item.min ?? Math.min(place.duration_minutes ?? 30, 180)
     const big = Boolean(item.dentro) && minutes > BIG_MINUTES
-    const candidates = drafts
-      .filter((draft) => !closedThatDay(item.lugar, draft.day) && !(item.no_con_dia ?? []).some((other) => shownInDraft(draft, other)) && !(big && stopsOfDraft(draft).some(isBigStop)))
-      .map((draft, index) => ({ draft, index, count: zonesOfDraft(draft).get(item.zona ?? place.zone) ?? 0 }))
-      .filter((entry) => entry.count > 0)
-      .sort((a, b) => b.count - a.count || a.index - b.index)
-    const target = candidates[0]?.draft
-    if (!target) return false
-    const zoneId = item.zona ?? place.zone
-    const half = item.franja ?? ((zonesOfDraft(target, 'manana').get(zoneId) ?? 0) >= (zonesOfDraft(target, 'tarde').get(zoneId) ?? 0) ? 'manana' : 'tarde')
-    const list = target[half]
-    const lastOfZone = list.map((stop, index) => (placeByName.get(stop.lugar)?.zone === zoneId && stop.modo !== 'camino' ? index : -1)).reduce((a, b) => Math.max(a, b), -1)
-    const stop = { lugar: item.lugar, min: minutes, ...(item.dentro ? { modo: 'dentro', entrada: (place.ticket_info ?? []).some((line) => /de pago/i.test(line)), si_cerrado: 'quitar' } : {}), ...(item.atardecer ? { modo: 'atardecer' } : {}) }
-    const extras = (item.con ?? []).filter((other) => placeByName.has(other) && !drafts.some((draft) => shownInDraft(draft, other))).map((other) => ({ lugar: other, min: Math.min(placeByName.get(other).duration_minutes ?? 20, 30) }))
-    const anchor = lastOfZone >= 0 ? list[lastOfZone].lugar : null
-    const key = half === 'manana' ? 'manana' : 'tarde.*'
-    const cambios = { [key]: { insertar: [...(anchor ? [{ despues_de: anchor, parada: stop }] : [{ parada: stop }]), ...extras.map((extra) => ({ despues_de: item.lugar, parada: extra }))] } }
-    // Si hay que quitar algo para que quepa: un paseo, un «De camino» o algo de nivel 3 (el último de la mitad).
-    // (Uno por cada ~25 min que se añaden, como mucho 3, de atrás hacia delante.)
-    const toRemove = Math.min(3, Math.max(1, Math.round(minutes / 25)))
-    const removable = [...list].reverse().filter(removableStop).slice(0, toRemove).map((stop) => stop.lugar)
-    if (removable.length > 0) cambios[key].quitar = removable
-    // Un solo atardecer por día: si el sitio es del atardecer, el que ya lo era pasa a parada normal.
-    if (item.atardecer) {
-      const adjust = {}
-      for (const other of stopsOfDraft(target)) if (other.modo === 'atardecer' && other.lugar !== item.lugar) adjust[other.lugar] = { modo: 'parada' }
-      if (Object.keys(adjust).length > 0) cambios[key].ajustar = adjust
+    const oneDay = contentDays === 1
+    const extras = (item.con ?? []).filter((other) => placeByName.has(other) && !drafts.some((draft) => shownInDraft(draft, other))).map((other) => ({ lugar: other, min: Math.min(placeByName.get(other).duration_minutes ?? 20, 30), protegido: true }))
+    const meters = (draft, half) => {
+      const points = draft[half].map((stop) => placeByName.get(stop.lugar)?.coordinates).filter(Array.isArray)
+      if (!Array.isArray(place.coordinates) || points.length === 0) return Infinity
+      const sorted = points.map((point) => straightLineMeters(place.coordinates, point)).sort((a, b) => a - b)
+      return sorted.slice(0, 3).reduce((sum, value) => sum + value, 0) / Math.min(3, sorted.length)
     }
-    applyOps(target, cambios, label)
-    target.poolOps.push([cambios, label])
-    return true
+    // Los días y mitades que prueba, en orden: los de su zona (más paradas de esa zona primero); en el viaje de 1 día, lo marcado en el pool
+    // entra siempre y sustituye la mitad más cercana (más cercana a su zona, con lo menos importante).
+    const options = []
+    for (const [index, draft] of drafts.entries()) {
+      if (closedThatDay(item.lugar, draft.day) || (item.no_con_dia ?? []).some((other) => shownInDraft(draft, other)) || (big && stopsOfDraft(draft).some(isBigStop))) continue
+      const count = zonesOfDraft(draft).get(zoneId) ?? 0
+      if (count > 0) {
+        const half = item.franja ?? ((zonesOfDraft(draft, 'manana').get(zoneId) ?? 0) >= (zonesOfDraft(draft, 'tarde').get(zoneId) ?? 0) ? 'manana' : 'tarde')
+        options.push({ draft, index, half, count, hard: oneDay && Boolean(item.pool) })
+      } else if (oneDay && item.pool) {
+        const half = item.franja ?? (meters(draft, 'manana') <= meters(draft, 'tarde') ? 'manana' : 'tarde')
+        options.push({ draft, index, half, count: 0, hard: true })
+      }
+    }
+    options.sort((a, b) => b.count - a.count || a.index - b.index)
+    for (const option of options) {
+      const { draft: target, half, hard } = option
+      const franja = item.dentro ? bestFranja(target, item.lugar) : null
+      const cuts = fitCuts(target, half, minutes + extras.reduce((sum, extra) => sum + extra.min, 0), { hard: hard && item.pool })
+      if (cuts == null) continue
+      const list = target[half]
+      const lastOfZone = list.map((stop, index) => (placeByName.get(stop.lugar)?.zone === zoneId && stop.modo !== 'camino' ? index : -1)).reduce((a, b) => Math.max(a, b), -1)
+      const stop = {
+        lugar: item.lugar,
+        min: minutes,
+        protegido: true,
+        ...(item.dentro ? { modo: 'dentro', entrada: (place.ticket_info ?? []).some((line) => /de pago/i.test(line)), si_cerrado: 'quitar' } : {}),
+        ...(item.atardecer ? { modo: 'atardecer' } : {}),
+        ...(franja ? { tipo: 'fija', hora: franja.hora, hora_tipo: 'turno', turno: true, llegar_antes: ENTRY_ARRIVAL_MARGIN } : {}),
+      }
+      const anchor = lastOfZone >= 0 ? list[lastOfZone].lugar : null
+      const key = half === 'manana' ? 'manana' : 'tarde.*'
+      const where = franja ? { al_principio: true } : anchor ? { despues_de: anchor } : {}
+      const cambios = { [key]: { insertar: [{ ...where, parada: stop }, ...extras.map((extra) => ({ despues_de: item.lugar, parada: extra }))] } }
+      if (cuts.length > 0) cambios[key].quitar = cuts
+      // Un solo atardecer por día: si el sitio es del atardecer, el que ya lo era pasa a parada normal.
+      if (item.atardecer) {
+        const adjust = {}
+        for (const other of stopsOfDraft(target)) if (other.modo === 'atardecer' && other.lugar !== item.lugar) adjust[other.lugar] = { modo: 'parada' }
+        if (Object.keys(adjust).length > 0) cambios[key].ajustar = adjust
+      }
+      applyOps(target, cambios, label)
+      target.poolOps.push([cambios, label])
+      return true
+    }
+    return false
   }
-  /** Alarga un sitio que el día ya lleva (el barrio, el parque): la experiencia lo pide más largo. */
+  /** Alarga un sitio que el día ya lleva (el barrio, el parque), solo con el tiempo que sobra: nunca quita una parada. */
   const stretchInDrafts = (item, label) => {
     for (const draft of drafts) {
       const found = stopsOfDraft(draft).find((stop) => stop.lugar === item.lugar && stop.modo !== 'camino')
       if (!found) continue
-      const needsMin = item.alarga && (found.min ?? 0) < item.min
-      // (El atardecer solo cambia en la tarde: un sitio de la mañana no se vuelve el atardecer.)
-      const needsSun = item.atardecer && found.modo !== 'atardecer' && draft.tarde.includes(found)
-      if (!needsMin && !needsSun) continue
       const half = draft.manana.includes(found) ? 'manana' : 'tarde'
-      const patch = { tipo: 'normal', ...(needsMin ? { min: item.min } : {}), ...(needsSun ? { modo: 'atardecer' } : {}) }
+      const extra = item.alarga ? Math.max(0, item.min - (found.min ?? placeByName.get(found.lugar)?.duration_minutes ?? 0)) : 0
+      const needsMin = extra > 0
+      // (El atardecer solo cambia en la tarde: un sitio de la mañana no se vuelve el atardecer.)
+      const needsSun = item.atardecer && found.modo !== 'atardecer' && half === 'tarde'
+      if (!needsMin && !needsSun) continue
+      // (Alargar un paseo solo usa el tiempo que sobra: nunca quita una parada.)
+      if (needsMin && halfCapacity(draft, half) - usedMinutes(draft[half]) < extra) continue
+      const patch = { tipo: 'normal', protegido: true, ...(needsMin ? { min: item.min } : {}), ...(needsSun ? { modo: 'atardecer' } : {}) }
       const adjust = { [item.lugar]: patch }
-      // (Un solo atardecer por día: el que ya lo era pasa a parada normal.)
       if (needsSun) for (const other of stopsOfDraft(draft)) if (other.modo === 'atardecer' && other.lugar !== item.lugar) adjust[other.lugar] = { modo: 'parada' }
       const cambios = { [half === 'manana' ? 'manana' : 'tarde.*']: { ajustar: adjust } }
       applyOps(draft, cambios, label)
@@ -772,7 +872,7 @@ export function planWrittenTrip(args) {
     const site = sites.find((candidate) => siteDraft(candidate) && !closedThatDay(name, siteDraft(candidate).day) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`)) ?? sites.find((candidate) => siteDraft(candidate) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`))
     if (!site) {
       // (Sin sitio escrito —el viaje de 1 día, o un día que no está en el viaje—: en el día de su zona, por dentro.)
-      if (insertByZone({ lugar: name, dentro: true }, `pool:${name}`)) continue
+      if (insertByZone({ lugar: name, dentro: true, pool: true }, `pool:${name}`)) continue
       unplacedPool.push({ unitId: name, name, reason: sites.length === 0 ? 'no_room' : 'no_room_day', dayNumber: null })
       continue
     }
@@ -1957,9 +2057,23 @@ export function planWrittenTrip(args) {
     const writtenDinners = [pickDinner([draft.cena?.restaurante].filter(Boolean)), pickDinner([draft.cena?.alternativa].filter(Boolean))].filter(Boolean)
     const nearDinner = (spot) => spot && walkLeg(last.coords, spot.coordinates) <= DINNER_WALK_MAX
     const nearestDinner = pickDinner(null)
-    // (`lejos_ok`: el usuario decidió la cena aunque quede a más de 15 min de lo último —D0 con Free Tour, cena en Monti—.)
-    const dinnerRestaurant = ((draft.cena?.lejos_ok && writtenDinners[0]) || writtenDinners.find(nearDinner)) ?? (nearDinner(nearestDinner) ? nearestDinner : null) ?? writtenDinners[0] ?? nearestDinner
-    const dinnerWalk = dinnerRestaurant ? walkLeg(last.coords, dinnerRestaurant.coordinates) : 10
+    // La cena entre lo último de la tarde y la nocturna, a 15 min o menos de las dos (REGLAS_RUTAS 15). Si no puede ser, va junto a la nocturna
+    // y el tramo desde lo último se hace en bus o taxi (regla 19).
+    const nightWalkDef = { ...(destData.night_walks?.[draft.noche] ?? {}), ...(written.destino?.noches?.[draft.noche] ?? {}) }
+    const nightFirst = (destData.night_experiences ?? []).find((entry) => entry.name === nightWalkDef.recorrido?.[0])
+    const nightCoords = Array.isArray(nightFirst?.coordinates) ? nightFirst.coordinates : null
+    const nearBoth = (spot) => nearDinner(spot) && (!nightCoords || walkLeg(spot.coordinates, nightCoords) <= DINNER_WALK_MAX)
+    let dinnerByTaxi = false
+    let dinnerRestaurant = writtenDinners.find(nearBoth) ?? (nearBoth(nearestDinner) ? nearestDinner : null)
+    if (!dinnerRestaurant && nightCoords) {
+      const nearNight = (spot) => spot && walkLeg(spot.coordinates, nightCoords) <= DINNER_WALK_MAX
+      const byNight = recommendedRestaurant(destData, { names: null, meal: 'cena', near: nightCoords, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: usedRestaurants })
+      dinnerRestaurant = writtenDinners.find(nearNight) ?? byNight ?? null
+      dinnerByTaxi = Boolean(dinnerRestaurant) && !nearDinner(dinnerRestaurant)
+    }
+    dinnerRestaurant = dinnerRestaurant ?? writtenDinners.find(nearDinner) ?? (nearDinner(nearestDinner) ? nearestDinner : null) ?? writtenDinners[0] ?? nearestDinner
+    const dinnerWalkOnFoot = dinnerRestaurant ? walkLeg(last.coords, dinnerRestaurant.coordinates) : 10
+    const dinnerWalk = dinnerByTaxi || dinnerWalkOnFoot > DINNER_WALK_MAX * 2 ? Math.min(dinnerWalkOnFoot, Math.round(straightLineMeters(last.coords, dinnerRestaurant.coordinates) / 350) + 6) : dinnerWalkOnFoot
     let readyAt = last.t + dinnerWalk
     // Nunca antes de las 19:30 (ni de la hora escrita) y, en verano (versión D), nunca antes de las 20:30.
     const dinnerFloor = Math.max(DINNER_EARLIEST, draft.version === 'D' ? DINNER_EARLIEST_SUMMER : 0, draft.cena?.hora ? toMin(draft.cena.hora) : 0)

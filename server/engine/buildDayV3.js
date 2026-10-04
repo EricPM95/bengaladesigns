@@ -354,6 +354,16 @@ function transitFields({ how, minutes }) {
   return { icon, label: `${line.charAt(0).toUpperCase()}${line.slice(1)}, unos ${minutes} min`, minutes, detail }
 }
 
+/** La hora límite de la noche del destino: `destination_config.noche_limite` ({ hora, meses: { 7: "23:30" } }). Null si no la dice. */
+function nightLimitOf(destData, dateIso) {
+  const config = destData.destination_config?.noche_limite
+  if (!config?.hora) return null
+  const month = dateIso ? String(Number(String(dateIso).slice(5, 7))) : null
+  const value = (month && config.meses?.[month]) || config.hora
+  const [h, m] = String(value).split(':').map(Number)
+  return h * 60 + (m || 0)
+}
+
 /** "Cierre temprano": lo que cierra antes de esta hora (el Foro, a las 16:30 en invierno). */
 const EARLY_CLOSING_MINUTES = 18 * 60
 
@@ -689,7 +699,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     dinnerEnd: dinnerMeal?.end ?? null,
     dinnerCoords: asPoint(dinnerMeal?.coordinates),
     dateIso: tripDay.hours?.dateIso ?? null,
-    nightMinutes: tripDay.curatedDay?.nocheMinutos ?? null,
+    // La última nocturna empieza como tarde a la hora límite del destino (`noche_limite`: Roma, 23:00 y 23:30 en julio y agosto).
+    lastStart: nightLimitOf(destData, tripDay.hours?.dateIso ?? null),
   }
   // Una nocturna que solo vale antes de cenar (el Janículo de noche: el bus 115 deja de subir a las 22:00): si el barrio
   // de la tarde se estiró hasta la cena, devuelve lo justo para que quepa antes (segundo repaso, 2026-09-28).

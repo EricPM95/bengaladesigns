@@ -240,6 +240,34 @@
 
 ---
 
+## 8 bis. Antes de añadir, la noche y las entradas del pool (4-oct, noche)
+
+### R-33 · Antes de añadir, se mira si cabe — OBLIGATORIA
+- **Texto:** vale para las experiencias, el pool y cualquier relleno. Se calcula **recortando solo lo que se puede recortar, en el orden de la regla 2**: opcionales, elástica, comida hasta su mínimo, nivel 3. Si no cabe, se prueba el siguiente de la lista o el siguiente día de su zona. **Lo protegido nunca se recorta para añadir:** imprescindibles, lo del pool, horas fijas y lo que añade la experiencia elegida. **Alargar un paseo nunca quita una parada:** solo usa tiempo que sobra.
+- **Datos:** `se_llenan`, `elastica`, `experiencias_lista`.
+- **Comprobación:** `pool_fuera`, `experiencia_sin_efecto`, `fuera_mal` (si algo protegido se recorta, salen ellas).
+
+### R-34 · Lo del pool que necesita entrada con hora va como entrada reservada — OBLIGATORIA
+- **Texto:** Museos Vaticanos, Galería Borghese… van como una **entrada reservada en su mejor franja real** (`entradas` del día), y el día usa su orden de franja (regla de las entradas reservadas, 2 y 16).
+- **Datos:** `entradas` de cada día escrito.
+- **Comprobación:** `pool_fuera`, `cerrada_a_su_hora`.
+
+### R-35 · En 1 día, lo del pool entra siempre — OBLIGATORIA
+- **Texto:** sustituye la mitad del día (mañana o tarde) **más cercana a su zona**, con **lo menos importante**. Las joyas no se tocan: como mínimo van por fuera. Se cumple con la regla 33 (se recorta en el mismo orden).
+- **Comprobación:** `pool_fuera` en viajes de 1 día.
+
+### R-36 · La comida nunca se estira para llenar un hueco — OBLIGATORIA
+- **Texto:** máximo **90 min**. El rato que sobra hasta una hora fija se llena con la regla 20.
+- **Comprobación:** `comida_mas_90`.
+- Aclara la 14.
+
+### R-37 · La noche tiene una hora límite por destino — OBLIGATORIA
+- **Texto:** cada destino tiene en su dato la hora a la que como tarde **empieza la última nocturna**. En Roma: **23:00** en invierno y **23:30** en julio y agosto. Si la cena no puede quedar a 15 min de lo último de la tarde y de la nocturna, **va junto a la nocturna** y el tramo desde la tarde se hace en bus o taxi (regla 19).
+- **Datos:** `destination_config.noche_limite`.
+- **Comprobación:** `atardecer_tarde`, `hueco_cena`, `cena_espera`.
+
+---
+
 ## 9. Dónde va lo demás
 
 ```

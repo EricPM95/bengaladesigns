@@ -230,19 +230,6 @@
       "empieza": "15:10",
       "paradas": [
         {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "si_pool": "Castillo de Sant'Angelo"
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "min": 15,
-          "si_pool": "Castillo de Sant'Angelo"
-        },
-        {
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
           "min": 20,
           "modo": "dentro",
@@ -281,15 +268,13 @@
         {
           "lugar": "Castillo de Sant'Angelo",
           "min": 20,
-          "modo": "fuera",
-          "no_si_pool": "Castillo de Sant'Angelo"
+          "modo": "fuera"
         },
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "lead": 55,
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-          "no_si_pool": "Castillo de Sant'Angelo"
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
         }
       ],
       "cena": {
@@ -1247,19 +1232,6 @@
         "empieza": "12:00",
         "paradas": [
           {
-            "lugar": "Castillo de Sant'Angelo",
-            "min": 60,
-            "modo": "dentro",
-            "entrada": true,
-            "si_cerrado": "fuera",
-            "si_pool": "Castillo de Sant'Angelo"
-          },
-          {
-            "lugar": "Puente Sant'Angelo",
-            "min": 15,
-            "si_pool": "Castillo de Sant'Angelo"
-          },
-          {
             "lugar": "San Pietro in Montorio y Tempietto de Bramante",
             "min": 20,
             "modo": "dentro",
@@ -1298,15 +1270,13 @@
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
-            "modo": "fuera",
-            "no_si_pool": "Castillo de Sant'Angelo"
+            "modo": "fuera"
           },
           {
             "lugar": "Puente Sant'Angelo",
             "modo": "atardecer",
             "lead": 55,
-            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-            "no_si_pool": "Castillo de Sant'Angelo"
+            "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
           }
         ],
         "cena": {

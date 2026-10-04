@@ -2,6 +2,19 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-05 — Las reglas que faltan (33 a 37)
+
+Encargo del usuario, a partir del informe del 4 de octubre. Lo escrito a mano sale y lo hacen las reglas.
+
+| Regla nueva | Qué cambia en los datos y el motor | Reglas |
+|---|---|---|
+| Antes de añadir, se mira si cabe | `fitCuts` recorta en el orden de la 2; lo protegido no se toca; alargar un paseo no quita paradas | 33 |
+| Pool con entrada con hora | `entradas` de D0 (Museos Vaticanos, Galería Borghese) | 34 |
+| 1 día: el pool entra siempre | `insertByZone` sustituye la mitad del día más cercana a su zona | 35 |
+| La comida no se estira | quitadas las dos ramas de `freeTime.js` que alargaban la comida | 36, 14 |
+| Hora límite de la noche | `noche_limite` en `roma.json`; la cena junto a la nocturna, tramo en bus o taxi | 37 |
+| Quitado a mano | el `si_pool` del Castillo en D2, la Basílica del 24 y 31 de diciembre por día, en D0 la cena de 75 min, las paradas de noche de 20 min, la cena en Monti y el Campo de' Fiori de 80 min | 12, 33, 37 |
+
 ## 2026-10-04 (noche) — Reglas, no casos
 
 Encargo del usuario: cada fallo se arregla aplicando una regla de `REGLAS_RUTAS.md` o corrigiendo un dato; nada para una fecha, un día o un sitio concreto.

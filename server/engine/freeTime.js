@@ -357,13 +357,8 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       const extra = Math.min(floor5(room), floor5(canStretch))
       stretch(prev, extra)
       report.mid.push({ kind: 'recoloca', name: nameOf(prev), minutes: extra, before: entry.before, after: entry.after })
-    } else if (afterLunch && lunch && lunchEnd != null) {
-      lunch.window_end = toHHMM(lunchEnd + floor5(room))
-      report.mid.push({ kind: 'recoloca', name: 'la comida', minutes: floor5(room), before: entry.before, after: entry.after })
-    } else if (beforeLunch && lunch && lunchStart != null) {
-      lunch.suggested_time = toHHMM(lunchStart - floor5(room))
-      report.mid.push({ kind: 'recoloca', name: 'la comida (antes)', minutes: floor5(room), before: entry.before, after: entry.after })
     }
+    // (REGLAS_RUTAS 14: la comida nunca se estira para llenar un hueco, 90 min como mucho: si no hay nada que ponga el hueco, el hueco se queda y la prueba lo cuenta.)
   }
   if (keep.length > 0) day.free_times = keep
   else delete day.free_times

@@ -77,7 +77,7 @@
       "id": "noche_coliseo",
       "name": "Coliseo (noche)",
       "muestra": ["coliseo"],
-      "duration": 45,
+      "duration": 20,
       "description": "El anfiteatro iluminado sin las multitudes del día — una imagen que no olvidarás",
       "coordinates": [
         41.8902,
@@ -116,7 +116,7 @@
       "id": "noche_fontana_de_trevi",
       "name": "Fontana de Trevi (noche)",
       "muestra": ["fontana_de_trevi"],
-      "duration": 45,
+      "duration": 20,
       "description": "La fuente iluminada sin multitudes — el momento más mágico de Roma",
       "coordinates": [
         41.9009,
@@ -8787,6 +8787,7 @@
         }
       ]
     },
+    "noche_limite": { "_nota": "La última nocturna empieza como tarde a esta hora (REGLAS_RUTAS 15); en julio y agosto, más tarde.", "hora": "23:00", "meses": { "7": "23:30", "8": "23:30" } },
     "se_llenan": ["Fontana de Trevi", "Plaza de España"],
     "sitios_extra": {
       "_nota": "Sitios que no son una ficha de `places` pero que una parada enseña (REGLAS_RUTAS regla 0 y 5). id → nombre. Dos sitios distintos tienen dos id aunque compartan ficha (el parque de Villa Borghese y su lago).",
