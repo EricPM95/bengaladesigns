@@ -2,6 +2,24 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-05 (tarde) — Máximos por sitio, cierres, noche y Free Tour
+
+Encargo del usuario (`A.1` a `A.8`, `B.1` a `B.6`, `C`).
+
+| Cambio | Reglas |
+|---|---|
+| Acortar antes del cierre, mínimo 20 min, para toda visita por dentro | 1 |
+| `min_max` en cada sitio de Roma; estirar nunca lo pasa; el mirador llega más tarde en vez de quedarse más | 38 |
+| El mirador a ±30 min del sol; ninguna espera de más de 90 min (descanso después de comer hasta 90) | 16 |
+| Cena a unos 20 min andando de la nocturna, o la nocturna con su taxi | 37 |
+| Lo que enseña una nocturna cuenta como visto | 39 |
+| «De camino» con su nombre propio y sin cerrar el pool | 40 |
+| Una nocturna que acaba tras `noche_limite` se quita | 41 |
+| Nochebuena: noche propia desde los datos (`noche_especial`) | 42 |
+| Calles fuera de las paradas; experiencias solo en su zona y cerca; zona de los restaurantes comprobada | 43 |
+| Free Tour: lo que recorre no se repite por fuera de día tras el tour; Trevi a las 8:00 en D3 | 8 |
+| D2 del miércoles sin volver atrás; D7 sin repetir sitios | 19, 5 |
+
 ## 2026-10-05 — Las reglas que faltan (33 a 37)
 
 Encargo del usuario, a partir del informe del 4 de octubre. Lo escrito a mano sale y lo hacen las reglas.

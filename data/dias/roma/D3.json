@@ -23,8 +23,15 @@
   "barrio_cena": "vaticano",
   "noche": "castillo_tiber",
   "manana": {
-    "empieza": "09:00",
+    "empieza": "08:00",
     "paradas": [
+      {
+        "lugar": "Fontana de Trevi",
+        "tipo": "fija",
+        "hora": "08:00",
+        "hora_tipo": "orientativa",
+        "min": 45
+      },
       {
         "lugar": "Desayuno romano",
         "tipo": "opcional",

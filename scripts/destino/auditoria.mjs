@@ -367,7 +367,7 @@ export function auditarViaje(D, days, options = {}) {
         const here = coordsOf(ordered[i])
         const there = coordsOf(before)
         const cerca = here && there && straightLineMeters(here, there) <= 250 && !before.is_night_experience
-        if ((base.length >= 4 && title.includes(base)) || cerca) add('paseo_misma_zona', n, ordered[i].suggested_time, ordered[i].name, `justo después de ${nameOf(before)}`)
+        if (((base.length >= 4 && title.includes(base)) || cerca) && (byName.get(nameOf(before))?.min_max ?? Infinity) - (before.duration_minutes ?? 0) >= 10) add('paseo_misma_zona', n, ordered[i].suggested_time, ordered[i].name, `justo después de ${nameOf(before)}`)
       }
     }
     // Paradas de paseo por encima de su máximo; "por fuera para llegar a todo" con tiempo de sobra; "por la mañana" por la tarde.

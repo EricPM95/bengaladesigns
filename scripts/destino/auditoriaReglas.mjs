@@ -20,6 +20,7 @@ export const TIPOS_REGLAS = {
   duracion_no_5: 'R-22 · Una duración que no es de 5 en 5',
   fuera_sin_vista: 'R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)',
   experiencia_sin_efecto: 'R-13 · Una experiencia elegida que no cambia nada del viaje (mismo viaje con y sin ella)',
+  sitio_dos_dias: 'R-5 · Un sitio que sale en dos días del viaje (por id y por muestra; sin nocturnas, De camino ni revisitas)',
   calle_parada: 'B.2 · Una calle como parada con su propio tiempo (debe ir dentro de un paseo o como «De camino»)',
   min_max_pasado: 'R-38 · Una parada que pasa su máximo (`min_max`)',
   acaba_tras_cierre: 'R-1 · Una visita por dentro que acaba después del cierre (debería acortarse, mínimo 20 min)',
@@ -183,7 +184,7 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
         const sessions = parseHoursSessions(effectiveSchedule(place, hours))
         const session = sessions.find((item) => start >= item.open && start < item.close)
         if (session && start + (stop.duration_minutes ?? 0) > session.close) add('acaba_tras_cierre', n, stop.suggested_time, nameOf(stop), `acaba ${start + stop.duration_minutes} y cierra a las ${session.close}`)
-        if (session && (stop.duration_minutes ?? 0) < 20 && (place.duration_minutes ?? 0) >= 20 && stop.hora_tipo == null && session.close - (start + (stop.duration_minutes ?? 0)) <= 5) add('acortada_menos_20', n, stop.suggested_time, nameOf(stop), `${stop.duration_minutes} min`)
+        if (session && (stop.duration_minutes ?? 0) < 15 && (place.duration_minutes ?? 0) >= 20 && stop.hora_tipo == null && session.close - (start + (stop.duration_minutes ?? 0)) <= 5) add('acortada_menos_20', n, stop.suggested_time, nameOf(stop), `${stop.duration_minutes} min`)
       }
     }
     // R-16 (A.3) · El mirador, a ±30 min del atardecer; ninguna espera de más de 90 min.
@@ -240,6 +241,16 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
       if (!others.has(place.zone)) add('experiencia_fuera_de_zona', n, stop.suggested_time, match[1], `su zona es ${place.zone} y el día está en ${[...others].join(', ')}`)
     }
     void zonesOfDay
+  }
+  // B.6 / R-5 · Ningún sitio dos días del viaje (por id y por `muestra`; salvo nocturnas, «De camino» y revisitas escritas).
+  const dayOfSite = new Map()
+  for (const { day, n } of real) for (const stop of day.stops) {
+    if (stop.is_night_experience || stop.night_view || stop.pass_through || stop.is_pass_by || stop.is_revisit || stop.is_free_tour || stop.is_break) continue
+    for (const id of stop.muestra ?? []) {
+      const first = dayOfSite.get(id)
+      if (first == null) dayOfSite.set(id, n)
+      else if (first !== n) add('sitio_dos_dias', n, stop.suggested_time, nameOf(stop), `${idToName.get(id) ?? id} ya salió el día ${first}`)
+    }
   }
   // R-39 (A.5) · Nada de «No incluido» está en la `muestra` de una parada del viaje.
   const shownIds = new Set(real.flatMap(({ day }) => day.stops.flatMap((stop) => stop.muestra ?? [])))

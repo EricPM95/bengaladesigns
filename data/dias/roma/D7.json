@@ -23,13 +23,15 @@
           "lugar": "Piazza Navona",
           "min": 30,
           "elastica": 30,
-          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza.",
+          "una_vez": true
         },
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
+          "una_vez": true
         },
         {
           "lugar": "Castillo de Sant'Angelo",
@@ -48,11 +50,13 @@
         {
           "lugar": "Campo de' Fiori",
           "min": 30,
-          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos.",
+          "una_vez": true
         },
         {
           "lugar": "Plaza Farnese",
-          "modo": "camino"
+          "modo": "camino",
+          "una_vez": true
         }
       ],
       "cena": {
@@ -68,7 +72,8 @@
           "lugar": "Piazza Navona",
           "min": 15,
           "elastica": 30,
-          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza.",
+          "una_vez": true
         },
         {
           "lugar": "Castillo de Sant'Angelo",
@@ -88,16 +93,19 @@
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
+          "una_vez": true
         },
         {
           "lugar": "Campo de' Fiori",
           "min": 30,
-          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos.",
+          "una_vez": true
         },
         {
           "lugar": "Plaza Farnese",
-          "modo": "camino"
+          "modo": "camino",
+          "una_vez": true
         }
       ],
       "cena": {
@@ -126,23 +134,27 @@
         {
           "lugar": "Piazza Navona",
           "min": 30,
-          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza.",
+          "una_vez": true
         },
         {
           "lugar": "Campo de' Fiori",
           "min": 30,
           "elastica": 30,
-          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos.",
+          "una_vez": true
         },
         {
           "lugar": "Plaza Farnese",
-          "modo": "camino"
+          "modo": "camino",
+          "una_vez": true
         },
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
+          "una_vez": true
         }
       ],
       "cena": {
@@ -171,24 +183,28 @@
         {
           "lugar": "Piazza Navona",
           "min": 50,
-          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza."
+          "revisita": "Ya la viste {dia}; a última hora de la tarde, con las terrazas llenas, es otra plaza.",
+          "una_vez": true
         },
         {
           "lugar": "Campo de' Fiori",
           "min": 60,
           "elastica": 30,
           "titulo": "Pasea y piérdete por Campo de' Fiori",
-          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos."
+          "revisita": "Ya pasaste por aquí {dia}; ahora es la hora del aperitivo, cuando la plaza es de los romanos.",
+          "una_vez": true
         },
         {
           "lugar": "Plaza Farnese",
-          "min": 15
+          "min": 15,
+          "una_vez": true
         },
         {
           "lugar": "Puente Sant'Angelo",
           "modo": "atardecer",
           "revisita": "Ya lo cruzaste {dia}; al atardecer, con la cúpula de San Pedro recortada al fondo, es otro puente.",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo."
+          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
+          "una_vez": true
         }
       ],
       "cena": {

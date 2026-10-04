@@ -690,8 +690,7 @@
             41.8912,
             12.4596
           ],
-          "duration_minutes": 40,
-          "min_max": 45,
+          "duration_minutes": 40,          "min_max": 45,
           "tip": "La mejor panorámica de Roma al atardecer. Llega 20 min antes de la puesta de sol. Hay un puesto de granita perfecto."
         },
         {
@@ -905,6 +904,7 @@
         12.4922
       ],
       "duration_minutes": 90,
+      "min_max": 60,
       "min_max": 120,
       "type": "interior",
       "group": "roma_antigua_core",
@@ -1437,6 +1437,7 @@
         12.473
       ],
       "duration_minutes": 30,
+      "min_max": 45,
       "type": "exterior",
       "group": "centro_historico_walk",
       "group_order": 2,
@@ -2036,6 +2037,7 @@
         12.4596
       ],
       "duration_minutes": 40,
+      "min_max": 60,
       "type": "exterior",
       "tip": "La mejor panorámica de Roma — se ven todas las cúpulas. Cada día a las 12:00 disparan un cañón (tradición desde 1847). Ideal para el atardecer subiendo desde Trastevere.",
       "photo_tip": "Panorámica de 180° con todas las cúpulas de Roma — la foto que resume la ciudad. Al atardecer el cielo se tiñe de naranja.",
@@ -2151,7 +2153,7 @@
         12.4856
       ],
       "duration_minutes": 90,
-      "min_max": 120,
+      "min_max": 90,
       "type": "exterior",
       "tip": "El pulmón verde de Roma — para recorrerlo con calma, no solo cruzarlo. Piazza di Siena (el hipódromo ovalado de arena) suele tener partidos de polo o carreras improvisadas. El lago con el Tempio di Esculapio (templete neoclásico en una islita) es la estampa más fotografiada del parque, con botes de remo. Piérdete por los senderos y jardines — hay rincones tranquilos lejos de las rutas turísticas. El Bioparco (zoo) está dentro del propio parque, ideal si viajas con niños. Desde la terraza del Pincio (también dentro del parque) tienes la vista clásica de Roma con San Pedro.",
       "tags": [
@@ -5137,6 +5139,7 @@
       "id": "testaccio",
       "name": "Testaccio",
       "duration_minutes": 40,
+      "min_max": 60,
       "zone": "testaccio",
       "coordinates": [
         41.8796,
@@ -7938,7 +7941,7 @@
         "lat": 41.89693,
         "lng": 12.47872
       },
-      "zone": "Piazza Venezia",
+      "zone": "Centro Histórico",
       "price_range": "€€",
       "avg_price_person": "20-35€",
       "what_to_order": "Carbonara, carciofi alla giudia, abbacchio",

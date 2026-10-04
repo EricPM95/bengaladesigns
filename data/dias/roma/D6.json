@@ -30,7 +30,8 @@
           "lugar": "Via dei Fori Imperiali",
           "modo": "atardecer",
           "lead": 20,
-          "no_calle": true
+          "no_calle": true,
+          "una_vez": true
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
@@ -40,7 +41,8 @@
         },
         {
           "lugar": "Monti",
-          "min": 38
+          "min": 38,
+          "una_vez": true
         }
       ],
       "cena": {
@@ -82,7 +84,8 @@
           "lugar": "Via dei Fori Imperiali",
           "modo": "atardecer",
           "lead": 20,
-          "no_calle": true
+          "no_calle": true,
+          "una_vez": true
         },
         {
           "lugar": "Basílica de Santa María la Mayor",
@@ -93,7 +96,8 @@
         },
         {
           "lugar": "Monti",
-          "min": 25
+          "min": 25,
+          "una_vez": true
         }
       ],
       "cena": {
@@ -128,13 +132,15 @@
         {
           "lugar": "Monti",
           "min": 29,
-          "elastica": 30
+          "elastica": 30,
+          "una_vez": true
         },
         {
           "lugar": "Via dei Fori Imperiali",
           "modo": "atardecer",
           "lead": 20,
-          "no_calle": true
+          "no_calle": true,
+          "una_vez": true
         }
       ],
       "cena": {
@@ -174,7 +180,8 @@
         {
           "lugar": "Monti",
           "min": 50,
-          "elastica": 30
+          "elastica": 30,
+          "una_vez": true
         },
         {
           "lugar": "Columna de Trajano",
@@ -184,7 +191,8 @@
           "lugar": "Via dei Fori Imperiali",
           "modo": "atardecer",
           "lead": 20,
-          "no_calle": true
+          "no_calle": true,
+          "una_vez": true
         }
       ],
       "cena": {

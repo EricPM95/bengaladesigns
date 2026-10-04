@@ -1289,6 +1289,10 @@ export function planWrittenTrip(args) {
           } else if (rule === 'camino') {
             place = readyPlace({ ...stop, modo: 'camino' }, source, null, ctx.hours)
             duration = place.duration_minutes
+          } else if (hasFreeTour && ctx.tourPassed && tourCovers.has(stop.lugar) && (rule === 'fuera' || source.minutos_fuera != null)) {
+            // (REGLAS_RUTAS 8: lo que el tour recorre no se repite por fuera, de día, ese mismo día, después del tour.)
+            if (stop.traslado) carry = stop.traslado
+            return
           } else if (rule === 'fuera' || source.minutos_fuera != null) {
             place = readyPlace(stop, source, reason, ctx.hours)
             duration = place.duration_minutes
@@ -1323,6 +1327,7 @@ export function planWrittenTrip(args) {
         // `revisita`: si el viaje ya pasó por aquí otro día, sale como revisita con su texto ({dia}: el día en que se vio).
         ...(stop.revisita && seenDay.has(source.name) && seenDay.get(source.name) !== ctx.day.dayNumber ? { isRevisit: true, revisitReason: String(stop.revisita).replace('{dia}', `el día ${seenDay.get(source.name)}`) } : {}),
       })
+      if (place.isFreeTour) ctx.tourPassed = true
       visits.push({ unitId, place, start: at, end: at + duration, chained: false, walkMinutes: leg, walkSource: 'matrix', ...(stop.entrada ? { ticket: true } : {}), ...(fixed != null ? { fixedAt: fixed, fixedMargin, horaTipo: stop.hora_tipo ?? 'reserva' } : {}), ...(stop.recorta_al_cierre ? { reservedEntry: true } : {}), ...(original.elastica != null ? { elasticMax: original.elastica } : {}), ...(late ? { __late: late } : {}) })
       t = at + duration
       coords = place.end_coordinates ?? place.coordinates

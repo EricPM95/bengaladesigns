@@ -332,7 +332,9 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
     // (REGLAS_RUTAS 5: tampoco un paseo que enseñe algo que el día ya enseña —por `muestra`—.)
     const walkShown = walkTitle ? new Set(muestraOf(destData, { name: walkTitle, is_free_walk: true }).muestra) : new Set()
     const dayShown = new Set(day.stops.flatMap((stop) => muestraOf(destData, stop).muestra))
-    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle) && ![...walkShown].some((id) => dayShown.has(id))) {
+    // (Y lo que enseñan los otros días del viaje: un sitio, una vez en el viaje, REGLAS_RUTAS 5. Un paseo no repite lo que otro día ya visita.)
+    const tripShown = new Set((trip?.days ?? []).filter((other) => other.dayNumber !== tripDay.dayNumber).flatMap((other) => (other.schedule?.visits ?? []).filter((visit) => !visit.place?.isNightExperience && !visit.place?.passThrough && !visit.place?.visitOutside).flatMap((visit) => muestraOf(destData, { name: visit.place.name }).muestra)))
+    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle) && ![...walkShown].some((id) => dayShown.has(id)) && ![...walkShown].some((id) => tripShown.has(id))) {
       const walkIn = leg(fromCoords, walk.coordinates)
       const walkOut = leg(walk.coordinates, toCoords)
       const start = ceil5(fromEnd + walkIn)

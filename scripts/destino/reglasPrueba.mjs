@@ -7,7 +7,7 @@ export const REGLAS_PRUEBA = [
   { id: 2, nombre: 'Una hora fija no se mueve ni se quita', tipos: ['v4_llega_tarde', 'hora_fija_movida'], nota: 'El orden de recorte y el aviso de la campana no se miran aquí.' },
   { id: 3, nombre: 'El viajero manda', tipos: ['hora_fija_movida'], nota: 'Una reserva por franja en la prueba; el empate pool/imprescindible sale como información (pago_cedido_al_pool).' },
   { id: 4, nombre: 'Los imprescindibles salen siempre', tipos: ['pago_sin_dentro', 'basilica_fuera', 'vaticano_sin_castillo', 'vaticano_sin_puente'] },
-  { id: 5, nombre: 'Un sitio, una vez en el viaje y una vez al día (por id)', tipos: ['repetido_dia', 'repetido_viaje'] },
+  { id: 5, nombre: 'Un sitio, una vez en el viaje y una vez al día (por id)', tipos: ['repetido_dia', 'repetido_viaje', 'sitio_dos_dias'] },
   { id: 6, nombre: 'Las nocturnas', tipos: ['nocturna_repite', 'nocturna_repite_viaje'], nota: '«Una nocturna cada noche» no se mira.' },
   { id: 7, nombre: 'Un barrio, una vez al día', tipos: ['barrio_dos_veces', 'paseo_repite_viaje', 'paseo_misma_zona'] },
   { id: 8, nombre: 'El Free Tour sustituye lo que enseña', tipos: ['tour_repite'] },

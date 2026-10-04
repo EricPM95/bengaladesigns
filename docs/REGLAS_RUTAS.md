@@ -31,10 +31,10 @@
 
 ### R-1 · Nunca un sitio cerrado — OBLIGATORIA
 - **Texto:** ninguna parada empieza antes de que abra ni después de su última entrada. Cuentan los horarios partidos, la última entrada por día, el horario por época, los cierres semanales, las misas, los festivos y los horarios especiales de ese año, sacados de la fuente oficial. **Sin fechas de viaje:** horario de laborable, y aviso en la parada si ese sitio cierra algún día de la semana.
-- **Si una parada choca con un cierre** (cierre semanal, festivo, misa, horario especial) el motor hace, por este orden: 1) la adelanta dentro del mismo día; 2) la acorta hasta su mínimo (`recorta_al_cierre`); 3) la pasa a por fuera, si se ve algo desde la calle; 4) la quita, si solo vale por dentro. Un imprescindible nunca se quita: como mínimo, va por fuera. Una entrada que el viajero reserva con el sitio cerrado se queda tal cual (manda el viajero) y sale el aviso «Ese día {lugar} cierra a las {hora}». La víspera de un festivo con misa (el Panteón, 17:00) se lee como un sábado.
+- **Si una parada choca con un cierre** (cierre semanal, festivo, misa, horario especial) el motor hace, por este orden: 1) la adelanta dentro del mismo día; 2) la acorta para que termine antes del cierre, con un **mínimo de 20 min** (la gente prefiere ver algo a no ver nada; vale para toda visita por dentro, no solo las marcadas con `recorta_al_cierre`); 3) si ni con 20 min cabe, la pasa a por fuera, si se ve algo desde la calle; 4) la quita, si solo vale por dentro. Un imprescindible nunca se quita: como mínimo, va por fuera. Una entrada que el viajero reserva con el sitio cerrado se queda tal cual (manda el viajero) y sale el aviso «Ese día {lugar} cierra a las {hora}». La víspera de un festivo con misa (el Panteón, 17:00) se lee como un sábado.
 - **Ejemplo:** el Foro y Palatino a las 15:30 el 24 de diciembre (abre hasta las 16:30) es un fallo si la parada dura más.
 - **Datos:** `places[].schedule`, `by_day`, `by_period`, `closed_on`, `closed_dates`, `special_hours`, `last_entry`.
-- **Comprobación:** `fuera_de_horario`, `v4_fuera_de_horario`, `cerrada_a_su_hora`, `v4_cerrado_sin_solucion`. La prueba incluye ya los viajes sin fechas.
+- **Comprobación:** `fuera_de_horario`, `v4_fuera_de_horario`, `cerrada_a_su_hora`, `v4_cerrado_sin_solucion`, `acaba_tras_cierre` (ninguna visita por dentro acaba después del cierre) y `acortada_menos_20`. La prueba incluye ya los viajes sin fechas.
 - **Sustituye a:** 2, 3, 51, 92 y 470, que pasan a ser el detalle de esta regla.
 
 ### R-2 · Una hora fija no se mueve ni se quita — OBLIGATORIA
@@ -84,9 +84,9 @@
 - **Sustituye a:** 447, que pasa a valer para todos los paseos.
 
 ### R-8 · El Free Tour sustituye la parte del día que enseña lo mismo — OBLIGATORIA
-- **Texto:** según la hora a la que sale: **de mañana** (antes de las 13:00) sustituye la mañana del centro; antes del tour, **Trevi a las 8:00 y el Panteón por dentro están bien**. **De tarde** (de 13:00 a 18:59) sustituye la tarde del centro, con el Panteón por dentro justo antes. **De noche** (desde las 19:00) sustituye la nocturna de ese día. Lo que el tour recorre no sale **después** del tour ese día. El tour no entra en los sitios. Los días sin tour y las horas especiales de festivo salen del dato del tour.
+- **Texto:** según la hora a la que sale: **de mañana** (antes de las 13:00) sustituye la mañana del centro; antes del tour, **Trevi a las 8:00 y el Panteón por dentro están bien**. **De tarde** (de 13:00 a 18:59) sustituye la tarde del centro, con el Panteón por dentro justo antes. **De noche** (desde las 19:00) sustituye la nocturna de ese día. Lo que el tour recorre no se repite **por fuera, de día, ese mismo día**. Las visitas **por dentro** (el Panteón, las iglesias) pueden ir antes o después del tour, porque el tour no entra en los sitios. De noche sí puede volver a salir, como cualquier nocturna (regla 6). Los días sin tour y las horas especiales de festivo salen del dato del tour.
 - **Datos:** `default_free_tour` (`covers`, `default_time`, `disponibilidad`), variantes `con_free_tour`.
-- **Comprobación:** `tour_repite` (solo cuenta lo que sale después del tour).
+- **Comprobación:** `tour_repite` (cuenta solo las paradas **por fuera y de día** que salen después del tour; no cuenta lo de antes, lo que va por dentro ni las nocturnas).
 - **Sustituye a:** 195, 413 (lo del Free Tour), 465 y 473.
 
 ---
@@ -142,9 +142,9 @@
 ## 5. Cómo se ordena un día
 
 ### R-16 · La tarde va según la luz — OBLIGATORIA
-- **Texto:** cada día tiene cuatro tardes (A, B, C y D) según la hora de la puesta de sol, con una parada elástica de ±30 min. Al mirador del atardecer se llega entre 15 y 35 min antes de que se ponga el sol.
+- **Texto:** cada día tiene cuatro tardes (A, B, C y D) según la hora de la puesta de sol, con una parada elástica de ±30 min. Al mirador del atardecer se llega entre 15 y 35 min antes de que se ponga el sol: **el mirador va a la hora del atardecer** (±30 min) y no se adelanta. El tiempo de antes lo llena el paseo de la zona del mirador (regla 20). **Ninguna espera pasa de 90 min:** si pasaría, se reordena la tarde para llegar a la zona más tarde, en vez de meter una espera (el descanso después de comer llega hasta 90 min).
 - **Datos:** `tarde.A..D` y `elastica` de los días escritos; cortes de luz 17:40 / 18:45 / 19:45.
-- **Comprobación:** `v4_elastica`, `atardecer_corto`, `atardecer_tarde`.
+- **Comprobación:** `v4_elastica`, `atardecer_corto`, `atardecer_tarde`, `mirador_fuera_de_hora` (mirador a más de 30 min del sol) y `espera_mas_90`.
 
 ### R-17 · A primera hora, lo que luego se llena — PREFERENCIA
 - **Texto:** madrugar está bien (Trevi a las 8:00).
@@ -262,9 +262,35 @@
 - Aclara la 14.
 
 ### R-37 · La noche tiene una hora límite por destino — OBLIGATORIA
-- **Texto:** cada destino tiene en su dato la hora a la que como tarde **empieza la última nocturna**. En Roma: **23:00** en invierno y **23:30** en julio y agosto. Si la cena no puede quedar a 15 min de lo último de la tarde y de la nocturna, **va junto a la nocturna** y el tramo desde la tarde se hace en bus o taxi (regla 19).
+- **Texto:** cada destino tiene en su dato la hora límite de la noche: **ninguna nocturna acaba después** (regla 41). En Roma: **23:00** en invierno y **23:30** en julio y agosto. El orden es última parada de la tarde → cena → nocturna; la cena queda a **15 min andando** de lo último de la tarde y a **unos 20 min andando o menos** de la nocturna, en la misma zona o en zonas vecinas. Si no puede ser, la cena **va junto a la nocturna** y el tramo desde la tarde se hace en bus o taxi (regla 19); si es la nocturna la que queda lejos de la cena, lleva su taxi puesto.
 - **Datos:** `destination_config.noche_limite`.
-- **Comprobación:** `atardecer_tarde`, `hueco_cena`, `cena_espera`.
+- **Comprobación:** `cena_lejos_nocturna` (cena a más de 20 min andando de la nocturna y sin transporte), `hueco_cena`, `cena_espera`.
+
+### R-38 · Cada parada tiene un máximo — OBLIGATORIA
+- **Texto:** cada sitio lleva en sus datos su `min_max` (con valores de alguien que conoce Roma: una plaza 15–45 min, una fuente 10–20, una calle no es parada) y estirarlo nunca lo pasa, ni con la elástica, ni con el rato del mirador, ni con un relleno. Si sobra tiempo, se aplica la regla 20: un sitio de camino y, si no, el paseo de la zona. Un mirador del atardecer no se queda más que su máximo: llega más tarde.
+- **Datos:** `places[].min_max`.
+- **Comprobación:** `min_max_pasado`.
+
+### R-39 · Lo que enseña una nocturna cuenta como visto — OBLIGATORIA
+- **Texto:** la `muestra` de la nocturna cuenta para «visto»: esos sitios no pueden salir en «No incluido».
+- **Comprobación:** `no_incluido_pero_visto`.
+
+### R-40 · «De camino» no es una visita — OBLIGATORIA
+- **Texto:** un «De camino» no cuenta como visita del sitio: si el sitio está en el pool o es imprescindible, sigue pendiente. Lleva su propio nombre, «De camino: {sitio}» (campo `display_name` de la parada), nunca el nombre de la visita.
+- **Comprobación:** `camino_cierra_pool`, `camino_sin_nombre`.
+
+### R-41 · Las nocturnas no están protegidas — OBLIGATORIA
+- **Texto:** si una nocturna acabaría después de la hora límite de la noche (`noche_limite`), se quita. No se empuja ni se recorta otra cosa para que quepa.
+- **Comprobación:** `noche_pasa_limite`.
+
+### R-42 · La noche propia de una fecha — OBLIGATORIA
+- **Texto:** algunas fechas tienen su noche en los datos del destino (Nochebuena: la Fontana de Trevi, una sola parada), no en el código.
+- **Datos:** `destination_config.noche_especial`.
+- **Comprobación:** revisión de los 20 viajes y `pruebaNavidad.mjs`.
+
+### R-43 · Una calle no es una parada; la zona de un restaurante es la de sus coordenadas — OBLIGATORIA
+- **Texto:** una calle va dentro de un paseo («Pasea y piérdete por el Tridente») o como «De camino», nunca como parada con su propio tiempo (un hueco no se llena con una calle). Las experiencias entran solo en el día de su zona y a unos 1.500 m de lo que ya lleva esa mitad; si no cabe, no entran y salen en «No incluido». La zona escrita de cada restaurante tiene que ser la de sus coordenadas.
+- **Comprobación:** `calle_parada`, `experiencia_fuera_de_zona`, `restaurante_zona`, `sitio_dos_dias`.
 
 ---
 
