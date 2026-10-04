@@ -30,7 +30,7 @@ import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { paseoMaxOf } from './curatedTrip.js'
-import { elegirTabla, aplicarAcciones, correrHoras, adelantar, ajustarAtardecer, aplicarExtra, vale, recortarSalida, finDe, toMin as filaMin, toHHMM as filaHHMM } from './escritos.js'
+import { elegirTabla, aplicarAcciones, correrHoras, adelantar, ajustarAtardecer, aplicarExtra, vale, recortarSalida, anotarCambios, esAncla, antesDeLlegar, hueco, finDe, toMin as filaMin, toHHMM as filaHHMM } from './escritos.js'
 
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_abre: 'A esta hora no abre', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Cortes de luz por defecto (Roma, 2026-09-28): A antes de 17:40, B hasta 18:44, C hasta 19:44, D desde 19:45. */
@@ -192,7 +192,7 @@ export function planWrittenTrip(args) {
   const selected = (experiencesPositive ?? []).filter((id) => id in TAG_INTEREST_MAP && id !== 'free_tour')
   const inPool = (name) => poolNames.includes(name)
   const tour = destData.default_free_tour ?? null
-  const tourCovers = new Set(hasFreeTour ? tour?.covers ?? [] : [])
+  const tourCovers = new Set(hasFreeTour || freeTourDespues ? tour?.covers ?? [] : [])
   const joyaNames = new Set((destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name))
   const cuts = written.destino?.cortes_luz ?? DEFAULT_CUTS
   const skeleton = tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso })
@@ -1754,8 +1754,33 @@ export function planWrittenTrip(args) {
         return openCheck(place, start, row.min, hours).ok === true
       },
     }
-    let rows = draft.rows
-    const acciones = { walk: rowWalk, abierta: env.abierta }
+    // Cada cambio de una fila respecto al documento lleva su causa real (draft.log): el test y la revisión leen de aquí.
+    const log = (draft.log = [])
+    let rows = draft.rows.map((row) => ({ ...row, imprescindible: placeByName.get(row.lugar)?.level === 1 }))
+    const marcar = (lista) => lista.map((row) => ({ ...row, imprescindible: row.imprescindible ?? placeByName.get(row.lugar)?.level === 1 }))
+    const acciones = { walk: rowWalk, abierta: env.abierta, marcar }
+    // La hora que puso el viajero (una entrada reservada o el Free Tour) manda sobre la del ejemplo de la tabla: la fila se queda en esa hora y el
+    // resto corre con los márgenes (30 min antes de una reserva, 15 antes de un turno o del tour).
+    {
+      const cambios = [
+        ...Object.entries(entradas ?? {}).map(([lugar, hora]) => ({ lugar, hora, causa: `reserva de ${lugar} a las ${hora}`, tipo: 'reserva' })),
+        ...(freeTourDespues?.hora && draft.id === 'D1' ? [{ lugar: tour?.name, hora: freeTourDespues.hora, causa: `Free Tour a las ${freeTourDespues.hora}`, tipo: 'tour' }] : []),
+      ]
+      for (const cambio of cambios) {
+        const i = rows.findIndex((row) => row.lugar === cambio.lugar && (row.hora_tipo === 'reserva' || row.hora_tipo === 'turno' || row.turno || row.tipo === 'tour'))
+        if (i < 0 || rows[i].hora === cambio.hora) continue
+        const antes = rows
+        const puestas = rows.map((row, k) => (k === i ? { ...row, hora: cambio.hora, ...(cambio.tipo === 'reserva' ? { hora_tipo: 'reserva' } : {}) } : row))
+        // (Desde la fila de después de la fija anterior: lo de antes de esa no se toca.)
+        // Si la fila nueva cabe donde está (la hora es más tarde que la del ejemplo), solo corre lo de después; si no, se vuelve a correr desde la fija anterior.
+        let anterior = i - 1
+        while (anterior > 0 && !esAncla(puestas[anterior])) anterior--
+        const limite = filaMin(cambio.hora) - antesDeLlegar(puestas[i])
+        const cabe = i === 0 || finDe(puestas[i - 1]) + hueco(puestas[i - 1], puestas[i], rowWalk) <= limite
+        rows = correrHoras(puestas, { desde: cabe ? i + 1 : Math.max(1, anterior + 1), walk: rowWalk }).rows
+        anotarCambios(antes, rows, cambio.causa, log)
+      }
+    }
     // El pool escrito (un extra por media jornada) y las experiencias elegidas.
     const franjasUsadas = new Set()
     const noIncluido = (name, reason) => unplacedPool.push({ unitId: name, name, reason, dayNumber: skeletonDay.dayNumber })
@@ -1763,8 +1788,10 @@ export function planWrittenTrip(args) {
       if (def.pendiente) { noIncluido(name, 'pendiente'); continue }
       if (def.no_cabe) { noIncluido(name, 'no_room'); continue }
       if (def.franja && franjasUsadas.has(def.franja)) { noIncluido(name, 'no_room_day'); continue }
+      if (closedThatDay(name, skeletonDay)) { noIncluido(name, 'closed_on_day'); continue }
       const hecho = aplicarExtra(rows, def, acciones)
       if (!hecho) { noIncluido(name, 'no_room_day'); continue }
+      anotarCambios(rows, hecho.rows, `pool: ${name}`, log)
       rows = hecho.rows
       if (def.franja) franjasUsadas.add(def.franja)
       draft.applied.push(`pool:${name}`)
@@ -1774,19 +1801,45 @@ export function planWrittenTrip(args) {
       if (!def || def.pendiente || !vale(def, { ids: order, dateIso: hours.dateIso })) { if (def?.pendiente) draft.extrasNoIncluidos.push({ name: exp, pendiente: def.pendiente }); continue }
       const hecho = aplicarExtra(rows, def, acciones)
       if (!hecho) { draft.extrasNoIncluidos.push({ name: exp, pendiente: 'no cabe' }); continue }
+      anotarCambios(rows, hecho.rows, `experiencia: ${exp}`, log)
       rows = hecho.rows
       draft.applied.push(`experiencia:${exp}`)
     }
-    if (draft.id === 'D0-medio' && draft.tablaVersion === 'manana') rows = recortarSalida(rows, mediaJornada?.salida ?? '15:00')
-    rows = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk })
+    if (draft.id === 'D0-medio' && draft.tablaVersion === 'manana') {
+      const salida = mediaJornada?.salida ?? '15:00'
+      const recortadas = recortarSalida(rows, salida, { walk: rowWalk })
+      anotarCambios(rows, recortadas, `salida a las ${salida}`, log)
+      rows = recortadas
+    }
+    {
+      const ajustadas = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk })
+      anotarCambios(rows, ajustadas, 'atardecer', log)
+      rows = ajustadas
+    }
     // Adelantar (regla de cierres): lo que por dentro cae cerrado a su hora se mueve antes en el día, hasta donde está abierto.
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
       if (row.modo !== 'dentro' || row.hora_tipo === 'reserva' || row.hora_tipo === 'turno' || env.abierta(row, filaMin(row.hora))) continue
       const moved = adelantar(rows, i, env)
       if (moved) {
+        anotarCambios(rows, moved, `cierre de ${row.lugar}`, log)
         rows = moved
         draft.applied.push(`adelantar:${row.lugar}`)
+      }
+    }
+    // Noche especial de la fecha (Nochebuena: solo la Fontana de Trevi; Nochevieja: una sola): sobran las demás nocturnas del día.
+    {
+      const especial = destData.destination_config?.noche_especial?.[String(hours.dateIso ?? '').slice(5)] ?? null
+      if (especial) {
+        const noches = rows.filter((row) => row.tipo === 'noche')
+        const quedan = especial.noche ? noches.filter((row) => row.noche === especial.noche).slice(0, especial.maximo ?? 1) : noches.slice(0, especial.maximo ?? 1)
+        const sobran = noches.filter((row) => !quedan.includes(row))
+        if (sobran.length > 0) {
+          // (Si el día no trae esa noche, la primera nocturna del día pasa a ser la de la fecha.)
+          const nuevas = quedan.length === 0 && especial.noche ? rows.filter((row) => !sobran.slice(1).includes(row)).map((row) => (row === sobran[0] ? { ...row, noche: especial.noche, id: `noche_${especial.noche}` } : row)) : rows.filter((row) => !sobran.includes(row))
+          anotarCambios(rows, nuevas, especial.noche ? `noche especial: ${especial.noche}` : 'noche especial: una sola', log)
+          rows = nuevas
+        }
       }
     }
     draft.rowsFinal = rows
@@ -1799,6 +1852,22 @@ export function planWrittenTrip(args) {
       carry = null
     }
     const run = runListOnce(stops, 'tarde', { t: filaMin(rows[0].hora), coords: null }, ctx)
+    // Lo que la regla de cierres cambia al construir las paradas (acortar, por fuera, quitar): con su causa.
+    {
+      const used = new Set()
+      for (const row of rows) {
+        if (row.tipo !== 'parada' && row.tipo !== 'paseo' && row.tipo !== 'desayuno' && row.tipo !== 'tour') continue
+        const visit = run.visits.find((item, k) => !used.has(k) && item.place.name === row.lugar)
+        const nombre = row.titulo ?? row.lugar
+        if (!visit) { log.push({ id: row.id, lugar: nombre, sitio: row.lugar ?? null, que: 'quitada', causa: `cierre de ${row.lugar}` }); continue }
+        used.add(run.visits.indexOf(visit))
+        const dif = []
+        if (visit.start !== filaMin(row.hora)) dif.push('hora')
+        if (visit.end - visit.start !== row.min) dif.push('min')
+        if (row.modo === 'dentro' && visit.place.visitOutside) dif.push('modo')
+        if (dif.length) log.push({ id: row.id, lugar: nombre, sitio: row.lugar ?? null, que: dif.join('+'), causa: `cierre de ${row.lugar}` })
+      }
+    }
     // Comidas y cenas
     const meals = []
     let dinnerRestaurant = null
@@ -1845,6 +1914,7 @@ export function planWrittenTrip(args) {
       otherRestaurants: [],
       written: { version: draft.version, escrito: true, tabla: draft.tablaClave, grupo: draft.tablaVersion },
       escritoNights: nights,
+      escritoLog: log.map((entry) => ({ ...entry, fecha: hours.dateIso ?? null })),
       escritoRows: rows,
     }
     return dayPlan

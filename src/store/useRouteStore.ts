@@ -359,6 +359,8 @@ interface RouteStoreState {
   markDateNoticesSeen: (key: string) => void
   /** "Quiero entrar" (WantInsideDialog.tsx): el día rehecho por el motor y la parada que ahora va por dentro. */
   replaceDayWithInside: (dayId: string, day: DayPlan, insideName: string) => void
+  /** El día rehecho por el motor con las reservas del viajero (misma ruta original, sin nombre «por dentro»). */
+  replaceDayRebuilt: (dayId: string, day: DayPlan) => void
   /** "Volver a la ruta original": el día exactamente como lo dio el motor (su copia), sin regenerar. */
   restoreOriginalDay: (dayId: string) => void
   /** "Volver a mi ruta original" (la varita del mapa): el viaje entero como se creó, su copia guardada, sin recalcular. */
@@ -761,6 +763,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         ? { route: { ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)), insideNames: [...new Set([...(state.route.insideNames ?? []), insideName])] } }
         : state,
     ),
+  replaceDayRebuilt: (dayId, day) =>
+    set((state) => (state.route ? { route: reapplyReservations({ ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)) }, state.reservations) } : state)),
   restoreOriginalDay: (dayId) =>
     set((state) => {
       if (!state.route) return state
@@ -831,16 +835,23 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     if (reservation.kind === 'entrada') {
       const previous = get().reservations.find((other) => other.kind === 'entrada' && other.refId === reservation.refId && other.id !== reservation.id)
       set({ route: placeReservedEntrance(previous ? unpinReservedStops(route, previous.id) : route, reservation) })
+      // El motor rehace ese día corriendo las horas alrededor de la hora de la reserva.
+      const reservedDay = dayOfReservation(route, reservation)
+      if (reservedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(reservedDay.id))
       return
     }
     const day = dayOfReservation(route, reservation)
     if (day && excursion) get().placeExcursion(excursion, { dayId: day.id })
   },
-  removeReservation: (id) =>
+  removeReservation: (id) => {
+    const removed = get().reservations.find((reservation) => reservation.id === id)
+    const removedDay = removed && removed.kind === 'entrada' && get().route ? dayOfReservation(get().route!, removed) : null
     set((state) => ({
       reservations: state.reservations.filter((reservation) => reservation.id !== id),
       route: state.route ? unpinReservedStops(state.route, id) : state.route,
-    })),
+    }))
+    if (removedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id))
+  },
   receiveSale: (sale) =>
     set((state) => {
       const already = state.sales.find((other) => other.id === sale.id)

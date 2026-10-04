@@ -48,7 +48,7 @@ const VIAJES = [
 const diffs = []
 let comparados = 0
 let filasTotal = 0
-const limpia = (t) => t.replace(/s*(noche)/g, '').replace(/ iluminados?$/, '').trim()
+const limpia = (t) => t.replace(/\s*\(noche\)/g, '').replace(/ iluminados?$/, '').trim()
 const claveFila = (row) => limpia(plain(row.titulo ?? row.lugar ?? row.restaurante ?? row.noche ?? ''))
 const claveActual = (stop) => limpia(plain(stop.display_title ?? stop.night_view_title ?? stop.place_name ?? stop.name))
 
@@ -58,47 +58,43 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
     ...(day.stops ?? []).map((stop) => ({ kind: 'stop', key: claveActual(stop), hora: stop.suggested_time, min: stop.duration_minutes, stop })),
     ...(day.meals ?? []).map((meal) => ({ kind: 'meal', key: plain(meal.restaurant ?? ''), hora: meal.suggested_time, min: meal.window_end ? toMin(meal.window_end) - toMin(meal.suggested_time) : null, tipo: meal.time, meal })),
   ]
+  const log = day.engine_log ?? []
   const usadas = new Set()
-  const variantes = day.curated_day?.variants ?? []
-  const hayCierre = variantes.some((v) => /^(adelantar|acortar|fuera|quitar)/.test(v)) || (day.not_included ?? []).length > 0
-  const hayAtardecer = rows.some((r) => r.modo === 'atardecer')
-  const idxComida = Math.max(0, rows.findIndex((r) => r.tipo === 'comida'))
   const hours = { dateIso: iso, weekday: weekdayOf(iso) }
+  /** La causa que el motor apunta para ese cambio de esa fila; sin causa apuntada, la diferencia es un fallo. */
+  const causaDe = (row, que) => {
+    const hit = log.filter((x) => x.id === row.id && (que === 'quitada' ? x.que === 'quitada' : x.que.split('+').includes(que)))
+    return hit.length ? [...new Set(hit.map((x) => x.causa))].join(' + ') : null
+  }
   for (const row of esperadas) {
-    const filaIdx = rows.indexOf(row)
     filasTotal++
     const key = claveFila(row)
     const esComida = row.tipo === 'comida' || row.tipo === 'cena'
-    const alts = esComida ? [row.restaurante, row.alternativa].filter(Boolean).map(plain) : []
     let i = actuales.findIndex((a, k) => !usadas.has(k) && (esComida ? a.kind === 'meal' && a.tipo === (row.tipo === 'cena' ? 'dinner' : 'lunch') : a.kind === 'stop' && (a.key === key || a.key.includes(key) || key.includes(a.key))))
     const where = { viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${row.hora} ${row.texto_documento?.replace(/\*/g, '') ?? ''}`.trim() }
-    const place = D.places.find((p) => p.name === row.lugar)
-    const explica = () => {
-      if (row.modo === 'atardecer') return 'atardecer'
-      if (hayCierre && variantes.some((v) => /^adelantar/.test(v))) return 'cierre'
-      if (day.not_included?.some((n) => plain(n.name) === plain(row.lugar ?? ''))) return 'cierre'
-      if (hayAtardecer && (row.colchon || filaIdx >= idxComida)) return 'atardecer'
-      if (place && row.modo === 'dentro' && closedOnDay(place, hours.weekday, iso)) return 'cierre'
-      return null
-    }
     if (i < 0) {
-      diffs.push({ ...where, tipo: 'falta', causa: explica() ?? (row.tipo === 'noche' ? 'hora_limite_noche' : null) })
+      diffs.push({ ...where, tipo: 'falta', causa: causaDe(row, 'quitada') })
       continue
     }
     usadas.add(i)
     const a = actuales[i]
-    if (a.hora !== row.hora) diffs.push({ ...where, tipo: 'hora', detalle: `${row.hora} → ${a.hora}`, causa: explica() })
-    if (!esComida && row.tipo !== 'noche' && a.min !== row.min) diffs.push({ ...where, tipo: 'minutos', detalle: `${row.min} → ${a.min}`, causa: explica() })
-    if (row.tipo === 'comida' && a.min != null && a.min !== row.min) diffs.push({ ...where, tipo: 'minutos', detalle: `${row.min} → ${a.min}`, causa: explica() })
+    if (a.hora !== row.hora) diffs.push({ ...where, tipo: 'hora', detalle: `${row.hora} → ${a.hora}`, causa: causaDe(row, 'hora') })
+    if (!esComida && row.tipo !== 'noche' && a.min !== row.min) diffs.push({ ...where, tipo: 'minutos', detalle: `${row.min} → ${a.min}`, causa: causaDe(row, 'min') })
+    if (row.tipo === 'comida' && a.min != null && a.min !== row.min) diffs.push({ ...where, tipo: 'minutos', detalle: `${row.min} → ${a.min}`, causa: causaDe(row, 'min') })
     if (a.kind === 'stop' && row.tipo === 'parada') {
       const modoActual = a.stop.pass_through ? 'camino' : a.stop.visit_mode === 'dentro' ? 'dentro' : a.stop.visit_mode === 'fuera' ? 'fuera' : null
       const modoFila = row.modo === 'atardecer' ? null : row.modo
-      if ((modoFila ?? null) !== modoActual) diffs.push({ ...where, tipo: 'cómo', detalle: `${row.modo ?? '-'} → ${modoActual ?? '-'}`, causa: explica() })
+      if ((modoFila ?? null) !== modoActual) diffs.push({ ...where, tipo: 'cómo', detalle: `${row.modo ?? '-'} → ${modoActual ?? '-'}`, causa: causaDe(row, 'modo') ?? causaDe(row, 'quitada') })
     }
+  }
+  // Las horas y las duraciones, de 5 en 5.
+  for (const a of actuales) {
+    if (a.hora && toMin(a.hora) % 5 !== 0) diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'hora_no_5', causa: null })
+    if (a.kind === 'stop' && a.min != null && a.min % 5 !== 0) diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'minutos_no_5', detalle: String(a.min), causa: null })
   }
   actuales.forEach((a, k) => {
     if (usadas.has(k)) return
-    diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'sobra', causa: null })
+    diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'sobra', causa: log.filter((x) => x.que === 'nueva' && limpia(plain(x.lugar)) === a.key).map((x) => x.causa)[0] ?? null })
   })
   comparados++
 }

@@ -2526,6 +2526,29 @@ function readTransportContext(body) {
   return { archetype, is_region, transport_option, vehicle_type, vehicle_ownership, accommodation_mode, travel_mode, pase_dominante, travel_pass_confirmed }
 }
 
+/**
+ * Lo que el viajero ha decidido y el motor de días escritos necesita (5-oct-2026): las reservas con hora de ese día (`reservas`: [{ placeNames, dateIso,
+ * dayNumber, time }]), el Free Tour de tarde o de noche (`answers.freeTourDespues`: { franja, hora }) y el medio día (`answers.mediaJornada`:
+ * { franja, llegada?, salida? }). Sale de aquí, en las mismas claves que lee buildDayBlockV3.
+ */
+function engineExtrasFromRequest(body, answers, dayNumber) {
+  const start = answers?.dateRange?.start ?? null
+  const dayIso = start ? new Date(Date.parse(`${start}T12:00:00Z`) + (Number(dayNumber) - 1) * 86400000).toISOString().slice(0, 10) : null
+  const entradas = {}
+  for (const reserva of Array.isArray(body?.reservas) ? body.reservas : []) {
+    if (!reserva || !/^\d{1,2}:\d{2}$/.test(String(reserva.time ?? ''))) continue
+    const esDeEsteDia = reserva.dateIso ? reserva.dateIso === dayIso : Number(reserva.dayNumber) === Number(dayNumber)
+    if (!esDeEsteDia) continue
+    const time = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
+    for (const name of Array.isArray(reserva.placeNames) ? reserva.placeNames : []) if (typeof name === 'string') entradas[name] = time
+  }
+  const ft = answers?.freeTourDespues
+  const freeTourDespues = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) ? { franja: ft.franja ?? null, hora: ft.hora } : null
+  const mj = answers?.mediaJornada
+  const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null } : null
+  return { entradas, freeTourDespues, mediaJornada }
+}
+
 function hasRequiredAnswers(answers) {
   return Boolean(
     answers?.origin && answers?.days && answers?.companion && Array.isArray(answers?.experiences) && answers?.chronotype && answers?.budgetLevel,
@@ -5271,6 +5294,7 @@ app.post('/api/curated-day-inside', async (req, res) => {
         month: Number.isInteger(answers.month) ? answers.month : null,
         season: answers.season ?? null,
         insideNames,
+        ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
       })
     const already = Array.isArray(inside_names) ? inside_names : []
     const before = await build(already)
@@ -5282,6 +5306,41 @@ app.post('/api/curated-day-inside', async (req, res) => {
     res.json({ day: after, ...compareInside(destData, before, after, add) })
   } catch (error) {
     console.error('[curated-day-inside]', error)
+    res.status(500).json({ error: 'No se pudo rehacer el día.' })
+  }
+})
+
+// Rehacer un día con las reservas del viajero (5-oct-2026): el motor corre las horas con los márgenes alrededor de la hora que puso. Sin Claude.
+app.post('/api/rebuild-day', async (req, res) => {
+  const { destination, answers, all_days, day_number, must_include_places, inside_names } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destination || !answers || !destData || !Number.isInteger(Number(day_number))) {
+    res.status(400).json({ error: 'Faltan datos para rehacer el día.' })
+    return
+  }
+  // Solo los destinos con días escritos: los demás se generan con Claude y no se rehacen aquí.
+  if (!destData.curated_routes?.por_dias_ciudad) {
+    res.status(422).json({ error: 'Este destino no se rehace con reservas.' })
+    return
+  }
+  try {
+    const totalDays = Array.isArray(all_days) && all_days.length > 0 ? all_days.length + 1 : Number(day_number) + 1
+    const day = await buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), Number(day_number), MAPBOX_TOKEN, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
+      city: destination,
+      scheduler: 'v3',
+      engine: 'v4',
+      month: Number.isInteger(answers.month) ? answers.month : null,
+      season: answers.season ?? null,
+      insideNames: Array.isArray(inside_names) ? inside_names : [],
+      ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+    })
+    if (!day) {
+      res.status(422).json({ error: 'Este día no se puede rehacer.' })
+      return
+    }
+    res.json({ day })
+  } catch (error) {
+    console.error('[rebuild-day]', error)
     res.status(500).json({ error: 'No se pudo rehacer el día.' })
   }
 })
@@ -5383,7 +5442,7 @@ app.post('/api/generate-day-block', async (req, res) => {
             answers.dateRange?.start,
             must_include_places,
             answers.experiencesPositive,
-            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, engine, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null },
+            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, engine, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null, ...engineExtrasFromRequest(req.body, answers, blockDayNumbers[0]) },
           )
         : await buildDayBlockV2(
         pipelineV2Data,

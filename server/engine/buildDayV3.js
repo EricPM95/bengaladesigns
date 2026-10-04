@@ -413,7 +413,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const sunsetMirador = (destData.morning_flows ?? []).concat(destData.afternoon_flows ?? []).some((block) => block.paradas.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)) || curatedStops.some((stop) => stop.rol === 'atardecer' && stop.lugar === visit.place.name)
     // Si llega después de que se ponga el sol, ya es de noche (decisión del usuario, 2026-09-28: el Pincio a las 17:00
     // con el sol a las 16:39 no es "el atardecer más clásico"): "Roma iluminada desde el Pincio", sin 🌅.
-    const lateForSun = ((!tripDay.written && sunsetMirador) || visit.place.sunset != null) && sunsetToday != null && visit.start > sunsetToday
+    const lateForSun = !tripDay.escrito && ((!tripDay.written && sunsetMirador) || visit.place.sunset != null) && sunsetToday != null && visit.start > sunsetToday
     // REGLAS_RUTAS 21 (4-oct-2026): un solo camino para «iluminado». El mirador al que se llega de noche cambia solo si el destino
     // tiene buena foto de noche de ese lugar (`night_view_overrides`): sale como «{lugar} iluminado», con esa foto, y cuenta como su
     // nocturna. Sin ella sigue como parada normal con su foto de día (y sin el texto del atardecer).
@@ -609,7 +609,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   // minutos de las dos. Así el mismo sitio no sale dos veces seguidas.
   for (let index = 1; index < stops.length; index++) {
     const stop = stops[index]
-    if (!stop.night_view) continue
+    if (!stop.night_view || tripDay.escrito) continue
     const shown = destData.destination_config?.night_view_overrides?.[stop.place_name ?? stop.name]?.muestra ?? []
     const before = stops[index - 1]
     const beforeId = (destData.places ?? []).find((place) => place.name === (before.place_name ?? before.name))?.id

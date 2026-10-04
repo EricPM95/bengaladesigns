@@ -68,7 +68,7 @@ const SEASON_NAME = { primavera: 'Primavera', verano: 'Verano', otono: 'Otoño',
 export const SEASON_CARD_TEXTS = {
   primavera: '¡Vas a vivir {destino} en primavera! Las terrazas vuelven a llenarse y los días se alargan. Como anochece sobre las {hora}, hemos preparado tu ruta para aprovechar la luz{atardecer}.',
   primavera_atardecer: ' y llegar a los miradores con el atardecer',
-  verano: '¡Vas a vivir {destino} en verano! Días largos, noches templadas y la ciudad en la calle. Hemos preparado tu ruta para esquivar el calor{calor}. Y como anochece sobre las {hora}, las mejores vistas llegan al atardecer.',
+  verano: '¡Vas a vivir {destino} en verano! Días largos, noches templadas y la ciudad en la calle. Y como anochece sobre las {hora}, las mejores vistas llegan al atardecer.',
   verano_manana: 'lo más importante, a primera hora',
   verano_siesta: 'después de comer, descanso o sitios a cubierto',
   otono: '¡Vas a vivir {destino} en otoño! Luz dorada, menos calor y la ciudad a su ritmo. Como anochece sobre las {hora}, hemos colocado tu ruta para que veas lo mejor con luz{atardecer}.',

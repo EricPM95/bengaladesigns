@@ -122,3 +122,14 @@ Pedido por el usuario a partir de `docs/INFORME_REGLAS_RUTAS.md`. La hoja es `do
 
 ## 2026-10-04 · Tanda 1 de días escritos
 - Los seis días de Roma de 1, 1,5 y 2 días pasan a `data/dias/roma/` tal cual el documento; el motor solo ajusta lo que dice «Lo que hará el motor». Prueba nueva: `scripts/destino/pruebaEscritos.mjs` (parada a parada contra el documento, 365 fechas).
+
+## 2026-10-05 · Respuesta a la tanda 1 (días escritos)
+- **Adelantar sin zigzag:** un sitio solo se adelanta por cierre si no obliga a volver atrás (no se salta ningún sitio a más de 6 min andando ni anda más de 12 min de más en el día). Si obliga, se queda en su sitio y va por fuera o acortado. Los «de camino» pegados al sitio (a 6 min o menos) viajan con él.
+- **Un imprescindible (nivel 1) nunca se quita por márgenes:** como mínimo va «de camino», 5 min. Orden para quitar: colchón, de camino, paseo, por fuera, el resto (por dentro, lo último), siempre lo último del día primero. El D0-medio de mañana acorta la comida a 45 min antes de quitar nada.
+- **Lo que enseña el Free Tour** (sus covers) cuenta como visto también con el tour añadido a una hora (`freeTourDespues`).
+- **«No incluido» según la causa real:** «Ese día está cerrado (domingo, Navidad…)», «Solo por dentro con reserva» (1 día) o «No cabía en este viaje». Sin «ritmo completo» ni «márcalo en tu selección» donde no vale.
+- **Nochebuena:** una sola nocturna, la Fontana de Trevi (`noche_especial`), también en los días escritos.
+- **Horas y duraciones de 5 en 5**, incluido el atardecer y los taxis. Una cena que no llega a su hora se retrasa en vez de quitar visitas.
+- **Cada cambio lleva su causa:** el motor apunta en `day.engine_log` qué fila ha cambiado y por qué (cierre de X, atardecer, pool Y, experiencia Z, reserva, Free Tour, salida, noche especial, hora límite de la noche). La prueba contra el documento solo da por buena una diferencia con su causa apuntada.
+- **Reservas:** el cliente manda `reservas` (hora de cada entrada), `answers.freeTourDespues` y `answers.mediaJornada`; el servidor las pasa a `entradas`, `freeTourDespues` y `mediaJornada`; al añadir o quitar una reserva se rehace ese día (`POST /api/rebuild-day`). Con una hora distinta a la del ejemplo, el motor corre las horas con los márgenes.
+- **La prueba antigua de 365 fechas** ya no mide los seis días escritos.

@@ -149,7 +149,76 @@ function applyExperienceLayers(destData, day, experiences, calendar, dateIso) {
   }
 }
 
-export async function buildDayBlockV3(
+/**
+ * Los motivos de «No incluido» según la causa real (5-oct-2026): cerrado ese día, solo por dentro con reserva (viaje de 1 día) o no cabía en el
+ * viaje. Sin ritmos y sin «márcalo en tu selección» donde no vale.
+ */
+function tidyNotIncluded(day, { contentDays, destData, tripDays = [] }) {
+  const weekday = day.weekday_name ?? null
+  const dateIso = day.date_iso ?? null
+  const fixed = (destData?.fechas_especiales?.fechas ?? []).find((entry) => dateIso && entry.fecha === String(dateIso).slice(5))
+  const closedLabel = (name) => {
+    const place = (destData?.places ?? []).find((candidate) => candidate.name === name)
+    const plano = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '')
+    if (weekday && (place?.closed_on ?? []).some((d) => plano(d) === plano(weekday))) return weekday
+    if (fixed) return String(fixed.titulo ?? '').split('·').pop().trim() || 'festivo'
+    return weekday ?? 'festivo'
+  }
+  // Un sitio que cierra algún día del viaje y no cabe: lo dice la fecha, no «no cabía».
+  const WEEK = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+  const closedByLog = (name) => (day.trip_engine_log ?? []).find((entry) => entry.que === 'quitada' && /^cierre de /.test(entry.causa) && (entry.sitio ?? entry.lugar) === name)?.fecha ?? null
+  const closedDayOf = (name) => {
+    const place = (destData?.places ?? []).find((candidate) => candidate.name === name)
+    if (!place) return closedByLog(name)
+    const plain = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '')
+    // (Cierra ese día de la semana, aunque abra un domingo de cada mes: el documento escribe esos domingos sin ese sitio.)
+    return tripDays.find((iso) => { const weekdayName = WEEK[new Date(`${iso}T12:00:00Z`).getUTCDay()]; return closedOnDay(place, plain(weekdayName), iso) || (place.closed_on ?? []).some((d) => plain(d) === plain(weekdayName)) }) ?? closedByLog(name)
+  }
+  const labelOfDate = (name, iso) => {
+    const place = (destData?.places ?? []).find((candidate) => candidate.name === name)
+    const plano = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '')
+    const weekdayName = WEEK[new Date(`${iso}T12:00:00Z`).getUTCDay()]
+    if ((place?.closed_on ?? []).some((d) => plano(d) === plano(weekdayName))) return weekdayName
+    const fixedDate = (destData?.fechas_especiales?.fechas ?? []).find((entry) => entry.fecha === String(iso).slice(5))
+    return fixedDate ? String(fixedDate.titulo ?? '').split('·').pop().trim() || 'festivo' : weekdayName
+  }
+  const items = (day.not_included ?? []).map((item) => {
+    let reason = item.reason
+    const closedIso = /^(No cabía|En un viaje corto|No te dio tiempo)/.test(reason) ? closedDayOf(item.name) : null
+    if (closedIso) return { ...item, reason: `Ese día está cerrado (${labelOfDate(item.name, closedIso)})`, suggestion: 'Cambia las fechas si quieres verlo por dentro' }
+    if (/^No cabía en ese día/.test(reason) || reason === 'No cabía en ningún día del viaje' || reason === 'No te dio tiempo') reason = 'No cabía en este viaje'
+    else if (reason === 'En un viaje corto no entra, y por fuera no hay nada que ver') reason = contentDays === 1 ? 'Solo por dentro con reserva' : 'No cabía en este viaje'
+    else if (reason === 'Ese día está cerrado') { const iso = closedDayOf(item.name); reason = `Ese día está cerrado (${iso ? labelOfDate(item.name, iso) : closedLabel(item.name)})` }
+    let suggestion = item.suggestion ?? null
+    if (suggestion) suggestion = suggestion.replace(/ o elige el ritmo completo/, '')
+    if (suggestion === 'Márcalo en tu selección si quieres entrar') suggestion = null
+    if (/^Ese día está cerrado/.test(reason)) suggestion = 'Cambia las fechas si quieres verlo por dentro'
+    return { ...item, reason, suggestion }
+  })
+  // Lo que el motor quitó de un día escrito por un cierre: con su motivo.
+  for (const entry of [...(day.engine_log ?? []), ...(day.trip_engine_log ?? [])]) {
+    if (entry.que !== 'quitada' || !/^cierre de /.test(entry.causa)) continue
+    const propia = (day.engine_log ?? []).includes(entry)
+    const nuevo = { name: entry.sitio ?? entry.lugar, reason: `Ese día está cerrado (${entry.fecha ? labelOfDate(entry.sitio ?? entry.lugar, entry.fecha) : closedLabel(entry.sitio ?? entry.lugar)})`, suggestion: 'Cambia las fechas si quieres verlo por dentro' }
+    const at = items.findIndex((item) => item.name === (entry.sitio ?? entry.lugar))
+    if (at >= 0) items[at] = { ...items[at], ...nuevo }
+    else if (propia) items.push(nuevo)
+  }
+  return items
+}
+
+export async function buildDayBlockV3(...args) {
+  const day = await buildDayBlockV3Inner(...args)
+  if (day?.not_included) {
+    const [destData, totalDays, , dayNumber, , dateRangeStartIso] = args
+    const dateIso = day.engine_log && dateRangeStartIso ? new Date(Date.parse(`${dateRangeStartIso}T12:00:00Z`) + (Number(dayNumber) - 1) * 86400000) : null
+    day.not_included = tidyNotIncluded({ ...day, date_iso: dateIso ? dateIso.toISOString().slice(0, 10) : null, weekday_name: dateIso ? ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dateIso.getUTCDay()] : null }, { contentDays: Math.max(1, totalDays - 1), destData, tripDays: dateRangeStartIso ? Array.from({ length: Math.max(1, totalDays - 1) }, (_, index) => new Date(Date.parse(`${dateRangeStartIso}T12:00:00Z`) + index * 86400000).toISOString().slice(0, 10)) : [] })
+  }
+  delete day?.trip_engine_log
+  return day
+}
+
+async function buildDayBlockV3Inner(
   destData,
   totalDays,
   hasFreeTour,
@@ -411,6 +480,13 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // El día curado y las variantes que se le han aplicado (para la revisión y la ficha).
   if (trip.freeTourInfo) day.free_tour_info = trip.freeTourInfo
   if (tripDay.curatedDay) day.curated_day = { id: tripDay.curatedDay.id, name: tripDay.curatedDay.nombre, variants: tripDay.curatedDay.variantes }
+  // Día escrito: qué ha cambiado el motor respecto al documento y por qué (la prueba y la revisión leen de aquí).
+  if (tripDay.escritoLog) {
+    const shown = (row) => (day.stops ?? []).some((stop) => [stop.display_title, stop.night_view_title, stop.name, stop.place_name].some((title) => title && String(title).replace(/\s*\(noche\)$/, '') === String(row.titulo ?? row.noche ?? '').replace(/\s*\(noche\)$/, '')))
+    const nightsLost = (tripDay.escritoRows ?? []).filter((row) => row.tipo === 'noche' && !shown(row)).map((row) => ({ id: row.id, lugar: row.noche, que: 'quitada', causa: row.solo_meses && !row.solo_meses.includes(Number(String(tripDay.hours?.dateIso ?? '').slice(5, 7))) ? 'fuera de temporada (solo en julio y agosto)' : 'hora límite de la noche' }))
+    day.engine_log = [...tripDay.escritoLog, ...nightsLost]
+    day.trip_engine_log = (trip.days ?? []).flatMap((other) => other.escritoLog ?? [])
+  }
   // El título no promete un atardecer que ese día no hay (el Janículo llega ya de noche): "… y Trastevere", sin "al atardecer".
   if (day.curated_day?.name && / al atardecer$/.test(day.curated_day.name) && !(day.stops ?? []).some((stop) => stop.sunset_minutes != null)) day.curated_day.name = day.curated_day.name.replace(/ al atardecer$/, '')
   // Mañanas y tardes tipo (Parte B): qué bloque lleva cada medio día; sin bloque, "medio día sin tipo".

@@ -1,6 +1,7 @@
 import type { QuestionnaireAnswers, Route, TransportContext, TripDefaultTransport } from './types'
 import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDay } from './mapGeneratedRoute'
 import { encodeExperienceCategories } from './experienceCategoryBank'
+import { reservasActuales } from './engineReservas'
 
 /** Misma clave que espera route_cache/computeRouteCacheMatch en server/index.js — ver encodeExperienceCategories. */
 function routeCacheExperiences(answers: QuestionnaireAnswers): string[] {
@@ -195,6 +196,7 @@ async function applyHighMatchReuse(
         // vuelta (encontrado el 2026-09-24: el motor lo daba vacío y caía en Claude).
         all_days: Array.from({ length: answers.days }, (_, index) => ({ day_number: index + 1, city: days[index]?.city ?? lastDay?.city ?? destination })),
         is_first_block_of_trip: false,
+        reservas: await reservasActuales(),
         ...transportContext,
       })
       days = [...days, ...result.days]
@@ -394,6 +396,7 @@ async function requestDayBlockWithRetry(
         // routeAlgorithm.js) — necesita la lista aquí, no solo en generate-day-places, porque este
         // endpoint relee zone_distribution desde cero y no confía en `places_for_block`.
         must_include_places: mustIncludePlaces,
+        reservas: await reservasActuales(),
         ...transportContext,
       })
     } catch (error) {

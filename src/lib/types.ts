@@ -161,6 +161,10 @@ export interface QuestionnaireAnswers {
   experiencesNegative: ExperienceCategoryId[]
   chronotype: Chronotype
   budgetLevel: BudgetLevel
+  /** Free Tour de tarde o de noche, con su hora (el viaje usa el Día de la Roma antigua con el tour a esa hora). Lo rellenará quien conozca la hora; el motor ya lo lee. */
+  freeTourDespues?: { franja: 'manana' | 'tarde' | 'noche'; hora: string }
+  /** Viaje de 1,5 días: el medio día cae por la tarde (llegada) o por la mañana (salida). */
+  mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string }
 }
 
 /** Todo lo decidido en la fase de transporte — se pasa tal cual al prompt de generación de ruta. */

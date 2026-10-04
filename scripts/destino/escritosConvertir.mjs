@@ -3,7 +3,7 @@
 //   node scripts/destino/escritosConvertir.mjs --solo-comprobar   → no escribe: solo cuenta tablas y filas
 // Las horas, los minutos y el «cómo» se copian TAL CUAL. Lo único que se añade es el enlace de cada fila con su lugar de la ficha.
 import fs from 'node:fs'
-import { anadirExtras } from './escritosExtras.mjs'
+import { anadirExtras, completarAlternativas } from './escritosExtras.mjs'
 
 const root = 'C:/Users/ERIC/Desktop/CLAUDE PROYECTS/APP RUTAS/'
 const md = fs.readFileSync(root + 'docs/dias/DIAS_ESCRITOS_ROMA.md', 'utf8').split(/\r?\n/)
@@ -268,6 +268,7 @@ out['D1-FT'] = {
 }
 
 anadirExtras(out)
+completarAlternativas(out)
 
 // ── Escritura ────────────────────────────────────────────────────────────────────────────────
 const soloComprobar = process.argv.includes('--solo-comprobar')

@@ -88,6 +88,10 @@ async function buildTripDays({ fecha, dias, ft, pool = [], positive = [], reserv
   return days
 }
 
+/** Los seis días escritos (Roma) no se miden aquí: para ellos vale la prueba contra el documento (scripts/destino/pruebaEscritos.mjs). */
+const DIAS_ESCRITOS = new Set(['D0', 'D0-medio', 'D1', 'D2', 'D3', 'D1-FT'])
+const esDiaEscrito = (day) => DIAS_ESCRITOS.has(day?.curated_day?.id)
+
 async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null }) {
   const positive = [...(ft ? ['free_tour'] : []), ...exps]
   const label = `${fecha ?? 'sin fechas'} · ${dias} día${dias === 1 ? '' : 's'}${ft ? ' · FT' : ''}${exps.length ? ` · ${exps.join('+')}` : ''}${pool.length ? ` · pool ${pool.join('+')}` : ''}${reservas ? ` · reserva ${Object.entries(reservas).map(([place, hour]) => `${place} ${hour}`).join('+')}` : ''}`
@@ -101,6 +105,7 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null 
   trips++
   // La comida, 45 min como mínimo en la ruta que ve el viajero: de su hora a su fin, y hasta la parada siguiente.
   for (const [i, day] of days.entries()) {
+    if (esDiaEscrito(day)) continue
     const lunch = day?.meals?.find((meal) => meal.time === 'lunch')
     if (!lunch?.suggested_time) continue
     const start = t2m(lunch.suggested_time)
@@ -129,6 +134,7 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null 
     // (Regla 3: si el viajero marcó un extra del pool y el imprescindible se ve bien por fuera, entra el extra y el imprescindible va por fuera, sin aviso.)
     else if (caso.tipo === 'pago_sin_dentro' && pool.length > 0 && hasOutside(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cedido_al_pool'
     const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
+    if (n && esDiaEscrito(days[n - 1])) continue
     // (La versión del día escrito va al final del detalle: «D3 D», para agrupar por día y versión.)
     add(caso.tipo, caso.donde, `${caso.detalle}${n ? ` [${keyOf(n)}]` : ''}`)
     tally(caso.tipo, n ? keyOf(n) : 'viaje')
@@ -136,6 +142,7 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null 
   // Las reglas 2, 9, 10, 17, 21, 22 y 25 (auditoriaReglas.mjs).
   for (const caso of auditarReglas(D, days, { startIso: fecha, label, reservas, poolNames: pool, leg: legBetween })) {
     const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
+    if (n && esDiaEscrito(days[n - 1])) continue
     // (La versión del día escrito va al final del detalle: «D3 D», para agrupar por día y versión.)
     add(caso.tipo, caso.donde, `${caso.detalle}${n ? ` [${keyOf(n)}]` : ''}`)
     tally(caso.tipo, n ? keyOf(n) : 'viaje')
@@ -149,7 +156,7 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null 
     } catch {}
   }
   for (const [index, day] of days.entries()) {
-    if (!day?.stops?.length) continue
+    if (!day?.stops?.length || esDiaEscrito(day)) continue
     const n = index + 1
     for (const aviso of tituloQueNoSeCumple(day)) add('v4_titulo', `${label}, día ${n}`, aviso)
     const dinner = (day.meals ?? []).find((meal) => meal.time === 'dinner')
@@ -172,7 +179,7 @@ function planChecks({ fecha, dias, ft, exps = [], pool = [] }) {
   }
   for (const day of plan.days) {
     const w = day.written
-    if (!w) continue
+    if (!w || w.escrito) continue
     const where = `${label}, día ${day.dayNumber} (${day.curatedDay?.id} ${w.version}, ${day.hours?.weekday})`
     for (const problem of w.problems ?? []) tally(`v4_${problem.tipo}`, `${day.curatedDay?.id} ${w.version} ${day.hours?.weekday ?? ''}`)
     if (w.elastic && elasticOut(w.elastic)) tally('v4_elastica', `${day.curatedDay?.id} ${w.version}${(day.curatedDay?.variantes ?? []).slice(1).length ? ' +' + day.curatedDay.variantes.slice(1).join('+') : ''}`)

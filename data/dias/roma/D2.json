@@ -48,7 +48,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -187,7 +188,8 @@
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
           "zona": "en el Borgo",
-          "derivada": true
+          "derivada": true,
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -347,7 +349,8 @@
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
           "zona": "en el Borgo",
-          "derivada": true
+          "derivada": true,
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -507,7 +510,8 @@
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
           "zona": "en el Borgo",
-          "derivada": true
+          "derivada": true,
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -668,7 +672,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -808,7 +813,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -977,7 +983,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -1187,7 +1194,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "traslado_el_bus_23_por_el_lungotevere",
@@ -1353,7 +1361,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "traslado_el_bus_23_por_el_lungotevere",
@@ -1502,7 +1511,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -1640,7 +1650,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -2113,7 +2124,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -2238,7 +2250,8 @@
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "alternativa": "200 Gradi"
         },
         {
           "id": "parada_plaza_de_san_pedro",

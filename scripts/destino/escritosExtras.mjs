@@ -94,3 +94,19 @@ export function anadirExtras(out) {
     mercadillos_navidenos: { ...MERCADILLOS, acciones: [BAMBINO] },
   }
 }
+
+/**
+ * Alternativas de comida que el documento no escribe y el usuario pidió elegir (5-oct-2026): Borghiciana cierra los domingos, así que en el
+ * D2 su alternativa es un restaurante de la misma zona (Vaticano / Borgo) que abre los domingos.
+ */
+export function completarAlternativas(out) {
+  for (const day of Object.values(out)) {
+    for (const grupo of Object.values(day.versiones ?? {})) {
+      for (const filas of Object.values(grupo)) {
+        for (const fila of filas) {
+          if (fila.tipo === 'comida' && fila.restaurante === 'Borghiciana Pastificio Artigianale' && !fila.alternativa) fila.alternativa = '200 Gradi'
+        }
+      }
+    }
+  }
+}

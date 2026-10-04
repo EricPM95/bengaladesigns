@@ -25,7 +25,7 @@ export const MARGENES = {
 }
 
 export const finDe = (row) => toMin(row.hora) + row.min
-const esAncla = (row) => row.tipo === 'tour' || row.hora_tipo === 'turno' || row.hora_tipo === 'reserva' || (row.tipo === 'cena' && !row.flujo) || row.fija === true
+export const esAncla = (row) => row.tipo === 'tour' || row.hora_tipo === 'turno' || row.hora_tipo === 'reserva' || (row.tipo === 'cena' && !row.flujo) || row.fija === true
 const llevaMargenLargo = (row) => row.guia === true || row.tipo === 'tour'
 
 /** Cuánto antes de su hora hay que llegar a una fila anclada. */
@@ -62,14 +62,16 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
   const problemas = []
   const nuevoOrdenQuitar = (hasta = Infinity) => {
     // 1) el colchón (el último primero), 2) el orden del día, 3) lo de camino y los paseos del final de la tarde.
-    const candidatos = lista.map((row, i) => ({ row, i })).filter(({ row, i }) => i >= desde && i < hasta && !protegidas(row) && !esAncla(row) && row.tipo !== 'comida' && row.tipo !== 'noche' && row.tipo !== 'traslado')
+    // (Un imprescindible nunca se quita: se queda «de camino», 5 min; si ya está así, no es candidato.)
+    const yaMinimo = (row) => row.imprescindible === true && row.modo === 'camino' && row.min <= 5
+    const candidatos = lista.map((row, i) => ({ row, i })).filter(({ row, i }) => i >= desde && i < hasta && !protegidas(row) && !esAncla(row) && !yaMinimo(row) && row.tipo !== 'comida' && row.tipo !== 'noche' && row.tipo !== 'traslado')
     for (const clave of orden) {
       const hit = candidatos.find(({ row }) => row.lugar === clave || row.id === clave)
       if (hit) return hit
     }
-    // Sin orden escrito: primero el colchón, luego lo de camino, los paseos y lo que va por fuera; siempre lo último del día primero. Nunca lo que va por dentro.
-    const rango = (row) => (row.colchon ? 0 : row.modo === 'camino' ? 1 : row.tipo === 'paseo' || row.tipo === 'desayuno' ? 2 : row.modo === 'fuera' ? 3 : row.modo === 'dentro' ? 9 : 4)
-    const elegidos = candidatos.filter(({ row }) => rango(row) < 9).sort((x, y) => rango(x.row) - rango(y.row) || y.i - x.i)
+    // Sin orden escrito (decisión del usuario, 5-oct-2026): el colchón, lo de camino, los paseos, lo que va por fuera y el resto, por dentro lo último; siempre lo último del día primero.
+    const rango = (row) => (row.colchon ? 0 : row.modo === 'camino' ? 1 : row.tipo === 'paseo' || row.tipo === 'desayuno' ? 2 : row.modo === 'fuera' ? 3 : row.modo === 'dentro' ? 5 : 4)
+    const elegidos = candidatos.sort((x, y) => rango(x.row) - rango(y.row) || y.i - x.i)
     return elegidos[0] ?? null
   }
   for (let guard = 0; guard < 40; guard++) {
@@ -77,7 +79,7 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
     for (let i = Math.max(1, desde); i < lista.length; i++) {
       const prev = lista[i - 1]
       const row = lista[i]
-      const llegada = finDe(prev) + hueco(prev, row, walk)
+      const llegada = up5(finDe(prev) + hueco(prev, row, walk))
       if (esAncla(row) && row.tipo !== 'traslado') {
         const limite = toMin(row.hora) - antesDeLlegar(row)
         if (llegada > limite) {
@@ -110,12 +112,21 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
       falta -= quita
     }
     if (falta <= 0) continue
+    // Una cena no se pierde: si no se llega a su hora ni acortando, se retrasa lo que haga falta.
+    if (lista[fallo.i].tipo === 'cena') {
+      lista[fallo.i] = { ...lista[fallo.i], hora: toHHMM(toMin(lista[fallo.i].hora) + up5(falta)) }
+      continue
+    }
     // Quitar por el orden del día.
     const hit = nuevoOrdenQuitar(fallo.i)
     if (!hit || hit.i >= fallo.i) {
       problemas.push(`no_cabe:${lista[fallo.i].lugar ?? lista[fallo.i].id}`)
       // Se deja la hora escrita de la fila anclada: llegará tarde y la prueba lo marca.
       return { rows: lista, quitadas, problemas }
+    }
+    if (hit.row.imprescindible === true) {
+      lista[hit.i] = { ...hit.row, modo: 'camino', min: 5 }
+      continue
     }
     quitadas.push(hit.row)
     lista = lista.filter((_, k) => k !== hit.i)
@@ -224,7 +235,10 @@ export function aplicarAcciones(rows, acciones, { walk, taxiMin } = {}) {
       // Todo lo que va después de la comida se sustituye por estas filas.
       const iComida = lista.findIndex((row) => row.tipo === 'comida')
       if (iComida < 0) continue
-      lista.splice(iComida + 1, lista.length, ...accion.filas.map((fila) => nuevaFila(fila)))
+      // (Lo que ya estaba en la tarde conserva su id: así se sabe qué fila del documento es cuál.)
+      const clave = (row) => row.lugar ?? row.restaurante ?? row.noche ?? (row.tipo === 'traslado' ? 'traslado' : row.id)
+      const viejas = new Map(lista.slice(iComida + 1).map((row) => [clave(row), row.id]))
+      lista.splice(iComida + 1, lista.length, ...accion.filas.map((fila) => { const nueva = nuevaFila(fila); const id = viejas.get(clave(nueva)); return id && nueva.tipo !== 'traslado' ? { ...nueva, id } : nueva }))
       primera = Math.min(primera, iComida + 1)
     } else if (accion.op === 'insertar') {
       const filas = (Array.isArray(accion.fila) ? accion.fila : [accion.fila]).map((fila) => nuevaFila(fila))
@@ -241,16 +255,44 @@ export function aplicarAcciones(rows, acciones, { walk, taxiMin } = {}) {
  * Adelantar (regla de cierres): una fila por dentro que cae cerrada a su hora se mueve hacia delante en el día, de una en una, hasta el primer
  * sitio donde está abierta. Solo cruza filas que no son anclas ni comidas. Devuelve las filas (con las horas corridas) o null si no se puede.
  */
+export const ZIGZAG_MIN = 12 // minutos de más andando que hacen que adelantar sea volver atrás
+export const ZIGZAG_CERCA = 6 // un sitio al que se salta por delante tiene que estar a esos minutos andando o menos
+
+/** Lo que se anda en todo el día, fila a fila (sin traslados). */
+export function caminoTotal(rows, walk) {
+  const filas = rows.filter((row) => row.tipo !== 'traslado')
+  let total = 0
+  for (let k = 1; k < filas.length; k++) total += walk(filas[k - 1], filas[k]) || 0
+  return total
+}
+
+/**
+ * Adelantar (regla de cierres): una fila por dentro que cae cerrada a su hora se mueve hacia delante en el día, de una en una, hasta el primer
+ * sitio donde está abierta. Solo cruza filas que no son anclas ni comidas. Sin zigzag: si moverla obliga a volver atrás (el día anda más de
+ * ZIGZAG_MIN minutos de más), no se mueve y se queda en su sitio (por fuera o acortada, lo decide la regla de cierres). Los «de camino» que
+ * van justo antes de la fila viajan con ella. Devuelve las filas (con las horas corridas) o null si no se puede.
+ */
 export function adelantar(rows, i, { walk, abierta, orden = [] }) {
   const fila = rows[i]
-  for (let destino = i - 1; destino >= 1; destino--) {
+  let inicio = i
+  // (Solo los «de camino» pegados a ella: a 6 min andando o menos de la fila siguiente del grupo.)
+  while (inicio - 1 >= 1 && rows[inicio - 1].modo === 'camino' && rows[inicio - 1].tipo === 'parada' && walk(rows[inicio - 1], rows[inicio]) <= 6) inicio--
+  const grupo = rows.slice(inicio, i + 1)
+  const resto = rows.filter((_, k) => k < inicio || k > i)
+  const antes = caminoTotal(rows, walk)
+  for (let destino = inicio - 1; destino >= 1; destino--) {
     const cruzada = rows[destino]
     if (esAncla(cruzada) || cruzada.tipo === 'comida' || cruzada.tipo === 'traslado' || cruzada.tipo === 'noche') break
-    const prueba = rows.filter((_, k) => k !== i)
-    prueba.splice(destino, 0, { ...fila })
+    const prueba = [...resto.slice(0, destino), ...grupo.map((row) => ({ ...row })), ...resto.slice(destino)]
     const { rows: corridas } = correrHoras(prueba, { desde: destino, walk, orden })
     const movida = corridas.find((r) => r.id === fila.id)
-    if (movida && abierta(movida, toMin(movida.hora))) return corridas
+    if (!movida || !abierta(movida, toMin(movida.hora))) continue
+    // El primer sitio donde está abierta: si para llegar ahí hay que volver atrás, se queda donde estaba. Volver atrás es saltarse un sitio que
+    // no está pegado (más de ZIGZAG_CERCA min andando) o andar en total más de ZIGZAG_MIN min de más.
+    const saltadas = rows.slice(destino, inicio).filter((row) => row.tipo !== 'traslado' && row.modo !== 'camino')
+    if (saltadas.some((row) => walk(fila, row) > ZIGZAG_CERCA)) return null
+    if (caminoTotal(corridas, walk) > antes + ZIGZAG_MIN) return null
+    return corridas
   }
   return null
 }
@@ -262,7 +304,7 @@ export function resolverTaxis(rows, walk) {
     const antes = rows.slice(0, i).reverse().find((other) => other.tipo !== 'traslado')
     const despues = rows.slice(i + 1).find((other) => other.tipo !== 'traslado')
     const andar = antes && despues ? walk(antes, despues) : 20
-    const min = Math.max(10, Math.round(andar / 2.5) + 5)
+    const min = up5(Math.max(10, Math.round(andar / 2.5) + 5))
     return { ...row, min, traslado: { ...row.traslado, min } }
   })
 }
@@ -275,7 +317,7 @@ export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30
   if (sunset == null) return rows
   const k = rows.findIndex((row) => row.modo === 'atardecer' && row.tipo === 'parada')
   if (k < 1) return rows
-  const target = sunset - lead
+  const target = near5(sunset - lead)
   const llegada = toMin(rows[k].hora)
   const lista = rows.map((row) => ({ ...row }))
   if (llegada < target) {
@@ -320,9 +362,9 @@ export function vale(def, { ids = [], dateIso = null } = {}) {
 /**
  * Aplica un extra del pool o una experiencia a las filas del día. Devuelve { rows, quitadas } o null si no cabe (entonces el extra va a «No incluido»).
  */
-export function aplicarExtra(rows, def, { walk, abierta }) {
+export function aplicarExtra(rows, def, { walk, abierta, marcar = (lista) => lista }) {
   const aplicadas = aplicarAcciones(rows, def.acciones ?? [], { walk })
-  let lista = resolverTaxis(aplicadas.rows, walk)
+  let lista = resolverTaxis(marcar(aplicadas.rows), walk)
   const corrida = correrHoras(lista, { desde: aplicadas.primera, walk, protegidas: (row) => row.hora_tipo === 'reserva' })
   if (corrida.problemas.length > 0) return null
   lista = corrida.rows
@@ -341,10 +383,48 @@ export function aplicarExtra(rows, def, { walk, abierta }) {
   return { rows: lista, quitadas: corrida.quitadas }
 }
 
-/** Medio día de mañana: acaba a la hora de salida (por defecto las 15:00); lo que no quepa se quita del final. */
-export function recortarSalida(rows, salida = '15:00') {
+/**
+ * Medio día de mañana: acaba a la hora de salida (por defecto las 15:00). Primero la comida pasa a 45 min; lo que aun así no quepa se quita del
+ * final, salvo un imprescindible, que se queda «de camino» (5 min).
+ */
+export function recortarSalida(rows, salida = '15:00', { walk } = {}) {
   const limite = toMin(salida)
-  const lista = rows.map((row) => ({ ...row }))
-  while (lista.length > 1 && finDe(lista.at(-1)) > limite) lista.pop()
+  let lista = rows.map((row) => ({ ...row }))
+  const corre = (desde) => (walk ? correrHoras(lista, { desde, walk }).rows : lista)
+  const iComida = lista.findIndex((row) => row.tipo === 'comida')
+  if (iComida >= 0 && lista[iComida].min > 45 && finDe(lista.at(-1)) > limite) {
+    lista[iComida].min = 45
+    lista = corre(iComida + 1)
+  }
+  for (let guard = 0; guard < 40 && lista.length > 1 && finDe(lista.at(-1)) > limite; guard++) {
+    const ultima = lista.at(-1)
+    if (ultima.imprescindible === true) {
+      if (ultima.modo === 'camino' && ultima.min <= 5) break
+      lista[lista.length - 1] = { ...ultima, modo: 'camino', min: 5 }
+      lista = corre(Math.max(1, lista.length - 1))
+      continue
+    }
+    lista.pop()
+  }
   return lista
+}
+
+/**
+ * Apunta qué ha cambiado entre dos listas de filas y por qué (la causa real de cada cambio). `log` recibe { id, lugar, que, causa }.
+ */
+export function anotarCambios(antes, despues, causa, log) {
+  const nombre = (row) => row.titulo ?? row.lugar ?? row.restaurante ?? row.noche ?? row.id
+  const previas = new Map(antes.map((row) => [row.id, row]))
+  const ahora = new Set(despues.map((row) => row.id))
+  for (const row of despues) {
+    const previa = previas.get(row.id)
+    if (!previa) { log.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'nueva', causa }); continue }
+    const dif = []
+    if (previa.hora !== row.hora) dif.push('hora')
+    if (previa.min !== row.min) dif.push('min')
+    if ((previa.modo ?? null) !== (row.modo ?? null)) dif.push('modo')
+    if ((previa.titulo ?? null) !== (row.titulo ?? null)) dif.push('titulo')
+    if (dif.length) log.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: dif.join('+'), causa })
+  }
+  for (const row of antes) if (!ahora.has(row.id)) log.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'quitada', causa })
 }
