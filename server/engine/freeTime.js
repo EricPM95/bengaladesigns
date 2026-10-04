@@ -166,7 +166,7 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
       // (REGLAS_RUTAS 5: por sitio, no por nombre — el paseo no enseña nada que el día ya haya enseñado, Campo de' Fiori a las 17:50 y otra vez en su paseo.)
       const paseoSites = muestraOf(destData, { name: title, is_free_walk: true }).muestra
       const shownToday = new Set(day.stops.flatMap((stop) => muestraOf(destData, stop).muestra))
-      const seenEarlier = !same && (paseoSites.some((id) => shownToday.has(id)) || before.slice(0, before.indexOf(previous)).some((stop) => !stop.is_night_experience && (placeByName.get(nameOf(stop))?.tags ?? []).includes('barrio') && mentions(stop)))
+      const seenEarlier = (!same || onlyRepeated) && (paseoSites.some((id) => shownToday.has(id)) || before.slice(0, before.indexOf(previous)).some((stop) => !stop.is_night_experience && (placeByName.get(nameOf(stop))?.tags ?? []).includes('barrio') && mentions(stop)))
       if (seenEarlier) {
         report.evening = { kind: 'omitido', name: title }
         continue
@@ -326,7 +326,10 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
     }
     // (Un mismo sitio, una vez al día: si el paseo de esa zona ya está en el día, el rato va a la parada que se estira, INVARIANTES 467.)
     const walkTitle = walk ? `${PASEO_PREFIX}${String(walk.name).replace(/^Pasear por /i, '')}` : null
-    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle)) {
+    // (REGLAS_RUTAS 5: tampoco un paseo que enseñe algo que el día ya enseña —por `muestra`—.)
+    const walkShown = walkTitle ? new Set(muestraOf(destData, { name: walkTitle, is_free_walk: true }).muestra) : new Set()
+    const dayShown = new Set(day.stops.flatMap((stop) => muestraOf(destData, stop).muestra))
+    if (walk && Array.isArray(walk.coordinates) && !day.stops.some((stop) => stop.is_free_walk && stop.name === walkTitle) && ![...walkShown].some((id) => dayShown.has(id))) {
       const walkIn = leg(fromCoords, walk.coordinates)
       const walkOut = leg(walk.coordinates, toCoords)
       const start = ceil5(fromEnd + walkIn)

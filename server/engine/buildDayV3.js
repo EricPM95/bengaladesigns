@@ -704,7 +704,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   let chainForNight = nightChain
   const winterEvening = (tripDay.hours?.sunset ?? Infinity) < WINTER_EVENING_BEFORE && (schedule.idleBeforeDinner ?? 0) > WINTER_IDLE_MAX
   if (nightChain.length > 0) {
-    const chain = winterEvening && !nightTiming(nightChain, nightTimingInput).beforeDinner ? nightChain.map((entry) => ({ ...entry, afterDinnerOnly: false })) : nightChain
+    const chain = winterEvening && !nightChain.some((entry) => entry.afterDinnerForced) && !nightTiming(nightChain, nightTimingInput).beforeDinner ? nightChain.map((entry) => ({ ...entry, afterDinnerOnly: false })) : nightChain
     // Con la nocturna antes de cenar (repaso 3, 2026-09-28): primero la nocturna (20-25 min) y luego el rato de "luces y
     // aperitivo", justo antes de la cena y hasta la hora de cenar (hasta 90 min, ver index.js).
     if (nightTiming(chain, nightTimingInput).beforeDinner) chainForNight = chain

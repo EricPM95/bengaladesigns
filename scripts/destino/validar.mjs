@@ -159,6 +159,7 @@ const section = (title) => {
       if (zoneConfig.si_visto_nombre && !config.paseo_muestras[zone].si_visto) s.warn.push(`paseo_muestras.${zone}: tiene si_visto_nombre y no su muestra`)
     }
   }
+  for (const walk of D.zone_walks ?? []) check(`zone_walks "${walk.name}".muestra`, walk.muestra)
   for (const [title, list] of Object.entries(config.sitios_por_titulo ?? {})) if (!title.startsWith('_')) check(`sitios_por_titulo "${title}"`, list)
   for (const name of D.default_free_tour?.covers ?? []) if (!byName.get(name)?.id) s.red.push(`Free Tour covers: "${name}" no tiene id`)
   // Un título escrito en un día que no existe en ningún sitio de `sitios_por_titulo` no es un error: enseña su ficha.

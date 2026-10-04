@@ -126,14 +126,16 @@ async function runTrip({ fecha, dias, ft, exps = [], pool = [], reservas = null 
     if (caso.tipo === 'pago_sin_dentro' && closedAllTrip(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cerrado_fecha'
     // (Regla 3: si el viajero marcó un extra del pool y el imprescindible se ve bien por fuera, entra el extra y el imprescindible va por fuera, sin aviso.)
     else if (caso.tipo === 'pago_sin_dentro' && pool.length > 0 && hasOutside(/todo el viaje (.+)$/.exec(caso.donde)?.[1] ?? '')) caso.tipo = 'pago_cedido_al_pool'
-    add(caso.tipo, caso.donde, caso.detalle)
     const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
+    // (La versión del día escrito va al final del detalle: «D3 D», para agrupar por día y versión.)
+    add(caso.tipo, caso.donde, `${caso.detalle}${n ? ` [${keyOf(n)}]` : ''}`)
     tally(caso.tipo, n ? keyOf(n) : 'viaje')
   }
   // Las reglas 2, 9, 10, 17, 21, 22 y 25 (auditoriaReglas.mjs).
   for (const caso of auditarReglas(D, days, { startIso: fecha, label, reservas })) {
-    add(caso.tipo, caso.donde, caso.detalle)
     const n = Number(/día ([0-9]+)/.exec(caso.donde)?.[1] ?? 0)
+    // (La versión del día escrito va al final del detalle: «D3 D», para agrupar por día y versión.)
+    add(caso.tipo, caso.donde, `${caso.detalle}${n ? ` [${keyOf(n)}]` : ''}`)
     tally(caso.tipo, n ? keyOf(n) : 'viaje')
   }
   // La regla 13: una experiencia elegida cambia algo del viaje (el mismo viaje con y sin ella).

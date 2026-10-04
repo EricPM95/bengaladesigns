@@ -61,7 +61,15 @@ export function muestraOf(destData, stop, registry = siteRegistry(destData)) {
   // Un paseo libre del motor: lo de su zona y su título.
   if (stop.is_free_walk && !place) {
     const key = paseoKey(destData, stop.name)
-    const muestra = key ? config.paseo_muestras?.[key[0]]?.[key[1]] : null
+    let muestra = key ? config.paseo_muestras?.[key[0]]?.[key[1]] : null
+    // (Un paseo a mitad de día, «Pasea y piérdete por Trastevere»: lo que enseña es el barrio con ese nombre, si es un sitio.)
+    if (!muestra) {
+      const area = String(stop.name).replace(/^Pasea y piérdete por /, '').replace(/^(el|la|los|las) /i, '')
+      const named = (destData.places ?? []).find((candidate) => candidate.name === area)
+      const walk = (destData.zone_walks ?? []).find((candidate) => candidate.name.replace(/^Pasear por /i, '').replace(/^(el|la|los|las) /i, '') === area)
+      if (named) muestra = [named.id]
+      else if (walk?.muestra) muestra = walk.muestra
+    }
     return { site_id: key ? `paseo_${key[0]}` : null, muestra: own(muestra ?? []) }
   }
   // Una parada escrita que enseña otra cosa que su ficha (el lago de Villa Borghese, Via Margutta).

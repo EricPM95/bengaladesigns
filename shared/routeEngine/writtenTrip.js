@@ -24,6 +24,7 @@ import { specialHoursToAvoid } from './specialDates.js'
 import { anyTransitRuns, publicTransitKind, transitRuns } from './holidayTransit.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
+import { straightLineMeters } from './travelTimes.js'
 import { availableForTrip, seasonFit } from './availability.js' // eslint-disable-line no-unused-vars
 import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
@@ -433,6 +434,8 @@ export function planWrittenTrip(args) {
       // Sant'Angelo; la D de D1-FT, que ya pasa la tarde en Trastevere y de noche va al centro.)
       nombre: tardeVersion.nombre ?? w.nombre,
       noche: tardeVersion.noche ?? w.noche ?? null,
+      // (`noche_despues_de_cenar`: el paseo de noche va siempre después de cenar, aunque quepa antes: el viaje de 1 día, Trevi y la Plaza de España.)
+      noche_despues_de_cenar: Boolean(tardeVersion.noche_despues_de_cenar ?? w.noche_despues_de_cenar),
       noche_si_cae: null,
       barrio_cena: tardeVersion.barrio_cena ?? w.barrio_cena ?? null,
       manana: clone(w.manana?.paradas ?? []),
@@ -654,7 +657,18 @@ export function planWrittenTrip(args) {
       continue
     }
     extrasUsed++
-    const sites = written.destino?.pool?.[name]?.sitios ?? []
+    // El extra va en el día más cercano a su zona (decisión del usuario, 4-oct-2026): los sitios escritos se ordenan por la distancia media
+    // del lugar a las tres paradas más cercanas de cada día (sin zigzag); a igual distancia, el orden del fichero.
+    const nearness = (siteDay) => {
+      const source = placeByName.get(name)
+      const draft = drafts.find((candidate) => candidate.id === siteDay)
+      if (!Array.isArray(source?.coordinates) || !draft) return Infinity
+      const points = [...draft.manana, ...draft.tarde].filter((stop) => stop.modo !== 'camino').map((stop) => placeByName.get(stop.lugar)?.coordinates).filter(Array.isArray)
+      if (points.length === 0) return Infinity
+      const meters = points.map((point) => straightLineMeters(source.coordinates, point)).sort((x, y) => x - y)
+      return meters.slice(0, 3).reduce((sum, value) => sum + value, 0) / Math.min(3, meters.length)
+    }
+    const sites = (written.destino?.pool?.[name]?.sitios ?? []).map((candidate, index) => ({ candidate, index, meters: nearness(candidate.dia) })).sort((x, y) => x.meters - y.meters || x.index - y.index).map((item) => item.candidate)
     // (Nunca en un día en que ese lugar cierra: pasa a su siguiente sitio.)
     const siteDraft = (candidate) => drafts.find((draft) => draft.id === candidate.dia)
     const site = sites.find((candidate) => siteDraft(candidate) && !closedThatDay(name, siteDraft(candidate).day) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`)) ?? sites.find((candidate) => siteDraft(candidate) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`))
@@ -669,7 +683,7 @@ export function planWrittenTrip(args) {
   }
   // Viaje de 2 días: por dentro solo lo marcado en el pool (o, sin nada marcado, lo que dice el destino) y lo que va siempre
   // dentro (el Panteón); el resto de lo que tiene entrada, por fuera (INVARIANTES 449).
-  const shortRule = cityDays.length <= 2 ? written.destino?.viajes_cortos?.dos_dias ?? null : null
+  const shortRule = cityDays.length === 1 ? written.destino?.viajes_cortos?.un_dia ?? null : cityDays.length === 2 ? written.destino?.viajes_cortos?.dos_dias ?? null : null
   const insideAllowed = (() => {
     if (!shortRule) return null
     const marked = Object.keys(shortRule.marcables ?? {}).filter((name) => inPool(name))
@@ -1868,7 +1882,7 @@ export function planWrittenTrip(args) {
       dinnerRestaurant,
       nightNames: [],
       blocks: null,
-      curatedDay: { id: draft.id, nombre: draft.nombre, variantes: draft.applied, noche: draft.noche, nocheSiCae: draft.noche_si_cae, version: draft.version },
+      curatedDay: { id: draft.id, nombre: draft.nombre, variantes: draft.applied, noche: draft.noche, nocheDespuesDeCenar: draft.noche_despues_de_cenar, nocheSiCae: draft.noche_si_cae, version: draft.version },
       ...(draft.noTour ? { noTour: true } : {}),
       untypedAfternoon: false,
       reorderedBlocks: [],
@@ -1975,7 +1989,7 @@ export function planWrittenTrip(args) {
     }
     const sameAs = fromAlternative ? Object.values(walks).find((other) => other !== walk && Array.isArray(other.recorrido) && chain.every((entry) => other.recorrido.includes(entry.name))) : null
     const text = fromAlternative ? (sameAs ? walkText(sameAs, chain) : null) : walkText(walk, chain)
-    nightsByDay.set(day.dayNumber, chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...(fromAlternative && walk.alternativas_despues_de_cenar ? { afterDinnerOnly: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) ? { replacesDayVisit: true } : {}) })))
+    nightsByDay.set(day.dayNumber, chain.map((entry) => ({ ...entry, wholeWalk: true, ...(walk.excepcion_mismo_dia ? { sameDayException: true } : {}), ...((fromAlternative && walk.alternativas_despues_de_cenar) || day.curatedDay.nocheDespuesDeCenar ? { afterDinnerOnly: true } : {}), ...(day.curatedDay.nocheDespuesDeCenar ? { afterDinnerForced: true } : {}), ...(shortTrip && (entry.conflicts_with ?? []).some((name) => daysOfPlace.get(name)?.has(day.dayNumber)) && lateVisit(entry) ? { replacesDayVisit: true } : {}) })))
     day.nightWalk = { nombre: fromAlternative ? sameAs?.nombre ?? nightNameOf(chain) : walk.nombre, texto: text, textoAntesCenar: fromAlternative ? (sameAs ? walkText(sameAs, chain, true) : null) : walkText(walk, chain, true), recorrido: chain.map((entry) => entry.name), ...(!fromAlternative && walk.texto_despues_cenar ? { textoDespuesCenar: walk.texto_despues_cenar } : {}) }
   }
   const centro = Object.values(walks).find((walk) => Array.isArray(walk.centro_dos_dias))

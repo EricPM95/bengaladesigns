@@ -1,0 +1,228 @@
+{
+  "_nota": "D0: el viaje de UN día de Roma, escrito (4-oct-2026, INVARIANTES 453 pasada a día escrito). En un día no da tiempo a entrar: todo lo que tiene entrada va por fuera (Coliseo, Foro desde la Via dei Fori Imperiali, Altar de la Patria, Panteón, Castillo). Mañana: Roma Antigua y Centro. Tarde (desde las 14:30): Vaticano por fuera (Plaza y Basílica de San Pedro, gratis), Via della Conciliazione, Castillo por fuera y Puente. Noche: Trevi y Plaza de España iluminadas, después de cenar en el Borgo (a 15 min de lo último, regla 15; la 453 decía el Tridente). Comida y cena en restaurantes distintos. Solo sin Free Tour y sin pool: con cualquiera de los dos se queda el reparto de antes (short_trips).",
+  "id": "D0",
+  "nombre": "Roma en un día: la Roma Antigua, el Centro, el Vaticano y las fuentes",
+  "joyas": [
+    "Coliseo",
+    "Fontana de Trevi",
+    "Panteón"
+  ],
+  "barrio_cena": "vaticano",
+  "noche": "fuentes",
+  "noche_despues_de_cenar": true,
+  "manana": {
+    "empieza": "08:30",
+    "paradas": [
+      {
+        "lugar": "Coliseo",
+        "min": 20,
+        "modo": "fuera"
+      },
+      {
+        "lugar": "Arco de Constantino",
+        "min": 20
+      },
+      {
+        "lugar": "Foro Romano y Palatino",
+        "modo": "fuera"
+      },
+      {
+        "lugar": "Altar de la Patria",
+        "modo": "fuera"
+      },
+      {
+        "lugar": "Plaza del Campidoglio",
+        "min": 20
+      },
+      {
+        "lugar": "Panteón",
+        "modo": "fuera"
+      },
+      {
+        "lugar": "Piazza Navona",
+        "min": 30
+      }
+    ],
+    "comida": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Supplizio"
+    }
+  },
+  "tarde": {
+    "empieza": "13:30",
+    "A": {
+      "_sol": "antes de las 17:40: el Vaticano por fuera y, al caer el sol, el Puente con el Castillo ya iluminado",
+      "paradas": [
+        {
+          "lugar": "Plaza de San Pedro",
+          "min": 25,
+          "traslado": {
+            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "min": 60,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini con el Castillo delante y la cúpula de San Pedro al fondo, río abajo."
+        }
+      ],
+      "cena": {
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Osteria dell'Angelo",
+        "hora": "19:30"
+      }
+    },
+    "B": {
+      "_sol": "de 17:40 a 18:44: un paseo por el Borgo antes del Castillo",
+      "paradas": [
+        {
+          "lugar": "Plaza de San Pedro",
+          "min": 25,
+          "traslado": {
+            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "min": 60,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "min": 30,
+          "elastica": 45
+        },
+        {
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini con el Castillo delante y la cúpula de San Pedro al fondo, río abajo."
+        }
+      ],
+      "cena": {
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Osteria dell'Angelo",
+        "hora": "19:30"
+      }
+    },
+    "C": {
+      "_sol": "de 18:45 a 19:44: el Borgo con más calma antes del Castillo",
+      "paradas": [
+        {
+          "lugar": "Plaza de San Pedro",
+          "min": 25,
+          "traslado": {
+            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "min": 60,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "min": 60,
+          "elastica": 45
+        },
+        {
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini con el Castillo delante y la cúpula de San Pedro al fondo, río abajo."
+        }
+      ],
+      "cena": {
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Osteria dell'Angelo",
+        "hora": "20:00"
+      }
+    },
+    "D": {
+      "_sol": "desde las 19:45 (verano): el Borgo, una pausa y el Puente al atardecer; la cena, más tarde",
+      "paradas": [
+        {
+          "lugar": "Plaza de San Pedro",
+          "min": 25,
+          "traslado": {
+            "como": "el bus 40 (desde Largo di Torre Argentina) o un taxi",
+            "min": 20
+          }
+        },
+        {
+          "lugar": "Basílica de San Pedro",
+          "min": 60,
+          "modo": "dentro",
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "min": 60,
+          "elastica": 45
+        },
+        {
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "lugar": "Castillo de Sant'Angelo",
+          "min": 20,
+          "modo": "fuera",
+          "una_vez": true
+        },
+        {
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer",
+          "texto": "Al caer el sol, el puente de los ángeles de Bernini con el Castillo delante y la cúpula de San Pedro al fondo, río abajo."
+        }
+      ],
+      "cena": {
+        "restaurante": "L'Arcangelo",
+        "alternativa": "Osteria dell'Angelo",
+        "hora": "20:30"
+      }
+    }
+  }
+}

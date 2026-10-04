@@ -108,7 +108,15 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
       const previous = day.stops[index - 1]
       const chained = previous && Number.isFinite(previous.latitude) && Number.isFinite(stop.latitude) && metersApart([previous.latitude, previous.longitude], [stop.latitude, stop.longitude]) < 200
       const fixed = stop.hora_tipo != null || stop.sunset_minutes != null || stop.is_free_tour || stop.reserved_entry || stop.night_view
-      if (start % 10 !== 0 && !fixed && !chained) add('hora_no_10', n, stop.suggested_time, nameOf(stop))
+      // (Pegada en el tiempo: el motor no pone una parada antes de que acabe la anterior con su paseo, ni la retrasa más de lo que deja una hora fija
+      // de después; en esos casos la hora es de 5 en 5. Se mide con el paseo en línea recta a 75 m/min, que es como lo mira el motor.)
+      const walk = (a, b) => (a && b && Number.isFinite(a.latitude) && Number.isFinite(b.latitude) ? metersApart([a.latitude, a.longitude], [b.latitude, b.longitude]) / 75 : null)
+      const prevEnd = previous ? t2m(previous.suggested_time) + (previous.duration_minutes ?? 0) : null
+      const tightBefore = prevEnd != null && !previous.is_night_experience && walk(previous, stop) != null && start - prevEnd <= walk(previous, stop) + 6
+      const next = day.stops[index + 1]
+      const nextFixed = next && (next.hora_tipo != null || next.sunset_minutes != null || next.is_free_tour || next.reserved_entry)
+      const tightAfter = nextFixed && walk(stop, next) != null && t2m(next.suggested_time) - (start + (stop.duration_minutes ?? 0)) <= walk(stop, next) + 6
+      if (start % 10 !== 0 && !fixed && !chained && !tightBefore && !tightAfter) add('hora_no_10', n, stop.suggested_time, nameOf(stop))
       if ((stop.duration_minutes ?? 0) % 5 !== 0) add('duracion_no_5', n, stop.suggested_time, nameOf(stop), `${stop.duration_minutes} min`)
     })
   }

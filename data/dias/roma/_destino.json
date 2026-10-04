@@ -6,6 +6,12 @@
     "19:45"
   ],
   "viajes_cortos": {
+    "un_dia": {
+      "_nota": "Viaje de 1 día (INVARIANTES 453, escrito en D0): todo lo que tiene entrada va por fuera. Solo va por dentro lo que el viajero marcó en el pool (y con algo marcado el día se monta como antes, con short_trips).",
+      "siempre_dentro": [],
+      "dentro_sin_marcar": [],
+      "marcables": {}
+    },
     "_nota": "Viaje de 2 días (INVARIANTES 449): por dentro solo lo que sigue. Sin nada marcado en el pool, lo de dentro_sin_marcar; con algo marcado (una clave de marcables), lo marcado y sus acompañantes; el Panteón (siempre_dentro) en todos los casos. Lo demás con entrada va por fuera. Un cierre va siempre por fuera.",
     "dos_dias": {
       "siempre_dentro": ["Panteón"],
