@@ -39,9 +39,10 @@
 
 ### R-2 · Una hora fija no se mueve ni se quita — OBLIGATORIA
 - **Texto:** si no cabe todo, se recorta lo de antes, en este orden: 1) salen las opcionales; 2) se encoge la parada elástica; 3) se acorta la comida, hasta 30 min; 4) se quita lo de menor nivel (primero el 3, luego el 2). Si aun así no cabe, sale un aviso en la campana. A una entrada reservada se llega **30 min antes**. Una hora **orientativa** no es fija: llegar unos minutos tarde no es llegar tarde.
+- **Una entrada con hora es fija y lo de antes se ajusta a ella:** la comida va antes (desde las 11:30) o más corta, o sale un sitio menos de la mañana. La entrada nunca va a «No incluido» y nunca sale un aviso de «llegarás más tarde» al viajero. Un sitio no puede estar a la vez en el día y en «No incluido».
 - **Ejemplo:** Museos Vaticanos reservados a las 14:45: la comida de antes se acorta, la parada de la mañana se encoge, y la entrada sale a las 14:45.
 - **Datos:** `hora`, `hora_tipo` (`reserva` | `turno` | `orientativa`), `llegar_antes`, `elastica`, `tipo` (`fija` | `normal` | `opcional`) en `data/dias/<destino>/D*.json`.
-- **Comprobación:** `v4_llega_tarde`, `hora_fija_movida`. Falta comprobar el orden de recorte y que sale el aviso. **Vuelos, trenes y barcos:** pendiente del encargo de vuelos (hoy el motor no los recibe).
+- **Comprobación:** `v4_llega_tarde`, `hora_fija_movida`, `aviso_de_llegada`, `en_el_dia_y_no_incluido`. Falta comprobar el orden de recorte y que sale el aviso. **Vuelos, trenes y barcos:** pendiente del encargo de vuelos (hoy el motor no los recibe).
 - **Sustituye a:** 427 (el «10 min antes»), 466 y 469.
 
 ### R-3 · El viajero manda
@@ -164,13 +165,14 @@
 
 ### R-20 · Los huecos, según cuánto duran y qué viene después
 - **Texto:** **hasta 30 min:** se estira la parada de antes, **si es de las que se disfrutan con calma** (plaza, parque, mirador, barrio, jardín); si es un sitio pequeño (una iglesia, una fuente), se hace lo de la línea siguiente. **Más de 30 min:** un sitio que pille de camino, que valga la pena, abierto, de esa zona y no visto antes; si no lo hay, el paseo de la zona. **Antes de una entrada reservada** (hasta 60 min): nada, es margen para llegar con calma. **Antes del atardecer:** el paseo por la zona del mirador. **Antes de cenar:** «Pasea y piérdete» por la zona de la cena. Una parada opcional nunca crea una espera ni sale cerrada.
-- **Datos:** `elastica` de cada parada; `paseo_libre`; `zone_walks`.
+- **Los rellenos son dato de cada zona** (`destination_config.rellenos_zona`): una lista ordenada de sitios pequeños, una iglesia bonita, un rincón con encanto. La regla coge **el primero que no se haya visto en el viaje** (y los siguientes hasta llenar el hueco, a 15 min andando como mucho). El paseo de la zona solo se descarta si **todo** lo que enseña ya se ha visto: si enseña al menos un sitio nuevo, vale. **Cualquier espera de más de 20 min entre dos paradas sale como hueco** (solo la entrada con hora tiene su margen de hasta 60).
+- **Datos:** `elastica` de cada parada; `paseo_libre`; `zone_walks`; `rellenos_zona`.
 - **Comprobación:** `hueco`, `libre_largo`, `libre_pisa_comida`.
 - **Sustituye a:** 419 (es esta, con su orden) y 461.
 
 ### R-21 · La época del año — OBLIGATORIA
 - **Texto:** **julio y agosto:** de 14:00 a 16:30, solo sitios a cubierto o descanso; lo que va al aire libre, después. **Invierno:** anochece pronto, pero las paradas siguen siendo paradas normales, con su foto de día; la cena no se adelanta por el sol. **Un mirador al que se llega de noche:** si el destino tiene una buena foto de noche de ese mirador, se llama «{lugar} iluminado», lleva esa foto y cuenta como la nocturna de ese sitio (regla 6); si no la tiene, sigue como parada normal con su foto de día. Es la única parada que cambia por la luz. Un solo camino para «iluminado», no dos.
-- **Julio y agosto:** de 14:00 a 16:30 el rato es «Descanso a la sombra» (o en el alojamiento), no un hueco.
+- **Julio y agosto:** de 14:00 a 16:30 **primero van las visitas por dentro de la zona** (la Basílica con su plaza de acceso, iglesias, museos abiertos); el descanso a la sombra solo llena lo que sobre, nunca deja fuera un imprescindible y, en un viaje de 1 día, dura 60 min como mucho (`alcance.descanso_viaje_1_dia_max_min`).
 - **Datos:** `destination_config.night_view_overrides` (`title`, `photo`, `muestra`, `nocturna`); en `writtenTrip.js`, `SUMMER_MONTHS = [7, 8]`.
 - **Comprobación:** `verano_al_sol`; el «iluminado» se mira con `repetido_dia` y `nocturna_repite_viaje`.
 - **Sustituye a:** 105, 186, 245, 290, 311, 315 y 328. De la 240 y la 246 se queda solo lo del mirador.
@@ -262,7 +264,7 @@
 - Aclara la 14.
 
 ### R-37 · La noche tiene una hora límite por destino — OBLIGATORIA
-- **Texto:** cada destino tiene en su dato la hora límite de la noche: **ninguna nocturna acaba después** (regla 41). En Roma: **23:00** en invierno y **23:30** en julio y agosto. El orden es última parada de la tarde → cena → nocturna; la cena queda a **15 min andando** de lo último de la tarde y a **unos 20 min andando o menos** de la nocturna, en la misma zona o en zonas vecinas. Si no puede ser, la cena **va junto a la nocturna** y el tramo desde la tarde se hace en bus o taxi (regla 19); si es la nocturna la que queda lejos de la cena, lleva su taxi puesto.
+- **Texto:** cada destino tiene en su dato la hora límite de la noche: **ninguna nocturna acaba después** (regla 41). En Roma: **23:00** en invierno y **23:30** en julio y agosto. El orden es siempre última parada de la tarde → cena → nocturna, también en invierno (**ninguna nocturna antes de cenar**; si sobra tiempo antes de cenar, va el paseo de la zona de la cena, regla 20); la cena queda a **15 min andando** de lo último de la tarde y a **unos 20 min andando o menos** de la nocturna, en la misma zona o en zonas vecinas. Si no puede ser, la cena **va junto a la nocturna** y el tramo desde la tarde se hace en bus o taxi (regla 19); si es la nocturna la que queda lejos de la cena, lleva su taxi puesto.
 - **Datos:** `destination_config.noche_limite`.
 - **Comprobación:** `cena_lejos_nocturna` (cena a más de 20 min andando de la nocturna y sin transporte), `hueco_cena`, `cena_espera`.
 
@@ -291,6 +293,19 @@
 ### R-43 · Una calle no es una parada; la zona de un restaurante es la de sus coordenadas — OBLIGATORIA
 - **Texto:** una calle va dentro de un paseo («Pasea y piérdete por el Tridente») o como «De camino», nunca como parada con su propio tiempo (un hueco no se llena con una calle). Las experiencias entran solo en el día de su zona y a unos 1.500 m de lo que ya lleva esa mitad; si no cabe, no entran y salen en «No incluido». La zona escrita de cada restaurante tiene que ser la de sus coordenadas.
 - **Comprobación:** `calle_parada`, `experiencia_fuera_de_zona`, `restaurante_zona`, `sitio_dos_dias`.
+
+### R-44 · La cena tiene hora límite — OBLIGATORIA
+- **Texto:** la cena empieza como muy tarde a la hora que dice el destino (`destination_config.cena_limite`; Roma: 21:30, y 22:00 en julio y agosto). Si la tarde no cabe, se recorta en el orden de siempre: acortar y, si no, quitar lo menos importante de la tarde (nunca un imprescindible, lo del pool ni una hora fija).
+- **Datos:** `destination_config.cena_limite`.
+- **Comprobación:** `cena_tarde`.
+
+### R-45 · Por dentro gana a por fuera — OBLIGATORIA
+- **Texto:** si un sitio sale en dos días del viaje, uno por fuera y otro por dentro, se queda el de dentro y se quita el de fuera. Si los dos son por fuera, se queda el del día de su zona. No vale para las nocturnas (regla 6) ni para los «De camino». No se quita nunca una hora fija.
+- **Comprobación:** `sitio_dos_dias`, `repetido_viaje`, `repetido_dia`.
+
+### R-46 · Distancias y tiempos del destino, en datos — PREFERENCIA
+- **Texto:** los números que mandan sobre la ruta (la nocturna a unos 20 min de la cena, la distancia a partir de la cual la nocturna lleva taxi, lo cerca que tiene que estar una experiencia, el máximo del descanso) no están en el código: son `destination_config.alcance`.
+- **Datos:** `destination_config.alcance`.
 
 ---
 

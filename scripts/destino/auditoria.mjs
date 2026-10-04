@@ -155,7 +155,7 @@ export function auditarViaje(D, days, options = {}) {
       const key = kind === 'paseo' ? [stop.site_id ?? nameOf(stop)] : showsOf(stop)
       for (const id of key) {
         const seen = seenOnDay.get(`${kind}:${id}`)
-        if (seen != null && seen !== n) add(kind === 'visita' ? 'repetido_viaje' : kind === 'nocturna' ? 'nocturna_repite_viaje' : 'paseo_repite_viaje', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: ya en el día ${seen}`)
+        if (seen != null && seen !== n && !(kind === 'nocturna' && iso && D.destination_config?.noche_especial?.[iso.slice(5)]?.noche)) add(kind === 'visita' ? 'repetido_viaje' : kind === 'nocturna' ? 'nocturna_repite_viaje' : 'paseo_repite_viaje', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: ya en el día ${seen}`)
         else if (seen == null) seenOnDay.set(`${kind}:${id}`, n)
       }
     }
@@ -286,7 +286,7 @@ export function auditarViaje(D, days, options = {}) {
         if (!fromLunch && !stop.transit && walk != null && start - prevEnd < walk - 4) add('no_cuadra', n, stop.suggested_time, name, `acaba ${previous.name} a las ${String(Math.floor(prevEnd / 60)).padStart(2, '0')}:${String(prevEnd % 60).padStart(2, '0')} y hay ${Math.round(walk)} min andando`)
       }
       // Nivel 1-2 "Por el camino".
-      if (!viajeCorto && passing && !outside && levelOf(name) <= 2) add('nivel_camino', n, stop.suggested_time, name)
+      if (!viajeCorto && passing && !outside && levelOf(name) <= 2 && !String(place?.approach_to ?? '').includes(nameOf(day.stops[day.stops.indexOf(stop) + 1] ?? {}))) add('nivel_camino', n, stop.suggested_time, name)
       // Duraciones.
       if (levelOf(name) === 1 && !outside && !passing && (stop.duration_minutes ?? 0) < 20 && !((place?.min_max ?? 99) < 20)) add('duracion_corta', n, stop.suggested_time, name, `${stop.duration_minutes} min`)
       if (stop.visit_mode === 'fuera' && place?.minutos_fuera != null && stop.duration_minutes !== place.minutos_fuera) add('fuera_minutos', n, stop.suggested_time, name, `${stop.duration_minutes} min (JSON: ${place.minutos_fuera})`)

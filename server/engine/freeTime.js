@@ -15,7 +15,7 @@ import { muestraOf } from '../../shared/routeEngine/sitios.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { buildStop } from './buildDay.js'
 import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
-import { effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
+import { effectiveSchedule, lastEntryMinutes, parseClosingMinutes, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 
 export const PASEO_MIN_MINUTES = 20
 export const PASEO_MAX_MINUTES = 90
@@ -87,6 +87,7 @@ function paseoStop({ title, start, minutes, coordinates, photoName, photoAlterna
  * de paso, ni el mirador del atardecer; nunca por encima de su máximo de paseo (un barrio, 90) ni de la hora de cierre.
  */
 function stretchRoom(stop, place, hours, { ignoreWalkMax = false } = {}) {
+  if (stop.hora_tipo === 'reserva' || stop.hora_tipo === 'turno' || stop.reserved_entry || stop.is_free_tour) return 0 // (una entrada con hora es fija: no se estira para llenar un hueco)
   if (stop.visit_mode === 'fuera' || stop.is_night_experience || stop.pass_through || stop.is_break || stop.is_free_walk || stop.sunset_minutes != null || stop.night_view) return 0
   let room = Infinity
   const max = ignoreWalkMax ? null : paseoMaxOf(place)
@@ -297,8 +298,13 @@ export function resolveFreeTime(day, { destData, tripDay, dayVisitedNames, trave
         if (leg(cursorCoords, spot.coordinates) > 15 || leg(spot.coordinates, toCoords) > 20) continue
         const start = ceil5(cursorEnd + leg(cursorCoords, spot.coordinates))
         let minutes = Math.min(floor5(toStart - start - leg(spot.coordinates, toCoords)), spot.min_max ?? 30, 45)
-        const closing = parseClosingMinutes(effectiveSchedule(spot, tripDay.hours ?? {}))
-        if (closing != null && closing < 24 * 60) minutes = Math.min(minutes, floor5(closing - start))
+        // (Abierto de verdad: dentro de una franja de ese día, no en el cierre del mediodía; y antes de su última entrada.)
+        const sessions = parseHoursSessions(effectiveSchedule(spot, tripDay.hours ?? {}))
+        if (sessions.length > 0) {
+          const session = sessions.find((item) => start >= item.open && start < item.close)
+          if (!session) continue
+          minutes = Math.min(minutes, floor5(session.close - start))
+        }
         const lastEntry = lastEntryMinutes(spot, start, tripDay.hours ?? {})
         if (lastEntry != null && start > lastEntry) continue
         if (minutes < Math.min(minMinutes, 15)) continue

@@ -88,7 +88,8 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
     // (Los que van en días distintos, con los dos por dentro.)
     // (Dos miembros distintos del grupo, sin ningún día en común: el grupo está partido. El mismo sitio dos días es otra regla, la 5.)
     const split = daysOfMember.some(([, a], i) => daysOfMember.some(([, b], j) => j > i && !a.some((day) => b.includes(day))))
-    if (group.breakable_if_short === false && all.size > 1 && split) add('grupo_partido', 0, '', group.name ?? groupId, daysOfMember.map(([name, list]) => `${name}: día ${list.join(',')}`).join(' · '))
+    const anyInside = members.some((name) => real.some(({ day }) => day.stops.some((stop) => nameOf(stop) === name && stop.visit_mode === 'dentro')))
+    if (group.breakable_if_short === false && all.size > 1 && split && !anyInside) add('grupo_partido', 0, '', group.name ?? groupId, daysOfMember.map(([name, list]) => `${name}: día ${list.join(',')}`).join(' · '))
   }
 
   // R-17 A primera hora, lo que luego se llena (lista del destino).
@@ -109,6 +110,8 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
       if (stop.is_night_experience || stop.night_view || stop.is_break || stop.pass_through) continue
       const place = byName.get(nameOf(stop))
       if (!place) continue
+      const following = day.stops[day.stops.indexOf(stop) + 1]
+      if (following && following.visit_mode === 'dentro' && String(place.approach_to ?? '').includes(nameOf(following))) continue
       const openAir = place.type === 'exterior' || stop.visit_mode === 'fuera'
       if (openAir && stop.hora_tipo !== 'reserva' && stop.hora_tipo !== 'turno') add('verano_al_sol', n, stop.suggested_time, nameOf(stop), 'al aire libre en las horas de calor')
     }

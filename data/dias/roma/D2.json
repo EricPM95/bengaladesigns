@@ -288,7 +288,7 @@
   },
   "variantes": {
     "miercoles": {
-      "_nota": "Miércoles de audiencia: la audiencia ocupa la plaza por la mañana y la Basílica abre hacia las 12:30. Museos Vaticanos → comida → Plaza de San Pedro y Basílica (a las 12:30) → el Castillo y el Puente → el resto de la tarde de siempre. Sin volver atrás (REGLAS_RUTAS 19). La Cúpula, ese día no.",
+      "_nota": "Miércoles de audiencia: la audiencia ocupa la plaza por la mañana y la Basílica abre hacia las 12:30. Museos Vaticanos 8:00 → comida en el Borgo → Plaza y Basílica (12:30) → el Castillo y el Puente → Trastevere → el Janículo al atardecer → cena en Trastevere. Sin volver atrás (REGLAS_RUTAS 19).",
       "manana": {
         "paradas": [
           {
@@ -307,28 +307,206 @@
           "alternativa": "Pizzarium (Bonci)"
         }
       },
-      "tarde.*": {
+      "nombre": "Vaticano, Castillo y Trastevere al atardecer",
+      "barrio_cena": "trastevere",
+      "tarde.A": {
         "empieza": "12:30",
-        "insertar": [
+        "paradas": [
           {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Basílica de San Pedro",
-              "min": 75,
-              "modo": "dentro",
-              "elastica": 30
-            }
+            "lugar": "Plaza de San Pedro",
+            "min": 25
           },
           {
-            "al_principio": true,
-            "parada": {
-              "lugar": "Plaza de San Pedro",
-              "min": 25
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 45,
+            "elastica": 30
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "modo": "atardecer",
+            "traslado": {
+              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
+              "min": 20
             }
           }
         ]
       },
-      "nombre": "Vaticano, Castillo y Trastevere al atardecer"
+      "tarde.B": {
+        "empieza": "12:30",
+        "paradas": [
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 25
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 45,
+            "elastica": 30
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "modo": "atardecer",
+            "traslado": {
+              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
+              "min": 20
+            }
+          }
+        ]
+      },
+      "tarde.C": {
+        "empieza": "12:30",
+        "paradas": [
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 25
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 45,
+            "elastica": 30
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "modo": "atardecer",
+            "traslado": {
+              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
+              "min": 20
+            }
+          }
+        ]
+      },
+      "tarde.D": {
+        "empieza": "12:30",
+        "paradas": [
+          {
+            "lugar": "Plaza de San Pedro",
+            "min": 25
+          },
+          {
+            "lugar": "Basílica de San Pedro",
+            "min": 60,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera"
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10
+          },
+          {
+            "lugar": "Iglesia de Santa Maria in Trastevere",
+            "min": 20,
+            "modo": "dentro",
+            "si_cerrado": "fuera"
+          },
+          {
+            "lugar": "Trastevere",
+            "min": 45,
+            "elastica": 30
+          },
+          {
+            "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+            "min": 15,
+            "modo": "dentro",
+            "si_cerrado": "quitar"
+          },
+          {
+            "lugar": "Fontana dell'Acqua Paola",
+            "min": 15
+          },
+          {
+            "lugar": "Mirador del Janículo",
+            "modo": "atardecer",
+            "traslado": {
+              "como": "el bus 115 o el 870 (desde Via Paola, junto al puente Vittorio Emanuele II, hasta el Piazzale Garibaldi)",
+              "min": 20
+            }
+          }
+        ]
+      }
     },
     "lunes": {
       "_nota": "El Castillo y el Tempietto cierran los lunes: el Castillo por fuera desde el puente; en A, el atardecer en el Janículo (bus 115); en las demás, la Isla Tiberina y Santa Cecilia antes de subir y Santa Maria in Trastevere al bajar (Trastevere una sola vez). En D, con más luz, la tarde empieza por Borgo Pio.",

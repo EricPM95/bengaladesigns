@@ -40,9 +40,8 @@
       },
       {
         "lugar": "Parque de Villa Borghese",
-        "min": 15,
         "titulo": "El parque de Villa Borghese: Piazza di Siena, de camino a la Galería",
-        "modo": "parada",
+        "modo": "camino",
         "texto_titulo": null,
         "foto": "Piazza di Siena"
       },
@@ -161,22 +160,6 @@
       "_sol": "de 18:45 a 19:44: igual que B, con la tarde más larga",
       "paradas": [
         {
-          "lugar": "Via del Babuino",
-          "min": 15,
-          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
-          "no_calle": true,
-          "elastica": 30,
-          "una_vez": true,
-          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
-        },
-        {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        },
-        {
           "lugar": "Parque de Villa Borghese",
           "min": 60,
           "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
@@ -198,6 +181,22 @@
           "si_cerrado": "fuera"
         },
         {
+          "lugar": "Ara Pacis",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Via del Babuino",
+          "min": 15,
+          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
+          "no_calle": true,
+          "elastica": 30,
+          "una_vez": true,
+          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
+        },
+        {
           "lugar": "Terraza del Pincio",
           "modo": "atardecer"
         }
@@ -212,22 +211,6 @@
       "_sol": "desde las 19:45: de 14:00 a 16:30, sombra y sitios cerrados; la cena en el Tridente y, después, la Terraza del Pincio de noche o la Plaza de España",
       "empieza": "15:15",
       "paradas": [
-        {
-          "lugar": "Via del Babuino",
-          "min": 15,
-          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
-          "no_calle": true,
-          "elastica": 30,
-          "una_vez": true,
-          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
-        },
-        {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        },
         {
           "lugar": "Parque de Villa Borghese",
           "min": 55,
@@ -248,6 +231,22 @@
           "min": 25,
           "modo": "dentro",
           "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Ara Pacis",
+          "min": 45,
+          "modo": "dentro",
+          "entrada": true,
+          "si_cerrado": "fuera"
+        },
+        {
+          "lugar": "Via del Babuino",
+          "min": 15,
+          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
+          "no_calle": true,
+          "elastica": 30,
+          "una_vez": true,
+          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
         }
       ],
       "cena": {
@@ -274,7 +273,8 @@
             "parada": {
               "lugar": "Porta Pinciana",
               "min": 20,
-              "titulo": "La Porta Pinciana y Via Veneto"
+              "titulo": "La Porta Pinciana y Via Veneto",
+              "modo": "camino"
             }
           }
         ]

@@ -2,6 +2,21 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-05 (noche) — Huecos con datos, calor, cena, entrada fija y por dentro gana
+
+| Cambio | Reglas |
+|---|---|
+| Rellenos por zona en los datos; cualquier espera de más de 20 min es hueco; el paseo de la zona vale si enseña algo nuevo | 20 |
+| Con calor, primero lo de dentro; el descanso solo llena lo que sobra; 60 min como mucho en 1 día | 21 |
+| Cena con hora límite (`cena_limite`) | 44 |
+| Ninguna nocturna antes de cenar | 37 |
+| Entrada con hora fija: la comida va antes, sin avisos | 2 |
+| Por dentro gana a por fuera entre días | 45 |
+| Los números del código pasan a `destination_config.alcance` | 46 |
+| Máximos: Arco 10, Ponte Sisto 30, Borgo Pio 30, Monti y Trastevere 60; el Coliseo de noche enseña también el Arco | 38 |
+| Nochebuena sustituye la nocturna aunque ya se hubiera usado | 42 |
+| D2 del miércoles, D4 en un solo sentido, D7 con el Castillo por dentro | 19, 45 |
+
 ## 2026-10-05 (tarde) — Máximos por sitio, cierres, noche y Free Tour
 
 Encargo del usuario (`A.1` a `A.8`, `B.1` a `B.6`, `C`).

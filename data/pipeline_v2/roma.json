@@ -8875,7 +8875,7 @@
         }
       ]
     },
-    "noche_especial": { "_nota": "Fechas con una noche propia (REGLAS_RUTAS 42): una sola parada. Nochebuena, la Fontana de Trevi; en Nochevieja, una sola, la que toque.", "12-24": { "noche": "Fontana de Trevi", "maximo": 1 }, "12-31": { "maximo": 1 } },
+    "noche_especial": { "_nota": "Fechas con una noche propia (REGLAS_RUTAS 42): una sola parada. Nochebuena, la Fontana de Trevi; en Nochevieja, una sola, la que toque.", "12-24": { "noche": "Fontana de Trevi (noche)", "maximo": 1 }, "12-31": { "maximo": 1 } },
     "rellenos_zona": {
       "_nota": "REGLAS_RUTAS 20: por zona, los rellenos de un hueco, en orden: sitios pequeños, una iglesia bonita, un rincón con encanto. La regla coge el primero que no se haya visto en el viaje. Es dato del destino: se amplía con sitios nuevos (un café con historia, una calle con encanto dentro de un paseo) según se vayan sumando a places.",
       "aventino": [

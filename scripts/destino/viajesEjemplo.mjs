@@ -55,7 +55,7 @@ for (const v of VIAJES) {
     out.push(`### Día ${n} · ${DIAS[new Date(`${fecha}T12:00:00Z`).getUTCDay()]} ${fecha} · ${day.curated_day?.id ?? ''} ${day.curated_day?.name ?? day.title ?? ''}\n`)
     const filas = []
     for (const m of day.meals ?? []) filas.push({ t: m.suggested_time ?? '', txt: `**${m.time === 'lunch' ? 'Comida' : m.time === 'dinner' ? 'Cena' : m.time}** ${typeof m.restaurant === 'string' ? m.restaurant : m.restaurant?.name ?? ''}${m.window_end ? ` (hasta ${m.window_end}, ${m.zone ?? ''})` : ` (${m.zone ?? ''})`}` })
-    for (const s of day.stops ?? []) filas.push({ t: hora(s), txt: `${s.night_view_title ?? s.name} · ${s.duration_minutes} min${s.visit_mode === 'fuera' ? ' · por fuera' : s.visit_mode === 'dentro' ? ' · por dentro' : ''}${s.pass_through ? ' · de paso' : ''}${s.is_night_experience || s.night_view ? ' · de noche' : ''}${s.transit ? ` · ${s.transit.label}` : ''}` })
+    for (const s of day.stops ?? []) filas.push({ t: hora(s), txt: `${s.display_title ?? s.night_view_title ?? s.name} · ${s.duration_minutes} min${s.visit_mode === 'fuera' ? ' · por fuera' : s.visit_mode === 'dentro' ? ' · por dentro' : ''}${s.pass_through ? ' · de paso' : ''}${s.is_night_experience || s.night_view ? ' · de noche' : ''}${s.transit ? ` · ${s.transit.label}` : ''}` })
     filas.sort((a, b) => String(a.t).localeCompare(String(b.t)))
     for (const f of filas) out.push(`- ${f.t} ${f.txt}`)
     for (const f of day.free_times ?? []) out.push(`- (hueco) ${f.minutes} min antes de ${f.before}${f.title ? ` «${f.title}»` : ''}`)

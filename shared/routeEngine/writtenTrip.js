@@ -912,7 +912,10 @@ export function planWrittenTrip(args) {
     const source = placeByName.get(name)
     return !source || source.minutos_fuera != null || Boolean(source.pass_by) || source.type === 'exterior'
   }
+  // REGLAS_RUTAS 45: por dentro gana a por fuera entre días del viaje (se rellena más abajo, tras montar todos los días).
+  const dedupeDrop = new Set()
   const finishDraft = (draft) => {
+    if (dedupeDrop.size > 0) for (const section of ['manana', 'tarde']) draft[section] = draft[section].filter((stop) => !dedupeDrop.has(`${draft.id}:${stop.lugar}`))
     // (Lo que se quitó de la tarde para que la cena no pase de su hora límite, REGLAS_RUTAS 44.)
     if (dropTarde.length > 0) draft.tarde = draft.tarde.filter((stop) => !dropTarde.includes(`${draft.id}:${stop.lugar}`))
     if (insideAllowed) {
@@ -944,6 +947,33 @@ export function planWrittenTrip(args) {
     for (const stop of [...draft.manana, ...draft.tarde]) if (insideNames.includes(stop.lugar) && stop.modo === 'fuera') stop.modo = 'dentro'
   }
   for (const draft of drafts) finishDraft(draft)
+  // Si un sitio sale en dos días del viaje, uno por fuera y otro por dentro, se queda el de dentro; si los dos son por fuera, el del día de su zona.
+  // Las nocturnas no cuentan (siguen la regla 5/6) ni los «De camino».
+  {
+    const found = new Map()
+    for (const draft of drafts) for (const section of ['manana', 'tarde']) for (const stop of draft[section]) {
+      if (stop.modo === 'camino') continue
+      const list = found.get(stop.lugar) ?? []
+      list.push({ draft, stop })
+      found.set(stop.lugar, list)
+    }
+    for (const [name, list] of found) {
+      const byDraft = new Map(list.map((item) => [item.draft.id, item]))
+      if (byDraft.size < 2) continue
+      const entries = [...byDraft.values()]
+      const place = placeByName.get(name)
+      const isInside = (item) => item.stop.modo === 'dentro' && !closedThatDay(name, item.draft.day)
+      const locked = (item) => item.stop.hora_tipo === 'reserva' || item.stop.hora_tipo === 'turno' || item.stop.turno === true
+      let keep
+      if (entries.some(isInside)) keep = entries.find(isInside)
+      else {
+        const zoneCount = (item) => zonesOfDraft(item.draft).get(place?.zone) ?? 0
+        keep = [...entries].sort((a, b) => zoneCount(b) - zoneCount(a))[0]
+      }
+      for (const item of entries) if (item !== keep && !locked(item) && !(isInside(item))) dedupeDrop.add(`${item.draft.id}:${name}`)
+    }
+    if (dedupeDrop.size > 0) for (const draft of drafts) finishDraft(draft)
+  }
   /** El mismo día escrito con otra versión de la tarde (y lo mismo del pool). */
   const redraft = (draft, version) => {
     const other = makeDraft(draft.id, draft.index, version)
@@ -1209,7 +1239,7 @@ export function planWrittenTrip(args) {
       // Verano (REGLAS_RUTAS 21: solo julio y agosto, de 14:00 a 16:30): por la tarde, nada al sol. Lo que va al aire libre espera
       // (el rato es descanso); lo que está a cubierto (una iglesia, un museo por dentro) o se cruza de camino, no.
       // (Una hora fija de después manda sobre la sombra: la entrada reservada no se mueve, INVARIANTES 466.)
-      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= SUMMER_SHADE_FROM && !place.passThrough && place.sunset == null && source.type !== 'interior' && hourOf(stop) == null && !list.slice(index + 1).some((other) => hourOf(other) != null)) at = SUMMER_SHADE_UNTIL
+      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= SUMMER_SHADE_FROM && !place.passThrough && place.sunset == null && source.type !== 'interior' && hourOf(stop) == null && !list.slice(index + 1).some((other) => hourOf(other) != null) && !(list[index + 1]?.modo === 'dentro' && String(source.approach_to ?? '').includes(list[index + 1].lugar))) at = SUMMER_SHADE_UNTIL
       const fixed = hourOf(stop)
       let fixedMargin = 0
       if (fixed != null) {
@@ -1861,9 +1891,23 @@ export function planWrittenTrip(args) {
       // Verano (julio y agosto): de 14:00 a 16:30, solo descanso o sitios a cubierto (INVARIANTES 413). Si lo primero de la
       // tarde es al sol, la tarde empieza a las 16:30 y antes va el descanso.
       const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
+      // REGLAS_RUTAS 21: con calor, de 14:00 a 16:30 van primero las visitas por dentro (la Basílica, iglesias, museos), con su acceso delante; el descanso a la sombra solo llena lo que sobra.
+      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !draft.tarde.some((stop) => hourOf(stop) != null)) {
+        const isIndoor = (stop) => stop.modo === 'dentro' && placeByName.get(stop.lugar)?.type === 'interior' && stop.tipo !== 'opcional' && openCheck(placeByName.get(stop.lugar), afterLunch.t + 30, stop.min ?? placeByName.get(stop.lugar).duration_minutes ?? 30, hours).ok === true
+        const head = []
+        const tail = []
+        draft.tarde.forEach((stop, i) => {
+          const nextIndoor = draft.tarde[i + 1] && isIndoor(draft.tarde[i + 1]) && placeByName.get(stop.lugar)?.approach_to?.includes?.(draft.tarde[i + 1].lugar)
+          ;(isIndoor(stop) || nextIndoor ? head : tail).push(stop)
+        })
+        if (head.length > 0 && tail.length > 0 && draft.tarde[0] !== head[0]) draft.tarde = [...head, ...tail]
+      }
       const first = draft.tarde.find((stop) => stop.modo !== 'camino')
       const covered = first && placeByName.get(first.lugar)?.type === 'interior' && first.modo !== 'fuera' && first.modo !== 'atardecer'
-      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !covered && !draft.tarde.some((stop) => hourOf(stop) != null)) {
+      // (O es el acceso de una visita por dentro que viene justo detrás: la Plaza y la Basílica de San Pedro cuentan como una visita a cubierto.)
+      const secondStop = draft.tarde.filter((stop) => stop.modo !== 'camino')[1]
+      const coveredByPair = Boolean(first && secondStop && secondStop.modo === 'dentro' && placeByName.get(secondStop.lugar)?.type === 'interior' && placeByName.get(first.lugar)?.approach_to?.includes?.(secondStop.lugar))
+      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !covered && !coveredByPair && !draft.tarde.some((stop) => hourOf(stop) != null)) {
         summerRest = SUMMER_SHADE_UNTIL - afterLunch.t
         afterLunch = { ...afterLunch, t: SUMMER_SHADE_UNTIL }
       }
@@ -1947,7 +1991,7 @@ export function planWrittenTrip(args) {
       const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX
       // (Nunca si lo primero de la tarde es una hora fija: el descanso no la mueve, INVARIANTES 466; San Clemente a las 14:00.)
       if (spare > 20 && !summerRest && hourOf(firstRequiredOf(draft.tarde) ?? {}) == null) {
-        restAfterLunch = Math.floor(Math.min(spare, destData.destination_config?.alcance?.descanso_despues_comer_max_min ?? REST_AFTER_LUNCH_MAX) / 5) * 5
+        restAfterLunch = Math.floor(Math.min(spare, contentDays === 1 ? destData.destination_config?.alcance?.descanso_viaje_1_dia_max_min ?? 60 : destData.destination_config?.alcance?.descanso_despues_comer_max_min ?? REST_AFTER_LUNCH_MAX) / 5) * 5
         // (El descanso no cierra ninguna puerta: si por empezar la tarde más tarde algo pasa a verse por fuera, el Panteón
         // del sábado, que deja de vender entradas a las 16:00, no hay descanso.)
         const outsideWith = (from) => {
@@ -2233,7 +2277,7 @@ export function planWrittenTrip(args) {
     const max = shortNight ? specialNight.maximo ?? 1 : walk.maximo ?? 2
     let chain = walk.recorrido.filter((name) => !removedByDay.includes(name)).map((name) => catalogue.get(name)).filter((entry) => allowed(entry))
     // (La noche propia de una fecha, de los datos del destino: el 24 de diciembre, la Fontana de Trevi.)
-    if (specialNight?.noche && allowed(catalogue.get(specialNight.noche))) chain = [catalogue.get(specialNight.noche)]
+    if (specialNight?.noche && catalogue.get(specialNight.noche) && !visitedThisAfternoon(catalogue.get(specialNight.noche))) chain = [catalogue.get(specialNight.noche)]
     let fromAlternative = false
     // (`sin_relevo`: esa noche no lleva paseo; el plan de la tarde ya es de noche, el mercadillo de Navona antes de cenar.)
     if (chain.length === 0 && !walk.sin_relevo) {
