@@ -30,7 +30,7 @@ import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { paseoMaxOf } from './curatedTrip.js'
-import { elegirTabla, aplicarAcciones, correrHoras, adelantar, finDe, toMin as filaMin, toHHMM as filaHHMM } from './escritos.js'
+import { elegirTabla, aplicarAcciones, correrHoras, adelantar, ajustarAtardecer, aplicarExtra, vale, recortarSalida, finDe, toMin as filaMin, toHHMM as filaHHMM } from './escritos.js'
 
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_abre: 'A esta hora no abre', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Cortes de luz por defecto (Roma, 2026-09-28): A antes de 17:40, B hasta 18:44, C hasta 19:44, D desde 19:45. */
@@ -721,7 +721,7 @@ export function planWrittenTrip(args) {
   // lo muestra (por \`muestra\`). ANTES de añadir se mira si cabe (regla 2 de las nuevas): se cuenta el tiempo de la mitad y solo se
   // recorta lo que se puede recortar, en este orden: opcionales y «De camino», la elástica, nivel 3. Lo protegido nunca se recorta:
   // imprescindibles, lo del pool, las horas fijas y lo que añade la experiencia. Si no cabe, se prueba el siguiente día de su zona.
-  const stopsOfDraft = (draft) => [...draft.manana, ...draft.tarde]
+  const stopsOfDraft = (draft) => (draft.escrito ? (draft.rows ?? []).filter((row) => row.lugar).map((row) => ({ lugar: row.lugar, modo: row.modo ?? undefined })) : [...draft.manana, ...draft.tarde])
   const zonesOfDraft = (draft, half) => {
     const counts = new Map()
     for (const stop of half ? draft[half] : stopsOfDraft(draft)) {
@@ -817,6 +817,7 @@ export function planWrittenTrip(args) {
     // entra siempre y sustituye la mitad más cercana (más cercana a su zona, con lo menos importante).
     const options = []
     for (const [index, draft] of drafts.entries()) {
+      if (draft.escrito) continue
       if (closedThatDay(item.lugar, draft.day) || (item.no_con_dia ?? []).some((other) => shownInDraft(draft, other)) || (big && stopsOfDraft(draft).some(isBigStop))) continue
       const count = zonesOfDraft(draft).get(zoneId) ?? 0
       if (count > 0) {
@@ -865,6 +866,7 @@ export function planWrittenTrip(args) {
   /** Alarga un sitio que el día ya lleva (el barrio, el parque), solo con el tiempo que sobra: nunca quita una parada. */
   const stretchInDrafts = (item, label) => {
     for (const draft of drafts) {
+      if (draft.escrito) continue
       const found = stopsOfDraft(draft).find((stop) => stop.lugar === item.lugar && stop.modo !== 'camino')
       if (!found) continue
       const half = draft.manana.includes(found) ? 'manana' : 'tarde'
@@ -895,7 +897,14 @@ export function planWrittenTrip(args) {
   const extrasLimit = poolExtrasLimit(contentDays)
   let extrasUsed = 0
   for (const name of orderedPool) {
-    const already = drafts.find((draft) => [...draft.manana, ...draft.tarde].some((stop) => stop.lugar === name && stop.modo !== 'camino'))
+    // Un día escrito trae el sitio escrito de cada extra (qué sale, qué entra, en qué orden y cuántos minutos): lo coloca él. Lo que ya va en el día no cambia nada.
+    const escritoDef = drafts.map((draft) => (draft.escrito ? { draft, def: written.days[draft.id]?.pool?.[name] ?? null } : null)).find((item) => item?.def && (item.def.pendiente || item.def.no_cabe || vale(item.def, { ids: order, dateIso: hoursOf(item.draft.day).dateIso })))
+    if (escritoDef) {
+      ;(escritoDef.draft.poolPedido ??= []).push({ name, def: escritoDef.def })
+      continue
+    }
+    if (drafts.some((draft) => draft.escrito && (draft.rows ?? []).some((row) => row.lugar === name && row.modo !== 'camino'))) continue
+    const already = drafts.find((draft) => !draft.escrito && [...draft.manana, ...draft.tarde].some((stop) => stop.lugar === name && stop.modo !== 'camino'))
     if (already) {
       forceInside(already, name)
       already.poolInside.push(name)
@@ -1741,6 +1750,30 @@ export function planWrittenTrip(args) {
       },
     }
     let rows = draft.rows
+    const acciones = { walk: rowWalk, abierta: env.abierta }
+    // El pool escrito (un extra por media jornada) y las experiencias elegidas.
+    const franjasUsadas = new Set()
+    const noIncluido = (name, reason) => unplacedPool.push({ unitId: name, name, reason, dayNumber: skeletonDay.dayNumber })
+    for (const { name, def } of draft.poolPedido ?? []) {
+      if (def.pendiente) { noIncluido(name, 'pendiente'); continue }
+      if (def.no_cabe) { noIncluido(name, 'no_room'); continue }
+      if (def.franja && franjasUsadas.has(def.franja)) { noIncluido(name, 'no_room_day'); continue }
+      const hecho = aplicarExtra(rows, def, acciones)
+      if (!hecho) { noIncluido(name, 'no_room_day'); continue }
+      rows = hecho.rows
+      if (def.franja) franjasUsadas.add(def.franja)
+      draft.applied.push(`pool:${name}`)
+    }
+    for (const exp of selected) {
+      const def = written.days[draft.id]?.experiencias?.[exp]
+      if (!def || def.pendiente || !vale(def, { ids: order, dateIso: hours.dateIso })) { if (def?.pendiente) draft.extrasNoIncluidos.push({ name: exp, pendiente: def.pendiente }); continue }
+      const hecho = aplicarExtra(rows, def, acciones)
+      if (!hecho) { draft.extrasNoIncluidos.push({ name: exp, pendiente: 'no cabe' }); continue }
+      rows = hecho.rows
+      draft.applied.push(`experiencia:${exp}`)
+    }
+    if (draft.id === 'D0-medio' && draft.tablaVersion === 'manana') rows = recortarSalida(rows, mediaJornada?.salida ?? '15:00')
+    rows = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk })
     // Adelantar (regla de cierres): lo que por dentro cae cerrado a su hora se mueve antes en el día, hasta donde está abierto.
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]

@@ -823,5 +823,184 @@
         }
       ]
     }
+  },
+  "pool": {
+    "Boca de la Verdad": {
+      "franja": "tarde",
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Isla Tiberina",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Boca de la Verdad",
+            "min": 15,
+            "modo": null
+          }
+        }
+      ]
+    },
+    "Museos Capitolinos": {
+      "franja": "manana",
+      "cuando": {
+        "sin_dias": [
+          "D5"
+        ]
+      },
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Plaza del Campidoglio",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Museos Capitolinos",
+            "min": 75,
+            "modo": "dentro",
+            "guia": true
+          }
+        },
+        {
+          "op": "cambiar",
+          "fila": "Altar de la Patria",
+          "modo": "camino",
+          "min": 5
+        },
+        {
+          "op": "cambiar",
+          "fila": "Barrio Judío",
+          "min": 20
+        }
+      ],
+      "despues": [
+        {
+          "op": "fuera_si_tarde",
+          "fila": "Iglesia de San Luigi dei Francesi",
+          "desde": "18:00"
+        }
+      ]
+    },
+    "Termas de Caracalla": {
+      "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D5",
+          "D5C"
+        ]
+      },
+      "acciones": [
+        {
+          "op": "quitar",
+          "fila": [
+            "Barrio Judío"
+          ]
+        },
+        {
+          "op": "insertar",
+          "despues": "tipo:comida",
+          "fila": [
+            {
+              "tipo": "traslado",
+              "traslado": {
+                "como": "un taxi",
+                "min": "auto"
+              }
+            },
+            {
+              "tipo": "parada",
+              "lugar": "Termas de Caracalla",
+              "min": 60,
+              "modo": "dentro"
+            },
+            {
+              "tipo": "traslado",
+              "traslado": {
+                "como": "un taxi",
+                "min": "auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "Galería Borghese": {
+      "pendiente": "El documento no dice los minutos del parque ni del Pincio, ni la hora de la cena en el Tridente."
+    },
+    "Ojo de la Cerradura del Aventino": {
+      "pendiente": "El documento no dice los minutos del taxi al Tempietto."
+    },
+    "Basílica de San Juan de Letrán": {
+      "pendiente": "Como en el D1: falta el metro y la hora de acabar."
+    }
+  },
+  "experiencias": {
+    "arte_museos": {
+      "franja": "manana",
+      "cuando": {
+        "sin_dias": [
+          "D5"
+        ]
+      },
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Plaza del Campidoglio",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Museos Capitolinos",
+            "min": 75,
+            "modo": "dentro",
+            "guia": true
+          }
+        },
+        {
+          "op": "cambiar",
+          "fila": "Altar de la Patria",
+          "modo": "camino",
+          "min": 5
+        },
+        {
+          "op": "cambiar",
+          "fila": "Barrio Judío",
+          "min": 20
+        }
+      ],
+      "despues": [
+        {
+          "op": "fuera_si_tarde",
+          "fila": "Iglesia de San Luigi dei Francesi",
+          "desde": "18:00"
+        }
+      ]
+    },
+    "naturaleza_vistas": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Altar de la Patria",
+          "min": 60
+        }
+      ]
+    },
+    "barrios_sabores": {
+      "pendiente": "El documento dice «el Barrio Judío 45 y el colchón de Trastevere más largo», sin decir cuánto."
+    },
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Plaza del Campidoglio",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Santo Bambino de Aracoeli",
+            "min": 5,
+            "modo": "camino"
+          }
+        }
+      ]
+    }
   }
 }

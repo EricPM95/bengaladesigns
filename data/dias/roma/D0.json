@@ -304,5 +304,21 @@
         }
       ]
     }
+  },
+  "experiencias": {
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Piazza Navona",
+          "min": 35,
+          "titulo": "Piazza Navona y su mercadillo navideño"
+        }
+      ]
+    }
   }
 }

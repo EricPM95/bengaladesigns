@@ -361,5 +361,33 @@
         }
       ]
     }
+  },
+  "pool": {
+    "Cúpula de San Pedro": {
+      "franja": "manana",
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Basílica de San Pedro",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Cúpula de San Pedro",
+            "min": 45,
+            "modo": "dentro"
+          }
+        }
+      ]
+    },
+    "Castillo de Sant'Angelo": {
+      "franja": "tarde",
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Castillo de Sant'Angelo",
+          "modo": "dentro",
+          "min": 60
+        }
+      ]
+    }
   }
 }

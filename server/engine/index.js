@@ -374,6 +374,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
           ? `Cierra todos los días de tu viaje (${item.closedOn.join(', ')})`
           : item.reason === 'closed_on_day'
             ? 'Ese día está cerrado'
+          : item.reason === 'pendiente'
+            ? 'Todavía no tiene su sitio escrito en este día'
           : item.reason === 'no_room_day'
             ? 'No cabía en ese día sin quitar ningún imprescindible'
           : item.reason === 'out_of_season'

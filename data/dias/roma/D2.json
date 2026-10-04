@@ -2306,5 +2306,87 @@
         }
       ]
     }
+  },
+  "pool": {
+    "Cúpula de San Pedro": {
+      "franja": "manana",
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Basílica de San Pedro",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Cúpula de San Pedro",
+            "min": 45,
+            "modo": "dentro"
+          }
+        }
+      ]
+    },
+    "Castillo de Sant'Angelo": {
+      "franja": "tarde",
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Castillo de Sant'Angelo",
+          "modo": "dentro",
+          "min": 60
+        }
+      ]
+    }
+  },
+  "experiencias": {
+    "arte_museos": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Museos Vaticanos y Capilla Sixtina",
+          "min": 240
+        }
+      ]
+    },
+    "barrios_sabores": {
+      "acciones": [
+        {
+          "op": "insertar",
+          "antes": "tipo:comida",
+          "fila": {
+            "tipo": "paseo",
+            "lugar": "Borgo Pio",
+            "titulo": "Pasea y piérdete por Borgo Pio",
+            "min": 30
+          }
+        }
+      ]
+    },
+    "naturaleza_vistas": {
+      "franja": "manana",
+      "acciones": [
+        {
+          "op": "insertar",
+          "despues": "Basílica de San Pedro",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Cúpula de San Pedro",
+            "min": 45,
+            "modo": "dentro"
+          }
+        }
+      ]
+    },
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Plaza de San Pedro",
+          "min": 40,
+          "titulo": "Plaza de San Pedro y los 100 Presepi"
+        }
+      ]
+    }
   }
 }

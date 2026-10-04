@@ -548,5 +548,48 @@
         }
       ]
     }
+  },
+  "pool": {
+    "Cúpula de San Pedro": {
+      "no_cabe": true
+    },
+    "Castillo de Sant'Angelo": {
+      "no_cabe": true
+    }
+  },
+  "experiencias": {
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Plaza de San Pedro",
+          "min": 25,
+          "titulo": "Plaza de San Pedro y los 100 Presepi"
+        },
+        {
+          "op": "insertar",
+          "despues": "tipo:tour",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Piazza Navona",
+            "min": 15,
+            "titulo": "Piazza Navona y su mercadillo navideño"
+          }
+        }
+      ]
+    },
+    "barrios_sabores": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Pasea y piérdete por Prati",
+          "titulo": "Pasea y piérdete por Prati, con Via Cola di Rienzo"
+        }
+      ]
+    }
   }
 }
