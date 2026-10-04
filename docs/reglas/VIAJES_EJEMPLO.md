@@ -46,15 +46,15 @@ Salida el miércoles 2027-07-14 · 1 día
 - 11:15 Piazza Navona · 25 min
 - 11:50 Campo de' Fiori · 30 min
 - 12:30 **Comida** Armando al Pantheon (hasta 13:30, Centro Histórico)
-- 15:10 Plaza de San Pedro · 20 min · Bus 40 o un taxi, unos 20 min
-- 15:35 Basílica de San Pedro · 65 min · por dentro
-- 16:50 Pasea y piérdete por Borgo Pio · 25 min
-- 17:20 Via della Conciliazione · 5 min · de paso
-- 17:35 Castillo de Sant'Angelo · 20 min · por fuera
+- 15:40 Plaza de San Pedro · 20 min · Bus 40 o un taxi, unos 20 min
+- 16:05 Basílica de San Pedro · 60 min · por dentro
+- 17:10 Pasea y piérdete por Borgo Pio · 25 min
+- 17:40 Via della Conciliazione · 5 min · de paso
+- 17:55 Castillo de Sant'Angelo · 20 min · por fuera
 - 20:20 Puente Sant'Angelo · 40 min
 - 21:15 **Cena** Pizzeria Da Baffetto (Centro Histórico)
 - 23:00 Fontana de Trevi (noche) · 20 min · de noche
-- (hueco) 60 min antes de Plaza de San Pedro «Descanso a la sombra»
+- (hueco) 90 min antes de Plaza de San Pedro «Descanso después de comer»
 - No incluido: Museos Vaticanos y Capilla Sixtina (En un viaje corto no entra, y por fuera no hay nada que ver)
 
 
@@ -68,15 +68,15 @@ Salida el martes 2027-04-20 · 1 día · con Free Tour
 - 09:00 Panteón · 30 min · por dentro
 - 10:00 Free Tour Centro Histórico · 155 min
 - 12:40 **Comida** Supplizio (hasta 13:30, Centro Histórico)
-- 14:50 Plaza de San Pedro · 20 min · Bus 40 o un taxi, unos 20 min
-- 15:15 Basílica de San Pedro · 60 min · por dentro
-- 16:20 Pasea y piérdete por Borgo Pio · 30 min
-- 16:55 Via della Conciliazione · 5 min · de paso
-- 17:10 Castillo de Sant'Angelo · 20 min · por fuera
+- 15:20 Plaza de San Pedro · 20 min · Bus 40 o un taxi, unos 20 min
+- 15:45 Basílica de San Pedro · 60 min · por dentro
+- 16:50 Pasea y piérdete por Borgo Pio · 30 min
+- 17:25 Via della Conciliazione · 5 min · de paso
+- 17:40 Castillo de Sant'Angelo · 20 min · por fuera
 - 19:30 Puente Sant'Angelo · 40 min
 - 20:30 **Cena** Trattoria Valentino (Monti)
 - 22:00 Coliseo (noche) · 20 min · de noche
-- (hueco) 55 min antes de Plaza de San Pedro «Descanso después de comer»
+- (hueco) 85 min antes de Plaza de San Pedro «Descanso después de comer»
 - No incluido: Museos Vaticanos y Capilla Sixtina (En un viaje corto no entra, y por fuera no hay nada que ver)
 - No incluido: Altar de la Patria (No cabía en ningún día del viaje)
 
@@ -266,42 +266,40 @@ Salida el martes 2027-08-10 · 3 días
 - 10:30 Foro Romano y Palatino · 90 min · por dentro
 - 12:00 Plaza del Campidoglio · 20 min
 - 12:30 **Comida** Giggetto al Portico d'Ottavia (hasta 14:00, Barrio Judío)
-- 14:30 Panteón · 25 min · por dentro
-- 15:00 Elefantino de Bernini · 10 min · de paso
-- 15:10 Iglesia de Santa Maria sopra Minerva · 10 min
-- 15:30 Iglesia de San Luigi dei Francesi · 20 min · por dentro
-- 16:40 Largo di Torre Argentina · 15 min
-- 17:00 Iglesia del Gesù · 15 min · por dentro
-- 17:20 Plaza Venecia · 5 min · de paso
-- 17:30 Altar de la Patria · 25 min · por dentro
-- 18:10 Piazza Navona · 35 min
-- 18:50 Campo de' Fiori · 40 min
-- 19:40 Fuente de las Tortugas · 15 min
+- 15:20 Panteón · 25 min · por dentro
+- 15:50 Elefantino de Bernini · 10 min · de paso
+- 16:00 Iglesia de Santa Maria sopra Minerva · 10 min
+- 16:20 Iglesia de San Luigi dei Francesi · 20 min · por dentro
+- 16:50 Largo di Torre Argentina · 15 min
+- 17:10 Iglesia del Gesù · 15 min · por dentro
+- 17:30 Plaza Venecia · 5 min · de paso
+- 17:40 Altar de la Patria · 25 min · por dentro
+- 18:20 Piazza Navona · 35 min
+- 19:00 Campo de' Fiori · 35 min
+- 19:40 Plaza Farnese · 15 min
 - 20:05 Ponte Sisto · 30 min
 - 21:00 **Cena** Armando al Pantheon (Centro Histórico)
 - 22:30 Fontana de Trevi (noche) · 20 min · de noche
 - 23:00 Plaza de España (noche) · 25 min · de noche
-- (hueco) 40 min antes de Largo di Torre Argentina «Descanso a la sombra»
+- (hueco) 60 min antes de Panteón «Descanso después de comer»
 
 ### Día 2 · miércoles 2027-08-11 · D2 Vaticano, Castillo y Trastevere al atardecer
 
 - 08:00 Museos Vaticanos y Capilla Sixtina · 180 min · por dentro
 - 11:20 Pasea y piérdete por Prati y el Borgo · 55 min
 - 12:30 **Comida** Borghiciana Pastificio Artigianale (hasta 13:15, Vaticano / Borgo)
-- 13:50 Plaza de San Pedro · 25 min
-- 14:20 Basílica de San Pedro · 65 min · por dentro
-- 15:30 Via della Conciliazione · 10 min · de paso
-- 15:50 Castillo de Sant'Angelo · 20 min · por fuera
-- 16:40 Puente Sant'Angelo · 10 min
-- 17:10 Iglesia de Santa Maria in Trastevere · 20 min · por dentro
-- 17:30 Trastevere · 55 min
-- 18:40 Fontana dell'Acqua Paola · 10 min
+- 14:30 Plaza de San Pedro · 25 min
+- 15:00 Basílica de San Pedro · 65 min · por dentro
+- 16:10 Via della Conciliazione · 10 min · de paso
+- 16:30 Castillo de Sant'Angelo · 20 min · por fuera
+- 16:55 Puente Sant'Angelo · 15 min
+- 17:30 Iglesia de Santa Maria in Trastevere · 20 min · por dentro
+- 17:50 Trastevere · 55 min
+- 19:00 Fontana dell'Acqua Paola · 15 min
 - 19:40 Mirador del Janículo · 50 min · Bus 115 o el 870, unos 20 min
 - 20:45 **Cena** Tonnarello (Trastevere)
 - 22:30 Panteón (noche) · 45 min · de noche
-- (hueco) 35 min antes de Plaza de San Pedro «Descanso a la sombra»
-- (hueco) 20 min antes de Puente Sant'Angelo «Descanso a la sombra»
-- (hueco) 30 min antes de Mirador del Janículo «La Passeggiata del Gianicolo»
+- (hueco) 75 min antes de Plaza de San Pedro «Descanso después de comer»
 
 ### Día 3 · jueves 2027-08-12 · D4M Trevi a primera hora, el Pincio y la tarde en Monti
 
@@ -314,17 +312,17 @@ Salida el martes 2027-08-10 · 3 días
 - 10:50 Piazza del Popolo · 10 min
 - 11:05 Santa Maria del Popolo · 25 min · por dentro
 - 11:35 Terraza del Pincio · 25 min
-- 12:10 Un paseo por Villa Borghese · 30 min
+- 12:10 Un paseo por Villa Borghese · 25 min
 - 13:00 **Comida** Girarrosto Fiorentino (hasta 14:30, Via Veneto / Salario)
-- 15:30 Basílica de Santa María la Mayor · 30 min · por dentro
-- 16:10 Iglesia de San Pietro in Vincoli · 20 min · por dentro
-- 16:50 Basílica de San Juan de Letrán · 35 min · por dentro · Metro A o un taxi, unos 25 min
-- 17:40 Mercados de Trajano · 50 min · por dentro · Un taxi, unos 16 min
-- 18:40 Monti · 55 min
+- 15:30 Basílica de San Juan de Letrán · 30 min · por dentro · Metro A o un taxi, unos 25 min
+- 16:20 Basílica de Santa María la Mayor · 30 min · por dentro
+- 17:00 Iglesia de San Pietro in Vincoli · 20 min · por dentro
+- 17:30 Mercados de Trajano · 50 min · por dentro
+- 18:30 Monti · 60 min
 - 19:55 Via dei Fori Imperiali · 35 min
 - 20:45 **Cena** La Boccaccia (Monti)
 - 22:30 Coliseo (noche) · 20 min · de noche
-- (hueco) 30 min antes de Basílica de Santa María la Mayor «Descanso a la sombra»
+- (hueco) 35 min antes de Basílica de San Juan de Letrán «Descanso después de comer»
 
 
 ## 9. 3 días «Arte y Museos»

@@ -15,7 +15,7 @@ export const TIPOS_REGLAS = {
   dos_visitas_grandes: 'R-10 · Dos visitas grandes (grupo con más de 90 min por dentro) el mismo día',
   grupo_partido: 'R-10 · Un grupo que nunca se separa, partido entre dos días',
   se_llena_tarde: 'R-17 · Un sitio que se llena (lista del destino), después de las 9:30',
-  verano_al_sol: 'R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30',
+  primera_hora: 'R-5 · El Coliseo o los Museos Vaticanos por dentro pasadas las 10:00 sin ser una reserva',
   hora_no_10: 'R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)',
   duracion_no_5: 'R-22 · Una duración que no es de 5 en 5',
   fuera_sin_vista: 'R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)',
@@ -100,23 +100,12 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
     }
   }
 
-  // R-21 Julio y agosto: nada al aire libre de 14:00 a 16:30.
-  for (const { day, n, index } of real) {
-    const month = startIso ? Number(addDays(startIso, index).slice(5, 7)) : null
-    if (month !== 7 && month !== 8) continue
-    for (const stop of day.stops) {
-      const start = t2m(stop.suggested_time)
-      if (start == null || start < 14 * 60 || start >= 16 * 60 + 30) continue
-      if (stop.is_night_experience || stop.night_view || stop.is_break || stop.pass_through) continue
-      const place = byName.get(nameOf(stop))
-      if (!place) continue
-      const following = day.stops[day.stops.indexOf(stop) + 1]
-      if (following && following.visit_mode === 'dentro' && String(place.approach_to ?? '').includes(nameOf(following))) continue
-      const openAir = place.type === 'exterior' || stop.visit_mode === 'fuera'
-      if (openAir && stop.hora_tipo !== 'reserva' && stop.hora_tipo !== 'turno') add('verano_al_sol', n, stop.suggested_time, nameOf(stop), 'al aire libre en las horas de calor')
-    }
+  // Regla 5 · Coliseo y Museos Vaticanos a primera hora (hasta las 10:00 si la hora no es de una reserva o un turno).
+  for (const { day, n } of real) for (const stop of day.stops) {
+    if (!['Coliseo', 'Museos Vaticanos y Capilla Sixtina'].includes(nameOf(stop)) || stop.visit_mode !== 'dentro' || stop.is_night_experience) continue
+    if (stop.hora_tipo === 'reserva' || stop.hora_tipo === 'turno' || stop.reserved_entry || (reservas && reservas[nameOf(stop)])) continue
+    if (t2m(stop.suggested_time) > 10 * 60) add('primera_hora', n, stop.suggested_time, nameOf(stop), 'por dentro y pasadas las 10:00')
   }
-
   // R-22 Horas de 10 en 10 (las fijas y las pegadas, no) y duraciones de 5 en 5.
   const metersApart = (a, b) => {
     const rad = Math.PI / 180

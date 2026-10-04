@@ -80,9 +80,6 @@ const BREAKFAST_AFTER_BEFORE = 9 * 60 + 30 // el desayuno va después de una vis
 
 const LUNCH_MAX_COMPLETO = 90 // en completo, 90
 /** Verano (julio y agosto): de 14:00 a 16:30, nada al sol (INVARIANTES 413). */
-const SUMMER_MONTHS = [7, 8]
-const SUMMER_SHADE_FROM = 14 * 60
-const SUMMER_SHADE_UNTIL = 16 * 60 + 30
 /** Sin huecos antes de cenar (PARA_CODE_TARDE_VATICANO, 3): desde cuántos minutos libres se busca un sitio, a cuánto
  * andando como mucho, cuánto dura (entre 20 y 45) y el paseo que se cuenta hasta la cena. */
 const NEXT_TO_ESSENTIAL_WALK = 5 // junto a un imprescindible: a 5 min andando o menos (el exterior de lo cerrado se ve y se fotografía)
@@ -476,9 +473,6 @@ export function planWrittenTrip(args) {
     const ftHere = ftDayIndex === index ? variants[ftKey] : null
     if (!entryKey && ftHere?.usa_entrada) entryKey = `entrada:${ftHere.usa_entrada}`
     if (entryKey && variants[entryKey]) applyOps(draft, variants[entryKey], entryKey)
-    // (Y en verano, julio y agosto, lo que cambia con ese orden: la Galería en las horas de calor, el parque cuando baja el sol: `entrada:<franja>@verano`.)
-    const monthNow = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
-    if (entryKey && SUMMER_MONTHS.includes(monthNow) && variants[`${entryKey}@verano`]) applyOps(draft, variants[`${entryKey}@verano`], `${entryKey}@verano`)
     if (ftHere) {
       applyOps(draft, ftHere, ftKey)
       for (const list of [draft.manana, draft.tarde]) for (const item of list) if (item.lugar === tour?.name) Object.assign(item, { tipo: 'fija', hora: freeTourDespues.hora, hora_tipo: 'turno' })
@@ -694,8 +688,7 @@ export function planWrittenTrip(args) {
   const halfCapacity = (draft, half) => {
     const hours = hoursOf(draft.day)
     if (half === 'manana') return 13 * 60 - toMin(draft.manana_empieza ?? '08:30')
-    const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
-    const begins = Math.max(toMin(draft.empieza ?? '14:00'), SUMMER_MONTHS.includes(month) ? SUMMER_SHADE_UNTIL : 0)
+    const begins = toMin(draft.empieza ?? '14:00')
     return Math.min((hours.sunset ?? 18 * 60) + 45, 21 * 60 + 30) - begins
   }
   /** Lo que no se recorta para hacer sitio: imprescindibles, lo del pool, las horas fijas y lo que añade la experiencia. */
@@ -1239,7 +1232,6 @@ export function planWrittenTrip(args) {
       // Verano (REGLAS_RUTAS 21: solo julio y agosto, de 14:00 a 16:30): por la tarde, nada al sol. Lo que va al aire libre espera
       // (el rato es descanso); lo que está a cubierto (una iglesia, un museo por dentro) o se cruza de camino, no.
       // (Una hora fija de después manda sobre la sombra: la entrada reservada no se mueve, INVARIANTES 466.)
-      if (ctx.summerShade && slot === 'tarde' && at < SUMMER_SHADE_UNTIL && at >= SUMMER_SHADE_FROM && !place.passThrough && place.sunset == null && source.type !== 'interior' && hourOf(stop) == null && !list.slice(index + 1).some((other) => hourOf(other) != null) && !(list[index + 1]?.modo === 'dentro' && String(source.approach_to ?? '').includes(list[index + 1].lugar))) at = SUMMER_SHADE_UNTIL
       const fixed = hourOf(stop)
       let fixedMargin = 0
       if (fixed != null) {
@@ -1673,9 +1665,6 @@ export function planWrittenTrip(args) {
     // Tranquilo: las opcionales no vuelven nunca (PROMPT_ROMA_V4_REPASO 6); el rato que sobra va al barrio elástico (hasta
     // su máximo de paseo, 120 min) y al aperitivo (hasta 90). Antes volvían en verano y la tarde tranquila era la completa.
     const ctx = { id: draft.id, day: skeletonDay, hours, reserved: draft.applied.some((label) => String(label).startsWith('reserva:')), problems: [], sunsetArrival: null, morningNames: new Set(draft.manana.flatMap((stop) => [stop.lugar, ...(stop.si_cerrado?.cambiar_por?.lugar ? [stop.si_cerrado.cambiar_por.lugar] : [])])) }
-    // (Verano: la tarde no pone nada al sol antes de las 16:30; ver runList.)
-    const dayMonth = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
-    if (SUMMER_MONTHS.includes(dayMonth)) ctx.summerShade = true
     // El día que no empieza antes de una hora (el 1 de enero tras la Nochevieja, a las 10:00): toda la mañana se corre lo
     // mismo que la primera hora, menos lo que tiene turno. Si así se llega tarde a una hora fija o la comida se va
     // demasiado tarde, se prueba con la variante `empieza_tarde` del día escrito (lo que pasa a la tarde: no se quita
@@ -1825,7 +1814,6 @@ export function planWrittenTrip(args) {
     if (morning.list) draft.manana = morning.list
     // La comida: el restaurante escrito o su alternativa (si cierra ese día o ya salió en el viaje).
     const meals = []
-    let summerRest = 0
     let afterLunch = morning.cursor
     let lunchName = null
     if (!half && draft.comida) {
@@ -1888,29 +1876,6 @@ export function planWrittenTrip(args) {
         lunchName = spot.name
       }
       afterLunch = { t: end, coords: spot?.coordinates ?? morning.cursor.coords }
-      // Verano (julio y agosto): de 14:00 a 16:30, solo descanso o sitios a cubierto (INVARIANTES 413). Si lo primero de la
-      // tarde es al sol, la tarde empieza a las 16:30 y antes va el descanso.
-      const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null
-      // REGLAS_RUTAS 21: con calor, de 14:00 a 16:30 van primero las visitas por dentro (la Basílica, iglesias, museos), con su acceso delante; el descanso a la sombra solo llena lo que sobra.
-      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !draft.tarde.some((stop) => hourOf(stop) != null)) {
-        const isIndoor = (stop) => stop.modo === 'dentro' && placeByName.get(stop.lugar)?.type === 'interior' && stop.tipo !== 'opcional' && openCheck(placeByName.get(stop.lugar), afterLunch.t + 30, stop.min ?? placeByName.get(stop.lugar).duration_minutes ?? 30, hours).ok === true
-        const head = []
-        const tail = []
-        draft.tarde.forEach((stop, i) => {
-          const nextIndoor = draft.tarde[i + 1] && isIndoor(draft.tarde[i + 1]) && placeByName.get(stop.lugar)?.approach_to?.includes?.(draft.tarde[i + 1].lugar)
-          ;(isIndoor(stop) || nextIndoor ? head : tail).push(stop)
-        })
-        if (head.length > 0 && tail.length > 0 && draft.tarde[0] !== head[0]) draft.tarde = [...head, ...tail]
-      }
-      const first = draft.tarde.find((stop) => stop.modo !== 'camino')
-      const covered = first && placeByName.get(first.lugar)?.type === 'interior' && first.modo !== 'fuera' && first.modo !== 'atardecer'
-      // (O es el acceso de una visita por dentro que viene justo detrás: la Plaza y la Basílica de San Pedro cuentan como una visita a cubierto.)
-      const secondStop = draft.tarde.filter((stop) => stop.modo !== 'camino')[1]
-      const coveredByPair = Boolean(first && secondStop && secondStop.modo === 'dentro' && placeByName.get(secondStop.lugar)?.type === 'interior' && placeByName.get(first.lugar)?.approach_to?.includes?.(secondStop.lugar))
-      if (SUMMER_MONTHS.includes(month) && afterLunch.t < SUMMER_SHADE_UNTIL && !covered && !coveredByPair && !draft.tarde.some((stop) => hourOf(stop) != null)) {
-        summerRest = SUMMER_SHADE_UNTIL - afterLunch.t
-        afterLunch = { ...afterLunch, t: SUMMER_SHADE_UNTIL }
-      }
     } else if (half) {
       afterLunch = { t: draft.empieza ? toMin(draft.empieza) : HALF_DAY_AFTERNOON, coords: null }
       // Al volver de la excursión de medio día (Ostia, hasta las 14:00), la comida: junto a donde se llega (`junto_a`, la
@@ -1963,8 +1928,7 @@ export function planWrittenTrip(args) {
     // (Por menos de 5 min no se adelanta: esa espera en el mirador no se nota.)
     // Si la tarde no llega al sol ni con la elástica, la comida se acorta (hasta 45 min)
     // antes de perder el atardecer: comer junto a la Galería Borghese deja luego 25 min hasta el Ara Pacis.
-    // (En verano no: la tarde empieza a las 16:30 igual, acortar la comida no adelanta nada.)
-    if (elasticStop && !summerRest && elasticWanted < -(elasticStop.elastica + LEAD_FLEX)) {
+    if (elasticStop && elasticWanted < -(elasticStop.elastica + LEAD_FLEX)) {
       const lunchMeal = meals.find((meal) => meal.type === 'lunch')
       const room = lunchMeal ? lunchMeal.end - lunchMeal.start - lunchMinOf(draft) : 0
       const cut = Math.floor(Math.min(room, -elasticWanted - elasticStop.elastica) / 5) * 5
@@ -1984,14 +1948,14 @@ export function planWrittenTrip(args) {
     }
     // Tranquilo (PROMPT_ROMA_V4_REPASO 6): lo que sobra después del barrio (hasta su máximo) y del aperitivo (hasta 90) no
     // se queda suelto antes del atardecer: es un descanso después de comer, con su nombre, y la tarde empieza después.
-    let restAfterLunch = summerRest
+    let restAfterLunch = 0
     // (En completo, igual, hasta 60 min: la comida escrita de 140 min en verano pasa a 90 y la tarde empezaba antes de que
     // abriese Santa Cecilia; el descanso va antes que el aperitivo.)
     if (elasticStop && lunchName) {
       const spare = elasticWanted - (elasticGrow ?? 0) - LEAD_FLEX
       // (Nunca si lo primero de la tarde es una hora fija: el descanso no la mueve, INVARIANTES 466; San Clemente a las 14:00.)
-      if (spare > 20 && !summerRest && hourOf(firstRequiredOf(draft.tarde) ?? {}) == null) {
-        restAfterLunch = Math.floor(Math.min(spare, contentDays === 1 ? destData.destination_config?.alcance?.descanso_viaje_1_dia_max_min ?? 60 : destData.destination_config?.alcance?.descanso_despues_comer_max_min ?? REST_AFTER_LUNCH_MAX) / 5) * 5
+      if (spare > 20 && hourOf(firstRequiredOf(draft.tarde) ?? {}) == null) {
+        restAfterLunch = Math.floor(Math.min(spare, destData.destination_config?.alcance?.descanso_despues_comer_max_min ?? REST_AFTER_LUNCH_MAX) / 5) * 5
         // (El descanso no cierra ninguna puerta: si por empezar la tarde más tarde algo pasa a verse por fuera, el Panteón
         // del sábado, que deja de vender entradas a las 16:00, no hay descanso.)
         const outsideWith = (from) => {

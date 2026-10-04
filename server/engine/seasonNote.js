@@ -133,7 +133,7 @@ export function seasonNoteFor(destData, trip, { hasNight }) {
   } else if (season === 'verano') {
     const early = earlyMornings(destData, trip)
     const months = (trip.days ?? []).filter((day) => day.schedule && day.hours?.dateIso).map((day) => Number(day.hours.dateIso.slice(5, 7)))
-    const siesta = calendar.hasDates ? months.some((month) => SUMMER_SHADE_MONTHS.includes(month)) : Number.isInteger(calendar.month) && SUMMER_SHADE_MONTHS.includes(calendar.month + 1)
+    const siesta = false // (sin regla del calor: ya no se promete descanso a la sombra)
     if (early) promises.push('primera_hora')
     if (siesta) promises.push('descanso')
     const parts = [early ? texts.verano_manana : null, siesta ? texts.verano_siesta : null].filter(Boolean)

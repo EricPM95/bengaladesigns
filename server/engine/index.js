@@ -861,13 +861,11 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
   }
   const seenToday = new Set(dayVisitedNames)
   return gaps
-    // (En verano, el rato de antes de las 16:30 sale como descanso aunque sea corto: si no, queda un hueco sin nombre.)
-    .filter((gap) => gap.minutes >= FREE_GAP_MINUTES || (gap.minutes >= 15 && isSummerSiesta(tripDay, gap.from ? gap.from.end : gap.fromEnd, gap.end, gap.minutes)))
+    .filter((gap) => gap.minutes >= FREE_GAP_MINUTES)
     .map((gap) => {
       const from = gap.from ? coordsOf(gap.from) : gap.fromCoords
       const startMinutes = gap.from ? gap.from.end : gap.fromEnd
-      // (En verano, el rato de antes de las 16:30 es descanso: nada que proponer al sol. INVARIANTES 413.)
-      const siesta = isSummerSiesta(tripDay, startMinutes, gap.end, gap.minutes)
+      const siesta = false
       // (El rato de antes de un mirador que tiene su paseo al lado, `paseo_antes`: la Passeggiata del Gianicolo antes del
       // atardecer en el Janículo, con su nombre. PROMPT_REPASO_LOCAL_ROMA, 3.)
       const walkBefore = !siesta ? (destData.places ?? []).find((place) => place.name === gap.before)?.paseo_antes ?? null : null
@@ -893,7 +891,6 @@ function freeTimesFor(destData, trip, tripDay, options, dayVisitedNames) {
         // La tarde larga empieza con un descanso después de comer (lo que no cabe en el barrio ni en el aperitivo).
         ...(gap.rest ? { title: REST_TITLE, hint: REST_HINT, descanso: true } : {}),
         // En julio y agosto, más de 90 min entre las 14:00 y las 17:00: lo que haría un local (repaso 3, 2026-09-28).
-        ...(siesta ? { title: SIESTA_TITLE, hint: SIESTA_HINT, descanso: true } : {}),
         ...(walkBefore ? { title: walkBefore.titulo, hint: walkBefore.texto, named: true } : {}),
       }
     })
@@ -910,15 +907,6 @@ function namedWalkTitle(destData, suggestions, zone) {
 
 const REST_TITLE = 'Descanso después de comer'
 const REST_HINT = 'Sin prisa: un café, volver un rato al alojamiento o sentarse a la sombra antes de seguir.'
-const SIESTA_TITLE = 'Descanso a la sombra'
-const SIESTA_HINT = 'En verano los romanos se esconden del calor a estas horas.'
-/** Julio o agosto, más de 90 min libres y dentro de 13:45-17:15 (el calor del día); o cualquier rato de la tarde que acabe
- * hacia las 16:30, la hora hasta la que el motor no pone nada al sol (INVARIANTES 413). */
-function isSummerSiesta(tripDay, start, end, minutes) {
-  const month = Number(String(tripDay.hours?.dateIso ?? '').slice(5, 7))
-  if (month !== 7 && month !== 8) return false
-  return (minutes > 90 && start >= 13 * 60 + 45 && end <= 17 * 60 + 15) || (start >= 13 * 60 && start < 16 * 60 + 30 && end <= 16 * 60 + 45)
-}
 
 /** "Pasear por Villa Borghese: el pulmón verde de Roma." — el paseo de la zona, en una frase. */
 function zoneHintFor(destData, zone) {

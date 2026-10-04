@@ -1,6 +1,6 @@
 # Prueba de las 365 fechas (motor v4, días escritos)
 
-6987 viajes (todas las fechas de 2027), en 563 s. **Total: 11284**.
+6987 viajes (todas las fechas de 2027), en 533 s. **Total: 11015**.
 
 - **Sitio repetido en el mismo día (por id: paradas, nocturnas, paseos, «De camino» y «iluminado»)**: 0 ✅
 - **Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)**: 11
@@ -15,21 +15,19 @@
 - **Lugar del pool fuera de la ruta**: 0 ✅
 - **Parada fuera de su horario real de ese día**: 0 ✅
 - **Mirador de atardecer después del sol (o texto de atardecer de noche)**: 0 ✅
-- **Tramo de más de 25 min andando sin transporte**: 11
+- **Tramo de más de 25 min andando sin transporte**: 4
   - 2027-04-19 · 7 días, día 2, 18:45 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
   - 2027-04-21 · 7 días, día 2, 18:50 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
   - 2027-04-23 · 7 días, día 2, 18:50 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
-  - 2027-06-30 · 7 días, día 2, 19:35 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
-  - 2027-07-02 · 7 días, día 2, 19:35 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
-  - 2027-07-05 · 7 días, día 2, 19:35 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
-- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 289
+  - 2027-08-23 · 7 días, día 2, 18:45 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: 269
   - 2027-01-01 · 1 día, día 1, 16:30 Puente Sant'Angelo — acaba Castillo de Sant'Angelo a las 16:35 y hay 2 min andando [D0 A +fecha:01-01]
   - 2027-01-01 · 4 días · FT, día 4, 16:30 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 16:25 y hay 16 min andando [D1-FT A +lunes]
   - 2027-01-02 · 1 día, día 1, 16:30 Puente Sant'Angelo — acaba Castillo de Sant'Angelo a las 16:35 y hay 2 min andando [D0 A]
   - 2027-01-02 · 4 días · FT, día 3, 16:30 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 16:25 y hay 16 min andando [D1-FT A +lunes]
   - 2027-01-02 · 5 días · FT, día 3, 16:30 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 16:25 y hay 16 min andando [D1-FT A +lunes]
   - 2027-01-02 · 6 días · FT, día 3, 16:30 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 16:25 y hay 16 min andando [D1-FT A +lunes]
-- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 4010
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: 4148
   - 2027-01-01 · 3 días, día 2, 16:25 Puente Sant'Angelo — 23 min [D2 A +relleno_cena:Isla Tiberina]
   - 2027-01-01 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 A +con_free_tour+domingo]
   - 2027-01-01 · 5 días, día 5, 16:30 Puente Sant'Angelo — 28 min [D2 A +relleno_cena:Isla Tiberina]
@@ -40,7 +38,7 @@
 - **La misma foto propia en dos tarjetas del mismo día**: 0 ✅
 - **Sale un «Tiempo libre» o un «Aperitivo» (ya no existen)**: 0 ✅
 - **El paseo de «Pasea y piérdete por…» en el mismo sitio que la parada de antes (esa parada se alarga y no hay tarjeta aparte)**: 0 ✅
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: 187
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: 213
   - 2027-05-13 · 7 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min [D2 D +lunes]
   - 2027-05-15 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min [D2 D +lunes]
   - 2027-05-16 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min [D2 D +lunes]
@@ -49,13 +47,13 @@
   - 2027-05-22 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 85 min [D2 D +lunes]
 - **Tiempo libre que pisa la comida o la cena**: 0 ✅
 - **Cena que empieza más de 20 min después de llegar, sin motivo**: 0 ✅
-- **Zigzag: volver a una zona que ya se dejó ese día**: 168
-  - 2027-06-29 · 3 días, día 3, 19:10 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
-  - 2027-06-30 · 3 días, día 3, 19:10 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
-  - 2027-07-01 · 3 días, día 3, 19:10 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
-  - 2027-07-01 · 6 días, día 5, 17:25 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-  - 2027-07-01 · 7 días, día 5, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-  - 2027-07-03 · 3 días, día 3, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- **Zigzag: volver a una zona que ya se dejó ese día**: 7
+  - 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 17:20 Elefantino de Bernini — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
+  - 2027-01-01 · 4 días · reserva Coliseo 15:30, día 2, 17:30 Iglesia de Santa Maria sopra Minerva — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
+  - 2027-12-31 · 4 días · reserva Coliseo 15:30, día 1, 17:20 Elefantino de Bernini — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
+  - 2027-12-31 · 4 días · reserva Coliseo 15:30, día 1, 17:30 Iglesia de Santa Maria sopra Minerva — vuelve junto a Panteón [D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori]
+  - 2027-04-09 · 4 días · pool Termas de Caracalla, día 1, 18:55 Iglesia del Gesù — vuelve junto a Plaza Venecia [D1 C +pool:Termas de Caracalla]
+  - 2027-05-28 · 4 días · pool Termas de Caracalla, día 1, 19:10 Iglesia del Gesù — vuelve junto a Plaza Venecia [D1 D +pool:Termas de Caracalla]
 - **Nivel 1-2 como "Por el camino"**: 39
   - 2027-01-02 · 6 días, día 5, 09:40 Parque de Villa Borghese —  [D4 A +fecha:01-06]
   - 2027-01-02 · 7 días, día 5, 09:40 Parque de Villa Borghese —  [D4 A +fecha:01-06]
@@ -75,7 +73,7 @@
 - **Parada de atardecer que acaba antes de que se ponga el sol**: 0 ✅
 - **Nocturna (o «iluminado») sobre un sitio que ya salió de día ese mismo día, si no fue por la mañana (antes de las 13:00)**: 0 ✅
 - **"Quedó fuera" con un lugar por el que pasa la ruta o con "No te dio tiempo" por un cierre**: 0 ✅
-- **Iglesia o monumento antes que su plaza**: 474
+- **Iglesia o monumento antes que su plaza**: 465
   - 2027-01-01 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A +fecha:01-01]
   - 2027-01-02 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
   - 2027-01-03 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A]
@@ -85,9 +83,13 @@
 - **Texto genérico en una nocturna o en "Roma iluminada"**: 0 ✅
 - **Texto con solo_si_viene_de / solo_si_sigue que no se cumple**: 0 ✅
 - **Tiempo libre con ideas de otra zona**: 0 ✅
-- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: 2
-  - 2027-08-27 · 5 días · naturaleza_vistas, día 3, 20:10 Via del Babuino — 50 min (máximo 45) [D4 D +domingo+lista:naturaleza_vistas:Terraza del Pincio]
-  - 2027-08-29 · 5 días · naturaleza_vistas, día 3, 20:10 Via del Babuino — 50 min (máximo 45) [D4 D +lista:naturaleza_vistas:Terraza del Pincio]
+- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: 48
+  - 2027-07-28 · 6 días, día 5, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D +domingo]
+  - 2027-07-28 · 7 días, día 5, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D +domingo]
+  - 2027-07-30 · 6 días, día 5, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D]
+  - 2027-07-30 · 7 días, día 5, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D]
+  - 2027-07-31 · 6 días, día 2, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D +domingo]
+  - 2027-07-31 · 7 días, día 2, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D +domingo]
 - **El mismo restaurante dos veces en el viaje**: 0 ✅
 - **"Por fuera para llegar a todo" en un día con tiempo libre o paradas estiradas (salvo lo escrito «por fuera» a propósito, el Castillo)**: 0 ✅
 - **La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)**: 2
@@ -114,7 +116,7 @@
 - **Cerrado ese día y sin nada escrito**: 0 ✅
 - **La comida no cabe en sus 45 min y no hay opcional ni elástica que lo absorba**: 0 ✅
 - **Lugar escrito que no existe en las fichas**: 0 ✅
-- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: 110
+- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: 134
   - 2027-06-10 · 6 días, día 5 (D2 D, lunes) — Basílica de Santa Cecilia in Trastevere: quería +156 (margen ±30); sol 20:46
   - 2027-06-10 · 7 días, día 5 (D2 D, lunes) — Basílica de Santa Cecilia in Trastevere: quería +179 (margen ±30); sol 20:46
   - 2027-06-12 · 6 días, día 3 (D2 D, lunes) — Basílica de Santa Cecilia in Trastevere: quería +156 (margen ±30); sol 20:46
@@ -140,21 +142,17 @@
   - 2027-01-07 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - **R-10 · Dos visitas grandes (grupo con más de 90 min por dentro) el mismo día**: 0 ✅
 - **R-10 · Un grupo que nunca se separa, partido entre dos días**: 0 ✅
-- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: 757
+- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: 761
   - 2027-01-01 · 3 días, día 1, 10:05 Plaza de España —  [D4M A]
   - 2027-01-01 · 6 días, día 1, 10:20 Plaza de España —  [D4 A +fecha:01-01]
   - 2027-01-01 · 6 días · FT, día 1, 10:20 Plaza de España —  [D4 A +con_free_tour+fecha:01-01]
   - 2027-01-01 · 7 días, día 1, 10:20 Plaza de España —  [D4 A +fecha:01-01]
   - 2027-01-01 · 7 días · FT, día 1, 10:20 Plaza de España —  [D4 A +con_free_tour+fecha:01-01]
   - 2027-01-02 · 3 días, día 2, 10:05 Plaza de España —  [D4M A +domingo]
-- **R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30**: 198
-  - 2027-07-01 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
-  - 2027-07-01 · 6 días · FT, día 5, 15:40 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-  - 2027-07-01 · 7 días · FT, día 5, 15:40 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-  - 2027-07-02 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
-  - 2027-07-03 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D +sabado]
-  - 2027-07-03 · 4 días · FT, día 3, 16:00 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: 2458
+- **R-5 · El Coliseo o los Museos Vaticanos por dentro pasadas las 10:00 sin ser una reserva**: 2
+  - 2027-12-24 · 2 días · FT, día 1, 14:15 Coliseo — por dentro y pasadas las 10:00 [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
+  - 2027-12-31 · 2 días · FT, día 1, 14:15 Coliseo — por dentro y pasadas las 10:00 [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
+- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: 2426
   - 2027-01-01 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 A +fecha:01-01]
   - 2027-01-01 · 1 día · FT, día 1, 10:25 Iglesia del Gesù —  [D0 A +con_free_tour+fecha:01-01]
   - 2027-01-01 · 4 días, día 3, 18:55 Pasea y piérdete por el Tridente iluminado —  [D4 A +domingo]
@@ -196,20 +194,18 @@
   - sin fechas · 4 días · FT, día 4, 18:50 Via dei Fori Imperiali — 20 min [D5C C]
   - sin fechas · 5 días, día 5, 18:50 Via dei Fori Imperiali — 20 min [D5C C]
   - sin fechas · 5 días · FT, día 5, 18:50 Via dei Fori Imperiali — 20 min [D5C C]
-- **R-38 · Una parada que pasa su máximo (`min_max`)**: 2
-  - 2027-08-27 · 5 días · naturaleza_vistas, día 3, 20:10 Via del Babuino — 50 min y su máximo es 15 [D4 D +domingo+lista:naturaleza_vistas:Terraza del Pincio]
-  - 2027-08-29 · 5 días · naturaleza_vistas, día 3, 20:10 Via del Babuino — 50 min y su máximo es 15 [D4 D +lista:naturaleza_vistas:Terraza del Pincio]
+- **R-38 · Una parada que pasa su máximo (`min_max`)**: 0 ✅
 - **R-1 · Una visita por dentro que acaba después del cierre (debería acortarse, mínimo 20 min)**: 1
   - 2027-12-24 · 1 día, día 1, 14:20 Basílica de San Pedro — acaba 905 y cierra a las 900 [D0 A +fecha:12-24]
 - **R-1 · Una visita por dentro acortada a menos de 20 min**: 0 ✅
 - **R-16 · Un mirador de atardecer a más de 30 min del sol**: 0 ✅
-- **R-16 · Una espera de más de 90 min entre dos paradas**: 821
+- **R-16 · Una espera de más de 90 min entre dos paradas**: 744
   - 2027-03-25 · 2 días · FT, día 2, 14:50 Castillo de Sant'Angelo — 175 min hasta Puente Sant'Angelo [D3 B +fecha:easter-2]
   - 2027-03-26 · 2 días · FT, día 1, 14:50 Castillo de Sant'Angelo — 175 min hasta Puente Sant'Angelo [D3 B +fecha:easter-2]
-  - 2027-03-29 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 95 min hasta Puente Sant'Angelo [D0 C +con_free_tour]
-  - 2027-03-30 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 C +con_free_tour]
-  - 2027-03-31 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 C +con_free_tour]
-  - 2027-04-01 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 C +con_free_tour]
+  - 2027-04-22 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 95 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+  - 2027-04-23 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 95 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+  - 2027-04-24 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 95 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+  - 2027-04-26 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
 - **R-37 · La cena a más de 20 min andando de la nocturna y sin transporte**: 116
   - 2027-03-28 · 2 días · FT, día 2, 22:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D +cerrado:Museos Vaticanos y Capilla Sixtina+luz:C→D]
   - 2027-03-28 · 3 días · FT, día 3, 22:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 C]
@@ -220,7 +216,7 @@
 - **R-41 · Una nocturna que acaba después de la hora límite de la noche**: 0 ✅
 - **R-40 · Un «De camino» cuyo nombre no empieza por «De camino»**: 0 ✅
 - **R-40 · Un «De camino» que cierra un lugar del pool**: 0 ✅
-- **B.3 · Una parada de experiencia fuera de la zona del día**: 39
+- **B.3 · Una parada de experiencia fuera de la zona del día**: 36
   - 2027-03-02 · 3 días · arte_museos, día 3, 15:30 Palazzo Doria Pamphilj — su zona es centro_historico y el día está en vaticano, trastevere [D2 B +lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina]
   - 2027-03-02 · 5 días · arte_museos, día 3, 15:30 Palazzo Doria Pamphilj — su zona es centro_historico y el día está en vaticano, trastevere [D2 B +lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina]
   - 2027-03-04 · 3 días · arte_museos, día 2, 15:30 Palazzo Doria Pamphilj — su zona es centro_historico y el día está en vaticano, trastevere [D2 B +lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina]
@@ -233,51 +229,50 @@
 
 ## Dónde caen (día escrito, versión y variantes)
 
-- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D0 A ×75 · D1-FT A +lunes ×55 · D1-FT A ×48 · D1-FT A +domingo ×27 · D1-FT A +sabado ×18 · D5 D ×16 · D2 B +lunes ×12 · D1-FT B +lunes ×6 · D2 C +lunes ×6 · D2 B +lista:arte_museos:Palazzo Doria Pamphilj ×6 · D1-FT D +lunes ×4 · D1-FT C +sabado ×4 · D4 B +lista:naturaleza_vistas:Parque de Villa Borghese ×4 · D1-FT C +lunes ×2
-- **Iglesia o monumento antes que su plaza**: D0 D ×144 · D0 A ×100 · D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×83 · D0 B ×68 · D0 C ×49 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×8 · D1 D ×7 · D2 D +miercoles ×4 · D2 D +lunes ×2 · D0 A +fecha:01-01 ×1 · D0 A +fecha:01-06 ×1 · D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D0 A +fecha:12-24 ×1 · D0 A +fecha:12-25 ×1
-- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: D4 A ×473 · D4 A +con_free_tour ×241 · D4 A +domingo ×214 · D4 B ×167 · D0 D ×144 · D3 D ×119 · D0 A ×115 · D4 B +domingo ×101 · D4 B +con_free_tour ×94 · D2 D +lunes ×88 · D4 A +con_free_tour+domingo ×77 · D2 D +miercoles ×75 · D0 B ×73 · D4 B +luz:A→B ×70
+- **Hora que no cuadra: la anterior + su duración + el paseo pasa de la hora de la parada**: D0 A ×75 · D1-FT A +lunes ×55 · D1-FT A ×48 · D1-FT A +domingo ×27 · D1-FT A +sabado ×18 · D2 B +lunes ×12 · D1-FT B +lunes ×6 · D2 C +lunes ×6 · D2 B +lista:arte_museos:Palazzo Doria Pamphilj ×6 · D1-FT C +sabado ×4 · D4 B +lista:naturaleza_vistas:Parque de Villa Borghese ×4 · D1-FT C +lunes ×2 · D0 A +fecha:01-01 ×1 · D0 A +fecha:01-06 ×1
+- **Iglesia o monumento antes que su plaza**: D0 D ×144 · D0 A ×100 · D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×83 · D0 B ×68 · D0 C ×49 · D1 D ×7 · D2 D +miercoles ×4 · D2 D +lunes ×2 · D0 A +fecha:01-01 ×1 · D0 A +fecha:01-06 ×1 · D0 A +fecha:12-24 ×1 · D0 A +fecha:12-25 ×1 · D0 A +fecha:12-31 ×1 · D1 D +sabado ×1
+- **R-22 · Una hora que no es de 10 en 10 (salvo las fijas y las paradas pegadas a menos de 200 m)**: D4 A ×473 · D4 A +con_free_tour ×241 · D4 A +domingo ×214 · D4 B ×167 · D0 D ×144 · D3 D ×119 · D0 A ×115 · D4 B +domingo ×101 · D4 B +con_free_tour ×94 · D2 D +lunes ×92 · D4 A +con_free_tour+domingo ×77 · D0 B ×72 · D4 B +luz:A→B ×70 · D0 C ×51
 - **Más de 45 min antes de cenar sin nada, con un sitio de la ruta sin ver a un paseo**: D4 D +con_free_tour ×442 · D4 D +con_free_tour+domingo ×130 · D7 D ×40 · D7 D +cerrado:Palazzo Doria Pamphilj ×18 · D7 D +domingo ×8 · D5C A ×7 · D7 B +cerrado:Palazzo Doria Pamphilj ×6 · D7 C +cerrado:Palazzo Doria Pamphilj ×3 · D1 A +fecha:01-01+relleno_cena:Campo de' Fiori ×2 · D7 C +domingo+cerrado:Palazzo Doria Pamphilj ×1 · D7 C ×1 · D1 A +sabado+fecha:01-01+empieza:10:00+comida:sin Plaza del Campidoglio+relleno_cena:Campo de' Fiori ×1
-- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D2 D ×563 · D4 D +con_free_tour ×442 · D4 A +con_free_tour ×262 · D4 C +con_free_tour ×240 · D4 B +con_free_tour ×216 · D4 C ×147 · D0 D ×144 · D0 D +con_free_tour ×144 · D3 D ×144 · D4 D +con_free_tour+domingo ×130 · D2 D +luz:C→D ×129 · D1-FT D ×110 · D2 A +relleno_cena:Isla Tiberina ×101 · D1 D ×100
-- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: D4M A ×101 · D4M D ×99 · D4M D +domingo ×64 · D4M B ×50 · D4M D +naturaleza_vistas ×49 · D4M D +lista:barrios_sabores:Monti ×46 · D4M A +naturaleza_vistas ×36 · D4M A +domingo ×35 · D4M B +domingo ×27 · D4M B +naturaleza_vistas ×25 · D4M B +lista:barrios_sabores:Monti ×25 · D4M C +domingo ×20 · D4M C ×18 · D4M D +domingo+naturaleza_vistas+lista:naturaleza_vistas:Parque de Villa Borghese ×17
+- **Hueco de más de 20 min sin nada entre dos paradas (30 antes del atardecer o de una entrada con turno)**: D2 D ×687 · D4 D +con_free_tour ×442 · D4 A +con_free_tour ×262 · D4 C +con_free_tour ×240 · D4 B +con_free_tour ×216 · D4 C ×147 · D0 D ×144 · D0 D +con_free_tour ×144 · D3 D ×144 · D4 D +con_free_tour+domingo ×130 · D2 D +luz:C→D ×129 · D1-FT D ×124 · D2 A +relleno_cena:Isla Tiberina ×101 · D4 A +con_free_tour+domingo ×83
+- **R-17 · Un sitio que se llena (lista del destino), después de las 9:30**: D4M A ×101 · D4M D ×99 · D4M D +domingo ×65 · D4M B ×50 · D4M D +naturaleza_vistas ×49 · D4M D +lista:barrios_sabores:Monti ×49 · D4M A +naturaleza_vistas ×36 · D4M A +domingo ×35 · D4M B +domingo ×27 · D4M B +naturaleza_vistas ×25 · D4M B +lista:barrios_sabores:Monti ×25 · D4M D +domingo+naturaleza_vistas+lista:naturaleza_vistas:Parque de Villa Borghese ×22 · D4M C +domingo ×20 · D4M C ×18
 - **R-9 · Una joya que sale por primera vez después del día 3 (después del día 2 en viajes de 2 días)**: viaje ×461
 - **Nivel 1-2 como "Por el camino"**: D4 A +fecha:12-25 ×25 · D4 A +fecha:01-06 ×14
-- **R-16 · Una espera de más de 90 min entre dos paradas**: D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×164 · D0 D +con_free_tour ×144 · D0 D ×140 · D2 D +lunes ×111 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×62 · D3 D ×54 · D2 D ×44 · D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×23 · D0 C +con_free_tour ×22 · D3 D +sabado ×11 · D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×9 · D2 D +lunes+naturaleza_vistas ×8 · D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos ×6 · D0 C ×4
+- **R-16 · Una espera de más de 90 min entre dos paradas**: D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×164 · D2 D +lunes ×135 · D0 D +con_free_tour ×122 · D0 D ×100 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×62 · D3 D ×54 · D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×42 · D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×19 · D3 D +sabado ×11 · D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos ×9 · D2 D +lunes+naturaleza_vistas ×8 · D2 D +entrada:primera_tarde+reserva:13:00 ×4 · D5C A +barrios_sabores+lista:barrios_sabores:Monti+lista:barrios_sabores:Mercado de Testaccio+comida:sin Cementerio Protestante ×3 · D3 B +fecha:easter-2 ×2
 - **R-5 · Un sitio que sale en dos días del viaje (por id y por muestra; sin nocturnas, De camino ni revisitas)**: D7 C ×10 · D6 A +lunes ×8 · D6 A ×8 · D5C D ×6 · D5C B ×4 · D7 C +cerrado:Palazzo Doria Pamphilj ×3 · D7 C +domingo ×2 · D7 D +domingo ×2 · D7 D ×2 · D5C C ×1
 - **R-37 · La cena a más de 20 min andando de la nocturna y sin transporte**: D3 D ×84 · D3 C ×13 · D1-FT A +sabado ×11 · D6 A ×4 · D6 A +domingo ×2 · D3 D +cerrado:Museos Vaticanos y Capilla Sixtina+luz:C→D ×1 · D1 A +domingo ×1
-- **Tramo de más de 25 min andando sin transporte**: D2 D ×11
-- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×83 · D2 D +lunes ×61 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×34 · D2 D +lunes+naturaleza_vistas ×4 · D1-FT C +domingo ×2 · D2 D +entrada:primera_tarde+reserva:13:00 ×2 · D2 C +entrada:primera_tarde+reserva:13:00 ×1
+- **Tramo de más de 25 min andando sin transporte**: D2 D ×4
+- **Tiempo libre de más de 30 min (60 si sale con nombre de paseo; 70 la Passeggiata del Gianicolo de los lunes, decisión del usuario)**: D2 D +lunes ×84 · D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×83 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×34 · D2 D +lunes+naturaleza_vistas ×4 · D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina ×2 · D1-FT C +domingo ×2 · D2 D +entrada:primera_tarde+reserva:13:00 ×2 · D2 D +cerrado:Museos Vaticanos y Capilla Sixtina ×1 · D2 C +entrada:primera_tarde+reserva:13:00 ×1
 - **Aviso de fecha que nombra un lugar que no está en el viaje**: D0 D +con_free_tour ×1
-- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×67 · D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×21 · D2 D +lunes ×14 · D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×8
+- **La elástica tendría que pasar de su margen (±30, y 10 más en la llegada al mirador: de 15 a 35 min antes del sol)**: D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×67 · D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×37 · D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×16 · D2 D +lunes ×14
 - **R-44 · Una cena que empieza después de la hora límite del destino (cena_limite)**: D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo ×83 · D2 D +lunes ×42 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×34 · D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×5 · D2 D +lunes+naturaleza_vistas ×4 · D2 D +entrada:primera_tarde+reserva:13:00 ×1 · D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio ×1
-- **Zigzag: volver a una zona que ya se dejó ese día**: D2 D +lunes ×73 · D4M D ×35 · D4M D +naturaleza_vistas ×17 · D4M D +lista:barrios_sabores:Monti ×15 · D2 D +lunes+naturaleza_vistas ×8 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×8 · D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori ×4 · D4M D +lista:barrios_sabores:Barrio Judío ×3 · D1 C +pool:Termas de Caracalla ×2 · D2 D +lunes+pool:Trastevere ×2 · D1 D +pool:Termas de Caracalla ×1
-- **R-21 · Julio o agosto: una parada al aire libre entre las 14:00 y las 16:30**: D2 D +miercoles ×68 · D3 D ×52 · D1-FT D +lunes ×24 · D3 D +sabado ×8 · D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere ×8 · D2 D +miercoles+naturaleza_vistas ×8 · D2 D +miercoles+barrios_sabores ×8 · D1 D +domingo ×4 · D1 D +entrada:tarde+reserva:15:30 ×4 · D2 D +lunes ×3 · D1 D +domingo+fecha:primer_domingo+lista:arte_museos:Iglesia de San Pietro in Vincoli+lista:arte_museos:Palazzo Doria Pamphilj ×2 · D1 D +domingo+fecha:primer_domingo+lista:arte_museos:Palazzo Doria Pamphilj ×2 · D1 D +domingo+fecha:primer_domingo+barrios_sabores+lista:barrios_sabores:Barrio Judío ×2 · D1 D +domingo+barrios_sabores+lista:barrios_sabores:Barrio Judío ×2
+- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: D5 D ×32 · D5 D +domingo ×16
 - **(Información) Imprescindible de pago sin visita por dentro porque cierra un día del viaje (1 de enero, Navidad…)**: viaje ×3
 - **R-1 · Una visita por dentro que acaba después del cierre (debería acortarse, mínimo 20 min)**: D0 A +fecha:12-24 ×1
+- **R-5 · El Coliseo o los Museos Vaticanos por dentro pasadas las 10:00 sin ser una reserva**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25 ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01 ×1
 - **La Basílica de San Pedro por fuera en un día de Museos Vaticanos (salvo que esté cerrada)**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+relleno_cena:Largo di Torre Argentina ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+relleno_cena:Largo di Torre Argentina ×1
 - **R-25 · Una parada «por fuera» de un sitio que por fuera no se ve (los Museos Vaticanos)**: D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+relleno_cena:Largo di Torre Argentina ×1 · D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+relleno_cena:Largo di Torre Argentina ×1
 - **Se llega tarde a una hora fija (o a recoger la entrada)**: D3 A sábado ×2
 - **Imprescindible de pago que no sale nunca por dentro en el viaje**: viaje ×1
 - **B.2 · Una calle como parada con su propio tiempo (debe ir dentro de un paseo o como «De camino»)**: D5C C ×5 · D6 C ×4 · D4M C +relleno_cena:Mercados de Trajano ×1
+- **Zigzag: volver a una zona que ya se dejó ese día**: D1 A +entrada:tarde+entrada:tarde@sabado+reserva:15:30+relleno_cena:Campo de' Fiori ×4 · D1 C +pool:Termas de Caracalla ×2 · D1 D +pool:Termas de Caracalla ×1
 - **Sitio visitado otro día (por id; salvo nocturnas, paseos, de paso y revisitas)**: D5C D ×6 · D5C B ×4 · D5C C ×1
-- **B.3 · Una parada de experiencia fuera de la zona del día**: D2 B +lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina ×28 · D2 C +lista:arte_museos:Palazzo Doria Pamphilj ×6 · D2 D +barrios_sabores+lista:barrios_sabores:Trastevere+lista:barrios_sabores:Barrio Judío ×3 · D2 B +fecha:easter-2+lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina ×2
-- **Parada de paseo (parque, jardín, barrio o avenida) por encima de su máximo**: D4 D +domingo+lista:naturaleza_vistas:Terraza del Pincio ×1 · D4 D +lista:naturaleza_vistas:Terraza del Pincio ×1
-- **R-38 · Una parada que pasa su máximo (`min_max`)**: D4 D +domingo+lista:naturaleza_vistas:Terraza del Pincio ×1 · D4 D +lista:naturaleza_vistas:Terraza del Pincio ×1
+- **B.3 · Una parada de experiencia fuera de la zona del día**: D2 B +lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina ×28 · D2 C +lista:arte_museos:Palazzo Doria Pamphilj ×6 · D2 B +fecha:easter-2+lista:arte_museos:Palazzo Doria Pamphilj+relleno_cena:Isla Tiberina ×2
 
 ## Solo en las fechas clave de los viajeros españoles
 
-1230 viajes pisan alguna fecha clave. **Avisos de verdad: 2154** · informativos (algo cierra ese día y el aviso lo explica): 3.
+1230 viajes pisan alguna fecha clave. **Avisos de verdad: 2140** · informativos (algo cierra ese día y el aviso lo explica): 3.
 
 | Fecha clave | Fechas | Viajes | De verdad | Informativos |
 |---|---|---|---|---|
 | Navidad y Reyes (final) | 01-01 – 01-06 | 118 | 189 | 0 |
-| Semana Santa | 03-24 – 03-29 | 168 | 275 | 0 |
-| Puente de mayo | 04-30 – 05-02 | 99 | 211 | 0 |
-| Verano: fin de semana de julio | 07-16 – 07-18 | 133 | 364 | 0 |
-| Verano: el 15 de agosto | 08-13 – 08-16 | 122 | 231 | 2 |
-| Puente del Pilar | 10-09 – 10-12 | 122 | 142 | 0 |
+| Semana Santa | 03-24 – 03-29 | 168 | 271 | 0 |
+| Puente de mayo | 04-30 – 05-02 | 99 | 208 | 0 |
+| Verano: fin de semana de julio | 07-16 – 07-18 | 133 | 287 | 0 |
+| Verano: el 15 de agosto | 08-13 – 08-16 | 122 | 307 | 2 |
+| Puente del Pilar | 10-09 – 10-12 | 122 | 134 | 0 |
 | Todos los Santos | 10-30 – 11-01 | 118 | 198 | 0 |
 | Puente de diciembre | 12-04 – 12-08 | 148 | 189 | 0 |
-| Navidad y Reyes | 12-24 – 12-31 | 202 | 355 | 1 |
+| Navidad y Reyes | 12-24 – 12-31 | 202 | 357 | 1 |
 
 - Navidad y Reyes (final): no_cuadra | 2027-01-01 · 1 día, día 1, 16:30 Puente Sant'Angelo — acaba Castillo de Sant'Angelo a las 16:35 y hay 2 min andando [D0 A +fecha:01-01]
 - Navidad y Reyes (final): plaza_despues | 2027-01-01 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 A +fecha:01-01]
@@ -530,7 +525,6 @@
 - Semana Santa: hora_no_10 | 2027-03-23 · 7 días · FT, día 3, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Semana Santa: plaza_despues | 2027-03-24 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Semana Santa: hora_no_10 | 2027-03-24 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Semana Santa: hueco | 2027-03-24 · 1 día · FT, día 1, 18:00 Puente Sant'Angelo — 28 min [D0 B +con_free_tour]
 - Semana Santa: hueco | 2027-03-24 · 2 días, día 2, 12:00 Basílica de San Pedro — 99 min [D2 B +fecha:easter-3+relleno_cena:Isla Tiberina]
 - Semana Santa: hora_no_10 | 2027-03-24 · 2 días, día 2, 08:45 Pasea y piérdete por Prati y el Borgo —  [D2 B +fecha:easter-3+relleno_cena:Isla Tiberina]
 - Semana Santa: hueco | 2027-03-24 · 2 días · FT, día 1, 18:00 Puente Sant'Angelo — 73 min [D3 B]
@@ -549,7 +543,6 @@
 - Semana Santa: hueco | 2027-03-24 · 7 días · FT, día 5, 19:30 Terraza del Pincio — 29 min [D4 C +con_free_tour+domingo]
 - Semana Santa: plaza_despues | 2027-03-25 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Semana Santa: hora_no_10 | 2027-03-25 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Semana Santa: hueco | 2027-03-25 · 1 día · FT, día 1, 18:00 Puente Sant'Angelo — 28 min [D0 B +con_free_tour]
 - Semana Santa: hueco | 2027-03-25 · 2 días · FT, día 2, 18:05 Puente Sant'Angelo — 173 min [D3 B +fecha:easter-2]
 - Semana Santa: espera_mas_90 | 2027-03-25 · 2 días · FT, día 2, 14:50 Castillo de Sant'Angelo — 175 min hasta Puente Sant'Angelo [D3 B +fecha:easter-2]
 - Semana Santa: se_llena_tarde | 2027-03-25 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
@@ -568,10 +561,10 @@
 - Semana Santa: joya_tarde | 2027-03-25 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
 - Semana Santa: hora_no_10 | 2027-03-25 · 7 días · FT, día 1, 18:55 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
 - Semana Santa: sitio_dos_dias | 2027-03-25 · 7 días · FT, día 7, 17:50 Campo de' Fiori — Campo de' Fiori ya salió el día 5 [D7 C +cerrado:Palazzo Doria Pamphilj]
-- Semana Santa: hueco | 2027-03-26 · 1 día, día 1, 18:05 Puente Sant'Angelo — 58 min [D0 B]
+- Semana Santa: hueco | 2027-03-26 · 1 día, día 1, 18:05 Puente Sant'Angelo — 28 min [D0 B]
 - Semana Santa: plaza_despues | 2027-03-26 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Semana Santa: hora_no_10 | 2027-03-26 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Semana Santa: hueco | 2027-03-26 · 1 día · FT, día 1, 18:05 Puente Sant'Angelo — 78 min [D0 B +con_free_tour]
+- Semana Santa: hueco | 2027-03-26 · 1 día · FT, día 1, 18:05 Puente Sant'Angelo — 48 min [D0 B +con_free_tour]
 - Semana Santa: hueco | 2027-03-26 · 2 días · FT, día 1, 18:05 Puente Sant'Angelo — 173 min [D3 B +fecha:easter-2]
 - Semana Santa: espera_mas_90 | 2027-03-26 · 2 días · FT, día 1, 14:50 Castillo de Sant'Angelo — 175 min hasta Puente Sant'Angelo [D3 B +fecha:easter-2]
 - Semana Santa: se_llena_tarde | 2027-03-26 · 3 días, día 3, 10:05 Plaza de España —  [D4M C +domingo]
@@ -589,7 +582,6 @@
 - Semana Santa: hueco | 2027-03-26 · 7 días · FT, día 3, 19:30 Terraza del Pincio — 29 min [D4 C +con_free_tour+domingo]
 - Semana Santa: plaza_despues | 2027-03-27 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Semana Santa: hora_no_10 | 2027-03-27 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Semana Santa: hueco | 2027-03-27 · 1 día · FT, día 1, 18:05 Puente Sant'Angelo — 33 min [D0 B +con_free_tour]
 - Semana Santa: hueco | 2027-03-27 · 2 días · FT, día 1, 18:05 Puente Sant'Angelo — 78 min [D3 B +sabado]
 - Semana Santa: se_llena_tarde | 2027-03-27 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +lunes+luz:C→D]
 - Semana Santa: hueco | 2027-03-27 · 4 días, día 2, 19:30 Terraza del Pincio — 29 min [D4 C +domingo]
@@ -613,10 +605,10 @@
 - Semana Santa: joya_tarde | 2027-03-27 · 7 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Semana Santa: joya_tarde | 2027-03-27 · 7 días · FT, todo el viaje Panteón — sale por primera vez el día 5
 - Semana Santa: sitio_dos_dias | 2027-03-27 · 7 días · FT, día 7, 18:50 Campo de' Fiori — Campo de' Fiori ya salió el día 3 [D7 C]
-- Semana Santa: hueco | 2027-03-28 · 1 día, día 1, 19:05 Puente Sant'Angelo — 78 min [D0 C]
+- Semana Santa: hueco | 2027-03-28 · 1 día, día 1, 19:05 Puente Sant'Angelo — 48 min [D0 C]
 - Semana Santa: plaza_despues | 2027-03-28 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 C]
 - Semana Santa: hora_no_10 | 2027-03-28 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 C]
-- Semana Santa: hueco | 2027-03-28 · 1 día · FT, día 1, 19:05 Puente Sant'Angelo — 88 min [D0 C +con_free_tour]
+- Semana Santa: hueco | 2027-03-28 · 1 día · FT, día 1, 19:05 Puente Sant'Angelo — 58 min [D0 C +con_free_tour]
 - Semana Santa: cena_lejos_nocturna | 2027-03-28 · 2 días · FT, día 2, 22:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D +cerrado:Museos Vaticanos y Capilla Sixtina+luz:C→D]
 - Semana Santa: hueco | 2027-03-28 · 3 días, día 3, 19:00 Puente Sant'Angelo — 23 min [D2 D +luz:C→D]
 - Semana Santa: se_llena_tarde | 2027-03-28 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +lunes+luz:C→D]
@@ -638,11 +630,10 @@
 - Semana Santa: hueco | 2027-03-28 · 7 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 C +con_free_tour+domingo]
 - Semana Santa: hueco | 2027-03-28 · 7 días · FT, día 1, 19:30 Terraza del Pincio — 29 min [D4 C +con_free_tour+domingo]
 - Semana Santa: sitio_dos_dias | 2027-03-28 · 7 días · FT, día 7, 18:50 Campo de' Fiori — Campo de' Fiori ya salió el día 2 [D7 C]
-- Semana Santa: hueco | 2027-03-29 · 1 día, día 1, 19:05 Puente Sant'Angelo — 78 min [D0 C]
+- Semana Santa: hueco | 2027-03-29 · 1 día, día 1, 19:05 Puente Sant'Angelo — 48 min [D0 C]
 - Semana Santa: plaza_despues | 2027-03-29 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 C]
 - Semana Santa: hora_no_10 | 2027-03-29 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 C]
-- Semana Santa: hueco | 2027-03-29 · 1 día · FT, día 1, 19:05 Puente Sant'Angelo — 93 min [D0 C +con_free_tour]
-- Semana Santa: espera_mas_90 | 2027-03-29 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 95 min hasta Puente Sant'Angelo [D0 C +con_free_tour]
+- Semana Santa: hueco | 2027-03-29 · 1 día · FT, día 1, 19:05 Puente Sant'Angelo — 63 min [D0 C +con_free_tour]
 - Semana Santa: hueco | 2027-03-29 · 2 días, día 2, 19:00 Puente Sant'Angelo — 38 min [D2 D +luz:C→D]
 - Semana Santa: hueco | 2027-03-29 · 2 días · FT, día 2, 19:10 Puente Sant'Angelo — 21 min [D3 C]
 - Semana Santa: hora_no_10 | 2027-03-29 · 2 días · FT, día 2, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 C]
@@ -831,12 +822,11 @@
 - Puente de mayo: joya_tarde | 2027-04-29 · 7 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-29 · 7 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Puente de mayo: joya_tarde | 2027-04-29 · 7 días · FT, todo el viaje Panteón — sale por primera vez el día 5
-- Puente de mayo: hueco | 2027-04-30 · 1 día, día 1, 19:40 Puente Sant'Angelo — 113 min [D0 D]
+- Puente de mayo: hueco | 2027-04-30 · 1 día, día 1, 19:40 Puente Sant'Angelo — 83 min [D0 D]
 - Puente de mayo: plaza_despues | 2027-04-30 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Puente de mayo: espera_mas_90 | 2027-04-30 · 1 día, día 1, 17:25 Castillo de Sant'Angelo — 115 min hasta Puente Sant'Angelo [D0 D]
-- Puente de mayo: hueco | 2027-04-30 · 1 día · FT, día 1, 19:40 Puente Sant'Angelo — 128 min [D0 D +con_free_tour]
-- Puente de mayo: espera_mas_90 | 2027-04-30 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 130 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Puente de mayo: hueco | 2027-04-30 · 1 día · FT, día 1, 19:40 Puente Sant'Angelo — 98 min [D0 D +con_free_tour]
+- Puente de mayo: espera_mas_90 | 2027-04-30 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
 - Puente de mayo: hueco | 2027-04-30 · 2 días, día 1, 19:30 Puente Sant'Angelo — 33 min [D2 D]
 - Puente de mayo: hueco | 2027-04-30 · 2 días · FT, día 1, 19:40 Puente Sant'Angelo — 51 min [D3 D +sabado]
 - Puente de mayo: hora_no_10 | 2027-04-30 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D +sabado]
@@ -855,12 +845,11 @@
 - Puente de mayo: hueco | 2027-04-30 · 7 días · FT, día 2, 19:55 Ponte Sisto — 35 min [D1-FT D +sabado]
 - Puente de mayo: hueco_cena | 2027-04-30 · 7 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Puente de mayo: hueco | 2027-04-30 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Puente de mayo: hueco | 2027-05-01 · 1 día, día 1, 19:45 Puente Sant'Angelo — 118 min [D0 D]
+- Puente de mayo: hueco | 2027-05-01 · 1 día, día 1, 19:45 Puente Sant'Angelo — 88 min [D0 D]
 - Puente de mayo: plaza_despues | 2027-05-01 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Puente de mayo: hora_no_10 | 2027-05-01 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Puente de mayo: espera_mas_90 | 2027-05-01 · 1 día, día 1, 17:25 Castillo de Sant'Angelo — 120 min hasta Puente Sant'Angelo [D0 D]
-- Puente de mayo: hueco | 2027-05-01 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 133 min [D0 D +con_free_tour]
-- Puente de mayo: espera_mas_90 | 2027-05-01 · 1 día · FT, día 1, 17:10 Castillo de Sant'Angelo — 135 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Puente de mayo: hueco | 2027-05-01 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 103 min [D0 D +con_free_tour]
+- Puente de mayo: espera_mas_90 | 2027-05-01 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 105 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
 - Puente de mayo: no_cuadra | 2027-05-01 · 2 días, día 1, 19:40 Mirador del Janículo — acaba Fontana dell'Acqua Paola a las 19:40 y hay 16 min andando [D2 D +cerrado:Museos Vaticanos y Capilla Sixtina]
 - Puente de mayo: hueco | 2027-05-01 · 2 días · FT, día 1, 19:45 Puente Sant'Angelo — 36 min [D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina]
 - Puente de mayo: hueco | 2027-05-01 · 2 días · FT, día 2, 19:55 Ponte Sisto — 30 min [D1-FT D +domingo+fecha:primer_domingo]
@@ -876,12 +865,11 @@
 - Puente de mayo: hueco | 2027-05-01 · 7 días · FT, día 1, 19:55 Ponte Sisto — 35 min [D1-FT D +sabado]
 - Puente de mayo: hueco_cena | 2027-05-01 · 7 días · FT, día 5, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Puente de mayo: hueco | 2027-05-01 · 7 días · FT, día 5, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Puente de mayo: hueco | 2027-05-02 · 1 día, día 1, 19:45 Puente Sant'Angelo — 118 min [D0 D]
+- Puente de mayo: hueco | 2027-05-02 · 1 día, día 1, 19:45 Puente Sant'Angelo — 88 min [D0 D]
 - Puente de mayo: plaza_despues | 2027-05-02 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Puente de mayo: espera_mas_90 | 2027-05-02 · 1 día, día 1, 17:25 Castillo de Sant'Angelo — 120 min hasta Puente Sant'Angelo [D0 D]
-- Puente de mayo: hueco | 2027-05-02 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 128 min [D0 D +con_free_tour]
-- Puente de mayo: espera_mas_90 | 2027-05-02 · 1 día · FT, día 1, 17:15 Castillo de Sant'Angelo — 130 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Puente de mayo: hueco | 2027-05-02 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 98 min [D0 D +con_free_tour]
+- Puente de mayo: espera_mas_90 | 2027-05-02 · 1 día · FT, día 1, 17:45 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
 - Puente de mayo: hora_no_10 | 2027-05-02 · 2 días, día 2, 17:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Puente de mayo: hueco | 2027-05-02 · 2 días · FT, día 1, 19:55 Ponte Sisto — 30 min [D1-FT D +domingo+fecha:primer_domingo]
 - Puente de mayo: hueco | 2027-05-02 · 2 días · FT, día 2, 19:45 Puente Sant'Angelo — 56 min [D3 D]
@@ -955,273 +943,227 @@
 - Puente de mayo: espera_mas_90 | 2027-05-01 · 5 días · barrios_sabores, día 3, 17:25 Isla Tiberina — 100 min hasta Mirador del Janículo [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
 - Puente de mayo: cena_tarde | 2027-05-01 · 5 días · barrios_sabores, día 3, 22:00 Tonnarello — límite 21:30 [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: fin de semana de julio: hueco | 2027-07-10 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D +sabado]
-- Verano: fin de semana de julio: zigzag | 2027-07-10 · 7 días, día 3, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: libre_largo | 2027-07-10 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min [D2 D +lunes]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-10 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
-- Verano: fin de semana de julio: hueco_cena | 2027-07-10 · 7 días · FT, día 5, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-10 · 7 días, día 3, 17:50 Fontana dell'Acqua Paola — 115 min hasta Mirador del Janículo [D2 D +lunes]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-10 · 7 días, día 3 Mirador del Janículo — 95 min libres [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-10 · 7 días · FT, día 5, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-10 · 7 días · FT, día 5, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-10 · 7 días · FT, día 3, 15:40 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-- Verano: fin de semana de julio: zigzag | 2027-07-11 · 6 días, día 2, 17:20 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-11 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-11 · 6 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D +domingo]
+- Verano: fin de semana de julio: libre_largo | 2027-07-11 · 6 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-11 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-11 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-11 · 6 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-11 · 6 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-11 · 7 días, día 1, 20:30 Ponte Sisto — 26 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-11 · 7 días, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: hueco | 2027-07-11 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D +domingo]
+- Verano: fin de semana de julio: libre_largo | 2027-07-11 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 95 min [D2 D +lunes]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-11 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: fin de semana de julio: hueco | 2027-07-11 · 7 días · FT, día 1, 20:30 Ponte Sisto — 21 min [D1-FT D +domingo]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-11 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-11 · 7 días, día 2, 17:50 Fontana dell'Acqua Paola — 115 min hasta Mirador del Janículo [D2 D +lunes]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-11 · 7 días, día 2 Mirador del Janículo — 95 min libres [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-11 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-11 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-11 · 7 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-11 · 7 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días, día 2, 20:10 Puente Sant'Angelo — 33 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · FT, día 2, 20:30 Ponte Sisto — 25 min [D1-FT D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 6 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 6 días, día 2, 20:10 Puente Sant'Angelo — 33 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-12 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-12 · 6 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 7 días, día 1, 20:30 Ponte Sisto — 26 min [D1 D]
-- Verano: fin de semana de julio: tramo_largo | 2027-07-12 · 7 días, día 2, 19:35 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 7 días, día 2, 20:10 Puente Sant'Angelo — 32 min [D2 D]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 7 días, día 7, 18:50 Plaza Farnese — 80 min hasta la cena y Barrio Judío a un paseo [D7 D +domingo]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-12 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-12 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-12 · 7 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
-- Verano: fin de semana de julio: hueco | 2027-07-13 · 4 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-13 · 4 días, día 2, 16:20 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-13 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-13 · 5 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-13 · 5 días, día 2, 16:20 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-13 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-13 · 6 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-13 · 6 días, día 2, 16:20 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-13 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-13 · 6 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
-- Verano: fin de semana de julio: hueco | 2027-07-13 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-13 · 7 días, día 1, 20:30 Ponte Sisto — 24 min [D1 D]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 7 días, día 7, 17:30 Plaza Farnese — 152 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-13 · 7 días, día 2, 16:20 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-13 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-13 · 7 días · FT, día 5, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-13 · 7 días · FT, día 7, 18:10 Plaza Farnese — 112 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: zigzag | 2027-07-14 · 3 días, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-14 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 4 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 4 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 4 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-14 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 6 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 6 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 6 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-14 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: tramo_largo | 2027-07-14 · 7 días, día 2, 19:35 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 7 días, día 1, 20:30 Ponte Sisto — 24 min [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 7 días, día 2, 20:10 Puente Sant'Angelo — 32 min [D2 D]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-14 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-14 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 2 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 2 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-15 · 2 días, día 2, 14:20 San Pietro in Montorio y Tempietto de Bramante — 115 min hasta Fontana dell'Acqua Paola [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 2 días, día 2, 20:10 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: fin de semana de julio: hueco | 2027-07-15 · 2 días · FT, día 1, 20:20 Puente Sant'Angelo — 91 min [D3 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-15 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-15 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-15 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo — 105 min hasta Puente Sant'Angelo [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 3 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 3 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: zigzag | 2027-07-15 · 3 días, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 3 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-15 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 6 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: zigzag | 2027-07-15 · 6 días, día 5, 17:15 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
-- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 6 días · FT, día 2, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 6 días · FT, día 2, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-15 · 6 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-15 · 6 días · FT, día 3, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-15 · 6 días · FT, día 5, 15:20 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: zigzag | 2027-07-15 · 7 días, día 5, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 7 días, día 1, 20:30 Ponte Sisto — 24 min [D1 D]
+- Verano: fin de semana de julio: libre_largo | 2027-07-15 · 7 días, día 5 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min [D2 D +lunes]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 7 días, día 7, 17:50 Plaza Farnese — 132 min hasta la cena y Barrio Judío a un paseo [D7 D +cerrado:Palazzo Doria Pamphilj]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
-- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 7 días · FT, día 2, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-15 · 7 días, día 5, 17:50 Fontana dell'Acqua Paola — 110 min hasta Mirador del Janículo [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 7 días · FT, día 2, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-15 · 7 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: no_cuadra | 2027-07-15 · 7 días · FT, día 3, 20:20 Plaza del Campidoglio — acaba Iglesia de Santa Maria sopra Minerva a las 20:15 y hay 11 min andando [D5 D]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-15 · 7 días · FT, día 7, 18:30 Plaza Farnese — 92 min hasta la cena y Barrio Judío a un paseo [D7 D +cerrado:Palazzo Doria Pamphilj]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-15 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-15 · 7 días · FT, día 5, 15:20 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 1 día, día 1, 20:20 Puente Sant'Angelo — 143 min [D0 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 1 día, día 1, 20:20 Puente Sant'Angelo — 123 min [D0 D]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-16 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-16 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 145 min hasta Puente Sant'Angelo [D0 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 1 día · FT, día 1, 20:20 Puente Sant'Angelo — 158 min [D0 D +con_free_tour]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 160 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 2 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 2 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 2 días, día 2, 14:20 San Pietro in Montorio y Tempietto de Bramante — 115 min hasta Fontana dell'Acqua Paola [D2 D]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 1 día, día 1, 17:55 Castillo de Sant'Angelo — 125 min hasta Puente Sant'Angelo [D0 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 1 día · FT, día 1, 20:20 Puente Sant'Angelo — 138 min [D0 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 140 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 2 días, día 2, 20:10 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 2 días · FT, día 1, 20:20 Puente Sant'Angelo — 91 min [D3 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-16 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 2 días · FT, día 2, 20:30 Ponte Sisto — 25 min [D1-FT D +sabado]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-16 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo — 105 min hasta Puente Sant'Angelo [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +domingo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 4 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · FT, día 2, 20:30 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · FT, día 2, 20:30 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 4 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 5 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · FT, día 2, 20:30 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 5 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 6 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 6 días, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 6 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 6 días, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 6 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: tramo_largo | 2027-07-16 · 7 días, día 2, 19:35 Pasea y piérdete por Prati y el Borgo — 32 min andando [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 7 días, día 1, 20:30 Ponte Sisto — 24 min [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 7 días, día 2, 20:10 Puente Sant'Angelo — 32 min [D2 D]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 7 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-16 · 7 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: fin de semana de julio: hueco | 2027-07-17 · 1 día, día 1, 20:20 Puente Sant'Angelo — 143 min [D0 D]
+- Verano: fin de semana de julio: hueco | 2027-07-17 · 1 día, día 1, 20:20 Puente Sant'Angelo — 123 min [D0 D]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-17 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 145 min hasta Puente Sant'Angelo [D0 D]
-- Verano: fin de semana de julio: hueco | 2027-07-17 · 1 día · FT, día 1, 20:20 Puente Sant'Angelo — 158 min [D0 D +con_free_tour]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 160 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-17 · 2 días, día 1, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-17 · 2 días, día 2, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 2 días, día 1, 14:20 San Pietro in Montorio y Tempietto de Bramante — 115 min hasta Fontana dell'Acqua Paola [D2 D]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 1 día, día 1, 17:55 Castillo de Sant'Angelo — 125 min hasta Puente Sant'Angelo [D0 D]
+- Verano: fin de semana de julio: hueco | 2027-07-17 · 1 día · FT, día 1, 20:20 Puente Sant'Angelo — 138 min [D0 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 140 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: fin de semana de julio: hueco | 2027-07-17 · 2 días, día 1, 20:10 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 2 días · FT, día 1, 20:20 Puente Sant'Angelo — 91 min [D3 D +sabado]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D +sabado]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D +sabado]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo — 105 min hasta Puente Sant'Angelo [D3 D +sabado]
-- Verano: fin de semana de julio: zigzag | 2027-07-17 · 3 días, día 3, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-17 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +domingo]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 3 días, día 1, 15:35 Panteón —  [D1 D +sabado]
-- Verano: fin de semana de julio: zigzag | 2027-07-17 · 4 días, día 3, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 3 días, día 3, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 4 días, día 1, 15:35 Panteón —  [D1 D +sabado]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 4 días · FT, día 2, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 4 días, día 3, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 4 días · FT, día 2, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 4 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 4 días · FT, día 3, 15:40 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-- Verano: fin de semana de julio: zigzag | 2027-07-17 · 5 días, día 3, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: hueco | 2027-07-17 · 4 días · FT, día 3, 20:25 Ponte Sisto — 25 min [D1-FT D +lunes]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 5 días, día 1, 15:35 Panteón —  [D1 D +sabado]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 5 días · FT, día 2, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-17 · 5 días, día 3, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 5 días · FT, día 2, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 5 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 5 días · FT, día 3, 15:40 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
+- Verano: fin de semana de julio: hueco | 2027-07-17 · 5 días · FT, día 3, 20:25 Ponte Sisto — 25 min [D1-FT D +lunes]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 6 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D +sabado]
-- Verano: fin de semana de julio: zigzag | 2027-07-17 · 6 días, día 3, 17:15 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-17 · 6 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
-- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 6 días · FT, día 5, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 6 días · FT, día 5, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 6 días · FT, día 5, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 6 días · FT, día 3, 15:20 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 7 días, día 1, 20:30 Ponte Sisto — 21 min [D1 D +sabado]
-- Verano: fin de semana de julio: zigzag | 2027-07-17 · 7 días, día 3, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: libre_largo | 2027-07-17 · 7 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min [D2 D +lunes]
 - Verano: fin de semana de julio: joya_tarde | 2027-07-17 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
-- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 7 días · FT, día 5, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-17 · 7 días, día 3, 17:50 Fontana dell'Acqua Paola — 110 min hasta Mirador del Janículo [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-17 · 7 días · FT, día 5, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-17 · 7 días · FT, día 5, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-17 · 7 días · FT, día 3, 15:20 San Pietro in Montorio y Tempietto de Bramante — al aire libre en las horas de calor [D1-FT D +lunes]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 1 día, día 1, 20:15 Puente Sant'Angelo — 138 min [D0 D]
+- Verano: fin de semana de julio: hueco | 2027-07-18 · 1 día, día 1, 20:15 Puente Sant'Angelo — 118 min [D0 D]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-18 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 140 min hasta Puente Sant'Angelo [D0 D]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 1 día · FT, día 1, 20:15 Puente Sant'Angelo — 153 min [D0 D +con_free_tour]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 155 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 2 días, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 2 días, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 2 días, día 2, 14:20 Iglesia de Santa Maria in Trastevere — 115 min hasta Borgo Pio [D2 D +lunes]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 1 día, día 1, 17:55 Castillo de Sant'Angelo — 120 min hasta Puente Sant'Angelo [D0 D]
+- Verano: fin de semana de julio: hueco | 2027-07-18 · 1 día · FT, día 1, 20:15 Puente Sant'Angelo — 128 min [D0 D +con_free_tour]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 1 día · FT, día 1, 17:45 Castillo de Sant'Angelo — 130 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: fin de semana de julio: libre_largo | 2027-07-18 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min [D2 D +lunes]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 2 días, día 2, 17:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 2 días, día 2, 17:55 Fontana dell'Acqua Paola — 110 min hasta Mirador del Janículo [D2 D +lunes]
 - Verano: fin de semana de julio: hueco | 2027-07-18 · 2 días · FT, día 2, 20:15 Puente Sant'Angelo — 86 min [D3 D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 2 días · FT, día 2, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
 - Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 2 días · FT, día 2, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 2 días · FT, día 2, 17:05 Pasea y piérdete por Prati y el Borgo — 100 min hasta Puente Sant'Angelo [D3 D]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-18 · 2 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 3 días, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-18 · 3 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 4 días, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 4 días, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 4 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-18 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-18 · 4 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 5 días, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-18 · 5 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 6 días, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 6 días, día 2, 17:15 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-18 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-18 · 6 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 7 días, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 7 días, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
+- Verano: fin de semana de julio: hueco | 2027-07-18 · 7 días, día 1, 20:25 Ponte Sisto — 26 min [D1 D +domingo]
+- Verano: fin de semana de julio: libre_largo | 2027-07-18 · 7 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 90 min [D2 D +lunes]
 - Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 7 días, día 2, 17:50 Fontana dell'Acqua Paola — 110 min hasta Mirador del Janículo [D2 D +lunes]
 - Verano: fin de semana de julio: hueco | 2027-07-18 · 7 días · FT, día 2, 20:15 Puente Sant'Angelo — 33 min [D3 D]
-- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: fin de semana de julio: hueco_cena | 2027-07-18 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: fin de semana de julio: hueco | 2027-07-18 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: fin de semana de julio: cena_lejos_nocturna | 2027-07-18 · 7 días · FT, día 2, 23:00 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 08:30, día 1, 20:30 Ponte Sisto — 21 min [D1 D +reserva:08:30]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 08:30, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 15:30, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 08:30, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 15:30, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · reserva Coliseo 15:30, día 4, 20:20 Via dei Fori Imperiali — 71 min [D5C D]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-16 · 4 días · reserva Coliseo 15:30, día 1, 14:10 Monti — al aire libre en las horas de calor [D1 D +entrada:tarde+reserva:15:30]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · arte_museos, día 5, 20:25 Via dei Fori Imperiali — 56 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 33 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · arte_museos, día 5, 20:25 Via dei Fori Imperiali — 56 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
 - Verano: fin de semana de julio: v4_elastica | 2027-07-12 · 5 días · naturaleza_vistas, día 2 (D2 D, martes) — Trastevere: quería +177 (margen ±30); sol 20:45
+- Verano: fin de semana de julio: v4_elastica | 2027-07-12 · 5 días · naturaleza_vistas, día 3 (D4 D, miércoles) — Parque de Villa Borghese: quería +154 (margen ±30); sol 20:44
 - Verano: fin de semana de julio: libre_largo | 2027-07-12 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 165 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-12 · 5 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (23:00) antes que Puente Sant'Angelo (23:25) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · naturaleza_vistas, día 3, 20:10 Terraza del Pincio — 24 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · naturaleza_vistas, día 3, 20:10 Terraza del Pincio — 144 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-12 · 5 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 185 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-12 · 5 días · naturaleza_vistas, día 2 Mirador del Janículo — 165 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-12 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 150 min hasta Terraza del Pincio [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-12 · 5 días · naturaleza_vistas, día 2, 23:45 L'Arcangelo — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · arte_museos, día 1, 20:30 Ponte Sisto — 21 min [D1 D +lista:arte_museos:Iglesia de San Pietro in Vincoli]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · arte_museos, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · arte_museos, día 5, 20:20 Via dei Fori Imperiali — 51 min [D5C D +domingo+arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria]
+- Verano: fin de semana de julio: hueco | 2027-07-12 · 5 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 33 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · arte_museos, día 5, 20:20 Via dei Fori Imperiali — 51 min [D5C D +domingo+arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
 - Verano: fin de semana de julio: v4_elastica | 2027-07-14 · 3 días · naturaleza_vistas, día 2 (D2 D, jueves) — Trastevere: quería +176 (margen ±30); sol 20:44
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · naturaleza_vistas, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
 - Verano: fin de semana de julio: libre_largo | 2027-07-14 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 165 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-14 · 3 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (23:00) antes que Puente Sant'Angelo (23:25) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: zigzag | 2027-07-14 · 3 días · naturaleza_vistas, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D +naturaleza_vistas]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-14 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-14 · 3 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 185 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-14 · 3 días · naturaleza_vistas, día 2 Mirador del Janículo — 165 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-14 · 3 días · naturaleza_vistas, día 2, 23:45 L'Arcangelo — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: v4_elastica | 2027-07-14 · 5 días · naturaleza_vistas, día 2 (D2 D, jueves) — Trastevere: quería +176 (margen ±30); sol 20:44
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · naturaleza_vistas, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
+- Verano: fin de semana de julio: v4_elastica | 2027-07-14 · 5 días · naturaleza_vistas, día 3 (D4 D, viernes) — Parque de Villa Borghese: quería +153 (margen ±30); sol 20:43
 - Verano: fin de semana de julio: libre_largo | 2027-07-14 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 165 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-14 · 5 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (23:00) antes que Puente Sant'Angelo (23:25) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · naturaleza_vistas, día 3, 20:10 Terraza del Pincio — 24 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · naturaleza_vistas, día 3, 20:10 Terraza del Pincio — 144 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-14 · 5 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 185 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-14 · 5 días · naturaleza_vistas, día 2 Mirador del Janículo — 165 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-14 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 150 min hasta Terraza del Pincio [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-14 · 5 días · naturaleza_vistas, día 2, 23:45 L'Arcangelo — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: zigzag | 2027-07-14 · 3 días · barrios_sabores, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D +lista:barrios_sabores:Monti]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 3 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-14 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +lista:barrios_sabores:Monti]
-- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · arte_museos, día 5, 20:20 Via dei Fori Imperiali — 86 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria]
+- Verano: fin de semana de julio: hueco | 2027-07-14 · 5 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · arte_museos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · arte_museos, día 5, 20:20 Via dei Fori Imperiali — 86 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
 - Verano: fin de semana de julio: v4_elastica | 2027-07-16 · 3 días · naturaleza_vistas, día 2 (D2 D, sábado) — Trastevere: quería +175 (margen ±30); sol 20:43
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · naturaleza_vistas, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
 - Verano: fin de semana de julio: libre_largo | 2027-07-16 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 165 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-16 · 3 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (23:00) antes que Puente Sant'Angelo (23:25) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas+lista:naturaleza_vistas:Parque de Villa Borghese]
@@ -1229,326 +1171,371 @@
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 3 días · naturaleza_vistas, día 2 Mirador del Janículo — 165 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-16 · 3 días · naturaleza_vistas, día 2, 23:45 L'Arcangelo — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: v4_elastica | 2027-07-16 · 5 días · naturaleza_vistas, día 2 (D2 D, sábado) — Trastevere: quería +175 (margen ±30); sol 20:43
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · naturaleza_vistas, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
+- Verano: fin de semana de julio: v4_elastica | 2027-07-16 · 5 días · naturaleza_vistas, día 3 (D4 D, domingo) — Parque de Villa Borghese: quería +152 (margen ±30); sol 20:42
 - Verano: fin de semana de julio: libre_largo | 2027-07-16 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 165 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: plaza_despues | 2027-07-16 · 5 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (23:00) antes que Puente Sant'Angelo (23:25) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · naturaleza_vistas, día 3, 20:05 Terraza del Pincio — 29 min [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · naturaleza_vistas, día 3, 20:05 Terraza del Pincio — 124 min [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 5 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 180 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 5 días · naturaleza_vistas, día 2 Mirador del Janículo — 165 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-16 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 130 min hasta Terraza del Pincio [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-16 · 5 días · naturaleza_vistas, día 2, 23:45 L'Arcangelo — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 3 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-16 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +domingo]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días · arte_museos, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 3 días · arte_museos, día 1, 15:00 Iglesia de Santa Maria sopra Minerva — al aire libre en las horas de calor [D1 D +domingo+lista:arte_museos:Iglesia de San Pietro in Vincoli+lista:arte_museos:Palazzo Doria Pamphilj]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 5 días · arte_museos, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días · arte_museos, día 5, 20:20 Via dei Fori Imperiali — 86 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 5 días · arte_museos, día 1, 15:00 Iglesia de Santa Maria sopra Minerva — al aire libre en las horas de calor [D1 D +domingo+lista:arte_museos:Palazzo Doria Pamphilj]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 3 días · naturaleza_vistas, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días · naturaleza_vistas, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes+naturaleza_vistas]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días · naturaleza_vistas, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D +naturaleza_vistas]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · barrios_sabores, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días · arte_museos, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
+- Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días · arte_museos, día 5, 20:20 Via dei Fori Imperiali — 86 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días · arte_museos, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 3 días · naturaleza_vistas, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes+naturaleza_vistas]
 - Verano: fin de semana de julio: experiencia_sin_efecto | 2027-07-18 · 3 días · naturaleza_vistas — naturaleza_vistas
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días · naturaleza_vistas, día 1, 20:25 Ponte Sisto — 21 min [D1 D +domingo]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 5 días · naturaleza_vistas, día 2, 17:05 Via della Conciliazione — vuelve junto a Plaza de San Pedro [D2 D +lunes+naturaleza_vistas]
-- Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días · naturaleza_vistas, día 3, 20:05 Terraza del Pincio — 29 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días · barrios_sabores, día 2, 21:20 Trastevere — vuelve junto a Iglesia de Santa Maria in Trastevere [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: libre_largo | 2027-07-18 · 3 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 140 min [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: plaza_despues | 2027-07-18 · 3 días · barrios_sabores, día 2 — Castillo de Sant'Angelo (16:00) antes que Puente Sant'Angelo (16:30) [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 3 días · barrios_sabores, día 3, 19:05 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D +lista:barrios_sabores:Monti]
+- Verano: fin de semana de julio: v4_elastica | 2027-07-18 · 5 días · naturaleza_vistas, día 3 (D4 D, martes) — Parque de Villa Borghese: quería +150 (margen ±30); sol 20:40
+- Verano: fin de semana de julio: hueco | 2027-07-18 · 5 días · naturaleza_vistas, día 3, 20:05 Terraza del Pincio — 139 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: fin de semana de julio: hora_no_10 | 2027-07-18 · 5 días · naturaleza_vistas, día 2, 18:55 Fontana dell'Acqua Paola —  [D2 D +lunes+naturaleza_vistas]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 145 min hasta Terraza del Pincio [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: fin de semana de julio: libre_largo | 2027-07-18 · 3 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 115 min [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: fin de semana de julio: se_llena_tarde | 2027-07-18 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +lista:barrios_sabores:Monti]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 3 días · barrios_sabores, día 1, 15:00 Iglesia de Santa Maria sopra Minerva — al aire libre en las horas de calor [D1 D +domingo+barrios_sabores+lista:barrios_sabores:Barrio Judío]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 3 días · barrios_sabores, día 2, 16:00 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 3 días · barrios_sabores, día 2, 17:00 Isla Tiberina — 160 min hasta Mirador del Janículo [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 3 días · barrios_sabores, día 2 Mirador del Janículo — 140 min libres [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 3 días · barrios_sabores, día 2, 17:25 Isla Tiberina — 135 min hasta Mirador del Janículo [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 3 días · barrios_sabores, día 2 Mirador del Janículo — 115 min libres [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-18 · 3 días · barrios_sabores, día 2, 22:30 Tonnarello — límite 21:30 [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: zigzag | 2027-07-18 · 5 días · barrios_sabores, día 2, 21:20 Trastevere — vuelve junto a Iglesia de Santa Maria in Trastevere [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: libre_largo | 2027-07-18 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 140 min [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: plaza_despues | 2027-07-18 · 5 días · barrios_sabores, día 2 — Castillo de Sant'Angelo (16:00) antes que Puente Sant'Angelo (16:30) [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 5 días · barrios_sabores, día 1, 15:00 Iglesia de Santa Maria sopra Minerva — al aire libre en las horas de calor [D1 D +domingo+barrios_sabores+lista:barrios_sabores:Barrio Judío]
-- Verano: fin de semana de julio: verano_al_sol | 2027-07-18 · 5 días · barrios_sabores, día 2, 16:00 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 5 días · barrios_sabores, día 2, 17:00 Isla Tiberina — 160 min hasta Mirador del Janículo [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 5 días · barrios_sabores, día 2 Mirador del Janículo — 140 min libres [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: libre_largo | 2027-07-18 · 5 días · barrios_sabores, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 115 min [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 5 días · barrios_sabores, día 2, 17:25 Isla Tiberina — 135 min hasta Mirador del Janículo [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: fin de semana de julio: espera_mas_90 | 2027-07-18 · 5 días · barrios_sabores, día 2 Mirador del Janículo — 115 min libres [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: fin de semana de julio: cena_tarde | 2027-07-18 · 5 días · barrios_sabores, día 2, 22:30 Tonnarello — límite 21:30 [D2 D +lunes+barrios_sabores+lista:barrios_sabores:Trastevere]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Cúpula de San Pedro, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Cúpula de San Pedro, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Trastevere, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Trastevere, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Galería Borghese, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Galería Borghese, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Castillo de Sant'Angelo, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Cúpula de San Pedro, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Trastevere, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Galería Borghese, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Castillo de Sant'Angelo, día 2, 20:10 Puente Sant'Angelo — 27 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Boca de la Verdad, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Boca de la Verdad, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Parque de Villa Borghese, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Parque de Villa Borghese, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Ojo de la Cerradura del Aventino, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Arco de Constantino, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Arco de Constantino, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: plaza_despues | 2027-07-15 · 4 días · pool Altar de la Patria, día 1 — Altar de la Patria (15:25) antes que Plaza Venecia (18:10) [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Altar de la Patria, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Museos Capitolinos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Termas de Caracalla, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Termas de Caracalla, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Basílica de San Juan de Letrán, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Basílica de San Juan de Letrán, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días · pool Galería Borghese+Museos Capitolinos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Cúpula de San Pedro, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Cúpula de San Pedro, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Trastevere, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Trastevere, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Galería Borghese, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Galería Borghese, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Castillo de Sant'Angelo, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Boca de la Verdad, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Parque de Villa Borghese, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Arco de Constantino, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: plaza_despues | 2027-07-15 · 4 días · pool Altar de la Patria, día 1 — Altar de la Patria (15:35) antes que Plaza Venecia (18:20) [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Altar de la Patria, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Museos Capitolinos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Termas de Caracalla, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 4 días · pool Basílica de San Juan de Letrán, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-15 · 5 días · pool Galería Borghese+Museos Capitolinos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Cúpula de San Pedro, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Trastevere, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Galería Borghese, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Castillo de Sant'Angelo, día 2, 20:10 Puente Sant'Angelo — 27 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Boca de la Verdad, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Boca de la Verdad, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Parque de Villa Borghese, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Parque de Villa Borghese, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Ojo de la Cerradura del Aventino, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Arco de Constantino, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Arco de Constantino, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: plaza_despues | 2027-07-16 · 4 días · pool Altar de la Patria, día 1 — Altar de la Patria (15:25) antes que Plaza Venecia (18:10) [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Altar de la Patria, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Museos Capitolinos, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Termas de Caracalla, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Basílica de San Juan de Letrán, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Basílica de San Juan de Letrán, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · pool Galería Borghese+Termas de Caracalla, día 1, 20:30 Ponte Sisto — 21 min [D1 D]
-- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · pool Galería Borghese+Termas de Caracalla, día 2, 20:10 Puente Sant'Angelo — 23 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Boca de la Verdad, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Parque de Villa Borghese, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Ojo de la Cerradura del Aventino, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Arco de Constantino, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: plaza_despues | 2027-07-16 · 4 días · pool Altar de la Patria, día 1 — Altar de la Patria (15:30) antes que Plaza Venecia (18:20) [D1 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Altar de la Patria, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Museos Capitolinos, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Termas de Caracalla, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 4 días · pool Basílica de San Juan de Letrán, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: fin de semana de julio: hueco | 2027-07-16 · 5 días · pool Galería Borghese+Termas de Caracalla, día 2, 20:10 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: el 15 de agosto: hueco | 2027-08-07 · 7 días, día 1, 20:05 Ponte Sisto — 21 min [D1 D +sabado]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-07 · 7 días, día 2, 15:50 Via Appia Antica — 180 min (máximo 150) [D5 D +domingo]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-07 · 7 días, todo el viaje Fontana de Trevi — sale por primera vez el día 5
-- Verano: el 15 de agosto: hueco_cena | 2027-08-07 · 7 días · FT, día 5, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-07 · 7 días · FT, día 5, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-07 · 7 días · FT, día 5, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-08 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-08 · 6 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco | 2027-08-08 · 6 días · FT, día 1, 20:05 Ponte Sisto — 25 min [D1-FT D +domingo]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-08 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-08 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: cena_lejos_nocturna | 2027-08-08 · 6 días · FT, día 2, 22:30 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
+- Verano: el 15 de agosto: hueco | 2027-08-08 · 7 días, día 1, 20:05 Ponte Sisto — 39 min [D1 D +domingo]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-08 · 7 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-08 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-08 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-08 · 7 días · FT, día 1, 20:05 Ponte Sisto — 25 min [D1-FT D +domingo]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-08 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-08 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: cena_lejos_nocturna | 2027-08-08 · 7 días · FT, día 2, 22:30 Fontana de Trevi (noche) — ~22 min andando desde la cena [D3 D]
-- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días, día 2, 19:45 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días, día 2, 19:45 Puente Sant'Angelo — 48 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco | 2027-08-09 · 6 días, día 2, 19:45 Puente Sant'Angelo — 23 min [D2 D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 6 días, día 2, 19:45 Puente Sant'Angelo — 48 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-09 · 6 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-09 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco | 2027-08-09 · 7 días, día 2, 19:45 Puente Sant'Angelo — 22 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 7 días, día 1, 20:05 Ponte Sisto — 24 min [D1 D]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 7 días, día 2, 19:45 Puente Sant'Angelo — 32 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-09 · 7 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 7 días, día 7, 18:50 Plaza Farnese — 80 min hasta la cena y Barrio Judío a un paseo [D7 D +domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-09 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-09 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-10 · 4 días, día 2, 15:50 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-10 · 4 días · FT, día 2, 20:00 Ponte Sisto — 25 min [D1-FT D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-10 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-10 · 5 días, día 2, 15:50 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-10 · 5 días · FT, día 2, 20:00 Ponte Sisto — 25 min [D1-FT D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-10 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-10 · 6 días, día 2, 15:50 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-10 · 6 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-10 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-10 · 7 días, día 1, 20:05 Ponte Sisto — 24 min [D1 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-10 · 7 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 7 días, día 7, 17:30 Plaza Farnese — 152 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-10 · 7 días, día 2, 15:50 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-10 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-10 · 7 días · FT, día 7, 18:10 Plaza Farnese — 112 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: el 15 de agosto: zigzag | 2027-08-11 · 3 días, día 3, 18:35 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 3 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-11 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 3 días · FT, día 2, 20:00 Ponte Sisto — 25 min [D1-FT D]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 4 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 4 días · FT, día 2, 20:00 Ponte Sisto — 25 min [D1-FT D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-11 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · FT, día 2, 20:00 Ponte Sisto — 25 min [D1-FT D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 6 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-11 · 6 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D +domingo]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-11 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco | 2027-08-11 · 7 días, día 2, 19:40 Puente Sant'Angelo — 22 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 7 días, día 2, 19:40 Puente Sant'Angelo — 32 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-11 · 7 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D +domingo]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-11 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-11 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-12 · 2 días, día 2, 14:20 San Pietro in Montorio y Tempietto de Bramante — 115 min hasta Fontana dell'Acqua Paola [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 2 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: hueco | 2027-08-12 · 2 días · FT, día 1, 19:50 Puente Sant'Angelo — 61 min [D3 D]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-12 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-12 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
-- Verano: el 15 de agosto: zigzag | 2027-08-12 · 3 días, día 3, 18:35 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 3 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-12 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 4 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-12 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 5 días, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-12 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 6 días, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-12 · 6 días, día 3, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 6 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 6 días, todo el viaje Panteón — sale por primera vez el día 5
-- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 6 días · FT, día 2, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 6 días · FT, día 2, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-12 · 6 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 6 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Verano: el 15 de agosto: hueco | 2027-08-12 · 7 días, día 1, 19:40 Puente Sant'Angelo — 22 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 7 días, día 1, 19:40 Puente Sant'Angelo — 32 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-12 · 7 días, día 3, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco | 2027-08-12 · 7 días, día 5, 19:55 Ponte Sisto — 24 min [D1 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 7 días, día 7, 17:20 Plaza Farnese — 162 min hasta la cena y Barrio Judío a un paseo [D7 D +cerrado:Palazzo Doria Pamphilj]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 7 días, todo el viaje Coliseo — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 7 días, todo el viaje Panteón — sale por primera vez el día 5
-- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 7 días · FT, día 2, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 7 días · FT, día 2, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-12 · 7 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-12 · 7 días · FT, día 7, 18:00 Plaza Farnese — 122 min hasta la cena y Barrio Judío a un paseo [D7 D +cerrado:Palazzo Doria Pamphilj]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-12 · 7 días · FT, todo el viaje Coliseo — sale por primera vez el día 5
-- Verano: el 15 de agosto: hueco | 2027-08-13 · 1 día, día 1, 19:50 Puente Sant'Angelo — 113 min [D0 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 1 día, día 1, 19:50 Puente Sant'Angelo — 93 min [D0 D]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-13 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-13 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 115 min hasta Puente Sant'Angelo [D0 D]
-- Verano: el 15 de agosto: hueco | 2027-08-13 · 1 día · FT, día 1, 19:50 Puente Sant'Angelo — 128 min [D0 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 130 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 2 días, día 1, 14:20 San Pietro in Montorio y Tempietto de Bramante — 115 min hasta Fontana dell'Acqua Paola [D2 D]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 1 día, día 1, 17:55 Castillo de Sant'Angelo — 95 min hasta Puente Sant'Angelo [D0 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 1 día · FT, día 1, 19:50 Puente Sant'Angelo — 108 min [D0 D +con_free_tour]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 110 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 2 días, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 2 días · FT, día 1, 19:50 Puente Sant'Angelo — 61 min [D3 D]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-13 · 2 días · FT, día 1, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 2 días · FT, día 2, 19:55 Ponte Sisto — 25 min [D1-FT D +sabado]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-13 · 2 días · FT, día 1, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 3 días, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días, día 3, 10:05 Plaza de España —  [D4M D +domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 4 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 3 días · FT, día 2, 19:55 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días · FT, día 2, 19:55 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 4 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 5 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días · FT, día 2, 19:55 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 5 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 6 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 6 días, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-13 · 6 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 6 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 7 días · FT, día 3, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 7 días, día 1, 19:40 Puente Sant'Angelo — 32 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-13 · 7 días, día 5, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-13 · 7 días · FT, día 3, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco | 2027-08-14 · 1 día, día 1, 19:45 Puente Sant'Angelo — 108 min [D0 D]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 1 día, día 1, 19:45 Puente Sant'Angelo — 88 min [D0 D]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-14 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-14 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 110 min hasta Puente Sant'Angelo [D0 D]
-- Verano: el 15 de agosto: hueco | 2027-08-14 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 123 min [D0 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-14 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 125 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-14 · 2 días, día 2, 14:30 Panteón — al aire libre en las horas de calor [D1 D +domingo]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-14 · 2 días, día 2, 15:00 Iglesia de Santa Maria sopra Minerva — al aire libre en las horas de calor [D1 D +domingo]
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 2 días, día 2, 15:25 Iglesia de San Luigi dei Francesi —  [D1 D +domingo]
-- Verano: el 15 de agosto: hueco | 2027-08-14 · 2 días · FT, día 1, 19:45 Puente Sant'Angelo — 21 min [D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 103 min [D0 D +con_free_tour]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-14 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 105 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 2 días, día 1, 16:00 Iglesia de Santa Maria in Trastevere — 72 min [D2 D +cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: libre_largo | 2027-08-14 · 2 días, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 80 min [D2 D +cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 2 días, día 1, 14:25 Plaza Trilussa —  [D2 D +cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-14 · 2 días, día 1, 17:45 Fontana dell'Acqua Paola — 95 min hasta Mirador del Janículo [D2 D +cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 2 días · FT, día 1, 19:45 Puente Sant'Angelo — 36 min [D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina]
 - Verano: el 15 de agosto: hueco | 2027-08-14 · 2 días · FT, día 2, 19:55 Ponte Sisto — 25 min [D1-FT D +domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 3 días, día 3, 16:00 Iglesia de Santa Maria in Trastevere — 72 min [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: libre_largo | 2027-08-14 · 3 días, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-14 · 3 días, día 2, 10:05 Plaza de España —  [D4M D +domingo]
-- Verano: el 15 de agosto: plaza_despues | 2027-08-14 · 3 días · FT, día 1 — Basílica de San Pedro (16:30) antes que Plaza de San Pedro (18:30) [D3 D +sabado+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 3 días, día 3, 14:25 Plaza Trilussa —  [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-14 · 3 días, día 3, 17:45 Fontana dell'Acqua Paola — 95 min hasta Mirador del Janículo [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
 - Verano: el 15 de agosto: hueco | 2027-08-14 · 3 días · FT, día 2, 19:55 Ponte Sisto — 25 min [D1-FT D +domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 4 días, día 4, 19:35 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 4 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
-- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 4 días · FT, día 2, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 4 días · FT, día 1, 19:55 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 4 días · FT, día 2, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-14 · 4 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 4 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 4
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 4 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 4
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 4 días · FT, todo el viaje Panteón — sale por primera vez el día 4
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 5 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-14 · 5 días, día 5, 15:40 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 5 días, día 5, 11:25 Pasea y piérdete por Prati y el Borgo —  [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 5 días · FT, día 2, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 5 días · FT, día 1, 19:55 Ponte Sisto — 25 min [D1-FT D +sabado]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 5 días · FT, día 2, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-14 · 5 días · FT, día 2, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 5 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 5 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 5 días · FT, todo el viaje Panteón — sale por primera vez el día 5
+- Verano: el 15 de agosto: paseo_largo | 2027-08-14 · 6 días, día 2, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D +domingo]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 6 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-14 · 6 días, día 5, 15:40 Castillo de Sant'Angelo — al aire libre en las horas de calor [D2 D +miercoles]
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 6 días, día 5, 11:25 Pasea y piérdete por Prati y el Borgo —  [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 6 días · FT, día 1, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 6 días · FT, día 1, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-14 · 6 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 6 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 6 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 6 días · FT, todo el viaje Panteón — sale por primera vez el día 5
+- Verano: el 15 de agosto: paseo_largo | 2027-08-14 · 7 días, día 2, 15:50 Via Appia Antica — 170 min (máximo 150) [D5 D +domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-14 · 7 días, día 3, 19:55 Ponte Sisto — 24 min [D1 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 7 días, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-14 · 7 días, día 5, 11:25 Pasea y piérdete por Prati y el Borgo —  [D2 D +miercoles]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 7 días · FT, día 1, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-14 · 7 días · FT, día 1, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-14 · 7 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 7 días · FT, todo el viaje Fontana de Trevi — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 7 días · FT, todo el viaje Museos Vaticanos y Capilla Sixtina — sale por primera vez el día 5
 - Verano: el 15 de agosto: joya_tarde | 2027-08-14 · 7 días · FT, todo el viaje Panteón — sale por primera vez el día 5
-- Verano: el 15 de agosto: hueco | 2027-08-15 · 1 día, día 1, 19:45 Puente Sant'Angelo — 108 min [D0 D]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 1 día, día 1, 19:45 Puente Sant'Angelo — 88 min [D0 D]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-15 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-15 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 110 min hasta Puente Sant'Angelo [D0 D]
-- Verano: el 15 de agosto: hueco | 2027-08-15 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 123 min [D0 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 125 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-15 · 2 días, día 1, 14:30 Panteón — al aire libre en las horas de calor [D1 D +domingo]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-15 · 2 días, día 1, 15:00 Iglesia de Santa Maria sopra Minerva — al aire libre en las horas de calor [D1 D +domingo]
-- Verano: el 15 de agosto: hora_no_10 | 2027-08-15 · 2 días, día 1, 15:25 Iglesia de San Luigi dei Francesi —  [D1 D +domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 98 min [D0 D +con_free_tour]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 1 día · FT, día 1, 17:45 Castillo de Sant'Angelo — 100 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 2 días, día 2, 16:00 Iglesia de Santa Maria in Trastevere — 72 min [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: libre_largo | 2027-08-15 · 2 días, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 75 min [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: hora_no_10 | 2027-08-15 · 2 días, día 2, 14:25 Plaza Trilussa —  [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 2 días, día 2, 17:45 Fontana dell'Acqua Paola — 95 min hasta Mirador del Janículo [D2 D +lunes+cerrado:Museos Vaticanos y Capilla Sixtina]
 - Verano: el 15 de agosto: hueco | 2027-08-15 · 2 días · FT, día 1, 19:55 Ponte Sisto — 25 min [D1-FT D +domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 2 días · FT, día 2, 19:45 Puente Sant'Angelo — 36 min [D3 D +cerrado:Museos Vaticanos y Capilla Sixtina]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 3 días, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-15 · 3 días, día 1, 10:05 Plaza de España —  [D4M D +domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-15 · 3 días · FT, día 1, 19:55 Ponte Sisto — 25 min [D1-FT D +domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 4 días · FT, día 1, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 4 días, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 4 días · FT, día 1, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-15 · 4 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 5 días · FT, día 1, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 5 días · FT, día 1, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 6 días · FT, día 1, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 6 días, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-15 · 6 días, día 5, 15:50 Via Appia Antica — 160 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 6 días · FT, día 1, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-15 · 6 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 7 días, día 2, 19:55 Ponte Sisto — 24 min [D1 D]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 7 días, día 3, 19:35 Puente Sant'Angelo — 32 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-15 · 7 días, día 5, 15:50 Via Appia Antica — 160 min (máximo 150) [D5 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 7 días, día 7, 18:50 Plaza Farnese — 72 min hasta la cena y Barrio Judío a un paseo [D7 D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 7 días · FT, día 1, 18:30 Via del Babuino — 101 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-15 · 7 días · FT, día 1, 18:00 Via del Babuino — 131 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour+domingo]
 - Verano: el 15 de agosto: hueco | 2027-08-15 · 7 días · FT, día 1, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour+domingo]
-- Verano: el 15 de agosto: hueco | 2027-08-16 · 1 día, día 1, 19:45 Puente Sant'Angelo — 108 min [D0 D]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 1 día, día 1, 19:45 Puente Sant'Angelo — 88 min [D0 D]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-16 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 D]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-16 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 D]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-16 · 1 día, día 1, 17:35 Castillo de Sant'Angelo — 110 min hasta Puente Sant'Angelo [D0 D]
-- Verano: el 15 de agosto: hueco | 2027-08-16 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 123 min [D0 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-16 · 1 día · FT, día 1, 17:20 Castillo de Sant'Angelo — 125 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
-- Verano: el 15 de agosto: espera_mas_90 | 2027-08-16 · 2 días, día 2, 14:20 San Pietro in Montorio y Tempietto de Bramante — 115 min hasta Fontana dell'Acqua Paola [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 1 día · FT, día 1, 19:45 Puente Sant'Angelo — 103 min [D0 D +con_free_tour]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-16 · 1 día · FT, día 1, 17:40 Castillo de Sant'Angelo — 105 min hasta Puente Sant'Angelo [D0 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 2 días, día 2, 19:35 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: hueco | 2027-08-16 · 2 días · FT, día 2, 19:45 Puente Sant'Angelo — 56 min [D3 D]
-- Verano: el 15 de agosto: verano_al_sol | 2027-08-16 · 2 días · FT, día 2, 16:25 Castillo de Sant'Angelo — al aire libre en las horas de calor [D3 D]
 - Verano: el 15 de agosto: hora_no_10 | 2027-08-16 · 2 días · FT, día 2, 17:05 Pasea y piérdete por Prati y el Borgo —  [D3 D]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 3 días, día 2, 19:35 Puente Sant'Angelo — 38 min [D2 D]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-16 · 3 días, día 3, 10:05 Plaza de España —  [D4M D]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 4 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 4 días, día 2, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 4 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-16 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 5 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 5 días, día 2, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 5 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-16 · 5 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 6 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 6 días, día 2, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-16 · 6 días, día 5, 15:50 Via Appia Antica — 160 min (máximo 150) [D5 D]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 6 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-16 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 7 días, día 1, 19:55 Ponte Sisto — 24 min [D1 D]
+- Verano: el 15 de agosto: hueco | 2027-08-16 · 7 días, día 2, 19:35 Puente Sant'Angelo — 32 min [D2 D]
+- Verano: el 15 de agosto: paseo_largo | 2027-08-16 · 7 días, día 5, 15:50 Via Appia Antica — 160 min (máximo 150) [D5 D]
 - Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 7 días, día 7, 18:50 Plaza Farnese — 80 min hasta la cena y Barrio Judío a un paseo [D7 D +domingo]
-- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 7 días · FT, día 3, 18:30 Via del Babuino — 103 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco_cena | 2027-08-16 · 7 días · FT, día 3, 18:00 Via del Babuino — 133 min hasta la cena y Trinità dei Monti a un paseo [D4 D +con_free_tour]
 - Verano: el 15 de agosto: hueco | 2027-08-16 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 D +con_free_tour]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días · reserva Coliseo 08:30, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días · reserva Coliseo 15:30, día 1, 19:40 Puente Sant'Angelo — 33 min [D2 D]
 - Verano: el 15 de agosto: hueco | 2027-08-13 · 4 días · reserva Coliseo 15:30, día 4, 19:50 Via dei Fori Imperiali — 41 min [D5C D]
-- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · arte_museos, día 2, 19:45 Puente Sant'Angelo — 23 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · arte_museos, día 2, 19:45 Puente Sant'Angelo — 48 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · arte_museos, día 5, 19:55 Via dei Fori Imperiali — 26 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
 - Verano: el 15 de agosto: v4_elastica | 2027-08-09 · 5 días · naturaleza_vistas, día 2 (D2 D, martes) — Trastevere: quería +150 (margen ±30); sol 20:18
+- Verano: el 15 de agosto: v4_elastica | 2027-08-09 · 5 días · naturaleza_vistas, día 3 (D4 D, miércoles) — Parque de Villa Borghese: quería +126 (margen ±30); sol 20:16
 - Verano: el 15 de agosto: libre_largo | 2027-08-09 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 140 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-09 · 5 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (22:30) antes que Puente Sant'Angelo (22:55) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · naturaleza_vistas, día 3, 19:40 Terraza del Pincio — 24 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · naturaleza_vistas, día 3, 19:40 Terraza del Pincio — 114 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-09 · 5 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 155 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-09 · 5 días · naturaleza_vistas, día 2 Mirador del Janículo — 140 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-09 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 120 min hasta Terraza del Pincio [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-09 · 5 días · naturaleza_vistas, día 2, 23:30 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: hueco | 2027-08-09 · 5 días · barrios_sabores, día 2, 19:45 Puente Sant'Angelo — 48 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 3 días · arte_museos, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · arte_museos, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D +lista:arte_museos:Palazzo Doria Pamphilj]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · arte_museos, día 5, 19:50 Via dei Fori Imperiali — 21 min [D5C D +domingo+arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
 - Verano: el 15 de agosto: v4_elastica | 2027-08-11 · 3 días · naturaleza_vistas, día 2 (D2 D, jueves) — Trastevere: quería +147 (margen ±30); sol 20:15
 - Verano: el 15 de agosto: libre_largo | 2027-08-11 · 3 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 135 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-11 · 3 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (22:30) antes que Puente Sant'Angelo (22:55) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: zigzag | 2027-08-11 · 3 días · naturaleza_vistas, día 3, 18:35 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D +naturaleza_vistas]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-11 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +naturaleza_vistas]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-11 · 3 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 155 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-11 · 3 días · naturaleza_vistas, día 2 Mirador del Janículo — 135 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-11 · 3 días · naturaleza_vistas, día 2, 23:15 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: v4_elastica | 2027-08-11 · 5 días · naturaleza_vistas, día 2 (D2 D, jueves) — Trastevere: quería +147 (margen ±30); sol 20:15
+- Verano: el 15 de agosto: v4_elastica | 2027-08-11 · 5 días · naturaleza_vistas, día 3 (D4 D, viernes) — Parque de Villa Borghese: quería +124 (margen ±30); sol 20:14
 - Verano: el 15 de agosto: libre_largo | 2027-08-11 · 5 días · naturaleza_vistas, día 2 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 135 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-11 · 5 días · naturaleza_vistas, día 2 — Castillo de Sant'Angelo (22:30) antes que Puente Sant'Angelo (22:55) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · naturaleza_vistas, día 3, 19:40 Terraza del Pincio — 24 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · naturaleza_vistas, día 3, 19:40 Terraza del Pincio — 114 min [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-11 · 5 días · naturaleza_vistas, día 2, 16:50 San Pietro in Montorio y Tempietto de Bramante — 155 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-11 · 5 días · naturaleza_vistas, día 2 Mirador del Janículo — 135 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-11 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 120 min hasta Terraza del Pincio [D4 D +lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-11 · 5 días · naturaleza_vistas, día 2, 23:15 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: zigzag | 2027-08-11 · 3 días · barrios_sabores, día 3, 18:35 Monti — vuelve junto a Iglesia de San Pietro in Vincoli [D4M D +lista:barrios_sabores:Monti]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 3 días · barrios_sabores, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-11 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +lista:barrios_sabores:Monti]
+- Verano: el 15 de agosto: hueco | 2027-08-11 · 5 días · barrios_sabores, día 2, 19:40 Puente Sant'Angelo — 43 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 3 días · arte_museos, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días · arte_museos, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D]
 - Verano: el 15 de agosto: v4_elastica | 2027-08-13 · 3 días · naturaleza_vistas, día 1 (D2 D, viernes) — Trastevere: quería +146 (margen ±30); sol 20:14
 - Verano: el 15 de agosto: libre_largo | 2027-08-13 · 3 días · naturaleza_vistas, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 135 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-13 · 3 días · naturaleza_vistas, día 1 — Castillo de Sant'Angelo (22:30) antes que Puente Sant'Angelo (22:55) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas]
+- Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días · naturaleza_vistas, día 3, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas+lista:naturaleza_vistas:Parque de Villa Borghese]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 3 días · naturaleza_vistas, día 1, 16:50 San Pietro in Montorio y Tempietto de Bramante — 155 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 3 días · naturaleza_vistas, día 1 Mirador del Janículo — 135 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-13 · 3 días · naturaleza_vistas, día 1, 23:15 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: v4_elastica | 2027-08-13 · 5 días · naturaleza_vistas, día 1 (D2 D, viernes) — Trastevere: quería +146 (margen ±30); sol 20:14
+- Verano: el 15 de agosto: v4_elastica | 2027-08-13 · 5 días · naturaleza_vistas, día 3 (D4 D, domingo) — Parque de Villa Borghese: quería +121 (margen ±30); sol 20:11
 - Verano: el 15 de agosto: libre_largo | 2027-08-13 · 5 días · naturaleza_vistas, día 1 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 135 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-13 · 5 días · naturaleza_vistas, día 1 — Castillo de Sant'Angelo (22:30) antes que Puente Sant'Angelo (22:55) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días · naturaleza_vistas, día 3, 19:35 Terraza del Pincio — 29 min [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días · naturaleza_vistas, día 3, 19:35 Terraza del Pincio — 109 min [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 5 días · naturaleza_vistas, día 1, 16:50 San Pietro in Montorio y Tempietto de Bramante — 155 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 5 días · naturaleza_vistas, día 1 Mirador del Janículo — 135 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-13 · 5 días · naturaleza_vistas, día 3, 17:15 Santa Maria del Popolo — 115 min hasta Terraza del Pincio [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-13 · 5 días · naturaleza_vistas, día 1, 23:15 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 3 días · barrios_sabores, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-13 · 3 días · barrios_sabores, día 3, 10:05 Plaza de España —  [D4M D +domingo]
 - Verano: el 15 de agosto: experiencia_sin_efecto | 2027-08-13 · 3 días · barrios_sabores — barrios_sabores
+- Verano: el 15 de agosto: hueco | 2027-08-13 · 5 días · barrios_sabores, día 1, 19:40 Puente Sant'Angelo — 43 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 3 días · arte_museos, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días · arte_museos, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días · arte_museos, día 5, 19:45 Via dei Fori Imperiali — 51 min [D5C D +arte_museos+lista:arte_museos:Iglesia de Santa Maria della Vittoria+lista:arte_museos:Museos Capitolinos]
 - Verano: el 15 de agosto: v4_elastica | 2027-08-15 · 3 días · naturaleza_vistas, día 3 (D2 D, martes) — Trastevere: quería +140 (margen ±30); sol 20:08
 - Verano: el 15 de agosto: libre_largo | 2027-08-15 · 3 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 130 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-15 · 3 días · naturaleza_vistas, día 3 — Castillo de Sant'Angelo (22:20) antes que Puente Sant'Angelo (22:45) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
-- Verano: el 15 de agosto: se_llena_tarde | 2027-08-15 · 3 días · naturaleza_vistas, día 1, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas]
+- Verano: el 15 de agosto: se_llena_tarde | 2027-08-15 · 3 días · naturaleza_vistas, día 1, 10:05 Plaza de España —  [D4M D +domingo+naturaleza_vistas+lista:naturaleza_vistas:Parque de Villa Borghese]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 3 días · naturaleza_vistas, día 3, 16:50 San Pietro in Montorio y Tempietto de Bramante — 145 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 3 días · naturaleza_vistas, día 3 Mirador del Janículo — 130 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-15 · 3 días · naturaleza_vistas, día 3, 23:15 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: v4_elastica | 2027-08-15 · 5 días · naturaleza_vistas, día 1 (D4 D, domingo) — Parque de Villa Borghese: quería +121 (margen ±30); sol 20:11
 - Verano: el 15 de agosto: v4_elastica | 2027-08-15 · 5 días · naturaleza_vistas, día 3 (D2 D, martes) — Trastevere: quería +140 (margen ±30); sol 20:08
-- Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días · naturaleza_vistas, día 1, 19:35 Terraza del Pincio — 29 min [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días · naturaleza_vistas, día 1, 19:35 Terraza del Pincio — 109 min [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: libre_largo | 2027-08-15 · 5 días · naturaleza_vistas, día 3 «La Passeggiata del Gianicolo» antes de Mirador del Janículo — 130 min [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: plaza_despues | 2027-08-15 · 5 días · naturaleza_vistas, día 3 — Castillo de Sant'Angelo (22:20) antes que Puente Sant'Angelo (22:45) [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 5 días · naturaleza_vistas, día 1, 17:15 Santa Maria del Popolo — 115 min hasta Terraza del Pincio [D4 D +domingo+lista:naturaleza_vistas:Parque de Villa Borghese+lista:naturaleza_vistas:Terraza del Pincio]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 5 días · naturaleza_vistas, día 3, 16:50 San Pietro in Montorio y Tempietto de Bramante — 145 min hasta Mirador del Janículo [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: espera_mas_90 | 2027-08-15 · 5 días · naturaleza_vistas, día 3 Mirador del Janículo — 130 min libres [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
 - Verano: el 15 de agosto: cena_tarde | 2027-08-15 · 5 días · naturaleza_vistas, día 3, 23:15 Tonnarello — límite 21:30 [D2 D +naturaleza_vistas+lista:naturaleza_vistas:Mirador del Janículo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 3 días · barrios_sabores, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
 - Verano: el 15 de agosto: se_llena_tarde | 2027-08-15 · 3 días · barrios_sabores, día 1, 10:05 Plaza de España —  [D4M D +domingo]
+- Verano: el 15 de agosto: hueco | 2027-08-15 · 5 días · barrios_sabores, día 3, 19:35 Puente Sant'Angelo — 38 min [D2 D +barrios_sabores+lista:barrios_sabores:Trastevere]
 - Puente del Pilar: hueco | 2027-10-03 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 C +con_free_tour]
 - Puente del Pilar: hora_no_10 | 2027-10-04 · 6 días, día 3, 19:15 Pasea y piérdete por el Tridente —  [D4 B]
 - Puente del Pilar: hueco | 2027-10-04 · 6 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 B +con_free_tour]
@@ -1588,10 +1575,8 @@
 - Puente del Pilar: hora_no_10 | 2027-10-08 · 7 días, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +domingo]
 - Puente del Pilar: hueco | 2027-10-08 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 B +con_free_tour+domingo]
 - Puente del Pilar: hora_no_10 | 2027-10-08 · 7 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour+domingo]
-- Puente del Pilar: hueco | 2027-10-09 · 1 día, día 1, 18:15 Puente Sant'Angelo — 28 min [D0 B]
 - Puente del Pilar: plaza_despues | 2027-10-09 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Puente del Pilar: hueco | 2027-10-09 · 1 día · FT, día 1, 18:15 Puente Sant'Angelo — 43 min [D0 B +con_free_tour]
 - Puente del Pilar: hueco | 2027-10-09 · 2 días · FT, día 1, 18:15 Puente Sant'Angelo — 88 min [D3 B +sabado]
 - Puente del Pilar: se_llena_tarde | 2027-10-09 · 3 días, día 2, 10:05 Plaza de España —  [D4M B +domingo]
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 3 días, día 2, 19:05 Pasea y piérdete por el Tridente —  [D4M B +domingo]
@@ -1609,10 +1594,8 @@
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 7 días, día 5, 19:05 Pasea y piérdete por el Tridente —  [D4 B]
 - Puente del Pilar: hueco | 2027-10-09 · 7 días · FT, día 5, 11:00 Galería Borghese — 114 min [D4 B +con_free_tour]
 - Puente del Pilar: hora_no_10 | 2027-10-09 · 7 días · FT, día 5, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Puente del Pilar: hueco | 2027-10-10 · 1 día, día 1, 18:10 Puente Sant'Angelo — 23 min [D0 B]
 - Puente del Pilar: plaza_despues | 2027-10-10 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Puente del Pilar: hueco | 2027-10-10 · 1 día · FT, día 1, 18:10 Puente Sant'Angelo — 33 min [D0 B +con_free_tour]
 - Puente del Pilar: hueco | 2027-10-10 · 2 días · FT, día 2, 18:10 Puente Sant'Angelo — 83 min [D3 B]
 - Puente del Pilar: se_llena_tarde | 2027-10-10 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 4 días, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B]
@@ -1627,10 +1610,8 @@
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 7 días, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B]
 - Puente del Pilar: hueco | 2027-10-10 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 B +con_free_tour]
 - Puente del Pilar: hora_no_10 | 2027-10-10 · 7 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Puente del Pilar: hueco | 2027-10-11 · 1 día, día 1, 18:10 Puente Sant'Angelo — 23 min [D0 B]
 - Puente del Pilar: plaza_despues | 2027-10-11 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Puente del Pilar: hora_no_10 | 2027-10-11 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Puente del Pilar: hueco | 2027-10-11 · 1 día · FT, día 1, 18:10 Puente Sant'Angelo — 38 min [D0 B +con_free_tour]
 - Puente del Pilar: hueco | 2027-10-11 · 2 días · FT, día 1, 18:10 Puente Sant'Angelo — 83 min [D3 B]
 - Puente del Pilar: se_llena_tarde | 2027-10-11 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
 - Puente del Pilar: hora_no_10 | 2027-10-11 · 4 días, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B]
@@ -1645,10 +1626,8 @@
 - Puente del Pilar: hora_no_10 | 2027-10-11 · 7 días, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B]
 - Puente del Pilar: hueco | 2027-10-11 · 7 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 B +con_free_tour]
 - Puente del Pilar: hora_no_10 | 2027-10-11 · 7 días · FT, día 3, 19:05 Pasea y piérdete por el Tridente —  [D4 B +con_free_tour]
-- Puente del Pilar: hueco | 2027-10-12 · 1 día, día 1, 18:10 Puente Sant'Angelo — 23 min [D0 B]
 - Puente del Pilar: plaza_despues | 2027-10-12 · 1 día, día 1 — Coliseo (08:30) antes que Arco de Constantino (08:55) [D0 B]
 - Puente del Pilar: hora_no_10 | 2027-10-12 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 B]
-- Puente del Pilar: hueco | 2027-10-12 · 1 día · FT, día 1, 18:10 Puente Sant'Angelo — 38 min [D0 B +con_free_tour]
 - Puente del Pilar: hueco | 2027-10-12 · 2 días · FT, día 1, 18:10 Puente Sant'Angelo — 83 min [D3 B]
 - Puente del Pilar: se_llena_tarde | 2027-10-12 · 3 días, día 3, 10:05 Plaza de España —  [D4M B]
 - Puente del Pilar: hueco | 2027-10-12 · 4 días · FT, día 3, 11:00 Galería Borghese — 114 min [D4 B +con_free_tour]
@@ -2151,6 +2130,7 @@
 - Navidad y Reyes: hora_no_10 | 2027-12-24 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 A +fecha:12-24]
 - Navidad y Reyes: acaba_tras_cierre | 2027-12-24 · 1 día, día 1, 14:20 Basílica de San Pedro — acaba 905 y cierra a las 900 [D0 A +fecha:12-24]
 - Navidad y Reyes: hora_no_10 | 2027-12-24 · 1 día · FT, día 1, 10:25 Iglesia del Gesù —  [D0 A +con_free_tour+fecha:12-24]
+- Navidad y Reyes: primera_hora | 2027-12-24 · 2 días · FT, día 1, 14:15 Coliseo — por dentro y pasadas las 10:00 [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-24+fecha:12-24&D1-FT@12-25]
 - Navidad y Reyes: hueco | 2027-12-24 · 3 días, día 2, 16:25 Via dei Fori Imperiali — 23 min [D4M A]
 - Navidad y Reyes: se_llena_tarde | 2027-12-24 · 3 días, día 2, 10:05 Plaza de España —  [D4M A]
 - Navidad y Reyes: cena_lejos_nocturna | 2027-12-24 · 3 días, día 3, 21:00 Plaza de España (noche) — ~22 min andando desde la cena [D1 A +domingo]
@@ -2316,6 +2296,7 @@
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 1 día, día 1, 09:55 Altar de la Patria —  [D0 A +fecha:12-31]
 - Navidad y Reyes: hora_no_10 | 2027-12-31 · 1 día · FT, día 1, 10:25 Iglesia del Gesù —  [D0 A +con_free_tour+fecha:12-31]
 - Navidad y Reyes: hueco_cena | 2027-12-31 · 2 días, día 2, 18:00 Campo de' Fiori — 58 min hasta la cena y Barrio Judío a un paseo [D1 A +sabado+fecha:01-01+empieza:10:00+comida:sin Plaza del Campidoglio+relleno_cena:Campo de' Fiori]
+- Navidad y Reyes: primera_hora | 2027-12-31 · 2 días · FT, día 1, 14:15 Coliseo — por dentro y pasadas las 10:00 [D3 A +sabado+cerrado:Museos Vaticanos y Capilla Sixtina+fecha:12-31+fecha:12-31&D1-FT@01-01]
 - Navidad y Reyes: hueco | 2027-12-31 · 3 días, día 1, 16:25 Puente Sant'Angelo — 23 min [D2 A +relleno_cena:Isla Tiberina]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días, día 2, 10:00 Fontana de Trevi —  [D4M A +empieza:10:00]
 - Navidad y Reyes: se_llena_tarde | 2027-12-31 · 3 días, día 2, 10:50 Plaza de España —  [D4M A +empieza:10:00]
@@ -2436,47 +2417,18 @@
 
 ## Una línea por regla
 
-- R-1: 1 fallos (acaba_tras_cierre 1) — Nunca un sitio cerrado. (La prueba mira también los viajes sin fechas (horario de laborable).)
-- R-2: 2 fallos (v4_llega_tarde 2) — Una hora fija no se mueve ni se quita. (El orden de recorte y el aviso de la campana no se miran aquí.)
-- R-3: 0 fallos — El viajero manda. (Una reserva por franja en la prueba; el empate pool/imprescindible sale como información (pago_cedido_al_pool).)
-- R-4: 3 fallos (pago_sin_dentro 1, basilica_fuera 2) — Los imprescindibles salen siempre
-- R-5: 57 fallos (repetido_viaje 11, sitio_dos_dias 46) — Un sitio, una vez en el viaje y una vez al día (por id)
-- R-6: 0 fallos — Las nocturnas. («Una nocturna cada noche» no se mira.)
-- R-7: 0 fallos — Un barrio, una vez al día
-- R-8: 0 fallos — El Free Tour sustituye lo que enseña
-- R-9: 461 fallos (joya_tarde 461) — Lo mejor, primero
-- R-10: 0 fallos — Cada día tiene un sentido
-- R-11: SIN COMPROBACIÓN en esta prueba — Según los días del viaje. Los viajes de 1 día y sin fechas ya están en la prueba, pero ninguna línea mira «1 día, todo por fuera».
-- R-12: 0 fallos — El pool entra primero. (El orden y el motivo de «No incluido» no se miran.)
-- R-13: 234 fallos (experiencia_sin_efecto 234) — Una experiencia añade algo que se nota
-- R-14: 0 fallos — La comida, siempre. (Los 15 min andando y «abierto ese día» no se miran aquí.)
-- R-15: 659 fallos (hueco_cena 659) — La tarde acaba donde se cena. (Los 15 min a la cena y la hora mínima (19:30 / 20:30) no se miran aquí.)
-- R-16: 931 fallos (v4_elastica 110, espera_mas_90 821) — La tarde va según la luz
-- R-17: 757 fallos (se_llena_tarde 757) — A primera hora, lo que luego se llena
-- R-18: 474 fallos (plaza_despues 474) — Primero el acceso, si se llega por su lado
-- R-19: 179 fallos (zigzag 168, tramo_largo 11) — Sin ir y volver
-- R-20: 4197 fallos (hueco 4010, libre_largo 187) — Los huecos
-- R-21: 198 fallos (verano_al_sol 198) — La época del año. (El «iluminado» solo con foto de noche se mira con la regla 5 y la 6.)
-- R-22: 2747 fallos (hora_no_10 2458, no_cuadra 289) — Horas de 10 en 10
-- R-23: 2 fallos (paseo_largo 2) — Mínimos y máximos
-- R-24: 49 fallos (nivel_camino 39, calle_parada 10) — Qué es una parada
-- R-25: 2 fallos (fuera_sin_vista 2) — Por fuera, solo donde se ve algo
-- R-26: 1 fallos (aviso_lugar_ajeno 1) — Variantes por cierre y por fecha. (Las fechas clave tienen su sección aparte en el informe.)
-- R-27: SIN COMPROBACIÓN en esta prueba — Las excursiones. No hay ninguna línea en esta prueba.
-- R-28: SIN COMPROBACIÓN en esta prueba — Al llegar. La mira scripts/destino/llegadas.mjs, no esta prueba (y está pendiente del encargo de vuelos).
-- R-29: SIN COMPROBACIÓN en esta prueba — Al irse. La mira scripts/destino/llegadas.mjs, no esta prueba (y está pendiente del encargo de vuelos).
-- R-30: esta lista (La prueba imprime una línea por regla)
-- R-31: SIN COMPROBACIÓN en esta prueba — Los datos se cruzan solos. La mira node scripts/destino/validar.mjs <destino>, no esta prueba.
-- R-32: SIN COMPROBACIÓN en esta prueba — La revisión como un local. Es una revisión a mano de una lista fija de 20 viajes; no es automática.
-- R-33: 273 fallos (experiencia_sin_efecto 234, experiencia_fuera_de_zona 39) — Antes de añadir, se mira si cabe
-- R-34: 0 fallos — Lo del pool con entrada con hora va como entrada reservada
-- R-35: 0 fallos — En 1 día, lo del pool entra siempre
-- R-36: 0 fallos — La comida nunca se estira para llenar un hueco
-- R-37: 775 fallos (cena_lejos_nocturna 116, hueco_cena 659) — La noche: cena junto a la nocturna
-- R-38: 2 fallos (min_max_pasado 2) — Cada parada tiene un máximo (min_max)
-- R-39: 0 fallos — Lo que enseña una nocturna cuenta como visto
-- R-40: 0 fallos — «De camino» no es una visita
-- R-41: 0 fallos — Las nocturnas no están protegidas (hora límite)
-- R-42: SIN COMPROBACIÓN en esta prueba — La noche propia de una fecha (Nochebuena). Se mira en la revisión de los 20 viajes y en pruebaNavidad.mjs.
-- R-44: 170 fallos (cena_tarde 170) — La cena tiene hora límite
-- R-43: 0 fallos — La zona de los restaurantes contra sus coordenadas
+- R-1: 6 fallos (acaba_tras_cierre 1, fuera_sin_vista 2, pago_sin_dentro 1, basilica_fuera 2) — Nunca un sitio cerrado
+- R-2: 2 fallos (v4_llega_tarde 2) — El viajero manda
+- R-3: 57 fallos (repetido_viaje 11, sitio_dos_dias 46) — Un sitio, una vez en el viaje
+- R-4: 937 fallos (zigzag 7, tramo_largo 4, plaza_despues 465, joya_tarde 461) — Cada día, una zona y un sentido
+- R-5: 763 fallos (primera_hora 2, se_llena_tarde 761) — Coliseo y Museos Vaticanos a primera hora. («Si solo cabe uno, uno» no se mira aquí.)
+- R-6: 134 fallos (v4_elastica 134) — La tarde según la luz
+- R-7: 0 fallos — La comida. (Los 15 min andando y «abierto ese día» no se miran aquí.)
+- R-8: 945 fallos (hueco_cena 659, cena_lejos_nocturna 116, cena_tarde 170) — La noche
+- R-9: 7848 fallos (hueco 4148, libre_largo 213, espera_mas_90 744, paseo_largo 48, hora_no_10 2426, no_cuadra 269) — Los huecos
+- R-10: 0 fallos — El Free Tour
+- R-11: 49 fallos (nivel_camino 39, calle_parada 10) — Qué es parada
+- R-12: SIN COMPROBACIÓN en esta prueba — Según los días del viaje. Los viajes de 1 día y sin fechas están en la prueba, pero ninguna línea mira «1 día, todo por fuera».
+- R-13: 270 fallos (experiencia_sin_efecto 234, experiencia_fuera_de_zona 36) — Las experiencias
+- R-14: 1 fallos (aviso_lugar_ajeno 1) — Las fechas especiales. (Las fechas clave tienen su sección aparte en el informe.)
+- R-15: SIN COMPROBACIÓN en esta prueba — Excursiones, llegada y vuelta. Las mira scripts/destino/llegadas.mjs, no esta prueba (y está pendiente del encargo de vuelos).

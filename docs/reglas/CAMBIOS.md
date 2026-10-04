@@ -2,6 +2,10 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-06 — La hoja pasa de 46 reglas a 15
+
+Encargo del usuario. Se ordena, no se cambia: cada regla vieja va dentro de una nueva (tabla «R vieja → regla nueva» al final de `REGLAS_RUTAS.md`). Lo de cómo se comprueba (R-30, 31, 32 y 46) pasa a la sección «Cómo se comprueba». **Se quita la regla del calor** (R-21: julio y agosto, descanso a la sombra, «primero lo de dentro»): sale del motor (`writtenTrip.js`, `index.js`, `seasonNote.js`) y de la prueba (`verano_al_sol`). Entra la regla 5 (Coliseo y Museos a primera hora) con su comprobación `primera_hora`. La prueba imprime una línea por cada una de las 15 reglas. Lo que no se supo juntar está en la hoja («Lo que no supe juntar»).
+
 ## 2026-10-05 (noche) — Huecos con datos, calor, cena, entrada fija y por dentro gana
 
 | Cambio | Reglas |
