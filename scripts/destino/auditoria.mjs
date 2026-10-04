@@ -51,7 +51,6 @@ export const TIPOS_AUDITORIA = {
   aviso_repetido: 'Avisos de fecha repetidos',
   titulo_hora: 'Texto de hora que no coincide con la hora real',
   nota_promete: 'Nota de temporada que promete algo que la ruta no hace',
-  atardecer_corto: 'Parada de atardecer que acaba antes de que se ponga el sol',
   nocturna_repite: 'Nocturna (o «iluminado») sobre un sitio que ya salió de día ese mismo día, si no fue por la mañana (antes de las 13:00)',
   fuera_mal: '"Quedó fuera" con un lugar por el que pasa la ruta o con "No te dio tiempo" por un cierre',
   plaza_despues: 'Iglesia o monumento antes que su plaza',
@@ -155,7 +154,7 @@ export function auditarViaje(D, days, options = {}) {
       const key = kind === 'paseo' ? [stop.site_id ?? nameOf(stop)] : showsOf(stop)
       for (const id of key) {
         const seen = seenOnDay.get(`${kind}:${id}`)
-        if (seen != null && seen !== n && !(kind === 'nocturna' && iso && D.destination_config?.noche_especial?.[iso.slice(5)]?.noche)) add(kind === 'visita' ? 'repetido_viaje' : kind === 'nocturna' ? 'nocturna_repite_viaje' : 'paseo_repite_viaje', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: ya en el día ${seen}`)
+        if (seen != null && seen !== n) add(kind === 'visita' ? 'repetido_viaje' : kind === 'nocturna' ? 'nocturna_repite_viaje' : 'paseo_repite_viaje', n, stop.suggested_time, nameOf(stop), `${nameOfSite(id)}: ya en el día ${seen}`)
         else if (seen == null) seenOnDay.set(`${kind}:${id}`, n)
       }
     }
@@ -412,7 +411,6 @@ export function auditarViaje(D, days, options = {}) {
     for (const stop of day.stops) {
       const start = t2m(stop.suggested_time)
       // El atardecer acaba antes de que se ponga el sol.
-      if (stop.sunset_minutes != null && sunset != null && start != null && start + (stop.duration_minutes ?? 0) < sunset - ROUNDING) add('atardecer_corto', n, stop.suggested_time, nameOf(stop), `acaba antes del sol (${Math.floor(sunset / 60)}:${String(sunset % 60).padStart(2, '0')})`)
       // (La nocturna que repite lo que ya salió ese día se mira arriba, por id de sitio: `nocturna_repite`.)
       // Textos genéricos en las nocturnas y en "Roma iluminada".
       if ((stop.is_night_experience || stop.night_view) && generic.has(stop.why)) add('texto_generico', n, stop.suggested_time, stop.night_view_title ?? stop.name, stop.why)

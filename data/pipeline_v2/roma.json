@@ -1988,8 +1988,6 @@
         "angelo"
       ],
       "related_to": "Puente Sant'Angelo",
-      "group": "castillo_santangelo_group",
-      "group_order": 2,
       "windows": [
         "09:00-19:30"
       ],
@@ -2476,9 +2474,7 @@
           "se_llega_por": "centro",
           "monumento_antes_si_viene_de": ["vaticano"]
         }
-      },
-      "group": "castillo_santangelo_group",
-      "group_order": 1
+      }
     },
     {
       "id": "isla_tiberina",
@@ -5654,30 +5650,7 @@
       "breakable_if_short": false,
       "combined_duration_minutes": 60
     },
-    "castillo_santangelo_group": {
-      "name": "Castillo y Puente Sant'Angelo",
-      "places": [
-        "Puente Sant'Angelo",
-        "Castillo de Sant'Angelo"
-      ],
-      "order": [
-        "Puente Sant'Angelo",
-        "Castillo de Sant'Angelo"
-      ],
-      "order_evening": [
-        "Puente Sant'Angelo",
-        "Castillo de Sant'Angelo"
-      ],
-      "note": "Se llega por el puente y se entra al castillo. Inseparables: el castillo se disfruta también desde fuera (como el Coliseo), así que puente y castillo son una sola visita aunque la entrada sea de pago.",
-      "inseparable": [
-        [
-          "Puente Sant'Angelo",
-          "Castillo de Sant'Angelo"
-        ]
-      ],
-      "breakable_if_short": false,
-      "combined_duration_minutes": 90
-    },
+
     "popolo": {
       "name": "Piazza del Popolo",
       "places": [
@@ -8939,7 +8912,7 @@
       ]
     },
     "alcance": { "_nota": "Distancias y tiempos del destino (REGLAS_RUTAS 37, 43 y 16), no del código.", "nocturna_desde_cena_m": 1500, "taxi_desde_m": 1500, "experiencia_cerca_m": 1200, "descanso_despues_comer_max_min": 90 },
-    "cena_limite": { "_nota": "La cena empieza como tarde a esta hora (REGLAS_RUTAS 44); en julio y agosto, más tarde.", "hora": "21:30", "meses": { "7": "22:00", "8": "22:00" } },
+    "cena_horas": { "_nota": "La cena empieza entre estas horas (REGLAS_RUTAS 8). La versión D de la tarde (las tardes largas) tiene las suyas.", "normal": { "desde": "19:30", "hasta": "21:30" }, "D": { "desde": "20:30", "hasta": "22:00" } },
     "noche_limite": { "_nota": "La última nocturna empieza como tarde a esta hora (REGLAS_RUTAS 15); en julio y agosto, más tarde.", "hora": "23:00", "meses": { "7": "23:30", "8": "23:30" } },
     "se_llenan": ["Fontana de Trevi", "Plaza de España"],
     "sitios_extra": {

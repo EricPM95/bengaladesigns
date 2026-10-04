@@ -225,7 +225,7 @@
       "empieza": "14:45"
     },
     "D": {
-      "_sol": "desde las 19:45 (de mayo a agosto): el Tempietto cierra a las 18:00 y el sol se pone después de las 20:00, así que no se puede entrar y ver el atardecer en el Janículo a la vez sin dos horas de espera. Se sube primero (el Tempietto por dentro, la Fontana dell'Acqua Paola y el mirador con la luz de la tarde), se baja andando hasta el Castillo, que abre hasta las 19:30, y el atardecer es desde el Puente Sant'Angelo, con los ángeles de Bernini y la cúpula de San Pedro al fondo. Trastevere, una sola vez: la cena y el paseo de noche (PROMPT_REPASO_LOCAL_ROMA, 3). La cena, cerca (en el Borgo o en Prati), y de noche el centro iluminado, al otro lado del puente.",
+      "_sol": "el Tempietto cierra a las 18:00 y el sol se pone después de las 20:00, así que no se puede entrar y ver el atardecer en el Janículo a la vez sin dos horas de espera. Se sube primero (el Tempietto por dentro, la Fontana dell'Acqua Paola y el mirador con la luz de la tarde), se baja andando hasta el Castillo, que abre hasta las 19:30, y el atardecer es desde el Puente Sant'Angelo, con los ángeles de Bernini y la cúpula de San Pedro al fondo. Trastevere, una sola vez: la cena y el paseo de noche (PROMPT_REPASO_LOCAL_ROMA, 3). La cena, cerca (en el Borgo o en Prati), y de noche el centro iluminado, al otro lado del puente.",
       "nombre": "Vaticano, el Janículo y el Castillo al atardecer",
       "empieza": "15:10",
       "paradas": [
@@ -288,7 +288,7 @@
   },
   "variantes": {
     "miercoles": {
-      "_nota": "Miércoles de audiencia: la audiencia ocupa la plaza por la mañana y la Basílica abre hacia las 12:30. Museos Vaticanos 8:00 → comida en el Borgo → Plaza y Basílica (12:30) → el Castillo y el Puente → Trastevere → el Janículo al atardecer → cena en Trastevere. Sin volver atrás (REGLAS_RUTAS 19).",
+      "_nota": "Miércoles de audiencia: la audiencia ocupa la plaza por la mañana y la Basílica abre hacia las 12:30. Con Museos: Museos 8:00 → comida en el Borgo → Plaza y Basílica → el Castillo y el Puente → Trastevere → el Janículo al atardecer → cena en Trastevere. Sin Museos: por la mañana el Puente y el Castillo, el Borgo y Conciliazione → comida en el Borgo → Plaza y Basílica desde las 13:00 → Trastevere → el Janículo. Sin volver atrás.",
       "manana": {
         "paradas": [
           {
@@ -300,6 +300,27 @@
             "modo": "dentro",
             "entrada": true,
             "turno": true
+          },
+          {
+            "lugar": "Puente Sant'Angelo",
+            "min": 10,
+            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
+          },
+          {
+            "lugar": "Castillo de Sant'Angelo",
+            "min": 20,
+            "modo": "fuera",
+            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
+          },
+          {
+            "lugar": "Via della Conciliazione",
+            "modo": "camino",
+            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
+          },
+          {
+            "lugar": "Borgo Pio",
+            "min": 30,
+            "solo_sin": "Museos Vaticanos y Capilla Sixtina"
           }
         ],
         "comida": {
@@ -310,7 +331,7 @@
       "nombre": "Vaticano, Castillo y Trastevere al atardecer",
       "barrio_cena": "trastevere",
       "tarde.A": {
-        "empieza": "12:30",
+        "empieza": "13:00",
         "paradas": [
           {
             "lugar": "Plaza de San Pedro",
@@ -324,16 +345,19 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino"
+            "modo": "camino",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
-            "modo": "fuera"
+            "modo": "fuera",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10
+            "min": 10,
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -357,7 +381,7 @@
         ]
       },
       "tarde.B": {
-        "empieza": "12:30",
+        "empieza": "13:00",
         "paradas": [
           {
             "lugar": "Plaza de San Pedro",
@@ -371,16 +395,19 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino"
+            "modo": "camino",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
-            "modo": "fuera"
+            "modo": "fuera",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10
+            "min": 10,
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -404,7 +431,7 @@
         ]
       },
       "tarde.C": {
-        "empieza": "12:30",
+        "empieza": "13:00",
         "paradas": [
           {
             "lugar": "Plaza de San Pedro",
@@ -418,16 +445,19 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino"
+            "modo": "camino",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
-            "modo": "fuera"
+            "modo": "fuera",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10
+            "min": 10,
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -451,7 +481,7 @@
         ]
       },
       "tarde.D": {
-        "empieza": "12:30",
+        "empieza": "13:00",
         "paradas": [
           {
             "lugar": "Plaza de San Pedro",
@@ -465,16 +495,19 @@
           },
           {
             "lugar": "Via della Conciliazione",
-            "modo": "camino"
+            "modo": "camino",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Castillo de Sant'Angelo",
             "min": 20,
-            "modo": "fuera"
+            "modo": "fuera",
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Puente Sant'Angelo",
-            "min": 10
+            "min": 10,
+            "solo_con": "Museos Vaticanos y Capilla Sixtina"
           },
           {
             "lugar": "Iglesia de Santa Maria in Trastevere",
@@ -738,7 +771,7 @@
       }
     },
     "cerrado:Museos Vaticanos y Capilla Sixtina": {
-      "_nota": "Los Museos Vaticanos cierran (sus festivos). Tres casos, con la MISMA condición en la mañana y en la tarde para que el Castillo vaya una sola vez: (1) con el sol antes de las 19:45, la Plaza, la Cúpula, la Basílica y el Castillo por la mañana, desde las 8:30; (2) de junio a agosto con el sol tarde (14 de agosto), lo mismo por la mañana y por la tarde un descanso largo y las iglesias de Trastevere desde las 16:00; (3) con el sol tarde fuera del verano (1 de mayo), la mañana a las 10:00 sin el Castillo, que va por la tarde.",
+      "_nota": "Los Museos Vaticanos cierran (sus festivos). Tres casos, con la MISMA condición en la mañana y en la tarde para que el Castillo vaya una sola vez: (1) con el sol antes de las 19:45, la Plaza, la Cúpula, la Basílica y el Castillo por la mañana, desde las 8:30;",
       "manana": {
         "paradas": [
           {
@@ -853,7 +886,7 @@
         ]
       },
       "tarde.D": {
-        "_nota": "Con el sol desde las 19:45. De junio a agosto: después de comer, un descanso largo por el calor, y Santa Maria in Trastevere a las 16:00 y Santa Cecilia a las 16:30, por dentro. El resto (1 de mayo): el Castillo por la tarde, que hace que las iglesias ya estén abiertas.",
+        "_nota": "Con el sol desde las 19:45. El resto (1 de mayo): el Castillo por la tarde, que hace que las iglesias ya estén abiertas.",
         "paradas": [
           {
             "lugar": "Via della Conciliazione",

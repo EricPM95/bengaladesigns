@@ -1,5 +1,5 @@
 {
-  "_nota": "D0: el viaje de UN día de Roma, escrito (4-oct-2026). En un día no da tiempo a entrar: todo lo que tiene entrada va por fuera (Coliseo, Foro desde la Via dei Fori Imperiali, Altar de la Patria, Panteón, Castillo). Mañana: Roma Antigua y Centro. Tarde: Vaticano (Plaza y Basílica de San Pedro, gratis), Via della Conciliazione, Castillo por fuera y Puente al atardecer. Cena por la zona de Navona y el Panteón (a 15 min de lo último y de Trevi); después, Trevi y la Plaza de España iluminadas. En julio y agosto el paseo de noche va antes de cenar (si no, la Plaza de España pasa de las 23:00). Con Free Tour: Trevi a las 8:00, el Panteón por dentro, el tour a las 10:00 y el Vaticano por la tarde; cena en Monti y, de noche, el Coliseo y el Foro iluminados. Con algo marcado en el pool, la regla 12 lo mete en la mitad del día más cercana a su zona.",
+  "_nota": "D0: el viaje de UN día de Roma, escrito (4-oct-2026). En un día no da tiempo a entrar: todo lo que tiene entrada va por fuera (Coliseo, Foro desde la Via dei Fori Imperiali, Altar de la Patria, Panteón, Castillo). Mañana: Roma Antigua y Centro. Tarde: Vaticano (Plaza y Basílica de San Pedro, gratis), Via della Conciliazione, Castillo por fuera y Puente al atardecer. Cena por la zona de Navona y el Panteón (a 15 min de lo último y de Trevi); después, Trevi y la Plaza de España iluminadas. Con Free Tour: Trevi a las 8:00, el Panteón por dentro, el tour a las 10:00 y el Vaticano por la tarde; cena en Monti y, de noche, el Coliseo y el Foro iluminados. Con algo marcado en el pool, la regla 12 lo mete en la mitad del día más cercana a su zona.",
   "id": "D0",
   "nombre": "Roma en un día: la Roma Antigua, el Centro, el Vaticano y las fuentes",
   "joyas": [
@@ -186,7 +186,7 @@
       }
     },
     "D": {
-      "_sol": "desde las 19:45 (verano): descanso a la sombra hasta las 16:30, la Basílica a cubierto, el Borgo, el Castillo y el Puente al atardecer; cena y la nocturna por las reglas",
+      "_sol": "desde las 19:45: el Vaticano, el Borgo, el Castillo y el Puente al atardecer; cena y la nocturna por las reglas",
       "paradas": [
         {
           "lugar": "Plaza de San Pedro",

@@ -10,7 +10,7 @@ import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { TIPOS_AUDITORIA, auditarViaje } from './auditoria.mjs'
 import { TIPOS_REGLAS, auditarReglas, auditarRestaurantes } from './auditoriaReglas.mjs'
-import { REGLAS_PRUEBA } from './reglasPrueba.mjs'
+import { REGLAS_PRUEBA, FORMATO_PRUEBA } from './reglasPrueba.mjs'
 import { readFileSync, readdirSync } from 'node:fs'
 import { tituloQueNoSeCumple } from './textChecks.mjs'
 import { closedOnDay, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
@@ -283,7 +283,8 @@ const ruleLines = REGLAS_PRUEBA.map((rule) => {
   const detail = rule.tipos.filter((tipo) => (counts.get(tipo) ?? 0) > 0 && !INFO_TIPOS.has(tipo)).map((tipo) => `${tipo} ${counts.get(tipo)}`).join(', ')
   return `R-${rule.id}: ${fails} fallos${detail ? ` (${detail})` : ''} — ${rule.nombre}${rule.nota ? `. (${rule.nota})` : ''}`
 })
-const unmapped = [...counts.keys()].filter((tipo) => !REGLAS_PRUEBA.some((rule) => rule.tipos.includes(tipo)) && !INFO_TIPOS.has(tipo))
+ruleLines.push(`Formato (no es regla): ${FORMATO_PRUEBA.tipos.reduce((sum, tipo) => sum + (counts.get(tipo) ?? 0), 0)} fallos (${FORMATO_PRUEBA.tipos.filter((tipo) => (counts.get(tipo) ?? 0) > 0).map((tipo) => `${tipo} ${counts.get(tipo)}`).join(', ')}) — ${FORMATO_PRUEBA.nombre}`)
+const unmapped = [...counts.keys()].filter((tipo) => !REGLAS_PRUEBA.some((rule) => rule.tipos.includes(tipo)) && !FORMATO_PRUEBA.tipos.includes(tipo) && !INFO_TIPOS.has(tipo))
 lines.push('', '## Una línea por regla', '', ...ruleLines.map((line) => `- ${line}`), ...(unmapped.length > 0 ? ['', `Cuentan en la prueba pero no están en ninguna regla: ${unmapped.map((tipo) => `${tipo} ${counts.get(tipo)}`).join(', ')}`] : []))
 console.log(ruleLines.join('\n'))
 writeFileSync(out, lines.join('\n') + '\n')

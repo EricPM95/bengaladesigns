@@ -44,16 +44,18 @@ Salida el miércoles 2027-07-14 · 1 día
 - 10:20 Plaza del Campidoglio · 20 min
 - 10:50 Panteón · 15 min · por fuera
 - 11:15 Piazza Navona · 25 min
-- 11:50 Campo de' Fiori · 30 min
+- 11:45 Iglesia de San Luigi dei Francesi · 30 min
 - 12:30 **Comida** Armando al Pantheon (hasta 13:30, Centro Histórico)
 - 15:40 Plaza de San Pedro · 20 min · Bus 40 o un taxi, unos 20 min
 - 16:05 Basílica de San Pedro · 60 min · por dentro
 - 17:10 Pasea y piérdete por Borgo Pio · 25 min
 - 17:40 Via della Conciliazione · 5 min · de paso
 - 17:55 Castillo de Sant'Angelo · 20 min · por fuera
-- 20:20 Puente Sant'Angelo · 40 min
-- 21:15 **Cena** Pizzeria Da Baffetto (Centro Histórico)
-- 23:00 Fontana de Trevi (noche) · 20 min · de noche
+- 18:10 Puente Sant'Angelo · 50 min
+- 19:15 Pasea y piérdete por Campo de' Fiori y la Plaza Farnese · 65 min
+- 20:30 **Cena** Pizzeria Da Baffetto (Centro Histórico)
+- 22:00 Fontana de Trevi (noche) · 20 min · de noche
+- 22:30 Plaza de España (noche) · 25 min · de noche
 - (hueco) 90 min antes de Plaza de San Pedro «Descanso después de comer»
 - No incluido: Museos Vaticanos y Capilla Sixtina (En un viaje corto no entra, y por fuera no hay nada que ver)
 
@@ -73,7 +75,7 @@ Salida el martes 2027-04-20 · 1 día · con Free Tour
 - 16:50 Pasea y piérdete por Borgo Pio · 30 min
 - 17:25 Via della Conciliazione · 5 min · de paso
 - 17:40 Castillo de Sant'Angelo · 20 min · por fuera
-- 19:30 Puente Sant'Angelo · 40 min
+- 18:05 Puente Sant'Angelo · 50 min
 - 20:30 **Cena** Trattoria Valentino (Monti)
 - 22:00 Coliseo (noche) · 20 min · de noche
 - (hueco) 85 min antes de Plaza de San Pedro «Descanso después de comer»
@@ -137,18 +139,21 @@ Salida el martes 2027-04-13 · 2 días
 
 ### Día 2 · miércoles 2027-04-14 · D2 Vaticano, Castillo y Trastevere al atardecer
 
+- 09:30 Puente Sant'Angelo · 10 min
+- 09:40 Castillo de Sant'Angelo · 20 min · por fuera
+- 10:10 Via della Conciliazione · 10 min · de paso
+- 10:25 Borgo Pio · 25 min
 - 12:30 **Comida** Borghiciana Pastificio Artigianale (hasta 13:15, Vaticano / Borgo)
-- 14:10 Plaza de San Pedro · 20 min
-- 14:35 Basílica de San Pedro · 60 min · por dentro
-- 15:40 Via della Conciliazione · 10 min · de paso
-- 16:00 Castillo de Sant'Angelo · 20 min · por fuera
-- 16:25 Puente Sant'Angelo · 15 min
-- 17:00 Iglesia de Santa Maria in Trastevere · 20 min · por dentro
-- 17:20 Trastevere · 55 min
-- 18:30 Fontana dell'Acqua Paola · 15 min
+- 14:50 Plaza de San Pedro · 25 min
+- 15:20 Basílica de San Pedro · 65 min · por dentro
+- 16:50 Iglesia de Santa Maria in Trastevere · 20 min · por dentro
+- 17:10 Trastevere · 55 min
+- 18:20 Fontana dell'Acqua Paola · 15 min
 - 19:15 Mirador del Janículo · 60 min · Bus 115 o el 870, unos 20 min
 - 20:30 **Cena** Tonnarello (Trastevere)
 - 22:00 Panteón (noche) · 45 min · de noche
+- (hueco) 95 min antes de Plaza de San Pedro «Descanso después de comer»
+- (hueco) 20 min antes de Mirador del Janículo «La Passeggiata del Gianicolo»
 - No incluido: Museos Vaticanos y Capilla Sixtina (En un viaje corto no entra, y por fuera no hay nada que ver)
 
 
@@ -173,12 +178,11 @@ Salida el martes 2027-05-18 · 2 días · pool: Coliseo + Museos Vaticanos y Cap
 - 16:25 Panteón · 30 min · por dentro
 - 17:00 Iglesia de San Luigi dei Francesi · 15 min · por dentro
 - 17:20 Piazza Navona · 35 min
-- 18:00 Campo de' Fiori · 35 min
-- 18:45 Iglesia del Gesù · 40 min
-- 19:35 Plaza Colonna · 15 min
-- 20:10 Ponte Sisto · 30 min
-- 21:00 **Cena** Armando al Pantheon (Centro Histórico)
-- 22:30 Fontana de Trevi (noche) · 20 min · de noche
+- 18:00 Campo de' Fiori · 40 min
+- 18:45 Ponte Sisto · 30 min
+- 20:30 **Cena** Armando al Pantheon (Centro Histórico)
+- 22:00 Fontana de Trevi (noche) · 20 min · de noche
+- 22:30 Plaza de España (noche) · 25 min · de noche
 
 ### Día 2 · miércoles 2027-05-19 · D2 Vaticano, Castillo y Trastevere al atardecer
 
@@ -409,10 +413,10 @@ Salida el martes 2027-06-08 · 3 días · naturaleza_vistas
 - 17:00 Iglesia de San Luigi dei Francesi · 15 min · por dentro
 - 17:20 Piazza Navona · 35 min
 - 18:00 Campo de' Fiori · 40 min
-- 18:50 Iglesia del Gesù · 40 min
-- 19:40 Plaza Colonna · 20 min
-- 20:30 Ponte Sisto · 30 min
-- 21:15 **Cena** Armando al Pantheon (Centro Histórico)
+- 18:45 Ponte Sisto · 30 min
+- 20:30 **Cena** Armando al Pantheon (Centro Histórico)
+- 22:00 Fontana de Trevi (noche) · 20 min · de noche
+- 22:30 Plaza de España (noche) · 25 min · de noche
 
 ### Día 2 · miércoles 2027-06-09 · D2 Vaticano, Castillo y Trastevere al atardecer
 
@@ -510,12 +514,11 @@ Salida el martes 2027-03-02 · 4 días · entrada: Coliseo a las 15:30
 - 15:40 Iglesia de Santa Maria in Trastevere · 20 min · por dentro · Bus 23 por el Lungotevere, unos 15 min
 - 16:10 San Pietro in Montorio y Tempietto de Bramante · 20 min · por dentro
 - 16:35 Fontana dell'Acqua Paola · 10 min
-- 17:40 Mirador del Janículo · 40 min
-- 18:40 Trastevere · 30 min
-- 19:20 Isla Tiberina · 20 min
-- 20:00 **Cena** Tonnarello (Trastevere)
-- 21:30 Foro Romano desde el Campidoglio (noche) · 30 min · de noche
-- (hueco) 35 min antes de Mirador del Janículo «La Passeggiata del Gianicolo»
+- 17:00 Mirador del Janículo · 60 min
+- 18:20 Trastevere · 30 min
+- 19:00 Isla Tiberina · 20 min
+- 19:45 **Cena** Tonnarello (Trastevere)
+- 21:15 Foro Romano desde el Campidoglio (noche) · 30 min · de noche
 
 ### Día 4 · viernes 2027-03-05 · D5C El Aventino, Testaccio, las basílicas y el Coliseo de noche
 
@@ -529,10 +532,10 @@ Salida el martes 2027-03-02 · 4 días · entrada: Coliseo a las 15:30
 - 14:00 Basílica de San Clemente · 45 min · por dentro · Metro B, unos 20 min
 - 15:00 Basílica de San Juan de Letrán · 30 min · por dentro
 - 15:50 Basílica de Santa María la Mayor · 30 min · por dentro
-- 16:30 Iglesia de San Pietro in Vincoli · 25 min · por dentro
-- 17:10 Columna de Trajano · 15 min
-- 17:45 Via dei Fori Imperiali · 35 min
-- 18:35 Pasea y piérdete por Monti · 75 min
+- 16:30 Iglesia de San Pietro in Vincoli · 20 min · por dentro
+- 17:00 Via dei Fori Imperiali · 45 min
+- 17:55 Mercados de Trajano · 45 min · por dentro
+- 18:55 Pasea y piérdete por Monti · 55 min
 - 20:00 **Cena** Trattoria Valentino (Monti)
 - 21:30 Coliseo (noche) · 20 min · de noche
 
@@ -757,12 +760,11 @@ Salida el martes 2027-10-19 · 5 días
 - 15:40 Iglesia de Santa Maria in Trastevere · 20 min · por dentro · Bus 23 por el Lungotevere, unos 15 min
 - 16:10 San Pietro in Montorio y Tempietto de Bramante · 20 min · por dentro
 - 16:35 Fontana dell'Acqua Paola · 10 min
-- 17:45 Mirador del Janículo · 55 min
-- 19:00 Trastevere · 30 min
-- 19:40 Isla Tiberina · 20 min
-- 20:30 **Cena** Tonnarello (Trastevere)
-- 22:00 Piazza Navona (noche) · 30 min · de noche
-- (hueco) 45 min antes de Mirador del Janículo «La Passeggiata del Gianicolo»
+- 17:00 Mirador del Janículo · 60 min
+- 18:20 Trastevere · 30 min
+- 19:00 Isla Tiberina · 20 min
+- 19:45 **Cena** Tonnarello (Trastevere)
+- 21:15 Piazza Navona (noche) · 30 min · de noche
 
 ### Día 4 · viernes 2027-10-22 ·  Excursión
 
@@ -809,7 +811,8 @@ Salida el lunes 2027-12-20 · 5 días · mercadillos_navidenos
 - 17:20 Piazza Navona y su mercadillo navideño · 45 min
 - 18:10 Campo de' Fiori · 30 min
 - 19:30 **Cena** Armando al Pantheon (Centro Histórico)
-- 21:00 Fontana de Trevi (noche) · 20 min · de noche
+- 21:00 Foro Romano desde el Campidoglio (noche) · 30 min · de noche
+- 21:50 Trastevere de noche · 25 min · de noche
 
 ### Día 2 · martes 2027-12-21 · D2 Vaticano, Castillo y Trastevere al atardecer
 
@@ -849,7 +852,7 @@ Salida el lunes 2027-12-20 · 5 días · mercadillos_navidenos
 ### Día 4 · jueves 2027-12-23 ·  Excursión
 
 
-### Día 5 · viernes 2027-12-24 · D5C El Aventino, Testaccio, las basílicas y el Coliseo de noche
+### Día 5 · viernes 2027-12-24 · D5C El Aventino, Testaccio y las basílicas
 
 - 09:30 Boca de la Verdad · 20 min
 - 10:00 Jardín de los Naranjos · 25 min
@@ -889,11 +892,10 @@ Salida el martes 2027-06-15 · 5 días · entrada: Museos Vaticanos y Capilla Si
 - 16:25 Panteón · 30 min · por dentro
 - 17:00 Iglesia de San Luigi dei Francesi · 15 min · por dentro
 - 17:20 Piazza Navona · 35 min
-- 18:00 Campo de' Fiori · 35 min
-- 18:45 Iglesia del Gesù · 40 min
-- 19:35 Plaza Colonna · 20 min
-- 20:30 Ponte Sisto · 30 min
-- 21:15 **Cena** Armando al Pantheon (Centro Histórico)
+- 18:00 Campo de' Fiori · 40 min
+- 18:45 Ponte Sisto · 30 min
+- 20:30 **Cena** Armando al Pantheon (Centro Histórico)
+- 22:00 Fontana de Trevi (noche) · 20 min · de noche
 
 ### Día 2 · miércoles 2027-06-16 · D2 Vaticano, el Janículo y el Castillo al atardecer
 
@@ -903,12 +905,12 @@ Salida el martes 2027-06-15 · 5 días · entrada: Museos Vaticanos y Capilla Si
 - 11:30 **Comida** Pizzarium (Bonci) (hasta 12:20, Prati / Vaticano)
 - 13:00 Museos Vaticanos y Capilla Sixtina · 180 min · por dentro
 - 16:10 Plaza de San Pedro · 25 min
-- 16:40 Basílica de San Pedro · 55 min · por dentro
-- 20:20 Mirador del Janículo · 40 min
-- 21:20 Iglesia de Santa Maria in Trastevere · 10 min · por fuera
-- 21:35 Trastevere · 45 min
-- 22:30 **Cena** Tonnarello (Vaticano)
-- (hueco) 135 min antes de Mirador del Janículo «La Passeggiata del Gianicolo»
+- 16:40 Basílica de San Pedro · 60 min · por dentro
+- 18:00 Fontana dell'Acqua Paola · 15 min · Un taxi, unos 19 min
+- 18:30 Mirador del Janículo · 60 min
+- 19:50 Iglesia de Santa Maria in Trastevere · 20 min · por dentro
+- 20:10 Trastevere · 45 min
+- 21:00 **Cena** Tonnarello (Vaticano)
 
 ### Día 3 · jueves 2027-06-17 · D4 Trevi, la Borghese con su parque y el Popolo
 
@@ -930,7 +932,7 @@ Salida el martes 2027-06-15 · 5 días · entrada: Museos Vaticanos y Capilla Si
 ### Día 4 · viernes 2027-06-18 ·  Excursión
 
 
-### Día 5 · sábado 2027-06-19 · D5C El Aventino, Testaccio, las basílicas y el Coliseo de noche
+### Día 5 · sábado 2027-06-19 · D5C El Aventino, Testaccio y las basílicas
 
 - 09:30 Boca de la Verdad · 20 min
 - 10:00 Jardín de los Naranjos · 25 min
@@ -1095,10 +1097,9 @@ Salida el martes 2027-02-09 · 7 días · con Free Tour
 - 19:30 **Cena** Trattoria Da Enzo al 29 (Trastevere)
 - 21:30 Foro Romano desde el Campidoglio (noche) · 30 min · de noche
 
-### Día 3 · jueves 2027-02-11 · D4 El Castillo, la Borghese y el Popolo
+### Día 3 · jueves 2027-02-11 · D4 la Borghese y el Popolo
 
-- 08:00 El parque de Villa Borghese: Piazza di Siena, de camino a la Galería · 15 min
-- 08:25 Porta Pinciana · 30 min
+- 10:30 El parque de Villa Borghese: Piazza di Siena, de camino a la Galería · 10 min
 - 11:00 Galería Borghese · 120 min · por dentro
 - 13:20 **Comida** Girarrosto Fiorentino (hasta 14:20, Via Veneto / Salario)
 - 14:30 El lago y el Templo de Esculapio, en Villa Borghese · 40 min
@@ -1144,7 +1145,7 @@ Salida el martes 2027-02-09 · 7 días · con Free Tour
 - 19:45 **Cena** Trattoria Monti (Monti)
 - 21:30 Terraza del Pincio (noche) · 30 min · de noche · Un taxi, unos 13 min
 
-### Día 7 · lunes 2027-02-15 · D7 Tívoli, el Castillo y el atardecer sobre San Pedro
+### Día 7 · lunes 2027-02-15 · D7 Tívoli y el atardecer sobre San Pedro
 
 - 16:00 Palazzo Doria Pamphilj · 60 min
 - 17:10 Campo de' Fiori · 35 min
@@ -1190,12 +1191,11 @@ Salida el jueves 2027-03-25 · 3 días
 - 15:40 Iglesia de Santa Maria in Trastevere · 20 min · por dentro · Bus 23 por el Lungotevere, unos 15 min
 - 16:10 San Pietro in Montorio y Tempietto de Bramante · 20 min · por dentro
 - 16:35 Fontana dell'Acqua Paola · 10 min
-- 17:55 Mirador del Janículo · 55 min
-- 19:10 Trastevere · 30 min
-- 19:50 Isla Tiberina · 20 min
-- 20:30 **Cena** Tonnarello (Trastevere)
-- 22:00 Piazza Navona (noche) · 30 min · de noche
-- (hueco) 50 min antes de Mirador del Janículo «La Passeggiata del Gianicolo»
+- 17:00 Mirador del Janículo · 60 min
+- 18:20 Trastevere · 30 min
+- 19:00 Isla Tiberina · 20 min
+- 19:45 **Cena** Tonnarello (Trastevere)
+- 21:15 Piazza Navona (noche) · 30 min · de noche
 
 ### Día 3 · sábado 2027-03-27 · D4M Trevi a primera hora, el Pincio y la tarde en Monti
 

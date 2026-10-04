@@ -29,7 +29,6 @@ export const TIPOS_REGLAS = {
   min_max_pasado: 'R-38 · Una parada que pasa su máximo (`min_max`)',
   acaba_tras_cierre: 'R-1 · Una visita por dentro que acaba después del cierre (debería acortarse, mínimo 20 min)',
   acortada_menos_20: 'R-1 · Una visita por dentro acortada a menos de 20 min',
-  mirador_fuera_de_hora: 'R-16 · Un mirador de atardecer a más de 30 min del sol',
   espera_mas_90: 'R-16 · Una espera de más de 90 min entre dos paradas',
   cena_lejos_nocturna: 'R-37 · La cena a más de 20 min andando de la nocturna y sin transporte',
   noche_pasa_limite: 'R-41 · Una nocturna que acaba después de la hora límite de la noche',
@@ -88,8 +87,7 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
     // (Los que van en días distintos, con los dos por dentro.)
     // (Dos miembros distintos del grupo, sin ningún día en común: el grupo está partido. El mismo sitio dos días es otra regla, la 5.)
     const split = daysOfMember.some(([, a], i) => daysOfMember.some(([, b], j) => j > i && !a.some((day) => b.includes(day))))
-    const anyInside = members.some((name) => real.some(({ day }) => day.stops.some((stop) => nameOf(stop) === name && stop.visit_mode === 'dentro')))
-    if (group.breakable_if_short === false && all.size > 1 && split && !anyInside) add('grupo_partido', 0, '', group.name ?? groupId, daysOfMember.map(([name, list]) => `${name}: día ${list.join(',')}`).join(' · '))
+    if (group.breakable_if_short === false && all.size > 1 && split) add('grupo_partido', 0, '', group.name ?? groupId, daysOfMember.map(([name, list]) => `${name}: día ${list.join(',')}`).join(' · '))
   }
 
   // R-17 A primera hora, lo que luego se llena (lista del destino).
@@ -183,15 +181,7 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
         if (session && (stop.duration_minutes ?? 0) < 15 && (place.duration_minutes ?? 0) >= 20 && stop.hora_tipo == null && session.close - (start + (stop.duration_minutes ?? 0)) <= 5) add('acortada_menos_20', n, stop.suggested_time, nameOf(stop), `${stop.duration_minutes} min`)
       }
     }
-    // R-16 (A.3) · El mirador, a ±30 min del atardecer; ninguna espera de más de 90 min.
-    if (sunset != null) {
-      for (const stop of stops) {
-        if (stop.sunset_minutes == null || stop.night_view) continue
-        const start = t2m(stop.suggested_time)
-        const end = start + (stop.duration_minutes ?? 0)
-        if (start > sunset + 30 || end < sunset - 30) add('mirador_fuera_de_hora', n, stop.suggested_time, nameOf(stop), `sol a las ${Math.floor(sunset / 60)}:${String(sunset % 60).padStart(2, '0')}`)
-      }
-    }
+    // Regla 6 · El atardecer se intenta pero no se esperan más de 30 min sin nada: lo mira `hueco`.
     const mealTimes = (day.meals ?? []).map((meal) => t2m(meal.suggested_time)).filter((time) => time != null)
     stops.forEach((stop, i) => {
       const next = stops[i + 1]
@@ -248,15 +238,14 @@ export function auditarReglas(D, days, { startIso = null, label = '', reservas =
       else if (first !== n) add('sitio_dos_dias', n, stop.suggested_time, nameOf(stop), `${idToName.get(id) ?? id} ya salió el día ${first}`)
     }
   }
-  // R-44 · La cena no empieza después de `cena_limite`. R-37 · Ninguna nocturna antes de la cena. R-3 · Ningún sitio a la vez en el día y en «No incluido»; ningún aviso de llegada.
+  // La cena no empieza después de `cena_horas.hasta`. R-37 · Ninguna nocturna antes de la cena. R-3 · Ningún sitio a la vez en el día y en «No incluido»; ningún aviso de llegada.
   for (const { day, n, index } of real) {
     const iso = dateOf(index)
     const dinner = (day.meals ?? []).find((meal) => meal.time === 'dinner')
-    const cfg = config.cena_limite
-    const month = iso ? String(Number(iso.slice(5, 7))) : null
+    const cfg = config.cena_horas?.[/^D$/.test(String(day.curated_day?.variants?.[0] ?? '')) ? 'D' : 'normal']
     const dinnerAt = t2m(dinner?.suggested_time)
-    const limit = cfg ? t2m((month && cfg.meses?.[month]) || cfg.hora) : null
-    if (limit != null && dinnerAt != null && dinnerAt > limit) add('cena_tarde', n, dinner.suggested_time, dinner.restaurant ?? '', `límite ${cfg.hora}`)
+    const limit = cfg?.hasta ? t2m(cfg.hasta) : null
+    if (limit != null && dinnerAt != null && dinnerAt > limit) add('cena_tarde', n, dinner.suggested_time, dinner.restaurant ?? '', `límite ${cfg.hasta}`)
     if (dinnerAt != null) for (const stop of day.stops) if (stop.is_night_experience && t2m(stop.suggested_time) < dinnerAt) add('nocturna_antes_de_cenar', n, stop.suggested_time, nameOf(stop), `cena a las ${dinner.suggested_time}`)
     for (const item of day.not_included ?? []) {
       if (item.is_notice && /Llegarás/.test(item.reason ?? '')) add('aviso_de_llegada', n, '', item.name, item.reason)

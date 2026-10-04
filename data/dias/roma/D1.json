@@ -1,5 +1,5 @@
 {
-  "_nota": "D1 escrito (2026-09-29), sacado de los días curados y corregido con las lecciones: el Gesù entra (abre a las 16:00), sin atardecer (la tarde del centro no depende del sol; en verano empieza más tarde). (30-sep: el 1 de enero el Coliseo y el Foro suelen abrir con horario corto, colosseo.it; fuera la variante del 1 de enero y su no_en: el reparto evita ese día si puede por el horario especial probable.)",
+  "_nota": "D1 escrito (2026-09-29), sacado de los días curados y corregido con las lecciones: el Gesù entra (abre a las 16:00), sin atardecer (la tarde del centro no depende del sol; (30-sep: el 1 de enero el Coliseo y el Foro suelen abrir con horario corto, colosseo.it; fuera la variante del 1 de enero y su no_en: el reparto evita ese día si puede por el horario especial probable.)",
   "id": "D1",
   "nombre": "Roma Antigua y el centro barroco",
   "joyas": [
@@ -381,7 +381,6 @@
     },
     "D": {
       "empieza": "15:30",
-      "_sol": "en verano la comida va sin prisa y la tarde empieza a las 15:30",
       "paradas": "igual que C",
       "cena": {
         "restaurante": "Armando al Pantheon",
@@ -392,7 +391,7 @@
   },
   "variantes": {
     "sabado": {
-      "_nota": "Sábado (PROMPT_REPASO_LOCAL_ROMA, 3): el Panteón deja de vender entradas a las 16:00 (misa de las 17:00), así que va nada más comer; el Largo Argentina y el Ghetto pasan a la mañana, después del Altar, y la comida es fuera del Ghetto (el sábado es su día de descanso y muchos negocios judíos cierran). Por la tarde, sin volver atrás: el Panteón, la Minerva (el sábado abre a las 15:30) y el Gesù (reabre a las 16:00, cerca), San Luigi, Navona, Campo de' Fiori y, en C y D, el Ponte Sisto al atardecer. En julio y agosto, el Altar de la Patria va después del Gesù, con el sol ya bajo. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio.",
+      "_nota": "Sábado (PROMPT_REPASO_LOCAL_ROMA, 3): el Panteón deja de vender entradas a las 16:00 (misa de las 17:00), así que va nada más comer; el Largo Argentina y el Ghetto pasan a la mañana, después del Altar, y la comida es fuera del Ghetto (el sábado es su día de descanso y muchos negocios judíos cierran). Por la tarde, sin volver atrás: el Panteón, la Minerva (el sábado abre a las 15:30) y el Gesù (reabre a las 16:00, cerca), San Luigi, Navona, Campo de' Fiori y, en C y D, el Ponte Sisto al atardecer. Con Arte, los Museos Capitolinos van por la mañana, en la misma plaza del Campidoglio.",
       "tarde.*": {
         "paradas": [
           {
@@ -602,7 +601,7 @@
       "_fuente": "colosseo.it (#domenicalmuseo: «non si prenotano», «in ordine di arrivo», taquillas de la plaza del Coliseo y Largo della Salara Vecchia; sin nivel superior, arena ni subterráneos), consultado el 30-09-2026. Fuera «poca cola, casi vacío» ese día (PROMPT_REPASO_LOCAL_ROMA, 5)."
     },
     "fecha:01-01": {
-      "_nota": "1 de enero: el Panteón suele abrir de 9:00 a 17:00, con la última entrada a las 16:30 (cultura.gov.it, 1 de enero de 2026). Como haría un romano (PROMPT_REPASO_LOCAL_ROMA, 3): el Coliseo, el Foro y el Campidoglio (con Arte, los Museos Capitolinos, que abren a las 11:00 ese día) por la mañana; después de comer, siempre hacia delante: el Altar de la Patria, el Panteón (antes de su última entrada), la Minerva, San Luigi y Navona, y a cenar. Sin el Largo Argentina, el Gesù ni el Ghetto por la tarde (salían dos veces y el Gesù, ya de noche, por fuera). Si el día empieza tarde (tras la Nochevieja), el Campidoglio va detrás del Altar y los Capitolinos no caben sin perder el Panteón.",
+      "_nota": "1 de enero: Como haría un romano (PROMPT_REPASO_LOCAL_ROMA, 3): el Coliseo, el Foro y el Campidoglio (con Arte, los Museos Capitolinos, que abren a las 11:00 ese día) por la mañana; después de comer, siempre hacia delante: el Altar de la Patria, el Panteón (antes de su última entrada), la Minerva, San Luigi y Navona, y a cenar. Sin el Largo Argentina, el Gesù ni el Ghetto por la tarde (salían dos veces y el Gesù, ya de noche, por fuera). Si el día empieza tarde (tras la Nochevieja), el Campidoglio va detrás del Altar y los Capitolinos no caben sin perder el Panteón.",
       "tarde.*": {
         "paradas": [
           {
@@ -1006,7 +1005,7 @@
       }
     },
     "entrada:tarde@sabado": {
-      "_nota": "Sábado con el orden 2: el Panteón solo vende hasta las 16:00 (misa a las 17:00), así que va por la mañana, después del Foro y antes de comer; por la tarde, después del Coliseo, directos a Navona. (La ancla es la Plaza del Campidoglio y no el Foro: en julio y agosto el Foro está escrito dos veces según el mes, y el Panteón no puede quedar delante de la hora fija del Foro.)",
+      "_nota": "Sábado con el orden 2: el Panteón solo vende hasta las 16:00 (misa a las 17:00), así que va por la mañana, después del Foro y antes de comer; por la tarde, después del Coliseo, directos a Navona. (La ancla es la Plaza del Campidoglio y no el Foro:",
       "manana": {
         "insertar": [
           {
@@ -1117,7 +1116,6 @@
       }
     }
   },
-  "_nota_verano": "Julio y agosto (PROMPT_REPASO_LOCAL_ROMA, 2): el Foro y el Palatino, más cortos (90 min en vez de 100; el Altar de la Patria sale de la mañana). Después de comer, lo que está a cubierto (el Panteón, Santa Maria sopra Minerva, San Luigi dei Francesi); el descanso hasta las 16:30, y desde ahí Largo Argentina, el Gesù y el Altar de la Patria (hacia las 17:30, con el sol ya bajo y antes de que cierre), Navona, Campo de' Fiori y el Ponte Sisto. El Ghetto ya se ve con la comida (sin volver a pleno sol).",
   "entradas": {
     "Coliseo": {
       "manana": [

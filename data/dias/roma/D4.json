@@ -208,7 +208,7 @@
       }
     },
     "D": {
-      "_sol": "desde las 19:45: de 14:00 a 16:30, sombra y sitios cerrados; la cena en el Tridente y, después, la Terraza del Pincio de noche o la Plaza de España",
+      "_sol": "desde las 19:45: la cena en el Tridente y, después, la Terraza del Pincio de noche o la Plaza de España",
       "empieza": "15:15",
       "paradas": [
         {
@@ -290,7 +290,7 @@
       }
     },
     "domingo": {
-      "_nota": "Edy e Il Gabriello cierran el domingo. Santa Maria del Popolo abre el domingo a las 16:30 (y cierra a las 18:00): en A, por fuera si no llega (PARA_CODE_TODO_2026-10-01, paso 5.5).",
+      "_nota": "Edy e Il Gabriello cierran el domingo. en A, por fuera si no llega (PARA_CODE_TODO_2026-10-01, paso 5.5).",
       "manana": {
         "restaurante": {
           "comida": "Poldo e Gianna Osteria",
@@ -1639,82 +1639,6 @@
               "min": 150,
               "modo": "parada"
             }
-          }
-        ]
-      }
-    },
-    "entrada:quince@verano": {
-      "_nota": "Verano (julio y agosto) con la entrada de 15:00: la regla de «nada al sol antes de las 16:30» es para el parque, no para la Galería, que es por dentro (PARA_CODE_ROJOS, 4). Orden: comida, la Galería en las horas de calor, el Parque de Villa Borghese (elástica) cuando baja el sol y, al final, los Jardines y la Terraza del Pincio al atardecer. La hora de la parada de la Galería es solo un ejemplo: la que vale es la reservada.",
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 40,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          }
-        ]
-      }
-    },
-    "entrada:tarde@verano": {
-      "_nota": "Verano (julio y agosto) con la entrada de 15:30 a 17:45: la regla de «nada al sol antes de las 16:30» es para el parque, no para la Galería, que es por dentro (PARA_CODE_ROJOS, 4). Orden: comida, la Galería en las horas de calor, el Parque de Villa Borghese (elástica) cuando baja el sol y, al final, los Jardines y la Terraza del Pincio al atardecer. La hora de la parada de la Galería es solo un ejemplo: la que vale es la reservada.",
-      "tarde.*": {
-        "paradas": [
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 40,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
           }
         ]
       }

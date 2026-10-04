@@ -556,6 +556,22 @@ function buildCityDayV3(destData, trip, tripDay, options) {
   // Unsplash o Wikipedia) en vez de la propia.
   markRepeatedOwnPhotos(day, photosFor(findPipelineV2Key(destData.destination ?? options.city ?? '') ?? ''), tripDay.hours?.dateIso ?? null)
   // Un id por sitio y lo que enseña cada parada (reglas 0 y 5): lo escribe el motor, la prueba compara por ahí.
+  // El título solo nombra lo que sale ese día (REGLAS_RUTAS 4 y «Cómo se comprueba»): un trozo del título que nombra un sitio y ese sitio no está en el día, se quita.
+  if (day.curated_day?.name) {
+    const plain = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    const STOP_WORDS = new Set(['para', 'desde', 'entre', 'sobre', 'antes', 'luego', 'tarde', 'noche', 'roma', 'antigua', 'centro'])
+    const core = (text) => plain(text).replace(/[^a-z0-9 ]/g, ' ').split(' ').filter((word) => word.length >= 4 && !STOP_WORDS.has(word))
+    const dayText = plain((day.stops ?? []).map((stop) => `${stop.name} ${stop.place_name ?? ''} ${stop.display_title ?? ''} ${stop.night_view_title ?? ''}`).join(' '))
+    const pieces = day.curated_day.name.split(/, | y /)
+    const kept = pieces.filter((piece) => {
+      const words = core(piece)
+      if (words.length === 0) return true
+      // (Un trozo nombra un sitio si todas sus palabras son palabras enteras del nombre de ese sitio; "el Vaticano" no nombra los Museos Vaticanos.)
+      const matching = (destData.places ?? []).filter((place) => (place.level ?? 3) <= 2 && !(place.tags ?? []).includes('mercadillo_navideno')).filter((place) => { const tokens = new Set(plain(place.name).replace(/[^a-z0-9 ]/g, ' ').split(' ')); return words.every((word) => tokens.has(word)) })
+      return matching.length === 0 || matching.some((place) => dayText.includes(plain(place.name)) || dayText.includes(plain(place.name).split(' ').filter((word) => word.length >= 4).slice(0, 2).join(' ')))
+    })
+    if (kept.length > 0 && kept.length < pieces.length) day.curated_day.name = kept.length === 1 ? kept[0] : `${kept.slice(0, -1).join(', ')} y ${kept.at(-1)}`
+  }
   attachSites(destData, day)
   // El banner de contexto va una vez, con el primer día de ciudad (el cliente lo pinta encima del Día 1).
   const firstCityDay = trip.days.find((candidate) => candidate.schedule)?.dayNumber

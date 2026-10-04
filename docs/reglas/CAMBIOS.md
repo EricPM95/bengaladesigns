@@ -2,6 +2,23 @@
 
 El diario de `docs/REGLAS_RUTAS.md`. Una regla nueva entra en su sitio **quitando la que contradiga**, y se apunta aquí con su fecha y con quién la pidió. Lo más nuevo, arriba.
 
+## 2026-10-06 (tarde) — Respuestas del usuario a las dudas de la hoja de 15
+
+| Cambio | Regla |
+|---|---|
+| Un solo aviso: la reserva del viajero con el sitio cerrado. Fuera «llegarás más tarde» y «hoy la Basílica cierra a las…» | 2 |
+| Un imprescindible, por fuera si desde la calle se ve algo; si no (los Museos), a «No incluido» | 1 |
+| Los grupos se mantienen; el Castillo y el Puente salen de `groups` (dos sitios) | 4 |
+| Nochebuena: la fecha manda; la nocturna de esa fecha se reserva y los demás días llevan otra | 3, 14 |
+| Las joyas «como tarde el día 3» pasan a la 12; las horas de 10 en 10 y las duraciones de 5 en 5 pasan a «Cómo se comprueba» (formato) | 12 |
+| La cena entre dos horas del destino (`cena_horas`: 19:30–21:30, y 20:30–22:00 en la versión D) | 8 |
+| Comida con entrada detrás: a mediodía antes y rápida; por la tarde tranquila | 7 |
+| Quitadas las frases del calor de las notas de D0, D1, D2 y D4, los `_sol` del calor y las dos variantes `@verano` | — |
+| El atardecer se intenta pero no se esperan más de 30 min sin nada | 6 |
+| Si antes de una entrada sobra tiempo, el día empieza más tarde | 2 |
+| El título del día solo nombra lo que sale | 4 |
+| D2 del miércoles con y sin Museos (`solo_con` / `solo_sin`); D4 de Free Tour con el Castillo según el día | 14 |
+
 ## 2026-10-06 — La hoja pasa de 46 reglas a 15
 
 Encargo del usuario. Se ordena, no se cambia: cada regla vieja va dentro de una nueva (tabla «R vieja → regla nueva» al final de `REGLAS_RUTAS.md`). Lo de cómo se comprueba (R-30, 31, 32 y 46) pasa a la sección «Cómo se comprueba». **Se quita la regla del calor** (R-21: julio y agosto, descanso a la sombra, «primero lo de dentro»): sale del motor (`writtenTrip.js`, `index.js`, `seasonNote.js`) y de la prueba (`verano_al_sol`). Entra la regla 5 (Coliseo y Museos a primera hora) con su comprobación `primera_hora`. La prueba imprime una línea por cada una de las 15 reglas. Lo que no se supo juntar está en la hoja («Lo que no supe juntar»).
