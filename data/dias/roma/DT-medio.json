@@ -1,0 +1,1444 @@
+{
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
+  "id": "DT-medio",
+  "nombre": "Medio día del Tridente y el Pincio",
+  "versiones": {
+    "manana": {
+      "unica": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:45",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_cerca_de_la_plaza_de_espana",
+          "hora": "08:25",
+          "min": 30,
+          "texto_documento": "Desayuno cerca de la Plaza de España",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno cerca de la Plaza de España"
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "09:10",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "09:35",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "10:00",
+          "min": 20,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio",
+          "hora": "10:35",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_terraza_del_pincio_la_vista_de_san_pedro_con_la_luz_de_la_manana",
+          "hora": "11:15",
+          "min": 20,
+          "texto_documento": "Terraza del Pincio (la vista de San Pedro con la luz de la mañana)",
+          "como_documento": "",
+          "nota": "la vista de San Pedro con la luz de la mañana",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "titulo": "Terraza del Pincio (la vista de San Pedro con la luz de la mañana)",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_los_jardines_del_pincio",
+          "hora": "11:45",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por los Jardines del Pincio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Los bustos de italianos ilustres, el obelisco de Antínoo, el reloj de agua y la Casina Valadier por fuera.",
+          "tipo": "paseo",
+          "lugar": "Jardines del Pincio",
+          "titulo": "Pasea y piérdete por los Jardines del Pincio"
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "12:25",
+          "min": 15,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "12:45",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_condotti",
+          "hora": "12:50",
+          "min": 10,
+          "texto_documento": "Via Condotti",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Condotti",
+          "modo": "camino"
+        },
+        {
+          "id": "comida_poldo_e_gianna_osteria",
+          "hora": "13:15",
+          "min": 60,
+          "texto_documento": "**Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Poldo e Gianna Osteria",
+          "alternativa": "Edy",
+          "zona": "en el Tridente"
+        }
+      ]
+    },
+    "tarde": {
+      "A": [
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "15:00",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "15:30",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "15:55",
+          "min": 15,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio",
+          "hora": "16:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "17:05",
+          "min": 30,
+          "texto_documento": "Terraza del Pincio, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "17:55",
+          "min": 15,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "18:15",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
+          "hora": "18:30",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
+          "tipo": "paseo",
+          "lugar": "Via Condotti",
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "21:30",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
+      ],
+      "B": [
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "15:00",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "15:30",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "15:55",
+          "min": 15,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio",
+          "hora": "16:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio)",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_los_jardines_del_pincio",
+          "hora": "17:00",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por los Jardines del Pincio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Los bustos de italianos ilustres, el obelisco de Antínoo, el reloj de agua y la Casina Valadier por fuera.",
+          "tipo": "paseo",
+          "lugar": "Jardines del Pincio",
+          "titulo": "Pasea y piérdete por los Jardines del Pincio"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "18:00",
+          "min": 30,
+          "texto_documento": "Terraza del Pincio, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "18:50",
+          "min": 15,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "19:10",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
+          "hora": "19:25",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
+          "tipo": "paseo",
+          "lugar": "Via Condotti",
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:40",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "22:00",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
+      ],
+      "C": [
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "16:30",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "16:55",
+          "min": 15,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio",
+          "hora": "17:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio)",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_el_reloj_de_agua_y_los_jardines",
+          "hora": "18:05",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "19:25",
+          "min": 30,
+          "texto_documento": "Terraza del Pincio, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "20:15",
+          "min": 10,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "como_documento": "por fuera (la iglesia cierra a las 19:45)",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "20:30",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "20:50",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "22:30",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo (de mayo a septiembre)",
+          "como_documento": "",
+          "nota": "de mayo a septiembre",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "22:50",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado (de mayo a septiembre)",
+          "como_documento": "de noche",
+          "nota": "de mayo a septiembre",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "16:30",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "16:55",
+          "min": 15,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio",
+          "hora": "17:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio)",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_el_reloj_de_agua_y_los_jardines",
+          "hora": "18:05",
+          "min": 90,
+          "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "19:55",
+          "min": 30,
+          "texto_documento": "Terraza del Pincio, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "20:45",
+          "min": 10,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "como_documento": "por fuera (la iglesia cierra a las 19:45)",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "21:00",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "21:20",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "23:00",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "23:20",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
+      ]
+    },
+    "tarde_invierno": {
+      "unica": [
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "15:00",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "15:35",
+          "min": 15,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España (subiendo la escalinata)",
+          "como_documento": "por dentro",
+          "nota": "subiendo la escalinata",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "16:15",
+          "min": 30,
+          "texto_documento": "Terraza del Pincio, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio",
+          "hora": "17:05",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "17:40",
+          "min": 20,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "18:05",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
+          "hora": "18:25",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
+          "tipo": "paseo",
+          "lugar": "Via Condotti",
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "19:20",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:00",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "21:20",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
+      ]
+    }
+  },
+  "pool": {
+    "Galería Borghese": {
+      "prioridad": 1,
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "dia",
+          "tablas": {
+            "manana": [
+              {
+                "hora": "07:40",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi, sin gente",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Fontana de Trevi",
+                "modo": null
+              },
+              {
+                "hora": "08:10",
+                "min": 10,
+                "texto_documento": "Taxi a la Galería Borghese",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "09:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "11:25",
+                "min": 20,
+                "texto_documento": "Pasea por Villa Borghese hasta el Pincio",
+                "como_documento": "",
+                "tipo": "paseo",
+                "lugar": "Parque de Villa Borghese",
+                "titulo": "Pasea por Villa Borghese hasta el Pincio"
+              },
+              {
+                "hora": "12:00",
+                "min": 20,
+                "texto_documento": "Terraza del Pincio",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": null
+              },
+              {
+                "hora": "12:40",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "13:00",
+                "min": 10,
+                "texto_documento": "Via del Babuino y Via Margutta",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via del Babuino y Via Margutta",
+                "modo": "camino"
+              },
+              {
+                "hora": "13:25",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "14:00",
+                "min": 60,
+                "texto_documento": "**Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Poldo e Gianna Osteria",
+                "alternativa": "Edy",
+                "zona": "en el Tridente"
+              }
+            ],
+            "A": [
+              {
+                "hora": "15:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "17:25",
+                "min": 20,
+                "texto_documento": "Pasea por Villa Borghese hasta el Pincio",
+                "como_documento": "",
+                "tipo": "paseo",
+                "lugar": "Parque de Villa Borghese",
+                "titulo": "Pasea por Villa Borghese hasta el Pincio"
+              },
+              {
+                "hora": "18:00",
+                "min": 30,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "18:50",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "19:15",
+                "min": 10,
+                "texto_documento": "Via Margutta y Via del Babuino",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via Margutta y Via del Babuino",
+                "modo": "camino"
+              },
+              {
+                "hora": "19:40",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "20:15",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "21:55",
+                "min": 10,
+                "texto_documento": "Taxi al Coliseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "22:15",
+                "min": 20,
+                "texto_documento": "Coliseo iluminado",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Coliseo (noche)"
+              }
+            ],
+            "B": [
+              {
+                "hora": "15:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "17:25",
+                "min": 20,
+                "texto_documento": "Pasea por Villa Borghese hasta el Pincio",
+                "como_documento": "",
+                "tipo": "paseo",
+                "lugar": "Parque de Villa Borghese",
+                "titulo": "Pasea por Villa Borghese hasta el Pincio"
+              },
+              {
+                "hora": "18:00",
+                "min": 30,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "18:50",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "19:15",
+                "min": 10,
+                "texto_documento": "Via Margutta y Via del Babuino",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via Margutta y Via del Babuino",
+                "modo": "camino"
+              },
+              {
+                "hora": "19:40",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "20:15",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "21:55",
+                "min": 10,
+                "texto_documento": "Taxi al Coliseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "22:15",
+                "min": 20,
+                "texto_documento": "Coliseo iluminado",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Coliseo (noche)"
+              }
+            ],
+            "C": [
+              {
+                "hora": "15:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "17:25",
+                "min": 60,
+                "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)",
+                "como_documento": "",
+                "colchon": true,
+                "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+                "tipo": "paseo",
+                "lugar": "Parque de Villa Borghese",
+                "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines"
+              },
+              {
+                "hora": "18:45",
+                "min": 30,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "19:35",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "20:00",
+                "min": 10,
+                "texto_documento": "Via Margutta y Via del Babuino",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via Margutta y Via del Babuino",
+                "modo": "camino"
+              },
+              {
+                "hora": "20:25",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "21:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              }
+            ],
+            "D": [
+              {
+                "hora": "15:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "17:25",
+                "min": 60,
+                "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)",
+                "como_documento": "",
+                "colchon": true,
+                "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+                "tipo": "paseo",
+                "lugar": "Parque de Villa Borghese",
+                "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines"
+              },
+              {
+                "hora": "18:45",
+                "min": 30,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "19:35",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "20:00",
+                "min": 10,
+                "texto_documento": "Via Margutta y Via del Babuino",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via Margutta y Via del Babuino",
+                "modo": "camino"
+              },
+              {
+                "hora": "20:25",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "21:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "Parque de Villa Borghese": {
+      "prioridad": 1,
+      "solo_en": [
+        "B"
+      ],
+      "incluido_en": [
+        "C",
+        "D"
+      ],
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "dia",
+          "tablas": {
+            "B": [
+              {
+                "hora": "15:00",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "15:30",
+                "min": 10,
+                "texto_documento": "Via del Babuino y Via Margutta",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via del Babuino y Via Margutta",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:55",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "16:25",
+                "min": 20,
+                "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+                "como_documento": "por dentro",
+                "nota": "los Caravaggio",
+                "tipo": "parada",
+                "lugar": "Santa Maria del Popolo",
+                "titulo": "Santa Maria del Popolo (los Caravaggio)",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:05",
+                "min": 45,
+                "texto_documento": "Parque de Villa Borghese",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Parque de Villa Borghese",
+                "modo": null
+              },
+              {
+                "hora": "18:10",
+                "min": 30,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "19:00",
+                "min": 15,
+                "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Trinità dei Monti",
+                "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+                "modo": "dentro"
+              },
+              {
+                "hora": "19:20",
+                "min": 5,
+                "texto_documento": "Bajar la escalinata de la Plaza de España",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "titulo": "Bajar la escalinata de la Plaza de España",
+                "modo": "camino"
+              },
+              {
+                "hora": "20:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "21:40",
+                "min": 10,
+                "texto_documento": "Taxi al Coliseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "22:00",
+                "min": 20,
+                "texto_documento": "Coliseo iluminado",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Coliseo (noche)"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "experiencias": {
+    "naturaleza_vistas": {
+      "solo_en": [
+        "B"
+      ],
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "dia",
+          "tablas": {
+            "B": [
+              {
+                "hora": "15:00",
+                "min": 20,
+                "texto_documento": "Plaza de España",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "modo": null
+              },
+              {
+                "hora": "15:30",
+                "min": 10,
+                "texto_documento": "Via del Babuino y Via Margutta",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Via del Babuino",
+                "titulo": "Via del Babuino y Via Margutta",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:55",
+                "min": 15,
+                "texto_documento": "Piazza del Popolo",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza del Popolo",
+                "modo": null
+              },
+              {
+                "hora": "16:25",
+                "min": 20,
+                "texto_documento": "Santa Maria del Popolo (los Caravaggio)",
+                "como_documento": "por dentro",
+                "nota": "los Caravaggio",
+                "tipo": "parada",
+                "lugar": "Santa Maria del Popolo",
+                "titulo": "Santa Maria del Popolo (los Caravaggio)",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:05",
+                "min": 45,
+                "texto_documento": "Parque de Villa Borghese",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Parque de Villa Borghese",
+                "modo": null
+              },
+              {
+                "hora": "18:10",
+                "min": 30,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "19:00",
+                "min": 15,
+                "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Trinità dei Monti",
+                "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+                "modo": "dentro"
+              },
+              {
+                "hora": "19:20",
+                "min": 5,
+                "texto_documento": "Bajar la escalinata de la Plaza de España",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Plaza de España",
+                "titulo": "Bajar la escalinata de la Plaza de España",
+                "modo": "camino"
+              },
+              {
+                "hora": "20:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "21:40",
+                "min": 10,
+                "texto_documento": "Taxi al Coliseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "22:00",
+                "min": 20,
+                "texto_documento": "Coliseo iluminado",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Coliseo (noche)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
+          "lugar": "Luces de Navidad del Tridente",
+          "titulo": "Luces de Navidad del Tridente",
+          "texto": null
+        }
+      ]
+    }
+  }
+}

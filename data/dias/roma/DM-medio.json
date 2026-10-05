@@ -1,0 +1,164 @@
+{
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
+  "id": "DM-medio",
+  "nombre": "Medio día de Monti",
+  "versiones": {
+    "manana": {
+      "unica": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "09:00",
+          "min": 5,
+          "texto_documento": "Fontana de Trevi",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_del_quirinal_la_vista_de_san_pedro",
+          "hora": "09:20",
+          "min": 15,
+          "texto_documento": "Plaza del Quirinal (la vista de San Pedro)",
+          "como_documento": "",
+          "nota": "la vista de San Pedro",
+          "tipo": "parada",
+          "lugar": "Plaza del Quirinal",
+          "titulo": "Plaza del Quirinal (la vista de San Pedro)",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:40",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)",
+          "como_documento": "",
+          "nota": "Via Panisperna y la Piazza Madonna dei Monti",
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "11:00",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "11:40",
+          "min": 40,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_trattoria_monti",
+          "hora": "12:45",
+          "min": 60,
+          "texto_documento": "**Comida:** Trattoria Monti (o La Boccaccia), junto a Santa Maria Maggiore",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Trattoria Monti",
+          "alternativa": "La Boccaccia"
+        }
+      ]
+    }
+  },
+  "pool": {
+    "Basílica de San Juan de Letrán": {
+      "prioridad": 1,
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "dia",
+          "tablas": {
+            "manana": [
+              {
+                "hora": "09:00",
+                "min": 15,
+                "texto_documento": "Plaza del Quirinal (la vista de San Pedro)",
+                "como_documento": "",
+                "nota": "la vista de San Pedro",
+                "tipo": "parada",
+                "lugar": "Plaza del Quirinal",
+                "titulo": "Plaza del Quirinal (la vista de San Pedro)",
+                "modo": null
+              },
+              {
+                "hora": "09:40",
+                "min": 30,
+                "texto_documento": "Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)",
+                "como_documento": "",
+                "nota": "Via Panisperna y la Piazza Madonna dei Monti",
+                "tipo": "paseo",
+                "lugar": "Monti",
+                "titulo": "Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)"
+              },
+              {
+                "hora": "10:30",
+                "min": 20,
+                "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+                "como_documento": "por dentro",
+                "nota": "el Moisés de Miguel Ángel",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Pietro in Vincoli",
+                "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+                "modo": "dentro"
+              },
+              {
+                "hora": "11:10",
+                "min": 30,
+                "texto_documento": "Santa Maria Maggiore",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Basílica de Santa María la Mayor",
+                "modo": "dentro"
+              },
+              {
+                "hora": "12:10",
+                "min": 45,
+                "texto_documento": "San Juan de Letrán y la Escalera Santa",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Basílica de San Juan de Letrán",
+                "titulo": "San Juan de Letrán y la Escalera Santa",
+                "modo": "dentro"
+              },
+              {
+                "hora": "13:10",
+                "min": 60,
+                "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "SantoPalato",
+                "alternativa": "Il Bocconcino",
+                "zona": "en San Giovanni"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "experiencias": {
+    "barrios_sabores": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)",
+          "min": 75
+        }
+      ]
+    }
+  }
+}

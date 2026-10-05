@@ -3242,6 +3242,75 @@
       "coordinates_checked": true
     },
     {
+      "id": "plaza_del_quirinal",
+      "name": "Plaza del Quirinal",
+      "duration_minutes": 15,
+      "min_max": 20,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.8996,
+        12.4875
+      ],
+      "level": 3,
+      "type": "exterior",
+      "is_free_access": true,
+      "tags": [
+        "plaza",
+        "mirador"
+      ],
+      "filter_category": "monumentos",
+      "description": "La plaza más alta de Roma, con los Dioscuros y el obelisco, el palacio del Presidente de la República y una vista abierta hasta la cúpula de San Pedro",
+      "tip": "Asómate a la barandilla de la derecha: San Pedro se ve al fondo, entre los tejados.",
+      "search_aliases": [
+        "plaza del quirinal",
+        "piazza del quirinale",
+        "quirinale"
+      ],
+      "search_en": "Piazza del Quirinale Rome",
+      "search_en_keywords": [
+        "quirinale"
+      ],
+      "neighbor_of": [
+        "Fontana de Trevi",
+        "Monti"
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "Añadida el 5-oct-2026 para el medio día de Monti (DM-medio), por encargo del documento de los días escritos: nivel 3, por fuera, 15 min, entre Trevi y Monti."
+    },
+    {
+      "id": "via_dei_coronari",
+      "name": "Via dei Coronari",
+      "duration_minutes": 10,
+      "min_max": 15,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9014,
+        12.4723
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "calle"
+      ],
+      "filter_category": "monumentos",
+      "description": "La calle de los anticuarios del Renacimiento, entre el Puente Sant'Angelo y Piazza Navona",
+      "tip": "Mira hacia arriba: las casas conservan sus balcones y capillas de calle del siglo XV.",
+      "search_aliases": [
+        "via dei coronari",
+        "coronari"
+      ],
+      "search_en": "Via dei Coronari Rome",
+      "search_en_keywords": [
+        "coronari"
+      ],
+      "neighbor_of": [
+        "Piazza Navona",
+        "Puente Sant'Angelo"
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "Añadida el 5-oct-2026: el medio día del Vaticano (D0-medio) la lleva «de camino» entre el Puente Sant'Angelo y Trevi."
+    },
+    {
       "id": "via_condotti",
       "name": "Via Condotti",
       "duration_minutes": 20,
@@ -14032,6 +14101,8 @@
       "comprobado": "2026-09-28"
     },
     "Plaza Colonna": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano.",
+    "Plaza del Quirinal": "La plaza más alta de Roma: los Dioscuros con sus caballos, el obelisco y el palacio donde vive el Presidente de la República. Desde la barandilla, San Pedro se ve al fondo, entre los tejados.",
+    "Via dei Coronari": "La calle de los anticuarios del Renacimiento, entre el Puente Sant'Angelo y Navona. Se llama así por los vendedores de rosarios (coronari) que atendían a los peregrinos camino de San Pedro.",
     "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi.",
     "Plaza de España": "La escalinata más famosa del mundo, con la iglesia de Trinità dei Monti arriba. Abajo está la Fuente de la Barcaccia, con forma de barca medio hundida. Un detalle: sentarse en los escalones está prohibido.",
     "Santa Maria del Popolo": {

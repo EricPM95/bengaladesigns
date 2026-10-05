@@ -44,12 +44,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:40",
           "min": 75,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -85,8 +85,9 @@
           "id": "traslado_el_bus_23_por_el_lungotevere",
           "hora": "16:35",
           "min": 20,
-          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "texto_documento": "Bus 23 por el Lungotevere hasta la Isla Tiberina (parada Lungotevere dei Cenci)",
           "como_documento": "",
+          "nota": "parada Lungotevere dei Cenci",
           "tipo": "traslado",
           "traslado": {
             "como": "el bus 23 por el Lungotevere",
@@ -94,8 +95,18 @@
           }
         },
         {
+          "id": "parada_isla_tiberina",
+          "hora": "17:05",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "17:10",
+          "hora": "17:45",
           "min": 25,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "por dentro",
@@ -105,24 +116,15 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "17:45",
-          "min": 75,
-          "texto_documento": "Pasea y piérdete por Trastevere iluminado",
+          "hora": "18:20",
+          "min": 80,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
-        },
-        {
-          "id": "parada_isla_tiberina",
-          "hora": "19:20",
-          "min": 20,
-          "texto_documento": "Isla Tiberina (colchón)",
-          "como_documento": "",
-          "colchon": true,
-          "tipo": "parada",
-          "lugar": "Isla Tiberina",
-          "modo": null
         },
         {
           "id": "cena_tonnarello",
@@ -183,13 +185,13 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:40",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Dal Toscano",
           "zona": "en el Borgo",
-          "derivada": true,
-          "alternativa": "200 Gradi"
+          "derivada": true
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -282,6 +284,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
@@ -296,13 +299,13 @@
           "restaurante": "Tonnarello"
         },
         {
-          "id": "noche_piazza_navona_noche",
-          "hora": "22:15",
+          "id": "noche_trastevere_de_noche",
+          "hora": "21:55",
           "min": 30,
-          "texto_documento": "Piazza Navona de noche",
+          "texto_documento": "Trastevere de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Piazza Navona (noche)"
+          "noche": "Trastevere de noche"
         }
       ],
       "C": [
@@ -344,13 +347,13 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:40",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Dal Toscano",
           "zona": "en el Borgo",
-          "derivada": true,
-          "alternativa": "200 Gradi"
+          "derivada": true
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -413,6 +416,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere"
@@ -457,13 +461,13 @@
           "restaurante": "Tonnarello"
         },
         {
-          "id": "noche_piazza_navona_noche",
-          "hora": "22:30",
+          "id": "noche_trastevere_de_noche",
+          "hora": "22:10",
           "min": 30,
-          "texto_documento": "Piazza Navona de noche",
+          "texto_documento": "Trastevere de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Piazza Navona (noche)"
+          "noche": "Trastevere de noche"
         }
       ],
       "D": [
@@ -505,13 +509,13 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:40",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Dal Toscano",
           "zona": "en el Borgo",
-          "derivada": true,
-          "alternativa": "200 Gradi"
+          "derivada": true
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -604,6 +608,7 @@
           "texto_documento": "La Passeggiata del Gianicolo (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La avenida de los bustos de Garibaldi, el monumento ecuestre a Garibaldi, el de Anita Garibaldi y el Faro de los Argentinos, con Roma a los pies.",
           "tipo": "paseo",
           "lugar": "Mirador del Janículo",
           "titulo": "La Passeggiata del Gianicolo"
@@ -628,13 +633,13 @@
           "restaurante": "Tonnarello"
         },
         {
-          "id": "noche_piazza_navona_noche",
-          "hora": "23:00",
-          "min": 20,
-          "texto_documento": "Piazza Navona de noche",
+          "id": "noche_trastevere_de_noche",
+          "hora": "22:40",
+          "min": 30,
+          "texto_documento": "Trastevere de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Piazza Navona (noche)"
+          "noche": "Trastevere de noche"
         }
       ]
     },
@@ -660,6 +665,7 @@
           "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo; Via Cola di Rienzo, la calle de compras de los romanos, y la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio».",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio y Prati"
@@ -668,12 +674,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "12:00",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -756,6 +762,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
@@ -801,6 +808,7 @@
           "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo; Via Cola di Rienzo, la calle de compras de los romanos, y la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio».",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio y Prati"
@@ -809,12 +817,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "12:00",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -923,17 +931,18 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
           "hora": "19:50",
-          "min": 30,
+          "min": 10,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
         },
         {
           "id": "cena_tonnarello",
-          "hora": "20:45",
+          "hora": "20:15",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello",
           "como_documento": "",
@@ -942,7 +951,7 @@
         },
         {
           "id": "noche_piazza_navona_noche",
-          "hora": "22:45",
+          "hora": "22:15",
           "min": 30,
           "texto_documento": "Piazza Navona de noche",
           "como_documento": "de noche",
@@ -971,6 +980,7 @@
           "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo; Via Cola di Rienzo, la calle de compras de los romanos, y la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio».",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio y Prati"
@@ -979,12 +989,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "12:00",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -1067,6 +1077,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere"
@@ -1152,6 +1163,7 @@
           "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio"
@@ -1190,12 +1202,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:35",
           "min": 75,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         },
         {
           "id": "traslado_el_bus_23_por_el_lungotevere",
@@ -1266,6 +1278,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
@@ -1319,6 +1332,7 @@
           "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Borgo Pio"
@@ -1357,12 +1371,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:35",
           "min": 75,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         },
         {
           "id": "traslado_el_bus_23_por_el_lungotevere",
@@ -1456,6 +1470,480 @@
         }
       ]
     },
+    "miercoles_sin_museos": {
+      "A": [
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "09:00",
+          "min": 10,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "09:25",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "10:05",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Prati",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "11:25",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
+          "como_documento": "",
+          "nota": "abre tras la audiencia",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "14:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "15:40",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta la Isla Tiberina (parada Lungotevere dei Cenci)",
+          "como_documento": "",
+          "nota": "parada Lungotevere dei Cenci",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "16:10",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:50",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "17:25",
+          "min": 110,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello, en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ],
+      "B": [
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "09:00",
+          "min": 10,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "09:25",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "10:05",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Prati",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "11:25",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
+          "como_documento": "",
+          "nota": "abre tras la audiencia",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "14:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "15:40",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:15",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "16:55",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "17:15",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "17:45",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:40",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "20:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:15",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ],
+      "CD": [
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "09:00",
+          "min": 10,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": null
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "09:25",
+          "min": 20,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "10:05",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Prati",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "11:25",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "13:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
+          "como_documento": "",
+          "nota": "abre tras la audiencia",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "14:05",
+          "min": 75,
+          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
+          "como_documento": "por dentro",
+          "nota": "con las Grutas y el control",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "dentro",
+          "con_grutas": true
+        },
+        {
+          "id": "traslado_el_bus_23_por_el_lungotevere",
+          "hora": "15:40",
+          "min": 20,
+          "texto_documento": "Bus 23 por el Lungotevere hasta Trastevere",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "el bus 23 por el Lungotevere",
+            "min": 20
+          }
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "16:15",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "16:55",
+          "min": 25,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "17:30",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:40",
+          "min": 20,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:15",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:45",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_tonnarello",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Tonnarello",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Tonnarello"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "23:00",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ]
+    },
     "reserva_10_12": {
       "AB": [
         {
@@ -1486,6 +1974,7 @@
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Borgo Pio, el Passetto, la Piazza del Risorgimento y los muros vaticanos hasta la entrada de los Museos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
@@ -1507,12 +1996,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "15:25",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -1573,6 +2062,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
@@ -1625,6 +2115,7 @@
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Borgo Pio, el Passetto, la Piazza del Risorgimento y los muros vaticanos hasta la entrada de los Museos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
@@ -1646,12 +2137,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "15:25",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Pizzarium (Bonci)",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -1785,6 +2276,7 @@
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Borgo Pio, el Passetto, la Piazza del Risorgimento y los muros vaticanos hasta la entrada de los Museos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
@@ -1872,6 +2364,7 @@
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado"
@@ -1924,6 +2417,7 @@
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Borgo Pio, el Passetto, la Piazza del Risorgimento y los muros vaticanos hasta la entrada de los Museos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
@@ -2120,12 +2614,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "12:35",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -2165,10 +2659,11 @@
           "id": "cena_l_arcangelo",
           "hora": "19:30",
           "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
           "zona": "en Prati"
         },
         {
@@ -2246,12 +2741,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "12:35",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -2294,6 +2789,7 @@
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati"
@@ -2302,10 +2798,11 @@
           "id": "cena_l_arcangelo",
           "hora": "20:30",
           "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
           "zona": "en Prati"
         },
         {
@@ -2316,6 +2813,164 @@
           "como_documento": "de noche",
           "tipo": "noche",
           "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
+        }
+      ]
+    },
+    "fiesta": {
+      "unica": [
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "08:30",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere (aún tranquilo)",
+          "como_documento": "",
+          "nota": "aún tranquilo",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "09:00",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "09:20",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "09:40",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "paseo_la_passeggiata_del_gianicolo_bajando_hasta_san_pedro",
+          "hora": "10:00",
+          "min": 30,
+          "texto_documento": "La Passeggiata del Gianicolo, bajando hasta San Pedro",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Mirador del Janículo",
+          "titulo": "La Passeggiata del Gianicolo, bajando hasta San Pedro"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro_la_bendicion_del_papa_a_las_12_00_y_el_belen",
+          "hora": "11:00",
+          "min": 75,
+          "texto_documento": "Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "titulo": "Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén",
+          "modo": null
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:35",
+          "min": 90,
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo (con reserva)",
+          "como_documento": "",
+          "nota": "con reserva",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo (con reserva)"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "14:10",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "14:40",
+          "min": 15,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "15:10",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "16:10",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_centro_iluminado",
+          "hora": "16:40",
+          "min": 90,
+          "texto_documento": "Pasea y piérdete por el centro iluminado",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Piazza Navona",
+          "titulo": "Pasea y piérdete por el centro iluminado"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "18:15",
+          "min": 5,
+          "texto_documento": "Panteón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "camino"
+        },
+        {
+          "id": "cena_armando_al_pantheon",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Armando al Pantheon (o la alternativa abierta ese día; con reserva)",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Armando al Pantheon"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "21:15",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
       ]
     }

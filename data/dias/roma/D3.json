@@ -54,12 +54,12 @@
           "id": "comida_armando_al_pantheon",
           "hora": "12:50",
           "min": 45,
-          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio)",
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
-          "nota": "o Supplizio",
           "tipo": "comida",
           "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
+          "alternativa": "Supplizio",
+          "tercera": "Piccolo Arancio"
         },
         {
           "id": "traslado_el_bus_40_o_un_taxi",
@@ -104,6 +104,7 @@
           "texto_documento": "Plaza de San Pedro, ya iluminada (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La columnata de Bernini, el obelisco y las dos fuentes; los dos discos del suelo desde donde las cuatro filas de columnas se ven como una sola.",
           "tipo": "parada",
           "lugar": "Plaza de San Pedro",
           "modo": null
@@ -114,10 +115,10 @@
           "min": 90,
           "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
-          "nota": "o Osteria dell'Angelo",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
-          "alternativa": "Osteria dell'Angelo"
+          "alternativa": "Osteria dell'Angelo",
+          "zona": "en Prati"
         },
         {
           "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
@@ -130,6 +131,61 @@
         }
       ],
       "CD": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:45",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_en_piazza_della_rotonda_frente_al_panteon",
+          "hora": "08:25",
+          "min": 20,
+          "texto_documento": "Desayuno en Piazza della Rotonda, frente al Panteón",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno en Piazza della Rotonda, frente al Panteón"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Panteón (abre a las 9:00)",
+          "como_documento": "por dentro",
+          "nota": "abre a las 9:00",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "dentro"
+        },
+        {
+          "id": "tour_free_tour_centro_historico",
+          "hora": "10:00",
+          "min": 150,
+          "texto_documento": "**Free Tour Centro Histórico** (sale de la Plaza de España, acaba en Navona)",
+          "como_documento": "con guía",
+          "nota": "sale de la Plaza de España, acaba en Navona",
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "hora_tipo": "turno",
+          "guia": true,
+          "modo": null
+        },
+        {
+          "id": "comida_armando_al_pantheon",
+          "hora": "12:50",
+          "min": 45,
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio",
+          "tercera": "Piccolo Arancio"
+        },
         {
           "id": "traslado_el_bus_40_o_un_taxi",
           "hora": "13:50",
@@ -210,10 +266,11 @@
           "id": "cena_l_arcangelo",
           "hora": "20:45",
           "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
           "zona": "en Prati"
         },
         {
@@ -277,12 +334,12 @@
           "id": "comida_armando_al_pantheon",
           "hora": "12:50",
           "min": 60,
-          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio)",
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
-          "nota": "o Supplizio",
           "tipo": "comida",
           "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
+          "alternativa": "Supplizio",
+          "tercera": "Piccolo Arancio"
         },
         {
           "id": "traslado_el_bus_40_o_un_taxi",
@@ -365,6 +422,7 @@
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati"
@@ -373,10 +431,11 @@
           "id": "cena_l_arcangelo",
           "hora": "19:45",
           "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
           "zona": "en Prati"
         },
         {
@@ -438,12 +497,12 @@
           "id": "comida_armando_al_pantheon",
           "hora": "12:50",
           "min": 60,
-          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio)",
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
-          "nota": "o Supplizio",
           "tipo": "comida",
           "restaurante": "Armando al Pantheon",
-          "alternativa": "Supplizio"
+          "alternativa": "Supplizio",
+          "tercera": "Piccolo Arancio"
         },
         {
           "id": "traslado_el_bus_40_o_un_taxi",
@@ -516,6 +575,7 @@
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati"
@@ -534,10 +594,11 @@
           "id": "cena_l_arcangelo",
           "hora": "20:45",
           "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
           "zona": "en Prati"
         },
         {

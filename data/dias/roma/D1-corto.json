@@ -1,0 +1,1307 @@
+{
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
+  "id": "D1-corto",
+  "nombre": "Día entero del viaje de 1,5 días: la Roma antigua, el centro y Trastevere",
+  "versiones": {
+    "normal": {
+      "A": [
+        {
+          "id": "parada_coliseo",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Coliseo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "09:25",
+          "min": 5,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_fori_imperiali",
+          "hora": "09:35",
+          "min": 15,
+          "texto_documento": "Via dei Fori Imperiali (con la vista de los Foros)",
+          "como_documento": "de camino",
+          "nota": "con la vista de los Foros",
+          "tipo": "parada",
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "10:05",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
+          "hora": "10:35",
+          "min": 15,
+          "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "10:55",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "11:15",
+          "min": 10,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "11:35",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "12:00",
+          "min": 15,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "12:35",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "14:20",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "14:55",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:05",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "15:15",
+          "min": 5,
+          "texto_documento": "Iglesia del Gesù",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "15:30",
+          "min": 3,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "15:35",
+          "min": 3,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Panteón",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "16:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_campo_de_fiori",
+          "hora": "17:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Campo de' Fiori",
+          "modo": null
+        },
+        {
+          "id": "parada_ponte_sisto",
+          "hora": "17:50",
+          "min": 15,
+          "texto_documento": "Ponte Sisto, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ponte Sisto",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:20",
+          "min": 35,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "19:00",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "19:45",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:25",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "21:50",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
+        },
+        {
+          "id": "noche_plaza_de_espana_noche",
+          "hora": "22:30",
+          "min": 20,
+          "texto_documento": "Plaza de España de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Plaza de España (noche)"
+        }
+      ],
+      "B": [
+        {
+          "id": "parada_coliseo",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Coliseo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "09:25",
+          "min": 5,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_fori_imperiali",
+          "hora": "09:35",
+          "min": 15,
+          "texto_documento": "Via dei Fori Imperiali (con la vista de los Foros)",
+          "como_documento": "de camino",
+          "nota": "con la vista de los Foros",
+          "tipo": "parada",
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "10:05",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
+          "hora": "10:35",
+          "min": 15,
+          "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "10:55",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "11:15",
+          "min": 10,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "11:35",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "12:00",
+          "min": 15,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "12:35",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "14:20",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "14:55",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:05",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "15:15",
+          "min": 5,
+          "texto_documento": "Iglesia del Gesù",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "15:30",
+          "min": 3,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "15:35",
+          "min": 3,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Panteón",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "16:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_campo_de_fiori",
+          "hora": "17:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Campo de' Fiori",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_centro_historico",
+          "hora": "17:45",
+          "min": 15,
+          "texto_documento": "Pasea y piérdete por el Centro Histórico (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via del Governo Vecchio, la Piazza di Pasquino con su «estatua parlante» y Via dei Coronari, la calle de los anticuarios.",
+          "tipo": "paseo",
+          "lugar": "Campo de' Fiori",
+          "titulo": "Pasea y piérdete por el Centro Histórico"
+        },
+        {
+          "id": "parada_ponte_sisto",
+          "hora": "18:15",
+          "min": 15,
+          "texto_documento": "Ponte Sisto, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ponte Sisto",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
+          "hora": "18:45",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere iluminado"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "19:20",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:40",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "22:05",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
+        },
+        {
+          "id": "noche_plaza_de_espana_noche",
+          "hora": "22:45",
+          "min": 20,
+          "texto_documento": "Plaza de España de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Plaza de España (noche)"
+        }
+      ],
+      "C": [
+        {
+          "id": "parada_coliseo",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Coliseo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "09:25",
+          "min": 5,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_fori_imperiali",
+          "hora": "09:35",
+          "min": 15,
+          "texto_documento": "Via dei Fori Imperiali (con la vista de los Foros)",
+          "como_documento": "de camino",
+          "nota": "con la vista de los Foros",
+          "tipo": "parada",
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "10:05",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
+          "hora": "10:35",
+          "min": 15,
+          "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "10:55",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "11:15",
+          "min": 10,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "11:35",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "12:00",
+          "min": 15,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "12:35",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "14:20",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "14:55",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:05",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "15:15",
+          "min": 5,
+          "texto_documento": "Iglesia del Gesù",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "15:30",
+          "min": 3,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "15:35",
+          "min": 3,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Panteón",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "16:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_campo_de_fiori",
+          "hora": "17:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Campo de' Fiori",
+          "modo": null
+        },
+        {
+          "id": "parada_ponte_sisto",
+          "hora": "17:40",
+          "min": 5,
+          "texto_documento": "Ponte Sisto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Ponte Sisto",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "17:55",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "18:15",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "18:35",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "19:05",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "20:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "22:10",
+          "min": 10,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_fontana_de_trevi_noche",
+          "hora": "22:35",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi iluminada",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Fontana de Trevi (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_coliseo",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Coliseo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Coliseo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_arco_de_constantino",
+          "hora": "09:25",
+          "min": 5,
+          "texto_documento": "Arco de Constantino",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Arco de Constantino",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_fori_imperiali",
+          "hora": "09:35",
+          "min": 15,
+          "texto_documento": "Via dei Fori Imperiali (con la vista de los Foros)",
+          "como_documento": "de camino",
+          "nota": "con la vista de los Foros",
+          "tipo": "parada",
+          "lugar": "Via dei Fori Imperiali",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "10:05",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
+          "hora": "10:35",
+          "min": 15,
+          "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "10:55",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_altar_de_la_patria",
+          "hora": "11:15",
+          "min": 10,
+          "texto_documento": "Altar de la Patria",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_teatro_de_marcelo",
+          "hora": "11:35",
+          "min": 5,
+          "texto_documento": "Teatro de Marcelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Teatro de Marcelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "12:00",
+          "min": 15,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_isla_tiberina",
+          "hora": "12:35",
+          "min": 20,
+          "texto_documento": "Isla Tiberina",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Isla Tiberina",
+          "modo": null
+        },
+        {
+          "id": "comida_nonna_betta",
+          "hora": "13:10",
+          "min": 60,
+          "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "parada_barrio_judio",
+          "hora": "14:20",
+          "min": 30,
+          "texto_documento": "Barrio Judío",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Barrio Judío",
+          "modo": null
+        },
+        {
+          "id": "parada_fuente_de_las_tortugas",
+          "hora": "14:55",
+          "min": 5,
+          "texto_documento": "Fuente de las Tortugas",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente de las Tortugas",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_largo_di_torre_argentina",
+          "hora": "15:05",
+          "min": 5,
+          "texto_documento": "Largo di Torre Argentina",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Largo di Torre Argentina",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_del_gesu",
+          "hora": "15:15",
+          "min": 5,
+          "texto_documento": "Iglesia del Gesù",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia del Gesù",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_elefantino_de_bernini",
+          "hora": "15:30",
+          "min": 3,
+          "texto_documento": "Elefantino de Bernini",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Elefantino de Bernini",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_sopra_minerva",
+          "hora": "15:35",
+          "min": 3,
+          "texto_documento": "Santa Maria sopra Minerva",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria sopra Minerva",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "15:50",
+          "min": 15,
+          "texto_documento": "Panteón",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "16:20",
+          "min": 30,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_campo_de_fiori",
+          "hora": "17:10",
+          "min": 25,
+          "texto_documento": "Campo de' Fiori",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Campo de' Fiori",
+          "modo": null
+        },
+        {
+          "id": "parada_ponte_sisto",
+          "hora": "17:40",
+          "min": 5,
+          "texto_documento": "Ponte Sisto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Ponte Sisto",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_trastevere",
+          "hora": "18:00",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Trastevere",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por Trastevere"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "18:50",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
+          "hora": "19:10",
+          "min": 5,
+          "texto_documento": "San Pietro in Montorio y el Tempietto",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_dell_acqua_paola",
+          "hora": "19:30",
+          "min": 10,
+          "texto_documento": "Fontana dell'Acqua Paola",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana dell'Acqua Paola",
+          "modo": null
+        },
+        {
+          "id": "parada_mirador_del_janiculo",
+          "hora": "20:00",
+          "min": 30,
+          "texto_documento": "Mirador del Janículo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Mirador del Janículo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_trattoria_da_enzo_al_29",
+          "hora": "21:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere"
+        }
+      ]
+    }
+  },
+  "pool": {
+    "Coliseo": {
+      "franja": "manana",
+      "ya_si_dentro": "Coliseo",
+      "acciones": [
+        {
+          "op": "reemplazar_manana",
+          "filas": [
+            {
+              "hora": "08:30",
+              "min": 75,
+              "texto_documento": "Coliseo",
+              "como_documento": "por dentro (turno)",
+              "tipo": "parada",
+              "lugar": "Coliseo",
+              "modo": "dentro",
+              "turno": true,
+              "hora_tipo": "turno",
+              "guia": true
+            },
+            {
+              "hora": "10:05",
+              "min": 10,
+              "texto_documento": "Arco de Constantino",
+              "como_documento": "",
+              "tipo": "parada",
+              "lugar": "Arco de Constantino",
+              "modo": null
+            },
+            {
+              "hora": "10:30",
+              "min": 90,
+              "texto_documento": "Foro Romano y Palatino",
+              "como_documento": "por dentro",
+              "tipo": "parada",
+              "lugar": "Foro Romano y Palatino",
+              "modo": "dentro",
+              "guia": true
+            },
+            {
+              "hora": "12:20",
+              "min": 15,
+              "texto_documento": "Plaza del Campidoglio",
+              "como_documento": "",
+              "tipo": "parada",
+              "lugar": "Plaza del Campidoglio",
+              "modo": null
+            },
+            {
+              "hora": "12:40",
+              "min": 5,
+              "texto_documento": "Piazza Venezia",
+              "como_documento": "de camino",
+              "tipo": "parada",
+              "lugar": "Plaza Venecia",
+              "modo": "camino"
+            },
+            {
+              "hora": "13:00",
+              "min": 30,
+              "texto_documento": "Altar de la Patria",
+              "como_documento": "por dentro",
+              "tipo": "parada",
+              "lugar": "Altar de la Patria",
+              "modo": "dentro"
+            }
+          ]
+        }
+      ]
+    },
+    "Foro Romano y Palatino": {
+      "franja": "manana",
+      "ya_si_dentro": "Foro Romano y Palatino",
+      "acciones": [
+        {
+          "op": "reemplazar_manana",
+          "filas": [
+            {
+              "hora": "08:30",
+              "min": 75,
+              "texto_documento": "Coliseo",
+              "como_documento": "por dentro (turno)",
+              "tipo": "parada",
+              "lugar": "Coliseo",
+              "modo": "dentro",
+              "turno": true,
+              "hora_tipo": "turno",
+              "guia": true
+            },
+            {
+              "hora": "10:05",
+              "min": 10,
+              "texto_documento": "Arco de Constantino",
+              "como_documento": "",
+              "tipo": "parada",
+              "lugar": "Arco de Constantino",
+              "modo": null
+            },
+            {
+              "hora": "10:30",
+              "min": 90,
+              "texto_documento": "Foro Romano y Palatino",
+              "como_documento": "por dentro",
+              "tipo": "parada",
+              "lugar": "Foro Romano y Palatino",
+              "modo": "dentro",
+              "guia": true
+            },
+            {
+              "hora": "12:20",
+              "min": 15,
+              "texto_documento": "Plaza del Campidoglio",
+              "como_documento": "",
+              "tipo": "parada",
+              "lugar": "Plaza del Campidoglio",
+              "modo": null
+            },
+            {
+              "hora": "12:40",
+              "min": 5,
+              "texto_documento": "Piazza Venezia",
+              "como_documento": "de camino",
+              "tipo": "parada",
+              "lugar": "Plaza Venecia",
+              "modo": "camino"
+            },
+            {
+              "hora": "13:00",
+              "min": 30,
+              "texto_documento": "Altar de la Patria",
+              "como_documento": "por dentro",
+              "tipo": "parada",
+              "lugar": "Altar de la Patria",
+              "modo": "dentro"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "experiencias": {
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Piazza Navona",
+          "min": 40,
+          "titulo": "Piazza Navona y su mercadillo navideño"
+        },
+        {
+          "op": "insertar",
+          "despues": "Plaza del Campidoglio",
+          "fila": {
+            "tipo": "parada",
+            "lugar": "Santo Bambino de Aracoeli",
+            "min": 5,
+            "modo": "camino"
+          }
+        }
+      ]
+    }
+  }
+}

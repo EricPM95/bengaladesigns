@@ -76,10 +76,10 @@
           "min": 60,
           "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
-          "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "alternativa": "Giggetto al Portico d'Ottavia"
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "parada_barrio_judio",
@@ -103,17 +103,17 @@
         },
         {
           "id": "parada_largo_di_torre_argentina",
-          "hora": "15:45",
-          "min": 5,
+          "hora": "15:55",
+          "min": 15,
           "texto_documento": "Largo di Torre Argentina",
-          "como_documento": "de camino",
+          "como_documento": "",
           "tipo": "parada",
           "lugar": "Largo di Torre Argentina",
-          "modo": "camino"
+          "modo": null
         },
         {
           "id": "parada_iglesia_del_gesu",
-          "hora": "16:05",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Iglesia del Gesù (abre a las 16:00)",
           "como_documento": "por dentro",
@@ -124,7 +124,7 @@
         },
         {
           "id": "parada_elefantino_de_bernini",
-          "hora": "16:35",
+          "hora": "16:55",
           "min": 5,
           "texto_documento": "Elefantino de Bernini",
           "como_documento": "de camino",
@@ -134,7 +134,7 @@
         },
         {
           "id": "parada_iglesia_de_santa_maria_sopra_minerva",
-          "hora": "16:40",
+          "hora": "17:00",
           "min": 5,
           "texto_documento": "Santa Maria sopra Minerva",
           "como_documento": "de camino",
@@ -143,9 +143,20 @@
           "modo": "camino"
         },
         {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:20",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi (cierra a las 18:15)",
+          "como_documento": "por dentro",
+          "nota": "cierra a las 18:15",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro"
+        },
+        {
           "id": "parada_panteon",
-          "hora": "17:00",
-          "min": 30,
+          "hora": "17:55",
+          "min": 40,
           "texto_documento": "Panteón",
           "como_documento": "por dentro",
           "tipo": "parada",
@@ -153,34 +164,13 @@
           "modo": "dentro"
         },
         {
-          "id": "parada_iglesia_de_san_luigi_dei_francesi",
-          "hora": "17:45",
-          "min": 20,
-          "texto_documento": "San Luigi dei Francesi",
-          "como_documento": "por dentro",
-          "tipo": "parada",
-          "lugar": "Iglesia de San Luigi dei Francesi",
-          "modo": "dentro"
-        },
-        {
           "id": "parada_piazza_navona",
-          "hora": "18:20",
-          "min": 30,
+          "hora": "18:50",
+          "min": 45,
           "texto_documento": "Piazza Navona",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Piazza Navona",
-          "modo": null
-        },
-        {
-          "id": "parada_campo_de_fiori",
-          "hora": "19:10",
-          "min": 25,
-          "texto_documento": "Campo de' Fiori (colchón)",
-          "como_documento": "",
-          "colchon": true,
-          "tipo": "parada",
-          "lugar": "Campo de' Fiori",
           "modo": null
         },
         {
@@ -189,7 +179,6 @@
           "min": 90,
           "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
           "como_documento": "",
-          "nota": "o Da Baffetto",
           "tipo": "cena",
           "restaurante": "Armando al Pantheon",
           "alternativa": "Pizzeria Da Baffetto"
@@ -225,7 +214,8 @@
           "modo": "dentro",
           "turno": true,
           "hora_tipo": "turno",
-          "guia": true
+          "guia": true,
+          "derivada": true
         },
         {
           "id": "parada_arco_de_constantino",
@@ -235,7 +225,8 @@
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Arco de Constantino",
-          "modo": null
+          "modo": null,
+          "derivada": true
         },
         {
           "id": "parada_foro_romano_y_palatino",
@@ -246,7 +237,8 @@
           "tipo": "parada",
           "lugar": "Foro Romano y Palatino",
           "modo": "dentro",
-          "guia": true
+          "guia": true,
+          "derivada": true
         },
         {
           "id": "parada_plaza_del_campidoglio",
@@ -256,7 +248,8 @@
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "derivada": true
         },
         {
           "id": "parada_plaza_venecia",
@@ -266,7 +259,8 @@
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "derivada": true
         },
         {
           "id": "parada_altar_de_la_patria",
@@ -276,7 +270,8 @@
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "dentro"
+          "modo": "dentro",
+          "derivada": true
         },
         {
           "id": "comida_nonna_betta",
@@ -284,10 +279,11 @@
           "min": 60,
           "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
-          "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "alternativa": "Giggetto al Portico d'Ottavia"
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío",
+          "derivada": true
         },
         {
           "id": "parada_barrio_judio",
@@ -297,7 +293,8 @@
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Barrio Judío",
-          "modo": null
+          "modo": null,
+          "derivada": true
         },
         {
           "id": "parada_fuente_de_las_tortugas",
@@ -307,119 +304,118 @@
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "derivada": true
         },
         {
           "id": "parada_largo_di_torre_argentina",
-          "hora": "15:45",
-          "min": 5,
+          "hora": "15:55",
+          "min": 15,
           "texto_documento": "Largo di Torre Argentina",
-          "como_documento": "de camino",
+          "como_documento": "",
           "tipo": "parada",
           "lugar": "Largo di Torre Argentina",
-          "modo": "camino"
+          "modo": null,
+          "derivada": true
         },
         {
           "id": "parada_iglesia_del_gesu",
-          "hora": "16:05",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Iglesia del Gesù (abre a las 16:00)",
           "como_documento": "por dentro",
           "nota": "abre a las 16:00",
           "tipo": "parada",
           "lugar": "Iglesia del Gesù",
-          "modo": "dentro"
+          "modo": "dentro",
+          "derivada": true
         },
         {
           "id": "parada_elefantino_de_bernini",
-          "hora": "16:35",
+          "hora": "16:55",
           "min": 5,
           "texto_documento": "Elefantino de Bernini",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Elefantino de Bernini",
-          "modo": "camino"
+          "modo": "camino",
+          "derivada": true
         },
         {
           "id": "parada_iglesia_de_santa_maria_sopra_minerva",
-          "hora": "16:40",
+          "hora": "17:00",
           "min": 5,
           "texto_documento": "Santa Maria sopra Minerva",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Iglesia de Santa Maria sopra Minerva",
-          "modo": "camino"
+          "modo": "camino",
+          "derivada": true
+        },
+        {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:20",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi (cierra a las 18:15)",
+          "como_documento": "por dentro",
+          "nota": "cierra a las 18:15",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro",
+          "derivada": true
         },
         {
           "id": "parada_panteon",
-          "hora": "17:00",
-          "min": 30,
+          "hora": "17:55",
+          "min": 40,
           "texto_documento": "Panteón",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Panteón",
-          "modo": "dentro"
-        },
-        {
-          "id": "parada_iglesia_de_san_luigi_dei_francesi",
-          "hora": "17:45",
-          "min": 20,
-          "texto_documento": "San Luigi dei Francesi",
-          "como_documento": "por dentro",
-          "tipo": "parada",
-          "lugar": "Iglesia de San Luigi dei Francesi",
-          "modo": "dentro"
+          "modo": "dentro",
+          "derivada": true
         },
         {
           "id": "parada_piazza_navona",
-          "hora": "18:20",
-          "min": 30,
+          "hora": "18:50",
+          "min": 45,
           "texto_documento": "Piazza Navona",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Piazza Navona",
-          "modo": null
-        },
-        {
-          "id": "parada_campo_de_fiori",
-          "hora": "19:10",
-          "min": 25,
-          "texto_documento": "Campo de' Fiori",
-          "como_documento": "",
-          "tipo": "parada",
-          "lugar": "Campo de' Fiori",
-          "modo": null
-        },
-        {
-          "id": "parada_ponte_sisto",
-          "hora": "19:50",
-          "min": 15,
-          "texto_documento": "Ponte Sisto al atardecer (colchón)",
-          "como_documento": "",
-          "colchon": true,
-          "tipo": "parada",
-          "lugar": "Ponte Sisto",
-          "modo": "atardecer"
+          "modo": null,
+          "derivada": true
         },
         {
           "id": "cena_armando_al_pantheon",
-          "hora": "20:30",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
           "como_documento": "",
-          "nota": "o Da Baffetto",
           "tipo": "cena",
           "restaurante": "Armando al Pantheon",
-          "alternativa": "Pizzeria Da Baffetto"
+          "alternativa": "Pizzeria Da Baffetto",
+          "derivada": true
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:20",
+          "hora": "21:50",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Fontana de Trevi (noche)"
+          "noche": "Fontana de Trevi (noche)",
+          "derivada": true
+        },
+        {
+          "id": "noche_plaza_de_espana_noche",
+          "hora": "22:30",
+          "min": 20,
+          "texto_documento": "Plaza de España de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Plaza de España (noche)",
+          "derivada": true
         }
       ],
       "D": [
@@ -493,10 +489,10 @@
           "min": 60,
           "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
-          "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "alternativa": "Giggetto al Portico d'Ottavia"
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "parada_barrio_judio",
@@ -520,17 +516,17 @@
         },
         {
           "id": "parada_largo_di_torre_argentina",
-          "hora": "15:45",
-          "min": 5,
+          "hora": "15:55",
+          "min": 15,
           "texto_documento": "Largo di Torre Argentina",
-          "como_documento": "de camino",
+          "como_documento": "",
           "tipo": "parada",
           "lugar": "Largo di Torre Argentina",
-          "modo": "camino"
+          "modo": null
         },
         {
           "id": "parada_iglesia_del_gesu",
-          "hora": "16:05",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Iglesia del Gesù (abre a las 16:00)",
           "como_documento": "por dentro",
@@ -541,7 +537,7 @@
         },
         {
           "id": "parada_elefantino_de_bernini",
-          "hora": "16:35",
+          "hora": "16:55",
           "min": 5,
           "texto_documento": "Elefantino de Bernini",
           "como_documento": "de camino",
@@ -551,7 +547,7 @@
         },
         {
           "id": "parada_iglesia_de_santa_maria_sopra_minerva",
-          "hora": "16:40",
+          "hora": "17:00",
           "min": 5,
           "texto_documento": "Santa Maria sopra Minerva",
           "como_documento": "de camino",
@@ -560,9 +556,20 @@
           "modo": "camino"
         },
         {
+          "id": "parada_iglesia_de_san_luigi_dei_francesi",
+          "hora": "17:20",
+          "min": 20,
+          "texto_documento": "San Luigi dei Francesi (cierra a las 18:15)",
+          "como_documento": "por dentro",
+          "nota": "cierra a las 18:15",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Luigi dei Francesi",
+          "modo": "dentro"
+        },
+        {
           "id": "parada_panteon",
-          "hora": "17:00",
-          "min": 30,
+          "hora": "17:55",
+          "min": 40,
           "texto_documento": "Panteón",
           "como_documento": "por dentro",
           "tipo": "parada",
@@ -570,18 +577,8 @@
           "modo": "dentro"
         },
         {
-          "id": "parada_iglesia_de_san_luigi_dei_francesi",
-          "hora": "17:45",
-          "min": 20,
-          "texto_documento": "San Luigi dei Francesi",
-          "como_documento": "por dentro",
-          "tipo": "parada",
-          "lugar": "Iglesia de San Luigi dei Francesi",
-          "modo": "dentro"
-        },
-        {
           "id": "parada_piazza_navona",
-          "hora": "18:20",
+          "hora": "18:50",
           "min": 30,
           "texto_documento": "Piazza Navona",
           "como_documento": "",
@@ -591,8 +588,8 @@
         },
         {
           "id": "parada_campo_de_fiori",
-          "hora": "19:10",
-          "min": 25,
+          "hora": "19:40",
+          "min": 20,
           "texto_documento": "Campo de' Fiori",
           "como_documento": "",
           "tipo": "parada",
@@ -600,41 +597,42 @@
           "modo": null
         },
         {
-          "id": "paseo_pasea_y_pierdete_por_el_centro_historico",
-          "hora": "19:45",
-          "min": 10,
-          "texto_documento": "Pasea y piérdete por el Centro Histórico (colchón)",
-          "como_documento": "",
-          "colchon": true,
-          "tipo": "paseo",
-          "lugar": "Campo de' Fiori",
-          "titulo": "Pasea y piérdete por el Centro Histórico"
-        },
-        {
           "id": "parada_ponte_sisto",
-          "hora": "20:10",
+          "hora": "20:15",
           "min": 25,
-          "texto_documento": "Ponte Sisto al atardecer",
+          "texto_documento": "Ponte Sisto, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ponte Sisto",
           "modo": "atardecer"
         },
         {
-          "id": "cena_armando_al_pantheon",
+          "id": "cena_trattoria_da_enzo_al_29",
           "hora": "21:00",
           "min": 90,
-          "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
           "como_documento": "",
-          "nota": "o Da Baffetto",
           "tipo": "cena",
-          "restaurante": "Armando al Pantheon",
-          "alternativa": "Pizzeria Da Baffetto"
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "22:40",
+          "min": 15,
+          "texto_documento": "Taxi a Trevi",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 15
+          }
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:50",
-          "min": 15,
+          "hora": "23:05",
+          "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
@@ -714,10 +712,10 @@
           "min": 45,
           "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
-          "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "alternativa": "Giggetto al Portico d'Ottavia"
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "parada_barrio_judio",
@@ -788,7 +786,6 @@
           "min": 90,
           "texto_documento": "**Cena:** Pizzeria Da Baffetto (o Armando al Pantheon)",
           "como_documento": "",
-          "nota": "o Armando al Pantheon",
           "tipo": "cena",
           "restaurante": "Pizzeria Da Baffetto",
           "alternativa": "Armando al Pantheon"
@@ -877,10 +874,10 @@
           "min": 60,
           "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
-          "nota": "o Giggetto",
           "tipo": "comida",
           "restaurante": "Nonna Betta",
-          "alternativa": "Giggetto al Portico d'Ottavia"
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "parada_barrio_judio",
@@ -959,6 +956,7 @@
           "texto_documento": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "La Piazza di Pietra con el Templo de Adriano, la Piazza Colonna con la Columna de Marco Aurelio y Via Frattina.",
           "tipo": "paseo",
           "lugar": "Plaza Colonna",
           "titulo": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España"
@@ -982,7 +980,6 @@
           "min": 90,
           "texto_documento": "**Cena:** Pizzeria Da Baffetto (o Armando al Pantheon)",
           "como_documento": "",
-          "nota": "o Armando al Pantheon",
           "tipo": "cena",
           "restaurante": "Pizzeria Da Baffetto",
           "alternativa": "Armando al Pantheon"
@@ -1084,79 +1081,293 @@
       },
       "acciones": [
         {
-          "op": "reemplazar_tarde",
-          "filas": [
-            {
-              "tipo": "parada",
-              "lugar": "Panteón",
-              "min": 30,
-              "modo": "dentro"
-            },
-            {
-              "tipo": "parada",
-              "lugar": "Elefantino de Bernini",
-              "min": 5,
-              "modo": "camino"
-            },
-            {
-              "tipo": "parada",
-              "lugar": "Iglesia de Santa Maria sopra Minerva",
-              "min": 5,
-              "modo": "camino"
-            },
-            {
-              "tipo": "parada",
-              "lugar": "Iglesia de San Luigi dei Francesi",
-              "min": 20,
-              "modo": "dentro"
-            },
-            {
-              "tipo": "parada",
-              "lugar": "Piazza Navona",
-              "min": 30,
-              "modo": null
-            },
-            {
-              "tipo": "traslado",
-              "traslado": {
-                "como": "un taxi",
-                "min": "auto"
+          "op": "tabla",
+          "desde": "comida",
+          "tablas": {
+            "AB": [
+              {
+                "hora": "13:50",
+                "min": 45,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "14:45",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:05",
+                "min": 25,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "15:35",
+                "min": 5,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:55",
+                "min": 20,
+                "texto_documento": "Taxi a la Galería Borghese",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 20
+                }
+              },
+              {
+                "hora": "17:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "19:35",
+                "min": 20,
+                "texto_documento": "Terraza del Pincio",
+                "como_documento": "al atardecer en C; iluminada en A y B",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": null
+              },
+              {
+                "hora": "20:15",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "22:00",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:40",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
               }
-            },
-            {
-              "tipo": "parada",
-              "lugar": "Galería Borghese",
-              "min": 120,
-              "modo": "dentro",
-              "hora": "17:00",
-              "hora_tipo": "turno",
-              "turno": true,
-              "guia": true
-            },
-            {
-              "tipo": "parada",
-              "lugar": "Terraza del Pincio",
-              "min": 20,
-              "modo": null,
-              "minutos_de_la_ficha": true
-            },
-            {
-              "tipo": "cena",
-              "restaurante": "Il Gabriello",
-              "min": 90,
-              "flujo": true
-            },
-            {
-              "tipo": "noche",
-              "noche": "Plaza de España (noche)",
-              "min": 20
-            },
-            {
-              "tipo": "noche",
-              "noche": "Fontana de Trevi (noche)",
-              "min": 20
-            }
-          ]
+            ],
+            "C": [
+              {
+                "hora": "13:50",
+                "min": 45,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "14:45",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:05",
+                "min": 25,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "15:35",
+                "min": 5,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:55",
+                "min": 20,
+                "texto_documento": "Taxi a la Galería Borghese",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 20
+                }
+              },
+              {
+                "hora": "17:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "19:35",
+                "min": 20,
+                "texto_documento": "Terraza del Pincio",
+                "como_documento": "al atardecer en C; iluminada en A y B",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "20:15",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "22:00",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:40",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ],
+            "D": [
+              {
+                "hora": "13:50",
+                "min": 45,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "14:45",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:05",
+                "min": 25,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "15:35",
+                "min": 5,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:55",
+                "min": 20,
+                "texto_documento": "Taxi a la Galería Borghese",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 20
+                }
+              },
+              {
+                "hora": "17:00",
+                "min": 120,
+                "texto_documento": "Galería Borghese",
+                "como_documento": "por dentro (reserva)",
+                "tipo": "parada",
+                "lugar": "Galería Borghese",
+                "modo": "dentro",
+                "reserva": true,
+                "hora_tipo": "reserva",
+                "guia": true
+              },
+              {
+                "hora": "19:35",
+                "min": 20,
+                "texto_documento": "Terraza del Pincio",
+                "como_documento": "al atardecer en C; iluminada en A y B",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "20:30",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "22:00",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              }
+            ]
+          }
         }
       ]
     },
@@ -1176,10 +1387,1404 @@
       ]
     },
     "Ojo de la Cerradura del Aventino": {
-      "pendiente": "El documento no dice qué pasa con la Fuente de las Tortugas y Largo di Torre Argentina, ni los minutos del taxi."
+      "franja": "tarde",
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "comida",
+          "tablas": {
+            "AB": [
+              {
+                "hora": "13:50",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:00",
+                "min": 20,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "15:25",
+                "min": 5,
+                "texto_documento": "Teatro de Marcelo",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Teatro de Marcelo",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:45",
+                "min": 15,
+                "texto_documento": "Boca de la Verdad",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Boca de la Verdad",
+                "modo": null
+              },
+              {
+                "hora": "16:10",
+                "min": 10,
+                "texto_documento": "Jardín de los Naranjos",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Jardín de los Naranjos",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:35",
+                "min": 10,
+                "texto_documento": "Ojo de la Cerradura del Aventino",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Ojo de la Cerradura del Aventino",
+                "modo": null
+              },
+              {
+                "hora": "17:00",
+                "min": 15,
+                "texto_documento": "Taxi a Largo di Torre Argentina",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "17:20",
+                "min": 3,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "de camino (la fachada)",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:30",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:35",
+                "min": 3,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:50",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:25",
+                "min": 3,
+                "texto_documento": "San Luigi dei Francesi",
+                "como_documento": "de camino (la fachada)",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Luigi dei Francesi",
+                "modo": "camino"
+              },
+              {
+                "hora": "18:45",
+                "min": 30,
+                "texto_documento": "Piazza Navona (colchón)",
+                "como_documento": "",
+                "colchon": true,
+                "texto": "Las tres fuentes (los Cuatro Ríos, el Moro y Neptuno), Sant'Agnese in Agone y los pintores de la plaza.",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": null
+              },
+              {
+                "hora": "20:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Armando al Pantheon",
+                "alternativa": "Pizzeria Da Baffetto"
+              },
+              {
+                "hora": "21:50",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:30",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ],
+            "C": [
+              {
+                "hora": "13:50",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:00",
+                "min": 20,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "15:25",
+                "min": 5,
+                "texto_documento": "Teatro de Marcelo",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Teatro de Marcelo",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:45",
+                "min": 15,
+                "texto_documento": "Boca de la Verdad",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Boca de la Verdad",
+                "modo": null
+              },
+              {
+                "hora": "16:10",
+                "min": 10,
+                "texto_documento": "Jardín de los Naranjos",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Jardín de los Naranjos",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:35",
+                "min": 10,
+                "texto_documento": "Ojo de la Cerradura del Aventino",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Ojo de la Cerradura del Aventino",
+                "modo": null
+              },
+              {
+                "hora": "17:00",
+                "min": 15,
+                "texto_documento": "Taxi a Largo di Torre Argentina",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "17:20",
+                "min": 3,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "de camino (la fachada)",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:30",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:35",
+                "min": 3,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:50",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:25",
+                "min": 3,
+                "texto_documento": "San Luigi dei Francesi",
+                "como_documento": "de camino (la fachada)",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Luigi dei Francesi",
+                "modo": "camino"
+              },
+              {
+                "hora": "18:45",
+                "min": 30,
+                "texto_documento": "Piazza Navona (colchón)",
+                "como_documento": "",
+                "colchon": true,
+                "texto": "Las tres fuentes (los Cuatro Ríos, el Moro y Neptuno), Sant'Agnese in Agone y los pintores de la plaza.",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": null
+              },
+              {
+                "hora": "20:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Armando al Pantheon",
+                "alternativa": "Pizzeria Da Baffetto"
+              },
+              {
+                "hora": "21:50",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:30",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ],
+            "D": [
+              {
+                "hora": "13:50",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:00",
+                "min": 20,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "15:25",
+                "min": 5,
+                "texto_documento": "Teatro de Marcelo",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Teatro de Marcelo",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:45",
+                "min": 15,
+                "texto_documento": "Boca de la Verdad",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Boca de la Verdad",
+                "modo": null
+              },
+              {
+                "hora": "16:10",
+                "min": 10,
+                "texto_documento": "Jardín de los Naranjos",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Jardín de los Naranjos",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:35",
+                "min": 10,
+                "texto_documento": "Ojo de la Cerradura del Aventino",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Ojo de la Cerradura del Aventino",
+                "modo": null
+              },
+              {
+                "hora": "17:00",
+                "min": 15,
+                "texto_documento": "Taxi a Largo di Torre Argentina",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "17:20",
+                "min": 3,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "de camino (la fachada)",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:30",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:35",
+                "min": 3,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:50",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:25",
+                "min": 3,
+                "texto_documento": "San Luigi dei Francesi",
+                "como_documento": "de camino (la fachada)",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Luigi dei Francesi",
+                "modo": "camino"
+              },
+              {
+                "hora": "18:50",
+                "min": 30,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": null
+              },
+              {
+                "hora": "19:40",
+                "min": 20,
+                "texto_documento": "Campo de' Fiori",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Campo de' Fiori",
+                "modo": null
+              },
+              {
+                "hora": "20:15",
+                "min": 25,
+                "texto_documento": "Ponte Sisto, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Ponte Sisto",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "21:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Trattoria Da Enzo al 29",
+                "alternativa": "Tonnarello",
+                "zona": "en Trastevere"
+              },
+              {
+                "hora": "22:40",
+                "min": 15,
+                "texto_documento": "Taxi a Trevi",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "23:05",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              }
+            ]
+          }
+        }
+      ]
     },
     "Basílica de San Juan de Letrán": {
-      "pendiente": "El documento no dice los minutos del metro ni a qué hora acaba el día."
+      "franja": "dia",
+      "cuando": {
+        "sin_dias": [
+          "D4M",
+          "D5C"
+        ]
+      },
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "dia",
+          "tablas": {
+            "AB": [
+              {
+                "hora": "07:45",
+                "min": 25,
+                "texto_documento": "Basílica de San Juan de Letrán",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Basílica de San Juan de Letrán",
+                "modo": "dentro"
+              },
+              {
+                "hora": "08:25",
+                "min": 10,
+                "texto_documento": "Metro B de San Giovanni a Colosseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "el metro B",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "09:00",
+                "min": 75,
+                "texto_documento": "Coliseo",
+                "como_documento": "por dentro (turno)",
+                "tipo": "parada",
+                "lugar": "Coliseo",
+                "modo": "dentro",
+                "turno": true,
+                "hora_tipo": "turno",
+                "guia": true
+              },
+              {
+                "hora": "10:35",
+                "min": 10,
+                "texto_documento": "Arco de Constantino",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Arco de Constantino",
+                "modo": null
+              },
+              {
+                "hora": "11:00",
+                "min": 90,
+                "texto_documento": "Foro Romano y Palatino",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Foro Romano y Palatino",
+                "modo": "dentro",
+                "guia": true
+              },
+              {
+                "hora": "12:50",
+                "min": 15,
+                "texto_documento": "Plaza del Campidoglio",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza del Campidoglio",
+                "modo": null
+              },
+              {
+                "hora": "13:10",
+                "min": 5,
+                "texto_documento": "Piazza Venezia",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Plaza Venecia",
+                "modo": "camino"
+              },
+              {
+                "hora": "13:30",
+                "min": 30,
+                "texto_documento": "Altar de la Patria",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Altar de la Patria",
+                "modo": "dentro"
+              },
+              {
+                "hora": "14:20",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:30",
+                "min": 30,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "16:05",
+                "min": 5,
+                "texto_documento": "Fuente de las Tortugas",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Fuente de las Tortugas",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:15",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:35",
+                "min": 20,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:05",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:10",
+                "min": 5,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:30",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:15",
+                "min": 20,
+                "texto_documento": "San Luigi dei Francesi",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Luigi dei Francesi",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:50",
+                "min": 30,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": null
+              },
+              {
+                "hora": "20:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Armando al Pantheon",
+                "alternativa": "Pizzeria Da Baffetto"
+              },
+              {
+                "hora": "21:50",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:30",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ],
+            "C": [
+              {
+                "hora": "07:45",
+                "min": 25,
+                "texto_documento": "Basílica de San Juan de Letrán",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Basílica de San Juan de Letrán",
+                "modo": "dentro"
+              },
+              {
+                "hora": "08:25",
+                "min": 10,
+                "texto_documento": "Metro B de San Giovanni a Colosseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "el metro B",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "09:00",
+                "min": 75,
+                "texto_documento": "Coliseo",
+                "como_documento": "por dentro (turno)",
+                "tipo": "parada",
+                "lugar": "Coliseo",
+                "modo": "dentro",
+                "turno": true,
+                "hora_tipo": "turno",
+                "guia": true
+              },
+              {
+                "hora": "10:35",
+                "min": 10,
+                "texto_documento": "Arco de Constantino",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Arco de Constantino",
+                "modo": null
+              },
+              {
+                "hora": "11:00",
+                "min": 90,
+                "texto_documento": "Foro Romano y Palatino",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Foro Romano y Palatino",
+                "modo": "dentro",
+                "guia": true
+              },
+              {
+                "hora": "12:50",
+                "min": 15,
+                "texto_documento": "Plaza del Campidoglio",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza del Campidoglio",
+                "modo": null
+              },
+              {
+                "hora": "13:10",
+                "min": 5,
+                "texto_documento": "Piazza Venezia",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Plaza Venecia",
+                "modo": "camino"
+              },
+              {
+                "hora": "13:30",
+                "min": 30,
+                "texto_documento": "Altar de la Patria",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Altar de la Patria",
+                "modo": "dentro"
+              },
+              {
+                "hora": "14:20",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:30",
+                "min": 30,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "16:05",
+                "min": 5,
+                "texto_documento": "Fuente de las Tortugas",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Fuente de las Tortugas",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:15",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:35",
+                "min": 20,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:05",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:10",
+                "min": 5,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:30",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:15",
+                "min": 20,
+                "texto_documento": "San Luigi dei Francesi",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Luigi dei Francesi",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:50",
+                "min": 30,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": null
+              },
+              {
+                "hora": "20:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Armando al Pantheon",
+                "alternativa": "Pizzeria Da Baffetto"
+              },
+              {
+                "hora": "21:50",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:30",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ],
+            "D": [
+              {
+                "hora": "07:45",
+                "min": 25,
+                "texto_documento": "Basílica de San Juan de Letrán",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Basílica de San Juan de Letrán",
+                "modo": "dentro"
+              },
+              {
+                "hora": "08:25",
+                "min": 10,
+                "texto_documento": "Metro B de San Giovanni a Colosseo",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "el metro B",
+                  "min": 10
+                }
+              },
+              {
+                "hora": "09:00",
+                "min": 75,
+                "texto_documento": "Coliseo",
+                "como_documento": "por dentro (turno)",
+                "tipo": "parada",
+                "lugar": "Coliseo",
+                "modo": "dentro",
+                "turno": true,
+                "hora_tipo": "turno",
+                "guia": true
+              },
+              {
+                "hora": "10:35",
+                "min": 10,
+                "texto_documento": "Arco de Constantino",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Arco de Constantino",
+                "modo": null
+              },
+              {
+                "hora": "11:00",
+                "min": 90,
+                "texto_documento": "Foro Romano y Palatino",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Foro Romano y Palatino",
+                "modo": "dentro",
+                "guia": true
+              },
+              {
+                "hora": "12:50",
+                "min": 15,
+                "texto_documento": "Plaza del Campidoglio",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Plaza del Campidoglio",
+                "modo": null
+              },
+              {
+                "hora": "13:10",
+                "min": 5,
+                "texto_documento": "Piazza Venezia",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Plaza Venecia",
+                "modo": "camino"
+              },
+              {
+                "hora": "13:30",
+                "min": 30,
+                "texto_documento": "Altar de la Patria",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Altar de la Patria",
+                "modo": "dentro"
+              },
+              {
+                "hora": "14:20",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:30",
+                "min": 30,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "16:05",
+                "min": 5,
+                "texto_documento": "Fuente de las Tortugas",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Fuente de las Tortugas",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:15",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:35",
+                "min": 20,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:05",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:10",
+                "min": 5,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:30",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:15",
+                "min": 20,
+                "texto_documento": "San Luigi dei Francesi",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia de San Luigi dei Francesi",
+                "modo": "dentro"
+              },
+              {
+                "hora": "18:50",
+                "min": 30,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": null
+              },
+              {
+                "hora": "19:40",
+                "min": 20,
+                "texto_documento": "Campo de' Fiori",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Campo de' Fiori",
+                "modo": null
+              },
+              {
+                "hora": "20:15",
+                "min": 25,
+                "texto_documento": "Ponte Sisto, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Ponte Sisto",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "21:00",
+                "min": 90,
+                "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Trattoria Da Enzo al 29",
+                "alternativa": "Tonnarello",
+                "zona": "en Trastevere"
+              },
+              {
+                "hora": "22:40",
+                "min": 15,
+                "texto_documento": "Taxi a Trevi",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "23:05",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "Parque de Villa Borghese": {
+      "franja": "tarde",
+      "solo_en": [
+        "C",
+        "D"
+      ],
+      "acciones": [
+        {
+          "op": "tabla",
+          "desde": "comida",
+          "tablas": {
+            "C": [
+              {
+                "hora": "13:50",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:00",
+                "min": 30,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "15:35",
+                "min": 5,
+                "texto_documento": "Fuente de las Tortugas",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Fuente de las Tortugas",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:45",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:05",
+                "min": 20,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "dentro"
+              },
+              {
+                "hora": "16:35",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:40",
+                "min": 5,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:00",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:35",
+                "min": 5,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:55",
+                "min": 15,
+                "texto_documento": "Taxi a Villa Borghese",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "18:25",
+                "min": 45,
+                "texto_documento": "Parque de Villa Borghese (el lago)",
+                "como_documento": "",
+                "nota": "el lago",
+                "tipo": "parada",
+                "lugar": "Parque de Villa Borghese",
+                "modo": null
+              },
+              {
+                "hora": "19:30",
+                "min": 25,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "20:15",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "22:10",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:50",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ],
+            "D": [
+              {
+                "hora": "13:50",
+                "min": 60,
+                "texto_documento": "**Comida:** Nonna Betta (o Giggetto), en el Barrio Judío",
+                "como_documento": "",
+                "tipo": "comida",
+                "restaurante": "Nonna Betta",
+                "alternativa": "Giggetto al Portico d'Ottavia",
+                "zona": "en el Barrio Judío"
+              },
+              {
+                "hora": "15:00",
+                "min": 30,
+                "texto_documento": "Barrio Judío",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Barrio Judío",
+                "modo": null
+              },
+              {
+                "hora": "15:35",
+                "min": 5,
+                "texto_documento": "Fuente de las Tortugas",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Fuente de las Tortugas",
+                "modo": "camino"
+              },
+              {
+                "hora": "15:45",
+                "min": 5,
+                "texto_documento": "Largo di Torre Argentina",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Largo di Torre Argentina",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:05",
+                "min": 20,
+                "texto_documento": "Iglesia del Gesù",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Iglesia del Gesù",
+                "modo": "dentro"
+              },
+              {
+                "hora": "16:35",
+                "min": 3,
+                "texto_documento": "Elefantino de Bernini",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Elefantino de Bernini",
+                "modo": "camino"
+              },
+              {
+                "hora": "16:40",
+                "min": 5,
+                "texto_documento": "Santa Maria sopra Minerva",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Iglesia de Santa Maria sopra Minerva",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:00",
+                "min": 30,
+                "texto_documento": "Panteón",
+                "como_documento": "por dentro",
+                "tipo": "parada",
+                "lugar": "Panteón",
+                "modo": "dentro"
+              },
+              {
+                "hora": "17:35",
+                "min": 5,
+                "texto_documento": "Piazza Navona",
+                "como_documento": "de camino",
+                "tipo": "parada",
+                "lugar": "Piazza Navona",
+                "modo": "camino"
+              },
+              {
+                "hora": "17:55",
+                "min": 15,
+                "texto_documento": "Taxi a Villa Borghese",
+                "como_documento": "",
+                "tipo": "traslado",
+                "traslado": {
+                  "como": "un taxi",
+                  "min": 15
+                }
+              },
+              {
+                "hora": "18:25",
+                "min": 45,
+                "texto_documento": "Parque de Villa Borghese (el lago)",
+                "como_documento": "",
+                "nota": "el lago",
+                "tipo": "parada",
+                "lugar": "Parque de Villa Borghese",
+                "modo": null
+              },
+              {
+                "hora": "19:30",
+                "min": 25,
+                "texto_documento": "Terraza del Pincio, al atardecer",
+                "como_documento": "",
+                "tipo": "parada",
+                "lugar": "Terraza del Pincio",
+                "modo": "atardecer"
+              },
+              {
+                "hora": "20:15",
+                "min": 90,
+                "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+                "como_documento": "",
+                "tipo": "cena",
+                "restaurante": "Il Gabriello",
+                "alternativa": "Poldo e Gianna Osteria",
+                "zona": "en el Tridente"
+              },
+              {
+                "hora": "22:10",
+                "min": 20,
+                "texto_documento": "Fontana de Trevi iluminada",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Fontana de Trevi (noche)"
+              },
+              {
+                "hora": "22:50",
+                "min": 20,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)"
+              }
+            ]
+          }
+        }
+      ]
     }
   },
   "experiencias": {

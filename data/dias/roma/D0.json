@@ -80,10 +80,12 @@
           "id": "comida_armando_al_pantheon",
           "hora": "12:40",
           "min": 60,
-          "texto_documento": "**Comida:** Armando al Pantheon",
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
           "tipo": "comida",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio",
+          "tercera": "Piccolo Arancio"
         },
         {
           "id": "parada_fontana_de_trevi",
@@ -237,10 +239,12 @@
           "id": "comida_armando_al_pantheon",
           "hora": "13:15",
           "min": 45,
-          "texto_documento": "**Comida:** Armando al Pantheon",
+          "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
           "tipo": "comida",
-          "restaurante": "Armando al Pantheon"
+          "restaurante": "Armando al Pantheon",
+          "alternativa": "Supplizio",
+          "tercera": "Piccolo Arancio"
         },
         {
           "id": "parada_panteon",

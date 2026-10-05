@@ -7,6 +7,111 @@
     "manana": {
       "unica": [
         {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:30",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "09:50",
+          "min": 5,
+          "texto_documento": "Basílica de San Pedro",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "10:10",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por Borgo Pio",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "10:35",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "11:05",
+          "min": 15,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "11:25",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_coronari",
+          "hora": "11:35",
+          "min": 10,
+          "texto_documento": "Via dei Coronari",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Coronari",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "12:10",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "12:50",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "comida_poldo_e_gianna_osteria",
+          "hora": "13:25",
+          "min": 60,
+          "texto_documento": "**Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Poldo e Gianna Osteria",
+          "alternativa": "Edy",
+          "zona": "en el Tridente"
+        }
+      ]
+    },
+    "manana_con_museos": {
+      "unica": [
+        {
           "id": "parada_museos_vaticanos_y_capilla_sixtina",
           "hora": "08:00",
           "min": 180,
@@ -44,12 +149,12 @@
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "13:40",
           "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -80,6 +185,196 @@
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
           "modo": "camino"
+        }
+      ]
+    },
+    "tarde_sin_museos": {
+      "AB": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "15:00",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "15:20",
+          "min": 5,
+          "texto_documento": "Basílica de San Pedro",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "15:40",
+          "min": 25,
+          "texto_documento": "Pasea y piérdete por Borgo Pio",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "16:10",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "16:40",
+          "min": 15,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "17:10",
+          "min": 15,
+          "texto_documento": "Puente Sant'Angelo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "17:45",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
+        }
+      ],
+      "CD": [
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "16:20",
+          "min": 5,
+          "texto_documento": "Basílica de San Pedro",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "16:40",
+          "min": 25,
+          "texto_documento": "Pasea y piérdete por Borgo Pio",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "17:10",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "17:40",
+          "min": 15,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_prati",
+          "hora": "18:15",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Prati (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Prati"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "19:40",
+          "min": 20,
+          "texto_documento": "Puente Sant'Angelo, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "atardecer"
+        },
+        {
+          "id": "cena_l_arcangelo",
+          "hora": "20:30",
+          "min": 90,
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
+          "zona": "en Prati"
+        },
+        {
+          "id": "noche_piazza_navona_noche",
+          "hora": "22:30",
+          "min": 20,
+          "texto_documento": "Piazza Navona de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Piazza Navona (noche)"
         }
       ]
     },
@@ -126,6 +421,7 @@
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
+          "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati"
@@ -134,10 +430,11 @@
           "id": "cena_l_arcangelo",
           "hora": "19:30",
           "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
+          "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
+          "alternativa": "Osteria dell'Angelo",
           "zona": "en Prati"
         },
         {
@@ -148,219 +445,6 @@
           "como_documento": "de noche",
           "tipo": "noche",
           "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
-        }
-      ]
-    },
-    "tarde_sin_museos": {
-      "AB": [
-        {
-          "id": "parada_plaza_de_san_pedro",
-          "hora": "15:00",
-          "min": 20,
-          "texto_documento": "Plaza de San Pedro",
-          "como_documento": "",
-          "tipo": "parada",
-          "lugar": "Plaza de San Pedro",
-          "modo": null
-        },
-        {
-          "id": "parada_basilica_de_san_pedro",
-          "hora": "15:35",
-          "min": 75,
-          "texto_documento": "Basílica de San Pedro (con el control)",
-          "como_documento": "por dentro",
-          "nota": "con el control",
-          "tipo": "parada",
-          "lugar": "Basílica de San Pedro",
-          "modo": "dentro"
-        },
-        {
-          "id": "parada_via_della_conciliazione",
-          "hora": "16:55",
-          "min": 10,
-          "texto_documento": "Via della Conciliazione",
-          "como_documento": "de camino",
-          "tipo": "parada",
-          "lugar": "Via della Conciliazione",
-          "modo": "camino"
-        },
-        {
-          "id": "parada_castillo_de_sant_angelo",
-          "hora": "17:25",
-          "min": 20,
-          "texto_documento": "Castillo de Sant'Angelo",
-          "como_documento": "por fuera",
-          "tipo": "parada",
-          "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
-        },
-        {
-          "id": "parada_puente_sant_angelo",
-          "hora": "18:00",
-          "min": 15,
-          "texto_documento": "Puente Sant'Angelo",
-          "como_documento": "",
-          "tipo": "parada",
-          "lugar": "Puente Sant'Angelo",
-          "modo": null
-        },
-        {
-          "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo",
-          "hora": "18:30",
-          "min": 40,
-          "texto_documento": "Pasea y piérdete por Prati y el Borgo (colchón)",
-          "como_documento": "",
-          "colchon": true,
-          "tipo": "paseo",
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati y el Borgo"
-        },
-        {
-          "id": "cena_l_arcangelo",
-          "hora": "19:30",
-          "min": 90,
-          "texto_documento": "**Cena:** L'Arcangelo, en Prati",
-          "como_documento": "",
-          "tipo": "cena",
-          "restaurante": "L'Arcangelo",
-          "zona": "en Prati"
-        },
-        {
-          "id": "noche_piazza_navona_noche",
-          "hora": "21:30",
-          "min": 30,
-          "texto_documento": "Piazza Navona de noche",
-          "como_documento": "de noche",
-          "tipo": "noche",
-          "noche": "Piazza Navona (noche)"
-        }
-      ]
-    },
-    "miercoles_manana": {
-      "unica": [
-        {
-          "id": "parada_museos_vaticanos_y_capilla_sixtina",
-          "hora": "08:00",
-          "min": 180,
-          "texto_documento": "Museos Vaticanos y Capilla Sixtina",
-          "como_documento": "por dentro (turno de las 8:00)",
-          "tipo": "parada",
-          "lugar": "Museos Vaticanos y Capilla Sixtina",
-          "modo": "dentro",
-          "turno": true,
-          "hora_tipo": "turno",
-          "guia": true
-        },
-        {
-          "id": "paseo_pasea_y_pierdete_por_borgo_pio_y_prati",
-          "hora": "11:25",
-          "min": 20,
-          "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
-          "como_documento": "",
-          "colchon": true,
-          "tipo": "paseo",
-          "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio y Prati"
-        },
-        {
-          "id": "comida_borghiciana_pastificio_artigianale",
-          "hora": "12:00",
-          "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
-          "como_documento": "",
-          "tipo": "comida",
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
-        },
-        {
-          "id": "parada_plaza_de_san_pedro",
-          "hora": "13:20",
-          "min": 20,
-          "texto_documento": "Plaza de San Pedro (abre tras la audiencia)",
-          "como_documento": "",
-          "nota": "abre tras la audiencia",
-          "tipo": "parada",
-          "lugar": "Plaza de San Pedro",
-          "modo": null
-        },
-        {
-          "id": "parada_basilica_de_san_pedro",
-          "hora": "13:55",
-          "min": 60,
-          "texto_documento": "Basílica de San Pedro (con el control)",
-          "como_documento": "por dentro",
-          "nota": "con el control",
-          "tipo": "parada",
-          "lugar": "Basílica de San Pedro",
-          "modo": "dentro"
-        }
-      ]
-    },
-    "domingo_manana": {
-      "unica": [
-        {
-          "id": "parada_plaza_de_san_pedro",
-          "hora": "09:00",
-          "min": 20,
-          "texto_documento": "Plaza de San Pedro",
-          "como_documento": "",
-          "tipo": "parada",
-          "lugar": "Plaza de San Pedro",
-          "modo": null
-        },
-        {
-          "id": "parada_basilica_de_san_pedro",
-          "hora": "09:35",
-          "min": 90,
-          "texto_documento": "Basílica de San Pedro (con las Grutas y el control)",
-          "como_documento": "por dentro",
-          "nota": "con las Grutas y el control",
-          "tipo": "parada",
-          "lugar": "Basílica de San Pedro",
-          "modo": "dentro",
-          "con_grutas": true
-        },
-        {
-          "id": "parada_via_della_conciliazione",
-          "hora": "11:10",
-          "min": 10,
-          "texto_documento": "Via della Conciliazione",
-          "como_documento": "de camino",
-          "tipo": "parada",
-          "lugar": "Via della Conciliazione",
-          "modo": "camino"
-        },
-        {
-          "id": "parada_castillo_de_sant_angelo",
-          "hora": "11:40",
-          "min": 20,
-          "texto_documento": "Castillo de Sant'Angelo",
-          "como_documento": "por fuera",
-          "tipo": "parada",
-          "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
-        },
-        {
-          "id": "parada_puente_sant_angelo",
-          "hora": "12:15",
-          "min": 15,
-          "texto_documento": "Puente Sant'Angelo",
-          "como_documento": "",
-          "tipo": "parada",
-          "lugar": "Puente Sant'Angelo",
-          "modo": null
-        },
-        {
-          "id": "comida_borghiciana_pastificio_artigianale",
-          "hora": "12:50",
-          "min": 60,
-          "texto_documento": "**Comida:** Borghiciana, en el Borgo",
-          "como_documento": "",
-          "tipo": "comida",
-          "restaurante": "Borghiciana Pastificio Artigianale",
-          "zona": "en el Borgo",
-          "alternativa": "200 Gradi"
         }
       ]
     }
@@ -389,6 +473,28 @@
           "fila": "Castillo de Sant'Angelo",
           "modo": "dentro",
           "min": 60
+        }
+      ]
+    }
+  },
+  "experiencias": {
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Piazza Navona",
+          "min": 40,
+          "titulo": "Piazza Navona y su mercadillo navideño"
+        },
+        {
+          "op": "cambiar",
+          "fila": "Plaza de San Pedro",
+          "min": 35,
+          "titulo": "Plaza de San Pedro y los 100 Presepi"
         }
       ]
     }
