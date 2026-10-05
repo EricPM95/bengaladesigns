@@ -632,6 +632,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
             ...dinnerFields(destData, tripDay.dinnerZone, dinnerZone),
             // La cena también lleva su restaurante recomendado (decisión del usuario, 2026-09-28).
             ...(tripDay.dinnerRestaurant ? { restaurant: tripDay.dinnerRestaurant.name, latitude: tripDay.dinnerRestaurant.coordinates[0], longitude: tripDay.dinnerRestaurant.coordinates[1] } : {}),
+            // (La zona de la cena es la de su restaurante en los datos —como la de la comida—, no la de la tabla ni la del barrio de cena del día.)
+            ...(tripDay.dinnerRestaurant?.zone ? { zone: tripDay.dinnerRestaurant.zone, zone_display: `en ${String(tripDay.dinnerRestaurant.zone).replace(/\s*\/\s*/g, ' y ')}` } : {}),
           }),
   }))
 

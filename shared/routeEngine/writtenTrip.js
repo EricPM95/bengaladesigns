@@ -16,7 +16,7 @@
 
 import { placesForScheduler } from './planTrip.js'
 import { PRIORITY } from './scheduleDay.js'
-import { dinnerZones, recommendedRestaurant } from './dinnerZones.js'
+import { dinnerZones, recommendedRestaurant, mainZoneOf } from './dinnerZones.js'
 import { MODE_V3 } from './modes.js'
 import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, massWeekday, matchesDateRange, matchesDateToken, parseHoursSessions } from './openingHours.js'
@@ -2124,83 +2124,72 @@ export function planWrittenTrip(args) {
       draft.applied.push(`noche:${nueva}`)
     }
     const trastevereIluminado = (rows) => rows.some((row) => row.lugar === 'Trastevere' && /iluminado/.test(row.titulo ?? ''))
-    for (const draft of escritos) {
-      const rows = draft.rowsPrep
-      const noches = rows.filter((row) => row.tipo === 'noche')
-      if (noches.length === 0) continue
-      const cena = rows.find((row) => row.tipo === 'cena')
-      const enTrastevere = cena && String(restaurantByName.get(cena.restaurante)?.zone ?? '').includes('Trastevere')
-      const primera = noches[0]
-      const quedaAMitad = (row) => rows.indexOf(row) > rows.findIndex((r) => r.tipo === 'cena')
-      if (!quedaAMitad(primera)) continue
-      let hecho = false
-      // 1,5 días: el medio día de tarde.
-      if (draft.id === 'D0-medio' && String(draft.tablaVersion).startsWith('tarde') && primera.noche === 'Piazza Navona (noche)' && !nocheViaje('Fontana de Trevi (noche)', draft)) {
-        cambiarNoche(draft, primera, 'Fontana de Trevi (noche)', 'Trevi no ha salido de noche en el viaje: la nocturna del medio día de tarde es Trevi')
-        hecho = true
-      }
-      // D1, tarde D: Trevi, el Coliseo o Trastevere de noche, en ese orden.
-      else if (draft.id === 'D1' && draft.tablaClave === 'D' && draft.tablaVersion === 'normal' && noches.length === 1 && primera.noche === 'Fontana de Trevi (noche)') {
-        const destino = !salido('Fontana de Trevi (noche)', draft) ? 'Fontana de Trevi (noche)' : !nocheViaje('Coliseo (noche)', draft) ? 'Coliseo (noche)' : 'Trastevere de noche'
-        if (destino !== primera.noche) {
-          cambiarNoche(draft, primera, destino, destino === 'Coliseo (noche)' ? 'Trevi ya salió en el viaje: la nocturna de la tarde D es el Coliseo iluminado' : 'Trevi y el Coliseo ya salieron en el viaje: la nocturna de la tarde D es Trastevere de noche')
-          hecho = true
-        }
-      }
-      // D2: la Plaza de España, si todavía no ha salido en el viaje.
-      else if (draft.id === 'D2' && ['Piazza Navona (noche)', 'Trastevere de noche'].includes(primera.noche) && !salido('Plaza de España (noche)', draft)) {
-        cambiarNoche(draft, primera, 'Plaza de España (noche)', 'la Plaza de España todavía no ha salido en el viaje: es la nocturna del Día del Vaticano')
-        hecho = true
-      }
-      // Se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche.
-      else if (enTrastevere && primera.noche === 'Piazza Navona (noche)' && !trastevereIluminado(rows)) {
-        cambiarNoche(draft, primera, 'Trastevere de noche', 'se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche')
-        hecho = true
-      }
-      // 2,5 días: el Coliseo iluminado ya salió de noche en el viaje.
-      else if (draft.id === 'DT-medio' && primera.noche === 'Coliseo (noche)' && nocheViaje('Coliseo (noche)', draft)) {
-        cambiarNoche(draft, primera, 'Piazza Navona (noche)', 'el Coliseo iluminado ya salió de noche en el viaje: la nocturna del medio día es Piazza Navona de noche')
-        hecho = true
-      }
-      void hecho
-    }
-    // Medio día de tarde de 1,5 días: si el día entero no ha llevado Trevi ni la Plaza de España de noche, la noche acaba con Trevi y después la Plaza de España (10 min andando).
-    for (const draft of escritos) {
-      if (!(draft.id === 'D0-medio' && String(draft.tablaVersion).startsWith('tarde'))) continue
-      const trevi = draft.rowsPrep.find((row) => row.tipo === 'noche' && row.noche === 'Fontana de Trevi (noche)')
-      if (!trevi || nocheViaje('Plaza de España (noche)', draft) || draft.rowsPrep.some((row) => row.tipo === 'noche' && row.noche === 'Plaza de España (noche)')) continue
-      const rows = draft.rowsPrep
-      const i = rows.indexOf(trevi)
-      const nueva = { id: 'noche_plaza_de_espana_noche', tipo: 'noche', noche: 'Plaza de España (noche)', hora: filaHHMM(filaMin(trevi.hora) + trevi.min + 10), min: NOCHE_MIN['Plaza de España (noche)'], como_documento: '', texto_documento: 'Plaza de España (noche)' }
-      const lista = [...rows.slice(0, i + 1), nueva, ...rows.slice(i + 1)]
-      anotarCambios(rows, lista, 'la Plaza de España no ha salido de noche en el viaje: la noche del medio día de tarde acaba con Trevi y la Plaza de España (10 min andando)', draft.log)
-      draft.rowsPrep = lista
-      draft.applied.push('noche:Plaza de España (noche)')
-    }
-    // Ninguna nocturna se repite en el viaje: la repetida pasa a la que haya salido menos y quede más cerca de la cena (la que el día escrito prefiera primero, `noche_si_repetida`); si no queda ninguna, sin nocturna.
+    // Las nocturnas se reparten día a día, empezando por el primero del viaje (Tanda 4). «Ya salió» es: salió DE NOCHE en un día anterior (o antes ese mismo día); un sitio visto de día no quita su nocturna.
+    // Antes que ninguna otra va la primera nocturna imprescindible (destination_config.noches_imprescindibles) que aún no ha salido; luego la que escribe el día; luego, si se cena en Trastevere,
+    // Trastevere de noche; y si esa ya salió, la que prefiera el día (`noche_si_repetida`) o la que quede más cerca de la cena. Sin ninguna libre, el día se queda sin nocturna.
+    const imprescindibles = destData.destination_config?.noches_imprescindibles?.lista ?? []
     const NOCHES_POSIBLES = ['Fontana de Trevi (noche)', 'Plaza de España (noche)', 'Coliseo (noche)', 'Piazza Navona (noche)', 'Panteón (noche)', 'Trastevere de noche', 'Foro Romano desde el Campidoglio (noche)', "El Puente y el Castillo de Sant'Angelo (noche)"]
-    const vistas = new Set()
-    for (const draft of escritos) {
-      for (const row of [...draft.rowsPrep].filter((item) => item.tipo === 'noche')) {
-        if (!vistas.has(row.noche)) { vistas.add(row.noche); continue }
+    // (`usadas`: lo que ya salió de noche en los días anteriores, DESPUÉS de componer cada día: una nocturna que la hora límite de la noche quita no cuenta como salida.)
+    const usadas = new Set()
+    const asignarDia = (draft) => {
+      const provisional = new Set()
+      const mmdd = String((draft.hoursPrep ?? hoursOf(draft.day)).dateIso ?? '').slice(5)
+      const fija = destData.destination_config?.noche_especial?.[mmdd]?.noche ?? null
+      const huecos = draft.rowsPrep.filter((row) => row.tipo === 'noche').length
+      for (let k = 0; k < huecos; k++) {
+        const row = draft.rowsPrep.filter((item) => item.tipo === 'noche')[k]
+        if (!row) break
+        // (Nochebuena: solo Trevi, y esa noche puede repetir.)
+        if (fija && row.noche === fija) { provisional.add(row.noche); continue }
         const rows = draft.rowsPrep
         const cena = rows.find((item) => item.tipo === 'cena')
-        const dentro = new Set(rows.filter((item) => item.tipo === 'noche').map((item) => item.noche))
+        // (Las que ese día ya ha repartido, no las que la tabla escribe en las otras nocturnas: esas se reparten a su vez.)
+        const delDia = provisional
+        const sitios = new Set(rows.filter((item) => item.lugar).map((item) => item.lugar))
+        const vale = (name) => {
+          const entrada = catalogueByName.get(name)
+          if (!entrada || usadas.has(name) || provisional.has(name) || delDia.has(name)) return false
+          return entrada.allow_same_day === true || !(entrada.conflicts_with ?? []).some((lugar) => sitios.has(lugar))
+        }
         const distancia = (name) => (cena && catalogueByName.get(name)?.coordinates ? straightLineMeters(rowCoords(cena) ?? catalogueByName.get(name).coordinates, catalogueByName.get(name).coordinates) : 0)
-        const libres = NOCHES_POSIBLES.filter((name) => catalogueByName.has(name) && !vistas.has(name) && !dentro.has(name))
-        const preferida = (written.days[draft.id]?.noche_si_repetida ?? []).find((name) => libres.includes(name))
-        const elegida = preferida ?? [...libres].sort((x, y) => Number(diaViaje(lugarDeNoche[x] ?? '', draft)) - Number(diaViaje(lugarDeNoche[y] ?? '', draft)) || distancia(x) - distancia(y))[0]
+        const enTrastevere = cena && String(restaurantByName.get(cena.restaurante)?.zone ?? '').includes('Trastevere')
+        let elegida = imprescindibles.find(vale) ?? null
+        let causa = elegida ? `${elegida} es la primera nocturna imprescindible que aún no ha salido de noche en el viaje` : null
+        if (!elegida && vale(row.noche)) { elegida = row.noche; causa = null }
+        if (!elegida && enTrastevere && !trastevereIluminado(rows) && vale('Trastevere de noche')) { elegida = 'Trastevere de noche'; causa = 'se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche' }
+        if (!elegida) {
+          const preferida = (written.days[draft.id]?.noche_si_repetida ?? []).find(vale)
+          elegida = preferida ?? [...NOCHES_POSIBLES.filter(vale)].sort((x, y) => Number(diaViaje(lugarDeNoche[x] ?? '', draft)) - Number(diaViaje(lugarDeNoche[y] ?? '', draft)) || distancia(x) - distancia(y))[0] ?? null
+          causa = elegida ? `${row.noche} ya salió de noche en el viaje: la nocturna pasa a ${elegida}` : null
+        }
         if (elegida) {
-          cambiarNoche(draft, row, elegida, `${row.noche} ya salió de noche en el viaje: la nocturna pasa a ${elegida}`)
-          vistas.add(elegida)
+          if (elegida !== row.noche) cambiarNoche(draft, row, elegida, causa)
+          provisional.add(elegida)
         } else {
           const i = rows.indexOf(row)
-          const lista = rows.filter((item, k) => item !== row && !(k === i - 1 && item.tipo === 'traslado'))
+          const lista = rows.filter((item, j) => item !== row && !(j === i - 1 && item.tipo === 'traslado'))
           anotarCambios(rows, lista, `${row.noche} ya salió de noche en el viaje y no queda otra nocturna: sin nocturna`, draft.log)
           draft.rowsPrep = lista
+          k--
+          // (Al quitar una, la siguiente ocupa su sitio en la lista.)
+          if (draft.rowsPrep.filter((item) => item.tipo === 'noche').length <= k + 1) break
+        }
+      }
+      // Medio día de tarde de 1,5 días: si la Plaza de España aún no ha salido de noche, la noche acaba con Trevi y después la Plaza de España (10 min andando).
+      if (draft.id === 'D0-medio' && String(draft.tablaVersion).startsWith('tarde') && !usadas.has('Plaza de España (noche)') && !provisional.has('Plaza de España (noche)')) {
+        const trevi = draft.rowsPrep.find((row) => row.tipo === 'noche' && row.noche === 'Fontana de Trevi (noche)')
+        if (trevi) {
+          const rows = draft.rowsPrep
+          const i = rows.indexOf(trevi)
+          const nueva = { id: 'noche_plaza_de_espana_noche', tipo: 'noche', noche: 'Plaza de España (noche)', hora: filaHHMM(filaMin(trevi.hora) + trevi.min + 10), min: NOCHE_MIN['Plaza de España (noche)'], como_documento: '', texto_documento: 'Plaza de España (noche)' }
+          const lista = [...rows.slice(0, i + 1), nueva, ...rows.slice(i + 1)]
+          anotarCambios(rows, lista, 'la Plaza de España no ha salido de noche en el viaje: la noche del medio día de tarde acaba con Trevi y la Plaza de España (10 min andando)', draft.log)
+          draft.rowsPrep = lista
+          draft.applied.push('noche:Plaza de España (noche)')
         }
       }
     }
+    return { asignarDia, registrar: (draft) => { for (const row of draft.rowsPrep) if (row.tipo === 'noche') usadas.add(row.noche) } }
   }
 
   // ── Las horas, una sola vez, al final (Tanda 4) ───────────────────────────────────────────────────────────────────────────
@@ -2249,6 +2238,16 @@ export function planWrittenTrip(args) {
         stageLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'hora', causa: `cierre de ${row.lugar}: abre a las ${hora}` })
         rows = rows.map((other, k) => (k === i ? { ...other, hora } : other))
       }
+    }
+    // Una fila con hora fija (reserva, turno) que a esa hora está cerrada se quita —el día no se reordena para abrirla— y el tiempo que deja lo llena componerDia con nombre.
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const row = rows[i]
+      if (row.modo !== 'dentro' || !(row.hora_tipo === 'reserva' || row.hora_tipo === 'turno') || env0.abierta(row, filaMin(row.hora))) continue
+      stageLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar ?? null, que: 'quitada', causa: `cierre de ${row.lugar}: a las ${row.hora} está cerrado` })
+      const weekly = (placeByName.get(row.lugar)?.closed_on ?? []).some((day) => norm(day) === norm(hours.weekday))
+      unplacedPool.push({ unitId: row.lugar, name: row.lugar, reason: 'closed_on_day', dayNumber: skeletonDay.dayNumber, closed: { dateIso: realDateIso(skeletonDay), weekday: hours.weekday }, closedWeekly: weekly })
+      rows = rows.filter((other, k) => k !== i && !(k === i - 1 && other.tipo === 'traslado'))
+      i = Math.min(i, rows.length)
     }
     rows = nocheEspecial(rows, hours, stageLog)
     const inicial = marcarFilas(draft.rows)
@@ -2314,6 +2313,8 @@ export function planWrittenTrip(args) {
     draft.problemasComponer = resultado.problemas
   }
 
+  // Lo que ya se ha comido y cenado en el viaje (los días se planifican en orden): restaurantes usados, el barrio de la cena del día anterior y el de la comida de hoy.
+  const mesas = { usados: new Set(), cenaAnterior: null, cenaDeHoy: null, comidaHoy: null }
   const planEscritoDay = (draft, skeletonDay) => {
     const hours = hoursOf(skeletonDay)
     const ctx = { id: draft.id, day: skeletonDay, hours, escrito: true, reserved: false, problems: [], sunsetArrival: null, morningNames: new Set() }
@@ -2346,12 +2347,16 @@ export function planWrittenTrip(args) {
         if (dif.length) log.push({ id: row.id, lugar: nombre, sitio: row.lugar ?? null, que: dif.join('+'), causa: `cierre de ${row.lugar}` })
       }
     }
+    mesas.comidaHoy = null
+    mesas.cenaDeHoy = null
     // Comidas y cenas: el escrito; si cierra ese día o a esa hora, su alternativa; si cierran los dos, la tercera (cuando la hay); si no hay ninguna abierta, otro de la
     // misma zona abierto a esa hora (de los datos), apuntado en el registro.
     const meals = []
     let dinnerRestaurant = null
     const mmdd = String(hours.dateIso ?? '').slice(5)
-    const NAVIDAD = ['12-24', '12-25', '12-31', '01-01']
+    // (Las fechas en que todas las mesas llevan «Con reserva» van en destination_config.fechas_con_reserva: un solo sitio, no repartidas por las tablas.)
+    const reservaCfg = destData.destination_config?.fechas_con_reserva ?? {}
+    const NAVIDAD = reservaCfg.fechas ?? []
     for (const row of rows) {
       if (row.tipo !== 'comida' && row.tipo !== 'cena') continue
       const meal = row.tipo === 'cena' ? 'cena' : 'comida'
@@ -2360,12 +2365,54 @@ export function planWrittenTrip(args) {
       let chosen = null
       let motivo = null
       const candidatas = [row.restaurante, row.alternativa, row.tercera].filter(Boolean)
-      for (const name of candidatas) {
-        const hit = pick(name)
-        if (hit?.name === name) {
-          chosen = hit
-          if (name !== row.restaurante) motivo = `${candidatas.slice(0, candidatas.indexOf(name)).join(' y ')} ${candidatas.indexOf(name) > 1 ? 'cierran' : 'cierra'} ese día o a esa hora: va ${name}`
-          break
+      // Un restaurante no se repite en el viaje (los días van en orden y el primero se queda el suyo) y, si hay otra opción, no se cena dos días seguidos en el mismo barrio
+      // ni se come y se cena en el mismo barrio el mismo día. La cadena: lo escrito, su alternativa, la tercera, otro de la misma zona y otro a menos de 1 km en otro barrio, abierto y sin usar.
+      const barrioDe = (name) => mainZoneOf(restaurantByName.get(name)?.zone ?? '')
+      const cenando = row.tipo === 'cena'
+      const barrioOk = (name) => !cenando || (barrioDe(name) !== mesas.cenaAnterior?.barrio && barrioDe(name) !== mesas.comidaHoy)
+      const abierto = (name) => pick(name)?.name === name
+      const sinUsar = (name) => !mesas.usados.has(name)
+      const coordsDe = (name) => {
+        const c = restaurantByName.get(name)?.coordinates
+        return Array.isArray(c) ? c : c ? [c.lat, c.lng] : null
+      }
+      const escritoCoords = coordsDe(row.restaurante)
+      const distanciaA = (name) => (escritoCoords && coordsDe(name) ? straightLineMeters(escritoCoords, coordsDe(name)) : Infinity)
+      // (Los otros restaurantes abiertos solo se miran si lo escrito no sirve: es lo caro.)
+      let otrosCache = null
+      const otros = () => (otrosCache ??= (destData.restaurants ?? []).map((restaurant) => restaurant.name).filter((name) => !candidatas.includes(name) && abierto(name)))
+      const mismaZona = (name) => barrioDe(name) === barrioDe(row.restaurante)
+      const orden = (lista) => [...lista].sort((x, y) => distanciaA(x) - distanciaA(y) || x.localeCompare(y, 'es'))
+      const etapas = [
+        () => candidatas.filter((name) => abierto(name) && sinUsar(name) && barrioOk(name)),
+        () => orden(otros().filter((name) => sinUsar(name) && barrioOk(name) && mismaZona(name))),
+        () => orden(otros().filter((name) => sinUsar(name) && barrioOk(name) && distanciaA(name) <= 1000)),
+        () => candidatas.filter((name) => abierto(name) && sinUsar(name)),
+        () => orden(otros().filter((name) => sinUsar(name) && mismaZona(name))),
+        () => candidatas.filter((name) => abierto(name)),
+      ]
+      let etapa = -1
+      let elegidas = []
+      for (let k = 0; k < etapas.length && etapa < 0; k++) {
+        elegidas = etapas[k]()
+        if (elegidas.length > 0) etapa = k
+      }
+      if (etapa >= 0) {
+        const name = elegidas[0]
+        chosen = pick(name)
+        if (chosen?.name !== name) chosen = { name, coordinates: coordsDe(name), zone: restaurantByName.get(name)?.zone ?? null }
+        if (name !== row.restaurante) {
+          const razones = []
+          for (const candidata of candidatas.slice(0, candidatas.includes(name) ? candidatas.indexOf(name) : candidatas.length)) {
+            const porque = !abierto(candidata) ? 'cierra ese día o a esa hora' : !sinUsar(candidata) ? 'ya sale en el viaje' : !barrioOk(candidata) ? (barrioDe(candidata) === mesas.comidaHoy ? 'se comió en ese mismo barrio ese día' : 'se cenó en ese mismo barrio el día anterior') : null
+            if (porque) razones.push(`${candidata} ${porque}`)
+          }
+          const dondeEsta = candidatas.includes(name) ? '' : mismaZona(name) ? ', otro de la misma zona abierto y sin usar' : ', otro a menos de 1 km en otro barrio, abierto y sin usar'
+          motivo = razones.length ? `${razones.join('; ')}: va ${name}${dondeEsta}` : `${row.restaurante}: va ${name}${dondeEsta}`
+        }
+        if (etapa === 3 || etapa === 4 || (etapa === 5 && !sinUsar(name))) {
+          if (!sinUsar(name) || etapa === 5) log.push({ id: row.id, lugar: name, sitio: null, que: 'aviso', causa: `restaurante repetido en el viaje: ${name} (no queda otro abierto en la zona)` })
+          if (cenando && !barrioOk(name)) log.push({ id: row.id, lugar: name, sitio: null, que: 'aviso', causa: `barrio repetido: ${barrioDe(name)} (${barrioDe(name) === mesas.comidaHoy ? 'se come y se cena en el mismo barrio' : 'dos cenas seguidas en el mismo barrio'}); no hay otra opción abierta que no rompa la ruta` })
         }
       }
       if (!chosen) {
@@ -2374,17 +2421,23 @@ export function planWrittenTrip(args) {
         if (!chosen) chosen = recommendedRestaurant(destData, { names: [row.restaurante], meal, near: null, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: null })
         motivo = chosen ? `${candidatas.join(', ')}: ninguno abierto ese día a esa hora; va ${chosen.name}, otro de la misma zona abierto` : `${candidatas.join(', ')}: ninguno abierto ese día a esa hora y no hay otro en la zona`
       }
+      if (chosen?.name) {
+        mesas.usados.add(chosen.name)
+        if (cenando) { mesas.cenaDeHoy = { barrio: barrioDe(chosen.name) } } else mesas.comidaHoy = barrioDe(chosen.name)
+      }
       if (motivo) log.push({ id: row.id, lugar: row.restaurante, sitio: null, que: 'restaurante', causa: motivo })
       // (Navidad y Año Nuevo: «con reserva»; y sin dato de si ese restaurante cierra, el aviso de que se reserve con antelación.)
       const restaurante = restaurantByName.get(chosen?.name)
       const sinDato = restaurante && !restaurante.closed_on && !restaurante.closed_dates && !/\d{1,2}:\d{2}\s*-/.test(String(restaurante.hours ?? ''))
-      const nota = mmdd === '12-31' && row.tipo === 'cena' ? 'Con reserva: menú de Nochevieja' : mmdd === '12-24' || /con reserva/i.test(row.nota ?? '') ? 'Con reserva' : NAVIDAD.includes(mmdd) && sinDato ? 'En Navidad, reserva con antelación' : null
+      const nota = !NAVIDAD.includes(mmdd) ? (/con reserva/i.test(row.nota ?? '') ? 'Con reserva' : null) : sinDato ? reservaCfg.sin_dato ?? 'En Navidad, reserva con antelación' : (row.tipo === 'cena' && reservaCfg.cena_especial?.[mmdd]) || reservaCfg.texto || 'Con reserva'
       if (row.tipo === 'comida') meals.push({ type: 'lunch', start, end: start + row.min, eatMinutes: row.min, coordinates: chosen?.coordinates ?? null, ...(chosen ? { spot: { name: chosen.name, zone: chosen.zone } } : {}), eatStart: start, ...(nota ? { note: nota } : {}) })
       else {
         dinnerRestaurant = chosen
         meals.push({ type: 'dinner', start, end: start + row.min, coordinates: chosen?.coordinates ?? null, walkMinutes: 0, ...(nota ? { note: nota } : {}) })
       }
     }
+    // (Lo que se cenó hoy es lo que mira la cena de mañana.)
+    mesas.cenaAnterior = mesas.cenaDeHoy
     const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : null
     const nights = rows.filter((row) => row.tipo === 'noche' && (!row.solo_meses || (month != null && row.solo_meses.includes(month)))).map((row) => ({ ...catalogueByName.get(row.noche), fixedStart: filaMin(row.hora), fixedMinutes: row.min, wholeWalk: true })).filter((entry) => entry.name)
     const dinnerZone = dinnerRestaurant ? dinnerZones(destData).find((zone) => zone.restaurants.includes(dinnerRestaurant.name))?.id ?? null : null
@@ -2429,10 +2482,15 @@ export function planWrittenTrip(args) {
     if (index >= 0 && drafts[index].escrito) prepararEscrito(drafts[index], skeletonDay)
   }
   aplicarDentroUnaVez()
-  aplicarNochesDelViaje()
+  const noches = aplicarNochesDelViaje()
+  // (Día a día: se reparten las nocturnas de ese día, se componen sus horas y solo entonces cuenta lo que de verdad salió de noche.)
   for (const skeletonDay of skeleton) {
     const index = cityDays.indexOf(skeletonDay)
-    if (index >= 0 && drafts[index].escrito) componerEscrito(drafts[index], skeletonDay)
+    if (index >= 0 && drafts[index].escrito) {
+      noches.asignarDia(drafts[index])
+      componerEscrito(drafts[index], skeletonDay)
+      noches.registrar(drafts[index])
+    }
   }
   for (const skeletonDay of skeleton) {
     const index = cityDays.indexOf(skeletonDay)

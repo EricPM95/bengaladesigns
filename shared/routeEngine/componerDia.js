@@ -390,6 +390,15 @@ function componer(rows0, env, retrasos) {
           if (g <= HUECO_MAXIMO) { i++; continue }
         }
       }
+      // Si lo de antes es todo del principio del día y no tiene hora fija (ni reserva ni sol), el día empieza más tarde: no hay nada que llenar, solo que empezar a su hora.
+      if (salida.slice(0, i).every((fila) => !esFija(fila) && fila.llegada !== true && fila.id !== solarId && fila.tipo !== 'cena')) {
+        const mover = salida.slice(0, i).map((fila) => ({ ...fila, hora: toHHMM(toMin(fila.hora) + g) }))
+        if (!mover.some((fila) => env.abierta && !env.abierta(fila, toMin(fila.hora), fila.min))) {
+          mover.forEach((fila, t) => { salida[t] = fila; nota(fila, `el día empieza ${g} min más tarde: ${nombreDe(b)} no abre antes (${b.hora})`) })
+          i++
+          continue
+        }
+      }
       avisos.push(`queda un hueco de ${g} min antes de ${nombreDe(b)} (${b.hora}): no hay colchón de esa zona`)
       i++
     }

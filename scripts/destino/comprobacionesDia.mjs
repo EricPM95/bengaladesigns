@@ -52,3 +52,89 @@ export function comprobarDia({ D, iso, id, day }) {
   }
   return fallos
 }
+
+/** Lo que se mira en el viaje entero (los días ya construidos, en orden): [{ iso, day }]. */
+export function comprobarViaje({ D, dias }) {
+  const fallos = []
+  // 3. Las nocturnas imprescindibles salen por orden en las primeras noches del viaje (la primera noche del viaje es Trevi, luego la Plaza de España, luego el Coliseo), salvo
+  // las noches de fecha propia (Nochebuena: solo Trevi, y esa noche puede repetir; Nochevieja: una sola).
+  const lista = D.destination_config?.noches_imprescindibles?.lista ?? []
+  const especiales = D.destination_config?.noche_especial ?? {}
+  const noches = []
+  for (const { iso, day } of dias) {
+    if (!day) continue
+    const stops = (day.stops ?? []).filter((stop) => stop.is_night_experience).sort((a, b) => String(a.suggested_time).localeCompare(String(b.suggested_time)))
+    for (const stop of stops) noches.push({ iso, name: stop.name, fija: Boolean(especiales[iso.slice(5)]?.noche) })
+  }
+  // (Una noche de fecha propia —Nochebuena— cuenta como salida si es la primera vez; las demás van por orden: cada una es la primera de la lista que aún no ha salido.)
+  const faltan = [...lista]
+  let n = 0
+  for (const noche of noches) {
+    const i = faltan.indexOf(noche.name)
+    if (noche.fija) { if (i >= 0) faltan.splice(i, 1); continue }
+    n++
+    if (faltan.length === 0) break
+    if (noche.name !== faltan[0]) {
+      fallos.push({ regla: 'noche_orden', texto: `la nocturna ${n} del viaje (${noche.iso}) es «${noche.name}» y toca «${faltan[0]}»` })
+      break
+    }
+    faltan.shift()
+  }
+  return fallos
+}
+
+/** 4. Restaurantes: ninguno se repite en el viaje; no se cena dos días seguidos en el mismo barrio ni se come y se cena en el mismo barrio el mismo día (salvo con motivo apuntado). */
+export function comprobarMesas({ D, dias }) {
+  const fallos = []
+  const info = []
+  const zonaDe = (name) => String(D.restaurants?.find((restaurant) => restaurant.name === name)?.zone ?? '').split('/')[0].trim()
+  const vistos = new Map()
+  let cenaAnterior = null
+  for (const { iso, day } of dias) {
+    if (!day) { cenaAnterior = null; continue }
+    const id = day.curated_day?.id ?? '?'
+    const comida = (day.meals ?? []).find((meal) => meal.time === 'lunch')?.restaurant ?? null
+    const cena = (day.meals ?? []).find((meal) => meal.time === 'dinner')?.restaurant ?? null
+    for (const [tipo, name] of [['comida', comida], ['cena', cena]]) {
+      if (!name) continue
+      if (vistos.has(name)) fallos.push({ regla: 'restaurante_repetido', texto: `${name}: ${vistos.get(name)} y ${iso} ${id} (${tipo})` })
+      else vistos.set(name, `${iso} ${id} (${tipo})`)
+    }
+    const avisos = (day.engine_log ?? []).filter((x) => x.que === 'aviso' && /barrio repetido/.test(x.causa)).map((x) => x.causa)
+    const repite = []
+    if (comida && cena && zonaDe(comida) && zonaDe(comida) === zonaDe(cena)) repite.push(`se come y se cena en ${zonaDe(cena)} (${comida} / ${cena})`)
+    if (cena && cenaAnterior && zonaDe(cena) && zonaDe(cena) === cenaAnterior.barrio) repite.push(`dos cenas seguidas en ${cenaAnterior.barrio} (${cenaAnterior.name} / ${cena})`)
+    if (repite.length) (avisos.length ? info : fallos).push({ regla: avisos.length ? 'barrio_repetido_con_motivo' : 'barrio_repetido_sin_motivo', texto: `${iso} ${id}: ${repite.join('; ')}${avisos.length ? ` — ${avisos[0]}` : ''}` })
+    cenaAnterior = cena ? { barrio: zonaDe(cena), name: cena } : null
+  }
+  return { fallos, info }
+}
+
+/** 5. Los textos que salen en pantalla: la zona de cada comida y cena es la de su restaurante en los datos, y «Con reserva» en las fechas de `fechas_con_reserva`. */
+export function comprobarPantalla({ D, iso, id, day }) {
+  const fallos = []
+  const donde = `${iso} ${id}`
+  const cfg = D.destination_config?.fechas_con_reserva ?? {}
+  const reserva = (cfg.fechas ?? []).includes(iso.slice(5))
+  for (const meal of day.meals ?? []) {
+    const tipo = meal.time === 'dinner' ? 'cena' : 'comida'
+    const restaurante = D.restaurants?.find((item) => item.name === meal.restaurant)
+    if (!restaurante) continue
+    const esperada = `en ${String(restaurante.zone).replace(/\s*\/\s*/g, ' y ')}`
+    if (meal.zone_display !== esperada) fallos.push({ regla: 'zona_etiqueta', texto: `${donde}: la ${tipo} en ${meal.restaurant} sale como «${meal.zone_display}» y su zona en los datos es «${restaurante.zone}»` })
+    if (reserva && !meal.reservation_note) fallos.push({ regla: 'con_reserva', texto: `${donde}: la ${tipo} en ${meal.restaurant} no lleva «Con reserva» ni el aviso de reservar` })
+    if (!reserva && /Con reserva|reserva con antelación/.test(meal.reservation_note ?? '') && !(D.restaurants && false)) fallos.push({ regla: 'con_reserva_fuera_de_fecha', texto: `${donde}: la ${tipo} en ${meal.restaurant} lleva «${meal.reservation_note}» y esa fecha no está en la lista` })
+  }
+  return fallos
+}
+
+/** Los sitios y restaurantes que usa algún día escrito y no tienen horario en los datos: el motor los da por abiertos siempre. */
+export function sinHorario({ D, dias }) {
+  const nombres = { lugar: new Set(), restaurante: new Set() }
+  const texto = JSON.stringify(dias)
+  for (const m of texto.matchAll(/"lugar":"((?:[^"\\]|\\.)*)"/g)) nombres.lugar.add(JSON.parse(`"${m[1]}"`))
+  for (const m of texto.matchAll(/"(?:restaurante|alternativa|tercera)":"((?:[^"\\]|\\.)*)"/g)) nombres.restaurante.add(JSON.parse(`"${m[1]}"`))
+  const lugares = [...nombres.lugar].map((name) => D.places.find((place) => place.name === name)).filter(Boolean).filter((place) => !(place.schedule || place.windows || place.by_day || place.by_season || place.by_period || place.special_hours || place.hours))
+  const restaurantes = [...nombres.restaurante].map((name) => D.restaurants.find((item) => item.name === name)).filter(Boolean).filter((item) => !/\d{1,2}[:.]\d{2}/.test(String(item.hours ?? '')))
+  return { lugares: lugares.map((place) => ({ name: place.name, tipo: place.type ?? null })), restaurantes: restaurantes.map((item) => item.name) }
+}

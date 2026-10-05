@@ -10,7 +10,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
-import { comprobarDia } from './comprobacionesDia.mjs'
+import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -207,7 +207,9 @@ function tablaBase(id, iso, viaje, posicion) {
   if (id === 'D6') return por(!abre8 ? 'miercoles' : 'normal')
   if (id === 'D7') return por('normal')
   if (id === 'D4') {
-    const rows = por('normal')
+    // (La Galería cierra —el lunes, un festivo—: la mañana del documento con la Cripta de los Capuchinos.)
+    const galeriaCerrada = Boolean(placeOf('Galería Borghese') && closedOnDay(placeOf('Galería Borghese'), weekdayOf(iso), iso))
+    const rows = galeriaCerrada && v.lunes ? por('lunes') : por('normal')
     // (Con Free Tour de mañana, el tour ya pasó por Trevi, la Plaza de España y Via Condotti: sin Trevi ni desayuno, a las 9:00 en la Fuente del Tritón; el rato que sobra, al colchón del Tridente.)
     if (!viaje.ft) return rows
     const sin = rows.filter((row) => !((row.lugar === 'Fontana de Trevi' && row.tipo === 'parada') || row.tipo === 'desayuno'))
@@ -318,7 +320,7 @@ function comprobarExtras(viaje, iso, dayNumber, id, day, ids) {
     if (entry.que === 'aviso' && /pasa de las 22:00/.test(entry.causa)) extra.cena_22.push(`${iso} ${viaje.clave} ${id}: ${entry.causa}`)
     if (entry.que === 'aviso' && /más de 2 horas/.test(entry.causa)) extra.colchon_2h.push(`${iso} ${viaje.clave} ${id}: ${entry.lugar} (${entry.causa})`)
   }
-  for (const fallo of comprobarDia({ D, iso: `${iso}`, id, day })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${viaje.clave} ${fallo.texto}`])
+  for (const fallo of [...comprobarDia({ D, iso: `${iso}`, id, day }), ...comprobarPantalla({ D, iso: `${iso}`, id, day })]) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${viaje.clave} ${fallo.texto}`])
   void ids
 }
 
@@ -361,6 +363,13 @@ for (let n = Number(args.desde ?? 0); n < 365; n += PASO) {
       const day = construidos[i]
       const lleva = (day?.stops ?? []).some((stop) => /Museos Vaticanos|Basílica de San Pedro/.test(stop.place_name ?? stop.name ?? ''))
       if (lleva) extra.aviso_vaticano.push(`${card.date_iso} ${viaje.clave}: el aviso dice «Hemos puesto el Vaticano otro día» y ese día (${day.curated_day?.id}) lleva el Vaticano`)
+    }
+    // Lo que se mira en el viaje entero (tanda 4).
+    for (const fallo of comprobarViaje({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })) })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
+    {
+      const mesas = comprobarMesas({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })) })
+      for (const fallo of mesas.fallos) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
+      for (const fallo of mesas.info) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
     }
     // Regla 0bis y nocturnas (tanda 3): lo que tiene visita por dentro sale por dentro una sola vez en el viaje, y ninguna nocturna se repite.
     {
@@ -452,6 +461,13 @@ listar('Nocturnas repetidas', extra.noche_repetida)
 if (extra.imprescindibles.size > 0) {
   lines.push(`## Imprescindibles que no salen (${extra.imprescindibles.size})`, '')
   for (const item of [...extra.imprescindibles.values()].sort((a, b) => a.viaje.localeCompare(b.viaje) || b.fechas.length - a.fechas.length)) lines.push(`- ${item.viaje} · ${item.name} · ${item.fechas.length} fechas (${item.fechas.slice(0, 3).join(', ')}${item.fechas.length > 3 ? '…' : ''})`)
+  lines.push('')
+}
+{
+  const sh = sinHorario({ D, dias })
+  lines.push(`## Sitios y restaurantes que usa un día escrito y no tienen horario en los datos (${sh.lugares.length} sitios, ${sh.restaurantes.length} restaurantes)`, '', 'El motor los da por abiertos siempre: hay que rellenar su horario.', '')
+  for (const lugar of sh.lugares) lines.push(`- Sitio: ${lugar.name}${lugar.tipo ? ` (${lugar.tipo})` : ''}`)
+  for (const name of sh.restaurantes) lines.push(`- Restaurante: ${name}`)
   lines.push('')
 }
 lines.push('## Sin explicar', '')
