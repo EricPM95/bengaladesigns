@@ -55,6 +55,7 @@ import { AddStopScreen } from '../addStop/AddStopScreen'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { MealDetailSheet } from './MealDetailSheet'
+import { organizarDiaEnCiudad } from '../../../lib/rebuildDay'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
 import { WantInsideDialog, useWantInside } from './WantInsideDialog'
@@ -1182,7 +1183,7 @@ export function DayDetailPanel({
           {dayType === 'excursion' && !excursionEnteraEnBlanco && (
             <div className="space-y-3 pt-1">
               {/* Regla 10: si este día tenía ruta curada, SIEMPRE se ofrece volver a ella. */}
-              {day.curatedAlternative && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
+              {day.curatedAlternative && !day.stayInCity && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
               {esDiaEnBlanco ? (
                 // En un día en blanco no se propone: el viajero vino a elegir. Y no lleva la salida
                 // "te montamos otro día de ruta" — este día está en blanco justamente porque el
@@ -1217,6 +1218,10 @@ export function DayDetailPanel({
                   // tiene el core day desplazado esperando, así que no queda vacío ni repetido) y
                   // "vacío" lo deja libre para que lo monte él.
                   onDecline={(fill) => convertDay(fill === 'route' ? 'normal' : 'manual')}
+                  // «Prefiero quedarme en Roma» (Tanda 3): la pantalla con las paradas emblemáticas; «Organízame este día» pide el día escrito, «Prefiero crear mi propio día» lo deja en blanco.
+                  stayInCity={day.stayInCity ?? null}
+                  onStayOrganize={() => organizarDiaEnCiudad(day.id)}
+                  onStayOwnDay={() => convertDay('manual')}
                 />
               ) : (
                 <p className="py-6 text-center text-small text-text-soft">Todavía no tenemos excursiones seleccionadas para {day.city}.</p>

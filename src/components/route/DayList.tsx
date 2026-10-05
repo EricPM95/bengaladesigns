@@ -260,6 +260,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{dayLabel(day.dayNumber, dateIso)}</p>
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
                 {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
+                {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3). */}
+                {day.dayType === 'excursion' && !travel && <p className="text-[12.5px] font-medium text-accent-red">Día de excursión</p>}
                 {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
                 {(route.dateNotices ?? []).some((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)) && (
                   <span className="mt-1 flex flex-wrap gap-1.5">

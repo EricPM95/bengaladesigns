@@ -163,6 +163,8 @@ export interface QuestionnaireAnswers {
   budgetLevel: BudgetLevel
   /** Free Tour de tarde o de noche, con su hora (el viaje usa el Día de la Roma antigua con el tour a esa hora). Lo rellenará quien conozca la hora; el motor ya lo lee. */
   freeTourDespues?: { franja: 'manana' | 'tarde' | 'noche'; hora: string }
+  /** «Prefiero quedarme en Roma» (días de excursión de 5 y 6 días): el día de excursión pasó a ser un día de ciudad escrito (D6 en 5 días, D7 en 6); el motor lo tiene en cuenta al rehacer cualquier día. */
+  sinExcursion?: boolean
   /** Viaje de 1,5 días: el medio día cae por la tarde (llegada) o por la mañana (salida). */
   mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string; /** Dónde cae el medio día: 'primero' (llegada) o 'ultimo' (salida); sin él, la tarde es la llegada y la mañana la salida. */ posicion?: 'primero' | 'ultimo' }
 }
@@ -516,6 +518,15 @@ export interface CuratedAlternative {
   places: string[]
 }
 
+/** «Prefiero quedarme en Roma» (día de excursión): el día de ciudad que entraría en su lugar y sus paradas emblemáticas, sin horas (la pantalla las enseña con su foto). */
+export interface StayInCity {
+  /** El día escrito que entra (D6, D7): solo lo usa el servidor. */
+  dayId: string
+  title: string
+  text?: string | null
+  stops: { name: string; photoName: string }[]
+}
+
 export interface Excursion {
   id: string
   title: string
@@ -640,6 +651,8 @@ export interface DayPlan {
   excursionOffer?: { title: string; text: string } | null
   /** Solo días de excursión que tenían ruta curada — ver CuratedAlternative. */
   curatedAlternative?: CuratedAlternative | null
+  /** Solo días de excursión de un destino con días escritos: lo que enseña «Prefiero quedarme en Roma». */
+  stayInCity?: StayInCity | null
   /** El día tal como lo dio el motor, antes del primer cambio del viajero (decisión del usuario, 2026-09-28): "Volver a
       la ruta original" lo recupera EXACTAMENTE, sin regenerar. Solo en los días nuestros; se guarda con el viaje. */
   originalSnapshot?: DayPlan | null

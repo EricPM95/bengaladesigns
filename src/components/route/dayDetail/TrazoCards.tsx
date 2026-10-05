@@ -94,6 +94,10 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
         </span>
         <div className="absolute bottom-0 left-[30px] right-0 top-0" style={{ clipPath: 'polygon(26px 0, 100% 0, calc(100% - 20px) 100%, 0 100%)', background: photoBg }}>
           {photoUrl && !noPhoto && <img src={photoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
+          {/* Sin foto del sitio: el recuadro neutro con su nombre (nunca una foto que no sea del sitio; las fotos propias que faltan salen solas al llegar). */}
+          {!photoUrl && !noPhoto && !iconPath && !dashed && typeof name === 'string' && (
+            <span className={`absolute inset-0 flex items-center justify-center px-7 text-center font-display text-[12px] leading-[1.15] [overflow-wrap:anywhere] ${night ? 'text-white/60' : 'text-text/45'}`}>{name}</span>
+          )}
         </div>
       </div>
       <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>

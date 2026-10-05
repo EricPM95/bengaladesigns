@@ -4,7 +4,8 @@
   "sin_foto": [
     "Via Margutta",
     "Via Margutta y Via del Babuino",
-    "Pasear por San Giovanni"
+    "Pasear por San Giovanni",
+    "Terraza del Altar de la Patria"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour sigue con la foto de Piazza Navona (photo_from): decisión del usuario del 3-oct-2026, no se toca. · Armando al Pantheon, Trattoria Monti y Felice a Testaccio: sin foto (3-oct-2026) para no repetir la del Panteón, Monti y Testaccio; las fotos de esos tres lugares no se tocan. · 3-oct-2026: TODOS los restaurantes, cafés y heladerías de Roma (el array restaurants de roma.json) van sin foto, también en Explorar y en las tarjetas de comida y cena: ninguno lleva la foto de un sitio que no es suyo. Las fotos de los lugares no se tocan. Si se añade un restaurante nuevo a roma.json, hay que apuntarlo aquí. · 3-oct-2026 (después): los restaurantes, cafés y heladerías ya NO se apuntan aquí. Todo lo que está en la lista `restaurants` de un destino (roma.json y los demás) va sin foto solo, por regla del servidor (isRestaurantName en server/index.js): al añadir uno nuevo o un destino nuevo, nunca busca foto. La tarjeta general «Restaurantes» de Explorar (la foto genérica de una trattoria) no es un restaurante y se queda con su foto.",
   "fotos": [
@@ -743,5 +744,358 @@
       }
     ],
     "Pasear por San Giovanni": []
-  }
+  },
+  "huecos": [
+    {
+      "archivo": "dia_terraza_altar_patria.jpg",
+      "lugares": [
+        "Terraza del Altar de la Patria"
+      ],
+      "cuando": "dia",
+      "sitio": "Terraza del Altar de la Patria (la del ascensor panorámico)",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)",
+      "estrella": true,
+      "nota": "La del Altar que ya hay es la del edificio.",
+      "sin_foto_hasta_llegar": true
+    },
+    {
+      "archivo": "dia_castillo_sant_angelo_dentro.jpg",
+      "lugares": [
+        "Castillo de Sant'Angelo"
+      ],
+      "cuando": "dia",
+      "sitio": "Castillo de Sant'Angelo por dentro (la terraza del ángel)",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_museos_capitolinos.jpg",
+      "lugares": [
+        "Museos Capitolinos"
+      ],
+      "cuando": "dia",
+      "sitio": "Museos Capitolinos (el Marco Aurelio o la Loba)",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_plaza_campidoglio.jpg",
+      "lugares": [
+        "Plaza del Campidoglio"
+      ],
+      "cuando": "dia",
+      "sitio": "Plaza del Campidoglio, de día",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_piazza_venezia.jpg",
+      "lugares": [
+        "Plaza Venecia"
+      ],
+      "cuando": "dia",
+      "sitio": "Piazza Venezia, de día",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)"
+    },
+    {
+      "archivo": "dia_santa_maria_aracoeli.jpg",
+      "lugares": [
+        "Santo Bambino de Aracoeli",
+        "Santa Maria in Aracoeli"
+      ],
+      "cuando": "dia",
+      "sitio": "Santa Maria in Aracoeli y su escalinata",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)"
+    },
+    {
+      "archivo": "dia_foros_de_trajano.jpg",
+      "lugares": [
+        "Columna de Trajano",
+        "Mercados de Trajano",
+        "Foros de Trajano"
+      ],
+      "cuando": "dia",
+      "sitio": "Foros de Trajano (la Columna y los Mercados)",
+      "grupo": "Día «Roma desde arriba» (5 y 6 días)"
+    },
+    {
+      "archivo": "dia_santa_maria_maggiore.jpg",
+      "lugares": [
+        "Basílica de Santa María la Mayor"
+      ],
+      "cuando": "dia",
+      "sitio": "Santa Maria Maggiore",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_san_pietro_in_vincoli.jpg",
+      "lugares": [
+        "Iglesia de San Pietro in Vincoli"
+      ],
+      "cuando": "dia",
+      "sitio": "San Pietro in Vincoli (el Moisés)",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_san_juan_de_letran.jpg",
+      "lugares": [
+        "Basílica de San Juan de Letrán"
+      ],
+      "cuando": "dia",
+      "sitio": "San Juan de Letrán",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_escalera_santa.jpg",
+      "lugares": [
+        "Escalera Santa"
+      ],
+      "cuando": "dia",
+      "sitio": "Escalera Santa",
+      "grupo": "Día de las basílicas y el Aventino (4 días)"
+    },
+    {
+      "archivo": "dia_san_clemente.jpg",
+      "lugares": [
+        "Basílica de San Clemente"
+      ],
+      "cuando": "dia",
+      "sitio": "San Clemente (si es posible, las excavaciones de abajo)",
+      "grupo": "Día de las basílicas y el Aventino (4 días)"
+    },
+    {
+      "archivo": "dia_monti.jpg",
+      "lugares": [
+        "Monti"
+      ],
+      "cuando": "dia",
+      "sitio": "Monti (la Piazza Madonna dei Monti o Via Panisperna)",
+      "grupo": "Día de las basílicas y el Aventino (4 días)"
+    },
+    {
+      "archivo": "dia_termas_de_caracalla.jpg",
+      "lugares": [
+        "Termas de Caracalla"
+      ],
+      "cuando": "dia",
+      "sitio": "Termas de Caracalla",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_circo_maximo.jpg",
+      "lugares": [
+        "Circo Máximo"
+      ],
+      "cuando": "dia",
+      "sitio": "Circo Máximo",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_boca_de_la_verdad.jpg",
+      "lugares": [
+        "Boca de la Verdad"
+      ],
+      "cuando": "dia",
+      "sitio": "Boca de la Verdad",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_paseo_aventino.jpg",
+      "lugares": [
+        "Paseo por el Aventino"
+      ],
+      "cuando": "dia",
+      "sitio": "Paseo por el Aventino (Santa Sabina, el Parque Savello; la Rosaleda en mayo y junio)",
+      "grupo": "Día de las basílicas y el Aventino (4 días)",
+      "nota": "La Rosaleda solo en mayo y junio: si es otra foto, se dice."
+    },
+    {
+      "archivo": "dia_paseo_testaccio.jpg",
+      "lugares": [
+        "Paseo por Testaccio"
+      ],
+      "cuando": "dia",
+      "sitio": "Paseo por Testaccio (la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero)",
+      "grupo": "Día de las basílicas y el Aventino (4 días)"
+    },
+    {
+      "archivo": "dia_mercado_de_testaccio.jpg",
+      "lugares": [
+        "Mercado de Testaccio"
+      ],
+      "cuando": "dia",
+      "sitio": "Mercado de Testaccio",
+      "grupo": "Medio día del Aventino y Testaccio (3,5 días)"
+    },
+    {
+      "archivo": "dia_fontana_de_trevi.jpg",
+      "lugares": [
+        "Fontana de Trevi"
+      ],
+      "cuando": "dia",
+      "sitio": "Fontana de Trevi de día, sin gente",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)",
+      "estrella": true,
+      "nota": "Ahora solo hay la de noche (noche_fontana_trevi.jpg), que no se toca."
+    },
+    {
+      "archivo": "dia_plaza_de_espana.jpg",
+      "lugares": [
+        "Plaza de España"
+      ],
+      "cuando": "dia",
+      "sitio": "Plaza de España de día",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)",
+      "estrella": true,
+      "nota": "Ahora solo hay la de noche."
+    },
+    {
+      "archivo": "dia_galeria_borghese.jpg",
+      "lugares": [
+        "Galería Borghese"
+      ],
+      "cuando": "dia",
+      "sitio": "Galería Borghese",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_piazza_del_popolo.jpg",
+      "lugares": [
+        "Piazza del Popolo"
+      ],
+      "cuando": "dia",
+      "sitio": "Piazza del Popolo de día",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_santa_maria_del_popolo.jpg",
+      "lugares": [
+        "Santa Maria del Popolo"
+      ],
+      "cuando": "dia",
+      "sitio": "Santa Maria del Popolo (los Caravaggio)",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_ara_pacis.jpg",
+      "lugares": [
+        "Ara Pacis"
+      ],
+      "cuando": "dia",
+      "sitio": "Ara Pacis",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_via_condotti.jpg",
+      "lugares": [
+        "Via Condotti"
+      ],
+      "cuando": "dia",
+      "sitio": "Via Condotti",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_fuente_del_triton.jpg",
+      "lugares": [
+        "Fuente del Tritón"
+      ],
+      "cuando": "dia",
+      "sitio": "Fuente del Tritón",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_via_veneto.jpg",
+      "lugares": [
+        "Via Veneto"
+      ],
+      "cuando": "dia",
+      "sitio": "Via Veneto",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_porta_pinciana.jpg",
+      "lugares": [
+        "Porta Pinciana"
+      ],
+      "cuando": "dia",
+      "sitio": "Porta Pinciana",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_reloj_de_agua_pincio.jpg",
+      "lugares": [
+        "Reloj de agua del Pincio"
+      ],
+      "cuando": "dia",
+      "sitio": "El reloj de agua del Pincio",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
+    },
+    {
+      "archivo": "dia_villa_farnesina.jpg",
+      "lugares": [
+        "Villa Farnesina"
+      ],
+      "cuando": "dia",
+      "sitio": "Villa Farnesina (los frescos de Rafael)",
+      "grupo": "La Vía Appia y Trastevere tranquilo (6 días en Roma)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_catacumbas_san_calixto.jpg",
+      "lugares": [
+        "Catacumbas de San Calixto"
+      ],
+      "cuando": "dia",
+      "sitio": "Catacumbas de San Calixto",
+      "grupo": "La Vía Appia y Trastevere tranquilo (6 días en Roma)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_via_appia_antica.jpg",
+      "lugares": [
+        "Via Appia Antica"
+      ],
+      "cuando": "dia",
+      "sitio": "Vía Appia Antica (los pinos y las tumbas)",
+      "grupo": "La Vía Appia y Trastevere tranquilo (6 días en Roma)",
+      "estrella": true
+    },
+    {
+      "archivo": "dia_trastevere_tranquilo.jpg",
+      "lugares": [
+        "Trastevere tranquilo"
+      ],
+      "cuando": "dia",
+      "sitio": "Trastevere tranquilo (la Piazza in Piscinula)",
+      "grupo": "La Vía Appia y Trastevere tranquilo (6 días en Roma)"
+    },
+    {
+      "archivo": "dia_plaza_del_quirinal.jpg",
+      "lugares": [
+        "Plaza del Quirinal"
+      ],
+      "cuando": "dia",
+      "sitio": "Plaza del Quirinal, con la vista de San Pedro",
+      "grupo": "Medios días de 2,5 días"
+    },
+    {
+      "archivo": "noche_puente_castillo_sant_angelo.jpg",
+      "lugares": [
+        "El Puente y el Castillo de Sant'Angelo (noche)"
+      ],
+      "cuando": "noche",
+      "sitio": "El Puente y el Castillo de Sant'Angelo iluminados (otra distinta de la del Puente)",
+      "grupo": "Para más adelante",
+      "nota": "Solo si quieres una distinta de la del Puente."
+    }
+  ],
+  "_huecos": "Huecos para las fotos propias que faltan (docs/dias/FOTOS_PENDIENTES.md): cada sitio tiene un archivo FIJO en public/fotos/roma/. Se suelta la foto (1600 px de ancho o más) con ese nombre y sale sola, sin tocar nada más (el servidor mira si el archivo existe; la versión pequeña, <archivo>_p.jpg, es opcional: sin ella se usa la grande). `sin_foto_hasta_llegar`: hasta que llegue la foto, el sitio va con un recuadro neutro con su nombre y no con una buscada (su nombre no es el de un lugar que ya tenga foto). Se genera con scripts/destino/fotosHuecos.mjs."
 }

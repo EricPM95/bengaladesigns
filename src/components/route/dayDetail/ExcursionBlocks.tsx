@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from '../reservas/ReservedMarks'
-import type { CuratedAlternative, Excursion } from '../../../lib/types'
+import type { CuratedAlternative, Excursion, StayInCity } from '../../../lib/types'
+import { StayInCitySheet } from './StayInCitySheet'
 
 /**
  * Prompt 4 — las piezas de excursión de la ficha de un día, en un solo sitio porque comparten el
@@ -539,6 +540,9 @@ export function ExcursionDayProposal({
   socialProof,
   onSelect,
   onDecline,
+  stayInCity,
+  onStayOrganize,
+  onStayOwnDay,
 }: {
   destination: string
   options: Excursion[]
@@ -546,12 +550,17 @@ export function ExcursionDayProposal({
   socialProof?: string | null
   onSelect: (id: string | null) => void
   onDecline: (fill: 'route' | 'empty') => void
+  /** «Prefiero quedarme en Roma» (Tanda 3): lo que enseña la pantalla y lo que hacen sus dos botones. Sin ello, el aviso de siempre. */
+  stayInCity?: StayInCity | null
+  onStayOrganize?: () => Promise<boolean>
+  onStayOwnDay?: () => void
 }) {
   const [showAll, setShowAll] = useState(false)
   // Quitar la excursión no decide sola qué hacer con el día: hay quien quiere que le montemos otra
   // cosa y hay quien quiere el día libre para organizarlo por su cuenta. Decidirlo por él es
   // quitarle el día que acaba de recuperar.
   const [asking, setAsking] = useState(false)
+  const [staying, setStaying] = useState(false)
   const featured = options.find((option) => option.id === selectedId) ?? options[0] ?? null
   // Una excursión reservada es el día: no se cambia por otra ni se deja (PARA_CODE_RESERVAS, 6).
   const reserved = Boolean(useExcursionReservation(featured?.id))
@@ -621,7 +630,18 @@ export function ExcursionDayProposal({
         </>
       )}
 
-      {reserved ? null : asking ? (
+      {reserved ? null : stayInCity && onStayOrganize && onStayOwnDay ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setStaying(true)}
+            className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
+          >
+            Prefiero quedarme en {destination}
+          </button>
+          {staying && <StayInCitySheet city={destination} stay={stayInCity} onOrganize={onStayOrganize} onOwnDay={onStayOwnDay} onClose={() => setStaying(false)} />}
+        </>
+      ) : asking ? (
         <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
           <p className="text-small font-semibold text-text">¿Qué hacemos con este día?</p>
           <div className="flex gap-2">

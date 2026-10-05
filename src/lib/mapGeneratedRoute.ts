@@ -220,6 +220,8 @@ export interface GeneratedDay {
   excursion_offer?: { title: string; text: string } | null
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
   curated_alternative?: { title: string; places: string[] } | null
+  /** Solo días de excursión (Roma): el día de ciudad que entraría en su lugar — ver DayPlan.stayInCity. */
+  stay_in_city?: { day_id: string; title: string; text?: string | null; stops: { name: string; photo_name: string }[] } | null
 }
 
 interface GeneratedFeasibilityLeg {
@@ -720,6 +722,7 @@ function mapDay(
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,
     excursionOffer: generated.excursion_offer ?? null,
     curatedAlternative: generated.curated_alternative ?? null,
+    stayInCity: generated.stay_in_city ? { dayId: generated.stay_in_city.day_id, title: generated.stay_in_city.title, text: generated.stay_in_city.text ?? null, stops: generated.stay_in_city.stops.map((stop) => ({ name: stop.name, photoName: stop.photo_name })) } : null,
     isRelaxedDay: generated.type === 'relax',
     timesAreFinal: generated.times_are_final,
   }
