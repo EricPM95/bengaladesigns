@@ -101,7 +101,7 @@ Variantes: B, tarde_sin_museos, AB
 - 2027-03-25 Jueves Santo: Es posible que la Basílica de San Pedro cierre por la mañana por la Misa Crismal del Papa. Hemos puesto la Basílica desde las 12:00; cuenta 45-60 min de cola en el control.
 - 2027-03-26 Viernes Santo: Es posible que San Pedro cierre por la tarde, y de noche hay Via Crucis en el Coliseo. Hemos puesto el Coliseo por la mañana. La Basílica, otro día.
 
-### Día 2 · viernes 2027-03-26 · D1-corto Día entero del viaje de 1,5 días: la Roma antigua, el centro y Trastevere
+### Día 2 · viernes 2027-03-26 · D1-corto Día de la Roma antigua, el centro y Trastevere
 
 Variantes: B, normal
 
@@ -127,13 +127,13 @@ Variantes: B, normal
 | 15:50 | Panteón | 15 | por fuera |  |
 | 16:20 | Piazza Navona | 30 | - |  |
 | 17:10 | Campo de' Fiori | 25 | - |  |
-| 17:45 | Pasea y piérdete por el Centro Histórico | 10 | - | documento: min 15 → atardecer |
-| 18:15 | Ponte Sisto | 15 | - |  |
-| 18:45 | Pasea y piérdete por Trastevere iluminado | 30 | - |  |
-| 19:15 | Iglesia de Santa Maria in Trastevere | 5 | de camino | documento: hora 19:20 → atardecer |
-| 19:55 | Cena: Trattoria Da Enzo al 29 |  | mesa | documento: hora 20:00 → atardecer |
-| 21:55 | Fontana de Trevi (noche) | 20 | noche | documento: hora 22:05 → atardecer |
-| 22:35 | Plaza de España (noche) | 20 | noche | documento: hora 22:45 → atardecer |
+| 17:55 | Ponte Sisto | 15 | - | documento: hora 18:15 → atardecer |
+| 18:25 | Pasea y piérdete por Trastevere iluminado | 30 | - | documento: hora 18:45 → atardecer |
+| 18:55 | Iglesia de Santa Maria in Trastevere | 5 | de camino | documento: hora 19:20 → atardecer |
+| 19:50 | Cena: Trattoria Da Enzo al 29 |  | mesa | documento: hora 20:00 → atardecer |
+| 21:50 | Fontana de Trevi (noche) | 20 | noche | documento: hora 22:05 → atardecer |
+| 22:30 | Plaza de España (noche) | 20 | noche | documento: hora 22:45 → atardecer |
+| (17:45) | Pasea y piérdete por el Centro Histórico | 15 | - | quitada: atardecer |
 
 **No incluido**
 
@@ -141,7 +141,7 @@ Variantes: B, normal
 
 ## Viaje 4: 1,5 días: día entero domingo 02-05-2027 y medio día de mañana el lunes 03-05
 
-### Día 1 · domingo 2027-05-02 · D1-corto Día entero del viaje de 1,5 días: la Roma antigua, el centro y Trastevere
+### Día 1 · domingo 2027-05-02 · D1-corto Día de la Roma antigua, el centro y Trastevere
 
 Variantes: D, normal
 
@@ -665,7 +665,7 @@ Variantes: B, normal, AB
 
 ## Viaje 13: 1,5 días: día entero el martes 12-10-2027 y medio día de tarde el miércoles 13-10, sin reservas
 
-### Día 1 · martes 2027-10-12 · D1-corto Día entero del viaje de 1,5 días: la Roma antigua, el centro y Trastevere
+### Día 1 · martes 2027-10-12 · D1-corto Día de la Roma antigua, el centro y Trastevere
 
 Variantes: B, normal
 
@@ -1155,10 +1155,10 @@ Variantes: D, normal
 | 17:10 | Pasea y piérdete por Trastevere | 45 | - | documento: min 60 → atardecer |
 | 18:15 | San Pietro in Montorio y Tempietto de Bramante | 10 | por fuera | documento: hora 18:35, min 20, cómo dentro → atardecer + cierre de San Pietro in Montorio y Tempietto de Bramante |
 | 18:50 | Fontana dell'Acqua Paola | 10 | - | documento: hora 19:10 → atardecer |
-| 19:30 | La Passeggiata del Gianicolo | 10 | - | documento: min 15 → atardecer |
-| 19:50 | Mirador del Janículo | 30 | - | documento: hora 20:05 → atardecer |
-| 20:55 | Cena: Trattoria Da Enzo al 29 |  | mesa | documento: hora 21:15 → atardecer |
-| 22:55 | Fontana de Trevi (noche) | 15 | noche | documento: hora 23:20 → atardecer |
+| 19:30 | Mirador del Janículo | 30 | - | documento: hora 20:05 → atardecer |
+| 20:45 | Cena: Trattoria Da Enzo al 29 |  | mesa | documento: hora 21:15 → atardecer |
+| 22:45 | Fontana de Trevi (noche) | 15 | noche | documento: hora 23:20 → atardecer |
+| (19:30) | La Passeggiata del Gianicolo | 15 | - | quitada: atardecer |
 
 ### Día 3 · jueves 2027-04-15 · DM-medio Medio día de Monti
 

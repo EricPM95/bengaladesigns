@@ -1,6 +1,6 @@
 # Prueba de los días escritos (parada a parada, 2027)
 
-7613 días comparados, 115218 filas del documento. Diferencias: 15771 (0 sin explicar). Días cuya tabla el documento no trae (se derivan): 52.
+7613 días comparados, 115218 filas del documento. Diferencias: 15991 (0 sin explicar). Días cuya tabla el documento no trae (se derivan): 52.
 
 Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 días, día entero y medio día de mañana · 2 días · 2 días con Free Tour de mañana · 2,5 días, medio día de tarde · 2,5 días, medio día de mañana · 2,5 días con Free Tour de mañana, medio día de tarde · 2,5 días con Free Tour de mañana, medio día de mañana
 
@@ -48,30 +48,30 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - D1-FT · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello) ×426 — 2027-04-08 20:15 → 20:30 · 2027-04-08 20:15 → 20:30 · 2027-04-09 20:15 → 20:30
 - DT-medio · hora · atardecer · Bajar la escalinata de la Plaza de España ×402 — 2027-02-08 18:15 → 18:20 · 2027-02-09 18:15 → 18:20 · 2027-02-10 18:15 → 18:20
 - D1-FT · hora · atardecer · Fontana de Trevi iluminada ×387 — 2027-04-08 22:20 → 22:30 · 2027-04-08 22:20 → 22:30 · 2027-04-09 22:20 → 22:30
-- D1-FT · minutos · atardecer · La Passeggiata del Gianicolo (colchón) ×375 — 2027-04-10 15 → 10 · 2027-04-10 15 → 10 · 2027-04-11 15 → 10
 - DT-medio · hora · atardecer · Coliseo iluminado ×374 — 2027-01-05 21:20 → 21:25 · 2027-01-05 21:20 → 21:25 · 2027-01-06 21:20 → 21:25
-- D2 · minutos · atardecer · La Passeggiata del Gianicolo (colchón) ×363 — 2027-04-10 15 → 10 · 2027-04-10 15 → 10 · 2027-04-10 15 → 10
 - D2 · hora · atardecer · Trastevere de noche ×337 — 2027-04-08 22:10 → 22:15 · 2027-04-08 22:10 → 22:15 · 2027-04-09 22:10 → 22:15
-- D1-corto · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×330 — 2027-02-13 20:00 → 19:55 · 2027-02-14 20:00 → 19:55 · 2027-02-13 20:00 → 19:55
+- D1-corto · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×330 — 2027-02-13 20:00 → 19:45 · 2027-02-14 20:00 → 19:45 · 2027-02-13 20:00 → 19:45
 - D0-medio · hora · atardecer · Puente Sant'Angelo, al atardecer ×299 — 2027-01-01 17:10 → 17:05 · 2027-01-02 17:10 → 17:05 · 2027-01-03 17:10 → 17:05
 - D1-corto · hora · atardecer · Mirador del Janículo, al atardecer ×290 — 2027-03-30 19:05 → 19:10 · 2027-03-31 19:05 → 19:10 · 2027-03-30 19:05 → 19:10
 - D1-FT · hora · atardecer · San Pietro in Montorio y el Tempietto ×282 — 2027-03-28 18:25 → 18:10 · 2027-03-28 18:25 → 18:10 · 2027-03-28 18:25 → 18:10
 - D1-FT · hora · atardecer · Fontana dell'Acqua Paola ×282 — 2027-03-28 18:45 → 18:30 · 2027-03-28 18:45 → 18:30 · 2027-03-28 18:45 → 18:30
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Via del Babuino y Via Margutta ×280 — 2027-01-24 15:30 → 15:10 · 2027-01-25 15:30 → 15:10 · 2027-01-26 15:30 → 15:10
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Piazza del Popolo ×280 — 2027-01-24 15:55 → 15:40 · 2027-01-25 15:55 → 15:40 · 2027-01-26 15:55 → 15:40
+- D2 · minutos · atardecer · La Passeggiata del Gianicolo (colchón) ×279 — 2027-04-26 15 → 10 · 2027-04-26 15 → 10 · 2027-04-27 15 → 10
+- D1-FT · minutos · atardecer · La Passeggiata del Gianicolo (colchón) ×270 — 2027-05-01 15 → 10 · 2027-05-01 15 → 10 · 2027-05-02 15 → 10
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Santa Maria del Popolo (los Caravaggio) ×268 — 2027-01-25 16:25 → 16:10 · 2027-01-26 16:25 → 16:10 · 2027-01-27 16:25 → 16:10
 - D2 · hora · atardecer · San Pietro in Montorio y el Tempietto ×246 — 2027-03-29 18:25 → 18:05 · 2027-03-29 18:25 → 18:05 · 2027-03-29 18:25 → 18:05
 - D2 · hora · atardecer · Fontana dell'Acqua Paola ×246 — 2027-03-29 19:00 → 18:40 · 2027-03-29 19:00 → 18:40 · 2027-03-29 19:00 → 18:40
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Trinità dei Monti y su mirador sobre la Plaza de España ×234 — 2027-01-27 17:55 → 17:50 · 2027-01-28 17:55 → 17:50 · 2027-01-29 17:55 → 17:50
-- D1-corto · hora · atardecer · Santa Maria in Trastevere ×222 — 2027-02-13 19:20 → 19:15 · 2027-02-14 19:20 → 19:15 · 2027-02-13 19:20 → 19:15
+- D1-corto · hora · atardecer · Santa Maria in Trastevere ×222 — 2027-02-13 19:20 → 18:55 · 2027-02-14 19:20 → 18:55 · 2027-02-13 19:20 → 18:55
 - DT-medio · hora · atardecer · Trinità dei Monti y su mirador sobre la Plaza de España ×214 — 2027-02-08 17:55 → 18:05 · 2027-02-09 17:55 → 18:05 · 2027-02-10 17:55 → 18:05
-- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×192 — 2027-03-28 18:05 → 18:00 · 2027-03-29 18:05 → 18:00 · 2027-03-30 18:05 → 18:00
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×185 — 2027-03-28 18:05 → 18:00 · 2027-03-29 18:05 → 18:00 · 2027-03-30 18:05 → 18:00
 - D3 · hora · atardecer · Puente Sant'Angelo, al atardecer ×184 — 2027-03-29 19:55 → 19:00 · 2027-03-29 19:55 → 19:00 · 2027-03-29 19:55 → 19:00
 - D1-FT · minutos · atardecer · Pasea y piérdete por Trastevere ×180 — 2027-04-10 60 → 45 · 2027-04-10 60 → 45 · 2027-04-11 60 → 45
 - D3 · hora · atardecer · Cena: L'Arcangelo (o Osteria dell'Angelo), en Prati ×177 — 2027-03-29 20:45 → 19:55 · 2027-03-29 20:45 → 19:55 · 2027-03-29 20:45 → 19:55
-- D0-medio · minutos · atardecer · Pasea y piérdete por Prati (colchón) ×177 — 2027-03-28 60 → 25 · 2027-03-29 60 → 25 · 2027-03-30 60 → 30
-- DT-medio · minutos · atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×163 — 2027-03-28 60 → 40 · 2027-03-29 60 → 40 · 2027-03-30 60 → 45
-- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×161 — 2027-03-28 75 → 40 · 2027-03-29 75 → 40 · 2027-03-30 75 → 45
+- D0-medio · minutos · atardecer · Pasea y piérdete por Prati (colchón) ×164 — 2027-03-28 60 → 25 · 2027-03-29 60 → 25 · 2027-03-30 60 → 30
+- DT-medio · minutos · atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×156 — 2027-03-28 60 → 40 · 2027-03-29 60 → 40 · 2027-03-30 60 → 45
+- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×154 — 2027-03-28 75 → 40 · 2027-03-29 75 → 40 · 2027-03-30 75 → 45
 - D2 · minutos · atardecer · Pasea y piérdete por Trastevere ×147 — 2027-03-29 60 → 45 · 2027-03-29 60 → 45 · 2027-03-29 60 → 45
 - D0-medio · falta · Trevi no ha salido de noche en el viaje: la nocturna del medio día de tarde es Trevi · Piazza Navona de noche ×144 — 2027-04-09 · 2027-04-10 · 2027-04-11
 - D0-medio · sobra · Trevi no ha salido de noche en el viaje: la nocturna del medio día de tarde es Trevi · fontana de trevi ×144 — 2027-04-09 · 2027-04-10 · 2027-04-11
@@ -79,12 +79,14 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - D1 · falta · Trevi ya salió en el viaje: la nocturna de la tarde D es el Coliseo iluminado · Fontana de Trevi iluminada ×143 — 2027-04-11 · 2027-04-11 · 2027-04-12
 - D1 · sobra · Trevi ya salió en el viaje: la nocturna de la tarde D es el Coliseo iluminado · coliseo ×143 — 2027-04-11 · 2027-04-11 · 2027-04-12
 - D0-medio · hora · atardecer · Cena: L'Arcangelo (o Osteria dell'Angelo), en Prati ×141 — 2027-03-28 20:30 → 19:55 · 2027-03-29 20:30 → 19:55 · 2027-03-30 20:30 → 20:00
-- D0-medio · hora · atardecer · Pasea y piérdete por Prati (colchón) ×138 — 2027-01-01 17:45 → 17:40 · 2027-01-02 17:45 → 17:40 · 2027-01-03 17:45 → 17:40
 - D3 · hora · atardecer · Piazza Navona de noche ×138 — 2027-03-29 22:45 → 21:50 · 2027-03-29 22:45 → 21:50 · 2027-03-29 22:45 → 21:50
 - D2 · falta · la Plaza de España todavía no ha salido en el viaje: es la nocturna del Día del Vaticano · Trastevere de noche ×138 — 2027-04-10 · 2027-04-12 · 2027-04-13
-- D1-corto · minutos · atardecer · Pasea y piérdete por el Centro Histórico (colchón) ×120 — 2027-02-13 15 → 10 · 2027-02-14 15 → 10 · 2027-02-13 15 → 10
-- D1-corto · hora · atardecer · Fontana de Trevi iluminada ×120 — 2027-02-13 22:05 → 21:55 · 2027-02-14 22:05 → 21:55 · 2027-02-13 22:05 → 21:55
-- D1-corto · hora · atardecer · Plaza de España de noche ×120 — 2027-02-13 22:45 → 22:35 · 2027-02-14 22:45 → 22:35 · 2027-02-13 22:45 → 22:35
+- D0-medio · hora · atardecer · Pasea y piérdete por Prati (colchón) ×125 — 2027-01-01 17:45 → 17:40 · 2027-01-02 17:45 → 17:40 · 2027-01-03 17:45 → 17:40
+- D1-corto · hora · atardecer · Ponte Sisto, al atardecer ×122 — 2027-02-13 18:15 → 17:55 · 2027-02-14 18:15 → 17:55 · 2027-02-13 18:15 → 17:55
+- D1-corto · hora · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×122 — 2027-02-13 18:45 → 18:25 · 2027-02-14 18:45 → 18:25 · 2027-02-13 18:45 → 18:25
+- D1-corto · falta · atardecer · Pasea y piérdete por el Centro Histórico (colchón) ×120 — 2027-02-13 · 2027-02-14 · 2027-02-13
+- D1-corto · hora · atardecer · Fontana de Trevi iluminada ×120 — 2027-02-13 22:05 → 21:45 · 2027-02-14 22:05 → 21:45 · 2027-02-13 22:05 → 21:45
+- D1-corto · hora · atardecer · Plaza de España de noche ×120 — 2027-02-13 22:45 → 22:25 · 2027-02-14 22:45 → 22:25 · 2027-02-13 22:45 → 22:25
 - D1 · hora · atardecer · Ponte Sisto, al atardecer ×120 — 2027-06-07 20:15 → 20:20 · 2027-06-07 20:15 → 20:20 · 2027-06-09 20:15 → 20:20
 - D1 · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×120 — 2027-06-07 21:00 → 21:10 · 2027-06-07 21:00 → 21:10 · 2027-06-09 21:00 → 21:10
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Terraza del Pincio, al atardecer ×119 — 2027-01-01 16:15 → 16:25 · 2027-01-02 16:15 → 16:25 · 2027-01-03 16:15 → 16:25
@@ -92,19 +94,20 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - D0-medio · minutos · atardecer · Pasea y piérdete por Borgo Pio ×112 — 2027-01-01 25 → 20 · 2027-01-02 25 → 20 · 2027-01-03 25 → 20
 - D0-medio · hora · atardecer · Via della Conciliazione ×112 — 2027-01-01 16:10 → 16:05 · 2027-01-02 16:10 → 16:05 · 2027-01-03 16:10 → 16:05
 - D0-medio · hora · atardecer · Castillo de Sant'Angelo ×112 — 2027-01-01 16:40 → 16:35 · 2027-01-02 16:40 → 16:35 · 2027-01-03 16:40 → 16:35
-- DT-medio · minutos · atardecer · Pasea y piérdete por los Jardines del Pincio (colchón) ×109 — 2027-02-13 45 → 10 · 2027-02-13 45 → 15 · 2027-02-14 45 → 10
 - DT-medio · hora · atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×107 — 2027-01-01 18:25 → 18:35 · 2027-01-02 18:25 → 18:35 · 2027-01-03 18:25 → 18:35
+- D1-FT · falta · atardecer · La Passeggiata del Gianicolo (colchón) ×105 — 2027-04-10 · 2027-04-10 · 2027-04-11
+- DT-medio · minutos · atardecer · Pasea y piérdete por los Jardines del Pincio (colchón) ×103 — 2027-02-13 45 → 15 · 2027-02-14 45 → 15 · 2027-02-15 45 → 20
 - D1-corto · minutos · atardecer · Pasea y piérdete por Trastevere ×102 — 2027-04-10 45 → 35 · 2027-04-11 45 → 35 · 2027-04-10 45 → 35
 - D1-corto · hora · atardecer · San Pietro in Montorio y el Tempietto ×102 — 2027-04-10 19:10 → 18:50 · 2027-04-11 19:10 → 18:50 · 2027-04-10 19:10 → 18:50
 - D1-corto · hora · atardecer · Fontana dell'Acqua Paola ×102 — 2027-04-10 19:30 → 19:10 · 2027-04-11 19:30 → 19:10 · 2027-04-10 19:30 → 19:10
-- D1-FT · minutos · atardecer · Pasea y piérdete por Trastevere (colchón) ×90 — 2027-03-28 60 → 50 · 2027-03-28 60 → 50 · 2027-03-28 60 → 50
-- D2 · minutos · atardecer · Pasea y piérdete por Trastevere (colchón) ×90 — 2027-06-02 40 → 65 · 2027-06-02 40 → 65 · 2027-06-02 40 → 65
 - DT-medio · hora · atardecer · Coliseo iluminado (de mayo a septiembre) ×88 — 2027-03-28 22:50 → 22:35 · 2027-03-28 22:50 → 22:30 · 2027-03-29 22:50 → 22:35
+- D1-FT · minutos · atardecer · Pasea y piérdete por Trastevere (colchón) ×87 — 2027-03-28 60 → 50 · 2027-03-28 60 → 50 · 2027-03-28 60 → 50
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Trinità dei Monti y su mirador sobre la Plaza de España (subiendo la escalinata) ×85 — 2027-01-01 15:35 → 15:20 · 2027-01-02 15:35 → 15:20 · 2027-01-03 15:35 → 15:20
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Santa Maria del Popolo (los Caravaggio) ×85 — 2027-01-01 17:05 → 17:10 · 2027-01-02 17:05 → 17:10 · 2027-01-03 17:05 → 17:10
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Piazza del Popolo ×85 — 2027-01-01 17:40 → 17:45 · 2027-01-02 17:40 → 17:45 · 2027-01-03 17:40 → 17:45
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Via del Babuino y Via Margutta ×85 — 2027-01-01 18:05 → 18:10 · 2027-01-02 18:05 → 18:10 · 2027-01-03 18:05 → 18:10
 - DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×85 — 2027-01-01 55 → 30 · 2027-01-02 55 → 30 · 2027-01-03 55 → 30
+- D2 · falta · atardecer · La Passeggiata del Gianicolo (colchón) ×84 — 2027-04-10 · 2027-04-10 · 2027-04-10
 - DT-medio · sobra · atardecer · pasea y pierdete por los jardines del pincio ×80 — 2027-01-01 · 2027-01-02 · 2027-01-03
 - D1 · hora · atardecer · Fontana de Trevi iluminada ×80 — 2027-06-07 23:05 → 23:15 · 2027-06-07 23:05 → 23:15 · 2027-06-09 23:05 → 23:15
 - DT-medio · minutos · atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×76 — 2027-01-01 40 → 30 · 2027-01-02 40 → 30 · 2027-01-03 40 → 30
@@ -114,10 +117,12 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - DT-medio · cómo · cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×54 — 2027-01-03 dentro → fuera · 2027-01-10 dentro → fuera · 2027-01-17 dentro → fuera
 - DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×54 — 2027-01-27 60 → 45 · 2027-01-28 60 → 45 · 2027-01-29 60 → 45
 - D1-FT · hora · atardecer · La Passeggiata del Gianicolo (colchón) ×48 — 2027-05-06 19:30 → 19:35 · 2027-05-06 19:30 → 19:35 · 2027-05-07 19:30 → 19:35
+- D2 · minutos · atardecer · Pasea y piérdete por Trastevere (colchón) ×48 — 2027-06-02 40 → 65 · 2027-06-02 40 → 65 · 2027-06-02 40 → 65
 - D0-medio · hora · atardecer · Piazza Navona de noche ×47 — 2027-03-28 22:30 → 21:50 · 2027-03-29 22:30 → 21:50 · 2027-03-30 22:30 → 21:55
 - DT-medio · hora · atardecer · Santa Maria del Popolo (los Caravaggio) ×43 — 2027-01-01 17:05 → 17:10 · 2027-01-02 17:05 → 17:10 · 2027-01-03 17:05 → 17:10
 - DT-medio · hora · atardecer · Piazza del Popolo ×43 — 2027-01-01 17:40 → 17:45 · 2027-01-02 17:40 → 17:45 · 2027-01-03 17:40 → 17:45
 - DT-medio · hora · atardecer · Via del Babuino y Via Margutta ×43 — 2027-01-01 18:05 → 18:10 · 2027-01-02 18:05 → 18:10 · 2027-01-03 18:05 → 18:10
+- D2 · falta · atardecer · Pasea y piérdete por Trastevere (colchón) ×42 — 2027-09-23 · 2027-09-23 · 2027-09-24
 - D2 · hora · atardecer · La Passeggiata del Gianicolo (colchón) ×36 — 2027-05-03 19:25 → 19:30 · 2027-05-03 19:25 → 19:30 · 2027-05-04 19:25 → 19:30
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Trinità dei Monti y su mirador sobre la Plaza de España ×35 — 2027-01-24 17:55 → 17:45 · 2027-01-25 17:55 → 17:45 · 2027-01-26 17:55 → 17:45
 - DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×34 — 2027-01-24 60 → 50 · 2027-01-25 60 → 50 · 2027-01-26 60 → 50
@@ -130,8 +135,10 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Terraza del Pincio, al atardecer ×15 — 2027-01-24 17:05 → 16:50 · 2027-01-25 17:05 → 16:50 · 2027-01-26 17:05 → 16:50
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Bajar la escalinata de la Plaza de España ×15 — 2027-01-24 18:15 → 18:00 · 2027-01-25 18:15 → 18:00 · 2027-01-26 18:15 → 18:00
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×15 — 2027-01-24 18:30 → 18:25 · 2027-01-25 18:30 → 18:25 · 2027-01-26 18:30 → 18:25
+- DT-medio · falta · atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×14 — 2027-09-29 · 2027-09-29 · 2027-09-30
 - D2 · falta · se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche · Piazza Navona de noche ×13 — 2027-03-29 · 2027-03-29 · 2027-03-29
 - D2 · sobra · se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche · trastevere de noche ×13 — 2027-03-29 · 2027-03-29 · 2027-03-29
+- D0-medio · falta · atardecer · Pasea y piérdete por Prati (colchón) ×13 — 2027-09-23 · 2027-09-24 · 2027-09-25
 - DT-medio · hora · cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×12 — 2027-01-24 16:25 → 16:30 · 2027-01-31 16:25 → 16:30 · 2027-02-07 16:25 → 16:30
 - DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×12 — 2027-01-24 16:25 → 16:30 · 2027-01-31 16:25 → 16:30 · 2027-02-07 16:25 → 16:30
 - D2 · minutos · cierre de San Pietro in Montorio y Tempietto de Bramante · San Pietro in Montorio y el Tempietto ×12 — 2027-03-29 20 → 10 · 2027-03-29 20 → 10 · 2027-03-29 20 → 10
@@ -156,6 +163,7 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - D2 · hora · atardecer · Puente Sant'Angelo, al atardecer ×7 — 2027-12-25 16:10 → 16:20 · 2027-12-25 16:10 → 16:20 · 2027-12-25 16:10 → 16:20
 - D2 · hora · atardecer · Pasea y piérdete por el centro iluminado ×7 — 2027-12-25 16:40 → 17:00 · 2027-12-25 16:40 → 17:00 · 2027-12-25 16:40 → 17:00
 - D2 · hora · atardecer · Panteón ×7 — 2027-12-25 18:15 → 18:35 · 2027-12-25 18:15 → 18:35 · 2027-12-25 18:15 → 18:35
+- DT-medio · falta · atardecer · Pasea y piérdete por los Jardines del Pincio (colchón) ×6 — 2027-02-13 · 2027-02-14 · 2027-02-15
 - D3 · falta · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control; se cruza la Plaza) ×6 — 2027-03-26 · 2027-03-26 · 2027-03-26
 - D1 · hora · cierre de Panteón · Campo de' Fiori ×6 — 2027-06-01 19:40 → 19:45 · 2027-06-01 19:40 → 19:45 · 2027-06-01 19:40 → 19:45
 - D1 · hora · cierre de Panteón · Ponte Sisto, al atardecer ×6 — 2027-06-01 20:15 → 20:25 · 2027-06-01 20:15 → 20:25 · 2027-06-01 20:15 → 20:25
@@ -173,6 +181,7 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - D2 · hora · cierre de Basílica de San Pedro · Fontana dell'Acqua Paola ×3 — 2027-03-26 17:55 → 17:45 · 2027-03-26 17:55 → 17:45 · 2027-03-26 17:55 → 17:45
 - D2 · hora · cierre de Basílica de San Pedro · Pasea y piérdete por Trastevere iluminado (colchón) ×3 — 2027-03-26 19:20 → 19:30 · 2027-03-26 19:20 → 19:30 · 2027-03-26 19:20 → 19:30
 - D2 · hora · cierre de Basílica de San Pedro · Trastevere de noche ×3 — 2027-03-26 21:55 → 22:00 · 2027-03-26 21:55 → 22:00 · 2027-03-26 21:55 → 22:00
+- D1-FT · falta · atardecer · Pasea y piérdete por Trastevere (colchón) ×3 — 2027-10-05 · 2027-10-05 · 2027-10-05
 - D2 · falta · noche especial: Fontana de Trevi (noche) · Piazza Navona de noche ×3 — 2027-12-24 · 2027-12-24 · 2027-12-24
 - D2 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×3 — 2027-12-24 · 2027-12-24 · 2027-12-24
 - D1-FT · falta · noche especial: Fontana de Trevi (noche) · Plaza de España de noche ×3 — 2027-12-24 · 2027-12-24 · 2027-12-24
@@ -187,8 +196,6 @@ Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 d
 - D3 · minutos · cierre de Panteón · Panteón (abre a las 9:00) ×3 — 2027-12-25 20 → 15 · 2027-12-25 20 → 15 · 2027-12-25 20 → 15
 - D3 · cómo · cierre de Panteón · Panteón (abre a las 9:00) ×3 — 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera
 - D1-FT · falta · noche especial: una sola · Plaza de España de noche ×3 — 2027-12-31 · 2027-12-31 · 2027-12-31
-- D1-corto · hora · atardecer · Ponte Sisto, al atardecer ×2 — 2027-10-06 18:15 → 18:20 · 2027-10-06 18:15 → 18:20
-- D1-corto · hora · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×2 — 2027-10-06 18:45 → 18:50 · 2027-10-06 18:45 → 18:50
 - D1-corto · falta · noche especial: Fontana de Trevi (noche) · Plaza de España de noche ×2 — 2027-12-24 · 2027-12-24
 - DT-medio · falta · noche especial: Fontana de Trevi (noche) · Coliseo iluminado ×2 — 2027-12-24 · 2027-12-24
 - DT-medio · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×2 — 2027-12-24 · 2027-12-24

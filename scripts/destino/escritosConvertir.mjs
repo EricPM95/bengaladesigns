@@ -325,7 +325,7 @@ out['D0'] = {
 const a1c = T(3)
 out['D1-corto'] = {
   id: 'D1-corto',
-  nombre: 'Día entero del viaje de 1,5 días: la Roma antigua, el centro y Trastevere',
+  nombre: 'Día de la Roma antigua, el centro y Trastevere',
   versiones: {
     normal: {
       A: a1c,

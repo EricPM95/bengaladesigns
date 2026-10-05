@@ -1,7 +1,7 @@
 # Diferencias entre el motor y la simulación de los viajes de 2,5 días
 
 Generado por `scripts/destino/viajes25Motor.mjs`. Compara parada a parada lo que saca el motor con `docs/dias/VIAJES_2_5_SIMULACION.html`. Cada diferencia lleva la causa que apunta el motor (su registro); sin causa apuntada, lo dice.
-**33 diferencias** (1 sin causa apuntada). Por viaje: invierno 5 · primavera 8 · verano 9 · otono 0 · navidad 11.
+**32 diferencias** (1 sin causa apuntada). Por viaje: invierno 5 · primavera 7 · verano 9 · otono 0 · navidad 11.
 
 
 ## Invierno · Viernes 15 (tarde), sábado 16 y domingo 17 de enero de 2027
@@ -34,10 +34,9 @@ Generado por `scripts/destino/viajes25Motor.mjs`. Compara parada a parada lo que
 - Minutos de «San Pietro in Montorio y el Tempietto»: simulación 20, motor 10 — De 18:35 a 18:15: atardecer. cierre de San Pietro in Montorio y Tempietto de Bramante.
 - Cómo de «San Pietro in Montorio y el Tempietto»: simulación «por dentro», motor «por fuera» — De 18:35 a 18:15: atardecer. cierre de San Pietro in Montorio y Tempietto de Bramante.
 - Hora de «Fontana dell'Acqua Paola»: simulación 18:55, motor 18:50 — De 19:10 a 18:50: atardecer.
-- Hora de «Mirador del Janículo, al atardecer»: simulación 19:25, motor 19:50 — De 20:05 a 19:50: atardecer.
-- Hora de «Cena: Da Enzo al 29 (o Tonnarello)»: simulación 20:35, motor 20:55 — De 21:15 a 20:55: atardecer.
-- Hora de «Fontana de Trevi iluminada»: simulación 22:35, motor 22:55 — De 23:20 a 22:55: atardecer.
-- Sobra en el motor (no está en la simulación): 19:30 La Passeggiata del Gianicolo (10 min) — 15 → 10 min: atardecer.
+- Hora de «Mirador del Janículo, al atardecer»: simulación 19:25, motor 19:30 — De 20:05 a 19:30: atardecer.
+- Hora de «Cena: Da Enzo al 29 (o Tonnarello)»: simulación 20:35, motor 20:45 — De 21:15 a 20:45: atardecer.
+- Hora de «Fontana de Trevi iluminada»: simulación 22:35, motor 22:45 — De 23:20 a 22:45: atardecer.
 
 ### Jueves 15 · Mañana · salida: motor DM-medio · D · manana · unica / simulación DM-medio
 

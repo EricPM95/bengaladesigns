@@ -436,12 +436,21 @@ export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30
       falta -= quita
       primera = Math.min(primera, j + 1)
     }
-    const movido = llegada - target - falta
+    // Si aun así no se llega con el sol, se quita el colchón que ya está al mínimo (la Passeggiata del Gianicolo el 14 de abril: el sol se pone antes de lo que la tabla da por hecho).
+    const idMirador = lista[k].id
+    for (let j = k - 1; j > Math.max(0, iComida) && falta > 0; j--) {
+      if (!lista[j].colchon) continue
+      falta -= lista[j].min
+      lista.splice(j, 1)
+      primera = Math.min(primera, j)
+    }
+    const movido = llegada - target - Math.max(falta, 0)
     if (movido <= 0) return rows
-    lista[k].hora = toHHMM(llegada - movido)
+    lista[lista.findIndex((row) => row.id === idMirador)].hora = toHHMM(llegada - movido)
     let corridas = correrHoras(lista, { desde: primera, walk }).rows
+    const kNuevo = corridas.findIndex((row) => row.id === idMirador)
     // Si el sol se pone antes de lo que la tabla da por hecho, la cena sigue al mirador: se adelanta lo mismo, sin bajar de la hora más temprana de su versión (`cena_horas`) ni llegar antes de que acabe lo de antes; y la noche la sigue.
-    const c = corridas.findIndex((row, index) => index > k && row.tipo === 'cena' && esAncla(row))
+    const c = corridas.findIndex((row, index) => index > kNuevo && row.tipo === 'cena' && esAncla(row))
     if (c > 0 && cenaDesde != null) {
       const minima = Math.max(cenaDesde, up5(finDe(corridas[c - 1]) + hueco(corridas[c - 1], corridas[c], walk)))
       const nueva = Math.max(minima, toMin(corridas[c].hora) - movido)

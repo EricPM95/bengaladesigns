@@ -330,7 +330,7 @@ listar('Orden de los días: fallos', extra.orden)
 listar('Restaurantes cerrados', extra.restaurante_cerrado)
 listar('Comidas o cenas sin restaurante', extra.restaurante_sin)
 listar('Cenas después de las 22:00', extra.cena_22)
-listar('Colchones de más de 2 horas', extra.colchon_2h)
+listar('Colchones de más de 2 horas', extra.colchon_2h, 200)
 listar('Avisos «otro día» en el día del Vaticano', extra.aviso_vaticano)
 if (extra.imprescindibles.size > 0) {
   lines.push(`## Imprescindibles que no salen (${extra.imprescindibles.size})`, '')
