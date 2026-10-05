@@ -1,0 +1,835 @@
+# Prueba de los días escritos (parada a parada, 2027)
+
+55115 días comparados, 863456 filas del documento. Diferencias: 219449 (0 sin explicar). Días cuya tabla el documento no trae (se derivan): 3650.
+
+Viajes probados: 1 día · 1,5 días, medio día de tarde y día entero · 1,5 días, día entero y medio día de mañana · 2 días · 2 días con Free Tour de mañana · 2,5 días, medio día de tarde · 2,5 días, medio día de mañana · 2,5 días con Free Tour de mañana, medio día de tarde · 2,5 días con Free Tour de mañana, medio día de mañana · 3 días · 3 días con Free Tour de mañana · 3,5 días, medio día de mañana (vuelta) · 3,5 días con Free Tour de mañana, medio día de mañana (vuelta) · 3,5 días, medio día de tarde (llegada) · 4 días · 4 días con Free Tour de mañana · 5 días (con excursión) · 5 días con Free Tour de mañana (con excursión) · 5 días, «Prefiero quedarme en Roma» · 6 días (con excursión) · 6 días con Free Tour de mañana (con excursión) · 6 días, «Prefiero quedarme en Roma» · 2 días + pool: Galería Borghese · 2 días + pool: Ojo de la Cerradura del Aventino · 2 días + pool: Basílica de San Juan de Letrán · 2 días + pool: Parque de Villa Borghese · 2 días con Free Tour de mañana + pool: Galería Borghese · 2 días con Free Tour de mañana + pool: Ojo de la Cerradura del Aventino · 2 días con Free Tour de mañana + pool: Basílica de San Juan de Letrán · 2,5 días, medio día de tarde + pool: Galería Borghese · 2,5 días, medio día de tarde + pool: Parque de Villa Borghese · 2,5 días, medio día de mañana + pool: Galería Borghese · 2,5 días con Free Tour de mañana, medio día de mañana + pool: Basílica de San Juan de Letrán · 1,5 días, medio día de tarde y día entero + pool: Museos Vaticanos · 1,5 días, día entero y medio día de mañana + pool: Museos Vaticanos · 1,5 días, medio día de tarde y día entero + pool: Coliseo · 1 día + pool: Coliseo · 5 días + pool: Galería Borghese · 5 días + pool: Basílica de San Juan de Letrán · 5 días + pool: Termas de Caracalla · 5 días + pool: Castillo de Sant'Angelo · 5 días + pool: Cúpula de San Pedro · 5 días + pool: Museos Capitolinos · 3 días + pool: Galería Borghese · 3 días + pool: Termas de Caracalla · 4 días con Free Tour de mañana + pool: Galería Borghese · 4 días con Free Tour de mañana + pool: Museos Capitolinos · 2 días + Free Tour de tarde (17:00) · 2 días + Free Tour de noche (18:30)
+
+## Resumen de las otras comprobaciones
+
+- Qué días lleva cada viaje y en qué orden (con el cambio de orden por fechas): 0 fallos.
+- Comidas y cenas comprobadas: 103660. En un restaurante cerrado ese día o a esa hora: 3; comidas o cenas sin restaurante: 0; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): 10425.
+- Cenas que pasan de las 22:00: 0. Colchones de más de 2 horas: 0.
+- Avisos «Hemos puesto el Vaticano otro día» en un día del Vaticano: 0.
+- Por dentro más de una vez en el viaje (regla 0bis): 0 (y 0 de sitios sin visita por fuera, que se quedan). Nocturnas repetidas: 0.
+- Imprescindibles que no salen en algún viaje (viaje · lugar · cuántas fechas de 365): 51 casos.
+
+## Restaurantes cerrados (3)
+
+- 2027-12-24 4 días con Free Tour de mañana + pool: Museos Capitolinos D1-FT: comida en Giggetto al Portico d'Ottavia (14:55)
+- 2027-12-24 5 días + pool: Museos Capitolinos D1: comida en Nonna Betta (14:55)
+- 2027-12-31 4 días con Free Tour de mañana + pool: Museos Capitolinos D1-FT: comida en Giggetto al Portico d'Ottavia (14:55)
+
+## Imprescindibles que no salen (51)
+
+- 1 día · Plaza de España · 365 fechas (2027-01-01, 2027-01-02, 2027-01-03…)
+- 1 día · Museos Vaticanos y Capilla Sixtina · 365 fechas (2027-01-01, 2027-01-02, 2027-01-03…)
+- 1,5 días, día entero y medio día de mañana · Museos Vaticanos y Capilla Sixtina · 365 fechas (2027-01-01, 2027-01-02, 2027-01-03…)
+- 1,5 días, medio día de tarde y día entero · Museos Vaticanos y Capilla Sixtina · 365 fechas (2027-01-01, 2027-01-02, 2027-01-03…)
+- 1,5 días, medio día de tarde y día entero · Plaza de España · 51 fechas (2027-03-27, 2027-03-28, 2027-03-29…)
+- 2 días · Museos Vaticanos y Capilla Sixtina · 8 fechas (2027-02-10, 2027-03-28, 2027-05-01…)
+- 2 días · Basílica de San Pedro · 2 fechas (2027-12-24, 2027-12-25)
+- 2 días + Free Tour de noche (18:30) · Plaza de España · 363 fechas (2027-01-02, 2027-01-03, 2027-01-04…)
+- 2 días + Free Tour de noche (18:30) · Fontana de Trevi · 362 fechas (2027-01-02, 2027-01-03, 2027-01-04…)
+- 2 días + Free Tour de noche (18:30) · Piazza Navona · 262 fechas (2027-02-12, 2027-02-13, 2027-02-14…)
+- 2 días + Free Tour de noche (18:30) · Museos Vaticanos y Capilla Sixtina · 8 fechas (2027-02-10, 2027-03-28, 2027-05-01…)
+- 2 días + Free Tour de noche (18:30) · Basílica de San Pedro · 2 fechas (2027-12-24, 2027-12-25)
+- 2 días + Free Tour de tarde (17:00) · Plaza de España · 363 fechas (2027-01-02, 2027-01-03, 2027-01-04…)
+- 2 días + Free Tour de tarde (17:00) · Fontana de Trevi · 361 fechas (2027-01-02, 2027-01-03, 2027-01-04…)
+- 2 días + Free Tour de tarde (17:00) · Piazza Navona · 262 fechas (2027-02-12, 2027-02-13, 2027-02-14…)
+- 2 días + Free Tour de tarde (17:00) · Museos Vaticanos y Capilla Sixtina · 8 fechas (2027-02-10, 2027-03-28, 2027-05-01…)
+- 2 días + Free Tour de tarde (17:00) · Basílica de San Pedro · 2 fechas (2027-12-24, 2027-12-25)
+- 2 días con Free Tour de mañana · Museos Vaticanos y Capilla Sixtina · 8 fechas (2027-03-28, 2027-05-01, 2027-08-14…)
+- 2 días con Free Tour de mañana · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 2,5 días con Free Tour de mañana, medio día de mañana · Museos Vaticanos y Capilla Sixtina · 8 fechas (2027-03-28, 2027-05-01, 2027-08-14…)
+- 2,5 días con Free Tour de mañana, medio día de mañana · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 2,5 días con Free Tour de mañana, medio día de tarde · Museos Vaticanos y Capilla Sixtina · 9 fechas (2027-03-27, 2027-04-30, 2027-08-13…)
+- 2,5 días con Free Tour de mañana, medio día de tarde · Basílica de San Pedro · 2 fechas (2027-03-25, 2027-12-30)
+- 2,5 días, medio día de mañana · Museos Vaticanos y Capilla Sixtina · 8 fechas (2027-02-10, 2027-03-28, 2027-05-01…)
+- 2,5 días, medio día de mañana · Basílica de San Pedro · 2 fechas (2027-12-24, 2027-12-25)
+- 2,5 días, medio día de tarde · Museos Vaticanos y Capilla Sixtina · 9 fechas (2027-02-09, 2027-03-27, 2027-04-30…)
+- 2,5 días, medio día de tarde · Basílica de San Pedro · 3 fechas (2027-12-23, 2027-12-24, 2027-12-31)
+- 3 días · Museos Vaticanos y Capilla Sixtina · 2 fechas (2027-08-14, 2027-12-24)
+- 3 días · Basílica de San Pedro · 1 fechas (2027-12-24)
+- 3 días con Free Tour de mañana · Museos Vaticanos y Capilla Sixtina · 4 fechas (2027-08-14, 2027-12-24, 2027-12-25…)
+- 3 días con Free Tour de mañana · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 3,5 días con Free Tour de mañana, medio día de mañana (vuelta) · Museos Vaticanos y Capilla Sixtina · 4 fechas (2027-08-14, 2027-12-24, 2027-12-25…)
+- 3,5 días con Free Tour de mañana, medio día de mañana (vuelta) · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 3,5 días, medio día de mañana (vuelta) · Museos Vaticanos y Capilla Sixtina · 2 fechas (2027-08-14, 2027-12-24)
+- 3,5 días, medio día de mañana (vuelta) · Basílica de San Pedro · 1 fechas (2027-12-24)
+- 3,5 días, medio día de tarde (llegada) · Museos Vaticanos y Capilla Sixtina · 2 fechas (2027-08-13, 2027-12-23)
+- 3,5 días, medio día de tarde (llegada) · Basílica de San Pedro · 1 fechas (2027-12-23)
+- 4 días con Free Tour de mañana · Museos Vaticanos y Capilla Sixtina · 3 fechas (2027-12-24, 2027-12-25, 2027-12-31)
+- 4 días con Free Tour de mañana · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 5 días (con excursión) · Museos Vaticanos y Capilla Sixtina · 2 fechas (2027-08-14, 2027-12-24)
+- 5 días (con excursión) · Basílica de San Pedro · 1 fechas (2027-12-24)
+- 5 días con Free Tour de mañana (con excursión) · Museos Vaticanos y Capilla Sixtina · 3 fechas (2027-12-24, 2027-12-25, 2027-12-31)
+- 5 días con Free Tour de mañana (con excursión) · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 5 días, «Prefiero quedarme en Roma» · Museos Vaticanos y Capilla Sixtina · 2 fechas (2027-08-14, 2027-12-24)
+- 5 días, «Prefiero quedarme en Roma» · Basílica de San Pedro · 1 fechas (2027-12-24)
+- 6 días (con excursión) · Museos Vaticanos y Capilla Sixtina · 1 fechas (2027-12-24)
+- 6 días (con excursión) · Basílica de San Pedro · 1 fechas (2027-12-24)
+- 6 días con Free Tour de mañana (con excursión) · Museos Vaticanos y Capilla Sixtina · 3 fechas (2027-12-24, 2027-12-25, 2027-12-31)
+- 6 días con Free Tour de mañana (con excursión) · Basílica de San Pedro · 2 fechas (2027-03-26, 2027-12-31)
+- 6 días, «Prefiero quedarme en Roma» · Museos Vaticanos y Capilla Sixtina · 1 fechas (2027-12-24)
+- 6 días, «Prefiero quedarme en Roma» · Basílica de San Pedro · 1 fechas (2027-12-24)
+
+## Sin explicar
+
+
+## Explicadas por «Lo que hará el motor»
+
+- D2 · hora · atardecer · Cena: Tonnarello ×4274 — 2027-03-29 21:00 → 20:45 · 2027-03-30 20:30 → 20:20 · 2027-03-29 21:00 → 20:45
+- D2 · hora · atardecer · Mirador del Janículo, al atardecer ×4226 — 2027-03-29 19:35 → 19:20 · 2027-03-30 19:20 → 19:10 · 2027-03-29 19:35 → 19:20
+- D5 · hora · atardecer · Jardín de los Naranjos, al atardecer ×3282 — 2027-01-12 16:30 → 16:35 · 2027-01-12 16:30 → 16:35 · 2027-01-12 16:30 → 16:35
+- D5 · hora · atardecer · Ojo de la Cerradura del Aventino ×3282 — 2027-01-12 17:15 → 17:20 · 2027-01-12 17:15 → 17:20 · 2027-01-12 17:15 → 17:20
+- D4 · hora · atardecer · Trinità dei Monti y su mirador, al atardecer ×3146 — 2027-03-17 17:50 → 17:55 · 2027-03-17 17:50 → 17:55 · 2027-03-17 17:50 → 17:55
+- D4 · hora · atardecer · Bajar la escalinata de la Plaza de España ×2911 — 2027-03-21 18:25 → 18:30 · 2027-03-21 18:25 → 18:30 · 2027-03-21 18:25 → 18:30
+- D5 · hora · atardecer · Cena: Felice a Testaccio ×2770 — 2027-03-30 20:25 → 20:30 · 2027-03-30 20:25 → 20:30 · 2027-03-30 20:25 → 20:30
+- D5 · hora · atardecer · El Foro Romano desde el Campidoglio, de noche ×2665 — 2027-03-30 22:25 → 22:30 · 2027-03-30 22:25 → 22:30 · 2027-03-30 22:25 → 22:30
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Via Veneto, la calle de La Dolce Vita ×2555 — 2027-01-03 08:50 → 09:10 · 2027-01-03 08:50 → 09:10 · 2027-01-02 08:50 → 09:10
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Porta Pinciana ×2555 — 2027-01-03 09:05 → 09:25 · 2027-01-03 09:05 → 09:25 · 2027-01-02 09:05 → 09:25
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón) ×2555 — 2027-01-03 09:30 → 09:50 · 2027-01-03 09:30 → 09:50 · 2027-01-02 09:30 → 09:50
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Terraza del Pincio ×2555 — 2027-01-03 14:05 → 14:15 · 2027-01-03 14:05 → 14:15 · 2027-01-02 14:05 → 14:15
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Comida: Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo ×2555 — 2027-01-03 14:40 → 14:55 · 2027-01-03 14:40 → 14:55 · 2027-01-02 14:40 → 14:55
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Piazza del Popolo ×2555 — 2027-01-03 15:55 → 16:15 · 2027-01-03 15:55 → 16:15 · 2027-01-02 15:55 → 16:15
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Santa Maria del Popolo (los Caravaggio; abre a las 16:00) ×2555 — 2027-01-03 16:25 → 16:45 · 2027-01-03 16:25 → 16:45 · 2027-01-02 16:25 → 16:45
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Plaza de España ×2555 — 2027-01-03 18:25 → 18:30 · 2027-01-03 18:25 → 18:30 · 2027-01-02 18:25 → 18:30
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón) ×2545 — 2027-01-03 40 → 20 · 2027-01-03 40 → 20 · 2027-01-02 40 → 20
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie ×2545 — 2027-01-03 13:20 → 13:25 · 2027-01-03 13:20 → 13:25 · 2027-01-02 13:20 → 13:25
+- D2 · hora · atardecer · San Pietro in Montorio y el Tempietto ×2534 — 2027-03-29 18:25 → 18:05 · 2027-03-30 18:25 → 18:10 · 2027-03-29 18:25 → 18:05
+- D2 · hora · atardecer · Fontana dell'Acqua Paola ×2534 — 2027-03-29 19:00 → 18:40 · 2027-03-30 18:45 → 18:30 · 2027-03-29 19:00 → 18:40
+- D1 · falta · Trevi y el Coliseo ya salieron en el viaje: la nocturna de la tarde D es Trastevere de noche · Fontana de Trevi iluminada ×2305 — 2027-04-12 · 2027-04-10 · 2027-04-10
+- D2 · minutos · atardecer · La Passeggiata del Gianicolo (colchón) ×2246 — 2027-05-03 15 → 10 · 2027-05-03 15 → 10 · 2027-05-03 15 → 10
+- D1 · sobra · Trevi y el Coliseo ya salieron en el viaje: la nocturna de la tarde D es Trastevere de noche · trastevere de noche ×2133 — 2027-04-10 · 2027-04-10 · 2027-04-10
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Ara Pacis (última entrada 18:30) ×2075 — 2027-01-03 17:05 → 17:25 · 2027-01-03 17:05 → 17:25 · 2027-01-02 17:05 → 17:25
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Via Condotti ×2075 — 2027-01-03 18:00 → 18:20 · 2027-01-03 18:00 → 18:20 · 2027-01-02 18:00 → 18:20
+- D2 · hora · atardecer · Trastevere de noche ×2073 — 2027-03-30 22:10 → 22:05 · 2027-03-30 22:10 → 22:05 · 2027-03-30 22:10 → 22:05
+- D4 · hora · atardecer · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×2034 — 2027-04-04 20:30 → 20:35 · 2027-04-04 20:30 → 20:35 · 2027-04-04 20:30 → 20:35
+- D5 · minutos · atardecer · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón) ×2029 — 2027-04-10 75 → 35 · 2027-04-10 75 → 35 · 2027-04-10 75 → 35
+- D4 · hora · atardecer · Coliseo iluminado ×2025 — 2027-04-04 22:30 → 22:35 · 2027-04-04 22:30 → 22:35 · 2027-04-04 22:30 → 22:35
+- D2 · minutos · atardecer · Pasea y piérdete por Trastevere ×1836 — 2027-03-29 60 → 45 · 2027-03-29 60 → 45 · 2027-03-29 60 → 45
+- D2 · sobra · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a El Puente y el Castillo de Sant'Angelo (noche) · el puente y el castillo de sant'angelo ×1715 — 2027-04-12 · 2027-04-12 · 2027-04-12
+- D2 · falta · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a El Puente y el Castillo de Sant'Angelo (noche) · Trastevere de noche ×1704 — 2027-04-12 · 2027-04-12 · 2027-04-12
+- D1-FT · hora · atardecer · Mirador del Janículo, al atardecer ×1639 — 2027-03-29 19:20 → 18:10 · 2027-03-29 19:20 → 18:10 · 2027-03-29 19:20 → 18:10
+- D4 · hora · cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio; abre a las 16:00) ×1628 — 2027-01-03 16:25 → 16:30 · 2027-01-03 16:25 → 16:30 · 2027-01-03 16:25 → 16:30
+- D1-FT · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello) ×1605 — 2027-03-29 20:20 → 20:10 · 2027-03-29 20:20 → 20:10 · 2027-03-29 20:20 → 20:10
+- D1-FT · minutos · cierre de San Pietro in Montorio y Tempietto de Bramante · San Pietro in Montorio y el Tempietto ×1587 — 2027-04-12 20 → 10 · 2027-04-10 20 → 10 · 2027-04-12 20 → 10
+- D1-FT · cómo · cierre de San Pietro in Montorio y Tempietto de Bramante · San Pietro in Montorio y el Tempietto ×1587 — 2027-04-12 dentro → fuera · 2027-04-10 dentro → fuera · 2027-04-12 dentro → fuera
+- D4 · minutos · atardecer · Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×1519 — 2027-04-13 60 → 10 · 2027-04-13 60 → 10 · 2027-04-13 60 → 10
+- D1-FT · hora · atardecer · Fontana de Trevi iluminada ×1471 — 2027-03-29 22:20 → 22:10 · 2027-03-29 22:20 → 22:10 · 2027-03-29 22:20 → 22:10
+- D1 · minutos · cierre de Iglesia de San Luigi dei Francesi · San Luigi dei Francesi (cierra a las 18:15) ×1338 — 2027-01-02 20 → 10 · 2027-01-02 20 → 10 · 2027-01-02 20 → 10
+- D1 · cómo · cierre de Iglesia de San Luigi dei Francesi · San Luigi dei Francesi (cierra a las 18:15) ×1338 — 2027-01-02 dentro → fuera · 2027-01-02 dentro → fuera · 2027-01-02 dentro → fuera
+- D2 · falta · atardecer · La Passeggiata del Gianicolo (colchón) ×1184 — 2027-04-12 · 2027-04-12 · 2027-04-10
+- D1-FT · hora · atardecer · San Pietro in Montorio y el Tempietto ×1110 — 2027-03-29 18:25 → 17:10 · 2027-03-29 18:25 → 17:10 · 2027-03-29 18:25 → 17:10
+- D1-FT · hora · atardecer · Fontana dell'Acqua Paola ×1110 — 2027-03-29 18:45 → 17:30 · 2027-03-29 18:45 → 17:30 · 2027-03-29 18:45 → 17:30
+- D4 · falta · atardecer · Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×1060 — 2027-04-10 · 2027-04-10 · 2027-04-10
+- D6 · minutos · cierre de Santo Bambino de Aracoeli · Santa Maria in Aracoeli y su escalinata ×1040 — 2027-02-13 20 → 15 · 2027-02-13 20 → 15 · 2027-02-13 20 → 15
+- D6 · cómo · cierre de Santo Bambino de Aracoeli · Santa Maria in Aracoeli y su escalinata ×1040 — 2027-02-13 dentro → fuera · 2027-02-13 dentro → fuera · 2027-02-13 dentro → fuera
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Comida: Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo ×1006 — 2027-04-10 60 → 45 · 2027-04-10 60 → 45 · 2027-04-10 60 → 45
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Trinità dei Monti y su mirador, al atardecer ×1006 — 2027-04-10 20:15 → 18:50 · 2027-04-10 20:15 → 18:50 · 2027-04-10 20:15 → 18:50
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Bajar la escalinata de la Plaza de España ×1006 — 2027-04-10 20:45 → 19:20 · 2027-04-10 20:45 → 19:20 · 2027-04-10 20:45 → 19:20
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×1006 — 2027-04-10 21:00 → 21:20 · 2027-04-10 21:00 → 21:20 · 2027-04-10 21:00 → 21:20
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Coliseo iluminado ×1006 — 2027-04-10 23:00 → 23:20 · 2027-04-10 23:00 → 23:20 · 2027-04-10 23:00 → 23:20
+- DT-medio · hora · atardecer · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×900 — 2027-01-10 19:20 → 19:30 · 2027-01-10 19:20 → 19:30 · 2027-01-10 19:20 → 19:30
+- DT-medio · hora · atardecer · Terraza del Pincio, al atardecer ×860 — 2027-01-01 16:15 → 16:25 · 2027-01-01 16:15 → 16:25 · 2027-01-01 16:15 → 16:25
+- D1-FT · minutos · atardecer · Pasea y piérdete por Trastevere ×837 — 2027-04-12 60 → 45 · 2027-04-10 60 → 45 · 2027-04-12 60 → 45
+- D3 · hora · atardecer · Puente Sant'Angelo, al atardecer ×823 — 2027-03-29 19:55 → 19:00 · 2027-03-29 19:55 → 19:00 · 2027-03-29 19:55 → 19:00
+- DT-medio · hora · atardecer · Trinità dei Monti y su mirador sobre la Plaza de España ×815 — 2027-02-08 17:55 → 18:05 · 2027-02-08 17:55 → 18:05 · 2027-02-08 17:55 → 18:05
+- DT-medio · hora · atardecer · Bajar la escalinata de la Plaza de España ×815 — 2027-02-08 18:15 → 18:20 · 2027-02-08 18:15 → 18:20 · 2027-02-08 18:15 → 18:20
+- D3 · hora · atardecer · Cena: L'Arcangelo (o Osteria dell'Angelo), en Prati ×801 — 2027-03-29 20:45 → 19:55 · 2027-03-29 20:45 → 19:55 · 2027-03-29 20:45 → 19:55
+- D1-FT · minutos · atardecer · La Passeggiata del Gianicolo (colchón) ×784 — 2027-05-06 15 → 10 · 2027-05-06 15 → 10 · 2027-05-07 15 → 10
+- D1 · hora · atardecer · Ponte Sisto, al atardecer ×765 — 2027-06-07 20:15 → 20:20 · 2027-06-07 20:15 → 20:20 · 2027-06-07 20:15 → 20:20
+- D1 · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×765 — 2027-06-07 21:00 → 21:10 · 2027-06-07 21:00 → 21:10 · 2027-06-07 21:00 → 21:10
+- D1 · hora · cierre de Panteón · Barrio Judío ×734 — 2027-01-02 15:00 → 16:05 · 2027-01-02 15:00 → 16:05 · 2027-01-02 15:00 → 16:05
+- D1 · hora · cierre de Panteón · Fuente de las Tortugas ×734 — 2027-01-02 15:35 → 16:40 · 2027-01-02 15:35 → 16:40 · 2027-01-02 15:35 → 16:40
+- D1 · hora · cierre de Panteón · Largo di Torre Argentina ×734 — 2027-01-02 15:55 → 17:00 · 2027-01-02 15:55 → 17:00 · 2027-01-02 15:55 → 17:00
+- D1 · hora · cierre de Panteón · Elefantino de Bernini ×734 — 2027-01-02 16:55 → 17:55 · 2027-01-02 16:55 → 17:55 · 2027-01-02 16:55 → 17:55
+- D1 · hora · cierre de Panteón · Panteón ×734 — 2027-01-02 17:55 → 15:00 · 2027-01-02 17:55 → 15:00 · 2027-01-02 17:55 → 15:00
+- D1 · minutos · cierre de Panteón · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×731 — 2027-01-02 60 → 50 · 2027-01-02 60 → 50 · 2027-01-02 60 → 50
+- D1 · hora · cierre de Panteón · Iglesia del Gesù (abre a las 16:00) ×731 — 2027-01-02 16:25 → 17:30 · 2027-01-02 16:25 → 17:30 · 2027-01-02 16:25 → 17:30
+- D1 · hora · cierre de Panteón · Santa Maria sopra Minerva ×731 — 2027-01-02 17:00 → 18:00 · 2027-01-02 17:00 → 18:00 · 2027-01-02 17:00 → 18:00
+- D1 · hora · cierre de Panteón · San Luigi dei Francesi (cierra a las 18:15) ×731 — 2027-01-02 17:20 → 18:25 · 2027-01-02 17:20 → 18:25 · 2027-01-02 17:20 → 18:25
+- D1 · hora · cierre de Panteón · Piazza Navona ×731 — 2027-01-02 18:50 → 19:00 · 2027-01-02 18:50 → 19:00 · 2027-01-02 18:50 → 19:00
+- D1-corto · hora · atardecer · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×696 — 2027-02-13 20:00 → 19:45 · 2027-02-13 20:00 → 19:45 · 2027-02-14 20:00 → 19:45
+- D0-medio · hora · atardecer · Puente Sant'Angelo, al atardecer ×653 — 2027-01-01 17:10 → 17:05 · 2027-01-01 17:10 → 17:05 · 2027-01-01 17:10 → 17:05
+- D1 · falta · hora límite de la noche · Plaza de España de noche ×634 — 2027-01-03 · 2027-01-03 · 2027-01-03
+- D3 · hora · atardecer · Piazza Navona de noche ×618 — 2027-03-29 22:45 → 21:50 · 2027-03-29 22:45 → 21:50 · 2027-03-29 22:45 → 21:50
+- D2 · hora · atardecer · La Passeggiata del Gianicolo (colchón) ×601 — 2027-05-03 19:40 → 19:25 · 2027-05-03 19:40 → 19:25 · 2027-05-03 19:40 → 19:25
+- D2 · sobra · la Plaza de España todavía no ha salido en el viaje: es la nocturna del Día del Vaticano · plaza de espana ×577 — 2027-04-10 · 2027-04-10 · 2027-04-10
+- D2 · falta · la Plaza de España todavía no ha salido en el viaje: es la nocturna del Día del Vaticano · Trastevere de noche ×552 — 2027-04-10 · 2027-04-10 · 2027-04-10
+- D2 · falta · atardecer · Pasea y piérdete por Trastevere (colchón) ×546 — 2027-03-30 · 2027-03-30 · 2027-03-30
+- D1-corto · hora · atardecer · Mirador del Janículo, al atardecer ×544 — 2027-04-04 19:10 → 19:15 · 2027-04-04 19:10 → 19:15 · 2027-04-05 19:10 → 19:15
+- D2 · minutos · atardecer · Pasea y piérdete por Trastevere (colchón) ×533 — 2027-03-30 40 → 30 · 2027-03-30 40 → 30 · 2027-03-30 40 → 30
+- D6 · hora · atardecer · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer ×528 — 2027-04-10 20:10 → 19:30 · 2027-04-10 20:10 → 19:30 · 2027-04-10 20:10 → 19:30
+- DT-medio · hora · atardecer · Coliseo iluminado ×489 — 2027-01-10 21:20 → 21:30 · 2027-01-10 21:20 → 21:30 · 2027-01-11 21:20 → 21:30
+- DT-medio · minutos · atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×483 — 2027-03-28 60 → 35 · 2027-03-28 60 → 35 · 2027-03-28 60 → 35
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Via del Babuino y Via Margutta ×480 — 2027-02-13 16:50 → 17:10 · 2027-02-13 16:50 → 17:10 · 2027-02-13 16:50 → 17:10
+- D1-corto · hora · atardecer · Santa Maria in Trastevere ×480 — 2027-02-13 19:20 → 18:55 · 2027-02-13 19:20 → 18:55 · 2027-02-14 19:20 → 18:55
+- D6 · hora · atardecer · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×470 — 2027-04-05 20:00 → 20:05 · 2027-04-10 21:00 → 20:30 · 2027-04-10 21:00 → 20:30
+- D1 · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Panteón ×468 — 2027-01-03 15:05 → 15:10 · 2027-01-03 15:05 → 15:10 · 2027-01-03 15:05 → 15:10
+- D1 · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Piazza Navona ×468 — 2027-01-03 15:35 → 15:40 · 2027-01-03 15:35 → 15:40 · 2027-01-03 15:35 → 15:40
+- D5 · hora · atardecer · Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón) ×463 — 2027-01-12 17:50 → 17:55 · 2027-01-12 17:50 → 17:55 · 2027-01-12 17:50 → 17:55
+- D4 · hora · atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×459 — 2027-03-17 18:45 → 18:50 · 2027-03-17 18:45 → 18:50 · 2027-03-17 18:45 → 18:50
+- D4 · minutos · atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×459 — 2027-03-17 60 → 55 · 2027-03-17 60 → 55 · 2027-03-17 60 → 55
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Piazza del Popolo ×454 — 2027-01-03 12:40 → 12:45 · 2027-01-02 18:50 → 18:55 · 2027-01-03 18:50 → 18:55
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Plaza de España ×454 — 2027-01-03 13:25 → 13:35 · 2027-01-02 19:40 → 19:45 · 2027-01-03 19:40 → 19:45
+- D5 · minutos · atardecer · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón) ×454 — 2027-03-30 30 → 35 · 2027-03-30 30 → 35 · 2027-03-30 30 → 35
+- D1-FT · falta · atardecer · La Passeggiata del Gianicolo (colchón) ×446 — 2027-04-12 · 2027-04-10 · 2027-04-12
+- D4 · hora · atardecer · Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×426 — 2027-03-28 19:50 → 20:00 · 2027-03-28 19:50 → 20:00 · 2027-03-28 19:50 → 20:00
+- D4 · minutos · atardecer · Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×426 — 2027-03-28 30 → 15 · 2027-03-28 30 → 15 · 2027-03-28 30 → 15
+- D6 · hora · atardecer · Panteón de noche ×423 — 2027-04-10 22:55 → 22:20 · 2027-04-10 22:55 → 22:20 · 2027-04-10 22:55 → 22:20
+- D1 · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Fontana de Trevi iluminada ×418 — 2027-01-03 22:05 → 22:10 · 2027-01-03 22:05 → 22:10 · 2027-01-03 22:05 → 22:10
+- D1-FT · falta · atardecer · Pasea y piérdete por Trastevere (colchón) ×417 — 2027-03-29 · 2027-03-29 · 2027-03-29
+- D2 · falta · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a Piazza Navona (noche) · Trastevere de noche ×417 — 2027-04-12 · 2027-04-12 · 2027-04-12
+- D2 · sobra · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a Piazza Navona (noche) · piazza navona ×417 — 2027-04-12 · 2027-04-12 · 2027-04-12
+- D4 · minutos · por dentro una sola vez en el viaje: ya va por dentro otro día · Santa Maria del Popolo (los Caravaggio; abre a las 16:00) ×365 — 2027-01-03 20 → 10 · 2027-01-05 20 → 10 · 2027-01-06 20 → 10
+- D4 · cómo · por dentro una sola vez en el viaje: ya va por dentro otro día · Santa Maria del Popolo (los Caravaggio; abre a las 16:00) ×365 — 2027-01-03 dentro → fuera · 2027-01-05 dentro → fuera · 2027-01-06 dentro → fuera
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Barrio Judío ×365 — 2027-01-01 15:00 → 15:05 · 2027-01-03 15:00 → 15:05 · 2027-01-03 15:00 → 15:05
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Fuente de las Tortugas ×365 — 2027-01-01 15:25 → 15:30 · 2027-01-03 15:25 → 15:30 · 2027-01-03 15:25 → 15:30
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Teatro de Marcelo ×365 — 2027-01-01 15:35 → 15:45 · 2027-01-03 15:35 → 15:45 · 2027-01-03 15:35 → 15:45
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Boca de la Verdad ×365 — 2027-01-01 15:55 → 16:10 · 2027-01-03 15:55 → 16:10 · 2027-01-03 15:55 → 16:10
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Jardín de los Naranjos ×365 — 2027-01-01 16:20 → 16:35 · 2027-01-03 16:20 → 16:35 · 2027-01-03 16:20 → 16:35
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Ojo de la Cerradura del Aventino ×365 — 2027-01-01 16:45 → 17:00 · 2027-01-03 16:45 → 17:00 · 2027-01-03 16:45 → 17:00
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Plaza del Campidoglio ×365 — 2027-01-01 12:55 → 13:00 · 2027-01-03 12:55 → 13:00 · 2027-01-03 12:55 → 13:00
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Piazza Venezia ×365 — 2027-01-01 13:10 → 13:20 · 2027-01-03 13:10 → 13:20 · 2027-01-03 13:10 → 13:20
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Altar de la Patria ×365 — 2027-01-01 13:30 → 13:40 · 2027-01-03 13:30 → 13:40 · 2027-01-03 13:30 → 13:40
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Comida: Giggetto al Portico d'Ottavia (o Nonna Betta) ×365 — 2027-01-01 14:20 → 14:30 · 2027-01-03 14:20 → 14:30 · 2027-01-03 14:20 → 14:30
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Barrio Judío ×365 — 2027-01-01 15:30 → 15:45 · 2027-01-03 15:30 → 15:45 · 2027-01-03 15:30 → 15:45
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Fuente de las Tortugas ×365 — 2027-01-01 16:00 → 16:15 · 2027-01-03 16:00 → 16:15 · 2027-01-03 16:00 → 16:15
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Teatro de Marcelo ×365 — 2027-01-01 16:10 → 16:30 · 2027-01-03 16:10 → 16:30 · 2027-01-03 16:10 → 16:30
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Isla Tiberina ×365 — 2027-01-01 16:30 → 16:55 · 2027-01-03 16:30 → 16:55 · 2027-01-03 16:30 → 16:55
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · San Pietro in Montorio y el Tempietto ×365 — 2027-01-01 17:10 → 17:30 · 2027-01-03 17:10 → 17:30 · 2027-01-03 17:10 → 17:30
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Fontana dell'Acqua Paola ×365 — 2027-01-01 17:30 → 17:50 · 2027-01-03 17:30 → 17:50 · 2027-01-03 17:30 → 17:50
+- DM-medio · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Santa Maria Maggiore ×365 — 2027-01-03 11:10 → 11:15 · 2027-01-04 11:10 → 11:15 · 2027-01-05 11:10 → 11:15
+- DM-medio · hora · pool: Basílica de San Juan de Letrán: horas por los márgenes · San Juan de Letrán y la Escalera Santa ×365 — 2027-01-03 12:10 → 12:15 · 2027-01-04 12:10 → 12:15 · 2027-01-05 12:10 → 12:15
+- DM-medio · hora · pool: Basílica de San Juan de Letrán: horas por los márgenes · Comida: SantoPalato (o Il Bocconcino), en San Giovanni ×365 — 2027-01-03 13:15 → 13:20 · 2027-01-04 13:15 → 13:20 · 2027-01-05 13:15 → 13:20
+- D1-FT · minutos · pool: Museos Capitolinos · Altar de la Patria ×365 — 2027-01-01 30 → 5 · 2027-01-04 30 → 5 · 2027-01-03 30 → 5
+- D1-FT · cómo · pool: Museos Capitolinos · Altar de la Patria ×365 — 2027-01-01 dentro → camino · 2027-01-04 dentro → camino · 2027-01-03 dentro → camino
+- D1-FT · minutos · pool: Museos Capitolinos · Barrio Judío ×365 — 2027-01-01 25 → 20 · 2027-01-04 25 → 20 · 2027-01-03 25 → 20
+- D1-FT · sobra · pool: Museos Capitolinos · museos capitolinos ×365 — 2027-01-01 · 2027-01-04 · 2027-01-03
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Plaza del Campidoglio ×364 — 2027-01-02 12:25 → 12:30 · 2027-01-03 12:25 → 12:30 · 2027-01-04 12:25 → 12:30
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Altar de la Patria ×364 — 2027-01-02 13:00 → 13:10 · 2027-01-03 13:00 → 13:10 · 2027-01-04 13:00 → 13:10
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×364 — 2027-01-02 13:10 → 14:00 · 2027-01-03 13:10 → 14:00 · 2027-01-04 13:10 → 14:00
+- D1-corto · minutos · pool: Coliseo + pool: Coliseo: horas por los márgenes · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×364 — 2027-01-02 60 → 45 · 2027-01-03 60 → 45 · 2027-01-04 60 → 45
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Barrio Judío ×364 — 2027-01-02 14:20 → 15:15 · 2027-01-03 14:20 → 15:15 · 2027-01-04 14:20 → 15:15
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Panteón ×364 — 2027-01-02 15:50 → 16:45 · 2027-01-03 15:50 → 16:45 · 2027-01-04 15:50 → 16:45
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Piazza Navona ×364 — 2027-01-02 16:20 → 17:20 · 2027-01-03 16:20 → 17:20 · 2027-01-04 16:20 → 17:20
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Campo de' Fiori ×364 — 2027-01-02 17:10 → 18:10 · 2027-01-03 17:10 → 18:10 · 2027-01-04 17:10 → 18:10
+- D2 · hora · pool: Cúpula de San Pedro · Comida: Borghiciana (o Dal Toscano), en el Borgo ×364 — 2027-01-02 13:40 → 14:35 · 2027-01-04 13:40 → 14:35 · 2027-01-04 13:40 → 14:35
+- D2 · hora · pool: Cúpula de San Pedro · Via della Conciliazione ×364 — 2027-01-02 15:00 → 15:55 · 2027-01-04 15:00 → 15:55 · 2027-01-04 15:00 → 15:55
+- D2 · hora · pool: Cúpula de San Pedro · Castillo de Sant'Angelo ×364 — 2027-01-02 15:30 → 16:25 · 2027-01-04 15:30 → 16:25 · 2027-01-04 15:30 → 16:25
+- D2 · hora · pool: Cúpula de San Pedro · Puente Sant'Angelo ×364 — 2027-01-02 16:05 → 17:00 · 2027-01-04 16:05 → 17:00 · 2027-01-04 16:05 → 17:00
+- D2 · hora · pool: Cúpula de San Pedro · Santa Maria in Trastevere ×364 — 2027-01-02 17:45 → 18:40 · 2027-01-04 17:45 → 18:40 · 2027-01-04 17:45 → 18:40
+- D2 · sobra · pool: Cúpula de San Pedro · cupula de san pedro ×364 — 2027-01-02 · 2027-01-04 · 2027-01-04
+- D2 · minutos · pool: Castillo de Sant'Angelo · Castillo de Sant'Angelo ×363 — 2027-01-02 20 → 60 · 2027-01-02 20 → 60 · 2027-01-05 20 → 60
+- D2 · cómo · pool: Castillo de Sant'Angelo · Castillo de Sant'Angelo ×363 — 2027-01-02 fuera → dentro · 2027-01-02 fuera → dentro · 2027-01-05 fuera → dentro
+- D2 · hora · pool: Castillo de Sant'Angelo · Puente Sant'Angelo ×363 — 2027-01-02 16:05 → 16:45 · 2027-01-02 16:05 → 16:45 · 2027-01-05 16:05 → 16:45
+- D2 · hora · pool: Castillo de Sant'Angelo · Santa Maria in Trastevere ×363 — 2027-01-02 17:45 → 18:25 · 2027-01-02 17:45 → 18:25 · 2027-01-05 17:45 → 18:25
+- D1-FT · hora · pool: Museos Capitolinos · Piazza Venezia ×363 — 2027-01-01 12:40 → 14:10 · 2027-01-04 12:40 → 14:10 · 2027-01-03 12:40 → 14:10
+- D1-FT · hora · pool: Museos Capitolinos · Altar de la Patria ×363 — 2027-01-01 13:00 → 14:20 · 2027-01-04 13:00 → 14:20 · 2027-01-03 13:00 → 14:20
+- D1-FT · hora · pool: Museos Capitolinos · Comida: Giggetto al Portico d'Ottavia (o Nonna Betta) ×363 — 2027-01-01 13:50 → 14:45 · 2027-01-04 13:50 → 14:45 · 2027-01-03 13:50 → 14:45
+- D1-FT · hora · pool: Museos Capitolinos · Barrio Judío ×363 — 2027-01-01 15:00 → 15:45 · 2027-01-04 15:00 → 15:45 · 2027-01-03 15:00 → 15:45
+- D1-FT · hora · pool: Museos Capitolinos · Fuente de las Tortugas ×363 — 2027-01-01 15:30 → 16:10 · 2027-01-04 15:30 → 16:10 · 2027-01-03 15:30 → 16:10
+- D1-FT · hora · pool: Museos Capitolinos · Teatro de Marcelo ×363 — 2027-01-01 15:40 → 16:25 · 2027-01-04 15:40 → 16:25 · 2027-01-03 15:40 → 16:25
+- D1-FT · hora · pool: Museos Capitolinos · Isla Tiberina ×363 — 2027-01-01 16:00 → 16:50 · 2027-01-04 16:00 → 16:50 · 2027-01-03 16:00 → 16:50
+- D1-FT · hora · pool: Museos Capitolinos · Santa Maria in Trastevere ×363 — 2027-01-01 18:35 → 19:25 · 2027-01-04 18:35 → 19:25 · 2027-01-03 18:35 → 19:25
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Barrio Judío ×363 — 2027-01-03 15:00 → 15:05 · 2027-01-03 15:00 → 15:05 · 2027-01-04 15:00 → 15:05
+- D1 · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Teatro de Marcelo ×363 — 2027-01-03 15:25 → 15:30 · 2027-01-03 15:25 → 15:30 · 2027-01-04 15:25 → 15:30
+- D1 · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Boca de la Verdad ×363 — 2027-01-03 15:45 → 15:55 · 2027-01-03 15:45 → 15:55 · 2027-01-04 15:45 → 15:55
+- D1 · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Jardín de los Naranjos ×363 — 2027-01-03 16:10 → 16:20 · 2027-01-03 16:10 → 16:20 · 2027-01-04 16:10 → 16:20
+- D1 · hora · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Ojo de la Cerradura del Aventino ×363 — 2027-01-03 16:35 → 16:45 · 2027-01-03 16:35 → 16:45 · 2027-01-04 16:35 → 16:45
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Iglesia del Gesù ×363 — 2027-01-03 17:25 → 17:30 · 2027-01-03 17:25 → 17:30 · 2027-01-04 17:25 → 17:30
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Elefantino de Bernini ×363 — 2027-01-03 17:30 → 17:40 · 2027-01-03 17:30 → 17:40 · 2027-01-04 17:30 → 17:40
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Santa Maria sopra Minerva ×363 — 2027-01-03 17:35 → 17:45 · 2027-01-03 17:35 → 17:45 · 2027-01-04 17:35 → 17:45
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Panteón ×363 — 2027-01-03 17:50 → 18:05 · 2027-01-03 17:50 → 18:05 · 2027-01-04 17:50 → 18:05
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · San Luigi dei Francesi ×363 — 2027-01-03 18:25 → 18:40 · 2027-01-03 18:25 → 18:40 · 2027-01-04 18:25 → 18:40
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Plaza del Campidoglio ×363 — 2027-01-03 12:55 → 13:00 · 2027-01-03 12:55 → 13:00 · 2027-01-04 12:55 → 13:00
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Piazza Venezia ×363 — 2027-01-03 13:10 → 13:20 · 2027-01-03 13:10 → 13:20 · 2027-01-04 13:10 → 13:20
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Altar de la Patria ×363 — 2027-01-03 13:30 → 13:40 · 2027-01-03 13:30 → 13:40 · 2027-01-04 13:30 → 13:40
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×363 — 2027-01-03 14:20 → 14:30 · 2027-01-03 14:20 → 14:30 · 2027-01-04 14:20 → 14:30
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Barrio Judío ×363 — 2027-01-03 15:30 → 15:45 · 2027-01-03 15:30 → 15:45 · 2027-01-04 15:30 → 15:45
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Fuente de las Tortugas ×363 — 2027-01-03 16:05 → 16:20 · 2027-01-03 16:05 → 16:20 · 2027-01-04 16:05 → 16:20
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Largo di Torre Argentina ×363 — 2027-01-03 16:15 → 16:30 · 2027-01-03 16:15 → 16:30 · 2027-01-04 16:15 → 16:30
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Iglesia del Gesù ×363 — 2027-01-03 16:35 → 16:50 · 2027-01-03 16:35 → 16:50 · 2027-01-04 16:35 → 16:50
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Elefantino de Bernini ×363 — 2027-01-03 17:05 → 17:15 · 2027-01-03 17:05 → 17:15 · 2027-01-04 17:05 → 17:15
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Santa Maria sopra Minerva ×363 — 2027-01-03 17:10 → 17:20 · 2027-01-03 17:10 → 17:20 · 2027-01-04 17:10 → 17:20
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · Panteón ×363 — 2027-01-03 17:30 → 18:20 · 2027-01-03 17:30 → 18:20 · 2027-01-04 17:30 → 18:20
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · San Luigi dei Francesi ×363 — 2027-01-03 18:15 → 17:45 · 2027-01-03 18:15 → 17:45 · 2027-01-04 18:15 → 17:45
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · Piazza Navona ×363 — 2027-01-03 18:50 → 19:10 · 2027-01-03 18:50 → 19:10 · 2027-01-04 18:50 → 19:10
+- D1 · minutos · pool: Museos Capitolinos · Altar de la Patria ×363 — 2027-01-02 30 → 5 · 2027-01-03 30 → 5 · 2027-01-04 30 → 5
+- D1 · cómo · pool: Museos Capitolinos · Altar de la Patria ×363 — 2027-01-02 dentro → camino · 2027-01-03 dentro → camino · 2027-01-04 dentro → camino
+- D1 · minutos · pool: Museos Capitolinos · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×363 — 2027-01-02 60 → 45 · 2027-01-03 60 → 45 · 2027-01-04 60 → 45
+- D1 · minutos · pool: Museos Capitolinos · Barrio Judío ×363 — 2027-01-02 30 → 20 · 2027-01-03 30 → 20 · 2027-01-04 30 → 20
+- D1 · sobra · pool: Museos Capitolinos · museos capitolinos ×363 — 2027-01-02 · 2027-01-03 · 2027-01-04
+- D1 · hora · pool: Museos Capitolinos · Piazza Venezia ×362 — 2027-01-02 12:40 → 14:10 · 2027-01-03 12:40 → 14:10 · 2027-01-04 12:40 → 14:10
+- D1 · hora · pool: Museos Capitolinos · Altar de la Patria ×362 — 2027-01-02 13:00 → 14:20 · 2027-01-03 13:00 → 14:20 · 2027-01-04 13:00 → 14:20
+- D1 · hora · pool: Museos Capitolinos · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×362 — 2027-01-02 13:50 → 14:45 · 2027-01-03 13:50 → 14:45 · 2027-01-04 13:50 → 14:45
+- D1 · hora · pool: Museos Capitolinos · Barrio Judío ×362 — 2027-01-02 15:00 → 15:45 · 2027-01-03 15:00 → 15:45 · 2027-01-04 15:00 → 15:45
+- D1 · hora · pool: Museos Capitolinos · Fuente de las Tortugas ×362 — 2027-01-02 15:35 → 16:10 · 2027-01-03 15:35 → 16:10 · 2027-01-04 15:35 → 16:10
+- D1 · hora · pool: Museos Capitolinos · Largo di Torre Argentina ×362 — 2027-01-02 15:55 → 16:30 · 2027-01-03 15:55 → 16:30 · 2027-01-04 15:55 → 16:30
+- D1 · hora · pool: Museos Capitolinos · Iglesia del Gesù (abre a las 16:00) ×362 — 2027-01-02 16:25 → 17:00 · 2027-01-03 16:25 → 17:00 · 2027-01-04 16:25 → 17:00
+- D1 · hora · pool: Museos Capitolinos · Elefantino de Bernini ×362 — 2027-01-02 16:55 → 17:25 · 2027-01-03 16:55 → 17:25 · 2027-01-04 16:55 → 17:25
+- D1 · hora · pool: Museos Capitolinos · Santa Maria sopra Minerva ×362 — 2027-01-02 17:00 → 17:30 · 2027-01-03 17:00 → 17:30 · 2027-01-04 17:00 → 17:30
+- D1-FT · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Barrio Judío ×360 — 2027-01-03 14:45 → 14:50 · 2027-01-03 14:45 → 14:50 · 2027-01-05 14:45 → 14:50
+- D1-FT · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Fuente de las Tortugas ×360 — 2027-01-03 15:10 → 15:15 · 2027-01-03 15:10 → 15:15 · 2027-01-05 15:10 → 15:15
+- D0-medio · minutos · atardecer · Pasea y piérdete por Prati (colchón) ×357 — 2027-03-28 60 → 25 · 2027-03-28 60 → 25 · 2027-03-28 60 → 25
+- D1 · minutos · pool: Termas de Caracalla · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×354 — 2027-01-02 60 → 45 · 2027-01-03 60 → 45 · 2027-01-05 60 → 45
+- D1 · falta · pool: Termas de Caracalla · Barrio Judío ×354 — 2027-01-02 · 2027-01-03 · 2027-01-05
+- D1 · falta · pool: Termas de Caracalla · Fuente de las Tortugas ×354 — 2027-01-02 · 2027-01-03 · 2027-01-05
+- D1 · falta · pool: Termas de Caracalla · Largo di Torre Argentina ×354 — 2027-01-02 · 2027-01-03 · 2027-01-05
+- D1 · hora · pool: Termas de Caracalla · Iglesia del Gesù (abre a las 16:00) ×354 — 2027-01-02 16:25 → 16:55 · 2027-01-03 16:25 → 16:55 · 2027-01-05 16:25 → 16:55
+- D1 · hora · pool: Termas de Caracalla · Elefantino de Bernini ×354 — 2027-01-02 16:55 → 17:20 · 2027-01-03 16:55 → 17:20 · 2027-01-05 16:55 → 17:20
+- D1 · hora · pool: Termas de Caracalla · Santa Maria sopra Minerva ×354 — 2027-01-02 17:00 → 17:25 · 2027-01-03 17:00 → 17:25 · 2027-01-05 17:00 → 17:25
+- D1 · sobra · pool: Termas de Caracalla · termas de caracalla ×354 — 2027-01-02 · 2027-01-03 · 2027-01-05
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Mirador del Janículo, al atardecer ×347 — 2027-01-01 18:05 → 18:30 · 2027-01-03 18:05 → 18:30 · 2027-01-03 18:05 → 18:30
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Santa Maria in Trastevere ×347 — 2027-01-01 19:05 → 19:30 · 2027-01-03 19:05 → 19:30 · 2027-01-03 19:05 → 19:30
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×347 — 2027-01-01 19:35 → 20:05 · 2027-01-03 19:35 → 20:05 · 2027-01-03 19:35 → 20:05
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×333 — 2027-02-13 18:45 → 18:50 · 2027-02-13 18:45 → 18:50 · 2027-02-13 18:45 → 18:50
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti: el rato que sobra va al colchón del Tridente + Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×333 — 2027-02-13 75 → 55 · 2027-02-13 75 → 55 · 2027-02-13 75 → 55
+- DT-medio · sobra · el Coliseo iluminado ya salió de noche en el viaje: la nocturna del medio día es Piazza Navona de noche · piazza navona ×332 — 2027-01-01 · 2027-01-02 · 2027-01-03
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×329 — 2027-01-01 19:15 → 19:20 · 2027-01-03 19:15 → 19:20 · 2027-01-03 19:15 → 19:20
+- D1-FT · minutos · pool: Museos Capitolinos · Comida: Giggetto al Portico d'Ottavia (o Nonna Betta) ×316 — 2027-01-01 60 → 45 · 2027-01-04 60 → 45 · 2027-01-03 60 → 45
+- DT-medio · falta · el Coliseo iluminado ya salió de noche en el viaje: la nocturna del medio día es Piazza Navona de noche · Coliseo iluminado ×315 — 2027-01-01 · 2027-01-02 · 2027-01-03
+- D0-medio · falta · Trevi no ha salido de noche en el viaje: la nocturna del medio día de tarde es Trevi · Piazza Navona de noche ×313 — 2027-04-09 · 2027-04-09 · 2027-04-10
+- D0-medio · sobra · Trevi no ha salido de noche en el viaje: la nocturna del medio día de tarde es Trevi · fontana de trevi ×313 — 2027-04-09 · 2027-04-09 · 2027-04-10
+- D0-medio · sobra · la Plaza de España no ha salido de noche en el viaje: la noche del medio día de tarde acaba con Trevi y la Plaza de España (10 min andando) · plaza de espana ×313 — 2027-04-09 · 2027-04-09 · 2027-04-10
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Terraza del Pincio ×311 — 2027-01-03 12:05 → 12:10 · 2027-01-05 12:05 → 12:10 · 2027-01-06 12:05 → 12:10
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Via del Babuino y Via Margutta ×311 — 2027-01-03 13:00 → 13:05 · 2027-01-05 13:00 → 13:05 · 2027-01-06 13:00 → 13:05
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Comida: Poldo e Gianna Osteria (o Edy), en el Tridente ×311 — 2027-01-03 14:05 → 14:15 · 2027-01-05 14:05 → 14:15 · 2027-01-06 14:05 → 14:15
+- D1 · hora · pool: Museos Capitolinos + cierre de Panteón · San Luigi dei Francesi (cierra a las 18:15) ×309 — 2027-01-03 17:20 → 18:50 · 2027-01-04 17:20 → 18:50 · 2027-01-06 17:20 → 18:50
+- D1 · hora · pool: Museos Capitolinos + cierre de Panteón · Panteón ×309 — 2027-01-03 17:55 → 17:50 · 2027-01-04 17:55 → 17:50 · 2027-01-06 17:55 → 17:50
+- D1 · hora · pool: Museos Capitolinos + cierre de Panteón · Piazza Navona ×309 — 2027-01-03 18:50 → 19:25 · 2027-01-04 18:50 → 19:25 · 2027-01-06 18:50 → 19:25
+- D1-corto · falta · atardecer · Pasea y piérdete por el Centro Histórico (colchón) ×308 — 2027-02-13 · 2027-02-13 · 2027-02-13
+- D1 · hora · cierre de Panteón · Campo de' Fiori ×306 — 2027-04-10 19:40 → 19:45 · 2027-04-10 19:40 → 19:45 · 2027-04-10 19:40 → 19:45
+- D0-medio · hora · atardecer · Cena: L'Arcangelo (o Osteria dell'Angelo), en Prati ×304 — 2027-03-28 20:30 → 19:55 · 2027-03-28 20:30 → 19:55 · 2027-03-28 20:30 → 19:55
+- D0-medio · minutos · salida a las 15:00 · Comida: Borghiciana (o Dal Toscano), en el Borgo ×301 — 2027-01-02 60 → 45 · 2027-01-04 60 → 45 · 2027-01-05 60 → 45
+- D0-medio · hora · salida a las 15:00 · Via della Conciliazione ×301 — 2027-01-02 14:45 → 14:30 · 2027-01-04 14:45 → 14:30 · 2027-01-05 14:45 → 14:30
+- D0-medio · hora · salida a las 15:00 · Castillo de Sant'Angelo ×301 — 2027-01-02 15:00 → 14:45 · 2027-01-04 15:00 → 14:45 · 2027-01-05 15:00 → 14:45
+- D0-medio · hora · salida a las 15:00 · Puente Sant'Angelo ×301 — 2027-01-02 15:10 → 14:50 · 2027-01-04 15:10 → 14:50 · 2027-01-05 15:10 → 14:50
+- D1 · hora · pool: Termas de Caracalla + cierre de Panteón · San Luigi dei Francesi (cierra a las 18:15) ×298 — 2027-01-03 17:20 → 18:45 · 2027-01-06 17:20 → 18:45 · 2027-01-07 17:20 → 18:45
+- D1 · hora · pool: Termas de Caracalla + cierre de Panteón · Panteón ×298 — 2027-01-03 17:55 → 17:45 · 2027-01-06 17:55 → 17:45 · 2027-01-07 17:55 → 17:45
+- D1 · hora · pool: Termas de Caracalla + cierre de Panteón · Piazza Navona ×298 — 2027-01-03 18:50 → 19:20 · 2027-01-06 18:50 → 19:20 · 2027-01-07 18:50 → 19:20
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×296 — 2027-01-02 19:45 → 20:30 · 2027-01-03 19:45 → 20:30 · 2027-01-04 19:45 → 20:30
+- D6 · minutos · atardecer · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×290 — 2027-05-06 30 → 10 · 2027-05-06 30 → 10 · 2027-05-06 30 → 10
+- D1 · falta · Trevi ya salió en el viaje: la nocturna de la tarde D es el Coliseo iluminado · Fontana de Trevi iluminada ×286 — 2027-04-11 · 2027-04-11 · 2027-04-11
+- D1 · sobra · Trevi ya salió en el viaje: la nocturna de la tarde D es el Coliseo iluminado · coliseo ×286 — 2027-04-11 · 2027-04-11 · 2027-04-11
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Terraza del Pincio, al atardecer ×282 — 2027-01-01 16:15 → 16:25 · 2027-01-02 16:15 → 16:25 · 2027-01-03 16:15 → 16:25
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Via del Babuino y Via Margutta ×280 — 2027-01-24 15:30 → 15:10 · 2027-01-25 15:30 → 15:10 · 2027-01-26 15:30 → 15:10
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Piazza del Popolo ×280 — 2027-01-24 15:55 → 15:40 · 2027-01-25 15:55 → 15:40 · 2027-01-26 15:55 → 15:40
+- D0-medio · hora · atardecer · Pasea y piérdete por Prati (colchón) ×274 — 2027-01-01 17:45 → 17:40 · 2027-01-01 17:45 → 17:40 · 2027-01-01 17:45 → 17:40
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Santa Maria del Popolo (los Caravaggio) ×268 — 2027-01-25 16:25 → 16:10 · 2027-01-26 16:25 → 16:10 · 2027-01-27 16:25 → 16:10
+- DT-medio · hora · atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×265 — 2027-01-01 18:25 → 18:30 · 2027-01-01 18:25 → 18:30 · 2027-01-01 18:25 → 18:30
+- D2 · minutos · pool: Cúpula de San Pedro · Comida: Borghiciana (o Dal Toscano), en el Borgo ×261 — 2027-02-15 60 → 45 · 2027-02-13 60 → 45 · 2027-02-15 60 → 45
+- D1-FT · hora · atardecer · La Passeggiata del Gianicolo (colchón) ×247 — 2027-05-06 19:45 → 19:30 · 2027-05-06 19:45 → 19:30 · 2027-05-07 19:45 → 19:30
+- D0-medio · minutos · atardecer · Pasea y piérdete por Borgo Pio ×245 — 2027-01-01 25 → 20 · 2027-01-01 25 → 20 · 2027-01-01 25 → 20
+- D0-medio · hora · atardecer · Via della Conciliazione ×245 — 2027-01-01 16:10 → 16:05 · 2027-01-01 16:10 → 16:05 · 2027-01-01 16:10 → 16:05
+- D0-medio · hora · atardecer · Castillo de Sant'Angelo ×245 — 2027-01-01 16:40 → 16:35 · 2027-01-01 16:40 → 16:35 · 2027-01-01 16:40 → 16:35
+- D1-corto · hora · atardecer · Ponte Sisto, al atardecer ×244 — 2027-02-13 18:15 → 17:55 · 2027-02-13 18:15 → 17:55 · 2027-02-14 18:15 → 17:55
+- D1-corto · hora · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×244 — 2027-02-13 18:45 → 18:25 · 2027-02-13 18:45 → 18:25 · 2027-02-14 18:45 → 18:25
+- D1-corto · hora · atardecer · Fontana de Trevi iluminada ×240 — 2027-02-13 22:05 → 21:45 · 2027-02-13 22:05 → 21:45 · 2027-02-14 22:05 → 21:45
+- D1-corto · hora · atardecer · Plaza de España de noche ×240 — 2027-02-13 22:45 → 22:25 · 2027-02-13 22:45 → 22:25 · 2027-02-14 22:45 → 22:25
+- D1-corto · minutos · atardecer · Pasea y piérdete por Trastevere ×240 — 2027-04-10 45 → 35 · 2027-04-10 45 → 35 · 2027-04-11 45 → 35
+- D1-corto · hora · atardecer · San Pietro in Montorio y el Tempietto ×240 — 2027-04-10 19:10 → 18:50 · 2027-04-10 19:10 → 18:50 · 2027-04-11 19:10 → 18:50
+- D1-corto · hora · atardecer · Fontana dell'Acqua Paola ×240 — 2027-04-10 19:30 → 19:10 · 2027-04-10 19:30 → 19:10 · 2027-04-11 19:30 → 19:10
+- D1 · hora · cierre de Panteón · Ponte Sisto, al atardecer ×224 — 2027-04-10 20:15 → 20:25 · 2027-04-10 20:15 → 20:25 · 2027-04-10 20:15 → 20:25
+- D1 · hora · cierre de Panteón · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×224 — 2027-04-10 21:00 → 21:15 · 2027-04-10 21:00 → 21:15 · 2027-04-10 21:00 → 21:15
+- D1-FT · falta · hora límite de la noche · Plaza de España de noche ×221 — 2027-01-01 · 2027-01-01 · 2027-01-03
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Piazza Venezia ×220 — 2027-01-02 12:40 → 12:50 · 2027-01-03 12:40 → 12:50 · 2027-01-04 12:40 → 12:50
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Fuente de las Tortugas ×220 — 2027-01-02 14:55 → 15:50 · 2027-01-03 14:55 → 15:50 · 2027-01-04 14:55 → 15:50
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Largo di Torre Argentina ×220 — 2027-01-02 15:05 → 16:00 · 2027-01-03 15:05 → 16:00 · 2027-01-04 15:05 → 16:00
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Iglesia del Gesù ×220 — 2027-01-02 15:15 → 16:10 · 2027-01-03 15:15 → 16:10 · 2027-01-04 15:15 → 16:10
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Elefantino de Bernini ×220 — 2027-01-02 15:30 → 16:20 · 2027-01-03 15:30 → 16:20 · 2027-01-04 15:30 → 16:20
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Santa Maria sopra Minerva ×220 — 2027-01-02 15:35 → 16:25 · 2027-01-03 15:35 → 16:25 · 2027-01-04 15:35 → 16:25
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Piazza Navona (colchón) ×220 — 2027-01-03 18:45 → 19:00 · 2027-01-03 18:45 → 19:00 · 2027-01-04 18:45 → 19:00
+- D1 · hora · pool: Museos Capitolinos · Cena: Armando al Pantheon (o Da Baffetto) ×218 — 2027-01-02 20:00 → 20:30 · 2027-01-03 20:00 → 20:30 · 2027-01-04 20:00 → 20:30
+- D1 · hora · pool: Museos Capitolinos · Fontana de Trevi iluminada ×218 — 2027-01-02 21:50 → 22:20 · 2027-01-03 21:50 → 22:20 · 2027-01-04 21:50 → 22:20
+- D1 · hora · pool: Termas de Caracalla · Cena: Armando al Pantheon (o Da Baffetto) ×212 — 2027-01-02 20:00 → 20:25 · 2027-01-03 20:00 → 20:25 · 2027-01-05 20:00 → 20:25
+- D1 · hora · pool: Termas de Caracalla · Fontana de Trevi iluminada ×212 — 2027-01-02 21:50 → 22:15 · 2027-01-03 21:50 → 22:15 · 2027-01-05 21:50 → 22:15
+- D5 · minutos · atardecer · Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón) ×206 — 2027-01-23 70 → 65 · 2027-01-23 70 → 65 · 2027-01-23 70 → 65
+- D5 · falta · atardecer · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón) ×205 — 2027-09-23 · 2027-09-23 · 2027-09-23
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Cena: Da Enzo al 29 (o Tonnarello) ×203 — 2027-01-01 20:15 → 20:35 · 2027-01-03 20:15 → 20:35 · 2027-01-03 20:15 → 20:35
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Fontana de Trevi iluminada ×202 — 2027-01-01 22:20 → 22:35 · 2027-01-03 22:20 → 22:35 · 2027-01-03 22:20 → 22:35
+- D1 · minutos · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×192 — 2027-03-28 60 → 45 · 2027-03-28 60 → 45 · 2027-03-29 60 → 45
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Barrio Judío ×192 — 2027-03-28 15:00 → 15:05 · 2027-03-28 15:00 → 15:05 · 2027-03-29 15:00 → 15:05
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Fuente de las Tortugas ×192 — 2027-03-28 15:35 → 15:40 · 2027-03-28 15:35 → 15:40 · 2027-03-29 15:35 → 15:40
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Largo di Torre Argentina ×192 — 2027-03-28 15:45 → 15:50 · 2027-03-28 15:45 → 15:50 · 2027-03-29 15:45 → 15:50
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Iglesia del Gesù ×192 — 2027-03-28 16:05 → 16:10 · 2027-03-28 16:05 → 16:10 · 2027-03-29 16:05 → 16:10
+- D2 · hora · pool: Cúpula de San Pedro + atardecer · San Pietro in Montorio y el Tempietto ×191 — 2027-03-30 18:25 → 18:10 · 2027-03-30 18:25 → 18:10 · 2027-04-01 18:25 → 18:10
+- D2 · hora · pool: Cúpula de San Pedro + atardecer · Fontana dell'Acqua Paola ×191 — 2027-03-30 18:45 → 18:30 · 2027-03-30 18:45 → 18:30 · 2027-04-01 18:45 → 18:30
+- D6 · falta · atardecer · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×191 — 2027-04-10 · 2027-04-10 · 2027-04-10
+- D2 · hora · pool: Castillo de Sant'Angelo + atardecer · San Pietro in Montorio y el Tempietto ×190 — 2027-03-30 18:25 → 18:05 · 2027-03-30 18:25 → 18:05 · 2027-04-01 18:25 → 18:05
+- D2 · hora · pool: Castillo de Sant'Angelo + atardecer · Fontana dell'Acqua Paola ×190 — 2027-03-30 18:45 → 18:25 · 2027-03-30 18:45 → 18:25 · 2027-04-01 18:45 → 18:25
+- D1-FT · hora · pool: Museos Capitolinos + atardecer · Mirador del Janículo, al atardecer ×189 — 2027-03-29 19:20 → 19:00 · 2027-03-29 19:20 → 19:00 · 2027-03-29 19:20 → 19:00
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×185 — 2027-03-28 18:10 → 18:00 · 2027-03-29 18:10 → 18:00 · 2027-03-30 18:10 → 18:00
+- DT-medio · minutos · atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×179 — 2027-01-01 40 → 35 · 2027-01-01 40 → 35 · 2027-01-01 40 → 35
+- D1-corto · falta · hora límite de la noche · Plaza de España de noche ×175 — 2027-01-02 · 2027-01-03 · 2027-01-04
+- D1-FT · hora · pool: Museos Capitolinos · Mirador del Janículo, al atardecer ×174 — 2027-01-01 17:35 → 18:25 · 2027-01-04 17:35 → 18:25 · 2027-01-03 17:35 → 18:25
+- D1-FT · hora · pool: Museos Capitolinos · Cena: Da Enzo al 29 (o Tonnarello) ×174 — 2027-01-01 19:45 → 20:30 · 2027-01-04 19:45 → 20:30 · 2027-01-03 19:45 → 20:30
+- D1-FT · minutos · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Comida: Giggetto al Portico d'Ottavia (o Nonna Betta) ×173 — 2027-01-01 60 → 45 · 2027-01-03 60 → 45 · 2027-01-03 60 → 45
+- D1-FT · minutos · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×173 — 2027-01-01 20 → 10 · 2027-01-03 20 → 10 · 2027-01-03 20 → 10
+- D2 · hora · pool: Castillo de Sant'Angelo · Pasea y piérdete por Trastevere iluminado (colchón) ×173 — 2027-01-02 18:20 → 19:05 · 2027-01-02 18:20 → 19:05 · 2027-01-05 18:20 → 19:05
+- D2 · minutos · pool: Castillo de Sant'Angelo · Pasea y piérdete por Trastevere iluminado (colchón) ×173 — 2027-01-02 80 → 40 · 2027-01-02 80 → 40 · 2027-01-05 80 → 40
+- D2 · hora · pool: Cúpula de San Pedro · Pasea y piérdete por Trastevere iluminado (colchón) ×173 — 2027-01-02 18:20 → 19:20 · 2027-01-04 18:20 → 19:20 · 2027-01-04 18:20 → 19:20
+- D2 · minutos · pool: Cúpula de San Pedro · Pasea y piérdete por Trastevere iluminado (colchón) ×173 — 2027-01-02 80 → 25 · 2027-01-04 80 → 25 · 2027-01-04 80 → 25
+- D1-FT · hora · pool: Museos Capitolinos · Fontana de Trevi iluminada ×173 — 2027-01-01 21:50 → 22:30 · 2027-01-04 21:50 → 22:30 · 2027-01-03 21:50 → 22:30
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×173 — 2027-09-11 19:50 → 19:55 · 2027-09-11 19:50 → 19:55 · 2027-09-11 19:50 → 19:55
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti: el rato que sobra va al colchón del Tridente + Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti · Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×173 — 2027-09-11 50 → 20 · 2027-09-11 50 → 20 · 2027-09-11 50 → 20
+- D1-corto · minutos · pool: Coliseo + pool: Coliseo: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×172 — 2027-01-02 35 → 10 · 2027-01-03 35 → 10 · 2027-01-04 35 → 10
+- D1-FT · minutos · pool: Museos Capitolinos · Pasea y piérdete por Trastevere iluminado (colchón) ×172 — 2027-01-01 20 → 10 · 2027-01-04 20 → 10 · 2027-01-03 20 → 10
+- D1-FT · hora · pool: Museos Capitolinos · San Pietro in Montorio y el Tempietto ×170 — 2027-01-01 16:40 → 17:25 · 2027-01-04 16:40 → 17:25 · 2027-01-03 16:40 → 17:25
+- D1-FT · hora · pool: Museos Capitolinos · Fontana dell'Acqua Paola ×170 — 2027-01-01 17:00 → 17:45 · 2027-01-04 17:00 → 17:45 · 2027-01-03 17:00 → 17:45
+- D1-FT · hora · pool: Museos Capitolinos · Pasea y piérdete por Trastevere iluminado (colchón) ×170 — 2027-01-01 19:05 → 20:00 · 2027-01-04 19:05 → 20:00 · 2027-01-03 19:05 → 20:00
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Terraza del Pincio, al atardecer ×163 — 2027-03-28 18:45 → 19:05 · 2027-03-30 18:45 → 19:10 · 2027-03-31 18:45 → 19:10
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×162 — 2027-03-28 19:50 → 20:00 · 2027-03-28 19:50 → 20:00 · 2027-03-28 19:50 → 20:00
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti: el rato que sobra va al colchón del Tridente + Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) ×162 — 2027-03-28 50 → 15 · 2027-03-28 50 → 15 · 2027-03-28 50 → 15
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×160 — 2027-03-28 21:00 → 21:15 · 2027-03-30 21:00 → 21:20 · 2027-03-31 21:00 → 21:20
+- DT-medio · minutos · atardecer · Pasea y piérdete por los Jardines del Pincio (colchón) ×156 — 2027-02-13 45 → 15 · 2027-02-14 45 → 15 · 2027-02-15 45 → 20
+- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×154 — 2027-03-28 75 → 40 · 2027-03-29 75 → 40 · 2027-03-30 75 → 45
+- D1 · hora · atardecer · Fontana de Trevi iluminada ×154 — 2027-06-07 23:05 → 23:15 · 2027-06-08 23:05 → 23:15 · 2027-06-07 23:05 → 23:15
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Santa Maria in Trastevere ×152 — 2027-01-02 19:00 → 20:00 · 2027-01-03 19:00 → 20:00 · 2027-01-04 19:00 → 20:00
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×151 — 2027-01-02 20:15 → 20:20 · 2027-01-03 20:15 → 20:20 · 2027-01-05 20:15 → 20:20
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Terraza del Pincio, al atardecer ×148 — 2027-01-02 18:05 → 18:10 · 2027-01-03 18:05 → 18:10 · 2027-01-05 18:05 → 18:10
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×147 — 2027-01-01 18:25 → 18:30 · 2027-01-02 18:25 → 18:30 · 2027-01-03 18:25 → 18:30
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×147 — 2027-03-21 18:45 → 18:55 · 2027-03-21 18:45 → 18:55 · 2027-03-21 18:45 → 18:55
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti: el rato que sobra va al colchón del Tridente + Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×147 — 2027-03-21 75 → 50 · 2027-03-21 75 → 50 · 2027-03-21 75 → 50
+- D1 · cómo · cierre de Panteón · Panteón ×145 — 2027-01-02 dentro → fuera · 2027-01-02 dentro → fuera · 2027-01-05 dentro → fuera
+- D2 · hora · pool: Cúpula de San Pedro · Pasea y piérdete por Trastevere ×145 — 2027-04-12 17:30 → 18:10 · 2027-04-10 17:30 → 18:10 · 2027-04-12 17:30 → 18:10
+- D2 · hora · pool: Cúpula de San Pedro + atardecer · Cena: Tonnarello ×144 — 2027-04-12 21:00 → 21:10 · 2027-04-10 21:00 → 21:10 · 2027-04-12 21:00 → 21:10
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Piazza Venezia ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Fuente de las Tortugas ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Largo di Torre Argentina ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Iglesia del Gesù ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Elefantino de Bernini ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Santa Maria sopra Minerva ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Ponte Sisto ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Pasea y piérdete por Trastevere ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Santa Maria in Trastevere ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · San Pietro in Montorio y el Tempietto ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Fontana dell'Acqua Paola ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-corto · falta · pool: Coliseo + pool: Coliseo: horas por los márgenes · Mirador del Janículo, al atardecer ×144 — 2027-04-10 · 2027-04-11 · 2027-04-12
+- D1-FT · hora · pool: Museos Capitolinos · Pasea y piérdete por Trastevere ×144 — 2027-04-12 17:10 → 18:05 · 2027-04-12 17:10 → 18:05 · 2027-04-11 17:10 → 18:05
+- D1-FT · hora · pool: Museos Capitolinos + atardecer · San Pietro in Montorio y el Tempietto ×144 — 2027-04-12 18:35 → 19:10 · 2027-04-12 18:35 → 19:10 · 2027-04-11 18:35 → 19:10
+- D1-FT · hora · pool: Museos Capitolinos + atardecer · Fontana dell'Acqua Paola ×144 — 2027-04-12 19:10 → 19:45 · 2027-04-12 19:10 → 19:45 · 2027-04-11 19:10 → 19:45
+- D1-FT · falta · pool: Museos Capitolinos · La Passeggiata del Gianicolo (colchón) ×144 — 2027-04-12 · 2027-04-12 · 2027-04-11
+- D1-FT · hora · pool: Museos Capitolinos + atardecer · Cena: Da Enzo al 29 (o Tonnarello) ×144 — 2027-04-12 21:15 → 21:45 · 2027-04-12 21:15 → 21:45 · 2027-04-11 21:15 → 21:45
+- D1-FT · hora · pool: Museos Capitolinos + atardecer · Fontana de Trevi iluminada ×144 — 2027-04-12 23:20 → 23:45 · 2027-04-12 23:20 → 23:45 · 2027-04-11 23:20 → 23:45
+- D1 · hora · pool: Museos Capitolinos · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×144 — 2027-04-10 21:00 → 21:50 · 2027-04-11 21:00 → 21:50 · 2027-04-12 21:00 → 21:50
+- D7 · minutos · atardecer · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×143 — 2027-03-12 20 → 10 · 2027-03-13 20 → 10 · 2027-03-15 20 → 10
+- D2 · hora · pool: Castillo de Sant'Angelo · Pasea y piérdete por Trastevere ×143 — 2027-04-10 17:30 → 18:10 · 2027-04-10 17:30 → 18:10 · 2027-04-13 17:30 → 18:10
+- D1 · minutos · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×143 — 2027-04-11 60 → 45 · 2027-04-11 60 → 45 · 2027-04-12 60 → 45
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Piazza Navona ×143 — 2027-04-11 18:50 → 19:00 · 2027-04-11 18:50 → 19:00 · 2027-04-12 18:50 → 19:00
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Campo de' Fiori ×143 — 2027-04-11 19:40 → 19:50 · 2027-04-11 19:40 → 19:50 · 2027-04-12 19:40 → 19:50
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Ponte Sisto, al atardecer ×143 — 2027-04-11 20:15 → 20:30 · 2027-04-11 20:15 → 20:30 · 2027-04-12 20:15 → 20:30
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×143 — 2027-04-11 21:00 → 21:20 · 2027-04-11 21:00 → 21:20 · 2027-04-12 21:00 → 21:20
+- D1 · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Fontana de Trevi iluminada ×143 — 2027-04-11 23:05 → 23:25 · 2027-04-11 23:05 → 23:25 · 2027-04-12 23:05 → 23:25
+- D1 · minutos · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×143 — 2027-04-11 60 → 45 · 2027-04-11 60 → 45 · 2027-04-12 60 → 45
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · Campo de' Fiori ×143 — 2027-04-11 19:40 → 20:00 · 2027-04-11 19:40 → 20:00 · 2027-04-12 19:40 → 20:00
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · Ponte Sisto, al atardecer ×143 — 2027-04-11 20:15 → 20:40 · 2027-04-11 20:15 → 20:40 · 2027-04-12 20:15 → 20:40
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×143 — 2027-04-11 21:00 → 21:30 · 2027-04-11 21:00 → 21:30 · 2027-04-12 21:00 → 21:30
+- D1 · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + cierre de Iglesia de San Luigi dei Francesi · Fontana de Trevi iluminada ×143 — 2027-04-11 23:05 → 23:35 · 2027-04-11 23:05 → 23:35 · 2027-04-12 23:05 → 23:35
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Coliseo iluminado ×142 — 2027-01-02 22:15 → 22:20 · 2027-01-03 22:15 → 22:20 · 2027-01-05 22:15 → 22:20
+- D2 · hora · pool: Castillo de Sant'Angelo + atardecer · Cena: Tonnarello ×142 — 2027-04-10 21:00 → 21:10 · 2027-04-10 21:00 → 21:10 · 2027-04-13 21:00 → 21:10
+- D1 · hora · pool: Termas de Caracalla · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×142 — 2027-04-10 21:00 → 21:45 · 2027-04-11 21:00 → 21:45 · 2027-04-13 21:00 → 21:45
+- D1 · hora · pool: Parque de Villa Borghese: horas por los márgenes · Terraza del Pincio, al atardecer ×140 — 2027-03-28 19:30 → 19:35 · 2027-03-28 19:30 → 19:35 · 2027-03-29 19:30 → 19:35
+- D1 · hora · pool: Parque de Villa Borghese: horas por los márgenes · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×140 — 2027-03-28 20:15 → 20:20 · 2027-03-28 20:15 → 20:20 · 2027-03-29 20:15 → 20:20
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Fontana de Trevi iluminada ×140 — 2027-03-28 22:10 → 22:15 · 2027-03-28 22:10 → 22:15 · 2027-03-29 22:10 → 22:15
+- DT-medio · hora · atardecer · Coliseo iluminado (de mayo a septiembre) ×139 — 2027-03-28 22:50 → 22:35 · 2027-03-28 22:50 → 22:30 · 2027-03-28 22:50 → 22:35
+- D4 · minutos · cierre de Ara Pacis · Ara Pacis (última entrada 18:30) ×139 — 2027-05-01 45 → 10 · 2027-05-01 45 → 10 · 2027-05-01 45 → 10
+- D4 · cómo · cierre de Ara Pacis · Ara Pacis (última entrada 18:30) ×139 — 2027-05-01 dentro → fuera · 2027-05-01 dentro → fuera · 2027-05-01 dentro → fuera
+- DT-medio · hora · atardecer · Santa Maria del Popolo (los Caravaggio) ×136 — 2027-01-01 17:05 → 17:10 · 2027-01-01 17:05 → 17:10 · 2027-01-01 17:05 → 17:10
+- DT-medio · hora · atardecer · Piazza del Popolo ×136 — 2027-01-01 17:40 → 17:45 · 2027-01-01 17:40 → 17:45 · 2027-01-01 17:40 → 17:45
+- DT-medio · hora · atardecer · Via del Babuino y Via Margutta ×136 — 2027-01-01 18:05 → 18:10 · 2027-01-01 18:05 → 18:10 · 2027-01-01 18:05 → 18:10
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Fontana de Trevi iluminada ×134 — 2027-01-02 21:50 → 22:30 · 2027-01-03 21:50 → 22:30 · 2027-01-04 21:50 → 22:30
+- D1 · sobra · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · foro romano desde el campidoglio ×130 — 2027-04-12 · 2027-04-13 · 2027-04-13
+- D1 · minutos · cierre de Panteón · Panteón ×128 — 2027-01-02 40 → 15 · 2027-01-02 40 → 15 · 2027-01-05 40 → 15
+- DT-medio · sobra · atardecer · pasea y pierdete por los jardines del pincio ×127 — 2027-01-01 · 2027-01-02 · 2027-01-03
+- D7 · hora · atardecer · El Coliseo desde el Colle Oppio, al atardecer ×127 — 2027-04-05 19:10 → 19:15 · 2027-04-06 19:10 → 19:15 · 2027-04-08 19:10 → 19:20
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Plaza de España ×127 — 2027-04-10 20:25 → 20:55 · 2027-04-11 20:25 → 20:55 · 2027-04-13 20:25 → 21:00
+- D7 · hora · atardecer · Cena: Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti ×121 — 2027-04-05 20:00 → 20:15 · 2027-04-06 20:00 → 20:15 · 2027-04-08 20:00 → 20:20
+- D1 · hora · pool: Museos Capitolinos + cierre de Panteón · Campo de' Fiori ×121 — 2027-04-11 19:40 → 20:15 · 2027-04-12 19:40 → 20:15 · 2027-04-13 19:40 → 20:15
+- D1 · hora · pool: Museos Capitolinos + cierre de Panteón · Ponte Sisto, al atardecer ×121 — 2027-04-11 20:15 → 20:55 · 2027-04-12 20:15 → 20:55 · 2027-04-13 20:15 → 20:55
+- D1 · hora · pool: Termas de Caracalla + cierre de Panteón · Campo de' Fiori ×119 — 2027-04-11 19:40 → 20:10 · 2027-04-13 19:40 → 20:10 · 2027-04-13 19:40 → 20:10
+- D1 · hora · pool: Termas de Caracalla + cierre de Panteón · Ponte Sisto, al atardecer ×119 — 2027-04-11 20:15 → 20:50 · 2027-04-13 20:15 → 20:50 · 2027-04-13 20:15 → 20:50
+- D6 · hora · Giggetto al Portico d'Ottavia abre a las 19:30: la cena se retrasa 30 min · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×108 — 2027-01-05 19:00 → 19:30 · 2027-01-05 19:00 → 19:30 · 2027-01-05 19:00 → 19:30
+- D6 · hora · Giggetto al Portico d'Ottavia abre a las 19:30: la cena se retrasa 30 min · Panteón de noche ×106 — 2027-01-05 20:55 → 21:20 · 2027-01-05 20:55 → 21:20 · 2027-01-05 20:55 → 21:20
+- D4 · minutos · por dentro una sola vez en el viaje: ya va por dentro otro día · Trinità dei Monti y su mirador sobre la Plaza de España (ya iluminada) ×105 — 2027-01-03 15 → 10 · 2027-01-05 15 → 10 · 2027-01-06 15 → 10
+- D4 · cómo · por dentro una sola vez en el viaje: ya va por dentro otro día · Trinità dei Monti y su mirador sobre la Plaza de España (ya iluminada) ×105 — 2027-01-03 dentro → fuera · 2027-01-05 dentro → fuera · 2027-01-06 dentro → fuera
+- D1-FT · minutos · pool: Ojo de la Cerradura del Aventino: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×105 — 2027-01-01 25 → 20 · 2027-01-03 25 → 20 · 2027-01-03 25 → 20
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Ponte Sisto, al atardecer ×104 — 2027-01-02 17:50 → 18:55 · 2027-01-03 17:50 → 18:55 · 2027-01-04 17:50 → 18:55
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×104 — 2027-01-02 18:20 → 19:25 · 2027-01-03 18:20 → 19:25 · 2027-01-04 18:20 → 19:25
+- D2 · hora · pool: Castillo de Sant'Angelo · Isla Tiberina ×104 — 2027-01-02 17:05 → 17:45 · 2027-01-02 17:05 → 17:45 · 2027-01-05 17:05 → 17:45
+- D2 · hora · pool: Cúpula de San Pedro · Isla Tiberina ×103 — 2027-01-02 17:05 → 18:00 · 2027-01-04 17:05 → 18:00 · 2027-01-04 17:05 → 18:00
+- D0-medio · hora · atardecer · Piazza Navona de noche ×102 — 2027-03-28 22:30 → 21:50 · 2027-03-28 22:30 → 21:50 · 2027-03-28 22:30 → 21:50
+- D2 · falta · Piazza Navona (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · Piazza Navona de noche ×98 — 2027-01-04 · 2027-01-04 · 2027-01-05
+- D2 · sobra · Piazza Navona (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · trastevere de noche ×98 — 2027-01-04 · 2027-01-04 · 2027-01-05
+- DT-medio · hora · pool: Galería Borghese + atardecer · Piazza del Popolo ×95 — 2027-03-28 19:35 → 19:50 · 2027-03-30 19:35 → 19:55 · 2027-03-31 19:35 → 19:55
+- D1 · hora · pool: Parque de Villa Borghese: horas por los márgenes · Plaza de España de noche ×91 — 2027-04-11 22:50 → 22:55 · 2027-04-11 22:50 → 22:55 · 2027-04-12 22:50 → 22:55
+- D6 · hora · atardecer · Terraza del Altar de la Patria, al atardecer (ascensor panorámico) ×89 — 2027-01-19 16:40 → 16:45 · 2027-01-19 16:40 → 16:45 · 2027-01-19 16:40 → 16:45
+- D2 · hora · pool: Castillo de Sant'Angelo + atardecer · Trastevere de noche ×88 — 2027-03-30 22:10 → 22:00 · 2027-03-30 22:10 → 22:00 · 2027-04-01 22:10 → 22:00
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Trinità dei Monti y su mirador sobre la Plaza de España (subiendo la escalinata) ×85 — 2027-01-01 15:35 → 15:20 · 2027-01-02 15:35 → 15:20 · 2027-01-03 15:35 → 15:20
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Santa Maria del Popolo (los Caravaggio) ×85 — 2027-01-01 17:05 → 17:10 · 2027-01-02 17:05 → 17:10 · 2027-01-03 17:05 → 17:10
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Piazza del Popolo ×85 — 2027-01-01 17:40 → 17:45 · 2027-01-02 17:40 → 17:45 · 2027-01-03 17:40 → 17:45
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Via del Babuino y Via Margutta ×85 — 2027-01-01 18:05 → 18:10 · 2027-01-02 18:05 → 18:10 · 2027-01-03 18:05 → 18:10
+- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×85 — 2027-01-01 55 → 35 · 2027-01-02 55 → 35 · 2027-01-03 55 → 35
+- D6 · hora · atardecer · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×85 — 2027-01-19 17:45 → 17:55 · 2027-01-19 17:45 → 17:55 · 2027-01-19 17:45 → 17:55
+- DT-medio · hora · pool: Galería Borghese + atardecer · Via Margutta y Via del Babuino ×81 — 2027-03-28 20:00 → 20:10 · 2027-03-30 20:00 → 20:15 · 2027-03-31 20:00 → 20:15
+- DT-medio · falta · atardecer · Via Margutta y Via del Babuino ×79 — 2027-05-11 · 2027-05-12 · 2027-05-13
+- D5 · falta · Foro Romano desde el Campidoglio (noche) ya salió de noche en el viaje: la nocturna pasa a Panteón (noche) · El Foro Romano desde el Campidoglio, de noche ×77 — 2027-04-14 · 2027-04-16 · 2027-04-16
+- D5 · sobra · Foro Romano desde el Campidoglio (noche) ya salió de noche en el viaje: la nocturna pasa a Panteón (noche) · panteon ×77 — 2027-04-14 · 2027-04-16 · 2027-04-16
+- D2 · hora · pool: Cúpula de San Pedro · San Pietro in Montorio y el Tempietto ×71 — 2027-02-15 17:35 → 18:05 · 2027-02-13 17:35 → 18:05 · 2027-02-15 17:35 → 18:05
+- D2 · hora · pool: Cúpula de San Pedro · Fontana dell'Acqua Paola ×71 — 2027-02-15 17:55 → 18:25 · 2027-02-13 17:55 → 18:25 · 2027-02-15 17:55 → 18:25
+- D2 · hora · pool: Cúpula de San Pedro · Mirador del Janículo, al atardecer ×71 — 2027-02-15 18:30 → 19:05 · 2027-02-13 18:30 → 19:05 · 2027-02-15 18:30 → 19:05
+- D2 · hora · pool: Cúpula de San Pedro · Cena: Tonnarello ×71 — 2027-02-15 20:15 → 20:35 · 2027-02-13 20:15 → 20:35 · 2027-02-15 20:15 → 20:35
+- D2 · hora · pool: Cúpula de San Pedro · Trastevere de noche ×71 — 2027-02-15 21:55 → 22:20 · 2027-02-13 21:55 → 22:20 · 2027-02-15 21:55 → 22:20
+- D2 · hora · pool: Castillo de Sant'Angelo · San Pietro in Montorio y el Tempietto ×70 — 2027-02-13 17:35 → 18:05 · 2027-02-13 17:35 → 18:05 · 2027-02-16 17:35 → 18:05
+- D2 · hora · pool: Castillo de Sant'Angelo · Fontana dell'Acqua Paola ×70 — 2027-02-13 17:55 → 18:25 · 2027-02-13 17:55 → 18:25 · 2027-02-16 17:55 → 18:25
+- D2 · hora · pool: Castillo de Sant'Angelo · Mirador del Janículo, al atardecer ×70 — 2027-02-13 18:30 → 19:05 · 2027-02-13 18:30 → 19:05 · 2027-02-16 18:30 → 19:05
+- D2 · hora · pool: Castillo de Sant'Angelo · Cena: Tonnarello ×70 — 2027-02-13 20:15 → 20:35 · 2027-02-13 20:15 → 20:35 · 2027-02-16 20:15 → 20:35
+- D2 · hora · pool: Castillo de Sant'Angelo · Trastevere de noche ×70 — 2027-02-13 21:55 → 22:20 · 2027-02-13 21:55 → 22:20 · 2027-02-16 21:55 → 22:20
+- DT-medio · minutos · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×69 — 2027-03-28 60 → 75 · 2027-03-30 60 → 80 · 2027-03-31 60 → 80
+- D5 · hora · cierre de Basílica de San Clemente · Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00) ×68 — 2027-01-01 11:30 → 12:00 · 2027-01-01 11:30 → 12:00 · 2027-06-29 11:30 → 12:00
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes + atardecer · Ponte Sisto, al atardecer ×68 — 2027-02-13 18:15 → 18:55 · 2027-02-14 18:15 → 18:55 · 2027-02-15 18:15 → 18:55
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes + atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×68 — 2027-02-13 18:45 → 19:25 · 2027-02-14 18:45 → 19:25 · 2027-02-15 18:45 → 19:25
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes + atardecer · Santa Maria in Trastevere ×68 — 2027-02-13 19:20 → 19:35 · 2027-02-14 19:20 → 19:35 · 2027-02-15 19:20 → 19:35
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes + atardecer · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×68 — 2027-02-13 20:00 → 20:40 · 2027-02-14 20:00 → 20:40 · 2027-02-15 20:00 → 20:40
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes + atardecer · Fontana de Trevi iluminada ×68 — 2027-02-13 22:05 → 22:40 · 2027-02-14 22:05 → 22:40 · 2027-02-15 22:05 → 22:40
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por los Jardines del Pincio (colchón) ×68 — 2027-02-13 17:00 → 16:45 · 2027-02-14 17:00 → 16:45 · 2027-02-15 17:00 → 16:45
+- DT-medio · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Piazza del Popolo ×68 — 2027-02-13 15:55 → 16:00 · 2027-02-14 15:55 → 16:00 · 2027-02-15 15:55 → 16:00
+- DT-medio · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Santa Maria del Popolo (los Caravaggio) ×68 — 2027-02-13 16:25 → 16:30 · 2027-02-14 16:25 → 16:30 · 2027-02-15 16:25 → 16:30
+- DT-medio · hora · pool: Parque de Villa Borghese: horas por los márgenes · Parque de Villa Borghese ×68 — 2027-02-13 17:10 → 17:20 · 2027-02-14 17:10 → 17:20 · 2027-02-15 17:10 → 17:20
+- DT-medio · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Terraza del Pincio, al atardecer ×68 — 2027-02-13 18:15 → 18:30 · 2027-02-14 18:15 → 18:30 · 2027-02-15 18:15 → 18:30
+- DT-medio · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Trinità dei Monti y su mirador sobre la Plaza de España ×68 — 2027-02-13 19:05 → 19:25 · 2027-02-14 19:05 → 19:25 · 2027-02-15 19:05 → 19:25
+- DT-medio · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes + atardecer · Bajar la escalinata de la Plaza de España ×68 — 2027-02-13 19:20 → 19:40 · 2027-02-14 19:20 → 19:40 · 2027-02-15 19:20 → 19:40
+- D2 · hora · pool: Castillo de Sant'Angelo + atardecer · Mirador del Janículo, al atardecer ×66 — 2027-03-30 19:20 → 19:05 · 2027-03-30 19:20 → 19:05 · 2027-04-01 19:20 → 19:05
+- D2 · hora · pool: Cúpula de San Pedro + atardecer · Mirador del Janículo, al atardecer ×66 — 2027-03-30 19:20 → 19:10 · 2027-03-30 19:20 → 19:10 · 2027-04-01 19:20 → 19:10
+- D4 · minutos · por dentro una sola vez en el viaje: ya va por dentro otro día · Trinità dei Monti y su mirador, al atardecer ×65 — 2027-02-13 30 → 10 · 2027-02-14 30 → 10 · 2027-02-14 30 → 10
+- D4 · cómo · por dentro una sola vez en el viaje: ya va por dentro otro día · Trinità dei Monti y su mirador, al atardecer ×65 — 2027-02-13 dentro → fuera · 2027-02-14 dentro → fuera · 2027-02-14 dentro → fuera
+- D2 · falta · se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche · Piazza Navona de noche ×64 — 2027-03-29 · 2027-03-29 · 2027-03-29
+- D1 · hora · atardecer · Terraza del Pincio ×64 — 2027-04-27 19:35 → 19:40 · 2027-04-28 19:35 → 19:40 · 2027-04-28 19:35 → 19:40
+- DT-medio · falta · atardecer · Piazza del Popolo ×64 — 2027-05-20 · 2027-05-21 · 2027-05-22
+- D6 · hora · Giggetto al Portico d'Ottavia abre a las 19:30: la cena se retrasa 15 min · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×63 — 2027-02-16 19:15 → 19:30 · 2027-02-16 19:15 → 19:30 · 2027-02-16 19:15 → 19:30
+- D6 · hora · Giggetto al Portico d'Ottavia abre a las 19:30: la cena se retrasa 15 min · Panteón de noche ×63 — 2027-02-16 21:10 → 21:20 · 2027-02-16 21:10 → 21:20 · 2027-02-16 21:10 → 21:20
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Trinità dei Monti y su mirador sobre la Plaza de España ×62 — 2027-01-27 17:55 → 17:50 · 2027-01-28 17:55 → 17:50 · 2027-01-29 17:55 → 17:50
+- DT-medio · hora · verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las 15:30 · Galería Borghese ×62 — 2027-05-11 15:00 → 15:30 · 2027-05-12 15:00 → 15:30 · 2027-05-13 15:00 → 15:30
+- DT-medio · hora · pool: Galería Borghese + verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las 15:30 · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×62 — 2027-05-11 17:25 → 17:55 · 2027-05-12 17:25 → 17:55 · 2027-05-13 17:25 → 17:55
+- DT-medio · minutos · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer + verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las 15:30 · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×62 — 2027-05-11 60 → 95 · 2027-05-12 60 → 95 · 2027-05-13 60 → 95
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Bajar la escalinata de la Plaza de España ×61 — 2027-01-27 18:15 → 18:05 · 2027-01-28 18:15 → 18:05 · 2027-01-29 18:15 → 18:05
+- D2 · minutos · cierre de San Pietro in Montorio y Tempietto de Bramante · San Pietro in Montorio y el Tempietto ×61 — 2027-03-29 20 → 10 · 2027-03-29 20 → 10 · 2027-03-29 20 → 10
+- D2 · cómo · cierre de San Pietro in Montorio y Tempietto de Bramante · San Pietro in Montorio y el Tempietto ×61 — 2027-03-29 dentro → fuera · 2027-03-29 dentro → fuera · 2027-03-29 dentro → fuera
+- D6 · minutos · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Castillo de Sant'Angelo, hasta la terraza del ángel ×56 — 2027-01-04 90 → 15 · 2027-01-11 90 → 15 · 2027-01-18 90 → 15
+- D6 · cómo · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Castillo de Sant'Angelo, hasta la terraza del ángel ×56 — 2027-01-04 dentro → fuera · 2027-01-11 dentro → fuera · 2027-01-18 dentro → fuera
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Puente Sant'Angelo ×56 — 2027-01-04 11:30 → 11:50 · 2027-01-11 11:30 → 11:50 · 2027-01-18 11:30 → 11:50
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Via dei Coronari ×56 — 2027-01-04 11:40 → 12:05 · 2027-01-11 11:40 → 12:05 · 2027-01-18 11:40 → 12:05
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Piazza Navona ×56 — 2027-01-04 12:05 → 12:30 · 2027-01-11 12:05 → 12:30 · 2027-01-18 12:05 → 12:30
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Panteón ×56 — 2027-01-04 12:35 → 12:55 · 2027-01-11 12:35 → 12:55 · 2027-01-18 12:35 → 12:55
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Comida: Enoteca Corsi (o Giggetto al Portico d'Ottavia) ×56 — 2027-01-04 13:00 → 13:15 · 2027-01-11 13:00 → 13:15 · 2027-01-18 13:00 → 13:15
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Plaza del Campidoglio ×56 — 2027-01-04 14:20 → 14:35 · 2027-01-11 14:20 → 14:35 · 2027-01-18 14:20 → 14:35
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Piazza Venezia ×56 — 2027-01-04 16:20 → 16:35 · 2027-01-11 16:20 → 16:35 · 2027-01-18 16:20 → 16:35
+- D6 · sobra · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · pasea y pierdete por borgo pio ×56 — 2027-01-04 · 2027-01-11 · 2027-01-18
+- D1 · hora · pool: Termas de Caracalla · San Luigi dei Francesi (cierra a las 18:15) ×56 — 2027-01-02 17:20 → 17:50 · 2027-01-05 17:20 → 17:50 · 2027-01-05 17:20 → 17:50
+- D1 · hora · pool: Termas de Caracalla · Panteón ×56 — 2027-01-02 17:55 → 18:25 · 2027-01-05 17:55 → 18:25 · 2027-01-05 17:55 → 18:25
+- D1 · hora · pool: Termas de Caracalla · Piazza Navona ×56 — 2027-01-02 18:50 → 19:25 · 2027-01-05 18:50 → 19:25 · 2027-01-05 18:50 → 19:25
+- D6 · minutos · atardecer · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×55 — 2027-01-28 45 → 40 · 2027-01-28 45 → 40 · 2027-01-28 45 → 40
+- DT-medio · minutos · cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×54 — 2027-01-03 20 → 10 · 2027-01-10 20 → 10 · 2027-01-17 20 → 10
+- DT-medio · cómo · cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×54 — 2027-01-03 dentro → fuera · 2027-01-10 dentro → fuera · 2027-01-17 dentro → fuera
+- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España + atardecer · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×54 — 2027-01-27 60 → 45 · 2027-01-28 60 → 45 · 2027-01-29 60 → 45
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Museos Capitolinos, con la terraza sobre los Foros ×53 — 2027-01-04 14:45 → 15:00 · 2027-01-11 14:45 → 15:00 · 2027-01-18 14:45 → 15:00
+- D1 · hora · pool: Museos Capitolinos · San Luigi dei Francesi (cierra a las 18:15) ×53 — 2027-01-02 17:20 → 17:55 · 2027-01-05 17:20 → 17:55 · 2027-01-09 17:20 → 17:55
+- D1 · hora · pool: Museos Capitolinos · Panteón ×53 — 2027-01-02 17:55 → 18:30 · 2027-01-05 17:55 → 18:30 · 2027-01-09 17:55 → 18:30
+- D1 · hora · pool: Museos Capitolinos · Piazza Navona ×53 — 2027-01-02 18:50 → 19:30 · 2027-01-05 18:50 → 19:30 · 2027-01-09 18:50 → 19:30
+- D7 · falta · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 · Catacumbas de San Calixto (visita guiada; cierra el miércoles) ×53 — 2027-01-06 · 2027-01-13 · 2027-01-20
+- D7 · falta · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Villa Farnesina (los frescos de Rafael; abre de 9:00 a 14:00) ×53 — 2027-01-10 · 2027-01-17 · 2027-01-24
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Santa Maria in Trastevere ×53 — 2027-01-10 09:55 → 10:00 · 2027-01-17 09:55 → 10:00 · 2027-01-24 09:55 → 10:00
+- D7 · falta · cierre de Basílica de Santa Cecilia in Trastevere · Basílica de Santa Cecilia in Trastevere ×53 — 2027-01-10 · 2027-01-17 · 2027-01-24
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón) ×53 — 2027-01-10 11:15 → 11:25 · 2027-01-17 11:15 → 11:25 · 2027-01-24 11:15 → 11:25
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Comida: Da Enzo al 29 (o Tonnarello), en Trastevere ×53 — 2027-01-10 12:40 → 12:50 · 2027-01-17 12:40 → 12:50 · 2027-01-24 12:40 → 12:50
+- D2 · sobra · se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche · trastevere de noche ×53 — 2027-03-29 · 2027-03-29 · 2027-03-29
+- D6 · falta · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica) ×52 — 2027-01-06 · 2027-01-13 · 2027-01-20
+- D6 · falta · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Plaza de San Pedro ×52 — 2027-01-06 · 2027-01-13 · 2027-01-20
+- D6 · falta · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Via della Conciliazione ×52 — 2027-01-06 · 2027-01-13 · 2027-01-20
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Castillo de Sant'Angelo, hasta la terraza del ángel ×52 — 2027-01-06 09:55 → 09:00 · 2027-01-13 09:55 → 09:00 · 2027-01-20 09:55 → 09:00
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Via dei Coronari ×52 — 2027-01-06 11:40 → 11:45 · 2027-01-13 11:40 → 11:45 · 2027-01-20 11:40 → 11:45
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Piazza Navona ×52 — 2027-01-06 12:05 → 12:10 · 2027-01-13 12:05 → 12:10 · 2027-01-20 12:05 → 12:10
+- D7 · hora · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 · Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) ×52 — 2027-01-06 15:35 → 14:20 · 2027-01-13 15:35 → 14:20 · 2027-01-20 15:35 → 14:20
+- D7 · minutos · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón) ×52 — 2027-01-10 65 → 10 · 2027-01-17 65 → 10 · 2027-01-24 65 → 10
+- D7 · minutos · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Comida: Da Enzo al 29 (o Tonnarello), en Trastevere ×52 — 2027-01-10 60 → 45 · 2027-01-17 60 → 45 · 2027-01-24 60 → 45
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Catacumbas de San Calixto (visita guiada; cierra el miércoles) ×52 — 2027-01-10 14:20 → 14:30 · 2027-01-17 14:20 → 14:30 · 2027-01-24 14:20 → 14:30
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) ×52 — 2027-01-10 15:35 → 15:50 · 2027-01-17 15:35 → 15:50 · 2027-01-24 15:35 → 15:50
+- D1 · hora · pool: Parque de Villa Borghese: horas por los márgenes + atardecer · Terraza del Pincio, al atardecer ×52 — 2027-04-26 19:30 → 19:40 · 2027-04-28 19:30 → 19:40 · 2027-04-28 19:30 → 19:40
+- D1 · hora · pool: Parque de Villa Borghese: horas por los márgenes + atardecer · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×52 — 2027-04-26 20:15 → 20:25 · 2027-04-28 20:15 → 20:25 · 2027-04-28 20:15 → 20:25
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes + atardecer · Fontana de Trevi iluminada ×52 — 2027-04-26 22:10 → 22:20 · 2027-04-28 22:10 → 22:20 · 2027-04-28 22:10 → 22:20
+- D1 · hora · pool: Parque de Villa Borghese: horas por los márgenes + atardecer · Plaza de España de noche ×52 — 2027-04-26 22:50 → 23:00 · 2027-04-28 22:50 → 23:00 · 2027-04-28 22:50 → 23:00
+- D0-medio · hora · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control) ×51 — 2027-01-13 12:05 → 12:30 · 2027-01-20 12:05 → 12:30 · 2027-01-27 12:05 → 12:30
+- D2 · hora · pool: Cúpula de San Pedro + atardecer · Trastevere de noche ×51 — 2027-03-30 22:10 → 22:05 · 2027-03-30 22:10 → 22:05 · 2027-04-01 22:10 → 22:05
+- D1-FT · minutos · por dentro una sola vez en el viaje: ya va por dentro otro día · Altar de la Patria ×50 — 2027-01-18 30 → 15 · 2027-01-25 30 → 15 · 2027-02-01 30 → 15
+- D1-FT · cómo · por dentro una sola vez en el viaje: ya va por dentro otro día · Altar de la Patria ×50 — 2027-01-18 dentro → fuera · 2027-01-25 dentro → fuera · 2027-02-01 dentro → fuera
+- DT-medio · falta · atardecer · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×50 — 2027-09-23 · 2027-09-24 · 2027-09-25
+- D1-FT · minutos · pool: Basílica de San Juan de Letrán: horas por los márgenes · Comida: Giggetto al Portico d'Ottavia (o Nonna Betta) ×48 — 2027-03-28 60 → 45 · 2027-03-28 60 → 45 · 2027-03-29 60 → 45
+- D1-FT · minutos · pool: Basílica de San Juan de Letrán: horas por los márgenes · Pasea y piérdete por Trastevere iluminado (colchón) ×48 — 2027-03-28 20 → 10 · 2027-03-28 20 → 10 · 2027-03-29 20 → 10
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Ponte Sisto ×48 — 2027-03-28 17:40 → 18:40 · 2027-03-29 17:40 → 18:40 · 2027-03-30 17:40 → 18:40
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · San Pietro in Montorio y el Tempietto ×48 — 2027-03-28 18:15 → 19:05 · 2027-03-29 18:15 → 19:05 · 2027-03-30 18:15 → 19:05
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Fontana dell'Acqua Paola ×48 — 2027-03-28 18:35 → 19:25 · 2027-03-29 18:35 → 19:25 · 2027-03-30 18:35 → 19:25
+- D1-corto · hora · pool: Coliseo + pool: Coliseo: horas por los márgenes · Mirador del Janículo, al atardecer ×48 — 2027-03-28 19:10 → 20:05 · 2027-03-29 19:10 → 20:05 · 2027-03-30 19:10 → 20:05
+- DT-medio · falta · el Coliseo iluminado ya salió de noche en el viaje: la nocturna del medio día es Piazza Navona de noche · Coliseo iluminado (de mayo a septiembre) ×48 — 2027-03-28 · 2027-03-29 · 2027-03-30
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×44 — 2027-01-10 18:55 → 19:10 · 2027-01-17 18:55 → 19:10 · 2027-01-24 18:55 → 19:10
+- DT-medio · falta · hora límite de la noche · Coliseo iluminado ×43 — 2027-06-18 · 2027-06-18 · 2027-06-19
+- D2 · minutos · atardecer · Pasea y piérdete por Prati (colchón) ×42 — 2027-12-25 40 → 45 · 2027-12-25 40 → 45 · 2027-12-25 40 → 45
+- D2 · hora · atardecer · Puente Sant'Angelo, al atardecer ×42 — 2027-12-25 16:10 → 16:20 · 2027-12-25 16:10 → 16:20 · 2027-12-25 16:10 → 16:20
+- D2 · hora · atardecer · Pasea y piérdete por el centro iluminado ×42 — 2027-12-25 16:45 → 17:00 · 2027-12-25 16:45 → 17:00 · 2027-12-25 16:45 → 17:00
+- D2 · hora · atardecer · Panteón ×42 — 2027-12-25 18:20 → 18:35 · 2027-12-25 18:20 → 18:35 · 2027-12-25 18:20 → 18:35
+- D1 · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Plaza de España de noche ×40 — 2027-09-01 22:45 → 22:50 · 2027-09-01 22:45 → 22:50 · 2027-09-01 22:45 → 22:50
+- D1 · hora · atardecer + cierre de Panteón · Ponte Sisto, al atardecer ×39 — 2027-06-12 20:15 → 20:25 · 2027-06-12 20:15 → 20:25 · 2027-06-12 20:15 → 20:25
+- D1 · hora · atardecer + cierre de Panteón · Cena: Da Enzo al 29 (o Tonnarello), en Trastevere ×39 — 2027-06-12 21:00 → 21:15 · 2027-06-12 21:00 → 21:15 · 2027-06-12 21:00 → 21:15
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Santa Maria in Aracoeli y su escalinata ×37 — 2027-02-15 17:20 → 17:40 · 2027-02-22 17:20 → 17:40 · 2027-03-01 17:20 → 17:40
+- D1-FT · hora · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×37 — 2027-10-06 19:10 → 19:25 · 2027-10-06 19:10 → 19:25 · 2027-10-07 19:10 → 19:20
+- D2 · falta · noche especial: Fontana de Trevi (noche) · Piazza Navona de noche ×37 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D2 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×37 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino + atardecer · Mirador del Janículo, al atardecer ×36 — 2027-03-12 17:45 → 17:50 · 2027-03-13 17:45 → 17:50 · 2027-03-14 17:45 → 17:50
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino + atardecer · Santa Maria in Trastevere ×36 — 2027-03-12 18:45 → 18:50 · 2027-03-13 18:45 → 18:50 · 2027-03-14 18:45 → 18:50
+- D1-FT · hora · pool: Ojo de la Cerradura del Aventino + pool: Ojo de la Cerradura del Aventino: horas por los márgenes + atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×36 — 2027-03-12 19:15 → 19:25 · 2027-03-13 19:15 → 19:25 · 2027-03-14 19:15 → 19:25
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Terraza del Pincio, al atardecer ×35 — 2027-01-24 17:05 → 16:50 · 2027-01-25 17:05 → 16:50 · 2027-01-26 17:05 → 16:50
+- D5 · falta · hora límite de la noche · El Foro Romano desde el Campidoglio, de noche ×35 — 2027-04-08 · 2027-04-08 · 2027-04-08
+- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×34 — 2027-01-24 60 → 50 · 2027-01-25 60 → 50 · 2027-01-26 60 → 50
+- DT-medio · hora · pool: Galería Borghese: horas por los márgenes + atardecer · Plaza de España ×33 — 2027-03-28 20:25 → 20:40 · 2027-03-30 20:25 → 20:45 · 2027-03-31 20:25 → 20:45
+- D1 · hora · atardecer · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×33 — 2027-05-11 20:30 → 20:35 · 2027-05-12 20:30 → 20:35 · 2027-05-12 20:30 → 20:35
+- DT-medio · hora · Poldo e Gianna Osteria abre a las 19:30: la cena se retrasa 10 min · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×32 — 2027-01-03 19:20 → 19:30 · 2027-01-03 19:20 → 19:30 · 2027-01-03 19:20 → 19:30
+- D7 · hora · atardecer · Atardecer en la Vía Appia Antica ×31 — 2027-03-12 17:45 → 17:50 · 2027-03-13 17:45 → 17:50 · 2027-03-15 17:45 → 17:50
+- D7 · hora · atardecer · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×31 — 2027-03-12 18:55 → 19:00 · 2027-03-13 18:55 → 19:00 · 2027-03-15 18:55 → 19:00
+- D1 · hora · pool: Parque de Villa Borghese + pool: Parque de Villa Borghese: horas por los márgenes · Plaza de España de noche ×31 — 2027-09-01 22:50 → 22:55 · 2027-09-01 22:50 → 22:55 · 2027-09-02 22:50 → 22:55
+- D5 · falta · cierre de Basílica de San Clemente · Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00) ×31 — 2027-12-25 · 2027-12-25 · 2027-12-25
+- D6 · minutos · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Comida: Enoteca Corsi (o Giggetto al Portico d'Ottavia) ×30 — 2027-02-15 60 → 45 · 2027-02-22 60 → 45 · 2027-03-01 60 → 45
+- D3 · minutos · atardecer · Pasea y piérdete por Prati (colchón) ×30 — 2027-03-29 60 → 10 · 2027-03-29 60 → 10 · 2027-03-29 60 → 10
+- D1 · sobra · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a Panteón (noche) · panteon ×30 — 2027-04-12 · 2027-04-19 · 2027-04-26
+- D1 · hora · pool: Museos Capitolinos · Plaza de España de noche ×30 — 2027-09-01 22:30 → 23:00 · 2027-09-02 22:30 → 23:00 · 2027-09-03 22:30 → 23:00
+- D1 · hora · pool: Termas de Caracalla · Plaza de España de noche ×30 — 2027-09-01 22:30 → 22:55 · 2027-09-02 22:30 → 22:55 · 2027-09-03 22:30 → 22:55
+- D1 · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Fontana de Trevi iluminada ×29 — 2027-05-11 22:20 → 22:30 · 2027-05-12 22:20 → 22:30 · 2027-05-12 22:20 → 22:30
+- D4 · falta · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Galería Borghese ×29 — 2027-12-25 · 2027-12-25 · 2027-12-25
+- D0-medio · falta · atardecer · Pasea y piérdete por Prati (colchón) ×28 — 2027-09-23 · 2027-09-23 · 2027-09-24
+- D4 · falta · noche especial: Fontana de Trevi (noche) · Coliseo iluminado ×28 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D4 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×28 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- DT-medio · hora · cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×27 — 2027-01-24 16:25 → 16:30 · 2027-01-24 16:25 → 16:30 · 2027-01-24 16:25 → 16:30
+- D1-FT · minutos · atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×27 — 2027-03-17 30 → 25 · 2027-03-18 30 → 25 · 2027-03-19 30 → 25
+- D3 · falta · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control; se cruza la Plaza) ×27 — 2027-03-26 · 2027-03-26 · 2027-03-26
+- D7 · minutos · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×26 — 2027-01-10 20 → 10 · 2027-01-17 20 → 10 · 2027-01-24 20 → 10
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere + atardecer · El Coliseo desde el Colle Oppio, al atardecer ×26 — 2027-04-04 19:10 → 18:30 · 2027-04-11 19:10 → 18:30 · 2027-04-25 19:10 → 19:35
+- D6 · hora · atardecer · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) ×26 — 2027-10-07 18:05 → 18:15 · 2027-10-07 18:05 → 18:15 · 2027-10-07 18:05 → 18:15
+- D7 · minutos · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 + atardecer · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×25 — 2027-03-17 20 → 10 · 2027-03-24 20 → 10 · 2027-04-14 40 → 50
+- D7 · hora · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 + atardecer · El Coliseo desde el Colle Oppio, al atardecer ×25 — 2027-03-28 19:10 → 18:15 · 2027-04-14 19:10 → 19:25 · 2027-04-21 19:10 → 19:30
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere + atardecer · Cena: Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti ×25 — 2027-04-04 20:00 → 20:15 · 2027-04-25 20:00 → 20:30 · 2027-05-02 20:00 → 20:40
+- D2 · falta · la Plaza de España todavía no ha salido en el viaje: es la nocturna del Día del Vaticano · Piazza Navona de noche ×25 — 2027-05-01 · 2027-05-01 · 2027-05-01
+- D1 · falta · noche especial: Fontana de Trevi (noche) · Plaza de España de noche ×25 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D3 · falta · cierre de Museos Vaticanos y Capilla Sixtina · Museos Vaticanos y Capilla Sixtina ×25 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- DT-medio · hora · Poldo e Gianna Osteria abre a las 19:30: la cena se retrasa 10 min · Coliseo iluminado ×24 — 2027-01-03 21:20 → 21:30 · 2027-01-03 21:20 → 21:30 · 2027-01-03 21:20 → 21:30
+- D7 · minutos · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×24 — 2027-01-06 20 → 15 · 2027-01-13 20 → 15 · 2027-01-20 20 → 15
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Atardecer en la Vía Appia Antica ×23 — 2027-01-10 17:45 → 18:00 · 2027-01-17 17:45 → 18:00 · 2027-01-24 17:45 → 18:00
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Cena: La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti ×23 — 2027-01-10 19:30 → 19:40 · 2027-01-17 19:30 → 19:40 · 2027-01-24 19:30 → 19:40
+- D1 · hora · pool: Museos Capitolinos · Campo de' Fiori ×23 — 2027-04-10 19:40 → 20:20 · 2027-04-17 19:40 → 20:20 · 2027-04-24 19:40 → 20:20
+- D1 · hora · pool: Museos Capitolinos · Ponte Sisto, al atardecer ×23 — 2027-04-10 20:15 → 21:00 · 2027-04-17 20:15 → 21:00 · 2027-04-24 20:15 → 21:00
+- D1 · hora · pool: Termas de Caracalla · Campo de' Fiori ×23 — 2027-04-10 19:40 → 20:15 · 2027-04-17 19:40 → 20:15 · 2027-04-24 19:40 → 20:15
+- D1 · hora · pool: Termas de Caracalla · Ponte Sisto, al atardecer ×23 — 2027-04-10 20:15 → 20:55 · 2027-04-17 20:15 → 20:55 · 2027-04-24 20:15 → 20:55
+- D3 · minutos · atardecer · Pasea y piérdete por Borgo Pio ×22 — 2027-10-31 30 → 25 · 2027-10-31 30 → 25 · 2027-10-31 30 → 25
+- D3 · hora · atardecer · Via della Conciliazione ×22 — 2027-10-31 17:20 → 17:15 · 2027-10-31 17:20 → 17:15 · 2027-10-31 17:20 → 17:15
+- D3 · hora · atardecer · Castillo de Sant'Angelo ×22 — 2027-10-31 17:50 → 17:45 · 2027-10-31 17:50 → 17:45 · 2027-10-31 17:50 → 17:45
+- D3 · hora · atardecer · Pasea y piérdete por Prati (colchón) ×22 — 2027-10-31 19:05 → 19:00 · 2027-10-31 19:05 → 19:00 · 2027-10-31 19:05 → 19:00
+- D7 · hora · Trattoria Valentino abre a las 20:00: la cena se retrasa 30 min · Cena: La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti ×21 — 2027-01-05 19:30 → 20:00 · 2027-01-12 19:30 → 20:00 · 2027-01-19 19:30 → 20:00
+- D7 · hora · atardecer · Cena: La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti ×21 — 2027-03-17 19:30 → 19:35 · 2027-03-18 19:30 → 19:35 · 2027-03-19 19:30 → 19:35
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Terraza del Altar de la Patria (ascensor panorámico; última subida a las 18:45) ×21 — 2027-04-12 18:20 → 18:30 · 2027-04-19 18:20 → 18:30 · 2027-04-26 18:20 → 18:30
+- D7 · hora · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 + atardecer · Cena: Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti ×21 — 2027-04-14 20:00 → 20:20 · 2027-04-21 20:00 → 20:25 · 2027-04-28 20:00 → 20:35
+- DT-medio · minutos · Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón + Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×20 — 2027-04-08 75 → 60 · 2027-04-09 75 → 60 · 2027-05-06 105 → 90
+- D6 · minutos · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Comida: Enoteca Corsi (o Giggetto al Portico d'Ottavia) ×20 — 2027-04-14 60 → 45 · 2027-04-21 60 → 45 · 2027-04-28 60 → 45
+- D2 · hora · cierre de Basílica de San Pedro · Plaza de San Pedro ×19 — 2027-03-26 11:30 → 13:00 · 2027-03-26 11:30 → 13:00 · 2027-03-26 11:30 → 13:00
+- D2 · hora · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control) ×19 — 2027-03-26 12:05 → 11:30 · 2027-03-26 12:05 → 11:30 · 2027-03-26 12:05 → 11:30
+- D2 · hora · cierre de Basílica de San Pedro · Santa Maria in Trastevere ×19 — 2027-03-26 16:55 → 16:50 · 2027-03-26 16:55 → 16:50 · 2027-03-26 16:55 → 16:50
+- D2 · hora · cierre de Basílica de San Pedro · San Pietro in Montorio y el Tempietto ×19 — 2027-03-26 17:35 → 17:25 · 2027-03-26 17:35 → 17:25 · 2027-03-26 17:35 → 17:25
+- D2 · hora · cierre de Basílica de San Pedro · Fontana dell'Acqua Paola ×19 — 2027-03-26 17:55 → 17:45 · 2027-03-26 17:55 → 17:45 · 2027-03-26 17:55 → 17:45
+- D2 · hora · cierre de Basílica de San Pedro · Mirador del Janículo, al atardecer ×19 — 2027-03-26 18:30 → 18:25 · 2027-03-26 18:30 → 18:25 · 2027-03-26 18:30 → 18:25
+- D2 · hora · cierre de Basílica de San Pedro · Trastevere de noche ×19 — 2027-03-26 21:55 → 22:00 · 2027-03-26 21:55 → 22:00 · 2027-03-26 21:55 → 22:00
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» + atardecer · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer ×19 — 2027-03-29 18:30 → 19:05 · 2027-04-05 18:30 → 19:15 · 2027-04-12 20:10 → 19:40
+- D7 · minutos · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere + atardecer · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×19 — 2027-04-25 40 → 45 · 2027-05-02 40 → 55 · 2027-05-09 40 → 60
+- D6 · falta · cierre de Museos Capitolinos · Museos Capitolinos, con la terraza sobre los Foros ×19 — 2027-05-01 · 2027-05-01 · 2027-05-01
+- D2 · hora · pool: Cúpula de San Pedro + atardecer · La Passeggiata del Gianicolo (colchón) ×19 — 2027-06-21 19:40 → 20:05 · 2027-06-19 19:40 → 20:05 · 2027-06-21 19:40 → 20:05
+- D2 · minutos · pool: Cúpula de San Pedro · La Passeggiata del Gianicolo (colchón) ×19 — 2027-06-21 15 → 10 · 2027-06-19 15 → 10 · 2027-06-21 15 → 10
+- D4 · minutos · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón) ×19 — 2027-12-25 40 → 10 · 2027-12-25 40 → 10 · 2027-12-25 40 → 10
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie ×19 — 2027-12-25 13:20 → 11:40 · 2027-12-25 13:20 → 11:40 · 2027-12-25 13:20 → 11:40
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Comida: Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo ×19 — 2027-12-25 14:40 → 14:45 · 2027-12-25 14:40 → 14:45 · 2027-12-25 14:40 → 14:45
+- D4 · minutos · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Comida: Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo ×19 — 2027-12-25 60 → 45 · 2027-12-25 60 → 45 · 2027-12-25 60 → 45
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Piazza del Popolo ×19 — 2027-12-25 15:55 → 16:05 · 2027-12-25 15:55 → 16:05 · 2027-12-25 15:55 → 16:05
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Santa Maria del Popolo (los Caravaggio; abre a las 16:00) ×19 — 2027-12-25 16:25 → 16:35 · 2027-12-25 16:25 → 16:35 · 2027-12-25 16:25 → 16:35
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Ara Pacis (última entrada 18:30) ×19 — 2027-12-25 17:05 → 17:15 · 2027-12-25 17:05 → 17:15 · 2027-12-25 17:05 → 17:15
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Via Condotti ×19 — 2027-12-25 18:00 → 18:10 · 2027-12-25 18:00 → 18:10 · 2027-12-25 18:00 → 18:10
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Plaza de España ×19 — 2027-12-25 18:25 → 18:40 · 2027-12-25 18:25 → 18:40 · 2027-12-25 18:25 → 18:40
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Trinità dei Monti y su mirador sobre la Plaza de España (ya iluminada) ×19 — 2027-12-25 18:55 → 19:15 · 2027-12-25 18:55 → 19:15 · 2027-12-25 18:55 → 19:15
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Bajar la escalinata de la Plaza de España ×19 — 2027-12-25 19:15 → 19:30 · 2027-12-25 19:15 → 19:30 · 2027-12-25 19:15 → 19:30
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×19 — 2027-12-25 19:45 → 19:50 · 2027-12-25 19:45 → 19:50 · 2027-12-25 19:45 → 19:50
+- D4 · hora · Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Coliseo iluminado ×19 — 2027-12-25 21:45 → 21:50 · 2027-12-25 21:45 → 21:50 · 2027-12-25 21:45 → 21:50
+- D7 · falta · atardecer · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×18 — 2027-03-28 · 2027-04-04 · 2027-04-11
+- D1-corto · falta · hora límite de la noche · Fontana de Trevi iluminada ×18 — 2027-03-28 · 2027-03-29 · 2027-03-30
+- D2 · hora · pool: Castillo de Sant'Angelo + atardecer · La Passeggiata del Gianicolo (colchón) ×18 — 2027-06-19 19:40 → 20:05 · 2027-06-19 19:40 → 20:05 · 2027-06-22 19:40 → 20:05
+- D2 · minutos · pool: Castillo de Sant'Angelo · La Passeggiata del Gianicolo (colchón) ×18 — 2027-06-19 15 → 10 · 2027-06-19 15 → 10 · 2027-06-22 15 → 10
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + atardecer · Mirador del Janículo, al atardecer ×18 — 2027-09-11 18:05 → 19:00 · 2027-09-12 18:05 → 19:00 · 2027-09-12 18:05 → 19:00
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + atardecer · Santa Maria in Trastevere ×18 — 2027-09-11 19:05 → 20:00 · 2027-09-12 19:05 → 20:00 · 2027-09-12 19:05 → 20:00
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + atardecer · Pasea y piérdete por Trastevere iluminado (colchón) ×18 — 2027-09-11 19:35 → 20:35 · 2027-09-12 19:35 → 20:35 · 2027-09-12 19:35 → 20:35
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + atardecer · Cena: Da Enzo al 29 (o Tonnarello) ×18 — 2027-09-11 20:15 → 21:05 · 2027-09-12 20:15 → 21:05 · 2027-09-12 20:15 → 21:05
+- D1-FT · hora · pool: Basílica de San Juan de Letrán + pool: Basílica de San Juan de Letrán: horas por los márgenes + atardecer · Fontana de Trevi iluminada ×18 — 2027-09-11 22:20 → 23:05 · 2027-09-12 22:20 → 23:05 · 2027-09-12 22:20 → 23:05
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Terraza del Altar de la Patria, al atardecer (ascensor panorámico) ×17 — 2027-01-04 16:40 → 16:55 · 2027-01-11 16:40 → 16:55 · 2027-01-18 16:40 → 16:55
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×17 — 2027-01-04 17:45 → 18:05 · 2027-01-11 17:45 → 18:05 · 2027-01-18 17:45 → 18:05
+- D6 · minutos · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×17 — 2027-01-04 45 → 40 · 2027-01-11 45 → 40 · 2027-01-18 45 → 40
+- DT-medio · hora · verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las 16:00 · Galería Borghese ×17 — 2027-06-18 15:00 → 16:00 · 2027-06-19 15:00 → 16:00 · 2027-06-20 15:00 → 16:00
+- DT-medio · hora · pool: Galería Borghese + verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las 16:00 · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×17 — 2027-06-18 17:25 → 18:25 · 2027-06-19 17:25 → 18:25 · 2027-06-20 17:25 → 18:25
+- DT-medio · minutos · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer + verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las 16:00 · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×17 — 2027-06-18 60 → 95 · 2027-06-19 60 → 95 · 2027-06-20 60 → 95
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo + atardecer · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer ×16 — 2027-04-14 20:10 → 19:30 · 2027-04-21 20:10 → 19:30 · 2027-04-28 20:10 → 19:30
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo + atardecer · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×16 — 2027-04-14 21:00 → 20:55 · 2027-04-21 21:00 → 20:55 · 2027-04-28 21:00 → 20:55
+- D5 · falta · noche especial: Fontana de Trevi (noche) · El Foro Romano desde el Campidoglio, de noche ×16 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D5 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×16 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Trinità dei Monti y su mirador sobre la Plaza de España ×15 — 2027-01-24 17:55 → 17:45 · 2027-01-25 17:55 → 17:45 · 2027-01-26 17:55 → 17:45
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Bajar la escalinata de la Plaza de España ×15 — 2027-01-24 18:15 → 18:00 · 2027-01-25 18:15 → 18:00 · 2027-01-26 18:15 → 18:00
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España · Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) ×15 — 2027-01-24 18:35 → 18:25 · 2027-01-25 18:35 → 18:25 · 2027-01-26 18:35 → 18:25
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×15 — 2027-02-15 19:15 → 19:30 · 2027-02-22 19:15 → 19:30 · 2027-03-01 19:15 → 19:30
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Panteón de noche ×15 — 2027-02-15 21:10 → 21:20 · 2027-02-22 21:10 → 21:20 · 2027-03-01 21:10 → 21:20
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» + atardecer · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×15 — 2027-04-12 21:00 → 21:05 · 2027-04-19 21:00 → 21:05 · 2027-04-26 21:00 → 21:05
+- D3 · minutos · cierre de Panteón · Panteón (abre a las 9:00) ×14 — 2027-12-25 20 → 15 · 2027-12-25 20 → 15 · 2027-12-25 20 → 15
+- D3 · cómo · cierre de Panteón · Panteón (abre a las 9:00) ×14 — 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera
+- DT-medio · falta · atardecer · Pasea y piérdete por los Jardines del Pincio (colchón) ×13 — 2027-02-13 · 2027-02-13 · 2027-02-14
+- D1-FT · falta · noche especial: Fontana de Trevi (noche) · Plaza de España de noche ×13 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- DT-medio · hora · Free Tour de mañana: el tour ya pasa por la Plaza de España + cierre de Santa Maria del Popolo · Santa Maria del Popolo (los Caravaggio) ×12 — 2027-01-24 16:25 → 16:30 · 2027-01-31 16:25 → 16:30 · 2027-02-07 16:25 → 16:30
+- D3 · minutos · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control; se cruza la Plaza) ×12 — 2027-12-24 45 → 30 · 2027-12-24 45 → 30 · 2027-12-24 45 → 30
+- D3 · falta · noche especial: Fontana de Trevi (noche) · El Puente y el Castillo de Sant'Angelo iluminados ×12 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D3 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×12 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×11 — 2027-01-06 17:45 → 17:50 · 2027-01-13 17:45 → 17:50 · 2027-11-03 17:45 → 17:50
+- D1 · minutos · por dentro una sola vez en el viaje: ya va por dentro otro día · Altar de la Patria ×11 — 2027-03-29 30 → 15 · 2027-03-29 30 → 15 · 2027-03-29 30 → 15
+- D1 · cómo · por dentro una sola vez en el viaje: ya va por dentro otro día · Altar de la Patria ×11 — 2027-03-29 dentro → fuera · 2027-03-29 dentro → fuera · 2027-03-29 dentro → fuera
+- D1-FT · sobra · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · foro romano desde el campidoglio ×11 — 2027-12-25 · 2027-12-25 · 2027-12-26
+- D1-FT · falta · noche especial: una sola · Plaza de España de noche ×11 — 2027-12-31 · 2027-12-31 · 2027-12-31
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · El Foro Romano, desde la terraza del Campidoglio ×10 — 2027-02-17 16:50 → 16:55 · 2027-02-24 16:50 → 16:55 · 2027-03-03 16:50 → 16:55
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Santa Maria in Aracoeli y su escalinata ×10 — 2027-02-17 17:20 → 17:25 · 2027-02-24 17:20 → 17:25 · 2027-03-03 17:20 → 17:25
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Piazza Venezia ×10 — 2027-02-17 17:45 → 17:50 · 2027-02-24 17:45 → 17:50 · 2027-03-03 17:45 → 17:50
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×10 — 2027-05-26 19:20 → 19:25 · 2027-06-02 19:20 → 19:25 · 2027-06-09 19:20 → 19:25
+- D4 · minutos · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón) ×10 — 2027-12-25 40 → 120 · 2027-12-25 40 → 120 · 2027-12-25 40 → 120
+- D4 · hora · Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti + Galería Borghese cierra ese día: la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua · Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie ×10 — 2027-12-25 13:20 → 12:00 · 2027-12-25 13:20 → 12:00 · 2027-12-25 13:20 → 12:00
+- D1-FT · minutos · cierre de Coliseo · Coliseo ×10 — 2027-12-25 75 → 20 · 2027-12-25 75 → 20 · 2027-12-25 75 → 20
+- D1-FT · cómo · cierre de Coliseo · Coliseo ×10 — 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera
+- D1-FT · minutos · cierre de Foro Romano y Palatino · Foro Romano y Palatino ×10 — 2027-12-25 90 → 15 · 2027-12-25 90 → 15 · 2027-12-25 90 → 15
+- D1-FT · cómo · cierre de Foro Romano y Palatino · Foro Romano y Palatino ×10 — 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera · 2027-12-25 dentro → fuera
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · El Foro Romano, desde la terraza del Campidoglio ×9 — 2027-02-15 16:50 → 17:10 · 2027-02-22 16:50 → 17:10 · 2027-03-01 16:50 → 17:10
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) ×9 — 2027-02-15 18:05 → 18:25 · 2027-02-22 18:05 → 18:25 · 2027-03-01 18:05 → 18:25
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) ×9 — 2027-02-17 18:05 → 18:10 · 2027-02-24 18:05 → 18:10 · 2027-03-03 18:05 → 18:10
+- DT-medio · minutos · cierre de Trinità dei Monti · Trinità dei Monti y su mirador sobre la Plaza de España ×9 — 2027-02-14 15 → 10 · 2027-02-21 15 → 10 · 2027-02-28 15 → 10
+- DT-medio · cómo · cierre de Trinità dei Monti · Trinità dei Monti y su mirador sobre la Plaza de España ×9 — 2027-02-14 dentro → fuera · 2027-02-21 dentro → fuera · 2027-02-28 dentro → fuera
+- D1 · sobra · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a Coliseo (noche) · coliseo ×9 — 2027-05-01 · 2027-05-01 · 2027-05-01
+- D4 · falta · Coliseo (noche) ya salió de noche en el viaje: la nocturna pasa a Fontana de Trevi (noche) · Coliseo iluminado ×9 — 2027-05-02 · 2027-05-02 · 2027-05-02
+- D4 · sobra · Coliseo (noche) ya salió de noche en el viaje: la nocturna pasa a Fontana de Trevi (noche) · fontana de trevi ×9 — 2027-05-02 · 2027-05-02 · 2027-05-02
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer ×9 — 2027-06-07 20:10 → 20:25 · 2027-06-14 20:10 → 20:25 · 2027-06-21 20:10 → 20:25
+- D1-FT · falta · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · Fontana de Trevi iluminada ×9 — 2027-12-25 · 2027-12-25 · 2027-12-26
+- D1 · hora · cierre de Panteón · Fontana de Trevi iluminada ×8 — 2027-06-01 23:05 → 23:20 · 2027-06-01 23:05 → 23:20 · 2027-06-01 23:05 → 23:20
+- DT-medio · hora · pool: Galería Borghese: horas por los márgenes · Plaza de España ×8 — 2027-09-14 20:25 → 20:30 · 2027-09-15 20:25 → 20:30 · 2027-09-16 20:25 → 20:30
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Terraza del Altar de la Patria (ascensor panorámico) ×7 — 2027-03-29 16:55 → 17:10 · 2027-04-05 16:55 → 17:10 · 2027-09-06 16:55 → 17:10
+- DT-medio · falta · hora límite de la noche · Coliseo iluminado (de mayo a septiembre) ×6 — 2027-04-08 · 2027-04-08 · 2027-04-08
+- DA-medio · minutos · cierre de Termas de Caracalla · Termas de Caracalla (abre a las 9:00) ×6 — 2027-05-01 75 → 15 · 2027-05-01 75 → 15 · 2027-12-25 75 → 15
+- DA-medio · cómo · cierre de Termas de Caracalla · Termas de Caracalla (abre a las 9:00) ×6 — 2027-05-01 dentro → fuera · 2027-05-01 dentro → fuera · 2027-12-25 dentro → fuera
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×6 — 2027-06-07 19:20 → 19:35 · 2027-06-14 19:20 → 19:35 · 2027-06-21 19:20 → 19:35
+- D6 · minutos · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×6 — 2027-06-07 30 → 10 · 2027-06-14 30 → 10 · 2027-06-21 30 → 10
+- D6 · minutos · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo + atardecer · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×6 — 2027-06-09 30 → 35 · 2027-06-16 30 → 35 · 2027-06-23 30 → 40
+- D6 · falta · Panteón (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · Panteón de noche ×6 — 2027-12-26 · 2027-12-26 · 2027-12-26
+- D6 · sobra · Panteón (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · trastevere de noche ×6 — 2027-12-26 · 2027-12-26 · 2027-12-26
+- D1 · minutos · pool: Ojo de la Cerradura del Aventino + cierre de Panteón · Panteón ×5 — 2027-06-01 30 → 15 · 2027-08-14 30 → 15 · 2027-08-15 30 → 15
+- D1 · minutos · pool: Basílica de San Juan de Letrán + cierre de Panteón · Panteón ×5 — 2027-06-01 30 → 15 · 2027-08-14 30 → 15 · 2027-08-15 30 → 15
+- DT-medio · minutos · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes · Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón) ×5 — 2027-09-17 60 → 10 · 2027-09-18 60 → 10 · 2027-09-19 60 → 10
+- D1-FT · falta · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · Fontana de Trevi iluminada ×5 — 2027-12-27 · 2027-12-27 · 2027-12-27
+- D1-FT · sobra · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · trastevere de noche ×5 — 2027-12-27 · 2027-12-27 · 2027-12-27
+- D1-corto · falta · noche especial: Fontana de Trevi (noche) · Plaza de España de noche ×5 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D1-corto · falta · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · Fontana de Trevi iluminada ×5 — 2027-12-25 · 2027-12-25 · 2027-12-25
+- D1-corto · sobra · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · foro romano desde el campidoglio ×5 — 2027-12-25 · 2027-12-25 · 2027-12-25
+- DT-medio · falta · noche especial: Fontana de Trevi (noche) · Coliseo iluminado ×5 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- DT-medio · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×5 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D1-corto · falta · noche especial: una sola · Plaza de España de noche ×5 — 2027-12-31 · 2027-12-31 · 2027-12-31
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo + atardecer · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×4 — 2027-01-20 17:45 → 17:55 · 2027-01-27 17:45 → 18:05 · 2027-02-03 17:45 → 18:10
+- D6 · falta · cierre de Cúpula de San Pedro · Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica) ×4 — 2027-03-25 · 2027-03-25 · 2027-03-25
+- D1-FT · hora · pool: Museos Capitolinos · Pasea y piérdete por Trastevere (colchón) ×4 — 2027-04-08 17:10 → 18:05 · 2027-04-09 17:10 → 18:05 · 2027-09-01 17:10 → 18:05
+- D6 · minutos · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) ×4 — 2027-05-26 30 → 10 · 2027-06-02 30 → 10 · 2027-07-21 30 → 10
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer ×4 — 2027-05-26 20:10 → 20:15 · 2027-06-02 20:10 → 20:15 · 2027-07-21 20:10 → 20:15
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo · Cena: Nonna Betta (o Giggetto), en el Barrio Judío ×4 — 2027-05-26 21:00 → 21:05 · 2027-06-02 21:00 → 21:05 · 2027-07-21 21:00 → 21:05
+- D1 · minutos · pool: Parque de Villa Borghese + cierre de Panteón · Panteón ×4 — 2027-06-01 30 → 15 · 2027-08-14 30 → 15 · 2027-08-15 30 → 15
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Piazza del Popolo ×4 — 2027-10-06 18:50 → 19:05 · 2027-10-07 18:50 → 19:00 · 2027-10-08 18:50 → 19:00
+- DT-medio · hora · pool: Galería Borghese + pool: Galería Borghese: horas por los márgenes + atardecer · Coliseo iluminado ×4 — 2027-10-06 22:15 → 22:30 · 2027-10-07 22:15 → 22:25 · 2027-10-08 22:15 → 22:25
+- D7 · hora · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 · El Coliseo desde el Colle Oppio, al atardecer ×3 — 2027-03-31 19:10 → 19:15 · 2027-04-07 19:10 → 19:15 · 2027-09-08 19:10 → 19:15
+- D7 · hora · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 · Cena: Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti ×3 — 2027-03-31 20:00 → 20:10 · 2027-04-07 20:00 → 20:10 · 2027-09-08 20:00 → 20:10
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Cena: Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti ×3 — 2027-04-11 20:00 → 20:25 · 2027-04-18 20:00 → 20:25 · 2027-08-29 20:00 → 20:25
+- D1 · sobra · Trastevere de noche ya salió de noche en el viaje: la nocturna pasa a Piazza Navona (noche) · piazza navona ×3 — 2027-08-16 · 2027-08-16 · 2027-08-16
+- D1 · minutos · pool: Galería Borghese + cierre de Panteón · Panteón ×3 — 2027-08-15 25 → 15 · 2027-08-15 25 → 15 · 2027-08-15 25 → 15
+- D6 · falta · noche especial: Fontana de Trevi (noche) · Panteón de noche ×3 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D6 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×3 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D0-medio · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×3 — 2027-12-24 · 2027-12-24 · 2027-12-24
+- D1 · falta · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · Fontana de Trevi iluminada ×3 — 2027-12-26 · 2027-12-26 · 2027-12-26
+- D1 · sobra · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) · foro romano desde el campidoglio ×3 — 2027-12-26 · 2027-12-26 · 2027-12-26
+- D5 · falta · Foro Romano desde el Campidoglio (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · El Foro Romano desde el Campidoglio, de noche ×3 — 2027-12-28 · 2027-12-29 · 2027-12-28
+- D5 · sobra · Foro Romano desde el Campidoglio (noche) ya salió de noche en el viaje: la nocturna pasa a Trastevere de noche · trastevere de noche ×3 — 2027-12-28 · 2027-12-29 · 2027-12-28
+- D2 · falta · Piazza Navona (noche) ya salió de noche en el viaje: la nocturna pasa a El Puente y el Castillo de Sant'Angelo (noche) · Piazza Navona de noche ×3 — 2027-12-30 · 2027-12-31 · 2028-01-03
+- D2 · sobra · Piazza Navona (noche) ya salió de noche en el viaje: la nocturna pasa a El Puente y el Castillo de Sant'Angelo (noche) · el puente y el castillo de sant'angelo ×3 — 2027-12-30 · 2027-12-31 · 2028-01-03
+- DT-medio · hora · atardecer + Poldo e Gianna Osteria abre a las 19:30: la cena se retrasa 5 min · Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente ×2 — 2027-01-10 19:20 → 19:30 · 2027-11-07 19:20 → 19:30
+- DT-medio · hora · atardecer + Poldo e Gianna Osteria abre a las 19:30: la cena se retrasa 5 min · Coliseo iluminado ×2 — 2027-01-10 21:20 → 21:30 · 2027-11-07 21:20 → 21:30
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» + atardecer · Terraza del Altar de la Patria, al atardecer (ascensor panorámico) ×2 — 2027-02-01 16:40 → 17:00 · 2027-02-08 16:40 → 17:10
+- D6 · hora · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» + atardecer · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×2 — 2027-02-01 17:45 → 18:10 · 2027-02-08 17:45 → 18:20
+- D6 · minutos · Castillo de Sant'Angelo cierra ese día: el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» + atardecer · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) ×2 — 2027-02-01 45 → 35 · 2027-02-08 45 → 25
+- D7 · hora · atardecer + Trattoria Valentino abre a las 20:00: la cena se retrasa 20 min · Cena: La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti ×2 — 2027-03-23 19:30 → 20:00 · 2027-10-19 19:30 → 20:00
+- DA-medio · minutos · cierre de Cementerio Protestante · Cementerio Protestante (la tumba de Keats) ×2 — 2027-03-29 30 → 15 · 2027-03-29 30 → 15
+- DA-medio · cómo · cierre de Cementerio Protestante · Cementerio Protestante (la tumba de Keats) ×2 — 2027-03-29 dentro → fuera · 2027-03-29 dentro → fuera
+- D0-medio · falta · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control) ×2 — 2027-03-26 · 2027-12-31
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · El Coliseo desde el Colle Oppio, al atardecer ×2 — 2027-04-18 19:10 → 19:30 · 2027-08-29 19:10 → 19:30
+- D1 · hora · cierre de Panteón · El Foro Romano desde el Campidoglio (noche) ×2 — 2027-06-01 21:50 → 21:55 · 2027-08-14 21:50 → 21:55
+- D6 · falta · Panteón (noche) ya salió de noche en el viaje: la nocturna pasa a Piazza Navona (noche) · Panteón de noche ×2 — 2027-08-17 · 2027-08-17
+- D6 · sobra · Panteón (noche) ya salió de noche en el viaje: la nocturna pasa a Piazza Navona (noche) · piazza navona ×2 — 2027-08-17 · 2027-08-17
+- D1-FT · falta · noche especial: Fontana de Trevi (noche) · Trastevere de noche ×2 — 2027-12-24 · 2027-12-24
+- D1-FT · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×2 — 2027-12-24 · 2027-12-24
+- D1-FT · hora · cierre de Museos Capitolinos · Plaza del Campidoglio ×2 — 2027-12-24 12:25 → 14:00 · 2027-12-31 12:25 → 14:00
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Piazza Venezia ×2 — 2027-12-24 12:40 → 14:20 · 2027-12-31 12:40 → 14:20
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Altar de la Patria ×2 — 2027-12-24 13:00 → 14:30 · 2027-12-31 13:00 → 14:30
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Comida: Giggetto al Portico d'Ottavia (o Nonna Betta) ×2 — 2027-12-24 13:50 → 14:55 · 2027-12-31 13:50 → 14:55
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Barrio Judío ×2 — 2027-12-24 15:00 → 15:55 · 2027-12-31 15:00 → 15:55
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Fuente de las Tortugas ×2 — 2027-12-24 15:30 → 16:20 · 2027-12-31 15:30 → 16:20
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Teatro de Marcelo ×2 — 2027-12-24 15:40 → 16:35 · 2027-12-31 15:40 → 16:35
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Isla Tiberina ×2 — 2027-12-24 16:00 → 17:00 · 2027-12-31 16:00 → 17:00
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · San Pietro in Montorio y el Tempietto ×2 — 2027-12-24 16:40 → 17:35 · 2027-12-31 16:40 → 17:35
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Fontana dell'Acqua Paola ×2 — 2027-12-24 17:00 → 17:55 · 2027-12-31 17:00 → 17:55
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Mirador del Janículo, al atardecer ×2 — 2027-12-24 17:35 → 18:35 · 2027-12-31 17:35 → 18:35
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Santa Maria in Trastevere ×2 — 2027-12-24 18:35 → 19:35 · 2027-12-31 18:35 → 19:35
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Pasea y piérdete por Trastevere iluminado (colchón) ×2 — 2027-12-24 19:05 → 20:10 · 2027-12-31 19:05 → 20:10
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Cena: Da Enzo al 29 (o Tonnarello) ×2 — 2027-12-24 19:45 → 20:40 · 2027-12-31 19:45 → 20:40
+- D1-FT · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Fontana de Trevi iluminada ×2 — 2027-12-24 21:50 → 22:40 · 2027-12-31 21:50 → 22:40
+- D0-medio · falta · noche especial: Fontana de Trevi (noche) · Piazza Navona de noche ×2 — 2027-12-24 · 2027-12-24
+- D1-FT · falta · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Foro Romano desde el Campidoglio (noche) + hora límite de la noche · Fontana de Trevi iluminada ×2 — 2027-12-25 · 2027-12-25
+- D0-medio · falta · cierre de Museos Vaticanos y Capilla Sixtina · Museos Vaticanos y Capilla Sixtina ×2 — 2027-12-24 · 2027-12-31
+- D1 · falta · noche especial: una sola · Plaza de España de noche ×2 — 2027-12-31 · 2027-12-31
+- D7 · hora · Catacumbas de San Calixto cierra ese día: las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15 + Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere · Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) ×1 — 2027-03-28 15:35 → 14:30
+- D0-medio · hora · cierre de Basílica de San Pedro · Plaza de San Pedro ×1 — 2027-03-26 11:30 → 13:00
+- D2 · hora · pool: Castillo de Sant'Angelo · Comida: Borghiciana (o Dal Toscano), en el Borgo ×1 — 2027-08-14 13:35 → 14:10
+- D2 · hora · pool: Cúpula de San Pedro · Pasea y piérdete por Borgo Pio (colchón) ×1 — 2027-08-16 11:20 → 12:20
+- D2 · minutos · pool: Cúpula de San Pedro · Pasea y piérdete por Borgo Pio (colchón) ×1 — 2027-08-16 30 → 10
+- D6 · hora · Cúpula de San Pedro cierra ese día: miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo + atardecer · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) ×1 — 2027-10-06 18:05 → 18:20
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere + atardecer · Atardecer en la Vía Appia Antica ×1 — 2027-10-10 17:45 → 18:10
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere + atardecer · Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) ×1 — 2027-10-10 18:55 → 19:20
+- D7 · hora · Villa Farnesina cierra ese día: la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere + atardecer · Cena: La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti ×1 — 2027-10-10 19:30 → 19:50
+- D7 · hora · atardecer + Trattoria Valentino abre a las 20:00: la cena se retrasa 10 min · Cena: La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti ×1 — 2027-10-12 19:30 → 20:00
+- D1 · falta · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Panteón (noche) · Fontana de Trevi iluminada ×1 — 2027-12-27
+- D1 · hora · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Panteón (noche) · Plaza de España de noche ×1 — 2027-12-27 22:30 → 22:45
+- D1 · sobra · Fontana de Trevi (noche) ya salió de noche en el viaje: la nocturna pasa a Panteón (noche) · panteon ×1 — 2027-12-27
+- D0-medio · minutos · cierre de Basílica de San Pedro · Basílica de San Pedro (con el control) ×1 — 2027-12-24 60 → 45
+- D0-medio · falta · noche especial: Fontana de Trevi (noche) · El Puente y el Castillo de Sant'Angelo iluminados ×1 — 2027-12-24
+- D1 · hora · cierre de Museos Capitolinos · Plaza del Campidoglio ×1 — 2027-12-24 12:25 → 14:00
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Piazza Venezia ×1 — 2027-12-24 12:40 → 14:20
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Altar de la Patria ×1 — 2027-12-24 13:00 → 14:30
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Comida: Nonna Betta (o Giggetto), en el Barrio Judío ×1 — 2027-12-24 13:50 → 14:55
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Barrio Judío ×1 — 2027-12-24 15:00 → 15:55
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Fuente de las Tortugas ×1 — 2027-12-24 15:35 → 16:20
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Largo di Torre Argentina ×1 — 2027-12-24 15:55 → 16:40
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos · Iglesia del Gesù (abre a las 16:00) ×1 — 2027-12-24 16:25 → 17:10
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · Elefantino de Bernini ×1 — 2027-12-24 16:55 → 18:20
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · Santa Maria sopra Minerva ×1 — 2027-12-24 17:00 → 18:25
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · San Luigi dei Francesi (cierra a las 18:15) ×1 — 2027-12-24 17:20 → 17:55
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · Panteón ×1 — 2027-12-24 17:55 → 18:45
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · Piazza Navona ×1 — 2027-12-24 18:50 → 19:45
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · Cena: Armando al Pantheon (o Da Baffetto) ×1 — 2027-12-24 20:00 → 20:45
+- D1 · hora · pool: Museos Capitolinos + cierre de Museos Capitolinos + cierre de Iglesia de San Luigi dei Francesi · Fontana de Trevi iluminada ×1 — 2027-12-24 21:50 → 22:35
+- D1 · falta · noche especial: Fontana de Trevi (noche) · El Foro Romano desde el Campidoglio (noche) ×1 — 2027-12-24
+- D1 · sobra · noche especial: Fontana de Trevi (noche) · fontana de trevi ×1 — 2027-12-24
+- D0 · minutos · cierre de Coliseo · Coliseo ×1 — 2027-12-25 60 → 20
+- D0 · cómo · cierre de Coliseo · Coliseo ×1 — 2027-12-25 dentro → fuera

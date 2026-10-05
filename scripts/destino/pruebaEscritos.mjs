@@ -1,5 +1,5 @@
 // La prueba de los días escritos: parada a parada contra docs/dias/DIAS_ESCRITOS_ROMA.md, en las 365 fechas de 2027.
-//   node scripts/destino/pruebaEscritos.mjs [out=docs/dias/PRUEBA_ESCRITOS.md] [volcado=ruta.txt] [dias=1,1.5,2,2.5]
+//   node scripts/destino/pruebaEscritos.mjs [out=docs/dias/PRUEBA_ESCRITOS.md] [volcado=ruta.txt] [dias=1,1.5,2,2.5,3,3.5,4,5,6,pool,ft]
 // Una diferencia es un fallo, salvo las que explica «Lo que hará el motor» (cierres, ajuste al atardecer, hora límite de la noche…).
 // Tanda 2 (5-oct-2026): además del parada a parada, comprueba qué días lleva cada viaje y en qué orden (con el cambio de orden de los días), que ninguna comida ni cena
 // caiga en un restaurante cerrado ese día o a esa hora, los avisos «Hemos puesto el Vaticano otro día», lo que pasa de las 22:00 o de 2 horas, y qué imprescindibles no salen.
@@ -14,7 +14,7 @@ import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
 const D = findPipelineV2Data('Roma')
-const IDS = ['D0', 'D0-medio', 'D1', 'D1-corto', 'D2', 'D3', 'D1-FT', 'DT-medio', 'DM-medio']
+const IDS = ['D0', 'D0-medio', 'D1', 'D1-corto', 'D2', 'D3', 'D1-FT', 'DT-medio', 'DM-medio', 'D4', 'DA-medio', 'D5', 'D6', 'D7']
 const dias = Object.fromEntries(IDS.map((id) => [id, JSON.parse(fs.readFileSync(`data/dias/roma/${id}.json`, 'utf8'))]))
 const WEEKDAY = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
@@ -37,7 +37,23 @@ const mala = (id, iso) => {
   if (id === 'D2') return wd === 'domingo' || wd === 'miercoles' || museosCierran(iso)
   if (id === 'D3') return wd === 'domingo' || museosCierran(iso) || sinTour(iso)
   if (id === 'D1' || id === 'D1-FT') return mmdd === '06-02' || mmdd === '12-25'
+  // Tanda 3: D4 (la Galería cierra), D5 (Caracalla cierra), D6 (miércoles: audiencia; el Castillo cierra) y D7 (la Villa Farnesina y las catacumbas cierran).
+  const cierra = (name) => Boolean(placeOf(name) && closedOnDay(placeOf(name), weekdayOf(iso), iso))
+  if (id === 'D4') return cierra('Galería Borghese')
+  if (id === 'D5') return cierra('Termas de Caracalla')
+  if (id === 'D6') return wd === 'miercoles' || cierra("Castillo de Sant'Angelo")
+  if (id === 'D7') return cierra('Villa Farnesina') || cierra('Catacumbas de San Calixto')
   return false
+}
+/** Los órdenes de días enteros con menos días malos (el medio día se queda donde está: posición 0 o la última). */
+function mejoresOrdenes(ids, isos, medioPosicion = null) {
+  const fijos = medioPosicion == null ? [] : [ids[medioPosicion]]
+  const enteros = ids.filter((_, i) => i !== medioPosicion)
+  const permutaciones = (lista) => (lista.length <= 1 ? [lista] : lista.flatMap((x, i) => permutaciones([...lista.slice(0, i), ...lista.slice(i + 1)]).map((resto) => [x, ...resto])))
+  const candidatos = permutaciones(enteros).map((p) => (medioPosicion == null ? p : medioPosicion === 0 ? [fijos[0], ...p] : [...p, fijos[0]]))
+  const coste = (orden) => orden.reduce((suma, id, i) => suma + (mala(id, isos[i]) ? 1 : 0), 0)
+  const minimo = Math.min(...candidatos.map(coste))
+  return candidatos.filter((orden) => coste(orden) === minimo)
 }
 /** El orden de dos días enteros: el escrito si no cae mal, y si cae mal y se puede cambiar, cambiados. Con los mismos días malos en los dos órdenes, valen los dos. */
 function parOrdenado(par, isos) {
@@ -57,6 +73,45 @@ const VIAJES = [
   { clave: '2,5 días con Free Tour de mañana, medio día de tarde', dias: 3, ft: true, medio: { franja: 'tarde' }, esperado: (start) => parOrdenado(['D3', 'D1-FT'], [addDays(start, 1), addDays(start, 2)]).map((par) => ['DT-medio', ...par]) },
   { clave: '2,5 días con Free Tour de mañana, medio día de mañana', dias: 3, ft: true, medio: { franja: 'manana', salida: '15:00' }, esperado: (start) => parOrdenado(['D3', 'D1-FT'], [start, addDays(start, 1)]).map((par) => [...par, 'DM-medio']) },
 ]
+// Tanda 3 (3 a 6 días): los días de ciudad con su orden (cambio por fechas); el día de excursión no se compara. `ciudad`: los días de ciudad en el orden del documento.
+const CIUDAD = { 3: { sin: ['D1', 'D2', 'D4'], con: ['D3', 'D1-FT', 'D4'] }, 4: { sin: ['D1', 'D2', 'D4', 'D5'], con: ['D3', 'D1-FT', 'D4', 'D5'] }, 5: { sin: ['D1', 'D2', 'D4', 'D5', 'D6'], con: ['D3', 'D1-FT', 'D4', 'D5', 'D6'] }, 6: { sin: ['D1', 'D2', 'D4', 'D5', 'D6', 'D7'], con: ['D3', 'D1-FT', 'D4', 'D5', 'D6', 'D7'] } }
+const nuevo = (clave, grupo, dias, ft, ids, extra = {}) => ({ clave, grupo, dias, ft, esperadoCiudad: (start, isos) => mejoresOrdenes(ids, isos, extra.medioPosicion ?? null), ...extra })
+// (Con «Prefiero quedarme en Roma» el viaje no se reordena: los días de siempre, en el orden que tenían con la excursión, y el día nuevo en el hueco de la excursión —el cuarto día—.)
+// (El día de la excursión es el cuarto, salvo que caiga en una fecha en que nadie se va de excursión —24, 25 y 31 de diciembre y 1 de enero—: entonces pasa al día siguiente que no sea el último o, si no hay, al anterior.)
+const diaDeExcursion = (fechas) => {
+  const baneada = (iso) => ['12-24', '12-25', '12-31', '01-01'].includes(iso.slice(5))
+  const previstos = 3
+  if (!baneada(fechas[previstos])) return previstos
+  const despues = []
+  for (let d = previstos + 1; d < fechas.length - 1; d++) despues.push(d)
+  const antes = []
+  for (let d = previstos - 1; d >= 1; d--) antes.push(d)
+  return [...antes, ...despues].find((d) => !baneada(fechas[d])) ?? null
+}
+const quedarme = (clave, grupo, dias, baseIds, nuevoId) => ({
+  ...nuevo(clave, grupo, dias, false, baseIds, { sinExcursion: true }),
+  esperadoCiudad: (start, isos) => {
+    const exc = diaDeExcursion(isos)
+    if (exc == null) return mejoresOrdenes([...baseIds, nuevoId], isos)
+    return mejoresOrdenes(baseIds, isos.filter((_, i) => i !== exc)).map((orden) => [...orden.slice(0, exc), nuevoId, ...orden.slice(exc)])
+  },
+})
+const NUEVOS = [
+  nuevo('3 días', '3', 3, false, CIUDAD[3].sin),
+  nuevo('3 días con Free Tour de mañana', '3', 3, true, CIUDAD[3].con),
+  nuevo('3,5 días, medio día de mañana (vuelta)', '3.5', 4, false, [...CIUDAD[3].sin, 'DA-medio'], { medio: { franja: 'manana', salida: '15:00' }, medioPosicion: 3 }),
+  nuevo('3,5 días con Free Tour de mañana, medio día de mañana (vuelta)', '3.5', 4, true, [...CIUDAD[3].con, 'DA-medio'], { medio: { franja: 'manana', salida: '15:00' }, medioPosicion: 3 }),
+  nuevo('3,5 días, medio día de tarde (llegada)', '3.5', 4, false, ['DT-medio', ...CIUDAD[3].sin], { medio: { franja: 'tarde' }, medioPosicion: 0 }),
+  nuevo('4 días', '4', 4, false, CIUDAD[4].sin),
+  nuevo('4 días con Free Tour de mañana', '4', 4, true, CIUDAD[4].con),
+  nuevo('5 días (con excursión)', '5', 5, false, CIUDAD[4].sin),
+  nuevo('5 días con Free Tour de mañana (con excursión)', '5', 5, true, CIUDAD[4].con),
+  quedarme('5 días, «Prefiero quedarme en Roma»', '5', 5, CIUDAD[4].sin, 'D6'),
+  nuevo('6 días (con excursión)', '6', 6, false, CIUDAD[5].sin),
+  nuevo('6 días con Free Tour de mañana (con excursión)', '6', 6, true, CIUDAD[5].con),
+  quedarme('6 días, «Prefiero quedarme en Roma»', '6', 6, CIUDAD[5].sin, 'D7'),
+]
+VIAJES.push(...NUEVOS)
 // Los extras del pool con su tabla escrita (tanda 2): el mismo viaje con un lugar marcado; el día que lo lleva sale con la tabla de ese extra (o con la normal si ese día cierra o su versión no la tiene).
 const base = (clave) => VIAJES.find((viaje) => viaje.clave === clave)
 const POOL = [
@@ -69,6 +124,10 @@ const POOL = [
   { ...base('1,5 días, día entero y medio día de mañana'), clave: '1,5 días, día entero y medio día de mañana + pool: Museos Vaticanos', pool: ['Museos Vaticanos y Capilla Sixtina'] },
   { ...base('1,5 días, medio día de tarde y día entero'), clave: '1,5 días, medio día de tarde y día entero + pool: Coliseo', pool: ['Coliseo'] },
   { ...base('1 día'), clave: '1 día + pool: Coliseo', pool: ['Coliseo'] },
+  // Tanda 3: con un lugar marcado, los días de 3 a 6 lo llevan en su día (ya incluido) y no repiten ninguna visita por dentro.
+  ...['Galería Borghese', 'Basílica de San Juan de Letrán', 'Termas de Caracalla', "Castillo de Sant'Angelo", 'Cúpula de San Pedro', 'Museos Capitolinos'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '5 días (con excursión)'), clave: `5 días + pool: ${name}`, pool: [name] })),
+  ...['Galería Borghese', 'Termas de Caracalla'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '3 días'), clave: `3 días + pool: ${name}`, pool: [name] })),
+  ...['Galería Borghese', 'Museos Capitolinos'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '4 días con Free Tour de mañana'), clave: `4 días con Free Tour de mañana + pool: ${name}`, pool: [name] })),
 ]
 // El Free Tour de tarde (17:00) y de noche (18:30) en el viaje de 2 días: el Día de la Roma antigua lleva su versión con el tour.
 const FT_DESPUES = [
@@ -76,10 +135,10 @@ const FT_DESPUES = [
   { ...base('2 días'), clave: '2 días + Free Tour de noche (18:30)', ftDespues: { franja: 'noche', hora: '18:30' } },
 ]
 const SOLO = args.dias ? new Set(args.dias.split(',')) : null
-const viajesAUsar = [...VIAJES, ...(SOLO?.has('pool') ? POOL : []), ...(SOLO?.has('ft') ? FT_DESPUES : [])].filter((viaje) => !SOLO || (SOLO.has('pool') && viaje.pool) || (SOLO.has('ft') && viaje.ftDespues) || (!viaje.pool && !viaje.ftDespues && SOLO.has({ 1: '1', 2: viaje.medio ? '1.5' : '2', 3: '2.5' }[viaje.dias])))
+const viajesAUsar = [...VIAJES, ...(SOLO?.has('pool') ? POOL : []), ...(SOLO?.has('ft') ? FT_DESPUES : [])].filter((viaje) => !SOLO || (SOLO.has('pool') && viaje.pool) || (SOLO.has('ft') && viaje.ftDespues) || (!viaje.pool && !viaje.ftDespues && SOLO.has(viaje.grupo ?? { 1: '1', 2: viaje.medio ? '1.5' : '2', 3: '2.5' }[viaje.dias])))
 
 /** Navidad y Año Nuevo: el Día de la Roma antigua se sustituye por el D1-corto (todo por fuera). */
-const conFiestas = (ids, start) => ids.map((id, i) => (id === 'D1' && ['12-25', '01-01'].includes(addDays(start, i).slice(5)) ? 'D1-corto' : id))
+const conFiestas = (ids, start, isos = null) => ids.map((id, i) => (id === 'D1' && ['12-25', '01-01'].includes((isos?.[i] ?? addDays(start, i)).slice(5)) ? 'D1-corto' : id))
 
 /** La tabla que toca según el documento (se vuelve a calcular aquí, sin mirar al motor). null = el documento no trae esa tabla (se deriva). */
 function tablaEsperada(id, iso, viaje, posicion) {
@@ -97,8 +156,10 @@ function conPool(rows, id, iso, viaje) {
   for (const name of viaje.pool) {
     const def = dias[id].pool?.[name]
     if (!def) continue
+    // (Un extra no vale si el viaje lleva un día que ya lo trae: `cuando.sin_dias`.)
+    if ((def.cuando?.sin_dias ?? []).some((otro) => viaje.ctx.ids.includes(otro))) continue
     // (Si el extra está escrito en varios días del viaje, va en uno solo: el que ese día abre, luego el de más prioridad y luego el primero.)
-    const candidatos = viaje.ctx.ids.map((cid, i) => ({ cid, i, iso: addDays(viaje.ctx.start, i), def: dias[cid]?.pool?.[name] })).filter((item) => item.def)
+    const candidatos = viaje.ctx.ids.map((cid, i) => ({ cid, i, iso: viaje.ctx.isos?.[i] ?? addDays(viaje.ctx.start, i), def: dias[cid]?.pool?.[name] })).filter((item) => item.def && !(item.def.cuando?.sin_dias ?? []).some((otro) => viaje.ctx.ids.includes(otro)))
     const cerrado = (item) => Boolean(placeOf(name) && closedOnDay(placeOf(name), weekdayOf(item.iso), item.iso))
     const ganador = [...candidatos].sort((x, y) => Number(cerrado(x)) - Number(cerrado(y)) || (y.def.prioridad ?? 0) - (x.def.prioridad ?? 0) || x.i - y.i)[0]
     if (ganador?.cid !== id || ganador?.iso !== iso) continue
@@ -135,6 +196,20 @@ function tablaBase(id, iso, viaje, posicion) {
     return por(wd === 'miercoles' ? 'miercoles' : 'normal')
   }
   if (id === 'D3') return por(museosCierran(iso) ? 'domingo' : 'normal')
+  if (id === 'D5') return por(wd === 'lunes' ? 'lunes' : wd === 'domingo' ? 'domingo' : 'normal')
+  if (id === 'DA-medio') return wd === 'lunes' ? v.lunes.unica : v.manana.unica
+  if (id === 'D6' || id === 'D7') return por('normal')
+  if (id === 'D4') {
+    const rows = por('normal')
+    // (Con Free Tour de mañana, el tour ya pasó por Trevi, la Plaza de España y Via Condotti: sin Trevi ni desayuno, a las 9:00 en la Fuente del Tritón; el rato que sobra, al colchón del Tridente.)
+    if (!viaje.ft) return rows
+    const sin = rows.filter((row) => !((row.lugar === 'Fontana de Trevi' && row.tipo === 'parada') || row.tipo === 'desayuno'))
+    const espana = sin.find((row) => row.lugar === 'Plaza de España' && row.tipo === 'parada' && row.modo !== 'camino')
+    const condotti = sin.find((row) => row.lugar === 'Via Condotti' && row.tipo === 'parada')
+    const colchon = [...sin].reverse().find((row) => row.colchon && /Tridente/.test(row.titulo ?? row.texto_documento ?? ''))
+    const sobra = (espana ? espana.min - 5 : 0) + (condotti && condotti.min > 5 ? condotti.min - 5 : 0)
+    return sin.map((row, i) => (i === 0 ? { ...row, hora: '09:00' } : row === espana ? { ...row, modo: 'camino', min: 5 } : row === condotti ? { ...row, min: 5 } : row === colchon ? { ...row, min: row.min + sobra } : row))
+  }
   // (Con el Free Tour de tarde o de noche, el Día de la Roma antigua lleva su versión con el tour, salvo el día en que no hay tour.)
   if (id === 'D1' && viaje.ftDespues && !sinTour(iso)) return v[viaje.ftDespues.franja === 'noche' ? 'free_tour_noche' : 'free_tour_tarde'].unica
   if (id === 'D1' || id === 'D1-FT' || id === 'D1-corto') return por('normal')
@@ -142,7 +217,7 @@ function tablaBase(id, iso, viaje, posicion) {
   if (id === 'D0-medio') {
     const museos = (viaje.pool ?? []).includes(MUSEOS) && !museosCierran(iso)
     if (!esMedioDeManana) return museos ? v.tarde_con_museos.unica : por('tarde_sin_museos')
-    return museos ? v.manana_con_museos.unica : wd === 'miercoles' ? null : v.manana.unica
+    return museos ? v.manana_con_museos.unica : wd === 'miercoles' ? v.miercoles_manana.unica : v.manana.unica
   }
   if (id === 'DM-medio') return v.manana.unica
   if (id === 'DT-medio') {
@@ -159,7 +234,7 @@ function tablaBase(id, iso, viaje, posicion) {
 }
 
 const diffs = []
-const extra = { mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0 }
+const extra = { dentro_repetido: [], dentro_repetido_sin_fuera: [], noche_repetida: [], mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0 }
 let comparados = 0
 let filasTotal = 0
 const limpia = (t) => t.replace(/\s*\(noche\)/g, '').replace(/ iluminados?$/, '').trim()
@@ -238,37 +313,62 @@ function comprobarExtras(viaje, iso, dayNumber, id, day, ids) {
 
 const nochesDe = (day) => (day.stops ?? []).filter((stop) => stop.is_night_experience).map((stop) => stop.name)
 
-for (let n = 0; n < 365; n++) {
+const PASO = Number(args.paso ?? 1)
+for (let n = Number(args.desde ?? 0); n < 365; n += PASO) {
   const start = addDays('2027-01-01', n)
   for (const viaje of viajesAUsar) {
-    const aceptables = viaje.esperado(start).map((ids) => conFiestas(ids, start))
+    let aceptables = viaje.esperadoCiudad ? [[]] : viaje.esperado(start).map((ids) => conFiestas(ids, start))
     const vistos = new Set()
     let ok = true
     // Primero los días del viaje (los que saca el motor), luego se mira si son los que pide el documento y se compara cada uno.
     const construidos = []
     for (let d = 1; d <= viaje.dias; d++) {
       try {
-        construidos.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, start, viaje.pool ?? [], viaje.ft ? ["imprescindibles", "free_tour"] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ?? null, freeTourDespues: viaje.ftDespues ?? null }))
+        construidos.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, start, viaje.pool ?? [], viaje.ft ? ["imprescindibles", "free_tour"] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ?? null, freeTourDespues: viaje.ftDespues ?? null, sinExcursion: viaje.sinExcursion === true }))
       } catch (error) {
         diffs.push({ viaje: viaje.clave, fecha: start, dia: d, id: aceptables[0][d - 1], fila: '-', tipo: 'error', detalle: String(error.message).slice(0, 120) })
         construidos.push(null)
         ok = false
       }
     }
-    const reales = construidos.map((day) => day?.curated_day?.id)
-    const esperadoIds = aceptables.find((ids) => ids.every((id, i) => id === reales[i])) ?? aceptables[0]
-    if (!aceptables.some((ids) => ids.every((id, i) => id === reales[i]))) {
+    // (Un día de excursión o en blanco no es un día escrito: no se compara. `ciudad`: los días del viaje que lleva un día escrito, con su fecha.)
+    const ciudad = construidos.map((day, k) => ({ day, k, iso: addDays(start, k) })).filter((item) => item.day?.curated_day?.id)
+    if (viaje.esperadoCiudad) aceptables = viaje.esperadoCiudad(start, ciudad.map((item) => item.iso)).map((ids) => conFiestas(ids, start, ciudad.map((item) => item.iso)))
+    const reales = viaje.esperadoCiudad ? ciudad.map((item) => item.day.curated_day.id) : construidos.map((day) => day?.curated_day?.id)
+    // (Un viaje con excursión lleva exactamente un día de excursión —salvo que el motor no pueda ponerla—; en blanco, ninguno.)
+    if (viaje.esperadoCiudad && viaje.dias >= 5 && !viaje.sinExcursion && construidos.filter((day) => day && !day.curated_day?.id && /excursion/i.test(String(day.type ?? ''))).length !== 1) extra.orden.push(`${start} ${viaje.clave}: no hay exactamente un día de excursión`)
+    const esperadoIds = aceptables.find((ids) => ids.length === reales.length && ids.every((id, i) => id === reales[i])) ?? aceptables[0]
+    if (!aceptables.some((ids) => ids.length === reales.length && ids.every((id, i) => id === reales[i]))) {
       extra.orden.push(`${start} ${viaje.clave}: el motor pone ${reales.join(' + ')} y el documento pide ${aceptables.map((ids) => ids.join(' + ')).join(' o ')}`)
       ok = false
     }
-    viaje.ctx = { ids: esperadoIds, start }
+    viaje.ctx = { ids: esperadoIds, start, isos: viaje.esperadoCiudad ? ciudad.map((item) => item.iso) : null }
     // Los avisos de fechas especiales que dicen «Hemos puesto el Vaticano otro día»: tiene que ser verdad (ese día no lleva el Vaticano).
     for (const card of construidos[0]?.date_notices ?? []) {
       if (!/Vaticano otro día/.test((card.texts ?? []).join(' '))) continue
       const i = construidos.findIndex((day, k) => k >= 0 && addDays(start, k) === card.date_iso)
       const day = construidos[i]
-      const lleva = (day?.stops ?? []).some((stop) => /Museos Vaticanos|Basílica de San Pedro|Plaza de San Pedro/.test(stop.place_name ?? stop.name ?? ''))
+      const lleva = (day?.stops ?? []).some((stop) => /Museos Vaticanos|Basílica de San Pedro/.test(stop.place_name ?? stop.name ?? ''))
       if (lleva) extra.aviso_vaticano.push(`${card.date_iso} ${viaje.clave}: el aviso dice «Hemos puesto el Vaticano otro día» y ese día (${day.curated_day?.id}) lleva el Vaticano`)
+    }
+    // Regla 0bis y nocturnas (tanda 3): lo que tiene visita por dentro sale por dentro una sola vez en el viaje, y ninguna nocturna se repite.
+    {
+      const dentro = new Map()
+      const noches = new Map()
+      construidos.forEach((day, k) => {
+        for (const stop of day?.stops ?? []) {
+          if (stop.visit_mode === 'dentro' && !stop.is_night_experience && !/^Terraza del Altar/.test(stop.display_title ?? '')) dentro.set(stop.place_name ?? stop.name, [...(dentro.get(stop.place_name ?? stop.name) ?? []), `${day.curated_day?.id}@${addDays(start, k)}`])
+          if (stop.is_night_experience) noches.set(stop.name, [...(noches.get(stop.name) ?? []), `${day.curated_day?.id}@${addDays(start, k)}`])
+        }
+      })
+      for (const [name, donde] of dentro) {
+        if (donde.length < 2) continue
+        const place = placeOf(name)
+        const sePuedeFuera = place?.minutos_fuera != null || place?.pass_by || place?.type === 'exterior'
+        ;(sePuedeFuera ? extra.dentro_repetido : extra.dentro_repetido_sin_fuera).push(`${start} ${viaje.clave}: ${name} por dentro en ${donde.join(' y ')}`)
+      }
+      // (Nochebuena: solo Trevi de noche, decisión del usuario —noche_especial—: ese día repite la de otro día si hace falta.)
+      for (const [name, donde] of noches) if (donde.length > 1 && !donde.every((x, i) => i === 0 || x.endsWith('12-24'))) extra.noche_repetida.push(`${start} ${viaje.clave}: ${name} en ${donde.join(' y ')}`)
     }
     for (let d = 1; d <= viaje.dias; d++) {
       const day = construidos[d - 1]
@@ -290,7 +390,7 @@ for (let n = 0; n < 365; n++) {
     }
     if (!ok) continue
     // Los imprescindibles (nivel 1 de roma.json) que no salen en ningún momento de ese viaje.
-    if (viaje.dias <= 3) {
+    if (viaje.dias <= 6 && !viaje.pool) {
       const faltan = D.places.filter((place) => place.level === 1 && !vistos.has(place.name)).map((place) => place.name)
       for (const name of faltan) {
         const clave = `${viaje.clave}|${name}`
@@ -318,6 +418,7 @@ lines.push(`- Qué días lleva cada viaje y en qué orden (con el cambio de orde
 lines.push(`- Comidas y cenas comprobadas: ${extra.mesas}. En un restaurante cerrado ese día o a esa hora: ${extra.restaurante_cerrado.length}; comidas o cenas sin restaurante: ${extra.restaurante_sin.length}; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): ${extra.restaurante_cambiado}.`)
 lines.push(`- Cenas que pasan de las 22:00: ${extra.cena_22.length}. Colchones de más de 2 horas: ${extra.colchon_2h.length}.`)
 lines.push(`- Avisos «Hemos puesto el Vaticano otro día» en un día del Vaticano: ${extra.aviso_vaticano.length}.`)
+ lines.push(`- Por dentro más de una vez en el viaje (regla 0bis): ${extra.dentro_repetido.length} (y ${extra.dentro_repetido_sin_fuera.length} de sitios sin visita por fuera, que se quedan). Nocturnas repetidas: ${extra.noche_repetida.length}.`)
 lines.push(`- Imprescindibles que no salen en algún viaje (viaje · lugar · cuántas fechas de 365): ${[...extra.imprescindibles.values()].length} casos.`, '')
 const listar = (titulo, lista, max = 40) => {
   if (lista.length === 0) return
@@ -332,6 +433,9 @@ listar('Comidas o cenas sin restaurante', extra.restaurante_sin)
 listar('Cenas después de las 22:00', extra.cena_22)
 listar('Colchones de más de 2 horas', extra.colchon_2h, 200)
 listar('Avisos «otro día» en el día del Vaticano', extra.aviso_vaticano)
+listar('Por dentro más de una vez (con visita por fuera posible)', extra.dentro_repetido, 200)
+listar('Por dentro más de una vez (sin visita por fuera: se queda)', extra.dentro_repetido_sin_fuera, 20)
+listar('Nocturnas repetidas', extra.noche_repetida)
 if (extra.imprescindibles.size > 0) {
   lines.push(`## Imprescindibles que no salen (${extra.imprescindibles.size})`, '')
   for (const item of [...extra.imprescindibles.values()].sort((a, b) => a.viaje.localeCompare(b.viaje) || b.fechas.length - a.fechas.length)) lines.push(`- ${item.viaje} · ${item.name} · ${item.fechas.length} fechas (${item.fechas.slice(0, 3).join(', ')}${item.fechas.length > 3 ? '…' : ''})`)
@@ -344,4 +448,4 @@ for (const [k, v] of [...por].filter(([k]) => !k.includes('SIN EXPLICAR')).sort(
 writeFileSync(out, lines.join('\n') + '\n')
 if (args.imprescindibles) writeFileSync(args.imprescindibles, JSON.stringify([...extra.imprescindibles.values()], null, 1))
 if (args.volcado) writeFileSync(args.volcado, diffs.map((x) => JSON.stringify(x)).join('\n') + '\n')
-console.log(JSON.stringify({ mesas: extra.mesas, dias: comparados, filas: filasTotal, diferencias: diffs.length, sin_explicar: sin.length, orden: extra.orden.length, restaurantes_cerrados: extra.restaurante_cerrado.length, sin_restaurante: extra.restaurante_sin.length, cena_22: extra.cena_22.length, colchon_2h: extra.colchon_2h.length, aviso_vaticano: extra.aviso_vaticano.length, imprescindibles_que_faltan: extra.imprescindibles.size }))
+console.log(JSON.stringify({ mesas: extra.mesas, dias: comparados, filas: filasTotal, diferencias: diffs.length, sin_explicar: sin.length, orden: extra.orden.length, restaurantes_cerrados: extra.restaurante_cerrado.length, sin_restaurante: extra.restaurante_sin.length, cena_22: extra.cena_22.length, colchon_2h: extra.colchon_2h.length, aviso_vaticano: extra.aviso_vaticano.length, dentro_repetido: extra.dentro_repetido.length, dentro_sin_fuera: extra.dentro_repetido_sin_fuera.length, noche_repetida: extra.noche_repetida.length, imprescindibles_que_faltan: extra.imprescindibles.size }))
