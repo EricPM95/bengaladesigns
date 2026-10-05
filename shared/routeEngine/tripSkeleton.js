@@ -40,7 +40,7 @@ export function curatedFranja(destData, totalDays, hasFreeTour, dayNumber) {
  * @returns {{dayNumber:number, weekday:string|null, allowsRepetition:boolean, isBlank:boolean,
  *            isExcursion:boolean, halfDayExcursion:object|null, curated:object|null}[]}
  */
-export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso = null, sinExcursion = false }) {
+export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso = null, sinExcursion = false, mediaExcursion = null }) {
   const config = destData?.destination_config ?? {}
   const coreDays = config.core_days ?? totalDays
   const maxAutoDays = config.max_auto_days ?? totalDays
@@ -72,7 +72,22 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
     return mmdd != null && (config.excursion_fechas_no ?? []).includes(mmdd)
   }
   // («Prefiero quedarme en Roma», tanda 3: el viajero cambia la excursión por un día en la ciudad; ese día pasa a ser de ciudad.)
-  let excursionDay = sinExcursion ? null : plannedExcursion
+  // Una excursión de MEDIO DÍA (Ostia, Tívoli) en lugar de la de día completo (5 y 6 días) o en el último día de ciudad (4 días, `mediaExcursion.dia`): de 8:00 a 14:00 la excursión y desde las 16:00 la tarde del
+  // día de ciudad que entraría en su lugar («Prefiero quedarme»: D5 en 4 días, D6 en 5, D7 en 6). Regla general: la tarde es la del día que sustituye a la excursión, en cualquier destino.
+  const mediaElegida = mediaExcursion?.id ? halfDayExcursions(destData).find((option) => option.id === mediaExcursion.id) ?? null : null
+  let excursionDay = sinExcursion || (mediaElegida && plannedExcursion !== null) ? null : plannedExcursion
+  if (mediaElegida && plannedExcursion !== null) {
+    // (El día de la excursión de día completo, con la misma regla de fechas en que nadie se va.)
+    let dia = plannedExcursion
+    if (bannedExcursion(dia)) {
+      const later = []
+      for (let day = dia + 1; day < contentDays; day++) later.push(day)
+      const earlier = []
+      for (let day = dia - 1; day >= 2; day--) earlier.push(day)
+      dia = [...earlier, ...later].find((day) => !bannedExcursion(day)) ?? null
+    }
+    mediaExcursion = { ...mediaExcursion, dia }
+  }
   if (excursionDay !== null && bannedExcursion(excursionDay)) {
     const later = []
     for (let day = excursionDay + 1; day < contentDays; day++) later.push(day)
@@ -100,8 +115,9 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
     const esBlanco = dayNumber > maxAutoDays
     // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero,
     // y colocarle una propuesta encima es lo contrario de dejárselo en blanco.
-    const mediaJornadaDelDia =
-      esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
+    const mediaJornadaDelDia = mediaElegida && mediaExcursion?.dia === dayNumber
+      ? { ...mediaElegida, soloTarde: true }
+      : esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
     days.push({
       dayNumber,
       weekday: weekdayForDay(dateRangeStartIso, dayNumber),

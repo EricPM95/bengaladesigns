@@ -47,6 +47,7 @@ export const HUECOS = [
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Fuente del Tritón', 'dia_fuente_del_triton.jpg', ['Fuente del Tritón']),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Via Veneto', 'dia_via_veneto.jpg', ['Via Veneto']),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Porta Pinciana', 'dia_porta_pinciana.jpg', ['Porta Pinciana']),
+  H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Cripta de los Capuchinos (Via Veneto; la entrada, sin fotos dentro)', 'dia_cripta_capuchinos.jpg', ['Cripta de los Capuchinos'], { estrella: true, nota: 'Sitio nuevo de la Tanda 4 (el lunes con la Galería cerrada).' }),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'El reloj de agua del Pincio', 'dia_reloj_de_agua_pincio.jpg', ['Reloj de agua del Pincio']),
   // D7
   H('La Vía Appia y Trastevere tranquilo (6 días en Roma)', 'Villa Farnesina (los frescos de Rafael)', 'dia_villa_farnesina.jpg', ['Villa Farnesina'], { estrella: true }),

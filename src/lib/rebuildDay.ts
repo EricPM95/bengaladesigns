@@ -38,6 +38,43 @@ export async function organizarDiaEnCiudad(dayId: string): Promise<boolean> {
 }
 
 /**
+ * Una excursión de MEDIO día en el día de la excursión (o en el último día de ciudad en 4 días): de 8:00 a 14:00 la excursión y desde las 16:00 la tarde del día escrito que sustituye a la excursión.
+ * Misma llamada que «Organízame este día», con `mediaExcursion`. Devuelve false si no se pudo.
+ */
+export async function organizarDiaConMediaJornada(dayId: string, excursionId: string): Promise<boolean> {
+  const { useRouteStore } = await import('../store/useRouteStore')
+  const { route, reservations } = useRouteStore.getState()
+  const day = route?.days.find((other) => other.id === dayId)
+  if (!route || !day) return false
+  // (En 4 días no hay excursión de día completo: el día que se cambia es el de esta fecha, el último de ciudad.)
+  const dia = day.dayType === 'excursion' ? null : day.dayNumber
+  try {
+    const response = await fetch('/api/rebuild-day', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        destination: route.destination,
+        answers: { ...route.answers, mediaExcursion: { id: excursionId, dia } },
+        all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
+        day_number: day.dayNumber,
+        must_include_places: route.mustIncludePlaces ?? [],
+        inside_names: route.insideNames ?? [],
+        reservas: reservasParaMotor(reservations),
+      }),
+    })
+    if (!response.ok) return false
+    const body = (await response.json()) as { day?: GeneratedDay }
+    if (!body.day) return false
+    const next = mapSingleGeneratedDay(route.destination, body.day, day)
+    await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
+    useRouteStore.getState().replaceExcursionWithHalfDay(dayId, next, excursionId, dia)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
  * Rehace un día con las reservas del viajero (5-oct-2026): el motor corre las horas con los márgenes alrededor de la hora que puso.
  * Un día que el viajero ya ha cambiado a mano no se toca (lo suyo manda; la reserva ya se coloca en su sitio). Sin conexión o en un
  * destino sin días escritos, no hace nada y el día se queda como está.

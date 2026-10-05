@@ -61,6 +61,7 @@ export function corregirTabla(rows) {
   if (cortos.length === 0) return { rows, cambios: [], fijos: [] }
   if (process.env.DISTANCIAS_MODO === 'recortar') return corregirRecortando(rows)
   const lista = rows.map((row) => ({ ...row }))
+  const nuevoModo = process.env.DISTANCIAS_MODO !== 'correr'
   const sinArreglo = (porque) => ({ rows, cambios: [], fijos: cortos.map((corto) => ({ id: rows[corto.i].id, fila: corto.a, hora: corto.hora_a, tramo: `${corto.de} → ${corto.a}`, andar: corto.andar, falta: corto.falta, porque })) })
   for (let i = 1; i < lista.length; i++) {
     const prev = lista[i - 1]
@@ -68,16 +69,37 @@ export function corregirTabla(rows) {
     if (!prev.hora || !row.hora) continue
     const llegada = up5(finDe(prev) + hueco(prev, row, andarT))
     if (llegada <= toMin(row.hora)) continue
+    // Modo nuevo (Tanda 4): primero se acorta el colchón de antes, sin bajar de 30 min (si ya tiene menos, no se toca); lo que haya entre el colchón y este tramo se adelanta lo mismo.
+    // Solo si no basta, se corre lo de después. (Una hora fija entre el colchón y el tramo corta la búsqueda.)
+    if (nuevoModo) {
+      let falta = llegada - toMin(row.hora)
+      for (let j = i - 1; j >= 1 && falta > 0; j--) {
+        if (esAncla(lista[j]) && lista[j].tipo !== 'cena') break
+        if (!lista[j].colchon || lista[j].min <= 30) continue
+        const quita = Math.min(falta, lista[j].min - 30)
+        lista[j].min -= quita
+        for (let k = j + 1; k < i; k++) lista[k].hora = toHHMM(toMin(lista[k].hora) - quita)
+        falta -= quita
+      }
+      if (falta <= 0) continue
+      const nueva = llegada - (llegada - toMin(row.hora) - falta) // lo que sigue faltando tras acortar
+      void nueva
+    }
+    // (Lo que queda por correr: la hora de llegada de verdad con lo ya acortado.)
+    const llegadaAhora = nuevoModo ? up5(finDe(lista[i - 1]) + hueco(lista[i - 1], row, andarT)) : llegada
+    if (llegadaAhora <= toMin(row.hora)) continue
     if (esAncla(row) && row.tipo !== 'traslado' && row.tipo !== 'cena') return sinArreglo(`la fila de llegada es fija (${row.hora_tipo ?? row.tipo})`)
-    if (row.tipo === 'cena' && llegada > CENA_MAXIMA) return sinArreglo('la cena pasaría de las 22:00')
-    row.hora = toHHMM(llegada)
+    // (La cena va siempre a en punto o a y media, redondeando hacia arriba.)
+    const destino = row.tipo === 'cena' && nuevoModo ? Math.ceil(llegadaAhora / 30) * 30 : llegadaAhora
+    if (row.tipo === 'cena' && destino > CENA_MAXIMA) return sinArreglo('la cena pasaría de las 22:00')
+    row.hora = toHHMM(destino)
   }
   const cambios = []
   const nuevas = lista.map((row, i) => {
     const antes = rows[i]
-    if (row.hora === antes.hora) return antes
-    cambios.push({ id: row.id, fila: nombre(row), de: antes.hora, a: row.hora, min_de: antes.min, min_a: row.min, tramo: `${nombre(rows[i - 1] ?? antes)} → ${nombre(row)}`, andar: i > 0 ? andar(rows[i - 1], row) : 0 })
-    return { ...row, hora_corregida: `distancia: lo escrito era ${antes.hora}` }
+    if (row.hora === antes.hora && row.min === antes.min) return antes
+    cambios.push({ id: row.id, fila: nombre(row), texto: antes.texto_documento ?? null, de: antes.hora, a: row.hora, min_de: antes.min, min_a: row.min, tramo: `${nombre(rows[i - 1] ?? antes)} → ${nombre(row)}`, andar: i > 0 ? andar(rows[i - 1], row) : 0 })
+    return { ...row, hora_corregida: `distancia: lo escrito era ${antes.hora}${row.min !== antes.min ? ` y ${antes.min} min` : ''}` }
   })
   return { rows: nuevas, cambios, fijos: [] }
 }

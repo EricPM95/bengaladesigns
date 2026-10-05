@@ -10,7 +10,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
-import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino } from './comprobacionesDia.mjs'
+import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -432,6 +432,29 @@ for (let n = Number(args.desde ?? 0); n < 365; n += PASO) {
   }
 }
 
+// Excursiones de medio día (Tanda 4, punto 8): en 4, 5 y 6 días, en invierno y en verano, con Ostia y con Tívoli.
+const mediaFallos = []
+let mediaDias = 0
+if (!SOLO || SOLO.has('media')) {
+  const TARDE = { 4: 'D5', 5: 'D6', 6: 'D7' }
+  for (const dias of [4, 5, 6]) {
+    for (const inicio of ['2027-01-12', '2027-04-12', '2027-07-12', '2027-10-12']) {
+      for (const media of ['ostia_antica', 'tivoli_villas']) {
+        const sinExc = dias === 4
+        // (En 4 días la excursión de medio día se pone en el último día de ciudad: el D5.)
+        let dia = null
+        for (let d = 1; d <= dias; d++) {
+          const day = await buildDayBlockV3(D, dias + 1, false, d, null, inicio, [], [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaExcursion: { id: media, dia: sinExc ? dias : null } })
+          if (day?.half_day_excursion) { dia = { day, d } }
+        }
+        if (!dia) { mediaFallos.push(`${inicio} ${dias} días ${media}: ningún día lleva la excursión de medio día`); continue }
+        mediaDias++
+        for (const fallo of comprobarMediaJornada({ D, iso: addDays(inicio, dia.d - 1), id: dia.day.curated_day?.id ?? '?', day: dia.day, esperadoId: TARDE[dias] })) mediaFallos.push(`${dias} días ${media}: ${fallo.texto}`)
+        for (const fallo of comprobarDia({ D, iso: addDays(inicio, dia.d - 1), id: dia.day.curated_day?.id ?? '?', day: dia.day })) mediaFallos.push(`${dias} días ${media}: ${fallo.texto}`)
+      }
+    }
+  }
+}
 const sin = diffs.filter((x) => !x.causa)
 const por = new Map()
 for (const x of diffs) {
@@ -444,6 +467,7 @@ for (const x of diffs) {
 const lines = [`# Prueba de los días escritos (parada a parada, 2027)`, '', `${comparados} días comparados, ${filasTotal} filas del documento. Diferencias: ${diffs.length} (${sin.length} sin explicar). Días cuya tabla el documento no trae (se derivan): ${extra.sinTabla}.`, '']
 lines.push('Viajes probados: ' + viajesAUsar.map((viaje) => viaje.clave).join(' · '), '')
 lines.push('## Resumen de las otras comprobaciones', '')
+lines.push(`- Excursiones de medio día (4, 5 y 6 días, 4 estaciones, Ostia y Tívoli): ${mediaDias} días comprobados, ${mediaFallos.length} fallos.`)
 lines.push(`- Tarjetas por día (varias «de camino» seguidas cuentan como una): ${(extra.tarjetas.n / Math.max(1, extra.tarjetas.dias)).toFixed(2)} de media en ${extra.tarjetas.dias} días.`)
 lines.push(`- Qué días lleva cada viaje y en qué orden (con el cambio de orden por fechas): ${extra.orden.length} fallos.`)
 lines.push(`- Comidas y cenas comprobadas: ${extra.mesas}. En un restaurante cerrado ese día o a esa hora: ${extra.restaurante_cerrado.length}; comidas o cenas sin restaurante: ${extra.restaurante_sin.length}; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): ${extra.restaurante_cambiado}.`)
@@ -459,6 +483,7 @@ const listar = (titulo, lista, max = 40) => {
   if (lista.length > max) lines.push(`- … y ${lista.length - max} más`)
   lines.push('')
 }
+listar('Excursiones de medio día: fallos', mediaFallos)
 listar('Orden de los días: fallos', extra.orden)
 listar('Restaurantes cerrados', extra.restaurante_cerrado)
 listar('Comidas o cenas sin restaurante', extra.restaurante_sin)

@@ -241,7 +241,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
           "hora": "19:05",
-          "min": 35,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -249,11 +249,11 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado",
-          "hora_corregida": "distancia: lo escrito era 18:20"
+          "hora_corregida": "distancia: lo escrito era 18:20 y 35 min"
         },
         {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "19:40",
+          "hora": "19:35",
           "min": 5,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "de camino (la plaza y la fachada)",
@@ -264,7 +264,7 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "20:10",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
           "como_documento": "",
@@ -276,7 +276,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "21:50",
+          "hora": "22:10",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -289,7 +289,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:10",
+          "hora": "22:30",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -299,7 +299,7 @@
         },
         {
           "id": "noche_plaza_de_espana_noche",
-          "hora": "22:50",
+          "hora": "23:10",
           "min": 20,
           "texto_documento": "Plaza de España de noche",
           "como_documento": "de noche",
@@ -903,7 +903,7 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "20:50",
+          "hora": "21:00",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
           "como_documento": "",
@@ -915,7 +915,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:30",
+          "hora": "22:40",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -928,7 +928,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:50",
+          "hora": "23:00",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -1227,7 +1227,7 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "21:45",
+          "hora": "22:00",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
           "como_documento": "",

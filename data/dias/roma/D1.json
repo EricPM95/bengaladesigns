@@ -188,7 +188,7 @@
         },
         {
           "id": "cena_armando_al_pantheon",
-          "hora": "20:10",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
           "como_documento": "",
@@ -199,7 +199,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:00",
+          "hora": "22:20",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -209,7 +209,7 @@
         },
         {
           "id": "noche_plaza_de_espana_noche",
-          "hora": "22:40",
+          "hora": "23:00",
           "min": 20,
           "texto_documento": "Plaza de España de noche",
           "como_documento": "de noche",
@@ -417,7 +417,7 @@
         },
         {
           "id": "cena_armando_al_pantheon",
-          "hora": "20:10",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Armando al Pantheon (o Da Baffetto)",
           "como_documento": "",
@@ -429,7 +429,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:00",
+          "hora": "22:20",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -440,7 +440,7 @@
         },
         {
           "id": "noche_plaza_de_espana_noche",
-          "hora": "22:40",
+          "hora": "23:00",
           "min": 20,
           "texto_documento": "Plaza de España de noche",
           "como_documento": "de noche",
@@ -655,7 +655,7 @@
         },
         {
           "id": "cena_dar_filettaro_a_santa_barbara",
-          "hora": "21:20",
+          "hora": "21:30",
           "min": 90,
           "texto_documento": "**Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori",
           "como_documento": "",
@@ -666,7 +666,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "23:20",
+          "hora": "23:30",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -676,7 +676,7 @@
         },
         {
           "id": "noche_plaza_de_espana_noche",
-          "hora": "24:00",
+          "hora": "24:10",
           "min": 15,
           "texto_documento": "Plaza de España de noche",
           "como_documento": "de noche",
@@ -1965,7 +1965,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:10",
+                "hora": "21:30",
                 "min": 90,
                 "texto_documento": "**Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori",
                 "como_documento": "",
@@ -1975,7 +1975,7 @@
                 "hora_corregida": "distancia: lo escrito era 21:00"
               },
               {
-                "hora": "23:10",
+                "hora": "23:30",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -1984,7 +1984,7 @@
                 "hora_corregida": "distancia: lo escrito era 23:00"
               },
               {
-                "hora": "23:50",
+                "hora": "24:10",
                 "min": 15,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
@@ -2631,7 +2631,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:15",
+                "hora": "21:30",
                 "min": 90,
                 "texto_documento": "**Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori",
                 "como_documento": "",
@@ -2641,7 +2641,7 @@
                 "hora_corregida": "distancia: lo escrito era 21:00"
               },
               {
-                "hora": "23:15",
+                "hora": "23:30",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -2650,7 +2650,7 @@
                 "hora_corregida": "distancia: lo escrito era 23:00"
               },
               {
-                "hora": "23:55",
+                "hora": "24:10",
                 "min": 15,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
@@ -2798,7 +2798,7 @@
                 "hora_corregida": "distancia: lo escrito era 19:30"
               },
               {
-                "hora": "20:20",
+                "hora": "20:30",
                 "min": 90,
                 "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
                 "como_documento": "",
@@ -2809,7 +2809,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "22:15",
+                "hora": "22:25",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -2818,7 +2818,7 @@
                 "hora_corregida": "distancia: lo escrito era 22:10"
               },
               {
-                "hora": "22:55",
+                "hora": "23:05",
                 "min": 20,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
@@ -2946,7 +2946,7 @@
                 "hora_corregida": "distancia: lo escrito era 19:30"
               },
               {
-                "hora": "20:20",
+                "hora": "20:30",
                 "min": 90,
                 "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
                 "como_documento": "",
@@ -2957,7 +2957,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "22:15",
+                "hora": "22:25",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -2966,7 +2966,7 @@
                 "hora_corregida": "distancia: lo escrito era 22:10"
               },
               {
-                "hora": "22:55",
+                "hora": "23:05",
                 "min": 20,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",

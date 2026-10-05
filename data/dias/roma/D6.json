@@ -151,7 +151,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_el_gueto_iluminado_y_el_teatro_de_marcelo",
           "hora": "17:50",
-          "min": 45,
+          "min": 40,
           "texto_documento": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -159,18 +159,17 @@
           "tipo": "paseo",
           "lugar": "Teatro de Marcelo",
           "titulo": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo",
-          "hora_corregida": "distancia: lo escrito era 17:45"
+          "hora_corregida": "distancia: lo escrito era 17:45 y 45 min"
         },
         {
           "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "19:05",
+          "hora": "19:00",
           "min": 90,
           "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto",
-          "hora_corregida": "distancia: lo escrito era 19:00"
+          "alternativa": "Pizzeria Da Baffetto"
         },
         {
           "id": "noche_panteon_noche",
@@ -354,7 +353,7 @@
         },
         {
           "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "19:20",
+          "hora": "19:30",
           "min": 90,
           "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
           "como_documento": "",
@@ -365,12 +364,13 @@
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "21:10",
+          "hora": "21:15",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Panteón (noche)"
+          "noche": "Panteón (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:10"
         }
       ],
       "C": [
@@ -742,7 +742,7 @@
         },
         {
           "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "21:15",
+          "hora": "21:30",
           "min": 90,
           "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
           "como_documento": "",
@@ -753,7 +753,7 @@
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "23:00",
+          "hora": "23:15",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
@@ -789,18 +789,19 @@
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio_las_calles_del_borgo_y_el_passetto_el_pasadizo_de_los_papas",
           "hora": "11:10",
-          "min": 40,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas"
+          "titulo": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas",
+          "hora_corregida": "distancia: lo escrito era 11:10 y 40 min"
         },
         {
           "id": "parada_plaza_de_san_pedro",
-          "hora": "12:05",
+          "hora": "11:55",
           "min": 15,
           "texto_documento": "Plaza de San Pedro (acaba la audiencia)",
           "como_documento": "",
@@ -812,7 +813,7 @@
         },
         {
           "id": "parada_cupula_de_san_pedro",
-          "hora": "12:35",
+          "hora": "12:25",
           "min": 75,
           "texto_documento": "Cúpula de San Pedro (abre al acabar la audiencia; se sale por la Basílica)",
           "como_documento": "por dentro",
@@ -824,19 +825,18 @@
         },
         {
           "id": "comida_ristorante_arlu",
-          "hora": "14:10",
+          "hora": "14:00",
           "min": 60,
           "texto_documento": "**Comida:** Ristorante Arlù (o 200 Gradi), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Ristorante Arlù",
           "alternativa": "200 Gradi",
-          "zona": "en el Borgo",
-          "hora_corregida": "distancia: lo escrito era 14:00"
+          "zona": "en el Borgo"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:20",
+          "hora": "15:10",
           "min": 15,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -844,24 +844,22 @@
           "traslado": {
             "como": "un taxi",
             "min": 15
-          },
-          "hora_corregida": "distancia: lo escrito era 15:10"
+          }
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "15:45",
+          "hora": "15:35",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
           "modo": null,
-          "recorrer_desde": "miércoles con audiencia: la tarde se corre desde las 15:35",
-          "hora_corregida": "distancia: lo escrito era 15:35"
+          "recorrer_desde": "miércoles con audiencia: la tarde se corre desde las 15:35"
         },
         {
           "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
-          "hora": "16:10",
+          "hora": "16:00",
           "min": 90,
           "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
           "como_documento": "por dentro",
@@ -873,7 +871,7 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "17:45",
+          "hora": "17:35",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
@@ -884,7 +882,7 @@
         },
         {
           "id": "parada_terraza_del_altar_de_la_patria_al_atardecer",
-          "hora": "18:05",
+          "hora": "17:55",
           "min": 45,
           "texto_documento": "Terraza del Altar de la Patria, al atardecer (ascensor panorámico)",
           "como_documento": "por dentro",
@@ -900,8 +898,8 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_gueto_iluminado_y_el_teatro_de_marcelo",
-          "hora": "19:15",
-          "min": 45,
+          "hora": "19:05",
+          "min": 30,
           "texto_documento": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -909,7 +907,7 @@
           "tipo": "paseo",
           "lugar": "Teatro de Marcelo",
           "titulo": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo",
-          "hora_corregida": "distancia: lo escrito era 17:45"
+          "hora_corregida": "distancia: lo escrito era 17:45 y 45 min"
         },
         {
           "id": "cena_trattoria_dal_cavalier_gino",
@@ -958,18 +956,19 @@
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio_las_calles_del_borgo_y_el_passetto_el_pasadizo_de_los_papas",
           "hora": "11:10",
-          "min": 40,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas"
+          "titulo": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas",
+          "hora_corregida": "distancia: lo escrito era 11:10 y 40 min"
         },
         {
           "id": "parada_plaza_de_san_pedro",
-          "hora": "12:05",
+          "hora": "11:55",
           "min": 15,
           "texto_documento": "Plaza de San Pedro (acaba la audiencia)",
           "como_documento": "",
@@ -981,7 +980,7 @@
         },
         {
           "id": "parada_cupula_de_san_pedro",
-          "hora": "12:35",
+          "hora": "12:25",
           "min": 75,
           "texto_documento": "Cúpula de San Pedro (abre al acabar la audiencia; se sale por la Basílica)",
           "como_documento": "por dentro",
@@ -993,19 +992,18 @@
         },
         {
           "id": "comida_ristorante_arlu",
-          "hora": "14:10",
+          "hora": "14:00",
           "min": 60,
           "texto_documento": "**Comida:** Ristorante Arlù (o 200 Gradi), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Ristorante Arlù",
           "alternativa": "200 Gradi",
-          "zona": "en el Borgo",
-          "hora_corregida": "distancia: lo escrito era 14:00"
+          "zona": "en el Borgo"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:20",
+          "hora": "15:10",
           "min": 15,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -1013,24 +1011,22 @@
           "traslado": {
             "como": "un taxi",
             "min": 15
-          },
-          "hora_corregida": "distancia: lo escrito era 15:10"
+          }
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "15:45",
+          "hora": "15:35",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
           "modo": null,
-          "recorrer_desde": "miércoles con audiencia: la tarde se corre desde las 15:35",
-          "hora_corregida": "distancia: lo escrito era 15:35"
+          "recorrer_desde": "miércoles con audiencia: la tarde se corre desde las 15:35"
         },
         {
           "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
-          "hora": "16:10",
+          "hora": "16:00",
           "min": 105,
           "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
           "como_documento": "por dentro",
@@ -1042,7 +1038,7 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "18:20",
+          "hora": "18:10",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
@@ -1054,7 +1050,7 @@
         },
         {
           "id": "parada_santa_maria_in_aracoeli_y_su_escalinata",
-          "hora": "18:50",
+          "hora": "18:40",
           "min": 20,
           "texto_documento": "Santa Maria in Aracoeli y su escalinata",
           "como_documento": "por dentro",
@@ -1067,7 +1063,7 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "19:15",
+          "hora": "19:05",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
@@ -1078,7 +1074,7 @@
         },
         {
           "id": "parada_terraza_del_altar_de_la_patria_al_atardecer",
-          "hora": "19:35",
+          "hora": "19:25",
           "min": 45,
           "texto_documento": "Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45)",
           "como_documento": "por dentro",
@@ -1094,7 +1090,7 @@
         },
         {
           "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "20:45",
+          "hora": "21:00",
           "min": 90,
           "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
           "como_documento": "",
@@ -1105,7 +1101,7 @@
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "22:30",
+          "hora": "22:45",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
@@ -1139,18 +1135,19 @@
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio_las_calles_del_borgo_y_el_passetto_el_pasadizo_de_los_papas",
           "hora": "11:10",
-          "min": 40,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas"
+          "titulo": "Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas",
+          "hora_corregida": "distancia: lo escrito era 11:10 y 40 min"
         },
         {
           "id": "parada_plaza_de_san_pedro",
-          "hora": "12:05",
+          "hora": "11:55",
           "min": 15,
           "texto_documento": "Plaza de San Pedro (acaba la audiencia)",
           "como_documento": "",
@@ -1162,7 +1159,7 @@
         },
         {
           "id": "parada_cupula_de_san_pedro",
-          "hora": "12:35",
+          "hora": "12:25",
           "min": 75,
           "texto_documento": "Cúpula de San Pedro (abre al acabar la audiencia; se sale por la Basílica)",
           "como_documento": "por dentro",
@@ -1174,19 +1171,18 @@
         },
         {
           "id": "comida_ristorante_arlu",
-          "hora": "14:10",
+          "hora": "14:00",
           "min": 60,
           "texto_documento": "**Comida:** Ristorante Arlù (o 200 Gradi), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Ristorante Arlù",
           "alternativa": "200 Gradi",
-          "zona": "en el Borgo",
-          "hora_corregida": "distancia: lo escrito era 14:00"
+          "zona": "en el Borgo"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:20",
+          "hora": "15:10",
           "min": 15,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -1194,24 +1190,22 @@
           "traslado": {
             "como": "un taxi",
             "min": 15
-          },
-          "hora_corregida": "distancia: lo escrito era 15:10"
+          }
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "15:45",
+          "hora": "15:35",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
           "modo": null,
-          "recorrer_desde": "miércoles con audiencia: la tarde se corre desde las 15:35",
-          "hora_corregida": "distancia: lo escrito era 15:35"
+          "recorrer_desde": "miércoles con audiencia: la tarde se corre desde las 15:35"
         },
         {
           "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
-          "hora": "16:10",
+          "hora": "16:00",
           "min": 105,
           "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
           "como_documento": "por dentro",
@@ -1223,7 +1217,7 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "18:00",
+          "hora": "17:50",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
@@ -1234,7 +1228,7 @@
         },
         {
           "id": "parada_terraza_del_altar_de_la_patria",
-          "hora": "18:20",
+          "hora": "18:10",
           "min": 45,
           "texto_documento": "Terraza del Altar de la Patria (ascensor panorámico)",
           "como_documento": "por dentro",
@@ -1249,7 +1243,7 @@
         },
         {
           "id": "parada_santa_maria_in_aracoeli_y_su_escalinata",
-          "hora": "19:20",
+          "hora": "19:10",
           "min": 20,
           "texto_documento": "Santa Maria in Aracoeli y su escalinata",
           "como_documento": "por dentro",
@@ -1262,7 +1256,7 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio_con_la_luz_del_atardecer",
-          "hora": "19:55",
+          "hora": "19:45",
           "min": 30,
           "texto_documento": "El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer",
           "como_documento": "",
@@ -1275,7 +1269,7 @@
         },
         {
           "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "20:55",
+          "hora": "21:00",
           "min": 90,
           "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
           "como_documento": "",
@@ -1286,7 +1280,7 @@
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "22:40",
+          "hora": "22:45",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",

@@ -40,7 +40,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_el_trastevere_tranquilo_la_piazza_in_piscinula_via_dei_genovesi_y_la_via_della_lungaretta",
           "hora": "11:20",
-          "min": 65,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -49,11 +49,11 @@
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta",
           "foto": "Trastevere tranquilo",
-          "hora_corregida": "distancia: lo escrito era 11:10"
+          "hora_corregida": "distancia: lo escrito era 11:10 y 65 min"
         },
         {
           "id": "comida_trattoria_da_enzo_al_29",
-          "hora": "12:45",
+          "hora": "12:10",
           "min": 60,
           "texto_documento": "**Comida:** Da Enzo al 29 (o Tonnarello), en Trastevere",
           "como_documento": "",
@@ -65,7 +65,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "13:55",
+          "hora": "13:25",
           "min": 20,
           "texto_documento": "Taxi a las Catacumbas de San Calixto",
           "como_documento": "",
@@ -78,7 +78,7 @@
         },
         {
           "id": "parada_catacumbas_de_san_calixto",
-          "hora": "14:25",
+          "hora": "13:55",
           "min": 60,
           "texto_documento": "Catacumbas de San Calixto (visita guiada; cierra el miércoles)",
           "como_documento": "por dentro",
@@ -90,7 +90,7 @@
         },
         {
           "id": "parada_recorre_la_via_appia_antica_en_bici_los_pinos_las_tumbas_y_la_de_cecilia_metela_colchon_se_alquila_en_el_punto_de_informacion",
-          "hora": "15:45",
+          "hora": "15:15",
           "min": 120,
           "texto_documento": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
           "como_documento": "",
@@ -103,7 +103,7 @@
         },
         {
           "id": "parada_atardecer_en_la_via_appia_antica",
-          "hora": "17:55",
+          "hora": "17:25",
           "min": 30,
           "texto_documento": "Atardecer en la Vía Appia Antica",
           "como_documento": "",
@@ -115,7 +115,7 @@
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "18:35",
+          "hora": "18:05",
           "min": 20,
           "texto_documento": "Taxi a Monti",
           "como_documento": "",
@@ -128,7 +128,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
-          "hora": "19:05",
+          "hora": "18:40",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
           "como_documento": "",
@@ -140,15 +140,14 @@
         },
         {
           "id": "cena_la_taverna_dei_fori_imperiali",
-          "hora": "19:55",
+          "hora": "19:30",
           "min": 90,
           "texto_documento": "**Cena:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "La Taverna dei Fori Imperiali",
           "alternativa": "Trattoria Valentino",
-          "zona": "en Monti",
-          "hora_corregida": "distancia: lo escrito era 19:30"
+          "zona": "en Monti"
         }
       ],
       "CD": [
@@ -186,7 +185,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_el_trastevere_tranquilo_la_piazza_in_piscinula_via_dei_genovesi_y_la_via_della_lungaretta",
           "hora": "11:20",
-          "min": 65,
+          "min": 40,
           "texto_documento": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -195,11 +194,11 @@
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta",
           "foto": "Trastevere tranquilo",
-          "hora_corregida": "distancia: lo escrito era 11:10"
+          "hora_corregida": "distancia: lo escrito era 11:10 y 65 min"
         },
         {
           "id": "comida_trattoria_da_enzo_al_29",
-          "hora": "12:45",
+          "hora": "12:20",
           "min": 60,
           "texto_documento": "**Comida:** Da Enzo al 29 (o Tonnarello), en Trastevere",
           "como_documento": "",
@@ -211,7 +210,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "13:55",
+          "hora": "13:35",
           "min": 20,
           "texto_documento": "Taxi a las Catacumbas de San Calixto",
           "como_documento": "",
@@ -224,7 +223,7 @@
         },
         {
           "id": "parada_catacumbas_de_san_calixto",
-          "hora": "14:25",
+          "hora": "14:05",
           "min": 60,
           "texto_documento": "Catacumbas de San Calixto (visita guiada; cierra el miércoles)",
           "como_documento": "por dentro",
@@ -236,7 +235,7 @@
         },
         {
           "id": "parada_recorre_la_via_appia_antica_en_bici_los_pinos_las_tumbas_y_la_de_cecilia_metela_colchon_se_alquila_en_el_punto_de_informacion",
-          "hora": "15:45",
+          "hora": "15:25",
           "min": 120,
           "texto_documento": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
           "como_documento": "",
@@ -244,12 +243,11 @@
           "tipo": "parada",
           "lugar": "Via Appia Antica",
           "titulo": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
-          "modo": null,
-          "hora_corregida": "distancia: lo escrito era 15:25"
+          "modo": null
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "17:55",
+          "hora": "17:35",
           "min": 20,
           "texto_documento": "Taxi a Monti",
           "como_documento": "",
@@ -257,24 +255,23 @@
           "traslado": {
             "como": "un taxi",
             "min": 20
-          },
-          "hora_corregida": "distancia: lo escrito era 17:35"
+          }
         },
         {
           "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
-          "hora": "18:25",
-          "min": 40,
+          "hora": "18:05",
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
           "como_documento": "",
           "colchon": true,
           "tipo": "paseo",
           "lugar": "Monti",
           "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti",
-          "hora_corregida": "distancia: lo escrito era 18:05"
+          "hora_corregida": "distancia: lo escrito era 18:05 y 40 min"
         },
         {
           "id": "parada_el_coliseo_desde_la_terraza_de_largo_gaetana_agnesi_al_atardecer",
-          "hora": "19:25",
+          "hora": "18:55",
           "min": 30,
           "texto_documento": "El Coliseo desde la terraza de Largo Gaetana Agnesi, al atardecer (encima del metro Colosseo; en la calle, siempre abierta)",
           "como_documento": "por fuera",
@@ -284,20 +281,18 @@
           "titulo": "El Coliseo desde la terraza de Largo Gaetana Agnesi, al atardecer",
           "modo": "fuera",
           "atardecer": true,
-          "foto": "Coliseo",
-          "hora_corregida": "distancia: lo escrito era 18:55"
+          "foto": "Coliseo"
         },
         {
           "id": "cena_trattoria_valentino",
-          "hora": "20:20",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Trattoria Valentino",
           "alternativa": "La Taverna dei Fori Imperiali",
-          "zona": "en Monti",
-          "hora_corregida": "distancia: lo escrito era 20:00"
+          "zona": "en Monti"
         }
       ]
     }

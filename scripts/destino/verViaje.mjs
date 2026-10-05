@@ -15,7 +15,7 @@ const exp = [...(ft ? ['imprescindibles', 'free_tour'] : []), ...(opt.exp ?? '')
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 for (let d = 1; d <= dias; d++) {
-  const day = await buildDayBlockV3(D, dias + 1, ft, d, null, opt.inicio, pool, exp, { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: medio, sinExcursion: opt.sin_excursion === '1', forceOrder: opt.orden ? opt.orden.split(',') : null })
+  const day = await buildDayBlockV3(D, dias + 1, ft, d, null, opt.inicio, pool, exp, { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: medio, sinExcursion: opt.sin_excursion === '1', mediaExcursion: opt.media_excursion ? { id: opt.media_excursion, dia: opt.media_dia ? Number(opt.media_dia) : null } : null, forceOrder: opt.orden ? opt.orden.split(',') : null })
   const iso = addDays(opt.inicio, d - 1)
   console.log(`\n=== Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · ${day?.curated_day?.id ?? day?.day_type ?? '?'} ${day?.curated_day?.name ?? ''}`)
   if (!day) continue

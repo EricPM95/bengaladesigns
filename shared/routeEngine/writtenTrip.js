@@ -178,7 +178,7 @@ function dateKeyMatches(key, dateIso) {
  * @returns el plan (misma forma que planCuratedTrip), o null si falta algún día escrito
  */
 export function planWrittenTrip(args) {
-  const { destData, written, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [], entradas = {}, freeTourDespues: freeTourDespuesIn = null, dropTarde = [], recortesCena = 0, mediaJornada = null, sinExcursion = false } = args
+  const { destData, written, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [], entradas = {}, freeTourDespues: freeTourDespuesIn = null, dropTarde = [], recortesCena = 0, mediaJornada = null, sinExcursion = false, mediaExcursion = null } = args
   if (!written?.days) return null
   let poolNames = poolNamesIn
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
@@ -196,7 +196,7 @@ export function planWrittenTrip(args) {
   const tour = destData.default_free_tour ?? null
   const joyaNames = new Set((destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name))
   const cuts = written.destino?.cortes_luz ?? DEFAULT_CUTS
-  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, sinExcursion })
+  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, sinExcursion, mediaExcursion })
   const contentDays = skeleton.length
   const cityDays = skeleton.filter((day) => !day.isBlank && !day.isExcursion)
   const earlyLimit = Math.min(3, Math.max(1, cityDays.length - 1))
@@ -320,7 +320,8 @@ export function planWrittenTrip(args) {
         if (avoids(w, day)) cost += EVITAR_COST
         // La media jornada (Ostia, Tívoli) va en el día que la lleva, y ese día no va en uno entero.
         const halfId = day.halfDayExcursion?.id ?? null
-        if (halfId ? halfDayOwner[halfId] !== id : Object.values(halfDayOwner).includes(id)) cost += 5000
+        if (day.halfDayExcursion?.soloTarde) { /* (la tarde de un día de ciudad con excursión de medio día: ese día va donde toca) */ }
+        else if (halfId ? halfDayOwner[halfId] !== id : Object.values(halfDayOwner).includes(id)) cost += 5000
         for (const joya of w.joyas ?? []) if (closedThatDay(joya, day)) cost += placeByName.get(joya)?.pass_by ? 300 : 2000
         for (const name of entries) if (closedThatDay(name, day)) cost += EVITAR_COST
         for (const rule of avoidSpecial) if (hoursOf(day).dateIso && matchesDateRange(rule.fecha, rule.hasta, hoursOf(day).dateIso) && rule.lugares.some((name) => carries(w, name))) cost += SPECIAL_HOURS_COST
@@ -1885,7 +1886,8 @@ export function planWrittenTrip(args) {
       // (\`minutos\`: una joya vale con llegar 20 min antes del cierre, mejor por dentro aunque sea corto que por fuera.)
       abierta: (row, start, minutos = null) => {
         const place = placeByName.get(row.lugar)
-        if (!place || row.modo !== 'dentro') return true
+        // (Lo que se visita —por dentro o sin modo escrito— tiene que estar abierto; lo que se ve por fuera, de camino o con el sol no.)
+        if (!place || row.modo === 'fuera' || row.modo === 'camino' || row.modo === 'atardecer' || !['parada', 'paseo'].includes(row.tipo)) return true
         return openCheck(place, start, minutos != null ? Math.min(row.min, minutos) : row.min, hours).ok === true
       },
     }
@@ -2241,11 +2243,34 @@ export function planWrittenTrip(args) {
       return fila
     })
   }
+  /** La tarde de un día escrito para después de una excursión de medio día: lo que va tras la comida, desde las 16:00. */
+  const tardeDeExcursion = (rows, log) => {
+    const iComida = rows.findIndex((row) => row.tipo === 'comida')
+    if (iComida < 0) return rows
+    let tarde = rows.slice(iComida + 1)
+    while (tarde[0]?.tipo === 'traslado') tarde = tarde.slice(1)
+    const primera = tarde[0]
+    if (!primera) return rows
+    const delta = Math.max(0, 16 * 60 - filaMin(primera.hora))
+    // (Las horas corren lo mismo hasta la primera hora fija —la cena, el sol, una reserva—; desde ahí, las del documento.)
+    let corre = true
+    const desplazada = tarde.map((row) => {
+      if (row.tipo === 'cena' || row.modo === 'atardecer' || row.hora_tipo === 'reserva' || row.hora_tipo === 'turno' || row.tipo === 'tour') corre = false
+      return corre && delta > 0 ? { ...row, hora: filaHHMM(filaMin(row.hora) + delta) } : row
+    })
+    for (const row of rows.slice(0, iComida + 1)) if (row.tipo === 'parada' || row.tipo === 'paseo' || row.tipo === 'desayuno' || row.tipo === 'comida') log.push({ id: row.id, lugar: row.titulo ?? row.lugar ?? row.restaurante, sitio: row.lugar ?? null, que: 'quitada', causa: 'excursión de medio día: de 8:00 a 14:00 el viajero está fuera; la ciudad empieza a las 16:00' })
+    return desplazada
+  }
   const componerEscrito = (draft, skeletonDay) => {
     const hours = draft.hoursPrep ?? hoursOf(skeletonDay)
     const env0 = envDe(skeletonDay)
     const stageLog = draft.log
-    let rows = reglasDeCamino(draft.rowsPrep, hours, stageLog)
+    let rows = draft.rowsPrep
+    // Con una excursión de medio día (8:00 a 14:00) el día es solo su tarde: desde las 16:00, la del día escrito que sustituye a la excursión, con sus cierres y su atardecer.
+    // Lo que no quepa se quita de abajo arriba por la pirámide; si de esa tarde no queda ninguna parada de nivel 1 o 2, la tarde queda libre.
+    if (skeletonDay.halfDayExcursion?.soloTarde) rows = tardeDeExcursion(rows, stageLog)
+    const vistosAntes = new Set(caminoVistos)
+    rows = reglasDeCamino(rows, hours, stageLog)
     // Cierres (regla de cierres): lo que por dentro cae cerrado a su hora se mueve antes en el día, hasta donde está abierto (una joya, el Panteón, mejor por dentro aunque sea corto).
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
@@ -2373,6 +2398,18 @@ export function planWrittenTrip(args) {
       if (row.colchon && row.min > 120) nuevoLog.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'aviso', causa: `colchón de ${row.min} min (más de 2 horas)` })
       if (row.tipo === 'cena' && filaMin(row.hora) > 22 * 60) nuevoLog.push({ id: row.id, lugar: row.restaurante, sitio: null, que: 'aviso', causa: `la cena pasa de las 22:00 (${row.hora})` })
     }
+    // Un sitio de nivel 1 o 2 que, aun así, acaba de camino la primera vez (los márgenes de una hora fija lo aprietan hasta lo último que deja el documento antes de quitarlo): queda apuntado.
+    {
+      const vistoHoy = new Set()
+      for (const row of finales) {
+        if (!row.lugar || row.tipo !== 'parada') continue
+        const place = placeByName.get(row.lugar)
+        if (row.modo === 'camino' && place && (place.level ?? 3) <= 2 && !vistosAntes.has(row.lugar) && !vistoHoy.has(row.lugar) && !tourCovers.has(row.lugar) && !row.llegada) nuevoLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'modo', causa: `los márgenes del día lo aprietan hasta «de camino» aunque sea la primera vez que sale ${row.lugar} en el viaje (nivel ${place.level}): es lo último antes de quitarlo` })
+        if (row.modo !== 'camino') vistoHoy.add(row.lugar)
+      }
+    }
+    // (Excursión de medio día: si de la tarde no queda ninguna parada de nivel 1 o 2, la tarde queda libre.)
+    if (skeletonDay.halfDayExcursion?.soloTarde) draft.tardeLibre = !finales.some((row) => row.tipo === 'parada' && !row.llegada && row.modo !== 'camino' && (placeByName.get(row.lugar)?.level ?? 3) <= 2)
     draft.log = nuevoLog
     draft.rowsPrep = finales
     draft.problemasComponer = resultado.problemas
@@ -2515,7 +2552,7 @@ export function planWrittenTrip(args) {
       allowsRepetition: false,
       isBlank: false,
       isExcursion: false,
-      halfDayExcursion: null,
+      halfDayExcursion: skeletonDay.halfDayExcursion ?? null,
       curated: true,
       escrito: true,
       hours,
@@ -2537,6 +2574,7 @@ export function planWrittenTrip(args) {
       escritoNights: nights,
       escritoLog: log.map((entry) => ({ ...entry, fecha: hours.dateIso ?? null })),
       escritoRows: rows,
+      tardeLibre: draft.tardeLibre === true,
     }
     return dayPlan
   }

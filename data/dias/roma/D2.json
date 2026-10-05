@@ -294,7 +294,7 @@
         },
         {
           "id": "cena_tonnarello",
-          "hora": "20:25",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello",
           "como_documento": "",
@@ -304,7 +304,7 @@
         },
         {
           "id": "noche_trastevere_de_noche",
-          "hora": "22:10",
+          "hora": "22:15",
           "min": 30,
           "texto_documento": "Trastevere de noche",
           "como_documento": "de noche",
@@ -417,7 +417,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
           "hora": "17:35",
-          "min": 40,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -425,38 +425,39 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere",
-          "hora_corregida": "distancia: lo escrito era 17:30"
+          "hora_corregida": "distancia: lo escrito era 17:30 y 40 min"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "18:25",
+          "hora": "18:15",
           "min": 5,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 18:25"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "18:45",
+          "hora": "18:35",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 18:45"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:25",
+          "hora": "19:15",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer",
-          "hora_corregida": "distancia: lo escrito era 19:15"
+          "modo": "atardecer"
         },
         {
           "id": "cena_tonnarello",
@@ -636,7 +637,7 @@
         },
         {
           "id": "cena_tonnarello",
-          "hora": "21:05",
+          "hora": "21:30",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello",
           "como_documento": "",
@@ -646,7 +647,7 @@
         },
         {
           "id": "noche_trastevere_de_noche",
-          "hora": "22:50",
+          "hora": "23:15",
           "min": 30,
           "texto_documento": "Trastevere de noche",
           "como_documento": "de noche",
@@ -958,7 +959,7 @@
         },
         {
           "id": "cena_tonnarello",
-          "hora": "20:35",
+          "hora": "21:00",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello",
           "como_documento": "",
@@ -968,7 +969,7 @@
         },
         {
           "id": "noche_piazza_navona_noche",
-          "hora": "22:35",
+          "hora": "23:00",
           "min": 30,
           "texto_documento": "Piazza Navona de noche",
           "como_documento": "de noche",
@@ -1091,7 +1092,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
           "hora": "18:05",
-          "min": 40,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1099,38 +1100,39 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere",
-          "hora_corregida": "distancia: lo escrito era 18:00"
+          "hora_corregida": "distancia: lo escrito era 18:00 y 40 min"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "18:55",
+          "hora": "18:45",
           "min": 5,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 18:55"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "19:15",
+          "hora": "19:05",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 19:15"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:55",
+          "hora": "19:45",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer",
-          "hora_corregida": "distancia: lo escrito era 19:45"
+          "modo": "atardecer"
         },
         {
           "id": "cena_tonnarello",
@@ -1616,7 +1618,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
           "hora": "17:30",
-          "min": 110,
+          "min": 105,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1624,28 +1626,26 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado",
-          "hora_corregida": "distancia: lo escrito era 17:25"
+          "hora_corregida": "distancia: lo escrito era 17:25 y 110 min"
         },
         {
           "id": "cena_tonnarello",
-          "hora": "19:35",
+          "hora": "19:30",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello, en Trastevere",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Tonnarello",
-          "zona": "en Trastevere",
-          "hora_corregida": "distancia: lo escrito era 19:30"
+          "zona": "en Trastevere"
         },
         {
           "id": "noche_piazza_navona_noche",
-          "hora": "21:35",
+          "hora": "21:30",
           "min": 30,
           "texto_documento": "Piazza Navona de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Piazza Navona (noche)",
-          "hora_corregida": "distancia: lo escrito era 21:30"
+          "noche": "Piazza Navona (noche)"
         }
       ],
       "B": [
@@ -1922,7 +1922,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
           "hora": "17:35",
-          "min": 45,
+          "min": 35,
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1930,38 +1930,39 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere",
-          "hora_corregida": "distancia: lo escrito era 17:30"
+          "hora_corregida": "distancia: lo escrito era 17:30 y 45 min"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "18:40",
+          "hora": "18:30",
           "min": 20,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 18:40"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "19:15",
+          "hora": "19:05",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 19:15"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:55",
+          "hora": "19:45",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer",
-          "hora_corregida": "distancia: lo escrito era 19:45"
+          "modo": "atardecer"
         },
         {
           "id": "cena_tonnarello",
@@ -2115,7 +2116,7 @@
         },
         {
           "id": "cena_tonnarello",
-          "hora": "20:05",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello",
           "como_documento": "",
@@ -2125,7 +2126,7 @@
         },
         {
           "id": "noche_piazza_navona_noche",
-          "hora": "22:05",
+          "hora": "22:30",
           "min": 30,
           "texto_documento": "Piazza Navona de noche",
           "como_documento": "de noche",
@@ -2327,7 +2328,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
           "hora": "10:40",
-          "min": 50,
+          "min": 35,
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -2335,19 +2336,18 @@
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos",
-          "hora_corregida": "distancia: lo escrito era 10:35"
+          "hora_corregida": "distancia: lo escrito era 10:35 y 50 min"
         },
         {
           "id": "comida_pizzarium_bonci",
-          "hora": "12:00",
+          "hora": "11:45",
           "min": 25,
           "texto_documento": "**Comida rápida:** Pizzarium, al lado de los Museos",
           "como_documento": "",
           "tipo": "comida",
           "rapida": true,
           "restaurante": "Pizzarium (Bonci)",
-          "zona": "al lado de los Museos",
-          "hora_corregida": "distancia: lo escrito era 11:45"
+          "zona": "al lado de los Museos"
         },
         {
           "id": "parada_museos_vaticanos_y_capilla_sixtina",
@@ -2476,7 +2476,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
           "hora": "10:40",
-          "min": 50,
+          "min": 35,
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -2484,19 +2484,18 @@
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos",
-          "hora_corregida": "distancia: lo escrito era 10:35"
+          "hora_corregida": "distancia: lo escrito era 10:35 y 50 min"
         },
         {
           "id": "comida_pizzarium_bonci",
-          "hora": "12:00",
+          "hora": "11:45",
           "min": 25,
           "texto_documento": "**Comida rápida:** Pizzarium, al lado de los Museos",
           "como_documento": "",
           "tipo": "comida",
           "rapida": true,
           "restaurante": "Pizzarium (Bonci)",
-          "zona": "al lado de los Museos",
-          "hora_corregida": "distancia: lo escrito era 11:45"
+          "zona": "al lado de los Museos"
         },
         {
           "id": "parada_museos_vaticanos_y_capilla_sixtina",
@@ -2991,7 +2990,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
           "hora": "15:35",
-          "min": 40,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -2999,11 +2998,11 @@
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati",
-          "hora_corregida": "distancia: lo escrito era 15:10"
+          "hora_corregida": "distancia: lo escrito era 15:10 y 40 min"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "16:35",
+          "hora": "16:25",
           "min": 15,
           "texto_documento": "Puente Sant'Angelo, al atardecer",
           "como_documento": "",
@@ -3014,7 +3013,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_centro_iluminado",
-          "hora": "17:15",
+          "hora": "17:05",
           "min": 90,
           "texto_documento": "Pasea y piérdete por el centro iluminado",
           "como_documento": "",
@@ -3025,7 +3024,7 @@
         },
         {
           "id": "parada_panteon",
-          "hora": "18:50",
+          "hora": "18:40",
           "min": 5,
           "texto_documento": "Panteón",
           "como_documento": "de camino",

@@ -165,6 +165,8 @@ export interface QuestionnaireAnswers {
   freeTourDespues?: { franja: 'manana' | 'tarde' | 'noche'; hora: string }
   /** «Prefiero quedarme en Roma» (días de excursión de 5 y 6 días): el día de excursión pasó a ser un día de ciudad escrito (D6 en 5 días, D7 en 6); el motor lo tiene en cuenta al rehacer cualquier día. */
   sinExcursion?: boolean
+  /** Una excursión de medio día (Ostia, Tívoli) en el día de la excursión: de 8:00 a 14:00 la excursión y desde las 16:00 la tarde del día de ciudad que la sustituye. `dia`: solo en 4 días (el último día de ciudad). */
+  mediaExcursion?: { id: string; dia?: number | null }
   /** Viaje de 1,5 días: el medio día cae por la tarde (llegada) o por la mañana (salida). */
   mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string; /** Dónde cae el medio día: 'primero' (llegada) o 'ultimo' (salida); sin él, la tarde es la llegada y la mañana la salida. */ posicion?: 'primero' | 'ultimo' }
 }
@@ -686,6 +688,8 @@ export interface DayPlan {
   freeTimes?: { minutes: number; after: string; before: string; suggestions: { name: string; walkMinutes: number; requiresTicket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** El viajero quitó la excursión de medio día: la mañana queda suya y no se le vuelve a proponer. */
   halfDayExcursionDeclined?: boolean
+  /** Excursión de medio día en este día y de la tarde del día escrito no queda ninguna parada de nivel 1 o 2: «Tu tarde está libre» con «Añadir paradas». */
+  afternoonFree?: boolean
   /** Día en blanco porque el viaje pasa de `max_auto_days` del destino — no porque el viajero lo
       convirtiera a libre. Solo el primero explica por qué. */
   beyondAutoDays?: boolean

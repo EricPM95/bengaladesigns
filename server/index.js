@@ -2548,7 +2548,10 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
   // «Prefiero quedarme en Roma» (tanda 3): el día de excursión pasa a ser un día de ciudad escrito (D6 en 5 días, D7 en 6).
   const sinExcursion = answers?.sinExcursion === true
-  return { entradas, freeTourDespues, mediaJornada, sinExcursion }
+  // Una excursión de medio día en el día de la excursión (o en el último día de ciudad en 4 días): `answers.mediaExcursion` = { id, dia? }.
+  const me = answers?.mediaExcursion
+  const mediaExcursion = me && typeof me.id === 'string' ? { id: me.id, dia: Number.isInteger(me.dia) ? me.dia : null } : null
+  return { entradas, freeTourDespues, mediaJornada, sinExcursion, mediaExcursion }
 }
 
 function hasRequiredAnswers(answers) {

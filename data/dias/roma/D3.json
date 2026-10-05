@@ -111,7 +111,7 @@
         },
         {
           "id": "cena_l_arcangelo",
-          "hora": "19:50",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
@@ -123,12 +123,13 @@
         },
         {
           "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
-          "hora": "21:40",
+          "hora": "21:50",
           "min": 30,
           "texto_documento": "El Puente y el Castillo de Sant'Angelo iluminados",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
+          "noche": "El Puente y el Castillo de Sant'Angelo (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:40"
         }
       ],
       "CD": [

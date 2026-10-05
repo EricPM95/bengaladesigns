@@ -425,7 +425,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
           "hora": "19:10",
-          "min": 60,
+          "min": 35,
           "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -433,23 +433,22 @@
           "tipo": "paseo",
           "lugar": "Via del Babuino",
           "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
-          "hora_corregida": "distancia: lo escrito era 18:40"
+          "hora_corregida": "distancia: lo escrito era 18:40 y 60 min"
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "20:25",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Il Gabriello",
           "alternativa": "Poldo e Gianna Osteria",
-          "zona": "en el Tridente",
-          "hora_corregida": "distancia: lo escrito era 20:00"
+          "zona": "en el Tridente"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:05",
+          "hora": "21:40",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -457,18 +456,16 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          },
-          "hora_corregida": "distancia: lo escrito era 21:40"
+          }
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "22:25",
+          "hora": "22:00",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Coliseo (noche)",
-          "hora_corregida": "distancia: lo escrito era 22:00"
+          "noche": "Coliseo (noche)"
         }
       ],
       "C": [
@@ -682,7 +679,7 @@
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "21:05",
+          "hora": "21:30",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
@@ -694,7 +691,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:45",
+          "hora": "23:10",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -707,7 +704,7 @@
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "23:05",
+          "hora": "23:30",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
@@ -890,7 +887,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_el_tridente_via_margutta_via_del_babuino_via_della_croce_y_el_caffe_greco",
           "hora": "19:30",
-          "min": 60,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -898,11 +895,11 @@
           "tipo": "paseo",
           "lugar": "Via del Babuino",
           "titulo": "Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco",
-          "hora_corregida": "distancia: lo escrito era 18:55"
+          "hora_corregida": "distancia: lo escrito era 18:55 y 60 min"
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
-          "hora": "20:50",
+          "hora": "20:20",
           "min": 30,
           "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
           "como_documento": "por fuera (la iglesia cierra a las 19:45)",
@@ -915,7 +912,7 @@
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
-          "hora": "21:20",
+          "hora": "20:50",
           "min": 5,
           "texto_documento": "Bajar la escalinata de la Plaza de España",
           "como_documento": "de camino",
@@ -927,7 +924,7 @@
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "21:40",
+          "hora": "21:30",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
@@ -939,7 +936,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "23:20",
+          "hora": "23:10",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -952,7 +949,7 @@
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "23:40",
+          "hora": "23:30",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
@@ -1029,7 +1026,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
           "hora": "11:35",
-          "min": 90,
+          "min": 70,
           "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1037,11 +1034,11 @@
           "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
           "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena",
-          "hora_corregida": "distancia: lo escrito era 11:30"
+          "hora_corregida": "distancia: lo escrito era 11:30 y 90 min"
         },
         {
           "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
-          "hora": "13:15",
+          "hora": "12:55",
           "min": 25,
           "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
           "como_documento": "",
@@ -1053,7 +1050,7 @@
         },
         {
           "id": "parada_terraza_del_pincio",
-          "hora": "14:05",
+          "hora": "13:45",
           "min": 20,
           "texto_documento": "Terraza del Pincio",
           "como_documento": "",
@@ -1064,7 +1061,7 @@
         },
         {
           "id": "comida_sgarro_bistrot",
-          "hora": "14:45",
+          "hora": "14:25",
           "min": 60,
           "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
           "como_documento": "",
@@ -1075,7 +1072,7 @@
         },
         {
           "id": "parada_piazza_del_popolo",
-          "hora": "16:05",
+          "hora": "15:45",
           "min": 15,
           "texto_documento": "Piazza del Popolo",
           "como_documento": "",
@@ -1086,7 +1083,7 @@
         },
         {
           "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
-          "hora": "16:35",
+          "hora": "16:15",
           "min": 20,
           "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
           "como_documento": "por dentro",
@@ -1099,7 +1096,7 @@
         },
         {
           "id": "parada_ara_pacis",
-          "hora": "17:15",
+          "hora": "16:55",
           "min": 45,
           "texto_documento": "Ara Pacis (última entrada 18:30)",
           "como_documento": "por dentro",
@@ -1111,7 +1108,7 @@
         },
         {
           "id": "parada_via_condotti",
-          "hora": "18:10",
+          "hora": "17:50",
           "min": 10,
           "texto_documento": "Via Condotti",
           "como_documento": "de camino",
@@ -1122,7 +1119,7 @@
         },
         {
           "id": "parada_plaza_de_espana",
-          "hora": "18:40",
+          "hora": "18:20",
           "min": 20,
           "texto_documento": "Plaza de España",
           "como_documento": "",
@@ -1133,7 +1130,7 @@
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
-          "hora": "19:15",
+          "hora": "18:55",
           "min": 15,
           "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España (ya iluminada)",
           "como_documento": "por dentro",
@@ -1141,36 +1138,33 @@
           "tipo": "parada",
           "lugar": "Trinità dei Monti",
           "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
-          "modo": "dentro",
-          "hora_corregida": "distancia: lo escrito era 18:55"
+          "modo": "dentro"
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
-          "hora": "19:30",
+          "hora": "19:15",
           "min": 5,
           "texto_documento": "Bajar la escalinata de la Plaza de España",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza de España",
           "titulo": "Bajar la escalinata de la Plaza de España",
-          "modo": "camino",
-          "hora_corregida": "distancia: lo escrito era 19:15"
+          "modo": "camino"
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "19:50",
+          "hora": "19:45",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Il Gabriello",
           "alternativa": "Poldo e Gianna Osteria",
-          "zona": "en el Tridente",
-          "hora_corregida": "distancia: lo escrito era 19:45"
+          "zona": "en el Tridente"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "21:30",
+          "hora": "21:25",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -1178,18 +1172,16 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          },
-          "hora_corregida": "distancia: lo escrito era 21:25"
+          }
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "21:50",
+          "hora": "21:45",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Coliseo (noche)",
-          "hora_corregida": "distancia: lo escrito era 21:45"
+          "noche": "Coliseo (noche)"
         }
       ],
       "B": [
@@ -1258,7 +1250,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
           "hora": "11:35",
-          "min": 90,
+          "min": 65,
           "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1266,11 +1258,11 @@
           "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
           "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena",
-          "hora_corregida": "distancia: lo escrito era 11:30"
+          "hora_corregida": "distancia: lo escrito era 11:30 y 90 min"
         },
         {
           "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
-          "hora": "13:15",
+          "hora": "12:50",
           "min": 25,
           "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
           "como_documento": "",
@@ -1282,7 +1274,7 @@
         },
         {
           "id": "parada_terraza_del_pincio",
-          "hora": "14:05",
+          "hora": "13:40",
           "min": 20,
           "texto_documento": "Terraza del Pincio",
           "como_documento": "",
@@ -1293,7 +1285,7 @@
         },
         {
           "id": "comida_sgarro_bistrot",
-          "hora": "14:45",
+          "hora": "14:20",
           "min": 60,
           "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
           "como_documento": "",
@@ -1304,7 +1296,7 @@
         },
         {
           "id": "parada_piazza_del_popolo",
-          "hora": "16:05",
+          "hora": "15:40",
           "min": 15,
           "texto_documento": "Piazza del Popolo",
           "como_documento": "",
@@ -1315,7 +1307,7 @@
         },
         {
           "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
-          "hora": "16:35",
+          "hora": "16:10",
           "min": 20,
           "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
           "como_documento": "por dentro",
@@ -1328,7 +1320,7 @@
         },
         {
           "id": "parada_via_del_babuino_y_via_margutta",
-          "hora": "17:00",
+          "hora": "16:35",
           "min": 10,
           "texto_documento": "Via del Babuino y Via Margutta",
           "como_documento": "de camino",
@@ -1340,7 +1332,7 @@
         },
         {
           "id": "parada_plaza_de_espana",
-          "hora": "17:30",
+          "hora": "17:05",
           "min": 20,
           "texto_documento": "Plaza de España",
           "como_documento": "",
@@ -1351,7 +1343,7 @@
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
-          "hora": "18:05",
+          "hora": "17:40",
           "min": 30,
           "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
           "como_documento": "por dentro",
@@ -1364,7 +1356,7 @@
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
-          "hora": "18:35",
+          "hora": "18:15",
           "min": 5,
           "texto_documento": "Bajar la escalinata de la Plaza de España",
           "como_documento": "de camino",
@@ -1376,7 +1368,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
-          "hora": "19:00",
+          "hora": "18:40",
           "min": 60,
           "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
           "como_documento": "",
@@ -1384,24 +1376,22 @@
           "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
           "tipo": "paseo",
           "lugar": "Via del Babuino",
-          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
-          "hora_corregida": "distancia: lo escrito era 18:40"
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "20:15",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Il Gabriello",
           "alternativa": "Poldo e Gianna Osteria",
-          "zona": "en el Tridente",
-          "hora_corregida": "distancia: lo escrito era 20:00"
+          "zona": "en el Tridente"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "21:55",
+          "hora": "21:40",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -1409,18 +1399,16 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          },
-          "hora_corregida": "distancia: lo escrito era 21:40"
+          }
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "22:15",
+          "hora": "22:00",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Coliseo (noche)",
-          "hora_corregida": "distancia: lo escrito era 22:00"
+          "noche": "Coliseo (noche)"
         }
       ],
       "C": [
@@ -1489,7 +1477,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
           "hora": "11:35",
-          "min": 90,
+          "min": 60,
           "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1497,11 +1485,11 @@
           "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
           "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena",
-          "hora_corregida": "distancia: lo escrito era 11:30"
+          "hora_corregida": "distancia: lo escrito era 11:30 y 90 min"
         },
         {
           "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
-          "hora": "13:15",
+          "hora": "12:45",
           "min": 25,
           "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
           "como_documento": "",
@@ -1513,7 +1501,7 @@
         },
         {
           "id": "parada_terraza_del_pincio",
-          "hora": "14:05",
+          "hora": "13:35",
           "min": 20,
           "texto_documento": "Terraza del Pincio",
           "como_documento": "",
@@ -1524,7 +1512,7 @@
         },
         {
           "id": "comida_sgarro_bistrot",
-          "hora": "14:45",
+          "hora": "14:15",
           "min": 60,
           "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
           "como_documento": "",
@@ -1535,7 +1523,7 @@
         },
         {
           "id": "parada_piazza_del_popolo",
-          "hora": "16:05",
+          "hora": "15:35",
           "min": 15,
           "texto_documento": "Piazza del Popolo",
           "como_documento": "",
@@ -1546,7 +1534,7 @@
         },
         {
           "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
-          "hora": "16:35",
+          "hora": "16:05",
           "min": 20,
           "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
           "como_documento": "por dentro",
@@ -1559,7 +1547,7 @@
         },
         {
           "id": "parada_ara_pacis",
-          "hora": "17:15",
+          "hora": "16:45",
           "min": 45,
           "texto_documento": "Ara Pacis (última entrada 18:30)",
           "como_documento": "por dentro",
@@ -1571,7 +1559,7 @@
         },
         {
           "id": "parada_via_condotti",
-          "hora": "18:10",
+          "hora": "17:40",
           "min": 10,
           "texto_documento": "Via Condotti",
           "como_documento": "de camino",
@@ -1582,7 +1570,7 @@
         },
         {
           "id": "parada_plaza_de_espana",
-          "hora": "18:40",
+          "hora": "18:10",
           "min": 20,
           "texto_documento": "Plaza de España",
           "como_documento": "",
@@ -1593,7 +1581,7 @@
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
-          "hora": "19:15",
+          "hora": "18:45",
           "min": 30,
           "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
           "como_documento": "por fuera (la iglesia cierra a las 19:45)",
@@ -1606,7 +1594,7 @@
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
-          "hora": "19:45",
+          "hora": "19:20",
           "min": 5,
           "texto_documento": "Bajar la escalinata de la Plaza de España",
           "como_documento": "de camino",
@@ -1618,7 +1606,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_tridente_iluminado_via_margutta_via_del_babuino_via_della_croce_y_el_caffe_greco",
-          "hora": "20:10",
+          "hora": "19:45",
           "min": 30,
           "texto_documento": "Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón)",
           "como_documento": "",
@@ -1626,24 +1614,22 @@
           "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
           "tipo": "paseo",
           "lugar": "Via del Babuino",
-          "titulo": "Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco",
-          "hora_corregida": "distancia: lo escrito era 19:45"
+          "titulo": "Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco"
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "20:55",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Il Gabriello",
           "alternativa": "Poldo e Gianna Osteria",
-          "zona": "en el Tridente",
-          "hora_corregida": "distancia: lo escrito era 20:30"
+          "zona": "en el Tridente"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:35",
+          "hora": "22:10",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -1651,18 +1637,16 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          },
-          "hora_corregida": "distancia: lo escrito era 22:10"
+          }
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "22:55",
+          "hora": "22:30",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Coliseo (noche)",
-          "hora_corregida": "distancia: lo escrito era 22:30"
+          "noche": "Coliseo (noche)"
         }
       ],
       "D": [
@@ -1731,7 +1715,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
           "hora": "11:35",
-          "min": 90,
+          "min": 65,
           "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1739,11 +1723,11 @@
           "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
           "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena",
-          "hora_corregida": "distancia: lo escrito era 11:30"
+          "hora_corregida": "distancia: lo escrito era 11:30 y 90 min"
         },
         {
           "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
-          "hora": "13:15",
+          "hora": "12:50",
           "min": 25,
           "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
           "como_documento": "",
@@ -1755,7 +1739,7 @@
         },
         {
           "id": "parada_terraza_del_pincio",
-          "hora": "14:05",
+          "hora": "13:40",
           "min": 20,
           "texto_documento": "Terraza del Pincio",
           "como_documento": "",
@@ -1766,7 +1750,7 @@
         },
         {
           "id": "comida_sgarro_bistrot",
-          "hora": "14:45",
+          "hora": "14:20",
           "min": 60,
           "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
           "como_documento": "",
@@ -1777,7 +1761,7 @@
         },
         {
           "id": "parada_piazza_del_popolo",
-          "hora": "16:05",
+          "hora": "15:40",
           "min": 15,
           "texto_documento": "Piazza del Popolo",
           "como_documento": "",
@@ -1788,7 +1772,7 @@
         },
         {
           "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
-          "hora": "16:35",
+          "hora": "16:10",
           "min": 20,
           "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
           "como_documento": "por dentro",
@@ -1801,7 +1785,7 @@
         },
         {
           "id": "parada_ara_pacis",
-          "hora": "17:15",
+          "hora": "16:50",
           "min": 45,
           "texto_documento": "Ara Pacis (última entrada 18:30)",
           "como_documento": "por dentro",
@@ -1813,7 +1797,7 @@
         },
         {
           "id": "parada_via_condotti",
-          "hora": "18:10",
+          "hora": "17:45",
           "min": 10,
           "texto_documento": "Via Condotti",
           "como_documento": "de camino",
@@ -1824,7 +1808,7 @@
         },
         {
           "id": "parada_plaza_de_espana",
-          "hora": "18:40",
+          "hora": "18:15",
           "min": 20,
           "texto_documento": "Plaza de España",
           "como_documento": "",
@@ -1835,8 +1819,8 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_tridente_via_margutta_via_del_babuino_via_della_croce_y_el_caffe_greco",
-          "hora": "19:20",
-          "min": 60,
+          "hora": "18:55",
+          "min": 50,
           "texto_documento": "Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -1844,11 +1828,11 @@
           "tipo": "paseo",
           "lugar": "Via del Babuino",
           "titulo": "Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco",
-          "hora_corregida": "distancia: lo escrito era 18:55"
+          "hora_corregida": "distancia: lo escrito era 18:55 y 60 min"
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
-          "hora": "20:40",
+          "hora": "20:05",
           "min": 30,
           "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
           "como_documento": "por fuera (la iglesia cierra a las 19:45)",
@@ -1856,36 +1840,33 @@
           "lugar": "Trinità dei Monti",
           "titulo": "Trinità dei Monti y su mirador, al atardecer",
           "modo": "fuera",
-          "atardecer": true,
-          "hora_corregida": "distancia: lo escrito era 20:05"
+          "atardecer": true
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
-          "hora": "21:10",
+          "hora": "20:40",
           "min": 5,
           "texto_documento": "Bajar la escalinata de la Plaza de España",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza de España",
           "titulo": "Bajar la escalinata de la Plaza de España",
-          "modo": "camino",
-          "hora_corregida": "distancia: lo escrito era 20:40"
+          "modo": "camino"
         },
         {
           "id": "cena_il_gabriello",
-          "hora": "21:30",
+          "hora": "21:00",
           "min": 90,
           "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Il Gabriello",
           "alternativa": "Poldo e Gianna Osteria",
-          "zona": "en el Tridente",
-          "hora_corregida": "distancia: lo escrito era 21:00"
+          "zona": "en el Tridente"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "23:10",
+          "hora": "22:40",
           "min": 10,
           "texto_documento": "Taxi al Coliseo",
           "como_documento": "",
@@ -1893,18 +1874,16 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          },
-          "hora_corregida": "distancia: lo escrito era 22:40"
+          }
         },
         {
           "id": "noche_coliseo_noche",
-          "hora": "23:30",
+          "hora": "23:00",
           "min": 20,
           "texto_documento": "Coliseo iluminado",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Coliseo (noche)",
-          "hora_corregida": "distancia: lo escrito era 23:00"
+          "noche": "Coliseo (noche)"
         }
       ]
     }

@@ -1030,6 +1030,17 @@
       "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
     },
     {
+      "archivo": "dia_cripta_capuchinos.jpg",
+      "lugares": [
+        "Cripta de los Capuchinos"
+      ],
+      "cuando": "dia",
+      "sitio": "Cripta de los Capuchinos (Via Veneto; la entrada, sin fotos dentro)",
+      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)",
+      "estrella": true,
+      "nota": "Sitio nuevo de la Tanda 4 (el lunes con la Galería cerrada)."
+    },
+    {
       "archivo": "dia_reloj_de_agua_pincio.jpg",
       "lugares": [
         "Reloj de agua del Pincio"

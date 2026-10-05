@@ -457,7 +457,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
           "hora": "18:25",
-          "min": 60,
+          "min": 55,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -465,18 +465,17 @@
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati",
-          "hora_corregida": "distancia: lo escrito era 18:15"
+          "hora_corregida": "distancia: lo escrito era 18:15 y 60 min"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "19:45",
+          "hora": "19:40",
           "min": 20,
           "texto_documento": "Puente Sant'Angelo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "hora_corregida": "distancia: lo escrito era 19:40"
+          "modo": "atardecer"
         },
         {
           "id": "cena_l_arcangelo",
@@ -551,7 +550,7 @@
         },
         {
           "id": "cena_l_arcangelo",
-          "hora": "19:40",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
@@ -563,7 +562,7 @@
         },
         {
           "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
-          "hora": "21:30",
+          "hora": "21:50",
           "min": 30,
           "texto_documento": "El Puente y el Castillo de Sant'Angelo iluminados",
           "como_documento": "de noche",

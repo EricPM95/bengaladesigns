@@ -53,10 +53,17 @@ const POR_DEFECTO = [
   // «Prefiero quedarme en Roma»: el día de excursión pasa a D6 (5 días) o D7 (6 días)
   '5-quedarme|5 días · quedarme en Roma|2027-07-14|5|||1||',
   '6-quedarme|6 días · quedarme en Roma|2027-04-14|6|||1||',
+  // Excursión de medio día (Tanda 4): de 8:00 a 14:00 la excursión y desde las 16:00 la tarde del día que sustituye a la de día completo (D5 en 4 días, D6 en 5, D7 en 6)
+  '4-media-invierno|4 días · excursión de medio día (Ostia) · invierno|2027-01-12|4||||||ostia_antica',
+  '4-media-verano|4 días · excursión de medio día (Tívoli) · verano|2027-07-12|4||||||tivoli_villas',
+  '5-media-invierno|5 días · excursión de medio día (Ostia) · invierno|2027-01-10|5||||||ostia_antica',
+  '5-media-verano|5 días · excursión de medio día (Tívoli) · verano|2027-07-14|5||||||tivoli_villas',
+  '6-media-invierno|6 días · excursión de medio día (Tívoli) · invierno|2027-01-12|6||||||tivoli_villas',
+  '6-media-verano|6 días · excursión de medio día (Ostia) · verano|2027-07-10|6||||||ostia_antica',
 ]
 const viajes = (args.filter((x) => x.startsWith('viaje=')).length ? args.filter((x) => x.startsWith('viaje=')).map((x) => x.slice(6)) : POR_DEFECTO).map((linea) => {
-  const [id, tag, inicio, dias, medio, ft, quedarme, exp, pool] = linea.split('|')
-  return { id, tag, inicio, dias: Number(dias), medio: medio === 'manana' || medio === 'tarde' ? medio : null, ft: ft === '1', quedarme: quedarme === '1', exp: (exp ?? '').split(',').filter(Boolean), pool: (pool ?? '').split(',').filter(Boolean) }
+  const [id, tag, inicio, dias, medio, ft, quedarme, exp, pool, mediaExc] = linea.split('|')
+  return { id, tag, inicio, dias: Number(dias), medio: medio === 'manana' || medio === 'tarde' ? medio : null, ft: ft === '1', quedarme: quedarme === '1', exp: (exp ?? '').split(',').filter(Boolean), pool: (pool ?? '').split(',').filter(Boolean), mediaExc: mediaExc || null }
 })
 
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -149,7 +156,7 @@ for (const viaje of viajes) {
   const fechas = Array.from({ length: viaje.dias }, (_, n) => addDays(viaje.inicio, n))
   const positivas = ['imprescindibles', ...(viaje.ft ? ['free_tour'] : []), ...viaje.exp]
   const days = []
-  for (let d = 1; d <= viaje.dias; d++) days.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, viaje.inicio, viaje.pool, positivas, { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ? { franja: viaje.medio, salida: '15:00' } : null, sinExcursion: viaje.quedarme }))
+  for (let d = 1; d <= viaje.dias; d++) days.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, viaje.inicio, viaje.pool, positivas, { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ? { franja: viaje.medio, salida: '15:00' } : null, sinExcursion: viaje.quedarme, mediaExcursion: viaje.mediaExc ? { id: viaje.mediaExc, dia: viaje.dias === 4 ? 4 : null } : null }))
   const ids = days.map((day) => day?.curated_day?.id ?? null)
   const sunset = sunsetFor(D, { dateIso: viaje.inicio })
   for (const [i, day] of days.entries()) {
@@ -161,6 +168,7 @@ for (const viaje of viajes) {
       continue
     }
     const esMedio = /medio/.test(id)
+    const excMedia = day.half_day_excursion ? (day.half_day_excursion.id === 'ostia_antica' ? 'Excursión a Ostia Antica (medio día)' : 'Excursión a Tívoli: Villa d’Este y Villa Adriana (medio día)') : null
     const parte = esMedio ? (viaje.medio === 'tarde' ? 'Tarde · llegada' : 'Mañana · salida') : 'Día entero'
     const quitadas = (day.engine_log ?? []).filter((x) => x.que === 'quitada').map((x) => `${x.lugar} (${x.causa})`)
     const avisos = (day.engine_log ?? []).filter((x) => x.que === 'aviso').map((x) => x.causa)
@@ -169,7 +177,7 @@ for (const viaje of viajes) {
       parte,
       codigo: `${id} · ${(day.curated_day?.variants ?? []).join(' · ')}`,
       nota: [`Sol a las ${toHHMM(sol)} (versión ${letraDe(sol)}).`, quitadas.length ? `El motor quita: ${quitadas.join('; ')}.` : null, avisos.length ? `A vigilar: ${avisos.join('; ')}.` : null, (day.not_included ?? []).length ? `No incluido: ${day.not_included.map((n) => n.name + (n.reason ? ` (${n.reason})` : '')).join('; ')}.` : null].filter(Boolean).join(' '),
-      stops: filasDelDia(day),
+      stops: [...(excMedia ? [{ h: day.half_day_excursion.starts_at, n: excMedia, m: 360, c: 'excursión', t: 'visita', ch: 'De 8:00 a 14:00 fuera de Roma; la comida va en el bloque «¿Tu excursión incluye comida?» y de 14:00 a 16:00 se descansa.', why: '' }] : []), ...filasDelDia(day), ...(day.afternoon_free ? [{ h: day.half_day_excursion.route_starts_at, n: 'Tu tarde en Roma está libre — Añadir parada', m: 0, c: '', t: 'colchon', ch: 'De esa tarde no queda ninguna parada de nivel 1 o 2.', why: '' }] : [])].sort((a, b) => toMin(a.h) - toMin(b.h)),
     })
   }
   const primeraVersion = (days[ids.findIndex((id) => id && !/medio/.test(id))]?.curated_day?.variants ?? [])[0] ?? letraDe(sunset)

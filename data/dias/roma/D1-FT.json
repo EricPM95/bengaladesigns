@@ -175,7 +175,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
           "hora": "19:35",
-          "min": 35,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -183,7 +183,7 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado",
-          "hora_corregida": "distancia: lo escrito era 18:55"
+          "hora_corregida": "distancia: lo escrito era 18:55 y 35 min"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
@@ -582,7 +582,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
           "hora": "17:40",
-          "min": 60,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -590,11 +590,11 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere",
-          "hora_corregida": "distancia: lo escrito era 17:10"
+          "hora_corregida": "distancia: lo escrito era 17:10 y 60 min"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "18:50",
+          "hora": "18:20",
           "min": 5,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "de camino",
@@ -605,7 +605,7 @@
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "19:10",
+          "hora": "18:40",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
@@ -616,7 +616,7 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:50",
+          "hora": "19:20",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
@@ -627,7 +627,7 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "20:55",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
@@ -638,7 +638,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:35",
+          "hora": "22:10",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -651,7 +651,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:55",
+          "hora": "22:30",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -853,7 +853,7 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "21:45",
+          "hora": "22:00",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
@@ -864,7 +864,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "23:25",
+          "hora": "23:40",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -877,7 +877,7 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "23:45",
+          "hora": "24:00",
           "min": 15,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
@@ -1513,7 +1513,7 @@
                 "hora_corregida": "distancia: lo escrito era 19:10"
               },
               {
-                "hora": "20:10",
+                "hora": "20:30",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
@@ -1523,7 +1523,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:00"
               },
               {
-                "hora": "21:50",
+                "hora": "22:10",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -1535,7 +1535,7 @@
                 "hora_corregida": "distancia: lo escrito era 21:40"
               },
               {
-                "hora": "22:10",
+                "hora": "22:30",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -1544,7 +1544,7 @@
                 "hora_corregida": "distancia: lo escrito era 22:05"
               },
               {
-                "hora": "22:50",
+                "hora": "23:10",
                 "min": 20,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
@@ -2183,7 +2183,7 @@
                 "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
-                "hora": "20:55",
+                "hora": "21:00",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
@@ -2193,7 +2193,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "22:35",
+                "hora": "22:40",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -2205,7 +2205,7 @@
                 "hora_corregida": "distancia: lo escrito era 21:55"
               },
               {
-                "hora": "22:55",
+                "hora": "23:00",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -2214,7 +2214,7 @@
                 "hora_corregida": "distancia: lo escrito era 22:20"
               },
               {
-                "hora": "23:35",
+                "hora": "23:40",
                 "min": 5,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de camino",
@@ -2408,7 +2408,7 @@
                 "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
-                "hora": "20:55",
+                "hora": "21:00",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
@@ -2418,7 +2418,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "22:35",
+                "hora": "22:40",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -2430,7 +2430,7 @@
                 "hora_corregida": "distancia: lo escrito era 21:55"
               },
               {
-                "hora": "22:55",
+                "hora": "23:00",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
@@ -2624,7 +2624,7 @@
                 "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
-                "hora": "20:55",
+                "hora": "21:00",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
@@ -2634,7 +2634,7 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "22:35",
+                "hora": "22:40",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -2646,7 +2646,7 @@
                 "hora_corregida": "distancia: lo escrito era 21:55"
               },
               {
-                "hora": "22:55",
+                "hora": "23:00",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",

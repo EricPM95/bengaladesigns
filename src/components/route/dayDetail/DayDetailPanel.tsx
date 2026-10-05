@@ -55,7 +55,7 @@ import { AddStopScreen } from '../addStop/AddStopScreen'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { MealDetailSheet } from './MealDetailSheet'
-import { organizarDiaEnCiudad } from '../../../lib/rebuildDay'
+import { organizarDiaConMediaJornada, organizarDiaEnCiudad } from '../../../lib/rebuildDay'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
 import { WantInsideDialog, useWantInside } from './WantInsideDialog'
@@ -837,7 +837,7 @@ export function DayDetailPanel({
     : null
   const excursionEnteraEnBlanco = excursionElegidaEnBlanco?.length === 'full-day' ? excursionElegidaEnBlanco : null
   /** Media jornada a mano y todavía sin paradas por la tarde: hay que ofrecerle montarla. */
-  const tardeLibreEnBlanco = esDiaEnBlanco && halfDayExcursion !== null && stops.length === 0
+  const tardeLibreEnBlanco = (esDiaEnBlanco && halfDayExcursion !== null && stops.length === 0) || (day.afternoonFree === true && halfDayExcursion !== null)
   // Dónde se ofrecen restaurantes al volver de la excursión: donde empieza la tarde.
   const halfDayLunchCoordinates = realStops.find((realStop) => hasRealCoordinates(realStop.coordinates))?.coordinates ?? cityCenter
   /** ¿Está el día enseñando su lista de paradas? Lo comparten la lista y el hueco de fin de día. */
@@ -1253,7 +1253,8 @@ export function DayDetailPanel({
                   options={excursionOptions}
                   selectedId={day.selectedExcursionId ?? null}
                   socialProof={day.excursionSocialProof}
-                  onSelect={(id) => selectDayExcursion(day.id, id)}
+                  // (Una excursión de medio día no es el día entero: el día pasa a ser el de ciudad que la sustituye, con su tarde desde las 16:00.)
+                  onSelect={(id) => (excursionOptions.find((option) => option.id === id)?.length === 'half-day' ? void organizarDiaConMediaJornada(day.id, id) : selectDayExcursion(day.id, id))}
                   // Rechazar no decide por el viajero: "ruta" devuelve el día a ciudad (el motor ya
                   // tiene el core day desplazado esperando, así que no queda vacío ni repetido) y
                   // "vacío" lo deja libre para que lo monte él.

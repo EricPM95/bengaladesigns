@@ -197,3 +197,18 @@ export function comprobarCamino({ D, dias, tourCubre = new Set() }) {
   return { fallos, info, tarjetas, dias: dias_n }
 }
 const GENERICAS = new Set(['terraza', 'plaza', 'iglesia', 'parque', 'fuente', 'fontana', 'basilica', 'museos', 'museo', 'puente', 'castillo', 'piazza', 'mirador', 'jardin', 'jardines', 'paseo', 'pasea', 'pierdete', 'calle', 'desde', 'luces', 'noche', 'viale', 'barrio'])
+
+/** 8. Excursión de medio día: de 8:00 a 14:00 el viajero está fuera (ninguna parada ni comida antes de las 16:00), la tarde es la del día que sustituye a la excursión y, sin ninguna parada de nivel 1 o 2, queda libre. */
+export function comprobarMediaJornada({ D, iso, id, day, esperadoId }) {
+  const fallos = []
+  const donde = `${iso} ${id}`
+  if (!day?.half_day_excursion) return [{ regla: 'media_jornada', texto: `${donde}: el día no lleva la excursión de medio día` }]
+  if (esperadoId && id !== esperadoId) fallos.push({ regla: 'media_jornada', texto: `${donde}: la tarde es la de ${id} y toca la de ${esperadoId}` })
+  const inicio = toMin(day.half_day_excursion.route_starts_at)
+  for (const stop of day.stops ?? []) if (!stop.is_night_experience && toMin(stop.suggested_time) < inicio) fallos.push({ regla: 'media_jornada', texto: `${donde}: «${stop.display_title ?? stop.name}» a las ${stop.suggested_time}, antes de las ${day.half_day_excursion.route_starts_at}` })
+  for (const meal of day.meals ?? []) if (meal.time === 'lunch') fallos.push({ regla: 'media_jornada', texto: `${donde}: lleva comida: la comida de esa excursión es el bloque «¿Tu excursión incluye comida?»` })
+  const buenas = (day.stops ?? []).filter((stop) => !stop.is_night_experience && !stop.pass_through && (D.places.find((place) => place.name === (stop.site_id ? D.places.find((p) => p.id === stop.site_id)?.name : stop.name))?.level ?? 3) <= 2)
+  if (buenas.length === 0 && !day.afternoon_free) fallos.push({ regla: 'media_jornada', texto: `${donde}: sin paradas de nivel 1 o 2 y la tarde no sale libre` })
+  if (buenas.length > 0 && day.afternoon_free) fallos.push({ regla: 'media_jornada', texto: `${donde}: sale «tarde libre» y tiene paradas de nivel 1 o 2` })
+  return fallos
+}

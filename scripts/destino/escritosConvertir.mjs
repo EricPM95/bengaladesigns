@@ -566,6 +566,20 @@ if (!soloComprobar && !process.argv.includes('--sin-distancias')) {
   l.push('', '## Sin corregir (corriendo solo las horas no se puede)', '')
   for (const x of fijos) l.push(`- **${x.dia}** (${x.donde}): ${x.tramo}: andando ${x.andar} min; faltan ${x.falta} min para llegar a las ${x.hora} (${x.porque})`)
   fs.writeFileSync(root + 'docs/dias/DISTANCIAS_TANDA3.md', l.join('\n') + '\n')
+  // La propuesta (Tanda 4): por cada tabla que cambia, la fila del documento → la fila nueva. El documento no se toca: lo pasa el usuario y las tablas quedan iguales.
+  {
+    const porTabla = new Map()
+    for (const x of distancias.cambios) porTabla.set(`${x.dia}|${x.donde}`, [...(porTabla.get(`${x.dia}|${x.donde}`) ?? []), x])
+    const p = ['# Distancias: propuesta para el documento (Tanda 4)', '', 'Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el margen, **primero se acorta el colchón de antes** (sin bajar de 30 min; si ya tiene menos, no se toca) y lo que va entre el colchón y ese tramo se adelanta lo mismo; **solo si no basta se corre lo de después**. La cena va siempre a en punto o a y media (hacia arriba). El documento no se ha tocado: cada línea es la fila como está ahora en `DIAS_ESCRITOS_ROMA.md` → la fila nueva, por tabla. Si la pasas al documento, las tablas quedan iguales a lo que saca el motor.', '', `${porTabla.size} tablas cambian.`, '']
+    for (const [clave, lista] of porTabla) {
+      const [dia, donde] = clave.split('|')
+      p.push(`### ${dia} · ${donde}`, '', '| Documento | Nuevo |', '|---|---|')
+      for (const x of lista) p.push(`| ${x.de} · ${x.texto ?? x.fila} · ${x.min_de} min | ${x.a} · ${x.texto ?? x.fila} · ${x.min_a} min |`)
+      p.push('')
+    }
+    if (distancias.fijos.length) { p.push('## Sin arreglo (hay que decidir en el documento)', ''); for (const x of unicos(distancias.fijos, (f) => `${f.dia}|${f.tramo}|${f.hora}`)) p.push(`- **${x.dia}** (${x.donde}): ${x.tramo}: faltan ${x.falta} min para llegar a las ${x.hora} (${x.porque})`); p.push('') }
+    fs.writeFileSync(root + 'docs/dias/DISTANCIAS_PROPUESTA.md', p.join(String.fromCharCode(10)) + String.fromCharCode(10))
+  }
   console.log(`distancias: ${cambios.length} corregidas, ${fijos.length} sin corregir (fila fija)`)
 }
 console.log(`tablas ${tables.length}, días ${Object.keys(out).length}, filas copiadas ${filas}`)

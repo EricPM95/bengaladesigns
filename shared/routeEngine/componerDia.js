@@ -27,6 +27,7 @@ export const COMIDA_MAXIMA = 75
 export const COMIDA_MINIMA = 45
 /** Lo que se tolera que llegue tarde el mirador del atardecer (el sol menos 25 min): pasado esto se quita por la pirámide lo que no cabe. */
 const TARDE_SOLAR = 10
+const SOL_MUY_TARDE = 45
 const LUNCH_EARLIEST = 12 * 60 + 30
 
 /** Lo menos que puede durar un colchón: no baja de 30 min; si ya dura menos, no se toca (decisión del usuario, Tanda 4). */
@@ -263,6 +264,8 @@ function componer(rows0, env, retrasos) {
       }
       // (Con el colchón recortado puede que ahora sobre tiempo: la hora del sol manda y el hueco se llena con nombre en la pasada final.)
       if (flexible === 'solar' && sbMin <= sb) return { inner: colocadas, sb }
+      // (Si el sol se adelanta más de 45 min a lo que la tarde puede dar de sí, lo que no cabe se quita por la pirámide, de abajo arriba, como antes de una reserva.)
+      if (flexible === 'solar' && sbMin - sb > SOL_MUY_TARDE) return quitarPorPiramide(colocadas, Fa, Fb, sb)
       if (flexible === 'solar') avisos.push(`el atardecer de ${nombreDe(Fb)} llega ${sbMin - sb} min tarde: no se puede acortar más`)
       return { inner: colocadas, sb: flexible === 'cena' ? Math.min(sbMin, Math.max(CENA_MAXIMA, sb)) : sbMin }
     }
@@ -295,9 +298,30 @@ function componer(rows0, env, retrasos) {
         }
         if (!mejoro) break
       }
+      // Y lo que se quitó vuelve si cabe (el último quitado primero): quitar de más tampoco vale.
+      const quitadasIds = r.quitadas.map((q) => q.id)
+      for (const id of [...quitadasIds].reverse()) {
+        const presentes = new Map(actual.rows.map((row) => [row.id, row]))
+        const candidata = prueba.filter((row) => presentes.has(row.id) || row.id === id).map((row) => (presentes.has(row.id) ? presentes.get(row.id) : { ...row }))
+        const intento = correrHoras(candidata, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (fila) => fila.llegada === true })
+        if (intento.problemas.length === 0 && intento.quitadas.length === 0) {
+          actual = { ...actual, rows: intento.rows }
+          const k = r.quitadas.findIndex((q) => q.id === id)
+          if (k >= 0) r.quitadas.splice(k, 1)
+        }
+      }
       r.rows = actual.rows
     }
-    const interior = r.rows.slice(Fa ? 1 : 0, r.rows.length - 1)
+    let interior = r.rows.slice(Fa ? 1 : 0, r.rows.length - 1)
+    // (Correr las horas hacia antes no mira lo que abre: lo que quedó a una hora cerrada empieza cuando abre y lo de después corre lo que haga falta.)
+    if (env.abierta && interior.some((row) => !env.abierta(row, toMin(row.hora), row.min))) {
+      interior = interior.map((row) => {
+        let inicio = toMin(row.hora)
+        for (let paso = 0; paso < 24 && !env.abierta(row, inicio, row.min); paso++) inicio += 5
+        return inicio === toMin(row.hora) ? row : { ...row, hora: toHHMM(inicio) }
+      })
+      interior = colocar(interior, Fa)
+    }
     for (const row of interior) {
       const antes = colocadas.find((x) => x.id === row.id)
       if (antes && (antes.hora !== row.hora || antes.min !== row.min)) nota(row, `los márgenes (lo andado más 10 min) antes de ${nombreDe(Fb)}`)
@@ -384,7 +408,7 @@ function componer(rows0, env, retrasos) {
       }
       if (g <= HUECO_MAXIMO) { i++; continue }
       const previa = salida[i - 1]
-      const molde = previa.tipo === 'traslado' ? null : env.colchonZona?.(previa) ?? env.colchonZona?.(b)
+      const molde = previa.tipo === 'traslado' ? env.colchonZona?.(b) : env.colchonZona?.(previa) ?? env.colchonZona?.(b)
       if (molde) {
         const probe = { ...molde, tipo: 'paseo', hora: toHHMM(0), min: 10 }
         const inicio = up5(finDe(previa) + hueco(previa, probe, walk))

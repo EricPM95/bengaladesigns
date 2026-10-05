@@ -212,6 +212,8 @@ export interface GeneratedDay {
   dinner_walk_minutes?: number | null
   /** Solo días de revisitas con excursión de medio día — ver HalfDayExcursionSlot. */
   half_day_excursion?: { id: string; starts_at: string; ends_at: string; route_starts_at: string } | null
+  /** Con excursión de medio día: de la tarde no queda ninguna parada de nivel 1 o 2 (DayPlan.afternoonFree). */
+  afternoon_free?: boolean
   /** Motor v3: los ratos con nombre (descanso de después de comer…) — DayPlan.freeTimes. */
   free_times?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
@@ -714,6 +716,7 @@ function mapDay(
           routeStartsAt: generated.half_day_excursion.route_starts_at,
         }
       : null,
+    ...(generated.afternoon_free ? { afternoonFree: true } : {}),
     dayNotice: generated.day_notice ?? null,
     transferNotice: generated.transfer_notice ?? null,
     dinnerWalkMinutes: generated.dinner_walk_minutes ?? null,

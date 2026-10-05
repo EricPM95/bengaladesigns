@@ -339,8 +339,8 @@ async function buildDayBlockV3Inner(
   const written = curated && useWrittenDays(options.engine) ? writtenDaysFor(destKey) : null
   // «Prefiero quedarme en Roma» (tanda 3): el día de excursión pasa a ser de ciudad (D6 en 5 días, D7 en 6) y los demás días se quedan como estaban: se pide el mismo orden de siempre con el día nuevo
   // en el hueco de la excursión (así el viaje que ya está en pantalla no se reordena por el día que entra).
-  const forceOrder = options.forceOrder ?? (written && options.sinExcursion === true ? ordenSinExcursion(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null)
-  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, sinExcursion: options.sinExcursion === true }) : null
+  const forceOrder = options.forceOrder ?? (written && (options.sinExcursion === true || options.mediaExcursion?.id) ? ordenSinExcursion(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null)
+  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, sinExcursion: options.sinExcursion === true, mediaExcursion: options.mediaExcursion?.id ? { id: options.mediaExcursion.id, dia: options.mediaExcursion.dia ?? null } : null }) : null
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
@@ -384,7 +384,7 @@ async function buildDayBlockV3Inner(
     }
     day.excursion_social_proof = config.excursion_social_proof ?? null
     // «Prefiero quedarme en Roma» (tanda 3): el día de ciudad que entraría en lugar de la excursión, con sus paradas emblemáticas para la pantalla.
-    if (writtenPlan && options.sinExcursion !== true) {
+    if (writtenPlan && options.sinExcursion !== true && !options.mediaExcursion?.id) {
       const stay = quedarmeEnCiudad(written, destData, writtenPlan, hasFreeTour, calendar.dateOfDay(dayNumber), options.season ?? null)
       if (stay) day.stay_in_city = stay
     }

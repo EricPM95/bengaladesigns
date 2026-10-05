@@ -363,6 +363,8 @@ interface RouteStoreState {
   replaceDayRebuilt: (dayId: string, day: DayPlan) => void
   /** «Prefiero quedarme en Roma» → «Organízame este día»: el día de excursión pasa a ser el día de ciudad que trae el servidor, y el viaje se acuerda de que ya no lleva excursión. */
   replaceExcursionWithCityDay: (dayId: string, day: DayPlan) => void
+  /** El día de excursión pasa a ser el día de ciudad con una excursión de MEDIO día (de 8:00 a 14:00) y su tarde desde las 16:00. */
+  replaceExcursionWithHalfDay: (dayId: string, day: DayPlan, excursionId: string, dia: number | null) => void
   /** "Volver a la ruta original": el día exactamente como lo dio el motor (su copia), sin regenerar. */
   restoreOriginalDay: (dayId: string) => void
   /** "Volver a mi ruta original" (la varita del mapa): el viaje entero como se creó, su copia guardada, sin recalcular. */
@@ -769,6 +771,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => (state.route ? { route: reapplyReservations({ ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)) }, state.reservations) } : state)),
   replaceExcursionWithCityDay: (dayId, day) =>
     set((state) => (state.route ? { route: reapplyReservations({ ...state.route, answers: { ...state.route.answers, sinExcursion: true }, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null, selectedExcursionId: null, excursionDeclined: true } : other)) }, state.reservations) } : state)),
+  replaceExcursionWithHalfDay: (dayId, day, excursionId, dia) =>
+    set((state) => (state.route ? { route: reapplyReservations({ ...state.route, answers: { ...state.route.answers, mediaExcursion: { id: excursionId, dia } }, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null, selectedExcursionId: null, excursionDeclined: true } : other)) }, state.reservations) } : state)),
   restoreOriginalDay: (dayId) =>
     set((state) => {
       if (!state.route) return state
