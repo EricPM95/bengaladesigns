@@ -42,6 +42,15 @@ export function anadirExtras(out, { T }) {
   // La mañana del Día de la Roma antigua (hasta la comida, sin ella): la que lleva el viaje de 1,5 días con el Coliseo en el pool.
   const mananaD1 = copia(d1.AB.slice(0, d1.AB.findIndex((row) => row.tipo === 'comida')))
 
+  // ── Lo que le va mal a cada día en una fecha (orden de los días: si se puede cambiar con otro día del viaje, se cambian) ──────────────
+  const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
+  out['D2'].fechas_malas = { dias_semana: ['domingo', 'miercoles'], cerrado: [MUSEOS] }
+  out['D3'].fechas_malas = { dias_semana: ['domingo'], cerrado: [MUSEOS] }
+  out['D1'].fechas_malas = { fechas: ['06-02', '12-25'] }
+  out['D1-FT'].fechas_malas = { fechas: ['06-02', '12-25'] }
+  // Si no cabe todo, se quita por este orden (Roma en un día; sin pool nunca se quitan San Pedro, el Panteón, Trevi ni el Coliseo).
+  out['D0'].orden_quitar = ['Via dei Fori Imperiali', 'Via della Conciliazione', 'Foro Romano y Palatino', 'Plaza del Campidoglio', 'Altar de la Patria']
+
   // ── D1: el Día de la Roma antigua (2 días) ──────────────────────────────────────────────────
   // (Los extras con tabla escrita para las tardes A y B: en C, igual; en D, hasta San Luigi y luego la tarde D desde Piazza Navona.)
   const tablasD1 = (rows) => ({ AB: rows, C: copia(rows), D: [...hastaIncluido(rows, 'Iglesia de San Luigi dei Francesi'), ...copia(desdeLugar(d1.D, 'Piazza Navona'))] })

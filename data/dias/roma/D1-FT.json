@@ -822,6 +822,12 @@
       ]
     }
   },
+  "fechas_malas": {
+    "fechas": [
+      "06-02",
+      "12-25"
+    ]
+  },
   "pool": {
     "Boca de la Verdad": {
       "franja": "tarde",

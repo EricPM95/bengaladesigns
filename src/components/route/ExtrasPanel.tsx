@@ -38,8 +38,8 @@ export function ExtrasPanel({ dayId, items, defaultTime }: ExtrasPanelProps) {
           {pending.map((item) => (
             <div key={item.id} className="rounded-xl border border-border p-3">
               <p className="text-body font-medium text-text">{item.name}</p>
-              <p className="mt-0.5 text-small italic text-text-soft">"{item.reason}"</p>
-              <p className="mt-0.5 text-small text-text-soft">→ {item.suggestion}</p>
+              {item.reason ? <p className="mt-0.5 text-small italic text-text-soft">"{item.reason}"</p> : null}
+              {item.suggestion ? <p className="mt-0.5 text-small text-text-soft">→ {item.suggestion}</p> : null}
               <button
                 type="button"
                 onClick={() => handleAdd(item)}

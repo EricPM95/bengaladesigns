@@ -20,9 +20,12 @@ export const MARGENES = {
   RESERVA_ANTES: 30,
   BUS_ANTES: 15,
   TAXI_TRAS_CENA: 10,
-  TRAS_TRASLADO: 15,
+  TRAS_TRASLADO: 10, // (el documento: «Bus o taxi: el trayecto más 10 min de espera»; antes 15, que empujaba 5 min la nocturna de las tablas nuevas)
   COLCHON_MINIMO: 10,
 }
+
+/** La cena se retrasa lo que haga falta, pero no más allá de las 22:00 (después de un Free Tour tardío, por ejemplo); si pasara de ahí se avisa en el informe. */
+export const CENA_MAXIMA = 22 * 60
 
 export const finDe = (row) => toMin(row.hora) + row.min
 export const esAncla = (row) => row.tipo === 'tour' || row.hora_tipo === 'turno' || row.hora_tipo === 'reserva' || (row.tipo === 'cena' && !row.flujo) || row.fija === true
@@ -41,7 +44,8 @@ export function antesDeLlegar(row) {
  * @param {(a: object, b: object) => number} taxi  minutos de un taxi entre dos filas
  */
 export function hueco(prev, next, walk) {
-  if (next.tipo === 'traslado') return prev.tipo === 'cena' ? MARGENES.TAXI_TRAS_CENA : MARGENES.BUS_ANTES
+  // (Un taxi llega en 10 min; el bus se espera 15: las tablas del documento dejan 10 antes de un taxi y 15 antes de un bus.)
+  if (next.tipo === 'traslado') return prev.tipo === 'cena' || (/taxi/.test(String(next.traslado?.como ?? '')) && !/bus/.test(String(next.traslado?.como ?? ''))) ? MARGENES.TAXI_TRAS_CENA : MARGENES.BUS_ANTES
   if (prev.tipo === 'traslado') return MARGENES.TRAS_TRASLADO
   const andar = walk(prev, next)
   // «De camino»: solo lo que se anda.
@@ -56,14 +60,15 @@ export function hueco(prev, next, walk) {
  * del día (`orden`, de lo primero que se quita a lo último) y, si aun así no cabe, se avisa en `problemas`.
  * @returns {{ rows: object[], quitadas: object[], problemas: string[] }}
  */
-export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = () => false }) {
+export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = () => false, quitarImprescindibles = false, soloEmpujar = false }) {
   let lista = rows.map((row) => ({ ...row }))
   const quitadas = []
   const problemas = []
   const nuevoOrdenQuitar = (hasta = Infinity) => {
     // 1) el colchón (el último primero), 2) el orden del día, 3) lo de camino y los paseos del final de la tarde.
     // (Un imprescindible nunca se quita: se queda «de camino», 5 min; si ya está así, no es candidato.)
-    const yaMinimo = (row) => row.imprescindible === true && row.modo === 'camino' && row.min <= 5
+    // (Salvo con lo marcado en el pool de un viaje corto, que manda: entonces el imprescindible que ya está al mínimo también se puede quitar, el último primero.)
+    const yaMinimo = (row) => !quitarImprescindibles && row.imprescindible === true && row.modo === 'camino' && row.min <= 5
     const candidatos = lista.map((row, i) => ({ row, i })).filter(({ row, i }) => i >= desde && i < hasta && !protegidas(row) && !esAncla(row) && !yaMinimo(row) && row.tipo !== 'comida' && row.tipo !== 'noche' && row.tipo !== 'traslado')
     for (const clave of orden) {
       const hit = candidatos.find(({ row }) => row.lugar === clave || row.id === clave)
@@ -71,11 +76,16 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
     }
     // Sin orden escrito (decisión del usuario, 5-oct-2026): el colchón, lo de camino, los paseos, lo que va por fuera y el resto, por dentro lo último; siempre lo último del día primero.
     const rango = (row) => (row.colchon ? 0 : row.modo === 'camino' ? 1 : row.tipo === 'paseo' || row.tipo === 'desayuno' ? 2 : row.modo === 'fuera' ? 3 : row.modo === 'dentro' ? 5 : 4)
-    const elegidos = candidatos.sort((x, y) => rango(x.row) - rango(y.row) || y.i - x.i)
+    // Regla general del documento (tanda 2): mientras se respeten los márgenes entran el nivel 1, luego el 2 y luego el 3; si algo no cabe, se quita al revés (3, luego 2, luego 1).
+    // (El colchón primero, siempre; los paseos y desayunos no son un sitio: cuentan como nivel 3.)
+    const nivel = (row) => (row.tipo === 'paseo' || row.tipo === 'desayuno' ? 3 : row.nivel ?? 3)
+    const elegidos = candidatos.sort((x, y) => (x.row.colchon ? 0 : 1) - (y.row.colchon ? 0 : 1) || nivel(y.row) - nivel(x.row) || rango(x.row) - rango(y.row) || y.i - x.i)
     return elegidos[0] ?? null
   }
   for (let guard = 0; guard < 40; guard++) {
     let fallo = null
+    // (Pasada la primera fila anclada —la cena—, lo de después conserva las horas del documento y solo se retrasa si los márgenes no dejan llegar: el resto de la noche no se recalcula.)
+    let trasAncla = false
     for (let i = Math.max(1, desde); i < lista.length; i++) {
       const prev = lista[i - 1]
       const row = lista[i]
@@ -86,9 +96,11 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
           fallo = { i, deficit: llegada - limite }
           break
         }
+        trasAncla = true
         continue
       }
-      row.hora = toHHMM(llegada)
+      // (`soloEmpujar`: una tabla escrita entera conserva sus horas; solo se retrasa lo que los márgenes no dejan llegar a su hora.)
+      row.hora = toHHMM(soloEmpujar || trasAncla ? Math.max(toMin(row.hora), llegada) : llegada)
     }
     if (!fallo) return { rows: lista, quitadas, problemas }
     // Acortar el colchón de antes (el más cercano primero).
@@ -113,8 +125,10 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
     }
     if (falta <= 0) continue
     // Una cena no se pierde: si no se llega a su hora ni acortando, se retrasa lo que haga falta.
-    if (lista[fallo.i].tipo === 'cena') {
-      lista[fallo.i] = { ...lista[fallo.i], hora: toHHMM(toMin(lista[fallo.i].hora) + up5(falta)) }
+    // (Hasta las 22:00: más tarde no, tanda 2; el resto se quita por el orden de abajo.)
+    if (lista[fallo.i].tipo === 'cena' && toMin(lista[fallo.i].hora) < CENA_MAXIMA) {
+      const retraso = Math.min(up5(falta), CENA_MAXIMA - toMin(lista[fallo.i].hora))
+      lista[fallo.i] = { ...lista[fallo.i], hora: toHHMM(toMin(lista[fallo.i].hora) + retraso) }
       continue
     }
     // Quitar por el orden del día.
@@ -124,7 +138,7 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
       // Se deja la hora escrita de la fila anclada: llegará tarde y la prueba lo marca.
       return { rows: lista, quitadas, problemas }
     }
-    if (hit.row.imprescindible === true) {
+    if (hit.row.imprescindible === true && !(hit.row.modo === 'camino' && hit.row.min <= 5)) {
       lista[hit.i] = { ...hit.row, modo: 'camino', min: 5 }
       continue
     }
@@ -146,7 +160,7 @@ export function claveLetra(tablas, letra) {
 /**
  * Qué tabla del día toca.
  * @param {object} day  el fichero del día (formato escrito)
- * @param {object} ctx  { letra, weekday, reservas: { lugar: 'HH:MM' }, freeTourHora, franja, llegada, mediaJornada }
+ * @param {object} ctx  { letra, weekday, dateIso, sunset, reservas: { lugar: 'HH:MM' }, pool: [lugares], freeTourHora, franja, llegada, mediaJornada, conFreeTour, museosCerrados }
  * @returns {{ version: string, clave: string, rows: object[], etiquetas: string[], notas: string[] }}
  */
 export function elegirTabla(day, ctx) {
@@ -158,42 +172,57 @@ export function elegirTabla(day, ctx) {
     return { version: grupo, clave, rows: tablas[clave].map((row) => ({ ...row })), etiquetas: [etiqueta ?? grupo, clave], notas }
   }
   const weekday = String(ctx.weekday ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  const mmdd = String(ctx.dateIso ?? '').slice(5)
   const reserva = (lugar) => (ctx.reservas?.[lugar] ? toMin(ctx.reservas[lugar]) : null)
+  const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
+  // Los Museos no abren el domingo (el último del mes, de 9:00 a 14:00, tampoco cuenta: el documento los trata como cerrados) ni en sus festivos.
+  const museosCierran = ctx.museosCerrados === true || weekday === 'domingo'
+  // Una reserva o el pool: lo marcado va por dentro y es la prioridad (1 y 1,5 días).
+  const marcado = (lugar) => reserva(lugar) != null || (ctx.pool ?? []).includes(lugar)
   switch (day.id) {
     case 'D0': {
       const coliseo = reserva('Coliseo')
       if (coliseo != null && coliseo < 13 * 60) return pick('reves', 'ruta_del_reves')
-      if (coliseo != null || reserva('Museos Vaticanos y Capilla Sixtina') != null) notas.push('reserva_por_la_tarde_sin_tabla')
+      // (El Coliseo en el pool, sin hora: la ruta del revés, con su hora de la tabla.)
+      if (coliseo == null && marcado('Coliseo') && !marcado(MUSEOS)) return pick('reves', 'ruta_del_reves')
+      if (coliseo != null || marcado(MUSEOS)) notas.push('reserva_por_la_tarde_sin_tabla')
       return pick('normal', 'ruta_normal')
     }
+    case 'D1-corto':
+      return pick('normal')
     case 'D0-medio': {
-      if (ctx.franja === 'tarde') {
-        const llegada = ctx.llegada ? toMin(ctx.llegada) : 12 * 60
-        if (weekday === 'domingo' || llegada >= 13 * 60) return pick('tarde_sin_museos')
-        return pick('tarde_con_museos')
-      }
-      if (weekday === 'miercoles') return pick('miercoles_manana')
-      if (weekday === 'domingo') return pick('domingo_manana')
-      return pick('manana')
+      const conMuseos = marcado(MUSEOS) && !museosCierran
+      if (ctx.franja === 'tarde') return pick(conMuseos ? 'tarde_con_museos' : 'tarde_sin_museos')
+      return pick(conMuseos ? 'manana_con_museos' : 'manana')
     }
+    case 'DT-medio': {
+      if (ctx.franja !== 'tarde') return pick('manana')
+      // (La tarde A de invierno: el sol se pone antes de las 17:15.)
+      if ((ctx.letra ?? 'A') === 'A' && ctx.sunset != null && ctx.sunset < 17 * 60 + 15 && v.tarde_invierno) return pick('tarde_invierno', 'tarde_A_de_invierno')
+      return pick('tarde')
+    }
+    case 'DM-medio':
+      return pick('manana')
     case 'D1': {
       if (ctx.freeTourHora != null) return pick(toMin(ctx.freeTourHora) >= 18 * 60 ? 'free_tour_noche' : 'free_tour_tarde')
       return pick('normal')
     }
     case 'D2': {
-      const museos = reserva('Museos Vaticanos y Capilla Sixtina')
-      if (museos != null) {
+      const museos = reserva(MUSEOS)
+      // Navidad y Año Nuevo: la bendición del Papa (los Museos y el Coliseo cierran).
+      if ((mmdd === '12-25' || mmdd === '01-01') && v.fiesta) return pick('fiesta', 'fiesta')
+      if (museos != null && !museosCierran) {
         if (museos >= 14 * 60) return pick('reserva_14_16')
         if (museos >= 13 * 60) return pick('reserva_13')
         if (museos >= 10 * 60 + 30) return pick('reserva_10_12')
         notas.push('reserva_de_manana_corre_el_dia')
       }
-      if (weekday === 'miercoles') return pick('miercoles')
-      if (weekday === 'domingo') return pick('domingo')
+      if (weekday === 'miercoles') return pick(museosCierran && v.miercoles_sin_museos ? 'miercoles_sin_museos' : 'miercoles')
+      if (museosCierran) return pick('domingo', 'sin_museos')
       return pick('normal')
     }
     case 'D3':
-      return pick(weekday === 'domingo' ? 'domingo' : 'normal')
+      return pick(museosCierran ? 'domingo' : 'normal')
     case 'D1-FT':
       return pick('normal')
     default:
@@ -212,7 +241,7 @@ export const nuevaFila = (campos) => ({ id: campos.id ?? `${campos.tipo ?? 'para
  *   { op: 'fuera_si_tarde', fila, desde }                    pasa a «por fuera» si empieza a partir de esa hora
  * Devuelve las filas y la posición de la primera fila tocada (desde ahí se corren las horas).
  */
-export function aplicarAcciones(rows, acciones, { walk, taxiMin } = {}) {
+export function aplicarAcciones(rows, acciones, { walk, taxiMin, clave = null } = {}) {
   let lista = rows.map((row) => ({ ...row }))
   let primera = lista.length
   const indice = (clave) => (String(clave).startsWith('tipo:') ? lista.findIndex((row) => row.tipo === String(clave).slice(5)) : lista.findIndex((row) => row.lugar === clave || row.id === clave || row.titulo === clave))
@@ -231,6 +260,24 @@ export function aplicarAcciones(rows, acciones, { walk, taxiMin } = {}) {
         lista.splice(i, 1)
         primera = Math.min(primera, i)
       }
+    } else if (accion.op === 'tabla') {
+      // La tabla entera de ese extra, la de la versión del día (`clave`: A, B, C, D o manana). Desde la comida (la mañana del día se queda) o todo el día.
+      const tabla = accion.tablas?.[clave] ?? accion.tablas?.[Object.keys(accion.tablas ?? {}).find((key) => key.length > 1 && clave && key.includes(clave) && /^[A-D]+$/.test(key))]
+      if (!tabla) continue
+      const desde = accion.desde === 'dia' ? 0 : lista.findIndex((row) => row.tipo === 'comida')
+      if (desde < 0) continue
+      const claveFila = (row) => row.lugar ?? row.restaurante ?? row.noche ?? (row.tipo === 'traslado' ? 'traslado' : row.id)
+      const viejas = new Map(lista.slice(desde).map((row) => [claveFila(row), row.id]))
+      lista.splice(desde, lista.length, ...tabla.map((fila) => { const nueva = nuevaFila(fila); const id = viejas.get(claveFila(nueva)); return id && nueva.tipo !== 'traslado' ? { ...nueva, id } : nueva }))
+      primera = Math.min(primera, Math.max(desde, 0))
+    } else if (accion.op === 'reemplazar_manana') {
+      // Todo lo que va antes de la comida se sustituye por estas filas (la mañana del Día de la Roma antigua en el viaje de 1,5 días con el Coliseo marcado).
+      const iComida = lista.findIndex((row) => row.tipo === 'comida')
+      if (iComida < 0) continue
+      const claveFila = (row) => row.lugar ?? row.restaurante ?? row.noche ?? (row.tipo === 'traslado' ? 'traslado' : row.id)
+      const viejas = new Map(lista.slice(0, iComida).map((row) => [claveFila(row), row.id]))
+      lista.splice(0, iComida, ...accion.filas.map((fila) => { const nueva = nuevaFila(fila); const id = viejas.get(claveFila(nueva)); return id && nueva.tipo !== 'traslado' ? { ...nueva, id } : nueva }))
+      primera = 0
     } else if (accion.op === 'reemplazar_tarde') {
       // Todo lo que va después de la comida se sustituye por estas filas.
       const iComida = lista.findIndex((row) => row.tipo === 'comida')
@@ -257,6 +304,7 @@ export function aplicarAcciones(rows, acciones, { walk, taxiMin } = {}) {
  */
 export const ZIGZAG_MIN = 12 // minutos de más andando que hacen que adelantar sea volver atrás
 export const ZIGZAG_CERCA = 6 // un sitio al que se salta por delante tiene que estar a esos minutos andando o menos
+export const ZIGZAG_JOYA = 15 // una joya (el Panteón) que cierra antes se adelanta aunque haya que andar hasta esos minutos de más
 
 /** Lo que se anda en todo el día, fila a fila (sin traslados). */
 export function caminoTotal(rows, walk) {
@@ -272,7 +320,7 @@ export function caminoTotal(rows, walk) {
  * ZIGZAG_MIN minutos de más), no se mueve y se queda en su sitio (por fuera o acortada, lo decide la regla de cierres). Los «de camino» que
  * van justo antes de la fila viajan con ella. Devuelve las filas (con las horas corridas) o null si no se puede.
  */
-export function adelantar(rows, i, { walk, abierta, orden = [] }) {
+export function adelantar(rows, i, { walk, abierta, orden = [], joya = false }) {
   const fila = rows[i]
   let inicio = i
   // (Solo los «de camino» pegados a ella: a 6 min andando o menos de la fila siguiente del grupo.)
@@ -280,21 +328,25 @@ export function adelantar(rows, i, { walk, abierta, orden = [] }) {
   const grupo = rows.slice(inicio, i + 1)
   const resto = rows.filter((_, k) => k < inicio || k > i)
   const antes = caminoTotal(rows, walk)
-  for (let destino = inicio - 1; destino >= 1; destino--) {
-    const cruzada = rows[destino]
-    if (esAncla(cruzada) || cruzada.tipo === 'comida' || cruzada.tipo === 'traslado' || cruzada.tipo === 'noche') break
-    const prueba = [...resto.slice(0, destino), ...grupo.map((row) => ({ ...row })), ...resto.slice(destino)]
-    const { rows: corridas } = correrHoras(prueba, { desde: destino, walk, orden })
-    const movida = corridas.find((r) => r.id === fila.id)
-    if (!movida || !abierta(movida, toMin(movida.hora))) continue
-    // El primer sitio donde está abierta: si para llegar ahí hay que volver atrás, se queda donde estaba. Volver atrás es saltarse un sitio que
-    // no está pegado (más de ZIGZAG_CERCA min andando) o andar en total más de ZIGZAG_MIN min de más.
-    const saltadas = rows.slice(destino, inicio).filter((row) => row.tipo !== 'traslado' && row.modo !== 'camino')
-    if (saltadas.some((row) => walk(fila, row) > ZIGZAG_CERCA)) return null
-    if (caminoTotal(corridas, walk) > antes + ZIGZAG_MIN) return null
-    return corridas
+  /** @param {boolean} corta  una joya: vale llegar con 20 min antes del cierre y andar hasta ZIGZAG_JOYA min de más (decisión del usuario, 5-oct-2026) */
+  const probar = (corta) => {
+    for (let destino = inicio - 1; destino >= 1; destino--) {
+      const cruzada = rows[destino]
+      if (esAncla(cruzada) || cruzada.tipo === 'comida' || cruzada.tipo === 'traslado' || cruzada.tipo === 'noche') break
+      const prueba = [...resto.slice(0, destino), ...grupo.map((row) => ({ ...row })), ...resto.slice(destino)]
+      const { rows: corridas } = correrHoras(prueba, { desde: destino, walk, orden })
+      const movida = corridas.find((r) => r.id === fila.id)
+      if (!movida || !abierta(movida, toMin(movida.hora), corta ? 20 : null)) continue
+      // El primer sitio donde está abierta: si para llegar ahí hay que volver atrás, se queda donde estaba. Volver atrás es saltarse un sitio que
+      // no está pegado (más de ZIGZAG_CERCA min andando) o andar en total más de ZIGZAG_MIN min de más. Una joya: hasta ZIGZAG_JOYA min de más, sin mirar lo pegado.
+      const saltadas = rows.slice(destino, inicio).filter((row) => row.tipo !== 'traslado' && row.modo !== 'camino')
+      if (!corta && saltadas.some((row) => walk(fila, row) > ZIGZAG_CERCA)) return null
+      if (caminoTotal(corridas, walk) > antes + (corta ? ZIGZAG_JOYA : ZIGZAG_MIN)) return null
+      return corridas
+    }
+    return null
   }
-  return null
+  return probar(false) ?? (joya ? probar(true) : null)
 }
 
 /** Los taxis escritos «auto» tardan lo que dice el motor entre la fila de antes y la de después (andando / 2,5 + 5, nunca menos de 10). */
@@ -321,6 +373,14 @@ export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30
   const llegada = toMin(rows[k].hora)
   const lista = rows.map((row) => ({ ...row }))
   if (llegada < target) {
+    // Llegar antes del sol: si hay un colchón de antes, absorbe el rato (el documento: «el motor ajusta esa parada y el colchón de antes»); si no, se espera hasta 30 min.
+    const iComida = lista.findIndex((row) => row.tipo === 'comida')
+    for (let j = k - 1; j > Math.max(0, iComida); j--) {
+      if (!lista[j].colchon) continue
+      lista[j].min += target - llegada
+      lista[k].hora = toHHMM(target)
+      return correrHoras(lista, { desde: j + 1, walk }).rows
+    }
     if (target - llegada > maxEspera) return rows
     lista[k].hora = toHHMM(target)
     return correrHoras(lista, { desde: k + 1, walk }).rows
@@ -362,10 +422,11 @@ export function vale(def, { ids = [], dateIso = null } = {}) {
 /**
  * Aplica un extra del pool o una experiencia a las filas del día. Devuelve { rows, quitadas } o null si no cabe (entonces el extra va a «No incluido»).
  */
-export function aplicarExtra(rows, def, { walk, abierta, marcar = (lista) => lista }) {
-  const aplicadas = aplicarAcciones(rows, def.acciones ?? [], { walk })
+export function aplicarExtra(rows, def, { walk, abierta, marcar = (lista) => lista, clave = null, pool = false, orden = [] }) {
+  const aplicadas = aplicarAcciones(rows, def.acciones ?? [], { walk, clave })
   let lista = resolverTaxis(marcar(aplicadas.rows), walk)
-  const corrida = correrHoras(lista, { desde: aplicadas.primera, walk, protegidas: (row) => row.hora_tipo === 'reserva' })
+  // (Lo marcado en el pool es la prioridad: en 1 y 1,5 días, si para meterlo no cabe un imprescindible, el imprescindible se queda fuera.)
+  const corrida = correrHoras(lista, { desde: aplicadas.primera, walk, orden: def.orden ?? orden, protegidas: (row) => row.hora_tipo === 'reserva', quitarImprescindibles: pool, soloEmpujar: (def.acciones ?? []).some((accion) => accion.op === 'tabla' || accion.op === 'reemplazar_manana') })
   if (corrida.problemas.length > 0) return null
   lista = corrida.rows
   // Acciones que se hacen cuando ya están las horas.
@@ -380,7 +441,7 @@ export function aplicarExtra(rows, def, { walk, abierta, marcar = (lista) => lis
     }
   }
   if (desdeDespues != null) lista = correrHoras(lista, { desde: desdeDespues + 1, walk }).rows
-  return { rows: lista, quitadas: corrida.quitadas }
+  return { rows: lista, quitadas: corrida.quitadas, tabla: (def.acciones ?? []).some((accion) => accion.op === 'tabla' || accion.op === 'reemplazar_manana') ? aplicadas.rows : null }
 }
 
 /**

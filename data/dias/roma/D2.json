@@ -2975,6 +2975,15 @@
       ]
     }
   },
+  "fechas_malas": {
+    "dias_semana": [
+      "domingo",
+      "miercoles"
+    ],
+    "cerrado": [
+      "Museos Vaticanos y Capilla Sixtina"
+    ]
+  },
   "pool": {
     "Cúpula de San Pedro": {
       "franja": "manana",

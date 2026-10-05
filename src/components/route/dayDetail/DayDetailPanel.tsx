@@ -1151,7 +1151,8 @@ export function DayDetailPanel({
                 <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
               </svg>
               <p className="min-w-0 flex-1 text-[13px] leading-[1.45] text-text">
-                No hemos podido incluir <span className="font-semibold">{notice.name}</span> porque {notice.reason.charAt(0).toLowerCase() + notice.reason.slice(1)}.
+                No hemos podido incluir <span className="font-semibold">{notice.name}</span>
+                {notice.reason ? <> porque {notice.reason.charAt(0).toLowerCase() + notice.reason.slice(1)}</> : null}.
               </p>
             </div>
           ))}

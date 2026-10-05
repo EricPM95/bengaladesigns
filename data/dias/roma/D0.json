@@ -309,6 +309,13 @@
       ]
     }
   },
+  "orden_quitar": [
+    "Via dei Fori Imperiali",
+    "Via della Conciliazione",
+    "Foro Romano y Palatino",
+    "Plaza del Campidoglio",
+    "Altar de la Patria"
+  ],
   "experiencias": {
     "mercadillos_navidenos": {
       "fechas": {

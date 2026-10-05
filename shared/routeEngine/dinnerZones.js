@@ -131,6 +131,25 @@ function average(values) {
 }
 
 /**
+ * ¿Está abierto a esa hora (minutos desde las 0:00)? Del texto `hours` solo se leen los tramos «HH:MM-HH:MM» (la unión de todos, sin mirar el día de la
+ * semana: el día lo dice `closed_on`); si el texto no trae tramos, se da por abierto. Un cierre de madrugada (hasta 01:00, o 00:00) cuenta hasta las 24+.
+ * Hay que llegar con al menos 15 min antes del cierre.
+ */
+export function restaurantOpenAt(restaurant, minutes) {
+  const text = String(restaurant?.hours ?? '')
+  // (Un horario con «desde», «hasta», «~» o «según el día» no se entiende como tramos: se da por abierto.)
+  if (/desde|hasta|~|según|sin confirmar/i.test(text)) return true
+  const ranges = [...text.matchAll(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/g)].map((m) => {
+    const open = Number(m[1]) * 60 + Number(m[2])
+    let close = Number(m[3]) * 60 + Number(m[4])
+    if (close <= open) close += 24 * 60
+    return { open, close }
+  })
+  if (ranges.length === 0) return true
+  return ranges.some((range) => minutes >= range.open && minutes <= range.close - 15)
+}
+
+/**
  * El restaurante recomendado de una comida o una cena (decisión del usuario, 2026-09-28: cada comida y cada cena lleva
  * un restaurante curado nuestro, que el viajero puede cambiar). De `names` (los de su barrio) o, sin ellos, de todos los
  * que dan esa comida: el que abre ese día (`closed_on` / `closed_dates`) y queda más cerca de `near`. Si los de su barrio
@@ -138,11 +157,11 @@ function average(values) {
  * @param {{ names?: string[]|null, meal: 'comida'|'cena', near: [number, number]|null, weekday?: string|null, dateIso?: string|null }} options
  * @returns {{ name: string, coordinates: [number, number], zone: string|null } | null}
  */
-export function recommendedRestaurant(destData, { names = null, meal, near, weekday = null, dateIso = null, exclude = null }) {
+export function recommendedRestaurant(destData, { names = null, meal, near, weekday = null, dateIso = null, exclude = null, at = null }) {
   const serves = meal === 'cena' ? servesDinner : servesLunch
   const all = (destData?.restaurants ?? []).filter((restaurant) => serves(restaurant) && restaurantCoordinates(restaurant))
-  // (`exclude`: los que ya salen en el viaje; solo si no queda otro, se repite.)
-  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso) && !exclude?.has(restaurant.name)
+  // (`exclude`: los que ya salen en el viaje; solo si no queda otro, se repite. `at`: la hora (minutos) a la que se llega a la mesa: tiene que estar abierto a esa hora.)
+  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso) && !exclude?.has(restaurant.name) && (at == null || restaurantOpenAt(restaurant, at))
   const wanted = names?.length ? all.filter((restaurant) => names.includes(restaurant.name)) : all
   const mains = new Set(wanted.map((restaurant) => mainZoneOf(restaurant.zone ?? '')))
   const sameZone = all.filter((restaurant) => mains.has(mainZoneOf(restaurant.zone ?? '')))

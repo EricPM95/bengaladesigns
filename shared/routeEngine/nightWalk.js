@@ -293,7 +293,7 @@ export const NIGHT_LAST_START = 23 * 60
  * las 23:30). Lo que empezaría después de las 23:00 se queda fuera.
  * @returns {{ entry: object, start: number, duration: number }[]}
  */
-export function timeChain(entries, start, maxMinutes = Infinity, lastStart = NIGHT_LAST_START) {
+export function timeChain(entries, start, maxMinutes = Infinity, lastStart = NIGHT_LAST_START, startLimit = null) {
   const timed = []
   let cursor = start
   for (const [index, entry] of entries.entries()) {
@@ -302,7 +302,8 @@ export function timeChain(entries, start, maxMinutes = Infinity, lastStart = NIG
     const duration = Number.isFinite(entry.fixedMinutes) ? entry.fixedMinutes : Math.min(durationOf(entry, index), maxMinutes)
     // REGLAS_RUTAS 41: una nocturna que acabaría después de la hora límite de la noche (`noche_limite`) se quita; no se empuja ni se recorta otra cosa.
     // (Un día escrito: hasta 5 min de más sobre la hora límite, que es como están escritas las tablas.)
-    if (Number.isFinite(entry.fixedStart) ? at + duration > lastStart + 5 : Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
+    // (Tanda 2: de mayo a septiembre y con el sol después de las 19:45, la nocturna de un día escrito entra si EMPIEZA a las 23:45 como tarde: `startLimit`.)
+    if (Number.isFinite(entry.fixedStart) ? (startLimit != null ? at > startLimit : at + duration > lastStart + 5) : Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
     timed.push({ entry, start: at, duration })
     cursor = at + duration
   }
@@ -317,7 +318,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
   // 2026-09-28).
   const entries = plan.beforeDinner ? plan.entries : [...new Map(plan.entries.map((entry) => (entry.solo_antes_de_cenar ? (entry.fallback ? { ...entry.fallback, replacedFrom: entry.name } : null) : entry)).filter(Boolean).map((entry) => [entry.name, entry])).values()]
   // (`timing.nightMinutes`: lo que dura cada parada de noche como mucho; el viaje de 1 día en verano, 20 min, para que la Plaza de España no pase de las 23:00.)
-  for (const { entry, start, duration } of timeChain(entries, plan.start, timing.nightMinutes ?? Infinity, timing.lastStart ?? NIGHT_LAST_START)) {
+  for (const { entry, start, duration } of timeChain(entries, plan.start, timing.nightMinutes ?? Infinity, timing.lastStart ?? NIGHT_LAST_START, timing.startLimit ?? null)) {
     // Si el lugar ya se ha visto de día, la tarjeta lo dice: no es que se repita por descuido, es
     // que de noche es otra cosa. Eso es parte del valor, no algo que esconder.
     void dayVisitedNames

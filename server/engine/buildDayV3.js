@@ -364,6 +364,21 @@ function nightLimitOf(destData, dateIso) {
   return h * 60 + (m || 0)
 }
 
+/**
+ * La hora a la que EMPIEZA como tarde la última nocturna de un día escrito en las noches largas: de mayo a septiembre y siempre que el sol se ponga a las 19:45 o más tarde
+ * (versión D), las 23:45 (`destination_config.noche_larga`). Fuera de esas noches, null: la nocturna tiene que acabar antes de la hora límite (23:00). Sustituye a «23:30 en julio y agosto».
+ */
+function writtenNightStartLimit(destData, dateIso, sunset) {
+  const config = destData.destination_config?.noche_larga
+  if (!config?.hora_inicio) return null
+  const month = dateIso ? Number(String(dateIso).slice(5, 7)) : null
+  const [h, m] = String(config.hora_inicio).split(':').map(Number)
+  const [dh, dm] = String(config.sol_despues_de ?? '19:45').split(':').map(Number)
+  const byMonth = month != null && (config.meses ?? []).includes(month)
+  const bySun = sunset != null && sunset >= dh * 60 + (dm || 0)
+  return byMonth || bySun ? h * 60 + (m || 0) : null
+}
+
 /** "Cierre temprano": lo que cierra antes de esta hora (el Foro, a las 16:30 en invierno). */
 const EARLY_CLOSING_MINUTES = 18 * 60
 
@@ -629,6 +644,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     options: [],
     // La comida es una FRANJA (Paso 2): llegar, comer y andar a la siguiente parada.
     ...(meal.type === 'lunch' ? { window_end: toHHMM(meal.end) } : {}),
+    // Navidad y Año Nuevo: «Con reserva», «Con reserva: menú de Nochevieja» o «En Navidad, reserva con antelación».
+    ...(meal.note ? { reservation_note: meal.note } : {}),
     // Dónde se come: el restaurante que eligió el programador (lunchSpots.js), con su zona.
     ...(meal.type === 'lunch' && meal.spot
       ? { zone: meal.spot.zone, zone_display: `en ${String(meal.spot.zone).replace(/\s*\/\s*/g, ' y ')}`, restaurant: meal.spot.name, latitude: meal.coordinates[0], longitude: meal.coordinates[1] }
@@ -703,6 +720,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     dateIso: tripDay.hours?.dateIso ?? null,
     // La última nocturna empieza como tarde a la hora límite del destino (`noche_limite`: Roma, 23:00 y 23:30 en julio y agosto).
     lastStart: nightLimitOf(destData, tripDay.hours?.dateIso ?? null),
+    // Un día escrito (tanda 2): la hora límite de la noche son las 23:00 (acaba antes), salvo de mayo a septiembre y con el sol después de las 19:45, que entra si empieza a las 23:45.
+    startLimit: tripDay.escrito ? writtenNightStartLimit(destData, tripDay.hours?.dateIso ?? null, tripDay.hours?.sunset ?? null) : null,
   }
   // Una nocturna que solo vale antes de cenar (el Janículo de noche: el bus 115 deja de subir a las 22:00): si el barrio
   // de la tarde se estiró hasta la cena, devuelve lo justo para que quepa antes (segundo repaso, 2026-09-28).

@@ -613,6 +613,14 @@
       ]
     }
   },
+  "fechas_malas": {
+    "dias_semana": [
+      "domingo"
+    ],
+    "cerrado": [
+      "Museos Vaticanos y Capilla Sixtina"
+    ]
+  },
   "pool": {
     "Cúpula de San Pedro": {
       "no_cabe": true
