@@ -18,33 +18,36 @@
         },
         {
           "id": "parada_basilica_de_san_pedro",
-          "hora": "10:05",
+          "hora": "10:10",
           "min": 5,
           "texto_documento": "Basílica de San Pedro",
           "como_documento": "de camino (la fachada)",
           "tipo": "parada",
           "lugar": "Basílica de San Pedro",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:05"
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "10:15",
+          "hora": "10:20",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:15"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "10:45",
+          "hora": "10:50",
           "min": 15,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 10:45"
         },
         {
           "id": "parada_puente_sant_angelo",
@@ -58,78 +61,85 @@
         },
         {
           "id": "parada_piazza_navona",
-          "hora": "11:30",
+          "hora": "11:35",
           "min": 25,
           "texto_documento": "Piazza Navona",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Piazza Navona",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 11:30"
         },
         {
           "id": "parada_panteon",
-          "hora": "12:10",
+          "hora": "12:20",
           "min": 15,
           "texto_documento": "Panteón",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Panteón",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 12:10"
         },
         {
           "id": "comida_armando_al_pantheon",
-          "hora": "12:40",
+          "hora": "12:50",
           "min": 60,
           "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Armando al Pantheon",
           "alternativa": "Supplizio",
-          "tercera": "Piccolo Arancio"
+          "tercera": "Piccolo Arancio",
+          "hora_corregida": "distancia: lo escrito era 12:40"
         },
         {
           "id": "parada_fontana_de_trevi",
-          "hora": "14:00",
+          "hora": "14:10",
           "min": 20,
           "texto_documento": "Fontana de Trevi",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana de Trevi",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:00"
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "14:30",
+          "hora": "14:40",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 14:30"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "14:40",
+          "hora": "14:50",
           "min": 5,
           "texto_documento": "Altar de la Patria",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 14:40"
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "14:50",
+          "hora": "15:05",
           "min": 5,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 14:50"
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "15:15",
+          "hora": "15:35",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
@@ -141,17 +151,18 @@
         },
         {
           "id": "parada_via_dei_fori_imperiali",
-          "hora": "15:30",
+          "hora": "15:55",
           "min": 10,
           "texto_documento": "Via dei Fori Imperiali",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via dei Fori Imperiali",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:30"
         },
         {
           "id": "parada_coliseo",
-          "hora": "16:00",
+          "hora": "16:25",
           "min": 15,
           "texto_documento": "Coliseo",
           "como_documento": "por fuera",
@@ -162,13 +173,14 @@
         },
         {
           "id": "parada_arco_de_constantino",
-          "hora": "16:15",
+          "hora": "16:45",
           "min": 5,
           "texto_documento": "Arco de Constantino",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Arco de Constantino",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:15"
         }
       ]
     },
@@ -199,13 +211,14 @@
         },
         {
           "id": "parada_via_dei_fori_imperiali",
-          "hora": "11:35",
+          "hora": "11:40",
           "min": 15,
           "texto_documento": "Via dei Fori Imperiali",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via dei Fori Imperiali",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "parada_plaza_venecia",
@@ -229,84 +242,92 @@
         },
         {
           "id": "parada_fontana_de_trevi",
-          "hora": "12:35",
+          "hora": "12:40",
           "min": 20,
           "texto_documento": "Fontana de Trevi",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana de Trevi",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:35"
         },
         {
           "id": "comida_armando_al_pantheon",
-          "hora": "13:15",
+          "hora": "13:20",
           "min": 45,
           "texto_documento": "**Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Armando al Pantheon",
           "alternativa": "Supplizio",
-          "tercera": "Piccolo Arancio"
+          "tercera": "Piccolo Arancio",
+          "hora_corregida": "distancia: lo escrito era 13:15"
         },
         {
           "id": "parada_panteon",
-          "hora": "14:15",
+          "hora": "14:20",
           "min": 15,
           "texto_documento": "Panteón",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Panteón",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 14:15"
         },
         {
           "id": "parada_piazza_navona",
-          "hora": "14:45",
+          "hora": "14:55",
           "min": 20,
           "texto_documento": "Piazza Navona",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Piazza Navona",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:45"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "15:15",
+          "hora": "15:30",
           "min": 5,
           "texto_documento": "Puente Sant'Angelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:15"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "15:25",
+          "hora": "15:35",
           "min": 5,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:25"
         },
         {
           "id": "parada_plaza_de_san_pedro",
-          "hora": "15:55",
+          "hora": "16:05",
           "min": 15,
           "texto_documento": "Plaza de San Pedro",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza de San Pedro",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:55"
         },
         {
           "id": "parada_basilica_de_san_pedro",
-          "hora": "16:10",
+          "hora": "16:25",
           "min": 10,
           "texto_documento": "Basílica de San Pedro",
           "como_documento": "de camino (la fachada)",
           "tipo": "parada",
           "lugar": "Basílica de San Pedro",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:10"
         }
       ]
     }

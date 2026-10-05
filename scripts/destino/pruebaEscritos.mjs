@@ -125,9 +125,10 @@ const POOL = [
   { ...base('1,5 días, medio día de tarde y día entero'), clave: '1,5 días, medio día de tarde y día entero + pool: Coliseo', pool: ['Coliseo'] },
   { ...base('1 día'), clave: '1 día + pool: Coliseo', pool: ['Coliseo'] },
   // Tanda 3: con un lugar marcado, los días de 3 a 6 lo llevan en su día (ya incluido) y no repiten ninguna visita por dentro.
-  ...['Galería Borghese', 'Basílica de San Juan de Letrán', 'Termas de Caracalla', "Castillo de Sant'Angelo", 'Cúpula de San Pedro', 'Museos Capitolinos'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '5 días (con excursión)'), clave: `5 días + pool: ${name}`, pool: [name] })),
+  ...['Galería Borghese', 'Basílica de San Juan de Letrán', 'Termas de Caracalla', "Castillo de Sant'Angelo", 'Cúpula de San Pedro'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '5 días (con excursión)'), clave: `5 días + pool: ${name}`, pool: [name] })),
   ...['Galería Borghese', 'Termas de Caracalla'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '3 días'), clave: `3 días + pool: ${name}`, pool: [name] })),
-  ...['Galería Borghese', 'Museos Capitolinos'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '4 días con Free Tour de mañana'), clave: `4 días con Free Tour de mañana + pool: ${name}`, pool: [name] })),
+  ...['Galería Borghese'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '4 días con Free Tour de mañana'), clave: `4 días con Free Tour de mañana + pool: ${name}`, pool: [name] })),
+  ...["Castillo de Sant'Angelo", 'Cúpula de San Pedro', 'Museos Capitolinos'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '6 días (con excursión)'), clave: `6 días + pool: ${name}`, pool: [name] })),
 ]
 // El Free Tour de tarde (17:00) y de noche (18:30) en el viaje de 2 días: el Día de la Roma antigua lleva su versión con el tour.
 const FT_DESPUES = [
@@ -260,7 +261,10 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
     filasTotal++
     const key = claveFila(row)
     const esComida = row.tipo === 'comida' || row.tipo === 'cena'
-    const i = actuales.findIndex((a, k) => !usadas.has(k) && (esComida ? a.kind === 'meal' && a.tipo === (row.tipo === 'cena' ? 'dinner' : 'lunch') : a.kind === 'stop' && (a.key === key || a.key.includes(key) || key.includes(a.key))))
+    const esLa = (a, k) => !usadas.has(k) && (esComida ? a.kind === 'meal' && a.tipo === (row.tipo === 'cena' ? 'dinner' : 'lunch') : a.kind === 'stop' && (a.key === key || a.key.includes(key) || key.includes(a.key)))
+    // (Primero el de nombre exacto —«Plaza de España» no es «Trinità dei Monti y su mirador sobre la Plaza de España»—, y si no, el que lo contiene.)
+    const exacto = esComida ? -1 : actuales.findIndex((a, k) => esLa(a, k) && a.key === key)
+    const i = exacto >= 0 ? exacto : actuales.findIndex(esLa)
     const where = { viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${row.hora} ${row.texto_documento?.replace(/\*/g, '') ?? ''}`.trim() }
     if (i < 0) {
       diffs.push({ ...where, tipo: 'falta', causa: causaDe(row, 'quitada') })

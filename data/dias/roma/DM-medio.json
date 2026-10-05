@@ -18,7 +18,7 @@
         },
         {
           "id": "parada_plaza_del_quirinal_la_vista_de_san_pedro",
-          "hora": "09:20",
+          "hora": "09:25",
           "min": 15,
           "texto_documento": "Plaza del Quirinal (la vista de San Pedro)",
           "como_documento": "",
@@ -26,11 +26,12 @@
           "tipo": "parada",
           "lugar": "Plaza del Quirinal",
           "titulo": "Plaza del Quirinal (la vista de San Pedro)",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 09:20"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
-          "hora": "09:55",
+          "hora": "10:00",
           "min": 60,
           "texto_documento": "Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)",
           "como_documento": "",
@@ -42,7 +43,7 @@
         },
         {
           "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
-          "hora": "11:10",
+          "hora": "11:15",
           "min": 20,
           "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
           "como_documento": "por dentro",
@@ -55,7 +56,7 @@
         },
         {
           "id": "parada_basilica_de_santa_maria_la_mayor",
-          "hora": "11:50",
+          "hora": "12:00",
           "min": 40,
           "texto_documento": "Santa Maria Maggiore",
           "como_documento": "por dentro",
@@ -66,13 +67,14 @@
         },
         {
           "id": "comida_trattoria_monti",
-          "hora": "12:45",
+          "hora": "12:55",
           "min": 60,
           "texto_documento": "**Comida:** Trattoria Monti (o La Boccaccia), junto a Santa Maria Maggiore",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Trattoria Monti",
-          "alternativa": "La Boccaccia"
+          "alternativa": "La Boccaccia",
+          "hora_corregida": "distancia: lo escrito era 12:45"
         }
       ]
     }
@@ -119,26 +121,28 @@
                 "modo": "dentro"
               },
               {
-                "hora": "11:10",
+                "hora": "11:15",
                 "min": 30,
                 "texto_documento": "Santa Maria Maggiore",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Basílica de Santa María la Mayor",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 11:10"
               },
               {
-                "hora": "12:10",
+                "hora": "12:15",
                 "min": 45,
                 "texto_documento": "San Juan de Letrán y la Escalera Santa",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Basílica de San Juan de Letrán",
                 "titulo": "San Juan de Letrán y la Escalera Santa",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 12:10"
               },
               {
-                "hora": "13:15",
+                "hora": "13:20",
                 "min": 60,
                 "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
                 "como_documento": "",

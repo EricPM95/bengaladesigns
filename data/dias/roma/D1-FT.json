@@ -42,7 +42,7 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:25",
+          "hora": "12:30",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
@@ -53,97 +53,106 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "12:40",
+          "hora": "12:50",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 12:40"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "13:00",
+          "hora": "13:10",
           "min": 30,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 13:00"
         },
         {
           "id": "comida_giggetto_al_portico_d_ottavia",
-          "hora": "13:50",
+          "hora": "14:00",
           "min": 60,
           "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Giggetto al Portico d'Ottavia",
-          "alternativa": "Nonna Betta"
+          "alternativa": "Nonna Betta",
+          "hora_corregida": "distancia: lo escrito era 13:50"
         },
         {
           "id": "parada_barrio_judio",
-          "hora": "15:00",
+          "hora": "15:15",
           "min": 25,
           "texto_documento": "Barrio Judío",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Barrio Judío",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:00"
         },
         {
           "id": "parada_fuente_de_las_tortugas",
-          "hora": "15:30",
+          "hora": "15:45",
           "min": 5,
           "texto_documento": "Fuente de las Tortugas",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:30"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "15:40",
+          "hora": "16:00",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:40"
         },
         {
           "id": "parada_isla_tiberina",
-          "hora": "16:00",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Isla Tiberina",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Isla Tiberina",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 16:00"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "16:40",
+          "hora": "17:00",
           "min": 5,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "17:00",
+          "hora": "17:20",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:00"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "17:35",
+          "hora": "18:00",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
@@ -154,7 +163,7 @@
         },
         {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "18:35",
+          "hora": "19:00",
           "min": 20,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "por dentro",
@@ -165,8 +174,8 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "19:05",
-          "min": 20,
+          "hora": "19:35",
+          "min": 35,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -174,21 +183,22 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere iluminado",
-          "hora_corregida": "distancia: lo escrito era 18:55 y 35 min"
+          "hora_corregida": "distancia: lo escrito era 18:55"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "19:45",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Trattoria Da Enzo al 29",
-          "alternativa": "Tonnarello"
+          "alternativa": "Tonnarello",
+          "hora_corregida": "distancia: lo escrito era 19:45"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "21:25",
+          "hora": "22:10",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -196,25 +206,28 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 21:25"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "21:50",
+          "hora": "22:30",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Fontana de Trevi (noche)"
+          "noche": "Fontana de Trevi (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:50"
         },
         {
           "id": "noche_plaza_de_espana_noche",
-          "hora": "22:30",
+          "hora": "23:10",
           "min": 20,
           "texto_documento": "Plaza de España de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Plaza de España (noche)"
+          "noche": "Plaza de España (noche)",
+          "hora_corregida": "distancia: lo escrito era 22:30"
         }
       ],
       "B": [
@@ -254,7 +267,7 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:25",
+          "hora": "12:30",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
@@ -265,107 +278,117 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "12:40",
+          "hora": "12:50",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 12:40"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "13:00",
+          "hora": "13:10",
           "min": 30,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 13:00"
         },
         {
           "id": "comida_giggetto_al_portico_d_ottavia",
-          "hora": "13:50",
+          "hora": "14:00",
           "min": 60,
           "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Giggetto al Portico d'Ottavia",
-          "alternativa": "Nonna Betta"
+          "alternativa": "Nonna Betta",
+          "hora_corregida": "distancia: lo escrito era 13:50"
         },
         {
           "id": "parada_barrio_judio",
-          "hora": "15:00",
+          "hora": "15:15",
           "min": 25,
           "texto_documento": "Barrio Judío",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Barrio Judío",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:00"
         },
         {
           "id": "parada_fuente_de_las_tortugas",
-          "hora": "15:30",
+          "hora": "15:45",
           "min": 5,
           "texto_documento": "Fuente de las Tortugas",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:30"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "15:40",
+          "hora": "16:00",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:40"
         },
         {
           "id": "parada_isla_tiberina",
-          "hora": "16:00",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Isla Tiberina",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Isla Tiberina",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 16:00"
         },
         {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "16:40",
+          "hora": "17:05",
           "min": 20,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "17:15",
+          "hora": "17:35",
           "min": 5,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 17:15"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "17:35",
+          "hora": "17:55",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:35"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "18:10",
+          "hora": "18:35",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
@@ -376,7 +399,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "19:10",
+          "hora": "19:40",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
@@ -389,17 +412,18 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "20:15",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Trattoria Da Enzo al 29",
-          "alternativa": "Tonnarello"
+          "alternativa": "Tonnarello",
+          "hora_corregida": "distancia: lo escrito era 20:15"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "21:55",
+          "hora": "22:10",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -407,16 +431,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 21:55"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:20",
+          "hora": "22:30",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Fontana de Trevi (noche)"
+          "noche": "Fontana de Trevi (noche)",
+          "hora_corregida": "distancia: lo escrito era 22:20"
         }
       ],
       "C": [
@@ -456,7 +482,7 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:25",
+          "hora": "12:30",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
@@ -467,89 +493,96 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "12:40",
+          "hora": "12:50",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 12:40"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "13:00",
+          "hora": "13:10",
           "min": 30,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 13:00"
         },
         {
           "id": "comida_giggetto_al_portico_d_ottavia",
-          "hora": "13:50",
-          "min": 45,
+          "hora": "14:00",
+          "min": 60,
           "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Giggetto al Portico d'Ottavia",
           "alternativa": "Nonna Betta",
-          "hora_corregida": "distancia: lo escrito era 13:50 y 60 min"
+          "hora_corregida": "distancia: lo escrito era 13:50"
         },
         {
           "id": "parada_barrio_judio",
-          "hora": "15:00",
+          "hora": "15:15",
           "min": 25,
           "texto_documento": "Barrio Judío",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Barrio Judío",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:00"
         },
         {
           "id": "parada_fuente_de_las_tortugas",
-          "hora": "15:30",
+          "hora": "15:45",
           "min": 5,
           "texto_documento": "Fuente de las Tortugas",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:30"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "15:40",
+          "hora": "16:00",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:40"
         },
         {
           "id": "parada_isla_tiberina",
-          "hora": "16:00",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Isla Tiberina",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Isla Tiberina",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 16:00"
         },
         {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "16:40",
+          "hora": "17:05",
           "min": 20,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
-          "hora": "17:10",
-          "min": 10,
+          "hora": "17:40",
+          "min": 60,
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -557,31 +590,33 @@
           "tipo": "paseo",
           "lugar": "Trastevere",
           "titulo": "Pasea y piérdete por Trastevere",
-          "hora_corregida": "distancia: lo escrito era 17:10 y 60 min"
+          "hora_corregida": "distancia: lo escrito era 17:10"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "18:25",
+          "hora": "18:50",
           "min": 5,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 18:25"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "18:45",
+          "hora": "19:10",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 18:45"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:20",
+          "hora": "19:50",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
@@ -592,7 +627,7 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "20:20",
+          "hora": "20:55",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
@@ -603,7 +638,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:00",
+          "hora": "22:35",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -616,12 +651,13 @@
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "22:20",
+          "hora": "22:55",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Fontana de Trevi (noche)"
+          "noche": "Fontana de Trevi (noche)",
+          "hora_corregida": "distancia: lo escrito era 22:20"
         }
       ],
       "D": [
@@ -661,7 +697,7 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:25",
+          "hora": "12:30",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
@@ -672,117 +708,128 @@
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "12:40",
+          "hora": "12:50",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 12:40"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "13:00",
+          "hora": "13:10",
           "min": 30,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 13:00"
         },
         {
           "id": "comida_giggetto_al_portico_d_ottavia",
-          "hora": "13:50",
+          "hora": "14:00",
           "min": 60,
           "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Giggetto al Portico d'Ottavia",
-          "alternativa": "Nonna Betta"
+          "alternativa": "Nonna Betta",
+          "hora_corregida": "distancia: lo escrito era 13:50"
         },
         {
           "id": "parada_barrio_judio",
-          "hora": "15:00",
+          "hora": "15:15",
           "min": 25,
           "texto_documento": "Barrio Judío",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Barrio Judío",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:00"
         },
         {
           "id": "parada_fuente_de_las_tortugas",
-          "hora": "15:30",
+          "hora": "15:45",
           "min": 5,
           "texto_documento": "Fuente de las Tortugas",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Fuente de las Tortugas",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:30"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "15:40",
+          "hora": "16:00",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:40"
         },
         {
           "id": "parada_isla_tiberina",
-          "hora": "16:00",
+          "hora": "16:25",
           "min": 20,
           "texto_documento": "Isla Tiberina",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Isla Tiberina",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 16:00"
         },
         {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "16:40",
+          "hora": "17:05",
           "min": 20,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
-          "hora": "17:10",
+          "hora": "17:40",
           "min": 60,
           "texto_documento": "Pasea y piérdete por Trastevere",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere"
+          "titulo": "Pasea y piérdete por Trastevere",
+          "hora_corregida": "distancia: lo escrito era 17:10"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
-          "hora": "18:35",
+          "hora": "19:00",
           "min": 20,
           "texto_documento": "San Pietro in Montorio y el Tempietto",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 18:35"
         },
         {
           "id": "parada_fontana_dell_acqua_paola",
-          "hora": "19:10",
+          "hora": "19:35",
           "min": 10,
           "texto_documento": "Fontana dell'Acqua Paola",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana dell'Acqua Paola",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 19:10"
         },
         {
           "id": "paseo_la_passeggiata_del_gianicolo",
-          "hora": "19:45",
+          "hora": "20:15",
           "min": 15,
           "texto_documento": "La Passeggiata del Gianicolo (colchón)",
           "como_documento": "",
@@ -795,7 +842,7 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "20:10",
+          "hora": "20:40",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
@@ -806,17 +853,18 @@
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "21:15",
+          "hora": "21:45",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Trattoria Da Enzo al 29",
-          "alternativa": "Tonnarello"
+          "alternativa": "Tonnarello",
+          "hora_corregida": "distancia: lo escrito era 21:15"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "22:55",
+          "hora": "23:25",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -824,16 +872,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 22:55"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "23:20",
+          "hora": "23:45",
           "min": 15,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Fontana de Trevi (noche)"
+          "noche": "Fontana de Trevi (noche)",
+          "hora_corregida": "distancia: lo escrito era 23:20"
         }
       ]
     }
@@ -970,22 +1020,24 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "14:45",
+                "hora": "14:50",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 14:45"
               },
               {
-                "hora": "15:10",
+                "hora": "15:15",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:10"
               },
               {
                 "hora": "15:30",
@@ -1061,22 +1113,24 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "14:45",
+                "hora": "14:50",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 14:45"
               },
               {
-                "hora": "15:10",
+                "hora": "15:15",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:10"
               },
               {
                 "hora": "15:30",
@@ -1152,22 +1206,24 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "14:45",
+                "hora": "14:50",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 14:45"
               },
               {
-                "hora": "15:10",
+                "hora": "15:15",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:10"
               },
               {
                 "hora": "15:30",
@@ -1243,22 +1299,24 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "14:45",
+                "hora": "14:50",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 14:45"
               },
               {
-                "hora": "15:10",
+                "hora": "15:15",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:10"
               },
               {
                 "hora": "15:30",
@@ -1351,61 +1409,67 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "15:00",
+                "hora": "15:05",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:00"
               },
               {
-                "hora": "15:25",
+                "hora": "15:30",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:25"
               },
               {
-                "hora": "15:35",
+                "hora": "15:45",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:35"
               },
               {
-                "hora": "15:55",
+                "hora": "16:10",
                 "min": 15,
                 "texto_documento": "Boca de la Verdad",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Boca de la Verdad",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:55"
               },
               {
-                "hora": "16:20",
+                "hora": "16:35",
                 "min": 10,
                 "texto_documento": "Jardín de los Naranjos",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Jardín de los Naranjos",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:20"
               },
               {
-                "hora": "16:45",
+                "hora": "17:00",
                 "min": 10,
                 "texto_documento": "Ojo de la Cerradura del Aventino",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Ojo de la Cerradura del Aventino",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:45"
               },
               {
-                "hora": "17:10",
+                "hora": "17:20",
                 "min": 15,
                 "texto_documento": "Taxi al Janículo (Fontana dell'Acqua Paola)",
                 "como_documento": "",
@@ -1414,7 +1478,8 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 15
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
                 "hora": "17:45",
@@ -1436,8 +1501,8 @@
                 "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:15",
-                "min": 25,
+                "hora": "19:20",
+                "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
@@ -1445,19 +1510,20 @@
                 "tipo": "paseo",
                 "lugar": "Trastevere",
                 "titulo": "Pasea y piérdete por Trastevere iluminado",
-                "hora_corregida": "distancia: lo escrito era 19:10 y 30 min"
+                "hora_corregida": "distancia: lo escrito era 19:10"
               },
               {
-                "hora": "20:00",
+                "hora": "20:10",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
                 "tipo": "cena",
                 "restaurante": "Trattoria Da Enzo al 29",
-                "alternativa": "Tonnarello"
+                "alternativa": "Tonnarello",
+                "hora_corregida": "distancia: lo escrito era 20:00"
               },
               {
-                "hora": "21:40",
+                "hora": "21:50",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -1465,23 +1531,26 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 10
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 21:40"
               },
               {
-                "hora": "22:05",
+                "hora": "22:10",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:05"
               },
               {
-                "hora": "22:45",
+                "hora": "22:50",
                 "min": 20,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Plaza de España (noche)"
+                "noche": "Plaza de España (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:45"
               }
             ],
             "B": [
@@ -1495,61 +1564,67 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "15:00",
+                "hora": "15:05",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:00"
               },
               {
-                "hora": "15:25",
+                "hora": "15:30",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:25"
               },
               {
-                "hora": "15:35",
+                "hora": "15:45",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:35"
               },
               {
-                "hora": "15:55",
+                "hora": "16:10",
                 "min": 15,
                 "texto_documento": "Boca de la Verdad",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Boca de la Verdad",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:55"
               },
               {
-                "hora": "16:20",
+                "hora": "16:35",
                 "min": 10,
                 "texto_documento": "Jardín de los Naranjos",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Jardín de los Naranjos",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:20"
               },
               {
-                "hora": "16:45",
+                "hora": "17:00",
                 "min": 10,
                 "texto_documento": "Ojo de la Cerradura del Aventino",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Ojo de la Cerradura del Aventino",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:45"
               },
               {
-                "hora": "17:10",
+                "hora": "17:20",
                 "min": 15,
                 "texto_documento": "Taxi al Janículo (Fontana dell'Acqua Paola)",
                 "como_documento": "",
@@ -1558,7 +1633,8 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 15
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
                 "hora": "17:45",
@@ -1580,7 +1656,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:15",
+                "hora": "19:20",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -1631,61 +1707,67 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "15:00",
+                "hora": "15:05",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:00"
               },
               {
-                "hora": "15:25",
+                "hora": "15:30",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:25"
               },
               {
-                "hora": "15:35",
+                "hora": "15:45",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:35"
               },
               {
-                "hora": "15:55",
+                "hora": "16:10",
                 "min": 15,
                 "texto_documento": "Boca de la Verdad",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Boca de la Verdad",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:55"
               },
               {
-                "hora": "16:20",
+                "hora": "16:35",
                 "min": 10,
                 "texto_documento": "Jardín de los Naranjos",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Jardín de los Naranjos",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:20"
               },
               {
-                "hora": "16:45",
+                "hora": "17:00",
                 "min": 10,
                 "texto_documento": "Ojo de la Cerradura del Aventino",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Ojo de la Cerradura del Aventino",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:45"
               },
               {
-                "hora": "17:10",
+                "hora": "17:20",
                 "min": 15,
                 "texto_documento": "Taxi al Janículo (Fontana dell'Acqua Paola)",
                 "como_documento": "",
@@ -1694,7 +1776,8 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 15
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
                 "hora": "17:45",
@@ -1716,7 +1799,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:15",
+                "hora": "19:20",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -1767,61 +1850,67 @@
                 "alternativa": "Nonna Betta"
               },
               {
-                "hora": "15:00",
+                "hora": "15:05",
                 "min": 20,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:00"
               },
               {
-                "hora": "15:25",
+                "hora": "15:30",
                 "min": 3,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:25"
               },
               {
-                "hora": "15:35",
+                "hora": "15:45",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 15:35"
               },
               {
-                "hora": "15:55",
+                "hora": "16:10",
                 "min": 15,
                 "texto_documento": "Boca de la Verdad",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Boca de la Verdad",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:55"
               },
               {
-                "hora": "16:20",
+                "hora": "16:35",
                 "min": 10,
                 "texto_documento": "Jardín de los Naranjos",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Jardín de los Naranjos",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:20"
               },
               {
-                "hora": "16:45",
+                "hora": "17:00",
                 "min": 10,
                 "texto_documento": "Ojo de la Cerradura del Aventino",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Ojo de la Cerradura del Aventino",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:45"
               },
               {
-                "hora": "17:10",
+                "hora": "17:20",
                 "min": 15,
                 "texto_documento": "Taxi al Janículo (Fontana dell'Acqua Paola)",
                 "como_documento": "",
@@ -1830,7 +1919,8 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 15
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
                 "hora": "17:45",
@@ -1852,7 +1942,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:15",
+                "hora": "19:20",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -1961,7 +2051,7 @@
                 "guia": true
               },
               {
-                "hora": "12:55",
+                "hora": "13:00",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
@@ -1971,88 +2061,97 @@
                 "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
-                "hora": "13:10",
+                "hora": "13:20",
                 "min": 5,
                 "texto_documento": "Piazza Venezia",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Plaza Venecia",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 13:10"
               },
               {
-                "hora": "13:30",
+                "hora": "13:40",
                 "min": 30,
                 "texto_documento": "Altar de la Patria",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Altar de la Patria",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 13:30"
               },
               {
-                "hora": "14:20",
+                "hora": "14:30",
                 "min": 60,
                 "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
                 "como_documento": "",
                 "tipo": "comida",
                 "restaurante": "Giggetto al Portico d'Ottavia",
-                "alternativa": "Nonna Betta"
+                "alternativa": "Nonna Betta",
+                "hora_corregida": "distancia: lo escrito era 14:20"
               },
               {
-                "hora": "15:30",
+                "hora": "15:45",
                 "min": 25,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:30"
               },
               {
-                "hora": "16:00",
+                "hora": "16:15",
                 "min": 5,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:00"
               },
               {
-                "hora": "16:10",
+                "hora": "16:30",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:10"
               },
               {
-                "hora": "16:30",
+                "hora": "16:55",
                 "min": 20,
                 "texto_documento": "Isla Tiberina",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Isla Tiberina",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:30"
               },
               {
-                "hora": "17:10",
+                "hora": "17:30",
                 "min": 5,
                 "texto_documento": "San Pietro in Montorio y el Tempietto",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
-                "hora": "17:30",
+                "hora": "17:50",
                 "min": 10,
                 "texto_documento": "Fontana dell'Acqua Paola",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Fontana dell'Acqua Paola",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 17:30"
               },
               {
-                "hora": "18:05",
+                "hora": "18:30",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
@@ -2062,7 +2161,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "19:05",
+                "hora": "19:30",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
@@ -2072,8 +2171,8 @@
                 "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:35",
-                "min": 20,
+                "hora": "20:05",
+                "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
@@ -2081,19 +2180,20 @@
                 "tipo": "paseo",
                 "lugar": "Trastevere",
                 "titulo": "Pasea y piérdete por Trastevere iluminado",
-                "hora_corregida": "distancia: lo escrito era 19:25 y 30 min"
+                "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
-                "hora": "20:15",
+                "hora": "20:55",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
                 "tipo": "cena",
                 "restaurante": "Trattoria Da Enzo al 29",
-                "alternativa": "Tonnarello"
+                "alternativa": "Tonnarello",
+                "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:55",
+                "hora": "22:35",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -2101,18 +2201,20 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 10
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 21:55"
               },
               {
-                "hora": "22:20",
+                "hora": "22:55",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:20"
               },
               {
-                "hora": "23:00",
+                "hora": "23:35",
                 "min": 5,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de camino",
@@ -2174,7 +2276,7 @@
                 "guia": true
               },
               {
-                "hora": "12:55",
+                "hora": "13:00",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
@@ -2184,88 +2286,97 @@
                 "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
-                "hora": "13:10",
+                "hora": "13:20",
                 "min": 5,
                 "texto_documento": "Piazza Venezia",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Plaza Venecia",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 13:10"
               },
               {
-                "hora": "13:30",
+                "hora": "13:40",
                 "min": 30,
                 "texto_documento": "Altar de la Patria",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Altar de la Patria",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 13:30"
               },
               {
-                "hora": "14:20",
+                "hora": "14:30",
                 "min": 60,
                 "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
                 "como_documento": "",
                 "tipo": "comida",
                 "restaurante": "Giggetto al Portico d'Ottavia",
-                "alternativa": "Nonna Betta"
+                "alternativa": "Nonna Betta",
+                "hora_corregida": "distancia: lo escrito era 14:20"
               },
               {
-                "hora": "15:30",
+                "hora": "15:45",
                 "min": 25,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:30"
               },
               {
-                "hora": "16:00",
+                "hora": "16:15",
                 "min": 5,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:00"
               },
               {
-                "hora": "16:10",
+                "hora": "16:30",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:10"
               },
               {
-                "hora": "16:30",
+                "hora": "16:55",
                 "min": 20,
                 "texto_documento": "Isla Tiberina",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Isla Tiberina",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:30"
               },
               {
-                "hora": "17:10",
+                "hora": "17:30",
                 "min": 5,
                 "texto_documento": "San Pietro in Montorio y el Tempietto",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
-                "hora": "17:30",
+                "hora": "17:50",
                 "min": 10,
                 "texto_documento": "Fontana dell'Acqua Paola",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Fontana dell'Acqua Paola",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 17:30"
               },
               {
-                "hora": "18:05",
+                "hora": "18:30",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
@@ -2275,7 +2386,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "19:05",
+                "hora": "19:30",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
@@ -2285,8 +2396,8 @@
                 "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:35",
-                "min": 20,
+                "hora": "20:05",
+                "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
@@ -2294,19 +2405,20 @@
                 "tipo": "paseo",
                 "lugar": "Trastevere",
                 "titulo": "Pasea y piérdete por Trastevere iluminado",
-                "hora_corregida": "distancia: lo escrito era 19:25 y 30 min"
+                "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
-                "hora": "20:15",
+                "hora": "20:55",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
                 "tipo": "cena",
                 "restaurante": "Trattoria Da Enzo al 29",
-                "alternativa": "Tonnarello"
+                "alternativa": "Tonnarello",
+                "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:55",
+                "hora": "22:35",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -2314,15 +2426,17 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 10
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 21:55"
               },
               {
-                "hora": "22:20",
+                "hora": "22:55",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:20"
               }
             ],
             "C": [
@@ -2378,7 +2492,7 @@
                 "guia": true
               },
               {
-                "hora": "12:55",
+                "hora": "13:00",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
@@ -2388,88 +2502,97 @@
                 "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
-                "hora": "13:10",
+                "hora": "13:20",
                 "min": 5,
                 "texto_documento": "Piazza Venezia",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Plaza Venecia",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 13:10"
               },
               {
-                "hora": "13:30",
+                "hora": "13:40",
                 "min": 30,
                 "texto_documento": "Altar de la Patria",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Altar de la Patria",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 13:30"
               },
               {
-                "hora": "14:20",
+                "hora": "14:30",
                 "min": 60,
                 "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
                 "como_documento": "",
                 "tipo": "comida",
                 "restaurante": "Giggetto al Portico d'Ottavia",
-                "alternativa": "Nonna Betta"
+                "alternativa": "Nonna Betta",
+                "hora_corregida": "distancia: lo escrito era 14:20"
               },
               {
-                "hora": "15:30",
+                "hora": "15:45",
                 "min": 25,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:30"
               },
               {
-                "hora": "16:00",
+                "hora": "16:15",
                 "min": 5,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:00"
               },
               {
-                "hora": "16:10",
+                "hora": "16:30",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:10"
               },
               {
-                "hora": "16:30",
+                "hora": "16:55",
                 "min": 20,
                 "texto_documento": "Isla Tiberina",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Isla Tiberina",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:30"
               },
               {
-                "hora": "17:10",
+                "hora": "17:30",
                 "min": 5,
                 "texto_documento": "San Pietro in Montorio y el Tempietto",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
-                "hora": "17:30",
+                "hora": "17:50",
                 "min": 10,
                 "texto_documento": "Fontana dell'Acqua Paola",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Fontana dell'Acqua Paola",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 17:30"
               },
               {
-                "hora": "18:05",
+                "hora": "18:30",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
@@ -2479,7 +2602,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "19:05",
+                "hora": "19:30",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
@@ -2489,8 +2612,8 @@
                 "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:35",
-                "min": 20,
+                "hora": "20:05",
+                "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
@@ -2498,19 +2621,20 @@
                 "tipo": "paseo",
                 "lugar": "Trastevere",
                 "titulo": "Pasea y piérdete por Trastevere iluminado",
-                "hora_corregida": "distancia: lo escrito era 19:25 y 30 min"
+                "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
-                "hora": "20:15",
+                "hora": "20:55",
                 "min": 90,
                 "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
                 "como_documento": "",
                 "tipo": "cena",
                 "restaurante": "Trattoria Da Enzo al 29",
-                "alternativa": "Tonnarello"
+                "alternativa": "Tonnarello",
+                "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:55",
+                "hora": "22:35",
                 "min": 10,
                 "texto_documento": "Taxi a Trevi",
                 "como_documento": "",
@@ -2518,15 +2642,17 @@
                 "traslado": {
                   "como": "un taxi",
                   "min": 10
-                }
+                },
+                "hora_corregida": "distancia: lo escrito era 21:55"
               },
               {
-                "hora": "22:20",
+                "hora": "22:55",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:20"
               }
             ],
             "D": [
@@ -2582,7 +2708,7 @@
                 "guia": true
               },
               {
-                "hora": "12:55",
+                "hora": "13:00",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
@@ -2592,88 +2718,97 @@
                 "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
-                "hora": "13:10",
+                "hora": "13:20",
                 "min": 5,
                 "texto_documento": "Piazza Venezia",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Plaza Venecia",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 13:10"
               },
               {
-                "hora": "13:30",
+                "hora": "13:40",
                 "min": 30,
                 "texto_documento": "Altar de la Patria",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Altar de la Patria",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 13:30"
               },
               {
-                "hora": "14:20",
+                "hora": "14:30",
                 "min": 60,
                 "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
                 "como_documento": "",
                 "tipo": "comida",
                 "restaurante": "Giggetto al Portico d'Ottavia",
-                "alternativa": "Nonna Betta"
+                "alternativa": "Nonna Betta",
+                "hora_corregida": "distancia: lo escrito era 14:20"
               },
               {
-                "hora": "15:30",
+                "hora": "15:45",
                 "min": 25,
                 "texto_documento": "Barrio Judío",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Barrio Judío",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 15:30"
               },
               {
-                "hora": "16:00",
+                "hora": "16:15",
                 "min": 5,
                 "texto_documento": "Fuente de las Tortugas",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Fuente de las Tortugas",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:00"
               },
               {
-                "hora": "16:10",
+                "hora": "16:30",
                 "min": 5,
                 "texto_documento": "Teatro de Marcelo",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "Teatro de Marcelo",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 16:10"
               },
               {
-                "hora": "16:30",
+                "hora": "16:55",
                 "min": 20,
                 "texto_documento": "Isla Tiberina",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Isla Tiberina",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 16:30"
               },
               {
-                "hora": "17:10",
+                "hora": "17:30",
                 "min": 5,
                 "texto_documento": "San Pietro in Montorio y el Tempietto",
                 "como_documento": "de camino",
                 "tipo": "parada",
                 "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:10"
               },
               {
-                "hora": "17:30",
+                "hora": "17:50",
                 "min": 10,
                 "texto_documento": "Fontana dell'Acqua Paola",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Fontana dell'Acqua Paola",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 17:30"
               },
               {
-                "hora": "18:05",
+                "hora": "18:30",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
@@ -2683,7 +2818,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "19:05",
+                "hora": "19:30",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
@@ -2693,7 +2828,7 @@
                 "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:35",
+                "hora": "20:05",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",

@@ -39,43 +39,47 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "12:10",
+          "hora": "12:15",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:10"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "12:55",
+          "hora": "13:00",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:55"
         },
         {
           "id": "comida_mordi_e_vai",
-          "hora": "13:35",
+          "hora": "13:40",
           "min": 60,
           "texto_documento": "**Comida:** en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Mordi e Vai",
-          "alternativa": "Felice a Testaccio"
+          "alternativa": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 13:35"
         },
         {
           "id": "parada_piramide_cestia",
-          "hora": "14:55",
+          "hora": "15:00",
           "min": 15,
           "texto_documento": "Pirámide Cestia",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Pirámide Cestia",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:55"
         }
       ]
     },
@@ -104,23 +108,25 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "10:50",
+          "hora": "10:55",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 10:50"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "11:35",
+          "hora": "11:40",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
@@ -137,17 +143,18 @@
         },
         {
           "id": "comida_mordi_e_vai",
-          "hora": "13:00",
+          "hora": "13:05",
           "min": 60,
           "texto_documento": "**Comida:** en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Mordi e Vai",
-          "alternativa": "Felice a Testaccio"
+          "alternativa": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 13:00"
         },
         {
           "id": "parada_piramide_cestia",
-          "hora": "14:20",
+          "hora": "14:25",
           "min": 15,
           "texto_documento": "Pirámide Cestia",
           "como_documento": "",
@@ -158,7 +165,7 @@
         },
         {
           "id": "parada_cementerio_protestante",
-          "hora": "14:50",
+          "hora": "14:55",
           "min": 30,
           "texto_documento": "Cementerio Protestante (la tumba de Keats)",
           "como_documento": "por dentro",

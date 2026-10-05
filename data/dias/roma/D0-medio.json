@@ -18,87 +18,95 @@
         },
         {
           "id": "parada_basilica_de_san_pedro",
-          "hora": "09:50",
+          "hora": "09:55",
           "min": 5,
           "texto_documento": "Basílica de San Pedro",
           "como_documento": "de camino (la fachada)",
           "tipo": "parada",
           "lugar": "Basílica de San Pedro",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 09:50"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio",
-          "hora": "10:10",
+          "hora": "10:20",
           "min": 20,
           "texto_documento": "Pasea y piérdete por Borgo Pio",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio"
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "hora_corregida": "distancia: lo escrito era 10:10"
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "10:35",
+          "hora": "10:45",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:35"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "11:05",
+          "hora": "11:15",
           "min": 15,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 11:05"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "11:25",
+          "hora": "11:30",
           "min": 5,
           "texto_documento": "Puente Sant'Angelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:25"
         },
         {
           "id": "parada_via_dei_coronari",
-          "hora": "11:35",
+          "hora": "11:45",
           "min": 10,
           "texto_documento": "Via dei Coronari",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via dei Coronari",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "parada_fontana_de_trevi",
-          "hora": "12:10",
+          "hora": "12:20",
           "min": 20,
           "texto_documento": "Fontana de Trevi",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Fontana de Trevi",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:10"
         },
         {
           "id": "parada_plaza_de_espana",
-          "hora": "12:50",
+          "hora": "13:00",
           "min": 20,
           "texto_documento": "Plaza de España",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza de España",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:50"
         },
         {
           "id": "comida_poldo_e_gianna_osteria",
-          "hora": "13:30",
+          "hora": "13:40",
           "min": 60,
           "texto_documento": "**Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente",
           "como_documento": "",
@@ -155,27 +163,29 @@
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "10:55",
+          "hora": "11:00",
           "min": 15,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 10:55"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio",
-          "hora": "11:30",
+          "hora": "11:35",
           "min": 25,
           "texto_documento": "Pasea y piérdete por Borgo Pio",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio"
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "hora_corregida": "distancia: lo escrito era 11:30"
         },
         {
           "id": "parada_plaza_de_san_pedro",
-          "hora": "12:10",
+          "hora": "12:15",
           "min": 20,
           "texto_documento": "Plaza de San Pedro",
           "como_documento": "",
@@ -186,7 +196,7 @@
         },
         {
           "id": "parada_basilica_de_san_pedro",
-          "hora": "12:30",
+          "hora": "12:40",
           "min": 5,
           "texto_documento": "Basílica de San Pedro",
           "como_documento": "de camino (la fachada)",
@@ -197,14 +207,15 @@
         },
         {
           "id": "comida_borghiciana_pastificio_artigianale",
-          "hora": "12:50",
+          "hora": "13:05",
           "min": 60,
           "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
           "alternativa": "Dal Toscano",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "hora_corregida": "distancia: lo escrito era 12:50"
         }
       ]
     },
@@ -301,57 +312,62 @@
         },
         {
           "id": "parada_basilica_de_san_pedro",
-          "hora": "15:20",
+          "hora": "15:25",
           "min": 5,
           "texto_documento": "Basílica de San Pedro",
           "como_documento": "de camino (la fachada)",
           "tipo": "parada",
           "lugar": "Basílica de San Pedro",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 15:20"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio",
-          "hora": "15:40",
+          "hora": "15:50",
           "min": 25,
           "texto_documento": "Pasea y piérdete por Borgo Pio",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio"
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "hora_corregida": "distancia: lo escrito era 15:40"
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "16:10",
+          "hora": "16:20",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:10"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "16:40",
+          "hora": "16:50",
           "min": 15,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "17:10",
+          "hora": "17:20",
           "min": 15,
           "texto_documento": "Puente Sant'Angelo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 17:10"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
-          "hora": "17:45",
+          "hora": "17:55",
           "min": 45,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
@@ -359,7 +375,8 @@
           "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati"
+          "titulo": "Pasea y piérdete por Prati",
+          "hora_corregida": "distancia: lo escrito era 17:45"
         },
         {
           "id": "cena_l_arcangelo",
@@ -395,47 +412,51 @@
         },
         {
           "id": "parada_basilica_de_san_pedro",
-          "hora": "16:20",
+          "hora": "16:25",
           "min": 5,
           "texto_documento": "Basílica de San Pedro",
           "como_documento": "de camino (la fachada)",
           "tipo": "parada",
           "lugar": "Basílica de San Pedro",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:20"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio",
-          "hora": "16:40",
+          "hora": "16:50",
           "min": 25,
           "texto_documento": "Pasea y piérdete por Borgo Pio",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio"
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "17:10",
+          "hora": "17:20",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 17:10"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "17:40",
+          "hora": "17:50",
           "min": 15,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 17:40"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
-          "hora": "18:15",
+          "hora": "18:25",
           "min": 60,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
@@ -443,17 +464,19 @@
           "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati"
+          "titulo": "Pasea y piérdete por Prati",
+          "hora_corregida": "distancia: lo escrito era 18:15"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "19:40",
+          "hora": "19:45",
           "min": 20,
           "texto_documento": "Puente Sant'Angelo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:40"
         },
         {
           "id": "cena_l_arcangelo",
@@ -516,7 +539,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
           "hora": "18:55",
-          "min": 15,
+          "min": 20,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -524,27 +547,29 @@
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati",
-          "hora_corregida": "distancia: lo escrito era 18:50 y 20 min"
+          "hora_corregida": "distancia: lo escrito era 18:50"
         },
         {
           "id": "cena_l_arcangelo",
-          "hora": "19:30",
+          "hora": "19:40",
           "min": 90,
           "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
           "alternativa": "Osteria dell'Angelo",
-          "zona": "en Prati"
+          "zona": "en Prati",
+          "hora_corregida": "distancia: lo escrito era 19:30"
         },
         {
           "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
-          "hora": "21:25",
+          "hora": "21:30",
           "min": 30,
           "texto_documento": "El Puente y el Castillo de Sant'Angelo iluminados",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "El Puente y el Castillo de Sant'Angelo (noche)"
+          "noche": "El Puente y el Castillo de Sant'Angelo (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:25"
         }
       ]
     }

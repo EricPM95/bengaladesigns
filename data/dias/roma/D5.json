@@ -107,27 +107,29 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "16:30",
+          "hora": "16:35",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 16:30"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "17:15",
+          "hora": "17:20",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:15"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 70,
           "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
           "como_documento": "",
@@ -136,7 +138,8 @@
           "tipo": "paseo",
           "lugar": "Testaccio",
           "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
-          "foto": "Paseo por Testaccio"
+          "foto": "Paseo por Testaccio",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "cena_felice_a_testaccio",
@@ -281,23 +284,25 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "18:05",
+          "hora": "18:10",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "18:50",
+          "hora": "18:55",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 18:50"
         },
         {
           "id": "cena_felice_a_testaccio",
@@ -442,7 +447,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_y_la_via_di_santa_sabina",
-          "hora": "18:20",
+          "hora": "18:25",
           "min": 30,
           "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
           "como_documento": "",
@@ -451,40 +456,44 @@
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
           "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
-          "foto": "Paseo por el Aventino"
+          "foto": "Paseo por el Aventino",
+          "hora_corregida": "distancia: lo escrito era 18:20"
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "19:05",
+          "hora": "19:10",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:05"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "19:50",
+          "hora": "19:55",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 19:50"
         },
         {
           "id": "cena_felice_a_testaccio",
-          "hora": "20:25",
+          "hora": "20:30",
           "min": 90,
           "texto_documento": "**Cena:** Felice a Testaccio",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Felice a Testaccio"
+          "restaurante": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 20:25"
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "22:05",
+          "hora": "22:10",
           "min": 10,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -492,16 +501,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 22:05"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "22:25",
+          "hora": "22:30",
           "min": 30,
           "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 22:25"
         }
       ],
       "D": [
@@ -616,7 +627,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
-          "hora": "18:30",
+          "hora": "18:35",
           "min": 75,
           "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
           "como_documento": "",
@@ -625,40 +636,44 @@
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
           "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
-          "foto": "Paseo por el Aventino"
+          "foto": "Paseo por el Aventino",
+          "hora_corregida": "distancia: lo escrito era 18:30"
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "20:00",
+          "hora": "20:05",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 20:00"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "20:45",
+          "hora": "20:50",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 20:45"
         },
         {
           "id": "cena_felice_a_testaccio",
-          "hora": "21:20",
+          "hora": "21:25",
           "min": 90,
           "texto_documento": "**Cena:** Felice a Testaccio",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Felice a Testaccio"
+          "restaurante": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 21:20"
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "23:00",
+          "hora": "23:05",
           "min": 10,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -666,16 +681,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 23:00"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "23:20",
+          "hora": "23:25",
           "min": 30,
           "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 23:20"
         }
       ]
     },
@@ -782,27 +799,29 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "16:30",
+          "hora": "16:35",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 16:30"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "17:15",
+          "hora": "17:20",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:15"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 70,
           "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
           "como_documento": "",
@@ -811,7 +830,8 @@
           "tipo": "paseo",
           "lugar": "Testaccio",
           "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
-          "foto": "Paseo por Testaccio"
+          "foto": "Paseo por Testaccio",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "cena_felice_a_testaccio",
@@ -946,27 +966,29 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "16:30",
+          "hora": "16:35",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 16:30"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "17:15",
+          "hora": "17:20",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:15"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 70,
           "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
           "como_documento": "",
@@ -975,7 +997,8 @@
           "tipo": "paseo",
           "lugar": "Testaccio",
           "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
-          "foto": "Paseo por Testaccio"
+          "foto": "Paseo por Testaccio",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "cena_felice_a_testaccio",
@@ -1110,27 +1133,29 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "16:30",
+          "hora": "16:35",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 16:30"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "17:15",
+          "hora": "17:20",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:15"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 70,
           "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
           "como_documento": "",
@@ -1139,7 +1164,8 @@
           "tipo": "paseo",
           "lugar": "Testaccio",
           "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
-          "foto": "Paseo por Testaccio"
+          "foto": "Paseo por Testaccio",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "cena_felice_a_testaccio",
@@ -1274,27 +1300,29 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "16:30",
+          "hora": "16:35",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 16:30"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "17:15",
+          "hora": "17:20",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:15"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 70,
           "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
           "como_documento": "",
@@ -1303,7 +1331,8 @@
           "tipo": "paseo",
           "lugar": "Testaccio",
           "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
-          "foto": "Paseo por Testaccio"
+          "foto": "Paseo por Testaccio",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "cena_felice_a_testaccio",
@@ -1374,7 +1403,7 @@
         },
         {
           "id": "parada_san_juan_de_letran_y_la_escalera_santa",
-          "hora": "11:40",
+          "hora": "11:45",
           "min": 40,
           "texto_documento": "San Juan de Letrán y la Escalera Santa",
           "como_documento": "por dentro",
@@ -1399,7 +1428,7 @@
         },
         {
           "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
-          "hora": "14:15",
+          "hora": "14:20",
           "min": 40,
           "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
           "como_documento": "por dentro",
@@ -1413,7 +1442,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:05",
+          "hora": "15:10",
           "min": 10,
           "texto_documento": "Taxi al Circo Máximo",
           "como_documento": "",
@@ -1426,7 +1455,7 @@
         },
         {
           "id": "parada_circo_maximo",
-          "hora": "15:25",
+          "hora": "15:30",
           "min": 20,
           "texto_documento": "Circo Máximo",
           "como_documento": "",
@@ -1437,7 +1466,7 @@
         },
         {
           "id": "parada_boca_de_la_verdad",
-          "hora": "16:00",
+          "hora": "16:10",
           "min": 20,
           "texto_documento": "Boca de la Verdad",
           "como_documento": "",
@@ -1448,7 +1477,7 @@
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "16:40",
+          "hora": "16:55",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
@@ -1459,7 +1488,7 @@
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "17:20",
+          "hora": "17:40",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
@@ -1470,7 +1499,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
-          "hora": "17:50",
+          "hora": "18:15",
           "min": 70,
           "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
           "como_documento": "",
@@ -1479,20 +1508,22 @@
           "tipo": "paseo",
           "lugar": "Testaccio",
           "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
-          "foto": "Paseo por Testaccio"
+          "foto": "Paseo por Testaccio",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "cena_felice_a_testaccio",
-          "hora": "19:30",
+          "hora": "19:40",
           "min": 90,
           "texto_documento": "**Cena:** Felice a Testaccio",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Felice a Testaccio"
+          "restaurante": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 19:30"
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "21:10",
+          "hora": "21:20",
           "min": 10,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -1500,16 +1531,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 21:10"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "21:30",
+          "hora": "21:40",
           "min": 30,
           "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:30"
         }
       ],
       "B": [
@@ -1548,7 +1581,7 @@
         },
         {
           "id": "parada_san_juan_de_letran_y_la_escalera_santa",
-          "hora": "11:40",
+          "hora": "11:45",
           "min": 40,
           "texto_documento": "San Juan de Letrán y la Escalera Santa",
           "como_documento": "por dentro",
@@ -1573,7 +1606,7 @@
         },
         {
           "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
-          "hora": "14:15",
+          "hora": "14:20",
           "min": 40,
           "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
           "como_documento": "por dentro",
@@ -1587,7 +1620,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:05",
+          "hora": "15:10",
           "min": 10,
           "texto_documento": "Taxi a las Termas de Caracalla",
           "como_documento": "",
@@ -1600,7 +1633,7 @@
         },
         {
           "id": "parada_termas_de_caracalla",
-          "hora": "15:25",
+          "hora": "15:30",
           "min": 60,
           "texto_documento": "Termas de Caracalla",
           "como_documento": "por dentro",
@@ -1611,7 +1644,7 @@
         },
         {
           "id": "parada_circo_maximo",
-          "hora": "16:50",
+          "hora": "17:00",
           "min": 20,
           "texto_documento": "Circo Máximo",
           "como_documento": "",
@@ -1622,46 +1655,50 @@
         },
         {
           "id": "parada_boca_de_la_verdad",
-          "hora": "17:25",
+          "hora": "17:40",
           "min": 20,
           "texto_documento": "Boca de la Verdad",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Boca de la Verdad",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:25"
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "18:05",
+          "hora": "18:25",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "18:50",
+          "hora": "19:10",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 18:50"
         },
         {
           "id": "cena_felice_a_testaccio",
-          "hora": "19:30",
+          "hora": "19:45",
           "min": 90,
           "texto_documento": "**Cena:** Felice a Testaccio",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Felice a Testaccio"
+          "restaurante": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 19:30"
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "21:10",
+          "hora": "21:25",
           "min": 10,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -1669,16 +1706,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 21:10"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "21:30",
+          "hora": "21:45",
           "min": 30,
           "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:30"
         }
       ],
       "C": [
@@ -1717,7 +1756,7 @@
         },
         {
           "id": "parada_san_juan_de_letran_y_la_escalera_santa",
-          "hora": "11:40",
+          "hora": "11:45",
           "min": 40,
           "texto_documento": "San Juan de Letrán y la Escalera Santa",
           "como_documento": "por dentro",
@@ -1742,7 +1781,7 @@
         },
         {
           "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
-          "hora": "14:15",
+          "hora": "14:20",
           "min": 40,
           "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
           "como_documento": "por dentro",
@@ -1756,7 +1795,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:05",
+          "hora": "15:10",
           "min": 10,
           "texto_documento": "Taxi a las Termas de Caracalla",
           "como_documento": "",
@@ -1769,7 +1808,7 @@
         },
         {
           "id": "parada_termas_de_caracalla",
-          "hora": "15:25",
+          "hora": "15:30",
           "min": 75,
           "texto_documento": "Termas de Caracalla",
           "como_documento": "por dentro",
@@ -1780,7 +1819,7 @@
         },
         {
           "id": "parada_circo_maximo",
-          "hora": "17:05",
+          "hora": "17:15",
           "min": 20,
           "texto_documento": "Circo Máximo",
           "como_documento": "",
@@ -1791,17 +1830,18 @@
         },
         {
           "id": "parada_boca_de_la_verdad",
-          "hora": "17:40",
+          "hora": "17:55",
           "min": 20,
           "texto_documento": "Boca de la Verdad",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Boca de la Verdad",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:40"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_y_la_via_di_santa_sabina",
-          "hora": "18:20",
+          "hora": "18:40",
           "min": 30,
           "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
           "como_documento": "",
@@ -1810,40 +1850,44 @@
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
           "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
-          "foto": "Paseo por el Aventino"
+          "foto": "Paseo por el Aventino",
+          "hora_corregida": "distancia: lo escrito era 18:20"
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "19:05",
+          "hora": "19:25",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:05"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "19:50",
+          "hora": "20:10",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 19:50"
         },
         {
           "id": "cena_felice_a_testaccio",
-          "hora": "20:25",
+          "hora": "20:45",
           "min": 90,
           "texto_documento": "**Cena:** Felice a Testaccio",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Felice a Testaccio"
+          "restaurante": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 20:25"
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "22:05",
+          "hora": "22:25",
           "min": 10,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -1851,16 +1895,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 22:05"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "22:25",
+          "hora": "22:45",
           "min": 30,
           "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 22:25"
         }
       ],
       "D": [
@@ -1899,7 +1945,7 @@
         },
         {
           "id": "parada_san_juan_de_letran_y_la_escalera_santa",
-          "hora": "11:40",
+          "hora": "11:45",
           "min": 40,
           "texto_documento": "San Juan de Letrán y la Escalera Santa",
           "como_documento": "por dentro",
@@ -1924,7 +1970,7 @@
         },
         {
           "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
-          "hora": "14:15",
+          "hora": "14:20",
           "min": 40,
           "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
           "como_documento": "por dentro",
@@ -1938,7 +1984,7 @@
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "15:05",
+          "hora": "15:10",
           "min": 10,
           "texto_documento": "Taxi a las Termas de Caracalla",
           "como_documento": "",
@@ -1951,7 +1997,7 @@
         },
         {
           "id": "parada_termas_de_caracalla",
-          "hora": "15:25",
+          "hora": "15:30",
           "min": 75,
           "texto_documento": "Termas de Caracalla",
           "como_documento": "por dentro",
@@ -1962,7 +2008,7 @@
         },
         {
           "id": "parada_circo_maximo",
-          "hora": "17:05",
+          "hora": "17:15",
           "min": 30,
           "texto_documento": "Circo Máximo",
           "como_documento": "",
@@ -1973,17 +2019,18 @@
         },
         {
           "id": "parada_boca_de_la_verdad",
-          "hora": "17:50",
+          "hora": "18:05",
           "min": 20,
           "texto_documento": "Boca de la Verdad",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Boca de la Verdad",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
-          "hora": "18:30",
+          "hora": "18:50",
           "min": 75,
           "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
           "como_documento": "",
@@ -1992,40 +2039,44 @@
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
           "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
-          "foto": "Paseo por el Aventino"
+          "foto": "Paseo por el Aventino",
+          "hora_corregida": "distancia: lo escrito era 18:30"
         },
         {
           "id": "parada_jardin_de_los_naranjos",
-          "hora": "20:00",
+          "hora": "20:20",
           "min": 30,
           "texto_documento": "Jardín de los Naranjos, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Jardín de los Naranjos",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 20:00"
         },
         {
           "id": "parada_ojo_de_la_cerradura_del_aventino",
-          "hora": "20:45",
+          "hora": "21:05",
           "min": 15,
           "texto_documento": "Ojo de la Cerradura del Aventino",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 20:45"
         },
         {
           "id": "cena_felice_a_testaccio",
-          "hora": "21:20",
+          "hora": "21:40",
           "min": 90,
           "texto_documento": "**Cena:** Felice a Testaccio",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Felice a Testaccio"
+          "restaurante": "Felice a Testaccio",
+          "hora_corregida": "distancia: lo escrito era 21:20"
         },
         {
           "id": "traslado_un_taxi#2",
-          "hora": "23:00",
+          "hora": "23:20",
           "min": 10,
           "texto_documento": "Taxi al Campidoglio",
           "como_documento": "",
@@ -2033,16 +2084,18 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 23:00"
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "23:20",
+          "hora": "23:40",
           "min": 30,
           "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 23:20"
         }
       ]
     }
@@ -2050,6 +2103,7 @@
   "colchon_insertable": {
     "dia_semana": "lunes",
     "fila": {
+      "id": "paseo_pasea_y_pierdete_por_el_aventino_lunes",
       "hora": "18:20",
       "min": 30,
       "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",

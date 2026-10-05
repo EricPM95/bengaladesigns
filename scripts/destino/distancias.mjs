@@ -5,7 +5,7 @@
 import fs from 'node:fs'
 import { findPipelineV2Data, findPipelineV2Key } from '../../server/routeAlgorithm.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
-import { hueco, finDe, esAncla, toMin, correrHoras } from '../../shared/routeEngine/escritos.js'
+import { hueco, finDe, esAncla, toMin, toHHMM, CENA_MAXIMA, correrHoras } from '../../shared/routeEngine/escritos.js'
 
 const D = findPipelineV2Data('Roma')
 const travel = travelTimesFor(findPipelineV2Key(D.destination ?? 'Roma'))
@@ -14,10 +14,11 @@ const restBy = new Map(D.restaurants.map((restaurant) => [restaurant.name, resta
 const nightBy = new Map((D.night_experiences ?? []).map((entry) => [entry.name, entry]))
 const up5 = (m) => Math.ceil(m / 5) * 5
 /**
- * Tolerancia (provisional, PREGUNTAS_TANDA3): las tablas del documento van de 5 en 5 y el motor redondea hacia arriba (andando + 10 → 15, 20…); medido hacia abajo —lo que se anda más los 10 min, redondeado a 5 hacia abajo—
- * ya no sobran tramos «cortos» por 1 a 4 min de redondeo. Con TOLERANCIA_DISTANCIAS=0 se corrige con el redondeo del motor (478 tramos en vez de 117: corre las tardes hasta 20 min).
+ * Tolerancia en minutos: 0 = la regla de márgenes del documento tal cual, con el mismo redondeo del motor (andando + 10, a 5 hacia arriba). Con TOLERANCIA_DISTANCIAS=4 se mide hacia abajo
+ * (117 tramos en vez de 478), pero entonces las tablas quedan con tramos cortos que el motor destapa en cuanto corre las horas por otra causa (un cierre, el pool…): recorta colchones sin que nadie
+ * lo haya pedido. Por eso por defecto es 0 (decisión provisional, PREGUNTAS_TANDA3).
  */
-export const TOLERANCIA = Number(process.env.TOLERANCIA_DISTANCIAS ?? 4)
+export const TOLERANCIA = Number(process.env.TOLERANCIA_DISTANCIAS ?? 0)
 
 export function coordsDe(row) {
   if (row.tipo === 'comida' || row.tipo === 'cena') {
@@ -51,12 +52,41 @@ export function tramosCortos(rows) {
 }
 
 /**
- * Corre las horas de una tabla con la regla de márgenes del documento (la misma del motor, `correrHoras`): lo que no llega a su hora sale más tarde, lo de después se empuja si hace falta,
- * un colchón de antes se acorta (hasta su mínimo) si no se llegaría a una fila fija, y la cena se retrasa (hasta las 22:00). Si para que quepa habría que QUITAR algo, no se toca la tabla
- * y el tramo se apunta (`fijos`): lo decide quien escribe el documento.
+ * Corre las horas de una tabla: cada fila que no llega a su hora sale más tarde (lo andado más el margen del documento) y lo de después se empuja lo que haga falta. SOLO corre horas: no
+ * acorta colchones ni comidas ni quita nada. La cena puede retrasarse (hasta las 22:00, como en el motor); una reserva, un turno, el Free Tour u otra fila fija, no. Si la tabla no se
+ * puede arreglar así, no se toca y los tramos cortos se apuntan (`fijos`): lo decide quien escribe el documento (recortar un colchón, mover una parada).
  */
 export function corregirTabla(rows) {
-  if (tramosCortos(rows).length === 0) return { rows, cambios: [], fijos: [] }
+  const cortos = tramosCortos(rows)
+  if (cortos.length === 0) return { rows, cambios: [], fijos: [] }
+  if (process.env.DISTANCIAS_MODO === 'recortar') return corregirRecortando(rows)
+  const lista = rows.map((row) => ({ ...row }))
+  const sinArreglo = (porque) => ({ rows, cambios: [], fijos: cortos.map((corto) => ({ id: rows[corto.i].id, fila: corto.a, hora: corto.hora_a, tramo: `${corto.de} → ${corto.a}`, andar: corto.andar, falta: corto.falta, porque })) })
+  for (let i = 1; i < lista.length; i++) {
+    const prev = lista[i - 1]
+    const row = lista[i]
+    if (!prev.hora || !row.hora) continue
+    const llegada = up5(finDe(prev) + hueco(prev, row, andarT))
+    if (llegada <= toMin(row.hora)) continue
+    if (esAncla(row) && row.tipo !== 'traslado' && row.tipo !== 'cena') return sinArreglo(`la fila de llegada es fija (${row.hora_tipo ?? row.tipo})`)
+    if (row.tipo === 'cena' && llegada > CENA_MAXIMA) return sinArreglo('la cena pasaría de las 22:00')
+    row.hora = toHHMM(llegada)
+  }
+  const cambios = []
+  const nuevas = lista.map((row, i) => {
+    const antes = rows[i]
+    if (row.hora === antes.hora) return antes
+    cambios.push({ id: row.id, fila: nombre(row), de: antes.hora, a: row.hora, min_de: antes.min, min_a: row.min, tramo: `${nombre(rows[i - 1] ?? antes)} → ${nombre(row)}`, andar: i > 0 ? andar(rows[i - 1], row) : 0 })
+    return { ...row, hora_corregida: `distancia: lo escrito era ${antes.hora}` }
+  })
+  return { rows: nuevas, cambios, fijos: [] }
+}
+
+/**
+ * La otra manera (DISTANCIAS_MODO=recortar): con `correrHoras` del motor, que además de correr las horas acorta el colchón de antes (hasta su mínimo) y la comida (hasta 45 min) antes de retrasar la cena.
+ * Deja la cena donde la escribió el documento, pero recorta colchones (hasta 55 min en algún día). Si habría que quitar una parada, no toca la tabla.
+ */
+function corregirRecortando(rows) {
   const corrida = correrHoras(rows.map((row) => ({ ...row })), { desde: 1, walk: andarT, soloEmpujar: true })
   if (corrida.quitadas.length > 0 || corrida.problemas.length > 0 || corrida.rows.length !== rows.length) {
     return { rows, cambios: [], fijos: tramosCortos(rows).map((corto) => ({ id: rows[corto.i].id, fila: corto.a, hora: corto.hora_a, tramo: `${corto.de} → ${corto.a}`, andar: corto.andar, falta: corto.falta, porque: corrida.problemas[0] ?? (corrida.quitadas.length ? 'habría que quitar una parada' : 'no cabe') })) }

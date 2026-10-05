@@ -507,7 +507,8 @@ out['D5'] = {
     domingo: Object.fromEntries(Object.entries(d5).map(([letra, rows]) => [letra, reordenarDomingo(rows)])),
   },
   // (Una fila que el motor mete antes del mirador si la tarde llega pronto al sol: el lunes, sin Termas, para B, C y D.)
-  colchon_insertable: { dia_semana: 'lunes', fila: colchonAventino },
+  // (Con su `id`: el colchón que se mete para llegar con el sol no se vuelve a acortar —va «protegido»—.)
+  colchon_insertable: { dia_semana: 'lunes', fila: { id: 'paseo_pasea_y_pierdete_por_el_aventino_lunes', ...colchonAventino } },
 }
 // D6: Roma desde arriba
 out['D6'] = { id: 'D6', nombre: 'Roma desde arriba', versiones: { normal: unir(T(57), { A: T(58), B: T(59), C: T(60), D: T(61) }) } }
@@ -532,9 +533,9 @@ if (!soloComprobar && !process.argv.includes('--sin-distancias')) {
   const unicos = (lista, clave) => { const vistos = new Set(); return lista.filter((x) => { const k = clave(x); if (vistos.has(k)) return false; vistos.add(k); return true }) }
   const cambios = unicos(distancias.cambios, (x) => `${x.dia}|${x.tramo}|${x.de}|${x.a}`)
   const fijos = unicos(distancias.fijos, (x) => `${x.dia}|${x.tramo}|${x.hora}`)
-  const l = ['# Distancias de los días escritos (Tanda 3)', '', 'El hueco entre una parada y la siguiente tiene que dar para lo que se tarda andando de verdad (coordenadas de roma.json y el mismo cálculo que usa la app) más el margen del documento (10 min; 15 después de una visita guiada; lo «de camino», solo lo que se anda). Lo que no llegaba se ha corrido (solo hacia delante: la fila siguiente sale más tarde). **Redondeo hacia abajo** (provisional, ver PREGUNTAS_TANDA3): lo que se anda más el margen se redondea a 5 hacia abajo (el motor lo redondea hacia arriba), para no corregir tramos que solo fallan por 1 a 4 min de redondeo; corregirlo todo con el redondeo del motor (478 tramos en vez de estos) acumula hasta 20 min en un día y mueve la tarde entera. Lo hace el convertidor (`escritosConvertir.mjs`, con `distancias.mjs`), así que se repite solo cada vez que cambie el documento.', '', `**${cambios.length} tramos corregidos** (distintos, de ${distancias.cambios.length} apariciones en las tablas) y **${fijos.length} que no se pueden corregir** corriendo horas sin quitar una parada (ahí manda el documento: se dejan como están).`, '', '## Corregidos', '']
+  const l = ['# Distancias de los días escritos (Tanda 3)', '', 'El hueco entre una parada y la siguiente tiene que dar para lo que se tarda andando de verdad (coordenadas de roma.json y el mismo cálculo que usa la app) más el margen del documento (10 min; 15 después de una visita guiada; lo «de camino», solo lo que se anda). Lo que no llegaba se ha corrido (solo hacia delante: la fila siguiente sale más tarde). Con la regla del documento tal cual y el mismo redondeo del motor (provisional, ver PREGUNTAS_TANDA3): solo se corren las horas (no se acorta ningún colchón ni comida; la cena puede retrasarse, hasta las 22:00). Así las tablas son coherentes con lo que el motor hace cuando corre las horas por otra causa (un cierre, el pool…). Si un día acaba más tarde de lo escrito, es por la suma de estos tramos. Lo hace el convertidor (`escritosConvertir.mjs`, con `distancias.mjs`), así que se repite solo cada vez que cambie el documento.', '', `**${cambios.length} tramos corregidos** (distintos, de ${distancias.cambios.length} apariciones en las tablas) y **${fijos.length} que no se pueden corregir** corriendo solo las horas (la fila de llegada es una reserva, un turno o el Free Tour: ahí manda el documento y se dejan como están).`, '', '## Corregidos', '']
   for (const x of cambios) l.push(`- **${x.dia}** (${x.donde}): ${x.tramo}: andando ${x.andar} min; ${x.fila}: ${x.de !== x.a ? `de las ${x.de} a las ${x.a}` : ''}${x.min_de !== x.min_a ? `${x.de !== x.a ? ' y ' : ''}de ${x.min_de} a ${x.min_a} min` : ''}`)
-  l.push('', '## Sin corregir (habría que quitar una parada)', '')
+  l.push('', '## Sin corregir (corriendo solo las horas no se puede)', '')
   for (const x of fijos) l.push(`- **${x.dia}** (${x.donde}): ${x.tramo}: andando ${x.andar} min; faltan ${x.falta} min para llegar a las ${x.hora} (${x.porque})`)
   fs.writeFileSync(root + 'docs/dias/DISTANCIAS_TANDA3.md', l.join('\n') + '\n')
   console.log(`distancias: ${cambios.length} corregidas, ${fijos.length} sin corregir (fila fija)`)

@@ -111,14 +111,15 @@
         },
         {
           "id": "cena_l_arcangelo",
-          "hora": "19:45",
+          "hora": "19:50",
           "min": 90,
           "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
           "alternativa": "Osteria dell'Angelo",
-          "zona": "en Prati"
+          "zona": "en Prati",
+          "hora_corregida": "distancia: lo escrito era 19:45"
         },
         {
           "id": "noche_el_puente_y_el_castillo_de_sant_angelo_noche",
@@ -377,48 +378,52 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio",
-          "hora": "16:45",
+          "hora": "16:50",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Borgo Pio",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio"
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "hora_corregida": "distancia: lo escrito era 16:45"
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "17:20",
+          "hora": "17:25",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 17:20"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 20,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "parada_puente_sant_angelo",
-          "hora": "18:25",
+          "hora": "18:30",
           "min": 20,
           "texto_documento": "Puente Sant'Angelo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 18:25"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
-          "hora": "19:05",
-          "min": 20,
+          "hora": "19:10",
+          "min": 25,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -426,27 +431,29 @@
           "tipo": "paseo",
           "lugar": "Borgo Pio",
           "titulo": "Pasea y piérdete por Prati",
-          "hora_corregida": "distancia: lo escrito era 19:05 y 25 min"
+          "hora_corregida": "distancia: lo escrito era 19:05"
         },
         {
           "id": "cena_l_arcangelo",
-          "hora": "19:45",
+          "hora": "20:00",
           "min": 90,
           "texto_documento": "**Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "L'Arcangelo",
           "alternativa": "Osteria dell'Angelo",
-          "zona": "en Prati"
+          "zona": "en Prati",
+          "hora_corregida": "distancia: lo escrito era 19:45"
         },
         {
           "id": "noche_piazza_navona_noche",
-          "hora": "21:45",
+          "hora": "21:55",
           "min": 30,
           "texto_documento": "Piazza Navona de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Piazza Navona (noche)"
+          "noche": "Piazza Navona (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:45"
         }
       ],
       "CD": [
@@ -541,37 +548,40 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio",
-          "hora": "16:45",
+          "hora": "16:50",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Borgo Pio",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio"
+          "titulo": "Pasea y piérdete por Borgo Pio",
+          "hora_corregida": "distancia: lo escrito era 16:45"
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "17:20",
+          "hora": "17:25",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 17:20"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
-          "hora": "17:50",
+          "hora": "17:55",
           "min": 20,
           "texto_documento": "Castillo de Sant'Angelo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Castillo de Sant'Angelo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
-          "hora": "18:30",
+          "hora": "18:35",
           "min": 60,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
@@ -579,7 +589,8 @@
           "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati"
+          "titulo": "Pasea y piérdete por Prati",
+          "hora_corregida": "distancia: lo escrito era 18:30"
         },
         {
           "id": "parada_puente_sant_angelo",
