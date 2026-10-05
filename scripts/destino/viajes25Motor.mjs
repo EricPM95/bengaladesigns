@@ -7,6 +7,7 @@
 //       → otros viajes con otras fechas. Formato de cada viaje: id|etiqueta|inicio (AAAA-MM-DD)|medio día (tarde o manana)|Free Tour de mañana (0 o 1)|experiencias (separadas por comas)|pool (separado por comas)
 //   Opciones: salida=ruta.html  sim=ruta/a/la/simulacion.html (para comparar; por defecto, la de docs/dias)  diferencias=ruta.md  sin_comparar=1
 import fs from 'node:fs'
+import { conCabecera } from './cabeceraHtml.mjs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
@@ -244,5 +245,5 @@ html = html
   .replace(/<h1>[^<]*<\/h1>/, '<h1>Viajes de 2,5 días: lo que saca el motor</h1>')
   .replace(/<p class="lead">[\s\S]*?<\/p>/, '<p class="lead">Estos viajes los ha hecho el motor, con las mismas fechas que la simulación hecha a mano: fechas, cambio de orden de los días, versión de la tarde según la puesta de sol, cierres y restaurantes. En amarillo, lo que el motor cambia respecto a la tabla escrita, con su causa. Para volver a generarla con otras fechas: <code>node scripts/destino/viajes25Motor.mjs</code>.</p>')
   .replace(/<h2>Lo que ha salido al probarlos<\/h2>/, '<h2>Lo que ha salido</h2>')
-fs.writeFileSync(salida, html)
+fs.writeFileSync(salida, conCabecera(html))
 console.log(JSON.stringify({ salida, diferencias: salidaDif, viajes: trips.length, diferencias_con_la_simulacion: resumenDif.total, sin_causa: resumenDif.sinCausa }))

@@ -511,7 +511,10 @@ export function aplicarExtra(rows, def, { walk, abierta, marcar = (lista) => lis
   // (Lo marcado en el pool es la prioridad: en 1 y 1,5 días, si para meterlo no cabe un imprescindible, el imprescindible se queda fuera.)
   const corrida = correrHoras(lista, { desde: aplicadas.primera, walk, orden: def.orden ?? orden, protegidas: (row) => row.hora_tipo === 'reserva', quitarImprescindibles: pool, soloEmpujar: (def.acciones ?? []).some((accion) => accion.op === 'tabla' || accion.op === 'reemplazar_manana') })
   if (corrida.problemas.length > 0) return null
-  lista = corrida.rows
+  // Con la tabla escrita de un extra (Tanda 4), este paso solo decide si CABE y qué se quita: las horas y los minutos de lo que se queda los saca componerDia, una sola vez, al final
+  // (antes se apretaban aquí —un imprescindible pasaba a «de camino» con las horas de la tabla— y luego sobraba tiempo que se rellenaba con un colchón).
+  const conTabla = (def.acciones ?? []).some((accion) => accion.op === 'tabla' || accion.op === 'reemplazar_manana')
+  lista = conTabla ? lista.filter((row) => !corrida.quitadas.some((q) => q.id === row.id)) : corrida.rows
   // Acciones que se hacen cuando ya están las horas.
   let desdeDespues = null
   for (const accion of def.despues ?? []) {

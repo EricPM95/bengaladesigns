@@ -25,7 +25,7 @@ import { anyTransitRuns, publicTransitKind, transitRuns } from './holidayTransit
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { straightLineMeters } from './travelTimes.js'
-import { componerDia } from './componerDia.js'
+import { componerDia, esFija } from './componerDia.js'
 import { nocheValida } from './nightLimit.js'
 import { availableForTrip, seasonFit } from './availability.js' // eslint-disable-line no-unused-vars
 import { joinSpanish } from './whyTexts.js'
@@ -2214,11 +2214,38 @@ export function planWrittenTrip(args) {
    * La hora de cada fila del día se calcula aquí, una sola vez (componerDia.js), desde la lista que dejaron todos los ajustes. El registro cuenta los cambios respecto al documento con
    * esa hora final: una entrada por fila, con todas las causas que la tocaron.
    */
+  /**
+   * «De camino» (Tanda 4): pasas por delante sin pararte, 5 min como mucho.
+   *   1. Una calle que se recorre en 10 o 15 min no es de camino: es un paseo («Paseo por Via Veneto»).
+   *   2. Un sitio de nivel 1 o 2 no va de camino la primera vez que sale en el viaje (salvo que el Free Tour ya pase por él): va como parada.
+   *   3. Un sitio que no se ve desde la calle cuando está cerrado (`visible_desde_calle: false`, como el Tempietto) y está cerrado a esa hora, sale con su alternativa (`camino_alternativa`).
+   */
+  const reglasDeCamino = (rows, hours, log) => {
+    return rows.map((row) => {
+      let fila = row
+      const place = placeByName.get(row.lugar)
+      if (row.modo === 'camino' && row.tipo === 'parada' && !row.llegada && place) {
+        if (row.min > 5) {
+          fila = { ...row, tipo: 'paseo', modo: null, titulo: `Paseo por ${place.name}`, min: row.min }
+          log.push({ id: row.id, lugar: fila.titulo, sitio: row.lugar, que: 'modo+titulo', causa: `${row.min} min andando: una calle de más de 5 min no es «de camino», es un paseo` })
+        } else if ((place.level ?? 3) <= 2 && !caminoVistos.has(row.lugar) && !tourCovers.has(row.lugar)) {
+          fila = { ...row, modo: 'fuera', min: place.minutos_fuera ?? 10, min_fuera: place.minutos_fuera ?? 10 }
+          log.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'modo+min', causa: `primera vez que sale ${row.lugar} en el viaje (nivel ${place.level}): va como parada, no de camino` })
+        }
+      }
+      if (place && place.visible_desde_calle === false && place.camino_alternativa && (fila.modo === 'camino' || fila.modo === 'fuera') && openCheck(place, filaMin(fila.hora), 5, hours).ok !== true) {
+        fila = { ...fila, titulo: place.camino_alternativa }
+        log.push({ id: row.id, lugar: fila.titulo, sitio: row.lugar, que: 'titulo', causa: `${place.name} no se ve desde la calle cuando está cerrado: la parada es ${place.camino_alternativa}` })
+      }
+      if (fila.lugar && fila.tipo !== 'traslado' && fila.modo !== 'camino') caminoVistos.add(fila.lugar)
+      return fila
+    })
+  }
   const componerEscrito = (draft, skeletonDay) => {
     const hours = draft.hoursPrep ?? hoursOf(skeletonDay)
     const env0 = envDe(skeletonDay)
     const stageLog = draft.log
-    let rows = draft.rowsPrep
+    let rows = reglasDeCamino(draft.rowsPrep, hours, stageLog)
     // Cierres (regla de cierres): lo que por dentro cae cerrado a su hora se mueve antes en el día, hasta donde está abierto (una joya, el Panteón, mejor por dentro aunque sea corto).
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
@@ -2251,7 +2278,7 @@ export function planWrittenTrip(args) {
     }
     rows = nocheEspecial(rows, hours, stageLog)
     const inicial = marcarFilas(draft.rows)
-    const resultado = componerDia(rows, {
+    const componer = (filas) => componerDia(filas, {
       walk: rowWalk,
       sunset: hours.sunset,
       lead: SUNSET_LEAD,
@@ -2264,6 +2291,44 @@ export function planWrittenTrip(args) {
       nocheValida: (row) => nocheValida(destData, hours.dateIso ?? null, hours.sunset ?? null, filaMin(row.hora), row.min),
       turnoMovible: (row) => row.lugar === 'Galería Borghese' && row.modo === 'dentro' && (row.hora_tipo === 'reserva' || row.turno) && entradas?.['Galería Borghese'] == null,
     })
+    let resultado = componer(rows)
+    // Un extra del pool (o lo que sea) que no cabe sin que la comida se vaya tarde (los restaurantes cierran sobre las 15:00): se acorta lo de antes de la comida por este orden y se vuelve a calcular,
+    // sin cambiar nunca el orden para comer antes (haría zigzag): 1) el colchón hasta su mínimo; 2) la visita por dentro hasta su mínimo (min_max del sitio); 3) lo de nivel más bajo pasa a «de camino»;
+    // 4) solo después se quita por la pirámide, de abajo arriba (nunca un imprescindible).
+    {
+      const limite = destData.destination_config?.comida_limite ? filaMin(destData.destination_config.comida_limite) : null
+      let actual = rows
+      for (let vuelta = 0; limite != null && vuelta < 40; vuelta++) {
+        const comida = resultado.rows.find((row) => row.tipo === 'comida')
+        if (!comida || filaMin(comida.hora) <= limite) break
+        const iComida = actual.findIndex((row) => row.id === comida.id)
+        if (iComida < 0) break
+        const libre = (row, i) => i < iComida && row.tipo !== 'traslado' && !row.llegada && !esFija(row) && row.hora_tipo !== 'reserva' && row.hora_tipo !== 'turno' && row.tipo !== 'tour'
+        const nivel = (row) => (row.tipo === 'paseo' || row.tipo === 'desayuno' ? 3 : placeByName.get(row.lugar)?.level ?? 3)
+        const lugares = actual.map((row, i) => ({ row, i })).filter(({ row, i }) => libre(row, i))
+        let cambio = null
+        const colchon = [...lugares].reverse().find(({ row }) => row.colchon && row.min > Math.min(row.min, 30))
+        const minimoPorDentro = (row) => placeByName.get(row.lugar)?.minimo_dentro ?? Math.max(30, Math.ceil(row.min * 0.75))
+        // (Solo la visita por dentro marcada en el pool, que es lo que hizo que no cupiera: nada más se acorta por dentro.)
+        const porDentro = [...lugares].sort((x, y) => Number(poolNames.includes(y.row.lugar)) - Number(poolNames.includes(x.row.lugar)) || y.i - x.i).find(({ row }) => row.modo === 'dentro' && poolNames.includes(row.lugar) && row.min > minimoPorDentro(row))
+        const aCamino = [...lugares].sort((x, y) => nivel(y.row) - nivel(x.row) || y.i - x.i).find(({ row }) => row.tipo === 'parada' && !row.colchon && nivel(row) >= 3 && row.modo !== 'camino' && row.modo !== 'dentro')
+        const quitable = [...lugares].sort((x, y) => nivel(y.row) - nivel(x.row) || y.i - x.i).find(({ row }) => nivel(row) >= 2 && !row.imprescindible && !poolNames.includes(row.lugar))
+        if (colchon) cambio = { i: colchon.i, fila: { ...colchon.row, min: Math.min(colchon.row.min, 30) }, causa: 'la comida iba a caer tarde: el colchón baja a su mínimo' }
+        else if (porDentro) cambio = { i: porDentro.i, fila: { ...porDentro.row, min: minimoPorDentro(porDentro.row) }, causa: `la comida iba a caer a las ${comida.hora}: la visita por dentro baja a su mínimo (${minimoPorDentro(porDentro.row)} min)` }
+        else if (aCamino) cambio = { i: aCamino.i, fila: { ...aCamino.row, modo: 'camino', min: 5 }, causa: `la comida iba a caer a las ${comida.hora}: lo de nivel más bajo pasa a «de camino»` }
+        else if (quitable) cambio = { i: quitable.i, quitar: true, causa: `la comida iba a caer a las ${comida.hora}: se quita lo de nivel más bajo (pirámide)` }
+        if (!cambio) break
+        const antesFila = actual[cambio.i]
+        if (cambio.quitar) {
+          stageLog.push({ id: antesFila.id, lugar: antesFila.titulo ?? antesFila.lugar, sitio: antesFila.lugar ?? null, que: 'quitada', causa: cambio.causa })
+          actual = actual.filter((_, k) => k !== cambio.i)
+        } else {
+          stageLog.push({ id: antesFila.id, lugar: antesFila.titulo ?? antesFila.lugar, sitio: antesFila.lugar ?? null, que: cambio.fila.modo !== antesFila.modo ? 'modo+min' : 'min', causa: cambio.causa })
+          actual = actual.map((row, k) => (k === cambio.i ? cambio.fila : row))
+        }
+        resultado = componer(actual)
+      }
+    }
     // Los colchones no nombran paradas que el mismo día tienen su tarjeta (el texto va por tabla y el día es el que manda).
     const nombresDelDia = resultado.rows.filter((row) => row.tipo === 'parada' && row.lugar && !row.llegada).map((row) => placeByName.get(row.lugar)?.name).filter(Boolean)
     const sanear = (row) => {
@@ -2315,6 +2380,8 @@ export function planWrittenTrip(args) {
 
   // Lo que ya se ha comido y cenado en el viaje (los días se planifican en orden): restaurantes usados, el barrio de la cena del día anterior y el de la comida de hoy.
   const mesas = { usados: new Set(), cenaAnterior: null, cenaDeHoy: null, comidaHoy: null }
+  // Lo que ya ha salido en el viaje como parada (no de camino): la primera vez que sale un sitio de nivel 1 o 2 va como parada, no de camino.
+  const caminoVistos = new Set()
   const planEscritoDay = (draft, skeletonDay) => {
     const hours = hoursOf(skeletonDay)
     const ctx = { id: draft.id, day: skeletonDay, hours, escrito: true, reserved: false, problems: [], sunsetArrival: null, morningNames: new Set() }

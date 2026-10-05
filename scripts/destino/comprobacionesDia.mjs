@@ -39,6 +39,9 @@ export function comprobarDia({ D, iso, id, day }) {
     if (row.tipo === 'noche' && !nocheValida(D, iso, sunset, toMin(row.hora), row.min)) fallos.push({ regla: 'limite_noche', texto: `${donde}: «${nombreFila(row)}» empieza a las ${row.hora} (${row.min} min), pasado el límite de la noche` })
     if (row.tipo === 'cena' && toMin(row.hora) > 22 * 60) fallos.push({ regla: 'cena_22', texto: `${donde}: la cena empieza a las ${row.hora}` })
   }
+  // 7. La comida no empieza después de la hora límite del destino (los restaurantes cierran sobre las 15:00).
+  const limiteComida = D.destination_config?.comida_limite ? toMin(D.destination_config.comida_limite) : null
+  for (const row of rows) if (limiteComida != null && row.tipo === 'comida' && toMin(row.hora) > limiteComida) fallos.push({ regla: (day.engine_log ?? []).some((x) => /la comida iba a caer/.test(x.causa ?? '')) ? 'comida_tarde_sin_mas_que_acortar' : 'comida_tarde', texto: `${donde}: la comida empieza a las ${row.hora} (límite ${D.destination_config.comida_limite})` })
   // 3. Nunca un hueco sin nombre: tiempo libre (después de andar y del margen de 10 min) de más de 15 min entre dos filas, sin ninguna parada.
   for (let i = 1; i < rows.length; i++) {
     const prev = rows[i - 1]
@@ -138,3 +141,59 @@ export function sinHorario({ D, dias }) {
   const restaurantes = [...nombres.restaurante].map((name) => D.restaurants.find((item) => item.name === name)).filter(Boolean).filter((item) => !/\d{1,2}[:.]\d{2}/.test(String(item.hours ?? '')))
   return { lugares: lugares.map((place) => ({ name: place.name, tipo: place.type ?? null })), restaurantes: restaurantes.map((item) => item.name) }
 }
+
+/** Las páginas HTML generadas (docs/**) empiezan por `<!doctype html>` y llevan `<meta charset="utf-8">` al principio: sin eso, en Windows los acentos salen rotos. La simulación a mano es plantilla, no generada. */
+export function comprobarCabecerasHtml(fs, carpetas = ['docs', 'docs/dias']) {
+  const malas = []
+  for (const carpeta of carpetas) {
+    if (!fs.existsSync(carpeta)) continue
+    for (const nombre of fs.readdirSync(carpeta).filter((file) => file.endsWith('.html') && !/SIMULACION/.test(file))) {
+      const inicio = fs.readFileSync(`${carpeta}/${nombre}`, 'utf8').slice(0, 600)
+      if (!/^\s*<!doctype html>/i.test(inicio) || !/<meta\s+charset="?utf-8"?/i.test(inicio)) malas.push(`${carpeta}/${nombre}`)
+    }
+  }
+  return malas
+}
+
+/** 6. «De camino»: 5 min como mucho; ningún sitio de nivel 1 o 2 de camino la primera vez que sale en el viaje (salvo que el Free Tour pase por él); un colchón no nombra otra parada del mismo día. */
+export function comprobarCamino({ D, dias, tourCubre = new Set() }) {
+  const fallos = []
+  const info = []
+  const visto = new Set()
+  const placeOf = (name) => D.places.find((place) => place.name === name)
+  let tarjetas = 0
+  let dias_n = 0
+  for (const { iso, day } of dias) {
+    if (!day) continue
+    dias_n++
+    const id = day.curated_day?.id ?? '?'
+    const stops = [...(day.stops ?? [])].filter((stop) => !stop.is_night_experience).sort((a, b) => String(a.suggested_time).localeCompare(String(b.suggested_time)))
+    const nombresOtros = stops.map((stop) => plain(stop.display_title ?? stop.name))
+    let enGrupo = false
+    for (const stop of stops) {
+      const place = placeOf(stop.site_id ? D.places.find((p) => p.id === stop.site_id)?.name : stop.name) ?? placeOf(stop.name)
+      const camino = stop.pass_through === true
+      if (!camino || !enGrupo) tarjetas++
+      enGrupo = camino
+      if (camino && stop.duration_minutes > 5) fallos.push({ regla: 'camino_mas_de_5', texto: `${iso} ${id}: «${stop.display_title ?? stop.name}» va de camino ${stop.duration_minutes} min` })
+      // (Un imprescindible que los márgenes de una hora fija o el pool aprietan hasta «de camino» —lo único que le deja el documento antes de quitarlo— se apunta aparte, con su causa.)
+      const apretado = (day.engine_log ?? []).some((x) => x.sitio === place?.name && String(x.que).split('+').includes('modo') && /márgenes|pool|comida iba/.test(x.causa))
+      if (camino && place && (place.level ?? 3) <= 2 && !visto.has(place.name) && !tourCubre.has(place.name) && apretado) info.push({ regla: 'camino_apretado_con_causa', texto: `${iso} ${id}: «${place.name}» (nivel ${place.level}) queda de camino por los márgenes` })
+      else if (camino && place && (place.level ?? 3) <= 2 && !visto.has(place.name) && !tourCubre.has(place.name)) fallos.push({ regla: 'camino_nivel_1_2_primera_vez', texto: `${iso} ${id}: «${place.name}» (nivel ${place.level}) va de camino la primera vez que sale` })
+      if (!camino && place) visto.add(place.name)
+      // un colchón (paseo) no nombra paradas del mismo día con tarjeta propia
+      if (/^Pasea y piérdete/.test(stop.display_title ?? '') && stop.why) {
+        const texto = plain(stop.why)
+        const propio = plain(stop.display_title)
+        for (const otro of stops) {
+          if (otro === stop || /^Pasea y piérdete/.test(otro.display_title ?? '')) continue
+          const palabras = plain(otro.display_title ?? otro.name).split(' ').filter((p) => p.length >= 6 && !GENERICAS.has(p) && !propio.includes(p))
+          const hit = palabras.find((p) => new RegExp(`\b${p}\b`).test(texto))
+          if (hit) { fallos.push({ regla: 'colchon_nombra_parada', texto: `${iso} ${id}: el texto de «${stop.display_title}» nombra «${hit}» (parada de ${otro.suggested_time})` }); break }
+        }
+      }
+    }
+  }
+  return { fallos, info, tarjetas, dias: dias_n }
+}
+const GENERICAS = new Set(['terraza', 'plaza', 'iglesia', 'parque', 'fuente', 'fontana', 'basilica', 'museos', 'museo', 'puente', 'castillo', 'piazza', 'mirador', 'jardin', 'jardines', 'paseo', 'pasea', 'pierdete', 'calle', 'desde', 'luces', 'noche', 'viale', 'barrio'])

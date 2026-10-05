@@ -294,3 +294,38 @@ export function OnTheWayCard({ name, photoUrl, onOpen, menu }: { name: string; p
     </div>
   )
 }
+
+/**
+ * Dos o más «de camino» seguidos (Tanda 4): UNA sola tarjeta, «De camino a {siguiente parada}», con cada sitio en una línea y su frase. La barra
+ * horaria y el mapa siguen marcando cada sitio; cada línea abre su ficha.
+ */
+export interface OnTheWayLine {
+  id: string
+  name: string
+  phrase?: string | null
+  photoUrl?: string | null
+  onOpen?: () => void
+}
+export function OnTheWayGroupCard({ toName, lines }: { toName: string | null; lines: OnTheWayLine[] }) {
+  return (
+    <div className="relative my-4 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] px-2 py-2">
+      <span className="block whitespace-nowrap px-1 pb-1 font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50 max-[479px]:tracking-[.06em]">
+        {toName ? `De camino a ${toName}` : 'De camino'}
+      </span>
+      <ul className="flex flex-col">
+        {lines.map((line) => (
+          <li key={line.id} data-stop-id={line.id}>
+            <button type="button" onClick={line.onOpen} className="flex w-full min-w-0 items-center gap-3 rounded-[12px] px-1 py-1.5 text-left">
+              <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-bg-hover">{line.photoUrl && <img src={line.photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />}</span>
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="line-clamp-1 font-display text-[16px] leading-[1.15] text-text">{line.name}</span>
+                {line.phrase && <span className="line-clamp-2 text-[12.5px] leading-[1.35] text-text/60">{line.phrase}</span>}
+              </span>
+              <span className="shrink-0 pr-1 text-[12.5px] font-semibold text-accent">Ver ›</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

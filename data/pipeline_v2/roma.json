@@ -3428,7 +3428,7 @@
       "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
       "duration_minutes": 120,
-      "min_max": 150,
+      "minimo_dentro": 60, "min_max": 150,
       "zone": "roma_antigua",
       "coordinates": [
         41.8933,
@@ -4924,7 +4924,7 @@
     {
       "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
       "visible_desde_calle": false,
-      "camino_alternativa": "Mirador de San Pietro in Montorio",
+      "camino_alternativa": "El mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
       "duration_minutes": 20,
       "min_max": 30,
@@ -9176,6 +9176,7 @@
     "noche_larga": { "_nota": "Días escritos (tanda 2, 5-oct-2026; sustituye a «23:30 en julio y agosto»): la hora límite de la noche son las 23:00 (una nocturna que pase de ahí se quita), salvo de mayo a septiembre y con el sol a las 19:45 o más tarde (versión D): entonces la nocturna entra si EMPIEZA como tarde a las 23:45 (puede acabar pasada la medianoche).", "meses": [5, 6, 7, 8, 9], "sol_despues_de": "19:45", "hora_inicio": "23:45" },
     "se_llenan": ["Fontana de Trevi", "Plaza de España"],
     "fechas_con_reserva": { "_nota": "Tanda 4: las fechas en que TODAS las comidas y cenas de TODOS los días llevan «Con reserva». Un restaurante sin dato de esa fecha (ni cierres ni horario) lleva el aviso de `sin_dato`. Un solo sitio: las tablas ya no lo escriben.", "fechas": ["12-24", "12-25", "12-31", "01-01"], "texto": "Con reserva", "sin_dato": "En Navidad, reserva con antelación", "cena_especial": { "12-31": "Con reserva: menú de Nochevieja" } },
+    "comida_limite": "14:30",
     "noches_imprescindibles": { "_nota": "Tanda 4: las nocturnas imprescindibles, por orden. Se reparten día a día desde el primero del viaje: antes que ninguna otra va la primera de esta lista que aún no haya salido DE NOCHE en un día anterior (un sitio visto de día no quita su nocturna).", "lista": ["Fontana de Trevi (noche)", "Plaza de España (noche)", "Coliseo (noche)"] },
     "sitios_extra": {
       "_nota": "Sitios que no son una ficha de `places` pero que una parada enseña (REGLAS_RUTAS regla 0 y 5). id → nombre. Dos sitios distintos tienen dos id aunque compartan ficha (el parque de Villa Borghese y su lago).",

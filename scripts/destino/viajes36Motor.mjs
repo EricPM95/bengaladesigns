@@ -6,6 +6,7 @@
 //   Opciones: salida=ruta.html  plantilla=ruta/a/la/pagina.html
 // Con algún lunes, miércoles y domingo dentro de los viajes (cada fecha de inicio está elegida para eso).
 import fs from 'node:fs'
+import { conCabecera } from './cabeceraHtml.mjs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
@@ -206,5 +207,5 @@ html = html
   .replace(/<h1>[^<]*<\/h1>/, '<h1>Viajes de 3 a 6 días: lo que saca el motor</h1>')
   .replace(/<p class="lead">[\s\S]*?<\/p>/, '<p class="lead">Un viaje de cada duración (3, 3,5, 4, 5 y 6 días) en invierno, primavera, verano, otoño y Navidad, con algún lunes, miércoles y domingo dentro, y dos con «Prefiero quedarme en Roma». Fechas, cambio de orden de los días, versión de la tarde según la puesta de sol, cierres y restaurantes. En amarillo, lo que el motor cambia respecto a la tabla escrita, con su causa. Para volver a generarla con otras fechas: <code>node scripts/destino/viajes36Motor.mjs</code>.</p>')
   .replace(/<h2>Lo que ha salido al probarlos<\/h2>/, '<h2>Lo que ha salido</h2>')
-fs.writeFileSync(salida, html)
+fs.writeFileSync(salida, conCabecera(html))
 console.log(JSON.stringify({ salida, viajes: trips.length }))

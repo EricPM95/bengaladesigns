@@ -10,7 +10,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
-import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario } from './comprobacionesDia.mjs'
+import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -129,6 +129,9 @@ const POOL = [
   ...['Galería Borghese', 'Basílica de San Juan de Letrán', 'Termas de Caracalla', "Castillo de Sant'Angelo", 'Cúpula de San Pedro'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '5 días (con excursión)'), clave: `5 días + pool: ${name}`, pool: [name] })),
   ...['Galería Borghese', 'Termas de Caracalla'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '3 días'), clave: `3 días + pool: ${name}`, pool: [name] })),
   ...['Galería Borghese'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '4 días con Free Tour de mañana'), clave: `4 días con Free Tour de mañana + pool: ${name}`, pool: [name] })),
+  // Tanda 4 (punto 7): los Museos Capitolinos vuelven a la prueba, en 2, 3 y 5 días, donde el día de la Roma antigua los lleva.
+  ...['2 días', '2 días con Free Tour de mañana'].map((clave) => ({ ...base(clave), clave: `${clave} + pool: Museos Capitolinos`, pool: ['Museos Capitolinos'] })),
+  ...['3 días', '4 días con Free Tour de mañana', '5 días (con excursión)'].map((clave) => ({ ...NUEVOS.find((v) => v.clave === clave), clave: `${clave} + pool: Museos Capitolinos`, pool: ['Museos Capitolinos'] })),
   ...["Castillo de Sant'Angelo", 'Cúpula de San Pedro', 'Museos Capitolinos'].map((name) => ({ ...NUEVOS.find((v) => v.clave === '6 días (con excursión)'), clave: `6 días + pool: ${name}`, pool: [name] })),
 ]
 // El Free Tour de tarde (17:00) y de noche (18:30) en el viaje de 2 días: el Día de la Roma antigua lleva su versión con el tour.
@@ -243,7 +246,7 @@ function tablaBase(id, iso, viaje, posicion) {
 }
 
 const diffs = []
-const extra = { dentro_repetido: [], dentro_repetido_sin_fuera: [], noche_repetida: [], mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0, dia: new Map() }
+const extra = { dentro_repetido: [], dentro_repetido_sin_fuera: [], noche_repetida: [], mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0, dia: new Map(), tarjetas: { n: 0, dias: 0 } }
 let comparados = 0
 let filasTotal = 0
 const limpia = (t) => t.replace(/\s*\(noche\)/g, '').replace(/ iluminados?$/, '').trim()
@@ -262,7 +265,8 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
   const causaDe = (row, que) => {
     // (Las filas de una tabla de pool no traen id: se buscan por su nombre en el registro.)
     const esLaFila = (x) => (row.id ? x.id === row.id : limpia(plain(x.lugar)) === claveFila(row) || x.sitio === row.lugar)
-    const hit = log.filter((x) => esLaFila(x) && (que === 'quitada' ? x.que === 'quitada' : x.que.split('+').includes(que)))
+    // (Una fila que cambia de título —«Paseo por Via Veneto», «El mirador de San Pietro in Montorio»— sale con otro nombre: el registro lo apunta y cuenta como explicada.)
+    const hit = log.filter((x) => esLaFila(x) && (que === 'quitada' ? x.que === 'quitada' || x.que.split('+').includes('titulo') : x.que.split('+').includes(que)))
     return hit.length ? [...new Set(hit.map((x) => x.causa))].join(' + ') : null
   }
   for (const row of esperadas) {
@@ -297,7 +301,7 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
   }
   actuales.forEach((a, k) => {
     if (usadas.has(k)) return
-    diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'sobra', causa: log.filter((x) => x.que === 'nueva' && limpia(plain(x.lugar)) === a.key).map((x) => x.causa)[0] ?? null })
+    diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'sobra', causa: log.filter((x) => (x.que === 'nueva' || x.que.split('+').includes('titulo')) && limpia(plain(x.lugar)) === a.key).map((x) => x.causa)[0] ?? null })
   })
   comparados++
 }
@@ -367,6 +371,12 @@ for (let n = Number(args.desde ?? 0); n < 365; n += PASO) {
     // Lo que se mira en el viaje entero (tanda 4).
     for (const fallo of comprobarViaje({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })) })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
     {
+      const camino = comprobarCamino({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })), tourCubre: viaje.ft || viaje.ftDespues ? new Set(D.default_free_tour?.covers ?? []) : new Set() })
+      for (const fallo of [...camino.fallos, ...camino.info]) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
+      extra.tarjetas.n += camino.tarjetas
+      extra.tarjetas.dias += camino.dias
+    }
+    {
       const mesas = comprobarMesas({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })) })
       for (const fallo of mesas.fallos) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
       for (const fallo of mesas.info) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
@@ -434,6 +444,7 @@ for (const x of diffs) {
 const lines = [`# Prueba de los días escritos (parada a parada, 2027)`, '', `${comparados} días comparados, ${filasTotal} filas del documento. Diferencias: ${diffs.length} (${sin.length} sin explicar). Días cuya tabla el documento no trae (se derivan): ${extra.sinTabla}.`, '']
 lines.push('Viajes probados: ' + viajesAUsar.map((viaje) => viaje.clave).join(' · '), '')
 lines.push('## Resumen de las otras comprobaciones', '')
+lines.push(`- Tarjetas por día (varias «de camino» seguidas cuentan como una): ${(extra.tarjetas.n / Math.max(1, extra.tarjetas.dias)).toFixed(2)} de media en ${extra.tarjetas.dias} días.`)
 lines.push(`- Qué días lleva cada viaje y en qué orden (con el cambio de orden por fechas): ${extra.orden.length} fallos.`)
 lines.push(`- Comidas y cenas comprobadas: ${extra.mesas}. En un restaurante cerrado ese día o a esa hora: ${extra.restaurante_cerrado.length}; comidas o cenas sin restaurante: ${extra.restaurante_sin.length}; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): ${extra.restaurante_cambiado}.`)
 lines.push(`- Cenas que pasan de las 22:00: ${extra.cena_22.length}. Colchones de más de 2 horas: ${extra.colchon_2h.length}.`)
@@ -469,6 +480,10 @@ if (extra.imprescindibles.size > 0) {
   for (const lugar of sh.lugares) lines.push(`- Sitio: ${lugar.name}${lugar.tipo ? ` (${lugar.tipo})` : ''}`)
   for (const name of sh.restaurantes) lines.push(`- Restaurante: ${name}`)
   lines.push('')
+}
+{
+  const malas = comprobarCabecerasHtml(fs)
+  lines.push(`- Páginas HTML generadas sin «doctype» o sin «meta charset utf-8»: ${malas.length}${malas.length ? ' (' + malas.join(', ') + ')' : ''}.`, '')
 }
 lines.push('## Sin explicar', '')
 for (const [k, v] of [...por].filter(([k]) => k.includes('SIN EXPLICAR')).sort((a, b) => b[1].n - a[1].n)) lines.push(`- ${k} ×${v.n} — ${v.ejemplos.join(' · ')}`)

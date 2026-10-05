@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
@@ -28,7 +28,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
-import { PeriodHeader, TrazoCard } from './TrazoCards'
+import { OnTheWayGroupCard, PeriodHeader, TrazoCard } from './TrazoCards'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
@@ -1116,6 +1116,46 @@ export function DayDetailPanel({
     )
   }
 
+  /** Lo de «de camino» (una calle, una fuente) sin desvío ni reserva ni «por fuera»: se agrupa si va seguido de otro. */
+  const esDeCamino = (entry: PlacedItem) => {
+    if (entry.item.type !== 'stop') return false
+    const stop = stops[entry.item.index]
+    return Boolean(stop?.passThrough && !stop.outsideReason && !stop.isBreak)
+  }
+  /** Los elementos de un tramo del día: dos o más «de camino» seguidos van en una sola tarjeta («De camino a {siguiente parada}»), cada sitio en una línea con su frase. */
+  const renderGroupItems = (items: PlacedItem[]) => {
+    const salida: ReactNode[] = []
+    for (let i = 0; i < items.length; i++) {
+      if (esDeCamino(items[i]) && i + 1 < items.length && esDeCamino(items[i + 1])) {
+        let fin = i
+        while (fin + 1 < items.length && esDeCamino(items[fin + 1])) fin++
+        const indices = items.slice(i, fin + 1).map((entry) => (entry.item as { type: 'stop'; index: number }).index)
+        const primero = indices[0]
+        const ultimo = indices[indices.length - 1]
+        const siguiente = stops[ultimo + 1]
+        const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[primero]
+        const showConnector = primero === 0 ? fromAccommodation : freeDay || i > 0
+        salida.push(
+          <SortableStop
+            key={`camino-${stops[primero].id}`}
+            id={realStops[primero]?.id ?? stops[primero].id}
+            disabled
+            gap={renderGap(connectorKey, showConnector ? connector : null, fromName, stops[primero].name, primero, dinnerInsertionIndex !== null && primero > dinnerInsertionIndex, realStops[primero]?.transitLabel ?? null)}
+          >
+            <OnTheWayGroupCard
+              toName={siguiente ? displayStopName(siguiente.name) : null}
+              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: stops[index].why ?? stops[index].placeText ?? null, photoUrl: stops[index].photoUrl, onOpen: () => setDetailIndex(index) }))}
+            />
+          </SortableStop>,
+        )
+        i = fin
+        continue
+      }
+      salida.push(renderTimelineItem(items[i], i === 0))
+    }
+    return salida
+  }
+
   return (
     // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
     // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
@@ -1339,7 +1379,7 @@ export function DayDetailPanel({
               {/* La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena. */}
               <div className="relative flex flex-col pl-[26px]">
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
-                {group.items.map((entry, itemIndex) => renderTimelineItem(entry, itemIndex === 0))}
+                {renderGroupItems(group.items)}
               </div>
             </div>
           ))}

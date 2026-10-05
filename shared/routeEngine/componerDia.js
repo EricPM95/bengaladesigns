@@ -271,9 +271,32 @@ function componer(rows0, env, retrasos) {
   /** Una hora fija (reserva, turno, el sol): se quita por la pirámide lo que no cabe. */
   const quitarPorPiramide = (colocadas, Fa, Fb, sb) => {
     const prueba = [...(Fa ? [{ ...Fa }] : []), ...colocadas, { ...Fb, hora: toHHMM(sb), fija: true }]
-    const r = correrHoras(prueba, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: true, protegidas: (row) => row.llegada === true })
+    const r = correrHoras(prueba, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (row) => row.llegada === true })
     for (const q of r.quitadas) quitadas.push({ ...q, causa: `no cabe antes de ${nombreDe(Fb)} (${toHHMM(sb)}) con los márgenes` })
     for (const p of r.problemas) if (!problemas.includes(p)) problemas.push(p)
+    // Apretar de más no vale: si al final sobra tiempo, lo apretado vuelve a su tamaño (el de nivel más alto primero) mientras siga cabiendo y apretando menos en total.
+    {
+      const original = new Map(prueba.map((row) => [row.id, row]))
+      const grado = (filas) => filas.reduce((suma, row) => {
+        const o = original.get(row.id)
+        return o ? suma + Math.max(0, (o.min ?? 0) - (row.min ?? 0)) + (row.modo === 'camino' && o.modo !== 'camino' ? 100 : 0) : suma
+      }, 0)
+      let actual = r
+      for (let vuelta = 0; vuelta < 12; vuelta++) {
+        const hoy = grado(actual.rows)
+        const apretadas = actual.rows.map((row, i) => ({ row, i })).filter(({ row, i }) => i > 0 && i < actual.rows.length - 1 && original.has(row.id) && (row.min < original.get(row.id).min || row.modo !== original.get(row.id).modo))
+          .sort((x, y) => (x.row.nivel ?? 3) - (y.row.nivel ?? 3) || x.i - y.i)
+        let mejoro = false
+        for (const { row, i } of apretadas) {
+          const o = original.get(row.id)
+          const base = actual.rows.map((fila, k) => (k === i ? { ...fila, min: o.min, modo: o.modo, min_fuera: o.min_fuera } : fila))
+          const intento = correrHoras(base, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (fila) => fila.llegada === true })
+          if (intento.problemas.length === 0 && intento.quitadas.length === 0 && grado(intento.rows) < hoy) { actual = { ...actual, rows: intento.rows }; mejoro = true; break }
+        }
+        if (!mejoro) break
+      }
+      r.rows = actual.rows
+    }
     const interior = r.rows.slice(Fa ? 1 : 0, r.rows.length - 1)
     for (const row of interior) {
       const antes = colocadas.find((x) => x.id === row.id)
@@ -380,7 +403,7 @@ function componer(rows0, env, retrasos) {
         let j = i - 1
         while (j > 0 && (salida[j].tipo === 'traslado' || salida[j].modo === 'camino')) j--
         const fila = salida[j]
-        const alAireLibre = fila.tipo === 'parada' && !fila.llegada && !esFija(fila) && fila.modo !== 'dentro' && fila.modo !== 'camino'
+        const alAireLibre = fila.tipo === 'parada' && !fila.llegada && !esFija(fila) && fila.modo !== 'camino'
         const mas = alAireLibre ? Math.min(g, 30) : 0
         if (mas > 0) {
           fila.min += mas
