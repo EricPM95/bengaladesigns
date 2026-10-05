@@ -7,6 +7,7 @@
  * Modo Hoy.
  */
 
+import { nightLimitOf, writtenNightStartLimit } from '../../shared/routeEngine/nightLimit.js'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -354,30 +355,6 @@ function transitFields({ how, minutes }) {
   return { icon, label: `${line.charAt(0).toUpperCase()}${line.slice(1)}, unos ${minutes} min`, minutes, detail }
 }
 
-/** La hora límite de la noche del destino: `destination_config.noche_limite` ({ hora, meses: { 7: "23:30" } }). Null si no la dice. */
-function nightLimitOf(destData, dateIso) {
-  const config = destData.destination_config?.noche_limite
-  if (!config?.hora) return null
-  const month = dateIso ? String(Number(String(dateIso).slice(5, 7))) : null
-  const value = (month && config.meses?.[month]) || config.hora
-  const [h, m] = String(value).split(':').map(Number)
-  return h * 60 + (m || 0)
-}
-
-/**
- * La hora a la que EMPIEZA como tarde la última nocturna de un día escrito en las noches largas: de mayo a septiembre y siempre que el sol se ponga a las 19:45 o más tarde
- * (versión D), las 23:45 (`destination_config.noche_larga`). Fuera de esas noches, null: la nocturna tiene que acabar antes de la hora límite (23:00). Sustituye a «23:30 en julio y agosto».
- */
-function writtenNightStartLimit(destData, dateIso, sunset) {
-  const config = destData.destination_config?.noche_larga
-  if (!config?.hora_inicio) return null
-  const month = dateIso ? Number(String(dateIso).slice(5, 7)) : null
-  const [h, m] = String(config.hora_inicio).split(':').map(Number)
-  const [dh, dm] = String(config.sol_despues_de ?? '19:45').split(':').map(Number)
-  const byMonth = month != null && (config.meses ?? []).includes(month)
-  const bySun = sunset != null && sunset >= dh * 60 + (dm || 0)
-  return byMonth || bySun ? h * 60 + (m || 0) : null
-}
 
 /** "Cierre temprano": lo que cierra antes de esta hora (el Foro, a las 16:30 en invierno). */
 const EARLY_CLOSING_MINUTES = 18 * 60

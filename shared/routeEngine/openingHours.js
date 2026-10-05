@@ -384,7 +384,29 @@ export function placeWindows(place, hours = {}) {
  * real o el 15 del mes) → `by_season` (reserva de destinos sin periodos) → `by_day` de laborables sin
  * fechas → `windows`. Los cierres (`closed_on`, `closed_dates`) van antes, en el reparto.
  */
+const toMinutes = (hhmm) => Number(String(hhmm).split(':')[0]) * 60 + Number(String(hhmm).split(':')[1])
 function rawWindows(place, hours) {
+  const windows = rawWindowsBase(place, hours)
+  // `restriccion_dia` (Tanda 4): un día de la semana en que el lugar abre más tarde (la Basílica y la Cúpula los miércoles, con la audiencia del Papa: de 9:00 a 12:30 cerradas;
+  // en julio no hay audiencias). Solo con fechas reales; un horario especial de ese día (una misa, un cierre) manda sobre ella.
+  const rule = place?.restriccion_dia
+  if (!rule || !windows || !hours.weekday || !hours.dateIso || specialHoursOn(place, hours.dateIso)) return windows
+  if (dayIndex(rule.dia) !== dayIndex(hours.weekday)) return windows
+  if ((rule.excepto_meses ?? []).includes(Number(String(hours.dateIso).slice(5, 7)))) return windows
+  const from = toMinutes(rule.desde)
+  const clipped = []
+  for (const window of windows) {
+    const m = /^(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/.exec(String(window).trim())
+    if (!m) { clipped.push(window); continue }
+    const open = toMinutes(m[1])
+    const close = toMinutes(m[2])
+    if (close <= from) continue
+    clipped.push(open >= from ? window : `${rule.desde}-${m[2]}`)
+  }
+  return clipped
+}
+
+function rawWindowsBase(place, hours) {
   // Un día con horario especial (PROMPT_AVISO_FECHAS): por delante de todo lo demás (los cierres van antes, en el
   // reparto).
   // (Solo con fechas reales: sin ellas no hay "2 de junio", y `weekday` solo va con fechas.)

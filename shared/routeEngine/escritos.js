@@ -44,6 +44,8 @@ export function antesDeLlegar(row) {
  * @param {(a: object, b: object) => number} taxi  minutos de un taxi entre dos filas
  */
 export function hueco(prev, next, walk) {
+  // (La «Llegada a {sitio}» acaba justo en la hora fija de ese mismo sitio: sin margen entre las dos.)
+  if (prev.llegada === true && prev.lugar != null && prev.lugar === next.lugar) return 0
   // (Un taxi llega en 10 min; el bus se espera 15: las tablas del documento dejan 10 antes de un taxi y 15 antes de un bus.)
   if (next.tipo === 'traslado') return prev.tipo === 'cena' || (/taxi/.test(String(next.traslado?.como ?? '')) && !/bus/.test(String(next.traslado?.como ?? ''))) ? MARGENES.TAXI_TRAS_CENA : MARGENES.BUS_ANTES
   if (prev.tipo === 'traslado') return MARGENES.TRAS_TRASLADO
@@ -229,8 +231,11 @@ export function elegirTabla(day, ctx) {
     case 'D1-FT':
       return pick('normal')
     // Tanda 3 (3 a 6 días): D4 y el Aventino (DA-medio, D5) llevan su tabla del lunes o del domingo cuando el documento la trae; D6 y D7 solo la normal (lo demás lo hace el motor).
+    // D4: con la Galería cerrada (el lunes, un festivo), la mañana del documento con la Cripta de los Capuchinos. D6: si la Cúpula no abre a las 8:00 (el miércoles con audiencia), la tabla del miércoles.
     case 'D4':
+      return pick(ctx.cerrado?.('Galería Borghese') && v.lunes ? 'lunes' : 'normal', ctx.cerrado?.('Galería Borghese') && v.lunes ? 'galeria_cerrada' : null)
     case 'D6':
+      return pick(ctx.abre?.('Cúpula de San Pedro', '08:00') === false && v.miercoles ? 'miercoles' : 'normal', ctx.abre?.('Cúpula de San Pedro', '08:00') === false && v.miercoles ? 'audiencia' : null)
     case 'D7':
       return pick('normal')
     case 'D5':
@@ -243,7 +248,9 @@ export function elegirTabla(day, ctx) {
 }
 
 /** Una fila nueva (de una acción del pool o de una experiencia) con sus campos mínimos. */
-export const nuevaFila = (campos) => ({ id: campos.id ?? `${campos.tipo ?? 'parada'}_${campos.lugar ?? campos.titulo ?? 'x'}`, hora: '00:00', min: 15, tipo: 'parada', modo: null, ...campos })
+/** El id de una fila sin id: su tipo y su nombre, sin acentos ni signos (el registro, las causas y el test encuentran la fila por él). */
+export const idDeFila = (campos) => `${campos.tipo ?? 'parada'}_${campos.titulo ?? campos.lugar ?? campos.restaurante ?? campos.noche ?? campos.traslado?.como ?? 'fila'}`.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+export const nuevaFila = (campos) => ({ id: campos.id ?? idDeFila(campos), hora: '00:00', min: 15, tipo: 'parada', modo: null, ...campos })
 
 /**
  * Aplica una lista de acciones del documento a las filas. Acciones:

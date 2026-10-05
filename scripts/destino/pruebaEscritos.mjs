@@ -8,8 +8,9 @@ import { writeFileSync } from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
-import { closedOnDay, matchesDateToken } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
+import { comprobarDia } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -199,7 +200,12 @@ function tablaBase(id, iso, viaje, posicion) {
   if (id === 'D3') return por(museosCierran(iso) ? 'domingo' : 'normal')
   if (id === 'D5') return por(wd === 'lunes' ? 'lunes' : wd === 'domingo' ? 'domingo' : 'normal')
   if (id === 'DA-medio') return wd === 'lunes' ? v.lunes.unica : v.manana.unica
-  if (id === 'D6' || id === 'D7') return por('normal')
+  // (El miércoles hay audiencia del Papa en la Plaza de San Pedro y la Cúpula no abre a las 8:00: el documento trae la mañana del miércoles del D6.)
+  // (Se mira el horario de verdad: el miércoles con audiencia, y el Jueves Santo, la Cúpula no abre a las 8:00.)
+  const cupula = placeOf('Cúpula de San Pedro')
+  const abre8 = !cupula || parseHoursSessions(effectiveSchedule(cupula, { weekday: weekdayOf(iso), dateIso: iso, season: null })).some((session) => session.open <= 8 * 60 && session.close >= 8 * 60 + 15)
+  if (id === 'D6') return por(!abre8 ? 'miercoles' : 'normal')
+  if (id === 'D7') return por('normal')
   if (id === 'D4') {
     const rows = por('normal')
     // (Con Free Tour de mañana, el tour ya pasó por Trevi, la Plaza de España y Via Condotti: sin Trevi ni desayuno, a las 9:00 en la Fuente del Tritón; el rato que sobra, al colchón del Tridente.)
@@ -235,7 +241,7 @@ function tablaBase(id, iso, viaje, posicion) {
 }
 
 const diffs = []
-const extra = { dentro_repetido: [], dentro_repetido_sin_fuera: [], noche_repetida: [], mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0 }
+const extra = { dentro_repetido: [], dentro_repetido_sin_fuera: [], noche_repetida: [], mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0, dia: new Map() }
 let comparados = 0
 let filasTotal = 0
 const limpia = (t) => t.replace(/\s*\(noche\)/g, '').replace(/ iluminados?$/, '').trim()
@@ -309,9 +315,10 @@ function comprobarExtras(viaje, iso, dayNumber, id, day, ids) {
   }
   for (const entry of day.engine_log ?? []) {
     if (entry.que === 'restaurante') extra.restaurante_cambiado++
-    if (entry.que === 'aviso' && /22:00/.test(entry.causa)) extra.cena_22.push(`${iso} ${viaje.clave} ${id}: ${entry.causa}`)
-    if (entry.que === 'aviso' && /colchón/.test(entry.causa)) extra.colchon_2h.push(`${iso} ${viaje.clave} ${id}: ${entry.lugar} (${entry.causa})`)
+    if (entry.que === 'aviso' && /pasa de las 22:00/.test(entry.causa)) extra.cena_22.push(`${iso} ${viaje.clave} ${id}: ${entry.causa}`)
+    if (entry.que === 'aviso' && /más de 2 horas/.test(entry.causa)) extra.colchon_2h.push(`${iso} ${viaje.clave} ${id}: ${entry.lugar} (${entry.causa})`)
   }
+  for (const fallo of comprobarDia({ D, iso: `${iso}`, id, day })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${viaje.clave} ${fallo.texto}`])
   void ids
 }
 
@@ -421,6 +428,7 @@ lines.push('## Resumen de las otras comprobaciones', '')
 lines.push(`- Qué días lleva cada viaje y en qué orden (con el cambio de orden por fechas): ${extra.orden.length} fallos.`)
 lines.push(`- Comidas y cenas comprobadas: ${extra.mesas}. En un restaurante cerrado ese día o a esa hora: ${extra.restaurante_cerrado.length}; comidas o cenas sin restaurante: ${extra.restaurante_sin.length}; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): ${extra.restaurante_cambiado}.`)
 lines.push(`- Cenas que pasan de las 22:00: ${extra.cena_22.length}. Colchones de más de 2 horas: ${extra.colchon_2h.length}.`)
+for (const [regla, lista] of extra.dia) lines.push(`- Tanda 4 · ${regla}: ${lista.length}.`)
 lines.push(`- Avisos «Hemos puesto el Vaticano otro día» en un día del Vaticano: ${extra.aviso_vaticano.length}.`)
  lines.push(`- Por dentro más de una vez en el viaje (regla 0bis): ${extra.dentro_repetido.length} (y ${extra.dentro_repetido_sin_fuera.length} de sitios sin visita por fuera, que se quedan). Nocturnas repetidas: ${extra.noche_repetida.length}.`)
 lines.push(`- Imprescindibles que no salen en algún viaje (viaje · lugar · cuántas fechas de 365): ${[...extra.imprescindibles.values()].length} casos.`, '')
@@ -436,6 +444,7 @@ listar('Restaurantes cerrados', extra.restaurante_cerrado)
 listar('Comidas o cenas sin restaurante', extra.restaurante_sin)
 listar('Cenas después de las 22:00', extra.cena_22)
 listar('Colchones de más de 2 horas', extra.colchon_2h, 200)
+for (const [regla, lista] of extra.dia) listar(`Tanda 4 · ${regla}`, lista, 30)
 listar('Avisos «otro día» en el día del Vaticano', extra.aviso_vaticano)
 listar('Por dentro más de una vez (con visita por fuera posible)', extra.dentro_repetido, 200)
 listar('Por dentro más de una vez (sin visita por fuera: se queda)', extra.dentro_repetido_sin_fuera, 20)
@@ -453,3 +462,4 @@ writeFileSync(out, lines.join('\n') + '\n')
 if (args.imprescindibles) writeFileSync(args.imprescindibles, JSON.stringify([...extra.imprescindibles.values()], null, 1))
 if (args.volcado) writeFileSync(args.volcado, diffs.map((x) => JSON.stringify(x)).join('\n') + '\n')
 console.log(JSON.stringify({ mesas: extra.mesas, dias: comparados, filas: filasTotal, diferencias: diffs.length, sin_explicar: sin.length, orden: extra.orden.length, restaurantes_cerrados: extra.restaurante_cerrado.length, sin_restaurante: extra.restaurante_sin.length, cena_22: extra.cena_22.length, colchon_2h: extra.colchon_2h.length, aviso_vaticano: extra.aviso_vaticano.length, dentro_repetido: extra.dentro_repetido.length, dentro_sin_fuera: extra.dentro_repetido_sin_fuera.length, noche_repetida: extra.noche_repetida.length, imprescindibles_que_faltan: extra.imprescindibles.size }))
+if (args.fallos) writeFileSync(args.fallos, JSON.stringify(Object.fromEntries(extra.dia), null, 1))

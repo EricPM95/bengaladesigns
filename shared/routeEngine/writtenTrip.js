@@ -25,12 +25,14 @@ import { anyTransitRuns, publicTransitKind, transitRuns } from './holidayTransit
 import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { straightLineMeters } from './travelTimes.js'
+import { componerDia } from './componerDia.js'
+import { nocheValida } from './nightLimit.js'
 import { availableForTrip, seasonFit } from './availability.js' // eslint-disable-line no-unused-vars
 import { joinSpanish } from './whyTexts.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { paseoMaxOf } from './curatedTrip.js'
-import { elegirTabla, aplicarAcciones, correrHoras, resolverTaxis, adelantar, ajustarAtardecer, aplicarExtra, vale, recortarSalida, anotarCambios, esAncla, antesDeLlegar, hueco, finDe, toMin as filaMin, toHHMM as filaHHMM } from './escritos.js'
+import { elegirTabla, idDeFila, aplicarAcciones, correrHoras, resolverTaxis, adelantar, ajustarAtardecer, aplicarExtra, vale, recortarSalida, anotarCambios, esAncla, antesDeLlegar, hueco, finDe, toMin as filaMin, toHHMM as filaHHMM } from './escritos.js'
 
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', ya_cerrado: 'A esta hora ya ha cerrado', no_abre: 'A esta hora no abre', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Cortes de luz por defecto (Roma, 2026-09-28): A antes de 17:40, B hasta 18:44, C hasta 19:44, D desde 19:45. */
@@ -296,6 +298,8 @@ export function planWrittenTrip(args) {
     if (hours.weekday && (bad.dias_semana ?? []).includes(norm(hours.weekday))) cost += 1000
     if (hours.dateIso && (bad.fechas ?? []).some((token) => matchesDateToken(token, hours.dateIso))) cost += 1000
     if ((bad.cerrado ?? []).some((name) => closedThatDay(name, day))) cost += 1000
+    // (`cerrado_a`: un sitio que a esa hora no abre —la Cúpula a las 8:00 el miércoles con audiencia—.)
+    if ((bad.cerrado_a ?? []).some(({ lugar, hora }) => placeByName.get(lugar) && openCheck(placeByName.get(lugar), toMin(hora), 15, hours).ok !== true)) cost += 1000
     return cost
   }
   // (`evitar` con `fecha`: mejor otro día si el viaje lo permite, el Viernes Santo junto al Coliseo por la tarde.)
@@ -497,10 +501,18 @@ export function planWrittenTrip(args) {
       freeTourHora: id === 'D1' && freeTourDespues?.hora ? freeTourDespues.hora : null,
       franja: franjaMedio,
       llegada: mediaJornada?.llegada ?? null,
+      cerrado: (name) => closedThatDay(name, day),
+      abre: (name, hhmm) => {
+        const place = placeByName.get(name)
+        return !place || openCheck(place, toMin(hhmm), 15, hours).ok === true
+      },
     })
     // El miércoles por la mañana (audiencia del Papa), sin Museos: la mañana empieza en el Castillo y el Puente, y la Plaza y la Basílica (por fuera) van al final,
     // si da tiempo antes de irse (el documento no trae esta tabla: se deriva de la mañana normal; lo apunta el registro).
     const cambiosIniciales = []
+    // (Una tabla que el documento dice «con las horas corridas desde…»: la fila marcada se queda en su hora y lo de después corre con los márgenes.)
+    const corrida = tabla.rows.find((row) => row.recorrer_desde)
+    if (corrida) cambiosIniciales.push({ id: corrida.id, lugar: corrida.titulo ?? corrida.lugar, que: 'hora', causa: corrida.recorrer_desde })
     if (id === 'D0-medio' && franjaMedio === 'manana' && tabla.version === 'manana' && norm(hours.weekday) === 'miercoles') {
       const por = (lugar) => tabla.rows.find((row) => row.lugar === lugar)
       const castillo = por("Castillo de Sant'Angelo")
@@ -1879,7 +1891,22 @@ export function planWrittenTrip(args) {
     }
   }
   const nivelDe = (name) => placeByName.get(name)?.level ?? null
-  const marcarFilas = (lista) => lista.map((row) => ({ ...row, imprescindible: row.imprescindible ?? nivelDe(row.lugar) === 1, nivel: row.nivel ?? nivelDe(row.lugar) }))
+  // (Las filas de una tabla de pool no traen id: se les da uno por su tipo y su nombre —con número si se repite en el día—, para que el registro y las causas las encuentren.)
+  const marcarFilas = (lista) => {
+    const vistas = new Set()
+    return lista.map((row) => {
+      let id = row.id
+      if (!id && row.tipo !== 'traslado') id = idDeFila(row)
+      // (Un id es de una sola fila: si se repite en el día —dos tarjetas con el mismo título—, la segunda lleva «_2».)
+      if (id && vistas.has(id)) {
+        let n = 2
+        while (vistas.has(`${id}_${n}`)) n++
+        id = `${id}_${n}`
+      }
+      if (id) vistas.add(id)
+      return { ...row, id, imprescindible: row.imprescindible ?? nivelDe(row.lugar) === 1, nivel: row.nivel ?? nivelDe(row.lugar) }
+    })
+  }
 
   /**
    * Primera parte de un día escrito: la tabla elegida, la hora que puso el viajero, el pool escrito, lo marcado en el pool que ya está en el día y las experiencias.
@@ -1891,21 +1918,12 @@ export function planWrittenTrip(args) {
     // Cada cambio de una fila respecto al documento lleva su causa real (draft.log): el test y la revisión leen de aquí.
     const log = (draft.log = [...(draft.cambiosIniciales ?? [])])
     let rows = marcarFilas(draft.rows)
+    // Lo que el documento da por escrito para cada fila: la tabla del día y, donde un extra trae su propia tabla, esa (el registro cuenta los cambios contra ella).
+    draft.docBase = new Map(rows.map((row) => [row.id, row]))
     const clave = claveDeTabla(draft)
     const orden = written.days[draft.id]?.orden_quitar ?? []
     const acciones = { walk: rowWalk, abierta: env.abierta, marcar: marcarFilas, clave, pool: poolManda, orden }
-    // Tablas derivadas (el miércoles por la mañana, el Free Tour de mañana en 2,5 días): sus horas se corren con los márgenes desde la segunda fila.
-    if (draft.recorrer) {
-      const antesDeRecorrer = rows
-      rows = correrHoras(rows, { desde: 1, walk: rowWalk, orden }).rows
-      // (Y la comida, no antes de las 12:30: es la hora a la que abren las mesas.)
-      const iComida = rows.findIndex((row) => row.tipo === 'comida')
-      if (iComida >= 0 && filaMin(rows[iComida].hora) < LUNCH_EARLIEST) {
-        rows[iComida] = { ...rows[iComida], hora: filaHHMM(LUNCH_EARLIEST) }
-        rows = correrHoras(rows, { desde: iComida + 1, walk: rowWalk, orden }).rows
-      }
-      anotarCambios(antesDeRecorrer, rows, draft.causaRecorrer ?? 'tabla derivada', log)
-    }
+    // (Una tabla derivada —el miércoles por la mañana, el Free Tour de mañana— deja sus horas como horas preferidas: las horas de verdad las saca `componerDia`, una sola vez, al final.)
     // La hora que puso el viajero (una entrada reservada o el Free Tour) manda sobre la del ejemplo de la tabla: la fila se queda en esa hora y el
     // resto corre con los márgenes (30 min antes de una reserva, 15 antes de un turno o del tour).
     {
@@ -1964,7 +1982,10 @@ export function planWrittenTrip(args) {
       if (!hecho) { noIncluido(name, 'no_room_day'); continue }
       anotarCambios(rows, hecho.rows, `pool: ${name}`, log)
       // Con la tabla escrita de ese extra, las horas salen de los márgenes (el documento: «Pool y experiencias: cómo se calculan las horas»): lo que se mueve respecto a las horas de la tabla se apunta aparte.
-      if (hecho.tabla) anotarCambios(hecho.tabla, hecho.rows, `pool: ${name}: horas por los márgenes`, log)
+      if (hecho.tabla) {
+        anotarCambios(hecho.tabla, hecho.rows, `pool: ${name}: horas por los márgenes`, log)
+        for (const fila of marcarFilas(hecho.tabla)) if (fila.id) draft.docBase.set(fila.id, fila)
+      }
       rows = hecho.rows
       if (def.franja) franjasUsadas.add(def.franja)
       if (def.franja === 'dia') { franjasUsadas.add('manana'); franjasUsadas.add('tarde') }
@@ -2001,29 +2022,7 @@ export function planWrittenTrip(args) {
       anotarCambios(rows, recortadas, `salida a las ${salida}`, log)
       rows = recortadas
     }
-    {
-      // (El medio día A de invierno del Tridente trae su colchón de los Jardines del Pincio para cuando el sol se pone más tarde; el de Via Condotti no baja de 30 min.)
-      let jardines = draft.tablaVersion === 'tarde_invierno' ? written.days['DT-medio']?.versiones?.tarde?.B?.find((row) => row.colchon && row.lugar === 'Jardines del Pincio') : null
-      // (D5 el lunes, sin las Termas: el colchón del Aventino se mete antes del Jardín de los Naranjos para llegar con el sol.)
-      const insertable = written.days[draft.id]?.colchon_insertable
-      if (!jardines && insertable?.fila && norm(hours.weekday) === insertable.dia_semana && draft.tablaVersion === insertable.dia_semana) jardines = insertable.fila
-      const ajustadas = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk, colchonInsertable: jardines ? marcarFilas([{ ...jardines }])[0] : null, cenaDesde: dinnerHoursOf(draft).desde })
-      anotarCambios(rows, ajustadas, 'atardecer', log)
-      rows = ajustadas
-    }
-    // Verano (decidido en la tanda 2, escrito en el documento bajo la tabla de la Galería): un colchón no pasa de 2 horas. Si para llegar al mirador con el sol pasaría, el turno de la
-    // Galería Borghese (que va antes) se retrasa lo que haga falta (de 30 en 30 min: 16:00…) y el colchón se queda en 2 horas como mucho. La reserva que eligió el viajero manda.
-    {
-      const iColchon = rows.findIndex((row) => row.colchon && row.min > 120)
-      const iGaleria = iColchon > 0 ? rows.slice(0, iColchon).map((_, k) => k).reverse().find((k) => rows[k].lugar === 'Galería Borghese' && rows[k].modo === 'dentro' && (rows[k].hora_tipo === 'reserva' || rows[k].turno)) : undefined
-      if (iGaleria != null && entradas?.['Galería Borghese'] == null) {
-        const desplaza = Math.ceil((rows[iColchon].min - 120) / 30) * 30
-        const antes = rows
-        const lista = rows.map((row, k) => (k === iGaleria ? { ...row, hora: filaHHMM(filaMin(row.hora) + desplaza) } : k === iColchon ? { ...row, min: row.min - desplaza } : row))
-        rows = correrHoras(lista, { desde: iGaleria + 1, walk: rowWalk, soloEmpujar: true }).rows
-        anotarCambios(antes, rows, `verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las ${rows[iGaleria].hora}`, log)
-      }
-    }
+    // (El atardecer, el turno de la Galería en verano y los huecos ya no se ajustan aquí: los hace `componerDia`, una sola vez, al final de todo.)
     // Una mesa cuyo restaurante todavía no ha abierto a esa hora (Poldo e Gianna a las 19:30, la cena escrita a las 19:20) se retrasa hasta que abre (hasta 30 min); si no, va su alternativa.
     {
       let lista = rows
@@ -2204,32 +2203,123 @@ export function planWrittenTrip(args) {
     }
   }
 
+  // ── Las horas, una sola vez, al final (Tanda 4) ───────────────────────────────────────────────────────────────────────────
+  const colchonesDeZona = (written.destino?.colchones?.lista ?? []).map((c) => ({ ...c, coords: placeByName.get(c.lugar)?.coordinates ?? null })).filter((c) => c.coords)
+  const normaId = (text) => String(text).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+  /** El colchón de la zona más cercana al sitio (a menos de 1,8 km), o null. */
+  const colchonCercano = (row) => {
+    const coords = rowCoords(row)
+    if (!coords) return null
+    const mejor = colchonesDeZona.map((c) => ({ c, d: straightLineMeters(coords, c.coords) })).sort((a, b) => a.d - b.d)[0]
+    return mejor && mejor.d <= 1800 ? { lugar: mejor.c.lugar, titulo: mejor.c.titulo, texto: mejor.c.texto, nivel: 3, imprescindible: false } : null
+  }
+  /** Una fila de «Llegada a {sitio}» para una reserva o un turno, con su motivo (los datos de `llegadas` del destino). */
+  const llegadaDe = (row) => {
+    const cfg = written.destino?.llegadas
+    if (!cfg || row.tipo === 'tour' || !placeByName.has(row.lugar)) return null
+    const base = row.hora_tipo === 'reserva' ? cfg.reserva : cfg.turno
+    if (!base) return null
+    return { min: base.min, titulo: `Llegada a ${row.lugar}`, texto: cfg.por_lugar?.[row.lugar] ?? base.texto }
+  }
+  /**
+   * La hora de cada fila del día se calcula aquí, una sola vez (componerDia.js), desde la lista que dejaron todos los ajustes. El registro cuenta los cambios respecto al documento con
+   * esa hora final: una entrada por fila, con todas las causas que la tocaron.
+   */
+  const componerEscrito = (draft, skeletonDay) => {
+    const hours = draft.hoursPrep ?? hoursOf(skeletonDay)
+    const env0 = envDe(skeletonDay)
+    const stageLog = draft.log
+    let rows = draft.rowsPrep
+    // Cierres (regla de cierres): lo que por dentro cae cerrado a su hora se mueve antes en el día, hasta donde está abierto (una joya, el Panteón, mejor por dentro aunque sea corto).
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
+      if (row.modo !== 'dentro' || row.hora_tipo === 'reserva' || row.hora_tipo === 'turno' || env0.abierta(row, filaMin(row.hora))) continue
+      const moved = adelantar(rows, i, { ...env0, joya: placeByName.get(row.lugar)?.tier === 'joya' })
+      if (moved) {
+        anotarCambios(rows, moved, `cierre de ${row.lugar}`, stageLog)
+        rows = moved
+        draft.applied.push(`adelantar:${row.lugar}`)
+        continue
+      }
+      // (Si no se puede adelantar y abre enseguida —San Clemente el 1 de enero abre a las 12:00—, la visita empieza cuando abre: la hora que ve el viajero sale de aquí, no de otro cálculo.)
+      const place = placeByName.get(row.lugar)
+      const espera = place ? openCheck(place, filaMin(row.hora), row.min, hours) : null
+      if (espera?.wait > 0) {
+        const hora = filaHHMM(filaMin(row.hora) + espera.wait)
+        stageLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'hora', causa: `cierre de ${row.lugar}: abre a las ${hora}` })
+        rows = rows.map((other, k) => (k === i ? { ...other, hora } : other))
+      }
+    }
+    rows = nocheEspecial(rows, hours, stageLog)
+    const inicial = marcarFilas(draft.rows)
+    const resultado = componerDia(rows, {
+      walk: rowWalk,
+      sunset: hours.sunset,
+      lead: SUNSET_LEAD,
+      cenaDesde: dinnerHoursOf(draft).desde,
+      mesaDesde: (row) => draft.mesaDesde?.get(row.id) ?? null,
+      abierta: env0.abierta,
+      colchonZona: colchonCercano,
+      llegada: llegadaDe,
+      orden: written.days[draft.id]?.orden_quitar ?? [],
+      nocheValida: (row) => nocheValida(destData, hours.dateIso ?? null, hours.sunset ?? null, filaMin(row.hora), row.min),
+      turnoMovible: (row) => row.lugar === 'Galería Borghese' && row.modo === 'dentro' && (row.hora_tipo === 'reserva' || row.turno) && entradas?.['Galería Borghese'] == null,
+    })
+    // Los colchones no nombran paradas que el mismo día tienen su tarjeta (el texto va por tabla y el día es el que manda).
+    const nombresDelDia = resultado.rows.filter((row) => row.tipo === 'parada' && row.lugar && !row.llegada).map((row) => placeByName.get(row.lugar)?.name).filter(Boolean)
+    const sanear = (row) => {
+      if (!row.colchon || !row.texto) return row
+      const otros = nombresDelDia.filter((nombre) => nombre !== row.lugar)
+      const claves = otros.map((nombre) => normaId(nombre).replace(/_/g, ' '))
+      const trozos = String(row.texto).split(/(?<=[;.])\s+/)
+      const buenos = trozos.filter((trozo) => !claves.some((clave) => clave.length > 3 && normaId(trozo).replace(/_/g, ' ').includes(clave)))
+      return buenos.length === trozos.length ? row : { ...row, texto: buenos.join(' ') || null, texto_saneado: true }
+    }
+    const finales = resultado.rows.map(sanear)
+    // El registro: una entrada por fila con todo lo que cambió respecto al documento, con la hora final.
+    const noCambios = stageLog.filter((entry) => ['nueva', 'quitada', 'aviso', 'restaurante'].includes(entry.que))
+    const causasDe = new Map()
+    for (const entry of stageLog) {
+      if (['nueva', 'quitada', 'aviso', 'restaurante'].includes(entry.que) || !entry.causa) continue
+      const lista = causasDe.get(entry.id) ?? []
+      if (!lista.includes(entry.causa)) lista.push(entry.causa)
+      causasDe.set(entry.id, lista)
+    }
+    const nuevoLog = noCambios.filter((entry) => !(entry.que === 'quitada' && finales.some((row) => row.id === entry.id)))
+    const idsFinales = new Set(finales.map((row) => row.id))
+    for (const entry of nuevoLog) if (entry.que === 'nueva' && !idsFinales.has(entry.id)) entry.que = 'nueva_quitada'
+    const nombre = (row) => row.titulo ?? row.lugar ?? row.restaurante ?? row.noche ?? row.id
+    for (const row of finales) {
+      const previa = draft.docBase?.get(row.id) ?? inicial.find((x) => x.id === row.id)
+      const causas = [...(causasDe.get(row.id) ?? []), ...(resultado.causas.get(row.id) ?? [])]
+      if (!previa) {
+        if (resultado.nuevas.includes(row.id)) nuevoLog.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'nueva', causa: causas.join(' + ') || 'fila nueva' })
+        continue
+      }
+      const dif = []
+      if (previa.hora !== row.hora) dif.push('hora')
+      if (previa.min !== row.min) dif.push('min')
+      if ((previa.modo ?? null) !== (row.modo ?? null)) dif.push('modo')
+      if ((previa.titulo ?? null) !== (row.titulo ?? null)) dif.push('titulo')
+      if (dif.length) nuevoLog.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: dif.join('+'), causa: causas.join(' + ') || 'las horas se recalculan al final con los márgenes', de: { hora: previa.hora, min: previa.min, modo: previa.modo ?? null }, a: { hora: row.hora, min: row.min, modo: row.modo ?? null } })
+    }
+    for (const row of resultado.quitadas) nuevoLog.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'quitada', causa: row.causa })
+    for (const aviso of resultado.avisos) nuevoLog.push({ id: null, lugar: null, sitio: null, que: 'aviso', causa: aviso })
+    for (const row of finales) {
+      if (row.colchon && row.min > 120) nuevoLog.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'aviso', causa: `colchón de ${row.min} min (más de 2 horas)` })
+      if (row.tipo === 'cena' && filaMin(row.hora) > 22 * 60) nuevoLog.push({ id: row.id, lugar: row.restaurante, sitio: null, que: 'aviso', causa: `la cena pasa de las 22:00 (${row.hora})` })
+    }
+    draft.log = nuevoLog
+    draft.rowsPrep = finales
+    draft.problemasComponer = resultado.problemas
+  }
+
   const planEscritoDay = (draft, skeletonDay) => {
     const hours = hoursOf(skeletonDay)
     const ctx = { id: draft.id, day: skeletonDay, hours, escrito: true, reserved: false, problems: [], sunsetArrival: null, morningNames: new Set() }
     const env = envDe(skeletonDay)
+    const rows = draft.rowsPrep
     const log = draft.log
-    let rows = draft.rowsPrep
-    // Adelantar (regla de cierres): lo que por dentro cae cerrado a su hora se mueve antes en el día, hasta donde está abierto. Una joya (el Panteón) cuando cierra antes
-    // (misa, festivo): mejor por dentro aunque sea corto (mínimo 20 min) que por fuera; se adelanta aunque haya que andar hasta 15 min de más.
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i]
-      if (row.modo !== 'dentro' || row.hora_tipo === 'reserva' || row.hora_tipo === 'turno' || env.abierta(row, filaMin(row.hora))) continue
-      const moved = adelantar(rows, i, { ...env, joya: placeByName.get(row.lugar)?.tier === 'joya' })
-      if (moved) {
-        anotarCambios(rows, moved, `cierre de ${row.lugar}`, log)
-        rows = moved
-        draft.applied.push(`adelantar:${row.lugar}`)
-      }
-    }
-    // Noche especial de la fecha (Nochebuena: solo la Fontana de Trevi; Nochevieja: una sola): sobran las demás nocturnas del día.
-    // (Ya aplicada al preparar el viaje —para que las otras nocturnas del viaje no repitan la de esa noche—; aquí no cambia nada más.)
-    rows = nocheEspecial(rows, hours, log)
-    // Avisos del registro (la revisión y la prueba los cuentan): un colchón de más de 2 horas, y una cena que pasa de las 22:00.
-    for (const row of rows) {
-      if (row.colchon && row.min > 120) log.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar ?? null, que: 'aviso', causa: `colchón de ${row.min} min (más de 2 horas)` })
-      if (row.tipo === 'cena' && filaMin(row.hora) > 22 * 60) log.push({ id: row.id, lugar: row.restaurante, sitio: null, que: 'aviso', causa: `la cena pasa de las 22:00 (${row.hora})` })
-    }
     draft.rowsFinal = rows
     const stops = []
     let carry = null
@@ -2340,6 +2430,10 @@ export function planWrittenTrip(args) {
   }
   aplicarDentroUnaVez()
   aplicarNochesDelViaje()
+  for (const skeletonDay of skeleton) {
+    const index = cityDays.indexOf(skeletonDay)
+    if (index >= 0 && drafts[index].escrito) componerEscrito(drafts[index], skeletonDay)
+  }
   for (const skeletonDay of skeleton) {
     const index = cityDays.indexOf(skeletonDay)
     if (index < 0) {
