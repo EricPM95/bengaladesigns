@@ -708,6 +708,9 @@ export function DayDetailPanel({
   const dinnerCuratedZone = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZone ?? null
   const lunchCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'lunch')?.curatedZoneDisplay ?? null
   const dinnerCuratedZoneDisplay = day.meals.find((meal) => meal.mealTime === 'dinner')?.curatedZoneDisplay ?? null
+  // (Navidad y Año Nuevo: «Con reserva»… va junto a los minutos andando de la tarjeta.)
+  const lunchReservationNote = day.meals.find((meal) => meal.mealTime === 'lunch')?.reservationNote ?? null
+  const dinnerReservationNote = day.meals.find((meal) => meal.mealTime === 'dinner')?.reservationNote ?? null
   // Con la franja del motor (v3), la comida va en su posición REAL: detrás de la última parada que
   // empieza antes de la franja. Sin franja (rutas antiguas), por la ventana de siempre.
   const lunchMeal = day.meals.find((meal) => meal.mealTime === 'lunch')
@@ -1039,7 +1042,7 @@ export function DayDetailPanel({
             franja="comida"
             timeRange={lunchTimeRange}
             chosenName={restaurantOf('lunch')?.name ?? null}
-            walkNote={mealWalkNote('lunch', index)}
+            walkNote={[mealWalkNote('lunch', index), lunchReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('lunch')}
             onOpen={() => setMealSheet({ franja: 'comida', stopIndex: index })}
           />
@@ -1059,7 +1062,7 @@ export function DayDetailPanel({
             franja="cena"
             timeRange={Number.isNaN(dinnerStartMinutes) ? null : minutesToTime(dinnerStartMinutes)}
             chosenName={restaurantOf('dinner')?.name ?? null}
-            walkNote={mealWalkNote('dinner', index)}
+            walkNote={[mealWalkNote('dinner', index), dinnerReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('dinner')}
             onOpen={() => setMealSheet({ franja: 'cena', stopIndex: index })}
           />

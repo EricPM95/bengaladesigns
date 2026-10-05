@@ -3056,6 +3056,9 @@
         "desde": "12-08",
         "hasta": "01-06"
       },
+      "sin_tablas": [
+        "fiesta"
+      ],
       "acciones": [
         {
           "op": "cambiar",

@@ -164,7 +164,7 @@ export interface QuestionnaireAnswers {
   /** Free Tour de tarde o de noche, con su hora (el viaje usa el Día de la Roma antigua con el tour a esa hora). Lo rellenará quien conozca la hora; el motor ya lo lee. */
   freeTourDespues?: { franja: 'manana' | 'tarde' | 'noche'; hora: string }
   /** Viaje de 1,5 días: el medio día cae por la tarde (llegada) o por la mañana (salida). */
-  mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string }
+  mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string; /** Dónde cae el medio día: 'primero' (llegada) o 'ultimo' (salida); sin él, la tarde es la llegada y la mañana la salida. */ posicion?: 'primero' | 'ultimo' }
 }
 
 /** Todo lo decidido en la fase de transporte — se pasa tal cual al prompt de generación de ruta. */
@@ -473,6 +473,8 @@ export interface MealSlot {
   curatedZone?: string | null
   /** Texto legible curado a mano para el TÍTULO del bloque ("en el Centro Histórico", ver `meal_zones[...].display`, Regla E) — nunca se usa para buscar restaurantes, solo para componer "Hora de comer/cenar {esto}". null/undefined = el título cae al formato genérico con `curatedZone`/zona geocodificada. */
   curatedZoneDisplay?: string | null
+  /** Navidad y Año Nuevo (días escritos): «Con reserva», «Con reserva: menú de Nochevieja» o «En Navidad, reserva con antelación». */
+  reservationNote?: string | null
   /** Motor v3, comida: fin de la franja ("14:30"); `time` es su inicio. La franja incluye llegar al
       restaurante, comer y andar a la siguiente parada. */
   windowEnd?: string

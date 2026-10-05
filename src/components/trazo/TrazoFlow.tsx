@@ -153,7 +153,9 @@ export function TrazoFlow() {
     if (!destinationName) return
     const experiencesPositive = answers.experiencesPositive?.length ? answers.experiencesPositive : (['imprescindibles'] as ExperienceCategoryId[])
     const experiences = deriveLegacyExperienceIds(experiencesPositive)
-    updateAnswers({ experiencesPositive, experiencesNegative: [], experiences })
+    // (El medio día solo existe con 3 o 4 días de calendario: si las fechas cambiaron, no queda uno de antes.)
+    const medioDiaValido = answers.days === 3 || answers.days === 4 ? answers.mediaJornada : undefined
+    updateAnswers({ experiencesPositive, experiencesNegative: [], experiences, mediaJornada: medioDiaValido, ...(experiencesPositive.includes('free_tour') ? {} : { freeTourDespues: undefined }) })
     // Destino no curado: se pide la sugerencia de lugares ya; curado: el pool del JSON, sin Claude.
     if (curatedPool === false) suggestPlacesOnDemand(destinationName, experiences)
     else store.getState().setPlacesStepStarted(true)
@@ -558,6 +560,11 @@ export function TrazoFlow() {
               month={answers.month}
               dateRange={answers.dateRange}
               selected={answers.experiencesPositive ?? ['imprescindibles']}
+              days={answers.days}
+              mediaJornada={answers.mediaJornada}
+              freeTourDespues={answers.freeTourDespues}
+              onMediaJornada={(mediaJornada) => updateAnswers({ mediaJornada })}
+              onFreeTourDespues={(freeTourDespues) => updateAnswers({ freeTourDespues })}
               onChange={(experiencesPositive) => updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })}
               onNext={confirmExperiences}
             />,

@@ -2545,7 +2545,7 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   const ft = answers?.freeTourDespues
   const freeTourDespues = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) ? { franja: ft.franja ?? null, hora: ft.hora } : null
   const mj = answers?.mediaJornada
-  const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null } : null
+  const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
   return { entradas, freeTourDespues, mediaJornada }
 }
 

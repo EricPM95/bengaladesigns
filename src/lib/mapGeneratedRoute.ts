@@ -163,6 +163,8 @@ interface GeneratedMeal {
   zone?: string | null
   /** Solo pipeline v2 — texto legible para el título ("en el Centro Histórico", Regla E), ver MealSlot.curatedZoneDisplay. Nunca se usa para buscar. */
   zone_display?: string | null
+  /** Días escritos, Navidad y Año Nuevo: «Con reserva», «Con reserva: menú de Nochevieja» o «En Navidad, reserva con antelación». */
+  reservation_note?: string | null
   /** Motor v3, comida: fin de la franja (llegar, comer y andar a la siguiente parada) — MealSlot.windowEnd. */
   window_end?: string | null
   /** Motor v3, comida y cena: el restaurante recomendado y dónde está — MealSlot.recommendedRestaurant. */
@@ -503,6 +505,7 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
     mealTime: generated.time,
     curatedZone: generated.zone ?? null,
     curatedZoneDisplay: generated.zone_display ?? null,
+    ...(generated.reservation_note ? { reservationNote: generated.reservation_note } : {}),
     ...(generated.window_end ? { windowEnd: generated.window_end } : {}),
     ...(typeof generated.latitude === 'number' && typeof generated.longitude === 'number' ? { coordinates: { lat: generated.latitude, lng: generated.longitude } } : {}),
     ...(generated.restaurant && typeof generated.latitude === 'number' && typeof generated.longitude === 'number'

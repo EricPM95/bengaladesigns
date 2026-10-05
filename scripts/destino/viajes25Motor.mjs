@@ -10,6 +10,7 @@ import fs from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
+import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 
 const args = process.argv.slice(2)
 const opt = Object.fromEntries(args.filter((x) => !x.startsWith('viaje=')).map((x) => x.split(/=(.*)/s).slice(0, 2)))
@@ -80,7 +81,7 @@ function filasDelDia(day) {
     const c = noche ? 'de noche' : tour ? 'con guía' : camino ? 'de camino' : dentro ? 'por dentro' : fuera ? 'por fuera' : ''
     const hTransito = stop.transit?.minutes ? toHHMM(Math.max(0, toMin(stop.suggested_time) - stop.transit.minutes - 10)) : null
     if (stop.transit?.label) out.push({ h: hTransito, n: stop.transit.label.replace(/, unos \d+ min$/, ''), m: stop.transit.minutes, c: '', t: 'transporte', ch: null, why: '', transporte: true })
-    out.push({ h: stop.suggested_time, n: titulo, m: stop.duration_minutes, c, t, ch: cambiosDe(row).join(' ') || null, why: String(stop.why ?? '').slice(0, 260), _clave: plain(titulo), _noche: noche })
+    out.push({ h: stop.suggested_time, n: titulo, m: stop.duration_minutes, c, t, ch: cambiosDe(row).join(' ') || null, why: String(stop.why ?? "").slice(0, 600), _clave: plain(titulo), _noche: noche })
   }
   for (const meal of day.meals ?? []) {
     const lunch = meal.time === 'lunch'
@@ -92,17 +93,31 @@ function filasDelDia(day) {
   return out.sort((a, b) => toMin(a.h) - toMin(b.h) || (a.transporte ? -1 : 0))
 }
 
+/** Por qué a un día le va mal una fecha (null si no le va mal): lo mismo que dice el documento en «Orden de los días». */
+function motivoMalo(id, iso) {
+  const dia = wd(iso)
+  const mmdd = iso.slice(5)
+  const museos = D.places.find((place) => place.name === 'Museos Vaticanos y Capilla Sixtina')
+  const cierran = dia === 'domingo' || closedOnDay(museos, dia, iso)
+  if (id === 'D2') return dia === 'miércoles' ? 'el miércoles es la audiencia del Papa' : cierran ? `ese día cierran los Museos Vaticanos (${dia === 'domingo' ? 'domingo' : 'festivo'})` : null
+  if (id === 'D3') return cierran ? 'ese día cierran los Museos Vaticanos' : null
+  if ((id === 'D1' || id === 'D1-FT') && (mmdd === '06-02' || mmdd === '12-25')) return mmdd === '06-02' ? 'el 2 de junio el Coliseo y el Foro abren por la tarde' : 'el 25 de diciembre el Coliseo y el Foro cierran'
+  return null
+}
+
 /** El orden de los días escrito en palabras: qué día lleva cada fecha y si se han cambiado. */
 function ordenEnPalabras(viaje, ids, fechas) {
-  const nombre = { D1: 'la Roma antigua', D2: 'el Vaticano', D3: 'el Free Tour y el Vaticano por la tarde', 'D1-FT': 'la Roma antigua y Trastevere', 'DT-medio': 'el Tridente y el Pincio', 'DM-medio': 'Monti', 'D1-corto': 'la Roma antigua (todo por fuera)' }
-  const enteros = ids.filter((id) => !/medio/.test(id))
+  const nombre = { D1: 'la Roma antigua', D2: 'el Vaticano', D3: 'el Free Tour y el Vaticano por la tarde', 'D1-FT': 'la Roma antigua y Trastevere', 'DT-medio': 'el Tridente y el Pincio', 'DM-medio': 'Monti', 'D1-corto': 'la Roma antigua (todo por fuera)', 'D0-medio': 'el Vaticano' }
+  const enteros = ids.map((id, i) => ({ id, fecha: fechas[i] })).filter((x) => !/medio/.test(x.id))
   const original = viaje.ft ? ['D3', 'D1-FT'] : ['D1', 'D2']
-  const cambiado = enteros[0] !== original[0]
   const texto = ids.map((id, i) => `${cap(wd(fechas[i]))} ${Number(fechas[i].slice(8))}: ${nombre[id] ?? id}`).join(' · ')
-  if (!cambiado) return `${texto}. Ningún día cae en una fecha que le vaya mal: no se cambian.`
-  const malo = original[0]
-  const dia = fechas[ids.indexOf(malo)] ?? ''
-  return `${texto}. El orden escrito era el contrario: ${nombre[malo]} iba el ${wd(addDays(dia, 0))} ${Number(dia.slice(8))} y a ese día le va mal esa fecha (domingo, miércoles, festivo con los Museos cerrados…): el motor cambia los días.`
+  if (enteros.length < 2 || enteros[0].id === original[0]) {
+    const aviso = enteros.map((x) => motivoMalo(x.id, x.fecha) && `${nombre[x.id]} (${cap(wd(x.fecha))} ${Number(x.fecha.slice(8))}: ${motivoMalo(x.id, x.fecha)})`).filter(Boolean)
+    return `${texto}. ${aviso.length ? `Orden escrito sin cambiar (no se puede mejorar): ${aviso.join('; ')}.` : 'Ningún día cae en una fecha que le vaya mal: no se cambian.'}`
+  }
+  // El orden escrito (el primero y el segundo de `original` en esas dos fechas) traía un día en una fecha mala.
+  const malos = original.map((id, i) => ({ id, fecha: enteros[i].fecha, motivo: motivoMalo(id, enteros[i].fecha) })).filter((x) => x.motivo)
+  return `${texto}. El orden escrito era el contrario, pero ${malos.map((x) => `${nombre[x.id]} caería el ${wd(x.fecha)} ${Number(x.fecha.slice(8))} (${x.motivo})`).join(' y ') || 'a uno de los días le iba mal su fecha'}: el motor cambia los días.`
 }
 
 const trips = []

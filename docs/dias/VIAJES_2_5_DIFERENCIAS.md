@@ -50,7 +50,7 @@ Generado por `scripts/destino/viajes25Motor.mjs`. Compara parada a parada lo que
 - Minutos de «Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)»: simulación 115, motor 110 — 90 → 110 min: atardecer.
 - Hora de «Trinità dei Monti y su mirador sobre la Plaza de España»: simulación 21:10, motor 21:15 — De 20:45 a 21:15: atardecer.
 - Hora de «Cena: Il Gabriello (o Poldo e Gianna Osteria), en el Tridente»: simulación 21:45, motor 21:50 — De 21:20 a 21:50: atardecer.
-- Falta en el motor: 23:45 Coliseo iluminado (20 min) — El motor quita: Coliseo (noche) (hora límite de la noche).
+- Hora de «Coliseo iluminado»: simulación 23:45, motor 23:50 — De 23:20 a 23:50: atardecer.
 
 ### Viernes 16 · Día entero: motor D1 · D · normal / simulación D1 · tarde D (nueva)
 

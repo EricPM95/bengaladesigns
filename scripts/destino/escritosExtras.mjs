@@ -96,7 +96,8 @@ export function anadirExtras(out, { T }) {
     arte_museos: { acciones: [{ op: 'cambiar', fila: 'Museos Vaticanos y Capilla Sixtina', min: 240 }] },
     barrios_sabores: { acciones: [{ op: 'insertar', antes: 'tipo:comida', fila: { tipo: 'paseo', lugar: 'Borgo Pio', titulo: 'Pasea y piérdete por Borgo Pio', min: 30 } }] },
     naturaleza_vistas: CUPULA,
-    mercadillos_navidenos: { ...MERCADILLOS, acciones: [{ op: 'cambiar', fila: 'Plaza de San Pedro', min: 40, titulo: 'Plaza de San Pedro y los 100 Presepi' }] },
+    // (La tabla de fiesta —25 de diciembre y 1 de enero— ya lleva el belén en la Plaza de San Pedro: no se cambia.)
+    mercadillos_navidenos: { ...MERCADILLOS, sin_tablas: ['fiesta'], acciones: [{ op: 'cambiar', fila: 'Plaza de San Pedro', min: 40, titulo: 'Plaza de San Pedro y los 100 Presepi' }] },
   }
 
   // ── D0 ──────────────────────────────────────────────────────────────────────────────────────

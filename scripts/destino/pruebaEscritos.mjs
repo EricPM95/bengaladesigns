@@ -70,8 +70,13 @@ const POOL = [
   { ...base('1,5 días, medio día de tarde y día entero'), clave: '1,5 días, medio día de tarde y día entero + pool: Coliseo', pool: ['Coliseo'] },
   { ...base('1 día'), clave: '1 día + pool: Coliseo', pool: ['Coliseo'] },
 ]
+// El Free Tour de tarde (17:00) y de noche (18:30) en el viaje de 2 días: el Día de la Roma antigua lleva su versión con el tour.
+const FT_DESPUES = [
+  { ...base('2 días'), clave: '2 días + Free Tour de tarde (17:00)', ftDespues: { franja: 'tarde', hora: '17:00' } },
+  { ...base('2 días'), clave: '2 días + Free Tour de noche (18:30)', ftDespues: { franja: 'noche', hora: '18:30' } },
+]
 const SOLO = args.dias ? new Set(args.dias.split(',')) : null
-const viajesAUsar = [...VIAJES, ...(SOLO?.has('pool') ? POOL : [])].filter((viaje) => !SOLO || SOLO.has('pool') && viaje.pool || SOLO.has({ 1: '1', 2: viaje.medio ? '1.5' : '2', 3: '2.5' }[viaje.dias]))
+const viajesAUsar = [...VIAJES, ...(SOLO?.has('pool') ? POOL : []), ...(SOLO?.has('ft') ? FT_DESPUES : [])].filter((viaje) => !SOLO || (SOLO.has('pool') && viaje.pool) || (SOLO.has('ft') && viaje.ftDespues) || (!viaje.pool && !viaje.ftDespues && SOLO.has({ 1: '1', 2: viaje.medio ? '1.5' : '2', 3: '2.5' }[viaje.dias])))
 
 /** Navidad y Año Nuevo: el Día de la Roma antigua se sustituye por el D1-corto (todo por fuera). */
 const conFiestas = (ids, start) => ids.map((id, i) => (id === 'D1' && ['12-25', '01-01'].includes(addDays(start, i).slice(5)) ? 'D1-corto' : id))
@@ -130,6 +135,8 @@ function tablaBase(id, iso, viaje, posicion) {
     return por(wd === 'miercoles' ? 'miercoles' : 'normal')
   }
   if (id === 'D3') return por(museosCierran(iso) ? 'domingo' : 'normal')
+  // (Con el Free Tour de tarde o de noche, el Día de la Roma antigua lleva su versión con el tour, salvo el día en que no hay tour.)
+  if (id === 'D1' && viaje.ftDespues && !sinTour(iso)) return v[viaje.ftDespues.franja === 'noche' ? 'free_tour_noche' : 'free_tour_tarde'].unica
   if (id === 'D1' || id === 'D1-FT' || id === 'D1-corto') return por('normal')
   if (id === 'D0') return (viaje.pool ?? []).includes('Coliseo') ? v.reves.unica : v.normal.unica
   if (id === 'D0-medio') {
@@ -152,7 +159,7 @@ function tablaBase(id, iso, viaje, posicion) {
 }
 
 const diffs = []
-const extra = { restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0 }
+const extra = { mesas: 0, restaurante_cerrado: [], restaurante_sin: [], cena_22: [], colchon_2h: [], aviso_vaticano: [], orden: [], restaurante_cambiado: 0, imprescindibles: new Map(), sinTabla: 0 }
 let comparados = 0
 let filasTotal = 0
 const limpia = (t) => t.replace(/\s*\(noche\)/g, '').replace(/ iluminados?$/, '').trim()
@@ -212,6 +219,7 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
 function comprobarExtras(viaje, iso, dayNumber, id, day, ids) {
   const wd = weekdayOf(iso)
   for (const meal of day.meals ?? []) {
+    extra.mesas++
     const nombre = meal.restaurant
     const tipo = meal.time === 'dinner' ? 'cena' : 'comida'
     if (!nombre) { extra.restaurante_sin.push(`${iso} ${id} ${tipo}`); continue }
@@ -240,7 +248,7 @@ for (let n = 0; n < 365; n++) {
     const construidos = []
     for (let d = 1; d <= viaje.dias; d++) {
       try {
-        construidos.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, start, viaje.pool ?? [], viaje.ft ? ["imprescindibles", "free_tour"] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ?? null }))
+        construidos.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, start, viaje.pool ?? [], viaje.ft ? ["imprescindibles", "free_tour"] : [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ?? null, freeTourDespues: viaje.ftDespues ?? null }))
       } catch (error) {
         diffs.push({ viaje: viaje.clave, fecha: start, dia: d, id: aceptables[0][d - 1], fila: '-', tipo: 'error', detalle: String(error.message).slice(0, 120) })
         construidos.push(null)
@@ -307,7 +315,7 @@ const lines = [`# Prueba de los días escritos (parada a parada, 2027)`, '', `${
 lines.push('Viajes probados: ' + viajesAUsar.map((viaje) => viaje.clave).join(' · '), '')
 lines.push('## Resumen de las otras comprobaciones', '')
 lines.push(`- Qué días lleva cada viaje y en qué orden (con el cambio de orden por fechas): ${extra.orden.length} fallos.`)
-lines.push(`- Comidas y cenas en un restaurante cerrado ese día o a esa hora: ${extra.restaurante_cerrado.length}; comidas o cenas sin restaurante: ${extra.restaurante_sin.length}; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): ${extra.restaurante_cambiado}.`)
+lines.push(`- Comidas y cenas comprobadas: ${extra.mesas}. En un restaurante cerrado ese día o a esa hora: ${extra.restaurante_cerrado.length}; comidas o cenas sin restaurante: ${extra.restaurante_sin.length}; restaurantes cambiados por su alternativa o por otro de la zona (apuntado en el registro): ${extra.restaurante_cambiado}.`)
 lines.push(`- Cenas que pasan de las 22:00: ${extra.cena_22.length}. Colchones de más de 2 horas: ${extra.colchon_2h.length}.`)
 lines.push(`- Avisos «Hemos puesto el Vaticano otro día» en un día del Vaticano: ${extra.aviso_vaticano.length}.`)
 lines.push(`- Imprescindibles que no salen en algún viaje (viaje · lugar · cuántas fechas de 365): ${[...extra.imprescindibles.values()].length} casos.`, '')
@@ -334,5 +342,6 @@ for (const [k, v] of [...por].filter(([k]) => k.includes('SIN EXPLICAR')).sort((
 lines.push('', '## Explicadas por «Lo que hará el motor»', '')
 for (const [k, v] of [...por].filter(([k]) => !k.includes('SIN EXPLICAR')).sort((a, b) => b[1].n - a[1].n)) lines.push(`- ${k} ×${v.n} — ${v.ejemplos.join(' · ')}`)
 writeFileSync(out, lines.join('\n') + '\n')
+if (args.imprescindibles) writeFileSync(args.imprescindibles, JSON.stringify([...extra.imprescindibles.values()], null, 1))
 if (args.volcado) writeFileSync(args.volcado, diffs.map((x) => JSON.stringify(x)).join('\n') + '\n')
-console.log(JSON.stringify({ dias: comparados, filas: filasTotal, diferencias: diffs.length, sin_explicar: sin.length, orden: extra.orden.length, restaurantes_cerrados: extra.restaurante_cerrado.length, sin_restaurante: extra.restaurante_sin.length, cena_22: extra.cena_22.length, colchon_2h: extra.colchon_2h.length, aviso_vaticano: extra.aviso_vaticano.length, imprescindibles_que_faltan: extra.imprescindibles.size }))
+console.log(JSON.stringify({ mesas: extra.mesas, dias: comparados, filas: filasTotal, diferencias: diffs.length, sin_explicar: sin.length, orden: extra.orden.length, restaurantes_cerrados: extra.restaurante_cerrado.length, sin_restaurante: extra.restaurante_sin.length, cena_22: extra.cena_22.length, colchon_2h: extra.colchon_2h.length, aviso_vaticano: extra.aviso_vaticano.length, imprescindibles_que_faltan: extra.imprescindibles.size }))

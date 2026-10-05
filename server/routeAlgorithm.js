@@ -106,7 +106,8 @@ export function findPipelineV2Data(destination) {
 }
 
 export function hasFreeTourFromAnswers(answers) {
-  return Array.isArray(answers?.experiencesPositive) && answers.experiencesPositive.includes('free_tour')
+  // (Un Free Tour de tarde o de noche —`answers.freeTourDespues`— no es el de mañana: el viaje usa los días sin tour y el Día de la Roma antigua lleva su versión con el tour a esa hora.)
+  return Array.isArray(answers?.experiencesPositive) && answers.experiencesPositive.includes('free_tour') && !answers.freeTourDespues
 }
 
 // ── Ronda 5 — tags por experiencia positiva ──────────────────────────────────────────────────

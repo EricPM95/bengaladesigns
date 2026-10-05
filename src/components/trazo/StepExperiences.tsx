@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { DateRange, ExperienceCategoryId, Season } from '../../lib/types'
+import type { DateRange, ExperienceCategoryId, QuestionnaireAnswers, Season } from '../../lib/types'
 import { EXPERIENCE_CATEGORY_BANK, MAX_POSITIVE_CATEGORIES, isCategoryVisible } from '../../lib/experienceCategoryBank'
 import { fetchSeasonalWindows, seasonStatus, type SeasonalWindow } from '../../lib/seasonalAvailability'
 import { ACCENT, AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
@@ -12,8 +12,45 @@ interface StepExperiencesProps {
   month: number | undefined
   dateRange: DateRange | undefined
   selected: ExperienceCategoryId[]
+  /** Días de calendario del viaje (el último es el de la vuelta): con ellos se sabe si hay 1, 1,5, 2 o 2,5 días de ruta. */
+  days?: number
+  mediaJornada?: QuestionnaireAnswers['mediaJornada']
+  freeTourDespues?: QuestionnaireAnswers['freeTourDespues']
+  onMediaJornada?: (value: QuestionnaireAnswers['mediaJornada']) => void
+  onFreeTourDespues?: (value: QuestionnaireAnswers['freeTourDespues']) => void
   onChange: (selected: ExperienceCategoryId[]) => void
   onNext: () => void
+}
+
+/** El Free Tour de tarde o de noche tiene su hora habitual; el de mañana sale a las 10:00 y es el de siempre. */
+const FRANJAS_FREE_TOUR = [
+  { id: 'manana', label: 'Por la mañana', note: '10:00', hora: null },
+  { id: 'tarde', label: 'Por la tarde', note: '17:00', hora: '17:00' },
+  { id: 'noche', label: 'De noche', note: '18:30', hora: '18:30' },
+] as const
+
+/** Pastillas de elección única (el medio día del viaje y la franja del Free Tour). */
+function Pastillas<T extends string>({ opciones, valor, onChange }: { opciones: { id: T; label: string; note?: string }[]; valor: T; onChange: (id: T) => void }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      {opciones.map((opcion) => {
+        const activa = opcion.id === valor
+        return (
+          <button
+            key={opcion.id}
+            type="button"
+            className="trazo-press"
+            aria-pressed={activa}
+            onClick={() => onChange(opcion.id)}
+            style={{ padding: '8px 12px', borderRadius: 999, border: `1px solid ${activa ? AMBER : 'rgba(28,34,48,.18)'}`, background: activa ? AMBER : 'rgba(255,255,255,0.85)', color: activa ? DARK : INK, font: "500 13px 'Geist'", cursor: 'pointer' }}
+          >
+            {opcion.label}
+            {opcion.note ? <span style={{ opacity: 0.7, marginLeft: 6, font: `500 11px ${MONO}` }}>{opcion.note}</span> : null}
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 /** Mercadillos solo en invierno: con fechas manda el mes real (nov-dic); sin fechas, la estación. Solo para los destinos sin
@@ -31,7 +68,7 @@ function isWinterTrip(season: Season | undefined, dateRange: DateRange | undefin
  * marcada y bloqueada; se pueden añadir hasta 2 más, o ninguna. Las de temporada siguen las ventanas
  * del destino (seasonalAvailability) y, sin ventana, la regla de invierno de siempre.
  */
-export function StepExperiences({ destinationName, season, month, dateRange, selected, onChange, onNext }: StepExperiencesProps) {
+export function StepExperiences({ destinationName, season, month, dateRange, selected, days, mediaJornada, freeTourDespues, onMediaJornada, onFreeTourDespues, onChange, onNext }: StepExperiencesProps) {
   const [windows, setWindows] = useState<Record<string, SeasonalWindow>>({})
   useEffect(() => {
     let alive = true
@@ -45,8 +82,12 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
 
   const winter = isWinterTrip(season, dateRange)
   const statusOf = (id: ExperienceCategoryId) => seasonStatus(windows[id], month, dateRange)
+  // Con 3 o 4 días de calendario (2 o 3 de ruta) el viaje puede tener un medio día: se pregunta aquí. Con 1 día o con 1,5, el Free Tour no se ofrece (desde 2 días, sí).
+  const puedeTenerMedioDia = days === 3 || days === 4
+  const medioDia = puedeTenerMedioDia ? mediaJornada : undefined
+  const sinFreeTour = days != null && (days <= 2 || (days === 3 && Boolean(medioDia)))
   const shown = EXPERIENCE_CATEGORY_BANK.filter((category) =>
-    windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
+    category.id === 'free_tour' && sinFreeTour ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
   )
   // El Free Tour, segundo, justo debajo de Imprescindibles y con la etiqueta «Recomendado» (solo cambia el orden en que se ven).
   const freeTour = shown.find((category) => category.id === 'free_tour')
@@ -59,7 +100,12 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
     const next = [LOCKED, ...selected.filter((id) => id !== LOCKED && visibleIds.includes(id))].slice(0, MAX_POSITIVE_CATEGORIES)
     if (next.length !== selected.length || next.some((id, i) => id !== selected[i])) onChange(next)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [windows, month, winter, dateRange?.start, dateRange?.end, selected.join(',')])
+  }, [windows, month, winter, dateRange?.start, dateRange?.end, selected.join(','), sinFreeTour])
+  // Sin Free Tour en la lista (o sin marcarlo), no queda una franja suya guardada.
+  useEffect(() => {
+    if (freeTourDespues && (!selected.includes('free_tour') || sinFreeTour)) onFreeTourDespues?.(undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected.join(','), sinFreeTour])
 
   const full = selected.length >= MAX_POSITIVE_CATEGORIES
   const toggle = (id: ExperienceCategoryId) => {
@@ -89,6 +135,20 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
       <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(28,34,48,.72)' }}>
         Imprescindibles ya va incluido. Añade hasta 2 más… o ninguna: tu viaje será igual de único, nosotros nos encargamos.
       </p>
+      {puedeTenerMedioDia && onMediaJornada && (
+        <div style={{ margin: '14px 0 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>¿Cómo son tus días?</span>
+          <Pastillas
+            valor={medioDia ? medioDia.franja : 'enteros'}
+            onChange={(id) => onMediaJornada(id === 'enteros' ? undefined : { franja: id, ...(id === 'manana' ? { salida: '15:00' } : {}) })}
+            opciones={[
+              { id: 'enteros', label: days === 3 ? 'Dos días enteros' : 'Tres días enteros' },
+              { id: 'tarde', label: days === 3 ? 'Un día y medio: llego a mediodía' : 'Dos días y medio: llego a mediodía' },
+              { id: 'manana', label: days === 3 ? 'Un día y medio: me voy a mediodía' : 'Dos días y medio: me voy a mediodía' },
+            ]}
+          />
+        </div>
+      )}
       <div className="trazo-noscroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, margin: '16px 0 12px' }}>
         {visible.map((category, index) => {
           const active = selected.includes(category.id)
@@ -181,6 +241,19 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
           )
         })}
       </div>
+      {selected.includes('free_tour') && !sinFreeTour && onFreeTourDespues && (
+        <div style={{ margin: '0 0 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>¿A qué hora prefieres el Free Tour?</span>
+          <Pastillas
+            valor={freeTourDespues?.franja ?? 'manana'}
+            onChange={(id) => {
+              const franja = FRANJAS_FREE_TOUR.find((item) => item.id === id)
+              onFreeTourDespues(franja?.hora ? { franja: id, hora: franja.hora } : undefined)
+            }}
+            opciones={FRANJAS_FREE_TOUR.map((item) => ({ id: item.id, label: item.label, note: item.note }))}
+          />
+        </div>
+      )}
       <Cta onClick={onNext}>Continuar</Cta>
     </>
   )

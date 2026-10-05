@@ -247,13 +247,15 @@ export function planWrittenTrip(args) {
   const wholeRow = (routeTable['2'] ?? {})[hasFreeTour ? 'con_free_tour' : 'sin_free_tour'] ?? ['D1', 'D2']
   let chosen
   let halfPosition = null
+  // (El medio día de tarde es el de llegada y el de mañana el de salida; `mediaJornada.posicion` ('primero' o 'ultimo') lo cambia: salir por la tarde, el último día.)
+  const halfFirst = mediaJornada?.posicion ? mediaJornada.posicion === 'primero' : mediaJornada?.franja === 'tarde'
   if (mediaJornada && cityDays.length === 2) {
-    chosen = mediaJornada.franja === 'tarde' ? ['D0-medio', 'D1-corto'] : ['D1-corto', 'D0-medio']
-    halfPosition = mediaJornada.franja === 'tarde' ? 0 : 1
+    chosen = halfFirst ? ['D0-medio', 'D1-corto'] : ['D1-corto', 'D0-medio']
+    halfPosition = halfFirst ? 0 : 1
   } else if (mediaJornada && cityDays.length === 3 && written.days['DT-medio']) {
     const half = hasFreeTour && mediaJornada.franja === 'manana' && written.days['DM-medio'] ? 'DM-medio' : 'DT-medio'
-    chosen = mediaJornada.franja === 'tarde' ? [half, ...wholeRow] : [...wholeRow, half]
-    halfPosition = mediaJornada.franja === 'tarde' ? 0 : 2
+    chosen = halfFirst ? [half, ...wholeRow] : [...wholeRow, half]
+    halfPosition = halfFirst ? 0 : 2
   } else chosen = row.map((item) => (typeof item === 'string' ? item : sinGaleria && contentDays < 4 ? item.sin_galeria : item.con_galeria)).slice(0, cityDays.length)
   if (chosen.some((id) => !written.days[id])) return null
   const halfDayOwner = Object.fromEntries(Object.entries(destData.curated_routes?.excursiones?.media_jornada ?? {}).map(([id, excursion]) => [excursion, id]))
@@ -1815,6 +1817,8 @@ export function planWrittenTrip(args) {
     const place = placeByName.get(row.lugar)
     const stop = { lugar: row.lugar, min: row.min, hora: row.hora, tipo: 'fija', hora_tipo: row.hora_tipo ?? 'orientativa', escrito: true }
     if (row.titulo) stop.titulo = row.titulo
+    // (El texto del colchón: lo que hay dentro, de la tabla «Qué hay en cada colchón» del documento.)
+    if (row.texto) stop.texto = row.texto
     if (row.turno) stop.turno = true
     if (row.modo === 'dentro') {
       stop.modo = 'dentro'
@@ -1944,6 +1948,7 @@ export function planWrittenTrip(args) {
       const def = written.days[draft.id]?.experiencias?.[exp]
       if (!def || def.pendiente || !vale(def, { ids: order, dateIso: hours.dateIso })) { if (def?.pendiente) draft.extrasNoIncluidos.push({ name: exp, pendiente: def.pendiente }); continue }
       if (def.solo_en && !def.solo_en.includes(clave)) continue
+      if (def.sin_tablas?.includes(draft.tablaVersion)) continue
       const hecho = aplicarExtra(rows, def, acciones)
       if (!hecho) { draft.extrasNoIncluidos.push({ name: exp, pendiente: 'no cabe' }); continue }
       anotarCambios(rows, hecho.rows, `experiencia: ${exp}`, log)
