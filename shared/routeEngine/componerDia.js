@@ -72,6 +72,13 @@ function componer(rows0, env, retrasos) {
     if (!lista.includes(causa)) lista.push(causa)
     causas.set(row.id, lista)
   }
+  /** Si la pirámide quitó un colchón de esa zona y ahora hay que meter uno, vuelve ése (con su id y su texto), no uno nuevo con otro nombre. */
+  const reaprovechar = (nuevo) => {
+    const k = quitadas.findIndex((q) => q.colchon && q.lugar === nuevo.lugar)
+    if (k < 0) return { fila: nuevo, nueva: true }
+    const [q] = quitadas.splice(k, 1)
+    return { fila: { ...q, min: nuevo.min, hora: nuevo.hora, hora_doc: q.hora_doc ?? nuevo.hora_doc, min_doc: q.min_doc ?? nuevo.min_doc }, nueva: false }
+  }
   let rows = rows0.map((row) => ({ ...row, hora_doc: row.hora_doc ?? row.hora, min_doc: row.min_doc ?? row.min }))
   // El turno que se retrasó (de 30 en 30 min, para llegar al atardecer con un colchón de 2 horas como mucho).
   for (const row of rows) {
@@ -166,9 +173,10 @@ function componer(rows0, env, retrasos) {
     const mas = Math.min(down5(disponible), COLCHON_MAXIMO)
     if (mas < MARGENES.COLCHON_MINIMO) return resto
     const nuevo = { ...molde, id: `colchon_${idDe(antes.lugar ?? antes.restaurante ?? 'zona')}_${idDe(nombreDe(Fb)).slice(0, 24)}`, tipo: 'paseo', colchon: true, min: mas, hora: toHHMM(inicio), hora_doc: toHHMM(inicio), min_doc: mas, como_documento: '', texto_documento: molde.titulo }
-    inner.push(nuevo)
-    nuevas.push(nuevo.id)
-    nota(nuevo, `quedaban ${resto} min libres antes de ${nombreDe(Fb)}: se mete el colchón de la zona`)
+    const re = reaprovechar(nuevo)
+    inner.push(re.fila)
+    if (re.nueva) nuevas.push(nuevo.id)
+    nota(re.fila, `quedaban ${resto} min libres antes de ${nombreDe(Fb)}: ${re.nueva ? 'se mete el colchón de la zona' : 'vuelve el colchón de la zona'}`)
     return resto - mas
   }
 
@@ -275,7 +283,6 @@ function componer(rows0, env, retrasos) {
   const quitarPorPiramide = (colocadas, Fa, Fb, sb) => {
     const prueba = [...(Fa ? [{ ...Fa }] : []), ...colocadas, { ...Fb, hora: toHHMM(sb), fija: true }]
     const r = correrHoras(prueba, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (row) => row.llegada === true })
-    for (const q of r.quitadas) quitadas.push({ ...q, causa: `no cabe antes de ${nombreDe(Fb)} (${toHHMM(sb)}) con los márgenes` })
     for (const p of r.problemas) if (!problemas.includes(p)) problemas.push(p)
     // Apretar de más no vale: si al final sobra tiempo, lo apretado vuelve a su tamaño (el de nivel más alto primero) mientras siga cabiendo y apretando menos en total.
     {
@@ -326,6 +333,8 @@ function componer(rows0, env, retrasos) {
       const antes = colocadas.find((x) => x.id === row.id)
       if (antes && (antes.hora !== row.hora || antes.min !== row.min)) nota(row, `los márgenes (lo andado más 10 min) antes de ${nombreDe(Fb)}`)
     }
+    // (Lo que de verdad se quedó fuera, después de devolver lo que cabía.)
+    for (const q of r.quitadas) quitadas.push({ ...q, causa: `no cabe antes de ${nombreDe(Fb)} (${toHHMM(sb)}) con los márgenes` })
     return { inner: interior, sb }
   }
 
@@ -416,9 +425,10 @@ function componer(rows0, env, retrasos) {
         const mas = Math.min(down5(dispon), COLCHON_MAXIMO)
         if (mas >= MARGENES.COLCHON_MINIMO) {
           const nuevo = { ...molde, id: `colchon_${idDe(previa.lugar ?? previa.restaurante ?? 'zona')}_${idDe(nombreDe(b)).slice(0, 24)}`, tipo: 'paseo', colchon: true, min: mas, hora: toHHMM(inicio), hora_doc: toHHMM(inicio), min_doc: mas, como_documento: '', texto_documento: molde.titulo }
-          salida.splice(i, 0, nuevo)
-          nuevas.push(nuevo.id)
-          nota(nuevo, `quedaban ${resto0} min libres antes de ${nombreDe(b)}: se mete el colchón de la zona`)
+          const re = reaprovechar(nuevo)
+          salida.splice(i, 0, re.fila)
+          if (re.nueva) nuevas.push(nuevo.id)
+          nota(re.fila, `quedaban ${resto0} min libres antes de ${nombreDe(b)}: ${re.nueva ? 'se mete el colchón de la zona' : 'vuelve el colchón de la zona'}`)
           continue
         }
       }

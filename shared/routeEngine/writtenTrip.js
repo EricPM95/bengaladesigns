@@ -2239,7 +2239,6 @@ export function planWrittenTrip(args) {
         fila = { ...fila, titulo: place.camino_alternativa }
         log.push({ id: row.id, lugar: fila.titulo, sitio: row.lugar, que: 'titulo', causa: `${place.name} no se ve desde la calle cuando está cerrado: la parada es ${place.camino_alternativa}` })
       }
-      if (fila.lugar && fila.tipo !== 'traslado' && fila.modo !== 'camino') caminoVistos.add(fila.lugar)
       return fila
     })
   }
@@ -2407,6 +2406,8 @@ export function planWrittenTrip(args) {
         if (row.modo === 'camino' && place && (place.level ?? 3) <= 2 && !vistosAntes.has(row.lugar) && !vistoHoy.has(row.lugar) && !tourCovers.has(row.lugar) && !row.llegada) nuevoLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'modo', causa: `los márgenes del día lo aprietan hasta «de camino» aunque sea la primera vez que sale ${row.lugar} en el viaje (nivel ${place.level}): es lo último antes de quitarlo` })
         if (row.modo !== 'camino') vistoHoy.add(row.lugar)
       }
+      // (Solo cuenta como visto lo que de verdad ha salido como parada, ya con las horas hechas.)
+      for (const row of finales) if (row.lugar && row.tipo !== 'traslado' && row.tipo !== 'comida' && row.tipo !== 'cena' && row.modo !== 'camino') caminoVistos.add(row.lugar)
     }
     // (Excursión de medio día: si de la tarde no queda ninguna parada de nivel 1 o 2, la tarde queda libre.)
     if (skeletonDay.halfDayExcursion?.soloTarde) draft.tardeLibre = !finales.some((row) => row.tipo === 'parada' && !row.llegada && row.modo !== 'camino' && (placeByName.get(row.lugar)?.level ?? 3) <= 2)

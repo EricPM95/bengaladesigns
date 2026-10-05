@@ -212,3 +212,17 @@ export function comprobarMediaJornada({ D, iso, id, day, esperadoId }) {
   if (buenas.length > 0 && day.afternoon_free) fallos.push({ regla: 'media_jornada', texto: `${donde}: sale «tarde libre» y tiene paradas de nivel 1 o 2` })
   return fallos
 }
+
+/** 9. Ningún medio día repite el tema de un día entero del mismo viaje (sus paradas principales). FALLO CONOCIDO: el arreglo de verdad es «Llegada según la hora» (próxima tanda); aquí solo se mide. */
+export function comprobarMedioDiaRepetido({ D, dias }) {
+  const fallos = []
+  const principales = (day) => new Set((day?.stops ?? []).filter((stop) => !stop.is_night_experience && !stop.pass_through && (D.places.find((place) => place.name === stop.name)?.level ?? 3) <= 2).map((stop) => stop.name))
+  const lista = dias.filter((x) => x.day).map((x) => ({ ...x, id: x.day.curated_day?.id ?? '', set: principales(x.day) }))
+  for (const medio of lista.filter((x) => /medio/.test(x.id))) {
+    for (const entero of lista.filter((x) => !/medio/.test(x.id) && x.id)) {
+      const comunes = [...medio.set].filter((name) => entero.set.has(name))
+      if (medio.set.size >= 3 && comunes.length / medio.set.size >= 0.6) fallos.push({ regla: 'medio_dia_repite_dia_FALLO_CONOCIDO', texto: `${medio.iso} ${medio.id} repite ${comunes.length} de sus ${medio.set.size} paradas principales del día ${entero.iso} ${entero.id} (${comunes.slice(0, 4).join(', ')})` })
+    }
+  }
+  return fallos
+}

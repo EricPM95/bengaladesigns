@@ -10,7 +10,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
-import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada } from './comprobacionesDia.mjs'
+import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada, comprobarMedioDiaRepetido } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -42,7 +42,12 @@ const mala = (id, iso) => {
   const cierra = (name) => Boolean(placeOf(name) && closedOnDay(placeOf(name), weekdayOf(iso), iso))
   if (id === 'D4') return cierra('Galería Borghese')
   if (id === 'D5') return cierra('Termas de Caracalla')
-  if (id === 'D6') return wd === 'miercoles' || cierra("Castillo de Sant'Angelo")
+  if (id === 'D6') {
+    // (La Cúpula no abre a las 8:00: el miércoles con audiencia —no en julio—, el Jueves Santo…; se mira el horario de verdad.)
+    const cupula = placeOf('Cúpula de San Pedro')
+    const abre8 = !cupula || parseHoursSessions(effectiveSchedule(cupula, { weekday: weekdayOf(iso), dateIso: iso, season: null })).some((session) => session.open <= 8 * 60 && session.close >= 8 * 60 + 15)
+    return !abre8 || cierra("Castillo de Sant'Angelo")
+  }
   if (id === 'D7') return cierra('Villa Farnesina') || cierra('Catacumbas de San Calixto')
   return false
 }
@@ -370,6 +375,7 @@ for (let n = Number(args.desde ?? 0); n < 365; n += PASO) {
     }
     // Lo que se mira en el viaje entero (tanda 4).
     for (const fallo of comprobarViaje({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })) })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
+    for (const fallo of comprobarMedioDiaRepetido({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })) })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
     {
       const camino = comprobarCamino({ D, dias: construidos.map((day, k) => ({ iso: addDays(start, k), day })), tourCubre: viaje.ft || viaje.ftDespues ? new Set(D.default_free_tour?.covers ?? []) : new Set() })
       for (const fallo of [...camino.fallos, ...camino.info]) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${start} ${viaje.clave}: ${fallo.texto}`])
