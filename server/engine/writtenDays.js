@@ -71,15 +71,37 @@ const tipsCache = new Map()
 export function photosFor(destinationKey) {
   const key = String(destinationKey ?? '').trim().toLowerCase()
   if (!key) return null
-  if (photosCache.has(key)) return photosCache.get(key)
+  if (photosCache.has(key)) {
+    const cached = photosCache.get(key)
+    return cached ? withSlots(key, cached) : null
+  }
   const file = join(DIAS_DIR, key, '_fotos.json')
   const raw = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
   const value = raw?.fotos?.length ? raw : null
   photosCache.set(key, value)
-  return value
+  return value ? withSlots(key, value) : null
 }
 
 const photosCache = new Map()
+const slotsCache = new Map()
+
+/**
+ * Los huecos de las fotos propias (`huecos` de _fotos.json, Tanda 3): cada sitio tiene un archivo fijo en public/fotos/<destino>/; en cuanto ese archivo existe, es una foto propia más (sin
+ * registrarla a mano). Se mira cada 5 segundos si ha llegado alguna, así que basta con soltar el archivo.
+ */
+function withSlots(key, table) {
+  if (!Array.isArray(table.huecos) || table.huecos.length === 0) return table
+  const cached = slotsCache.get(key)
+  if (cached && Date.now() - cached.at < 5000) return cached.value
+  const folder = join(DIAS_DIR, '..', '..', 'public', String(table.carpeta ?? '').replace(/^\//, ''))
+  const registered = new Set(table.fotos.map((foto) => foto.archivo))
+  const arrived = table.huecos
+    .filter((slot) => !registered.has(slot.archivo) && existsSync(join(folder, slot.archivo)))
+    .map((slot) => ({ archivo: slot.archivo, lugares: slot.lugares, cuando: slot.cuando ?? 'dia', ancho: 1600, fuente: '', autor: '', enlace: '', hueco: true }))
+  const value = arrived.length > 0 ? { ...table, fotos: [...table.fotos, ...arrived] } : table
+  slotsCache.set(key, { at: Date.now(), value })
+  return value
+}
 
 /**
  * La llegada y la vuelta de un destino (PROMPT_UI, Parte 3): `data/dias/<destino>/_llegada.json`, una sección por medio

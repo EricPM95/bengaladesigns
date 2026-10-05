@@ -38,6 +38,7 @@ import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
 import { applySeasonLines, seasonLinesOn } from '../../shared/routeEngine/seasonLines.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
+import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
 import { MODE_V3 } from '../../shared/routeEngine/modes.js'
@@ -83,6 +84,49 @@ function writtenPlanFor(written, destKey, args) {
   writtenPlanCache.set(key, plan)
   if (writtenPlanCache.size > 64) writtenPlanCache.delete(writtenPlanCache.keys().next().value)
   return plan
+}
+/** El día escrito que entra cuando el viajero cambia la excursión por un día en la ciudad: el que la tabla del destino añade al pasar de N a N+1 días de ciudad (D6 en 5 días, D7 en 6). */
+function diaQueEntraSinExcursion(destData, ciudadDias, hasFreeTour) {
+  const table = destData.curated_routes?.por_dias_ciudad ?? {}
+  const fila = (n) => table[String(n)]?.[hasFreeTour ? 'con_free_tour' : 'sin_free_tour'] ?? null
+  return (fila(ciudadDias + 1) ?? []).filter((id) => !(fila(ciudadDias) ?? []).includes(id)).at(-1) ?? null
+}
+/**
+ * El día que se pondría en lugar de la excursión y lo que se enseña de él en la pantalla «Prefiero quedarme en Roma»: su título y sus paradas emblemáticas (sin horas, con el nombre de su foto).
+ * Null si el destino no lo tiene escrito.
+ */
+function quedarmeEnCiudad(written, destData, plan, hasFreeTour, dateIso, season) {
+  const ciudad = plan.days.filter((day) => day.curatedDay?.id).length
+  const id = diaQueEntraSinExcursion(destData, ciudad, hasFreeTour)
+  const cfg = id ? destData.destination_config?.quedarme_en_ciudad?.[id] : null
+  if (!cfg || !written?.days?.[id]) return null
+  const sunset = sunsetFor(destData, { dateIso, season })
+  const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
+  const paradas = (cfg.paradas ?? []).filter((parada) => !parada.solo_tardes || (sunset != null && sunset >= toMin(parada.solo_tardes)))
+  return { day_id: id, title: cfg.titulo, text: cfg.texto ?? null, stops: paradas.map((parada) => ({ name: parada.nombre, photo_name: parada.foto ?? parada.nombre })) }
+}
+/**
+ * El orden de los días de ciudad cuando el viajero cambia la excursión por un día en la ciudad: el que el viaje tenía con la excursión (días de ciudad en su orden) con el día nuevo
+ * (el que la tabla del destino añade al pasar de N a N+1 días de ciudad) en el día de la excursión. Null si no se puede.
+ */
+function ordenSinExcursion(written, destKey, args) {
+  try {
+    const base = writtenPlanFor(written, destKey, { ...args, sinExcursion: false, forceOrder: null })
+    if (!base) return null
+    const ordenBase = base.days.filter((day) => day.curatedDay?.id).map((day) => day.curatedDay.id)
+    const excursion = base.days.find((day) => day.isExcursion)
+    const nuevo = diaQueEntraSinExcursion(args.destData, ordenBase.length, args.hasFreeTour)
+    if (!excursion || !nuevo || !written.days[nuevo]) return null
+    const orden = []
+    let cursor = 0
+    for (const day of base.days) {
+      if (day.dayNumber === excursion.dayNumber) orden.push(nuevo)
+      else if (day.curatedDay?.id) orden.push(ordenBase[cursor++])
+    }
+    return orden.length === ordenBase.length + 1 ? orden : null
+  } catch {
+    return null
+  }
 }
 /** El pool de un viaje con días escritos: qué va ya incluido y cuántos extras caben (null sin días escritos). */
 export function writtenPoolStatus(destData, city, { days, hasFreeTour = false, dateRangeStartIso = null }) {
@@ -293,7 +337,10 @@ async function buildDayBlockV3Inner(
   const planner = curated ? planCuratedTrip : isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
   const destKey = findPipelineV2Key(destData.destination ?? options.city ?? '')
   const written = curated && useWrittenDays(options.engine) ? writtenDaysFor(destKey) : null
-  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder: options.forceOrder ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null
+  // «Prefiero quedarme en Roma» (tanda 3): el día de excursión pasa a ser de ciudad (D6 en 5 días, D7 en 6) y los demás días se quedan como estaban: se pide el mismo orden de siempre con el día nuevo
+  // en el hueco de la excursión (así el viaje que ya está en pantalla no se reordena por el día que entra).
+  const forceOrder = options.forceOrder ?? (written && options.sinExcursion === true ? ordenSinExcursion(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null)
+  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, sinExcursion: options.sinExcursion === true }) : null
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
@@ -336,6 +383,11 @@ async function buildDayBlockV3Inner(
       day.excursion_preselected = preferida.id
     }
     day.excursion_social_proof = config.excursion_social_proof ?? null
+    // «Prefiero quedarme en Roma» (tanda 3): el día de ciudad que entraría en lugar de la excursión, con sus paradas emblemáticas para la pantalla.
+    if (writtenPlan && options.sinExcursion !== true) {
+      const stay = quedarmeEnCiudad(written, destData, writtenPlan, hasFreeTour, calendar.dateOfDay(dayNumber), options.season ?? null)
+      if (stay) day.stay_in_city = stay
+    }
     return day
   }
 

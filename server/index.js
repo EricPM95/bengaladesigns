@@ -7,7 +7,7 @@ import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
 import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor } from './engine/writtenDays.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
@@ -2546,7 +2546,9 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   const freeTourDespues = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) ? { franja: ft.franja ?? null, hora: ft.hora } : null
   const mj = answers?.mediaJornada
   const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
-  return { entradas, freeTourDespues, mediaJornada }
+  // «Prefiero quedarme en Roma» (tanda 3): el día de excursión pasa a ser un día de ciudad escrito (D6 en 5 días, D7 en 6).
+  const sinExcursion = answers?.sinExcursion === true
+  return { entradas, freeTourDespues, mediaJornada, sinExcursion }
 }
 
 function hasRequiredAnswers(answers) {
@@ -5186,7 +5188,9 @@ function ownPhotoFor(name, city, dateIso) {
   if (!foto) return null
   const base = `${table.carpeta}/${foto.archivo}`
   const credit = foto.autor && foto.enlace && foto.fuente ? { autor: foto.autor, enlace: foto.enlace, fuente: foto.fuente } : null
-  const small = base.replace(/\.jpg$/, '_p.jpg')
+  // (La versión pequeña es opcional en los huecos: sin ella, la grande.)
+  const smallPath = base.replace(/\.jpg$/, '_p.jpg')
+  const small = foto.hueco && !existsSync(join(__dirname, '../public', smallPath)) ? base : smallPath
   return { photo_source: 'propia', photo_url: versionedPhotoUrl(base), photo_small: versionedPhotoUrl(small), photo_credit: credit, photo_night: foto.cuando === 'noche' }
 }
 
@@ -5209,10 +5213,10 @@ app.post('/api/pool-photos', async (req, res) => {
   const hidden = new Set(photosFor(destKey ?? '')?.sin_foto ?? [])
   const isHidden = (name) => hidden.has(name) || isRestaurantName(destination, name)
   for (const name of list) {
-    if (isHidden(name)) continue
+    // (Una foto propia —también la de un hueco que acaba de llegar— va antes que el «sin foto».)
     const own = ownPhotoFor(name, destination, date)
     if (own) photos[name] = { url: own.photo_small, source: 'propia' }
-    else missing.push(name)
+    else if (!isHidden(name)) missing.push(name)
   }
   if (supabaseAdmin && missing.length > 0) {
     const { data, error } = await supabaseAdmin.from('place_photo_cache').select('place_name,photo_source,photo_url,unsplash_small').eq('city', cityKey).in('place_name', missing)
@@ -5249,13 +5253,14 @@ app.post('/api/place-photo', async (req, res) => {
   }
   try {
     // Lugares sin foto hasta que el usuario pase una buena (`sin_foto` en _fotos.json): el color neutro de la app, nunca una buscada sola.
-    if ((photosFor(findPipelineV2Key(city) ?? '')?.sin_foto ?? []).includes(name) || isRestaurantName(city, name)) {
-      res.json({ photo_source: 'none' })
-      return
-    }
+    // (Una foto propia —también la de un hueco que acaba de llegar— va antes que el «sin foto».)
     const own = excludeOwn ? null : ownPhotoFor(name, city, date)
     if (own) {
       res.json(own)
+      return
+    }
+    if ((photosFor(findPipelineV2Key(city) ?? '')?.sin_foto ?? []).includes(name) || isRestaurantName(city, name)) {
+      res.json({ photo_source: 'none' })
       return
     }
     const nightBase = nightBaseOf(name, city)
@@ -5463,8 +5468,8 @@ app.post('/api/generate-day-block', async (req, res) => {
         // Un viaje sin excursión (Roma en 4 días) la ofrece en un solo día, el de `excursion_oferta.dia`, con su texto y
         // sin precios; los demás días no llevan banner (decisión del usuario, 2026-09-29).
         const offer = pipelineV2Data.destination_config?.excursion_oferta
-        if (offer?.dia) {
-          const tripHasExcursion = tripDays({ destData: pipelineV2Data, totalDays: totalDaysV2, hasFreeTour: hasFreeTourFromAnswers(answers) }).some((day) => day.isExcursion)
+        if (offer?.dia && answers?.sinExcursion !== true) {
+          const tripHasExcursion = tripDays({ destData: pipelineV2Data, totalDays: totalDaysV2, hasFreeTour: hasFreeTourFromAnswers(answers), sinExcursion: answers?.sinExcursion === true }).some((day) => day.isExcursion)
           if (!tripHasExcursion) {
             const isOfferDay = dayBlockV2.curated_day?.id === offer.dia
             dayBlockV2.excursion_prominence = isOfferDay ? 'prominent' : 'subtle'

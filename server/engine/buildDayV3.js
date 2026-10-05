@@ -526,7 +526,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       stop.outside_kind = visit.place.outsideKind ?? 'no_cabe'
       // (Lo escrito «por fuera» es una decisión del día, el Castillo de Sant'Angelo: no es «por fuera para llegar a todo».)
       if (visit.place.outsideAuthored) stop.outside_authored = true
-    } else if (sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
+    } else if ((sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 || visit.place.writtenInside) && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
     // Un imprescindible es parada de verdad: 20 min como mínimo (la Plaza de España no se ve en 10), salvo por fuera.
     if (sourcePlace?.level === 1 && !visit.place.visitOutside && !stop.pass_through && !visit.place.passBy && !stop.is_night_experience) stop.min_minutes = IMPRESCINDIBLE_MIN_MINUTES
     if (visit.place.maxMinutes) stop.max_minutes = visit.place.maxMinutes

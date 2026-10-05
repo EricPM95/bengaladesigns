@@ -40,7 +40,7 @@ export function curatedFranja(destData, totalDays, hasFreeTour, dayNumber) {
  * @returns {{dayNumber:number, weekday:string|null, allowsRepetition:boolean, isBlank:boolean,
  *            isExcursion:boolean, halfDayExcursion:object|null, curated:object|null}[]}
  */
-export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso = null }) {
+export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso = null, sinExcursion = false }) {
   const config = destData?.destination_config ?? {}
   const coreDays = config.core_days ?? totalDays
   const maxAutoDays = config.max_auto_days ?? totalDays
@@ -71,7 +71,8 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
     const mmdd = monthDayForDay(dateRangeStartIso, dayNumber)
     return mmdd != null && (config.excursion_fechas_no ?? []).includes(mmdd)
   }
-  let excursionDay = plannedExcursion
+  // («Prefiero quedarme en Roma», tanda 3: el viajero cambia la excursión por un día en la ciudad; ese día pasa a ser de ciudad.)
+  let excursionDay = sinExcursion ? null : plannedExcursion
   if (excursionDay !== null && bannedExcursion(excursionDay)) {
     const later = []
     for (let day = excursionDay + 1; day < contentDays; day++) later.push(day)
@@ -86,7 +87,8 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   // repetir en el viaje — se reparten en orden editorial y cuando se acaban, se acabaron. Roma tiene
   // dos (Ostia y Tívoli), así que un viaje de 8 días cubre sus dos días de revisitas y uno de 9 ya
   // no: el tercer día de revisitas se queda como estaba, con la mañana en la ciudad.
-  const mediaJornada = halfDayExcursions(destData)
+  // (`sin_media_jornada`: Roma, tanda 3, no pone las medias jornadas de Ostia y Tívoli: esos días son ahora días escritos de ciudad.)
+  const mediaJornada = config.sin_media_jornada ? [] : halfDayExcursions(destData)
   let siguienteMediaJornada = 0
 
   const days = []

@@ -194,6 +194,8 @@ export function elegirTabla(day, ctx) {
     case 'D0-medio': {
       const conMuseos = marcado(MUSEOS) && !museosCierran
       if (ctx.franja === 'tarde') return pick(conMuseos ? 'tarde_con_museos' : 'tarde_sin_museos')
+      // (El miércoles por la mañana, audiencia del Papa: la mañana va al revés y acaba en San Pedro, tabla escrita en la tanda 3.)
+      if (!conMuseos && weekday === 'miercoles' && v.miercoles_manana) return pick('miercoles_manana', 'miercoles_audiencia')
       return pick(conMuseos ? 'manana_con_museos' : 'manana')
     }
     case 'DT-medio': {
@@ -226,6 +228,15 @@ export function elegirTabla(day, ctx) {
       return pick(museosCierran ? 'domingo' : 'normal')
     case 'D1-FT':
       return pick('normal')
+    // Tanda 3 (3 a 6 días): D4 y el Aventino (DA-medio, D5) llevan su tabla del lunes o del domingo cuando el documento la trae; D6 y D7 solo la normal (lo demás lo hace el motor).
+    case 'D4':
+    case 'D6':
+    case 'D7':
+      return pick('normal')
+    case 'D5':
+      return pick(weekday === 'lunes' && v.lunes ? 'lunes' : weekday === 'domingo' && v.domingo ? 'domingo' : 'normal', weekday === 'lunes' || weekday === 'domingo' ? weekday : null)
+    case 'DA-medio':
+      return pick(weekday === 'lunes' && v.lunes ? 'lunes' : 'manana')
     default:
       return pick(Object.keys(v)[0])
   }
@@ -245,7 +256,10 @@ export const nuevaFila = (campos) => ({ id: campos.id ?? `${campos.tipo ?? 'para
 export function aplicarAcciones(rows, acciones, { walk, taxiMin, clave = null } = {}) {
   let lista = rows.map((row) => ({ ...row }))
   let primera = lista.length
-  const indice = (clave) => (String(clave).startsWith('tipo:') ? lista.findIndex((row) => row.tipo === String(clave).slice(5)) : lista.findIndex((row) => row.lugar === clave || row.id === clave || row.titulo === clave))
+  // (`fallida`: una fila nueva que se debía meter detrás de una fila que ese día no está —la Cúpula detrás de la Basílica en la tabla de fiesta—: no se mete en cualquier sitio, el extra no cabe.)
+  let fallida = false
+  // (`tipo:cena` la primera fila de ese tipo; `colchon:Tridente` el colchón cuyo título lleva ese texto.)
+  const indice = (clave) => (String(clave).startsWith('tipo:') ? lista.findIndex((row) => row.tipo === String(clave).slice(5)) : String(clave).startsWith('colchon:') ? lista.findIndex((row) => row.colchon && String(row.titulo ?? row.texto_documento ?? '').includes(String(clave).slice(8))) : lista.findIndex((row) => row.lugar === clave || row.id === clave || row.titulo === clave))
   for (const accion of acciones) {
     if (accion.op === 'cambiar') {
       const i = indice(accion.fila)
@@ -290,13 +304,15 @@ export function aplicarAcciones(rows, acciones, { walk, taxiMin, clave = null } 
       primera = Math.min(primera, iComida + 1)
     } else if (accion.op === 'insertar') {
       const filas = (Array.isArray(accion.fila) ? accion.fila : [accion.fila]).map((fila) => nuevaFila(fila))
-      let i = accion.despues != null ? indice(accion.despues) + 1 : accion.antes != null ? indice(accion.antes) : lista.length
+      const ancla = accion.despues != null ? indice(accion.despues) : accion.antes != null ? indice(accion.antes) : null
+      if (ancla != null && ancla < 0) { fallida = true; continue }
+      let i = accion.despues != null ? ancla + 1 : accion.antes != null ? ancla : lista.length
       if (i < 0) i = lista.length
       lista.splice(i, 0, ...filas)
       primera = Math.min(primera, i)
     }
   }
-  return { rows: lista, primera: Math.max(1, primera) }
+  return { rows: lista, primera: Math.max(1, primera), fallida }
 }
 
 /**
@@ -368,7 +384,8 @@ export function resolverTaxis(rows, walk) {
  */
 export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30, colchonInsertable = null, cenaDesde = null }) {
   if (sunset == null) return rows
-  const k = rows.findIndex((row) => row.modo === 'atardecer' && row.tipo === 'parada')
+  const alSol = (row) => (row.modo === 'atardecer' || row.atardecer === true) && row.tipo === 'parada'
+  const k = rows.findIndex(alSol)
   if (k < 1) return rows
   const target = near5(sunset - lead)
   const llegada = toMin(rows[k].hora)
@@ -404,7 +421,7 @@ export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30
         return correrHoras(copia, { desde: k, walk, colchonProtegido: colchonInsertable.id })
       }
       let intento = probar(MARGENES.COLCHON_MINIMO)
-      const horaDelSol = (resultado) => toMin(resultado.rows.find((row) => row.modo === 'atardecer' && row.tipo === 'parada').hora)
+      const horaDelSol = (resultado) => toMin(resultado.rows.find(alSol).hora)
       if (horaDelSol(intento) < target) intento = probar(MARGENES.COLCHON_MINIMO + up5(target - horaDelSol(intento)))
       if (horaDelSol(intento) <= target + 5 && intento.problemas.length === 0) return intento.rows
     }
@@ -482,6 +499,7 @@ export function vale(def, { ids = [], dateIso = null } = {}) {
  */
 export function aplicarExtra(rows, def, { walk, abierta, marcar = (lista) => lista, clave = null, pool = false, orden = [] }) {
   const aplicadas = aplicarAcciones(rows, def.acciones ?? [], { walk, clave })
+  if (aplicadas.fallida) return null
   let lista = resolverTaxis(marcar(aplicadas.rows), walk)
   // (Lo marcado en el pool es la prioridad: en 1 y 1,5 días, si para meterlo no cabe un imprescindible, el imprescindible se queda fuera.)
   const corrida = correrHoras(lista, { desde: aplicadas.primera, walk, orden: def.orden ?? orden, protegidas: (row) => row.hora_tipo === 'reserva', quitarImprescindibles: pool, soloEmpujar: (def.acciones ?? []).some((accion) => accion.op === 'tabla' || accion.op === 'reemplazar_manana') })

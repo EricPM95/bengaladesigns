@@ -176,7 +176,7 @@ function dateKeyMatches(key, dateIso) {
  * @returns el plan (misma forma que planCuratedTrip), o null si falta algún día escrito
  */
 export function planWrittenTrip(args) {
-  const { destData, written, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [], entradas = {}, freeTourDespues: freeTourDespuesIn = null, dropTarde = [], recortesCena = 0, mediaJornada = null } = args
+  const { destData, written, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, insideNames = [], forceOrder = null, blockedPoolSites = [], entradas = {}, freeTourDespues: freeTourDespuesIn = null, dropTarde = [], recortesCena = 0, mediaJornada = null, sinExcursion = false } = args
   if (!written?.days) return null
   let poolNames = poolNamesIn
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
@@ -194,7 +194,7 @@ export function planWrittenTrip(args) {
   const tour = destData.default_free_tour ?? null
   const joyaNames = new Set((destData.places ?? []).filter((place) => place.tier === 'joya').map((place) => place.name))
   const cuts = written.destino?.cortes_luz ?? DEFAULT_CUTS
-  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso })
+  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, sinExcursion })
   const contentDays = skeleton.length
   const cityDays = skeleton.filter((day) => !day.isBlank && !day.isExcursion)
   const earlyLimit = Math.min(3, Math.max(1, cityDays.length - 1))
@@ -256,6 +256,13 @@ export function planWrittenTrip(args) {
     const half = hasFreeTour && mediaJornada.franja === 'manana' && written.days['DM-medio'] ? 'DM-medio' : 'DT-medio'
     chosen = halfFirst ? [half, ...wholeRow] : [...wholeRow, half]
     halfPosition = halfFirst ? 0 : 2
+  } else if (mediaJornada && cityDays.length === 4 && written.days['DA-medio']) {
+    // 3,5 días (tanda 3): los tres días enteros del viaje de 3 días y el Aventino y Testaccio por la mañana de vuelta (DA-medio). El medio día de llegada (tarde) lo traerá
+    // «Llegada según la hora» (aún no): mientras, el medio día del Tridente (provisional, PREGUNTAS_TANDA3).
+    const whole = (routeTable['3'] ?? {})[hasFreeTour ? 'con_free_tour' : 'sin_free_tour'] ?? ['D1', 'D2', 'D4']
+    const half = halfFirst ? 'DT-medio' : 'DA-medio'
+    chosen = halfFirst ? [half, ...whole] : [...whole, half]
+    halfPosition = halfFirst ? 0 : 3
   } else chosen = row.map((item) => (typeof item === 'string' ? item : sinGaleria && contentDays < 4 ? item.sin_galeria : item.con_galeria)).slice(0, cityDays.length)
   if (chosen.some((id) => !written.days[id])) return null
   const halfDayOwner = Object.fromEntries(Object.entries(destData.curated_routes?.excursiones?.media_jornada ?? {}).map(([id, excursion]) => [excursion, id]))
@@ -519,6 +526,20 @@ export function planWrittenTrip(args) {
         cambiosIniciales.push({ id: espana.id ?? 'parada_plaza_de_espana', lugar: 'Plaza de España', que: 'modo+min', causa: 'Free Tour de mañana: el tour ya pasa por la Plaza de España' })
         if (colchon) cambiosIniciales.push({ id: colchon.id, lugar: colchon.titulo ?? colchon.lugar, que: 'min', causa: 'Free Tour de mañana: el rato que sobra de la Plaza de España va al colchón' })
       }
+    }
+    // 3 días con Free Tour de mañana (tanda 3), D4: el tour ya pasó por Trevi, la Plaza de España y Via Condotti: la mañana empieza a las 9:00 en la Fuente del Tritón (desayuno en el hotel),
+    // sin Trevi; la Plaza de España y Via Condotti van de camino (5 min) y el tiempo que sobra pasa al colchón del Tridente.
+    if (id === 'D4' && hasFreeTour) {
+      const causa = 'Free Tour de mañana: el tour ya pasó por Trevi, la Plaza de España y Via Condotti'
+      const sin = tabla.rows.filter((row) => !((row.lugar === 'Fontana de Trevi' && row.tipo === 'parada') || row.tipo === 'desayuno'))
+      const espana = sin.find((row) => row.lugar === 'Plaza de España' && row.tipo === 'parada' && row.modo !== 'camino')
+      const condotti = sin.find((row) => row.lugar === 'Via Condotti' && row.tipo === 'parada')
+      const colchon = [...sin].reverse().find((row) => row.colchon && /Tridente/.test(row.titulo ?? row.texto_documento ?? ''))
+      const sobra = (espana ? espana.min - 5 : 0) + (condotti && condotti.min > 5 ? condotti.min - 5 : 0)
+      tabla.rows = sin.map((row, i) => (i === 0 ? { ...row, hora: '09:00' } : row === espana ? { ...row, modo: 'camino', min: 5 } : row === condotti ? { ...row, min: 5 } : row === colchon ? { ...row, min: row.min + sobra } : row))
+      cambiosIniciales.push({ id: tabla.rows[0].id, lugar: tabla.rows[0].titulo ?? tabla.rows[0].lugar, que: 'hora', causa })
+      if (espana) cambiosIniciales.push({ id: espana.id, lugar: 'Plaza de España', que: 'modo+min', causa })
+      if (colchon && sobra > 0) cambiosIniciales.push({ id: colchon.id, lugar: colchon.titulo ?? colchon.lugar, que: 'min', causa: causa + ': el rato que sobra va al colchón del Tridente' })
     }
     return {
       cambiosIniciales,
@@ -1023,7 +1044,8 @@ export function planWrittenTrip(args) {
     }
     const sites = (written.destino?.pool?.[name]?.sitios ?? []).map((candidate, index) => ({ candidate, index, meters: nearness(candidate.dia) })).sort((x, y) => x.meters - y.meters || x.index - y.index).map((item) => item.candidate)
     // (Nunca en un día en que ese lugar cierra: pasa a su siguiente sitio.)
-    const siteDraft = (candidate) => drafts.find((draft) => draft.id === candidate.dia)
+    // (Un sitio de los de siempre en un día escrito no hace nada —el día escrito trae sus propios extras—: no cuenta como sitio.)
+    const siteDraft = (candidate) => drafts.find((draft) => draft.id === candidate.dia && !draft.escrito)
     const site = sites.find((candidate) => siteDraft(candidate) && !closedThatDay(name, siteDraft(candidate).day) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`)) ?? sites.find((candidate) => siteDraft(candidate) && !(candidate.hueco && takenHoles.has(`${candidate.dia}:${candidate.hueco}`)) && !blockedPoolSites.includes(`${candidate.dia}:${name}`))
     if (!site) {
       // (Sin sitio escrito —el viaje de 1 día, o un día que no está en el viaje—: en el día de su zona, por dentro.)
@@ -1215,6 +1237,8 @@ export function planWrittenTrip(args) {
       }
     } else {
       if (stop.min != null) ready.duration_minutes = stop.min
+      // (Un día escrito que dice «por dentro» sale por dentro aunque el sitio sea de nivel 3: la cabecera del acordeón lo enseña.)
+      if (stop.escrito && modo === 'dentro') ready = { ...ready, writtenInside: true }
       if (modo === 'atardecer' && hours.sunset != null) ready = { ...ready, sunset: hours.sunset, ...(stop.lead ? { sunsetLead: stop.lead } : {}) }
     }
     // (Una calle que lo escrito pone como parada, «Via Margutta y Via del Babuino», es parada, no "de camino".)
@@ -1820,6 +1844,8 @@ export function planWrittenTrip(args) {
     // (El texto del colchón: lo que hay dentro, de la tabla «Qué hay en cada colchón» del documento.)
     if (row.texto) stop.texto = row.texto
     if (row.turno) stop.turno = true
+    // (El nombre con el que se pide su foto, si no es el del lugar: la terraza del Altar, el paseo por el Aventino… Hueco en _fotos.json.)
+    if (row.foto) stop.foto = row.foto
     if (row.modo === 'dentro') {
       stop.modo = 'dentro'
       stop.entrada = isPaid(place)
@@ -1839,7 +1865,7 @@ export function planWrittenTrip(args) {
   const GUIA_LARGA = new Set(['Museos Vaticanos y Capilla Sixtina', 'Coliseo', 'Foro Romano y Palatino', 'Galería Borghese'])
   /** Lo marcado en el pool manda en 1 y 1,5 días: si para meterlo no cabe un imprescindible, el imprescindible se queda fuera. */
   const poolManda = shortNoTour
-  const claveDeTabla = (draft) => (String(draft.tablaVersion ?? '').startsWith('manana') ? 'manana' : draft.version)
+  const claveDeTabla = (draft) => (/manana/.test(String(draft.tablaVersion ?? '')) ? 'manana' : draft.version)
   const envDe = (skeletonDay) => {
     const hours = hoursOf(skeletonDay)
     return {
@@ -1910,6 +1936,19 @@ export function planWrittenTrip(args) {
       unplacedPool.push({ unitId: name, name, reason, dayNumber: skeletonDay.dayNumber, ...(reason === 'closed_on_day' ? { closed: { dateIso: realDateIso(skeletonDay), weekday: hours.weekday }, closedWeekly: weekly } : {}) })
     }
     const tablaDeVersion = (def) => (def.acciones ?? []).every((accion) => accion.op !== 'tabla' || Boolean(accion.tablas?.[clave]) || Object.keys(accion.tablas ?? {}).some((key) => key.length > 1 && key.includes(clave) && /^[A-D]+$/.test(key)))
+    // Cierres que el documento escribe para un lugar del día (la Galería el lunes en el D4, el Castillo en el D6…): lo que pasa entonces, con su causa.
+    for (const [lugar, cierre] of Object.entries(written.days[draft.id]?.cierres ?? {})) {
+      // (`dia_semana`: no es un cierre del lugar sino lo que pasa ese día de la semana —el miércoles, audiencia del Papa—.)
+      const aplica = cierre.dia_semana ? Boolean(hours.weekday) && norm(hours.weekday) === cierre.dia_semana : closedThatDay(lugar, skeletonDay)
+      if (!aplica || !rows.some((row) => row.lugar === lugar)) continue
+      // (Las horas del documento se conservan: solo se empuja lo que los márgenes no dejan llegar, y lo que la acción fija a mano manda.)
+      const aplicadas = aplicarAcciones(rows, cierre.acciones, { walk: rowWalk, clave })
+      const corrida = correrHoras(resolverTaxis(marcarFilas(aplicadas.rows), rowWalk), { desde: aplicadas.primera, walk: rowWalk, orden, soloEmpujar: true })
+      anotarCambios(rows, corrida.rows, `${lugar} cierra ese día: ${cierre.causa ?? 'lo escrito en el documento'}`, log)
+      rows = corrida.rows
+      if (cierre.no_incluido) noIncluido(lugar, 'closed_on_day')
+      draft.applied.push(`cierre:${lugar}`)
+    }
     for (const { name, def } of draft.poolPedido ?? []) {
       if (def.pendiente) { noIncluido(name, 'pendiente'); continue }
       if (def.no_cabe) { noIncluido(name, 'no_room'); continue }
@@ -1949,13 +1988,14 @@ export function planWrittenTrip(args) {
       if (!def || def.pendiente || !vale(def, { ids: order, dateIso: hours.dateIso })) { if (def?.pendiente) draft.extrasNoIncluidos.push({ name: exp, pendiente: def.pendiente }); continue }
       if (def.solo_en && !def.solo_en.includes(clave)) continue
       if (def.sin_tablas?.includes(draft.tablaVersion)) continue
-      const hecho = aplicarExtra(rows, def, acciones)
+      // (`por_version`: lo que solo cambia en una versión de la tarde —A, B, C o D—.)
+      const hecho = aplicarExtra(rows, def.por_version?.[clave] ? { ...def, acciones: [...(def.acciones ?? []), ...def.por_version[clave]] } : def, acciones)
       if (!hecho) { draft.extrasNoIncluidos.push({ name: exp, pendiente: 'no cabe' }); continue }
       anotarCambios(rows, hecho.rows, `experiencia: ${exp}`, log)
       rows = hecho.rows
       draft.applied.push(`experiencia:${exp}`)
     }
-    if (draft.id === 'D0-medio' && String(draft.tablaVersion).startsWith('manana')) {
+    if (draft.id === 'D0-medio' && /manana/.test(String(draft.tablaVersion))) {
       const salida = mediaJornada?.salida ?? '15:00'
       const recortadas = recortarSalida(rows, salida, { walk: rowWalk })
       anotarCambios(rows, recortadas, `salida a las ${salida}`, log)
@@ -1963,10 +2003,26 @@ export function planWrittenTrip(args) {
     }
     {
       // (El medio día A de invierno del Tridente trae su colchón de los Jardines del Pincio para cuando el sol se pone más tarde; el de Via Condotti no baja de 30 min.)
-      const jardines = draft.tablaVersion === 'tarde_invierno' ? written.days['DT-medio']?.versiones?.tarde?.B?.find((row) => row.colchon && row.lugar === 'Jardines del Pincio') : null
+      let jardines = draft.tablaVersion === 'tarde_invierno' ? written.days['DT-medio']?.versiones?.tarde?.B?.find((row) => row.colchon && row.lugar === 'Jardines del Pincio') : null
+      // (D5 el lunes, sin las Termas: el colchón del Aventino se mete antes del Jardín de los Naranjos para llegar con el sol.)
+      const insertable = written.days[draft.id]?.colchon_insertable
+      if (!jardines && insertable?.fila && norm(hours.weekday) === insertable.dia_semana && draft.tablaVersion === insertable.dia_semana) jardines = insertable.fila
       const ajustadas = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk, colchonInsertable: jardines ? marcarFilas([{ ...jardines }])[0] : null, cenaDesde: dinnerHoursOf(draft).desde })
       anotarCambios(rows, ajustadas, 'atardecer', log)
       rows = ajustadas
+    }
+    // Verano (decidido en la tanda 2, escrito en el documento bajo la tabla de la Galería): un colchón no pasa de 2 horas. Si para llegar al mirador con el sol pasaría, el turno de la
+    // Galería Borghese (que va antes) se retrasa lo que haga falta (de 30 en 30 min: 16:00…) y el colchón se queda en 2 horas como mucho. La reserva que eligió el viajero manda.
+    {
+      const iColchon = rows.findIndex((row) => row.colchon && row.min > 120)
+      const iGaleria = iColchon > 0 ? rows.slice(0, iColchon).map((_, k) => k).reverse().find((k) => rows[k].lugar === 'Galería Borghese' && rows[k].modo === 'dentro' && (rows[k].hora_tipo === 'reserva' || rows[k].turno)) : undefined
+      if (iGaleria != null && entradas?.['Galería Borghese'] == null) {
+        const desplaza = Math.ceil((rows[iColchon].min - 120) / 30) * 30
+        const antes = rows
+        const lista = rows.map((row, k) => (k === iGaleria ? { ...row, hora: filaHHMM(filaMin(row.hora) + desplaza) } : k === iColchon ? { ...row, min: row.min - desplaza } : row))
+        rows = correrHoras(lista, { desde: iGaleria + 1, walk: rowWalk, soloEmpujar: true }).rows
+        anotarCambios(antes, rows, `verano: el colchón pasaría de 2 horas para llegar al mirador con el sol: el turno de la Galería Borghese pasa a las ${rows[iGaleria].hora}`, log)
+      }
     }
     // Una mesa cuyo restaurante todavía no ha abierto a esa hora (Poldo e Gianna a las 19:30, la cena escrita a las 19:20) se retrasa hasta que abre (hasta 30 min); si no, va su alternativa.
     {
@@ -2000,10 +2056,49 @@ export function planWrittenTrip(args) {
   //   · D2: si la Plaza de España todavía no ha salido en el viaje (de día o de noche), la nocturna es la Plaza de España de noche, con su taxi, en lugar de Piazza Navona.
   //   · Se cena en Trastevere y esa tarde no se ha paseado Trastevere de noche: la nocturna es Trastevere de noche (30 min, sin taxi), salvo que falte un imprescindible.
   //   · 2,5 días: si el Coliseo iluminado ya salió de noche en el viaje, la nocturna del medio día es Piazza Navona de noche (taxi).
-  const NOCHE_MIN = { 'Fontana de Trevi (noche)': 20, 'Plaza de España (noche)': 20, 'Coliseo (noche)': 20, 'Piazza Navona (noche)': 30, 'Trastevere de noche': 30 }
-  const lugarDeNoche = { 'Fontana de Trevi (noche)': 'Fontana de Trevi', 'Plaza de España (noche)': 'Plaza de España', 'Coliseo (noche)': 'Coliseo', 'Piazza Navona (noche)': 'Piazza Navona', 'Trastevere de noche': 'Trastevere' }
+  const NOCHE_MIN = { 'Fontana de Trevi (noche)': 20, 'Plaza de España (noche)': 20, 'Coliseo (noche)': 20, 'Piazza Navona (noche)': 30, 'Trastevere de noche': 30, 'Panteón (noche)': 30, 'Foro Romano desde el Campidoglio (noche)': 30, "El Puente y el Castillo de Sant'Angelo (noche)": 30 }
+  const lugarDeNoche = { 'Fontana de Trevi (noche)': 'Fontana de Trevi', 'Plaza de España (noche)': 'Plaza de España', 'Coliseo (noche)': 'Coliseo', 'Piazza Navona (noche)': 'Piazza Navona', 'Trastevere de noche': 'Trastevere', 'Panteón (noche)': 'Panteón', 'Foro Romano desde el Campidoglio (noche)': 'Foro Romano y Palatino', "El Puente y el Castillo de Sant'Angelo (noche)": "Puente Sant'Angelo" }
+  /**
+   * Regla 0bis (tanda 3): todo lo que tiene visita por dentro va por dentro UNA vez en el viaje; las otras veces, por fuera y más corto. Lo que solo tiene sentido por dentro (sin visita
+   * por fuera) se queda; la reserva manda. Va en el orden del viaje: el primer día que lo lleva por dentro se lo queda.
+   */
+  const aplicarDentroUnaVez = () => {
+    const vistos = new Map()
+    for (const draft of drafts) {
+      if (!draft.escrito || !draft.rowsPrep) continue
+      const antes = draft.rowsPrep
+      let cambiado = false
+      const rows = antes.map((row) => {
+        if (row.tipo !== 'parada' || row.modo !== 'dentro') return row
+        if (!vistos.has(row.lugar)) { vistos.set(row.lugar, draft.id); return row }
+        const place = placeByName.get(row.lugar)
+        const sePuedeFuera = place?.minutos_fuera != null || place?.pass_by || place?.type === 'exterior'
+        if (row.hora_tipo === 'reserva' || row.reserva_manda || row.otra_visita || !sePuedeFuera) return row
+        cambiado = true
+        return { ...row, modo: 'fuera', min: Math.min(row.min, place?.minutos_fuera ?? 15), guia: undefined, entrada: undefined }
+      })
+      if (!cambiado) continue
+      anotarCambios(antes, rows, 'por dentro una sola vez en el viaje: ya va por dentro otro día', draft.log)
+      draft.rowsPrep = rows
+    }
+  }
+  /** Noche especial de la fecha (`destination_config.noche_especial`): Nochebuena, solo la Fontana de Trevi; Nochevieja, una sola. Devuelve las filas con las nocturnas que sobran quitadas. */
+  const nocheEspecial = (rows, hours, log) => {
+    const especial = destData.destination_config?.noche_especial?.[String(hours.dateIso ?? '').slice(5)] ?? null
+    if (!especial) return rows
+    const noches = rows.filter((row) => row.tipo === 'noche')
+    const quedan = especial.noche ? noches.filter((row) => row.noche === especial.noche).slice(0, especial.maximo ?? 1) : noches.slice(0, especial.maximo ?? 1)
+    const sobran = noches.filter((row) => !quedan.includes(row))
+    if (sobran.length === 0) return rows
+    // (Si el día no trae esa noche, la primera nocturna del día pasa a ser la de la fecha.)
+    const nuevas = quedan.length === 0 && especial.noche ? rows.filter((row) => !sobran.slice(1).includes(row)).map((row) => (row === sobran[0] ? { ...row, noche: especial.noche, id: `noche_${especial.noche}` } : row)) : rows.filter((row) => !sobran.includes(row))
+    anotarCambios(rows, nuevas, especial.noche ? `noche especial: ${especial.noche}` : 'noche especial: una sola', log)
+    return nuevas
+  }
   const aplicarNochesDelViaje = () => {
     const escritos = drafts.filter((draft) => draft.escrito && draft.rowsPrep)
+    // (Primero la noche especial de cada fecha: así lo que sale ese día de noche cuenta como ya salido para el resto del viaje.)
+    for (const draft of escritos) draft.rowsPrep = nocheEspecial(draft.rowsPrep, draft.hoursPrep ?? hoursOf(draft.day), draft.log)
     // Lo que ya sale en el viaje, de día (cualquier fila con ese lugar, también «de camino», y lo que enseña el tour) y de noche.
     const diaViaje = (name, salvo = null) => tourCovers.has(name) || escritos.some((draft) => draft !== salvo && draft.rowsPrep.some((row) => row.lugar === name)) || drafts.some((draft) => !draft.escrito && [...(draft.manana ?? []), ...(draft.tarde ?? [])].some((stop) => stop.lugar === name))
     const nocheViaje = (noche, salvo = null) => escritos.some((draft) => draft !== salvo && draft.rowsPrep.some((row) => row.tipo === 'noche' && row.noche === noche))
@@ -2070,6 +2165,43 @@ export function planWrittenTrip(args) {
       }
       void hecho
     }
+    // Medio día de tarde de 1,5 días: si el día entero no ha llevado Trevi ni la Plaza de España de noche, la noche acaba con Trevi y después la Plaza de España (10 min andando).
+    for (const draft of escritos) {
+      if (!(draft.id === 'D0-medio' && String(draft.tablaVersion).startsWith('tarde'))) continue
+      const trevi = draft.rowsPrep.find((row) => row.tipo === 'noche' && row.noche === 'Fontana de Trevi (noche)')
+      if (!trevi || nocheViaje('Plaza de España (noche)', draft) || draft.rowsPrep.some((row) => row.tipo === 'noche' && row.noche === 'Plaza de España (noche)')) continue
+      const rows = draft.rowsPrep
+      const i = rows.indexOf(trevi)
+      const nueva = { id: 'noche_plaza_de_espana_noche', tipo: 'noche', noche: 'Plaza de España (noche)', hora: filaHHMM(filaMin(trevi.hora) + trevi.min + 10), min: NOCHE_MIN['Plaza de España (noche)'], como_documento: '', texto_documento: 'Plaza de España (noche)' }
+      const lista = [...rows.slice(0, i + 1), nueva, ...rows.slice(i + 1)]
+      anotarCambios(rows, lista, 'la Plaza de España no ha salido de noche en el viaje: la noche del medio día de tarde acaba con Trevi y la Plaza de España (10 min andando)', draft.log)
+      draft.rowsPrep = lista
+      draft.applied.push('noche:Plaza de España (noche)')
+    }
+    // Ninguna nocturna se repite en el viaje: la repetida pasa a la que haya salido menos y quede más cerca de la cena (la que el día escrito prefiera primero, `noche_si_repetida`); si no queda ninguna, sin nocturna.
+    const NOCHES_POSIBLES = ['Fontana de Trevi (noche)', 'Plaza de España (noche)', 'Coliseo (noche)', 'Piazza Navona (noche)', 'Panteón (noche)', 'Trastevere de noche', 'Foro Romano desde el Campidoglio (noche)', "El Puente y el Castillo de Sant'Angelo (noche)"]
+    const vistas = new Set()
+    for (const draft of escritos) {
+      for (const row of [...draft.rowsPrep].filter((item) => item.tipo === 'noche')) {
+        if (!vistas.has(row.noche)) { vistas.add(row.noche); continue }
+        const rows = draft.rowsPrep
+        const cena = rows.find((item) => item.tipo === 'cena')
+        const dentro = new Set(rows.filter((item) => item.tipo === 'noche').map((item) => item.noche))
+        const distancia = (name) => (cena && catalogueByName.get(name)?.coordinates ? straightLineMeters(rowCoords(cena) ?? catalogueByName.get(name).coordinates, catalogueByName.get(name).coordinates) : 0)
+        const libres = NOCHES_POSIBLES.filter((name) => catalogueByName.has(name) && !vistas.has(name) && !dentro.has(name))
+        const preferida = (written.days[draft.id]?.noche_si_repetida ?? []).find((name) => libres.includes(name))
+        const elegida = preferida ?? [...libres].sort((x, y) => Number(diaViaje(lugarDeNoche[x] ?? '', draft)) - Number(diaViaje(lugarDeNoche[y] ?? '', draft)) || distancia(x) - distancia(y))[0]
+        if (elegida) {
+          cambiarNoche(draft, row, elegida, `${row.noche} ya salió de noche en el viaje: la nocturna pasa a ${elegida}`)
+          vistas.add(elegida)
+        } else {
+          const i = rows.indexOf(row)
+          const lista = rows.filter((item, k) => item !== row && !(k === i - 1 && item.tipo === 'traslado'))
+          anotarCambios(rows, lista, `${row.noche} ya salió de noche en el viaje y no queda otra nocturna: sin nocturna`, draft.log)
+          draft.rowsPrep = lista
+        }
+      }
+    }
   }
 
   const planEscritoDay = (draft, skeletonDay) => {
@@ -2091,20 +2223,8 @@ export function planWrittenTrip(args) {
       }
     }
     // Noche especial de la fecha (Nochebuena: solo la Fontana de Trevi; Nochevieja: una sola): sobran las demás nocturnas del día.
-    {
-      const especial = destData.destination_config?.noche_especial?.[String(hours.dateIso ?? '').slice(5)] ?? null
-      if (especial) {
-        const noches = rows.filter((row) => row.tipo === 'noche')
-        const quedan = especial.noche ? noches.filter((row) => row.noche === especial.noche).slice(0, especial.maximo ?? 1) : noches.slice(0, especial.maximo ?? 1)
-        const sobran = noches.filter((row) => !quedan.includes(row))
-        if (sobran.length > 0) {
-          // (Si el día no trae esa noche, la primera nocturna del día pasa a ser la de la fecha.)
-          const nuevas = quedan.length === 0 && especial.noche ? rows.filter((row) => !sobran.slice(1).includes(row)).map((row) => (row === sobran[0] ? { ...row, noche: especial.noche, id: `noche_${especial.noche}` } : row)) : rows.filter((row) => !sobran.includes(row))
-          anotarCambios(rows, nuevas, especial.noche ? `noche especial: ${especial.noche}` : 'noche especial: una sola', log)
-          rows = nuevas
-        }
-      }
-    }
+    // (Ya aplicada al preparar el viaje —para que las otras nocturnas del viaje no repitan la de esa noche—; aquí no cambia nada más.)
+    rows = nocheEspecial(rows, hours, log)
     // Avisos del registro (la revisión y la prueba los cuentan): un colchón de más de 2 horas, y una cena que pasa de las 22:00.
     for (const row of rows) {
       if (row.colchon && row.min > 120) log.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar ?? null, que: 'aviso', causa: `colchón de ${row.min} min (más de 2 horas)` })
@@ -2218,6 +2338,7 @@ export function planWrittenTrip(args) {
     const index = cityDays.indexOf(skeletonDay)
     if (index >= 0 && drafts[index].escrito) prepararEscrito(drafts[index], skeletonDay)
   }
+  aplicarDentroUnaVez()
   aplicarNochesDelViaje()
   for (const skeletonDay of skeleton) {
     const index = cityDays.indexOf(skeletonDay)
