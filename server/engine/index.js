@@ -494,6 +494,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     const shown = (row) => (day.stops ?? []).some((stop) => [stop.display_title, stop.night_view_title, stop.name, stop.place_name].some((title) => title && String(title).replace(/\s*\(noche\)$/, '') === String(row.titulo ?? row.noche ?? '').replace(/\s*\(noche\)$/, '')))
     const nightsLost = (tripDay.escritoRows ?? []).filter((row) => row.tipo === 'noche' && !shown(row)).map((row) => ({ id: row.id, lugar: row.noche, que: 'quitada', causa: row.solo_meses && !row.solo_meses.includes(Number(String(tripDay.hours?.dateIso ?? '').slice(5, 7))) ? 'fuera de temporada (solo en julio y agosto)' : 'hora límite de la noche' }))
     day.engine_log = [...tripDay.escritoLog, ...nightsLost]
+    // Las filas finales del día (tipo, hora, minutos, cómo y si es colchón): las lee la revisión (scripts/destino/viajes25Motor.mjs).
+    day.escrito_rows = (tripDay.escritoRows ?? []).map((row) => ({ id: row.id, tipo: row.tipo, lugar: row.lugar ?? row.restaurante ?? row.noche ?? null, titulo: row.titulo ?? null, hora: row.hora, min: row.min, modo: row.modo ?? null, colchon: row.colchon === true, texto_documento: row.texto_documento ?? null }))
     day.trip_engine_log = (trip.days ?? []).flatMap((other) => other.escritoLog ?? [])
   }
   // El título no promete un atardecer que ese día no hay (el Janículo llega ya de noche): "… y Trastevere", sin "al atardecer".

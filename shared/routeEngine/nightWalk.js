@@ -303,7 +303,7 @@ export function timeChain(entries, start, maxMinutes = Infinity, lastStart = NIG
     // REGLAS_RUTAS 41: una nocturna que acabaría después de la hora límite de la noche (`noche_limite`) se quita; no se empuja ni se recorta otra cosa.
     // (Un día escrito: hasta 5 min de más sobre la hora límite, que es como están escritas las tablas.)
     // (Tanda 2: de mayo a septiembre y con el sol después de las 19:45, la nocturna de un día escrito entra si EMPIEZA a las 23:45 como tarde: `startLimit`.)
-    if (Number.isFinite(entry.fixedStart) ? (startLimit != null ? at > startLimit : at + duration > lastStart + 5) : Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
+    if (Number.isFinite(entry.fixedStart) ? (startLimit != null ? at > startLimit + 5 : at + duration > lastStart + 5) : Math.round(at / 10) * 10 + duration > lastStart) break // (con la hora como se enseña: de 10 en 10)
     timed.push({ entry, start: at, duration })
     cursor = at + duration
   }

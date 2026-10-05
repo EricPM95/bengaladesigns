@@ -715,7 +715,8 @@
           "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
           "tipo": "paseo",
           "lugar": "Via Condotti",
-          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
+          "colchon_minimo": 30
         },
         {
           "id": "cena_il_gabriello",

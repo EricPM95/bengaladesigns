@@ -1957,7 +1957,9 @@ export function planWrittenTrip(args) {
       rows = recortadas
     }
     {
-      const ajustadas = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk })
+      // (El medio día A de invierno del Tridente trae su colchón de los Jardines del Pincio para cuando el sol se pone más tarde; el de Via Condotti no baja de 30 min.)
+      const jardines = draft.tablaVersion === 'tarde_invierno' ? written.days['DT-medio']?.versiones?.tarde?.B?.find((row) => row.colchon && row.lugar === 'Jardines del Pincio') : null
+      const ajustadas = ajustarAtardecer(rows, { sunset: hours.sunset, walk: rowWalk, colchonInsertable: jardines ? marcarFilas([{ ...jardines }])[0] : null, cenaDesde: dinnerHoursOf(draft).desde })
       anotarCambios(rows, ajustadas, 'atardecer', log)
       rows = ajustadas
     }

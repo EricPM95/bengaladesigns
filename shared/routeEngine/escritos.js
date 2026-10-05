@@ -60,7 +60,7 @@ export function hueco(prev, next, walk) {
  * del día (`orden`, de lo primero que se quita a lo último) y, si aun así no cabe, se avisa en `problemas`.
  * @returns {{ rows: object[], quitadas: object[], problemas: string[] }}
  */
-export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = () => false, quitarImprescindibles = false, soloEmpujar = false }) {
+export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = () => false, quitarImprescindibles = false, soloEmpujar = false, colchonProtegido = null }) {
   let lista = rows.map((row) => ({ ...row }))
   const quitadas = []
   const problemas = []
@@ -108,8 +108,9 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
     const desdeAtras = Math.max(0, desde - 1)
     for (let j = fallo.i - 1; j >= desdeAtras && falta > 0; j--) {
       const row = lista[j]
-      if (!row.colchon) continue
-      const libre = row.min - MARGENES.COLCHON_MINIMO
+      // (El colchón que acaba de alargarse para llegar con el sol no se vuelve a acortar: si luego no cabe la cena, se retrasa la cena.)
+      if (!row.colchon || (colchonProtegido != null && row.id === colchonProtegido)) continue
+      const libre = row.min - (row.colchon_minimo ?? MARGENES.COLCHON_MINIMO)
       if (libre <= 0) continue
       const quita = Math.min(libre, up5(falta))
       row.min -= quita
@@ -365,7 +366,7 @@ export function resolverTaxis(rows, walk) {
  * El mirador «al atardecer»: el motor lo ajusta, y el colchón de antes, para llegar con el sol, sin esperar nunca más de 30 min.
  * Llegar antes: si el sol tarda 30 min o menos, espera; si tarda más, va cuando llega. Llegar tarde: se acorta el colchón de antes.
  */
-export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30 }) {
+export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30, colchonInsertable = null, cenaDesde = null }) {
   if (sunset == null) return rows
   const k = rows.findIndex((row) => row.modo === 'atardecer' && row.tipo === 'parada')
   if (k < 1) return rows
@@ -379,7 +380,33 @@ export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30
       if (!lista[j].colchon) continue
       lista[j].min += target - llegada
       lista[k].hora = toHHMM(target)
-      return correrHoras(lista, { desde: j + 1, walk }).rows
+      const idMirador = lista[k].id
+      let resultado = correrHoras(lista, { desde: j + 1, walk, colchonProtegido: lista[j].id })
+      // (Las horas de la tabla no siempre suman con los márgenes: se ajusta el colchón hasta que el mirador llega a su hora, como mucho dos veces.)
+      for (let vuelta = 0; vuelta < 2; vuelta++) {
+        const horaMirador = toMin(resultado.rows.find((row) => row.id === idMirador)?.hora ?? toHHMM(target))
+        if (horaMirador === target) break
+        const corregida = resultado.rows.map((row) => ({ ...row }))
+        const iColchon = corregida.findIndex((row) => row.id === lista[j].id)
+        const nuevoMin = corregida[iColchon].min + (target - horaMirador)
+        if (nuevoMin < MARGENES.COLCHON_MINIMO) break
+        corregida[iColchon].min = nuevoMin
+        resultado = correrHoras(corregida, { desde: iColchon + 1, walk, colchonProtegido: lista[j].id })
+      }
+      return resultado.rows
+    }
+    // Sin colchón de antes, pero con uno que el documento manda meter (la tarde A de invierno del Tridente: «el motor mete Pasea y piérdete por los Jardines del Pincio entre Trinità y el Pincio»):
+    // se mete con lo justo para llegar con el sol, y el colchón de después se acorta (hasta su mínimo).
+    if (colchonInsertable && target - llegada >= MARGENES.COLCHON_MINIMO) {
+      const probar = (min) => {
+        const copia = lista.map((row) => ({ ...row }))
+        copia.splice(k, 0, { ...colchonInsertable, hora: copia[k].hora, min })
+        return correrHoras(copia, { desde: k, walk, colchonProtegido: colchonInsertable.id })
+      }
+      let intento = probar(MARGENES.COLCHON_MINIMO)
+      const horaDelSol = (resultado) => toMin(resultado.rows.find((row) => row.modo === 'atardecer' && row.tipo === 'parada').hora)
+      if (horaDelSol(intento) < target) intento = probar(MARGENES.COLCHON_MINIMO + up5(target - horaDelSol(intento)))
+      if (horaDelSol(intento) <= target + 5 && intento.problemas.length === 0) return intento.rows
     }
     if (target - llegada > maxEspera) return rows
     lista[k].hora = toHHMM(target)
@@ -398,10 +425,32 @@ export function ajustarAtardecer(rows, { sunset, walk, lead = 25, maxEspera = 30
       falta -= quita
       primera = Math.min(primera, j + 1)
     }
+    // Sin colchón que acortar, el paseo de antes (un barrio) se acorta hasta el 75 % de lo escrito, nunca por debajo de 20 min (decisión prudente de la tanda 2, apuntada en PREGUNTAS_TANDA2).
+    for (let j = k - 1; j > Math.max(0, iComida) && falta > 0; j--) {
+      if (lista[j].tipo !== 'paseo' || lista[j].colchon) continue
+      const suelo = Math.max(20, up5(Math.ceil(lista[j].min * 0.75)))
+      const libre = lista[j].min - suelo
+      if (libre <= 0) continue
+      const quita = Math.min(libre, up5(falta))
+      lista[j].min -= quita
+      falta -= quita
+      primera = Math.min(primera, j + 1)
+    }
     const movido = llegada - target - falta
     if (movido <= 0) return rows
     lista[k].hora = toHHMM(llegada - movido)
-    return correrHoras(lista, { desde: primera, walk }).rows
+    let corridas = correrHoras(lista, { desde: primera, walk }).rows
+    // Si el sol se pone antes de lo que la tabla da por hecho, la cena sigue al mirador: se adelanta lo mismo, sin bajar de la hora más temprana de su versión (`cena_horas`) ni llegar antes de que acabe lo de antes; y la noche la sigue.
+    const c = corridas.findIndex((row, index) => index > k && row.tipo === 'cena' && esAncla(row))
+    if (c > 0 && cenaDesde != null) {
+      const minima = Math.max(cenaDesde, up5(finDe(corridas[c - 1]) + hueco(corridas[c - 1], corridas[c], walk)))
+      const nueva = Math.max(minima, toMin(corridas[c].hora) - movido)
+      if (nueva < toMin(corridas[c].hora)) {
+        corridas = corridas.map((row, index) => (index === c ? { ...row, hora: toHHMM(nueva) } : { ...row }))
+        corridas = correrHoras(corridas, { desde: c + 1, walk }).rows
+      }
+    }
+    return corridas
   }
   return rows
 }
@@ -485,7 +534,8 @@ export function anotarCambios(antes, despues, causa, log) {
     if (previa.min !== row.min) dif.push('min')
     if ((previa.modo ?? null) !== (row.modo ?? null)) dif.push('modo')
     if ((previa.titulo ?? null) !== (row.titulo ?? null)) dif.push('titulo')
-    if (dif.length) log.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: dif.join('+'), causa })
+    // (`de` y `a`: cómo era y cómo queda, para que la revisión lo cuente con las horas.)
+    if (dif.length) log.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: dif.join('+'), causa, de: { hora: previa.hora, min: previa.min, modo: previa.modo ?? null }, a: { hora: row.hora, min: row.min, modo: row.modo ?? null } })
   }
   for (const row of antes) if (!ahora.has(row.id)) log.push({ id: row.id, lugar: nombre(row), sitio: row.lugar ?? null, que: 'quitada', causa })
 }

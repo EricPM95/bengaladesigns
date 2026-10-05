@@ -51,6 +51,9 @@ export function anadirExtras(out, { T }) {
   // Si no cabe todo, se quita por este orden (Roma en un día; sin pool nunca se quitan San Pedro, el Panteón, Trevi ni el Coliseo).
   out['D0'].orden_quitar = ['Via dei Fori Imperiali', 'Via della Conciliazione', 'Foro Romano y Palatino', 'Plaza del Campidoglio', 'Altar de la Patria']
 
+  // La tarde A de invierno del Tridente: el colchón de Via Condotti no baja de 30 min (el documento: «acorta el colchón del Tridente (mínimo 30 min)»).
+  for (const rows of Object.values(out['DT-medio'].versiones.tarde_invierno)) for (const row of rows) if (row.colchon && /Via Condotti/.test(row.titulo ?? row.texto_documento ?? '')) row.colchon_minimo = 30
+
   // ── D1: el Día de la Roma antigua (2 días) ──────────────────────────────────────────────────
   // (Los extras con tabla escrita para las tardes A y B: en C, igual; en D, hasta San Luigi y luego la tarde D desde Piazza Navona.)
   const tablasD1 = (rows) => ({ AB: rows, C: copia(rows), D: [...hastaIncluido(rows, 'Iglesia de San Luigi dei Francesi'), ...copia(desdeLugar(d1.D, 'Piazza Navona'))] })
