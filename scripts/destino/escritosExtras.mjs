@@ -7,7 +7,7 @@
 
 const CAPITOLINOS = {
   franja: 'manana',
-  cuando: { sin_dias: ['D5'] },
+  cuando: { sin_dias: ['D6'] },
   acciones: [
     { op: 'insertar', despues: 'Plaza del Campidoglio', fila: { tipo: 'parada', lugar: 'Museos Capitolinos', min: 75, modo: 'dentro', guia: true } },
     { op: 'cambiar', fila: 'Altar de la Patria', modo: 'camino', min: 5 },
@@ -15,17 +15,17 @@ const CAPITOLINOS = {
   ],
   despues: [{ op: 'fuera_si_tarde', fila: 'Iglesia de San Luigi dei Francesi', desde: '18:00' }],
 }
-const BOCA = (despues) => ({ franja: 'tarde', acciones: [{ op: 'insertar', despues, fila: { tipo: 'parada', lugar: 'Boca de la Verdad', min: 15, modo: null } }] })
+const BOCA = (despues) => ({ franja: 'tarde', cuando: { sin_dias: ['D5'] }, acciones: [{ op: 'insertar', despues, fila: { tipo: 'parada', lugar: 'Boca de la Verdad', min: 15, modo: null } }] })
 const TERMAS = (quitar) => ({
   franja: 'tarde',
-  cuando: { sin_dias: ['D5', 'D5C'] },
+  cuando: { sin_dias: ['D5', 'DA-medio'] },
   acciones: [
     { op: 'quitar', fila: quitar },
     { op: 'insertar', despues: 'tipo:comida', fila: [{ tipo: 'traslado', traslado: { como: 'un taxi', min: 'auto' } }, { tipo: 'parada', lugar: 'Termas de Caracalla', min: 60, modo: 'dentro' }, { tipo: 'traslado', traslado: { como: 'un taxi', min: 'auto' } }] },
   ],
 })
-const CUPULA = { franja: 'manana', acciones: [{ op: 'insertar', despues: 'Basílica de San Pedro', fila: { tipo: 'parada', lugar: 'Cúpula de San Pedro', min: 45, modo: 'dentro' } }] }
-const CASTILLO_DENTRO = { franja: 'tarde', acciones: [{ op: 'cambiar', fila: "Castillo de Sant'Angelo", modo: 'dentro', min: 60 }] }
+const CUPULA = { franja: 'manana', cuando: { sin_dias: ['D6'] }, acciones: [{ op: 'insertar', despues: 'Basílica de San Pedro', fila: { tipo: 'parada', lugar: 'Cúpula de San Pedro', min: 45, modo: 'dentro' } }] }
+const CASTILLO_DENTRO = { franja: 'tarde', cuando: { sin_dias: ['D6'] }, acciones: [{ op: 'cambiar', fila: "Castillo de Sant'Angelo", modo: 'dentro', min: 60 }] }
 const MERCADILLOS = { fechas: { desde: '12-08', hasta: '01-06' } }
 const BAMBINO = { op: 'insertar', despues: 'Plaza del Campidoglio', fila: { tipo: 'parada', lugar: 'Santo Bambino de Aracoeli', min: 5, modo: 'camino' } }
 
@@ -57,19 +57,19 @@ export function anadirExtras(out, { T }) {
   // ── D1: el Día de la Roma antigua (2 días) ──────────────────────────────────────────────────
   // (Los extras con tabla escrita para las tardes A y B: en C, igual; en D, hasta San Luigi y luego la tarde D desde Piazza Navona.)
   const tablasD1 = (rows) => ({ AB: rows, C: copia(rows), D: [...hastaIncluido(rows, 'Iglesia de San Luigi dei Francesi'), ...copia(desdeLugar(d1.D, 'Piazza Navona'))] })
-  const galeriaD1 = T(15)
+  const galeriaD1 = T(16)
   const galeriaC = conModo(galeriaD1, 'Terraza del Pincio', 'atardecer')
   // (Tarde D: igual, con la cena a las 20:30 y solo Trevi de noche: la Plaza de España pasaría de las 23:00.)
   const galeriaD = galeriaC.filter((row) => row.noche !== 'Plaza de España (noche)').map((row) => (row.tipo === 'cena' ? { ...row, hora: '20:30' } : row))
-  const parque = T(18)
+  const parque = T(19)
   out['D1'].pool = {
     'Museos Capitolinos': CAPITOLINOS,
     'Termas de Caracalla': TERMAS(['Barrio Judío', 'Fuente de las Tortugas', 'Largo di Torre Argentina']),
     'Galería Borghese': { franja: 'tarde', cuando: { sin_dias: ['D4'] }, acciones: [{ op: 'tabla', desde: 'comida', tablas: { AB: galeriaD1, C: galeriaC, D: galeriaD } }] },
     'Boca de la Verdad': BOCA('Barrio Judío'),
-    'Ojo de la Cerradura del Aventino': { franja: 'tarde', acciones: [{ op: 'tabla', desde: 'comida', tablas: tablasD1(T(16)) }] },
-    'Basílica de San Juan de Letrán': { franja: 'dia', cuando: { sin_dias: ['D4M', 'D5C'] }, acciones: [{ op: 'tabla', desde: 'dia', tablas: tablasD1(T(17)) }] },
-    'Parque de Villa Borghese': { franja: 'tarde', solo_en: ['C', 'D'], acciones: [{ op: 'tabla', desde: 'comida', tablas: { C: parque, D: copia(parque) } }] },
+    'Ojo de la Cerradura del Aventino': { franja: 'tarde', cuando: { sin_dias: ['D5', 'DA-medio'] }, acciones: [{ op: 'tabla', desde: 'comida', tablas: tablasD1(T(17)) }] },
+    'Basílica de San Juan de Letrán': { franja: 'dia', cuando: { sin_dias: ['D5'] }, acciones: [{ op: 'tabla', desde: 'dia', tablas: tablasD1(T(18)) }] },
+    'Parque de Villa Borghese': { franja: 'tarde', cuando: { sin_dias: ['D4'] }, solo_en: ['C', 'D'], acciones: [{ op: 'tabla', desde: 'comida', tablas: { C: parque, D: copia(parque) } }] },
   }
   out['D1'].experiencias = {
     arte_museos: CAPITOLINOS,
@@ -125,9 +125,9 @@ export function anadirExtras(out, { T }) {
     'Boca de la Verdad': BOCA('Isla Tiberina'),
     'Museos Capitolinos': CAPITOLINOS,
     'Termas de Caracalla': TERMAS(['Barrio Judío']),
-    'Galería Borghese': { franja: 'tarde', acciones: [{ op: 'tabla', desde: 'comida', tablas: { A: T(31), B: T(31), C: T(31), D: T(31) } }] },
-    'Ojo de la Cerradura del Aventino': { franja: 'tarde', acciones: [{ op: 'tabla', desde: 'comida', tablas: tablasFT(T(29)) }] },
-    'Basílica de San Juan de Letrán': { franja: 'dia', acciones: [{ op: 'tabla', desde: 'dia', tablas: tablasFT(T(30)) }] },
+    'Galería Borghese': { franja: 'tarde', cuando: { sin_dias: ['D4'] }, acciones: [{ op: 'tabla', desde: 'comida', tablas: { A: T(32), B: T(32), C: T(32), D: T(32) } }] },
+    'Ojo de la Cerradura del Aventino': { franja: 'tarde', cuando: { sin_dias: ['D5', 'DA-medio'] }, acciones: [{ op: 'tabla', desde: 'comida', tablas: tablasFT(T(30)) }] },
+    'Basílica de San Juan de Letrán': { franja: 'dia', cuando: { sin_dias: ['D5'] }, acciones: [{ op: 'tabla', desde: 'dia', tablas: tablasFT(T(31)) }] },
   }
   out['D1-FT'].experiencias = {
     arte_museos: CAPITOLINOS,
@@ -138,23 +138,118 @@ export function anadirExtras(out, { T }) {
   }
 
   // ── DT-medio: medio día del Tridente y el Pincio (2,5 días) ─────────────────────────────────────
-  const galeriaTM = T(38)
-  const galeriaTAB = T(39)
-  const galeriaTCD = T(40)
-  const parqueTB = T(41)
+  const galeriaTM = T(39)
+  const galeriaTAB = T(40)
+  const galeriaTCD = T(41)
+  const parqueTB = T(42)
   out['DT-medio'].pool = {
     // (Va en el medio día aunque el Día de la Roma antigua también la lleve: lo dice el documento, «Pool» de este día. `prioridad`: gana al otro sitio.)
-    'Galería Borghese': { prioridad: 1, acciones: [{ op: 'tabla', desde: 'dia', tablas: { manana: galeriaTM, A: galeriaTAB, B: copia(galeriaTAB), C: galeriaTCD, D: copia(galeriaTCD) } }] },
+    'Galería Borghese': { prioridad: 1, cuando: { sin_dias: ['D4'] }, acciones: [{ op: 'tabla', desde: 'dia', tablas: { manana: galeriaTM, A: galeriaTAB, B: copia(galeriaTAB), C: galeriaTCD, D: copia(galeriaTCD) } }] },
     // (En C y D el parque ya va como colchón: «ya incluido»; en A no hay luz: no entra.)
-    'Parque de Villa Borghese': { prioridad: 1, solo_en: ['B'], incluido_en: ['C', 'D'], acciones: [{ op: 'tabla', desde: 'dia', tablas: { B: parqueTB } }] },
+    'Parque de Villa Borghese': { prioridad: 1, cuando: { sin_dias: ['D4'] }, solo_en: ['B'], incluido_en: ['C', 'D'], acciones: [{ op: 'tabla', desde: 'dia', tablas: { B: parqueTB } }] },
   }
   out['DT-medio'].experiencias = {
     naturaleza_vistas: { solo_en: ['B'], acciones: [{ op: 'tabla', desde: 'dia', tablas: { B: copia(parqueTB) } }] },
     mercadillos_navidenos: { ...MERCADILLOS, acciones: [{ op: 'cambiar', fila: 'Pasea y piérdete por Via Condotti y el Tridente iluminados', lugar: 'Luces de Navidad del Tridente', titulo: 'Luces de Navidad del Tridente', texto: null }] },
   }
 
+  // ── Tanda 3: D4, DA-medio, D5, D6 y D7 ─────────────────────────────────────────────────────────
+  const filaDe = (dia, re, version = 'normal', letra = null) => {
+    const grupo = out[dia].versiones[version]
+    const rows = letra ? grupo[letra] : Object.values(grupo)[0]
+    return rows.find((row) => re.test(row.titulo ?? row.texto_documento ?? row.lugar ?? ''))
+  }
+  // Lo que le va mal a cada día en una fecha (orden de los días).
+  out['D4'].fechas_malas = { cerrado: ['Galería Borghese'] }
+  out['D5'].fechas_malas = { cerrado: ['Termas de Caracalla'] }
+  out['D6'].fechas_malas = { dias_semana: ['miercoles'], cerrado: ["Castillo de Sant'Angelo"] }
+  // (El documento no lo dice, pero la Villa Farnesina cierra el domingo y las catacumbas el miércoles: si se puede cambiar, mejor otro día. Provisional.)
+  out['D7'].fechas_malas = { cerrado: ['Villa Farnesina', 'Catacumbas de San Calixto'] }
+  // Si la nocturna del día ya salió en el viaje: la que el documento prefiere (si no, la más cercana a la cena que no haya salido).
+  out['D4'].noche_si_repetida = ['Fontana de Trevi (noche)']
+  out['D5'].noche_si_repetida = ['Trastevere de noche']
+  // Los cierres que el documento escribe para un lugar del día.
+  const colchonVB = filaDe('D4', /Villa Borghese: el lago/)
+  const relojVB = filaDe('D4', /Villa Borghese hasta el Pincio/)
+  out['D4'].cierres = {
+    'Galería Borghese': {
+      causa: 'la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua',
+      no_incluido: true,
+      acciones: [
+        { op: 'quitar', fila: 'Galería Borghese' },
+        { op: 'cambiar', fila: colchonVB.titulo, min: 120 },
+        { op: 'cambiar', fila: relojVB.titulo, hora: '11:35' },
+      ],
+    },
+  }
+  out['D6'].cierres = {
+    "Castillo de Sant'Angelo": {
+      causa: "el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio»",
+      acciones: [
+        { op: 'cambiar', fila: "Castillo de Sant'Angelo", modo: 'fuera', min: 15, titulo: null, guia: false },
+        { op: 'insertar', despues: "Castillo de Sant'Angelo", fila: { id: 'paseo_pasea_y_pierdete_por_borgo_pio_lunes', tipo: 'paseo', lugar: 'Borgo Pio', titulo: 'Pasea y piérdete por Borgo Pio', min: 70, colchon: true, texto: 'La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.', como_documento: '', texto_documento: 'Pasea y piérdete por Borgo Pio (colchón)' } },
+      ],
+    },
+    'Cúpula de San Pedro': {
+      dia_semana: 'miercoles',
+      causa: 'miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo',
+      acciones: [
+        { op: 'quitar', fila: ['Cúpula de San Pedro', 'Plaza de San Pedro', 'Via della Conciliazione'] },
+        { op: 'cambiar', fila: "Castillo de Sant'Angelo", hora: '09:00' },
+      ],
+    },
+  }
+  const viaAppiaBici = filaDe('D7', /Recorre la Vía Appia/, 'normal', 'AB')
+  out['D7'].cierres = {
+    'Catacumbas de San Calixto': {
+      causa: 'las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15',
+      no_incluido: true,
+      acciones: [{ op: 'quitar', fila: 'Catacumbas de San Calixto' }, { op: 'cambiar', fila: viaAppiaBici.titulo, hora: '14:15' }],
+    },
+    'Villa Farnesina': {
+      causa: 'la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere',
+      no_incluido: true,
+      acciones: [{ op: 'quitar', fila: 'Villa Farnesina' }, { op: 'cambiar', fila: 'Iglesia de Santa Maria in Trastevere', hora: '10:00' }],
+    },
+  }
+  // Pool: ninguno de estos días tiene sitio para extras (los extras van en su día escrito).
+  out['D4'].pool = {}
+  out['DA-medio'].pool = {}
+  // (La Domus Aurea —solo con reserva, de viernes a domingo— «iría por la mañana, entre San Pietro in Vincoli y San Clemente», pero el documento no trae la tabla: pendiente, a «No incluido».)
+  out['D5'].pool = { 'Domus Aurea': { pendiente: 'el documento dice dónde iría (la mañana del D5, entre San Pietro in Vincoli y San Clemente, con reserva y de viernes a domingo) pero no trae la tabla' } }
+  out['D6'].pool = {}
+  out['D7'].pool = {}
+  // Experiencias.
+  out['D4'].experiencias = {
+    naturaleza_vistas: {
+      acciones: [{ op: 'cambiar', fila: colchonVB.titulo, min: 60 }, { op: 'cambiar', fila: 'Fontana de Trevi', hora: '07:15' }],
+      // «En A, el Pincio se hace al atardecer en vez de Trinità.»
+      por_version: { A: [{ op: 'cambiar', fila: 'Trinità dei Monti', lugar: 'Terraza del Pincio', titulo: 'Terraza del Pincio, al atardecer', modo: 'atardecer', min: 30 }] },
+    },
+    mercadillos_navidenos: { ...MERCADILLOS, acciones: [{ op: 'cambiar', fila: 'colchon:Tridente', lugar: 'Luces de Navidad del Tridente', titulo: 'Luces de Navidad del Tridente', texto: null }] },
+  }
+  out['DA-medio'].experiencias = {
+    barrios_sabores: { acciones: [{ op: 'insertar', antes: 'tipo:comida', fila: { tipo: 'paseo', lugar: 'Mercado de Testaccio', titulo: 'Pasea y piérdete por el Mercado de Testaccio', min: 30 } }, { op: 'cambiar', fila: 'tipo:comida', min: 75 }] },
+    naturaleza_vistas: { acciones: [{ op: 'cambiar', fila: 'Jardín de los Naranjos', min: 45 }] },
+  }
+  const paseoTestaccio = { tipo: 'paseo', lugar: 'Testaccio', titulo: 'Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero', min: 30, colchon: true, texto: 'La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.' }
+  out['D5'].experiencias = {
+    barrios_sabores: {
+      acciones: [{ op: 'cambiar', fila: 'colchon:Monti', min: 60 }],
+      // (La tarde A ya lleva el paseo por Testaccio antes de la cena; en las demás se mete.)
+      por_version: Object.fromEntries(['B', 'C', 'D'].map((letra) => [letra, [{ op: 'insertar', antes: 'tipo:cena', fila: { ...paseoTestaccio } }]])),
+    },
+    naturaleza_vistas: { acciones: [{ op: 'cambiar', fila: 'Jardín de los Naranjos', min: 45 }] },
+    mercadillos_navidenos: { ...MERCADILLOS, acciones: [{ op: 'cambiar', fila: 'Basílica de Santa María la Mayor', titulo: 'Santa Maria Maggiore y su belén (la basílica del pesebre)' }] },
+  }
+  out['D6'].experiencias = {
+    arte_museos: { acciones: [{ op: 'cambiar', fila: 'Museos Capitolinos', min: 150 }] },
+    mercadillos_navidenos: { ...MERCADILLOS, acciones: [{ op: 'cambiar', fila: 'Santo Bambino de Aracoeli', titulo: 'Santa Maria in Aracoeli y el Santo Bambino' }] },
+  }
+  out['D7'].experiencias = {}
+
   // ── DM-medio: medio día de Monti ────────────────────────────────────────────────────────────
-  out['DM-medio'].pool = { 'Basílica de San Juan de Letrán': { prioridad: 1, acciones: [{ op: 'tabla', desde: 'dia', tablas: { manana: T(43) } }] } }
+  out['DM-medio'].pool = { 'Basílica de San Juan de Letrán': { prioridad: 1, acciones: [{ op: 'tabla', desde: 'dia', tablas: { manana: T(44) } }] } }
   out['DM-medio'].experiencias = {
     barrios_sabores: { acciones: [{ op: 'cambiar', fila: 'Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti)', min: 75 }] },
   }

@@ -42,13 +42,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -242,14 +243,15 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
           "modo": null,
-          "derivada": true
+          "derivada": true,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -455,13 +457,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -678,13 +681,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -792,13 +796,14 @@
         },
         {
           "id": "noche_foro_romano_desde_el_campidoglio_noche",
-          "hora": "21:45",
+          "hora": "21:50",
           "min": 25,
           "texto_documento": "El Foro Romano desde el Campidoglio (noche)",
           "como_documento": "de noche",
           "nota": "noche",
           "tipo": "noche",
-          "noche": "Foro Romano desde el Campidoglio (noche)"
+          "noche": "Foro Romano desde el Campidoglio (noche)",
+          "hora_corregida": "distancia: lo escrito era 21:45"
         }
       ]
     },
@@ -840,13 +845,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -951,7 +957,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_centro_historico_hacia_la_plaza_de_espana",
-          "hora": "17:40",
+          "hora": "17:45",
           "min": 10,
           "texto_documento": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España (colchón)",
           "como_documento": "",
@@ -959,7 +965,8 @@
           "texto": "La Piazza di Pietra con el Templo de Adriano, la Piazza Colonna con la Columna de Marco Aurelio y Via Frattina.",
           "tipo": "paseo",
           "lugar": "Plaza Colonna",
-          "titulo": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España"
+          "titulo": "Pasea y piérdete por el Centro Histórico, hacia la Plaza de España",
+          "hora_corregida": "distancia: lo escrito era 17:40"
         },
         {
           "id": "tour_free_tour_centro_historico",
@@ -998,7 +1005,7 @@
       "franja": "manana",
       "cuando": {
         "sin_dias": [
-          "D5"
+          "D6"
         ]
       },
       "acciones": [
@@ -1038,7 +1045,7 @@
       "cuando": {
         "sin_dias": [
           "D5",
-          "D5C"
+          "DA-medio"
         ]
       },
       "acciones": [
@@ -1171,20 +1178,22 @@
                 "zona": "en el Tridente"
               },
               {
-                "hora": "22:00",
+                "hora": "22:05",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:00"
               },
               {
-                "hora": "22:40",
+                "hora": "22:45",
                 "min": 20,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Plaza de España (noche)"
+                "noche": "Plaza de España (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:40"
               }
             ],
             "C": [
@@ -1268,20 +1277,22 @@
                 "zona": "en el Tridente"
               },
               {
-                "hora": "22:00",
+                "hora": "22:05",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:00"
               },
               {
-                "hora": "22:40",
+                "hora": "22:45",
                 "min": 20,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Plaza de España (noche)"
+                "noche": "Plaza de España (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:40"
               }
             ],
             "D": [
@@ -1365,12 +1376,13 @@
                 "zona": "en el Tridente"
               },
               {
-                "hora": "22:00",
+                "hora": "22:20",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
-                "noche": "Fontana de Trevi (noche)"
+                "noche": "Fontana de Trevi (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:00"
               }
             ]
           }
@@ -1379,6 +1391,11 @@
     },
     "Boca de la Verdad": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D5"
+        ]
+      },
       "acciones": [
         {
           "op": "insertar",
@@ -1394,6 +1411,12 @@
     },
     "Ojo de la Cerradura del Aventino": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D5",
+          "DA-medio"
+        ]
+      },
       "acciones": [
         {
           "op": "tabla",
@@ -1467,13 +1490,14 @@
                 }
               },
               {
-                "hora": "17:20",
+                "hora": "17:25",
                 "min": 3,
                 "texto_documento": "Iglesia del Gesù",
                 "como_documento": "de camino (la fachada)",
                 "tipo": "parada",
                 "lugar": "Iglesia del Gesù",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:20"
               },
               {
                 "hora": "17:30",
@@ -1616,13 +1640,14 @@
                 }
               },
               {
-                "hora": "17:20",
+                "hora": "17:25",
                 "min": 3,
                 "texto_documento": "Iglesia del Gesù",
                 "como_documento": "de camino (la fachada)",
                 "tipo": "parada",
                 "lugar": "Iglesia del Gesù",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:20"
               },
               {
                 "hora": "17:30",
@@ -1765,13 +1790,14 @@
                 }
               },
               {
-                "hora": "17:20",
+                "hora": "17:25",
                 "min": 3,
                 "texto_documento": "Iglesia del Gesù",
                 "como_documento": "de camino (la fachada)",
                 "tipo": "parada",
                 "lugar": "Iglesia del Gesù",
-                "modo": "camino"
+                "modo": "camino",
+                "hora_corregida": "distancia: lo escrito era 17:20"
               },
               {
                 "hora": "17:30",
@@ -1874,8 +1900,7 @@
       "franja": "dia",
       "cuando": {
         "sin_dias": [
-          "D4M",
-          "D5C"
+          "D5"
         ]
       },
       "acciones": [
@@ -1936,13 +1961,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2132,13 +2158,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2328,13 +2355,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2499,6 +2527,11 @@
     },
     "Parque de Villa Borghese": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D4"
+        ]
+      },
       "solo_en": [
         "C",
         "D"
@@ -2798,7 +2831,7 @@
       "franja": "manana",
       "cuando": {
         "sin_dias": [
-          "D5"
+          "D6"
         ]
       },
       "acciones": [

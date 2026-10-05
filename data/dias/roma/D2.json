@@ -269,17 +269,18 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "18:25",
+          "hora": "18:30",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 18:25"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "19:20",
+          "hora": "19:30",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
@@ -287,7 +288,8 @@
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere iluminado"
+          "titulo": "Pasea y piérdete por Trastevere iluminado",
+          "hora_corregida": "distancia: lo escrito era 19:20"
         },
         {
           "id": "cena_tonnarello",
@@ -443,13 +445,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:15",
+          "hora": "19:20",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:15"
         },
         {
           "id": "cena_tonnarello",
@@ -603,7 +606,7 @@
         },
         {
           "id": "paseo_la_passeggiata_del_gianicolo",
-          "hora": "19:25",
+          "hora": "19:40",
           "min": 15,
           "texto_documento": "La Passeggiata del Gianicolo (colchón)",
           "como_documento": "",
@@ -611,17 +614,19 @@
           "texto": "La avenida de los bustos de Garibaldi, el monumento ecuestre a Garibaldi, el de Anita Garibaldi y el Faro de los Argentinos, con Roma a los pies.",
           "tipo": "paseo",
           "lugar": "Mirador del Janículo",
-          "titulo": "La Passeggiata del Gianicolo"
+          "titulo": "La Passeggiata del Gianicolo",
+          "hora_corregida": "distancia: lo escrito era 19:25"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "20:00",
+          "hora": "20:05",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 20:00"
         },
         {
           "id": "cena_tonnarello",
@@ -804,25 +809,27 @@
         {
           "id": "paseo_pasea_y_pierdete_por_borgo_pio_y_prati",
           "hora": "11:25",
-          "min": 20,
+          "min": 10,
           "texto_documento": "Pasea y piérdete por Borgo Pio y Prati (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo; Via Cola di Rienzo, la calle de compras de los romanos, y la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio».",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Borgo Pio y Prati"
+          "titulo": "Pasea y piérdete por Borgo Pio y Prati",
+          "hora_corregida": "distancia: lo escrito era 11:25 y 20 min"
         },
         {
           "id": "comida_borghiciana_pastificio_artigianale",
           "hora": "12:00",
-          "min": 60,
+          "min": 45,
           "texto_documento": "**Comida:** Borghiciana (o Pizzarium, al lado de los Museos), en el Borgo",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
           "alternativa": "Pizzarium (Bonci)",
-          "zona": "en el Borgo"
+          "zona": "en el Borgo",
+          "hora_corregida": "distancia: lo escrito era 12:00 y 60 min"
         },
         {
           "id": "parada_plaza_de_san_pedro",
@@ -920,17 +927,18 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "18:55",
+          "hora": "19:00",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 18:55"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "19:50",
+          "hora": "20:00",
           "min": 10,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
@@ -938,16 +946,18 @@
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere iluminado"
+          "titulo": "Pasea y piérdete por Trastevere iluminado",
+          "hora_corregida": "distancia: lo escrito era 19:50"
         },
         {
           "id": "cena_tonnarello",
-          "hora": "20:15",
+          "hora": "20:20",
           "min": 90,
           "texto_documento": "**Cena:** Tonnarello",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Tonnarello"
+          "restaurante": "Tonnarello",
+          "hora_corregida": "distancia: lo escrito era 20:15"
         },
         {
           "id": "noche_piazza_navona_noche",
@@ -1104,13 +1114,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:45",
+          "hora": "19:50",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:45"
         },
         {
           "id": "cena_tonnarello",
@@ -1263,17 +1274,18 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "17:55",
+          "hora": "18:00",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 17:55"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "18:50",
+          "hora": "19:00",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
@@ -1281,7 +1293,8 @@
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere iluminado"
+          "titulo": "Pasea y piérdete por Trastevere iluminado",
+          "hora_corregida": "distancia: lo escrito era 18:50"
         },
         {
           "id": "cena_tonnarello",
@@ -1442,13 +1455,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:30",
+          "hora": "19:35",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:30"
         },
         {
           "id": "cena_tonnarello",
@@ -1734,17 +1748,18 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "17:45",
+          "hora": "17:50",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 17:45"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "18:40",
+          "hora": "18:50",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
@@ -1752,7 +1767,8 @@
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere iluminado"
+          "titulo": "Pasea y piérdete por Trastevere iluminado",
+          "hora_corregida": "distancia: lo escrito era 18:40"
         },
         {
           "id": "cena_tonnarello",
@@ -1916,13 +1932,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:45",
+          "hora": "19:50",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:45"
         },
         {
           "id": "cena_tonnarello",
@@ -2111,14 +2128,15 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati_y_el_borgo_hacia_los_museos",
           "hora": "10:35",
-          "min": 35,
+          "min": 30,
           "texto_documento": "Pasea y piérdete por Prati y el Borgo, hacia los Museos (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Borgo Pio, el Passetto, la Piazza del Risorgimento y los muros vaticanos hasta la entrada de los Museos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos"
+          "titulo": "Pasea y piérdete por Prati y el Borgo, hacia los Museos",
+          "hora_corregida": "distancia: lo escrito era 10:35 y 35 min"
         },
         {
           "id": "parada_museos_vaticanos_y_capilla_sixtina",
@@ -2218,13 +2236,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "20:10",
+          "hora": "20:15",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 20:10"
         },
         {
           "id": "cena_tonnarello",
@@ -2283,14 +2302,15 @@
         },
         {
           "id": "comida_pizzarium_bonci",
-          "hora": "11:45",
+          "hora": "11:50",
           "min": 25,
           "texto_documento": "**Comida rápida:** Pizzarium, al lado de los Museos",
           "como_documento": "",
           "tipo": "comida",
           "rapida": true,
           "restaurante": "Pizzarium (Bonci)",
-          "zona": "al lado de los Museos"
+          "zona": "al lado de los Museos",
+          "hora_corregida": "distancia: lo escrito era 11:45"
         },
         {
           "id": "parada_museos_vaticanos_y_capilla_sixtina",
@@ -2307,13 +2327,14 @@
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "16:05",
+          "hora": "16:10",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:05"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
@@ -2424,14 +2445,15 @@
         },
         {
           "id": "comida_pizzarium_bonci",
-          "hora": "11:45",
+          "hora": "11:50",
           "min": 25,
           "texto_documento": "**Comida rápida:** Pizzarium, al lado de los Museos",
           "como_documento": "",
           "tipo": "comida",
           "rapida": true,
           "restaurante": "Pizzarium (Bonci)",
-          "zona": "al lado de los Museos"
+          "zona": "al lado de los Museos",
+          "hora_corregida": "distancia: lo escrito era 11:45"
         },
         {
           "id": "parada_museos_vaticanos_y_capilla_sixtina",
@@ -2448,13 +2470,14 @@
         },
         {
           "id": "parada_via_della_conciliazione",
-          "hora": "16:05",
+          "hora": "16:10",
           "min": 10,
           "texto_documento": "Via della Conciliazione",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Via della Conciliazione",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 16:05"
         },
         {
           "id": "parada_castillo_de_sant_angelo",
@@ -2520,13 +2543,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:45",
+          "hora": "19:50",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:45"
         },
         {
           "id": "cena_tonnarello",
@@ -2861,28 +2885,30 @@
         },
         {
           "id": "paseo_la_passeggiata_del_gianicolo_bajando_hasta_san_pedro",
-          "hora": "10:00",
+          "hora": "10:15",
           "min": 30,
           "texto_documento": "La Passeggiata del Gianicolo, bajando hasta San Pedro",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Mirador del Janículo",
-          "titulo": "La Passeggiata del Gianicolo, bajando hasta San Pedro"
+          "titulo": "La Passeggiata del Gianicolo, bajando hasta San Pedro",
+          "hora_corregida": "distancia: lo escrito era 10:00"
         },
         {
           "id": "parada_plaza_de_san_pedro_la_bendicion_del_papa_a_las_12_00_y_el_belen",
-          "hora": "11:00",
+          "hora": "11:10",
           "min": 75,
           "texto_documento": "Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza de San Pedro",
           "titulo": "Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 11:00"
         },
         {
           "id": "comida_borghiciana_pastificio_artigianale",
-          "hora": "12:35",
+          "hora": "12:40",
           "min": 90,
           "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo (con reserva)",
           "como_documento": "",
@@ -2890,7 +2916,8 @@
           "tipo": "comida",
           "restaurante": "Borghiciana Pastificio Artigianale",
           "alternativa": "Dal Toscano",
-          "zona": "en el Borgo (con reserva)"
+          "zona": "en el Borgo (con reserva)",
+          "hora_corregida": "distancia: lo escrito era 12:35"
         },
         {
           "id": "parada_via_della_conciliazione",
@@ -2914,7 +2941,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
-          "hora": "15:10",
+          "hora": "15:15",
           "min": 40,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
@@ -2922,7 +2949,8 @@
           "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati"
+          "titulo": "Pasea y piérdete por Prati",
+          "hora_corregida": "distancia: lo escrito era 15:10"
         },
         {
           "id": "parada_puente_sant_angelo",
@@ -2936,23 +2964,25 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_el_centro_iluminado",
-          "hora": "16:40",
+          "hora": "16:45",
           "min": 90,
           "texto_documento": "Pasea y piérdete por el centro iluminado",
           "como_documento": "",
           "tipo": "paseo",
           "lugar": "Piazza Navona",
-          "titulo": "Pasea y piérdete por el centro iluminado"
+          "titulo": "Pasea y piérdete por el centro iluminado",
+          "hora_corregida": "distancia: lo escrito era 16:40"
         },
         {
           "id": "parada_panteon",
-          "hora": "18:15",
+          "hora": "18:20",
           "min": 5,
           "texto_documento": "Panteón",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Panteón",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 18:15"
         },
         {
           "id": "cena_armando_al_pantheon",
@@ -2987,6 +3017,11 @@
   "pool": {
     "Cúpula de San Pedro": {
       "franja": "manana",
+      "cuando": {
+        "sin_dias": [
+          "D6"
+        ]
+      },
       "acciones": [
         {
           "op": "insertar",
@@ -3002,6 +3037,11 @@
     },
     "Castillo de Sant'Angelo": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D6"
+        ]
+      },
       "acciones": [
         {
           "op": "cambiar",
@@ -3038,6 +3078,11 @@
     },
     "naturaleza_vistas": {
       "franja": "manana",
+      "cuando": {
+        "sin_dias": [
+          "D6"
+        ]
+      },
       "acciones": [
         {
           "op": "insertar",

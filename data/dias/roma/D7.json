@@ -1,250 +1,340 @@
 {
-  "_nota": "D7 escrito (2026-09-29): la mañana es la media jornada a Tívoli; la tarde, desde las 16:00, Navona, Campo de' Fiori, el Castillo por dentro y el atardecer en el Puente Sant'Angelo.",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D7",
-  "nombre": "Tívoli, el Castillo y el atardecer sobre San Pedro",
-  "joyas": [],
-  "no_en": [
-    {
-      "dia_semana": "lunes"
-    }
-  ],
-  "barrio_cena": "centro_historico",
-  "noche": "panteon",
-  "manana": {
-    "paradas": [],
-    "comida": null
-  },
-  "tarde": {
-    "empieza": "16:00",
-    "A": {
-      "_sol": "antes de las 17:40: el atardecer en el puente nada más volver; el Castillo después (última entrada 18:30)",
-      "paradas": [
+  "nombre": "La Vía Appia y Trastevere tranquilo",
+  "versiones": {
+    "normal": {
+      "AB": [
         {
-          "lugar": "Piazza Navona",
-          "min": 30,
-          "elastica": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-          "una_vez": true
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "texto": "Por dentro: los salones papales, las murallas y, arriba, la terraza del Ángel, con Roma y el atardecer sobre San Pedro."
-        },
-        {
-          "lugar": "Palazzo Doria Pamphilj",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar",
-          "si_visto": "Castillo de Sant'Angelo"
-        },
-        {
-          "lugar": "Campo de' Fiori",
-          "min": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Plaza Farnese",
-          "modo": "camino",
-          "una_vez": true
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Dal Cavalier Gino",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "20:45"
-      }
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44",
-      "paradas": [
-        {
-          "lugar": "Piazza Navona",
-          "min": 15,
-          "elastica": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "texto": "Por dentro: los salones papales, las murallas y, arriba, la terraza del Ángel, con Roma y el atardecer sobre San Pedro."
-        },
-        {
-          "lugar": "Palazzo Doria Pamphilj",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar",
-          "si_visto": "Castillo de Sant'Angelo"
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-          "una_vez": true
-        },
-        {
-          "lugar": "Campo de' Fiori",
-          "min": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Plaza Farnese",
-          "modo": "camino",
-          "una_vez": true
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Dal Cavalier Gino",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "21:00"
-      }
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44: el Castillo primero; Navona y Campo de' Fiori; el puente al atardecer",
-      "paradas": [
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "texto": "Por dentro: los salones papales, las murallas y, arriba, la terraza del Ángel, con Roma y el atardecer sobre San Pedro."
-        },
-        {
-          "lugar": "Palazzo Doria Pamphilj",
-          "min": 75,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar",
-          "si_visto": "Castillo de Sant'Angelo"
-        },
-        {
-          "lugar": "Piazza Navona",
-          "min": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Campo de' Fiori",
-          "min": 30,
-          "elastica": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Plaza Farnese",
-          "modo": "camino",
-          "una_vez": true
-        },
-        {
-          "lugar": "Puente Sant'Angelo",
-          "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-          "una_vez": true
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Dal Cavalier Gino",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "19:30"
-      }
-    },
-    "D": {
-      "_sol": "desde las 19:45",
-      "paradas": [
-        {
-          "lugar": "Castillo de Sant'Angelo",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "texto": "Por dentro: los salones papales, las murallas y, arriba, la terraza del Ángel, con Roma y el atardecer sobre San Pedro."
-        },
-        {
-          "lugar": "Palazzo Doria Pamphilj",
-          "min": 75,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar",
-          "si_visto": "Castillo de Sant'Angelo"
-        },
-        {
-          "lugar": "Piazza Navona",
+          "id": "parada_villa_farnesina",
+          "hora": "09:00",
           "min": 45,
-          "una_vez": true
+          "texto_documento": "Villa Farnesina (los frescos de Rafael; abre de 9:00 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "los frescos de Rafael; abre de 9:00 a 14:00",
+          "tipo": "parada",
+          "lugar": "Villa Farnesina",
+          "modo": "dentro"
         },
         {
-          "lugar": "Campo de' Fiori",
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "09:55",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_basilica_de_santa_cecilia_in_trastevere",
+          "hora": "10:20",
           "min": 40,
-          "elastica": 30,
-          "titulo": "Pasea y piérdete por Campo de' Fiori",
-          "una_vez": true
+          "texto_documento": "Basílica de Santa Cecilia in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "modo": "dentro"
         },
         {
-          "lugar": "Plaza Farnese",
-          "min": 15,
-          "una_vez": true
+          "id": "paseo_pasea_y_pierdete_por_el_trastevere_tranquilo_la_piazza_in_piscinula_via_dei_genovesi_y_la_via_della_lungaretta",
+          "hora": "11:15",
+          "min": 65,
+          "texto_documento": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta",
+          "foto": "Trastevere tranquilo",
+          "hora_corregida": "distancia: lo escrito era 11:10"
         },
         {
-          "lugar": "Puente Sant'Angelo",
+          "id": "comida_trattoria_da_enzo_al_29",
+          "hora": "12:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere",
+          "hora_corregida": "distancia: lo escrito era 12:30"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "13:50",
+          "min": 20,
+          "texto_documento": "Taxi a las Catacumbas de San Calixto",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 20
+          },
+          "hora_corregida": "distancia: lo escrito era 13:45"
+        },
+        {
+          "id": "parada_catacumbas_de_san_calixto",
+          "hora": "14:20",
+          "min": 60,
+          "texto_documento": "Catacumbas de San Calixto (visita guiada; cierra el miércoles)",
+          "como_documento": "por dentro",
+          "nota": "visita guiada; cierra el miércoles",
+          "tipo": "parada",
+          "lugar": "Catacumbas de San Calixto",
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 14:15"
+        },
+        {
+          "id": "parada_recorre_la_via_appia_antica_en_bici_los_pinos_las_tumbas_y_la_de_cecilia_metela_colchon_se_alquila_en_el_punto_de_informacion",
+          "hora": "15:35",
+          "min": 120,
+          "texto_documento": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
+          "como_documento": "",
+          "nota": "colchón; se alquila en el punto de información",
+          "tipo": "parada",
+          "lugar": "Via Appia Antica",
+          "titulo": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:25"
+        },
+        {
+          "id": "parada_atardecer_en_la_via_appia_antica",
+          "hora": "17:45",
+          "min": 30,
+          "texto_documento": "Atardecer en la Vía Appia Antica",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Via Appia Antica",
+          "titulo": "Atardecer en la Vía Appia Antica",
           "modo": "atardecer",
-          "texto": "Crúzalo despacio con la última luz del día: los ángeles de Bernini, el Castillo detrás y la cúpula de San Pedro al fondo, río abajo.",
-          "una_vez": true
+          "hora_corregida": "distancia: lo escrito era 17:35"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "Taxi a Monti",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 20
+          },
+          "hora_corregida": "distancia: lo escrito era 18:15"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "18:55",
+          "min": 20,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti",
+          "hora_corregida": "distancia: lo escrito era 18:50 y 30 min"
+        },
+        {
+          "id": "cena_la_taverna_dei_fori_imperiali",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "La Taverna dei Fori Imperiali",
+          "alternativa": "Trattoria Valentino",
+          "zona": "en Monti"
         }
       ],
-      "cena": {
-        "restaurante": "Trattoria Dal Cavalier Gino",
-        "alternativa": "Pizzeria Da Baffetto",
-        "hora": "20:30"
-      }
+      "CD": [
+        {
+          "id": "parada_villa_farnesina",
+          "hora": "09:00",
+          "min": 45,
+          "texto_documento": "Villa Farnesina (los frescos de Rafael; abre de 9:00 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "los frescos de Rafael; abre de 9:00 a 14:00",
+          "tipo": "parada",
+          "lugar": "Villa Farnesina",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_iglesia_de_santa_maria_in_trastevere",
+          "hora": "09:55",
+          "min": 5,
+          "texto_documento": "Santa Maria in Trastevere",
+          "como_documento": "de camino (la plaza y la fachada)",
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_basilica_de_santa_cecilia_in_trastevere",
+          "hora": "10:20",
+          "min": 40,
+          "texto_documento": "Basílica de Santa Cecilia in Trastevere",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa Cecilia in Trastevere",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_trastevere_tranquilo_la_piazza_in_piscinula_via_dei_genovesi_y_la_via_della_lungaretta",
+          "hora": "11:15",
+          "min": 65,
+          "texto_documento": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma.",
+          "tipo": "paseo",
+          "lugar": "Trastevere",
+          "titulo": "Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta",
+          "foto": "Trastevere tranquilo",
+          "hora_corregida": "distancia: lo escrito era 11:10"
+        },
+        {
+          "id": "comida_trattoria_da_enzo_al_29",
+          "hora": "12:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Trattoria Da Enzo al 29",
+          "alternativa": "Tonnarello",
+          "zona": "en Trastevere",
+          "hora_corregida": "distancia: lo escrito era 12:30"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "13:50",
+          "min": 20,
+          "texto_documento": "Taxi a las Catacumbas de San Calixto",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 20
+          },
+          "hora_corregida": "distancia: lo escrito era 13:45"
+        },
+        {
+          "id": "parada_catacumbas_de_san_calixto",
+          "hora": "14:20",
+          "min": 60,
+          "texto_documento": "Catacumbas de San Calixto (visita guiada; cierra el miércoles)",
+          "como_documento": "por dentro",
+          "nota": "visita guiada; cierra el miércoles",
+          "tipo": "parada",
+          "lugar": "Catacumbas de San Calixto",
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 14:15"
+        },
+        {
+          "id": "parada_recorre_la_via_appia_antica_en_bici_los_pinos_las_tumbas_y_la_de_cecilia_metela_colchon_se_alquila_en_el_punto_de_informacion",
+          "hora": "15:35",
+          "min": 120,
+          "texto_documento": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
+          "como_documento": "",
+          "nota": "colchón; se alquila en el punto de información",
+          "tipo": "parada",
+          "lugar": "Via Appia Antica",
+          "titulo": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:25"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "17:45",
+          "min": 20,
+          "texto_documento": "Taxi a Monti",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 20
+          },
+          "hora_corregida": "distancia: lo escrito era 17:35"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "18:15",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti",
+          "hora_corregida": "distancia: lo escrito era 18:05"
+        },
+        {
+          "id": "parada_colle_oppio",
+          "hora": "19:10",
+          "min": 30,
+          "texto_documento": "El Coliseo desde el Colle Oppio, al atardecer",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Colle Oppio",
+          "modo": "fuera",
+          "atardecer": true,
+          "hora_corregida": "distancia: lo escrito era 18:55"
+        },
+        {
+          "id": "cena_trattoria_valentino",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Trattoria Valentino",
+          "alternativa": "La Taverna dei Fori Imperiali",
+          "zona": "en Monti"
+        }
+      ]
     }
   },
-  "variantes": {
-    "domingo": {
-      "_nota": "Trattoria Dal Cavalier Gino cierra el domingo.",
-      "tarde.*": {
-        "restaurante": {
-          "cena": "Pizzeria Da Baffetto",
-          "alternativa": "Tonnarello"
+  "fechas_malas": {
+    "cerrado": [
+      "Villa Farnesina",
+      "Catacumbas de San Calixto"
+    ]
+  },
+  "cierres": {
+    "Catacumbas de San Calixto": {
+      "causa": "las catacumbas cierran el miércoles: la Vía Appia empieza a las 14:15",
+      "no_incluido": true,
+      "acciones": [
+        {
+          "op": "quitar",
+          "fila": "Catacumbas de San Calixto"
+        },
+        {
+          "op": "cambiar",
+          "fila": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información)",
+          "hora": "14:15"
         }
-      }
+      ]
     },
-    "cerrado:Palazzo Doria Pamphilj": {
-      "_nota": "El Palazzo Doria Pamphilj cierra (miércoles, 1 de enero, Pascua, Navidad): por fuera, y el rato va a la Plaza Colonna, que está al lado (Via del Corso, de camino).",
-      "tarde.*": {
-        "insertar": [
-          {
-            "despues_de": "Palazzo Doria Pamphilj",
-            "parada": {
-              "lugar": "Plaza Colonna",
-              "min": 15,
-              "si_visto": "Castillo de Sant'Angelo",
-              "no_meses": [
-                8
-              ]
-            }
-          }
-        ]
-      },
-      "tarde.D": {
-        "ajustar": {
-          "Piazza Navona": {
-            "min": 65
-          }
+    "Villa Farnesina": {
+      "causa": "la Villa Farnesina cierra: la mañana empieza a las 10:00 en Santa Maria in Trastevere",
+      "no_incluido": true,
+      "acciones": [
+        {
+          "op": "quitar",
+          "fila": "Villa Farnesina"
+        },
+        {
+          "op": "cambiar",
+          "fila": "Iglesia de Santa Maria in Trastevere",
+          "hora": "10:00"
         }
-      },
-      "_verano": "En agosto, con el descanso hasta las 16:30, la Plaza Colonna no cabe antes del atardecer (INVARIANTES 413)."
+      ]
     }
-  }
+  },
+  "pool": {},
+  "experiencias": {}
 }

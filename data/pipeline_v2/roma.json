@@ -5301,6 +5301,39 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "colle_oppio",
+      "name": "Colle Oppio",
+      "duration_minutes": 20,
+      "min_max": 30,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8935,
+        12.4975
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "parque",
+        "mirador"
+      ],
+      "filter_category": "monumentos",
+      "description": "El parque sobre la Domus Aurea desde el que se ve el Coliseo al atardecer",
+      "tip": "Se sube desde Via Nicola Salvi; el Coliseo queda enfrente, con el sol de poniente.",
+      "search_aliases": [
+        "colle oppio",
+        "parco del colle oppio"
+      ],
+      "search_en": "Colle Oppio park Rome",
+      "search_en_keywords": [
+        "oppio"
+      ],
+      "neighbor_of": [
+        "Domus Aurea"
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "Tanda 3 (provisional): sitio nuevo para el D5 del documento (El Coliseo desde el Colle Oppio, al atardecer). Coordenadas aproximadas, por comprobar."
+    },
+    {
       "id": "via_veneto",
       "name": "Via Veneto",
       "duration_minutes": 10,
@@ -7857,6 +7890,7 @@
     {
       "name": "Buccone Vini e Olii",
       "sub_category": "aperitivo",
+      "meal": "ambos",
       "address": "Via di Ripetta 19/20, 00186 Roma",
       "coordinates": {
         "lat": 41.90904,
@@ -8664,6 +8698,8 @@
   "destination_config": {
     "ejemplo_nombre_dia": "Recorrido por el Centro Histórico",
     "core_days": 4,
+    "sin_media_jornada": true,
+    "_sin_media_jornada": "Tanda 3 (provisional): las medias jornadas de Ostia y Tívoli dejan de ponerse en los días 6 y siguientes: esos días son ahora D6 (Roma desde arriba) y D7 (la Vía Appia). Ver PREGUNTAS_TANDA3.",
     "excursion_desde_dias": 5,
     "excursion_fechas_no": [
       "12-24",
@@ -8673,10 +8709,35 @@
     ],
     "_excursion_fechas_no": "Ninguna excursión de día completo en Nochebuena, Navidad, Nochevieja ni Año Nuevo (PROMPT_REPASO_LOCAL_ROMA, 3): el transporte va recortado y se cena en la ciudad. La excursión pasa al día siguiente que valga o, si no, al anterior.",
     "excursion_oferta": {
-      "_nota": "Viajes sin excursión (4 días): en el día de D5C se ofrece cambiarlo por una excursión (decisión del usuario, 2026-09-29). Sin precios.",
-      "dia": "D5C",
+      "_nota": "Viajes sin excursión (4 días): en el día de D5 se ofrece cambiarlo por una excursión (decisión del usuario, 2026-09-29). Sin precios.",
+      "dia": "D5",
       "titulo": "¿Te apetece salir de Roma un día?",
       "texto": "Puedes cambiar este día por una excursión: Pompeya, Florencia, la Costa Amalfitana…"
+    },
+    "quedarme_en_ciudad": {
+      "_nota": "«Prefiero quedarme en Roma» (tanda 3, docs/dias/DIAS_ESCRITOS_ROMA.md): lo que se enseña al viajero que cambia el día de excursión por un día en la ciudad. La clave es el día escrito que entra (D6 en 5 días, D7 en 6). La pantalla enseña las paradas emblemáticas, sin horas y con su foto; las horas salen luego en la ruta. 'foto' es el nombre con el que se pide la foto; 'solo_tardes': solo si el sol se pone después de ese corte (el Coliseo desde el Colle Oppio, en C y D).",
+      "D6": {
+        "titulo": "Roma desde arriba",
+        "texto": "Lo más alto de Roma, sin salir de la ciudad: las vistas y los museos del Campidoglio.",
+        "paradas": [
+          { "nombre": "Cúpula de San Pedro", "foto": "Cúpula de San Pedro" },
+          { "nombre": "Castillo de Sant'Angelo", "foto": "Castillo de Sant'Angelo" },
+          { "nombre": "Plaza del Campidoglio", "foto": "Plaza del Campidoglio" },
+          { "nombre": "Museos Capitolinos", "foto": "Museos Capitolinos" },
+          { "nombre": "Terraza del Altar de la Patria", "foto": "Terraza del Altar de la Patria" }
+        ]
+      },
+      "D7": {
+        "titulo": "La Vía Appia y Trastevere tranquilo",
+        "texto": "Un día más pausado: los frescos de Rafael, las catacumbas y la Vía Appia.",
+        "paradas": [
+          { "nombre": "Villa Farnesina", "foto": "Villa Farnesina" },
+          { "nombre": "Santa Cecilia in Trastevere", "foto": "Basílica de Santa Cecilia in Trastevere" },
+          { "nombre": "Catacumbas de San Calixto", "foto": "Catacumbas de San Calixto" },
+          { "nombre": "Vía Appia Antica", "foto": "Via Appia Antica" },
+          { "nombre": "El Coliseo desde el Colle Oppio", "foto": "Coliseo", "solo_tardes": "18:45" }
+        ]
+      }
     },
     "max_auto_days": 6,
     "size": "grande",
@@ -13147,93 +13208,35 @@
     "_nota_galeria": "con_galeria si hay pool o Arte, o si el viaje tiene 4 días o más (tope de museos de pago: 1).",
     "_nota": "Las 12 rutas de Roma (2026-09-27): qué días van, por días de ciudad (sin la excursión) y con o sin Free Tour. Una entrada con \"con_galeria\"/\"sin_galeria\" se decide por el pool o Arte (en 3 días el tope de museos de pago no deja la Galería sola). El motor ordena los días como hasta ahora (cierres, joyas primero) y aplica variantes, ritmo, pool y tope de museos.",
     "por_dias_ciudad": {
-   "1": {
-    "sin_free_tour": ["D0"],
-    "con_free_tour": ["D0"]
-   },
-      "2": {
-        "sin_free_tour": [
-          "D1",
-          "D2"
-        ],
-        "con_free_tour": [
-          "D3",
-          "D1-FT"
-        ]
+        "1": {
+          "sin_free_tour": ["D0"],
+          "con_free_tour": ["D0"]
+        },
+        "2": {
+          "sin_free_tour": ["D1", "D2"],
+          "con_free_tour": ["D3", "D1-FT"]
+        },
+        "3": {
+          "sin_free_tour": ["D1", "D2", "D4"],
+          "con_free_tour": ["D3", "D1-FT", "D4"]
+        },
+        "4": {
+          "sin_free_tour": ["D1", "D2", "D4", "D5"],
+          "con_free_tour": ["D3", "D1-FT", "D4", "D5"]
+        },
+        "5": {
+          "sin_free_tour": ["D1", "D2", "D4", "D5", "D6"],
+          "con_free_tour": ["D3", "D1-FT", "D4", "D5", "D6"]
+        },
+        "6": {
+          "sin_free_tour": ["D1", "D2", "D4", "D5", "D6", "D7"],
+          "con_free_tour": ["D3", "D1-FT", "D4", "D5", "D6", "D7"]
+        },
+        "_nota_tanda3": "Tanda 3 (6-oct-2026), tabla «Qué días lleva cada viaje» del documento: 3 días D1+D2+D4; 3,5 días + DA-medio (medio día de mañana, de vuelta); 4 días + D5; 5 días (4 de ciudad + la excursión) y 6 días (5 de ciudad + la excursión) + D6; con «Prefiero quedarme en Roma» (sin_excursion) la excursión pasa a D6 (5 días) o D7 (6 días). Las claves son los días de CIUDAD (sin la excursión)."
       },
-      "3": {
-        "sin_free_tour": [
-          "D1",
-          "D2",
-          {
-            "con_galeria": "D4",
-            "sin_galeria": "D4M"
-          }
-        ],
-        "con_free_tour": [
-          "D3",
-          "D1-FT",
-          {
-            "con_galeria": "D4",
-            "sin_galeria": "D5C"
-          }
-        ]
-      },
-      "4": {
-        "sin_free_tour": [
-          "D1",
-          "D2",
-          "D4",
-          "D5C"
-        ],
-        "con_free_tour": [
-          "D3",
-          "D1-FT",
-          "D4",
-          "D5C"
-        ]
-      },
-      "5": {
-        "sin_free_tour": [
-          "D1",
-          "D2",
-          "D4",
-          "D5",
-          "D6"
-        ],
-        "con_free_tour": [
-          "D3",
-          "D1-FT",
-          "D4",
-          "D5",
-          "D6"
-        ]
-      },
-      "6": {
-        "sin_free_tour": [
-          "D1",
-          "D2",
-          "D4",
-          "D5",
-          "D6",
-          "D7"
-        ],
-        "con_free_tour": [
-          "D3",
-          "D1-FT",
-          "D4",
-          "D5",
-          "D6",
-          "D7"
-        ]
-      }
-    },
-    "excursiones": {
+      "excursiones": {
       "dia_completo_desde_dias": 4,
-      "media_jornada": {
-        "D6": "ostia_antica",
-        "D7": "tivoli_villas"
-      }
+      "media_jornada": {}
     }
   },
   "fechas_especiales": {

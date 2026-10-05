@@ -7,6 +7,7 @@
 // la comprobación de abajo —la primera fila de cada tabla— falla en vez de copiar una tabla equivocada.)
 import fs from 'node:fs'
 import { anadirExtras, completarAlternativas } from './escritosExtras.mjs'
+import { corregirDistancias } from './distancias.mjs'
 
 const root = 'C:/Users/ERIC/Desktop/CLAUDE PROYECTS/APP RUTAS/'
 const md = fs.readFileSync(root + 'docs/dias/DIAS_ESCRITOS_ROMA.md', 'utf8').split(/\r?\n/)
@@ -89,6 +90,27 @@ const LUGARES = {
   'San Pietro in Vincoli': 'Iglesia de San Pietro in Vincoli',
   'Plaza del Quirinal': 'Plaza del Quirinal',
   'Via del Babuino': 'Via del Babuino',
+  // Tanda 3
+  'Ara Pacis': 'Ara Pacis',
+  'Cementerio Protestante': 'Cementerio Protestante',
+  'Circo Máximo': 'Circo Máximo',
+  'Cúpula de San Pedro': 'Cúpula de San Pedro',
+  'Fuente del Tritón': 'Fuente del Tritón',
+  'Pirámide Cestia': 'Pirámide Cestia',
+  'Porta Pinciana': 'Porta Pinciana',
+  'Termas de Caracalla': 'Termas de Caracalla',
+  'Basílica de San Clemente': 'Basílica de San Clemente',
+  'Castillo de Sant\'Angelo, hasta la terraza del ángel': "Castillo de Sant'Angelo",
+  'Basílica de San Clemente, con las excavaciones': 'Basílica de San Clemente',
+  'Museos Capitolinos': 'Museos Capitolinos',
+  'Santa Maria in Aracoeli': 'Santo Bambino de Aracoeli',
+  'Terraza del Altar de la Patria': 'Altar de la Patria',
+  'Via Veneto': 'Via Veneto',
+  'Villa Farnesina': 'Villa Farnesina',
+  'Basílica de Santa Cecilia in Trastevere': 'Basílica de Santa Cecilia in Trastevere',
+  'Catacumbas de San Calixto': 'Catacumbas de San Calixto',
+  'Via Appia Antica': 'Via Appia Antica',
+  'El Coliseo desde el Colle Oppio': 'Colle Oppio',
 }
 const RESTAURANTES = {
   'Armando al Pantheon': 'Armando al Pantheon',
@@ -114,6 +136,15 @@ const RESTAURANTES = {
   'Il Bocconcino': 'Il Bocconcino',
   'La Boccaccia': 'La Boccaccia',
   'Trattoria Monti': 'Trattoria Monti',
+  // Tanda 3
+  'Enoteca Corsi': 'Enoteca Corsi',
+  'Felice a Testaccio': 'Felice a Testaccio',
+  'Sgarro Bistrot': 'Sgarro Bistrot',
+  'Buccone Vini e Olii': 'Buccone Vini e Olii',
+  'Mordi e Vai': 'Mordi e Vai',
+  'La Taverna dei Fori Imperiali': 'La Taverna dei Fori Imperiali',
+  'Trattoria Valentino': 'Trattoria Valentino',
+  'en el Mercado de Testaccio, Mordi e Vai': 'Mordi e Vai',
 }
 const NOCHES = {
   'Piazza Navona de noche': 'Piazza Navona (noche)',
@@ -123,6 +154,8 @@ const NOCHES = {
   "El Puente y el Castillo de Sant'Angelo iluminados": "El Puente y el Castillo de Sant'Angelo (noche)",
   'Coliseo iluminado': 'Coliseo (noche)',
   'Trastevere de noche': 'Trastevere de noche',
+  'El Foro Romano desde el Campidoglio, de noche': 'Foro Romano desde el Campidoglio (noche)',
+  'Panteón de noche': 'Panteón (noche)',
 }
 // Los traslados: no son una parada, llevan al sitio de después (los minutos son los del documento).
 const TRASLADOS = [
@@ -133,6 +166,13 @@ const TRASLADOS = [
 ]
 // Los paseos no son un sitio: para andar usan las coordenadas de un sitio de su zona (el título es el del documento).
 const PASEO_LUGAR = [
+  // (El tercer dato es el nombre con el que se pide la foto del paseo —hueco en _fotos.json—; sin él, la foto del lugar.)
+  [/Trastevere tranquilo/, 'Trastevere', 'Trastevere tranquilo'],
+  [/Testaccio/, 'Testaccio', 'Paseo por Testaccio'],
+  [/Aventino/, 'Ojo de la Cerradura del Aventino', 'Paseo por el Aventino'],
+  [/Gueto/, 'Teatro de Marcelo'],
+  [/Tridente/, 'Via del Babuino'],
+  [/Foros de Trajano/, 'Columna de Trajano', 'Foros de Trajano'],
   [/Via Condotti/, 'Via Condotti'],
   [/Jardines del Pincio/, 'Jardines del Pincio'],
   [/Villa Borghese/, 'Parque de Villa Borghese'],
@@ -159,6 +199,16 @@ const FRASES = [
   [/^El Foro Romano, desde la terraza del Campidoglio/, { lugar: 'Foro Romano y Palatino', titulo: true }],
   [/^Parque de Villa Borghese/, { lugar: 'Parque de Villa Borghese' }],
   [/^Pasea por Villa Borghese hasta el Pincio/, { lugar: 'Parque de Villa Borghese', paseo: true }],
+  [/^Castillo de Sant'Angelo, hasta la terraza/, { lugar: "Castillo de Sant'Angelo", titulo: true }],
+  [/^Basílica de San Clemente, con las excavaciones/, { lugar: 'Basílica de San Clemente', titulo: true, paren: true }],
+  [/^Museos Capitolinos, con la terraza/, { lugar: 'Museos Capitolinos', titulo: true }],
+  [/^Santa Maria in Aracoeli y su escalinata/, { lugar: 'Santa Maria in Aracoeli', titulo: true, campos: { foto: 'Santa Maria in Aracoeli' } }],
+  // (La terraza con el ascensor panorámico es otra visita que la del interior del Altar —el D1—: la regla de «por dentro una sola vez» no las junta.)
+  [/^Terraza del Altar de la Patria/, { lugar: 'Terraza del Altar de la Patria', titulo: true, campos: { otra_visita: true, foto: 'Terraza del Altar de la Patria' } }],
+  [/^El Foro Romano desde la terraza del Campidoglio, con la luz/, { lugar: 'Foro Romano y Palatino', titulo: true, modo: 'fuera' }],
+  [/^Recorre la Vía Appia Antica en bici/, { lugar: 'Via Appia Antica', titulo: true, paren: true }],
+  [/^Atardecer en la Vía Appia Antica/, { lugar: 'Via Appia Antica', titulo: true }],
+  [/^Via Veneto, la calle de/, { lugar: 'Via Veneto', titulo: true }],
 ]
 
 // ── Qué hay en cada colchón (tabla «Qué hay en cada colchón» del documento: se cuenta en el texto de la parada) ─────────────────
@@ -179,19 +229,36 @@ const COLCHONES = [
   [/Centro Histórico/, () => 'Via del Governo Vecchio, la Piazza di Pasquino con su «estatua parlante» y Via dei Coronari, la calle de los anticuarios.'],
 ]
 // («hacia la Plaza de España» va antes que «Centro Histórico»: el título dice las dos cosas.)
+const CONTADO = [
+  [/Testaccio: /, 'La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.'],
+  [/el Aventino: /, (t) => 'Santa Sabina, el Parque Savello y la Via di Santa Sabina' + (/Rosaleda/.test(t) ? ' y, en mayo y junio, la Rosaleda.' : '.')],
+  [/Gueto iluminado/, () => 'El Gueto con sus calles estrechas, el Pórtico de Octavia y el Teatro de Marcelo, iluminados.'],
+  [/Tridente/, (t) => 'Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco' + (/iluminado/.test(t) ? ', con las luces de la noche.' : '.')],
+  [/Foros de Trajano/, () => 'La Columna de Trajano y los Mercados de Trajano, por fuera.'],
+]
 const colchonTexto = (titulo) => {
+  const contado = CONTADO.find(([re]) => re.test(titulo))
+  if (contado) return typeof contado[1] === 'function' ? contado[1](titulo) : contado[1]
   const orden = [...COLCHONES].sort((a, b) => (/hacia la Plaza de España/.test(a[0].source) ? -1 : 0) - (/hacia la Plaza de España/.test(b[0].source) ? -1 : 0))
   const hit = orden.find(([re]) => re.test(titulo))
   return hit ? hit[1](titulo) : null
 }
 
+const FALLOS = new Set()
+process.on('exit', () => {
+  if (FALLOS.size) console.log([...FALLOS].join('\n'))
+})
 function fila(row) {
+  if (process.env.CONV_TODOS) { try { return fila0(row) } catch (e) { FALLOS.add(e.message + "  <<" + row.texto + "|" + row.como + ">>"); return { tipo: "x", hora: row.hora, min: row.min, lugar: "x" } } }
+  return fila0(row)
+}
+function fila0(row) {
   const { hora, min } = row
   const texto = row.texto.replace(/\*\*/g, '').trim()
   const como = row.como
   const base = { hora, min, texto_documento: row.texto, como_documento: como }
   const colchon = /\(colchón\)/.test(texto)
-  const atardecer = /al atardecer/.test(texto)
+  const atardecer = /(al|del) atardecer/.test(texto) || /^Atardecer en/.test(texto)
   const nota = [...texto.matchAll(/\(([^)]+)\)/g)].map((m) => m[1]).filter((n) => n !== 'colchón' && !/^o /.test(n))
   const limpio = texto.replace(/\s*\([^)]*\)/g, '').trim()
   const out = { ...base, ...(colchon ? { colchon: true } : {}), ...(nota.length ? { nota: nota.join('; ') } : {}) }
@@ -204,7 +271,7 @@ function fila(row) {
     const [alt, tercera] = altTexto ? altTexto.split(/;\s*si cierran los dos,\s*/) : [null, null]
     const principal = first.replace(/,\s*(en|al lado|junto).*$/, '').trim()
     const zona = (first.match(/,\s*(en .+|al lado .+|junto .+)$/) ?? [])[1] ?? ((rest[0] ?? '').match(/,\s*(en .+)$/) ?? [])[1] ?? null
-    const full = (name) => RESTAURANTES[String(name).replace(/,.*$/, '').trim()] ?? null
+    const full = (name) => RESTAURANTES[/^en el Mercado de Testaccio/.test(name) ? 'Mordi e Vai' : String(name).replace(/,.*$/, '').trim()] ?? null
     const restaurante = full(principal)
     const alternativa = alt ? full(alt) : null
     const terceraFull = tercera ? full(tercera) : null
@@ -227,9 +294,9 @@ function fila(row) {
     const textoColchon = colchon ? colchonTexto(titulo) : null
     const extra = { ...(textoColchon ? { texto: textoColchon } : {}) }
     if (/^La Passeggiata/.test(limpio)) return { ...out, ...extra, ...(colchon && !textoColchon ? { texto: colchonTexto(limpio) } : {}), tipo: 'paseo', lugar: 'Mirador del Janículo', titulo: limpio }
-    const lugar = PASEO_LUGAR.find(([re]) => re.test(limpio))?.[1]
+    const [, lugar, foto] = PASEO_LUGAR.find(([re]) => re.test(limpio)) ?? []
     if (!lugar) throw new Error('Paseo sin lugar: ' + limpio)
-    return { ...out, ...extra, tipo: 'paseo', lugar, titulo }
+    return { ...out, ...extra, tipo: 'paseo', lugar, titulo, ...(foto ? { foto } : {}) }
   }
   // Paradas con lugar
   let modo = null
@@ -247,33 +314,23 @@ function fila(row) {
     const [, def] = frase
     if (def.titulo) titulo = def.paren ? texto : limpio
     nombre = def.lugar
+    if (def.modo) modo = def.modo
     if (def.paseo) {
       const textoColchon = colchon ? colchonTexto(limpio) : null
-      return { ...out, ...(textoColchon ? { texto: textoColchon } : {}), tipo: 'paseo', lugar: def.lugar, titulo: limpio }
+      return { ...out, ...(textoColchon ? { texto: textoColchon } : {}), tipo: 'paseo', lugar: def.lugar, titulo: limpio, ...(/reloj de agua/.test(limpio) ? { foto: 'Reloj de agua del Pincio' } : {}) }
     }
   }
   const lugar = LUGARES[nombre]
   if (!lugar) throw new Error('Lugar sin enlace: «' + limpio + '» → «' + nombre + '»')
-  const mod = atardecer ? 'atardecer' : modo
+  // («Al atardecer» con su «cómo» —por dentro, por fuera— sigue con su «cómo» y se marca `atardecer`: el motor lo ajusta al sol. Sin «cómo», el modo es atardecer, como siempre.)
+  const mod = atardecer && !modo ? 'atardecer' : modo
   const guia = (LARGO.has(lugar) && modo === 'dentro') || undefined
   const textoColchon = colchon ? colchonTexto(limpio) : null
-  return { ...out, ...(textoColchon ? { texto: textoColchon } : {}), tipo: 'parada', lugar, ...(titulo ? { titulo } : {}), modo: mod, ...(turno ? { turno: true, hora_tipo: 'turno' } : {}), ...(reserva ? { reserva: true, hora_tipo: 'reserva' } : {}), ...(guia ? { guia: true } : {}), ...(/Grutas/.test(texto) ? { con_grutas: true } : {}) }
+  return { ...out, ...(textoColchon ? { texto: textoColchon } : {}), tipo: 'parada', lugar, ...(titulo ? { titulo } : {}), modo: mod, ...(turno ? { turno: true, hora_tipo: 'turno' } : {}), ...(reserva ? { reserva: true, hora_tipo: 'reserva' } : {}), ...(guia ? { guia: true } : {}), ...(atardecer && modo ? { atardecer: true } : {}), ...(frase?.[1]?.campos ?? {}), ...(/Grutas/.test(texto) ? { con_grutas: true } : {}) }
 }
 
 // La primera fila de cada tabla (hora y texto): si el documento cambia de orden, el convertidor lo dice en vez de copiar otra tabla.
-const PRIMERA = {
-  1: '09:45 Plaza de San Pedro', 2: '10:00 Coliseo', 3: '09:00 Coliseo', 4: '17:45 Pasea', 5: '17:10 Campo', 6: '17:10 Campo',
-  7: '09:30 Plaza de San Pedro', 8: '15:00 Plaza de San Pedro', 9: '16:00 Plaza de San Pedro', 10: '08:00 Museos', 11: '13:45 Plaza de San Pedro',
-  12: '08:30 Coliseo', 13: '13:50 **Comida', 14: '13:50 **Comida', 15: '13:50 **Comida', 16: '13:50 **Comida', 17: '07:45 Basílica de San Juan', 18: '13:50 **Comida',
-  19: '08:00 Museos', 20: '15:50 Puente', 21: '15:50 Puente', 22: '15:50 Puente', 23: '07:45 Fontana de Trevi', 24: '13:50 Bus 40',
-  25: '08:30 Coliseo', 26: '16:40 Santa Maria in Trastevere', 27: '16:40 Santa Maria in Trastevere', 28: '16:40 Santa Maria in Trastevere',
-  29: '13:50 **Comida', 30: '07:45 Basílica de San Juan', 31: '13:50 **Comida',
-  32: '07:45 Fontana de Trevi', 33: '15:00 Plaza de España', 34: '15:00 Plaza de España', 35: '15:00 Plaza de España', 36: '16:00 Plaza de España', 37: '16:00 Plaza de España',
-  38: '07:40 Fontana de Trevi', 39: '15:00 Galería Borghese', 40: '15:00 Galería Borghese', 41: '15:00 Plaza de España', 42: '09:00 Fontana de Trevi', 43: '09:00 Plaza del Quirinal',
-  44: '08:00 Museos', 45: '08:00 Museos', 46: '08:00 Museos', 47: '09:00 Plaza de San Pedro', 48: '09:00 Plaza de San Pedro',
-  49: '09:00 Puente', 50: '09:00 Puente', 51: '09:00 Puente', 52: '08:30 Plaza de San Pedro', 53: '08:30 Plaza de San Pedro', 54: '08:30 Plaza de San Pedro', 55: '08:30 Plaza de San Pedro',
-  56: '09:00 Santa Maria in Trastevere', 57: '09:00 Santa Maria in Trastevere', 58: '07:45 Fontana de Trevi', 59: '07:45 Fontana de Trevi', 60: '08:30 Coliseo', 61: '08:30 Coliseo', 62: '08:30 Pasea',
-}
+const PRIMERA = JSON.parse(fs.readFileSync(new URL('./escritosPrimeras.json', import.meta.url), 'utf8'))
 const T = (n) => {
   const table = tables.find((t) => t.n === n)
   if (!table) throw new Error('Falta la tabla ' + n)
@@ -341,63 +398,64 @@ out['D0-medio'] = {
   nombre: 'Medio día del Vaticano',
   versiones: {
     manana: { unica: T(7) },
+    miercoles_manana: { unica: T(12) },
     manana_con_museos: { unica: T(10) },
     tarde_sin_museos: { AB: T(8), CD: T(9) },
     tarde_con_museos: { unica: T(11) },
   },
 }
 // ── D1 ───────────────────────────────────────────────────────────────────────────────────────
-const manana1 = T(12).filter((r) => r.tipo !== 'comida')
-const d1ab = [...manana1, ...T(13)]
+const manana1 = T(13).filter((r) => r.tipo !== 'comida')
+const d1ab = [...manana1, ...T(14)]
 out['D1'] = {
   id: 'D1',
   nombre: 'Día de la Roma antigua',
   versiones: {
-    normal: { AB: d1ab, C: d1ab.map((r) => ({ ...r, derivada: true })), D: [...manana1, ...T(14)] },
-    free_tour_tarde: { unica: T(60) },
-    free_tour_noche: { unica: T(61) },
+    normal: { AB: d1ab, C: d1ab.map((r) => ({ ...r, derivada: true })), D: [...manana1, ...T(15)] },
+    free_tour_tarde: { unica: T(81) },
+    free_tour_noche: { unica: T(82) },
   },
 }
 // ── D2 ───────────────────────────────────────────────────────────────────────────────────────
-const a2 = T(19)
+const a2 = T(20)
 out['D2'] = {
   id: 'D2',
   nombre: 'Día del Vaticano y Trastevere',
   versiones: {
     normal: {
       A: a2,
-      B: desdeA(a2, "Castillo de Sant'Angelo", 60, T(20)),
-      C: desdeA(a2, "Castillo de Sant'Angelo", 60, T(21)),
-      D: desdeA(a2, "Castillo de Sant'Angelo", 60, T(22)),
+      B: desdeA(a2, "Castillo de Sant'Angelo", 60, T(21)),
+      C: desdeA(a2, "Castillo de Sant'Angelo", 60, T(22)),
+      D: desdeA(a2, "Castillo de Sant'Angelo", 60, T(23)),
     },
-    miercoles: { A: T(44), B: T(45), CD: T(46) },
-    domingo: { AB: T(47), CD: T(48) },
-    miercoles_sin_museos: { A: T(49), B: T(50), CD: T(51) },
-    reserva_10_12: { AB: T(52), CD: T(53) },
-    reserva_13: { AB: T(54), CD: T(55) },
-    reserva_14_16: { ABC: T(56), D: T(57) },
-    fiesta: { unica: T(62) },
+    miercoles: { A: T(65), B: T(66), CD: T(67) },
+    domingo: { AB: T(68), CD: T(69) },
+    miercoles_sin_museos: { A: T(70), B: T(71), CD: T(72) },
+    reserva_10_12: { AB: T(73), CD: T(74) },
+    reserva_13: { AB: T(75), CD: T(76) },
+    reserva_14_16: { ABC: T(77), D: T(78) },
+    fiesta: { unica: T(83) },
   },
 }
 // ── D3 ───────────────────────────────────────────────────────────────────────────────────────
 // (La tabla C y D del documento empieza en el bus al Vaticano: la mañana, hasta la comida, es la de la A y la B.)
-const d3ab = T(23)
+const d3ab = T(24)
 out['D3'] = {
   id: 'D3',
   nombre: 'Día del Free Tour y el Vaticano por la tarde',
-  versiones: { normal: { AB: d3ab, CD: [...d3ab.slice(0, d3ab.findIndex((row) => row.tipo === 'comida') + 1), ...T(24)] }, domingo: { AB: T(58), CD: T(59) } },
+  versiones: { normal: { AB: d3ab, CD: [...d3ab.slice(0, d3ab.findIndex((row) => row.tipo === 'comida') + 1), ...T(25)] }, domingo: { AB: T(79), CD: T(80) } },
 }
 // ── D1-FT ────────────────────────────────────────────────────────────────────────────────────
-const a1ft = T(25)
+const a1ft = T(26)
 out['D1-FT'] = {
   id: 'D1-FT',
   nombre: 'Día de la Roma antigua, el Gueto y Trastevere',
   versiones: {
     normal: {
       A: a1ft,
-      B: hastaLugar(a1ft, 'Isla Tiberina', T(26)),
-      C: hastaLugar(a1ft, 'Isla Tiberina', T(27)),
-      D: hastaLugar(a1ft, 'Isla Tiberina', T(28)),
+      B: hastaLugar(a1ft, 'Isla Tiberina', T(27)),
+      C: hastaLugar(a1ft, 'Isla Tiberina', T(28)),
+      D: hastaLugar(a1ft, 'Isla Tiberina', T(29)),
     },
   },
 }
@@ -406,20 +464,60 @@ out['DT-medio'] = {
   id: 'DT-medio',
   nombre: 'Medio día del Tridente y el Pincio',
   versiones: {
-    manana: { unica: T(32) },
-    tarde: { A: T(33), B: T(35), C: T(36), D: T(37) },
-    tarde_invierno: { unica: T(34) },
+    manana: { unica: T(33) },
+    tarde: { A: T(34), B: T(36), C: T(37), D: T(38) },
+    tarde_invierno: { unica: T(35) },
   },
 }
 // ── DM-medio: medio día de Monti (2,5 días con Free Tour de mañana, por la mañana) ───────────────────
 out['DM-medio'] = {
   id: 'DM-medio',
   nombre: 'Medio día de Monti',
-  versiones: { manana: { unica: T(42) } },
+  versiones: { manana: { unica: T(43) } },
 }
+
+// ── Tanda 3: D4, DA-medio, D5, D6 y D7 ────────────────────────────────────────────────────────
+// (Lo que el documento dice que hace el motor —lunes, miércoles, cierres, Free Tour de mañana— no se copia aquí: lo hace el motor y lo apunta en el registro.
+// Aquí solo van las tablas escritas y lo que el documento reescribe a mano: el lunes del DA-medio y el lunes y el domingo del D5.)
+const copiar = (rows) => rows.map((row) => ({ ...row }))
+const unir = (manana, tardes) => Object.fromEntries(Object.entries(tardes).map(([letra, tarde]) => [letra, [...copiar(manana), ...tarde]]))
+// D4: Villa Borghese, el Popolo y la Plaza de España
+out['D4'] = { id: 'D4', nombre: 'Día de Villa Borghese, el Popolo y la Plaza de España', versiones: { normal: unir(T(45), { A: T(46), B: T(47), C: T(48), D: T(49) }) } }
+// DA-medio: el Aventino y Testaccio (mañana de vuelta)
+out['DA-medio'] = { id: 'DA-medio', nombre: 'Medio día del Aventino y Testaccio', versiones: { manana: { unica: T(50) }, lunes: { unica: T(51) } } }
+// D5: las basílicas y el Aventino
+const d5 = unir(T(52), { A: T(53), B: T(54), C: T(55), D: T(56) })
+// - Lunes: las Termas cierran: en B, C y D la tarde es como la A (el colchón del Aventino de la C se mete para llegar con el sol).
+// - Domingo: San Clemente solo abre por la tarde: Letrán a las 11:30, comida a las 12:45 y San Clemente a las 14:00, y el taxi sale de San Clemente.
+const reordenarDomingo = (rows) => {
+  const iComida = rows.findIndex((row) => row.tipo === 'comida')
+  const clemente = rows.find((row) => row.lugar === 'Basílica de San Clemente')
+  const letran = rows.find((row) => row.lugar === 'Basílica de San Juan de Letrán')
+  const antes = rows.slice(0, iComida).filter((row) => row !== clemente && row !== letran)
+  const d = 'domingo: San Clemente solo abre por la tarde'
+  return [...antes, { ...letran, hora: '11:30', derivada: d }, { ...rows[iComida], hora: '12:45', derivada: d }, { ...clemente, hora: '14:00', derivada: d }, ...rows.slice(iComida + 1)]
+}
+const colchonAventino = d5.C.find((row) => row.colchon && /Aventino/.test(row.titulo ?? row.texto_documento ?? ''))
+out['D5'] = {
+  id: 'D5',
+  nombre: 'Día de las basílicas y el Aventino',
+  versiones: {
+    normal: d5,
+    lunes: { A: d5.A, B: d5.A, C: d5.A, D: d5.A },
+    domingo: Object.fromEntries(Object.entries(d5).map(([letra, rows]) => [letra, reordenarDomingo(rows)])),
+  },
+  // (Una fila que el motor mete antes del mirador si la tarde llega pronto al sol: el lunes, sin Termas, para B, C y D.)
+  colchon_insertable: { dia_semana: 'lunes', fila: colchonAventino },
+}
+// D6: Roma desde arriba
+out['D6'] = { id: 'D6', nombre: 'Roma desde arriba', versiones: { normal: unir(T(57), { A: T(58), B: T(59), C: T(60), D: T(61) }) } }
+// D7: la Vía Appia y Trastevere tranquilo
+out['D7'] = { id: 'D7', nombre: 'La Vía Appia y Trastevere tranquilo', versiones: { normal: unir(T(62), { AB: T(63), CD: T(64) }) } }
 
 anadirExtras(out, { T, hastaLugar, hastaAntesDe })
 completarAlternativas(out)
+// Distancias (tanda 3): el hueco entre dos paradas da para lo que se anda de verdad más el margen; si no, se corren las horas y queda apuntado.
+const distancias = process.argv.includes('--sin-distancias') ? { cambios: [], fijos: [] } : corregirDistancias(out)
 
 // ── Escritura ────────────────────────────────────────────────────────────────────────────────
 const soloComprobar = process.argv.includes('--solo-comprobar')
@@ -429,4 +527,17 @@ for (const [id, day] of Object.entries(out)) {
   for (const group of Object.values(full.versiones)) for (const [k, rows] of Object.entries(group)) { group[k] = idRows(rows); filas += rows.length }
   if (!soloComprobar) fs.writeFileSync(root + `data/dias/roma/${id}.json`, JSON.stringify(full, null, 2) + '\n')
 }
+// El informe de las distancias: cada tramo que no llegaba y cómo se corrigió (o por qué no se pudo).
+if (!soloComprobar && !process.argv.includes('--sin-distancias')) {
+  const unicos = (lista, clave) => { const vistos = new Set(); return lista.filter((x) => { const k = clave(x); if (vistos.has(k)) return false; vistos.add(k); return true }) }
+  const cambios = unicos(distancias.cambios, (x) => `${x.dia}|${x.tramo}|${x.de}|${x.a}`)
+  const fijos = unicos(distancias.fijos, (x) => `${x.dia}|${x.tramo}|${x.hora}`)
+  const l = ['# Distancias de los días escritos (Tanda 3)', '', 'El hueco entre una parada y la siguiente tiene que dar para lo que se tarda andando de verdad (coordenadas de roma.json y el mismo cálculo que usa la app) más el margen del documento (10 min; 15 después de una visita guiada; lo «de camino», solo lo que se anda). Lo que no llegaba se ha corrido (solo hacia delante: la fila siguiente sale más tarde). **Redondeo hacia abajo** (provisional, ver PREGUNTAS_TANDA3): lo que se anda más el margen se redondea a 5 hacia abajo (el motor lo redondea hacia arriba), para no corregir tramos que solo fallan por 1 a 4 min de redondeo; corregirlo todo con el redondeo del motor (478 tramos en vez de estos) acumula hasta 20 min en un día y mueve la tarde entera. Lo hace el convertidor (`escritosConvertir.mjs`, con `distancias.mjs`), así que se repite solo cada vez que cambie el documento.', '', `**${cambios.length} tramos corregidos** (distintos, de ${distancias.cambios.length} apariciones en las tablas) y **${fijos.length} que no se pueden corregir** corriendo horas sin quitar una parada (ahí manda el documento: se dejan como están).`, '', '## Corregidos', '']
+  for (const x of cambios) l.push(`- **${x.dia}** (${x.donde}): ${x.tramo}: andando ${x.andar} min; ${x.fila}: ${x.de !== x.a ? `de las ${x.de} a las ${x.a}` : ''}${x.min_de !== x.min_a ? `${x.de !== x.a ? ' y ' : ''}de ${x.min_de} a ${x.min_a} min` : ''}`)
+  l.push('', '## Sin corregir (habría que quitar una parada)', '')
+  for (const x of fijos) l.push(`- **${x.dia}** (${x.donde}): ${x.tramo}: andando ${x.andar} min; faltan ${x.falta} min para llegar a las ${x.hora} (${x.porque})`)
+  fs.writeFileSync(root + 'docs/dias/DISTANCIAS_TANDA3.md', l.join('\n') + '\n')
+  console.log(`distancias: ${cambios.length} corregidas, ${fijos.length} sin corregir (fila fija)`)
+}
 console.log(`tablas ${tables.length}, días ${Object.keys(out).length}, filas copiadas ${filas}`)
+if (FALLOS.size) console.log([...FALLOS].join('\n'))

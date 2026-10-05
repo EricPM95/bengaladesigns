@@ -1,1694 +1,995 @@
 {
-  "_nota": "D4 reescrito (PARA_CODE_TODO_2026-10-01, paso 5.5): la Galería Borghese nunca va sola, siempre con el Parque de Villa Borghese, y nunca se cruza por la calle lo que se cruza por el parque. Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D4",
-  "nombre": "Trevi, la Borghese con su parque y el Popolo",
-  "nombre_empieza_tarde": "Trevi, la Borghese y el Popolo",
-  "joyas": [
-    "Fontana de Trevi"
-  ],
-  "no_en": [
-    {
-      "dia_semana": "lunes",
-      "si_lleva": "Galería Borghese"
-    }
-  ],
-  "barrio_cena": "tridente",
-  "noche": "escalinata",
-  "manana": {
-    "paradas": [
-      {
-        "lugar": "Fontana de Trevi",
-        "tipo": "fija",
-        "hora": "08:30",
-        "hora_tipo": "orientativa",
-        "min": 25
-      },
-      {
-        "lugar": "Desayuno romano",
-        "tipo": "opcional",
-        "min": 20
-      },
-      {
-        "lugar": "Plaza de España",
-        "min": 20
-      },
-      {
-        "lugar": "Trinità dei Monti",
-        "min": 10,
-        "modo": "dentro",
-        "si_cerrado": "fuera"
-      },
-      {
-        "lugar": "Parque de Villa Borghese",
-        "titulo": "El parque de Villa Borghese: Piazza di Siena, de camino a la Galería",
-        "modo": "camino",
-        "texto_titulo": null,
-        "foto": "Piazza di Siena"
-      },
-      {
-        "lugar": "Galería Borghese",
-        "tipo": "fija",
-        "hora": "11:00",
-        "hora_tipo": "turno",
-        "min": 120,
-        "modo": "dentro",
-        "entrada": true,
-        "turno": true,
-        "si_cerrado": {
-          "cambiar_por": {
-            "lugar": "Parque de Villa Borghese",
-            "min": 60,
-            "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-          }
-        }
-      }
-    ],
-    "comida": {
-      "restaurante": "Edy",
-      "alternativa": "Poldo e Gianna Osteria"
-    }
-  },
-  "tarde": {
-    "empieza": "14:45",
-    "A": {
-      "_sol": "antes de las 17:40: el parque primero, para llegar al Pincio con el atardecer; lo de abajo, después, ya con las luces; Plaza de España de noche y cena",
-      "empieza": "14:25",
-      "paradas": [
+  "nombre": "Día de Villa Borghese, el Popolo y la Plaza de España",
+  "versiones": {
+    "normal": {
+      "A": [
         {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:30",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_cerca_de_trevi",
+          "hora": "08:00",
+          "min": 30,
+          "texto_documento": "Desayuno cerca de Trevi",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno cerca de Trevi"
+        },
+        {
+          "id": "parada_fuente_del_triton",
+          "hora": "08:40",
+          "min": 5,
+          "texto_documento": "Fuente del Tritón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente del Tritón",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_veneto_la_calle_de_la_dolce_vita",
+          "hora": "08:50",
+          "min": 15,
+          "texto_documento": "Via Veneto, la calle de *La Dolce Vita*",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Veneto",
+          "titulo": "Via Veneto, la calle de *La Dolce Vita*",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 08:45"
+        },
+        {
+          "id": "parada_porta_pinciana",
+          "hora": "09:05",
+          "min": 5,
+          "texto_documento": "Porta Pinciana",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Porta Pinciana",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 09:00"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
+          "hora": "09:30",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+          "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
-          "min": 55,
-          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
-          "elastica": 30,
-          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena"
         },
         {
-          "lugar": "Jardines del Pincio",
-          "min": 20
+          "id": "parada_galeria_borghese",
+          "hora": "11:00",
+          "min": 120,
+          "texto_documento": "Galería Borghese",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Galería Borghese",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
         },
         {
-          "lugar": "Terraza del Pincio",
-          "modo": "atardecer"
-        },
-        {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
-          "lugar": "Santa Maria del Popolo",
+          "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
+          "hora": "13:20",
           "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        }
-      ],
-      "cena": {
-        "restaurante": "Il Gabriello",
-        "alternativa": "Sgarro Bistrot",
-        "hora": "19:30"
-      }
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44: se baja por el parque y se vuelve a subir al Pincio para el atardecer",
-      "empieza": "14:35",
-      "paradas": [
-        {
+          "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "como_documento": "",
+          "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
-          "min": 55,
-          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
-          "elastica": 30,
-          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+          "titulo": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "foto": "Reloj de agua del Pincio"
         },
         {
-          "lugar": "Jardines del Pincio",
-          "min": 20
-        },
-        {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Santa Maria del Popolo",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "14:05",
+          "min": 20,
+          "texto_documento": "Terraza del Pincio",
+          "como_documento": "",
+          "tipo": "parada",
           "lugar": "Terraza del Pincio",
-          "modo": "atardecer"
-        }
-      ],
-      "cena": {
-        "restaurante": "Il Gabriello",
-        "alternativa": "Sgarro Bistrot",
-        "hora": "20:00"
-      }
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44: igual que B, con la tarde más larga",
-      "paradas": [
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
         {
-          "lugar": "Parque de Villa Borghese",
+          "id": "comida_sgarro_bistrot",
+          "hora": "14:40",
           "min": 60,
-          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
-          "elastica": 30,
-          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+          "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Sgarro Bistrot",
+          "alternativa": "Buccone Vini e Olii"
         },
         {
-          "lugar": "Jardines del Pincio",
-          "min": 20
-        },
-        {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
-          "lugar": "Santa Maria del Popolo",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Via del Babuino",
+          "id": "parada_piazza_del_popolo",
+          "hora": "15:55",
           "min": 15,
-          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
-          "no_calle": true,
-          "elastica": 30,
-          "una_vez": true,
-          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
         },
         {
-          "lugar": "Terraza del Pincio",
-          "modo": "atardecer"
+          "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
+          "hora": "16:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio; abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_ara_pacis",
+          "hora": "17:05",
+          "min": 45,
+          "texto_documento": "Ara Pacis (última entrada 18:30)",
+          "como_documento": "por dentro",
+          "nota": "última entrada 18:30",
+          "tipo": "parada",
+          "lugar": "Ara Pacis",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_condotti",
+          "hora": "18:00",
+          "min": 10,
+          "texto_documento": "Via Condotti",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Condotti",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
+          "hora": "18:55",
+          "min": 15,
+          "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España (ya iluminada)",
+          "como_documento": "por dentro",
+          "nota": "ya iluminada",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "19:15",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "19:45",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:25",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "21:45",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
         }
       ],
-      "cena": {
-        "restaurante": "Il Gabriello",
-        "alternativa": "Sgarro Bistrot",
-        "hora": "19:30"
-      }
-    },
-    "D": {
-      "_sol": "desde las 19:45: la cena en el Tridente y, después, la Terraza del Pincio de noche o la Plaza de España",
-      "empieza": "15:15",
-      "paradas": [
+      "B": [
         {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:30",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_cerca_de_trevi",
+          "hora": "08:00",
+          "min": 30,
+          "texto_documento": "Desayuno cerca de Trevi",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno cerca de Trevi"
+        },
+        {
+          "id": "parada_fuente_del_triton",
+          "hora": "08:40",
+          "min": 5,
+          "texto_documento": "Fuente del Tritón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente del Tritón",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_veneto_la_calle_de_la_dolce_vita",
+          "hora": "08:50",
+          "min": 15,
+          "texto_documento": "Via Veneto, la calle de *La Dolce Vita*",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Veneto",
+          "titulo": "Via Veneto, la calle de *La Dolce Vita*",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 08:45"
+        },
+        {
+          "id": "parada_porta_pinciana",
+          "hora": "09:05",
+          "min": 5,
+          "texto_documento": "Porta Pinciana",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Porta Pinciana",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 09:00"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
+          "hora": "09:30",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+          "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
-          "min": 55,
-          "titulo": "El lago y el Templo de Esculapio, en Villa Borghese",
-          "elastica": 30,
-          "foto": "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena"
         },
         {
-          "lugar": "Jardines del Pincio",
-          "min": 20
+          "id": "parada_galeria_borghese",
+          "hora": "11:00",
+          "min": 120,
+          "texto_documento": "Galería Borghese",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Galería Borghese",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
         },
         {
-          "lugar": "Piazza del Popolo",
-          "min": 10
-        },
-        {
-          "lugar": "Santa Maria del Popolo",
+          "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
+          "hora": "13:20",
           "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "foto": "Reloj de agua del Pincio"
         },
         {
-          "lugar": "Ara Pacis",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera"
+          "id": "parada_terraza_del_pincio",
+          "hora": "14:05",
+          "min": 20,
+          "texto_documento": "Terraza del Pincio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:00"
         },
         {
-          "lugar": "Via del Babuino",
+          "id": "comida_sgarro_bistrot",
+          "hora": "14:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Sgarro Bistrot",
+          "alternativa": "Buccone Vini e Olii"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "15:55",
           "min": 15,
-          "titulo": "Pasea y piérdete por Via del Babuino y Via Margutta",
-          "no_calle": true,
-          "elastica": 30,
-          "una_vez": true,
-          "texto": "Desde Piazza del Popolo, por Via del Babuino y Via Margutta: la calle de los artistas, con sus galerías y talleres, lejos del bullicio de la escalinata."
-        }
-      ],
-      "cena": {
-        "restaurante": "Il Gabriello",
-        "alternativa": "Sgarro Bistrot",
-        "hora": "20:30"
-      }
-    }
-  },
-  "variantes": {
-    "lunes": {
-      "_nota": "La Galería y la GNAM cierran los lunes; el orden de los días ya evita D4 en lunes (no_en). Por si no hay otro día: el parque por la mañana y, por la tarde, los jardines en lugar del lago.",
-      "manana": {
-        "cambiar": {
-          "Galería Borghese": {
-            "lugar": "Parque de Villa Borghese",
-            "min": 75,
-            "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago"
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
+          "hora": "16:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio; abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_del_babuino_y_via_margutta",
+          "hora": "16:50",
+          "min": 10,
+          "texto_documento": "Via del Babuino y Via Margutta",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via del Babuino",
+          "titulo": "Via del Babuino y Via Margutta",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "17:15",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
+          "hora": "17:50",
+          "min": 30,
+          "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador, al atardecer",
+          "modo": "dentro",
+          "atardecer": true
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "18:25",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
+          "hora": "18:45",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
+          "tipo": "paseo",
+          "lugar": "Via del Babuino",
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
+          "hora_corregida": "distancia: lo escrito era 18:40"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "21:40",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
         },
-        "insertar": [
-          {
-            "despues_de": "Parque de Villa Borghese",
-            "parada": {
-              "lugar": "Porta Pinciana",
-              "min": 20,
-              "titulo": "La Porta Pinciana y Via Veneto",
-              "modo": "camino"
-            }
-          }
-        ]
-      },
-      "tarde.*": {
-        "cambiar": {
-          "Parque de Villa Borghese": {
-            "lugar": "Jardines del Pincio",
-            "min": 60,
-            "elastica": 30
-          }
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "22:00",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
         }
-      }
-    },
-    "domingo": {
-      "_nota": "Edy e Il Gabriello cierran el domingo. en A, por fuera si no llega (PARA_CODE_TODO_2026-10-01, paso 5.5).",
-      "manana": {
-        "restaurante": {
-          "comida": "Poldo e Gianna Osteria",
-          "alternativa": "Sgarro Bistrot"
-        }
-      },
-      "tarde.*": {
-        "restaurante": {
-          "cena": "Sgarro Bistrot",
-          "alternativa": "Il Gabriello"
-        }
-      }
-    },
-    "con_free_tour": {
-      "_nota": "Con Free Tour, Trevi y la Plaza de España las enseña el tour: cambia solo la mañana. El Castillo por dentro a la apertura (con Free Tour no hay D2 y, con 4 días o más, el Castillo va por dentro) y en taxi a la Galería de las 11:00. El Puente Sant'Angelo ya va el día del Vaticano, al atardecer (PARA_CODE_TARDE_VATICANO, 6): aquí, directo al Castillo.",
-      "nombre": "El Castillo, la Borghese y el Popolo",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Castillo de Sant'Angelo",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "orientativa",
-            "min": 20,
-            "modo": "fuera",
-            "una_vez": true
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 15,
-            "titulo": "El parque de Villa Borghese: Piazza di Siena, de camino a la Galería",
-            "foto": "Piazza di Siena",
-            "traslado": {
-              "como": "un taxi (unos 15 min)",
-              "min": 20
-            }
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "11:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago",
-                "traslado": {
-                  "como": "un taxi (unos 15 min)",
-                  "min": 20
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "fecha:01-01": {
-      "_nota": "1 de enero: la Galería Borghese y el Castillo cierran (webs oficiales, 2026-09-30); el Ara Pacis se deja fuera (sin horario oficial de ese día). Por la mañana, de Trevi al parque; por la tarde, la de siempre sin el Ara Pacis.",
-      "manana": {
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "tipo": "fija",
-            "hora": "09:30",
-            "hora_tipo": "orientativa",
-            "min": 25,
-            "no_si_dia": [
-              "D3"
-            ]
-          },
-          {
-            "lugar": "Via Condotti",
-            "modo": "camino",
-            "tipo": "fija",
-            "hora": "10:05",
-            "hora_tipo": "orientativa"
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago",
-            "min": 60
-          }
-        ]
-      },
-      "tarde.*": {
-        "quitar": [
-          "Ara Pacis",
-          "Parque de Villa Borghese"
-        ]
-      },
-      "nombre": "Año Nuevo: Trevi, el Pincio y el Popolo",
-      "tarde.A": {
-        "ajustar": {
-          "Jardines del Pincio": {
-            "min": 75
-          }
-        }
-      }
-    },
-    "fecha:12-25": {
-      "_nota": "Navidad: la Galería Borghese y el Castillo cierran. Con Free Tour, la mañana empieza más tarde (el Castillo por fuera desde el puente) y el parque es el paseo largo de la mañana.",
-      "manana": {
-        "ajustar": {
-          "Puente Sant'Angelo": {
-            "hora": "10:15"
-          },
-          "Castillo de Sant'Angelo": {
-            "hora": "10:30"
-          },
-          "Galería Borghese": {
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 85,
-                "titulo": "El parque de Villa Borghese: Piazza di Siena y el lago",
-                "traslado": {
-                  "como": "un taxi (unos 15 min)",
-                  "min": 20
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "fecha:01-06": {
-      "_nota": "6 de enero (PROMPT_REPASO_LOCAL_ROMA, 5; decisión del usuario, 2026-10-01): es el último día del mercadillo de Navidad y la fiesta acaba a las 14:00 con la llegada de la Befana, así que Navona va por la mañana, antes de las 13:30: de San Ignacio, por el Panteón, a diez minutos. Después, en taxi a la Galería Borghese (11:00); la Plaza de España y la Trinità, ese día, se ven de noche. Con Free Tour, entre el Castillo (más corto) y la Galería. De noche, el Coliseo: Navona ya se ha visto ese día.",
-      "manana": {
-        "quitar": [
-          "Via Condotti",
-          "Plaza de España",
-          "Trinità dei Monti"
-        ],
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Piazza Navona",
-              "titulo": "Piazza Navona y su mercadillo navideño",
-              "min": 25,
-              "texto": "El 6 de enero es el último día del mercadillo de Navidad de Piazza Navona: puestos de dulces, belenes y el carbón de azúcar que se regala en Reyes, con la Fuente de los Cuatro Ríos en medio. Ven por la mañana: la fiesta acaba a las 14:00.",
-              "verificar": "El mercadillo acaba el 6 de enero y la fiesta termina a las 14:00, con la llegada de la Befana (turismoroma.it, «Festa di Piazza Navona 2025»): confirmar cada año.",
-              "revisita": "Ya pasaste por Piazza Navona {dia}; vuelves porque hoy es el último día del mercadillo de Navidad, y acaba a las 14:00."
-            },
-            "antes_de": "Parque de Villa Borghese"
-          }
-        ],
-        "ajustar": {
-          "Galería Borghese": {
-            "traslado": {
-              "como": "un taxi",
-              "min": 15
-            }
-          },
-          "Castillo de Sant'Angelo": {
-            "min": 55
-          }
-        }
-      },
-      "noche": "coliseo"
-    },
-    "entrada:mediodia": {
-      "_nota": "Orden 2 (entrada de 12:00 a 14:00): Trevi a las 8:30, la Plaza de España y el Parque de Villa Borghese de camino a la Galería; comida en el Tridente; por la tarde el lago, el Pincio (al atardecer en A, B y C; de día en D), Piazza del Popolo y Santa Maria del Popolo, y el Ara Pacis solo en D y si abre.",
-      "manana": {
-        "empieza": "08:30",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "tipo": "fija",
-            "hora": "08:30",
-            "hora_tipo": "orientativa",
-            "min": 25
-          },
-          {
-            "lugar": "Desayuno romano",
-            "tipo": "opcional",
-            "min": 20
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 20,
-            "elastica": 30,
-            "titulo": "Camino de la Galería, por el parque y Piazza di Siena"
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "13:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          }
-        ],
-        "comida": {
-          "restaurante": "Edy",
-          "alternativa": "Poldo e Gianna Osteria"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
+      ],
+      "C": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:30",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_cerca_de_trevi",
+          "hora": "08:00",
+          "min": 30,
+          "texto_documento": "Desayuno cerca de Trevi",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno cerca de Trevi"
+        },
+        {
+          "id": "parada_fuente_del_triton",
+          "hora": "08:40",
+          "min": 5,
+          "texto_documento": "Fuente del Tritón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente del Tritón",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_veneto_la_calle_de_la_dolce_vita",
+          "hora": "08:50",
+          "min": 15,
+          "texto_documento": "Via Veneto, la calle de *La Dolce Vita*",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Veneto",
+          "titulo": "Via Veneto, la calle de *La Dolce Vita*",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 08:45"
+        },
+        {
+          "id": "parada_porta_pinciana",
+          "hora": "09:05",
+          "min": 5,
+          "texto_documento": "Porta Pinciana",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Porta Pinciana",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 09:00"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
+          "hora": "09:30",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena"
+        },
+        {
+          "id": "parada_galeria_borghese",
+          "hora": "11:00",
+          "min": 120,
+          "texto_documento": "Galería Borghese",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Galería Borghese",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
+          "hora": "13:20",
+          "min": 25,
+          "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "foto": "Reloj de agua del Pincio"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "14:05",
+          "min": 20,
+          "texto_documento": "Terraza del Pincio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
+        {
+          "id": "comida_sgarro_bistrot",
+          "hora": "14:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Sgarro Bistrot",
+          "alternativa": "Buccone Vini e Olii"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "15:55",
+          "min": 15,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
+          "hora": "16:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio; abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_ara_pacis",
+          "hora": "17:05",
+          "min": 45,
+          "texto_documento": "Ara Pacis (última entrada 18:30)",
+          "como_documento": "por dentro",
+          "nota": "última entrada 18:30",
+          "tipo": "parada",
+          "lugar": "Ara Pacis",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_condotti",
+          "hora": "18:00",
+          "min": 10,
+          "texto_documento": "Via Condotti",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Condotti",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
+          "hora": "18:55",
+          "min": 30,
+          "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
+          "como_documento": "por fuera (la iglesia cierra a las 19:45)",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador, al atardecer",
+          "modo": "fuera",
+          "atardecer": true
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "19:30",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_tridente_iluminado_via_margutta_via_del_babuino_via_della_croce_y_el_caffe_greco",
+          "hora": "19:50",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
+          "tipo": "paseo",
+          "lugar": "Via del Babuino",
+          "titulo": "Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco",
+          "hora_corregida": "distancia: lo escrito era 19:45"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "20:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
           "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "22:10",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
             "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:00"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Ara Pacis",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:30"
-        }
-      }
-    },
-    "entrada:tarde": {
-      "_nota": "Orden 3 (entrada de 15:00 a 17:45): Trevi a las 8:30, la Plaza de España, el paseo del Tridente (una sola vez en el viaje), Santa Maria del Popolo y el Ara Pacis por la mañana; comida en el Tridente; el Pincio de día, el parque y la Galería. Al salir, en B, C y D, la Terraza del Pincio al atardecer si se llega antes de la puesta (unos 15 min andando); en A, el sol se pone durante la Galería.",
-      "manana": {
-        "empieza": "08:30",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "tipo": "fija",
-            "hora": "08:30",
-            "hora_tipo": "orientativa",
-            "min": 25
-          },
-          {
-            "lugar": "Desayuno romano",
-            "tipo": "opcional",
-            "min": 20
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 30,
-            "titulo": "Pasea y piérdete por el Tridente",
-            "no_calle": true,
-            "elastica": 30,
-            "una_vez": true
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Ara Pacis",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "comida": {
-          "restaurante": "Edy",
-          "alternativa": "Poldo e Gianna Osteria"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10,
-            "titulo": "La Terraza del Pincio, de día"
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10,
-            "titulo": "La Terraza del Pincio, de día"
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:00"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10,
-            "titulo": "La Terraza del Pincio, de día"
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10,
-            "titulo": "La Terraza del Pincio, de día"
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 30,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "16:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:30"
-        }
-      }
-    },
-    "entrada:nueve": {
-      "_nota": "Entrada a las 9:00: la Galería lo primero. Trevi, la Plaza de España y la Trinità dei Monti, por la tarde (la nocturna de Trevi no repite el mismo día si la visita fue por la tarde: regla 3).",
-      "manana": {
-        "empieza": "08:30",
-        "paradas": [
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 20,
-            "elastica": 30,
-            "titulo": "Camino de la Galería, por el parque y Piazza di Siena"
-          }
-        ],
-        "comida": {
-          "restaurante": "Edy",
-          "alternativa": "Poldo e Gianna Osteria"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "min": 25
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "min": 25
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:00"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "min": 25
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "min": 25
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Ara Pacis",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:30"
-        }
-      }
-    },
-    "entrada:diez": {
-      "_nota": "Entrada a las 10:00: Trevi a las 8:00 y de ahí a la Galería (el tiempo de más es margen: regla 2). La Plaza de España y la Trinità dei Monti pasan a la tarde.",
-      "manana": {
-        "empieza": "07:30",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "tipo": "fija",
-            "hora": "08:00",
-            "hora_tipo": "orientativa",
-            "min": 25
-          },
-          {
-            "lugar": "Desayuno romano",
-            "tipo": "opcional",
-            "min": 20
-          },
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 20,
-            "elastica": 30,
-            "titulo": "Camino de la Galería, por el parque y Piazza di Siena"
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "10:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          }
-        ],
-        "comida": {
-          "restaurante": "Edy",
-          "alternativa": "Poldo e Gianna Osteria"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:00"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "min": 10
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Ara Pacis",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:30"
-        }
-      }
-    },
-    "entrada:quince": {
-      "_nota": "Entrada a las 15:00: por la mañana lo de siempre (Trevi, Plaza de España, Tridente, Santa Maria del Popolo, Ara Pacis); antes de la Galería solo la comida y el Parque de Villa Borghese (elástica); los Jardines y la Terraza del Pincio, después, al atardecer.",
-      "manana": {
-        "empieza": "08:30",
-        "paradas": [
-          {
-            "lugar": "Fontana de Trevi",
-            "tipo": "fija",
-            "hora": "08:30",
-            "hora_tipo": "orientativa",
-            "min": 25
-          },
-          {
-            "lugar": "Desayuno romano",
-            "tipo": "opcional",
-            "min": 20
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 10
-          },
-          {
-            "lugar": "Plaza de España",
-            "min": 20
-          },
-          {
-            "lugar": "Trinità dei Monti",
-            "min": 10,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Via Condotti",
-            "min": 30,
-            "titulo": "Pasea y piérdete por el Tridente",
-            "no_calle": true,
-            "elastica": 30,
-            "una_vez": true
-          },
-          {
-            "lugar": "Piazza del Popolo",
-            "min": 10
-          },
-          {
-            "lugar": "Santa Maria del Popolo",
-            "min": 25,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          },
-          {
-            "lugar": "Ara Pacis",
-            "min": 45,
-            "modo": "dentro",
-            "si_cerrado": "fuera"
-          }
-        ],
-        "comida": {
-          "restaurante": "Edy",
-          "alternativa": "Poldo e Gianna Osteria"
-        }
-      },
-      "tarde.A": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 40,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer",
-            "tipo": "opcional"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.B": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 40,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:00"
-        }
-      },
-      "tarde.C": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 40,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "19:30"
-        }
-      },
-      "tarde.D": {
-        "empieza": "12:00",
-        "paradas": [
-          {
-            "lugar": "Parque de Villa Borghese",
-            "min": 40,
-            "titulo": "El lago y el Templo de Esculapio",
-            "elastica": 30
-          },
-          {
-            "lugar": "Galería Borghese",
-            "tipo": "fija",
-            "hora": "15:00",
-            "hora_tipo": "turno",
-            "min": 120,
-            "modo": "dentro",
-            "entrada": true,
-            "turno": true,
-            "si_cerrado": {
-              "cambiar_por": {
-                "lugar": "Parque de Villa Borghese",
-                "min": 60,
-                "titulo": "El parque de Villa Borghese: el lago y el Templo de Esculapio"
-              }
-            }
-          },
-          {
-            "lugar": "Jardines del Pincio",
-            "min": 20
-          },
-          {
-            "lugar": "Terraza del Pincio",
-            "modo": "atardecer"
-          }
-        ],
-        "cena": {
-          "restaurante": "Il Gabriello",
-          "alternativa": "Sgarro Bistrot",
-          "hora": "20:30"
-        }
-      }
-    },
-    "free_tour_despues:manana": {
-      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De mañana (10:00): el tour sustituye la mañana del centro: Trevi temprano, a las 8:00, antes del tour; la Galería pasa a su orden de tarde. Se quita lo que el tour ya enseña (Via Condotti, Plaza de España, Trinità dei Monti) y lo que queda de la mañana al otro lado de la ciudad.",
-      "usa_entrada": "tarde",
-      "manana": {
-        "empieza": "07:30",
-        "quitar": [
-          "Via Condotti",
-          "Via Condotti",
-          "Plaza de España",
-          "Trinità dei Monti",
-          "Piazza del Popolo",
-          "Santa Maria del Popolo",
-          "Ara Pacis"
-        ],
-        "ajustar": {
-          "Fontana de Trevi": {
-            "hora": "08:00",
-            "tipo": "fija"
           }
         },
-        "insertar": [
-          {
-            "despues_de": "Desayuno romano",
-            "parada": {
-              "lugar": "Free Tour Centro Histórico",
-              "tipo": "fija",
-              "hora": "10:00",
-              "hora_tipo": "turno",
-              "min": 150,
-              "modo": "parada"
-            }
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "22:30",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "07:30",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "desayuno_desayuno_cerca_de_trevi",
+          "hora": "08:00",
+          "min": 30,
+          "texto_documento": "Desayuno cerca de Trevi",
+          "como_documento": "",
+          "tipo": "desayuno",
+          "lugar": "Desayuno romano",
+          "titulo": "Desayuno cerca de Trevi"
+        },
+        {
+          "id": "parada_fuente_del_triton",
+          "hora": "08:40",
+          "min": 5,
+          "texto_documento": "Fuente del Tritón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Fuente del Tritón",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_veneto_la_calle_de_la_dolce_vita",
+          "hora": "08:50",
+          "min": 15,
+          "texto_documento": "Via Veneto, la calle de *La Dolce Vita*",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Veneto",
+          "titulo": "Via Veneto, la calle de *La Dolce Vita*",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 08:45"
+        },
+        {
+          "id": "parada_porta_pinciana",
+          "hora": "09:05",
+          "min": 5,
+          "texto_documento": "Porta Pinciana",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Porta Pinciana",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 09:00"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_la_fontana_dei_cavalli_marini_y_la_piazza_di_siena",
+          "hora": "09:30",
+          "min": 40,
+          "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena"
+        },
+        {
+          "id": "parada_galeria_borghese",
+          "hora": "11:00",
+          "min": 120,
+          "texto_documento": "Galería Borghese",
+          "como_documento": "por dentro (reserva)",
+          "tipo": "parada",
+          "lugar": "Galería Borghese",
+          "modo": "dentro",
+          "reserva": true,
+          "hora_tipo": "reserva",
+          "guia": true
+        },
+        {
+          "id": "paseo_pasea_por_villa_borghese_hasta_el_pincio_el_reloj_de_agua_y_el_viale_delle_magnolie",
+          "hora": "13:20",
+          "min": 25,
+          "texto_documento": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Parque de Villa Borghese",
+          "titulo": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "foto": "Reloj de agua del Pincio"
+        },
+        {
+          "id": "parada_terraza_del_pincio",
+          "hora": "14:05",
+          "min": 20,
+          "texto_documento": "Terraza del Pincio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Terraza del Pincio",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
+        {
+          "id": "comida_sgarro_bistrot",
+          "hora": "14:40",
+          "min": 60,
+          "texto_documento": "**Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Sgarro Bistrot",
+          "alternativa": "Buccone Vini e Olii"
+        },
+        {
+          "id": "parada_piazza_del_popolo",
+          "hora": "15:55",
+          "min": 15,
+          "texto_documento": "Piazza del Popolo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza del Popolo",
+          "modo": null
+        },
+        {
+          "id": "parada_santa_maria_del_popolo_los_caravaggio_abre_a_las_16_00",
+          "hora": "16:25",
+          "min": 20,
+          "texto_documento": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "como_documento": "por dentro",
+          "nota": "los Caravaggio; abre a las 16:00",
+          "tipo": "parada",
+          "lugar": "Santa Maria del Popolo",
+          "titulo": "Santa Maria del Popolo (los Caravaggio; abre a las 16:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_ara_pacis",
+          "hora": "17:05",
+          "min": 45,
+          "texto_documento": "Ara Pacis (última entrada 18:30)",
+          "como_documento": "por dentro",
+          "nota": "última entrada 18:30",
+          "tipo": "parada",
+          "lugar": "Ara Pacis",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_via_condotti",
+          "hora": "18:00",
+          "min": 10,
+          "texto_documento": "Via Condotti",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via Condotti",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "18:25",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_tridente_via_margutta_via_del_babuino_via_della_croce_y_el_caffe_greco",
+          "hora": "19:00",
+          "min": 60,
+          "texto_documento": "Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco.",
+          "tipo": "paseo",
+          "lugar": "Via del Babuino",
+          "titulo": "Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco",
+          "hora_corregida": "distancia: lo escrito era 18:55"
+        },
+        {
+          "id": "parada_trinita_dei_monti_y_su_mirador_al_atardecer",
+          "hora": "20:15",
+          "min": 30,
+          "texto_documento": "Trinità dei Monti y su mirador, al atardecer",
+          "como_documento": "por fuera (la iglesia cierra a las 19:45)",
+          "tipo": "parada",
+          "lugar": "Trinità dei Monti",
+          "titulo": "Trinità dei Monti y su mirador, al atardecer",
+          "modo": "fuera",
+          "atardecer": true,
+          "hora_corregida": "distancia: lo escrito era 20:05"
+        },
+        {
+          "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
+          "hora": "20:45",
+          "min": 5,
+          "texto_documento": "Bajar la escalinata de la Plaza de España",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "titulo": "Bajar la escalinata de la Plaza de España",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 20:40"
+        },
+        {
+          "id": "cena_il_gabriello",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Il Gabriello",
+          "alternativa": "Poldo e Gianna Osteria",
+          "zona": "en el Tridente"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "22:40",
+          "min": 10,
+          "texto_documento": "Taxi al Coliseo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
-        ]
-      }
-    },
-    "free_tour_despues:noche": {
-      "_nota": "Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada. De noche: el tour sustituye la nocturna de ese día (Trevi, Navona y Plaza de España iluminadas); el centro de día se queda y la cena va después del tour.",
-      "noche": "sin_paseo",
-      "tarde.*": {
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Free Tour Centro Histórico",
-              "tipo": "fija",
-              "hora": "18:30",
-              "hora_tipo": "turno",
-              "min": 150,
-              "modo": "parada"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "experiencias": {
-    "mercadillos_navidenos": {
-      "_nota": "Navidad: el paseo de las luces al final de la tarde, antes de cenar en el Tridente. Solo en sus fechas.",
-      "tarde.*": {
-        "insertar": [
-          {
-            "parada": {
-              "lugar": "Luces de Navidad del Tridente",
-              "titulo": "Via del Corso, Condotti, Babuino y Margutta, con sus luces de Navidad",
-              "min": 40,
-              "no_calle": true,
-              "si_cerrado": "quitar"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "entradas": {
-    "Galería Borghese": {
-      "manana": [
-        "10:30",
-        "11:00"
-      ],
-      "nueve": [
-        "09:00",
-        "09:30"
-      ],
-      "diez": [
-        "10:00",
-        "10:29"
-      ],
-      "mediodia": [
-        "12:00",
-        "14:00"
-      ],
-      "quince": [
-        "15:00",
-        "15:29"
-      ],
-      "tarde": [
-        "15:30",
-        "17:45"
+        },
+        {
+          "id": "noche_coliseo_noche",
+          "hora": "23:00",
+          "min": 20,
+          "texto_documento": "Coliseo iluminado",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Coliseo (noche)"
+        }
       ]
     }
   },
-  "_nota_entradas": "Entrada reservada a la Galería Borghese (3-oct-2026): `entrada:nueve` (9:00), `entrada:diez` (10:00), el orden de siempre (10:30-11:00), `entrada:mediodia` (12:00-14:00), `entrada:quince` (15:00) y `entrada:tarde` (15:30-17:45). La hora de la Galería de cada variante es solo un ejemplo: la que vale es la reservada."
+  "fechas_malas": {
+    "cerrado": [
+      "Galería Borghese"
+    ]
+  },
+  "noche_si_repetida": [
+    "Fontana de Trevi (noche)"
+  ],
+  "cierres": {
+    "Galería Borghese": {
+      "causa": "la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua",
+      "no_incluido": true,
+      "acciones": [
+        {
+          "op": "quitar",
+          "fila": "Galería Borghese"
+        },
+        {
+          "op": "cambiar",
+          "fila": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena",
+          "min": 120
+        },
+        {
+          "op": "cambiar",
+          "fila": "Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie",
+          "hora": "11:35"
+        }
+      ]
+    }
+  },
+  "pool": {},
+  "experiencias": {
+    "naturaleza_vistas": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena",
+          "min": 60
+        },
+        {
+          "op": "cambiar",
+          "fila": "Fontana de Trevi",
+          "hora": "07:15"
+        }
+      ],
+      "por_version": {
+        "A": [
+          {
+            "op": "cambiar",
+            "fila": "Trinità dei Monti",
+            "lugar": "Terraza del Pincio",
+            "titulo": "Terraza del Pincio, al atardecer",
+            "modo": "atardecer",
+            "min": 30
+          }
+        ]
+      }
+    },
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "colchon:Tridente",
+          "lugar": "Luces de Navidad del Tridente",
+          "titulo": "Luces de Navidad del Tridente",
+          "texto": null
+        }
+      ]
+    }
+  }
 }

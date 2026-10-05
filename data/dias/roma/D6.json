@@ -1,220 +1,826 @@
 {
-  "_nota": "D6 escrito (2026-09-29): la mañana es la media jornada a Ostia Antica (08:00-14:00); la tarde, desde las 16:00, las basílicas, Monti y los Foros al atardecer.",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D6",
-  "nombre": "Ostia Antica, las basílicas y Monti",
-  "joyas": [],
-  "no_en": [
-    {
-      "fecha": "easter-2",
-      "evitar": true,
-      "nota": "Viernes Santo: la zona del Coliseo se corta por la tarde por el Via Crucis. Si el viaje tiene otro día para este, ese."
-    }
-  ],
-  "barrio_cena": "monti",
-  "noche": "coliseo",
-  "manana": {
-    "paradas": [],
-    "comida": {
-      "restaurante": "Felice a Testaccio",
-      "alternativa": "Mordi e Vai",
-      "junto_a": "Pirámide Cestia",
-      "_nota": "Al volver de Ostia (el tren llega a Porta San Paolo, junto a la Pirámide), se come en Testaccio, a cinco minutos."
-    }
-  },
-  "tarde": {
-    "empieza": "16:00",
-    "A": {
-      "_sol": "antes de las 17:40: los Foros al atardecer nada más volver; luego Santa María la Mayor y Monti, para el aperitivo y la cena (Monti una sola vez, PROMPT_REPASO_LOCAL_ROMA, 3)",
-      "paradas": [
+  "nombre": "Roma desde arriba",
+  "versiones": {
+    "normal": {
+      "A": [
         {
-          "lugar": "Via dei Fori Imperiali",
-          "modo": "atardecer",
-          "lead": 20,
-          "no_calle": true,
-          "una_vez": true
+          "id": "parada_cupula_de_san_pedro",
+          "hora": "08:00",
+          "min": 75,
+          "texto_documento": "Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica)",
+          "como_documento": "por dentro",
+          "nota": "a pie o con ascensor; se sale por la Basílica",
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "modo": "dentro"
         },
         {
-          "lugar": "Basílica de Santa María la Mayor",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:20",
+          "min": 5,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": "camino"
         },
         {
-          "lugar": "Monti",
-          "min": 38,
-          "una_vez": true
-        }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Monti",
-        "alternativa": "Trattoria Valentino",
-        "hora": "19:30"
-      },
-      "nombre": "Ostia Antica, los Foros al atardecer y Monti"
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44: San Clemente y el Moisés antes de los Foros; Santa María la Mayor (si aún está abierta: cierra a las 19:00) y Monti después, para el aperitivo y la cena (Monti una sola vez, PROMPT_REPASO_LOCAL_ROMA, 3)",
-      "paradas": [
-        {
-          "lugar": "Basílica de San Clemente",
-          "min": 40,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar"
-        },
-        {
-          "lugar": "Iglesia de San Pietro in Vincoli",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Basílica de Santa María la Mayor",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "sol_desde": "18:30"
-        },
-        {
-          "lugar": "Columna de Trajano",
+          "id": "parada_via_della_conciliazione",
+          "hora": "09:25",
           "min": 10,
-          "sol_hasta": "18:30"
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
         },
         {
-          "lugar": "Via dei Fori Imperiali",
-          "modo": "atardecer",
-          "lead": 20,
-          "no_calle": true,
-          "una_vez": true
+          "id": "parada_castillo_de_sant_angelo_hasta_la_terraza_del_angel",
+          "hora": "09:55",
+          "min": 90,
+          "texto_documento": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "modo": "dentro"
         },
         {
-          "lugar": "Basílica de Santa María la Mayor",
+          "id": "parada_puente_sant_angelo",
+          "hora": "11:30",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_coronari",
+          "hora": "11:40",
+          "min": 10,
+          "texto_documento": "Via dei Coronari",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Coronari",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "12:05",
           "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "quitar",
-          "sol_hasta": "18:30"
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
         },
         {
-          "lugar": "Monti",
-          "min": 25,
-          "una_vez": true
+          "id": "parada_panteon",
+          "hora": "12:35",
+          "min": 5,
+          "texto_documento": "Panteón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "camino"
+        },
+        {
+          "id": "comida_enoteca_corsi",
+          "hora": "13:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia)",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Enoteca Corsi",
+          "alternativa": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "14:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
+          "hora": "14:45",
+          "min": 90,
+          "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "titulo": "Museos Capitolinos, con la terraza sobre los Foros",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "16:20",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_terraza_del_altar_de_la_patria_al_atardecer",
+          "hora": "16:40",
+          "min": 45,
+          "texto_documento": "Terraza del Altar de la Patria, al atardecer (ascensor panorámico)",
+          "como_documento": "por dentro",
+          "nota": "ascensor panorámico",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "titulo": "Terraza del Altar de la Patria, al atardecer",
+          "modo": "dentro",
+          "atardecer": true,
+          "otra_visita": true,
+          "foto": "Terraza del Altar de la Patria"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_gueto_iluminado_y_el_teatro_de_marcelo",
+          "hora": "17:45",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "El Gueto con sus calles estrechas, el Pórtico de Octavia y el Teatro de Marcelo, iluminados.",
+          "tipo": "paseo",
+          "lugar": "Teatro de Marcelo",
+          "titulo": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo"
+        },
+        {
+          "id": "cena_nonna_betta",
+          "hora": "19:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "noche_panteon_noche",
+          "hora": "20:55",
+          "min": 30,
+          "texto_documento": "Panteón de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Panteón (noche)"
         }
       ],
-      "cena": {
-        "restaurante": "Trattoria Monti",
-        "alternativa": "Trattoria Valentino",
-        "hora": "20:15"
-      },
-      "nombre": "Ostia Antica, San Clemente, los Foros y Monti"
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44: San Clemente, Letrán y Santa María la Mayor antes de los Foros",
-      "paradas": [
+      "B": [
         {
-          "lugar": "Basílica de San Clemente",
-          "min": 40,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar"
+          "id": "parada_cupula_de_san_pedro",
+          "hora": "08:00",
+          "min": 75,
+          "texto_documento": "Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica)",
+          "como_documento": "por dentro",
+          "nota": "a pie o con ascensor; se sale por la Basílica",
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "modo": "dentro"
         },
         {
-          "lugar": "Basílica de San Juan de Letrán",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:20",
+          "min": 5,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": "camino"
         },
         {
-          "lugar": "Basílica de Santa María la Mayor",
+          "id": "parada_via_della_conciliazione",
+          "hora": "09:25",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo_hasta_la_terraza_del_angel",
+          "hora": "09:55",
+          "min": 90,
+          "texto_documento": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "11:30",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_coronari",
+          "hora": "11:40",
+          "min": 10,
+          "texto_documento": "Via dei Coronari",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Coronari",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "12:05",
+          "min": 20,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "12:35",
+          "min": 5,
+          "texto_documento": "Panteón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "camino"
+        },
+        {
+          "id": "comida_enoteca_corsi",
+          "hora": "13:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia)",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Enoteca Corsi",
+          "alternativa": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "14:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
+          "hora": "14:45",
+          "min": 105,
+          "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "titulo": "Museos Capitolinos, con la terraza sobre los Foros",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
+          "hora": "16:50",
+          "min": 15,
+          "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+          "modo": "fuera"
+        },
+        {
+          "id": "parada_santa_maria_in_aracoeli_y_su_escalinata",
+          "hora": "17:20",
+          "min": 20,
+          "texto_documento": "Santa Maria in Aracoeli y su escalinata",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Santo Bambino de Aracoeli",
+          "titulo": "Santa Maria in Aracoeli y su escalinata",
+          "modo": "dentro",
+          "foto": "Santa Maria in Aracoeli"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "17:45",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_terraza_del_altar_de_la_patria_al_atardecer",
+          "hora": "18:05",
+          "min": 45,
+          "texto_documento": "Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45)",
+          "como_documento": "por dentro",
+          "nota": "ascensor panorámico; última subida a las 18:45",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "titulo": "Terraza del Altar de la Patria, al atardecer",
+          "modo": "dentro",
+          "atardecer": true,
+          "otra_visita": true,
+          "foto": "Terraza del Altar de la Patria"
+        },
+        {
+          "id": "cena_nonna_betta",
+          "hora": "19:15",
+          "min": 90,
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "noche_panteon_noche",
+          "hora": "21:10",
           "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
-        },
-        {
-          "lugar": "Monti",
-          "min": 29,
-          "elastica": 30,
-          "una_vez": true
-        },
-        {
-          "lugar": "Via dei Fori Imperiali",
-          "modo": "atardecer",
-          "lead": 20,
-          "no_calle": true,
-          "una_vez": true
+          "texto_documento": "Panteón de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Panteón (noche)"
         }
       ],
-      "cena": {
-        "restaurante": "Trattoria Monti",
-        "alternativa": "Trattoria Valentino",
-        "hora": "19:30"
-      }
-    },
-    "D": {
-      "_sol": "desde las 19:45: con el Moisés (en verano San Pietro in Vincoli abre hasta las 19:00)",
-      "paradas": [
+      "C": [
         {
-          "lugar": "Basílica de San Clemente",
-          "min": 40,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar"
+          "id": "parada_cupula_de_san_pedro",
+          "hora": "08:00",
+          "min": 75,
+          "texto_documento": "Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica)",
+          "como_documento": "por dentro",
+          "nota": "a pie o con ascensor; se sale por la Basílica",
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "modo": "dentro"
         },
         {
-          "lugar": "Basílica de San Juan de Letrán",
-          "min": 25,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:20",
+          "min": 5,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": "camino"
         },
         {
-          "lugar": "Basílica de Santa María la Mayor",
-          "min": 30,
-          "modo": "dentro",
-          "si_cerrado": "fuera"
+          "id": "parada_via_della_conciliazione",
+          "hora": "09:25",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
         },
         {
-          "lugar": "Iglesia de San Pietro in Vincoli",
+          "id": "parada_castillo_de_sant_angelo_hasta_la_terraza_del_angel",
+          "hora": "09:55",
+          "min": 90,
+          "texto_documento": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "11:30",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_coronari",
+          "hora": "11:40",
+          "min": 10,
+          "texto_documento": "Via dei Coronari",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Coronari",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "12:05",
           "min": 20,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "12:35",
+          "min": 5,
+          "texto_documento": "Panteón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "camino"
+        },
+        {
+          "id": "comida_enoteca_corsi",
+          "hora": "13:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia)",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Enoteca Corsi",
+          "alternativa": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "14:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
+          "hora": "14:45",
+          "min": 105,
+          "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "titulo": "Museos Capitolinos, con la terraza sobre los Foros",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "16:35",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_terraza_del_altar_de_la_patria",
+          "hora": "16:55",
+          "min": 45,
+          "texto_documento": "Terraza del Altar de la Patria (ascensor panorámico)",
+          "como_documento": "por dentro",
+          "nota": "ascensor panorámico",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "titulo": "Terraza del Altar de la Patria",
           "modo": "dentro",
-          "si_cerrado": "fuera"
+          "otra_visita": true,
+          "foto": "Terraza del Altar de la Patria"
         },
         {
-          "lugar": "Monti",
-          "min": 50,
-          "elastica": 30,
-          "una_vez": true
+          "id": "parada_santa_maria_in_aracoeli_y_su_escalinata",
+          "hora": "17:55",
+          "min": 20,
+          "texto_documento": "Santa Maria in Aracoeli y su escalinata",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Santo Bambino de Aracoeli",
+          "titulo": "Santa Maria in Aracoeli y su escalinata",
+          "modo": "dentro",
+          "foto": "Santa Maria in Aracoeli"
         },
         {
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio_con_la_luz_del_atardecer",
+          "hora": "18:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer",
+          "modo": "fuera",
+          "atardecer": true
+        },
+        {
+          "id": "cena_nonna_betta",
+          "hora": "20:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "noche_panteon_noche",
+          "hora": "21:55",
+          "min": 30,
+          "texto_documento": "Panteón de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Panteón (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_cupula_de_san_pedro",
+          "hora": "08:00",
+          "min": 75,
+          "texto_documento": "Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica)",
+          "como_documento": "por dentro",
+          "nota": "a pie o con ascensor; se sale por la Basílica",
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "09:20",
+          "min": 5,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_della_conciliazione",
+          "hora": "09:25",
+          "min": 10,
+          "texto_documento": "Via della Conciliazione",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via della Conciliazione",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo_hasta_la_terraza_del_angel",
+          "hora": "09:55",
+          "min": 90,
+          "texto_documento": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "11:30",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_via_dei_coronari",
+          "hora": "11:40",
+          "min": 10,
+          "texto_documento": "Via dei Coronari",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Coronari",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_piazza_navona",
+          "hora": "12:05",
+          "min": 20,
+          "texto_documento": "Piazza Navona",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Piazza Navona",
+          "modo": null
+        },
+        {
+          "id": "parada_panteon",
+          "hora": "12:35",
+          "min": 5,
+          "texto_documento": "Panteón",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Panteón",
+          "modo": "camino"
+        },
+        {
+          "id": "comida_enoteca_corsi",
+          "hora": "13:00",
+          "min": 60,
+          "texto_documento": "**Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia)",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Enoteca Corsi",
+          "alternativa": "Giggetto al Portico d'Ottavia"
+        },
+        {
+          "id": "parada_plaza_del_campidoglio",
+          "hora": "14:20",
+          "min": 15,
+          "texto_documento": "Plaza del Campidoglio",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza del Campidoglio",
+          "modo": null
+        },
+        {
+          "id": "parada_museos_capitolinos_con_la_terraza_sobre_los_foros",
+          "hora": "14:45",
+          "min": 150,
+          "texto_documento": "Museos Capitolinos, con la terraza sobre los Foros",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "titulo": "Museos Capitolinos, con la terraza sobre los Foros",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_santa_maria_in_aracoeli_y_su_escalinata",
+          "hora": "17:35",
+          "min": 20,
+          "texto_documento": "Santa Maria in Aracoeli y su escalinata",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Santo Bambino de Aracoeli",
+          "titulo": "Santa Maria in Aracoeli y su escalinata",
+          "modo": "dentro",
+          "foto": "Santa Maria in Aracoeli"
+        },
+        {
+          "id": "parada_plaza_venecia",
+          "hora": "18:00",
+          "min": 5,
+          "texto_documento": "Piazza Venezia",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Plaza Venecia",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_terraza_del_altar_de_la_patria",
+          "hora": "18:20",
+          "min": 45,
+          "texto_documento": "Terraza del Altar de la Patria (ascensor panorámico; última subida a las 18:45)",
+          "como_documento": "por dentro",
+          "nota": "ascensor panorámico; última subida a las 18:45",
+          "tipo": "parada",
+          "lugar": "Altar de la Patria",
+          "titulo": "Terraza del Altar de la Patria",
+          "modo": "dentro",
+          "otra_visita": true,
+          "foto": "Terraza del Altar de la Patria"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_los_foros_de_trajano_la_columna_de_trajano_y_los_mercados_de_trajano_por_fuera",
+          "hora": "19:20",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Columna de Trajano y los Mercados de Trajano, por fuera.",
+          "tipo": "paseo",
           "lugar": "Columna de Trajano",
-          "min": 10
+          "titulo": "Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera",
+          "foto": "Foros de Trajano"
         },
         {
-          "lugar": "Via dei Fori Imperiali",
-          "modo": "atardecer",
-          "lead": 20,
-          "no_calle": true,
-          "una_vez": true
+          "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio_con_la_luz_del_atardecer",
+          "hora": "20:10",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Foro Romano y Palatino",
+          "titulo": "El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer",
+          "modo": "fuera",
+          "atardecer": true
+        },
+        {
+          "id": "cena_nonna_betta",
+          "hora": "21:00",
+          "min": 90,
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
+        },
+        {
+          "id": "noche_panteon_noche",
+          "hora": "22:55",
+          "min": 30,
+          "texto_documento": "Panteón de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Panteón (noche)"
         }
-      ],
-      "cena": {
-        "restaurante": "Trattoria Monti",
-        "alternativa": "Trattoria Valentino",
-        "hora": "20:30"
-      }
+      ]
     }
   },
-  "variantes": {
-    "lunes": {
-      "_nota": "Trattoria Monti cierra el lunes.",
-      "tarde.*": {
-        "restaurante": {
-          "cena": "Trattoria Valentino",
-          "alternativa": "La Boccaccia"
+  "fechas_malas": {
+    "dias_semana": [
+      "miercoles"
+    ],
+    "cerrado": [
+      "Castillo de Sant'Angelo"
+    ]
+  },
+  "cierres": {
+    "Castillo de Sant'Angelo": {
+      "causa": "el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio»",
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Castillo de Sant'Angelo",
+          "modo": "fuera",
+          "min": 15,
+          "titulo": null,
+          "guia": false
+        },
+        {
+          "op": "insertar",
+          "despues": "Castillo de Sant'Angelo",
+          "fila": {
+            "id": "paseo_pasea_y_pierdete_por_borgo_pio_lunes",
+            "tipo": "paseo",
+            "lugar": "Borgo Pio",
+            "titulo": "Pasea y piérdete por Borgo Pio",
+            "min": 70,
+            "colchon": true,
+            "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.",
+            "como_documento": "",
+            "texto_documento": "Pasea y piérdete por Borgo Pio (colchón)"
+          }
         }
-      }
+      ]
     },
-    "domingo": {
-      "_nota": "Trattoria Valentino cierra el domingo."
+    "Cúpula de San Pedro": {
+      "dia_semana": "miercoles",
+      "causa": "miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo",
+      "acciones": [
+        {
+          "op": "quitar",
+          "fila": [
+            "Cúpula de San Pedro",
+            "Plaza de San Pedro",
+            "Via della Conciliazione"
+          ]
+        },
+        {
+          "op": "cambiar",
+          "fila": "Castillo de Sant'Angelo",
+          "hora": "09:00"
+        }
+      ]
     }
   },
-  "_nombre": "Sin «el Coliseo de noche» en el nombre: el paseo de noche lo elige el motor y no siempre es el Coliseo; en A y B solo hay una basílica (PROMPT_REPASO_LOCAL_ROMA, 3)."
+  "pool": {},
+  "experiencias": {
+    "arte_museos": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Museos Capitolinos",
+          "min": 150
+        }
+      ]
+    },
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Santo Bambino de Aracoeli",
+          "titulo": "Santa Maria in Aracoeli y el Santo Bambino"
+        }
+      ]
+    }
+  }
 }

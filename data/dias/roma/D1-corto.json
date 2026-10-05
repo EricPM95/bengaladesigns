@@ -49,44 +49,48 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "10:35",
+          "hora": "10:40",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Foro Romano y Palatino",
           "titulo": "El Foro Romano, desde la terraza del Campidoglio",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 10:35"
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "10:55",
+          "hora": "11:00",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:55"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "11:15",
+          "hora": "11:20",
           "min": 10,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 11:15"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "11:35",
+          "hora": "11:40",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "parada_boca_de_la_verdad",
@@ -327,44 +331,48 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "10:35",
+          "hora": "10:40",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Foro Romano y Palatino",
           "titulo": "El Foro Romano, desde la terraza del Campidoglio",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 10:35"
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "10:55",
+          "hora": "11:00",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:55"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "11:15",
+          "hora": "11:20",
           "min": 10,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 11:15"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "11:35",
+          "hora": "11:40",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "parada_boca_de_la_verdad",
@@ -617,44 +625,48 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "10:35",
+          "hora": "10:40",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Foro Romano y Palatino",
           "titulo": "El Foro Romano, desde la terraza del Campidoglio",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 10:35"
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "10:55",
+          "hora": "11:00",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:55"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "11:15",
+          "hora": "11:20",
           "min": 10,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 11:15"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "11:35",
+          "hora": "11:40",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "parada_boca_de_la_verdad",
@@ -819,13 +831,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:05",
+          "hora": "19:10",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:05"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
@@ -904,44 +917,48 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "10:35",
+          "hora": "10:40",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Foro Romano y Palatino",
           "titulo": "El Foro Romano, desde la terraza del Campidoglio",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 10:35"
         },
         {
           "id": "parada_plaza_venecia",
-          "hora": "10:55",
+          "hora": "11:00",
           "min": 5,
           "texto_documento": "Piazza Venezia",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Plaza Venecia",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 10:55"
         },
         {
           "id": "parada_altar_de_la_patria",
-          "hora": "11:15",
+          "hora": "11:20",
           "min": 10,
           "texto_documento": "Altar de la Patria",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Altar de la Patria",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 11:15"
         },
         {
           "id": "parada_teatro_de_marcelo",
-          "hora": "11:35",
+          "hora": "11:40",
           "min": 5,
           "texto_documento": "Teatro de Marcelo",
           "como_documento": "de camino",
           "tipo": "parada",
           "lugar": "Teatro de Marcelo",
-          "modo": "camino"
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 11:35"
         },
         {
           "id": "parada_boca_de_la_verdad",
@@ -1116,13 +1133,14 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "20:00",
+          "hora": "20:05",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 20:00"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
@@ -1178,13 +1196,14 @@
               "guia": true
             },
             {
-              "hora": "12:20",
+              "hora": "12:25",
               "min": 15,
               "texto_documento": "Plaza del Campidoglio",
               "como_documento": "",
               "tipo": "parada",
               "lugar": "Plaza del Campidoglio",
-              "modo": null
+              "modo": null,
+              "hora_corregida": "distancia: lo escrito era 12:20"
             },
             {
               "hora": "12:40",
@@ -1247,13 +1266,14 @@
               "guia": true
             },
             {
-              "hora": "12:20",
+              "hora": "12:25",
               "min": 15,
               "texto_documento": "Plaza del Campidoglio",
               "como_documento": "",
               "tipo": "parada",
               "lugar": "Plaza del Campidoglio",
-              "modo": null
+              "modo": null,
+              "hora_corregida": "distancia: lo escrito era 12:20"
             },
             {
               "hora": "12:40",

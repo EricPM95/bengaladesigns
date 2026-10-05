@@ -42,13 +42,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -142,35 +143,38 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "17:30",
+          "hora": "17:35",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 17:30"
         },
         {
           "id": "parada_iglesia_de_santa_maria_in_trastevere",
-          "hora": "18:25",
+          "hora": "18:35",
           "min": 20,
           "texto_documento": "Santa Maria in Trastevere",
           "como_documento": "por dentro",
           "tipo": "parada",
           "lugar": "Iglesia de Santa Maria in Trastevere",
-          "modo": "dentro"
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 18:25"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "18:55",
-          "min": 35,
+          "hora": "19:05",
+          "min": 20,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere iluminado"
+          "titulo": "Pasea y piérdete por Trastevere iluminado",
+          "hora_corregida": "distancia: lo escrito era 18:55 y 35 min"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
@@ -250,13 +254,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -360,17 +365,18 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "18:05",
+          "hora": "18:10",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere_iluminado",
-          "hora": "19:00",
+          "hora": "19:10",
           "min": 30,
           "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
           "como_documento": "",
@@ -378,7 +384,8 @@
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere iluminado"
+          "titulo": "Pasea y piérdete por Trastevere iluminado",
+          "hora_corregida": "distancia: lo escrito era 19:00"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
@@ -449,13 +456,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -480,12 +488,13 @@
         {
           "id": "comida_giggetto_al_portico_d_ottavia",
           "hora": "13:50",
-          "min": 60,
+          "min": 45,
           "texto_documento": "**Comida:** Giggetto al Portico d'Ottavia (o Nonna Betta)",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Giggetto al Portico d'Ottavia",
-          "alternativa": "Nonna Betta"
+          "alternativa": "Nonna Betta",
+          "hora_corregida": "distancia: lo escrito era 13:50 y 60 min"
         },
         {
           "id": "parada_barrio_judio",
@@ -540,14 +549,15 @@
         {
           "id": "paseo_pasea_y_pierdete_por_trastevere",
           "hora": "17:10",
-          "min": 60,
+          "min": 10,
           "texto_documento": "Pasea y piérdete por Trastevere (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma.",
           "tipo": "paseo",
           "lugar": "Trastevere",
-          "titulo": "Pasea y piérdete por Trastevere"
+          "titulo": "Pasea y piérdete por Trastevere",
+          "hora_corregida": "distancia: lo escrito era 17:10 y 60 min"
         },
         {
           "id": "parada_san_pietro_in_montorio_y_tempietto_de_bramante",
@@ -571,27 +581,29 @@
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "19:15",
+          "hora": "19:20",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:15"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "20:15",
+          "hora": "20:20",
           "min": 90,
           "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello)",
           "como_documento": "",
           "tipo": "cena",
           "restaurante": "Trattoria Da Enzo al 29",
-          "alternativa": "Tonnarello"
+          "alternativa": "Tonnarello",
+          "hora_corregida": "distancia: lo escrito era 20:15"
         },
         {
           "id": "traslado_un_taxi",
-          "hora": "21:55",
+          "hora": "22:00",
           "min": 10,
           "texto_documento": "Taxi a Trevi",
           "como_documento": "",
@@ -599,7 +611,8 @@
           "traslado": {
             "como": "un taxi",
             "min": 10
-          }
+          },
+          "hora_corregida": "distancia: lo escrito era 21:55"
         },
         {
           "id": "noche_fontana_de_trevi_noche",
@@ -648,13 +661,14 @@
         },
         {
           "id": "parada_plaza_del_campidoglio",
-          "hora": "12:20",
+          "hora": "12:25",
           "min": 15,
           "texto_documento": "Plaza del Campidoglio",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Plaza del Campidoglio",
-          "modo": null
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:20"
         },
         {
           "id": "parada_plaza_venecia",
@@ -768,7 +782,7 @@
         },
         {
           "id": "paseo_la_passeggiata_del_gianicolo",
-          "hora": "19:30",
+          "hora": "19:45",
           "min": 15,
           "texto_documento": "La Passeggiata del Gianicolo (colchón)",
           "como_documento": "",
@@ -776,17 +790,19 @@
           "texto": "La avenida de los bustos de Garibaldi, el monumento ecuestre a Garibaldi, el de Anita Garibaldi y el Faro de los Argentinos, con Roma a los pies.",
           "tipo": "paseo",
           "lugar": "Mirador del Janículo",
-          "titulo": "La Passeggiata del Gianicolo"
+          "titulo": "La Passeggiata del Gianicolo",
+          "hora_corregida": "distancia: lo escrito era 19:30"
         },
         {
           "id": "parada_mirador_del_janiculo",
-          "hora": "20:05",
+          "hora": "20:10",
           "min": 30,
           "texto_documento": "Mirador del Janículo, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Mirador del Janículo",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 20:05"
         },
         {
           "id": "cena_trattoria_da_enzo_al_29",
@@ -831,6 +847,11 @@
   "pool": {
     "Boca de la Verdad": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D5"
+        ]
+      },
       "acciones": [
         {
           "op": "insertar",
@@ -848,7 +869,7 @@
       "franja": "manana",
       "cuando": {
         "sin_dias": [
-          "D5"
+          "D6"
         ]
       },
       "acciones": [
@@ -888,7 +909,7 @@
       "cuando": {
         "sin_dias": [
           "D5",
-          "D5C"
+          "DA-medio"
         ]
       },
       "acciones": [
@@ -928,6 +949,11 @@
     },
     "Galería Borghese": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D4"
+        ]
+      },
       "acciones": [
         {
           "op": "tabla",
@@ -1303,6 +1329,12 @@
     },
     "Ojo de la Cerradura del Aventino": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D5",
+          "DA-medio"
+        ]
+      },
       "acciones": [
         {
           "op": "tabla",
@@ -1394,24 +1426,26 @@
                 "modo": "atardecer"
               },
               {
-                "hora": "18:40",
+                "hora": "18:45",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:10",
-                "min": 30,
+                "hora": "19:15",
+                "min": 25,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:10 y 30 min"
               },
               {
                 "hora": "20:00",
@@ -1536,16 +1570,17 @@
                 "modo": "atardecer"
               },
               {
-                "hora": "18:40",
+                "hora": "18:45",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:10",
+                "hora": "19:15",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -1553,7 +1588,8 @@
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:10"
               },
               {
                 "hora": "20:15",
@@ -1670,16 +1706,17 @@
                 "modo": "atardecer"
               },
               {
-                "hora": "18:40",
+                "hora": "18:45",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:10",
+                "hora": "19:15",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -1687,7 +1724,8 @@
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:10"
               },
               {
                 "hora": "20:15",
@@ -1804,16 +1842,17 @@
                 "modo": "atardecer"
               },
               {
-                "hora": "18:40",
+                "hora": "18:45",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:40"
               },
               {
-                "hora": "19:10",
+                "hora": "19:15",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -1821,7 +1860,8 @@
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:10"
               },
               {
                 "hora": "21:15",
@@ -1858,6 +1898,11 @@
     },
     "Basílica de San Juan de Letrán": {
       "franja": "dia",
+      "cuando": {
+        "sin_dias": [
+          "D5"
+        ]
+      },
       "acciones": [
         {
           "op": "tabla",
@@ -1916,13 +1961,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2006,33 +2052,36 @@
                 "modo": null
               },
               {
-                "hora": "18:00",
+                "hora": "18:05",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Mirador del Janículo",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "18:55",
+                "hora": "19:05",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:25",
-                "min": 30,
+                "hora": "19:35",
+                "min": 20,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:25 y 30 min"
               },
               {
                 "hora": "20:15",
@@ -2063,12 +2112,13 @@
                 "noche": "Fontana de Trevi (noche)"
               },
               {
-                "hora": "22:50",
+                "hora": "23:00",
                 "min": 5,
                 "texto_documento": "Plaza de España de noche",
                 "como_documento": "de camino",
                 "tipo": "noche",
-                "noche": "Plaza de España (noche)"
+                "noche": "Plaza de España (noche)",
+                "hora_corregida": "distancia: lo escrito era 22:50"
               }
             ],
             "B": [
@@ -2124,13 +2174,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2214,33 +2265,36 @@
                 "modo": null
               },
               {
-                "hora": "18:00",
+                "hora": "18:05",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Mirador del Janículo",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "18:55",
+                "hora": "19:05",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:25",
-                "min": 30,
+                "hora": "19:35",
+                "min": 20,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:25 y 30 min"
               },
               {
                 "hora": "20:15",
@@ -2324,13 +2378,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2414,33 +2469,36 @@
                 "modo": null
               },
               {
-                "hora": "18:00",
+                "hora": "18:05",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Mirador del Janículo",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "18:55",
+                "hora": "19:05",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:25",
-                "min": 30,
+                "hora": "19:35",
+                "min": 20,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
                 "colchon": true,
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:25 y 30 min"
               },
               {
                 "hora": "20:15",
@@ -2524,13 +2582,14 @@
                 "guia": true
               },
               {
-                "hora": "12:50",
+                "hora": "12:55",
                 "min": 15,
                 "texto_documento": "Plaza del Campidoglio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Plaza del Campidoglio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:50"
               },
               {
                 "hora": "13:10",
@@ -2614,25 +2673,27 @@
                 "modo": null
               },
               {
-                "hora": "18:00",
+                "hora": "18:05",
                 "min": 30,
                 "texto_documento": "Mirador del Janículo, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Mirador del Janículo",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
-                "hora": "18:55",
+                "hora": "19:05",
                 "min": 20,
                 "texto_documento": "Santa Maria in Trastevere",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Iglesia de Santa Maria in Trastevere",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 18:55"
               },
               {
-                "hora": "19:25",
+                "hora": "19:35",
                 "min": 30,
                 "texto_documento": "Pasea y piérdete por Trastevere iluminado (colchón)",
                 "como_documento": "",
@@ -2640,7 +2701,8 @@
                 "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma. De noche, ropa tendida, faroles y terrazas.",
                 "tipo": "paseo",
                 "lugar": "Trastevere",
-                "titulo": "Pasea y piérdete por Trastevere iluminado"
+                "titulo": "Pasea y piérdete por Trastevere iluminado",
+                "hora_corregida": "distancia: lo escrito era 19:25"
               },
               {
                 "hora": "21:15",
@@ -2681,7 +2743,7 @@
       "franja": "manana",
       "cuando": {
         "sin_dias": [
-          "D5"
+          "D6"
         ]
       },
       "acciones": [

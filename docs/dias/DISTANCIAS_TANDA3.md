@@ -1,0 +1,131 @@
+# Distancias de los días escritos (Tanda 3)
+
+El hueco entre una parada y la siguiente tiene que dar para lo que se tarda andando de verdad (coordenadas de roma.json y el mismo cálculo que usa la app) más el margen del documento (10 min; 15 después de una visita guiada; lo «de camino», solo lo que se anda). Lo que no llegaba se ha corrido (solo hacia delante: la fila siguiente sale más tarde). **Redondeo hacia abajo** (provisional, ver PREGUNTAS_TANDA3): lo que se anda más el margen se redondea a 5 hacia abajo (el motor lo redondea hacia arriba), para no corregir tramos que solo fallan por 1 a 4 min de redondeo; corregirlo todo con el redondeo del motor (478 tramos en vez de estos) acumula hasta 20 min en un día y mueve la tarde entera. Lo hace el convertidor (`escritosConvertir.mjs`, con `distancias.mjs`), así que se repite solo cada vez que cambie el documento.
+
+**117 tramos corregidos** (distintos, de 193 apariciones en las tablas) y **3 que no se pueden corregir** corriendo horas sin quitar una parada (ahí manda el documento: se dejan como están).
+
+## Corregidos
+
+- **D0** (normal/unica): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 15:10 a las 15:15
+- **D0** (normal/unica): Via dei Fori Imperiali → Coliseo: andando 10 min; Coliseo: de las 15:55 a las 16:00
+- **D1-corto** (normal/A): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 10:35 a las 10:40
+- **D1-corto** (normal/A): El Foro Romano, desde la terraza del Campidoglio → Plaza Venecia: andando 10 min; Plaza Venecia: de las 10:55 a las 11:00
+- **D1-corto** (normal/A): Plaza Venecia → Altar de la Patria: andando 5 min; Altar de la Patria: de las 11:15 a las 11:20
+- **D1-corto** (normal/A): Altar de la Patria → Teatro de Marcelo: andando 14 min; Teatro de Marcelo: de las 11:35 a las 11:40
+- **D1-corto** (normal/C): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 19:05 a las 19:10
+- **D1-corto** (normal/D): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 20:00 a las 20:05
+- **D1-corto** (pool Coliseo/mañana): Foro Romano y Palatino → Plaza del Campidoglio: andando 14 min; Plaza del Campidoglio: de las 12:20 a las 12:25
+- **D0-medio** (manana/unica): Plaza de España → Poldo e Gianna Osteria: andando 10 min; Poldo e Gianna Osteria: de las 13:25 a las 13:30
+- **D0-medio** (miercoles_manana/unica): Fontana de Trevi → Plaza de España: andando 10 min; Plaza de España: de las 09:30 a las 09:40
+- **D0-medio** (miercoles_manana/unica): Pasea y piérdete por Borgo Pio → Plaza de San Pedro: andando 5 min; Plaza de San Pedro: de las 12:05 a las 12:10
+- **D0-medio** (miercoles_manana/unica): Plaza de San Pedro → Basílica de San Pedro: andando 3 min; Basílica de San Pedro: de las 12:25 a las 12:30
+- **D0-medio** (tarde_con_museos/unica): Museos Vaticanos y Capilla Sixtina → Pasea y piérdete por Prati: andando 10 min; Pasea y piérdete por Prati: de las 18:50 a las 18:55 y de 20 a 15 min
+- **D1** (normal/AB): Foro Romano y Palatino → Plaza del Campidoglio: andando 14 min; Plaza del Campidoglio: de las 12:20 a las 12:25
+- **D1** (free_tour_tarde/unica): Pizzeria Da Baffetto → Foro Romano desde el Campidoglio (noche): andando 21 min; Foro Romano desde el Campidoglio (noche): de las 21:45 a las 21:50
+- **D1** (free_tour_noche/unica): Iglesia de San Luigi dei Francesi → Pasea y piérdete por el Centro Histórico, hacia la Plaza de España: andando 8 min; Pasea y piérdete por el Centro Histórico, hacia la Plaza de España: de las 17:40 a las 17:45
+- **D1** (pool Galería Borghese/AB): Il Gabriello → Fontana de Trevi (noche): andando 11 min; Fontana de Trevi (noche): de las 22:00 a las 22:05
+- **D1** (pool Galería Borghese/AB): Fontana de Trevi (noche) → Plaza de España (noche): andando 10 min; Plaza de España (noche): de las 22:40 a las 22:45
+- **D1** (pool Galería Borghese/D): Il Gabriello → Fontana de Trevi (noche): andando 11 min; Fontana de Trevi (noche): de las 22:00 a las 22:20
+- **D1** (pool Ojo de la Cerradura del Aventino/AB): traslado → Iglesia del Gesù: andando 0 min; Iglesia del Gesù: de las 17:20 a las 17:25
+- **D1** (pool Basílica de San Juan de Letrán/AB): Foro Romano y Palatino → Plaza del Campidoglio: andando 14 min; Plaza del Campidoglio: de las 12:50 a las 12:55
+- **D2** (normal/B): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 18:25 a las 18:30
+- **D2** (normal/B): Mirador del Janículo → Pasea y piérdete por Trastevere iluminado: andando 21 min; Pasea y piérdete por Trastevere iluminado: de las 19:20 a las 19:30
+- **D2** (normal/C): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 19:15 a las 19:20
+- **D2** (normal/D): Fontana dell'Acqua Paola → La Passeggiata del Gianicolo: andando 16 min; La Passeggiata del Gianicolo: de las 19:25 a las 19:40
+- **D2** (normal/D): La Passeggiata del Gianicolo → Mirador del Janículo: andando 0 min; Mirador del Janículo: de las 20:00 a las 20:05
+- **D2** (miercoles/B): Museos Vaticanos y Capilla Sixtina → Pasea y piérdete por Borgo Pio y Prati: andando 10 min; Pasea y piérdete por Borgo Pio y Prati: de 20 a 10 min
+- **D2** (miercoles/B): Pasea y piérdete por Borgo Pio y Prati → Borghiciana Pastificio Artigianale: andando 3 min; Borghiciana Pastificio Artigianale: de 60 a 45 min
+- **D2** (miercoles/B): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 18:55 a las 19:00
+- **D2** (miercoles/B): Mirador del Janículo → Pasea y piérdete por Trastevere iluminado: andando 21 min; Pasea y piérdete por Trastevere iluminado: de las 19:50 a las 20:00
+- **D2** (miercoles/B): Pasea y piérdete por Trastevere iluminado → Tonnarello: andando 1 min; Tonnarello: de las 20:15 a las 20:20
+- **D2** (miercoles/CD): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 19:45 a las 19:50
+- **D2** (domingo/AB): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 17:55 a las 18:00
+- **D2** (domingo/AB): Mirador del Janículo → Pasea y piérdete por Trastevere iluminado: andando 21 min; Pasea y piérdete por Trastevere iluminado: de las 18:50 a las 19:00
+- **D2** (domingo/CD): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 19:30 a las 19:35
+- **D2** (miercoles_sin_museos/B): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 17:45 a las 17:50
+- **D2** (miercoles_sin_museos/B): Mirador del Janículo → Pasea y piérdete por Trastevere iluminado: andando 21 min; Pasea y piérdete por Trastevere iluminado: de las 18:40 a las 18:50
+- **D2** (reserva_10_12/CD): Basílica de San Pedro → Pasea y piérdete por Prati y el Borgo, hacia los Museos: andando 7 min; Pasea y piérdete por Prati y el Borgo, hacia los Museos: de 35 a 30 min
+- **D2** (reserva_10_12/CD): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 20:10 a las 20:15
+- **D2** (reserva_13/AB): Pasea y piérdete por Prati y el Borgo, hacia los Museos → Pizzarium (Bonci): andando 18 min; Pizzarium (Bonci): de las 11:45 a las 11:50
+- **D2** (reserva_13/AB): Museos Vaticanos y Capilla Sixtina → Via della Conciliazione: andando 13 min; Via della Conciliazione: de las 16:05 a las 16:10
+- **D2** (fiesta/unica): Fontana dell'Acqua Paola → La Passeggiata del Gianicolo, bajando hasta San Pedro: andando 16 min; La Passeggiata del Gianicolo, bajando hasta San Pedro: de las 10:00 a las 10:15
+- **D2** (fiesta/unica): La Passeggiata del Gianicolo, bajando hasta San Pedro → Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén: andando 18 min; Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén: de las 11:00 a las 11:10
+- **D2** (fiesta/unica): Plaza de San Pedro: la bendición del Papa a las 12:00 y el belén → Borghiciana Pastificio Artigianale: andando 7 min; Borghiciana Pastificio Artigianale: de las 12:35 a las 12:40
+- **D2** (fiesta/unica): Castillo de Sant'Angelo → Pasea y piérdete por Prati: andando 10 min; Pasea y piérdete por Prati: de las 15:10 a las 15:15
+- **D2** (fiesta/unica): Puente Sant'Angelo → Pasea y piérdete por el centro iluminado: andando 14 min; Pasea y piérdete por el centro iluminado: de las 16:40 a las 16:45
+- **D2** (fiesta/unica): Pasea y piérdete por el centro iluminado → Panteón: andando 7 min; Panteón: de las 18:15 a las 18:20
+- **D3** (domingo/AB): Puente Sant'Angelo → Pasea y piérdete por Prati: andando 8 min; Pasea y piérdete por Prati: de 25 a 20 min
+- **D1-FT** (normal/A): Foro Romano y Palatino → Plaza del Campidoglio: andando 14 min; Plaza del Campidoglio: de las 12:20 a las 12:25
+- **D1-FT** (normal/A): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 17:30 a las 17:35
+- **D1-FT** (normal/A): Mirador del Janículo → Iglesia de Santa Maria in Trastevere: andando 20 min; Iglesia de Santa Maria in Trastevere: de las 18:25 a las 18:35
+- **D1-FT** (normal/A): Iglesia de Santa Maria in Trastevere → Pasea y piérdete por Trastevere iluminado: andando 1 min; Pasea y piérdete por Trastevere iluminado: de las 18:55 a las 19:05 y de 35 a 20 min
+- **D1-FT** (normal/B): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 18:05 a las 18:10
+- **D1-FT** (normal/B): Mirador del Janículo → Pasea y piérdete por Trastevere iluminado: andando 21 min; Pasea y piérdete por Trastevere iluminado: de las 19:00 a las 19:10
+- **D1-FT** (normal/C): Altar de la Patria → Giggetto al Portico d'Ottavia: andando 7 min; Giggetto al Portico d'Ottavia: de 60 a 45 min
+- **D1-FT** (normal/C): Iglesia de Santa Maria in Trastevere → Pasea y piérdete por Trastevere: andando 1 min; Pasea y piérdete por Trastevere: de 60 a 10 min
+- **D1-FT** (normal/C): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 19:15 a las 19:20
+- **D1-FT** (normal/C): Mirador del Janículo → Trattoria Da Enzo al 29: andando 24 min; Trattoria Da Enzo al 29: de las 20:15 a las 20:20
+- **D1-FT** (normal/C): Trattoria Da Enzo al 29 → traslado: andando 0 min; traslado: de las 21:55 a las 22:00
+- **D1-FT** (normal/D): Fontana dell'Acqua Paola → La Passeggiata del Gianicolo: andando 16 min; La Passeggiata del Gianicolo: de las 19:30 a las 19:45
+- **D1-FT** (normal/D): La Passeggiata del Gianicolo → Mirador del Janículo: andando 0 min; Mirador del Janículo: de las 20:05 a las 20:10
+- **D1-FT** (pool Ojo de la Cerradura del Aventino/A): Mirador del Janículo → Iglesia de Santa Maria in Trastevere: andando 20 min; Iglesia de Santa Maria in Trastevere: de las 18:40 a las 18:45
+- **D1-FT** (pool Ojo de la Cerradura del Aventino/A): Iglesia de Santa Maria in Trastevere → Pasea y piérdete por Trastevere iluminado: andando 1 min; Pasea y piérdete por Trastevere iluminado: de las 19:10 a las 19:15 y de 30 a 25 min
+- **D1-FT** (pool Basílica de San Juan de Letrán/A): Foro Romano y Palatino → Plaza del Campidoglio: andando 14 min; Plaza del Campidoglio: de las 12:50 a las 12:55
+- **D1-FT** (pool Basílica de San Juan de Letrán/A): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; Mirador del Janículo: de las 18:00 a las 18:05
+- **D1-FT** (pool Basílica de San Juan de Letrán/A): Mirador del Janículo → Iglesia de Santa Maria in Trastevere: andando 20 min; Iglesia de Santa Maria in Trastevere: de las 18:55 a las 19:05
+- **D1-FT** (pool Basílica de San Juan de Letrán/A): Iglesia de Santa Maria in Trastevere → Pasea y piérdete por Trastevere iluminado: andando 1 min; Pasea y piérdete por Trastevere iluminado: de las 19:25 a las 19:35 y de 30 a 20 min
+- **D1-FT** (pool Basílica de San Juan de Letrán/A): Fontana de Trevi (noche) → Plaza de España (noche): andando 10 min; Plaza de España (noche): de las 22:50 a las 23:00
+- **DT-medio** (tarde/A): Bajar la escalinata de la Plaza de España → Pasea y piérdete por Via Condotti y el Tridente iluminados: andando 6 min; Pasea y piérdete por Via Condotti y el Tridente iluminados: de las 18:30 a las 18:35
+- **DT-medio** (tarde/B): Bajar la escalinata de la Plaza de España → Pasea y piérdete por Via Condotti y el Tridente iluminados: andando 6 min; Pasea y piérdete por Via Condotti y el Tridente iluminados: de las 19:25 a las 19:30
+- **DT-medio** (tarde/C): Santa Maria del Popolo (los Caravaggio) → Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines: andando 16 min; Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines: de las 18:05 a las 18:10
+- **DT-medio** (tarde/C): Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines → Terraza del Pincio: andando 11 min; Terraza del Pincio: de las 19:25 a las 19:30
+- **DT-medio** (tarde/C): Terraza del Pincio → Trinità dei Monti y su mirador sobre la Plaza de España: andando 11 min; Trinità dei Monti y su mirador sobre la Plaza de España: de las 20:15 a las 20:20
+- **DT-medio** (tarde/D): Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines → Terraza del Pincio: andando 11 min; Terraza del Pincio: de las 19:55 a las 20:00
+- **DT-medio** (tarde/D): Terraza del Pincio → Trinità dei Monti y su mirador sobre la Plaza de España: andando 11 min; Trinità dei Monti y su mirador sobre la Plaza de España: de las 20:45 a las 20:50
+- **DT-medio** (pool Galería Borghese/manana): Pasea por Villa Borghese hasta el Pincio → Terraza del Pincio: andando 11 min; Terraza del Pincio: de las 12:00 a las 12:05
+- **DT-medio** (pool Galería Borghese/manana): Plaza de España → Poldo e Gianna Osteria: andando 10 min; Poldo e Gianna Osteria: de las 14:00 a las 14:05
+- **DT-medio** (pool Galería Borghese/A): Pasea por Villa Borghese hasta el Pincio → Terraza del Pincio: andando 11 min; Terraza del Pincio: de las 18:00 a las 18:05
+- **DT-medio** (pool Parque de Villa Borghese/B): Santa Maria del Popolo (los Caravaggio) → Parque de Villa Borghese: andando 16 min; Parque de Villa Borghese: de las 17:05 a las 17:10
+- **DT-medio** (pool Parque de Villa Borghese/B): Parque de Villa Borghese → Terraza del Pincio: andando 11 min; Terraza del Pincio: de las 18:10 a las 18:15
+- **DT-medio** (pool Parque de Villa Borghese/B): Terraza del Pincio → Trinità dei Monti y su mirador sobre la Plaza de España: andando 11 min; Trinità dei Monti y su mirador sobre la Plaza de España: de las 19:00 a las 19:05
+- **DM-medio** (manana/unica): Plaza del Quirinal (la vista de San Pedro) → Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti): andando 10 min; Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti): de las 09:40 a las 09:55
+- **DM-medio** (manana/unica): Pasea y piérdete por Monti (Via Panisperna y la Piazza Madonna dei Monti) → San Pietro in Vincoli (el Moisés de Miguel Ángel): andando 5 min; San Pietro in Vincoli (el Moisés de Miguel Ángel): de las 11:00 a las 11:10
+- **DM-medio** (manana/unica): San Pietro in Vincoli (el Moisés de Miguel Ángel) → Basílica de Santa María la Mayor: andando 12 min; Basílica de Santa María la Mayor: de las 11:40 a las 11:50
+- **DM-medio** (pool Basílica de San Juan de Letrán/manana): San Juan de Letrán y la Escalera Santa → SantoPalato: andando 10 min; SantoPalato: de las 13:10 a las 13:15
+- **D4** (normal/A): Fuente del Tritón → Via Veneto, la calle de *La Dolce Vita*: andando 7 min; Via Veneto, la calle de *La Dolce Vita*: de las 08:45 a las 08:50
+- **D4** (normal/A): Via Veneto, la calle de *La Dolce Vita* → Porta Pinciana: andando 2 min; Porta Pinciana: de las 09:00 a las 09:05
+- **D4** (normal/A): Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie → Terraza del Pincio: andando 11 min; Terraza del Pincio: de las 14:00 a las 14:05
+- **D4** (normal/B): Bajar la escalinata de la Plaza de España → Pasea y piérdete por Via Condotti y el Tridente iluminados: andando 6 min; Pasea y piérdete por Via Condotti y el Tridente iluminados: de las 18:40 a las 18:45
+- **D4** (normal/C): Bajar la escalinata de la Plaza de España → Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco: andando 6 min; Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco: de las 19:45 a las 19:50
+- **D4** (normal/D): Plaza de España → Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco: andando 6 min; Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco: de las 18:55 a las 19:00
+- **D4** (normal/D): Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco → Trinità dei Monti y su mirador, al atardecer: andando 6 min; Trinità dei Monti y su mirador, al atardecer: de las 20:05 a las 20:15
+- **D4** (normal/D): Trinità dei Monti y su mirador, al atardecer → Bajar la escalinata de la Plaza de España: andando 1 min; Bajar la escalinata de la Plaza de España: de las 20:40 a las 20:45
+- **DA-medio** (lunes/unica): Mordi e Vai → Pirámide Cestia: andando 10 min; Pirámide Cestia: de las 14:15 a las 14:20
+- **DA-medio** (lunes/unica): Pirámide Cestia → Cementerio Protestante: andando 5 min; Cementerio Protestante: de las 14:30 a las 14:50
+- **D5** (domingo/A): San Pietro in Vincoli (el Moisés de Miguel Ángel) → San Juan de Letrán y la Escalera Santa: andando 21 min; San Juan de Letrán y la Escalera Santa: de las 11:30 a las 11:40
+- **D5** (domingo/A): SantoPalato → Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00): andando 22 min; Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00): de las 14:00 a las 14:15
+- **D5** (domingo/A): Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00) → traslado: andando 0 min; traslado: de las 14:50 a las 15:05
+- **D5** (domingo/A): traslado → Circo Máximo: andando 0 min; Circo Máximo: de las 15:10 a las 15:25
+- **D5** (domingo/A): Circo Máximo → Boca de la Verdad: andando 6 min; Boca de la Verdad: de las 15:50 a las 16:00
+- **D5** (domingo/A): Boca de la Verdad → Jardín de los Naranjos: andando 11 min; Jardín de los Naranjos: de las 16:30 a las 16:40
+- **D5** (domingo/A): Jardín de los Naranjos → Ojo de la Cerradura del Aventino: andando 4 min; Ojo de la Cerradura del Aventino: de las 17:15 a las 17:20
+- **D5** (domingo/B): traslado → Termas de Caracalla: andando 0 min; Termas de Caracalla: de las 15:10 a las 15:25
+- **D5** (domingo/B): Termas de Caracalla → Circo Máximo: andando 17 min; Circo Máximo: de las 16:45 a las 16:50
+- **D5** (domingo/C): Termas de Caracalla → Circo Máximo: andando 17 min; Circo Máximo: de las 17:00 a las 17:05
+- **D7** (normal/AB): Basílica de Santa Cecilia in Trastevere → Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta: andando 7 min; Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta: de las 11:10 a las 11:15
+- **D7** (normal/AB): Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta → Trattoria Da Enzo al 29: andando 10 min; Trattoria Da Enzo al 29: de las 12:30 a las 12:40
+- **D7** (normal/AB): Trattoria Da Enzo al 29 → traslado: andando 0 min; traslado: de las 13:45 a las 13:50
+- **D7** (normal/AB): traslado → Catacumbas de San Calixto: andando 0 min; Catacumbas de San Calixto: de las 14:15 a las 14:20
+- **D7** (normal/AB): Catacumbas de San Calixto → Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información): andando 8 min; Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información): de las 15:25 a las 15:35
+- **D7** (normal/AB): Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) → Atardecer en la Vía Appia Antica: andando 0 min; Atardecer en la Vía Appia Antica: de las 17:35 a las 17:45
+- **D7** (normal/AB): Atardecer en la Vía Appia Antica → traslado: andando 0 min; traslado: de las 18:15 a las 18:25
+- **D7** (normal/AB): traslado → Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti: andando 0 min; Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti: de las 18:50 a las 18:55 y de 30 a 20 min
+- **D7** (normal/CD): Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) → traslado: andando 0 min; traslado: de las 17:35 a las 17:45
+- **D7** (normal/CD): traslado → Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti: andando 0 min; Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti: de las 18:05 a las 18:15
+- **D7** (normal/CD): Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti → Colle Oppio: andando 7 min; Colle Oppio: de las 18:55 a las 19:10
+
+## Sin corregir (habría que quitar una parada)
+
+- **D2** (reserva_14_16/ABC): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; faltan 5 min para llegar a las 11:05 (habría que quitar una parada)
+- **D2** (reserva_14_16/ABC): La Passeggiata del Gianicolo, bajando hasta San Pedro → Borghiciana Pastificio Artigianale: andando 22 min; faltan 10 min para llegar a las 12:35 (habría que quitar una parada)
+- **D2** (reserva_14_16/ABC): Museos Vaticanos y Capilla Sixtina → L'Arcangelo: andando 20 min; faltan 5 min para llegar a las 19:30 (habría que quitar una parada)

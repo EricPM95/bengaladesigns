@@ -217,15 +217,16 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
-          "hora": "18:30",
+          "hora": "18:35",
           "min": 45,
           "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
           "como_documento": "",
           "colchon": true,
-          "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
+          "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
           "tipo": "paseo",
-          "lugar": "Via Condotti",
-          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
+          "lugar": "Via del Babuino",
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
+          "hora_corregida": "distancia: lo escrito era 18:30"
         },
         {
           "id": "cena_il_gabriello",
@@ -350,15 +351,16 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_via_condotti_y_el_tridente_iluminados",
-          "hora": "19:25",
+          "hora": "19:30",
           "min": 20,
           "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
           "como_documento": "",
           "colchon": true,
-          "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
+          "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
           "tipo": "paseo",
-          "lugar": "Via Condotti",
-          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados"
+          "lugar": "Via del Babuino",
+          "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
+          "hora_corregida": "distancia: lo escrito era 19:25"
         },
         {
           "id": "cena_il_gabriello",
@@ -439,7 +441,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_el_reloj_de_agua_y_los_jardines",
-          "hora": "18:05",
+          "hora": "18:10",
           "min": 60,
           "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)",
           "como_documento": "",
@@ -447,28 +449,31 @@
           "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
           "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
-          "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines"
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines",
+          "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
           "id": "parada_terraza_del_pincio",
-          "hora": "19:25",
+          "hora": "19:30",
           "min": 30,
           "texto_documento": "Terraza del Pincio, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Terraza del Pincio",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:25"
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
-          "hora": "20:15",
+          "hora": "20:20",
           "min": 10,
           "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
           "como_documento": "por fuera (la iglesia cierra a las 19:45)",
           "tipo": "parada",
           "lugar": "Trinità dei Monti",
           "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 20:15"
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
@@ -562,7 +567,7 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_villa_borghese_el_lago_el_reloj_de_agua_y_los_jardines",
-          "hora": "18:05",
+          "hora": "18:10",
           "min": 90,
           "texto_documento": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines (colchón)",
           "como_documento": "",
@@ -570,28 +575,31 @@
           "texto": "Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.",
           "tipo": "paseo",
           "lugar": "Parque de Villa Borghese",
-          "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines"
+          "titulo": "Pasea y piérdete por Villa Borghese: el lago, el reloj de agua y los jardines",
+          "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
           "id": "parada_terraza_del_pincio",
-          "hora": "19:55",
+          "hora": "20:00",
           "min": 30,
           "texto_documento": "Terraza del Pincio, al atardecer",
           "como_documento": "",
           "tipo": "parada",
           "lugar": "Terraza del Pincio",
-          "modo": "atardecer"
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 19:55"
         },
         {
           "id": "parada_trinita_dei_monti_y_su_mirador_sobre_la_plaza_de_espana",
-          "hora": "20:45",
+          "hora": "20:50",
           "min": 10,
           "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
           "como_documento": "por fuera (la iglesia cierra a las 19:45)",
           "tipo": "parada",
           "lugar": "Trinità dei Monti",
           "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 20:45"
         },
         {
           "id": "parada_bajar_la_escalinata_de_la_plaza_de_espana",
@@ -712,9 +720,9 @@
           "texto_documento": "Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón)",
           "como_documento": "",
           "colchon": true,
-          "texto": "Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.",
+          "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con las luces de la noche.",
           "tipo": "paseo",
-          "lugar": "Via Condotti",
+          "lugar": "Via del Babuino",
           "titulo": "Pasea y piérdete por Via Condotti y el Tridente iluminados",
           "colchon_minimo": 30
         },
@@ -756,6 +764,11 @@
   "pool": {
     "Galería Borghese": {
       "prioridad": 1,
+      "cuando": {
+        "sin_dias": [
+          "D4"
+        ]
+      },
       "acciones": [
         {
           "op": "tabla",
@@ -804,13 +817,14 @@
                 "titulo": "Pasea por Villa Borghese hasta el Pincio"
               },
               {
-                "hora": "12:00",
+                "hora": "12:05",
                 "min": 20,
                 "texto_documento": "Terraza del Pincio",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Terraza del Pincio",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 12:00"
               },
               {
                 "hora": "12:40",
@@ -841,14 +855,15 @@
                 "modo": null
               },
               {
-                "hora": "14:00",
+                "hora": "14:05",
                 "min": 60,
                 "texto_documento": "**Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente",
                 "como_documento": "",
                 "tipo": "comida",
                 "restaurante": "Poldo e Gianna Osteria",
                 "alternativa": "Edy",
-                "zona": "en el Tridente"
+                "zona": "en el Tridente",
+                "hora_corregida": "distancia: lo escrito era 14:00"
               }
             ],
             "A": [
@@ -874,13 +889,14 @@
                 "titulo": "Pasea por Villa Borghese hasta el Pincio"
               },
               {
-                "hora": "18:00",
+                "hora": "18:05",
                 "min": 30,
                 "texto_documento": "Terraza del Pincio, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Terraza del Pincio",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
                 "hora": "18:50",
@@ -963,13 +979,14 @@
                 "titulo": "Pasea por Villa Borghese hasta el Pincio"
               },
               {
-                "hora": "18:00",
+                "hora": "18:05",
                 "min": 30,
                 "texto_documento": "Terraza del Pincio, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Terraza del Pincio",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:00"
               },
               {
                 "hora": "18:50",
@@ -1179,6 +1196,11 @@
     },
     "Parque de Villa Borghese": {
       "prioridad": 1,
+      "cuando": {
+        "sin_dias": [
+          "D4"
+        ]
+      },
       "solo_en": [
         "B"
       ],
@@ -1232,32 +1254,35 @@
                 "modo": "dentro"
               },
               {
-                "hora": "17:05",
+                "hora": "17:10",
                 "min": 45,
                 "texto_documento": "Parque de Villa Borghese",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Parque de Villa Borghese",
-                "modo": null
+                "modo": null,
+                "hora_corregida": "distancia: lo escrito era 17:05"
               },
               {
-                "hora": "18:10",
+                "hora": "18:15",
                 "min": 30,
                 "texto_documento": "Terraza del Pincio, al atardecer",
                 "como_documento": "",
                 "tipo": "parada",
                 "lugar": "Terraza del Pincio",
-                "modo": "atardecer"
+                "modo": "atardecer",
+                "hora_corregida": "distancia: lo escrito era 18:10"
               },
               {
-                "hora": "19:00",
+                "hora": "19:05",
                 "min": 15,
                 "texto_documento": "Trinità dei Monti y su mirador sobre la Plaza de España",
                 "como_documento": "por dentro",
                 "tipo": "parada",
                 "lugar": "Trinità dei Monti",
                 "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
-                "modo": "dentro"
+                "modo": "dentro",
+                "hora_corregida": "distancia: lo escrito era 19:00"
               },
               {
                 "hora": "19:20",

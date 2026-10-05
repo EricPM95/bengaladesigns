@@ -418,14 +418,15 @@
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
           "hora": "19:05",
-          "min": 25,
+          "min": 20,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati"
+          "titulo": "Pasea y piérdete por Prati",
+          "hora_corregida": "distancia: lo escrito era 19:05 y 25 min"
         },
         {
           "id": "cena_l_arcangelo",

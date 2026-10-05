@@ -1,437 +1,2155 @@
 {
-  "_nota": "D5 escrito (2026-09-29): el sur de Roma. Caracalla a la apertura, el Aventino y Testaccio; por la tarde las catacumbas y la Via Appia en bus, y el atardecer en el Campidoglio. En verano, los Museos Capitolinos antes del atardecer (museo de pago).",
+  "formato": "escrito",
+  "fuente": "docs/dias/DIAS_ESCRITOS_ROMA.md",
   "id": "D5",
-  "nombre": "El sur de Roma: el Aventino, Testaccio y la Via Appia",
-  "joyas": [],
-  "no_en": [
-    {
-      "dia_semana": "lunes",
-      "si_lleva": "Termas de Caracalla"
-    }
-  ],
-  "barrio_cena": "monti",
-  "noche": null,
-  "manana": {
-    "paradas": [
-      {
-        "lugar": "Termas de Caracalla",
-        "tipo": "fija",
-        "hora": "09:00",
-        "hora_tipo": "reserva",
-        "min": 60,
-        "modo": "dentro",
-        "entrada": true,
-        "si_cerrado": "fuera"
-      },
-      {
-        "lugar": "Boca de la Verdad",
-        "min": 20
-      },
-      {
-        "lugar": "Jardín de los Naranjos",
-        "min": 20
-      },
-      {
-        "lugar": "Ojo de la Cerradura del Aventino",
-        "min": 10
-      },
-      {
-        "lugar": "Pirámide Cestia",
-        "modo": "camino"
-      },
-      {
-        "lugar": "Cementerio Protestante",
-        "tipo": "opcional",
-        "min": 25,
-        "si_cerrado": "camino"
-      },
-      {
-        "lugar": "Testaccio",
-        "min": 40,
-        "titulo": "Testaccio y su mercado"
-      }
-    ],
-    "comida": {
-      "restaurante": "Mordi e Vai",
-      "alternativa": "Felice a Testaccio"
-    }
-  },
-  "tarde": {
-    "empieza": "14:00",
-    "A": {
-      "_sol": "antes de las 17:40: la Via Appia y el Campidoglio al anochecer; después, los Mercados de Trajano",
-      "paradas": [
+  "nombre": "Día de las basílicas y el Aventino",
+  "versiones": {
+    "normal": {
+      "A": [
         {
-          "lugar": "Catacumbas de San Calixto",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": {
-            "cambiar_por": {
-              "lugar": "Via Appia Antica",
-              "min": 45,
-              "no_calle": true
-            }
-          },
-          "traslado": {
-            "como": "el bus 118 (desde la Pirámide)",
-            "min": 25
-          }
-        },
-        {
-          "lugar": "Via Appia Antica",
-          "min": 54,
-          "elastica": 30,
-          "no_calle": true,
-          "no_si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Via Appia Antica",
-          "min": 40,
-          "elastica": 30,
-          "no_calle": true,
-          "si_dia": [
-            "D1-FT"
-          ],
-          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
-        },
-        {
-          "lugar": "Plaza del Campidoglio",
-          "modo": "atardecer",
-          "traslado": {
-            "como": "el bus 118 (hasta el Circo Máximo)",
-            "min": 30
-          }
-        },
-        {
-          "lugar": "Mercados de Trajano",
-          "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "fuera",
-          "no_meses": [
-            11,
-            12,
-            1,
-            2
-          ],
-          "_invierno": "De noviembre a febrero, después del atardecer en el Campidoglio ya es de noche: los Mercados de Trajano se entraban a oscuras prometiendo «los Foros a tus pies» (PROMPT_REPASO_LOCAL_ROMA, 3). Esos meses no van aquí; en D4M van a media tarde."
-        }
-      ],
-      "cena": {
-        "restaurante": "La Boccaccia",
-        "alternativa": "Trattoria Valentino",
-        "hora": "20:00"
-      }
-    },
-    "B": {
-      "_sol": "de 17:40 a 18:44",
-      "paradas": [
-        {
-          "lugar": "Catacumbas de San Calixto",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": {
-            "cambiar_por": {
-              "lugar": "Via Appia Antica",
-              "min": 45,
-              "no_calle": true
-            }
-          },
-          "traslado": {
-            "como": "el bus 118 (desde la Pirámide)",
-            "min": 25
-          }
-        },
-        {
-          "lugar": "Via Appia Antica",
-          "min": 55,
-          "elastica": 30,
-          "no_calle": true,
-          "no_si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Via Appia Antica",
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
           "min": 30,
-          "elastica": 30,
-          "no_calle": true,
-          "si_dia": [
-            "D1-FT"
-          ],
-          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
         },
         {
-          "lugar": "Circo Máximo",
-          "min": 20,
-          "traslado": {
-            "como": "el bus 118 (hasta el Circo Máximo)",
-            "min": 30
-          }
-        },
-        {
-          "lugar": "Isla Tiberina",
-          "min": 20,
-          "no_si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Largo di Torre Argentina",
-          "min": 15,
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Iglesia del Gesù",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Plaza del Campidoglio",
-          "modo": "atardecer"
-        }
-      ],
-      "cena": {
-        "restaurante": "La Boccaccia",
-        "alternativa": "Trattoria Valentino",
-        "hora": "20:00"
-      }
-    },
-    "C": {
-      "_sol": "de 18:45 a 19:44",
-      "paradas": [
-        {
-          "lugar": "Catacumbas de San Calixto",
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
           "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": {
-            "cambiar_por": {
-              "lugar": "Via Appia Antica",
-              "min": 45,
-              "no_calle": true
-            }
-          },
-          "traslado": {
-            "como": "el bus 118 (desde la Pirámide)",
-            "min": 25
-          }
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
         },
         {
-          "lugar": "Via Appia Antica",
-          "min": 60,
-          "elastica": 30,
-          "no_calle": true,
-          "no_si_dia": [
-            "D1-FT"
-          ]
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
         },
         {
-          "lugar": "Via Appia Antica",
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
           "min": 40,
-          "elastica": 30,
-          "no_calle": true,
-          "si_dia": [
-            "D1-FT"
-          ],
-          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
         },
         {
-          "lugar": "Circo Máximo",
-          "min": 20,
-          "traslado": {
-            "como": "el bus 118 (hasta el Circo Máximo)",
-            "min": 30
-          }
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
         },
         {
-          "lugar": "Isla Tiberina",
-          "min": 20,
-          "no_si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Museos Capitolinos",
+          "id": "comida_santopalato",
+          "hora": "13:40",
           "min": 60,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": "quitar"
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
         },
         {
-          "lugar": "Largo di Torre Argentina",
-          "min": 15,
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Iglesia del Gesù",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Plaza del Campidoglio",
-          "modo": "atardecer"
-        }
-      ],
-      "cena": {
-        "restaurante": "La Boccaccia",
-        "alternativa": "Trattoria Valentino",
-        "hora": "19:30"
-      }
-    },
-    "D": {
-      "_sol": "desde las 19:45: la Via Appia con calma, la Isla Tiberina y el Teatro de Marcelo, y el atardecer en el Campidoglio",
-      "empieza": "14:30",
-      "paradas": [
-        {
-          "lugar": "Catacumbas de San Calixto",
-          "min": 45,
-          "modo": "dentro",
-          "entrada": true,
-          "si_cerrado": {
-            "cambiar_por": {
-              "lugar": "Via Appia Antica",
-              "min": 45,
-              "no_calle": true
-            }
-          },
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi al Circo Máximo",
+          "como_documento": "",
+          "tipo": "traslado",
           "traslado": {
-            "como": "el bus 118 (desde la Pirámide)",
-            "min": 25
+            "como": "un taxi",
+            "min": 10
           }
         },
         {
-          "lugar": "Via Appia Antica",
-          "min": 120,
-          "elastica": 45,
-          "no_calle": true,
-          "no_si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Via Appia Antica",
-          "min": 110,
-          "elastica": 45,
-          "no_calle": true,
-          "si_dia": [
-            "D1-FT"
-          ],
-          "_nota": "Con D1-FT la tarde suma Largo Argentina y el Gesù: la Via Appia se acorta."
-        },
-        {
+          "id": "parada_circo_maximo",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
           "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "15:50",
           "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "16:30",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "17:15",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
+          "hora": "17:50",
+          "min": 70,
+          "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.",
+          "tipo": "paseo",
+          "lugar": "Testaccio",
+          "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+          "foto": "Paseo por Testaccio"
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
           "traslado": {
-            "como": "el bus 118 (hasta el Circo Máximo)",
-            "min": 30
+            "como": "un taxi",
+            "min": 10
           }
         },
         {
-          "lugar": "Isla Tiberina",
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
           "min": 30,
-          "no_si_dia": [
-            "D1-FT"
-          ],
-          "no_meses": [
-            8
-          ]
-        },
-        {
-          "lugar": "Teatro de Marcelo",
-          "min": 15,
-          "no_si_dia": [
-            "D1-FT"
-          ],
-          "no_meses": [
-            8
-          ]
-        },
-        {
-          "lugar": "Largo di Torre Argentina",
-          "min": 15,
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Iglesia del Gesù",
-          "min": 20,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Iglesia de Santa Maria sopra Minerva",
-          "min": 15,
-          "modo": "dentro",
-          "si_cerrado": "fuera",
-          "si_dia": [
-            "D1-FT"
-          ]
-        },
-        {
-          "lugar": "Plaza del Campidoglio",
-          "modo": "atardecer"
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
         }
       ],
-      "cena": {
-        "restaurante": "La Boccaccia",
-        "alternativa": "Trattoria Valentino",
-        "hora": "20:30"
-      },
-      "_verano": "Agosto: con el descanso hasta las 16:30 antes de la Via Appia, la Isla Tiberina y el Teatro de Marcelo no caben antes del atardecer en el Campidoglio (INVARIANTES 413)."
-    }
-  },
-  "variantes": {
-    "domingo": {
-      "_nota": "El mercado de Testaccio y Mordi e Vai cierran el domingo; el Cementerio Protestante, a las 13:00.",
-      "manana": {
-        "restaurante": {
-          "comida": "Felice a Testaccio",
-          "alternativa": "Da Remo"
-        }
-      },
-      "tarde.B": {
-        "ajustar": {
-          "Via Appia Antica": {
-            "min": 50
+      "B": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi a las Termas de Caracalla",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
+        },
+        {
+          "id": "parada_termas_de_caracalla",
+          "hora": "15:10",
+          "min": 60,
+          "texto_documento": "Termas de Caracalla",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Termas de Caracalla",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "16:45",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "17:25",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "18:05",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "18:50",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
         }
-      }
+      ],
+      "C": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi a las Termas de Caracalla",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "parada_termas_de_caracalla",
+          "hora": "15:10",
+          "min": 75,
+          "texto_documento": "Termas de Caracalla",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Termas de Caracalla",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "17:00",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "17:40",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_y_la_via_di_santa_sabina",
+          "hora": "18:20",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina.",
+          "tipo": "paseo",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
+          "foto": "Paseo por el Aventino"
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "19:05",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "19:50",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "20:25",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "22:05",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "22:25",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi a las Termas de Caracalla",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "parada_termas_de_caracalla",
+          "hora": "15:10",
+          "min": 75,
+          "texto_documento": "Termas de Caracalla",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Termas de Caracalla",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "17:00",
+          "min": 30,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "17:50",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
+          "hora": "18:30",
+          "min": 75,
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina y, en mayo y junio, la Rosaleda.",
+          "tipo": "paseo",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
+          "foto": "Paseo por el Aventino"
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "20:00",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "20:45",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "21:20",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "23:00",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "23:20",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ]
     },
     "lunes": {
-      "_nota": "Caracalla cierra el lunes (el orden ya lo evita): por fuera.",
-      "manana": {
-        "cambiar": {
-          "Termas de Caracalla": {
-            "lugar": "Termas de Caracalla",
-            "tipo": "fija",
-            "hora": "09:00",
-            "hora_tipo": "orientativa",
-            "modo": "fuera"
+      "A": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi al Circo Máximo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
           }
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "15:50",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "16:30",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "17:15",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
+          "hora": "17:50",
+          "min": 70,
+          "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.",
+          "tipo": "paseo",
+          "lugar": "Testaccio",
+          "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+          "foto": "Paseo por Testaccio"
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
         }
-      }
+      ],
+      "B": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi al Circo Máximo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "15:50",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "16:30",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "17:15",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
+          "hora": "17:50",
+          "min": 70,
+          "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.",
+          "tipo": "paseo",
+          "lugar": "Testaccio",
+          "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+          "foto": "Paseo por Testaccio"
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ],
+      "C": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi al Circo Máximo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "15:50",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "16:30",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "17:15",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
+          "hora": "17:50",
+          "min": 70,
+          "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.",
+          "tipo": "paseo",
+          "lugar": "Testaccio",
+          "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+          "foto": "Paseo por Testaccio"
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "11:30",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "12:35",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "13:40",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "14:50",
+          "min": 10,
+          "texto_documento": "Taxi al Circo Máximo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "15:10",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "15:50",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "16:30",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "17:15",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
+          "hora": "17:50",
+          "min": 70,
+          "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.",
+          "tipo": "paseo",
+          "lugar": "Testaccio",
+          "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+          "foto": "Paseo por Testaccio"
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ]
+    },
+    "domingo": {
+      "A": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "11:40",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 11:30"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "12:45",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni",
+          "derivada": "domingo: San Clemente solo abre por la tarde"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "14:15",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "15:05",
+          "min": 10,
+          "texto_documento": "Taxi al Circo Máximo",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          },
+          "hora_corregida": "distancia: lo escrito era 14:50"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "15:25",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:10"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "16:00",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 15:50"
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "16:40",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer",
+          "hora_corregida": "distancia: lo escrito era 16:30"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "17:20",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:15"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_testaccio_la_piazza_testaccio_el_monte_dei_cocci_y_el_antiguo_matadero",
+          "hora": "17:50",
+          "min": 70,
+          "texto_documento": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero.",
+          "tipo": "paseo",
+          "lugar": "Testaccio",
+          "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+          "foto": "Paseo por Testaccio"
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ],
+      "B": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "11:40",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 11:30"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "12:45",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni",
+          "derivada": "domingo: San Clemente solo abre por la tarde"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "14:15",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "15:05",
+          "min": 10,
+          "texto_documento": "Taxi a las Termas de Caracalla",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          },
+          "hora_corregida": "distancia: lo escrito era 14:50"
+        },
+        {
+          "id": "parada_termas_de_caracalla",
+          "hora": "15:25",
+          "min": 60,
+          "texto_documento": "Termas de Caracalla",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Termas de Caracalla",
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 15:10"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "16:50",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 16:45"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "17:25",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "18:05",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "18:50",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "19:30",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "21:10",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "21:30",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ],
+      "C": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "11:40",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 11:30"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "12:45",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni",
+          "derivada": "domingo: San Clemente solo abre por la tarde"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "14:15",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "15:05",
+          "min": 10,
+          "texto_documento": "Taxi a las Termas de Caracalla",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          },
+          "hora_corregida": "distancia: lo escrito era 14:50"
+        },
+        {
+          "id": "parada_termas_de_caracalla",
+          "hora": "15:25",
+          "min": 75,
+          "texto_documento": "Termas de Caracalla",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Termas de Caracalla",
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 15:10"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "17:05",
+          "min": 20,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:00"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "17:40",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_y_la_via_di_santa_sabina",
+          "hora": "18:20",
+          "min": 30,
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina.",
+          "tipo": "paseo",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
+          "foto": "Paseo por el Aventino"
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "19:05",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "19:50",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "20:25",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "22:05",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "22:25",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ],
+      "D": [
+        {
+          "id": "parada_basilica_de_santa_maria_la_mayor",
+          "hora": "09:00",
+          "min": 30,
+          "texto_documento": "Santa Maria Maggiore",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de Santa María la Mayor",
+          "modo": "dentro"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_monti_via_panisperna_y_la_piazza_madonna_dei_monti",
+          "hora": "09:50",
+          "min": 45,
+          "texto_documento": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "tipo": "paseo",
+          "lugar": "Monti",
+          "titulo": "Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti"
+        },
+        {
+          "id": "parada_san_pietro_in_vincoli_el_moises_de_miguel_angel",
+          "hora": "10:50",
+          "min": 20,
+          "texto_documento": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "como_documento": "por dentro",
+          "nota": "el Moisés de Miguel Ángel",
+          "tipo": "parada",
+          "lugar": "Iglesia de San Pietro in Vincoli",
+          "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+          "modo": "dentro"
+        },
+        {
+          "id": "parada_san_juan_de_letran_y_la_escalera_santa",
+          "hora": "11:40",
+          "min": 40,
+          "texto_documento": "San Juan de Letrán y la Escalera Santa",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 11:30"
+        },
+        {
+          "id": "comida_santopalato",
+          "hora": "12:45",
+          "min": 60,
+          "texto_documento": "**Comida:** SantoPalato (o Il Bocconcino), en San Giovanni",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "SantoPalato",
+          "alternativa": "Il Bocconcino",
+          "zona": "en San Giovanni",
+          "derivada": "domingo: San Clemente solo abre por la tarde"
+        },
+        {
+          "id": "parada_basilica_de_san_clemente_con_las_excavaciones_cierra_de_12_30_a_14_00",
+          "hora": "14:15",
+          "min": 40,
+          "texto_documento": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "como_documento": "por dentro",
+          "nota": "cierra de 12:30 a 14:00",
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00)",
+          "modo": "dentro",
+          "derivada": "domingo: San Clemente solo abre por la tarde",
+          "hora_corregida": "distancia: lo escrito era 14:00"
+        },
+        {
+          "id": "traslado_un_taxi",
+          "hora": "15:05",
+          "min": 10,
+          "texto_documento": "Taxi a las Termas de Caracalla",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          },
+          "hora_corregida": "distancia: lo escrito era 14:50"
+        },
+        {
+          "id": "parada_termas_de_caracalla",
+          "hora": "15:25",
+          "min": 75,
+          "texto_documento": "Termas de Caracalla",
+          "como_documento": "por dentro",
+          "tipo": "parada",
+          "lugar": "Termas de Caracalla",
+          "modo": "dentro",
+          "hora_corregida": "distancia: lo escrito era 15:10"
+        },
+        {
+          "id": "parada_circo_maximo",
+          "hora": "17:05",
+          "min": 30,
+          "texto_documento": "Circo Máximo",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Circo Máximo",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 17:00"
+        },
+        {
+          "id": "parada_boca_de_la_verdad",
+          "hora": "17:50",
+          "min": 20,
+          "texto_documento": "Boca de la Verdad",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "modo": null
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
+          "hora": "18:30",
+          "min": 75,
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
+          "como_documento": "",
+          "colchon": true,
+          "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina y, en mayo y junio, la Rosaleda.",
+          "tipo": "paseo",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
+          "foto": "Paseo por el Aventino"
+        },
+        {
+          "id": "parada_jardin_de_los_naranjos",
+          "hora": "20:00",
+          "min": 30,
+          "texto_documento": "Jardín de los Naranjos, al atardecer",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "modo": "atardecer"
+        },
+        {
+          "id": "parada_ojo_de_la_cerradura_del_aventino",
+          "hora": "20:45",
+          "min": 15,
+          "texto_documento": "Ojo de la Cerradura del Aventino",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "modo": null
+        },
+        {
+          "id": "cena_felice_a_testaccio",
+          "hora": "21:20",
+          "min": 90,
+          "texto_documento": "**Cena:** Felice a Testaccio",
+          "como_documento": "",
+          "tipo": "cena",
+          "restaurante": "Felice a Testaccio"
+        },
+        {
+          "id": "traslado_un_taxi#2",
+          "hora": "23:00",
+          "min": 10,
+          "texto_documento": "Taxi al Campidoglio",
+          "como_documento": "",
+          "tipo": "traslado",
+          "traslado": {
+            "como": "un taxi",
+            "min": 10
+          }
+        },
+        {
+          "id": "noche_foro_romano_desde_el_campidoglio_noche",
+          "hora": "23:20",
+          "min": 30,
+          "texto_documento": "El Foro Romano desde el Campidoglio, de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Foro Romano desde el Campidoglio (noche)"
+        }
+      ]
     }
   },
-  "experiencias": {}
+  "colchon_insertable": {
+    "dia_semana": "lunes",
+    "fila": {
+      "hora": "18:20",
+      "min": 30,
+      "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
+      "como_documento": "",
+      "colchon": true,
+      "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina.",
+      "tipo": "paseo",
+      "lugar": "Ojo de la Cerradura del Aventino",
+      "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
+      "foto": "Paseo por el Aventino"
+    }
+  },
+  "fechas_malas": {
+    "cerrado": [
+      "Termas de Caracalla"
+    ]
+  },
+  "noche_si_repetida": [
+    "Trastevere de noche"
+  ],
+  "pool": {
+    "Domus Aurea": {
+      "pendiente": "el documento dice dónde iría (la mañana del D5, entre San Pietro in Vincoli y San Clemente, con reserva y de viernes a domingo) pero no trae la tabla"
+    }
+  },
+  "experiencias": {
+    "barrios_sabores": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "colchon:Monti",
+          "min": 60
+        }
+      ],
+      "por_version": {
+        "B": [
+          {
+            "op": "insertar",
+            "antes": "tipo:cena",
+            "fila": {
+              "tipo": "paseo",
+              "lugar": "Testaccio",
+              "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+              "min": 30,
+              "colchon": true,
+              "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero."
+            }
+          }
+        ],
+        "C": [
+          {
+            "op": "insertar",
+            "antes": "tipo:cena",
+            "fila": {
+              "tipo": "paseo",
+              "lugar": "Testaccio",
+              "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+              "min": 30,
+              "colchon": true,
+              "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero."
+            }
+          }
+        ],
+        "D": [
+          {
+            "op": "insertar",
+            "antes": "tipo:cena",
+            "fila": {
+              "tipo": "paseo",
+              "lugar": "Testaccio",
+              "titulo": "Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero",
+              "min": 30,
+              "colchon": true,
+              "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero."
+            }
+          }
+        ]
+      }
+    },
+    "naturaleza_vistas": {
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Jardín de los Naranjos",
+          "min": 45
+        }
+      ]
+    },
+    "mercadillos_navidenos": {
+      "fechas": {
+        "desde": "12-08",
+        "hasta": "01-06"
+      },
+      "acciones": [
+        {
+          "op": "cambiar",
+          "fila": "Basílica de Santa María la Mayor",
+          "titulo": "Santa Maria Maggiore y su belén (la basílica del pesebre)"
+        }
+      ]
+    }
+  }
 }

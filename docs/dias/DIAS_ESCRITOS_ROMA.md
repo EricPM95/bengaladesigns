@@ -16,6 +16,14 @@
 3. **Viajes de 3 días o más:** van **todos los imprescindibles**, por dentro, porque caben.
 4. **Lo que solo se ve por dentro** (museos, galerías, palacios) y no va por dentro **no sale**, y no se explica por qué.
 5. **Mientras se respeten los márgenes**, entran por este orden: primero el **nivel 1**, luego el **nivel 2** y luego el **nivel 3**. **Si algo no cabe, se quita al revés:** primero el nivel 3, luego el 2 y luego el 1. Un imprescindible solo se queda fuera en el caso del punto 1 (el pool manda en 1 y 1,5 días).
+0. **El orden de visita va según la pirámide, SIEMPRE** (todos los destinos): imprescindibles, nivel 1, nivel 2 y nivel 3, también en el tiempo. Los primeros días y el **medio día de llegada** llevan lo mejor; a medida que se acaban los días se completa con el resto, y el **medio día de vuelta** lleva lo de más abajo. Más vale una parada menos que la gente quiere ver que tres extra poco conocidas: un viaje más largo no tiene por qué llevar todo lo de uno más corto.
+0bis. **Por dentro una sola vez en el viaje** (todos los destinos, a partir de 2 días; en 1 y 1,5 días manda la regla 1):
+   - Todo lo que tiene visita por dentro va por dentro (plazas, fuentes y calles no cuentan: son por fuera).
+   - Si el viaje ya lo visita por dentro en otro día, las demás veces sale **por fuera** y más corto (por ejemplo, el Panteón la tarde de llegada, si un día entero lo lleva por dentro). La visita por dentro se queda en su día escrito.
+   - Lo que solo tiene sentido por dentro (Galería Borghese, Termas de Caracalla, museos) va siempre con su entrada; la app avisa de reservar si hace falta.
+   - **Excepciones:** si el viajero tiene **reserva** en otro momento, la reserva manda (ese día por dentro y el otro por fuera). Si la visita por dentro se pierde por un cierre (misa, festivo), la otra vez que sale puede ir por dentro si está abierto.
+   - El Coliseo con el Foro y los Museos Vaticanos nunca van en un medio día: van en días enteros.
+   - **La tarde de llegada** es de imprescindibles que se disfrutan en una tarde o de noche (en Roma, del centro histórico; con Free Tour de mañana, del Gueto y Trastevere), según la hora a la que el viajero queda libre (aterrizaje + 1:30). Ver «Llegada según la hora». Los días enteros no cambian: lo que se ve esa tarde puede volver a salir otro día de otra forma (por dentro, de día); solo las nocturnas no se repiten (si ya salió, la siguiente de la lista: Navona de noche, Trastevere de noche, Coliseo iluminado).
 6. **Free Tour: en viajes de 1,5 días o menos, no.** Si el viaje dura **1,5 días o menos** (≤ 1,5), el Free Tour **no aparece en experiencias**: el formulario no lo ofrece y el motor no lo pone. Desde 2 días, sí.
 7. **Restaurantes:** cada comida y cena lleva su alternativa entre paréntesis. Si el primero cierra ese día (día de descanso, vacaciones o festivo), va la alternativa; si cierran los dos, la tercera cuando la hay. Si no hay ninguna abierta, el motor pone otro restaurante de la misma zona abierto a esa hora (de los datos) y lo apunta en el registro.
 8. **«No incluido»: motivo solo si es por un cierre o un festivo** («Cerrado el lunes», «Cerrado el 25 de diciembre»). En el resto de casos, solo el nombre, sin frase («solo con reserva», «no cabía»… no se ponen).
@@ -70,8 +78,11 @@ Si la cena es en Trastevere y esa tarde no se ha paseado ya Trastevere de noche,
 | Día de la Roma antigua, el Gueto y Trastevere | D1-FT |
 | Medio día del Tridente y el Pincio (viaje de 2,5 días) | DT-medio (nuevo) |
 | Medio día de Monti (2,5 días con Free Tour de mañana) | DM-medio (nuevo) |
-| Día de Trevi, el Pincio y Monti | D4M (pendiente; se rehará por niveles) |
-| Día de la Borghese | D4 (pendiente) |
+| Día de Villa Borghese, el Popolo y la Plaza de España | D4 (nuevo) |
+| Medio día del Aventino y Testaccio (3,5 días, mañana de vuelta) | DA-medio (nuevo) |
+| Día de las basílicas y el Aventino (4 días) | D5 (nuevo) |
+| Roma desde arriba (5 días en Roma y 6 días) | D6 (nuevo) |
+| La Vía Appia y Trastevere tranquilo (6 días en Roma) | D7 (nuevo) |
 
 ## Qué días lleva cada viaje
 
@@ -81,13 +92,14 @@ Si la cena es en Trastevere y esa tarde no se ha paseado ya Trastevere de noche,
 | 1,5 días | D1-corto + D0-medio (todo por fuera, salvo reserva) | no se ofrece |
 | 2 días | D1 + D2 | D3 + D1-FT |
 | 2,5 días | D1 + D2 + DT-medio (de mañana o de tarde) | D3 + D1-FT + DM-medio (de mañana) o DT-medio (de tarde) |
-| 3 días | D1 + D2 + D4 (con Galería) o D4M (sin ella) | D3 + D1-FT + D4 o D5C |
-| 4 días | D1 + D2 + D4 + D5C | D3 + D1-FT + D4 + D5C |
-| 5 días | D1 + D2 + D4 + D5 + D6 | D3 + D1-FT + D4 + D5 + D6 |
-| 6 días | + D7 | + D7 |
+| 3 días | D1 + D2 + D4 | D3 + D1-FT + D4 (versión con Free Tour) |
+| 3,5 días | D1 + D2 + D4 + DA-medio (mañana de vuelta) | D3 + D1-FT + D4 + DA-medio |
+| 4 días | D1 + D2 + D4 + D5 (o una excursión, si el viajero la elige) | D3 + D1-FT + D4 + D5 (o excursión) |
+| 5 días | D1 + D2 + D4 + D5 + excursión (o D6 con «Prefiero quedarme en Roma») | D3 + D1-FT + D4 + D5 + excursión (o D6) |
+| 6 días | D1 + D2 + D4 + D5 + D6 + excursión (o D7 con «Prefiero quedarme en Roma») | D3 + D1-FT + D4 + D5 + D6 + excursión (o D7) |
 | 7 o más | del día 7 en adelante, en blanco (el viajero lo rellena a mano) | igual |
 
-**Orden de los días (regla general):** si un día cae en una fecha que le va mal y se puede cambiar con otro día del viaje, se cambian. Fechas que le van mal a cada día:
+**Orden de los días (regla general):** el D4 (Galería Borghese) va mal en **lunes** (la Galería cierra); el D5, en **lunes** (Caracalla); el D6, en **miércoles** (audiencia: la Cúpula) y en **lunes** (el Castillo). Si un día cae en una fecha que le va mal y se puede cambiar con otro día del viaje, se cambian. Fechas que le van mal a cada día:
 - **Día del Vaticano (D2) y D3:** el **domingo**, el **Domingo de Pascua** (bendición del Papa, la plaza llena) y **cualquier fecha en que cierren los Museos Vaticanos** (las de sus datos: 1 y 6 de enero, 11 de febrero, 19 de marzo, Lunes de Pascua, 1 de mayo, 29 de junio, 14 y 15 de agosto, 8, 25 y 26 de diciembre…). El D2, además, el **miércoles** (audiencia del Papa).
 - **Día de la Roma antigua (D1 y D1-FT):** el **2 de junio** (el Coliseo y el Foro no abren hasta la tarde) y el **25 de diciembre**.
 
@@ -316,7 +328,21 @@ Con otra hora de reserva, el motor corre las horas con los márgenes.
 **Lo que hará el motor**
 - Elegir mañana o tarde según el viaje, y con o sin Museos según la reserva.
 - Sin pool ni reserva, los Museos no salen (regla general, punto 4).
-- Miércoles por la mañana (audiencia): la Plaza de San Pedro está ocupada hasta mediodía; la mañana empieza en el Castillo y el Puente, y la Plaza y la Basílica (por fuera) van al final, si da tiempo antes de irse.
+- Miércoles por la mañana (audiencia): la Plaza de San Pedro está ocupada hasta mediodía. Solo sale cuando no hay otra opción (en 1,5 días es la mañana de la vuelta y no se puede cambiar de día). La mañana va **al revés**, para acabar en San Pedro cuando termina la audiencia y sin volver atrás:
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 09:00 | Fontana de Trevi, sin gente | 20 |  |
+| 09:30 | Plaza de España | 20 |  |
+| 10:20 | Via dei Coronari | 10 | de camino |
+| 10:40 | Puente Sant'Angelo | 5 | de camino |
+| 10:55 | Castillo de Sant'Angelo | 15 | por fuera |
+| 11:30 | Pasea y piérdete por Borgo Pio | 25 |  |
+| 12:05 | Plaza de San Pedro | 20 |  |
+| 12:25 | Basílica de San Pedro | 5 | de camino (la fachada) |
+| 12:50 | **Comida:** Borghiciana (o Dal Toscano), en el Borgo | 60 |  |
+
+- Nocturna del medio día de tarde (llegada) en el viaje de 1,5 días: si el día entero no ha llevado Trevi ni la Plaza de España de noche, la noche acaba con **Trevi iluminada y después la Plaza de España de noche** (10 min andando), como en el D1. Vale la hora límite de la noche (en verano, hasta las 23:45).
 - Si algo cierra: la regla de cierres.
 
 **Pool:** lo marcado en el pool va por dentro y es la prioridad (como en el viaje de 1 día): los Museos con las tablas «con Museos», el Coliseo y el Foro con la mañana del D1. Para que quepa se quita lo de menos importancia; si hace falta, también un imprescindible: el pool manda.
@@ -390,7 +416,7 @@ Con otra hora de reserva, el motor corre las horas con los márgenes.
 ### Pool (solo si el viaje no tiene el día propio del extra; las horas salen de los márgenes)
 1. **Museos Capitolinos** (si no hay D5): después del Campidoglio, 75 min por dentro; el Altar pasa a «de camino»; por la tarde el Barrio Judío baja a 20 min y San Luigi va por fuera si no llega antes de las 18:00.
 2. **Termas de Caracalla** (si no hay D5 ni D5C): taxi después de comer, Termas 60 min, taxi al Gesù; se quitan el Barrio Judío, la Fuente de las Tortugas y Largo di Torre Argentina.
-3. **Galería Borghese** (solo si el viajero la marca en el pool; si no, va a «No incluido»). Turno de las 17:00 (reserva). Sustituye la tarde desde la comida; se pierden el Barrio Judío, el Gesù, San Luigi y Campo de' Fiori. Tardes A, B y C:
+3. **Galería Borghese** (solo en viajes de 2 y 2,5 días, y solo si el viajero la marca en el pool; si no, va a «No incluido». Desde 3 días va por defecto en el D4). Turno de las 17:00 (reserva). Sustituye la tarde desde la comida; se pierden el Barrio Judío, el Gesù, San Luigi y Campo de' Fiori. Tardes A, B y C:
 
 | Hora | Parada | Min | Cómo |
 |---|---|---|---|
@@ -947,6 +973,8 @@ En C y D, Trinità dei Monti va por fuera (la iglesia cierra a las 19:45), pero 
 
   Con la Galería, Santa Maria del Popolo y Trinità dei Monti no salen (cierran antes). Sin nocturna en C y D.
 
+  **Verano (decidido en la Tanda 2):** si para llegar al Pincio con el sol el colchón de Villa Borghese pasaría de 2 horas (pasa de mediados de mayo a mediados de agosto), el turno de la Galería pasa a las **16:00** (o a la hora que haga falta) y la tarde empieza más tarde: el colchón se queda en lo necesario, **como mucho 2 horas**. Así el viajero tiene más rato después de llegar.
+
 - **Parque de Villa Borghese, por la tarde, B** (en C y D ya va como colchón; en A no hay luz):
 
 | Hora | Parada | Min | Cómo |
@@ -1003,6 +1031,396 @@ Acaba a 5 min de Termini (tren y autobús al aeropuerto). La Plaza del Quirinal 
 Lo demás del pool, en los días enteros.
 
 **Experiencias:** Barrios y Sabores: Monti pasa de 60 a 75 min (la comida, a las 13:00). Las demás, en los días enteros.
+
+---
+
+## Día de Villa Borghese, el Popolo y la Plaza de España · D4 (viaje de 3 días)
+
+El tercer día del viaje de 3 días (D1 + D2 + D4; con Free Tour de mañana, D3 + D1-FT + D4). Va la **Galería Borghese por defecto**, a las 11:00: es lo que casi todo el mundo quiere ver; quien no la quiera, la quita (ver abajo). Recorrido en línea, sin volver atrás: de Trevi al parque por Via Veneto, la Galería, el Pincio, la Piazza del Popolo y bajada por el Tridente hasta la Plaza de España.
+
+**Mañana (igual todo el año)**
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 07:30 | Fontana de Trevi, sin gente | 20 |  |
+| 08:00 | Desayuno cerca de Trevi | 30 |  |
+| 08:40 | Fuente del Tritón | 5 | de camino |
+| 08:45 | Via Veneto, la calle de *La Dolce Vita* | 15 | de camino |
+| 09:00 | Porta Pinciana | 5 | de camino |
+| 09:30 | Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón) | 40 |  |
+| 10:30 | Galería Borghese: llegada con la reserva (30 min antes) |  |  |
+| 11:00 | Galería Borghese | 120 | por dentro (reserva) |
+| 13:20 | Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie | 25 |  |
+| 14:00 | Terraza del Pincio | 20 |  |
+| 14:40 | **Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo | 60 |  |
+
+Horas redondas a propósito: donde el margen sobra unos minutos, se deja (es colchón).
+
+**Tarde A** (sol antes de las 17:40: Trinità ya iluminada, sin atardecer)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 15:55 | Piazza del Popolo | 15 |  |
+| 16:25 | Santa Maria del Popolo (los Caravaggio; abre a las 16:00) | 20 | por dentro |
+| 17:05 | Ara Pacis (última entrada 18:30) | 45 | por dentro |
+| 18:00 | Via Condotti | 10 | de camino |
+| 18:25 | Plaza de España | 20 |  |
+| 18:55 | Trinità dei Monti y su mirador sobre la Plaza de España (ya iluminada) | 15 | por dentro |
+| 19:15 | Bajar la escalinata de la Plaza de España | 5 | de camino |
+| 19:45 | **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente | 90 |  |
+| 21:25 | Taxi al Coliseo | 10 |  |
+| 21:45 | Coliseo iluminado | 20 | de noche |
+
+**Tarde B** (sol de 17:40 a 18:45: Trinità al atardecer; Ara Pacis no cabe, porque su última entrada es a las 18:30)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 15:55 | Piazza del Popolo | 15 |  |
+| 16:25 | Santa Maria del Popolo (los Caravaggio; abre a las 16:00) | 20 | por dentro |
+| 16:50 | Via del Babuino y Via Margutta | 10 | de camino |
+| 17:15 | Plaza de España | 20 |  |
+| 17:50 | Trinità dei Monti y su mirador, al atardecer | 30 | por dentro |
+| 18:25 | Bajar la escalinata de la Plaza de España | 5 | de camino |
+| 18:40 | Pasea y piérdete por Via Condotti y el Tridente iluminados (colchón) | 60 |  |
+| 20:00 | **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente | 90 |  |
+| 21:40 | Taxi al Coliseo | 10 |  |
+| 22:00 | Coliseo iluminado | 20 | de noche |
+
+**Tarde C** (sol de 18:45 a 19:45)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 15:55 | Piazza del Popolo | 15 |  |
+| 16:25 | Santa Maria del Popolo (los Caravaggio; abre a las 16:00) | 20 | por dentro |
+| 17:05 | Ara Pacis (última entrada 18:30) | 45 | por dentro |
+| 18:00 | Via Condotti | 10 | de camino |
+| 18:25 | Plaza de España | 20 |  |
+| 18:55 | Trinità dei Monti y su mirador, al atardecer | 30 | por fuera (la iglesia cierra a las 19:45) |
+| 19:30 | Bajar la escalinata de la Plaza de España | 5 | de camino |
+| 19:45 | Pasea y piérdete por el Tridente iluminado: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) | 30 |  |
+| 20:30 | **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente | 90 |  |
+| 22:10 | Taxi al Coliseo | 10 |  |
+| 22:30 | Coliseo iluminado | 20 | de noche |
+
+**Tarde D** (sol después de las 19:45)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 15:55 | Piazza del Popolo | 15 |  |
+| 16:25 | Santa Maria del Popolo (los Caravaggio; abre a las 16:00) | 20 | por dentro |
+| 17:05 | Ara Pacis (última entrada 18:30) | 45 | por dentro |
+| 18:00 | Via Condotti | 10 | de camino |
+| 18:25 | Plaza de España | 20 |  |
+| 18:55 | Pasea y piérdete por el Tridente: Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco (colchón) | 60 |  |
+| 20:05 | Trinità dei Monti y su mirador, al atardecer | 30 | por fuera (la iglesia cierra a las 19:45) |
+| 20:40 | Bajar la escalinata de la Plaza de España | 5 | de camino |
+| 21:00 | **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente | 90 |  |
+| 22:40 | Taxi al Coliseo | 10 |  |
+| 23:00 | Coliseo iluminado | 20 | de noche |
+
+**Nocturna:** el Coliseo iluminado si no ha salido de noche en el viaje (en 3 días sin Free Tour no sale en otro día). Si ya salió, Trevi iluminada (taxi, 5 min). Hora límite según «Márgenes» (en D, la noche se alarga).
+
+**Lo que hará el motor**
+- Ajustar «al atardecer» (Trinità) y el colchón de antes o de después a la puesta de sol de ese día.
+- **Lunes:** la Galería cierra. Primero, el cambio de orden de los días (este día va a otro día del viaje). Si no se puede, la Galería va a «No incluido» («Cerrada el lunes») y Villa Borghese se alarga hasta las 12:00 con el reloj de agua; el resto igual.
+- Si el viajero quita la Galería (o no hay entradas): igual que el lunes, sin motivo en «No incluido».
+- Si el viajero reserva otro turno de la Galería (9:00 o 13:00): la mañana se corre con los márgenes; el parque va antes o después según el turno.
+- Si Santa Maria del Popolo o Trinità cierran (misa, festivo), la regla de cierres; como son iglesias, si no se puede entrar no salen (el mirador de Trinità sí, por fuera).
+- Si un restaurante cierra ese día, su alternativa.
+
+**Con Free Tour de mañana** (el tour ya pasó por Trevi, la Plaza de España y Via Condotti): la mañana empieza a las 9:00 en la Fuente del Tritón (desayuno en el hotel), sin Trevi; la Plaza de España y Via Condotti van de camino (5 min) y el tiempo sobrante pasa al colchón del Tridente. Trinità sigue siendo parada.
+
+**Pool:** la Cúpula, el Castillo por dentro, los Capitolinos, etc. van en su día escrito. Este día no tiene sitio para extras.
+**Experiencias:**
+- **Arte y Museos:** ya lleva la Galería, Ara Pacis y los Caravaggio de Santa Maria del Popolo.
+- **Naturaleza y Vistas:** Villa Borghese pasa de 40 a 60 min (Trevi a las 7:15) y, en A, el Pincio se hace al atardecer en vez de Trinità.
+- **Mercadillos (8 de diciembre a 6 de enero):** el colchón del Tridente pasa a «Luces de Navidad del Tridente».
+
+---
+
+## Medio día del Aventino y Testaccio · DA-medio (viaje de 3,5 días, mañana de vuelta)
+
+El medio día de vuelta del viaje de 3,5 días (D1 + D2 + D4 + DA-medio; con Free Tour de mañana, D3 + D1-FT + D4 + DA-medio). Es lo que toca por la pirámide cuando ya se ha visto lo imprescindible. Va en línea, de Caracalla hacia el río y Testaccio, y acaba junto a la estación de Ostiense (tren FL1 al aeropuerto de Fiumicino) y la de Piramide (metro B). Si el medio día es de llegada (por la tarde), este no se usa: ver «Llegada según la hora».
+
+**Por la mañana**
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 09:00 | Termas de Caracalla (abre a las 9:00) | 75 | por dentro |
+| 10:50 | Circo Máximo | 20 |  |
+| 11:30 | Boca de la Verdad | 20 |  |
+| 12:10 | Jardín de los Naranjos | 30 |  |
+| 12:55 | Ojo de la Cerradura del Aventino | 15 |  |
+| 13:35 | **Comida:** en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio) | 60 |  |
+| 14:55 | Pirámide Cestia | 15 |  |
+
+Desayuno en el hotel. El Ojo de la Cerradura, por la mañana, con menos cola que por la tarde.
+
+**Lunes** (las Termas de Caracalla cierran: van a «No incluido», «Cerrado el lunes»)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 09:30 | Circo Máximo | 20 |  |
+| 10:10 | Boca de la Verdad (abre a las 9:30) | 20 |  |
+| 10:50 | Jardín de los Naranjos | 30 |  |
+| 11:35 | Ojo de la Cerradura del Aventino | 15 |  |
+| 12:15 | Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón) | 30 |  |
+| 13:00 | **Comida:** en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio) | 60 |  |
+| 14:15 | Pirámide Cestia | 15 |  |
+| 14:30 | Cementerio Protestante (la tumba de Keats) | 30 | por dentro |
+
+**Lo que hará el motor**
+- **Domingo:** el Mercado de Testaccio y Mordi e Vai cierran: la comida es en Felice a Testaccio (abre todos los días).
+- Si algo cierra (festivo), la regla de cierres.
+- Si el viajero quita las Termas de Caracalla: la tabla del lunes, sin motivo en «No incluido».
+
+**Pool:** nada (lo del pool va en los días enteros).
+**Experiencias:**
+- **Barrios y Sabores:** la comida pasa a «Pasea y piérdete por el Mercado de Testaccio» y comida allí, 75 min.
+- **Naturaleza y Vistas:** el Jardín de los Naranjos pasa de 30 a 45 min.
+
+---
+
+## Día de las basílicas y el Aventino · D5 (viaje de 4 días)
+
+El cuarto día del viaje de 4 días (D1 + D2 + D4 + D5; con Free Tour de mañana, D3 + D1-FT + D4 + D5). Va en línea de norte a sur, sin volver atrás: Santa Maria Maggiore, Monti, San Pietro in Vincoli, San Clemente y Letrán por la mañana; taxi y, por la tarde, Caracalla, el Circo Máximo, la Boca de la Verdad, el Aventino al atardecer y cena en Testaccio.
+
+**Excursión:** en el viaje de 4 días, el viajero puede **cambiar este día por una excursión** (Pompeya, Tívoli, Florencia…, de las que den los afiliados). Por defecto va este día. Desde 5 días, la excursión va por defecto.
+
+**Mañana (igual todo el año)**
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 09:00 | Santa Maria Maggiore | 30 | por dentro |
+| 09:50 | Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) | 45 |  |
+| 10:50 | San Pietro in Vincoli (el Moisés de Miguel Ángel) | 20 | por dentro |
+| 11:30 | Basílica de San Clemente, con las excavaciones (cierra de 12:30 a 14:00) | 40 | por dentro |
+| 12:35 | San Juan de Letrán y la Escalera Santa | 40 | por dentro |
+| 13:40 | **Comida:** SantoPalato (o Il Bocconcino), en San Giovanni | 60 |  |
+
+**Tarde A** (sol antes de las 17:40: sin Caracalla, que cierra pronto en invierno)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:50 | Taxi al Circo Máximo | 10 |  |
+| 15:10 | Circo Máximo | 20 |  |
+| 15:50 | Boca de la Verdad | 20 |  |
+| 16:30 | Jardín de los Naranjos, al atardecer | 30 |  |
+| 17:15 | Ojo de la Cerradura del Aventino | 15 |  |
+| 17:50 | Pasea y piérdete por Testaccio: la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero (colchón) | 70 |  |
+| 19:30 | **Cena:** Felice a Testaccio | 90 |  |
+| 21:10 | Taxi al Campidoglio | 10 |  |
+| 21:30 | El Foro Romano desde el Campidoglio, de noche | 30 | de noche |
+
+**Tarde B** (sol de 17:40 a 18:45)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:50 | Taxi a las Termas de Caracalla | 10 |  |
+| 15:10 | Termas de Caracalla | 60 | por dentro |
+| 16:45 | Circo Máximo | 20 |  |
+| 17:25 | Boca de la Verdad | 20 |  |
+| 18:05 | Jardín de los Naranjos, al atardecer | 30 |  |
+| 18:50 | Ojo de la Cerradura del Aventino | 15 |  |
+| 19:30 | **Cena:** Felice a Testaccio | 90 |  |
+| 21:10 | Taxi al Campidoglio | 10 |  |
+| 21:30 | El Foro Romano desde el Campidoglio, de noche | 30 | de noche |
+
+**Tarde C** (sol de 18:45 a 19:45)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:50 | Taxi a las Termas de Caracalla | 10 |  |
+| 15:10 | Termas de Caracalla | 75 | por dentro |
+| 17:00 | Circo Máximo | 20 |  |
+| 17:40 | Boca de la Verdad | 20 |  |
+| 18:20 | Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón) | 30 |  |
+| 19:05 | Jardín de los Naranjos, al atardecer | 30 |  |
+| 19:50 | Ojo de la Cerradura del Aventino | 15 |  |
+| 20:25 | **Cena:** Felice a Testaccio | 90 |  |
+| 22:05 | Taxi al Campidoglio | 10 |  |
+| 22:25 | El Foro Romano desde el Campidoglio, de noche | 30 | de noche |
+
+**Tarde D** (sol después de las 19:45)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:50 | Taxi a las Termas de Caracalla | 10 |  |
+| 15:10 | Termas de Caracalla | 75 | por dentro |
+| 17:00 | Circo Máximo | 30 |  |
+| 17:50 | Boca de la Verdad | 20 |  |
+| 18:30 | Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón) | 75 |  |
+| 20:00 | Jardín de los Naranjos, al atardecer | 30 |  |
+| 20:45 | Ojo de la Cerradura del Aventino | 15 |  |
+| 21:20 | **Cena:** Felice a Testaccio | 90 |  |
+| 23:00 | Taxi al Campidoglio | 10 |  |
+| 23:20 | El Foro Romano desde el Campidoglio, de noche | 30 | de noche |
+
+**Nocturna:** el Foro desde el Campidoglio de noche (no sale en ningún otro día). Si ya hubiera salido, Trastevere de noche (taxi, 10 min).
+
+**Lo que hará el motor**
+- Ajustar «al atardecer» (el Jardín de los Naranjos) y el colchón de antes a la puesta de sol de ese día.
+- **Lunes:** las Termas de Caracalla cierran («Cerrado el lunes»): en B, C y D la tarde es como la A, con el colchón del Aventino más largo.
+- **Domingo:** San Clemente solo abre por la tarde (de 12:00 a 18:00): se cambia el orden de la mañana (Letrán a las 11:30, comida a las 12:45 y San Clemente a las 14:00) y el taxi sale de San Clemente.
+- La Boca de la Verdad cierra a última hora de la tarde: si no llega, por fuera (la fachada y la cola).
+- Si un restaurante cierra ese día, su alternativa (SantoPalato cierra domingo y lunes).
+
+**Pool:** la Domus Aurea (solo con reserva, de viernes a domingo) iría por la mañana, entre San Pietro in Vincoli y San Clemente; lo demás del pool, en su día.
+**Experiencias:**
+- **Barrios y Sabores:** el paseo por Monti pasa a 60 min y la cena en Testaccio lleva antes «Pasea y piérdete por Testaccio».
+- **Naturaleza y Vistas:** el Jardín de los Naranjos pasa de 30 a 45 min.
+- **Mercadillos (8 de diciembre a 6 de enero):** el belén de Santa Maria Maggiore (la basílica del pesebre) en la primera parada.
+
+---
+
+## Viaje de 5 días: el día de excursión y «Prefiero quedarme en Roma»
+
+- **5 días:** D1 + D2 + D4 + D5 + **excursión** (sí o sí por defecto). La excursión va en un día entero del medio, nunca el de llegada ni el de vuelta. En la pestaña RUTA, ese día lleva la etiqueta **«Día de excursión»** (como «Día de viaje» el primero y el último).
+- **«Prefiero quedarme en Roma»:** en el día de excursión, el viajero puede cambiarla por un día en Roma. Se le enseña una pantalla bonita, como una alerta pero sin serlo, con la lista de las **paradas emblemáticas** del día que haría (solo las conocidas, sin horas, con su foto y bien presentadas; lo de camino o menos famoso no sale aquí, saldrá luego en la ruta con sus horas). Debajo, dos botones:
+  1. **«Organízame este día»:** el día se rellena solo con la ruta curada (D6).
+  2. **«Prefiero crear mi propio día»:** el día se queda en blanco, con «Añadir parada».
+- **El día en Roma (D6, «Roma desde arriba», escrito más abajo):** lista de la pantalla: Cúpula de San Pedro, Castillo de Sant'Angelo (por dentro, con la terraza), Plaza del Campidoglio (aunque ya haya salido: es imprescindible y está junto a los museos), Museos Capitolinos y la terraza del Altar de la Patria con el ascensor panorámico, al atardecer. En la ruta definitiva (con horas) va además la Piazza Venezia, entre el Campidoglio y el Altar, aunque ya haya salido otro día. Sirve también para el sexto día del viaje de 6 días.
+- **4 días:** al revés, el D5 puede cambiarse por una excursión (pantalla con las excursiones de los afiliados).
+
+## Roma desde arriba · D6 (5 días con «Prefiero quedarme en Roma», y 6 días)
+
+Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castillo de Sant'Angelo por dentro, los Museos Capitolinos y la terraza del Altar de la Patria. En línea, del Vaticano al Campidoglio cruzando el centro, sin volver atrás.
+
+**Lista de la pantalla «Prefiero quedarme en Roma»** (sin horas, con foto): Cúpula de San Pedro · Castillo de Sant'Angelo · Plaza del Campidoglio · Museos Capitolinos · Terraza del Altar de la Patria.
+
+**Mañana (igual todo el año)**
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 08:00 | Cúpula de San Pedro (a pie o con ascensor; se sale por la Basílica) | 75 | por dentro |
+| 09:20 | Plaza de San Pedro | 5 | de camino |
+| 09:25 | Via della Conciliazione | 10 | de camino |
+| 09:55 | Castillo de Sant'Angelo, hasta la terraza del ángel | 90 | por dentro |
+| 11:30 | Puente Sant'Angelo | 5 | de camino |
+| 11:40 | Via dei Coronari | 10 | de camino |
+| 12:05 | Piazza Navona | 20 |  |
+| 12:35 | Panteón | 5 | de camino |
+| 13:00 | **Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia) | 60 |  |
+
+**Tarde A** (sol antes de las 17:40: el atardecer, desde la terraza del Altar)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:20 | Plaza del Campidoglio | 15 |  |
+| 14:45 | Museos Capitolinos, con la terraza sobre los Foros | 90 | por dentro |
+| 16:20 | Piazza Venezia | 5 | de camino |
+| 16:40 | Terraza del Altar de la Patria, al atardecer (ascensor panorámico) | 45 | por dentro |
+| 17:45 | Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) | 45 |  |
+| 19:00 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 20:55 | Panteón de noche | 30 | de noche |
+
+**Tarde B** (sol de 17:40 a 18:45: el atardecer, desde la terraza del Altar)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:20 | Plaza del Campidoglio | 15 |  |
+| 14:45 | Museos Capitolinos, con la terraza sobre los Foros | 105 | por dentro |
+| 16:50 | El Foro Romano, desde la terraza del Campidoglio | 15 | por fuera |
+| 17:20 | Santa Maria in Aracoeli y su escalinata | 20 | por dentro |
+| 17:45 | Piazza Venezia | 5 | de camino |
+| 18:05 | Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) | 45 | por dentro |
+| 19:15 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 21:10 | Panteón de noche | 30 | de noche |
+
+**Tarde C** (sol de 18:45 a 19:45: el ascensor ya ha cerrado; el atardecer, sobre el Foro)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:20 | Plaza del Campidoglio | 15 |  |
+| 14:45 | Museos Capitolinos, con la terraza sobre los Foros | 105 | por dentro |
+| 16:35 | Piazza Venezia | 5 | de camino |
+| 16:55 | Terraza del Altar de la Patria (ascensor panorámico) | 45 | por dentro |
+| 17:55 | Santa Maria in Aracoeli y su escalinata | 20 | por dentro |
+| 18:30 | El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer | 30 |  |
+| 20:00 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 21:55 | Panteón de noche | 30 | de noche |
+
+**Tarde D** (sol después de las 19:45)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 14:20 | Plaza del Campidoglio | 15 |  |
+| 14:45 | Museos Capitolinos, con la terraza sobre los Foros | 150 | por dentro |
+| 17:35 | Santa Maria in Aracoeli y su escalinata | 20 | por dentro |
+| 18:00 | Piazza Venezia | 5 | de camino |
+| 18:20 | Terraza del Altar de la Patria (ascensor panorámico; última subida a las 18:45) | 45 | por dentro |
+| 19:20 | Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) | 30 |  |
+| 20:10 | El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer | 30 |  |
+| 21:00 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 22:55 | Panteón de noche | 30 | de noche |
+
+**Nocturna:** el Panteón de noche (no sale en otros días). Si ya hubiera salido, la que quede más cerca de la cena sin repetir.
+
+**Lo que hará el motor**
+- Ajustar «al atardecer» y el colchón de antes a la puesta de sol de ese día.
+- **Lunes:** el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» (colchón).
+- **Miércoles:** hay audiencia del Papa y la Plaza y la Basílica cierran por la mañana: este día va mal en miércoles (regla de orden de los días). Si no se puede cambiar, la Cúpula pasa al final de la mañana o sale.
+- Si un restaurante cierra ese día, su alternativa (Enoteca Corsi cierra el domingo; Nonna Betta, el martes).
+- Por dentro una sola vez: la Basílica de San Pedro ya va por dentro en el día del Vaticano; aquí solo se cruza al bajar de la Cúpula.
+
+**Pool:** la Domus Aurea no; lo demás del pool, en su día.
+**Experiencias:** Arte y Museos: los Capitolinos pasan a 150 min en todas las tardes (se acorta el colchón). Naturaleza y Vistas: ya es el día de las vistas. Mercadillos: el Santo Bambino de Aracoeli en la visita a Santa Maria in Aracoeli.
+
+---
+
+## La Vía Appia y Trastevere tranquilo · D7 (6 días con «Prefiero quedarme en Roma»)
+
+Solo para el viaje de 6 días cuando el viajero cambia la excursión por un día en Roma. Lo que queda: Villa Farnesina (nivel 2) y lo mejor del nivel 3 (Santa Cecilia, las catacumbas y la Vía Appia). Por la mañana Trastevere, porque la Villa Farnesina solo abre por la mañana; por la tarde, la Vía Appia, y se acaba en Monti (sin volver a Trastevere).
+
+**Lista de la pantalla «Prefiero quedarme en Roma»** (sin horas, con foto): Villa Farnesina · Santa Cecilia in Trastevere · Catacumbas de San Calixto · Vía Appia Antica · el Coliseo desde el Colle Oppio (en C y D).
+
+**Mañana (igual todo el año)**
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 09:00 | Villa Farnesina (los frescos de Rafael; abre de 9:00 a 14:00) | 45 | por dentro |
+| 09:55 | Santa Maria in Trastevere | 5 | de camino (la plaza y la fachada) |
+| 10:20 | Basílica de Santa Cecilia in Trastevere | 40 | por dentro |
+| 11:10 | Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta (colchón) | 65 |  |
+| 12:30 | **Comida:** Da Enzo al 29 (o Tonnarello), en Trastevere | 60 |  |
+
+**Tarde A y B** (sol antes de las 18:45: el atardecer, en la Vía Appia)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 13:45 | Taxi a las Catacumbas de San Calixto | 20 |  |
+| 14:15 | Catacumbas de San Calixto (visita guiada; cierra el miércoles) | 60 | por dentro |
+| 15:25 | Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) | 120 |  |
+| 17:35 | Atardecer en la Vía Appia Antica | 30 |  |
+| 18:15 | Taxi a Monti | 20 |  |
+| 18:50 | Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) | 30 |  |
+| 19:30 | **Cena:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti | 90 |  |
+
+En A el atardecer llega antes: el paseo en bici se acorta para acabar con el sol (16:40 en diciembre) y el paseo por Monti se alarga (hasta 90 min).
+
+**Tarde C y D** (sol después de las 18:45: el atardecer, el Coliseo desde el Colle Oppio)
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 13:45 | Taxi a las Catacumbas de San Calixto | 20 |  |
+| 14:15 | Catacumbas de San Calixto (visita guiada; cierra el miércoles) | 60 | por dentro |
+| 15:25 | Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) | 120 |  |
+| 17:35 | Taxi a Monti | 20 |  |
+| 18:05 | Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) | 40 |  |
+| 18:55 | El Coliseo desde el Colle Oppio, al atardecer | 30 | por fuera |
+| 20:00 | **Cena:** Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti | 90 |  |
+
+En D, el paseo por Monti se alarga (hasta 85 min) para llegar al Colle Oppio con el sol; la cena, a las 20:30.
+
+**Nocturna:** la que aún no haya salido en el viaje, la más cerca de la cena. En un viaje de 6 días ya han salido casi todas: si no queda ninguna, sin nocturna.
+
+**Lo que hará el motor**
+- Ajustar «al atardecer» y el colchón de antes a la puesta de sol de ese día.
+- **Miércoles:** las catacumbas cierran («Cerrado el miércoles»): la Vía Appia empieza a las 14:15.
+- **Domingo:** la Villa Farnesina cierra («Cerrado el domingo»): la mañana empieza a las 10:00 en Santa Maria in Trastevere; Da Enzo cierra: comida en Tonnarello.
+- Si un restaurante cierra ese día, su alternativa (La Taverna dei Fori Imperiali cierra el martes; Trattoria Valentino, el domingo).
+
+**Pool y experiencias:** nada; es el último día en Roma de un viaje largo.
 
 ---
 
@@ -1392,6 +1810,25 @@ Los sitios del pool son siempre los mismos y cada uno tiene su sitio escrito (d�
 
 ---
 
+## Llegada según la hora (para el final: se hará con las llegadas en avión, tren, ferry o coche, cuando todos los días estén curados)
+
+El viajero queda libre a la hora de aterrizar más 1:30 (avión, maletas, traslado y alojamiento). La tarde de llegada sale de la tarde del centro histórico, recortada según esa hora. Lo que un día entero ya lleva por dentro (el Panteón), aquí por fuera.
+
+| Libre a partir de | Tarde de llegada |
+|---|---|
+| antes de las 15:00 | La tarde del centro histórico entera (Gueto, Largo di Torre Argentina, Gesù, San Luigi, Panteón, Navona), cena, Trevi y Plaza de España de noche |
+| 15:00 a 17:00 | San Luigi, Panteón, Navona, cena, Trevi y Plaza de España de noche |
+| 17:00 a 19:00 | Tres cosas del centro (Trevi, el Panteón por fuera, Navona), cena y Plaza de España de noche |
+| 19:00 a 21:30 | Cena en el centro y nocturna (Trevi y Plaza de España iluminadas) |
+| después de las 21:30 | Solo Trevi iluminada, si da tiempo |
+
+Los días enteros no cambian (lo que no se ve esa tarde está en ellos), y las nocturnas no se repiten en el viaje.
+
+Borrador de horas (se revisará al final):
+- Libre a las 15:00: Trevi 15:00, Plaza Colonna de camino, Panteón por fuera 15:45, Campo de' Fiori 16:25, Navona 17:05, colchón por Via del Governo Vecchio, Pasquino y Via dei Coronari 17:50, cena en Da Baffetto (o Armando) 19:00, el Puente y el Castillo de Sant'Angelo iluminados 20:50.
+- Libre a las 18:30: Trevi 18:30, Panteón por fuera 19:10, cena en Armando (o Da Baffetto) 19:45, Navona de noche 21:30.
+- Libre a las 19:30: cena en Armando 19:30, Trevi iluminada 21:20, Plaza de España de noche 22:00.
+
 ## Fechas especiales (Navidad y Año Nuevo)
 
 **Los horarios cortos y los cierres de esos días salen del dato oficial de cada sitio**, y el motor aplica la regla de cierres. Además:
@@ -1429,11 +1866,12 @@ Los sitios del pool son siempre los mismos y cada uno tiene su sitio escrito (d�
 
 ## Notas para escribir los días de 3 a 6 (pendiente)
 
-- **Orden para escribirlos: por niveles.** Primero la zona con imprescindibles o más nivel 2, luego las demás. Plan:
-  - 3 días: + día de la Plaza de España, el Popolo, el Pincio y Villa Borghese (con la Galería si va en el pool), sacado del DT-medio;
-  - 4 días: + día de Monti y el Esquilino (Santa Maria Maggiore, San Pietro in Vincoli, Mercados de Trajano, San Clemente, Letrán), sacado del DM-medio;
-  - 5 días: + día del Aventino, Testaccio y Caracalla (Circo Máximo, Jardín de los Naranjos, Ojo de la Cerradura, Caracalla, Mercado de Testaccio);
-  - 6 días: + día de Trastevere tranquilo (Villa Farnesina, Santa Cecilia) y lo que quede.
+- **Orden para escribirlos: de arriba abajo en la pirámide de niveles.** Primero las zonas con imprescindibles; después, la zona con más sitios de nivel 2 que aún no han salido en el viaje; luego el nivel 3. Plan:
+  - 3 días: + D4, día de Villa Borghese, el Popolo y la Plaza de España, con la Galería por defecto (escrito);
+  - 3,5 días: si el medio día es **de vuelta (mañana)**, el Aventino y Testaccio (DA-medio, escrito). Si es **de llegada (tarde)**, la tarde de «Llegada según la hora» y el Aventino no sale (es lo de más abajo de la pirámide).
+  - 4 días: + D5, día de las basílicas y el Aventino (escrito); el viajero puede cambiarlo por una excursión;
+  - 5 días: + excursión por defecto, con «Prefiero quedarme en Roma» (D6, «Roma desde arriba»);
+  - 6 días: + D6 «Roma desde arriba» (escrito) y la excursión; con «Prefiero quedarme en Roma», D7 «La Vía Appia y Trastevere tranquilo» (escrito).
 - **Nivel 3, si no cabe, no pasa nada** (regla general de arriba): se quita el primero y no sale en «No incluido».
 - **Dónde colocar los sitios que hoy no están en ningún día:**
   - Santa Maria della Vittoria, la Fuente del Tritón y Via Veneto → día de la Borghese;

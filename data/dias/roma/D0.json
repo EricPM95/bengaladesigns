@@ -129,14 +129,15 @@
         },
         {
           "id": "parada_el_foro_romano_desde_la_terraza_del_campidoglio",
-          "hora": "15:10",
+          "hora": "15:15",
           "min": 15,
           "texto_documento": "El Foro Romano, desde la terraza del Campidoglio",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Foro Romano y Palatino",
           "titulo": "El Foro Romano, desde la terraza del Campidoglio",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 15:10"
         },
         {
           "id": "parada_via_dei_fori_imperiali",
@@ -150,13 +151,14 @@
         },
         {
           "id": "parada_coliseo",
-          "hora": "15:55",
+          "hora": "16:00",
           "min": 15,
           "texto_documento": "Coliseo",
           "como_documento": "por fuera",
           "tipo": "parada",
           "lugar": "Coliseo",
-          "modo": "fuera"
+          "modo": "fuera",
+          "hora_corregida": "distancia: lo escrito era 15:55"
         },
         {
           "id": "parada_arco_de_constantino",

@@ -98,14 +98,113 @@
         },
         {
           "id": "comida_poldo_e_gianna_osteria",
-          "hora": "13:25",
+          "hora": "13:30",
           "min": 60,
           "texto_documento": "**Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente",
           "como_documento": "",
           "tipo": "comida",
           "restaurante": "Poldo e Gianna Osteria",
           "alternativa": "Edy",
-          "zona": "en el Tridente"
+          "zona": "en el Tridente",
+          "hora_corregida": "distancia: lo escrito era 13:25"
+        }
+      ]
+    },
+    "miercoles_manana": {
+      "unica": [
+        {
+          "id": "parada_fontana_de_trevi",
+          "hora": "09:00",
+          "min": 20,
+          "texto_documento": "Fontana de Trevi, sin gente",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Fontana de Trevi",
+          "modo": null
+        },
+        {
+          "id": "parada_plaza_de_espana",
+          "hora": "09:40",
+          "min": 20,
+          "texto_documento": "Plaza de España",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de España",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 09:30"
+        },
+        {
+          "id": "parada_via_dei_coronari",
+          "hora": "10:20",
+          "min": 10,
+          "texto_documento": "Via dei Coronari",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Via dei Coronari",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_puente_sant_angelo",
+          "hora": "10:40",
+          "min": 5,
+          "texto_documento": "Puente Sant'Angelo",
+          "como_documento": "de camino",
+          "tipo": "parada",
+          "lugar": "Puente Sant'Angelo",
+          "modo": "camino"
+        },
+        {
+          "id": "parada_castillo_de_sant_angelo",
+          "hora": "10:55",
+          "min": 15,
+          "texto_documento": "Castillo de Sant'Angelo",
+          "como_documento": "por fuera",
+          "tipo": "parada",
+          "lugar": "Castillo de Sant'Angelo",
+          "modo": "fuera"
+        },
+        {
+          "id": "paseo_pasea_y_pierdete_por_borgo_pio",
+          "hora": "11:30",
+          "min": 25,
+          "texto_documento": "Pasea y piérdete por Borgo Pio",
+          "como_documento": "",
+          "tipo": "paseo",
+          "lugar": "Borgo Pio",
+          "titulo": "Pasea y piérdete por Borgo Pio"
+        },
+        {
+          "id": "parada_plaza_de_san_pedro",
+          "hora": "12:10",
+          "min": 20,
+          "texto_documento": "Plaza de San Pedro",
+          "como_documento": "",
+          "tipo": "parada",
+          "lugar": "Plaza de San Pedro",
+          "modo": null,
+          "hora_corregida": "distancia: lo escrito era 12:05"
+        },
+        {
+          "id": "parada_basilica_de_san_pedro",
+          "hora": "12:30",
+          "min": 5,
+          "texto_documento": "Basílica de San Pedro",
+          "como_documento": "de camino (la fachada)",
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "modo": "camino",
+          "hora_corregida": "distancia: lo escrito era 12:25"
+        },
+        {
+          "id": "comida_borghiciana_pastificio_artigianale",
+          "hora": "12:50",
+          "min": 60,
+          "texto_documento": "**Comida:** Borghiciana (o Dal Toscano), en el Borgo",
+          "como_documento": "",
+          "tipo": "comida",
+          "restaurante": "Borghiciana Pastificio Artigianale",
+          "alternativa": "Dal Toscano",
+          "zona": "en el Borgo"
         }
       ]
     },
@@ -416,15 +515,16 @@
         },
         {
           "id": "paseo_pasea_y_pierdete_por_prati",
-          "hora": "18:50",
-          "min": 20,
+          "hora": "18:55",
+          "min": 15,
           "texto_documento": "Pasea y piérdete por Prati (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Via Cola di Rienzo, la calle de compras de los romanos; la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»; la Piazza del Risorgimento junto a los muros vaticanos.",
           "tipo": "paseo",
           "lugar": "Borgo Pio",
-          "titulo": "Pasea y piérdete por Prati"
+          "titulo": "Pasea y piérdete por Prati",
+          "hora_corregida": "distancia: lo escrito era 18:50 y 20 min"
         },
         {
           "id": "cena_l_arcangelo",
@@ -452,6 +552,11 @@
   "pool": {
     "Cúpula de San Pedro": {
       "franja": "manana",
+      "cuando": {
+        "sin_dias": [
+          "D6"
+        ]
+      },
       "acciones": [
         {
           "op": "insertar",
@@ -467,6 +572,11 @@
     },
     "Castillo de Sant'Angelo": {
       "franja": "tarde",
+      "cuando": {
+        "sin_dias": [
+          "D6"
+        ]
+      },
       "acciones": [
         {
           "op": "cambiar",
