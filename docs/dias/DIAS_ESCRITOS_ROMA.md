@@ -385,7 +385,7 @@ Con otra hora de reserva, el motor corre las horas con los márgenes.
 
 **Tarde C:** igual que la A y la B. El sol se pone mientras estás en Piazza Navona (18:50-19:35): el atardecer se ve en la plaza, sin ir a ningún puente.
 
-**Tarde D** (el sol se pone después de las 19:45). Igual que la A y la B hasta el Panteón; luego Navona, Campo de' Fiori y el Ponte Sisto al atardecer, y se cruza el puente para cenar en Trastevere (sin volver atrás).
+**Tarde D** (el sol se pone después de las 19:45). Igual que la A y la B hasta el Panteón; luego Navona, Campo de' Fiori y el Ponte Sisto al atardecer (desde el lado de Campo de' Fiori, sin cruzarlo), cena junto a Campo de' Fiori y la noche acaba con Trevi y la Plaza de España, como en la A y la B. **No se cena en Trastevere** (decidido en la Tanda 4): el día del Vaticano ya cena allí, y en verano salían dos cenas seguidas en el mismo barrio y Trevi se quedaba sin noche.
 
 | Hora | Parada | Min | Cómo |
 |---|---|---|---|
@@ -401,11 +401,11 @@ Con otra hora de reserva, el motor corre las horas con los márgenes.
 | 18:50 | Piazza Navona | 30 |  |
 | 19:40 | Campo de' Fiori | 20 |  |
 | 20:15 | Ponte Sisto, al atardecer | 25 |  |
-| 21:00 | **Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere | 90 |  |
-| 22:40 | Taxi a Trevi | 15 |  |
-| 23:05 | Fontana de Trevi iluminada | 20 | de noche |
+| 21:00 | **Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori | 90 |  |
+| 23:00 | Fontana de Trevi iluminada | 20 | de noche |
+| 23:40 | Plaza de España de noche | 15 | de noche |
 
-**Nocturna de la tarde D:** en taxi desde Trastevere. Si la Fontana de Trevi todavía no ha salido en el viaje, Trevi (es imprescindible). Si ya salió, el Coliseo iluminado (taxi al Coliseo, 15 min), si no ha salido de noche. Si los dos ya salieron, Trastevere de noche (ya estás allí). Cabe siempre: en la versión D la noche se alarga hasta las 23:45.
+**Nocturna de la tarde D:** andando desde la cena (20 min), Trevi iluminada y después la Plaza de España de noche: es el primer día del viaje y, por la pirámide, se queda las nocturnas imprescindibles. Cabe siempre: en la versión D la noche se alarga hasta las 23:45. El domingo Dar Filettaro cierra: Da Baffetto (más cerca de Trevi).
 
 **Lo que hará el motor**
 - Sábado: el Panteón cierra a las 17:00 por la misa → se adelanta, antes del Gesù.
@@ -1056,6 +1056,8 @@ El tercer día del viaje de 3 días (D1 + D2 + D4; con Free Tour de mañana, D3 
 
 Horas redondas a propósito: donde el margen sobra unos minutos, se deja (es colchón).
 
+**Texto del colchón de Villa Borghese de esta mañana** (se entra por la Porta Pinciana; el reloj de agua y el Pincio son paradas propias de después, no van en este texto): «Entras por la Porta Pinciana y bajas entre pinos hasta la Piazza di Siena, donde se corre el concurso hípico de mayo. Sigue hasta la Fontana dei Cavalli Marini y el lago, con el Templo de Esculapio en su isla: se alquilan barcas de remos (unos 20 min). Si sobra tiempo, una bici o un risciò para dar una vuelta, y a las 10:30 en la puerta de la Galería.»
+
 **Tarde A** (sol antes de las 17:40: Trinità ya iluminada, sin atardecer)
 
 | Hora | Parada | Min | Cómo |
@@ -1122,7 +1124,20 @@ Horas redondas a propósito: donde el margen sobra unos minutos, se deja (es col
 
 **Lo que hará el motor**
 - Ajustar «al atardecer» (Trinità) y el colchón de antes o de después a la puesta de sol de ese día.
-- **Lunes:** la Galería cierra. Primero, el cambio de orden de los días (este día va a otro día del viaje). Si no se puede, la Galería va a «No incluido» («Cerrada el lunes») y Villa Borghese se alarga hasta las 12:00 con el reloj de agua; el resto igual.
+- **Lunes:** la Galería cierra. Primero, el cambio de orden de los días (este día va a otro día del viaje). Si no se puede, la Galería va a «No incluido» («Cerrada el lunes») y su sitio lo ocupa la **Cripta de los Capuchinos**, en Via Veneto, que está en el camino del día y abre todos los días de 10:00 a 19:00 (decidido en la Tanda 4; sitio nuevo, nivel 2). La tarde, igual.
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 08:30 | Fontana de Trevi | 20 |  |
+| 09:00 | Desayuno cerca de Trevi | 30 |  |
+| 09:40 | Fuente del Tritón | 5 | de camino |
+| 10:00 | Cripta de los Capuchinos: las capillas decoradas con los huesos de 3.700 frailes | 45 | por dentro |
+| 10:55 | Via Veneto, la calle de *La Dolce Vita* | 10 | de camino |
+| 11:10 | Porta Pinciana | 5 | de camino |
+| 11:30 | Pasea y piérdete por Villa Borghese: el lago, la Fontana dei Cavalli Marini y la Piazza di Siena (colchón) | 90 |  |
+| 13:10 | Pasea por Villa Borghese hasta el Pincio: el reloj de agua y el Viale delle Magnolie | 25 |  |
+| 14:00 | Terraza del Pincio | 20 |  |
+| 14:40 | **Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo | 60 |  |
 - Si el viajero quita la Galería (o no hay entradas): igual que el lunes, sin motivo en «No incluido».
 - Si el viajero reserva otro turno de la Galería (9:00 o 13:00): la mañana se corre con los márgenes; el parque va antes o después según el turno.
 - Si Santa Maria del Popolo o Trinità cierran (misa, festivo), la regla de cierres; como son iglesias, si no se puede entrar no salen (el mirador de Trinità sí, por fuera).
@@ -1311,7 +1326,7 @@ Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castil
 | 16:20 | Piazza Venezia | 5 | de camino |
 | 16:40 | Terraza del Altar de la Patria, al atardecer (ascensor panorámico) | 45 | por dentro |
 | 17:45 | Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) | 45 |  |
-| 19:00 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 19:00 | **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón | 90 |  |
 | 20:55 | Panteón de noche | 30 | de noche |
 
 **Tarde B** (sol de 17:40 a 18:45: el atardecer, desde la terraza del Altar)
@@ -1324,7 +1339,7 @@ Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castil
 | 17:20 | Santa Maria in Aracoeli y su escalinata | 20 | por dentro |
 | 17:45 | Piazza Venezia | 5 | de camino |
 | 18:05 | Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) | 45 | por dentro |
-| 19:15 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 19:15 | **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón | 90 |  |
 | 21:10 | Panteón de noche | 30 | de noche |
 
 **Tarde C** (sol de 18:45 a 19:45: el ascensor ya ha cerrado; el atardecer, sobre el Foro)
@@ -1337,7 +1352,7 @@ Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castil
 | 16:55 | Terraza del Altar de la Patria (ascensor panorámico) | 45 | por dentro |
 | 17:55 | Santa Maria in Aracoeli y su escalinata | 20 | por dentro |
 | 18:30 | El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer | 30 |  |
-| 20:00 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 20:00 | **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón | 90 |  |
 | 21:55 | Panteón de noche | 30 | de noche |
 
 **Tarde D** (sol después de las 19:45)
@@ -1351,7 +1366,7 @@ Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castil
 | 18:20 | Terraza del Altar de la Patria (ascensor panorámico; última subida a las 18:45) | 45 | por dentro |
 | 19:20 | Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) | 30 |  |
 | 20:10 | El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer | 30 |  |
-| 21:00 | **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío | 90 |  |
+| 21:00 | **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón | 90 |  |
 | 22:55 | Panteón de noche | 30 | de noche |
 
 **Nocturna:** el Panteón de noche (no sale en otros días). Si ya hubiera salido, la que quede más cerca de la cena sin repetir.
@@ -1359,8 +1374,20 @@ Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castil
 **Lo que hará el motor**
 - Ajustar «al atardecer» y el colchón de antes a la puesta de sol de ese día.
 - **Lunes:** el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio» (colchón).
-- **Miércoles:** hay audiencia del Papa y la Plaza y la Basílica cierran por la mañana: este día va mal en miércoles (regla de orden de los días). Si no se puede cambiar, la Cúpula pasa al final de la mañana o sale.
-- Si un restaurante cierra ese día, su alternativa (Enoteca Corsi cierra el domingo; Nonna Betta, el martes).
+- **Miércoles:** hay audiencia del Papa: la Basílica y la Cúpula cierran de 9:00 a 12:30. Este día va mal en miércoles (regla de orden de los días), pero con «Prefiero quedarme en Roma» no se cambia de día, así que puede caer. **La Cúpula no se quita** (es lo que da nombre al día): la mañana va al revés y la Cúpula va al final, cuando acaba la audiencia (decidido en la Tanda 4). En julio no hay audiencias: la mañana normal.
+
+| Hora | Parada | Min | Cómo |
+|---|---|---|---|
+| 09:00 | Castillo de Sant'Angelo, hasta la terraza del ángel | 90 | por dentro |
+| 10:45 | Via della Conciliazione | 10 | de camino |
+| 11:10 | Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas (colchón) | 40 |  |
+| 12:00 | Plaza de San Pedro (acaba la audiencia) | 15 |  |
+| 12:30 | Cúpula de San Pedro (abre al acabar la audiencia; se sale por la Basílica) | 75 | por dentro |
+| 14:00 | **Comida:** Ristorante Arlù (o 200 Gradi), en el Borgo | 60 |  |
+| 15:10 | Taxi al Campidoglio | 15 |  |
+
+  La tarde es la de su versión, con las horas corridas desde las 15:35 (Plaza del Campidoglio). El Puente, Via dei Coronari, Navona y el Panteón de camino no salen: ya se vieron el día de la Roma antigua.
+- Si un restaurante cierra ese día, su alternativa (Enoteca Corsi cierra el domingo; Dal Cavalier Gino, el domingo y abre a las 20:00: antes de esa hora, Da Baffetto). La cena no va al Gueto: el día de la Roma antigua ya come allí (un restaurante y un barrio no se repiten para cenar en el viaje).
 - Por dentro una sola vez: la Basílica de San Pedro ya va por dentro en el día del Vaticano; aquí solo se cruza al bajar de la Cúpula.
 
 **Pool:** la Domus Aurea no; lo demás del pool, en su día.
@@ -1372,7 +1399,7 @@ Lo conocido que aún no sale en ningún día: la Cúpula de San Pedro, el Castil
 
 Solo para el viaje de 6 días cuando el viajero cambia la excursión por un día en Roma. Lo que queda: Villa Farnesina (nivel 2) y lo mejor del nivel 3 (Santa Cecilia, las catacumbas y la Vía Appia). Por la mañana Trastevere, porque la Villa Farnesina solo abre por la mañana; por la tarde, la Vía Appia, y se acaba en Monti (sin volver a Trastevere).
 
-**Lista de la pantalla «Prefiero quedarme en Roma»** (sin horas, con foto): Villa Farnesina · Santa Cecilia in Trastevere · Catacumbas de San Calixto · Vía Appia Antica · el Coliseo desde el Colle Oppio (en C y D).
+**Lista de la pantalla «Prefiero quedarme en Roma»** (sin horas, con foto): Villa Farnesina · Santa Cecilia in Trastevere · Catacumbas de San Calixto · Vía Appia Antica · el Coliseo desde la terraza de Largo Gaetana Agnesi (en C y D).
 
 **Mañana (igual todo el año)**
 
@@ -1398,7 +1425,7 @@ Solo para el viaje de 6 días cuando el viajero cambia la excursión por un día
 
 En A el atardecer llega antes: el paseo en bici se acorta para acabar con el sol (16:40 en diciembre) y el paseo por Monti se alarga (hasta 90 min).
 
-**Tarde C y D** (sol después de las 18:45: el atardecer, el Coliseo desde el Colle Oppio)
+**Tarde C y D** (sol después de las 18:45: el atardecer, el Coliseo desde la terraza de Largo Gaetana Agnesi)
 
 | Hora | Parada | Min | Cómo |
 |---|---|---|---|
@@ -1407,10 +1434,10 @@ En A el atardecer llega antes: el paseo en bici se acorta para acabar con el sol
 | 15:25 | Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela (colchón; se alquila en el punto de información) | 120 |  |
 | 17:35 | Taxi a Monti | 20 |  |
 | 18:05 | Pasea y piérdete por Monti: Via Panisperna y la Piazza Madonna dei Monti (colchón) | 40 |  |
-| 18:55 | El Coliseo desde el Colle Oppio, al atardecer | 30 | por fuera |
+| 18:55 | El Coliseo desde la terraza de Largo Gaetana Agnesi, al atardecer (encima del metro Colosseo; en la calle, siempre abierta) | 30 | por fuera |
 | 20:00 | **Cena:** Trattoria Valentino (o La Taverna dei Fori Imperiali), en Monti | 90 |  |
 
-En D, el paseo por Monti se alarga (hasta 85 min) para llegar al Colle Oppio con el sol; la cena, a las 20:30.
+En D, el paseo por Monti se alarga (hasta 85 min) para llegar a la terraza con el sol; la cena, a las 20:30. **No el Colle Oppio** (decidido en la Tanda 4): el jardín con la vista del Coliseo cierra a las 19:00 y en C y D el sol se pone más tarde.
 
 **Nocturna:** la que aún no haya salido en el viaje, la más cerca de la cena. En un viaje de 6 días ya han salido casi todas: si no queda ninguna, sin nocturna.
 

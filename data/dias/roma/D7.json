@@ -273,15 +273,18 @@
           "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
-          "id": "parada_colle_oppio",
+          "id": "parada_el_coliseo_desde_la_terraza_de_largo_gaetana_agnesi_al_atardecer",
           "hora": "19:25",
           "min": 30,
-          "texto_documento": "El Coliseo desde el Colle Oppio, al atardecer",
+          "texto_documento": "El Coliseo desde la terraza de Largo Gaetana Agnesi, al atardecer (encima del metro Colosseo; en la calle, siempre abierta)",
           "como_documento": "por fuera",
+          "nota": "encima del metro Colosseo; en la calle, siempre abierta",
           "tipo": "parada",
-          "lugar": "Colle Oppio",
+          "lugar": "Terraza de Largo Gaetana Agnesi",
+          "titulo": "El Coliseo desde la terraza de Largo Gaetana Agnesi, al atardecer",
           "modo": "fuera",
           "atardecer": true,
+          "foto": "Coliseo",
           "hora_corregida": "distancia: lo escrito era 18:55"
         },
         {

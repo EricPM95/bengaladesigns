@@ -35,7 +35,13 @@ for (let i = 0; i < md.length; i++) {
       rows.push({ hora: m[1], texto: m[2], min: Number(m[3]), como: m[4] })
       j++
     }
-    tables.push({ n: tables.length + 1, h2, h3, label, rows, line: i + 1 })
+    // (Tanda 4: el texto de un colchón va POR TABLA, no por sitio: el documento lo escribe debajo de la tabla, «Texto del colchón de … de esta mañana … : «…».)
+    let textoColchon = null
+    for (let k = j; k < Math.min(j + 6, md.length) && !/^(#|\| Hora)/.test(md[k]); k++) {
+      const m = /^\*\*Texto del colchón de .*?\*\*.*?«(.+)»\s*$/.exec(md[k])
+      if (m) { textoColchon = m[1]; break }
+    }
+    tables.push({ n: tables.length + 1, h2, h3, label, rows, line: i + 1, textoColchon })
   } else if (!line.startsWith('|')) inTable = false
 }
 
@@ -106,6 +112,9 @@ const LUGARES = {
   'Santa Maria in Aracoeli': 'Santo Bambino de Aracoeli',
   'Terraza del Altar de la Patria': 'Altar de la Patria',
   'Via Veneto': 'Via Veneto',
+  'Cripta de los Capuchinos': 'Cripta de los Capuchinos',
+  'Terraza de Largo Gaetana Agnesi': 'Terraza de Largo Gaetana Agnesi',
+  'Mirador de San Pietro in Montorio': 'Mirador de San Pietro in Montorio',
   'Villa Farnesina': 'Villa Farnesina',
   'Basílica de Santa Cecilia in Trastevere': 'Basílica de Santa Cecilia in Trastevere',
   'Catacumbas de San Calixto': 'Catacumbas de San Calixto',
@@ -139,6 +148,10 @@ const RESTAURANTES = {
   // Tanda 3
   'Enoteca Corsi': 'Enoteca Corsi',
   'Felice a Testaccio': 'Felice a Testaccio',
+  'Dar Filettaro a Santa Barbara': 'Dar Filettaro a Santa Barbara',
+  'Trattoria Dal Cavalier Gino': 'Trattoria Dal Cavalier Gino',
+  'Ristorante Arlù': 'Ristorante Arlù',
+  '200 Gradi': '200 Gradi',
   'Sgarro Bistrot': 'Sgarro Bistrot',
   'Buccone Vini e Olii': 'Buccone Vini e Olii',
   'Mordi e Vai': 'Mordi e Vai',
@@ -208,6 +221,9 @@ const FRASES = [
   [/^El Foro Romano desde la terraza del Campidoglio, con la luz/, { lugar: 'Foro Romano y Palatino', titulo: true, modo: 'fuera' }],
   [/^Recorre la Vía Appia Antica en bici/, { lugar: 'Via Appia Antica', titulo: true, paren: true }],
   [/^Atardecer en la Vía Appia Antica/, { lugar: 'Via Appia Antica', titulo: true }],
+  [/^Cripta de los Capuchinos/, { lugar: 'Cripta de los Capuchinos', titulo: true }],
+  // (El Coliseo desde la terraza de Largo Gaetana Agnesi usa la foto del Coliseo: Tanda 4.)
+  [/^El Coliseo desde la terraza de Largo Gaetana Agnesi/, { lugar: 'Terraza de Largo Gaetana Agnesi', titulo: true, campos: { foto: 'Coliseo' } }],
   [/^Via Veneto, la calle de/, { lugar: 'Via Veneto', titulo: true }],
 ]
 
@@ -221,7 +237,7 @@ const COLCHONES = [
   [/Borgo Pio/, () => 'La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.'],
   [/Via Condotti y el Tridente iluminados/, () => 'Los escaparates de Via Condotti, el Antico Caffè Greco (abierto desde 1760), Via Frattina y Via della Croce, y la Fontana della Barcaccia iluminada al pie de la escalinata. En Navidad, las luces.'],
   [/Jardines del Pincio/, () => 'Los bustos de italianos ilustres, el obelisco de Antínoo, el reloj de agua y la Casina Valadier por fuera.'],
-  [/Villa Borghese/, () => 'Se sube por la rampa del Pincio a los jardines, con los bustos de italianos ilustres; el reloj de agua del Pincio (un hidrocronómetro del siglo XIX, en el Viale dell\'Orologio); el lago con el Templo de Esculapio, donde se alquilan barcas de remos (unos 20 min); la Fontana dei Cavalli Marini y la Piazza di Siena, entre pinos; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque. La vuelta, por el Viale delle Magnolie, acaba en la terraza del Pincio a la hora del sol.'],
+  [/Villa Borghese/, () => 'Pinos, el lago con el Templo de Esculapio en su isla (se alquilan barcas de remos, unos 20 min), la Fontana dei Cavalli Marini y la Piazza di Siena; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque.'],
   [/Passeggiata del Gianicolo/, () => 'La avenida de los bustos de Garibaldi, el monumento ecuestre a Garibaldi, el de Anita Garibaldi y el Faro de los Argentinos, con Roma a los pies.'],
   [/^Plaza de San Pedro, ya iluminada/, () => 'La columnata de Bernini, el obelisco y las dos fuentes; los dos discos del suelo desde donde las cuatro filas de columnas se ven como una sola.'],
   [/^Piazza Navona/, () => 'Las tres fuentes (los Cuatro Ríos, el Moro y Neptuno), Sant\'Agnese in Agone y los pintores de la plaza.'],
@@ -336,7 +352,12 @@ const T = (n) => {
   if (!table) throw new Error('Falta la tabla ' + n)
   const first = `${table.rows[0].hora} ${table.rows[0].texto}`
   if (PRIMERA[n] && !first.startsWith(PRIMERA[n])) throw new Error(`La tabla ${n} (línea ${table.line}) ya no empieza por «${PRIMERA[n]}» sino por «${first}»: el documento ha cambiado de orden`)
-  return table.rows.map(fila)
+  const filas = table.rows.map(fila)
+  if (table.textoColchon) {
+    const colchon = filas.find((row) => row.colchon)
+    if (colchon) colchon.texto = table.textoColchon
+  }
+  return filas
 }
 const idRows = (rows) => {
   const seen = new Map()
@@ -412,8 +433,8 @@ out['D1'] = {
   nombre: 'Día de la Roma antigua',
   versiones: {
     normal: { AB: d1ab, C: d1ab.map((r) => ({ ...r, derivada: true })), D: [...manana1, ...T(15)] },
-    free_tour_tarde: { unica: T(81) },
-    free_tour_noche: { unica: T(82) },
+    free_tour_tarde: { unica: T(83) },
+    free_tour_noche: { unica: T(84) },
   },
 }
 // ── D2 ───────────────────────────────────────────────────────────────────────────────────────
@@ -428,13 +449,13 @@ out['D2'] = {
       C: desdeA(a2, "Castillo de Sant'Angelo", 60, T(22)),
       D: desdeA(a2, "Castillo de Sant'Angelo", 60, T(23)),
     },
-    miercoles: { A: T(65), B: T(66), CD: T(67) },
-    domingo: { AB: T(68), CD: T(69) },
-    miercoles_sin_museos: { A: T(70), B: T(71), CD: T(72) },
-    reserva_10_12: { AB: T(73), CD: T(74) },
-    reserva_13: { AB: T(75), CD: T(76) },
-    reserva_14_16: { ABC: T(77), D: T(78) },
-    fiesta: { unica: T(83) },
+    miercoles: { A: T(67), B: T(68), CD: T(69) },
+    domingo: { AB: T(70), CD: T(71) },
+    miercoles_sin_museos: { A: T(72), B: T(73), CD: T(74) },
+    reserva_10_12: { AB: T(75), CD: T(76) },
+    reserva_13: { AB: T(77), CD: T(78) },
+    reserva_14_16: { ABC: T(79), D: T(80) },
+    fiesta: { unica: T(85) },
   },
 }
 // ── D3 ───────────────────────────────────────────────────────────────────────────────────────
@@ -443,7 +464,7 @@ const d3ab = T(24)
 out['D3'] = {
   id: 'D3',
   nombre: 'Día del Free Tour y el Vaticano por la tarde',
-  versiones: { normal: { AB: d3ab, CD: [...d3ab.slice(0, d3ab.findIndex((row) => row.tipo === 'comida') + 1), ...T(25)] }, domingo: { AB: T(79), CD: T(80) } },
+  versiones: { normal: { AB: d3ab, CD: [...d3ab.slice(0, d3ab.findIndex((row) => row.tipo === 'comida') + 1), ...T(25)] }, domingo: { AB: T(81), CD: T(82) } },
 }
 // ── D1-FT ────────────────────────────────────────────────────────────────────────────────────
 const a1ft = T(26)
@@ -482,11 +503,15 @@ out['DM-medio'] = {
 const copiar = (rows) => rows.map((row) => ({ ...row }))
 const unir = (manana, tardes) => Object.fromEntries(Object.entries(tardes).map(([letra, tarde]) => [letra, [...copiar(manana), ...tarde]]))
 // D4: Villa Borghese, el Popolo y la Plaza de España
-out['D4'] = { id: 'D4', nombre: 'Día de Villa Borghese, el Popolo y la Plaza de España', versiones: { normal: unir(T(45), { A: T(46), B: T(47), C: T(48), D: T(49) }) } }
+// (Lunes —o cualquier día en que la Galería cierra—: la mañana con la Cripta de los Capuchinos, tabla del documento; la tarde, la de siempre. Su colchón no habla de la Galería.)
+const mananaLunes = T(50)
+const colchonLunes = mananaLunes.find((row) => row.colchon)
+if (colchonLunes?.texto) colchonLunes.texto = colchonLunes.texto.replace(/,? y a las 10:30 en la puerta de la Galería\.?$/, '.').replace(/ Si sobra tiempo, una bici o un risciò para dar una vuelta\.$/, ' Si sobra tiempo, una bici o un risciò para dar una vuelta.')
+out['D4'] = { id: 'D4', nombre: 'Día de Villa Borghese, el Popolo y la Plaza de España', versiones: { normal: unir(T(45), { A: T(46), B: T(47), C: T(48), D: T(49) }), lunes: unir(mananaLunes, { A: T(46), B: T(47), C: T(48), D: T(49) }) } }
 // DA-medio: el Aventino y Testaccio (mañana de vuelta)
-out['DA-medio'] = { id: 'DA-medio', nombre: 'Medio día del Aventino y Testaccio', versiones: { manana: { unica: T(50) }, lunes: { unica: T(51) } } }
+out['DA-medio'] = { id: 'DA-medio', nombre: 'Medio día del Aventino y Testaccio', versiones: { manana: { unica: T(51) }, lunes: { unica: T(52) } } }
 // D5: las basílicas y el Aventino
-const d5 = unir(T(52), { A: T(53), B: T(54), C: T(55), D: T(56) })
+const d5 = unir(T(53), { A: T(54), B: T(55), C: T(56), D: T(57) })
 // - Lunes: las Termas cierran: en B, C y D la tarde es como la A (el colchón del Aventino de la C se mete para llegar con el sol).
 // - Domingo: San Clemente solo abre por la tarde: Letrán a las 11:30, comida a las 12:45 y San Clemente a las 14:00, y el taxi sale de San Clemente.
 const reordenarDomingo = (rows) => {
@@ -511,9 +536,12 @@ out['D5'] = {
   colchon_insertable: { dia_semana: 'lunes', fila: { id: 'paseo_pasea_y_pierdete_por_el_aventino_lunes', ...colchonAventino } },
 }
 // D6: Roma desde arriba
-out['D6'] = { id: 'D6', nombre: 'Roma desde arriba', versiones: { normal: unir(T(57), { A: T(58), B: T(59), C: T(60), D: T(61) }) } }
+// (Miércoles con audiencia —la Basílica y la Cúpula cierran hasta las 12:30—: la mañana de la tabla del documento y la tarde de su versión, «con las horas corridas desde las 15:35»: Plaza del Campidoglio.)
+const tardesD6 = { A: T(59), B: T(60), C: T(61), D: T(62) }
+const miercolesD6 = Object.fromEntries(Object.entries(tardesD6).map(([letra, tarde]) => [letra, [...copiar(T(63)), ...tarde.map((row, i) => (i === 0 ? { ...row, hora: '15:35', recorrer_desde: 'miércoles con audiencia: la tarde se corre desde las 15:35' } : row))]]))
+out['D6'] = { id: 'D6', nombre: 'Roma desde arriba', versiones: { normal: unir(T(58), tardesD6), miercoles: miercolesD6 } }
 // D7: la Vía Appia y Trastevere tranquilo
-out['D7'] = { id: 'D7', nombre: 'La Vía Appia y Trastevere tranquilo', versiones: { normal: unir(T(62), { AB: T(63), CD: T(64) }) } }
+out['D7'] = { id: 'D7', nombre: 'La Vía Appia y Trastevere tranquilo', versiones: { normal: unir(T(64), { AB: T(65), CD: T(66) }) } }
 
 anadirExtras(out, { T, hastaLugar, hastaAntesDe })
 completarAlternativas(out)

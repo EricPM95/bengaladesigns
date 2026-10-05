@@ -775,6 +775,94 @@
       ]
     }
   },
+  "colchones": {
+    "_nota": "Tanda 4: el colchón de cada zona de Roma (tabla «Qué hay en cada colchón» del documento). Cuando queda tiempo libre antes de una hora fija y no hay colchón que alargar, el motor mete el de la zona más cercana al sitio de antes (por las coordenadas de `lugar`). Nunca nombran paradas que el mismo día ya tienen tarjeta: el motor quita de su texto lo que el día ya tiene.",
+    "lista": [
+      {
+        "lugar": "Trastevere",
+        "titulo": "Pasea y piérdete por Trastevere",
+        "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma."
+      },
+      {
+        "lugar": "Borgo Pio",
+        "titulo": "Pasea y piérdete por Borgo Pio y Prati",
+        "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo; Via Cola di Rienzo, la calle de compras de los romanos, y la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»."
+      },
+      {
+        "lugar": "Via del Babuino",
+        "titulo": "Pasea y piérdete por el Tridente",
+        "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con sus escaparates y sus talleres de artistas."
+      },
+      {
+        "lugar": "Jardines del Pincio",
+        "titulo": "Pasea y piérdete por los Jardines del Pincio",
+        "texto": "Los bustos de italianos ilustres, el obelisco de Antínoo, el reloj de agua y la Casina Valadier por fuera."
+      },
+      {
+        "lugar": "Parque de Villa Borghese",
+        "titulo": "Pasea y piérdete por Villa Borghese",
+        "texto": "Pinos, el lago con el Templo de Esculapio en su isla (se alquilan barcas de remos, unos 20 min), la Fontana dei Cavalli Marini y la Piazza di Siena; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque."
+      },
+      {
+        "lugar": "Mirador del Janículo",
+        "titulo": "Pasea y piérdete por el Gianicolo",
+        "texto": "La avenida de los bustos de Garibaldi, el monumento ecuestre a Garibaldi, el de Anita Garibaldi y el Faro de los Argentinos, con Roma a los pies."
+      },
+      {
+        "lugar": "Campo de' Fiori",
+        "titulo": "Pasea y piérdete por el Centro Histórico",
+        "texto": "Via del Governo Vecchio, la Piazza di Pasquino con su «estatua parlante» y las calles de los anticuarios."
+      },
+      {
+        "lugar": "Teatro de Marcelo",
+        "titulo": "Pasea y piérdete por el Gueto y el Teatro de Marcelo",
+        "texto": "El Gueto con sus calles estrechas, el Pórtico de Octavia y el Teatro de Marcelo."
+      },
+      {
+        "lugar": "Monti",
+        "titulo": "Pasea y piérdete por Monti",
+        "texto": "Via Panisperna, la Piazza Madonna dei Monti y sus tiendas de artesanos, con las terrazas del barrio."
+      },
+      {
+        "lugar": "Ojo de la Cerradura del Aventino",
+        "titulo": "Pasea y piérdete por el Aventino",
+        "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina."
+      },
+      {
+        "lugar": "Testaccio",
+        "titulo": "Pasea y piérdete por Testaccio",
+        "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero."
+      },
+      {
+        "lugar": "Columna de Trajano",
+        "titulo": "Pasea y piérdete por los Foros de Trajano",
+        "texto": "La Columna de Trajano y los Mercados de Trajano, por fuera."
+      },
+      {
+        "lugar": "Via Appia Antica",
+        "titulo": "Pasea y piérdete por la Vía Appia",
+        "texto": "Los pinos, las tumbas y el trozo de calzada romana original."
+      }
+    ]
+  },
+  "llegadas": {
+    "_nota": "Tanda 4: el margen antes de una reserva o un turno es una parada, «Llegada a {sitio}», con su motivo. 30 min antes de una reserva, 15 antes de un turno. `por_lugar` manda sobre el motivo de siempre.",
+    "reserva": {
+      "min": 30,
+      "texto": "Llegas con tiempo para recoger las entradas y pasar el control: la reserva se confirma 30 minutos antes de la hora."
+    },
+    "turno": {
+      "min": 15,
+      "texto": "Llegas con tiempo para la cola y el control de seguridad antes de tu turno."
+    },
+    "por_lugar": {
+      "Galería Borghese": "Recoger las entradas en la taquilla: la reserva se confirma 30 minutos antes y no se entra sin ellas. Se deja la mochila y los bolsos grandes en el guardarropa.",
+      "Museos Vaticanos y Capilla Sixtina": "La cola del control de seguridad: sin ella no se entra, y con la entrada reservada es la más corta.",
+      "Basílica de San Pedro": "El control de seguridad de la entrada: hombros y rodillas cubiertas.",
+      "Coliseo": "El control de seguridad y la cola de entrada.",
+      "Foro Romano y Palatino": "El control de la entrada."
+    }
+  },
   "noches": {
     "escalinata": {
       "_nota": "Días escritos (2026-09-29): la escalinata iluminada vale el mismo día que la Plaza de España de la mañana (D4): de noche es otra cosa.",

@@ -654,39 +654,35 @@
           "hora_corregida": "distancia: lo escrito era 20:15"
         },
         {
-          "id": "cena_trattoria_da_enzo_al_29",
-          "hora": "21:30",
+          "id": "cena_dar_filettaro_a_santa_barbara",
+          "hora": "21:20",
           "min": 90,
-          "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+          "texto_documento": "**Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Da Enzo al 29",
-          "alternativa": "Tonnarello",
-          "zona": "en Trastevere",
+          "restaurante": "Dar Filettaro a Santa Barbara",
+          "alternativa": "Pizzeria Da Baffetto",
           "hora_corregida": "distancia: lo escrito era 21:00"
         },
         {
-          "id": "traslado_un_taxi",
-          "hora": "23:10",
-          "min": 15,
-          "texto_documento": "Taxi a Trevi",
-          "como_documento": "",
-          "tipo": "traslado",
-          "traslado": {
-            "como": "un taxi",
-            "min": 15
-          },
-          "hora_corregida": "distancia: lo escrito era 22:40"
-        },
-        {
           "id": "noche_fontana_de_trevi_noche",
-          "hora": "23:35",
+          "hora": "23:20",
           "min": 20,
           "texto_documento": "Fontana de Trevi iluminada",
           "como_documento": "de noche",
           "tipo": "noche",
           "noche": "Fontana de Trevi (noche)",
-          "hora_corregida": "distancia: lo escrito era 23:05"
+          "hora_corregida": "distancia: lo escrito era 23:00"
+        },
+        {
+          "id": "noche_plaza_de_espana_noche",
+          "hora": "24:00",
+          "min": 15,
+          "texto_documento": "Plaza de España de noche",
+          "como_documento": "de noche",
+          "tipo": "noche",
+          "noche": "Plaza de España (noche)",
+          "hora_corregida": "distancia: lo escrito era 23:40"
         }
       ]
     },
@@ -1969,36 +1965,32 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:20",
+                "hora": "21:10",
                 "min": 90,
-                "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+                "texto_documento": "**Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori",
                 "como_documento": "",
                 "tipo": "cena",
-                "restaurante": "Trattoria Da Enzo al 29",
-                "alternativa": "Tonnarello",
-                "zona": "en Trastevere",
+                "restaurante": "Dar Filettaro a Santa Barbara",
+                "alternativa": "Pizzeria Da Baffetto",
                 "hora_corregida": "distancia: lo escrito era 21:00"
               },
               {
-                "hora": "23:00",
-                "min": 15,
-                "texto_documento": "Taxi a Trevi",
-                "como_documento": "",
-                "tipo": "traslado",
-                "traslado": {
-                  "como": "un taxi",
-                  "min": 15
-                },
-                "hora_corregida": "distancia: lo escrito era 22:40"
-              },
-              {
-                "hora": "23:25",
+                "hora": "23:10",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
                 "noche": "Fontana de Trevi (noche)",
-                "hora_corregida": "distancia: lo escrito era 23:05"
+                "hora_corregida": "distancia: lo escrito era 23:00"
+              },
+              {
+                "hora": "23:50",
+                "min": 15,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)",
+                "hora_corregida": "distancia: lo escrito era 23:40"
               }
             ]
           }
@@ -2639,36 +2631,32 @@
                 "hora_corregida": "distancia: lo escrito era 20:15"
               },
               {
-                "hora": "21:25",
+                "hora": "21:15",
                 "min": 90,
-                "texto_documento": "**Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere",
+                "texto_documento": "**Cena:** Dar Filettaro a Santa Barbara (o Pizzeria Da Baffetto), junto a Campo de' Fiori",
                 "como_documento": "",
                 "tipo": "cena",
-                "restaurante": "Trattoria Da Enzo al 29",
-                "alternativa": "Tonnarello",
-                "zona": "en Trastevere",
+                "restaurante": "Dar Filettaro a Santa Barbara",
+                "alternativa": "Pizzeria Da Baffetto",
                 "hora_corregida": "distancia: lo escrito era 21:00"
               },
               {
-                "hora": "23:05",
-                "min": 15,
-                "texto_documento": "Taxi a Trevi",
-                "como_documento": "",
-                "tipo": "traslado",
-                "traslado": {
-                  "como": "un taxi",
-                  "min": 15
-                },
-                "hora_corregida": "distancia: lo escrito era 22:40"
-              },
-              {
-                "hora": "23:30",
+                "hora": "23:15",
                 "min": 20,
                 "texto_documento": "Fontana de Trevi iluminada",
                 "como_documento": "de noche",
                 "tipo": "noche",
                 "noche": "Fontana de Trevi (noche)",
-                "hora_corregida": "distancia: lo escrito era 23:05"
+                "hora_corregida": "distancia: lo escrito era 23:00"
+              },
+              {
+                "hora": "23:55",
+                "min": 15,
+                "texto_documento": "Plaza de España de noche",
+                "como_documento": "de noche",
+                "tipo": "noche",
+                "noche": "Plaza de España (noche)",
+                "hora_corregida": "distancia: lo escrito era 23:40"
               }
             ]
           }

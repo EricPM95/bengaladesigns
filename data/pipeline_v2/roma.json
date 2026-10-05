@@ -1800,13 +1800,14 @@
         "nota": "Los miércoles con audiencia general del Papa, la Basílica cierra a los turistas por la mañana y abre hacia las 12:30. La audiencia se suspende algunas semanas (en julio suele no haberla): se deja el cierre todo el año, que es lo prudente. Desde junio de 2026 el horario es el mismo todo el año (antes: 7:00-19:10). Última entrada que usa el motor: 19:00, una hora antes del cierre contando el control (decisión del usuario, PROMPT_REPASO_LOCAL_ROMA, 7).",
         "fecha": "2026-09-30"
       },
-      "by_day": {
-        "lun,mar,jue-dom": [
-          "07:00-20:00"
+      "restriccion_dia": {
+        "dia": "mie",
+        "desde": "12:30",
+        "excepto_meses": [
+          7
         ],
-        "mie": [
-          "12:30-20:00"
-        ]
+        "motivo": "Audiencia del Papa en la plaza: la Basílica y la Cúpula cierran hasta las 12:30 (en julio no hay audiencias).",
+        "fuente": "Decidido en la Tanda 4 (docs/dias/DIAS_ESCRITOS_ROMA.md, D6)."
       },
       "comprobado": "2026-09-28",
       "special_hours": [
@@ -2717,6 +2718,15 @@
         "st peter"
       ],
       "contained_in": "Basílica de San Pedro",
+      "restriccion_dia": {
+        "dia": "mie",
+        "desde": "12:30",
+        "excepto_meses": [
+          7
+        ],
+        "motivo": "Audiencia del Papa en la plaza: la Basílica y la Cúpula cierran hasta las 12:30 (en julio no hay audiencias).",
+        "fuente": "Decidido en la Tanda 4 (docs/dias/DIAS_ESCRITOS_ROMA.md, D6)."
+      },
       "coordinates_checked": true,
       "windows": [
         "07:30-17:00"
@@ -4913,6 +4923,8 @@
     },
     {
       "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
+      "visible_desde_calle": false,
+      "camino_alternativa": "Mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
       "duration_minutes": 20,
       "min_max": 30,
@@ -5301,8 +5313,125 @@
       "_nota_ficha": "sin_texto_ia: la ficha lleva solo nuestro texto (el del usuario, 2026-10-01, en por_que_lugares), sin el que escribe la IA bajo demanda."
     },
     {
+      "id": "cripta_de_los_capuchinos",
+      "name": "Cripta de los Capuchinos",
+      "duration_minutes": 45,
+      "min_max": 45,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9045,
+        12.4886
+      ],
+      "level": 2,
+      "type": "interior",
+      "schedule": "10:00-19:00",
+      "windows": [
+        "10:00-19:00"
+      ],
+      "last_entry": "18:30",
+      "closed_on": [],
+      "reservation": "no",
+      "tags": [
+        "iglesia",
+        "curiosidad"
+      ],
+      "filter_category": "iglesias",
+      "description": "Cinco capillas decoradas con los huesos de unos 3.700 frailes capuchinos, bajo la iglesia de Santa Maria della Concezione, en Via Veneto 27",
+      "tip": "Se visita en unos 45 minutos. No se pueden hacer fotos. Abre todos los días de 10:00 a 19:00 (la taquilla cierra a las 18:30).",
+      "card_text": "Todos los días de 10:00 a 19:00 (la taquilla cierra a las 18:30).",
+      "ticket_info": [
+        "De pago (entrada de pocos euros)."
+      ],
+      "search_aliases": [
+        "cripta dei cappuccini",
+        "cripta de los capuchinos",
+        "capuchin crypt"
+      ],
+      "search_en": "Capuchin Crypt Rome",
+      "search_en_keywords": [
+        "capuchin",
+        "cappuccini"
+      ],
+      "neighbor_of": [
+        "Via Veneto",
+        "Porta Pinciana"
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "Tanda 4: sitio nuevo (Via Veneto 27). Coordenadas aproximadas (41,9045; 12,4886) y texto de la ficha escritos por Code: REVISAR."
+    },
+    {
+      "id": "terraza_largo_gaetana_agnesi",
+      "name": "Terraza de Largo Gaetana Agnesi",
+      "duration_minutes": 20,
+      "min_max": 30,
+      "zone": "roma_antigua",
+      "coordinates": [
+        41.8916,
+        12.491
+      ],
+      "level": 3,
+      "type": "exterior",
+      "is_free_access": true,
+      "tags": [
+        "mirador"
+      ],
+      "filter_category": "miradores",
+      "description": "Una terraza a pie de calle, encima del metro Colosseo, desde la que se ve el Coliseo entero, sin entrada y siempre abierta",
+      "tip": "Es el sitio para ver el Coliseo al atardecer sin esperar y sin pagar: en la calle, siempre abierta.",
+      "search_aliases": [
+        "largo gaetana agnesi",
+        "terraza del coliseo"
+      ],
+      "search_en": "Largo Gaetana Agnesi Colosseum viewpoint Rome",
+      "search_en_keywords": [
+        "agnesi"
+      ],
+      "neighbor_of": [
+        "Coliseo"
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "Tanda 4: sitio nuevo. Coordenadas del documento (41,8916; 12,4910) y texto de la ficha escritos por Code: REVISAR. Usa la foto del Coliseo."
+    },
+    {
+      "id": "mirador_de_san_pietro_in_montorio",
+      "name": "Mirador de San Pietro in Montorio",
+      "duration_minutes": 10,
+      "min_max": 20,
+      "zone": "trastevere",
+      "coordinates": [
+        41.8886,
+        12.4667
+      ],
+      "level": 3,
+      "type": "exterior",
+      "is_free_access": true,
+      "tags": [
+        "mirador"
+      ],
+      "filter_category": "miradores",
+      "description": "La plaza de delante de San Pietro in Montorio, en lo alto del Janículo: una de las mejores vistas de Roma, con toda la ciudad a los pies",
+      "tip": "Es la alternativa a ver el Tempietto cuando el patio está cerrado: la vista no cierra.",
+      "search_aliases": [
+        "mirador de san pietro in montorio",
+        "piazza san pietro in montorio"
+      ],
+      "search_en": "San Pietro in Montorio viewpoint Rome",
+      "search_en_keywords": [
+        "montorio"
+      ],
+      "neighbor_of": [
+        "San Pietro in Montorio y Tempietto de Bramante",
+        "Fontana dell'Acqua Paola"
+      ],
+      "sin_texto_ia": true,
+      "_nota_ficha": "Tanda 4: sitio nuevo (la plaza de delante del Tempietto). Texto de la ficha escrito por Code: REVISAR."
+    },
+    {
       "id": "colle_oppio",
       "name": "Colle Oppio",
+      "windows": ["07:00-19:00"],
+      "schedule": "07:00-19:00",
+      "horario_nota": "El jardín cierra a las 19:00 (decidido en la Tanda 4): en C y D el sol se pone más tarde, y el Coliseo se ve mejor desde la terraza de Largo Gaetana Agnesi.",
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "roma_antigua",
@@ -14048,6 +14177,9 @@
     "_restaurantes": "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
   },
   "por_que_lugares": {
+    "Cripta de los Capuchinos": "Cinco capillas hechas con los huesos de unos 3.700 frailes, colocados en arcos, lámparas y rosetones. No es morbo: es una meditación sobre la muerte que los capuchinos hicieron a propósito. Se hace en 45 minutos y está en Via Veneto, a un paso.",
+    "Terraza de Largo Gaetana Agnesi": "El Coliseo entero, sin entrada y sin cola, desde una terraza en la calle, encima del metro. Con el sol bajo, la piedra se pone dorada.",
+    "Mirador de San Pietro in Montorio": "Una de las mejores vistas de Roma, desde la plaza de la iglesia, en lo alto del Janículo: la cúpula de San Pedro y todo el centro a tus pies.",
     "Coliseo": {
       "texto": "Estás delante del edificio más famoso de Roma: aquí cabían unas 50.000 personas para ver luchar a los gladiadores. Guarda la entrada, porque con la misma ves después el Foro y el Palatino.",
       "temprano": "Llegas a la apertura, cuando todavía hay poca cola y hace fresco. Empezar el día dentro del Coliseo, casi vacío, es de esas cosas que no se olvidan. Guarda la entrada: con la misma ves después el Foro y el Palatino."

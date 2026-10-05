@@ -162,40 +162,21 @@ export function anadirExtras(out, { T }) {
   // Lo que le va mal a cada día en una fecha (orden de los días).
   out['D4'].fechas_malas = { cerrado: ['Galería Borghese'] }
   out['D5'].fechas_malas = { cerrado: ['Termas de Caracalla'] }
-  out['D6'].fechas_malas = { dias_semana: ['miercoles'], cerrado: ["Castillo de Sant'Angelo"] }
+  // (D6: va mal si el Castillo cierra o si la Cúpula no abre a las 8:00 —el miércoles con audiencia—; con «Prefiero quedarme en Roma» no se cambia de día, así que puede caer: tabla de miércoles.)
+  out['D6'].fechas_malas = { cerrado: ["Castillo de Sant'Angelo"], cerrado_a: [{ lugar: 'Cúpula de San Pedro', hora: '08:00' }] }
   // (El documento no lo dice, pero la Villa Farnesina cierra el domingo y las catacumbas el miércoles: si se puede cambiar, mejor otro día. Provisional.)
   out['D7'].fechas_malas = { cerrado: ['Villa Farnesina', 'Catacumbas de San Calixto'] }
   // Si la nocturna del día ya salió en el viaje: la que el documento prefiere (si no, la más cercana a la cena que no haya salido).
   out['D4'].noche_si_repetida = ['Fontana de Trevi (noche)']
   out['D5'].noche_si_repetida = ['Trastevere de noche']
   // Los cierres que el documento escribe para un lugar del día.
-  const colchonVB = filaDe('D4', /Villa Borghese: el lago/)
-  const relojVB = filaDe('D4', /Villa Borghese hasta el Pincio/)
-  out['D4'].cierres = {
-    'Galería Borghese': {
-      causa: 'la Galería cierra: Villa Borghese se alarga hasta las 12:00 con el reloj de agua',
-      no_incluido: true,
-      acciones: [
-        { op: 'quitar', fila: 'Galería Borghese' },
-        { op: 'cambiar', fila: colchonVB.titulo, min: 120 },
-        { op: 'cambiar', fila: relojVB.titulo, hora: '11:35' },
-      ],
-    },
-  }
+  // (D4 con la Galería cerrada: tabla del lunes del documento, con la Cripta de los Capuchinos; ya no hay cierre escrito a mano.)
   out['D6'].cierres = {
     "Castillo de Sant'Angelo": {
       causa: "el Castillo cierra: va por fuera (15 min) y el tiempo que sobra, a «Pasea y piérdete por Borgo Pio»",
       acciones: [
         { op: 'cambiar', fila: "Castillo de Sant'Angelo", modo: 'fuera', min: 15, titulo: null, guia: false },
         { op: 'insertar', despues: "Castillo de Sant'Angelo", fila: { id: 'paseo_pasea_y_pierdete_por_borgo_pio_lunes', tipo: 'paseo', lugar: 'Borgo Pio', titulo: 'Pasea y piérdete por Borgo Pio', min: 70, colchon: true, texto: 'La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo.', como_documento: '', texto_documento: 'Pasea y piérdete por Borgo Pio (colchón)' } },
-      ],
-    },
-    'Cúpula de San Pedro': {
-      dia_semana: 'miercoles',
-      causa: 'miércoles: audiencia del Papa, la Plaza y la Basílica cierran por la mañana: la Cúpula sale y la mañana empieza con el Castillo',
-      acciones: [
-        { op: 'quitar', fila: ['Cúpula de San Pedro', 'Plaza de San Pedro', 'Via della Conciliazione'] },
-        { op: 'cambiar', fila: "Castillo de Sant'Angelo", hora: '09:00' },
       ],
     },
   }
@@ -220,6 +201,7 @@ export function anadirExtras(out, { T }) {
   out['D6'].pool = {}
   out['D7'].pool = {}
   // Experiencias.
+  const colchonVB = filaDe('D4', /Villa Borghese: el lago/)
   out['D4'].experiencias = {
     naturaleza_vistas: {
       acciones: [{ op: 'cambiar', fila: colchonVB.titulo, min: 60 }, { op: 'cambiar', fila: 'Fontana de Trevi', hora: '07:15' }],
