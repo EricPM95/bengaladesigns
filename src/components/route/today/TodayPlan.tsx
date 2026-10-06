@@ -213,8 +213,8 @@ export function TodayTimeCheck({ day, nowMin, result, suggestOpen, onSuggestOpen
   const showQuestion = result.beforeMeal && !suggestOpen && !askedMeal
   return (
     <div className="mx-4 space-y-3 rounded-2xl border border-accent-green/40 bg-accent-green-soft p-4">
-      <p className="text-body font-semibold text-text">Vas bien de tiempo</p>
-      {result.message && <p className="text-small leading-snug text-text-soft">{result.message}</p>}
+      <p className="text-body font-semibold text-text">{result.status === 'hueco' ? result.message : 'Vas bien de tiempo'}</p>
+      {result.status !== 'hueco' && result.message && <p className="text-small leading-snug text-text-soft">{result.message}</p>}
       {showQuestion && (
         <>
           <p className="text-small leading-snug text-text">¿Vas ya al restaurante o quieres ver algo más?</p>

@@ -2,7 +2,7 @@ import { mapStop, type GeneratedStop } from './mapGeneratedRoute'
 import type { Stop } from './types'
 
 export interface CheckTimeResult {
-  status: 'bien' | 'justo' | 'normal'
+  status: 'bien' | 'justo' | 'normal' | 'hueco'
   message: string
   spareMinutes: number
   beforeMeal: boolean
@@ -35,7 +35,7 @@ export async function checkTime(dayId: string, nowMinutes: number): Promise<Chec
     })
     if (!response.ok) return null
     const body = (await response.json()) as {
-      status?: 'bien' | 'justo' | 'normal'
+      status?: 'bien' | 'justo' | 'normal' | 'hueco'
       message?: string
       spare_minutes?: number
       before_meal?: boolean

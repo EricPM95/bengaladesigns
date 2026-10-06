@@ -528,6 +528,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // El aviso del día curado ("a esta hora ya hay gente; si puedes, pásate temprano"). La `nota` es INTERNA
     // (instrucciones para nosotros y el motor): nunca sale (PROMPT_AJUSTES_20_RUTAS A.2).
     if (visit.place.stopNotice) stop.notice = visit.place.stopNotice
+    if (visit.place.waitOpensAt) stop.wait_opens_at = visit.place.waitOpensAt
+    if (visit.place.waitHint) stop.wait_hint = visit.place.waitHint
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
     // Un imprescindible ya visto otro día, repasado por fuera camino de la cena (ver planTrip, paso 7).
@@ -795,7 +797,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
             before_meal: tripDay.timeCheck.antesDeComer,
             franja: tripDay.timeCheck.franja,
             drop: tripDay.timeCheck.drop,
-            suggestions: tripDay.timeCheck.sugerencias.map(({ item, nota, place, cambioMesa }, index) => ({ ...buildVisitStop({ unitId: `${tripDay.curatedDay?.id ?? 'dia'}:sugerencia:${index}`, place, start: 0, end: item.min ?? 20 }, index, [{ place }]), suggested_time: '', ...(nota ? { add_note: nota } : {}), ...(cambioMesa ? { meal_change: { meal_time: cambioMesa.comida ? 'lunch' : 'dinner', restaurant: { name: cambioMesa.restaurante, coordinates: { lat: cambioMesa.coordenadas[0], lng: cambioMesa.coordenadas[1] }, zone: cambioMesa.zona } } } : {}) })),
+            suggestions: tripDay.timeCheck.sugerencias.map(({ item, nota, place, cambioMesa }, index) => ({ ...buildVisitStop({ unitId: `${tripDay.curatedDay?.id ?? 'dia'}:sugerencia:${index}`, place, start: 0, end: item.min ?? 20 }, index, [{ place }]), suggested_time: '', ...(nota ? { add_note: nota } : {}), ...(cambioMesa ? { meal_change: { meal_time: cambioMesa.comida ? 'lunch' : 'dinner', restaurant: { name: cambioMesa.restaurante, coordinates: { lat: cambioMesa.coordenadas[0], lng: cambioMesa.coordenadas[1] }, zone: cambioMesa.zona }, ...(cambioMesa.noches?.length ? { night_stops: nightStopsFor(cambioMesa.noches, dayVisitedNames, { ...nightTimingInput, dinnerCoords: asPoint(cambioMesa.coordenadas) }).map((stop) => ({ ...stop, orientative_time: true, franja: 'noche' })) } : {}) } } : {}) })),
           },
         }
       : {}),

@@ -146,6 +146,12 @@ export function TodayView({ route }: TodayViewProps) {
     ensureSeeded()
     addSuggestedStop(day.id, stop, afterIndex)
     if (stop.mealChange) setMealRestaurant(day.id, stop.mealChange.mealTime, stop.mealChange.restaurant)
+    // Si la cena cambia de zona y la noche tiene que seguir cerca, las nocturnas de antes se cambian por las nuevas.
+    if (stop.mealChange?.nightStops?.length) {
+      const latest = useRouteStore.getState().route?.days.find((other) => other.id === day.id)
+      for (const old of latest?.stops.filter((other) => other.isNightExperience) ?? []) removeStop(day.id, old.id)
+      stop.mealChange.nightStops.forEach((night) => insertStopAt(day.id, useRouteStore.getState().route?.days.find((other) => other.id === day.id)?.stops.length ?? 0, { ...night, addedByUser: true }))
+    }
     setTimeCheck((prev) => (prev ? { ...prev, suggestions: prev.suggestions.filter((other) => other.id !== stop.id) } : prev))
   }
 
@@ -290,7 +296,7 @@ export function TodayView({ route }: TodayViewProps) {
 
       {wandBlock}
 
-      {nextRealStop && nextDisplayStop && <NextStopPreview realStop={nextRealStop} displayStop={nextDisplayStop} from={currentRealStop.coordinates} />}
+      {nextRealStop && nextDisplayStop && <NextStopPreview realStop={nextRealStop} displayStop={nextDisplayStop} from={currentRealStop.coordinates} nowMin={nowMin} />}
 
       {showFreeGapBlock && (
         <div className="mx-4">

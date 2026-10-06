@@ -10,6 +10,7 @@ import { PurchaseSection } from '../dayDetail/PurchaseSection'
 import { StopMenu } from '../dayDetail/StopMenu'
 import { HowToGetThereSheet } from './HowToGetThereSheet'
 import { LegLine } from './TodayPlan'
+import { waitNotice } from './NextStopPreview'
 
 interface CurrentStopCardProps {
   day: DayPlan
@@ -59,6 +60,7 @@ export function CurrentStopCard({ day, index, realStop, displayStop, state, nowM
           {realStop.reservationTime ? `Es a las ${realStop.reservationTime} — ` : ''}te quedan {minutesLeft} min
         </p>
         <LegLine from={previousStop?.coordinates} to={realStop} />
+        {waitNotice(realStop, displayStop.name, nowMin) && <p className="text-small leading-snug text-text">{waitNotice(realStop, displayStop.name, nowMin)}</p>}
         <Button variant="secondary" onClick={onCheckIn} className="w-full">
           Marcar como hecha
         </Button>
@@ -104,6 +106,7 @@ export function CurrentStopCard({ day, index, realStop, displayStop, state, nowM
         </div>
 
         <LegLine from={previousStop?.coordinates} to={realStop} />
+        {waitNotice(realStop, displayStop.name, nowMin) && <p className="text-small leading-snug text-text">{waitNotice(realStop, displayStop.name, nowMin)}</p>}
 
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => setMapsOpen(true)} className="flex-1">

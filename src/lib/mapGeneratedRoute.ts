@@ -143,10 +143,13 @@ export interface GeneratedStop {
   /** Tanda 6b: Stop.franja y Stop.addNote. */
   franja?: 'manana' | 'tarde' | 'noche'
   add_note?: string | null
+  /** Tanda 6d: si se llega antes de que abra, la hora a la que abre y qué hacer mientras. */
+  wait_opens_at?: string | null
+  wait_hint?: string | null
   /** Tanda 6c: turno que propone el motor (no una reserva del viajero). */
   recommended_turn?: string | null
   /** Tanda 6c: una sugerencia de HOY lejana cambia también la comida o la cena a su zona. */
-  meal_change?: { meal_time: 'lunch' | 'dinner'; restaurant: { name: string; coordinates: { lat: number; lng: number }; zone?: string | null } } | null
+  meal_change?: { meal_time: 'lunch' | 'dinner'; restaurant: { name: string; coordinates: { lat: number; lng: number }; zone?: string | null }; night_stops?: GeneratedStop[] } | null
   break_icon?: string | null
   break_suggestions?: { name: string; walk_minutes: number; address?: string | null }[]
   /** Nombre del paseo nocturno curado — Stop.nightWalkName. */
@@ -497,8 +500,9 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.spare_reason ? { spareReason: generated.spare_reason } : {}),
     ...(generated.franja ? { franja: generated.franja } : {}),
     ...(generated.add_note ? { addNote: generated.add_note } : {}),
+    ...(generated.wait_opens_at ? { waitOpensAt: generated.wait_opens_at, waitHint: generated.wait_hint ?? null } : {}),
     ...(generated.recommended_turn ? { recommendedTurn: generated.recommended_turn } : {}),
-    ...(generated.meal_change ? { mealChange: generated.meal_change.restaurant ? { mealTime: generated.meal_change.meal_time, restaurant: generated.meal_change.restaurant } : null } : {}),
+    ...(generated.meal_change ? { mealChange: generated.meal_change.restaurant ? { mealTime: generated.meal_change.meal_time, restaurant: generated.meal_change.restaurant, ...(generated.meal_change.night_stops?.length ? { nightStops: generated.meal_change.night_stops.map((night) => mapStop(0, night)) } : {}) } : null } : {}),
     ...(generated.is_break
       ? {
           isBreak: true,

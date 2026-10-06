@@ -5407,8 +5407,8 @@ app.post('/api/check-time', async (req, res) => {
       res.json({ status: 'normal', message: '', spare_minutes: 0, before_meal: false, suggestions: [], drop: null })
       return
     }
-    const message = check.status === 'bien' ? 'Vas bien de tiempo' : check.status === 'justo' ? (check.drop ? `Vas justo. ¿Dejamos ${check.drop.name} para si te sobra tiempo?` : 'Vas justo') : ''
-    res.json({ status: check.status, message, spare_minutes: check.spare_minutes, before_meal: check.before_meal, suggestions: check.status === 'bien' ? check.suggestions : [], drop: check.status === 'justo' ? check.drop : null })
+    const message = check.status === 'bien' ? 'Vas bien de tiempo' : check.status === 'hueco' ? `Tienes ${Math.round(check.spare_minutes)} min antes de tu entrada` : check.status === 'justo' ? (check.drop ? `Vas justo. ¿Dejamos ${check.drop.name} para si te sobra tiempo?` : 'Vas justo') : ''
+    res.json({ status: check.status, message, spare_minutes: check.spare_minutes, before_meal: check.before_meal, suggestions: check.status === 'bien' || check.status === 'hueco' ? check.suggestions : [], drop: check.status === 'justo' ? check.drop : null })
   } catch (error) {
     console.error('[check-time]', error)
     res.status(500).json({ error: 'No se pudo mirar el tiempo.' })

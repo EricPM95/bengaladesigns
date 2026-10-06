@@ -94,6 +94,8 @@ export function aplicarOps(trabajo, ops) {
   if (ops.noche === null) out.noche = null
   else if (ops.noche) out.noche = { ...(out.noche ?? {}), ...clone(ops.noche) }
   if (ops.empieza) out.empieza = ops.empieza
+  // Lo que el documento deja para «Si te sobra tiempo» en esta versión del día.
+  if (ops.sobra) out.sobra = [...(out.sobra ?? []), ...clone(ops.sobra)]
   if (ops.quitar_cubierto_por_tour) out.quitar_cubierto_por_tour = true
   return out
 }
