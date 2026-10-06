@@ -2,33 +2,45 @@
 
 El hueco entre una parada y la siguiente tiene que dar para lo que se tarda andando de verdad (coordenadas de roma.json y el mismo cálculo que usa la app) más el margen del documento (10 min; 15 después de una visita guiada; lo «de camino», solo lo que se anda). Lo que no llegaba se ha corrido (solo hacia delante: la fila siguiente sale más tarde). Con la regla del documento tal cual y el mismo redondeo del motor (provisional, ver PREGUNTAS_TANDA3): solo se corren las horas (no se acorta ningún colchón ni comida; la cena puede retrasarse, hasta las 22:00). Así las tablas son coherentes con lo que el motor hace cuando corre las horas por otra causa (un cierre, el pool…). Si un día acaba más tarde de lo escrito, es por la suma de estos tramos. Lo hace el convertidor (`escritosConvertir.mjs`, con `distancias.mjs`), así que se repite solo cada vez que cambie el documento.
 
-**530 tramos corregidos** (distintos, de 969 apariciones en las tablas) y **9 que no se pueden corregir** corriendo solo las horas (la fila de llegada es una reserva, un turno o el Free Tour: ahí manda el documento y se dejan como están).
+**540 tramos corregidos** (distintos, de 979 apariciones en las tablas) y **17 que no se pueden corregir** corriendo solo las horas (la fila de llegada es una reserva, un turno o el Free Tour: ahí manda el documento y se dejan como están).
 
 ## Corregidos
 
-- **D0** (normal/unica): Plaza de San Pedro → Basílica de San Pedro: andando 3 min; Basílica de San Pedro: de las 10:05 a las 10:10
-- **D0** (normal/unica): Basílica de San Pedro → Via della Conciliazione: andando 5 min; Via della Conciliazione: de las 10:15 a las 10:20
-- **D0** (normal/unica): Via della Conciliazione → Castillo de Sant'Angelo: andando 9 min; Castillo de Sant'Angelo: de las 10:45 a las 10:50
-- **D0** (normal/unica): Puente Sant'Angelo → Piazza Navona: andando 14 min; Piazza Navona: de las 11:30 a las 11:35
-- **D0** (normal/unica): Piazza Navona → Panteón: andando 7 min; Panteón: de las 12:10 a las 12:20
-- **D0** (normal/unica): Panteón → Armando al Pantheon: andando 1 min; Armando al Pantheon: de las 12:40 a las 12:50
-- **D0** (normal/unica): Armando al Pantheon → Fontana de Trevi: andando 10 min; Fontana de Trevi: de las 14:00 a las 14:10
-- **D0** (normal/unica): Fontana de Trevi → Plaza Venecia: andando 10 min; Plaza Venecia: de las 14:30 a las 14:40
-- **D0** (normal/unica): Plaza Venecia → Altar de la Patria: andando 5 min; Altar de la Patria: de las 14:40 a las 14:50
-- **D0** (normal/unica): Altar de la Patria → Plaza del Campidoglio: andando 8 min; Plaza del Campidoglio: de las 14:50 a las 15:05
-- **D0** (normal/unica): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 15:10 a las 15:35
-- **D0** (normal/unica): El Foro Romano, desde la terraza del Campidoglio → Via dei Fori Imperiali: andando 5 min; Via dei Fori Imperiali: de las 15:30 a las 15:55
-- **D0** (normal/unica): Via dei Fori Imperiali → Coliseo: andando 10 min; Coliseo: de las 15:55 a las 16:25
-- **D0** (normal/unica): Coliseo → Arco de Constantino: andando 3 min; Arco de Constantino: de las 16:15 a las 16:45
-- **D0** (reves/unica): Arco de Constantino → Via dei Fori Imperiali: andando 8 min; Via dei Fori Imperiali: de las 11:35 a las 11:40
-- **D0** (reves/unica): Altar de la Patria → Fontana de Trevi: andando 14 min; Fontana de Trevi: de las 12:35 a las 12:40
-- **D0** (reves/unica): Fontana de Trevi → Armando al Pantheon: andando 10 min; Armando al Pantheon: de las 13:15 a las 13:20
-- **D0** (reves/unica): Armando al Pantheon → Panteón: andando 1 min; Panteón: de las 14:15 a las 14:20
-- **D0** (reves/unica): Panteón → Piazza Navona: andando 7 min; Piazza Navona: de las 14:45 a las 14:55
-- **D0** (reves/unica): Piazza Navona → Puente Sant'Angelo: andando 14 min; Puente Sant'Angelo: de las 15:15 a las 15:30
-- **D0** (reves/unica): Puente Sant'Angelo → Castillo de Sant'Angelo: andando 2 min; Castillo de Sant'Angelo: de las 15:25 a las 15:35
-- **D0** (reves/unica): Castillo de Sant'Angelo → Plaza de San Pedro: andando 11 min; Plaza de San Pedro: de las 15:55 a las 16:05
-- **D0** (reves/unica): Plaza de San Pedro → Basílica de San Pedro: andando 3 min; Basílica de San Pedro: de las 16:10 a las 16:25
+- **D0** (normal/unica): Plaza de San Pedro → Basílica de San Pedro: andando 3 min; Basílica de San Pedro: de las 09:50 a las 09:55
+- **D0** (normal/unica): Basílica de San Pedro → Paseo por Via della Conciliazione: andando 5 min; Paseo por Via della Conciliazione: de las 10:00 a las 10:15
+- **D0** (normal/unica): Paseo por Via della Conciliazione → Castillo de Sant'Angelo: andando 9 min; Castillo de Sant'Angelo: de las 10:30 a las 10:45
+- **D0** (normal/unica): Castillo de Sant'Angelo → Puente Sant'Angelo: andando 2 min; Puente Sant'Angelo: de las 10:50 a las 11:00
+- **D0** (normal/unica): Puente Sant'Angelo → Piazza Navona: andando 14 min; Piazza Navona: de las 11:20 a las 11:30
+- **D0** (normal/unica): Piazza Navona → Panteón: andando 7 min; Panteón: de las 12:05 a las 12:15
+- **D0** (normal/unica): Panteón → Armando al Pantheon: andando 1 min; Armando al Pantheon: de las 12:30 a las 12:45
+- **D0** (normal/unica): Armando al Pantheon → Plaza Venecia: andando 10 min; Plaza Venecia: de las 13:40 a las 13:55
+- **D0** (normal/unica): Plaza Venecia → Altar de la Patria: andando 5 min; Altar de la Patria: de las 13:50 a las 14:15
+- **D0** (normal/unica): Altar de la Patria → Plaza del Campidoglio: andando 8 min; Plaza del Campidoglio: de las 14:20 a las 14:50
+- **D0** (normal/unica): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 14:45 a las 15:30
+- **D0** (normal/unica): El Foro Romano, desde la terraza del Campidoglio → Paseo por Via dei Fori Imperiali: andando 5 min; Paseo por Via dei Fori Imperiali: de las 15:10 a las 16:00
+- **D0** (normal/unica): Paseo por Via dei Fori Imperiali → Coliseo: andando 10 min; Coliseo: de las 15:45 a las 16:30
+- **D0** (normal/unica): Coliseo → Arco de Constantino: andando 3 min; Arco de Constantino: de las 16:00 a las 16:50
+- **D0** (normal/unica): Arco de Constantino → traslado: andando 0 min; traslado: de las 16:20 a las 17:05
+- **D0** (normal/unica): traslado → Plaza de España: andando 0 min; Plaza de España: de las 16:45 a las 17:30
+- **D0** (normal/unica): Plaza de España → Trinità dei Monti y su mirador sobre la Plaza de España: andando 1 min; Trinità dei Monti y su mirador sobre la Plaza de España: de las 17:15 a las 18:05
+- **D0** (normal/unica): Trinità dei Monti y su mirador sobre la Plaza de España → Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco: andando 6 min; Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco: de las 17:45 a las 18:40 y de 90 a 35 min
+- **D0** (reves/unica): Arco de Constantino → Paseo por Via dei Fori Imperiali: andando 8 min; Paseo por Via dei Fori Imperiali: de las 11:35 a las 11:50
+- **D0** (reves/unica): Paseo por Via dei Fori Imperiali → Plaza Venecia: andando 5 min; Plaza Venecia: de las 12:05 a las 12:10
+- **D0** (reves/unica): Plaza Venecia → Altar de la Patria: andando 5 min; Altar de la Patria: de las 12:15 a las 12:30
+- **D0** (reves/unica): Altar de la Patria → Armando al Pantheon: andando 12 min; Armando al Pantheon: de las 13:00 a las 13:10
+- **D0** (reves/unica): Armando al Pantheon → Panteón: andando 1 min; Panteón: de las 14:10 a las 14:25
+- **D0** (reves/unica): Panteón → Piazza Navona: andando 7 min; Piazza Navona: de las 14:35 a las 15:00
+- **D0** (reves/unica): Piazza Navona → Puente Sant'Angelo: andando 14 min; Puente Sant'Angelo: de las 15:10 a las 15:35
+- **D0** (reves/unica): Puente Sant'Angelo → Castillo de Sant'Angelo: andando 2 min; Castillo de Sant'Angelo: de las 15:20 a las 15:55
+- **D0** (reves/unica): Castillo de Sant'Angelo → Paseo por Via della Conciliazione: andando 9 min; Paseo por Via della Conciliazione: de las 15:45 a las 16:30
+- **D0** (reves/unica): Paseo por Via della Conciliazione → Plaza de San Pedro: andando 3 min; Plaza de San Pedro: de las 16:05 a las 16:55
+- **D0** (reves/unica): Plaza de San Pedro → Basílica de San Pedro: andando 3 min; Basílica de San Pedro: de las 16:20 a las 17:15
+- **D0** (reves/unica): Basílica de San Pedro → traslado: andando 0 min; traslado: de las 16:35 a las 17:30
+- **D0** (reves/unica): traslado → Plaza de España: andando 0 min; Plaza de España: de las 17:00 a las 17:55
+- **D0** (reves/unica): Plaza de España → Trinità dei Monti y su mirador sobre la Plaza de España: andando 1 min; Trinità dei Monti y su mirador sobre la Plaza de España: de las 17:30 a las 18:30
+- **D0** (reves/unica): Trinità dei Monti y su mirador sobre la Plaza de España → Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco: andando 6 min; Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco: de las 17:55 a las 19:05 y de 80 a 30 min
+- **D0** (reves/unica): Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco → Il Gabriello: andando 2 min; Il Gabriello: de las 19:30 a las 20:00
+- **D0** (reves/unica): Il Gabriello → Fontana de Trevi (noche): andando 11 min; Fontana de Trevi (noche): de las 21:25 a las 21:55
 - **D1-corto** (normal/A): Arco de Constantino → Via dei Fori Imperiali: andando 8 min; Via dei Fori Imperiali: de las 09:35 a las 09:40
 - **D1-corto** (normal/A): Via dei Fori Imperiali → Plaza del Campidoglio: andando 9 min; Plaza del Campidoglio: de las 10:05 a las 10:15
 - **D1-corto** (normal/A): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 10:35 a las 10:55
@@ -480,29 +492,27 @@ El hueco entre una parada y la siguiente tiene que dar para lo que se tarda anda
 - **D5** (domingo/B): traslado → Foro Romano desde el Campidoglio (noche): andando 0 min; Foro Romano desde el Campidoglio (noche): de las 21:30 a las 22:00
 - **D5** (domingo/C): Termas de Caracalla → Circo Máximo: andando 17 min; Circo Máximo: de las 17:00 a las 17:15
 - **D5** (domingo/C): Circo Máximo → Boca de la Verdad: andando 6 min; Boca de la Verdad: de las 17:40 a las 17:55
-- **D5** (domingo/C): Boca de la Verdad → Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina: andando 14 min; Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina: de las 18:20 a las 18:40
-- **D5** (domingo/C): Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina → Jardín de los Naranjos: andando 4 min; Jardín de los Naranjos: de las 19:05 a las 19:25
+- **D5** (domingo/C): Boca de la Verdad → Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina: andando 14 min; Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina: de las 18:20 a las 18:40
+- **D5** (domingo/C): Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina → Jardín de los Naranjos: andando 4 min; Jardín de los Naranjos: de las 19:05 a las 19:25
 - **D5** (domingo/C): Jardín de los Naranjos → Ojo de la Cerradura del Aventino: andando 4 min; Ojo de la Cerradura del Aventino: de las 19:50 a las 20:10
 - **D5** (domingo/C): Ojo de la Cerradura del Aventino → Felice a Testaccio: andando 7 min; Felice a Testaccio: de las 20:25 a las 21:00
 - **D5** (domingo/C): Felice a Testaccio → traslado: andando 0 min; traslado: de las 22:05 a las 22:40
 - **D5** (domingo/C): traslado → Foro Romano desde el Campidoglio (noche): andando 0 min; Foro Romano desde el Campidoglio (noche): de las 22:25 a las 23:00
 - **D5** (domingo/D): Circo Máximo → Boca de la Verdad: andando 6 min; Boca de la Verdad: de las 17:50 a las 18:05
-- **D5** (domingo/D): Boca de la Verdad → Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda: andando 14 min; Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda: de las 18:30 a las 18:50 y de 75 a 55 min
+- **D5** (domingo/D): Boca de la Verdad → Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda: andando 14 min; Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda: de las 18:30 a las 18:50 y de 75 a 55 min
 - **D6** (normal/A): Plaza de San Pedro → Via della Conciliazione: andando 3 min; Via della Conciliazione: de las 09:25 a las 09:30
 - **D6** (normal/A): Via della Conciliazione → Castillo de Sant'Angelo, hasta la terraza del ángel: andando 9 min; Castillo de Sant'Angelo, hasta la terraza del ángel: de las 09:55 a las 10:00
 - **D6** (normal/A): Puente Sant'Angelo → Via dei Coronari: andando 9 min; Via dei Coronari: de las 11:40 a las 11:45
 - **D6** (normal/A): Via dei Coronari → Piazza Navona: andando 4 min; Piazza Navona: de las 12:05 a las 12:10
-- **D6** (normal/A): Terraza del Altar de la Patria, al atardecer → Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo: andando 14 min; Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo: de las 17:45 a las 17:50 y de 45 a 40 min
+- **D6** (normal/A): Terraza del Altar de la Patria, al atardecer → Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo: andando 14 min; Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo: de las 17:45 a las 17:50
 - **D6** (normal/B): Museos Capitolinos, con la terraza sobre los Foros → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 16:50 a las 16:55
 - **D6** (normal/B): El Foro Romano, desde la terraza del Campidoglio → Santa Maria in Aracoeli y su escalinata: andando 4 min; Santa Maria in Aracoeli y su escalinata: de las 17:20 a las 17:25
 - **D6** (normal/B): Santa Maria in Aracoeli y su escalinata → Plaza Venecia: andando 3 min; Plaza Venecia: de las 17:45 a las 17:50
 - **D6** (normal/B): Plaza Venecia → Terraza del Altar de la Patria, al atardecer: andando 5 min; Terraza del Altar de la Patria, al atardecer: de las 18:05 a las 18:10
-- **D6** (normal/B): Terraza del Altar de la Patria, al atardecer → Trattoria Dal Cavalier Gino: andando 14 min; Trattoria Dal Cavalier Gino: de las 19:15 a las 19:30
-- **D6** (normal/B): Trattoria Dal Cavalier Gino → Panteón (noche): andando 5 min; Panteón (noche): de las 21:10 a las 21:15
 - **D6** (normal/D): Terraza del Altar de la Patria → Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera: andando 8 min; Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera: de las 19:20 a las 19:25
 - **D6** (normal/D): Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera → El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer: andando 7 min; El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer: de las 20:10 a las 20:15
-- **D6** (normal/D): El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer → Trattoria Dal Cavalier Gino: andando 18 min; Trattoria Dal Cavalier Gino: de las 21:00 a las 21:30
-- **D6** (normal/D): Trattoria Dal Cavalier Gino → Panteón (noche): andando 5 min; Panteón (noche): de las 22:55 a las 23:15
+- **D6** (normal/D): El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer → Nonna Betta: andando 9 min; Nonna Betta: de las 21:00 a las 21:30
+- **D6** (normal/D): Nonna Betta → Panteón (noche): andando 10 min; Panteón (noche): de las 22:55 a las 23:20
 - **D6** (miercoles/A): Via della Conciliazione → Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas: andando 3 min; Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas: de 40 a 30 min
 - **D6** (miercoles/A): Pasea y piérdete por Borgo Pio: las calles del Borgo y el Passetto, el pasadizo de los papas → Plaza de San Pedro: andando 5 min; Plaza de San Pedro: de las 12:00 a las 11:55
 - **D6** (miercoles/A): Plaza de San Pedro → Cúpula de San Pedro: andando 3 min; Cúpula de San Pedro: de las 12:30 a las 12:25
@@ -510,20 +520,20 @@ El hueco entre una parada y la siguiente tiene que dar para lo que se tarda anda
 - **D6** (miercoles/A): Museos Capitolinos, con la terraza sobre los Foros → Plaza Venecia: andando 3 min; Plaza Venecia: de las 16:20 a las 17:35
 - **D6** (miercoles/A): Plaza Venecia → Terraza del Altar de la Patria, al atardecer: andando 5 min; Terraza del Altar de la Patria, al atardecer: de las 16:40 a las 17:55
 - **D6** (miercoles/A): Terraza del Altar de la Patria, al atardecer → Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo: andando 14 min; Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo: de las 17:45 a las 19:05 y de 45 a 30 min
-- **D6** (miercoles/A): Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo → Trattoria Dal Cavalier Gino: andando 16 min; Trattoria Dal Cavalier Gino: de las 19:00 a las 20:30
-- **D6** (miercoles/A): Trattoria Dal Cavalier Gino → Panteón (noche): andando 5 min; Panteón (noche): de las 20:55 a las 22:15
+- **D6** (miercoles/A): Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo → Nonna Betta: andando 2 min; Nonna Betta: de las 19:00 a las 20:00
+- **D6** (miercoles/A): Nonna Betta → Panteón (noche): andando 10 min; Panteón (noche): de las 20:55 a las 21:50
 - **D6** (miercoles/B): Museos Capitolinos, con la terraza sobre los Foros → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; El Foro Romano, desde la terraza del Campidoglio: de las 16:50 a las 18:10
 - **D6** (miercoles/B): El Foro Romano, desde la terraza del Campidoglio → Santa Maria in Aracoeli y su escalinata: andando 4 min; Santa Maria in Aracoeli y su escalinata: de las 17:20 a las 18:40
 - **D6** (miercoles/B): Santa Maria in Aracoeli y su escalinata → Plaza Venecia: andando 3 min; Plaza Venecia: de las 17:45 a las 19:05
 - **D6** (miercoles/B): Plaza Venecia → Terraza del Altar de la Patria, al atardecer: andando 5 min; Terraza del Altar de la Patria, al atardecer: de las 18:05 a las 19:25
-- **D6** (miercoles/B): Terraza del Altar de la Patria, al atardecer → Trattoria Dal Cavalier Gino: andando 14 min; Trattoria Dal Cavalier Gino: de las 19:15 a las 21:00
-- **D6** (miercoles/B): Trattoria Dal Cavalier Gino → Panteón (noche): andando 5 min; Panteón (noche): de las 21:10 a las 22:45
+- **D6** (miercoles/B): Terraza del Altar de la Patria, al atardecer → Nonna Betta: andando 7 min; Nonna Betta: de las 19:15 a las 20:30
+- **D6** (miercoles/B): Nonna Betta → Panteón (noche): andando 10 min; Panteón (noche): de las 21:10 a las 22:20
 - **D6** (miercoles/C): Museos Capitolinos, con la terraza sobre los Foros → Plaza Venecia: andando 3 min; Plaza Venecia: de las 16:35 a las 17:50
 - **D6** (miercoles/C): Plaza Venecia → Terraza del Altar de la Patria: andando 5 min; Terraza del Altar de la Patria: de las 16:55 a las 18:10
 - **D6** (miercoles/C): Terraza del Altar de la Patria → Santa Maria in Aracoeli y su escalinata: andando 1 min; Santa Maria in Aracoeli y su escalinata: de las 17:55 a las 19:10
 - **D6** (miercoles/C): Santa Maria in Aracoeli y su escalinata → El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer: andando 4 min; El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer: de las 18:30 a las 19:45
-- **D6** (miercoles/C): El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer → Trattoria Dal Cavalier Gino: andando 18 min; Trattoria Dal Cavalier Gino: de las 20:00 a las 21:00
-- **D6** (miercoles/C): Trattoria Dal Cavalier Gino → Panteón (noche): andando 5 min; Panteón (noche): de las 21:55 a las 22:45
+- **D6** (miercoles/C): El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer → Nonna Betta: andando 9 min; Nonna Betta: de las 20:00 a las 21:00
+- **D6** (miercoles/C): Nonna Betta → Panteón (noche): andando 10 min; Panteón (noche): de las 21:55 a las 22:50
 - **D7** (normal/AB): Basílica de Santa Cecilia in Trastevere → Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta: andando 7 min; Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta: de las 11:10 a las 11:20 y de 65 a 30 min
 - **D7** (normal/AB): Pasea y piérdete por el Trastevere tranquilo: la Piazza in Piscinula, Via dei Genovesi y la Via della Lungaretta → Trattoria Da Enzo al 29: andando 10 min; Trattoria Da Enzo al 29: de las 12:30 a las 12:10
 - **D7** (normal/AB): Trattoria Da Enzo al 29 → traslado: andando 0 min; traslado: de las 13:45 a las 13:25
@@ -539,6 +549,15 @@ El hueco entre una parada y la siguiente tiene que dar para lo que se tarda anda
 
 ## Sin corregir (corriendo solo las horas no se puede)
 
+- **D0** (con_museos/unica): Borghiciana Pastificio Artigianale → Piazza Navona: andando 16 min; faltan 20 min para llegar a las 14:50 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Plaza Venecia → Altar de la Patria: andando 5 min; faltan 10 min para llegar a las 17:20 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Altar de la Patria → Plaza del Campidoglio: andando 8 min; faltan 5 min para llegar a las 17:50 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: andando 12 min; faltan 15 min para llegar a las 18:15 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): El Foro Romano, desde la terraza del Campidoglio → Paseo por Via dei Fori Imperiali: andando 5 min; faltan 5 min para llegar a las 18:40 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Coliseo → Arco de Constantino: andando 3 min; faltan 5 min para llegar a las 19:30 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Plaza de España → Trinità dei Monti y su mirador sobre la Plaza de España: andando 1 min; faltan 5 min para llegar a las 20:45 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Trinità dei Monti y su mirador sobre la Plaza de España → Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco: andando 6 min; faltan 5 min para llegar a las 21:15 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco → Il Gabriello: andando 2 min; faltan 210 min para llegar a las 19:30 (la cena pasaría de las 22:00)
 - **D2** (reserva_14_16/ABC): Iglesia de Santa Maria in Trastevere → Pasea y piérdete por Trastevere: andando 1 min; faltan 5 min para llegar a las 09:35 (la fila de llegada es fija (reserva))
 - **D2** (reserva_14_16/ABC): Fontana dell'Acqua Paola → Mirador del Janículo: andando 16 min; faltan 10 min para llegar a las 11:05 (la fila de llegada es fija (reserva))
 - **D2** (reserva_14_16/ABC): La Passeggiata del Gianicolo, bajando hasta San Pedro → Borghiciana Pastificio Artigianale: andando 22 min; faltan 15 min para llegar a las 12:35 (la fila de llegada es fija (reserva))
@@ -547,4 +566,3 @@ El hueco entre una parada y la siguiente tiene que dar para lo que se tarda anda
 - **D6** (miercoles/D): Cúpula de San Pedro → Ristorante Arlù: andando 6 min; faltan 5 min para llegar a las 14:00 (la cena pasaría de las 22:00)
 - **D6** (miercoles/D): Plaza del Campidoglio → Museos Capitolinos, con la terraza sobre los Foros: andando 0 min; faltan 75 min para llegar a las 14:45 (la cena pasaría de las 22:00)
 - **D6** (miercoles/D): Terraza del Altar de la Patria → Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera: andando 8 min; faltan 5 min para llegar a las 19:20 (la cena pasaría de las 22:00)
-- **D6** (miercoles/D): El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer → Trattoria Dal Cavalier Gino: andando 18 min; faltan 10 min para llegar a las 21:00 (la cena pasaría de las 22:00)

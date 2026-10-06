@@ -13,6 +13,8 @@ const nombreFila = (row) => row.titulo ?? row.lugar ?? row.restaurante ?? row.no
 export function comprobarDia({ D, iso, id, day, pool = [] }) {
   const fallos = []
   const donde = `${iso} ${id}`
+  // Una tarde libre (la excursión de medio día sin paradas de nivel 1 o 2) sale sin paradas en pantalla a propósito: no hay nada que comparar con el cálculo.
+  if (day.afternoon_free) return fallos
   // (escrito_rows lleva el nombre en `lugar`; la tabla de distancias lo busca por restaurante / noche según el tipo.)
   const rows = (day.escrito_rows ?? []).map((row) => ({ ...row, restaurante: row.tipo === 'comida' || row.tipo === 'cena' ? row.lugar : undefined, noche: row.tipo === 'noche' ? row.lugar : undefined }))
   const log = day.engine_log ?? []
@@ -77,6 +79,17 @@ export function comprobarDia({ D, iso, id, day, pool = [] }) {
     if (vistas.has(clave)) fallos.push({ regla: 'parada_repetida', texto: `${donde}: «${stop.display_title ?? stop.name}» sale dos veces (${vistas.get(clave)} y ${stop.suggested_time})` })
     else vistas.set(clave, stop.suggested_time)
   }
+  // 9. «Llegada a {sitio}» es su propio tipo de parada (Tanda 5): lleva su texto de llegada, no el del sitio por fuera («Hoy lo ves por fuera»), ni modo, ni foto propia. Con Free Tour, también la llegada al punto de encuentro.
+  for (const stop of day.stops ?? []) {
+    if (!/^Llegada a/.test(stop.display_title ?? stop.name ?? '')) continue
+    const mal = []
+    if (stop.is_arrival !== true) mal.push('no es de tipo llegada')
+    if (!stop.arrival_text) mal.push('sin texto de llegada')
+    if (stop.outside_reason || stop.outside || stop.visit_mode) mal.push(`lleva «${stop.outside_reason ?? stop.visit_mode}»`)
+    if (stop.no_photo !== true) mal.push('lleva foto propia')
+    if (mal.length) fallos.push({ regla: 'llegada_tipo', texto: `${donde}: «${stop.display_title ?? stop.name}»: ${mal.join(', ')}` })
+  }
+  if ((day.stops ?? []).some((stop) => /Free Tour/.test(stop.display_title ?? stop.name ?? '') && !/^Llegada/.test(stop.display_title ?? stop.name ?? '')) && !(day.stops ?? []).some((stop) => /^Llegada al punto de encuentro/.test(stop.display_title ?? ''))) fallos.push({ regla: 'llegada_free_tour', texto: `${donde}: el Free Tour no lleva su «Llegada al punto de encuentro»` })
   // 8. El orden del día es el de su tabla (sin lo quitado): se mira en la prueba parada a parada (comparar), que conoce la tabla.
   return fallos
 }
@@ -261,4 +274,15 @@ export function comprobarMedioDiaRepetido({ D, dias }) {
     }
   }
   return fallos
+}
+
+/** 7. Fotos (Tanda 5): todas las fotos de public/fotos/<destino>/ están registradas (en `fotos` o en un hueco) y salen en su sitio; los huecos que siguen vacíos, en el informe. */
+export function comprobarFotos(fs, destino = 'roma') {
+  const tabla = JSON.parse(fs.readFileSync(`data/dias/${destino}/_fotos.json`, 'utf8'))
+  const archivos = fs.readdirSync(`public/fotos/${destino}`).filter((file) => /\.jpg$/i.test(file) && !/_p\.jpg$/i.test(file))
+  const registradas = new Set([...tabla.fotos.map((foto) => foto.archivo), ...tabla.huecos.map((hueco) => hueco.archivo)])
+  const sinRegistrar = archivos.filter((file) => !registradas.has(file))
+  const sinPequena = archivos.filter((file) => !archivos.includes(file.replace(/\.jpg$/i, '_p.jpg')) && !fs.existsSync(`public/fotos/${destino}/${file.replace(/\.jpg$/i, '_p.jpg')}`))
+  const vacios = tabla.huecos.filter((hueco) => !archivos.includes(hueco.archivo)).map((hueco) => `${hueco.archivo} → ${hueco.sitio}`)
+  return { sinRegistrar, sinPequena, vacios, total: archivos.length }
 }

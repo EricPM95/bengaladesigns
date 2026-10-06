@@ -20,6 +20,13 @@ const D = findPipelineV2Data('Roma')
 
 // id | etiqueta | inicio | días de contenido | medio día (manana = salida, tarde = llegada) | Free Tour de mañana | quedarme en Roma | experiencias | pool
 const POR_DEFECTO = [
+  // 1 día (Tanda 5: un día entero normal, sin crucero), con el Coliseo reservado por la mañana en el último
+  '1-invierno|1 día · invierno|2027-01-12|1|||0||',
+  '1-primavera|1 día · primavera|2027-04-14|1|||0||',
+  '1-verano|1 día · verano|2027-07-15|1|||0||',
+  '1-otono|1 día · otoño|2027-10-13|1|||0||',
+  '1-navidad|1 día · Navidad|2027-12-25|1|||0||',
+  '1-coliseo|1 día · Coliseo reservado por la mañana|2027-05-12|1|||0||||Coliseo=09:00',
   // 3 días
   '3-invierno|3 días · invierno|2027-01-11|3|||0||',
   '3-primavera|3 días · primavera|2027-04-14|3||1|0||',
@@ -62,8 +69,8 @@ const POR_DEFECTO = [
   '6-media-verano|6 días · excursión de medio día (Ostia) · verano|2027-07-10|6||||||ostia_antica',
 ]
 const viajes = (args.filter((x) => x.startsWith('viaje=')).length ? args.filter((x) => x.startsWith('viaje=')).map((x) => x.slice(6)) : POR_DEFECTO).map((linea) => {
-  const [id, tag, inicio, dias, medio, ft, quedarme, exp, pool, mediaExc] = linea.split('|')
-  return { id, tag, inicio, dias: Number(dias), medio: medio === 'manana' || medio === 'tarde' ? medio : null, ft: ft === '1', quedarme: quedarme === '1', exp: (exp ?? '').split(',').filter(Boolean), pool: (pool ?? '').split(',').filter(Boolean), mediaExc: mediaExc || null }
+  const [id, tag, inicio, dias, medio, ft, quedarme, exp, pool, mediaExc, reservas] = linea.split('|')
+  return { id, tag, inicio, dias: Number(dias), medio: medio === 'manana' || medio === 'tarde' ? medio : null, ft: ft === '1', quedarme: quedarme === '1', exp: (exp ?? '').split(',').filter(Boolean), pool: (pool ?? '').split(',').filter(Boolean), mediaExc: mediaExc || null, entradas: Object.fromEntries((reservas ?? '').split(',').filter(Boolean).map((x) => x.split('='))) }
 })
 
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -147,7 +154,14 @@ function ordenEnPalabras(ids, fechas, ft) {
   const base = ft ? ['D3', 'D1-FT', 'D4', 'D5', 'D6', 'D7'] : ['D1', 'D2', 'D4', 'D5', 'D6', 'D7']
   const entero = ids.filter((id) => id && !/medio/.test(id))
   const sinCambio = entero.every((id, i) => id === base.filter((x) => entero.includes(x))[i])
+  if (ids.length === 1) return `${enPalabras}. Un solo día: no hay orden que cambiar.${malos.length ? ` Cae en una fecha que le va mal: ${malos.join('; ')}.` : ''}`
   return `${enPalabras}. ${sinCambio ? 'Orden del documento.' : 'El motor ha cambiado el orden de los días para que ninguno caiga en una fecha que le va mal.'} ${malos.length ? `Con alguno no se pudo evitar: ${malos.join('; ')}.` : 'Ningún día cae en una fecha que le vaya mal.'}`
+}
+
+// Una reserva que la tabla del día no recoge (el D0 no trae orden para una entrada reservada) no mueve nada: se dice en la página en vez de dejar creer que se ha aplicado.
+const avisoReservas = (viaje, dias) => {
+  const sinAplicar = Object.entries(viaje.entradas).filter(([lugar, hora]) => !dias.some((dia) => dia.stops.some((stop) => stop.n.startsWith(lugar) && stop.h === hora)))
+  return sinAplicar.length ? ` Reservas pedidas que no se aplican: ${sinAplicar.map(([lugar, hora]) => `${lugar} a las ${hora}`).join(', ')} (la tabla de este día no trae orden para una entrada reservada: el sitio sigue donde la tabla lo pone).` : ''
 }
 
 const trips = []
@@ -156,7 +170,7 @@ for (const viaje of viajes) {
   const fechas = Array.from({ length: viaje.dias }, (_, n) => addDays(viaje.inicio, n))
   const positivas = ['imprescindibles', ...(viaje.ft ? ['free_tour'] : []), ...viaje.exp]
   const days = []
-  for (let d = 1; d <= viaje.dias; d++) days.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, viaje.inicio, viaje.pool, positivas, { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ? { franja: viaje.medio, salida: '15:00' } : null, sinExcursion: viaje.quedarme, mediaExcursion: viaje.mediaExc ? { id: viaje.mediaExc, dia: viaje.dias === 4 ? 4 : null } : null }))
+  for (let d = 1; d <= viaje.dias; d++) days.push(await buildDayBlockV3(D, viaje.dias + 1, viaje.ft, d, null, viaje.inicio, viaje.pool, positivas, { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', mediaJornada: viaje.medio ? { franja: viaje.medio, salida: '15:00' } : null, sinExcursion: viaje.quedarme, entradas: viaje.entradas, mediaExcursion: viaje.mediaExc ? { id: viaje.mediaExc, dia: viaje.dias === 4 ? 4 : null } : null }))
   const ids = days.map((day) => day?.curated_day?.id ?? null)
   const sunset = sunsetFor(D, { dateIso: viaje.inicio })
   for (const [i, day] of days.entries()) {
@@ -190,7 +204,7 @@ for (const viaje of viajes) {
     version: primeraVersion,
     ft: viaje.ft ? 'Con Free Tour de mañana' : 'Sin Free Tour',
     pool: viaje.pool.length || viaje.exp.length ? [...viaje.pool, ...viaje.exp].join(', ') : 'Sin pool ni experiencias',
-    orden: `${ordenEnPalabras(ids, fechas, viaje.ft)}${viaje.quedarme ? ' «Prefiero quedarme en Roma»: el día de excursión es de ciudad.' : ''}`,
+    orden: `${ordenEnPalabras(ids, fechas, viaje.ft)}${viaje.quedarme ? ' «Prefiero quedarme en Roma»: el día de excursión es de ciudad.' : ''}${avisoReservas(viaje, dias)}`,
     dias,
   })
 }

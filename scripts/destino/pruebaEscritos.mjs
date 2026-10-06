@@ -10,7 +10,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
-import { comprobarDia, comprobarViaje, comprobarMesas, comprobarRecambio, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada, comprobarMedioDiaRepetido } from './comprobacionesDia.mjs'
+import { comprobarDia, comprobarViaje, comprobarMesas, comprobarRecambio, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada, comprobarMedioDiaRepetido, comprobarFotos } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -534,6 +534,10 @@ if (extra.imprescindibles.size > 0) {
   for (const lugar of sh.lugares) lines.push(`- Sitio: ${lugar.name}${lugar.tipo ? ` (${lugar.tipo})` : ''}`)
   for (const name of sh.restaurantes) lines.push(`- Restaurante: ${name}`)
   lines.push('')
+}
+{
+  const fotos = comprobarFotos(fs)
+  lines.push(`## Fotos de public/fotos/roma (${fotos.total} fotos)`, '', `- Fotos sin registrar en _fotos.json (no salen en ningún sitio): ${fotos.sinRegistrar.length}${fotos.sinRegistrar.length ? ' (' + fotos.sinRegistrar.join(', ') + ')' : ''}.`, `- Fotos sin su versión pequeña (_p): ${fotos.sinPequena.length}.`, `- Huecos que aún están vacíos (${fotos.vacios.length}):`, ...fotos.vacios.map((x) => `  - ${x}`), '')
 }
 {
   const malas = comprobarCabecerasHtml(fs)
