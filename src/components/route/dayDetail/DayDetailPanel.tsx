@@ -1144,7 +1144,7 @@ export function DayDetailPanel({
           >
             <OnTheWayGroupCard
               toName={siguiente ? displayStopName(siguiente.name) : null}
-              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: stops[index].why ?? stops[index].placeText ?? null, photoUrl: stops[index].photoUrl, onOpen: () => setDetailIndex(index) }))}
+              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: stops[index].why ?? stops[index].placeText ?? null, onOpen: () => setDetailIndex(index) }))}
             />
           </SortableStop>,
         )

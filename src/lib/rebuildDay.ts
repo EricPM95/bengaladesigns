@@ -66,6 +66,8 @@ export async function organizarDiaConMediaJornada(dayId: string, excursionId: st
     const body = (await response.json()) as { day?: GeneratedDay }
     if (!body.day) return false
     const next = mapSingleGeneratedDay(route.destination, body.day, day)
+    // (Un destino sin días escritos no sabe de medias jornadas en este día: si el motor no devuelve la excursión, el día se queda como estaba.)
+    if (!next.halfDayExcursion) return false
     await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
     useRouteStore.getState().replaceExcursionWithHalfDay(dayId, next, excursionId, dia)
     return true

@@ -7,6 +7,7 @@ import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { isDayPinned } from '../../../lib/bookings'
 import { dayOptionLabel } from '../freeDay/AddToDaySheet'
+import { organizarDiaConMediaJornada } from '../../../lib/rebuildDay'
 
 /**
  * «¿Dónde la ponemos?» (PARA_CODE_EXCURSIONES, 3): sube desde abajo con su tirador y su cruz. Sin avisos: el viajero decide. Sustituir un
@@ -22,10 +23,13 @@ export function WhereSheet({ route, excursion, onClose }: { route: Route; excurs
   const [choice, setChoice] = useState<string>(days[0]?.id ?? (newDayAllowed ? 'new' : ''))
   const chosenDay = days.find((day) => day.id === choice) ?? null
 
-  const confirm = () => {
+  const confirm = async () => {
     if (choice === 'new') placeExcursion(excursion, { newDay: true })
-    else if (chosenDay) placeExcursion(excursion, { dayId: chosenDay.id })
-    else return
+    else if (chosenDay) {
+      // Una excursión de medio día en un día de ciudad (el D5 en 4 días, el día de excursión en 5 y 6): de 8:00 a 14:00 la excursión y desde las 16:00 la tarde de ese día, calculada por el motor.
+      const hecho = excursion.length === 'half-day' && chosenDay.dayType !== 'manual' ? await organizarDiaConMediaJornada(chosenDay.id, excursion.id) : false
+      if (!hecho) placeExcursion(excursion, { dayId: chosenDay.id })
+    } else return
     closePage()
   }
 

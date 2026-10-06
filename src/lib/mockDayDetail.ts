@@ -259,6 +259,9 @@ export interface MockStopDetail {
   closedNotice?: string | null
   /** Ver Stop.passThrough en types.ts. */
   passThrough?: boolean
+  /** Ver Stop.isArrival en types.ts. */
+  isArrival?: boolean
+  arrivalText?: string | null
   /** Ver Stop.experience en types.ts. */
   experience?: ExperienceCategoryId | null
   /** Ver Stop.why en types.ts. */
@@ -513,6 +516,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     placeText: stop.placeText ?? null,
     closedNotice: stop.closedNotice ?? null,
     passThrough: stop.passThrough ?? false,
+    ...(stop.isArrival ? { isArrival: true, arrivalText: stop.arrivalText ?? null } : {}),
     experience: stop.experience ?? null,
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
@@ -604,6 +608,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       placeText: detail.placeText ?? null,
       closedNotice: detail.closedNotice ?? null,
       passThrough: detail.passThrough ?? false,
+      ...(detail.isArrival ? { isArrival: true, arrivalText: detail.arrivalText ?? null } : {}),
       experience: detail.experience ?? null,
       why: detail.why ?? null,
       ticketInfo: detail.ticketInfo ?? null,

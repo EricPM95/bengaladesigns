@@ -336,6 +336,9 @@ export interface Stop {
   closedNotice?: string | null
   /** Una calle: no es una parada, sale como "Pasas por…" sin número (Parte A, regla 4). */
   passThrough?: boolean
+  /** «Llegada a {sitio}» (Tanda 5): el margen antes de una reserva o un turno. Su propio tipo de parada: lleva su texto de llegada (`arrivalText`), ni «por fuera» ni «visita», y no lleva foto propia. */
+  isArrival?: boolean
+  arrivalText?: string | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
   experience?: ExperienceCategoryId | null
   /** Por qué está en la ruta (motor v3, Paso 6): una línea fija según el motivo — "Uno de los

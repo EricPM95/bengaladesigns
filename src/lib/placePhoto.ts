@@ -258,7 +258,8 @@ export async function enrichRoutePhotos(route: Route): Promise<Route> {
   const jobs = route.days.flatMap((day) =>
     day.stops.map((stop) =>
       // `regular`: la foto de una parada se ve a pantalla completa en su ficha.
-      stop.isBreak || stop.fixedPhotoUrl || (stop.isFreeWalk && !stop.photoName)
+      // (La «Llegada a…» no lleva foto propia.)
+      stop.isBreak || stop.isArrival || stop.fixedPhotoUrl || (stop.isFreeWalk && !stop.photoName)
         ? Promise.resolve()
         : fetchPlacePhoto(photoNameOf(stop), day.city, stop.wikipediaTitle, 'regular', startIso ? addDaysToIso(startIso, day.dayNumber - 1) : null, Boolean(stop.noOwnPhoto)).then((photo) => {
             if (photo) stop.photoUrl = photo

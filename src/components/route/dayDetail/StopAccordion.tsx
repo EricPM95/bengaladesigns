@@ -49,7 +49,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   // (calles, plazas, fuentes, ruinas que se ven desde la acera). Un monumento que ese día no se visita sale
   // "Por fuera" con su motivo (PROMPT_RUTAS_CURADAS B2).
   if (stop.passThrough && !stop.outsideReason) {
-    return <OnTheWayCard name={displayStopName(stop.name)} photoUrl={stop.photoUrl} onOpen={onOpen} menu={menu} />
+    return <OnTheWayCard name={displayStopName(stop.name)} onOpen={onOpen} menu={menu} />
   }
   if (stop.passThrough) {
     return (
@@ -70,6 +70,23 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
     )
   }
 
+  // «Llegada a {sitio}» (Tanda 5): su propia tarjeta, con el texto de llegada (cuánto antes, por qué, dónde se entra) y sin foto.
+  if (stop.isArrival) {
+    return (
+      <TrazoCard
+        kind="monumento"
+        number={number}
+        numberColors={numberColors}
+        time={startTime ?? null}
+        name={displayStopName(stop.name)}
+        sub={stop.arrivalText ?? null}
+        meta={[{ icon: 'hour', text: formatDuration(stop.durationMinutes) }]}
+        noPhoto
+        onOpen={onOpen}
+        menu={menu}
+      />
+    )
+  }
   const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView, isFreeWalk: stop.isFreeWalk })
   const variant = kind === 'noche' ? 'night' : kind === 'atardecer' ? 'sunset' : 'normal'
   const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
@@ -131,6 +148,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       tags={tags}
       reserved={Boolean(stop.reservedId)}
       photoUrl={stop.photoUrl}
+      // (Un paseo no lleva foto propia ni el recuadro con su nombre: usa la del barrio si la hay y, si no, va sin foto. Tanda 5.)
+      noPhoto={!stop.photoUrl && (stop.isFreeWalk || /^(Pasea y piérdete|Paseo por|La Passeggiata)/.test(stop.nightViewTitle ?? stop.name ?? ''))}
       iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.walk : undefined}
       onOpen={onOpen}
       menu={menu}

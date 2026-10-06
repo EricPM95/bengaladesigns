@@ -276,14 +276,11 @@ export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChan
  * desviarse (una calle, una fuente pequeña, una plaza). Sin número ni hora, no suma tiempo: una tarjeta baja con borde
  * discontinuo, un poco metida a la derecha, con su foto redonda, "DE CAMINO · SIN DESVÍO", el nombre y "Ver ›".
  */
-export function OnTheWayCard({ name, photoUrl, onOpen, menu }: { name: string; photoUrl?: string | null; onOpen?: () => void; menu?: ReactNode }) {
+export function OnTheWayCard({ name, onOpen, menu }: { name: string; onOpen?: () => void; menu?: ReactNode }) {
   return (
     // (Alineada con las tarjetas de las paradas y con 16 px de aire arriba y abajo: PROMPT_UI_REPASO 6.)
     <div className="relative my-4 flex min-h-[60px] items-center gap-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] py-1 pl-2 pr-2 max-[479px]:min-h-[52px] max-[479px]:gap-2.5">
       <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-        <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-bg-hover max-[479px]:h-9 max-[479px]:w-9">
-          {photoUrl && <img src={photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />}
-        </span>
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="whitespace-nowrap font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50 max-[479px]:tracking-[.06em]">De camino · sin desvío</span>
           <span className="line-clamp-2 font-display text-[17px] leading-[1.15] text-text max-[479px]:text-[16px]">{name}</span>
@@ -303,7 +300,6 @@ export interface OnTheWayLine {
   id: string
   name: string
   phrase?: string | null
-  photoUrl?: string | null
   onOpen?: () => void
 }
 export function OnTheWayGroupCard({ toName, lines }: { toName: string | null; lines: OnTheWayLine[] }) {
@@ -316,7 +312,6 @@ export function OnTheWayGroupCard({ toName, lines }: { toName: string | null; li
         {lines.map((line) => (
           <li key={line.id} data-stop-id={line.id}>
             <button type="button" onClick={line.onOpen} className="flex w-full min-w-0 items-center gap-3 rounded-[12px] px-1 py-1.5 text-left">
-              <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-bg-hover">{line.photoUrl && <img src={line.photoUrl} alt="" loading="lazy" className="h-full w-full object-cover" />}</span>
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="line-clamp-1 font-display text-[16px] leading-[1.15] text-text">{line.name}</span>
                 {line.phrase && <span className="line-clamp-2 text-[12.5px] leading-[1.35] text-text/60">{line.phrase}</span>}

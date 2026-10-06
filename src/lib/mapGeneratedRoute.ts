@@ -131,6 +131,9 @@ interface GeneratedStop {
   pass_through?: boolean
   /** Pausa con nombre (el desayuno romano) — Stop.isBreak/breakIcon/breakSuggestions. */
   is_break?: boolean
+  /** «Llegada a {sitio}»: ver Stop.isArrival. */
+  is_arrival?: boolean
+  arrival_text?: string | null
   break_icon?: string | null
   break_suggestions?: { name: string; walk_minutes: number; address?: string | null }[]
   /** Nombre del paseo nocturno curado — Stop.nightWalkName. */
@@ -466,6 +469,7 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.place_text ? { placeText: generated.place_text } : {}),
     ...(generated.closed_notice || generated.notice ? { closedNotice: generated.closed_notice ?? generated.notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
+    ...(generated.is_arrival ? { isArrival: true, arrivalText: generated.arrival_text ?? null } : {}),
     ...(generated.is_break
       ? {
           isBreak: true,
