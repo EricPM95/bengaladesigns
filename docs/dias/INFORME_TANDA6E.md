@@ -31,3 +31,7 @@ Hecho y comprobado. Lo que he decidido yo está en `PREGUNTAS_TANDA6E.md` (23 pu
 ## Comprobaciones
 
 `tsc` sin errores; servidor reiniciado; `/api/reservation-advice`, `/api/check-time`, `/api/rebuild-day` y `/api/adjust-day` responden bien. `VIAJES_LISTAS.html` regenerado con los viajes por hora de reserva, y además el Coliseo a las 10:30, el D0 con el Coliseo a las 13:00 y a las 15:00, los Museos a las 10:00 y la Galería a las 9:00 y a las 15:00. No he probado la pantalla a mano en el móvil.
+
+## Push
+
+Hecho con tu permiso, una sola vez y sin --force: rama `main` subida a `origin` (github.com/EricPM95/bengaladesigns). El último commit subido es `9805108`. Antes comprobé la prueba entera (0 fallos), que `git status` estaba limpio y que no subía nada privado (ningún `.env` ni claves; `.env.local` está ignorado). Esta nota es un commit local posterior que no he subido.
