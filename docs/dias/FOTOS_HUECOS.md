@@ -13,7 +13,6 @@ Hasta que llegue, el sitio sigue con la foto de ahora; si no tiene, un recuadro 
 | ★ Castillo de Sant'Angelo por dentro (la terraza del ángel) | `public/fotos/roma/dia_castillo_sant_angelo_dentro.jpg` | sí |
 | ★ Museos Capitolinos (el Marco Aurelio o la Loba) | `public/fotos/roma/dia_museos_capitolinos.jpg` | sí |
 | ★ Plaza del Campidoglio, de día | `public/fotos/roma/dia_plaza_campidoglio.jpg` | sí |
-| Piazza Venezia, de día | `public/fotos/roma/dia_piazza_venezia.jpg` | no |
 | Santa Maria in Aracoeli y su escalinata | `public/fotos/roma/dia_santa_maria_aracoeli.jpg` | sí |
 | Foros de Trajano (la Columna y los Mercados) | `public/fotos/roma/dia_foros_de_trajano.jpg` | sí |
 
@@ -24,14 +23,10 @@ Hasta que llegue, el sitio sigue con la foto de ahora; si no tiene, un recuadro 
 | ★ Santa Maria Maggiore | `public/fotos/roma/dia_santa_maria_maggiore.jpg` | sí |
 | ★ San Pietro in Vincoli (el Moisés) | `public/fotos/roma/dia_san_pietro_in_vincoli.jpg` | sí |
 | ★ San Juan de Letrán | `public/fotos/roma/dia_san_juan_de_letran.jpg` | sí |
-| Escalera Santa | `public/fotos/roma/dia_escalera_santa.jpg` | sí |
 | San Clemente (si es posible, las excavaciones de abajo) | `public/fotos/roma/dia_san_clemente.jpg` | sí |
-| Monti (la Piazza Madonna dei Monti o Via Panisperna) | `public/fotos/roma/dia_monti.jpg` | no |
 | ★ Termas de Caracalla | `public/fotos/roma/dia_termas_de_caracalla.jpg` | sí |
 | ★ Circo Máximo | `public/fotos/roma/dia_circo_maximo.jpg` | sí |
 | ★ Boca de la Verdad | `public/fotos/roma/dia_boca_de_la_verdad.jpg` | sí |
-| Paseo por el Aventino (Santa Sabina, el Parque Savello; la Rosaleda en mayo y junio) — La Rosaleda solo en mayo y junio: si es otra foto, se dice. | `public/fotos/roma/dia_paseo_aventino.jpg` | no |
-| Paseo por Testaccio (la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero) | `public/fotos/roma/dia_paseo_testaccio.jpg` | no |
 
 ## Medio día del Aventino y Testaccio (3,5 días)
 
@@ -49,10 +44,7 @@ Hasta que llegue, el sitio sigue con la foto de ahora; si no tiene, un recuadro 
 | ★ Piazza del Popolo de día | `public/fotos/roma/dia_piazza_del_popolo.jpg` | sí |
 | Santa Maria del Popolo (los Caravaggio) | `public/fotos/roma/dia_santa_maria_del_popolo.jpg` | sí |
 | Ara Pacis | `public/fotos/roma/dia_ara_pacis.jpg` | sí |
-| Via Condotti | `public/fotos/roma/dia_via_condotti.jpg` | no |
-| Fuente del Tritón | `public/fotos/roma/dia_fuente_del_triton.jpg` | no |
-| Via Veneto | `public/fotos/roma/dia_via_veneto.jpg` | no |
-| Porta Pinciana | `public/fotos/roma/dia_porta_pinciana.jpg` | no |
+| Via Margutta (la calle de los artistas) | `public/fotos/roma/dia_via_margutta.jpg` | sí |
 | ★ Cripta de los Capuchinos (Via Veneto; la entrada, sin fotos dentro) — Sitio nuevo de la Tanda 4 (el lunes con la Galería cerrada). | `public/fotos/roma/dia_cripta_capuchinos.jpg` | no |
 | El reloj de agua del Pincio | `public/fotos/roma/dia_reloj_de_agua_pincio.jpg` | sí |
 
@@ -63,7 +55,6 @@ Hasta que llegue, el sitio sigue con la foto de ahora; si no tiene, un recuadro 
 | ★ Villa Farnesina (los frescos de Rafael) | `public/fotos/roma/dia_villa_farnesina.jpg` | sí |
 | ★ Catacumbas de San Calixto | `public/fotos/roma/dia_catacumbas_san_calixto.jpg` | sí |
 | ★ Vía Appia Antica (los pinos y las tumbas) | `public/fotos/roma/dia_via_appia_antica.jpg` | sí |
-| Trastevere tranquilo (la Piazza in Piscinula) | `public/fotos/roma/dia_trastevere_tranquilo.jpg` | no |
 
 ## Medios días de 2,5 días
 

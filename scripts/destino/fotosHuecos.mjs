@@ -16,22 +16,17 @@ export const HUECOS = [
   H('Día «Roma desde arriba» (5 y 6 días)', "Castillo de Sant'Angelo por dentro (la terraza del ángel)", 'dia_castillo_sant_angelo_dentro.jpg', ["Castillo de Sant'Angelo"], { estrella: true }),
   H('Día «Roma desde arriba» (5 y 6 días)', 'Museos Capitolinos (el Marco Aurelio o la Loba)', 'dia_museos_capitolinos.jpg', ['Museos Capitolinos'], { estrella: true }),
   H('Día «Roma desde arriba» (5 y 6 días)', 'Plaza del Campidoglio, de día', 'dia_plaza_campidoglio.jpg', ['Plaza del Campidoglio'], { estrella: true }),
-  H('Día «Roma desde arriba» (5 y 6 días)', 'Piazza Venezia, de día', 'dia_piazza_venezia.jpg', ['Plaza Venecia']),
   H('Día «Roma desde arriba» (5 y 6 días)', 'Santa Maria in Aracoeli y su escalinata', 'dia_santa_maria_aracoeli.jpg', ['Santo Bambino de Aracoeli', 'Santa Maria in Aracoeli']),
   H('Día «Roma desde arriba» (5 y 6 días)', 'Foros de Trajano (la Columna y los Mercados)', 'dia_foros_de_trajano.jpg', ['Columna de Trajano', 'Mercados de Trajano', 'Foros de Trajano']),
   // D5
   H('Día de las basílicas y el Aventino (4 días)', 'Santa Maria Maggiore', 'dia_santa_maria_maggiore.jpg', ['Basílica de Santa María la Mayor'], { estrella: true }),
   H('Día de las basílicas y el Aventino (4 días)', 'San Pietro in Vincoli (el Moisés)', 'dia_san_pietro_in_vincoli.jpg', ['Iglesia de San Pietro in Vincoli'], { estrella: true }),
   H('Día de las basílicas y el Aventino (4 días)', 'San Juan de Letrán', 'dia_san_juan_de_letran.jpg', ['Basílica de San Juan de Letrán'], { estrella: true }),
-  H('Día de las basílicas y el Aventino (4 días)', 'Escalera Santa', 'dia_escalera_santa.jpg', ['Escalera Santa']),
   H('Día de las basílicas y el Aventino (4 días)', 'San Clemente (si es posible, las excavaciones de abajo)', 'dia_san_clemente.jpg', ['Basílica de San Clemente']),
-  H('Día de las basílicas y el Aventino (4 días)', 'Monti (la Piazza Madonna dei Monti o Via Panisperna)', 'dia_monti.jpg', ['Monti']),
   H('Día de las basílicas y el Aventino (4 días)', 'Termas de Caracalla', 'dia_termas_de_caracalla.jpg', ['Termas de Caracalla'], { estrella: true }),
   H('Día de las basílicas y el Aventino (4 días)', 'Circo Máximo', 'dia_circo_maximo.jpg', ['Circo Máximo'], { estrella: true }),
   H('Día de las basílicas y el Aventino (4 días)', 'Boca de la Verdad', 'dia_boca_de_la_verdad.jpg', ['Boca de la Verdad'], { estrella: true }),
   H('Día de las basílicas y el Aventino (4 días)', 'Ojo de la Cerradura del Aventino (la cúpula dentro de la cerradura)', 'dia_ojo_cerradura_aventino.jpg', ['Ojo de la Cerradura del Aventino'], { estrella: true }),
-  H('Día de las basílicas y el Aventino (4 días)', 'Paseo por el Aventino (Santa Sabina, el Parque Savello; la Rosaleda en mayo y junio)', 'dia_paseo_aventino.jpg', ['Paseo por el Aventino'], { nota: 'La Rosaleda solo en mayo y junio: si es otra foto, se dice.' }),
-  H('Día de las basílicas y el Aventino (4 días)', 'Paseo por Testaccio (la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero)', 'dia_paseo_testaccio.jpg', ['Paseo por Testaccio']),
   // DA-medio
   H('Medio día del Aventino y Testaccio (3,5 días)', 'Mercado de Testaccio', 'dia_mercado_de_testaccio.jpg', ['Mercado de Testaccio']),
   H('Medio día del Aventino y Testaccio (3,5 días)', 'Pirámide Cestia', 'dia_piramide_cestia.jpg', ['Pirámide Cestia']),
@@ -43,17 +38,13 @@ export const HUECOS = [
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Piazza del Popolo de día', 'dia_piazza_del_popolo.jpg', ['Piazza del Popolo'], { estrella: true }),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Santa Maria del Popolo (los Caravaggio)', 'dia_santa_maria_del_popolo.jpg', ['Santa Maria del Popolo']),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Ara Pacis', 'dia_ara_pacis.jpg', ['Ara Pacis']),
-  H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Via Condotti', 'dia_via_condotti.jpg', ['Via Condotti']),
-  H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Fuente del Tritón', 'dia_fuente_del_triton.jpg', ['Fuente del Tritón']),
-  H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Via Veneto', 'dia_via_veneto.jpg', ['Via Veneto']),
-  H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Porta Pinciana', 'dia_porta_pinciana.jpg', ['Porta Pinciana']),
+  H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Via Margutta (la calle de los artistas)', 'dia_via_margutta.jpg', ['Via Margutta']),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'Cripta de los Capuchinos (Via Veneto; la entrada, sin fotos dentro)', 'dia_cripta_capuchinos.jpg', ['Cripta de los Capuchinos'], { estrella: true, nota: 'Sitio nuevo de la Tanda 4 (el lunes con la Galería cerrada).' }),
   H('Día de Villa Borghese, el Popolo y la Plaza de España (3 días)', 'El reloj de agua del Pincio', 'dia_reloj_de_agua_pincio.jpg', ['Reloj de agua del Pincio']),
   // D7
   H('La Vía Appia y Trastevere tranquilo (6 días en Roma)', 'Villa Farnesina (los frescos de Rafael)', 'dia_villa_farnesina.jpg', ['Villa Farnesina'], { estrella: true }),
   H('La Vía Appia y Trastevere tranquilo (6 días en Roma)', 'Catacumbas de San Calixto', 'dia_catacumbas_san_calixto.jpg', ['Catacumbas de San Calixto'], { estrella: true }),
   H('La Vía Appia y Trastevere tranquilo (6 días en Roma)', 'Vía Appia Antica (los pinos y las tumbas)', 'dia_via_appia_antica.jpg', ['Via Appia Antica'], { estrella: true }),
-  H('La Vía Appia y Trastevere tranquilo (6 días en Roma)', 'Trastevere tranquilo (la Piazza in Piscinula)', 'dia_trastevere_tranquilo.jpg', ['Trastevere tranquilo']),
   // Medios días de 2,5 días
   H('Medios días de 2,5 días', 'Plaza del Quirinal, con la vista de San Pedro', 'dia_plaza_del_quirinal.jpg', ['Plaza del Quirinal']),
   // Para más adelante
@@ -61,7 +52,7 @@ export const HUECOS = [
 ]
 
 // ¿Existe cada sitio en roma.json (o es un nombre de foto propio, `foto` de una fila)? Los nombres de foto de un paseo (Paseo por el Aventino…) se piden desde la fila (`foto`).
-const NOMBRES_DE_FILA = new Set(['Terraza del Altar de la Patria', 'Paseo por el Aventino', 'Paseo por Testaccio', 'Reloj de agua del Pincio', 'Trastevere tranquilo', 'Foros de Trajano', 'Santa Maria in Aracoeli', 'Escalera Santa'])
+const NOMBRES_DE_FILA = new Set(['Terraza del Altar de la Patria', 'Reloj de agua del Pincio', 'Foros de Trajano', 'Santa Maria in Aracoeli'])
 const conocidos = new Set([...D.places.map((place) => place.name), ...(D.night_experiences ?? []).map((entry) => entry.name)])
 for (const hueco of HUECOS) for (const lugar of hueco.lugares) if (!conocidos.has(lugar) && !NOMBRES_DE_FILA.has(lugar)) console.warn(`AVISO: «${lugar}» no es un lugar de roma.json ni un nombre de foto de fila (${hueco.archivo})`)
 
