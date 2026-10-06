@@ -1,0 +1,2012 @@
+{
+ "formato": "listas",
+ "fuente": "docs/dias/DIAS_ROMA_PARADAS.md",
+ "generado": "scripts/destino/listasConvertir.mjs",
+ "destino": "roma",
+ "dias": {
+  "D0": {
+   "id": "D0",
+   "nombre": "Roma en un día",
+   "titulo_documento": "Roma en un día · D0",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "titulo": "Basílica de San Pedro, la fachada",
+       "modo": "camino",
+       "doc": "Basílica de San Pedro (la fachada)",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": "camino",
+       "doc": "Via della Conciliazione",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": "camino",
+       "doc": "Puente Sant'Angelo",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~25",
+       "min": 25
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15",
+       "min": 15
+      }
+     ],
+     "comida": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Supplizio",
+      "tercera": "Piccolo Arancio",
+      "zona": null,
+      "doc": "Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": "camino",
+       "doc": "Piazza Venezia",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "fuera",
+       "doc": "Altar de la Patria, por fuera ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "modo": "fuera",
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via dei Fori Imperiali",
+       "modo": "camino",
+       "doc": "Via dei Fori Imperiali",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "fuera",
+       "doc": "Coliseo, por fuera ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": "camino",
+       "doc": "Arco de Constantino",
+       "min": 5
+      },
+      {
+       "tipo": "traslado",
+       "como": "taxi",
+       "texto": "Taxi a la Plaza de España",
+       "doc": "Taxi a la Plaza de España"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+       "modo": null,
+       "doc": "Trinità dei Monti y su mirador ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "titulo": "Bajar la escalinata de la Plaza de España",
+       "modo": "camino",
+       "doc": "bajar la escalinata",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Condotti",
+       "modo": "camino",
+       "doc": "Via Condotti",
+       "min": 5
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)"
+      ],
+      "doc": "Fontana de Trevi iluminada"
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.",
+    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos."
+   },
+   "quedarme": null
+  },
+  "D1-corto": {
+   "id": "D1-corto",
+   "nombre": "Día entero",
+   "titulo_documento": "Día entero · D1-corto (la Roma antigua, el centro y Trastevere, por fuera)",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "fuera",
+       "doc": "Coliseo, por fuera ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": "camino",
+       "doc": "Arco de Constantino",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via dei Fori Imperiali",
+       "modo": "camino",
+       "doc": "Via dei Fori Imperiali",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "modo": "fuera",
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": "camino",
+       "doc": "Piazza Venezia",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "fuera",
+       "doc": "Altar de la Patria, por fuera ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Teatro de Marcelo",
+       "modo": "camino",
+       "doc": "Teatro de Marcelo",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Boca de la Verdad",
+       "modo": null,
+       "doc": "Boca de la Verdad ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Isla Tiberina",
+       "modo": null,
+       "doc": "Isla Tiberina ~20",
+       "min": 20
+      }
+     ],
+     "comida": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": null,
+      "zona": "en el Barrio Judío",
+      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": "camino",
+       "doc": "Fuente de las Tortugas",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Largo di Torre Argentina",
+       "modo": "camino",
+       "doc": "Largo di Torre Argentina",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "titulo": "Iglesia del Gesù, la fachada",
+       "modo": "camino",
+       "doc": "Iglesia del Gesù (la fachada)",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Elefantino de Bernini",
+       "modo": "camino",
+       "doc": "Elefantino de Bernini",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria sopra Minerva",
+       "modo": "camino",
+       "doc": "Santa Maria sopra Minerva",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Campo de' Fiori",
+       "modo": null,
+       "doc": "Campo de' Fiori ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ponte Sisto",
+       "modo": null,
+       "doc": "Ponte Sisto ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria in Trastevere",
+       "titulo": "Santa Maria in Trastevere, la plaza y la fachada",
+       "modo": "camino",
+       "doc": "Santa Maria in Trastevere (la plaza y la fachada)",
+       "min": 5
+      }
+     ],
+     "cena": {
+      "restaurante": "Trattoria Da Enzo al 29",
+      "alternativa": "Tonnarello",
+      "tercera": null,
+      "zona": "en Trastevere",
+      "doc": "Da Enzo al 29 (o Tonnarello), en Trastevere"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi iluminada (taxi) y la Plaza de España de noche",
+      "taxi": true
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino.",
+    "doc": "**🌧 Si llueve:** el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino."
+   },
+   "quedarme": null
+  },
+  "D0-medio": {
+   "id": "D0-medio",
+   "nombre": "Medio día del Vaticano",
+   "titulo_documento": "Medio día del Vaticano · D0-medio (por fuera)",
+   "partes": {
+    "manana": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "camino",
+       "doc": "Basílica (la fachada)",
+       "min": 5,
+       "notas": [
+        "la fachada"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": "camino",
+       "doc": "Via della Conciliazione",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": "camino",
+       "doc": "Puente Sant'Angelo",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via dei Coronari",
+       "modo": "camino",
+       "doc": "Via dei Coronari",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      }
+     ],
+     "comida": {
+      "restaurante": "Poldo e Gianna Osteria",
+      "alternativa": "Edy",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Poldo e Gianna Osteria (o Edy), en el Tridente"
+     },
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    },
+    "tarde": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "camino",
+       "doc": "Basílica (la fachada)",
+       "min": 5,
+       "notas": [
+        "la fachada"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": "camino",
+       "doc": "Via della Conciliazione",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~15",
+       "min": 15
+      }
+     ],
+     "cena": {
+      "restaurante": "L'Arcangelo",
+      "alternativa": "Osteria dell'Angelo",
+      "tercera": null,
+      "zona": "en Prati",
+      "doc": "L'Arcangelo (o Osteria dell'Angelo), en Prati"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi iluminada y la Plaza de España de noche, si el día entero no las ha llevado; si no, Piazza Navona de noche.",
+      "alternativa": [
+       "Piazza Navona (noche)"
+      ]
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.",
+    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino."
+   },
+   "quedarme": null
+  },
+  "D1": {
+   "id": "D1",
+   "nombre": "Día de la Roma antigua",
+   "titulo_documento": "Día de la Roma antigua · D1",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)",
+       "min": 90,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": "camino",
+       "doc": "Piazza Venezia",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "dentro",
+       "doc": "Altar de la Patria, por dentro ~30",
+       "min": 30
+      }
+     ],
+     "comida": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": null,
+      "zona": "en el Barrio Judío",
+      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": "camino",
+       "doc": "Fuente de las Tortugas",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Largo di Torre Argentina",
+       "modo": null,
+       "doc": "Largo di Torre Argentina ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "modo": "dentro",
+       "doc": "Iglesia del Gesù, por dentro ~20 (⚠️ abre a las 16:00)",
+       "min": 20,
+       "avisos": [
+        "abre a las 16:00"
+       ],
+       "abre": "16:00"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Elefantino de Bernini",
+       "modo": "camino",
+       "doc": "Elefantino de Bernini",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria sopra Minerva",
+       "modo": "camino",
+       "doc": "Santa Maria sopra Minerva",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Luigi dei Francesi",
+       "titulo": "San Luigi dei Francesi (los Caravaggio)",
+       "modo": null,
+       "doc": "San Luigi dei Francesi (los Caravaggio) ~20 (⚠️ cierra a las 18:15). Va antes que el Panteón por eso",
+       "min": 20,
+       "avisos": [
+        "cierra a las 18:15"
+       ],
+       "cierra": "18:15",
+       "notas": [
+        "Va antes que el Panteón por eso"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "dentro",
+       "doc": "Panteón, por dentro ~40",
+       "min": 40
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~45",
+       "min": 45
+      }
+     ],
+     "cena": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi iluminada y la Plaza de España de noche"
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.",
+    "doc": "**🌧 Si llueve:** el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos."
+   },
+   "quedarme": null,
+   "fechas_malas": {
+    "fechas": [
+     "06-02",
+     "12-25"
+    ]
+   }
+  },
+  "D2": {
+   "id": "D2",
+   "nombre": "Día del Vaticano y Trastevere",
+   "titulo_documento": "Día del Vaticano y Trastevere · D2",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "modo": null,
+       "doc": "🎟 Museos Vaticanos y Capilla Sixtina ~3 h (turno a primera hora)",
+       "min": 180,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno a primera hora"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro ~1 h 15",
+       "min": 75
+      }
+     ],
+     "comida": {
+      "restaurante": "Borghiciana Pastificio Artigianale",
+      "alternativa": "Dal Toscano",
+      "tercera": null,
+      "zona": "en el Borgo",
+      "doc": "Borghiciana (o Dal Toscano), en el Borgo"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": "camino",
+       "doc": "Via della Conciliazione",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~15",
+       "min": 15
+      },
+      {
+       "tipo": "traslado",
+       "como": "bus 23",
+       "texto": "Bus 23 por el Lungotevere hasta la Isla Tiberina",
+       "doc": "Bus 23 por el Lungotevere hasta la Isla Tiberina"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Isla Tiberina",
+       "modo": null,
+       "doc": "Isla Tiberina ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria in Trastevere",
+       "modo": "dentro",
+       "doc": "Santa Maria in Trastevere, por dentro ~25",
+       "min": 25
+      },
+      {
+       "tipo": "parada",
+       "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+       "titulo": "San Pietro in Montorio y el Tempietto",
+       "modo": null,
+       "doc": "San Pietro in Montorio y el Tempietto ~10 (si está cerrado: «El mirador de San Pietro in Montorio»)",
+       "min": 10,
+       "si_cerrado": {
+        "cambiar_titulo": "El mirador de San Pietro in Montorio"
+       }
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana dell'Acqua Paola",
+       "modo": null,
+       "doc": "Fontana dell'Acqua Paola ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Mirador del Janículo",
+       "modo": null,
+       "doc": "Mirador del Janículo ~30",
+       "min": 30
+      }
+     ],
+     "cena": {
+      "restaurante": "Tonnarello",
+      "alternativa": null,
+      "tercera": null,
+      "zona": "en Trastevere",
+      "doc": "Tonnarello, en Trastevere"
+     },
+     "noche": {
+      "lista": [
+       "Trastevere de noche"
+      ],
+      "doc": "Trastevere de noche (o la imprescindible que falte)",
+      "o_imprescindible": true
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
+    "doc": "**🌧 Si llueve:** el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda."
+   },
+   "quedarme": null,
+   "fechas_malas": {
+    "dias_semana": [
+     "domingo",
+     "miercoles"
+    ],
+    "cerrado": [
+     "Museos Vaticanos y Capilla Sixtina"
+    ]
+   }
+  },
+  "D3": {
+   "id": "D3",
+   "nombre": "Día del Free Tour y el Vaticano por la tarde",
+   "titulo_documento": "Día del Free Tour y el Vaticano por la tarde · D3",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "titulo": "Fontana de Trevi, sin gente",
+       "modo": null,
+       "doc": "Fontana de Trevi sin gente ~20",
+       "min": 20
+      },
+      {
+       "tipo": "desayuno",
+       "lugar": "Desayuno romano",
+       "titulo": "Desayuno en la Piazza della Rotonda",
+       "min": 30,
+       "modo": null,
+       "doc": "Desayuno en la Piazza della Rotonda"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "dentro",
+       "doc": "Panteón, por dentro ~20 (abre a las 9:00)",
+       "min": 20,
+       "notas": [
+        "abre a las 9:00"
+       ]
+      },
+      {
+       "tipo": "tour",
+       "lugar": "Free Tour Centro Histórico",
+       "modo": null,
+       "doc": "🎟 Free Tour Centro Histórico, 10:00 ~2 h 30. Sale de la Plaza de España y acaba en Navona",
+       "min": 150,
+       "hora_tipo": "turno",
+       "hora": "10:00",
+       "notas": [
+        "Sale de la Plaza de España y acaba en Navona"
+       ]
+      }
+     ],
+     "comida": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Supplizio",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Supplizio)"
+     },
+     "tarde": [
+      {
+       "tipo": "traslado",
+       "como": "bus 40 o taxi",
+       "texto": "Bus 40 o taxi al Vaticano",
+       "doc": "Bus 40 o taxi al Vaticano"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro ~45 (se cruza la Plaza)",
+       "min": 45,
+       "notas": [
+        "se cruza la Plaza"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "modo": null,
+       "doc": "🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de tarde)",
+       "min": 150,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno de tarde"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "titulo": "Plaza de San Pedro, ya iluminada",
+       "modo": null,
+       "doc": "Plaza de San Pedro, ya iluminada ~20",
+       "min": 20
+      }
+     ],
+     "cena": {
+      "restaurante": "L'Arcangelo",
+      "alternativa": "Osteria dell'Angelo",
+      "tercera": null,
+      "zona": "en Prati",
+      "doc": "L'Arcangelo (o Osteria dell'Angelo), en Prati"
+     },
+     "noche": {
+      "lista": [
+       "El Puente y el Castillo de Sant'Angelo (noche)"
+      ],
+      "doc": "el Puente y el Castillo de Sant'Angelo iluminados"
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el Free Tour se hace igual (aviso: lleva paraguas); el resto ya es por dentro.",
+    "doc": "**🌧 Si llueve:** el Free Tour se hace igual (aviso: lleva paraguas); el resto ya es por dentro."
+   },
+   "quedarme": null,
+   "fechas_malas": {
+    "dias_semana": [
+     "domingo"
+    ],
+    "cerrado": [
+     "Museos Vaticanos y Capilla Sixtina"
+    ]
+   }
+  },
+  "D1-FT": {
+   "id": "D1-FT",
+   "nombre": "Día de la Roma antigua, el Gueto y Trastevere",
+   "titulo_documento": "Día de la Roma antigua, el Gueto y Trastevere · D1-FT (viajes con Free Tour de mañana)",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": {
+      "restaurante": "Giggetto al Portico d'Ottavia",
+      "alternativa": "Nonna Betta",
+      "tercera": null,
+      "zona": null,
+      "doc": "Giggetto al Portico d'Ottavia (o Nonna Betta)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~25",
+       "min": 25
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": "camino",
+       "doc": "Fuente de las Tortugas",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Teatro de Marcelo",
+       "modo": "camino",
+       "doc": "Teatro de Marcelo",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Isla Tiberina",
+       "modo": null,
+       "doc": "Isla Tiberina ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria in Trastevere",
+       "modo": "dentro",
+       "doc": "Santa Maria in Trastevere, por dentro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+       "titulo": "San Pietro in Montorio y el Tempietto",
+       "modo": null,
+       "doc": "San Pietro in Montorio y el Tempietto ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana dell'Acqua Paola",
+       "modo": null,
+       "doc": "Fontana dell'Acqua Paola ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Mirador del Janículo",
+       "modo": null,
+       "doc": "Mirador del Janículo ~30",
+       "min": 30
+      }
+     ],
+     "cena": {
+      "restaurante": "Trattoria Da Enzo al 29",
+      "alternativa": "Tonnarello",
+      "tercera": null,
+      "zona": null,
+      "doc": "Da Enzo al 29 (o Tonnarello)"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi iluminada (taxi) y la Plaza de España de noche",
+      "taxi": true
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.",
+    "doc": "**🌧 Si llueve:** el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina."
+   },
+   "quedarme": null,
+   "hereda_manana_de": "D1",
+   "fechas_malas": {
+    "fechas": [
+     "06-02",
+     "12-25"
+    ]
+   }
+  },
+  "DT-medio": {
+   "id": "DT-medio",
+   "nombre": "Medio día del Tridente y el Pincio",
+   "titulo_documento": "Medio día del Tridente y el Pincio · DT-medio",
+   "partes": {
+    "manana": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "titulo": "Fontana de Trevi, sin gente",
+       "modo": null,
+       "doc": "Fontana de Trevi sin gente ~20",
+       "min": 20
+      },
+      {
+       "tipo": "desayuno",
+       "lugar": "Desayuno romano",
+       "titulo": "Desayuno",
+       "min": 30,
+       "modo": null,
+       "doc": "Desayuno"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via del Babuino",
+       "titulo": "Via del Babuino y Via Margutta",
+       "modo": "camino",
+       "doc": "Via del Babuino y Via Margutta",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Santa Maria del Popolo",
+       "modo": null,
+       "doc": "Santa Maria del Popolo (los Caravaggio) ~20 (⚠️ por la mañana, de 10:30 a 12:00)",
+       "min": 20,
+       "avisos": [
+        "por la mañana, de 10:30 a 12:00"
+       ],
+       "notas": [
+        "los Caravaggio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardines del Pincio",
+       "modo": "camino",
+       "doc": "los Jardines del Pincio",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+       "modo": null,
+       "doc": "Trinità dei Monti y su mirador ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "titulo": "Bajar la escalinata de la Plaza de España",
+       "modo": "camino",
+       "doc": "bajar la escalinata",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Condotti",
+       "modo": "camino",
+       "doc": "Via Condotti",
+       "min": 5
+      }
+     ],
+     "comida": {
+      "restaurante": "Poldo e Gianna Osteria",
+      "alternativa": "Edy",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Poldo e Gianna Osteria (o Edy), en el Tridente"
+     },
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    },
+    "tarde": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via del Babuino",
+       "titulo": "Via del Babuino y Via Margutta",
+       "modo": "camino",
+       "doc": "Via del Babuino y Via Margutta",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Santa Maria del Popolo",
+       "modo": null,
+       "doc": "Santa Maria del Popolo ~20 (⚠️ abre a las 16:00 y cierra a las 18:00)",
+       "min": 20,
+       "avisos": [
+        "abre a las 16:00 y cierra a las 18:00"
+       ],
+       "abre": "16:00",
+       "cierra": "18:00"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+       "modo": null,
+       "doc": "Trinità dei Monti y su mirador ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "titulo": "Bajar la escalinata de la Plaza de España",
+       "modo": "camino",
+       "doc": "bajar la escalinata",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Condotti",
+       "modo": "camino",
+       "doc": "Via Condotti",
+       "min": 5
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [
+       "Coliseo (noche)"
+      ],
+      "doc": "Coliseo iluminado (taxi)",
+      "taxi": true
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España.",
+    "doc": "**🌧 Si llueve:** el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España."
+   },
+   "quedarme": null
+  },
+  "DM-medio": {
+   "id": "DM-medio",
+   "nombre": "Medio día de Monti",
+   "titulo_documento": "Medio día de Monti · DM-medio (con Free Tour de mañana)",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": "camino",
+       "doc": "Fontana de Trevi",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Quirinal",
+       "modo": null,
+       "doc": "Plaza del Quirinal ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Monti",
+       "titulo": "Monti: Via Panisperna y la Piazza Madonna dei Monti",
+       "modo": "camino",
+       "doc": "Monti (Via Panisperna y la Piazza Madonna dei Monti)",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Pietro in Vincoli",
+       "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+       "modo": "dentro",
+       "doc": "San Pietro in Vincoli (el Moisés), por dentro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de Santa María la Mayor",
+       "titulo": "Santa Maria Maggiore",
+       "modo": "dentro",
+       "doc": "Santa Maria Maggiore, por dentro ~40",
+       "min": 40
+      }
+     ],
+     "comida": {
+      "restaurante": "Trattoria Monti",
+      "alternativa": "La Boccaccia",
+      "tercera": null,
+      "zona": null,
+      "doc": "Trattoria Monti (o La Boccaccia)"
+     },
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": {
+    "texto": "igual (casi todo es por dentro), con más rato en Santa Maria Maggiore.",
+    "doc": "**🌧 Si llueve:** igual (casi todo es por dentro), con más rato en Santa Maria Maggiore."
+   },
+   "quedarme": null
+  },
+  "D4": {
+   "id": "D4",
+   "nombre": "Día de Villa Borghese, el Popolo y la Plaza de España",
+   "titulo_documento": "Día de Villa Borghese, el Popolo y la Plaza de España · D4",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "titulo": "Fontana de Trevi, sin gente",
+       "modo": null,
+       "doc": "Fontana de Trevi sin gente ~20",
+       "min": 20
+      },
+      {
+       "tipo": "desayuno",
+       "lugar": "Desayuno romano",
+       "titulo": "Desayuno",
+       "min": 30,
+       "modo": null,
+       "doc": "Desayuno"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente del Tritón",
+       "modo": "camino",
+       "doc": "Fuente del Tritón",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Veneto",
+       "modo": "camino",
+       "doc": "Via Veneto",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Porta Pinciana",
+       "modo": "camino",
+       "doc": "Porta Pinciana",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Parque de Villa Borghese",
+       "titulo": "La Piazza di Siena",
+       "modo": "camino",
+       "doc": "la Piazza di Siena",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Parque de Villa Borghese",
+       "titulo": "Lago de Villa Borghese y el Templo de Esculapio",
+       "modo": null,
+       "doc": "Lago de Villa Borghese y el Templo de Esculapio ~30 (barcas de remos)",
+       "min": 30,
+       "notas": [
+        "barcas de remos"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Galería Borghese",
+       "modo": null,
+       "doc": "🎟 Galería Borghese ~2 h (reserva con hora)",
+       "min": 120,
+       "hora_tipo": "reserva",
+       "notas": [
+        "reserva con hora"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Parque de Villa Borghese",
+       "titulo": "Reloj de agua del Pincio",
+       "foto": "Reloj de agua del Pincio",
+       "modo": null,
+       "doc": "Reloj de agua del Pincio ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      }
+     ],
+     "comida": {
+      "restaurante": "Sgarro Bistrot",
+      "alternativa": "Buccone Vini e Olii",
+      "tercera": null,
+      "zona": "junto a la Piazza del Popolo",
+      "doc": "Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Santa Maria del Popolo",
+       "modo": null,
+       "doc": "Santa Maria del Popolo (los Caravaggio) ~20 (⚠️ abre a las 16:00)",
+       "min": 20,
+       "avisos": [
+        "abre a las 16:00"
+       ],
+       "abre": "16:00",
+       "notas": [
+        "los Caravaggio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ara Pacis",
+       "modo": "dentro",
+       "doc": "Ara Pacis, por dentro ~45 (⚠️ última entrada a las 18:30)",
+       "min": 45,
+       "avisos": [
+        "última entrada a las 18:30"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Condotti",
+       "modo": "camino",
+       "doc": "Via Condotti",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España",
+       "modo": null,
+       "doc": "Trinità dei Monti y su mirador ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "titulo": "Bajar la escalinata de la Plaza de España",
+       "modo": "camino",
+       "doc": "bajar la escalinata",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Margutta",
+       "modo": "camino",
+       "doc": "Via Margutta",
+       "min": 5
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [
+       "Coliseo (noche)"
+      ],
+      "doc": "Coliseo iluminado (taxi)",
+      "taxi": true
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.",
+    "doc": "**🌧 Si llueve:** el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis."
+   },
+   "quedarme": null,
+   "fechas_malas": {
+    "cerrado": [
+     "Galería Borghese"
+    ]
+   }
+  },
+  "DA-medio": {
+   "id": "DA-medio",
+   "nombre": "Medio día del Aventino y Testaccio",
+   "titulo_documento": "Medio día del Aventino y Testaccio · DA-medio (3,5 días, mañana de vuelta)",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Termas de Caracalla",
+       "modo": "dentro",
+       "doc": "Termas de Caracalla, por dentro ~1 h 15 (abre a las 9:00)",
+       "min": 75,
+       "notas": [
+        "abre a las 9:00"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Circo Máximo",
+       "modo": null,
+       "doc": "Circo Máximo ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Boca de la Verdad",
+       "modo": null,
+       "doc": "Boca de la Verdad ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardín de los Naranjos",
+       "modo": null,
+       "doc": "Jardín de los Naranjos ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ojo de la Cerradura del Aventino",
+       "modo": null,
+       "doc": "Ojo de la Cerradura del Aventino ~15",
+       "min": 15
+      }
+     ],
+     "comida": {
+      "restaurante": "Mordi e Vai",
+      "alternativa": "Felice a Testaccio",
+      "tercera": null,
+      "zona": "en el Mercado de Testaccio",
+      "doc": "en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Pirámide Cestia",
+       "modo": "camino",
+       "doc": "Pirámide Cestia (al lado del metro Piramide y del tren al aeropuerto)",
+       "min": 5
+      }
+     ],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": {
+    "texto": "Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto.",
+    "doc": "**🌧 Si llueve:** Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto."
+   },
+   "quedarme": null
+  },
+  "D5": {
+   "id": "D5",
+   "nombre": "Día de las basílicas y el Aventino",
+   "titulo_documento": "Día de las basílicas y el Aventino · D5",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de Santa María la Mayor",
+       "titulo": "Santa Maria Maggiore",
+       "modo": "dentro",
+       "doc": "Santa Maria Maggiore, por dentro ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Monti",
+       "titulo": "Monti: Via Panisperna y la Piazza Madonna dei Monti",
+       "modo": "camino",
+       "doc": "Monti (Via Panisperna y la Piazza Madonna dei Monti)",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Pietro in Vincoli",
+       "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
+       "modo": "dentro",
+       "doc": "San Pietro in Vincoli (el Moisés), por dentro ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Clemente",
+       "titulo": "Basílica de San Clemente, con las excavaciones",
+       "modo": null,
+       "doc": "Basílica de San Clemente, con las excavaciones ~40 (⚠️ cierra de 12:30 a 14:00)",
+       "min": 40,
+       "avisos": [
+        "cierra de 12:30 a 14:00"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Juan de Letrán",
+       "titulo": "San Juan de Letrán y la Escalera Santa",
+       "modo": null,
+       "doc": "San Juan de Letrán y la Escalera Santa ~40",
+       "min": 40
+      }
+     ],
+     "comida": {
+      "restaurante": "SantoPalato",
+      "alternativa": "Il Bocconcino",
+      "tercera": null,
+      "zona": "en San Giovanni",
+      "doc": "SantoPalato (o Il Bocconcino), en San Giovanni"
+     },
+     "tarde": [
+      {
+       "tipo": "traslado",
+       "como": "taxi",
+       "texto": "Taxi a las Termas de Caracalla",
+       "doc": "Taxi a las Termas de Caracalla"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Termas de Caracalla",
+       "modo": "dentro",
+       "doc": "Termas de Caracalla, por dentro ~1 h 15 (⚠️ en invierno cierra pronto)",
+       "min": 75,
+       "avisos": [
+        "en invierno cierra pronto"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Circo Máximo",
+       "modo": null,
+       "doc": "Circo Máximo ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Boca de la Verdad",
+       "modo": null,
+       "doc": "Boca de la Verdad ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardín de los Naranjos",
+       "modo": null,
+       "doc": "Jardín de los Naranjos ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ojo de la Cerradura del Aventino",
+       "modo": null,
+       "doc": "Ojo de la Cerradura del Aventino ~15",
+       "min": 15
+      }
+     ],
+     "cena": {
+      "restaurante": "Felice a Testaccio",
+      "alternativa": null,
+      "tercera": null,
+      "zona": null,
+      "doc": "Felice a Testaccio"
+     },
+     "noche": {
+      "lista": [
+       "Foro Romano desde el Campidoglio (noche)"
+      ],
+      "doc": "el Foro Romano desde el Campidoglio, de noche (taxi)",
+      "taxi": true
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro.",
+    "doc": "**🌧 Si llueve:** la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro."
+   },
+   "quedarme": null,
+   "fechas_malas": {
+    "cerrado": [
+     "Termas de Caracalla"
+    ]
+   }
+  },
+  "D6": {
+   "id": "D6",
+   "nombre": "Roma desde arriba",
+   "titulo_documento": "Roma desde arriba · D6",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Cúpula de San Pedro",
+       "modo": null,
+       "doc": "Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)",
+       "min": 75,
+       "notas": [
+        "se sale por la Basílica"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": "camino",
+       "doc": "Plaza de San Pedro",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": "camino",
+       "doc": "Via della Conciliazione",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+       "modo": "dentro",
+       "doc": "Castillo de Sant'Angelo, hasta la terraza del ángel, por dentro ~1 h 30",
+       "min": 90
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": "camino",
+       "doc": "Puente Sant'Angelo",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via dei Coronari",
+       "modo": "camino",
+       "doc": "Via dei Coronari",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "camino",
+       "doc": "Panteón",
+       "min": 5
+      }
+     ],
+     "comida": {
+      "restaurante": "Enoteca Corsi",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": null,
+      "zona": null,
+      "doc": "Enoteca Corsi (o Giggetto al Portico d'Ottavia)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Museos Capitolinos",
+       "titulo": "Museos Capitolinos, con la terraza sobre los Foros",
+       "modo": null,
+       "doc": "Museos Capitolinos, con la terraza sobre los Foros ~1 h 30",
+       "min": 90
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "modo": "fuera",
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Santo Bambino de Aracoeli",
+       "titulo": "Santa Maria in Aracoeli y su escalinata",
+       "foto": "Santa Maria in Aracoeli",
+       "modo": null,
+       "doc": "Santa Maria in Aracoeli y su escalinata ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": "camino",
+       "doc": "Piazza Venezia",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "titulo": "Terraza del Altar de la Patria",
+       "foto": "Terraza del Altar de la Patria",
+       "modo": null,
+       "doc": "Terraza del Altar de la Patria (ascensor panorámico) ~45 (⚠️ última subida a las 18:45)",
+       "min": 45,
+       "avisos": [
+        "última subida a las 18:45"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Teatro de Marcelo",
+       "modo": "camino",
+       "doc": "Teatro de Marcelo",
+       "min": 5
+      }
+     ],
+     "cena": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": null,
+      "zona": "en el Barrio Judío",
+      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+     },
+     "noche": {
+      "lista": [
+       "Panteón (noche)"
+      ],
+      "doc": "Panteón de noche"
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa.",
+    "doc": "**🌧 Si llueve:** la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa."
+   },
+   "quedarme": [
+    "Cúpula de San Pedro",
+    "Castillo de Sant'Angelo",
+    "Plaza del Campidoglio",
+    "Museos Capitolinos",
+    "Terraza del Altar de la Patria."
+   ],
+   "fechas_malas": {
+    "cerrado": [
+     "Castillo de Sant'Angelo"
+    ],
+    "cerrado_a": [
+     {
+      "lugar": "Cúpula de San Pedro",
+      "hora": "08:00"
+     }
+    ]
+   }
+  },
+  "D7": {
+   "id": "D7",
+   "nombre": "La Vía Appia y Trastevere tranquilo",
+   "titulo_documento": "La Vía Appia y Trastevere tranquilo · D7",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Villa Farnesina",
+       "modo": null,
+       "doc": "Villa Farnesina (los frescos de Rafael) ~45 (⚠️ de 9:00 a 14:00; cierra el domingo)",
+       "min": 45,
+       "avisos": [
+        "de 9:00 a 14:00; cierra el domingo"
+       ],
+       "notas": [
+        "los frescos de Rafael"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria in Trastevere",
+       "modo": "camino",
+       "doc": "Santa Maria in Trastevere",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de Santa Cecilia in Trastevere",
+       "modo": null,
+       "doc": "Santa Cecilia in Trastevere ~40",
+       "min": 40
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trastevere",
+       "titulo": "La Piazza in Piscinula",
+       "modo": "camino",
+       "doc": "la Piazza in Piscinula",
+       "min": 5
+      }
+     ],
+     "comida": {
+      "restaurante": "Trattoria Da Enzo al 29",
+      "alternativa": "Tonnarello",
+      "tercera": null,
+      "zona": "en Trastevere",
+      "doc": "Da Enzo al 29 (o Tonnarello), en Trastevere"
+     },
+     "tarde": [
+      {
+       "tipo": "traslado",
+       "como": "taxi",
+       "texto": "Taxi a las Catacumbas de San Calixto",
+       "doc": "Taxi a las Catacumbas de San Calixto"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Catacumbas de San Calixto",
+       "modo": null,
+       "doc": "Catacumbas de San Calixto (visita guiada) ~1 h (⚠️ cierran el miércoles)",
+       "min": 60,
+       "avisos": [
+        "cierran el miércoles"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Appia Antica",
+       "titulo": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela",
+       "modo": null,
+       "doc": "Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela ~2 h",
+       "min": 120
+      },
+      {
+       "tipo": "traslado",
+       "como": "taxi",
+       "texto": "Taxi a Monti",
+       "doc": "Taxi a Monti"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza de Largo Gaetana Agnesi",
+       "titulo": "El Coliseo desde la terraza de Largo Gaetana Agnesi",
+       "foto": "Coliseo",
+       "modo": null,
+       "doc": "El Coliseo desde la terraza de Largo Gaetana Agnesi ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Monti",
+       "modo": "camino",
+       "doc": "Monti",
+       "min": 5
+      }
+     ],
+     "cena": {
+      "restaurante": "La Taverna dei Fori Imperiali",
+      "alternativa": "Trattoria Valentino",
+      "tercera": null,
+      "zona": "en Monti",
+      "doc": "La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti"
+     },
+     "noche": {
+      "lista": [],
+      "doc": "la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna.",
+      "libre": true,
+      "texto": "la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna"
+     }
+    }
+   },
+   "lluvia": {
+    "texto": "sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.",
+    "doc": "**🌧 Si llueve:** sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra."
+   },
+   "quedarme": [
+    "Villa Farnesina",
+    "Santa Cecilia in Trastevere",
+    "Catacumbas de San Calixto",
+    "Vía Appia Antica",
+    "el Coliseo desde la terraza de Largo Gaetana Agnesi."
+   ],
+   "fechas_malas": {
+    "cerrado": [
+     "Villa Farnesina",
+     "Catacumbas de San Calixto"
+    ]
+   }
+  }
+ }
+}

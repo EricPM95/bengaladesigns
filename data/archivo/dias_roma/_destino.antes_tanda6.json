@@ -1,0 +1,900 @@
+{
+  "_nota": "Roma con días escritos (2026-09-29): cortes de luz de la tarde, pool y reparto. Formato: docs/DIAS_ESCRITOS_FORMATO.md.",
+  "cortes_luz": [
+    "17:40",
+    "18:45",
+    "19:45"
+  ],
+  "viajes_cortos": {
+    "un_dia": {
+      "_nota": "Viaje de 1 día (INVARIANTES 453, escrito en D0): todo lo que tiene entrada va por fuera. Solo va por dentro lo que el viajero marcó en el pool (y con algo marcado el día se monta como antes, con short_trips).",
+      "siempre_dentro": [],
+      "siempre_dentro_con_free_tour": [
+        "Panteón"
+      ],
+      "dentro_sin_marcar": [],
+      "marcables": {}
+    },
+    "_nota": "Viaje de 2 días (INVARIANTES 449): por dentro solo lo que sigue. Sin nada marcado en el pool, lo de dentro_sin_marcar; con algo marcado (una clave de marcables), lo marcado y sus acompañantes; el Panteón (siempre_dentro) en todos los casos. Lo demás con entrada va por fuera. Un cierre va siempre por fuera.",
+    "dos_dias": {
+      "siempre_dentro": [
+        "Panteón"
+      ],
+      "dentro_sin_marcar": [
+        "Coliseo",
+        "Foro Romano y Palatino"
+      ],
+      "marcables": {
+        "Coliseo": [
+          "Coliseo",
+          "Foro Romano y Palatino"
+        ],
+        "Museos Vaticanos y Capilla Sixtina": [
+          "Museos Vaticanos y Capilla Sixtina"
+        ]
+      }
+    }
+  },
+  "pool": {
+    "_nota": "Cada extra del pool con su sitio escrito (día, mitad y qué sustituye), otro si ese día no está en el viaje y un segundo sitio si chocan (hueco). Manda el orden de pool_lista. Lo que ya va en la ruta no cuenta.",
+    "Galería Borghese": {
+      "sitios": [
+        {
+          "dia": "D1",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "paradas": [
+                {
+                  "lugar": "Panteón",
+                  "min": 30,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera"
+                },
+                {
+                  "lugar": "Piazza Navona",
+                  "min": 20
+                },
+                {
+                  "lugar": "Galería Borghese",
+                  "min": 120,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera",
+                  "tipo": "fija",
+                  "hora": "16:00",
+                  "turno": true,
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 20
+                  }
+                },
+                {
+                  "lugar": "Parque de Villa Borghese",
+                  "titulo": "El lago de Villa Borghese",
+                  "min": 30,
+                  "elastica": 30,
+                  "si_cerrado": "quitar"
+                },
+                {
+                  "lugar": "Terraza del Pincio",
+                  "modo": "atardecer"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "paradas": [
+                {
+                  "lugar": "Galería Borghese",
+                  "min": 120,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera",
+                  "tipo": "fija",
+                  "hora": "15:00",
+                  "turno": true,
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 20
+                  }
+                },
+                {
+                  "lugar": "Parque de Villa Borghese",
+                  "titulo": "El lago de Villa Borghese",
+                  "min": 45,
+                  "elastica": 30
+                },
+                {
+                  "lugar": "Jardines del Pincio",
+                  "min": 30
+                },
+                {
+                  "lugar": "Terraza del Pincio",
+                  "modo": "atardecer"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Parque de Villa Borghese": {
+      "sitios": [
+        {
+          "dia": "D4M",
+          "cambios": {
+            "manana": {
+              "ajustar": {
+                "Parque de Villa Borghese": {
+                  "tipo": "normal"
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D4",
+          "cambios": {
+            "tarde.A": {
+              "cambiar": {
+                "Jardines del Pincio": {
+                  "lugar": "Parque de Villa Borghese",
+                  "titulo": "El lago de Villa Borghese y los jardines del Pincio",
+                  "min": 15,
+                  "elastica": 30
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Boca de la Verdad": {
+      "sitios": [
+        {
+          "dia": "D2",
+          "hueco": "aventino_boca",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15,
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                }
+              ]
+            },
+            "tarde.B": {
+              "cambiar": {
+                "San Pietro in Montorio y Tempietto de Bramante": {
+                  "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+                  "modo": "fuera"
+                }
+              }
+            },
+            "tarde.C": {
+              "ajustar": {
+                "Trastevere": {
+                  "min": 35
+                }
+              }
+            },
+            "tarde.D": {
+              "ajustar": {
+                "Trastevere": {
+                  "min": 35
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "boca",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Barrio Judío",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "boca",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Isla Tiberina",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Ojo de la Cerradura del Aventino": {
+      "sitios": [
+        {
+          "dia": "D2",
+          "hueco": "aventino",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15,
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                },
+                {
+                  "antes_de": "San Pietro in Montorio y Tempietto de Bramante",
+                  "parada": {
+                    "lugar": "Ojo de la Cerradura del Aventino",
+                    "min": 10
+                  }
+                }
+              ]
+            },
+            "tarde.B": {
+              "cambiar": {
+                "San Pietro in Montorio y Tempietto de Bramante": {
+                  "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+                  "modo": "fuera"
+                }
+              }
+            },
+            "tarde.C": {
+              "ajustar": {
+                "Trastevere": {
+                  "min": 25
+                }
+              }
+            },
+            "tarde.D": {
+              "quitar": [
+                "Basílica de Santa Cecilia in Trastevere"
+              ],
+              "ajustar": {
+                "Trastevere": {
+                  "min": 25
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "ojo",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Barrio Judío",
+                  "parada": {
+                    "lugar": "Ojo de la Cerradura del Aventino",
+                    "min": 10
+                  }
+                },
+                {
+                  "despues_de": "Barrio Judío",
+                  "parada": {
+                    "lugar": "Boca de la Verdad",
+                    "min": 15
+                  }
+                }
+              ],
+              "ajustar": {
+                "Largo di Torre Argentina": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "ojo",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "despues_de": "Isla Tiberina",
+                  "parada": {
+                    "lugar": "Ojo de la Cerradura del Aventino",
+                    "min": 10
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Museos Capitolinos": {
+      "sitios": [
+        {
+          "dia": "D5",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "antes_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ],
+              "quitar": [
+                "Isla Tiberina",
+                "Catacumbas de San Calixto"
+              ],
+              "ajustar": {
+                "Via Appia Antica": {
+                  "min": 40,
+                  "traslado": {
+                    "como": "el bus 118 (desde la Pirámide)",
+                    "min": 25
+                  }
+                }
+              }
+            },
+            "tarde.B": {
+              "insertar": [
+                {
+                  "antes_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ],
+              "quitar": [
+                "Isla Tiberina"
+              ],
+              "ajustar": {
+                "Via Appia Antica": {
+                  "min": 30
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "capitolinos",
+          "cambios": {
+            "tarde.*": {
+              "insertar": [
+                {
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  },
+                  "antes_de": "Largo di Torre Argentina"
+                }
+              ],
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas",
+                "Plaza Venecia",
+                "Altar de la Patria"
+              ]
+            },
+            "manana": {
+              "insertar": [
+                {
+                  "despues_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Plaza Venecia",
+                    "modo": "camino"
+                  }
+                },
+                {
+                  "despues_de": "Plaza Venecia",
+                  "parada": {
+                    "lugar": "Altar de la Patria",
+                    "min": 40,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          },
+          "_verano": "En julio y agosto el Altar de la Patria va por la tarde (INVARIANTES 413); con este extra la tarde empieza en otra zona y volver al Altar sería un zigzag: el Altar vuelve a la mañana, junto al Campidoglio."
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "capitolinos",
+          "cambios": {
+            "tarde.*": {
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas",
+                "Teatro de Marcelo"
+              ],
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Museos Capitolinos",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D5C",
+          "cambios": {
+            "tarde.*": {
+              "cambiar": {
+                "Mercados de Trajano": {
+                  "lugar": "Museos Capitolinos",
+                  "min": 60,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Termas de Caracalla": {
+      "sitios": [
+        {
+          "dia": "D1-FT",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "paradas": [
+                {
+                  "lugar": "Circo Máximo",
+                  "modo": "camino"
+                },
+                {
+                  "lugar": "Termas de Caracalla",
+                  "min": 60,
+                  "modo": "dentro",
+                  "entrada": true,
+                  "si_cerrado": "fuera"
+                },
+                {
+                  "lugar": "Boca de la Verdad",
+                  "min": 15
+                },
+                {
+                  "lugar": "Ojo de la Cerradura del Aventino",
+                  "min": 10
+                },
+                {
+                  "lugar": "Jardín de los Naranjos",
+                  "modo": "atardecer"
+                },
+                {
+                  "lugar": "Trastevere",
+                  "min": 45
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "tarde",
+          "cambios": {
+            "tarde.*": {
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas",
+                "Largo di Torre Argentina",
+                "Iglesia del Gesù",
+                "Plaza Venecia",
+                "Altar de la Patria"
+              ],
+              "insertar": [
+                {
+                  "parada": {
+                    "lugar": "Termas de Caracalla",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera",
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  },
+                  "al_principio": true
+                }
+              ],
+              "ajustar": {
+                "Iglesia de Santa Maria sopra Minerva": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            },
+            "manana": {
+              "insertar": [
+                {
+                  "despues_de": "Plaza del Campidoglio",
+                  "parada": {
+                    "lugar": "Plaza Venecia",
+                    "modo": "camino"
+                  }
+                },
+                {
+                  "despues_de": "Plaza Venecia",
+                  "parada": {
+                    "lugar": "Altar de la Patria",
+                    "min": 40,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          },
+          "_verano": "En julio y agosto el Altar de la Patria va por la tarde (INVARIANTES 413); con este extra la tarde empieza en otra zona y volver al Altar sería un zigzag: el Altar vuelve a la mañana, junto al Campidoglio."
+        },
+        {
+          "dia": "D5C",
+          "hueco": "manana",
+          "cambios": {
+            "manana": {
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Termas de Caracalla",
+                    "tipo": "fija",
+                    "hora": "09:00",
+                    "min": 60,
+                    "modo": "dentro",
+                    "entrada": true,
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ],
+              "quitar": [
+                "Cementerio Protestante"
+              ],
+              "ajustar": {
+                "Boca de la Verdad": {
+                  "tipo": "normal",
+                  "hora": null
+                },
+                "Testaccio": {
+                  "min": 30
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Basílica de San Juan de Letrán": {
+      "sitios": [
+        {
+          "dia": "D5C",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "despues_de": "Basílica de San Clemente",
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ],
+              "quitar": [
+                "Iglesia de San Pietro in Vincoli"
+              ],
+              "ajustar": {
+                "Monti": {
+                  "min": 20
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D4M",
+          "cambios": {
+            "tarde.A": {
+              "insertar": [
+                {
+                  "despues_de": "Basílica de Santa María la Mayor",
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            },
+            "tarde.B": {
+              "insertar": [
+                {
+                  "despues_de": "Basílica de Santa María la Mayor",
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "dia": "D1",
+          "hueco": "manana_temprano",
+          "cambios": {
+            "manana": {
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "tipo": "fija",
+                    "hora": "08:00",
+                    "min": 25,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera"
+                  }
+                }
+              ],
+              "ajustar": {
+                "Coliseo": {
+                  "hora": "09:00"
+                }
+              }
+            }
+          }
+        },
+        {
+          "dia": "D1-FT",
+          "hueco": "letran",
+          "cambios": {
+            "tarde.*": {
+              "quitar": [
+                "Barrio Judío",
+                "Fuente de las Tortugas"
+              ],
+              "insertar": [
+                {
+                  "al_principio": true,
+                  "parada": {
+                    "lugar": "Basílica de San Juan de Letrán",
+                    "min": 30,
+                    "modo": "dentro",
+                    "si_cerrado": "fuera",
+                    "traslado": {
+                      "como": "un taxi",
+                      "min": 15
+                    }
+                  }
+                }
+              ],
+              "ajustar": {
+                "Isla Tiberina": {
+                  "traslado": {
+                    "como": "un taxi",
+                    "min": 15
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Castillo de Sant'Angelo": {
+      "_nota": "Solo por fuera, 20 min, todos los días (decisión del usuario, 2-oct-2026): sin visita por dentro. Si alguien quiere entrar, cambia la hora y la duración a mano.",
+      "sitios": []
+    },
+    "Cúpula de San Pedro": {
+      "_nota": "En D2. Con Free Tour no hay D2: sale como no incluido, con su motivo.",
+      "sitios": [
+        {
+          "dia": "D2",
+          "cambios": {
+            "manana": {
+              "ajustar": {
+                "Cúpula de San Pedro": {
+                  "tipo": "normal"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Trastevere": {
+      "_nota": "Trastevere ya va en la ruta casi siempre (se baja del Janículo para la cena). Solo falta en la D de D2 (el sol desde las 19:45: el atardecer en el Puente Sant'Angelo y la cena en Prati): ahí, de la Acqua Paola (que ya tiene la vista de Roma) se baja a Trastevere en lugar de subir al mirador.",
+      "sitios": [
+        {
+          "dia": "D2",
+          "cambios": {
+            "tarde.D": {
+              "cambiar": {
+                "Mirador del Janículo": {
+                  "lugar": "Trastevere",
+                  "min": 30
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "colchones": {
+    "_nota": "Tanda 4: el colchón de cada zona de Roma (tabla «Qué hay en cada colchón» del documento). Cuando queda tiempo libre antes de una hora fija y no hay colchón que alargar, el motor mete el de la zona más cercana al sitio de antes (por las coordenadas de `lugar`). Nunca nombran paradas que el mismo día ya tienen tarjeta: el motor quita de su texto lo que el día ya tiene.",
+    "lista": [
+      {
+        "lugar": "Trastevere",
+        "titulo": "Pasea y piérdete por Trastevere",
+        "texto": "Piazza Trilussa con su fuente, Via della Lungaretta, Vicolo del Cinque, Via della Scala con la hiedra y la Piazza di Santa Maria in Trastevere con la fuente más antigua de Roma."
+      },
+      {
+        "lugar": "Borgo Pio",
+        "titulo": "Pasea y piérdete por Borgo Pio y Prati",
+        "texto": "La calle peatonal del Borgo y el Passetto di Borgo, el pasadizo elevado por el que los Papas escapaban al Castillo; Via Cola di Rienzo, la calle de compras de los romanos, y la Piazza Cavour con el Palacio de Justicia, el «Palazzaccio»."
+      },
+      {
+        "lugar": "Via del Babuino",
+        "titulo": "Pasea y piérdete por el Tridente",
+        "texto": "Via Margutta, Via del Babuino, Via della Croce y el Caffè Greco, con sus escaparates y sus talleres de artistas."
+      },
+      {
+        "lugar": "Jardines del Pincio",
+        "titulo": "Pasea y piérdete por los Jardines del Pincio",
+        "texto": "Los bustos de italianos ilustres, el obelisco de Antínoo, el reloj de agua y la Casina Valadier por fuera."
+      },
+      {
+        "lugar": "Parque de Villa Borghese",
+        "titulo": "Pasea y piérdete por Villa Borghese",
+        "texto": "Pinos, el lago con el Templo de Esculapio en su isla (se alquilan barcas de remos, unos 20 min), la Fontana dei Cavalli Marini y la Piazza di Siena; y, si sobra tiempo, una bici o un risciò (cuatriciclo) para dar la vuelta al parque."
+      },
+      {
+        "lugar": "Mirador del Janículo",
+        "titulo": "Pasea y piérdete por el Gianicolo",
+        "texto": "La avenida de los bustos de Garibaldi, el monumento ecuestre a Garibaldi, el de Anita Garibaldi y el Faro de los Argentinos, con Roma a los pies."
+      },
+      {
+        "lugar": "Campo de' Fiori",
+        "titulo": "Pasea y piérdete por el Centro Histórico",
+        "texto": "Via del Governo Vecchio, la Piazza di Pasquino con su «estatua parlante» y las calles de los anticuarios."
+      },
+      {
+        "lugar": "Teatro de Marcelo",
+        "titulo": "Pasea y piérdete por el Gueto y el Teatro de Marcelo",
+        "texto": "El Gueto con sus calles estrechas, el Pórtico de Octavia y el Teatro de Marcelo."
+      },
+      {
+        "lugar": "Monti",
+        "titulo": "Pasea y piérdete por Monti",
+        "texto": "Via Panisperna, la Piazza Madonna dei Monti y sus tiendas de artesanos, con las terrazas del barrio."
+      },
+      {
+        "lugar": "Ojo de la Cerradura del Aventino",
+        "titulo": "Pasea y piérdete por el Aventino",
+        "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina."
+      },
+      {
+        "lugar": "Testaccio",
+        "titulo": "Pasea y piérdete por Testaccio",
+        "texto": "La Piazza Testaccio, el Monte dei Cocci (una colina hecha de ánforas rotas romanas) y el antiguo matadero."
+      },
+      {
+        "lugar": "Columna de Trajano",
+        "titulo": "Pasea y piérdete por los Foros de Trajano",
+        "texto": "La Columna de Trajano y los Mercados de Trajano, por fuera."
+      },
+      {
+        "lugar": "Via Appia Antica",
+        "titulo": "Pasea y piérdete por la Vía Appia",
+        "texto": "Los pinos, las tumbas y el trozo de calzada romana original."
+      }
+    ]
+  },
+  "llegadas": {
+    "_nota": "Tanda 4: el margen antes de una reserva o un turno es una parada, «Llegada a {sitio}», con su motivo. 30 min antes de una reserva, 15 antes de un turno. `por_lugar` manda sobre el motivo de siempre.",
+    "reserva": {
+      "min": 30,
+      "texto": "Llegas con tiempo para recoger las entradas y pasar el control: la reserva se confirma 30 minutos antes de la hora."
+    },
+    "turno": {
+      "min": 15,
+      "texto": "Llegas con tiempo para la cola y el control de seguridad antes de tu turno."
+    },
+    "por_lugar": {
+      "Galería Borghese": "Recoger las entradas en la taquilla: la reserva se confirma 30 minutos antes y no se entra sin ellas. Se deja la mochila y los bolsos grandes en el guardarropa.",
+      "Museos Vaticanos y Capilla Sixtina": "La cola del control de seguridad: sin ella no se entra, y con la entrada reservada es la más corta.",
+      "Basílica de San Pedro": "El control de seguridad de la entrada: hombros y rodillas cubiertas.",
+      "Coliseo": "El control de seguridad y la cola de entrada.",
+      "Foro Romano y Palatino": "El control de la entrada."
+    },
+    "free_tour": {
+      "min": 15,
+      "titulo": "Llegada al punto de encuentro del Free Tour",
+      "texto": "Llegas 15 minutos antes al punto de encuentro: el guía sale a su hora y no espera. Busca el paraguas o el cartel del tour."
+    }
+  },
+  "noches": {
+    "escalinata": {
+      "_nota": "Días escritos (2026-09-29): la escalinata iluminada vale el mismo día que la Plaza de España de la mañana (D4): de noche es otra cosa.",
+      "excepcion_mismo_dia": true
+    }
+  },
+  "solo_explorar": {
+    "_nota": "Lugares de nivel 2 sin sitio en los días, a propósito, con el motivo: salen en Explorar y en Añadir parada.",
+    "Villa Farnesina": "Solo abre por la mañana (de 9:00 a 14:00, cerrada el domingo) y los días de Trastevere son de tarde: meterla obliga a ir y volver al otro lado del río."
+  },
+  "textos": {
+    "_nota": "El «Por qué aquí» de las paradas escritas que no lo tienen en la parada ni en los días curados (2026-09-29).",
+    "Iglesia del Gesù": "La iglesia madre de los jesuitas, a dos pasos del Largo Argentina. Mira el techo: las figuras se salen del marco y parece que caen hacia ti. A la izquierda, el altar de san Ignacio, todo oro y lapislázuli.",
+    "Palazzo Doria Pamphilj": "Un palacio en el que todavía vive la familia: la galería de espejos y oro y, en su sala, el retrato del papa Inocencio X que pintó Velázquez.",
+    "Via del Corso": "La calle larga del centro, de la Piazza del Popolo a la Plaza Venecia: tiendas, palacios y romanos de paseo a última hora.",
+    "Domus Aurea": "Lo que queda del palacio de Nerón, enterrado bajo la colina Oppia: salas pintadas que copiaron Rafael y los artistas del Renacimiento."
+  }
+}

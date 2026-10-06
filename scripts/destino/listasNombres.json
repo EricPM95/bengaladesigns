@@ -1,0 +1,225 @@
+{
+  "_que_es": "Cómo se llama en roma.json cada nombre que el documento DIAS_ROMA_PARADAS.md pone en sus listas. Clave: el nombre tal cual lo escribe el documento (sin los minutos ni el «, por dentro/por fuera»). Valor: { lugar: el sitio de roma.json, titulo: cómo se llama la parada si no es el del sitio, foto: el nombre con el que se pide su foto si no es el del sitio, modo: el modo si el nombre lo implica (camino, fuera) }. Un nombre que ya es el de un sitio de roma.json no hace falta. Lo que el convertidor no encuentra aquí ni en roma.json NO se inventa: sale en PREGUNTAS_TANDA6.md.",
+  "Basílica": {
+    "lugar": "Basílica de San Pedro",
+    "modo": "camino"
+  },
+  "Basílica de San Pedro (la fachada)": {
+    "lugar": "Basílica de San Pedro",
+    "titulo": "Basílica de San Pedro, la fachada",
+    "modo": "camino"
+  },
+  "Piazza Venezia": {
+    "lugar": "Plaza Venecia"
+  },
+  "Fori Imperiali": {
+    "lugar": "Via dei Fori Imperiali"
+  },
+  "Piazza Navona": {
+    "lugar": "Piazza Navona"
+  },
+  "El Foro Romano, desde la terraza del Campidoglio": {
+    "lugar": "Foro Romano y Palatino",
+    "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+    "modo": "fuera"
+  },
+  "Trinità dei Monti y su mirador": {
+    "lugar": "Trinità dei Monti",
+    "titulo": "Trinità dei Monti y su mirador sobre la Plaza de España"
+  },
+  "bajar la escalinata": {
+    "lugar": "Plaza de España",
+    "titulo": "Bajar la escalinata de la Plaza de España",
+    "modo": "camino"
+  },
+  "Santa Maria sopra Minerva": {
+    "lugar": "Iglesia de Santa Maria sopra Minerva"
+  },
+  "Iglesia del Gesù (la fachada)": {
+    "lugar": "Iglesia del Gesù",
+    "titulo": "Iglesia del Gesù, la fachada",
+    "modo": "camino"
+  },
+  "Santa Maria in Trastevere (la plaza y la fachada)": {
+    "lugar": "Iglesia de Santa Maria in Trastevere",
+    "titulo": "Santa Maria in Trastevere, la plaza y la fachada",
+    "modo": "camino"
+  },
+  "Santa Maria in Trastevere": {
+    "lugar": "Iglesia de Santa Maria in Trastevere"
+  },
+  "Castillo": {
+    "lugar": "Castillo de Sant'Angelo"
+  },
+  "Puente": {
+    "lugar": "Puente Sant'Angelo"
+  },
+  "San Luigi dei Francesi (los Caravaggio)": {
+    "lugar": "Iglesia de San Luigi dei Francesi",
+    "titulo": "San Luigi dei Francesi (los Caravaggio)"
+  },
+  "San Luigi dei Francesi": {
+    "lugar": "Iglesia de San Luigi dei Francesi"
+  },
+  "la Piazza di Siena": {
+    "lugar": "Parque de Villa Borghese",
+    "titulo": "La Piazza di Siena",
+    "modo": "camino"
+  },
+  "Via Veneto, Porta Pinciana, la Piazza di Siena": {
+    "lugar": "Via Veneto"
+  },
+  "Lago de Villa Borghese y el Templo de Esculapio": {
+    "lugar": "Parque de Villa Borghese",
+    "titulo": "Lago de Villa Borghese y el Templo de Esculapio"
+  },
+  "Reloj de agua del Pincio": {
+    "lugar": "Parque de Villa Borghese",
+    "titulo": "Reloj de agua del Pincio",
+    "foto": "Reloj de agua del Pincio"
+  },
+  "los Jardines del Pincio": {
+    "lugar": "Jardines del Pincio",
+    "modo": "camino"
+  },
+  "Via del Babuino y Via Margutta": {
+    "lugar": "Via del Babuino",
+    "titulo": "Via del Babuino y Via Margutta",
+    "modo": "camino"
+  },
+  "Via Margutta": {
+    "lugar": "Via Margutta",
+    "modo": "camino"
+  },
+  "San Pietro in Montorio y el Tempietto": {
+    "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+    "titulo": "San Pietro in Montorio y el Tempietto"
+  },
+  "Santa Maria Maggiore": {
+    "lugar": "Basílica de Santa María la Mayor",
+    "titulo": "Santa Maria Maggiore"
+  },
+  "San Pietro in Vincoli (el Moisés)": {
+    "lugar": "Iglesia de San Pietro in Vincoli",
+    "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)"
+  },
+  "San Pietro in Vincoli": {
+    "lugar": "Iglesia de San Pietro in Vincoli"
+  },
+  "San Juan de Letrán y la Escalera Santa": {
+    "lugar": "Basílica de San Juan de Letrán",
+    "titulo": "San Juan de Letrán y la Escalera Santa"
+  },
+  "Basílica de San Clemente, con las excavaciones": {
+    "lugar": "Basílica de San Clemente",
+    "titulo": "Basílica de San Clemente, con las excavaciones"
+  },
+  "Plaza del Quirinal": {
+    "lugar": "Plaza del Quirinal"
+  },
+  "Monti (Via Panisperna y la Piazza Madonna dei Monti)": {
+    "lugar": "Monti",
+    "titulo": "Monti: Via Panisperna y la Piazza Madonna dei Monti",
+    "modo": "camino"
+  },
+  "Monti": {
+    "lugar": "Monti",
+    "modo": "camino"
+  },
+  "Santa Maria in Aracoeli y su escalinata": {
+    "lugar": "Santo Bambino de Aracoeli",
+    "titulo": "Santa Maria in Aracoeli y su escalinata",
+    "foto": "Santa Maria in Aracoeli"
+  },
+  "Terraza del Altar de la Patria (ascensor panorámico)": {
+    "lugar": "Altar de la Patria",
+    "titulo": "Terraza del Altar de la Patria",
+    "foto": "Terraza del Altar de la Patria"
+  },
+  "Santa Cecilia in Trastevere": {
+    "lugar": "Basílica de Santa Cecilia in Trastevere"
+  },
+  "la Piazza in Piscinula": {
+    "lugar": "Trastevere",
+    "titulo": "La Piazza in Piscinula",
+    "modo": "camino"
+  },
+  "Catacumbas de San Calixto (visita guiada)": {
+    "lugar": "Catacumbas de San Calixto"
+  },
+  "Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela": {
+    "lugar": "Via Appia Antica",
+    "titulo": "Recorre la Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela"
+  },
+  "El Coliseo desde la terraza de Largo Gaetana Agnesi": {
+    "lugar": "Terraza de Largo Gaetana Agnesi",
+    "titulo": "El Coliseo desde la terraza de Largo Gaetana Agnesi",
+    "foto": "Coliseo"
+  },
+  "Pirámide Cestia (al lado del metro Piramide y del tren al aeropuerto)": {
+    "lugar": "Pirámide Cestia"
+  },
+  "Cúpula de San Pedro (se sale por la Basílica)": {
+    "lugar": "Cúpula de San Pedro"
+  },
+  "Cripta de los Capuchinos": {
+    "lugar": "Cripta de los Capuchinos"
+  },
+  "Museos Capitolinos, con la terraza sobre los Foros": {
+    "lugar": "Museos Capitolinos",
+    "titulo": "Museos Capitolinos, con la terraza sobre los Foros"
+  },
+  "Termas de Caracalla": {
+    "lugar": "Termas de Caracalla"
+  },
+  "Luces de Navidad del Tridente": {
+    "lugar": "Luces de Navidad del Tridente"
+  },
+  "Santo Bambino de Aracoeli": {
+    "lugar": "Santo Bambino de Aracoeli"
+  },
+  "Piazza Navona y su mercadillo navideño": {
+    "lugar": "Piazza Navona",
+    "titulo": "Piazza Navona y su mercadillo navideño"
+  },
+  "Plaza de San Pedro y los 100 Presepi": {
+    "lugar": "Plaza de San Pedro",
+    "titulo": "Plaza de San Pedro y los 100 Presepi"
+  },
+  "Free Tour Centro Histórico": {
+    "lugar": "Free Tour Centro Histórico"
+  },
+  "Ojo de la Cerradura del Aventino": {
+    "lugar": "Ojo de la Cerradura del Aventino"
+  },
+  "_noches": {
+    "Fontana de Trevi iluminada": "Fontana de Trevi (noche)",
+    "Plaza de España de noche": "Plaza de España (noche)",
+    "Coliseo iluminado": "Coliseo (noche)",
+    "Panteón de noche": "Panteón (noche)",
+    "Piazza Navona de noche": "Piazza Navona (noche)",
+    "Trastevere de noche": "Trastevere de noche",
+    "el Foro Romano desde el Campidoglio, de noche": "Foro Romano desde el Campidoglio (noche)",
+    "el Puente y el Castillo de Sant'Angelo iluminados": "El Puente y el Castillo de Sant'Angelo (noche)"
+  },
+  "_restaurantes": {
+    "Borghiciana": "Borghiciana Pastificio Artigianale",
+    "Dal Toscano": "Dal Toscano",
+    "Arlù": "Ristorante Arlù",
+    "Da Enzo al 29": "Trattoria Da Enzo al 29",
+    "Giggetto": "Giggetto al Portico d'Ottavia",
+    "Da Baffetto": "Pizzeria Da Baffetto",
+    "Sgarro Bistrot": "Sgarro Bistrot",
+    "Buccone Vini e Olii": "Buccone Vini e Olii",
+    "Mordi e Vai": "Mordi e Vai",
+    "Felice a Testaccio": "Felice a Testaccio",
+    "Trattoria Monti": "Trattoria Monti",
+    "La Boccaccia": "La Boccaccia",
+    "Il Bocconcino": "Il Bocconcino",
+    "SantoPalato": "SantoPalato"
+  },
+  "Fontana de Trevi sin gente": {
+    "lugar": "Fontana de Trevi",
+    "titulo": "Fontana de Trevi, sin gente"
+  }
+}
