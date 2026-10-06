@@ -129,8 +129,10 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       // (Tanda 6d: la segunda excepción apuntada: Roma en un día (D0) con el Coliseo a media tarde; todo lo que va antes es imprescindible la primera vez y no hay nada que quitar sin romper la pirámide.)
       const excusadaFt = rows.some((x) => x.tipo === 'tour') && /Museos Vaticanos/.test(lugar)
       const excusadaD0 = dia.curatedDay.id === 'D0' && lugar === 'Coliseo' && toMin(hora) >= 13 * 60 && toMin(hora) <= 15 * 60 + 30
-      const excusada = excusadaFt || excusadaD0
-      if (r.tarde > 0) (excusada ? avisa : falla)('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}${excusadaFt ? ' (con Free Tour el mismo día)' : excusadaD0 ? ' (Roma en un día: todo lo de antes es imprescindible)' : ''}`)
+      // (Y la tercera: la ciudad solo empieza a las 16:00 por una excursión de medio día y la entrada es a las 16:00: la lista escrita de tarde no cabe antes.)
+      const excusadaMedia = Boolean(dia.halfDayExcursion?.soloTarde) && toMin(hora) <= 16 * 60 + 30
+      const excusada = excusadaFt || excusadaD0 || excusadaMedia
+      if (r.tarde > 0) (excusada ? avisa : falla)('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}${excusadaFt ? ' (con Free Tour el mismo día)' : excusadaD0 ? ' (Roma en un día: todo lo de antes es imprescindible)' : excusadaMedia ? ' (la ciudad empieza a las 16:00 por la excursión de medio día)' : ''}`)
     }
     // 2c. (Tanda 6c) La hora que se enseña y la que decide el cierre son la misma: una parada que sale «por fuera» por su horario tiene que estar de verdad cerrada a esa hora.
     for (const r of rows.filter((x) => x.por_horario)) {
