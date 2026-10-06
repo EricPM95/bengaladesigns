@@ -5388,6 +5388,7 @@
         "terraza del coliseo"
       ],
       "search_en": "Largo Gaetana Agnesi Colosseum viewpoint Rome",
+      "wikipedia_title": "en:Colosseum",
       "search_en_keywords": [
         "agnesi"
       ],
@@ -5421,6 +5422,7 @@
         "piazza san pietro in montorio"
       ],
       "search_en": "San Pietro in Montorio viewpoint Rome",
+      "wikipedia_title": "en:Janiculum",
       "search_en_keywords": [
         "montorio"
       ],
@@ -8487,6 +8489,37 @@
       "best_for": "Comer junto a las ruinas del Pórtico de Octavia",
       "_fuente": "https://www.giggetto.it/contatti (dirección, horario; el lunes no figura: cerrado); coordenadas OpenStreetMap (2026-09-26)",
       "comprobado": "2026-09-28"
+    },
+    {
+      "name": "Piperno",
+      "sub_category": "cocina judeo-romana", "tipo_local": "restaurante",
+      "meal": "ambos",
+      "address": "Via Monte de' Cenci, 9, 00186 Roma",
+      "coordinates": {
+        "lat": 41.8923,
+        "lng": 12.4767
+      },
+      "zone": "Barrio Judío",
+      "price_range": "€€€",
+      "avg_price_person": "45-60€",
+      "what_to_order": "Carciofi alla giudia, fiori di zucca, fritto misto",
+      "tip": "Desde 1860 en el corazón del Gueto. Entre semana solo abre a la cena; a la comida, solo sábado y domingo. Cierra los lunes.",
+      "hours": "Mar-Vie solo cena 19:45-22:30. Sáb 12:45-14:30 y 19:45-22:30. Dom solo comida 12:45-14:30. Lunes cerrado.",
+      "closed_on": [
+        "lunes"
+      ],
+      "closed_comida_on": [
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes"
+      ],
+      "closed_cena_on": [
+        "domingo"
+      ],
+      "best_for": "Cocina judeo-romana clásica en el Gueto",
+      "_fuente": "https://www.ristorantepiperno.it (dirección y horario, leído el 2026-10-06); coordenadas APROXIMADAS (no verificadas) y precio orientativo: por revisar",
+      "comprobado": "2026-10-06"
     }
   ],
   "entradas_reservas": [

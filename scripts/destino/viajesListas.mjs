@@ -33,6 +33,7 @@ for (const forma of FORMAS) {
   viajes.push({ ...forma, id: `${forma.dias}${forma.medio ? 'm' : ''}-verano`, estacion: 'verano', inicio: VERANO })
 }
 viajes.push({ clave: '3 días con la entrada del Coliseo reservada a las 12:00', dias: 3, id: 'reserva', estacion: 'verano', inicio: addDays(VERANO, 1), entradas: { Coliseo: '12:00' }, extra: 'Con la entrada del Coliseo reservada a las 12:00 y los Museos Vaticanos reservados a las 14:00 en el día del Vaticano.', entradas2: { [MUSEOS]: '14:00' } })
+viajes.push({ clave: '3 días con un ejemplo de HOY («Vas bien de tiempo»: al acabar la tarde del primer día con tiempo de sobra)', dias: 3, id: 'hoy', estacion: 'verano', inicio: addDays(VERANO, 0), ejemploHoy: { dia: 1, restoMin: 100 } })
 viajes.push({ clave: '2 días con lluvia (la alternativa de cada día aplicada)', dias: 2, id: 'lluvia', estacion: 'invierno', inicio: addDays(IVNO, 7), lluvia: true })
 
 const hhmm = (t) => t ?? ''
@@ -50,22 +51,35 @@ for (const viaje of viajes) {
   for (let d = 1; d <= viaje.dias; d++) {
     const day = await buildDayBlockV3(D, viaje.dias + 1, false, d, null, viaje.inicio, [], [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', entradas: { ...(viaje.entradas ?? {}), ...(viaje.entradas2 ?? {}) }, mediaJornada: viaje.medio ?? null })
     const iso = addDays(viaje.inicio, d - 1)
-    dias.push({ d, iso, day })
+    let hoy = null
+    if (viaje.ejemploHoy && viaje.ejemploHoy.dia === d && day?.stops) {
+      // El viajero ha marcado «Visto» en todo lo de la mañana y la tarde, y le sobran restoMin minutos antes de cenar.
+      const cena = (day.meals ?? []).find((m) => m.time === 'dinner')
+      const [h, m] = String(cena?.suggested_time ?? '20:00').split(':').map(Number)
+      const ahora = h * 60 + m - viaje.ejemploHoy.restoMin
+      const hechas = day.stops.flatMap((s) => [s.name, s.display_title].filter(Boolean))
+      const conChequeo = await buildDayBlockV3(D, viaje.dias + 1, false, d, null, viaje.inicio, [], [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', entradas: {}, mediaJornada: null, chequeo: { dayNumber: d, doneNames: hechas, nowMinutes: ahora } })
+      hoy = { ahora, tc: conChequeo?.time_check ?? null }
+    }
+    dias.push({ d, iso, day, hoy, lluvia: Boolean(viaje.lluvia) })
   }
   trips.push({ viaje, dias })
 }
 
 const cuerpo = trips.map(({ viaje, dias }) => {
   const cab = `<h2 id="${viaje.id}">${esc(viaje.clave)} · ${viaje.estacion}</h2><p class="fechas">Del ${DIAS[new Date(`${viaje.inicio}T12:00:00Z`).getUTCDay()]} ${viaje.inicio} al ${addDays(viaje.inicio, viaje.dias - 1)}${viaje.extra ? `. ${esc(viaje.extra)}` : ''}</p>`
-  const dd = dias.map(({ d, iso, day }) => {
+  const dd = dias.map(({ d, iso, day, hoy, lluvia: conLluvia }) => {
     if (!day) return `<h3>Día ${d} · ${iso}</h3><p>Sin día.</p>`
     if (day.excursion_options) return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · día de excursión</h3><p class="m">El viajero elige entre las excursiones.</p>`
-    const paradas = [...(day.stops ?? []).map((s) => ({ h: s.suggested_time, html: fila(s) })), ...(day.meals ?? []).map((m) => ({ h: m.suggested_time, html: comida(m) }))].sort((a, b) => String(a.h).localeCompare(String(b.h)))
+    // Con lluvia: lo que sale se va y lo que entra va al final de su franja (la alternativa aplicada).
+    const sale = new Set(conLluvia ? day.rain_plan?.remove ?? [] : [])
+    const entran = conLluvia ? (day.rain_plan?.add ?? []) : []
+    const paradas = [...(day.stops ?? []).filter((s) => !sale.has(s.display_title ?? s.name) && !sale.has(s.name)).map((s) => ({ h: s.suggested_time, html: fila(s) })), ...entran.map((s) => ({ h: '99:98', html: fila({ ...s, suggested_time: '☔', orientative_time: false }) })), ...(day.meals ?? []).map((m) => ({ h: m.suggested_time, html: comida(m) }))].sort((a, b) => String(a.h).localeCompare(String(b.h)))
     const sobra = (day.spare_stops ?? []).length ? `<details><summary>Si te sobra tiempo (${day.spare_stops.length})</summary><ul>${day.spare_stops.map((s) => `<li>${esc(s.display_title ?? s.name)} <span class="m">(${s.duration_minutes} min · ${esc(s.spare_reason)})</span> <button>Añadir</button></li>`).join('')}</ul></details>` : ''
     const llu = day.rain_plan ? `<p class="lluvia">🌧 <b>Si llueve:</b> ${esc(day.rain_plan.text)}${day.rain_plan.remove?.length ? ` <span class="m">Sale: ${esc(day.rain_plan.remove.join(', '))}.</span>` : ''}${day.rain_plan.add?.length ? ` <span class="m">Entra: ${esc(day.rain_plan.add.map((s) => `${s.display_title ?? s.name}`).join(', '))}.</span>` : ''}</p>` : ''
     const registro = (day.engine_log ?? []).filter((l) => ['quitada', 'modo', 'modo+min', 'titulo', 'restaurante', 'noche', 'hora', 'sobra', 'nueva', 'aviso'].includes(l.que) && l.causa).map((l) => `<li><b>${esc(l.que)}</b> ${esc(l.lugar ?? '')}: ${esc(l.causa)}</li>`).join('')
     const noInc = (day.not_included ?? []).length ? `<p class="m">No incluido: ${esc(day.not_included.map((n) => `${n.name}${n.reason ? ` (${n.reason})` : ''}`).join('; '))}</p>` : ''
-    return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · ${esc(day.curated_day?.id ?? '')} ${esc(day.curated_day?.name ?? '')}</h3>${day.sunset_text ? `<p class="sol">${esc(day.sunset_text)}</p>` : ''}${day.day_notice ? `<p>${esc(day.day_notice)}</p>` : ''}<table>${paradas.map((p) => p.html).join('')}</table>${sobra}${llu}${noInc}${registro ? `<details><summary>Lo que ha hecho el motor</summary><ul class="reg">${registro}</ul></details>` : ''}`
+    return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · ${esc(day.curated_day?.id ?? '')} ${esc(day.curated_day?.name ?? '')}</h3>${day.sunset_text ? `<p class="sol">${esc(day.sunset_text)}</p>` : ''}${day.day_notice ? `<p>${esc(day.day_notice)}</p>` : ''}<table>${paradas.map((p) => p.html).join('')}</table>${conLluvia && sale.size ? `<p class="lluvia">☔ <b>Con lluvia aplicada:</b> salen ${esc([...sale].join(', '))}${entran.length ? `; entran ${esc(entran.map((s) => s.display_title ?? s.name).join(', '))}` : ''}.</p>` : ''}${day.rest_card ? `<div class="descanso"><b>${esc(day.rest_card.title)}</b><br>${esc(day.rest_card.text)}</div>` : ''}${hoy?.tc ? `<div class="hoy"><b>HOY · a las ${Math.floor(hoy.ahora / 60)}:${String(hoy.ahora % 60).padStart(2, '0')} marcas «Visto» en la última parada</b><br>${hoy.tc.status === 'bien' ? 'Vas bien de tiempo' : hoy.tc.status === 'justo' ? 'Vas justo' : 'Vas bien'} (te sobran ${hoy.tc.spare_minutes} min).${hoy.tc.before_meal ? ' ¿Vas ya al restaurante o quieres ver algo más?' : ''}<ul>${(hoy.tc.suggestions ?? []).map((x) => `<li>${esc(x.display_title ?? x.name)} <span class="m">(${x.duration_minutes} min${x.add_note ? ` · ${esc(x.add_note)}` : ''})</span></li>`).join('') || '<li class="m">Sin sugerencias.</li>'}</ul></div>` : ''}${sobra}${llu}${noInc}${registro ? `<details><summary>Lo que ha hecho el motor</summary><ul class="reg">${registro}</ul></details>` : ''}`
   }).join('')
   return `<section>${cab}${dd}</section>`
 }).join('\n')
@@ -77,7 +91,7 @@ body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:0 auto;padding:16
 h1{font-size:22px}h2{font-size:19px;margin-top:36px;border-top:2px solid #0f6b66;padding-top:12px}h3{font-size:16px;margin:20px 0 4px}
 table{border-collapse:collapse;width:100%}td{padding:3px 6px;vertical-align:top;border-bottom:1px solid #e7e7e1}td.h{width:96px;color:#47606b;white-space:nowrap}
 tr.camino td{color:#6b7a82}tr.llegada td{background:#eef6f5}tr.mesa td{background:#fff6e0}tr.noche td{background:#eceef8}
-.m{color:#6b7a82;font-size:13px}.fechas,.sol{color:#47606b;margin:2px 0}.tr{color:#0f6b66}.lluvia{background:#eaf3fb;padding:6px 8px;border-radius:6px}
+.m{color:#6b7a82;font-size:13px}.fechas,.sol{color:#47606b;margin:2px 0}.tr{color:#0f6b66}.lluvia{background:#eaf3fb;padding:6px 8px;border-radius:6px}.descanso{background:#f3efe4;padding:8px 10px;border-radius:8px;margin:8px 0;border-left:3px solid #b08a2e}.hoy{background:#e9f4ea;padding:8px 10px;border-radius:8px;margin:8px 0;border-left:3px solid #2e8b57}
 em{color:#a1470f;font-style:normal;font-size:13px}details{margin:6px 0}summary{cursor:pointer;color:#0f6b66}.reg{font-size:13px;color:#47606b}
 nav{font-size:13px;line-height:1.9}
 </style>

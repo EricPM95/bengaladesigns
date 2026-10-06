@@ -4,7 +4,7 @@
 //   3. Sin zigzag.                                                     7. Las reservas, a su hora, con su «Llegada a…».
 //   4. La pirámide: ningún imprescindible quitado la primera vez.      8. Ninguna comida después de las 14:30 (salvo delante solo imprescindibles).
 // No hay prueba de «huecos»: el tiempo libre es del viajero.
-import { closedOnDay, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay, effectiveSchedule, lastEntryMinutes, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 
 const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
@@ -19,6 +19,12 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     return row.modo === 'fuera' || row.modo === 'camino' ? p.pass_by?.coordinates ?? p.coordinates : (Array.isArray(p.entrada) ? p.entrada : null) ?? p.coordinates
   }
   const dias = plan.days.filter((day) => day.curatedDay?.id)
+  // (Tanda 6c) Los sitios «conocidos»: los que salen en algún día escrito del documento o son de nivel 1 o 2.
+  const delDocumento = new Set()
+  {
+    const recorrer = (o) => { if (Array.isArray(o)) o.forEach(recorrer); else if (o && typeof o === 'object') { if (typeof o.lugar === 'string') delDocumento.add(o.lugar); Object.values(o).forEach(recorrer) } }
+    recorrer(listas?.days ?? {})
+  }
   const cubiertos = new Set(hasFreeTour ? D.default_free_tour?.covers ?? [] : [])
   const vistos = new Set(cubiertos)
   const dentro = new Map()
@@ -123,6 +129,24 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const excusada = rows.some((x) => x.tipo === 'tour') && /Museos Vaticanos/.test(lugar)
       if (r.tarde > 0) (excusada ? avisa : falla)('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}${excusada ? ' (con Free Tour el mismo día)' : ''}`)
     }
+    // 2c. (Tanda 6c) La hora que se enseña y la que decide el cierre son la misma: una parada que sale «por fuera» por su horario tiene que estar de verdad cerrada a esa hora.
+    for (const r of rows.filter((x) => x.por_horario)) {
+      const p = place(r.lugar)
+      const sesiones = p ? parseHoursSessions(effectiveSchedule(p, dia.hours)) : []
+      const dur = r.previo_min ?? 20
+      const ultima = p ? lastEntryMinutes(p, r.t0, dia.hours) : null
+      if (sesiones.some((x) => r.t0 >= x.open && r.t0 + dur <= x.close) && (ultima == null || r.t0 <= ultima)) falla('aviso_contradictorio', dia, `«${r.titulo ?? r.lugar}» sale por fuera por su horario hacia las ${Math.floor(r.t0 / 60)}:${String(r.t0 % 60).padStart(2, '0')}, pero a esa hora está abierto`)
+    }
+    // 2d. (Tanda 6c, regla 6) Antes de quitar algo de la mañana por la comida, se acorta: ninguna parada pasa a «Si te sobra tiempo» por la comida mientras quede en esa mañana algo por dentro que se pueda ver por fuera.
+    if (log.some((l) => l.que === 'sobra' && /la comida iba a caer/.test(l.causa ?? ''))) {
+      const acortable = rows.find((r) => r.tipo === 'parada' && r.franja === 'manana' && r.modo === 'dentro' && !r.fija && !r.protegido && !r.llegada && r.hora_tipo == null && (place(r.lugar)?.minutos_fuera ?? 99) < r.min)
+      if (acortable) falla('quitar_sin_acortar', dia, `se quita algo de la mañana por la comida y «${acortable.titulo ?? acortable.lugar}» sigue por dentro (${acortable.min} min)`)
+    }
+    // 2e. (Tanda 6c) Para llenar huecos solo sitios conocidos (del documento o de nivel 1 o 2): nunca uno poco conocido.
+    for (const r of rows.filter((x) => x.relleno)) {
+      const p = place(r.lugar)
+      if (p && (p.level ?? 3) > 2 && !delDocumento.has(r.lugar)) falla('relleno_desconocido', dia, `el relleno «${r.lugar}» no sale en ningún día del documento y no es de nivel 1 o 2`)
+    }
     // 7b. (Tanda 6b) La comida nunca detrás de una visita larga con hora fija que empieza entre las 13:30 y las 15:00 (si empieza antes de las 13:30 no cabe comer antes: se apunta); y 0 días que empiezan más tarde por una reserva.
     {
       const comidaIdx = rows.findIndex((x) => x.tipo === 'comida')
@@ -134,8 +158,10 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const parte = listas?.days?.[dia.curatedDay.id]?.partes
       const empiezaDoc = parte ? Object.values(parte).map((x) => x.empieza).find(Boolean) : null
       const variantes = dia.curatedDay.variantes ?? []
-      const esperado = toMin(variantes.includes('lunes_sin_galeria') ? '09:30' : variantes.includes('con_free_tour_de_manana') ? '09:00' : empiezaDoc ?? (dia.halfDayExcursion?.soloTarde ? '16:00' : (franjas.inicio ?? '09:00')))
-      const excusado = variantes.includes('miercoles_audiencia') || (dia.curatedDay.id === 'D0-medio' && (dia.written?.grupo === 'tarde')) || (dia.curatedDay.id === 'DT-medio' && dia.written?.grupo === 'tarde')
+      const esperado = toMin(variantes.includes('con_free_tour_de_manana') ? '09:00' : empiezaDoc ?? (dia.halfDayExcursion?.soloTarde ? '16:00' : (franjas.inicio ?? '09:00')))
+      // (Tanda 6c: el documento ya no dice «el día empieza más tarde» en ningún sitio; el lunes del D4 y los miércoles de audiencia empiezan a su hora.)
+      // (La única que queda: el D2 sin Museos en miércoles; el documento dice que la Plaza y la Basílica van después de la audiencia, desde las 12:30.)
+      const excusado = (dia.curatedDay.id === 'D2' && variantes.includes('miercoles_audiencia')) || (dia.curatedDay.id === 'D0-medio' && (dia.written?.grupo === 'tarde')) || (dia.curatedDay.id === 'DT-medio' && dia.written?.grupo === 'tarde')
       // (Si lo primero del día es una hora fija —o su «Llegada a…»—, el día empieza a esa hora: no hay nada que hacer antes y no se inventa.)
       if (primera && !excusado && !dia.halfDayExcursion && !primera.llegada && !primera.fija && primera.t0 > esperado + 15) falla('dia_empieza_tarde', dia, `el día empieza a las ${Math.floor(primera.t0 / 60)}:${String(primera.t0 % 60).padStart(2, '0')} y debería empezar a las ${Math.floor(esperado / 60)}:${String(esperado % 60).padStart(2, '0')}`)
     }

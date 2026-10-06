@@ -232,5 +232,10 @@
     "lugar": "Iglesia de Santa Maria in Trastevere",
     "titulo": "Bajada a Trastevere",
     "modo": "camino"
+  },
+  "Columna de Trajano y Mercados de Trajano": {
+    "lugar": "Mercados de Trajano",
+    "titulo": "Columna de Trajano y Mercados de Trajano",
+    "modo": "dentro"
   }
 }

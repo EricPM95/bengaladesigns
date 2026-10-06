@@ -54,7 +54,13 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
     - los avisos de cierre;
     - la cuenta atrás de las reservas: «Tu entrada al Coliseo es a las 12:00: sal de aquí a las 11:15».
     - **«Vas bien de tiempo» o «Vas justo»:** cada vez que el viajero marca «Visto», la app compara la hora con lo que le queda de la franja.
-      - **Si le sobra:** «Vas bien de tiempo». Si era la última parada antes de comer, «¿Vas ya al restaurante o quieres ver algo más?», con sugerencias que estén cerca de lo que le queda o a 5 min o menos de donde está, abiertas, no vistas y que no sean de otro día del viaje (o con «Lo tienes el día {n}»).
+      - **Si le sobra:** «Vas bien de tiempo». Si era la última parada antes de comer, «¿Vas ya al restaurante o quieres ver algo más?».
+      - **De dónde salen las sugerencias:** de todo el destino, no solo de los días de su viaje. Los sitios de los días de 5, 6 y 7 días (Monti, el Quirinal, los Foros de Trajano, Campo de' Fiori, el Aventino, la Vía Appia…) son sugerencias muy buenas para los viajes de 3 y 4 días, que serán la mayoría. Solo se excluye lo que ya sale en otro día de **su** viaje (o se avisa: «Lo tienes el día {n}»).
+      - **Lo lejos que puede estar depende del tiempo que le sobra:**
+        - en mitad de una franja, solo lo cercano (5–10 min andando), para no hacer zigzag;
+        - justo antes de comer o de cenar, si le sobra 1 h 30 o más, vale ir más lejos: 15–20 min andando o 15 min en bus o metro;
+        - y si esa zona tiene restaurante, la comida o la cena se cambia allí («y cenas en Monti»), con las reglas de restaurantes.
+      - Siempre abiertas a la hora a la que llegaría, con tiempo de verlas, y no vistas.
       - **Si le falta:** «Vas justo. ¿Dejamos {lo de menos importancia} para si te sobra tiempo?». El viajero decide.
       - Nunca cambia nada sola.
 
@@ -117,7 +123,7 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 
 ## Viaje de 1,5 días
 
-### Día entero · D1-corto (la Roma antigua, el centro y Trastevere, por fuera)
+### Día entero · D1-corto (la Roma antigua, el centro y Trastevere)
 
 - **Mañana:**
   - Coliseo, por fuera ~45
@@ -147,7 +153,7 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 - **🌧 Si llueve:** el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.
 
 
-### Medio día del Vaticano · D0-medio (por fuera)
+### Medio día del Vaticano · D0-medio
 
 **De mañana (la mañana de la vuelta):**
 - Plaza de San Pedro ~45
@@ -176,7 +182,7 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 - Plaza de España
 - *de camino:* Via dei Coronari, Puente
 - Castillo, por fuera
-- Plaza de San Pedro (después de las 12:00; si se llega antes, el día empieza más tarde)
+- Plaza de San Pedro (después de las 12:00, cuando acaba la audiencia)
 - *de camino:* Basílica (la fachada)
 - comida en el Borgo
 
@@ -208,6 +214,8 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 - **Cena:** Armando al Pantheon (o Da Baffetto)
 - **Noche:** Fontana de Trevi iluminada y la Plaza de España de noche
 - **Cierres:** el sábado el Panteón cierra a las 17:00 por la misa: aviso «entra antes». Si una iglesia cierra (domingo o festivo), por fuera.
+
+**Si te sobra tiempo** (sugerencia de «Vas bien de tiempo» antes de comer): la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.
 
 **Pool:** solo si el viaje no lleva el día propio de ese sitio.
 - **Museos Capitolinos:** por la mañana, después del Campidoglio ~60.
@@ -393,8 +401,7 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 
 **Lunes (la Galería cierra):**
 - primero, el cambio de orden de los días;
-- si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45), después de la Fuente del Tritón;
-- el día empieza más tarde.
+- si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.
 
 **Con Free Tour de mañana:** sin Trevi ni desayuno; la Plaza de España y Via Condotti van de camino (el tour ya pasó).
 
@@ -471,12 +478,13 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
   - El Foro Romano, desde la terraza del Campidoglio ~15
   - Santa Maria in Aracoeli y su escalinata ~20
   - *de camino:* Piazza Venezia
+  - Columna de Trajano y Mercados de Trajano ~1 h
   - Terraza del Altar de la Patria (ascensor panorámico) ~45 (⚠️ última subida a las 18:45)
   - *de camino:* Teatro de Marcelo
 - **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío
 - **Noche:** Panteón de noche
-- **Lunes:** el Castillo cierra: por fuera ~15, y lo de después se adelanta.
-- **Miércoles (audiencia):** la mañana va al revés y la Cúpula al final, cuando acaba la audiencia (desde las 12:30): Castillo (el día empieza más tarde), Plaza de San Pedro, Cúpula y comida en el Borgo (Arlù o 200 Gradi). En julio no hay audiencias.
+- **Lunes:** el Castillo cierra: por fuera ~30, y lo de después se adelanta.
+- **Miércoles (audiencia):** la mañana va al revés y la Cúpula al final, cuando acaba la audiencia (desde las 12:30): Piazza Navona, de camino el Panteón y Via dei Coronari, el Puente, el Castillo por dentro, la Plaza de San Pedro, la Cúpula y comida en el Borgo (Arlù o 200 Gradi). El día empieza a su hora. En julio no hay audiencias.
 - **Experiencias:**
   - **Arte y Museos:** los Capitolinos ~2 h 30.
   - **Mercadillos:** el Santo Bambino en Santa Maria in Aracoeli.
@@ -490,6 +498,9 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 **Lista de «Prefiero quedarme en Roma»:** Villa Farnesina · Santa Cecilia in Trastevere · Catacumbas de San Calixto · Vía Appia Antica · el Coliseo desde la terraza de Largo Gaetana Agnesi.
 
 - **Mañana:**
+  - Campo de' Fiori, con su mercado (solo por la mañana, de lunes a sábado) ~30
+  - Plaza Farnese ~15
+  - *de camino:* Ponte Sisto
   - Villa Farnesina (los frescos de Rafael) ~45 (⚠️ de 9:00 a 14:00; cierra el domingo)
   - *de camino:* Santa Maria in Trastevere
   - Santa Cecilia in Trastevere ~40

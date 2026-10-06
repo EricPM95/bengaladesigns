@@ -449,7 +449,7 @@
   "D1-corto": {
    "id": "D1-corto",
    "nombre": "Día entero",
-   "titulo_documento": "Día entero · D1-corto (la Roma antigua, el centro y Trastevere, por fuera)",
+   "titulo_documento": "Día entero · D1-corto (la Roma antigua, el centro y Trastevere)",
    "partes": {
     "unica": {
      "manana": [
@@ -528,7 +528,7 @@
      "comida": {
       "restaurante": "Nonna Betta",
       "alternativa": "Giggetto al Portico d'Ottavia",
-      "tercera": null,
+      "tercera": "Piperno",
       "zona": "en el Barrio Judío",
       "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
      },
@@ -690,7 +690,7 @@
   "D0-medio": {
    "id": "D0-medio",
    "nombre": "Medio día del Vaticano",
-   "titulo_documento": "Medio día del Vaticano · D0-medio (por fuera)",
+   "titulo_documento": "Medio día del Vaticano · D0-medio",
    "partes": {
     "manana": {
      "manana": [
@@ -1138,7 +1138,7 @@
      "comida": {
       "restaurante": "Nonna Betta",
       "alternativa": "Giggetto al Portico d'Ottavia",
-      "tercera": null,
+      "tercera": "Piperno",
       "zona": "en el Barrio Judío",
       "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
      },
@@ -1674,7 +1674,15 @@
       }
      }
     ]
-   }
+   },
+   "sugerencias": [
+    {
+     "doc": "la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.",
+     "lugar": "Mercados de Trajano",
+     "titulo": "Columna de Trajano y Mercados de Trajano",
+     "salvo_dia": "D6"
+    }
+   ]
   },
   "D2": {
    "id": "D2",
@@ -2158,7 +2166,7 @@
      "comida": {
       "restaurante": "Giggetto al Portico d'Ottavia",
       "alternativa": "Nonna Betta",
-      "tercera": null,
+      "tercera": "Piperno",
       "zona": null,
       "doc": "Giggetto al Portico d'Ottavia (o Nonna Betta)"
      },
@@ -3040,7 +3048,7 @@
        "lugar": "Piazza del Popolo",
        "modo": null,
        "doc": "Piazza del Popolo ~15",
-       "min": 15
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -3162,7 +3170,7 @@
    "variantes": [
     {
      "id": "lunes_sin_galeria",
-     "doc": "si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45), después de la Fuente del Tritón;",
+     "doc": "si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.",
      "cuando": {
       "cerrado": "Galería Borghese"
      },
@@ -3182,8 +3190,7 @@
          }
         }
        ]
-      },
-      "empieza": "09:30"
+      }
      }
     },
     {
@@ -3729,6 +3736,14 @@
       },
       {
        "tipo": "parada",
+       "lugar": "Mercados de Trajano",
+       "titulo": "Columna de Trajano y Mercados de Trajano",
+       "modo": "dentro",
+       "doc": "Columna de Trajano y Mercados de Trajano ~1 h",
+       "min": 60
+      },
+      {
+       "tipo": "parada",
        "lugar": "Altar de la Patria",
        "titulo": "Terraza del Altar de la Patria",
        "foto": "Terraza del Altar de la Patria",
@@ -3931,6 +3946,31 @@
      "manana": [
       {
        "tipo": "parada",
+       "lugar": "Campo de' Fiori",
+       "titulo": "Campo de' Fiori, con su mercado (solo por la mañana, de lunes a sábado)",
+       "modo": null,
+       "doc": "Campo de' Fiori, con su mercado (solo por la mañana, de lunes a sábado) ~30",
+       "min": 30,
+       "notas": [
+        "solo por la mañana, de lunes a sábado"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Farnese",
+       "modo": null,
+       "doc": "Plaza Farnese ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ponte Sisto",
+       "modo": "camino",
+       "doc": "Ponte Sisto",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
        "lugar": "Villa Farnesina",
        "modo": null,
        "doc": "Villa Farnesina (los frescos de Rafael) ~45 (⚠️ de 9:00 a 14:00; cierra el domingo)",
@@ -4085,6 +4125,12 @@
      },
      "ops": {
       "manana": {
+       "ajustar": {
+        "Campo de' Fiori": {
+         "modo": "camino",
+         "min": 5
+        }
+       },
        "cambiar": {
         "Iglesia de Santa Maria in Trastevere": {
          "tipo": "parada",

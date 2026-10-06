@@ -33,7 +33,14 @@ const museosTardeBorgo = camino('Via della Conciliazione', "Castillo de Sant'Ang
 const luces = P('Luces de Navidad del Tridente', 30, 'fuera', { protegido: false })
 const aracoeliCamino = P('Santo Bambino de Aracoeli', 5, 'camino')
 
+// Lo que el usuario pidió en una tanda aparte (docs/dias/PARA_CODE_TANDA6C.md) y que el documento no trae: cada cambio CITA la frase de la tanda de la que sale.
+const TANDA_6C = 'docs/dias/PARA_CODE_TANDA6C.md'
+
 export default {
+  ajustes_base: [
+    { fuente: TANDA_6C, doc: 'la Piazza del Popolo pasa a ~30 por la tarde', dia: 'D4', parte: 'tarde', ajustar: { 'Piazza del Popolo': { min: 30 } } },
+    { fuente: TANDA_6C, doc: 'como tercera opción de la comida del Gueto', tercera_comida: { restaurante: 'Piperno', zona: 'Barrio Judío' } },
+  ],
   dias: {
     // ── Roma en un día ────────────────────────────────────────────────────────────────────────────────────────────
     D0: {
@@ -97,6 +104,8 @@ export default {
 
     // ── La Roma antigua ─────────────────────────────────────────────────────────────────────────────────────────────────
     D1: {
+      // «Si te sobra tiempo» de HOY (antes de comer): lo que el documento sugiere, salvo que el viaje lleve el día propio de ese sitio.
+      sugerencias: [{ doc: 'la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.', lugar: 'Mercados de Trajano', titulo: 'Columna de Trajano y Mercados de Trajano', salvo_dia: 'D6' }],
       variantes: [
         { id: 'sabado_panteon', doc: 'el sábado el Panteón cierra a las 17:00 por la misa: aviso «entra antes».', cuando: { dia_semana: ['sábado'] }, ops: { tarde: { ajustar: { Panteón: { cierra: '17:00' } } } } },
         { id: 'free_tour_tarde', doc: 'Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
@@ -204,7 +213,7 @@ export default {
     // ── Villa Borghese, el Popolo y la Plaza de España ────────────────────────────────────────────────────────────────────────
     D4: {
       variantes: [
-        { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45), después de la Fuente del Tritón;', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] }, empieza: '09:30' } },
+        { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] } } },
         { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno; la Plaza de España y Via Condotti van de camino (el tour ya pasó).', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },
       ],
       experiencias: {
@@ -265,7 +274,7 @@ export default {
     // ── La Vía Appia y Trastevere tranquilo ───────────────────────────────────────────────────────────────────────────────────────
     D7: {
       variantes: [
-        { id: 'domingo_farnesina', doc: 'Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello.', cuando: { dia_semana: ['domingo'] }, ops: { manana: { cambiar: { 'Iglesia de Santa Maria in Trastevere': P('Santa Maria in Trastevere', 25, 'dentro') } } } },
+        { id: 'domingo_farnesina', doc: 'Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello.', cuando: { dia_semana: ['domingo'] }, ops: { manana: { ajustar: { "Campo de' Fiori": { modo: 'camino', min: 5 } }, cambiar: { 'Iglesia de Santa Maria in Trastevere': P('Santa Maria in Trastevere', 25, 'dentro') } } } },
       ],
       lluvia_doc: 'sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.',
       lluvia_ops: lluvia({ ops: { tarde: { cambiar: { 'Via Appia Antica': P('Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela', 30, 'fuera', { titulo: 'La Vía Appia en taxi hasta la tumba de Cecilia Metela' }) }, ajustar: { 'Catacumbas de San Calixto': { min: 90 } } } } }),

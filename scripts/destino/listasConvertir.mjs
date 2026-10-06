@@ -290,12 +290,26 @@ for (const seccion of secciones) {
 // ── Variantes, pool, experiencias (prosa del documento escrita como datos, con su frase citada) ──────────────────────
 for (const [id, extra] of Object.entries(variantes.dias ?? {})) {
   if (!dias[id]) { duda(id, `Las variantes hablan de un día que no está en el documento: ${id}.`, 'variantes'); continue }
-  for (const key of ['variantes', 'pool', 'experiencias']) if (extra[key]) dias[id][key] = extra[key]
+  for (const key of ['variantes', 'pool', 'experiencias', 'sugerencias']) if (extra[key]) dias[id][key] = extra[key]
   if (extra.empieza) dias[id].empieza = extra.empieza
   if (extra.lluvia_ops && dias[id].lluvia) dias[id].lluvia.ops = extra.lluvia_ops
   // Cada frase citada tiene que seguir en el documento.
-  const citas = [...(extra.variantes ?? []).map((v) => v.doc), ...Object.values(extra.pool ?? {}).map((p) => p.doc), ...Object.values(extra.experiencias ?? {}).map((p) => p.doc), extra.lluvia_doc].filter(Boolean)
+  const citas = [...(extra.variantes ?? []).map((v) => v.doc), ...Object.values(extra.pool ?? {}).map((p) => p.doc), ...Object.values(extra.experiencias ?? {}).map((p) => p.doc), ...(extra.sugerencias ?? []).map((x) => x.doc), extra.lluvia_doc].filter(Boolean)
   for (const cita of citas) if (!md.includes(cita)) duda(id, `La frase citada ya no está en el documento: «${cita}».`, 'variantes')
+}
+
+// ── Cambios pedidos en la tanda (cada uno cita su frase en el fichero de la tanda) ──────────────────────────────────────
+for (const cambio of variantes.ajustes_base ?? []) {
+  const fuente = fs.existsSync(cambio.fuente) ? fs.readFileSync(cambio.fuente, 'utf8') : ''
+  const sinNegritas = (t) => String(t).split('**').join('')
+  if (!sinNegritas(fuente).includes(sinNegritas(cambio.doc))) { duda(cambio.dia ?? 'todos', `La frase citada ya no está en ${cambio.fuente}: «${cambio.doc}».`, 'ajustes'); continue }
+  for (const dia of Object.values(dias)) {
+    if (cambio.dia && dia.id !== cambio.dia) continue
+    for (const parte of Object.values(dia.partes)) {
+      if (cambio.ajustar) for (const stop of parte[cambio.parte] ?? []) if (cambio.ajustar[stop.lugar]) Object.assign(stop, cambio.ajustar[stop.lugar])
+      if (cambio.tercera_comida && parte.comida && !parte.comida.tercera && restaurantes.get(norm(parte.comida.restaurante))?.zone === cambio.tercera_comida.zona) parte.comida.tercera = cambio.tercera_comida.restaurante
+    }
+  }
 }
 
 // ── Comprobaciones de lo convertido ───────────────────────────────────────────────────────────────────────────────
