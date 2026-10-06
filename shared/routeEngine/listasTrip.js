@@ -32,6 +32,7 @@ import { availableForTrip, seasonFit } from './availability.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
+import { claseDeReserva } from './listasReservas.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 
@@ -43,7 +44,7 @@ const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera 
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
   inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
-  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
+  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
 /** Cuántos extras del pool se pueden elegir: 2 días, 2; 3, 3; 4, 4; 5 o más, 5. */
@@ -206,8 +207,9 @@ export function planListasTrip(args) {
     return c
   }
 
+  // (El zigzag mira dónde está cada sitio, no por qué lado del Foro se entra: ese lado solo cuenta para el tiempo de andar.)
   const reglas = crearReglas({
-    coordsOf, nivelDe, walk: (a, b) => walkLeg(a, b), meters,
+    coordsOf: (item) => (item.entrada_en ? coordsOf({ ...item, entrada_en: undefined }) : coordsOf(item)), nivelDe, walk: (a, b) => walkLeg(a, b), meters,
     cerradoEnFranja: (item) => item.cerrado_todo_el_dia === true,
   })
 
@@ -243,6 +245,7 @@ export function planListasTrip(args) {
     weekday: hours.weekday, dateIso: calendar.hasDates ? hours.dateIso : null, month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null,
     hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, entradas, poolNames, experiencias: selected, orden: order, parte, enFechas,
     cerrado: (name) => closedThatDay(name, day),
+    abiertoA: (name, start, dur) => { const place = placeByName.get(name); return !place || openCheck(place, start, dur, hours).ok === true },
   })
 
   const preparar = (id, index) => {
@@ -350,6 +353,9 @@ export function planListasTrip(args) {
       })
     }
     host.aplicadas.push(`reserva:${hora}`)
+    // Regla 17: si el viajero insiste en una hora sin lista escrita, se aplica la regla general (4) y queda apuntado.
+    const clase = claseDeReserva(host.dia, lugar, hora, { tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
+    if (clase.clase === 'sin_lista' || clase.clase === 'no_cabe') host.log.push({ id: null, lugar, sitio: lugar, que: 'aviso', causa: clase.clase === 'sin_lista' ? `reserva sin lista: ${lugar} a las ${hora} no tiene lista escrita para este día; se aplica la regla general (4)` : `reserva que no cabe: ${lugar} a las ${hora} es una combinación que no cabe; se aplica la regla general (4)` })
   }
 
   // ── Un día: de la lista al día con sus horas orientativas ───────────────────────────────────────────────────────
@@ -381,7 +387,7 @@ export function planListasTrip(args) {
     const t = draft.trabajo
     if (!draft.soloTarde) {
       for (const stop of t.manana) items.push(aItem(stop, 'manana'))
-      if (t.comida) items.push({ ...t.comida, kind: 'comida', franja: 'comida', id: idDe({ kind: 'comida', restaurante: t.comida.restaurante }), min: cfg.comida_min, restaurante_escrito: t.comida.restaurante })
+      if (t.comida) items.push({ ...t.comida, kind: 'comida', franja: 'comida', id: idDe({ kind: 'comida', restaurante: t.comida.restaurante }), min: t.comida.min ?? cfg.comida_min, restaurante_escrito: t.comida.restaurante })
     }
     for (const stop of t.tarde) items.push(aItem(stop, 'tarde'))
     if (t.cena) items.push({ ...t.cena, kind: 'cena', franja: 'cena', id: idDe({ kind: 'cena', restaurante: t.cena.restaurante }), min: cfg.cena_min, restaurante_escrito: t.cena.restaurante })
@@ -651,11 +657,17 @@ export function planListasTrip(args) {
       const base = reglas.todas(lista, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })
       // (Lo que, puesta la hora fija, no cabe sin volver sobre sus pasos pasa a «Si te sobra tiempo»: `fueraSet`.)
       let fueraSet = new Set()
+      // (Un taxi escrito hasta la comida —el de Navona al Borgo— viaja con ella.)
+      const trasladosDeLaComida = comidaU ? comidaU.items.filter((it) => it !== comidaU.head) : []
       const montar = (A, extras = []) => {
         const dentro = new Set(A.flatMap((u) => u.items.map((it) => it.id)))
-        const despues = unidades.filter((u) => !dentro.has(u.head.id) && !(mediodia && u === comidaU) && !fueraSet.has(u.head.id))
+        let despues = unidades.filter((u) => !dentro.has(u.head.id) && !(mediodia && u === comidaU) && !fueraSet.has(u.head.id))
+        // Si la hora fija acaba ya pasado el mediodía y la comida no ha cabido antes, la comida va justo después de ella (en la zona), no detrás de lo que quedaba de la mañana.
+        const finFija = H + (F.min ?? 0)
+        const comidaCercaDeLaFija = Boolean(comidaU) && coordsOf(comidaU.head) && coordsF && walkLeg(coordsOf(comidaU.head), coordsF) <= cfg.comida_junto_min
+        if (comidaU && comidaCercaDeLaFija && !mediodia && !dentro.has(comidaU.head.id) && finFija >= toMin(cfg.comida_despues_de_fija_desde)) despues = [...despues.filter((u) => u === comidaU), ...despues.filter((u) => u !== comidaU)]
         const iniciales = [...plano(A), ...extras]
-        return { lista: [...iniciales, ...(comidaAntes ? [comidaAntes] : []), ...(L ? [L] : []), F, ...plano(despues)], antesComida: iniciales }
+        return { lista: [...iniciales, ...(comidaAntes ? [...trasladosDeLaComida, comidaAntes] : []), ...(L ? [L] : []), F, ...plano(despues)], antesComida: iniciales }
       }
       const nuevasRompe = (lista2) => reglas.nuevas(base, reglas.todas(lista2, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })).length > 0
       const cabe = (items) => llegadaA(items, objetivoC) <= objetivoT
@@ -692,7 +704,7 @@ export function planListasTrip(args) {
         const acortadas = []
         const acortarUnidad = (u, paso) => {
           const h = u.head
-          if (h.kind !== 'stop' || esFijo(h) || h.protegido || h.tipo === 'desayuno' || h.relleno_no_quitar) return null
+          if (h.kind !== 'stop' || esFijo(h) || h.protegido || h.tipo === 'desayuno' || h.relleno_no_quitar || protegidaPorReserva(lista, h)) return null
           let nuevo = null
           if (paso === 'fuera' && h.modo === 'dentro' && fueraMin(h) < h.min) nuevo = { ...h, modo: 'fuera', min: fueraMin(h) }
           else if (paso === 'camino' && h.modo === 'fuera' && h.min > 5) nuevo = { ...h, modo: 'camino', min: 5 }
@@ -711,6 +723,15 @@ export function planListasTrip(args) {
             acortadas.push({ id: cand.u.head.id, lugar: cand.u.head.lugar, titulo: cand.u.head.titulo ?? null, paso })
           }
         }
+        // Una comida de 45 min es normal: se prueba antes de quitar nada (una de 30 min, solo si quitar no basta).
+        const comidaMasCorta = (dur) => {
+          const k = quedan.findIndex((u) => u.head.kind === 'comida' && u.head.min > dur)
+          if (k < 0) return
+          const u = quedan[k]
+          const acortar = (it) => (it === u.head ? { ...it, min: dur } : it)
+          quedan[k] = { ...u, head: acortar(u.head), items: u.items.map(acortar) }
+        }
+        if (!cabe(plano([...A, ...quedan]))) comidaMasCorta(45)
         while (!cabe(plano([...A, ...quedan]))) {
           const quitable = quedan.map((u, i) => ({ u, i })).filter(({ u }) => puedeSobrar(u.head))
             .sort((a, b) => (nivelDe(b.u.head.lugar) ?? 3) - (nivelDe(a.u.head.lugar) ?? 3) || b.i - a.i)[0]
@@ -719,14 +740,7 @@ export function planListasTrip(args) {
           recortadas.add(quitable.u.head.id)
         }
         // Si quitar no basta, la comida de antes se hace más corta (45 o 30 min), como cuando va justo antes de la hora fija.
-        for (const dur of [45, 30]) {
-          if (cabe(plano([...A, ...quedan]))) break
-          const k = quedan.findIndex((u) => u.head.kind === 'comida' && u.head.min > dur)
-          if (k < 0) break
-          const u = quedan[k]
-          const acortar = (it) => (it === u.head ? { ...it, min: dur } : it)
-          quedan[k] = { ...u, head: acortar(u.head), items: u.items.map(acortar) }
-        }
+        if (!cabe(plano([...A, ...quedan]))) comidaMasCorta(30)
         if (cabe(plano([...A, ...quedan])) && (recortadas.size > 0 || acortadas.length > 0 || quedan.some((u) => u.head.min !== candidatas.find((c) => c.head.id === u.head.id)?.head.min))) variantes.push({ n: candidatas.length, A1: [...A, ...quedan], excl0: recortadas, acortadas })
       }
       for (let n = cabenN; n >= 0; n--) variantes.push({ n, A1: [...A, ...candidatas.slice(0, n)], excl0: new Set() })
@@ -754,9 +768,9 @@ export function planListasTrip(args) {
           excl.add(culpable.head.id)
         }
         if (!valido) continue
-        const coste = excl.size * 2 + Math.max(0, sobra(plano(A1))) / 60
+        // El orden de lo que se hace con lo que no cabe antes de una hora fija: primero MOVERLO (antes o después de la hora fija), luego ACORTAR otras cosas y solo al final QUITAR lo de menos importancia.
+        const coste = (excl.size > 0 ? 100 : 0) + ((v.acortadas ?? []).length > 0 ? 50 : 0) + excl.size * 2 + Math.max(0, sobra(plano(A1))) / 60
         if (!mejor || coste < mejor.coste) mejor = { n, A1, excl, coste, porTiempo: v.excl0, acortadas: v.acortadas ?? [] }
-        if (excl.size === 0) break
       }
       fueraSet = new Set()
       let tomadas = 0
@@ -847,6 +861,8 @@ export function planListasTrip(args) {
       if (!Array.isArray(lista)) continue
       for (const st of lista) if (st?.lugar && st.modo === 'fuera' && st.min && !fueraDelDocumento.has(st.lugar)) fueraDelDocumento.set(st.lugar, st.min)
     }
+    // Una reserva nunca pasa un imprescindible que se visita por dentro (la Basílica, el Foro, el Panteón…) a «por fuera» o «de camino» la primera vez: se mueve, antes o después, y solo se acortan otras cosas.
+    const protegidaPorReserva = (lista, it) => it.kind === 'stop' && it.modo === 'dentro' && (nivelDe(it.lugar) ?? 3) === 1 && !it.acortable && !placeByName.get(it.lugar)?.acortable && !estado.dentro.has(it.lugar)
     const fueraMin = (item) => Math.min(item.min, fueraDelDocumento.get(item.lugar) ?? placeByName.get(item.lugar)?.minutos_fuera ?? OUTSIDE_MINUTES)
     const exceso = (lista) => {
       const sim = simular(lista)
@@ -896,8 +912,9 @@ export function planListasTrip(args) {
       const excesoAntes = exceso(lista).manana
       if (franja === 'manana') {
         // (Pasar de por dentro a por fuera no quita nada: vale también para un imprescindible la primera vez, que se sigue viendo.)
+        const diaConReserva = lista.some((it) => it.kind === 'stop' && it.hora && !it.llegada)
         const dentroAcortables = lista
-          .filter((it) => it.kind === 'stop' && it.franja === franja && it.modo === 'dentro' && !esFijo(it) && !it.protegido && it.tipo !== 'desayuno' && !it.relleno_no_quitar)
+          .filter((it) => it.kind === 'stop' && it.franja === franja && it.modo === 'dentro' && !esFijo(it) && !it.protegido && it.tipo !== 'desayuno' && !it.relleno_no_quitar && !(diaConReserva && protegidaPorReserva(lista, it)))
           .sort((a, b) => valorDe(a, nivelDe) - valorDe(b, nivelDe) || b.n - a.n)
         for (const item of dentroAcortables) {
           {
@@ -928,6 +945,9 @@ export function planListasTrip(args) {
         const sp = [...spare, { ...item, franja }]
         const despues = reglas.todas(nueva, { spare: sp, vistosAntes: estado.vistos, dentroAntes: estado.dentro })
         if (reglas.nuevas(antes, despues).length > 0) continue
+        // (Solo se quita si de verdad ayuda: quitar algo que va antes de una hora fija, cuando después hay que esperar a ella, no adelanta nada.)
+        const mejora = franja === 'manana' ? exceso(nueva).manana < exceso(lista).manana : exceso(nueva).tarde < exceso(lista).tarde
+        if (!mejora) continue
         apuntarCaminos(caminos, item)
         spare.push({ ...item, franja, razon: 'cabe', spareReason: franja === 'manana' ? 'Si te da tiempo, por la mañana' : 'Si te da tiempo, por la tarde' })
         log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'sobra', causa: franja === 'manana' ? 'no cabe en la mañana (la comida iba a caer después de las 14:30): pasa a «Si te sobra tiempo»' : 'no cabe en la tarde: pasa a «Si te sobra tiempo»' })
@@ -1143,7 +1163,8 @@ export function planListasTrip(args) {
       const holgura = finFranja - fin
       // El hueco antes de una entrada: si lo siguiente que le queda es la «Llegada a…» de una reserva y sobran más de 30 min, HOY lo dice («Tienes 50 min antes de tu entrada») y sugiere algo cercano.
       const siguienteReal = sim.find((it) => it.kind !== 'traslado')
-      const huecoReserva = siguienteReal && siguienteReal.kind === 'stop' && siguienteReal.llegada ? siguienteReal.t0 - ahora : 0
+      const esperaEscrita = siguienteReal && siguienteReal.kind === 'stop' && !siguienteReal.llegada && siguienteReal.no_antes && !siguienteReal.espera_abre
+      const huecoReserva = siguienteReal && siguienteReal.kind === 'stop' && (siguienteReal.llegada || esperaEscrita) ? siguienteReal.t0 - ahora : 0
       const estadoTiempo = huecoReserva > cfg.hueco_reserva_min ? 'hueco' : holgura > cfg.vas_bien_min ? 'bien' : holgura < 0 ? 'justo' : 'normal'
       let drop = null
       if (estadoTiempo === 'justo') {
@@ -1182,16 +1203,18 @@ export function planListasTrip(args) {
         // Antes de comer: lo que se sugiere tiene que quedar cerca de donde empieza la tarde (si no, la tarde vuelve sobre sus pasos).
         const inicioTarde = !hueco && antesDeMesa && tipoMesa === 'comida' ? coordsOf(resto.find((it) => it.kind === 'stop' && it.franja === 'tarde' && !it.llegada) ?? {}) : null
         const llegadaC = hueco ? coordsOf(siguienteReal) : null
+        const siguienteLugar = hueco ? (siguienteReal.llegada ? siguienteReal.lugar : siguienteReal.lugar) : null
         const usadas = new Set([...estado.mesas, ...restaurantesDocumento])
         for (const it of marcada) if (it.kind === 'comida' || it.kind === 'cena') usadas.delete(it.restaurante)
         // 1º, lo de «Si te sobra tiempo» de ese día
         if (!hueco) for (const sp of spare) salida.push({ item: { ...sp, kind: 'stop' }, nota: null })
         // 2º, lo que el documento sugiere para este día (salvo que el viaje lleve ya ese sitio)
-        for (const sg of written.days[draft.id]?.sugerencias ?? []) {
+        const escritas = (written.days[draft.id]?.sugerencias ?? []).flatMap((sg) => (sg.lugares ? sg.lugares.map((lugar) => ({ ...sg, lugar })) : [sg]))
+        for (const sg of escritas) {
           const place = placeByName.get(sg.lugar)
           if (!place || salida.some((x) => x.item.lugar === sg.lugar) || vistosHoy.has(sg.lugar) || hechasHoy.includes(sg.lugar) || estado.vistos.has(sg.lugar) || yaSale(sg.lugar)) continue
           // (La del hueco antes de una entrada solo cuando esa entrada es la suya; las demás, no.)
-          if (sg.antes_de ? !hueco || siguienteReal.lugar !== sg.antes_de : hueco) continue
+          if (sg.antes_de ? !hueco || siguienteLugar !== sg.antes_de : hueco) continue
           if (sg.salvo_dia && drafts.some((d) => d !== draft && d.id === sg.salvo_dia)) continue
           const aqui = posActual && place.coordinates ? walkLeg(posActual, place.coordinates) : 0
           const minutos = Math.min(sg.min ?? place.minutos_fuera ?? place.duration_minutes ?? 60, 60)
@@ -1252,7 +1275,7 @@ export function planListasTrip(args) {
         }
         sugerencias = salida
       }
-      comprobacionTiempo = { estado: estadoTiempo, holgura: estadoTiempo === 'hueco' ? huecoReserva : holgura, antesDeComer: quedan.length === 0 && estadoTiempo !== 'hueco', franja: franjaActual, drop, sugerencias }
+      comprobacionTiempo = { estado: estadoTiempo, huecoDe: estadoTiempo === 'hueco' ? { nombre: siguienteReal.titulo ?? siguienteReal.lugar, entrada: Boolean(siguienteReal.llegada) } : null, holgura: estadoTiempo === 'hueco' ? huecoReserva : holgura, antesDeComer: quedan.length === 0 && estadoTiempo !== 'hueco', franja: franjaActual, drop, sugerencias }
     }
 
     // 5.9 Nocturnas (regla 12): la escrita; si ya salió, la imprescindible que falte; si no, la más cercana a la cena que no haya salido.

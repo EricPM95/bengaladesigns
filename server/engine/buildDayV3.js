@@ -197,6 +197,7 @@ import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngin
 import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
 import { closedAnchorNotice, closedOutsideNotice } from '../../shared/routeEngine/closedNotices.js'
 import { anyTransitRuns } from '../../shared/routeEngine/holidayTransit.js'
+import { avisoPagoEntrada } from '../../shared/routeEngine/pagoEntrada.js'
 
 /**
  * Un texto que manda al bus o al metro, en un festivo y a una hora en que no circulan (PROMPT_ROMA_NAVIDAD 1): el taxi en su
@@ -528,6 +529,9 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // El aviso del día curado ("a esta hora ya hay gente; si puedes, pásate temprano"). La `nota` es INTERNA
     // (instrucciones para nosotros y el motor): nunca sale (PROMPT_AJUSTES_20_RUTAS A.2).
     if (visit.place.stopNotice) stop.notice = visit.place.stopNotice
+    // La Fontana de Trevi cobra 2 € por la zona de dentro de 9:00 a 22:00 (desde el 2-feb-2026): el aviso depende de la hora a la que se llega.
+    const pagoEntrada = avisoPagoEntrada(visit.place.entrada_de_pago, visit.start, tripDay.hours?.weekday)
+    if (pagoEntrada) stop.notice = [stop.notice, pagoEntrada].filter(Boolean).join('. ')
     if (visit.place.waitOpensAt) stop.wait_opens_at = visit.place.waitOpensAt
     if (visit.place.waitHint) stop.wait_hint = visit.place.waitHint
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
@@ -754,6 +758,13 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   // El paseo de noche ANTES de cenar y la cena detrás (`noche_antes_de_cenar`, el viaje de 1 día en verano): la cena se retrasa hasta que acaba el paseo.
   const nightFirst = Boolean(tripDay.curatedDay?.nocheAntesDeCenar) && chainForNight.length > 0 && Boolean(dinnerMeal)
   const nightStops = chainForNight.length > 0 ? (nightFirst ? nightStopsFor(chainForNight.map((entry) => ({ ...entry, afterDinnerOnly: false })), dayVisitedNames, { ...nightTimingInput, dinnerStart: 26 * 60, dinnerEnd: 27 * 60 }) : nightStopsFor(chainForNight, dayVisitedNames, nightTimingInput)) : []
+  // La noche en una fuente de pago (Trevi): si la hora cae antes de las 22:00, el aviso de los 2 €.
+  for (const nightStop of nightStops) {
+    const entry = (destData.night_experiences ?? []).find((candidate) => candidate.name === nightStop.name)
+    const placeOfNight = entry?.muestra?.length ? destData.places?.find((place) => place.id === entry.muestra[0]) : null
+    const pagoNoche = avisoPagoEntrada(placeOfNight?.entrada_de_pago, toMinutes(nightStop.suggested_time), tripDay.hours?.weekday)
+    if (pagoNoche) nightStop.notice = [nightStop.notice, pagoNoche].filter(Boolean).join('. ')
+  }
   if (nightFirst && nightStops.length > 0) {
     const lastNight = nightStops.at(-1)
     const dinnerOut = meals.find((meal) => meal.time === 'dinner')
@@ -795,6 +806,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
             status: tripDay.timeCheck.estado,
             spare_minutes: Math.round(tripDay.timeCheck.holgura),
             before_meal: tripDay.timeCheck.antesDeComer,
+            gap_for: tripDay.timeCheck.huecoDe ?? null,
             franja: tripDay.timeCheck.franja,
             drop: tripDay.timeCheck.drop,
             suggestions: tripDay.timeCheck.sugerencias.map(({ item, nota, place, cambioMesa }, index) => ({ ...buildVisitStop({ unitId: `${tripDay.curatedDay?.id ?? 'dia'}:sugerencia:${index}`, place, start: 0, end: item.min ?? 20 }, index, [{ place }]), suggested_time: '', ...(nota ? { add_note: nota } : {}), ...(cambioMesa ? { meal_change: { meal_time: cambioMesa.comida ? 'lunch' : 'dinner', restaurant: { name: cambioMesa.restaurante, coordinates: { lat: cambioMesa.coordenadas[0], lng: cambioMesa.coordenadas[1] }, zone: cambioMesa.zona }, ...(cambioMesa.noches?.length ? { night_stops: nightStopsFor(cambioMesa.noches, dayVisitedNames, { ...nightTimingInput, dinnerCoords: asPoint(cambioMesa.coordenadas) }).map((stop) => ({ ...stop, orientative_time: true, franja: 'noche' })) } : {}) } } : {}) })),

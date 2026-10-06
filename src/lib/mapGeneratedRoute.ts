@@ -714,6 +714,7 @@ function mapDay(
     phaseType: asPhaseType(generated.phase_type),
     title: generated.title,
     ...(generated.curated_day?.name ? { curatedTitle: generated.curated_day.name } : {}),
+    ...(generated.curated_day?.id ? { curatedId: generated.curated_day.id } : {}),
     transport: transportByDay.get(generated.day_number),
     // (Un lugar que sale dos veces el mismo día, el parque de Villa Borghese en D4, no comparte id: el número del mapa y la clave de la
     // lista salen de él.)

@@ -4,7 +4,8 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { tripDays } from '../shared/routeEngine/tripSkeleton.js'
-import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor } from './engine/writtenDays.js'
+import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
+import { RESERVAS_GRANDES, consejoDeReserva } from '../shared/routeEngine/listasReservas.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -5384,6 +5385,20 @@ app.post('/api/adjust-day', async (req, res) => {
 })
 
 // HOY (Tanda 6b): «Vas bien de tiempo» / «Vas justo». Cada vez que el viajero marca «Visto», compara la hora real con lo que le queda de la franja. Nunca cambia nada: solo cuenta y propone. Sin Claude.
+// Reservas «solo lo escrito» (regla 17, Tanda 6e): al meter una reserva se enseñan las mejores horas del día y, si la hora no tiene lista escrita o la combinación no cabe,
+// se avisa y se propone otra hora u otro día. Nada de Claude: sale de las listas escritas (listas.json).
+app.post('/api/reservation-advice', (req, res) => {
+  const { destination, curated_day_id, place_names, time, has_free_tour, excursion_morning } = req.body ?? {}
+  const written = typeof destination === 'string' ? writtenDaysFor(destination.toLowerCase()) : null
+  const dia = written?.days?.[curated_day_id]
+  const lugar = (Array.isArray(place_names) ? place_names : []).find((name) => RESERVAS_GRANDES.has(name))
+  if (!dia || !lugar || !/^\d{1,2}:\d{2}$/.test(String(time ?? ''))) {
+    res.json({ estado: 'sin_definir', mejores: [], textoMejores: null, mensaje: null, propone: null })
+    return
+  }
+  res.json({ ...consejoDeReserva(dia, lugar, String(time), { tieneFreeTour: Boolean(has_free_tour), excursionManana: Boolean(excursion_morning) }), lugar })
+})
+
 app.post('/api/check-time', async (req, res) => {
   const { destination, answers, all_days, day_number, done_names, now_minutes, must_include_places } = req.body ?? {}
   const destData = findPipelineV2Data(destination)
@@ -5407,7 +5422,7 @@ app.post('/api/check-time', async (req, res) => {
       res.json({ status: 'normal', message: '', spare_minutes: 0, before_meal: false, suggestions: [], drop: null })
       return
     }
-    const message = check.status === 'bien' ? 'Vas bien de tiempo' : check.status === 'hueco' ? `Tienes ${Math.round(check.spare_minutes)} min antes de tu entrada` : check.status === 'justo' ? (check.drop ? `Vas justo. ¿Dejamos ${check.drop.name} para si te sobra tiempo?` : 'Vas justo') : ''
+    const message = check.status === 'bien' ? 'Vas bien de tiempo' : check.status === 'hueco' ? `Tienes ${Math.round(check.spare_minutes)} min antes de ${check.gap_for?.entrada === false ? check.gap_for.nombre : 'tu entrada'}` : check.status === 'justo' ? (check.drop ? `Vas justo. ¿Dejamos ${check.drop.name} para si te sobra tiempo?` : 'Vas justo') : ''
     res.json({ status: check.status, message, spare_minutes: check.spare_minutes, before_meal: check.before_meal, suggestions: check.status === 'bien' || check.status === 'hueco' ? check.suggestions : [], drop: check.status === 'justo' ? check.drop : null })
   } catch (error) {
     console.error('[check-time]', error)

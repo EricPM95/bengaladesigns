@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { Excursion, Route } from '../../../lib/types'
+import type { DayPlan, Excursion, Route } from '../../../lib/types'
 import { dateOfDay, dayLineOf, dayOnDate, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
 
@@ -13,6 +13,15 @@ export interface ReservationTarget {
   excursion?: Excursion | null
   /** El día en que está ahora en la ruta (para decir «la pasamos a tu Día 3» solo si cambia). */
   currentDayId?: string | null
+}
+
+/** El consejo del servidor para una reserva grande (regla 17). */
+interface ReservationAdvice {
+  estado: 'bien' | 'sin_lista' | 'no_cabe' | 'sin_definir'
+  mejores: string[]
+  textoMejores: string | null
+  mensaje: string | null
+  propone: 'otra_hora' | 'otro_dia' | null
 }
 
 type Tab = 'email' | 'file' | 'manual'
@@ -88,34 +97,59 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
   const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId)
   const ready = Boolean(resolvedDay && fields.time && /^\d{1,2}:\d{2}$/.test(fields.time))
 
-  // Tanda 6c: un Free Tour de mañana y los Museos Vaticanos a media tarde el mismo día no caben bien: se pregunta si los Museos pasan a otro día (el viajero decide).
-  const [keepSameDay, setKeepSameDay] = useState(false)
-  const timeMinutes = /^\d{1,2}:\d{2}$/.test(fields.time) ? Number(fields.time.split(':')[0]) * 60 + Number(fields.time.split(':')[1]) : null
-  const tourMuseumClash = Boolean(
-    resolvedDay &&
-      !isExcursion &&
-      !keepSameDay &&
-      target.placeNames.some((name) => /Museos Vaticanos/i.test(name)) &&
-      resolvedDay.stops.some((stop) => stop.isFreeTour) &&
-      timeMinutes !== null &&
-      timeMinutes >= 13 * 60 &&
-      timeMinutes <= 15 * 60,
-  )
-  const moveMuseumsToAnotherDay = () => {
-    if (!resolvedDay) return
-    // El día más cercano que no lleva el Free Tour (ni es de excursión).
-    const candidates = days
-      .filter((day) => day.id !== resolvedDay.id && !day.stops.some((stop) => stop.isFreeTour) && day.dayType !== 'excursion')
-      .sort((a, b) => Math.abs(a.dayNumber - resolvedDay.dayNumber) - Math.abs(b.dayNumber - resolvedDay.dayNumber))
-    const other = candidates[0]
-    if (!other) {
-      setKeepSameDay(true)
+  // Tanda 6e (regla 17, «solo lo escrito»): al meter una reserva grande se enseñan las mejores horas del día y, si la hora no tiene lista escrita o la combinación no cabe,
+  // se avisa y se propone otra hora u otro día. Si el viajero insiste, se guarda y queda apuntado (se aplica la regla general). Sale de /api/reservation-advice (sin Claude).
+  const [advice, setAdvice] = useState<ReservationAdvice | null>(null)
+  const [insist, setInsist] = useState(false)
+  const bigPlace = target.placeNames.find((name) => ['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese'].includes(name)) ?? null
+  const adviceKey = resolvedDay && bigPlace && !isExcursion && /^\d{1,2}:\d{2}$/.test(fields.time) && resolvedDay.curatedId ? `${resolvedDay.id}|${resolvedDay.curatedId}|${bigPlace}|${fields.time}` : null
+  useEffect(() => {
+    setInsist(false)
+    if (!adviceKey || !resolvedDay) {
+      setAdvice(null)
       return
     }
+    let cancelled = false
+    fetch('/api/reservation-advice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        destination: route.destination,
+        curated_day_id: resolvedDay.curatedId,
+        place_names: target.placeNames,
+        time: fields.time,
+        has_free_tour: resolvedDay.stops.some((stop) => stop.isFreeTour),
+        excursion_morning: Boolean(resolvedDay.halfDayExcursion),
+      }),
+    })
+      .then((response) => (response.ok ? (response.json() as Promise<ReservationAdvice>) : null))
+      .then((body) => {
+        if (!cancelled) setAdvice(body)
+      })
+      .catch(() => {
+        if (!cancelled) setAdvice(null)
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adviceKey])
+  const adviceBlocks = Boolean(advice && (advice.estado === 'sin_lista' || advice.estado === 'no_cabe') && !insist)
+  const setDayTo = (day: DayPlan) => {
     if (hasDates) {
-      const iso = dateOfDay(route, other)
+      const iso = dateOfDay(route, day)
       if (iso) set({ dateIso: iso })
-    } else set({ dayNumber: String(other.dayNumber) })
+    } else set({ dayNumber: String(day.dayNumber) })
+  }
+  /** El día más cercano que sirve: con la lista que se busca (el día de la Roma antigua para el Coliseo, el del Vaticano para los Museos) y sin el Free Tour. */
+  const otherDayFor = () => {
+    if (!resolvedDay || !bigPlace) return null
+    const wanted = bigPlace === 'Coliseo' ? ['D1', 'D1-FT'] : bigPlace === 'Galería Borghese' ? ['D4'] : ['D2']
+    return (
+      days
+        .filter((day) => day.id !== resolvedDay.id && !day.stops.some((stop) => stop.isFreeTour) && day.curatedId && wanted.includes(day.curatedId))
+        .sort((a, b) => Math.abs(a.dayNumber - resolvedDay.dayNumber) - Math.abs(b.dayNumber - resolvedDay.dayNumber))[0] ?? null
+    )
   }
 
   const applyRead = (data: { fecha: string | null; hora: string | null; hora_vuelta: string | null; punto_encuentro: string | null; localizador: string | null }) => {
@@ -289,15 +323,25 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
                   Tu reserva es del {shortDateEs(fields.dateIso)}, fuera de las fechas de tu viaje. Revisa la fecha.
                 </p>
               )}
-              {tourMuseumClash && resolvedDay && !outside && (
+              {advice?.textoMejores && !outside && <p className="mt-1.5 text-[13px] leading-snug text-text-soft">{advice.textoMejores}</p>}
+              {adviceBlocks && advice?.mensaje && !outside && (
                 <div className="mt-2 rounded-xl border border-accent-red/40 bg-bg-hover px-3 py-2.5">
-                  <p className="text-[13px] leading-snug text-text">El Free Tour y los Museos a las 14:00 el mismo día no caben bien. ¿Pasamos los Museos a otro día?</p>
-                  <div className="mt-2 flex gap-2">
-                    <button type="button" onClick={moveMuseumsToAnotherDay} className="h-9 flex-1 rounded-full bg-text text-[13px] font-medium text-bg">
-                      Sí, a otro día
-                    </button>
-                    <button type="button" onClick={() => setKeepSameDay(true)} className="h-9 flex-1 rounded-full border border-text/20 text-[13px] font-medium text-text">
-                      No, dejarlos
+                  <p className="text-[13px] leading-snug text-text">{advice.mensaje}</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {advice.estado === 'sin_lista' || (advice.estado === 'no_cabe' && advice.propone === 'otra_hora')
+                      ? advice.mejores.map((hour) => (
+                          <button key={hour} type="button" onClick={() => set({ time: hour.length === 4 ? `0${hour}` : hour })} className="h-9 rounded-full bg-text px-3.5 text-[13px] font-medium text-bg">
+                            A las {hour}
+                          </button>
+                        ))
+                      : null}
+                    {otherDayFor() && (
+                      <button type="button" onClick={() => setDayTo(otherDayFor()!)} className="h-9 rounded-full border border-text/20 px-3.5 text-[13px] font-medium text-text">
+                        Pasarla al Día {otherDayFor()!.dayNumber}
+                      </button>
+                    )}
+                    <button type="button" onClick={() => setInsist(true)} className="h-9 rounded-full border border-text/20 px-3.5 text-[13px] font-medium text-text">
+                      La quiero a esa hora
                     </button>
                   </div>
                 </div>
@@ -334,7 +378,7 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
         </div>
 
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-          <button type="button" disabled={!ready || tourMuseumClash} onClick={save} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+          <button type="button" disabled={!ready || adviceBlocks} onClick={save} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
             {resolvedDay ? `Guardar y ponerla en el Día ${resolvedDay.dayNumber}` : 'Guardar y ponerla en su día'}
           </button>
         </div>

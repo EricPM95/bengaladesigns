@@ -663,6 +663,8 @@ export interface DayPlan {
   title: string
   /** Nombre del día curado del destino ("Roma Antigua y el centro barroco") — el título en DIAS. */
   curatedTitle?: string
+  /** Tanda 6e: el id del día escrito (D0, D1, D2…), para las listas por hora de reserva. */
+  curatedId?: string
   transport?: TransportSegment
   hotel?: HotelSection
   stops: Stop[]
