@@ -228,10 +228,10 @@ function tidyNotIncluded(day, { contentDays, destData, tripDays = [] }) {
   }
   const items = (day.not_included ?? []).map((item) => {
     let reason = item.reason
-    const closedIso = /^(No cabía|En un viaje corto|No te dio tiempo)/.test(reason) ? closedDayOf(item.name) : null
+    const closedIso = /^(No cabía|Para otro momento|En un viaje corto|No te dio tiempo)/.test(reason) ? closedDayOf(item.name) : null
     if (closedIso) return { ...item, reason: `Ese día está cerrado (${labelOfDate(item.name, closedIso)})`, suggestion: 'Cambia las fechas si quieres verlo por dentro' }
-    if (/^No cabía en ese día/.test(reason) || reason === 'No cabía en ningún día del viaje' || reason === 'No te dio tiempo') reason = 'No cabía en este viaje'
-    else if (reason === 'En un viaje corto no entra, y por fuera no hay nada que ver') reason = contentDays === 1 ? 'Solo por dentro con reserva' : 'No cabía en este viaje'
+    if (/^No cabía en ese día/.test(reason) || reason === 'Para otro momento' || reason === 'No te dio tiempo') reason = 'Para otro momento'
+    else if (reason === 'En un viaje corto no entra, y por fuera no hay nada que ver') reason = contentDays === 1 ? 'Solo por dentro con reserva' : 'Para otro momento'
     else if (reason === 'Ese día está cerrado') { const iso = closedDayOf(item.name); reason = `Ese día está cerrado (${iso ? labelOfDate(item.name, iso) : closedLabel(item.name)})` }
     let suggestion = item.suggestion ?? null
     if (suggestion) suggestion = suggestion.replace(/ o elige el ritmo completo/, '')
@@ -424,7 +424,7 @@ async function buildDayBlockV3Inner(
           ? `Solo ${availabilityLabel(item.available)}`
           : item.reason === 'pool_afternoon_taken'
             ? `En 2 días solo hay una tarde para tus lugares elegidos, y es para ${item.takenBy}`
-            : 'No cabía en ningún día del viaje',
+            : 'Para otro momento',
     suggestion: item.reason === 'closed_every_day' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
   }))
 
@@ -516,20 +516,20 @@ function buildCityDayV3(destData, trip, tripDay, options) {
           : item.reason === 'pendiente'
             ? 'Todavía no tiene su sitio escrito en este día'
           : item.reason === 'no_room_day'
-            ? 'No cabía en ese día sin quitar ningún imprescindible'
+            ? 'Para otro momento'
           : item.reason === 'out_of_season'
             ? `Solo ${availabilityLabel(item.available)}`
             : item.reason === 'pool_afternoon_taken'
               ? `En 2 días solo hay una tarde para tus lugares elegidos, y es para ${item.takenBy}`
               : item.reason === 'pool_limit'
                 ? 'Ya has elegido todos los lugares extra que caben en este viaje'
-                : 'No cabía en ningún día del viaje',
+                : 'Para otro momento',
       suggestion: onlyClosures ? (item.reason === 'closed_every_day' || item.reason === 'closed_on_day' ? 'Cambia las fechas o quítalo de tu selección' : null) : item.reason === 'closed_every_day' || item.reason === 'out_of_season' ? 'Cambia las fechas o quítalo de tu selección' : 'Alarga el viaje un día o elige el ritmo completo',
     })),
     // Los avisos del día que no son «Quedó fuera»: llegar tarde a una entrada reservada, la Basílica que cierra pronto.
     ...(trip.dayNotices ?? []).filter((item) => item.dayNumber === tripDay.dayNumber).map((item) => ({ name: item.name, reason: item.reason, suggestion: item.suggestion ?? null, is_notice: true })),
     // Lo que se queda solo con su nocturna no "falta": sale de noche.
-    ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name) || (entry.muestra ?? []).includes(destData.places?.find((place) => place.name === item.name)?.id))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : onlyClosures ? { name: item.name, reason: closedInTrip(item.name), suggestion: null } : item.reason === 'short_trip_no_outside_view' ? { name: item.name, reason: 'En un viaje corto no entra, y por fuera no hay nada que ver', suggestion: 'Márcalo en tu selección si quieres entrar' } : { name: item.name, reason: 'No cabía en ningún día del viaje', suggestion: 'Alarga el viaje un día' })),
+    ...(trip.unplacedEssentials ?? []).filter((item) => ![...nights.values()].flat().some((entry) => (entry.conflicts_with ?? []).includes(item.name) || (entry.muestra ?? []).includes(destData.places?.find((place) => place.name === item.name)?.id))).map((item) => (item.reason === 'closed_every_day' ? { name: item.name, reason: 'Cierra todos los días de tu viaje', suggestion: 'Cambia las fechas si quieres verlo por dentro' } : onlyClosures ? { name: item.name, reason: closedInTrip(item.name), suggestion: null } : item.reason === 'short_trip_no_outside_view' ? { name: item.name, reason: 'En un viaje corto no entra, y por fuera no hay nada que ver', suggestion: 'Márcalo en tu selección si quieres entrar' } : { name: item.name, reason: 'Para otro momento', suggestion: 'Alarga el viaje un día' })),
     // Lo de una mañana o una tarde tipo que no llegó a su hora (ya no se madruga por lo que no es nivel 1).
     // (Si era del pool, se avisa como lo del pool: nunca desaparece en silencio.)
     // (Decisión del usuario, 2026-09-28: lo que la ruta pasa ese día no "quedó fuera"; y si fue un cierre, el motivo es el cierre.)

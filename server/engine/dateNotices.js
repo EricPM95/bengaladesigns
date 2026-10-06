@@ -238,7 +238,7 @@ export function dateNoticesFor(destData, trip, options = {}) {
       const place = placeByName.get(visit.place.name)
       if (!place || !matters(place.name) || !closedOnDay(place, day.hours.weekday ?? weekdayOf(iso), iso)) continue
       const g = grammar(place)
-      addAuto(iso, `${closureSentence(destData, place, iso)} Hemos ajustado el día para enseñárte${g.pronoun} por fuera sin perder tiempo.`, `${capital(g.bare)} ${g.cerrado}`, g.bare)
+      addAuto(iso, `${closureSentence(destData, place, iso)} Lo ves por fuera, sin perder tiempo.`, `${capital(g.bare)} ${g.cerrado}`, g.bare)
     }
   }
 

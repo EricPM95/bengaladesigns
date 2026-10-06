@@ -1,6 +1,6 @@
 // Lista todo lo que el viajero puede ver en Roma y se queda sin foto (paradas de los días escritos, paseos, nocturnas, pool, excursiones).
 //   node scripts/destino/auditarFotos.mjs [api=http://localhost:8787] [destino=roma]
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 
 const a = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const api = a.api ?? 'http://localhost:8787'
@@ -22,7 +22,8 @@ const walk = (node, where) => {
     }
   }
 }
-for (const file of readdirSync(`data/dias/${dest}`).filter((f) => /^D\w+\.json$/.test(f))) walk(JSON.parse(readFileSync(`data/dias/${dest}/${file}`, 'utf8')), `día ${file.replace('.json', '')}`)
+// (Tanda 6b: los días ya no son una tabla por fichero: están en listas.json, uno por clave.)
+for (const [id, day] of Object.entries(JSON.parse(readFileSync(`data/dias/${dest}/listas.json`, 'utf8')).dias ?? {})) walk(day, `día ${id}`)
 for (const place of data.places ?? []) add(place.name, place.is_filler ? 'paseo' : 'pool')
 for (const w of Object.values(data.night_walks ?? {})) for (const stop of w.recorrido ?? []) add(stop, 'paseo nocturno')
 for (const n of data.night_experiences ?? []) add(n.name, 'nocturna')

@@ -8,7 +8,7 @@ interface SpareStopsSectionProps {
 }
 
 /**
- * «Si te sobra tiempo» (Tanda 6): lo que no cabía en su franja. Plegado al final del día y solo si hay algo; cada parada con su
+ * «Si te sobra tiempo» (Tanda 6): lo que queda para si te da tiempo. Plegado al final del día y solo si hay algo; cada parada con su
  * motivo y un «Añadir» que la pasa al día (al final de su franja) y la saca de la lista.
  */
 export function SpareStopsSection({ stops, onAdd }: SpareStopsSectionProps) {
@@ -32,7 +32,7 @@ export function SpareStopsSection({ stops, onAdd }: SpareStopsSectionProps) {
                 <p className="font-display text-[16px] leading-[1.2] text-text [overflow-wrap:anywhere]">{displayStopName(stop.name)}</p>
                 <p className="mt-0.5 text-[12px] leading-[1.35] text-text/60">
                   {formatDuration(stop.durationMinutes)}
-                  {stop.spareReason ? ` · ${stop.spareReason}` : ''}
+                  {` · ${stop.spareReason ?? 'Para otro momento'}`}
                 </p>
               </div>
               <button

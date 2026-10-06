@@ -60,7 +60,8 @@ const walkDays = (node) => {
     for (const value of Object.values(node)) walkDays(value)
   }
 }
-for (const file of readdirSync(diasDir)) if (/^D.*\.json$/.test(file)) walkDays(JSON.parse(readFileSync(join(diasDir, file), 'utf8')))
+// (Tanda 6b: los días están en listas.json.)
+walkDays(JSON.parse(readFileSync(join(diasDir, 'listas.json'), 'utf8')).dias ?? {})
 // «De camino» manda sobre la categoría de parada: es como la ve el viajero (una mini-tarjeta con foto redonda).
 for (const name of camino) {
   const previous = entries.get(name)

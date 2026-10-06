@@ -119,7 +119,9 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const i = rows.indexOf(r)
       const previa = rows.slice(0, i).reverse().find((x) => x.tipo !== 'traslado')
       if (!previa?.llegada || previa.lugar !== lugar) falla('reserva', dia, `${lugar}: la reserva no lleva su «Llegada a…» delante`)
-      if (r.tarde > 0) avisa('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}`)
+      // (Tanda 6b) Llegar tarde a una reserva es un fallo; la única excepción apuntada: un Free Tour de mañana y los Museos a las 14:00 el mismo día, donde la comida y el tour no caben juntos.
+      const excusada = rows.some((x) => x.tipo === 'tour') && /Museos Vaticanos/.test(lugar)
+      if (r.tarde > 0) (excusada ? avisa : falla)('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}${excusada ? ' (con Free Tour el mismo día)' : ''}`)
     }
     // 7b. (Tanda 6b) La comida nunca detrás de una visita larga con hora fija que empieza entre las 13:30 y las 15:00 (si empieza antes de las 13:30 no cabe comer antes: se apunta); y 0 días que empiezan más tarde por una reserva.
     {

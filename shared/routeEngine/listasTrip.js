@@ -42,7 +42,7 @@ const MESES_INVIERNO = [11, 12, 1, 2]
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
-  inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:30', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
   llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15,
 }
 
@@ -659,22 +659,57 @@ export function planListasTrip(args) {
       // Cada trozo posible (de más largo a más corto): si colocar la hora fija rompe una comprobación por culpa de algo de DESPUÉS de ella, eso pasa a «Si te sobra tiempo»;
       // si la rompe algo de ANTES, ese trozo no vale. Gana el que menos deja fuera (cada parada fuera cuenta como 2; cada hora libre antes, como 1).
       let mejor = null
-      for (let n = cabenN; n >= 0; n--) {
-        const A1 = [...A, ...candidatas.slice(0, n)]
-        const excl = new Set()
+      // Variante «recortar»: si no cabe todo lo que iba antes, se quita (a «Si te sobra tiempo») lo menos importante que se puede quitar hasta que quepa el resto,
+      // en vez de dejar la hora fija tarde o lo que no cabe detrás de ella (donde haría volver sobre los pasos).
+      const variantes = []
+      if (cabenN < candidatas.length) {
+        const quedan = [...candidatas]
+        const recortadas = new Set()
+        while (!cabe(plano([...A, ...quedan]))) {
+          const quitable = quedan.map((u, i) => ({ u, i })).filter(({ u }) => puedeSobrar(u.head))
+            .sort((a, b) => (nivelDe(b.u.head.lugar) ?? 3) - (nivelDe(a.u.head.lugar) ?? 3) || b.i - a.i)[0]
+          if (!quitable) break
+          quedan.splice(quitable.i, 1)
+          recortadas.add(quitable.u.head.id)
+        }
+        // Si quitar no basta, la comida de antes se hace más corta (45 o 30 min), como cuando va justo antes de la hora fija.
+        for (const dur of [45, 30]) {
+          if (cabe(plano([...A, ...quedan]))) break
+          const k = quedan.findIndex((u) => u.head.kind === 'comida' && u.head.min > dur)
+          if (k < 0) break
+          const u = quedan[k]
+          const acortar = (it) => (it === u.head ? { ...it, min: dur } : it)
+          quedan[k] = { ...u, head: acortar(u.head), items: u.items.map(acortar) }
+        }
+        if (cabe(plano([...A, ...quedan])) && (recortadas.size > 0 || quedan.some((u, i) => u.head.min !== candidatas.find((c) => c.head.id === u.head.id)?.head.min))) variantes.push({ n: candidatas.length, A1: [...A, ...quedan], excl0: recortadas })
+      }
+      for (let n = cabenN; n >= 0; n--) variantes.push({ n, A1: [...A, ...candidatas.slice(0, n)], excl0: new Set() })
+      for (const v of variantes) {
+        const { n, A1 } = v
+        const excl = new Set(v.excl0)
         let valido = true
         for (let guard = 0; guard < 12; guard++) {
           fueraSet = excl
           const nuevas = reglas.nuevas(base, reglas.todas(montar(A1).lista, { vistosAntes: estado.vistos, dentroAntes: estado.dentro }))
           if (nuevas.length === 0) break
           const culpables = nuevas.map((v) => unidades.find((u) => u.head.id === v.clave.split('>').at(-1))).filter(Boolean)
-          const culpable = culpables.find((u) => !A1.includes(u) && puedeSobrar(u.head))
+          let culpable = culpables.find((u) => !A1.includes(u) && puedeSobrar(u.head))
+          // Si lo que vuelve a la zona es algo que no se puede quitar (un «de camino» que seguía a la hora fija), se quita lo que, ya puesta la hora fija, aleja del sitio antes de volver: lo que va entre ellos.
+          if (!culpable) {
+            const lst = montar(A1).lista
+            const iF = lst.findIndex((it) => it.id === F.id)
+            for (const c of culpables.filter((u) => !A1.includes(u))) {
+              const iC = lst.findIndex((it) => it.id === c.head.id)
+              culpable = unidades.find((u) => { const k = lst.findIndex((it) => it.id === u.head.id); return k > iF && k < iC && !A1.includes(u) && puedeSobrar(u.head) })
+              if (culpable) break
+            }
+          }
           if (!culpable) { valido = false; break }
           excl.add(culpable.head.id)
         }
         if (!valido) continue
         const coste = excl.size * 2 + Math.max(0, sobra(plano(A1))) / 60
-        if (!mejor || coste < mejor.coste) mejor = { n, A1, excl, coste }
+        if (!mejor || coste < mejor.coste) mejor = { n, A1, excl, coste, porTiempo: v.excl0 }
         if (excl.size === 0) break
       }
       fueraSet = new Set()
@@ -686,7 +721,7 @@ export function planListasTrip(args) {
         for (const id of mejor.excl) {
           const u = unidades.find((x) => x.head.id === id)
           spare.push({ ...u.head, razon: 'ancla', spareReason: 'Para otro momento' })
-          log.push({ id, lugar: u.head.titulo ?? u.head.lugar, sitio: u.head.lugar, que: 'sobra', causa: `poner ${F.titulo ?? F.lugar} a su hora (${F.hora}) lo dejaba volviendo sobre sus pasos: pasa a «Si te sobra tiempo»` })
+          log.push({ id, lugar: u.head.titulo ?? u.head.lugar, sitio: u.head.lugar, que: 'sobra', causa: mejor.porTiempo.has(id) ? `no cabía antes de ${F.titulo ?? F.lugar} (a las ${F.hora}) sin llegar tarde: pasa a «Si te sobra tiempo»` : `poner ${F.titulo ?? F.lugar} a su hora (${F.hora}) lo dejaba volviendo sobre sus pasos: pasa a «Si te sobra tiempo»` })
         }
       }
       // (Si no entró todo lo que iba antes en la lista, lo que queda va detrás de la hora fija y no se adelanta nada de lo que iba después.)

@@ -91,7 +91,7 @@ for (const forma of FORMAS) {
       const r = comprobarViaje({ D, plan, etiqueta, entradas, poolNames, hasFreeTour: Boolean(forma.ft), listas: written, franjas: written.destino?.franjas })
       resumen.dias += plan.days.filter((d) => d.curatedDay?.id).length
       for (const f of r.fallos) { fallos.push(f); porRegla.set(f.regla, (porRegla.get(f.regla) ?? 0) + 1) }
-      for (const f of r.info) { infoPorRegla.set(f.regla, (infoPorRegla.get(f.regla) ?? 0) + 1); if (vistoInfo.length < 400 && ['no_cabe_del_todo', 'comida_tarde', 'comida_tras_hora_fija', 'restaurante_repetido', 'reserva_tarde'].includes(f.regla)) vistoInfo.push(f) }
+      for (const f of r.info) { infoPorRegla.set(f.regla, (infoPorRegla.get(f.regla) ?? 0) + 1); if (vistoInfo.length < 4000 && ['no_cabe_del_todo', 'comida_tarde', 'comida_tras_hora_fija', 'restaurante_repetido', 'reserva_tarde'].includes(f.regla)) vistoInfo.push(f) }
     }
   }
 }
