@@ -7094,7 +7094,7 @@
   "restaurants": [
     {
       "name": "Armando al Pantheon",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Salita dei Crescenzi, 31, 00186 Roma",
       "coordinates": {
@@ -7115,7 +7115,7 @@
     },
     {
       "name": "Trattoria Da Enzo al 29",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via dei Vascellari, 29, 00153 Roma",
       "coordinates": {
@@ -7140,7 +7140,7 @@
     },
     {
       "name": "Felice a Testaccio",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Mastro Giorgio, 29, 00153 Roma",
       "coordinates": {
@@ -7158,7 +7158,7 @@
     },
     {
       "name": "Trattoria Monti",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via di San Vito, 13A, 00185 Roma",
       "coordinates": {
@@ -7179,7 +7179,7 @@
     },
     {
       "name": "Trattoria Dal Cavalier Gino",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo Rosini, 4, 00186 Roma",
       "coordinates": {
@@ -7200,7 +7200,7 @@
     },
     {
       "name": "Tonnarello",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via della Paglia, 77, 00153 Roma",
       "coordinates": {
@@ -7218,7 +7218,7 @@
     },
     {
       "name": "Taverna Trilussa",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via del Politeama, 23/25, 00153 Roma",
       "coordinates": {
@@ -7240,7 +7240,7 @@
     },
     {
       "name": "SantoPalato",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Piazza Tarquinia, 4A/B, 00183 Roma",
       "coordinates": {
@@ -7266,7 +7266,7 @@
     },
     {
       "name": "Pizzarium (Bonci)",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "horno",
       "meal": "ambos",
       "address": "Via della Meloria, 43, 00136 Roma",
       "coordinates": {
@@ -7288,7 +7288,7 @@
     },
     {
       "name": "Antico Forno Roscioli",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "horno",
       "meal": "comida",
       "address": "Via dei Chiavari, 34, 00186 Roma",
       "coordinates": {
@@ -7309,7 +7309,7 @@
     },
     {
       "name": "Forno Campo de' Fiori",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "horno",
       "meal": "comida",
       "address": "Vicolo del Gallo, 14, 00186 Roma",
       "coordinates": {
@@ -7327,7 +7327,7 @@
     },
     {
       "name": "Ai Marmi (Panattoni)",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Viale di Trastevere, 53, 00153 Roma",
       "coordinates": {
@@ -7352,7 +7352,7 @@
     },
     {
       "name": "Da Remo",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Piazza di Santa Maria Liberatrice, 44, 00153 Roma",
       "coordinates": {
@@ -7377,7 +7377,7 @@
     },
     {
       "name": "Fatamorgana",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via dei Chiavari, 37, 00186 Roma",
       "coordinates": {
         "lat": 41.8951,
@@ -7394,7 +7394,7 @@
     },
     {
       "name": "Fior di Luna",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via della Lungaretta, 96, 00153 Roma",
       "coordinates": {
         "lat": 41.8889,
@@ -7411,7 +7411,7 @@
     },
     {
       "name": "Gelateria dei Gracchi",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via dei Gracchi, 272, 00192 Roma",
       "coordinates": {
         "lat": 41.9092,
@@ -7428,7 +7428,7 @@
     },
     {
       "name": "Neve di Latte",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via Federico Cesi, 1, 00193 Roma",
       "coordinates": {
         "lat": 41.90633,
@@ -7449,7 +7449,7 @@
     },
     {
       "name": "Otaleg",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via di San Cosimato, 14A, 00153 Roma",
       "coordinates": {
         "lat": 41.88816,
@@ -7470,7 +7470,7 @@
     },
     {
       "name": "Gelateria Valentino",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via del Lavatore 96, 00187 Roma",
       "coordinates": {
         "lat": 41.90145,
@@ -7487,7 +7487,7 @@
     },
     {
       "name": "Fatamorgana (Via Laurina)",
-      "sub_category": "gelato",
+      "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via Laurina 10, 00187 Roma",
       "coordinates": {
         "lat": 41.9088,
@@ -7504,7 +7504,7 @@
     },
     {
       "name": "Roscioli Caffè Pasticceria",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Piazza Benedetto Cairoli, 16, 00186 Roma",
       "coordinates": {
         "lat": 41.8942,
@@ -7521,7 +7521,7 @@
     },
     {
       "name": "Caffè Sant'Eustachio",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Piazza di Sant'Eustachio, 82, 00186 Roma",
       "coordinates": {
         "lat": 41.8981,
@@ -7538,7 +7538,7 @@
     },
     {
       "name": "La Casa del Caffè Tazza d'Oro",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via degli Orfani, 84, 00186 Roma",
       "coordinates": {
         "lat": 41.8988,
@@ -7555,7 +7555,7 @@
     },
     {
       "name": "Faro - Caffè Specialty",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via Piave, 55, 00187 Roma",
       "coordinates": {
         "lat": 41.91025,
@@ -7576,7 +7576,7 @@
     },
     {
       "name": "Girarrosto Fiorentino",
-      "sub_category": "restaurante",
+      "sub_category": "restaurante", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Sicilia, 46, 00187 Roma",
       "coordinates": {
@@ -7598,7 +7598,7 @@
     },
     {
       "name": "Pasticceria Regoli",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via dello Statuto, 60, 00185 Roma",
       "coordinates": {
         "lat": 41.89486,
@@ -7619,7 +7619,7 @@
     },
     {
       "name": "Freni e Frizioni",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via del Politeama, 4-6, 00153 Roma",
       "coordinates": {
         "lat": 41.89128,
@@ -7640,7 +7640,7 @@
     },
     {
       "name": "Il Goccetto",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via dei Banchi Vecchi, 14, 00186 Roma",
       "coordinates": {
         "lat": 41.8968,
@@ -7660,7 +7660,7 @@
     },
     {
       "name": "Il Sorpasso",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via Properzio, 31/33, 00193 Roma",
       "coordinates": {
         "lat": 41.9065,
@@ -7681,7 +7681,7 @@
     },
     {
       "name": "Enoteca Ferrara",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Piazza Trilussa, 41, 00153 Roma",
       "coordinates": {
         "lat": 41.89135,
@@ -7702,7 +7702,7 @@
     },
     {
       "name": "Barnum Cafe",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via del Pellegrino, 87, 00186 Roma",
       "coordinates": {
         "lat": 41.896,
@@ -7719,7 +7719,7 @@
     },
     {
       "name": "Ma Che Siete Venuti a Fà",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via Benedetta, 25, 00153 Roma",
       "coordinates": {
         "lat": 41.89173,
@@ -7740,7 +7740,7 @@
     },
     {
       "name": "Trapizzino (Trastevere)",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Piazza Trilussa, 46, 00153 Roma",
       "coordinates": {
@@ -7762,7 +7762,7 @@
     },
     {
       "name": "Supplizio",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Via dei Banchi Vecchi, 143, 00186 Roma",
       "coordinates": {
@@ -7783,7 +7783,7 @@
     },
     {
       "name": "Dar Filettaro a Santa Barbara",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "cena",
       "address": "Largo dei Librari, 88, 00186 Roma",
       "coordinates": {
@@ -7804,7 +7804,7 @@
     },
     {
       "name": "Er Buchetto",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Via del Viminale, 2F, 00185 Roma",
       "coordinates": {
@@ -7822,7 +7822,7 @@
     },
     {
       "name": "Mordi e Vai",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "comida",
       "address": "Mercato di Testaccio, box 15, Via Beniamino Franklin 12e, 00153 Roma",
       "coordinates": {
@@ -7847,7 +7847,7 @@
     },
     {
       "name": "La Prosciutteria (Trastevere)",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Via della Scala, 71, 00153 Roma",
       "coordinates": {
@@ -7865,7 +7865,7 @@
     },
     {
       "name": "200 Gradi",
-      "sub_category": "street_food",
+      "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "comida",
       "address": "Piazza del Risorgimento 3, 00192 Roma",
       "coordinates": {
@@ -7883,7 +7883,7 @@
     },
     {
       "name": "Pizzeria Da Baffetto",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Via del Governo Vecchio, 114, 00186 Roma",
       "coordinates": {
@@ -7901,7 +7901,7 @@
     },
     {
       "name": "Coming Out",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "ambos",
       "address": "Via di S. Giovanni in Laterano 8, 00184 Roma",
       "coordinates": {
@@ -7919,7 +7919,7 @@
     },
     {
       "name": "Li Rioni",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Via dei Santi Quattro 24, 00184 Roma",
       "coordinates": {
@@ -7940,7 +7940,7 @@
     },
     {
       "name": "La Prezzemolina",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "comida",
       "address": "Via del Colosseo 1/E-F, 00184 Roma",
       "coordinates": {
@@ -7958,7 +7958,7 @@
     },
     {
       "name": "La Boccaccia",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "ambos",
       "address": "Via Leonina 73, 00184 Roma",
       "coordinates": {
@@ -7976,7 +7976,7 @@
     },
     {
       "name": "Piccolo Buco",
-      "sub_category": "pizza",
+      "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "ambos",
       "address": "Via del Lavatore 91, 00187 Roma",
       "coordinates": {
@@ -7997,7 +7997,7 @@
     },
     {
       "name": "Ai Tre Scalini",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via Panisperna, 251, 00184 Roma",
       "coordinates": {
         "lat": 41.89628,
@@ -8018,7 +8018,7 @@
     },
     {
       "name": "Buccone Vini e Olii",
-      "sub_category": "aperitivo",
+      "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "meal": "ambos",
       "address": "Via di Ripetta 19/20, 00186 Roma",
       "coordinates": {
@@ -8036,7 +8036,7 @@
     },
     {
       "name": "Panella - L'Arte del Pane",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via Merulana, 54, 00185 Roma",
       "coordinates": {
         "lat": 41.89424,
@@ -8057,7 +8057,7 @@
     },
     {
       "name": "Pompi",
-      "sub_category": "cafe",
+      "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via della Croce 88, 00187 Roma",
       "coordinates": {
         "lat": 41.9065,
@@ -8074,7 +8074,7 @@
     },
     {
       "name": "Osteria Fernanda",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Crescenzo del Monte, 18, 00153 Roma",
       "coordinates": {
@@ -8100,7 +8100,7 @@
     },
     {
       "name": "Il Bocconcino",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Ostilia 23, 00184 Roma",
       "coordinates": {
@@ -8121,7 +8121,7 @@
     },
     {
       "name": "La Taverna dei Fori Imperiali",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via della Madonna dei Monti 9, 00184 Roma",
       "coordinates": {
@@ -8142,7 +8142,7 @@
     },
     {
       "name": "Enoteca Corsi",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Gesù 87/88, 00186 Roma",
       "coordinates": {
@@ -8163,7 +8163,7 @@
     },
     {
       "name": "Il Gabriello",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Vittoria 51, 00187 Roma",
       "coordinates": {
@@ -8184,7 +8184,7 @@
     },
     {
       "name": "Edy",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo del Babuino 4, 00187 Roma",
       "coordinates": {
@@ -8205,7 +8205,7 @@
     },
     {
       "name": "Sgarro Bistrot",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Belsiana 14, 00187 Roma",
       "coordinates": {
@@ -8223,7 +8223,7 @@
     },
     {
       "name": "Poldo e Gianna Osteria",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo Rosini 6/7, 00186 Roma",
       "coordinates": {
@@ -8244,7 +8244,7 @@
     },
     {
       "name": "Piccolo Arancio",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo Scanderbeg 112, 00187 Roma",
       "coordinates": {
@@ -8265,7 +8265,7 @@
     },
     {
       "name": "Colline Emiliane",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via degli Avignonesi 22, 00187 Roma",
       "coordinates": {
@@ -8287,7 +8287,7 @@
     },
     {
       "name": "Ristorante Arlù",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "comida",
       "address": "Borgo Pio 135, 00193 Roma",
       "coordinates": {
@@ -8305,7 +8305,7 @@
     },
     {
       "name": "Borghiciana Pastificio Artigianale",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "comida",
       "address": "Borgo Pio 186, 00193 Roma",
       "coordinates": {
@@ -8326,7 +8326,7 @@
     },
     {
       "name": "Trattoria Valentino",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Boschetto 37, 00184 Roma",
       "coordinates": {
@@ -8347,7 +8347,7 @@
     },
     {
       "name": "Dal Toscano",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Germanico 58-60, 00192 Roma",
       "coordinates": {
@@ -8372,7 +8372,7 @@
     },
     {
       "name": "L'Arcangelo",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Giuseppe Gioachino Belli 59",
       "coordinates": {
@@ -8419,7 +8419,7 @@
     },
     {
       "name": "Osteria dell'Angelo",
-      "sub_category": "trattoria",
+      "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Giovanni Bettolo 24-32",
       "coordinates": {
@@ -8441,7 +8441,7 @@
     },
     {
       "name": "Nonna Betta",
-      "sub_category": "cocina judeo-romana",
+      "sub_category": "cocina judeo-romana", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Portico d'Ottavia, 16, 00186 Roma",
       "coordinates": {
@@ -8463,7 +8463,7 @@
     },
     {
       "name": "Giggetto al Portico d'Ottavia",
-      "sub_category": "trattoria romana",
+      "sub_category": "trattoria romana", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Portico d'Ottavia, 21/a-22, 00186 Roma",
       "coordinates": {
@@ -9177,6 +9177,7 @@
     "se_llenan": ["Fontana de Trevi", "Plaza de España"],
     "fechas_con_reserva": { "_nota": "Tanda 4: las fechas en que TODAS las comidas y cenas de TODOS los días llevan «Con reserva». Un restaurante sin dato de esa fecha (ni cierres ni horario) lleva el aviso de `sin_dato`. Un solo sitio: las tablas ya no lo escriben.", "fechas": ["12-24", "12-25", "12-31", "01-01"], "texto": "Con reserva", "sin_dato": "En Navidad, reserva con antelación", "cena_especial": { "12-31": "Con reserva: menú de Nochevieja" } },
     "comida_limite": "14:30",
+    "recambio_restaurante": { "_nota": "Tanda 5: el restaurante de recambio (si el escrito ya salió en el viaje) tiene que ser un restaurante de verdad —`tipo_local` en estos valores: no un horno, ni comida rápida, ni un bar de vinos— y estar a menos de `max_andar_min` min andando del escrito. Si no hay ninguno, va el escrito aunque se repita y se apunta en el registro.", "tipos": ["restaurante", "pizzeria"], "max_andar_min": 10 },
     "noches_imprescindibles": { "_nota": "Tanda 4: las nocturnas imprescindibles, por orden. Se reparten día a día desde el primero del viaje: antes que ninguna otra va la primera de esta lista que aún no haya salido DE NOCHE en un día anterior (un sitio visto de día no quita su nocturna).", "lista": ["Fontana de Trevi (noche)", "Plaza de España (noche)", "Coliseo (noche)"] },
     "sitios_extra": {
       "_nota": "Sitios que no son una ficha de `places` pero que una parada enseña (REGLAS_RUTAS regla 0 y 5). id → nombre. Dos sitios distintos tienen dos id aunque compartan ficha (el parque de Villa Borghese y su lago).",

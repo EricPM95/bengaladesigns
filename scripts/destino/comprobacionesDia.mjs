@@ -10,7 +10,7 @@ const plain = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').to
 const nombreFila = (row) => row.titulo ?? row.lugar ?? row.restaurante ?? row.noche ?? row.id
 
 /** Los días escritos de un viaje ya construidos: { iso, id, day } en el orden del viaje (sin los días de excursión ni en blanco). */
-export function comprobarDia({ D, iso, id, day }) {
+export function comprobarDia({ D, iso, id, day, pool = [] }) {
   const fallos = []
   const donde = `${iso} ${id}`
   // (escrito_rows lleva el nombre en `lugar`; la tabla de distancias lo busca por restaurante / noche según el tipo.)
@@ -37,22 +37,47 @@ export function comprobarDia({ D, iso, id, day }) {
   // 2. La noche: ninguna parada empieza después del límite de la noche; ninguna cena pasa de las 22:00.
   for (const row of rows) {
     if (row.tipo === 'noche' && !nocheValida(D, iso, sunset, toMin(row.hora), row.min)) fallos.push({ regla: 'limite_noche', texto: `${donde}: «${nombreFila(row)}» empieza a las ${row.hora} (${row.min} min), pasado el límite de la noche` })
-    if (row.tipo === 'cena' && toMin(row.hora) > 22 * 60) fallos.push({ regla: 'cena_22', texto: `${donde}: la cena empieza a las ${row.hora}` })
+    if (row.tipo === 'cena' && toMin(row.hora) > 22 * 60) fallos.push({ regla: log.some((x) => x.que === 'aviso' && /la cena pasa de las 22:00/.test(x.causa ?? '')) ? 'cena_22_con_aviso' : 'cena_22', texto: `${donde}: la cena empieza a las ${row.hora}` })
   }
   // 7. La comida no empieza después de la hora límite del destino (los restaurantes cierran sobre las 15:00).
   const limiteComida = D.destination_config?.comida_limite ? toMin(D.destination_config.comida_limite) : null
   for (const row of rows) if (limiteComida != null && row.tipo === 'comida' && toMin(row.hora) > limiteComida) fallos.push({ regla: (day.engine_log ?? []).some((x) => /la comida iba a caer/.test(x.causa ?? '')) ? 'comida_tarde_sin_mas_que_acortar' : 'comida_tarde', texto: `${donde}: la comida empieza a las ${row.hora} (límite ${D.destination_config.comida_limite})` })
-  // 3. Nunca un hueco sin nombre: tiempo libre (después de andar y del margen de 10 min) de más de 15 min entre dos filas, sin ninguna parada.
-  for (let i = 1; i < rows.length; i++) {
-    const prev = rows[i - 1]
-    const row = rows[i]
-    // (Un hueco es lo que sobra después de lo que piden los márgenes —lo andado más 10 min, a 5 hacia arriba—; antes de la noche no cuenta: la nocturna va a su hora.)
+  // 3. Lo que se calcula es lo que se ve (Tanda 5): cada fila de parada del cálculo sale como parada en pantalla. Si no, los huecos y los solapes se miran sobre filas que el viajero no ve (el 25 de
+  // diciembre San Clemente seguía en el cálculo aunque otro paso lo quitaba de la pantalla y el hueco de 50 min no se veía).
+  const visibles = rows.filter((row) => {
+    if (row.tipo !== 'parada' && row.tipo !== 'paseo' && row.tipo !== 'desayuno' && row.tipo !== 'tour') return true
+    if (usadas.has(row)) return true
+    fallos.push({ regla: 'fila_sin_parada', texto: `${donde}: «${nombreFila(row)}» (${row.hora}) está en el cálculo y no sale en pantalla` })
+    return false
+  })
+  // 4. Huecos: un margen de hasta 30 min antes de una hora fija es normal; más de eso sin colchón ni comida es un fallo. (Después de andar y del margen de 10 min; antes de la noche no cuenta.)
+  const finDe = (row) => toMin(row.hora) + row.min
+  const hhmm = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
+  for (let i = 1; i < visibles.length; i++) {
+    const prev = visibles[i - 1]
+    const row = visibles[i]
     if (row.tipo === 'noche') continue
     // (El margen de 15 min antes de un Free Tour o un turno sin su «Llegada» propia se espera en el punto de encuentro: cuenta como margen.)
     const margen = prev.llegada === true && prev.lugar === row.lugar ? 0 : antesDeLlegar(row)
-    const libre = toMin(row.hora) - margen - (toMin(prev.hora) + prev.min) - hueco(prev, row, andar)
-    if (libre > 15) fallos.push({ regla: 'hueco', texto: `${donde}: ${libre} min libres entre «${nombreFila(prev)}» (acaba a las ${String(Math.floor((toMin(prev.hora) + prev.min) / 60)).padStart(2, '0')}:${String((toMin(prev.hora) + prev.min) % 60).padStart(2, '0')}) y «${nombreFila(row)}» (${row.hora})` })
+    const libre = toMin(row.hora) - margen - finDe(prev) - hueco(prev, row, andar)
+    if (libre > 30) fallos.push({ regla: log.some((x) => x.que === 'aviso' && /queda un hueco/.test(x.causa ?? '')) ? 'hueco_con_aviso' : 'hueco', texto: `${donde}: ${libre} min libres entre «${nombreFila(prev)}» (acaba a las ${hhmm(finDe(prev))}) y «${nombreFila(row)}» (${row.hora})` })
+    // 5. Dos filas que se pisan.
+    if (row.tipo !== 'traslado' && prev.tipo !== 'traslado' && toMin(row.hora) < finDe(prev) && !(prev.llegada && prev.lugar === row.lugar)) fallos.push({ regla: 'solape', texto: `${donde}: «${nombreFila(row)}» (${row.hora}) empieza antes de que acabe «${nombreFila(prev)}» (${hhmm(finDe(prev))})` })
   }
+  // 6. Solo se alargan los colchones con contenido (hasta 2 horas) y las comidas (hasta 75 min): ninguna otra parada pasa de lo escrito más 10 min.
+  for (const row of visibles) {
+    if (row.colchon || row.tipo === 'comida' || row.tipo === 'cena' || row.tipo === 'traslado' || row.tipo === 'noche' || row.llegada || row.min_escrito == null || pool.includes(row.lugar)) continue
+    if (row.min > row.min_escrito + 10) fallos.push({ regla: 'parada_alargada', texto: `${donde}: «${nombreFila(row)}» dura ${row.min} min y el documento dice ${row.min_escrito}` })
+  }
+  // 7. Ninguna parada sale dos veces en el mismo día (las nocturnas de un sitio visto de día no cuentan).
+  const vistas = new Map()
+  for (const stop of day.stops ?? []) {
+    if (stop.is_night_experience) continue
+    const clave = plain(stop.display_title ?? stop.name)
+    if (vistas.has(clave)) fallos.push({ regla: 'parada_repetida', texto: `${donde}: «${stop.display_title ?? stop.name}» sale dos veces (${vistas.get(clave)} y ${stop.suggested_time})` })
+    else vistas.set(clave, stop.suggested_time)
+  }
+  // 8. El orden del día es el de su tabla (sin lo quitado): se mira en la prueba parada a parada (comparar), que conoce la tabla.
   return fallos
 }
 
@@ -86,31 +111,42 @@ export function comprobarViaje({ D, dias }) {
   return fallos
 }
 
-/** 4. Restaurantes: ninguno se repite en el viaje; no se cena dos días seguidos en el mismo barrio ni se come y se cena en el mismo barrio el mismo día (salvo con motivo apuntado). */
+/**
+ * 4. Restaurantes (Tanda 5): lo único que no se repite es el mismo restaurante (con aviso en el registro si no hay otro de verdad a menos de 10 min). La zona se puede repetir: no hay regla de barrio.
+ */
 export function comprobarMesas({ D, dias }) {
   const fallos = []
   const info = []
-  const zonaDe = (name) => String(D.restaurants?.find((restaurant) => restaurant.name === name)?.zone ?? '').split('/')[0].trim()
   const vistos = new Map()
-  let cenaAnterior = null
   for (const { iso, day } of dias) {
-    if (!day) { cenaAnterior = null; continue }
+    if (!day) continue
     const id = day.curated_day?.id ?? '?'
-    const comida = (day.meals ?? []).find((meal) => meal.time === 'lunch')?.restaurant ?? null
-    const cena = (day.meals ?? []).find((meal) => meal.time === 'dinner')?.restaurant ?? null
-    for (const [tipo, name] of [['comida', comida], ['cena', cena]]) {
+    const avisos = (day.engine_log ?? []).filter((x) => x.que === 'aviso' && /restaurante repetido/.test(x.causa)).map((x) => x.causa)
+    for (const meal of day.meals ?? []) {
+      const name = meal.restaurant
       if (!name) continue
-      if (vistos.has(name)) fallos.push({ regla: 'restaurante_repetido', texto: `${name}: ${vistos.get(name)} y ${iso} ${id} (${tipo})` })
+      const tipo = meal.time === 'dinner' ? 'cena' : 'comida'
+      if (vistos.has(name)) (avisos.some((texto) => texto.includes(name)) ? info : fallos).push({ regla: avisos.some((texto) => texto.includes(name)) ? 'restaurante_repetido_con_motivo' : 'restaurante_repetido', texto: `${name}: ${vistos.get(name)} y ${iso} ${id} (${tipo})` })
       else vistos.set(name, `${iso} ${id} (${tipo})`)
     }
-    const avisos = (day.engine_log ?? []).filter((x) => x.que === 'aviso' && /barrio repetido/.test(x.causa)).map((x) => x.causa)
-    const repite = []
-    if (comida && cena && zonaDe(comida) && zonaDe(comida) === zonaDe(cena)) repite.push(`se come y se cena en ${zonaDe(cena)} (${comida} / ${cena})`)
-    if (cena && cenaAnterior && zonaDe(cena) && zonaDe(cena) === cenaAnterior.barrio) repite.push(`dos cenas seguidas en ${cenaAnterior.barrio} (${cenaAnterior.name} / ${cena})`)
-    if (repite.length) (avisos.length ? info : fallos).push({ regla: avisos.length ? 'barrio_repetido_con_motivo' : 'barrio_repetido_sin_motivo', texto: `${iso} ${id}: ${repite.join('; ')}${avisos.length ? ` — ${avisos[0]}` : ''}` })
-    cenaAnterior = cena ? { barrio: zonaDe(cena), name: cena } : null
   }
   return { fallos, info }
+}
+
+/**
+ * Un recambio (el restaurante que sale no es el escrito ni su alternativa ni su tercera) tiene que ser un restaurante de verdad (`tipo_local` de `recambio_restaurante.tipos`) y estar a menos de
+ * `max_andar_min` min andando del escrito. `fila`: la fila de la tabla; `name`: el que sale.
+ */
+export function comprobarRecambio({ D, fila, name, iso, id }) {
+  const fallos = []
+  const candidatas = [fila.restaurante, fila.alternativa, fila.tercera].filter(Boolean)
+  if (!name || candidatas.includes(name)) return fallos
+  const cfg = D.destination_config?.recambio_restaurante ?? { tipos: ['restaurante', 'pizzeria'], max_andar_min: 10 }
+  const restaurante = D.restaurants.find((item) => item.name === name)
+  if (!cfg.tipos.includes(restaurante?.tipo_local)) fallos.push({ regla: 'recambio_no_es_restaurante', texto: `${iso} ${id}: en lugar de ${fila.restaurante} sale «${name}» (${restaurante?.tipo_local ?? 'sin tipo'})` })
+  const minutos = andar({ tipo: 'comida', restaurante: fila.restaurante }, { tipo: 'comida', restaurante: name })
+  if (minutos > cfg.max_andar_min) fallos.push({ regla: 'recambio_lejos', texto: `${iso} ${id}: en lugar de ${fila.restaurante} sale «${name}», a ${minutos} min andando (máximo ${cfg.max_andar_min})` })
+  return fallos
 }
 
 /** 5. Los textos que salen en pantalla: la zona de cada comida y cena es la de su restaurante en los datos, y «Con reserva» en las fechas de `fechas_con_reserva`. */

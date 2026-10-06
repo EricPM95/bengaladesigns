@@ -11,7 +11,6 @@ export const ARRIVAL_MODE_ICON: Record<ArrivalMode, string> = {
   tren: 'M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8.5 14.5h.01M15.5 14.5h.01M8 21l2-3M16 21l-2-3',
   bus: 'M6 3h12a2 2 0 0 1 2 2v12H4V5a2 2 0 0 1 2-2zM4 11h16M7 17v3M17 17v3M7.5 14h.01M16.5 14h.01',
   ferry: 'M3 16l2 5h14l2-5zM5 16v-5l7-3 7 3v5M12 3v5M9 5h6',
-  crucero: 'M3 16l2 5h14l2-5zM5 16v-5l7-3 7 3v5M12 3v5M9 5h6',
   coche: 'M5 15v-4l2-5h10l2 5v4M3 15h18v3H3zM7 18v2M17 18v2M5 11h14',
 }
 

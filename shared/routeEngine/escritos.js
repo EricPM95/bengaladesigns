@@ -62,7 +62,7 @@ export function hueco(prev, next, walk) {
  * del día (`orden`, de lo primero que se quita a lo último) y, si aun así no cabe, se avisa en `problemas`.
  * @returns {{ rows: object[], quitadas: object[], problemas: string[] }}
  */
-export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = () => false, quitarImprescindibles = false, soloEmpujar = false, colchonProtegido = null }) {
+export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = () => false, quitarImprescindibles = false, soloEmpujar = false, colchonProtegido = null, cenaFija = false }) {
   let lista = rows.map((row) => ({ ...row }))
   const quitadas = []
   const problemas = []
@@ -129,7 +129,8 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
     if (falta <= 0) continue
     // Una cena no se pierde: si no se llega a su hora ni acortando, se retrasa lo que haga falta.
     // (Hasta las 22:00: más tarde no, tanda 2; el resto se quita por el orden de abajo.)
-    if (lista[fallo.i].tipo === 'cena' && toMin(lista[fallo.i].hora) < CENA_MAXIMA) {
+    // (`cenaFija`: la cena no se retrasa; lo que no cabe se acorta o se quita antes.)
+    if (lista[fallo.i].tipo === 'cena' && !cenaFija && toMin(lista[fallo.i].hora) < CENA_MAXIMA) {
       const retraso = Math.min(up5(falta), CENA_MAXIMA - toMin(lista[fallo.i].hora))
       lista[fallo.i] = { ...lista[fallo.i], hora: toHHMM(toMin(lista[fallo.i].hora) + retraso) }
       continue
@@ -188,7 +189,9 @@ export function elegirTabla(day, ctx) {
       if (coliseo != null && coliseo < 13 * 60) return pick('reves', 'ruta_del_reves')
       // (El Coliseo en el pool, sin hora: la ruta del revés, con su hora de la tabla.)
       if (coliseo == null && marcado('Coliseo') && !marcado(MUSEOS)) return pick('reves', 'ruta_del_reves')
-      if (coliseo != null || marcado(MUSEOS)) notas.push('reserva_por_la_tarde_sin_tabla')
+      // Museos Vaticanos marcados en el pool o reservados (y abiertos ese día): la mañana de los Museos del medio día del Vaticano y la tarde del D0 desde Piazza Navona (provisional, Tanda 5).
+      if (marcado(MUSEOS) && !museosCierran && v.con_museos) return pick('con_museos', 'museos_en_un_dia')
+      if (coliseo != null) notas.push('reserva_por_la_tarde_sin_tabla')
       return pick('normal', 'ruta_normal')
     }
     case 'D1-corto':

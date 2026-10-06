@@ -504,7 +504,7 @@
       "tips_llegada": [
         {
           "titulo": "El tren va lleno los días de muchos barcos",
-          "texto": "Cuando hay varios cruceros en el puerto, el tren a Roma se llena: coge el de antes y no el primero que pasa.",
+          "texto": "Los días de muchos barcos en el puerto, el tren a Roma se llena: coge el de antes y no el primero que pasa.",
           "fuente": null
         },
         {
@@ -517,64 +517,6 @@
         {
           "titulo": "Embarque antes de lo que crees",
           "texto": "La naviera cierra el embarque bastante antes de zarpar: mira la hora en tu billete y cuenta el tren hasta Civitavecchia.",
-          "fuente": null
-        }
-      ]
-    },
-    "crucero": {
-      "textos": {
-        "llegada_titulo": "Un día en Roma desde el crucero",
-        "llegada_sub": "Del puerto de Civitavecchia a Roma, y de vuelta a bordo",
-        "llegada_por_que": "Tienes un solo día: tren regional desde Civitavecchia hasta San Pietro u Ostiense, y el día pensado para volver a bordo con margen.",
-        "vuelta_titulo": "Vuelta al barco",
-        "vuelta_sub": "De Roma al puerto de Civitavecchia antes de la hora de a bordo",
-        "vuelta_por_que": "Calculamos la hora de salir de Roma desde la hora de a bordo: el tren, la lanzadera del puerto y 30 min de margen."
-      },
-      "margen_min": 30,
-      "trayecto_min": 110,
-      "puntos": [
-        {
-          "id": "civitavecchia",
-          "nombre": "Puerto de Civitavecchia",
-          "barra": "CIVITAVECCHIA",
-          "foto": "Civitavecchia cruise port",
-          "al_centro_min": 120,
-          "al_centro": [
-            {
-              "nombre": "Lanzadera del puerto hasta Largo della Pace",
-              "mas_comodo": true,
-              "tiempo": "unos minutos",
-              "precio": "gratis",
-              "fuente": "https://civitavecchia.portmobility.it/en/shuttles",
-              "comprobado": "2026-09-29"
-            },
-            {
-              "nombre": "Tren regional a Roma (San Pietro, Ostiense, Termini)",
-              "tiempo": "unos 60-80 min",
-              "frecuencia": "cada 30 min",
-              "nota": "Tarifa regional por distancia: lo mismo hasta San Pietro, Ostiense o Termini. Compra el billete antes de subir: en Civitavecchia no se vende a bordo.",
-              "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf (Tariffa 39/8 Lazio, desde el 05-07-2026: 71-80 km, 2.ª clase, 4,60 €)",
-              "comprobado": "2026-09-30",
-              "precio": "4,60 €",
-              "verificar": "Los km exactos Civitavecchia–Roma no salen en la tarifa: si fueran más de 80, serían 5,10 €."
-            }
-          ],
-          "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Forte_Michelangelo_2014.jpg/960px-Forte_Michelangelo_2014.jpg",
-          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons",
-          "termini": false
-        }
-      ],
-      "tips_llegada": [
-        {
-          "titulo": "El tren va lleno los días de muchos cruceros",
-          "texto": "Coge el de antes: el que sale justo cuando desembarca todo el barco va de pie.",
-          "fuente": null
-        }
-      ],
-      "tips_vuelta": [
-        {
-          "titulo": "El barco no espera",
-          "texto": "Vuelve un tren antes del que te toca: si hay un retraso, el siguiente puede llegar tarde para embarcar.",
           "fuente": null
         }
       ]

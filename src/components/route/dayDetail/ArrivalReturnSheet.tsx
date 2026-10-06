@@ -30,8 +30,8 @@ function eyebrowDate(dateIso: string | null): string | null {
   return `${WEEKDAYS[date.getUTCDay()]} ${day} ${MONTHS[month - 1]}`
 }
 
-const BOOKING_NAME: Record<ArrivalMode, string> = { avion: 'Vuelo', tren: 'Tren', bus: 'Autobús', ferry: 'Ferry', crucero: 'A bordo', coche: 'En coche' }
-const ADD_LABEL: Record<ArrivalMode, string> = { avion: 'Añadir vuelo', tren: 'Añadir tren', bus: 'Añadir autobús', ferry: 'Añadir ferry', crucero: 'Añadir hora de a bordo', coche: '' }
+const BOOKING_NAME: Record<ArrivalMode, string> = { avion: 'Vuelo', tren: 'Tren', bus: 'Autobús', ferry: 'Ferry', coche: 'En coche' }
+const ADD_LABEL: Record<ArrivalMode, string> = { avion: 'Añadir vuelo', tren: 'Añadir tren', bus: 'Añadir autobús', ferry: 'Añadir ferry', coche: '' }
 
 export interface ArrivalReturnSheetProps {
   open: boolean
@@ -225,7 +225,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                       <span className="min-w-0 truncate">{bookingLine ?? `Sin ${BOOKING_NAME[mode].toLowerCase()} añadido`}</span>
                       {time && keyMinutes != null && (
                         <span className="shrink-0 whitespace-nowrap text-accent">
-                          {arrival ? `En el centro ${minutesToHHMM(keyMinutes)}` : mode === 'crucero' ? `A bordo ${time}` : `Sal a las ${minutesToHHMM(keyMinutes)}`}
+                          {arrival ? `En el centro ${minutesToHHMM(keyMinutes)}` : `Sal a las ${minutesToHHMM(keyMinutes)}`}
                         </span>
                       )}
                     </p>

@@ -20,10 +20,9 @@ const EJEMPLO = {
   tren: { llegada: '10:45', vuelta: '18:00' },
   bus: { llegada: '09:10', vuelta: '21:00' },
   ferry: { llegada: '07:00', vuelta: '20:00' },
-  crucero: { llegada: '08:00', vuelta: '18:00' },
   coche: { llegada: null, vuelta: null },
 }
-const NOMBRE = { avion: 'Avión', tren: 'Tren', bus: 'Autobús', ferry: 'Ferry', crucero: 'Crucero (un día)', coche: 'Coche' }
+const NOMBRE = { avion: 'Avión', tren: 'Tren', bus: 'Autobús', ferry: 'Ferry', coche: 'Coche' }
 
 const esc = (text) => String(text ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const fuente = (url, fecha) =>
@@ -84,11 +83,9 @@ for (const [mode, medio] of Object.entries(info.medios)) {
   const reglas =
     mode === 'coche'
       ? 'Sin hora clave: la barra enseña el aviso de la ZTL.'
-      : mode === 'crucero'
-        ? `En el centro = llegada + ${medio.puntos[0].al_centro_min} min. Salir = a bordo − ${medio.trayecto_min} min de trayecto − ${medio.margen_min} min de margen.`
-        : mode === 'ferry'
-          ? `En el centro = llegada + traslado. Salir = salida − ${medio.salir_antes_min} min de embarque − ${medio.trayecto_min} min de trayecto.`
-          : `En el centro = llegada + traslado del punto (de 5 en 5). Salir = salida − ${medio.salir_antes_min} min (de 5 en 5 hacia abajo).`
+      : mode === 'ferry'
+        ? `En el centro = llegada + traslado. Salir = salida − ${medio.salir_antes_min} min de embarque − ${medio.trayecto_min} min de trayecto.`
+        : `En el centro = llegada + traslado del punto (de 5 en 5). Salir = salida − ${medio.salir_antes_min} min (de 5 en 5 hacia abajo).`
   secciones += `<section class="modo" id="${mode}"><h2>${esc(NOMBRE[mode])}</h2><p class="reglas">${esc(reglas)}</p>${puntos}</section>`
 }
 

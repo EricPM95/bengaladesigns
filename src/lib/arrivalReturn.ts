@@ -6,10 +6,10 @@ import * as rules from '../../shared/arrival/arrivalRules.js'
 /**
  * La llegada y la vuelta (PROMPT_UI, Parte 3): los datos de cada destino (data/dias/<destino>/_llegada.json, servidos por
  * /api/arrival-info), qué medio usa cada tramo, las horas clave y los textos de la barra. Vale para todos los destinos y
- * para avión, tren, autobús, ferry, crucero o coche; sin datos del destino, los de siempre (mockDayDetail).
+ * para avión, tren, autobús, ferry o coche; sin datos del destino, los de siempre (mockDayDetail).
  */
 
-export type ArrivalMode = 'avion' | 'tren' | 'bus' | 'ferry' | 'crucero' | 'coche'
+export type ArrivalMode = 'avion' | 'tren' | 'bus' | 'ferry' | 'coche'
 
 export interface ArrivalOption {
   nombre: string
@@ -44,7 +44,7 @@ export interface ArrivalPoint {
   /** El resumen de ese punto, si no vale el del medio (Tiburtina no es Termini). */
   por_que_llegada?: string
   por_que_vuelta?: string
-  /** false: no pasa por Termini (Tiburtina, el crucero): sin la consigna, la estación ni «Tu última hora» de Termini. */
+  /** false: no pasa por Termini (Tiburtina): sin la consigna, la estación ni «Tu última hora» de Termini. */
   termini?: boolean
 }
 
@@ -62,10 +62,8 @@ export interface ArrivalMedio {
   textos: { llegada_titulo: string; llegada_sub: string; llegada_por_que: string; vuelta_titulo: string; vuelta_sub: string; vuelta_por_que: string }
   /** Cuánto antes de la salida hay que dejar la ciudad (avión 180, tren y bus 45, ferry 120 + el trayecto). */
   salir_antes_min?: number
-  /** Ferry y crucero: de Roma al puerto. */
+  /** Ferry: de Roma al puerto. */
   trayecto_min?: number
-  /** Crucero: margen antes de la hora de a bordo. */
-  margen_min?: number
   puntos: ArrivalPoint[]
   tips_llegada: ArrivalTip[]
   tips_vuelta: ArrivalTip[]
@@ -89,7 +87,7 @@ export interface ArrivalInfo {
   ultima_hora?: { nombre: string; texto: string }[]
 }
 
-/** El medio del formulario ('flight', 'train'…) en el de la llegada; un ferry de un solo día es un crucero. */
+/** El medio del formulario ('flight', 'train'…) en el de la llegada. */
 export const arrivalModeOf: (optionId: string | null | undefined, contentDays: number) => ArrivalMode = rules.arrivalModeOf
 
 /** El medio de cada tramo: la vuelta puede ser distinta de la ida (llegar en avión y volver en tren). */
@@ -199,7 +197,7 @@ export function useArrivalInfo(destination: string, city: string, origin: string
 
 /** El medio de ese tramo en los datos: el suyo o, si el destino no lo tiene, el primero que haya. */
 export function medioOf(info: ArrivalInfo, mode: ArrivalMode): ArrivalMedio | null {
-  return info.medios[mode] ?? (mode === 'crucero' ? info.medios.ferry : undefined) ?? Object.values(info.medios)[0] ?? null
+  return info.medios[mode] ?? Object.values(info.medios)[0] ?? null
 }
 
 const BOOKING_WORD: Record<ArrivalMode, { arrival: string; departure: string }> = {
@@ -207,7 +205,6 @@ const BOOKING_WORD: Record<ArrivalMode, { arrival: string; departure: string }> 
   tren: { arrival: 'Tren de llegada', departure: 'Tren de salida' },
   bus: { arrival: 'Autobús de llegada', departure: 'Autobús de salida' },
   ferry: { arrival: 'Ferry de llegada', departure: 'Ferry de salida' },
-  crucero: { arrival: 'Llegada del crucero', departure: 'Hora de a bordo' },
   coche: { arrival: 'Llegada en coche', departure: 'Salida en coche' },
 }
 

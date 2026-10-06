@@ -1888,6 +1888,8 @@ export function planWrittenTrip(args) {
         const place = placeByName.get(row.lugar)
         // (Lo que se visita —por dentro o sin modo escrito— tiene que estar abierto; lo que se ve por fuera, de camino o con el sol no.)
         if (!place || row.modo === 'fuera' || row.modo === 'camino' || row.modo === 'atardecer' || !['parada', 'paseo'].includes(row.tipo)) return true
+        // (Cerrado todo el día —un festivo, el descanso semanal—: no está abierto a ninguna hora; lo mira la misma regla que el resto del motor.)
+        if (closedThatDay(row.lugar, skeletonDay)) return false
         return openCheck(place, start, minutos != null ? Math.min(row.min, minutos) : row.min, hours).ok === true
       },
     }
@@ -1920,8 +1922,17 @@ export function planWrittenTrip(args) {
     // Cada cambio de una fila respecto al documento lleva su causa real (draft.log): el test y la revisión leen de aquí.
     const log = (draft.log = [...(draft.cambiosIniciales ?? [])])
     let rows = marcarFilas(draft.rows)
+    // Viajes de 1 y 1,5 días: todo por fuera (regla 1). Lo que el documento no marca como «por dentro» y tiene visita por dentro (Trinità dei Monti) sale por fuera, salvo lo que el viajero ha marcado en el pool.
+    if (shortNoTour) {
+      rows = rows.map((row) => {
+        const place = placeByName.get(row.lugar)
+        if (row.tipo !== 'parada' || row.modo || !place || place.type !== 'interior' || poolNames.includes(row.lugar) || (entradas ?? {})[row.lugar] != null) return row
+        log.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'modo', causa: 'viaje de 1 o 1,5 días: todo por fuera, salvo lo marcado en el pool o reservado' })
+        return { ...row, modo: 'fuera' }
+      })
+    }
     // Lo que el documento da por escrito para cada fila: la tabla del día y, donde un extra trae su propia tabla, esa (el registro cuenta los cambios contra ella).
-    draft.docBase = new Map(rows.map((row) => [row.id, row]))
+    draft.docBase = new Map(marcarFilas(draft.rows).map((row) => [row.id, row]))
     const clave = claveDeTabla(draft)
     const orden = written.days[draft.id]?.orden_quitar ?? []
     const acciones = { walk: rowWalk, abierta: env.abierta, marcar: marcarFilas, clave, pool: poolManda, orden }
@@ -2198,10 +2209,10 @@ export function planWrittenTrip(args) {
   const colchonesDeZona = (written.destino?.colchones?.lista ?? []).map((c) => ({ ...c, coords: placeByName.get(c.lugar)?.coordinates ?? null })).filter((c) => c.coords)
   const normaId = (text) => String(text).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
   /** El colchón de la zona más cercana al sitio (a menos de 1,8 km), o null. */
-  const colchonCercano = (row) => {
+  const colchonCercano = (row, excluidos = new Set()) => {
     const coords = rowCoords(row)
     if (!coords) return null
-    const mejor = colchonesDeZona.map((c) => ({ c, d: straightLineMeters(coords, c.coords) })).sort((a, b) => a.d - b.d)[0]
+    const mejor = colchonesDeZona.filter((c) => !excluidos.has(c.lugar)).map((c) => ({ c, d: straightLineMeters(coords, c.coords) })).sort((a, b) => a.d - b.d)[0]
     return mejor && mejor.d <= 1800 ? { lugar: mejor.c.lugar, titulo: mejor.c.titulo, texto: mejor.c.texto, nivel: 3, imprescindible: false } : null
   }
   /** Una fila de «Llegada a {sitio}» para una reserva o un turno, con su motivo (los datos de `llegadas` del destino). */
@@ -2231,7 +2242,7 @@ export function planWrittenTrip(args) {
           fila = { ...row, tipo: 'paseo', modo: null, titulo: `Paseo por ${place.name}`, min: row.min }
           log.push({ id: row.id, lugar: fila.titulo, sitio: row.lugar, que: 'modo+titulo', causa: `${row.min} min andando: una calle de más de 5 min no es «de camino», es un paseo` })
         } else if ((place.level ?? 3) <= 2 && !caminoVistos.has(row.lugar) && !tourCovers.has(row.lugar)) {
-          fila = { ...row, modo: 'fuera', min: place.minutos_fuera ?? 10, min_fuera: place.minutos_fuera ?? 10 }
+          fila = { ...row, modo: 'fuera', min: Math.min(place.minutos_fuera ?? 10, row.min + 10), min_fuera: Math.min(place.minutos_fuera ?? 10, row.min + 10) }
           log.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar, que: 'modo+min', causa: `primera vez que sale ${row.lugar} en el viaje (nivel ${place.level}): va como parada, no de camino` })
         }
       }
@@ -2274,14 +2285,8 @@ export function planWrittenTrip(args) {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
       if (row.modo !== 'dentro' || row.hora_tipo === 'reserva' || row.hora_tipo === 'turno' || env0.abierta(row, filaMin(row.hora))) continue
-      const moved = adelantar(rows, i, { ...env0, joya: placeByName.get(row.lugar)?.tier === 'joya' })
-      if (moved) {
-        anotarCambios(rows, moved, `cierre de ${row.lugar}`, stageLog)
-        rows = moved
-        draft.applied.push(`adelantar:${row.lugar}`)
-        continue
-      }
-      // (Si no se puede adelantar y abre enseguida —San Clemente el 1 de enero abre a las 12:00—, la visita empieza cuando abre: la hora que ve el viajero sale de aquí, no de otro cálculo.)
+      // (El orden de una tabla escrita no se cambia nunca —Tanda 5—: antes, lo cerrado se adelantaba en el día y salía un zigzag. Ahora: si abre enseguida, espera; si no, por fuera o se quita.)
+      // (Si abre enseguida —San Clemente el 1 de enero abre a las 12:00—, la visita empieza cuando abre: la hora que ve el viajero sale de aquí, no de otro cálculo.)
       const place = placeByName.get(row.lugar)
       const espera = place ? openCheck(place, filaMin(row.hora), row.min, hours) : null
       if (espera?.wait > 0) {
@@ -2290,19 +2295,50 @@ export function planWrittenTrip(args) {
         rows = rows.map((other, k) => (k === i ? { ...other, hora } : other))
       }
     }
-    // Una fila con hora fija (reserva, turno) que a esa hora está cerrada se quita —el día no se reordena para abrirla— y el tiempo que deja lo llena componerDia con nombre.
-    for (let i = rows.length - 1; i >= 0; i--) {
-      const row = rows[i]
-      if (row.modo !== 'dentro' || !(row.hora_tipo === 'reserva' || row.hora_tipo === 'turno') || env0.abierta(row, filaMin(row.hora))) continue
-      stageLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar ?? null, que: 'quitada', causa: `cierre de ${row.lugar}: a las ${row.hora} está cerrado` })
-      const weekly = (placeByName.get(row.lugar)?.closed_on ?? []).some((day) => norm(day) === norm(hours.weekday))
-      unplacedPool.push({ unitId: row.lugar, name: row.lugar, reason: 'closed_on_day', dayNumber: skeletonDay.dayNumber, closed: { dateIso: realDateIso(skeletonDay), weekday: hours.weekday }, closedWeekly: weekly })
-      rows = rows.filter((other, k) => k !== i && !(k === i - 1 && other.tipo === 'traslado'))
-      i = Math.min(i, rows.length)
+    // Lo que por dentro sigue cerrado a su hora —no abre enseguida, o tiene hora fija— se resuelve AQUÍ, no en otro paso (si no, el cálculo cuenta con ello y luego otro lo quita y el hueco queda sin
+    // llenar): por fuera si el sitio se ve desde la calle (`minutos_fuera`) y, si no, se quita —con su traslado— y va a «No incluido». Se mira antes de calcular las horas y otra vez con las horas hechas
+    // (el cálculo puede llevar una visita más tarde de lo que abre: Santa Maria in Trastevere a las 23:15). Lo que deja libre lo llena componerDia.
+    // (`evaluar`: las filas con sus horas, donde se mira qué está cerrado; `base`: las filas de entrada del cálculo, donde se aplica el cambio: el cálculo se repite siempre desde la tabla, no desde su resultado,
+    // para no arrastrar horas empujadas ni colchones que se metieron para llenar lo que ya no está.)
+    const resolverCerradas = (evaluar, base = evaluar) => {
+      let lista = base
+      let cambiado = false
+      for (let e = evaluar.length - 1; e >= 0; e--) {
+        const row = evaluar[e]
+        if (row.modo !== 'dentro' || env0.abierta(row, filaMin(row.hora))) continue
+        const i = lista.findIndex((other) => other.id === row.id)
+        if (i < 0) continue
+        const place = placeByName.get(row.lugar)
+        // (Un sitio sin interior —una plaza, una escalinata— no está «cerrado»: lo resuelve el programador de visitas como siempre.)
+        if (place && (place.type === 'exterior' || place.pass_by) && place.minutos_fuera == null) continue
+        cambiado = true
+        if (place && place.minutos_fuera != null && row.hora_tipo !== 'reserva') {
+          const min = Math.min(place.minutos_fuera, row.min + 10)
+          stageLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar ?? null, que: 'modo+min', causa: `cierre de ${row.lugar}: a las ${row.hora} está cerrado y se ve desde la calle: va por fuera` })
+          lista = lista.map((other, k) => (k === i ? { ...other, modo: 'fuera', min, min_fuera: min } : other))
+          continue
+        }
+        stageLog.push({ id: row.id, lugar: row.titulo ?? row.lugar, sitio: row.lugar ?? null, que: 'quitada', causa: `cierre de ${row.lugar}: a las ${row.hora} está cerrado` })
+        const weekly = (place?.closed_on ?? []).some((day) => norm(day) === norm(hours.weekday))
+        unplacedPool.push({ unitId: row.lugar, name: row.lugar, reason: 'closed_on_day', dayNumber: skeletonDay.dayNumber, closed: { dateIso: realDateIso(skeletonDay), weekday: hours.weekday }, closedWeekly: weekly })
+        lista = lista.filter((other, k) => k !== i && !(k === i - 1 && other.tipo === 'traslado'))
+      }
+      return { lista, cambiado }
     }
+    rows = resolverCerradas(rows).lista
     rows = nocheEspecial(rows, hours, stageLog)
     const inicial = marcarFilas(draft.rows)
-    const componer = (filas) => componerDia(filas, {
+    // (El cálculo se repite si cambia algo —el pool que no cabe, un restaurante de recambio—: lo que cada pasada anotó se junta, porque una fila nueva o quitada en la primera ya no lo es en la segunda.)
+    const acum = { nuevas: new Set(), causas: new Map(), quitadas: new Map() }
+    const ordenTabla = new Map(rows.map((row, i) => [row.id, i]))
+    const componer = (filas) => {
+      const r = componerDiaBase(filas)
+      for (const id of r.nuevas) acum.nuevas.add(id)
+      for (const [id, lista] of r.causas) acum.causas.set(id, [...new Set([...(acum.causas.get(id) ?? []), ...lista])])
+      for (const q of r.quitadas) acum.quitadas.set(q.id, q)
+      return r
+    }
+    const componerDiaBase = (filas) => componerDia(filas, {
       walk: rowWalk,
       sunset: hours.sunset,
       lead: SUNSET_LEAD,
@@ -2312,10 +2348,19 @@ export function planWrittenTrip(args) {
       colchonZona: colchonCercano,
       llegada: llegadaDe,
       orden: written.days[draft.id]?.orden_quitar ?? [],
+      // (1 y 1,5 días con algo marcado en el pool: el pool manda; si no cabe, hasta un imprescindible se quita, lo de más abajo primero. Lo marcado no se quita.)
+      poolManda: poolManda && poolNames.length > 0,
+      protegida: (row) => poolNames.includes(row.lugar),
       nocheValida: (row) => nocheValida(destData, hours.dateIso ?? null, hours.sunset ?? null, filaMin(row.hora), row.min),
       turnoMovible: (row) => row.lugar === 'Galería Borghese' && row.modo === 'dentro' && (row.hora_tipo === 'reserva' || row.turno) && entradas?.['Galería Borghese'] == null,
     })
     let resultado = componer(rows)
+    for (let vuelta = 0; vuelta < 3; vuelta++) {
+      const r = resolverCerradas(resultado.rows, rows)
+      if (!r.cambiado) break
+      rows = r.lista
+      resultado = componer(rows)
+    }
     // Un extra del pool (o lo que sea) que no cabe sin que la comida se vaya tarde (los restaurantes cierran sobre las 15:00): se acorta lo de antes de la comida por este orden y se vuelve a calcular,
     // sin cambiar nunca el orden para comer antes (haría zigzag): 1) el colchón hasta su mínimo; 2) la visita por dentro hasta su mínimo (min_max del sitio); 3) lo de nivel más bajo pasa a «de camino»;
     // 4) solo después se quita por la pirámide, de abajo arriba (nunca un imprescindible).
@@ -2332,7 +2377,7 @@ export function planWrittenTrip(args) {
         const lugares = actual.map((row, i) => ({ row, i })).filter(({ row, i }) => libre(row, i))
         let cambio = null
         const colchon = [...lugares].reverse().find(({ row }) => row.colchon && row.min > Math.min(row.min, 30))
-        const minimoPorDentro = (row) => placeByName.get(row.lugar)?.minimo_dentro ?? Math.max(30, Math.ceil(row.min * 0.75))
+        const minimoPorDentro = (row) => placeByName.get(row.lugar)?.minimo_dentro ?? Math.max(30, Math.ceil((row.min * 0.75) / 5) * 5)
         // (Solo la visita por dentro marcada en el pool, que es lo que hizo que no cupiera: nada más se acorta por dentro.)
         const porDentro = [...lugares].sort((x, y) => Number(poolNames.includes(y.row.lugar)) - Number(poolNames.includes(x.row.lugar)) || y.i - x.i).find(({ row }) => row.modo === 'dentro' && poolNames.includes(row.lugar) && row.min > minimoPorDentro(row))
         const aCamino = [...lugares].sort((x, y) => nivel(y.row) - nivel(x.row) || y.i - x.i).find(({ row }) => row.tipo === 'parada' && !row.colchon && nivel(row) >= 3 && row.modo !== 'camino' && row.modo !== 'dentro')
@@ -2352,6 +2397,90 @@ export function planWrittenTrip(args) {
         }
         resultado = componer(actual)
       }
+      rows = actual
+    }
+    // Los restaurantes del día (Tanda 5): se come y se cena donde acaba la ruta, aunque la zona se repita; lo único que no se repite es el mismo restaurante. Si el escrito ya salió, va su alternativa y,
+    // si tampoco, un restaurante de verdad (`tipo_local`) a menos de 10 min andando del escrito; si no hay ninguno, el escrito aunque se repita (apuntado). Se decide con las horas hechas y se vuelve a
+    // calcular con el restaurante que va de verdad: lo andado después de comer o cenar se cuenta desde él.
+    {
+      const cfg = destData.destination_config?.recambio_restaurante ?? { tipos: ['restaurante', 'pizzeria'], max_andar_min: 10 }
+      const dia = realDateIso(skeletonDay)
+      const coordsDe = (name) => {
+        const c = restaurantByName.get(name)?.coordinates
+        return Array.isArray(c) ? c : c ? [c.lat, c.lng] : null
+      }
+      const abiertoA = (name, meal, start) => recommendedRestaurant(destData, { names: [name], meal, near: null, weekday: hours.weekday, dateIso: dia, exclude: null, at: start })?.name === name
+      const elegir = (filas) => {
+        let cambiado = false
+        const usadasHoy = new Set()
+        const nuevas = filas.map((row) => {
+          if (row.tipo !== 'comida' && row.tipo !== 'cena') return row
+          const meal = row.tipo === 'cena' ? 'cena' : 'comida'
+          const start = filaMin(row.hora)
+          const original = row.restaurante_escrito ?? row.restaurante
+          const candidatas = [original, row.alternativa, row.tercera].filter(Boolean)
+          const libre = (name) => !mesas.usados.has(name) && !usadasHoy.has(name)
+          const porque = (candidata) => (!abiertoA(candidata, meal, start) ? 'cierra ese día o a esa hora' : 'ya sale en el viaje')
+          const descartadas = () => candidatas.filter((candidata) => !libre(candidata) || !abiertoA(candidata, meal, start)).map((candidata) => `${candidata} ${porque(candidata)}`).join('; ')
+          let name = candidatas.find((candidata) => abiertoA(candidata, meal, start) && libre(candidata))
+          let motivo = null
+          if (!name) {
+            const origen = coordsDe(original)
+            const buenos = (destData.restaurants ?? [])
+              .filter((restaurant) => !candidatas.includes(restaurant.name) && cfg.tipos.includes(restaurant.tipo_local) && libre(restaurant.name) && abiertoA(restaurant.name, meal, start))
+              .map((restaurant) => ({ name: restaurant.name, andar: origen && coordsDe(restaurant.name) ? walkLeg(origen, coordsDe(restaurant.name)) : Infinity }))
+              .filter((item) => item.andar <= cfg.max_andar_min)
+              .sort((x, y) => x.andar - y.andar || x.name.localeCompare(y.name, 'es'))
+            name = buenos[0]?.name ?? null
+            if (name) motivo = `${descartadas()}: va ${name}, un restaurante de verdad a ${buenos[0].andar} min andando`
+          }
+          if (!name) {
+            // (Ninguno de recambio: el escrito, aunque se repita, y queda apuntado.)
+            name = candidatas.find((candidata) => abiertoA(candidata, meal, start)) ?? original
+            if (!libre(name)) stageLog.push({ id: row.id, lugar: name, sitio: null, que: 'aviso', causa: `restaurante repetido en el viaje: ${name} (no hay un restaurante de verdad abierto a menos de ${cfg.max_andar_min} min andando)` })
+          }
+          const causaCambio = name !== original ? motivo ?? `${descartadas()}: va ${name}` : null
+          usadasHoy.add(name)
+          if (name === row.restaurante) return row
+          cambiado = true
+          if (causaCambio) stageLog.push({ id: row.id, lugar: original, sitio: null, que: 'restaurante', causa: causaCambio })
+          return { ...row, restaurante: name, restaurante_escrito: original }
+        })
+        return { filas: nuevas, cambiado }
+      }
+      const aplicarMesas = (base, evaluadas) => base.map((row) => {
+        const e = evaluadas.find((other) => other.id === row.id)
+        return e && e.restaurante !== row.restaurante ? { ...row, restaurante: e.restaurante, restaurante_escrito: e.restaurante_escrito } : row
+      })
+      const primera = elegir(resultado.rows)
+      if (primera.cambiado) {
+        rows = aplicarMesas(rows, primera.filas)
+        resultado = componer(rows)
+        // (Con las horas nuevas puede que el elegido ya no abra: se vuelve a mirar una vez.)
+        const segunda = elegir(resultado.rows)
+        if (segunda.cambiado) {
+          rows = aplicarMesas(rows, segunda.filas)
+          resultado = componer(rows)
+        }
+      }
+      for (const row of resultado.rows) if (row.tipo === 'comida' || row.tipo === 'cena') mesas.usados.add(row.restaurante)
+    }
+    {
+      // Un colchón que una pasada quitó y otra volvió a meter (la misma zona, el mismo título) es el mismo colchón: conserva su id y su texto, y el registro cuenta lo que cambió, no «quitada» y «nueva».
+      let filas = resultado.rows
+      for (const q of [...acum.quitadas.values()]) {
+        if (!q.colchon || filas.some((row) => row.id === q.id)) continue
+        const k = filas.findIndex((row) => row.colchon && acum.nuevas.has(row.id) && row.lugar === q.lugar && (row.titulo ?? null) === (q.titulo ?? null))
+        const vuelta = k >= 0 ? filas[k] : null
+        // (Solo si en la tabla iba justo ahí: el orden de una tabla escrita no se cambia nunca.)
+        if (!vuelta || !((ordenTabla.get(filas[k - 1]?.id) ?? -1) < (ordenTabla.get(q.id) ?? -1) && (ordenTabla.get(q.id) ?? Infinity) < (ordenTabla.get(filas[k + 1]?.id) ?? Infinity))) continue
+        acum.causas.set(q.id, [...new Set([...(acum.causas.get(q.id) ?? []), ...(acum.causas.get(vuelta.id) ?? [])])])
+        acum.nuevas.delete(vuelta.id)
+        acum.quitadas.delete(q.id)
+        filas = filas.map((row) => (row === vuelta ? { ...row, id: q.id, texto: q.texto ?? row.texto } : row))
+      }
+      const finalesIds = new Set(filas.map((row) => row.id))
+      resultado = { ...resultado, rows: filas, nuevas: [...acum.nuevas], causas: acum.causas, quitadas: [...acum.quitadas.values()].filter((q) => !finalesIds.has(q.id)) }
     }
     // Los colchones no nombran paradas que el mismo día tienen su tarjeta (el texto va por tabla y el día es el que manda).
     const nombresDelDia = resultado.rows.filter((row) => row.tipo === 'parada' && row.lugar && !row.llegada).map((row) => placeByName.get(row.lugar)?.name).filter(Boolean)
@@ -2363,7 +2492,8 @@ export function planWrittenTrip(args) {
       const buenos = trozos.filter((trozo) => !claves.some((clave) => clave.length > 3 && normaId(trozo).replace(/_/g, ' ').includes(clave)))
       return buenos.length === trozos.length ? row : { ...row, texto: buenos.join(' ') || null, texto_saneado: true }
     }
-    const finales = resultado.rows.map(sanear)
+    // (`min_escrito`: los minutos de la tabla del documento, para que la prueba vea que no se ha alargado lo que no es colchón ni comida.)
+    const finales = resultado.rows.map(sanear).map((row) => ({ ...row, min_escrito: draft.docBase?.get(row.id)?.min ?? null }))
     // El registro: una entrada por fila con todo lo que cambió respecto al documento, con la hora final.
     const noCambios = stageLog.filter((entry) => ['nueva', 'quitada', 'aviso', 'restaurante'].includes(entry.que))
     const causasDe = new Map()
@@ -2376,7 +2506,7 @@ export function planWrittenTrip(args) {
     const nuevoLog = noCambios.filter((entry) => !(entry.que === 'quitada' && finales.some((row) => row.id === entry.id)))
     const idsFinales = new Set(finales.map((row) => row.id))
     for (const entry of nuevoLog) if (entry.que === 'nueva' && !idsFinales.has(entry.id)) entry.que = 'nueva_quitada'
-    const nombre = (row) => row.titulo ?? row.lugar ?? row.restaurante ?? row.noche ?? row.id
+    const nombre = (row) => row.titulo ?? row.lugar ?? row.restaurante_escrito ?? row.restaurante ?? row.noche ?? row.id
     for (const row of finales) {
       const previa = draft.docBase?.get(row.id) ?? inicial.find((x) => x.id === row.id)
       const causas = [...(causasDe.get(row.id) ?? []), ...(resultado.causas.get(row.id) ?? [])]
@@ -2416,8 +2546,8 @@ export function planWrittenTrip(args) {
     draft.problemasComponer = resultado.problemas
   }
 
-  // Lo que ya se ha comido y cenado en el viaje (los días se planifican en orden): restaurantes usados, el barrio de la cena del día anterior y el de la comida de hoy.
-  const mesas = { usados: new Set(), cenaAnterior: null, cenaDeHoy: null, comidaHoy: null }
+  // Lo que ya se ha comido y cenado en el viaje (los días se planifican en orden): los restaurantes usados. Lo único que no se repite es el mismo restaurante.
+  const mesas = { usados: new Set() }
   // Lo que ya ha salido en el viaje como parada (no de camino): la primera vez que sale un sitio de nivel 1 o 2 va como parada, no de camino.
   const caminoVistos = new Set()
   const planEscritoDay = (draft, skeletonDay) => {
@@ -2452,8 +2582,6 @@ export function planWrittenTrip(args) {
         if (dif.length) log.push({ id: row.id, lugar: nombre, sitio: row.lugar ?? null, que: dif.join('+'), causa: `cierre de ${row.lugar}` })
       }
     }
-    mesas.comidaHoy = null
-    mesas.cenaDeHoy = null
     // Comidas y cenas: el escrito; si cierra ese día o a esa hora, su alternativa; si cierran los dos, la tercera (cuando la hay); si no hay ninguna abierta, otro de la
     // misma zona abierto a esa hora (de los datos), apuntado en el registro.
     const meals = []
@@ -2467,57 +2595,19 @@ export function planWrittenTrip(args) {
       const meal = row.tipo === 'cena' ? 'cena' : 'comida'
       const start = filaMin(row.hora)
       const pick = (name) => (name ? recommendedRestaurant(destData, { names: [name], meal, near: null, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: null, at: start }) : null)
-      let chosen = null
+      // (El restaurante lo decide componerEscrito, antes de fijar las horas, con lo ya usado en el viaje; aquí solo se comprueba que abre a su hora. Si no, la alternativa, la tercera y, como último recurso, otro de la zona.)
+      let chosen = pick(row.restaurante)
       let motivo = null
       const candidatas = [row.restaurante, row.alternativa, row.tercera].filter(Boolean)
-      // Un restaurante no se repite en el viaje (los días van en orden y el primero se queda el suyo) y, si hay otra opción, no se cena dos días seguidos en el mismo barrio
-      // ni se come y se cena en el mismo barrio el mismo día. La cadena: lo escrito, su alternativa, la tercera, otro de la misma zona y otro a menos de 1 km en otro barrio, abierto y sin usar.
-      const barrioDe = (name) => mainZoneOf(restaurantByName.get(name)?.zone ?? '')
-      const cenando = row.tipo === 'cena'
-      const barrioOk = (name) => !cenando || (barrioDe(name) !== mesas.cenaAnterior?.barrio && barrioDe(name) !== mesas.comidaHoy)
-      const abierto = (name) => pick(name)?.name === name
-      const sinUsar = (name) => !mesas.usados.has(name)
-      const coordsDe = (name) => {
-        const c = restaurantByName.get(name)?.coordinates
-        return Array.isArray(c) ? c : c ? [c.lat, c.lng] : null
-      }
-      const escritoCoords = coordsDe(row.restaurante)
-      const distanciaA = (name) => (escritoCoords && coordsDe(name) ? straightLineMeters(escritoCoords, coordsDe(name)) : Infinity)
-      // (Los otros restaurantes abiertos solo se miran si lo escrito no sirve: es lo caro.)
-      let otrosCache = null
-      const otros = () => (otrosCache ??= (destData.restaurants ?? []).map((restaurant) => restaurant.name).filter((name) => !candidatas.includes(name) && abierto(name)))
-      const mismaZona = (name) => barrioDe(name) === barrioDe(row.restaurante)
-      const orden = (lista) => [...lista].sort((x, y) => distanciaA(x) - distanciaA(y) || x.localeCompare(y, 'es'))
-      const etapas = [
-        () => candidatas.filter((name) => abierto(name) && sinUsar(name) && barrioOk(name)),
-        () => orden(otros().filter((name) => sinUsar(name) && barrioOk(name) && mismaZona(name))),
-        () => orden(otros().filter((name) => sinUsar(name) && barrioOk(name) && distanciaA(name) <= 1000)),
-        () => candidatas.filter((name) => abierto(name) && sinUsar(name)),
-        () => orden(otros().filter((name) => sinUsar(name) && mismaZona(name))),
-        () => candidatas.filter((name) => abierto(name)),
-      ]
-      let etapa = -1
-      let elegidas = []
-      for (let k = 0; k < etapas.length && etapa < 0; k++) {
-        elegidas = etapas[k]()
-        if (elegidas.length > 0) etapa = k
-      }
-      if (etapa >= 0) {
-        const name = elegidas[0]
-        chosen = pick(name)
-        if (chosen?.name !== name) chosen = { name, coordinates: coordsDe(name), zone: restaurantByName.get(name)?.zone ?? null }
-        if (name !== row.restaurante) {
-          const razones = []
-          for (const candidata of candidatas.slice(0, candidatas.includes(name) ? candidatas.indexOf(name) : candidatas.length)) {
-            const porque = !abierto(candidata) ? 'cierra ese día o a esa hora' : !sinUsar(candidata) ? 'ya sale en el viaje' : !barrioOk(candidata) ? (barrioDe(candidata) === mesas.comidaHoy ? 'se comió en ese mismo barrio ese día' : 'se cenó en ese mismo barrio el día anterior') : null
-            if (porque) razones.push(`${candidata} ${porque}`)
+      if (chosen?.name !== row.restaurante) {
+        chosen = null
+        for (const name of candidatas.slice(1)) {
+          const hit = pick(name)
+          if (hit?.name === name) {
+            chosen = hit
+            motivo = `${candidatas.slice(0, candidatas.indexOf(name)).join(' y ')} ${candidatas.indexOf(name) > 1 ? 'cierran' : 'cierra'} ese día o a esa hora: va ${name}`
+            break
           }
-          const dondeEsta = candidatas.includes(name) ? '' : mismaZona(name) ? ', otro de la misma zona abierto y sin usar' : ', otro a menos de 1 km en otro barrio, abierto y sin usar'
-          motivo = razones.length ? `${razones.join('; ')}: va ${name}${dondeEsta}` : `${row.restaurante}: va ${name}${dondeEsta}`
-        }
-        if (etapa === 3 || etapa === 4 || (etapa === 5 && !sinUsar(name))) {
-          if (!sinUsar(name) || etapa === 5) log.push({ id: row.id, lugar: name, sitio: null, que: 'aviso', causa: `restaurante repetido en el viaje: ${name} (no queda otro abierto en la zona)` })
-          if (cenando && !barrioOk(name)) log.push({ id: row.id, lugar: name, sitio: null, que: 'aviso', causa: `barrio repetido: ${barrioDe(name)} (${barrioDe(name) === mesas.comidaHoy ? 'se come y se cena en el mismo barrio' : 'dos cenas seguidas en el mismo barrio'}); no hay otra opción abierta que no rompa la ruta` })
         }
       }
       if (!chosen) {
@@ -2525,10 +2615,6 @@ export function planWrittenTrip(args) {
         // (Sin ninguno abierto a esa hora, otro de la zona abierto ese día, aunque la hora justa no esté clara.)
         if (!chosen) chosen = recommendedRestaurant(destData, { names: [row.restaurante], meal, near: null, weekday: hours.weekday, dateIso: realDateIso(skeletonDay), exclude: null })
         motivo = chosen ? `${candidatas.join(', ')}: ninguno abierto ese día a esa hora; va ${chosen.name}, otro de la misma zona abierto` : `${candidatas.join(', ')}: ninguno abierto ese día a esa hora y no hay otro en la zona`
-      }
-      if (chosen?.name) {
-        mesas.usados.add(chosen.name)
-        if (cenando) { mesas.cenaDeHoy = { barrio: barrioDe(chosen.name) } } else mesas.comidaHoy = barrioDe(chosen.name)
       }
       if (motivo) log.push({ id: row.id, lugar: row.restaurante, sitio: null, que: 'restaurante', causa: motivo })
       // (Navidad y Año Nuevo: «con reserva»; y sin dato de si ese restaurante cierra, el aviso de que se reserve con antelación.)
@@ -2541,8 +2627,6 @@ export function planWrittenTrip(args) {
         meals.push({ type: 'dinner', start, end: start + row.min, coordinates: chosen?.coordinates ?? null, walkMinutes: 0, ...(nota ? { note: nota } : {}) })
       }
     }
-    // (Lo que se cenó hoy es lo que mira la cena de mañana.)
-    mesas.cenaAnterior = mesas.cenaDeHoy
     const month = hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : null
     const nights = rows.filter((row) => row.tipo === 'noche' && (!row.solo_meses || (month != null && row.solo_meses.includes(month)))).map((row) => ({ ...catalogueByName.get(row.noche), fixedStart: filaMin(row.hora), fixedMinutes: row.min, wholeWalk: true })).filter((entry) => entry.name)
     const dinnerZone = dinnerRestaurant ? dinnerZones(destData).find((zone) => zone.restaurants.includes(dinnerRestaurant.name))?.id ?? null : null

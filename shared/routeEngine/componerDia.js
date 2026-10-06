@@ -20,14 +20,17 @@ import { toMin, toHHMM, hueco, finDe, correrHoras, CENA_MAXIMA, MARGENES, antesD
 const up5 = (m) => Math.ceil(m / 5) * 5
 const down5 = (m) => Math.floor(m / 5) * 5
 const near5 = (m) => Math.round(m / 5) * 5
-/** Un hueco de más de esto, sin nombre, es un fallo. */
-export const HUECO_MAXIMO = 15
+/** Un margen de hasta esto antes de una hora fija es normal y se deja tal cual («llegas con tiempo»); lo que pasa de aquí se llena, y solo con lo que tiene contenido: un colchón (hasta 2 horas) o la comida (hasta 75 min). Tanda 5. */
+export const HUECO_MAXIMO = 30
+/** Lo que sobra entre dos filas sin hora fija se corre hacia antes: la fila de después sale lo antes que los márgenes dejan (desde 15 min de sobra). */
+const HUECO_TIRAR = 15
 export const COLCHON_MAXIMO = 120
 export const COMIDA_MAXIMA = 75
 export const COMIDA_MINIMA = 45
 /** Lo que se tolera que llegue tarde el mirador del atardecer (el sol menos 25 min): pasado esto se quita por la pirámide lo que no cabe. */
 const TARDE_SOLAR = 10
 const SOL_MUY_TARDE = 45
+const CENA_TARDE = 30
 const LUNCH_EARLIEST = 12 * 60 + 30
 
 /** Lo menos que puede durar un colchón: no baja de 30 min; si ya dura menos, no se toca (decisión del usuario, Tanda 4). */
@@ -73,8 +76,25 @@ function componer(rows0, env, retrasos) {
     causas.set(row.id, lista)
   }
   /** Si la pirámide quitó un colchón de esa zona y ahora hay que meter uno, vuelve ése (con su id y su texto), no uno nuevo con otro nombre. */
-  const reaprovechar = (nuevo) => {
-    const k = quitadas.findIndex((q) => q.colchon && q.lugar === nuevo.lugar)
+  // (Solo si en la tabla iba justo ahí —después de la fila de antes y antes de la de después—: el orden de una tabla escrita no se cambia nunca.)
+  const orden0 = new Map(rows0.map((row, i) => [row.id, i]))
+  // Una parada no sale dos veces en el mismo día: no se mete un colchón de una zona que ya tiene el suyo en el día (el de la tabla, o uno que ya se metió).
+  const colchonesMetidos = new Set()
+  // (El de la zona más cercana que el día aún no tiene.)
+  const moldeDe = (...cercanos) => {
+    // (Ni el de una zona cuyo colchón escrito se acaba de quitar: sería el mismo paseo en otro sitio del día.)
+    const excluidos = new Set([...rows.filter((row) => row.colchon || row.tipo === 'paseo').map((row) => row.lugar), ...quitadas.filter((q) => q.colchon).map((q) => q.lugar), ...colchonesMetidos])
+    for (const cercano of cercanos) {
+      const molde = cercano ? env.colchonZona?.(cercano, excluidos) : null
+      if (molde) {
+        colchonesMetidos.add(molde.lugar)
+        return molde
+      }
+    }
+    return null
+  }
+  const reaprovechar = (nuevo, antes, despues) => {
+    const k = quitadas.findIndex((q) => q.colchon && q.lugar === nuevo.lugar && orden0.has(q.id) && orden0.get(q.id) > (orden0.get(antes?.id) ?? -1) && orden0.get(q.id) < (orden0.get(despues?.id) ?? Infinity))
     if (k < 0) return { fila: nuevo, nueva: true }
     const [q] = quitadas.splice(k, 1)
     return { fila: { ...q, min: nuevo.min, hora: nuevo.hora, hora_doc: q.hora_doc ?? nuevo.hora_doc, min_doc: q.min_doc ?? nuevo.min_doc }, nueva: false }
@@ -128,7 +148,7 @@ function componer(rows0, env, retrasos) {
       const mas_pronto = primera ? pref : llegadaA(prev, row)
       let inicio
       if (primera) inicio = pref
-      else if (pref >= mas_pronto) inicio = pref - mas_pronto > HUECO_MAXIMO ? mas_pronto : pref
+      else if (pref >= mas_pronto) inicio = pref - mas_pronto > HUECO_TIRAR ? mas_pronto : pref
       else inicio = mas_pronto
       inicio = Math.max(inicio, suelo(row))
       // (Tirado hacia antes, no antes de que abra: si a ese inicio está cerrado, se vuelve a la hora preferida.)
@@ -165,7 +185,7 @@ function componer(rows0, env, retrasos) {
   /** Un colchón nuevo de la zona del último sitio, para lo que quede libre. Devuelve lo que queda sin llenar. */
   const meter = (inner, Fa, Fb, resto, deseado) => {
     const antes = inner.at(-1) ?? Fa
-    const molde = antes ? env.colchonZona?.(antes) : null
+    const molde = antes ? moldeDe(antes) : null
     if (!molde || resto <= HUECO_MAXIMO) return resto
     const probe = { ...molde, tipo: 'paseo', hora: toHHMM(0), min: 10 }
     const inicio = antes ? llegadaA(antes, probe) : toMin(Fb.hora)
@@ -173,7 +193,7 @@ function componer(rows0, env, retrasos) {
     const mas = Math.min(down5(disponible), COLCHON_MAXIMO)
     if (mas < MARGENES.COLCHON_MINIMO) return resto
     const nuevo = { ...molde, id: `colchon_${idDe(antes.lugar ?? antes.restaurante ?? 'zona')}_${idDe(nombreDe(Fb)).slice(0, 24)}`, tipo: 'paseo', colchon: true, min: mas, hora: toHHMM(inicio), hora_doc: toHHMM(inicio), min_doc: mas, como_documento: '', texto_documento: molde.titulo }
-    const re = reaprovechar(nuevo)
+    const re = reaprovechar(nuevo, antes, Fb)
     inner.push(re.fila)
     if (re.nueva) nuevas.push(nuevo.id)
     nota(re.fila, `quedaban ${resto} min libres antes de ${nombreDe(Fb)}: ${re.nueva ? 'se mete el colchón de la zona' : 'vuelve el colchón de la zona'}`)
@@ -272,17 +292,30 @@ function componer(rows0, env, retrasos) {
       }
       // (Con el colchón recortado puede que ahora sobre tiempo: la hora del sol manda y el hueco se llena con nombre en la pasada final.)
       if (flexible === 'solar' && sbMin <= sb) return { inner: colocadas, sb }
+      // (La cena no se retrasa más de media hora sobre la hora escrita —o la del mirador—: si el día no cabe, lo de más abajo de la pirámide se quita antes.)
+      if (flexible === 'cena' && sbMin - sb > CENA_TARDE) return sinPasarse(quitarPorPiramide(colocadas, Fa, Fb, sb), Fa, Fb, flexible)
       // (Si el sol se adelanta más de 45 min a lo que la tarde puede dar de sí, lo que no cabe se quita por la pirámide, de abajo arriba, como antes de una reserva.)
-      if (flexible === 'solar' && sbMin - sb > SOL_MUY_TARDE) return quitarPorPiramide(colocadas, Fa, Fb, sb)
+      if (flexible === 'solar' && sbMin - sb > SOL_MUY_TARDE) return sinPasarse(quitarPorPiramide(colocadas, Fa, Fb, sb), Fa, Fb, flexible)
       if (flexible === 'solar') avisos.push(`el atardecer de ${nombreDe(Fb)} llega ${sbMin - sb} min tarde: no se puede acortar más`)
-      return { inner: colocadas, sb: flexible === 'cena' ? Math.min(sbMin, Math.max(CENA_MAXIMA, sb)) : sbMin }
+      if (flexible === 'cena' && sbMin > CENA_MAXIMA) avisos.push(`la cena pasa de las 22:00 (${toHHMM(sbMin)}): no hay nada que quitar para llegar antes`)
+      return { inner: colocadas, sb: sbMin }
     }
     return quitarPorPiramide(colocadas, Fa, Fb, sb)
+  }
+  /** La cena o el sol no se pisan con lo de antes: si quitando lo que se podía aún no se llega, la fila sale cuando se llega (la cena, hasta las 22:00; el sol, tarde y con aviso). */
+  const sinPasarse = (res, Fa, Fb, flexible) => {
+    const u = res.inner.at(-1) ?? Fa
+    const minimo = u ? up5(finDe(u) + hueco(u, Fb, walk)) + (Fb.llegada || (res.inner.length === 0 && Fa?.llegada) ? 0 : antesDeLlegar(Fb)) : res.sb
+    if (minimo <= res.sb) return res
+    if (flexible === 'solar') avisos.push(`el atardecer de ${nombreDe(Fb)} llega ${minimo - res.sb} min tarde: no se puede acortar más`)
+    // (Una cena nunca se pisa con lo de antes: si no hay nada que quitar, sale cuando se llega aunque pase de las 22:00, y queda apuntado.)
+    if (flexible === 'cena' && minimo > CENA_MAXIMA) avisos.push(`la cena pasa de las 22:00 (${toHHMM(minimo)}): no hay nada que quitar para llegar antes`)
+    return { ...res, sb: minimo }
   }
   /** Una hora fija (reserva, turno, el sol): se quita por la pirámide lo que no cabe. */
   const quitarPorPiramide = (colocadas, Fa, Fb, sb) => {
     const prueba = [...(Fa ? [{ ...Fa }] : []), ...colocadas, { ...Fb, hora: toHHMM(sb), fija: true }]
-    const r = correrHoras(prueba, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (row) => row.llegada === true })
+    const r = correrHoras(prueba, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, quitarImprescindibles: env.poolManda === true, cenaFija: Fb.tipo === 'cena', protegidas: (row) => row.llegada === true || (env.protegida ? env.protegida(row) : false) })
     for (const p of r.problemas) if (!problemas.includes(p)) problemas.push(p)
     // Apretar de más no vale: si al final sobra tiempo, lo apretado vuelve a su tamaño (el de nivel más alto primero) mientras siga cabiendo y apretando menos en total.
     {
@@ -300,7 +333,7 @@ function componer(rows0, env, retrasos) {
         for (const { row, i } of apretadas) {
           const o = original.get(row.id)
           const base = actual.rows.map((fila, k) => (k === i ? { ...fila, min: o.min, modo: o.modo, min_fuera: o.min_fuera } : fila))
-          const intento = correrHoras(base, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (fila) => fila.llegada === true })
+          const intento = correrHoras(base, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, quitarImprescindibles: env.poolManda === true, cenaFija: Fb.tipo === 'cena', protegidas: (fila) => fila.llegada === true })
           if (intento.problemas.length === 0 && intento.quitadas.length === 0 && grado(intento.rows) < hoy) { actual = { ...actual, rows: intento.rows }; mejoro = true; break }
         }
         if (!mejoro) break
@@ -310,7 +343,7 @@ function componer(rows0, env, retrasos) {
       for (const id of [...quitadasIds].reverse()) {
         const presentes = new Map(actual.rows.map((row) => [row.id, row]))
         const candidata = prueba.filter((row) => presentes.has(row.id) || row.id === id).map((row) => (presentes.has(row.id) ? presentes.get(row.id) : { ...row }))
-        const intento = correrHoras(candidata, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, protegidas: (fila) => fila.llegada === true })
+        const intento = correrHoras(candidata, { desde: 1, walk, orden: env.orden ?? [], soloEmpujar: false, quitarImprescindibles: env.poolManda === true, cenaFija: Fb.tipo === 'cena', protegidas: (fila) => fila.llegada === true })
         if (intento.problemas.length === 0 && intento.quitadas.length === 0) {
           actual = { ...actual, rows: intento.rows }
           const k = r.quitadas.findIndex((q) => q.id === id)
@@ -405,7 +438,7 @@ function componer(rows0, env, retrasos) {
         const fila = salida[j]
         if (esFija(fila) || fila.llegada === true || fila.tipo === 'cena' || fila.tipo === 'noche' || fila.id === solarId) break
         const esComida = fila.tipo === 'comida' && !fila.rapida
-        const tope = esComida ? COMIDA_MAXIMA : fila.colchon || fila.tipo === 'paseo' ? COLCHON_MAXIMO : 0
+        const tope = esComida ? COMIDA_MAXIMA : fila.colchon === true ? COLCHON_MAXIMO : 0
         const mas = Math.min(g, tope - fila.min)
         if (mas <= 0) continue
         const corridas = salida.slice(j + 1, i).map((row) => ({ ...row, hora: toHHMM(toMin(row.hora) + mas) }))
@@ -417,7 +450,7 @@ function componer(rows0, env, retrasos) {
       }
       if (g <= HUECO_MAXIMO) { i++; continue }
       const previa = salida[i - 1]
-      const molde = previa.tipo === 'traslado' ? env.colchonZona?.(b) : env.colchonZona?.(previa) ?? env.colchonZona?.(b)
+      const molde = previa.tipo === 'traslado' ? moldeDe(b) : moldeDe(previa, b)
       if (molde) {
         const probe = { ...molde, tipo: 'paseo', hora: toHHMM(0), min: 10 }
         const inicio = up5(finDe(previa) + hueco(previa, probe, walk))
@@ -425,26 +458,11 @@ function componer(rows0, env, retrasos) {
         const mas = Math.min(down5(dispon), COLCHON_MAXIMO)
         if (mas >= MARGENES.COLCHON_MINIMO) {
           const nuevo = { ...molde, id: `colchon_${idDe(previa.lugar ?? previa.restaurante ?? 'zona')}_${idDe(nombreDe(b)).slice(0, 24)}`, tipo: 'paseo', colchon: true, min: mas, hora: toHHMM(inicio), hora_doc: toHHMM(inicio), min_doc: mas, como_documento: '', texto_documento: molde.titulo }
-          const re = reaprovechar(nuevo)
+          const re = reaprovechar(nuevo, previa, b)
           salida.splice(i, 0, re.fila)
           if (re.nueva) nuevas.push(nuevo.id)
           nota(re.fila, `quedaban ${resto0} min libres antes de ${nombreDe(b)}: ${re.nueva ? 'se mete el colchón de la zona' : 'vuelve el colchón de la zona'}`)
           continue
-        }
-      }
-      // Último recurso: un rato más en el último sitio al aire libre (un mirador, una plaza) antes de lo fijo, hasta media hora.
-      {
-        let j = i - 1
-        while (j > 0 && (salida[j].tipo === 'traslado' || salida[j].modo === 'camino')) j--
-        const fila = salida[j]
-        const alAireLibre = fila.tipo === 'parada' && !fila.llegada && !esFija(fila) && fila.modo !== 'camino'
-        const mas = alAireLibre ? Math.min(g, 30) : 0
-        if (mas > 0) {
-          fila.min += mas
-          for (let t = j + 1; t < i; t++) salida[t] = { ...salida[t], hora: toHHMM(toMin(salida[t].hora) + mas) }
-          nota(fila, `se queda más rato ${mas} min: quedaban ${resto0} min libres antes de ${nombreDe(b)} y no cabía un colchón`)
-          g -= mas
-          if (g <= HUECO_MAXIMO) { i++; continue }
         }
       }
       // Si lo de antes es todo del principio del día y no tiene hora fija (ni reserva ni sol), el día empieza más tarde: no hay nada que llenar, solo que empezar a su hora.

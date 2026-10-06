@@ -8,34 +8,46 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 
 | Documento | Nuevo |
 |---|---|
-| 10:05 · Basílica de San Pedro · 5 min | 10:10 · Basílica de San Pedro · 5 min |
-| 10:15 · Via della Conciliazione · 10 min | 10:20 · Via della Conciliazione · 10 min |
-| 10:45 · Castillo de Sant'Angelo · 15 min | 10:50 · Castillo de Sant'Angelo · 15 min |
-| 11:30 · Piazza Navona · 25 min | 11:35 · Piazza Navona · 25 min |
-| 12:10 · Panteón · 15 min | 12:20 · Panteón · 15 min |
-| 12:40 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 60 min | 12:50 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 60 min |
-| 14:00 · Fontana de Trevi · 20 min | 14:10 · Fontana de Trevi · 20 min |
-| 14:30 · Piazza Venezia · 5 min | 14:40 · Piazza Venezia · 5 min |
-| 14:40 · Altar de la Patria · 5 min | 14:50 · Altar de la Patria · 5 min |
-| 14:50 · Plaza del Campidoglio · 5 min | 15:05 · Plaza del Campidoglio · 5 min |
-| 15:10 · El Foro Romano, desde la terraza del Campidoglio · 15 min | 15:35 · El Foro Romano, desde la terraza del Campidoglio · 15 min |
-| 15:30 · Via dei Fori Imperiali · 10 min | 15:55 · Via dei Fori Imperiali · 10 min |
-| 15:55 · Coliseo · 15 min | 16:25 · Coliseo · 15 min |
-| 16:15 · Arco de Constantino · 5 min | 16:45 · Arco de Constantino · 5 min |
+| 09:50 · Basílica de San Pedro · 5 min | 09:55 · Basílica de San Pedro · 5 min |
+| 10:00 · Paseo por Via della Conciliazione · 10 min | 10:15 · Paseo por Via della Conciliazione · 10 min |
+| 10:30 · Castillo de Sant'Angelo · 15 min | 10:45 · Castillo de Sant'Angelo · 15 min |
+| 10:50 · Puente Sant'Angelo · 5 min | 11:00 · Puente Sant'Angelo · 5 min |
+| 11:20 · Piazza Navona · 25 min | 11:30 · Piazza Navona · 25 min |
+| 12:05 · Panteón · 15 min | 12:15 · Panteón · 15 min |
+| 12:30 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 60 min | 12:45 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 60 min |
+| 13:40 · Piazza Venezia · 5 min | 13:55 · Piazza Venezia · 5 min |
+| 13:50 · Altar de la Patria · 15 min | 14:15 · Altar de la Patria · 15 min |
+| 14:20 · Plaza del Campidoglio · 15 min | 14:50 · Plaza del Campidoglio · 15 min |
+| 14:45 · El Foro Romano, desde la terraza del Campidoglio · 15 min | 15:30 · El Foro Romano, desde la terraza del Campidoglio · 15 min |
+| 15:10 · Paseo por Via dei Fori Imperiali · 10 min | 16:00 · Paseo por Via dei Fori Imperiali · 10 min |
+| 15:45 · Coliseo · 15 min | 16:30 · Coliseo · 15 min |
+| 16:00 · Arco de Constantino · 5 min | 16:50 · Arco de Constantino · 5 min |
+| 16:20 · Taxi a la Plaza de España · 15 min | 17:05 · Taxi a la Plaza de España · 15 min |
+| 16:45 · Plaza de España · 20 min | 17:30 · Plaza de España · 20 min |
+| 17:15 · Trinità dei Monti y su mirador sobre la Plaza de España · 15 min | 18:05 · Trinità dei Monti y su mirador sobre la Plaza de España · 15 min |
+| 17:45 · Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco (colchón) · 90 min | 18:40 · Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco (colchón) · 35 min |
 
 ### D0 · reves/unica
 
 | Documento | Nuevo |
 |---|---|
-| 11:35 · Via dei Fori Imperiali · 15 min | 11:40 · Via dei Fori Imperiali · 15 min |
-| 12:35 · Fontana de Trevi · 20 min | 12:40 · Fontana de Trevi · 20 min |
-| 13:15 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 45 min | 13:20 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 45 min |
-| 14:15 · Panteón · 15 min | 14:20 · Panteón · 15 min |
-| 14:45 · Piazza Navona · 20 min | 14:55 · Piazza Navona · 20 min |
-| 15:15 · Puente Sant'Angelo · 5 min | 15:30 · Puente Sant'Angelo · 5 min |
-| 15:25 · Castillo de Sant'Angelo · 5 min | 15:35 · Castillo de Sant'Angelo · 5 min |
-| 15:55 · Plaza de San Pedro · 15 min | 16:05 · Plaza de San Pedro · 15 min |
-| 16:10 · Basílica de San Pedro · 10 min | 16:25 · Basílica de San Pedro · 10 min |
+| 11:35 · Paseo por Via dei Fori Imperiali · 15 min | 11:50 · Paseo por Via dei Fori Imperiali · 15 min |
+| 12:05 · Piazza Venezia · 5 min | 12:10 · Piazza Venezia · 5 min |
+| 12:15 · Altar de la Patria · 15 min | 12:30 · Altar de la Patria · 15 min |
+| 13:00 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 60 min | 13:10 · **Comida:** Armando al Pantheon (o Supplizio; si cierran los dos, Piccolo Arancio) · 60 min |
+| 14:10 · Panteón · 15 min | 14:25 · Panteón · 15 min |
+| 14:35 · Piazza Navona · 20 min | 15:00 · Piazza Navona · 20 min |
+| 15:10 · Puente Sant'Angelo · 5 min | 15:35 · Puente Sant'Angelo · 5 min |
+| 15:20 · Castillo de Sant'Angelo · 15 min | 15:55 · Castillo de Sant'Angelo · 15 min |
+| 15:45 · Paseo por Via della Conciliazione · 10 min | 16:30 · Paseo por Via della Conciliazione · 10 min |
+| 16:05 · Plaza de San Pedro · 15 min | 16:55 · Plaza de San Pedro · 15 min |
+| 16:20 · Basílica de San Pedro · 5 min | 17:15 · Basílica de San Pedro · 5 min |
+| 16:35 · Taxi a la Plaza de España · 15 min | 17:30 · Taxi a la Plaza de España · 15 min |
+| 17:00 · Plaza de España · 20 min | 17:55 · Plaza de España · 20 min |
+| 17:30 · Trinità dei Monti y su mirador sobre la Plaza de España · 15 min | 18:30 · Trinità dei Monti y su mirador sobre la Plaza de España · 15 min |
+| 17:55 · Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco (colchón) · 80 min | 19:05 · Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco (colchón) · 30 min |
+| 19:30 · **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente · 90 min | 20:00 · **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente · 90 min |
+| 21:25 · Fontana de Trevi iluminada · 20 min | 21:55 · Fontana de Trevi iluminada · 20 min |
 
 ### D1-corto · normal/A
 
@@ -1384,7 +1396,7 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 15:10 · Termas de Caracalla · 75 min | 15:30 · Termas de Caracalla · 75 min |
 | 17:00 · Circo Máximo · 20 min | 17:15 · Circo Máximo · 20 min |
 | 17:40 · Boca de la Verdad · 20 min | 17:55 · Boca de la Verdad · 20 min |
-| 18:20 · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón) · 30 min | 18:40 · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón) · 30 min |
+| 18:20 · Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina (colchón) · 30 min | 18:40 · Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina (colchón) · 30 min |
 | 19:05 · Jardín de los Naranjos, al atardecer · 30 min | 19:25 · Jardín de los Naranjos, al atardecer · 30 min |
 | 19:50 · Ojo de la Cerradura del Aventino · 15 min | 20:10 · Ojo de la Cerradura del Aventino · 15 min |
 | 20:25 · **Cena:** Felice a Testaccio · 90 min | 21:00 · **Cena:** Felice a Testaccio · 90 min |
@@ -1402,7 +1414,7 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 15:10 · Termas de Caracalla · 75 min | 15:30 · Termas de Caracalla · 75 min |
 | 17:00 · Circo Máximo · 30 min | 17:15 · Circo Máximo · 30 min |
 | 17:50 · Boca de la Verdad · 20 min | 18:05 · Boca de la Verdad · 20 min |
-| 18:30 · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón) · 75 min | 18:50 · Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón) · 55 min |
+| 18:30 · Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón) · 75 min | 18:50 · Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón) · 55 min |
 
 ### D6 · normal/A
 
@@ -1412,7 +1424,7 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 09:55 · Castillo de Sant'Angelo, hasta la terraza del ángel · 90 min | 10:00 · Castillo de Sant'Angelo, hasta la terraza del ángel · 90 min |
 | 11:40 · Via dei Coronari · 10 min | 11:45 · Via dei Coronari · 10 min |
 | 12:05 · Piazza Navona · 20 min | 12:10 · Piazza Navona · 20 min |
-| 17:45 · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) · 45 min | 17:50 · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) · 40 min |
+| 17:45 · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) · 45 min | 17:50 · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) · 45 min |
 
 ### D6 · normal/B
 
@@ -1426,8 +1438,6 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 17:20 · Santa Maria in Aracoeli y su escalinata · 20 min | 17:25 · Santa Maria in Aracoeli y su escalinata · 20 min |
 | 17:45 · Piazza Venezia · 5 min | 17:50 · Piazza Venezia · 5 min |
 | 18:05 · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) · 45 min | 18:10 · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) · 45 min |
-| 19:15 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min | 19:30 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min |
-| 21:10 · Panteón de noche · 30 min | 21:15 · Panteón de noche · 30 min |
 
 ### D6 · normal/C
 
@@ -1448,8 +1458,8 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 12:05 · Piazza Navona · 20 min | 12:10 · Piazza Navona · 20 min |
 | 19:20 · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) · 30 min | 19:25 · Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera (colchón) · 30 min |
 | 20:10 · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer · 30 min | 20:15 · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer · 30 min |
-| 21:00 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min | 21:30 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min |
-| 22:55 · Panteón de noche · 30 min | 23:15 · Panteón de noche · 30 min |
+| 21:00 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min | 21:30 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min |
+| 22:55 · Panteón de noche · 30 min | 23:20 · Panteón de noche · 30 min |
 
 ### D6 · miercoles/A
 
@@ -1462,8 +1472,8 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 16:20 · Piazza Venezia · 5 min | 17:35 · Piazza Venezia · 5 min |
 | 16:40 · Terraza del Altar de la Patria, al atardecer (ascensor panorámico) · 45 min | 17:55 · Terraza del Altar de la Patria, al atardecer (ascensor panorámico) · 45 min |
 | 17:45 · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) · 45 min | 19:05 · Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón) · 30 min |
-| 19:00 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min | 20:30 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min |
-| 20:55 · Panteón de noche · 30 min | 22:15 · Panteón de noche · 30 min |
+| 19:00 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min | 20:00 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min |
+| 20:55 · Panteón de noche · 30 min | 21:50 · Panteón de noche · 30 min |
 
 ### D6 · miercoles/B
 
@@ -1477,8 +1487,8 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 17:20 · Santa Maria in Aracoeli y su escalinata · 20 min | 18:40 · Santa Maria in Aracoeli y su escalinata · 20 min |
 | 17:45 · Piazza Venezia · 5 min | 19:05 · Piazza Venezia · 5 min |
 | 18:05 · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) · 45 min | 19:25 · Terraza del Altar de la Patria, al atardecer (ascensor panorámico; última subida a las 18:45) · 45 min |
-| 19:15 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min | 21:00 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min |
-| 21:10 · Panteón de noche · 30 min | 22:45 · Panteón de noche · 30 min |
+| 19:15 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min | 20:30 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min |
+| 21:10 · Panteón de noche · 30 min | 22:20 · Panteón de noche · 30 min |
 
 ### D6 · miercoles/C
 
@@ -1492,8 +1502,8 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 | 16:55 · Terraza del Altar de la Patria (ascensor panorámico) · 45 min | 18:10 · Terraza del Altar de la Patria (ascensor panorámico) · 45 min |
 | 17:55 · Santa Maria in Aracoeli y su escalinata · 20 min | 19:10 · Santa Maria in Aracoeli y su escalinata · 20 min |
 | 18:30 · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer · 30 min | 19:45 · El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer · 30 min |
-| 20:00 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min | 21:00 · **Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón · 90 min |
-| 21:55 · Panteón de noche · 30 min | 22:45 · Panteón de noche · 30 min |
+| 20:00 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min | 21:00 · **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío · 90 min |
+| 21:55 · Panteón de noche · 30 min | 22:50 · Panteón de noche · 30 min |
 
 ### D7 · normal/AB
 
@@ -1520,6 +1530,15 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 
 ## Sin arreglo (hay que decidir en el documento)
 
+- **D0** (con_museos/unica): Borghiciana Pastificio Artigianale → Piazza Navona: faltan 20 min para llegar a las 14:50 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Plaza Venecia → Altar de la Patria: faltan 10 min para llegar a las 17:20 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Altar de la Patria → Plaza del Campidoglio: faltan 5 min para llegar a las 17:50 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Plaza del Campidoglio → El Foro Romano, desde la terraza del Campidoglio: faltan 15 min para llegar a las 18:15 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): El Foro Romano, desde la terraza del Campidoglio → Paseo por Via dei Fori Imperiali: faltan 5 min para llegar a las 18:40 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Coliseo → Arco de Constantino: faltan 5 min para llegar a las 19:30 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Plaza de España → Trinità dei Monti y su mirador sobre la Plaza de España: faltan 5 min para llegar a las 20:45 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Trinità dei Monti y su mirador sobre la Plaza de España → Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco: faltan 5 min para llegar a las 21:15 (la cena pasaría de las 22:00)
+- **D0** (con_museos/unica): Pasea y piérdete por el Tridente: Via Condotti, Via Margutta, Via del Babuino y el Caffè Greco → Il Gabriello: faltan 210 min para llegar a las 19:30 (la cena pasaría de las 22:00)
 - **D2** (reserva_14_16/ABC): Iglesia de Santa Maria in Trastevere → Pasea y piérdete por Trastevere: faltan 5 min para llegar a las 09:35 (la fila de llegada es fija (reserva))
 - **D2** (reserva_14_16/ABC): Fontana dell'Acqua Paola → Mirador del Janículo: faltan 10 min para llegar a las 11:05 (la fila de llegada es fija (reserva))
 - **D2** (reserva_14_16/ABC): La Passeggiata del Gianicolo, bajando hasta San Pedro → Borghiciana Pastificio Artigianale: faltan 15 min para llegar a las 12:35 (la fila de llegada es fija (reserva))
@@ -1528,5 +1547,4 @@ Modo nuevo: cuando el hueco entre dos paradas no da para lo que se anda más el 
 - **D6** (miercoles/D): Cúpula de San Pedro → Ristorante Arlù: faltan 5 min para llegar a las 14:00 (la cena pasaría de las 22:00)
 - **D6** (miercoles/D): Plaza del Campidoglio → Museos Capitolinos, con la terraza sobre los Foros: faltan 75 min para llegar a las 14:45 (la cena pasaría de las 22:00)
 - **D6** (miercoles/D): Terraza del Altar de la Patria → Pasea y piérdete por los Foros de Trajano: la Columna de Trajano y los Mercados de Trajano por fuera: faltan 5 min para llegar a las 19:20 (la cena pasaría de las 22:00)
-- **D6** (miercoles/D): El Foro Romano desde la terraza del Campidoglio, con la luz del atardecer → Trattoria Dal Cavalier Gino: faltan 10 min para llegar a las 21:00 (la cena pasaría de las 22:00)
 

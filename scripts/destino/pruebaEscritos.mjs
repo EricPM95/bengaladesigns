@@ -10,7 +10,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, matchesDateToken, effectiveSchedule, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { restaurantOpenAt } from '../../shared/routeEngine/dinnerZones.js'
-import { comprobarDia, comprobarViaje, comprobarMesas, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada, comprobarMedioDiaRepetido } from './comprobacionesDia.mjs'
+import { comprobarDia, comprobarViaje, comprobarMesas, comprobarRecambio, comprobarPantalla, sinHorario, comprobarCabecerasHtml, comprobarCamino, comprobarMediaJornada, comprobarMedioDiaRepetido } from './comprobacionesDia.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split('=')))
 const out = args.out ?? 'docs/dias/PRUEBA_ESCRITOS.md'
@@ -264,6 +264,9 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
     ...(day.stops ?? []).map((stop) => ({ kind: 'stop', key: claveActual(stop), hora: stop.suggested_time, min: stop.duration_minutes, stop })),
     ...(day.meals ?? []).map((meal) => ({ kind: 'meal', key: plain(meal.restaurant ?? ''), hora: meal.suggested_time, min: meal.window_end ? toMin(meal.window_end) - toMin(meal.suggested_time) : null, tipo: meal.time, meal })),
   ]
+  // (Las paradas y las comidas en el orden en que salen: así se empareja cada fila de la tabla con la parada que le toca, mirando primero lo que va después de la última emparejada.)
+  actuales.sort((x, y) => toMin(x.hora ?? '00:00') - toMin(y.hora ?? '00:00'))
+  let ultimoIdx = -1
   const log = day.engine_log ?? []
   const usadas = new Set()
   /** La causa que el motor apunta para ese cambio de esa fila; sin causa apuntada, la diferencia es un fallo. */
@@ -272,32 +275,52 @@ function comparar(viaje, iso, dayNumber, id, rows, day) {
     const esLaFila = (x) => (row.id ? x.id === row.id : limpia(plain(x.lugar)) === claveFila(row) || x.sitio === row.lugar)
     // (Una fila que cambia de título —«Paseo por Via Veneto», «El mirador de San Pietro in Montorio»— sale con otro nombre: el registro lo apunta y cuenta como explicada.)
     const hit = log.filter((x) => esLaFila(x) && (que === 'quitada' ? x.que === 'quitada' || x.que.split('+').includes('titulo') : x.que.split('+').includes(que)))
-    return hit.length ? [...new Set(hit.map((x) => x.causa))].join(' + ') : null
+    if (hit.length) return [...new Set(hit.map((x) => x.causa))].join(' + ')
+    // (Una fila que el cálculo quitó y volvió a meter como colchón nuevo con el mismo nombre: lo que cambia es que es nueva, y así está apuntado.)
+    const nueva = log.filter((x) => (x.que === 'nueva' || x.que === 'nueva_quitada') && limpia(plain(x.lugar)) === claveFila(row))
+    return nueva.length ? [...new Set(nueva.map((x) => x.causa))].join(' + ') : null
   }
+  // (El orden de una tabla escrita no se cambia nunca: lo que queda sale en el orden de la tabla.)
+  const posiciones = []
   for (const row of esperadas) {
     filasTotal++
     const key = claveFila(row)
     const esComida = row.tipo === 'comida' || row.tipo === 'cena'
     const esLa = (a, k) => !usadas.has(k) && (esComida ? a.kind === 'meal' && a.tipo === (row.tipo === 'cena' ? 'dinner' : 'lunch') : a.kind === 'stop' && (a.key === key || a.key.includes(key) || key.includes(a.key)))
     // (Primero el de nombre exacto —«Plaza de España» no es «Trinità dei Monti y su mirador sobre la Plaza de España»—, y si no, el que lo contiene.)
-    const exacto = esComida ? -1 : actuales.findIndex((a, k) => esLa(a, k) && a.key === key)
-    const i = exacto >= 0 ? exacto : actuales.findIndex(esLa)
+    const delante = (k) => k > ultimoIdx
+    const buscar = (condicion) => { const k = actuales.findIndex((a, j) => delante(j) && esLa(a, j) && condicion(a)); return k >= 0 ? k : actuales.findIndex((a, j) => esLa(a, j) && condicion(a)) }
+    const exacto = esComida ? -1 : buscar((a) => a.key === key)
+    const i = exacto >= 0 ? exacto : buscar(() => true)
+    if (i >= 0 && row.tipo !== 'noche' && row.tipo !== 'traslado') ultimoIdx = Math.max(ultimoIdx, i)
     const where = { viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${row.hora} ${row.texto_documento?.replace(/\*/g, '') ?? ''}`.trim() }
+    // (Una fila que el registro dice que se quitó no se empareja con otra parada que se llame parecido —el colchón nuevo de la misma zona—: es una fila quitada.)
+    const mismaFila = (x) => (row.id ? x.id === row.id : !/^noche_|^traslado/.test(x.id ?? '') && limpia(plain(x.lugar)) === claveFila(row))
+    const quitadaPorMotivo = row.tipo !== 'comida' && row.tipo !== 'cena' && row.tipo !== 'noche' ? (log.find((x) => x.que === 'quitada' && mismaFila(x))?.causa ?? null) : null
+    // (Salvo que haya una parada igual sin emparejar: la tabla del pool vuelve a escribir la fila que el pool quitó de la normal.)
+    const hayIgual = actuales.some((a, k) => !usadas.has(k) && a.kind === 'stop' && a.key === key)
+    if (quitadaPorMotivo && !hayIgual && !log.some((x) => x.id === row.id && x.que !== 'quitada' && x.que !== 'nueva_quitada' && x.que !== 'aviso')) {
+      diffs.push({ ...where, tipo: 'falta', causa: quitadaPorMotivo })
+      continue
+    }
     if (i < 0) {
       diffs.push({ ...where, tipo: 'falta', causa: causaDe(row, 'quitada') })
       continue
     }
     usadas.add(i)
     const a = actuales[i]
+    if (row.tipo !== 'noche' && row.tipo !== 'traslado' && a.hora) posiciones.push({ nombre: claveFila(row), t: toMin(a.hora), hora: a.hora })
     if (a.hora !== row.hora) diffs.push({ ...where, tipo: 'hora', detalle: `${row.hora} → ${a.hora}`, causa: causaDe(row, 'hora') })
     if (!esComida && row.tipo !== 'noche' && a.min !== row.min) diffs.push({ ...where, tipo: 'minutos', detalle: `${row.min} → ${a.min}`, causa: causaDe(row, 'min') })
     if (row.tipo === 'comida' && a.min != null && a.min !== row.min) diffs.push({ ...where, tipo: 'minutos', detalle: `${row.min} → ${a.min}`, causa: causaDe(row, 'min') })
+    if (esComida) for (const fallo of comprobarRecambio({ D, fila: row, name: a.meal?.restaurant, iso, id })) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${viaje.clave} ${fallo.texto}`])
     if (a.kind === 'stop' && row.tipo === 'parada') {
       const modoActual = a.stop.pass_through ? 'camino' : a.stop.visit_mode === 'dentro' ? 'dentro' : a.stop.visit_mode === 'fuera' ? 'fuera' : null
       const modoFila = row.modo === 'atardecer' ? null : row.modo
       if ((modoFila ?? null) !== modoActual) diffs.push({ ...where, tipo: 'cómo', detalle: `${row.modo ?? '-'} → ${modoActual ?? '-'}`, causa: causaDe(row, 'modo') ?? causaDe(row, 'quitada') })
     }
   }
+  for (let k = 1; k < posiciones.length; k++) if (posiciones[k].t < posiciones[k - 1].t) extra.dia.set('orden_del_dia', [...(extra.dia.get('orden_del_dia') ?? []), `${viaje.clave} ${iso} ${id}: «${posiciones[k].nombre}» sale a las ${posiciones[k].hora}, antes que «${posiciones[k - 1].nombre}» (${posiciones[k - 1].hora}), y en la tabla va después`])
   // Las horas y las duraciones, de 5 en 5.
   for (const a of actuales) {
     if (a.hora && toMin(a.hora) % 5 !== 0) diffs.push({ viaje: viaje.clave, fecha: iso, dia: dayNumber, id, fila: `${a.hora} ${a.key}`, tipo: 'hora_no_5', causa: null })
@@ -329,7 +352,7 @@ function comprobarExtras(viaje, iso, dayNumber, id, day, ids) {
     if (entry.que === 'aviso' && /pasa de las 22:00/.test(entry.causa)) extra.cena_22.push(`${iso} ${viaje.clave} ${id}: ${entry.causa}`)
     if (entry.que === 'aviso' && /más de 2 horas/.test(entry.causa)) extra.colchon_2h.push(`${iso} ${viaje.clave} ${id}: ${entry.lugar} (${entry.causa})`)
   }
-  for (const fallo of [...comprobarDia({ D, iso: `${iso}`, id, day }), ...comprobarPantalla({ D, iso: `${iso}`, id, day })]) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${viaje.clave} ${fallo.texto}`])
+  for (const fallo of [...comprobarDia({ D, iso: `${iso}`, id, day, pool: viaje.pool ?? [] }), ...comprobarPantalla({ D, iso: `${iso}`, id, day })]) extra.dia.set(fallo.regla, [...(extra.dia.get(fallo.regla) ?? []), `${viaje.clave} ${fallo.texto}`])
   void ids
 }
 

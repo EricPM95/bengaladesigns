@@ -151,7 +151,7 @@
         {
           "id": "paseo_pasea_y_pierdete_por_el_gueto_iluminado_y_el_teatro_de_marcelo",
           "hora": "17:50",
-          "min": 40,
+          "min": 45,
           "texto_documento": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo (colchón)",
           "como_documento": "",
           "colchon": true,
@@ -159,17 +159,18 @@
           "tipo": "paseo",
           "lugar": "Teatro de Marcelo",
           "titulo": "Pasea y piérdete por el Gueto iluminado y el Teatro de Marcelo",
-          "hora_corregida": "distancia: lo escrito era 17:45 y 45 min"
+          "hora_corregida": "distancia: lo escrito era 17:45"
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
+          "id": "cena_nonna_betta",
           "hora": "19:00",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto"
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "noche_panteon_noche",
@@ -352,25 +353,24 @@
           "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "19:30",
+          "id": "cena_nonna_betta",
+          "hora": "19:15",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto",
-          "hora_corregida": "distancia: lo escrito era 19:15"
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "21:15",
+          "hora": "21:10",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
           "tipo": "noche",
-          "noche": "Panteón (noche)",
-          "hora_corregida": "distancia: lo escrito era 21:10"
+          "noche": "Panteón (noche)"
         }
       ],
       "C": [
@@ -540,14 +540,15 @@
           "atardecer": true
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
+          "id": "cena_nonna_betta",
           "hora": "20:00",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto"
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "noche_panteon_noche",
@@ -741,19 +742,20 @@
           "hora_corregida": "distancia: lo escrito era 20:10"
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
+          "id": "cena_nonna_betta",
           "hora": "21:30",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío",
           "hora_corregida": "distancia: lo escrito era 21:00"
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "23:15",
+          "hora": "23:20",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
@@ -910,19 +912,20 @@
           "hora_corregida": "distancia: lo escrito era 17:45 y 45 min"
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "20:30",
+          "id": "cena_nonna_betta",
+          "hora": "20:00",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío",
           "hora_corregida": "distancia: lo escrito era 19:00"
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "22:15",
+          "hora": "21:50",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
@@ -1089,19 +1092,20 @@
           "hora_corregida": "distancia: lo escrito era 18:05"
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
-          "hora": "21:00",
+          "id": "cena_nonna_betta",
+          "hora": "20:30",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío",
           "hora_corregida": "distancia: lo escrito era 19:15"
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "22:45",
+          "hora": "22:20",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
@@ -1268,19 +1272,20 @@
           "hora_corregida": "distancia: lo escrito era 18:30"
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
+          "id": "cena_nonna_betta",
           "hora": "21:00",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto",
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío",
           "hora_corregida": "distancia: lo escrito era 20:00"
         },
         {
           "id": "noche_panteon_noche",
-          "hora": "22:45",
+          "hora": "22:50",
           "min": 30,
           "texto_documento": "Panteón de noche",
           "como_documento": "de noche",
@@ -1452,14 +1457,15 @@
           "atardecer": true
         },
         {
-          "id": "cena_trattoria_dal_cavalier_gino",
+          "id": "cena_nonna_betta",
           "hora": "21:00",
           "min": 90,
-          "texto_documento": "**Cena:** Trattoria Dal Cavalier Gino (o Pizzeria Da Baffetto), junto al Panteón",
+          "texto_documento": "**Cena:** Nonna Betta (o Giggetto), en el Barrio Judío",
           "como_documento": "",
           "tipo": "cena",
-          "restaurante": "Trattoria Dal Cavalier Gino",
-          "alternativa": "Pizzeria Da Baffetto"
+          "restaurante": "Nonna Betta",
+          "alternativa": "Giggetto al Portico d'Ottavia",
+          "zona": "en el Barrio Judío"
         },
         {
           "id": "noche_panteon_noche",

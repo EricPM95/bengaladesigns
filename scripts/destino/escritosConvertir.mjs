@@ -225,6 +225,9 @@ const FRASES = [
   // (El Coliseo desde la terraza de Largo Gaetana Agnesi usa la foto del Coliseo: Tanda 4.)
   [/^El Coliseo desde la terraza de Largo Gaetana Agnesi/, { lugar: 'Terraza de Largo Gaetana Agnesi', titulo: true, campos: { foto: 'Coliseo' } }],
   [/^Via Veneto, la calle de/, { lugar: 'Via Veneto', titulo: true }],
+  // (Tanda 5: el documento escribe «Paseo por {calle}» para las calles de 10 o 15 min: es una parada de paseo con el nombre de la calle.)
+  [/^Paseo por Via della Conciliazione/, { lugar: 'Via della Conciliazione', titulo: true }],
+  [/^Paseo por Via dei Fori Imperiali/, { lugar: 'Via dei Fori Imperiali', titulo: true }],
 ]
 
 // ── Qué hay en cada colchón (tabla «Qué hay en cada colchón» del documento: se cuenta en el texto de la parada) ─────────────────
@@ -393,11 +396,35 @@ function hastaAntesDe(rowsA, lugar, resto) {
 
 const out = {}
 
+// (La mañana con los Museos del medio día del Vaticano hasta la comida, y la tarde del D0 desde Piazza Navona, sin su comida.)
+function conMuseos1Dia() {
+  const manana = T(10)
+  const tarde = T(1)
+  const iComida = manana.findIndex((row) => row.tipo === 'comida')
+  const iNavona = tarde.findIndex((row) => row.lugar === 'Piazza Navona')
+  if (iComida < 0 || iNavona < 0) throw new Error('D0 con Museos: falta la comida de la mañana o Piazza Navona en la tarde')
+  const aMin = (hhmm) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5))
+  const aHora = (minutos) => `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`
+  // (La tarde empieza cuando acaba la comida —más 10 min—: sus horas corren lo mismo hasta la cena, que se queda a su hora del documento, y lo de después también.)
+  const comida = manana[iComida]
+  const delta = aMin(comida.hora) + comida.min + 10 - aMin(tarde[iNavona].hora)
+  let corre = true
+  const afternoon = tarde.slice(iNavona).filter((row) => row.tipo !== 'comida').map((row) => {
+    if (row.tipo === 'cena') corre = false
+    return corre ? { ...row, hora: aHora(aMin(row.hora) + delta) } : row
+  })
+  return [...manana.slice(0, iComida + 1), ...afternoon]
+}
 // ── D0 ───────────────────────────────────────────────────────────────────────────────────────
 out['D0'] = {
   id: 'D0',
-  nombre: 'Roma en un día (crucero)',
-  versiones: { normal: { unica: T(1) }, reves: { unica: T(2) } },
+  nombre: 'Roma en un día',
+  versiones: {
+    normal: { unica: T(1) },
+    reves: { unica: T(2) },
+    // Museos Vaticanos marcados en el pool en 1 día (PROVISIONAL, Tanda 5): la mañana es la de «Con reserva de los Museos» del medio día del Vaticano, hasta la comida; la tarde sigue con la del D0 desde Piazza Navona.
+    con_museos: { unica: conMuseos1Dia() },
+  },
 }
 // ── D1-corto: el día entero del viaje de 1,5 días (todo por fuera) ─────────────────────────────
 const a1c = T(3)

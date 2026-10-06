@@ -467,16 +467,16 @@
           "hora_corregida": "distancia: lo escrito era 17:40"
         },
         {
-          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_y_la_via_di_santa_sabina",
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_sant_alessio_y_la_via_di_santa_sabina",
           "hora": "18:20",
           "min": 30,
-          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina.",
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina",
           "foto": "Paseo por el Aventino"
         },
         {
@@ -650,16 +650,16 @@
           "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
-          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_sant_alessio_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
           "hora": "18:30",
           "min": 75,
-          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina y, en mayo y junio, la Rosaleda.",
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
           "foto": "Paseo por el Aventino"
         },
         {
@@ -1878,16 +1878,16 @@
           "hora_corregida": "distancia: lo escrito era 17:40"
         },
         {
-          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_y_la_via_di_santa_sabina",
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_sant_alessio_y_la_via_di_santa_sabina",
           "hora": "18:40",
           "min": 30,
-          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina.",
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina",
           "foto": "Paseo por el Aventino",
           "hora_corregida": "distancia: lo escrito era 18:20"
         },
@@ -2068,16 +2068,16 @@
           "hora_corregida": "distancia: lo escrito era 17:50"
         },
         {
-          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_el_parque_savello_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
+          "id": "paseo_pasea_y_pierdete_por_el_aventino_santa_sabina_sant_alessio_la_via_di_santa_sabina_y_en_mayo_y_junio_la_rosaleda",
           "hora": "18:50",
           "min": 55,
-          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
+          "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda (colchón)",
           "como_documento": "",
           "colchon": true,
           "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina y, en mayo y junio, la Rosaleda.",
           "tipo": "paseo",
           "lugar": "Ojo de la Cerradura del Aventino",
-          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
+          "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio, la Via di Santa Sabina y, en mayo y junio, la Rosaleda",
           "foto": "Paseo por el Aventino",
           "hora_corregida": "distancia: lo escrito era 18:30 y 75 min"
         },
@@ -2140,13 +2140,13 @@
       "id": "paseo_pasea_y_pierdete_por_el_aventino_lunes",
       "hora": "18:20",
       "min": 30,
-      "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina (colchón)",
+      "texto_documento": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina (colchón)",
       "como_documento": "",
       "colchon": true,
       "texto": "Santa Sabina, el Parque Savello y la Via di Santa Sabina.",
       "tipo": "paseo",
       "lugar": "Ojo de la Cerradura del Aventino",
-      "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, el Parque Savello y la Via di Santa Sabina",
+      "titulo": "Pasea y piérdete por el Aventino: Santa Sabina, Sant'Alessio y la Via di Santa Sabina",
       "foto": "Paseo por el Aventino"
     }
   },

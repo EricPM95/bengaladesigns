@@ -33,7 +33,7 @@ export function ticketDate(iso: string | undefined | null): string {
   return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${rest}`
 }
 
-const MODE_WORD: Record<ArrivalMode, string> = { avion: 'vuelo', tren: 'tren', bus: 'autobús', ferry: 'ferry', crucero: 'crucero', coche: 'coche' }
+const MODE_WORD: Record<ArrivalMode, string> = { avion: 'vuelo', tren: 'tren', bus: 'autobús', ferry: 'ferry', coche: 'coche' }
 export const modeWord = (mode: ArrivalMode) => MODE_WORD[mode]
 
 /** Un punto de la curva del billete (Bézier cuadrática del diseño) en t = 0..1. */
