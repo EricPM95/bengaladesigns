@@ -88,10 +88,10 @@ for (const forma of FORMAS) {
       resumen.viajes++
       if (!plan) { nulos++; fallos.push({ regla: 'sin_plan', texto: `${forma.clave}${extra.clave ? ` + ${extra.clave}` : ''} · ${inicio}: el motor no devuelve plan` }); porRegla.set('sin_plan', (porRegla.get('sin_plan') ?? 0) + 1); continue }
       const etiqueta = `${forma.clave}${extra.clave ? ` + ${extra.clave}` : ''} · inicio ${inicio}`
-      const r = comprobarViaje({ D, plan, etiqueta, entradas, poolNames, hasFreeTour: Boolean(forma.ft) })
+      const r = comprobarViaje({ D, plan, etiqueta, entradas, poolNames, hasFreeTour: Boolean(forma.ft), listas: written, franjas: written.destino?.franjas })
       resumen.dias += plan.days.filter((d) => d.curatedDay?.id).length
       for (const f of r.fallos) { fallos.push(f); porRegla.set(f.regla, (porRegla.get(f.regla) ?? 0) + 1) }
-      for (const f of r.info) { infoPorRegla.set(f.regla, (infoPorRegla.get(f.regla) ?? 0) + 1); if (vistoInfo.length < 400 && ['no_cabe_del_todo', 'comida_tarde', 'restaurante_repetido', 'reserva_tarde'].includes(f.regla)) vistoInfo.push(f) }
+      for (const f of r.info) { infoPorRegla.set(f.regla, (infoPorRegla.get(f.regla) ?? 0) + 1); if (vistoInfo.length < 400 && ['no_cabe_del_todo', 'comida_tarde', 'comida_tras_hora_fija', 'restaurante_repetido', 'reserva_tarde'].includes(f.regla)) vistoInfo.push(f) }
     }
   }
 }
@@ -106,7 +106,7 @@ const lineas = [
   '',
   '## Por regla',
   '',
-  ...['orden', 'cerrado', 'zigzag', 'piramide', 'dentro_dos_veces', 'restaurante_repetido', 'noche_repetida', 'reserva', 'comida_tarde', 'lluvia', 'sin_explicar', 'pool', 'sin_plan'].map((regla) => `- ${regla}: ${porRegla.get(regla) ?? 0}`),
+  ...['orden', 'cerrado', 'zigzag', 'piramide', 'dentro_dos_veces', 'restaurante_repetido', 'noche_repetida', 'reserva', 'comida_tarde', 'comida_tras_hora_fija', 'dia_empieza_tarde', 'cerrado_a_la_llegada', 'camino_en_sobra', 'lluvia', 'sin_explicar', 'pool', 'sin_plan'].map((regla) => `- ${regla}: ${porRegla.get(regla) ?? 0}`),
   '',
   '## Lo que se apunta (no es un fallo)',
   '',

@@ -42,7 +42,7 @@
     "comida_min": 60,
     "cena_min": 90,
     "cena_desde": "19:30",
-    "cena_desde_verano": "20:30",
+    "cena_desde_verano": "20:00",
     "meses_verano": [
       5,
       6,
@@ -60,7 +60,16 @@
     "hueco_para_parada_corta": 20,
     "cerca_m": 450,
     "andar_max_min": 25,
-    "tarde_medio_desde": "16:00"
+    "tarde_medio_desde": "16:00",
+    "comida_antes_desde": "12:00",
+    "hueco_llenar_min": 60,
+    "cerca_andar_min": 15,
+    "cerca_max_min": 30,
+    "espera_max_min": 15,
+    "manana_hasta": "14:00",
+    "vas_bien_min": 45,
+    "taxi_max_min": 15,
+    "comida_junto_min": 12
   },
   "minutos_por_dentro": {
     "_nota": "Cuánto dura por dentro lo que el viajero marca en el pool o reserva y la lista lleva por fuera o de camino.",
@@ -72,5 +81,18 @@
     "Foro Romano y Palatino": 90,
     "Museos Vaticanos y Capilla Sixtina": 150,
     "Cúpula de San Pedro": 45
+  },
+  "noche_frases": {
+    "_nota": "Cómo se dice cada nocturna en la tarjeta de descanso («…te llevamos a ver la Fontana de Trevi y la Plaza de España iluminadas»).",
+    "Fontana de Trevi (noche)": "la Fontana de Trevi iluminada",
+    "Plaza de España (noche)": "la Plaza de España iluminada",
+    "Coliseo (noche)": "el Coliseo iluminado",
+    "Panteón (noche)": "el Panteón iluminado",
+    "Piazza Navona (noche)": "Piazza Navona iluminada",
+    "Trastevere de noche": "Trastevere de noche",
+    "Foro Romano desde el Campidoglio (noche)": "el Foro Romano desde el Campidoglio, de noche",
+    "El Puente y el Castillo de Sant'Angelo (noche)": "el Puente y el Castillo de Sant'Angelo iluminados",
+    "Terraza del Pincio (noche)": "Roma desde el Pincio, de noche",
+    "Mirador del Janículo (noche)": "Roma desde el Janículo, de noche"
   }
 }

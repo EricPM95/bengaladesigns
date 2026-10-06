@@ -345,6 +345,10 @@ export interface Stop {
   reservationTime?: string | null
   /** Tanda 6: solo en las de «Si te sobra tiempo» — por qué no cabía en su franja. */
   spareReason?: string | null
+  /** Tanda 6b: la franja del día a la que pertenece (la manda el servidor; las de después de cenar, 'noche'). */
+  franja?: 'manana' | 'tarde' | 'noche'
+  /** Tanda 6b: «Lo tienes el día 3» — nota de una sugerencia de HOY. */
+  addNote?: string | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
   experience?: ExperienceCategoryId | null
   /** Por qué está en la ruta (motor v3, Paso 6): una línea fija según el motivo — "Uno de los
@@ -631,6 +635,13 @@ export interface RainPlan {
 
 // ── Day plan ──────────────────────────────────────────────
 
+export interface DayFranja {
+  id: 'manana' | 'tarde' | 'cena'
+  label: string
+  from: string
+  to: string | null
+}
+
 export interface DayPlan {
   /**
    * Dónde ha dejado el viajero la comida y la cena al arrastrarlas (PROMPT_UI_REPASO_3, 3): detrás de qué parada del día
@@ -657,6 +668,10 @@ export interface DayPlan {
   rainPlanB?: RainPlanB
   /** Tanda 6: las paradas que no caben y pasan a «Si te sobra tiempo» (plegado, con «Añadir»). */
   spareStops?: Stop[]
+  /** Tanda 6b: las franjas del día con su hora («Mañana · 9:00–14:00»). */
+  franjas?: DayFranja[]
+  /** Tanda 6b: tarjeta de descanso entre la tarde y la cena (texto ya montado por el servidor). */
+  restCard?: { title: string; text: string; nightName: string | null } | null
   /** Tanda 6: «Hoy el sol se pone a las 17:05» — solo dato, en la cabecera del día. */
   sunsetText?: string | null
   /** Tanda 6: la alternativa de lluvia del día (HOY la enseña si hay previsión; nunca se aplica sola). */

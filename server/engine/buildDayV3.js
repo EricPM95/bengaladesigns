@@ -608,6 +608,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (tripDay.listas) {
       if (visit.fixedAt != null && !visit.place.isArrival) stop.reservation_time = toHHMM(visit.fixedAt)
       else stop.orientative_time = true
+      if (visit.franja) stop.franja = visit.franja
     }
     return stop
   }
@@ -781,8 +782,21 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
     // (Un día escrito: las horas son las del documento, sin redondear.)
-    stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops, ...nightStops.map((stop) => (tripDay.listas ? { ...stop, orientative_time: true } : stop))].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
-    ...(tripDay.listas ? { spare_stops: spareStops, sunset_text: tripDay.sunsetText ?? null, rain_plan: rainPlan } : {}),
+    stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops, ...nightStops.map((stop) => (tripDay.listas ? { ...stop, orientative_time: true, franja: 'noche' } : stop))].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
+    ...(tripDay.listas ? { spare_stops: spareStops, sunset_text: tripDay.sunsetText ?? null, rain_plan: rainPlan, franjas: tripDay.franjas ?? [], rest_card: tripDay.restCard ?? null } : {}),
+    // HOY: «Vas bien de tiempo» / «Vas justo» (solo cuando el servidor lo pide con `chequeo`).
+    ...(tripDay.timeCheck
+      ? {
+          time_check: {
+            status: tripDay.timeCheck.estado,
+            spare_minutes: Math.round(tripDay.timeCheck.holgura),
+            before_meal: tripDay.timeCheck.antesDeComer,
+            franja: tripDay.timeCheck.franja,
+            drop: tripDay.timeCheck.drop,
+            suggestions: tripDay.timeCheck.sugerencias.map(({ item, nota, place }, index) => ({ ...buildVisitStop({ unitId: `${tripDay.curatedDay?.id ?? 'dia'}:sugerencia:${index}`, place, start: 0, end: item.min ?? 20 }, index, [{ place }]), suggested_time: '', ...(nota ? { add_note: nota } : {}) })),
+          },
+        }
+      : {}),
     // (La cena es una hora fija: de 5 en 5, como siempre; la comida, de 10 en 10.)
     afternoon_free: tripDay.tardeLibre === true,
     meals: (tripDay.tardeLibre ? [] : meals).map((meal) => {

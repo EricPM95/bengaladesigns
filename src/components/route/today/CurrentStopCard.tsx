@@ -56,7 +56,7 @@ export function CurrentStopCard({ day, index, realStop, displayStop, state, nowM
         <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">Próxima parada</p>
         <p className="text-body font-semibold text-text">{displayStop.name}</p>
         <p className="text-small text-text-soft">
-          {realStop.orientativeTime ? `Hacia las ${realStop.time}` : `Empieza sobre las ${realStop.time}`} — te quedan {minutesLeft} min
+          {realStop.reservationTime ? `Es a las ${realStop.reservationTime} — ` : ''}te quedan {minutesLeft} min
         </p>
         <LegLine from={previousStop?.coordinates} to={realStop} />
         <Button variant="secondary" onClick={onCheckIn} className="w-full">

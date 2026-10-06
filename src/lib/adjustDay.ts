@@ -1,7 +1,7 @@
 import { mapSingleGeneratedDay, type GeneratedDay } from './mapGeneratedRoute'
 import { enrichRoutePhotos } from './placePhoto'
 
-export type AdjustMode = 'retraso' | 'cansado'
+export type AdjustMode = 'justo' | 'cansado'
 
 export interface AdjustResult {
   ok: boolean
@@ -10,11 +10,11 @@ export interface AdjustResult {
 }
 
 /**
- * HOY: «Voy con retraso» / «Estoy cansado» (Tanda 6). Pide al servidor el día recalculado con lo que ya se ha hecho y la hora de
+ * HOY: «Vas justo» (el viajero acepta dejar algo para después) / «Estoy cansado» (Tanda 6). Pide al servidor el día recalculado con lo que ya se ha hecho y la hora de
  * ahora (`POST /api/adjust-day`, mismo patrón que /api/rebuild-day) y SUSTITUYE el día. Lo ya hecho se queda hecho (su `checkedInAt`).
  * Nunca decide el viajero a ciegas: el mensaje de después dice qué ha pasado.
  */
-export async function adjustDay(dayId: string, mode: AdjustMode, nowMinutes: number): Promise<AdjustResult> {
+export async function adjustDay(dayId: string, mode: AdjustMode, nowMinutes: number, dropNames?: string[]): Promise<AdjustResult> {
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
@@ -33,6 +33,7 @@ export async function adjustDay(dayId: string, mode: AdjustMode, nowMinutes: num
         done_names: done.flatMap((stop) => [stop.name, stop.fullName].filter(Boolean)),
         now_minutes: nowMinutes,
         mode,
+        ...(dropNames?.length ? { drop_names: dropNames } : {}),
       }),
     })
     if (!response.ok) return { ok: false, newSpare: 0 }

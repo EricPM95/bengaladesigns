@@ -3,7 +3,6 @@ import type { Route, Stop } from '../../../lib/types'
 import type { MealWindowKind } from '../../../lib/todayMode'
 import {
   FREE_GAP_THRESHOLD_MINUTES,
-  computeCheckInPace,
   computeFreeGapMinutes,
   findCurrentStopIndex,
   findGeneratedMealForWindow,
@@ -28,7 +27,9 @@ import { FreeTimeBanner } from './FreeTimeBanner'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { PaceWandPrompt } from './PaceWandPrompt'
 import { RainAlert } from './RainAlert'
-import { ReservationCountdown, TodayAdjust, TodayClosureNotices } from './TodayPlan'
+import { ReservationCountdown, TodayAdjust, TodayClosureNotices, TodayTimeCheck } from './TodayPlan'
+import { RestCard } from '../dayDetail/RestCard'
+import { checkTime, type CheckTimeResult } from '../../../lib/checkTime'
 import { addDaysToIso, todayIso } from '../../../lib/dateRange'
 
 const CLOCK_TICK_MS = 30_000
@@ -60,6 +61,9 @@ export function TodayView({ route }: TodayViewProps) {
   const [wandStopId, setWandStopId] = useState<string | null>(null)
   const [wandMealWindow, setWandMealWindow] = useState<MealWindowKind | null>(null)
   const [poolOpen, setPoolOpen] = useState(false)
+  const [timeCheck, setTimeCheck] = useState<CheckTimeResult | null>(null)
+  const [suggestOpen, setSuggestOpen] = useState(false)
+  const addSuggestedStop = useRouteStore((state) => state.addSuggestedStop)
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), CLOCK_TICK_MS)
@@ -102,16 +106,14 @@ export function TodayView({ route }: TodayViewProps) {
     ensureSeeded()
     cancelLocalNotification(`today-${day.id}-${stop.id}`)
 
-    const pace = computeCheckInPace(stop, nowMin)
     checkInStop(day.id, stop.id)
     setWandMealWindow(null)
-    if (pace === 'normal') {
-      setWandPace(null)
-      setWandStopId(null)
-    } else {
-      setWandPace(pace)
-      setWandStopId(stop.id)
-    }
+    setWandPace(null)
+    setWandStopId(null)
+    // Tanda 6b: cómo va de tiempo («Vas bien de tiempo» / «Vas justo»); el viajero decide siempre.
+    setTimeCheck(null)
+    setSuggestOpen(false)
+    void checkTime(day.id, nowMin).then(setTimeCheck)
 
     const next = realStops[stopIndex + 1]
     if (!next) return
@@ -132,6 +134,17 @@ export function TodayView({ route }: TodayViewProps) {
   const handleNoteDelay = (stop: Stop) => {
     ensureSeeded()
     noteStopDelay(day.id, stop.id)
+  }
+
+  const handleRecheck = () => {
+    setSuggestOpen(false)
+    void checkTime(day.id, minutesSinceMidnight(new Date())).then(setTimeCheck)
+  }
+
+  const handleAddSuggestion = (stop: Stop, afterIndex: number) => {
+    ensureSeeded()
+    addSuggestedStop(day.id, stop, afterIndex)
+    setTimeCheck((prev) => (prev ? { ...prev, suggestions: prev.suggestions.filter((other) => other.id !== stop.id) } : prev))
   }
 
   const handleWandAddSomething = () => {
@@ -164,6 +177,32 @@ export function TodayView({ route }: TodayViewProps) {
   }
 
   const allDone = currentIndex === -1
+  const timeBlock = (
+    <>
+      <TodayTimeCheck
+        day={day}
+        nowMin={nowMin}
+        result={timeCheck}
+        suggestOpen={suggestOpen}
+        onSuggestOpen={setSuggestOpen}
+        onRecheck={handleRecheck}
+        onAdd={(stop) => handleAddSuggestion(stop, allDone ? realStops.length - 1 : currentIndex)}
+        onResolved={() => setTimeCheck(null)}
+      />
+      {/* Tanda 6b: la tarjeta de descanso, cuando solo queda lo de la noche; con tiempo de sobra, «¿Quieres ver algo más?». */}
+      {day.restCard && realStops.every((stop) => stop.checkedInAt || stop.franja === 'noche') && (
+        <div className="mx-4">
+          <RestCard card={day.restCard}>
+            {timeCheck?.status === 'bien' && (
+              <button type="button" onClick={() => setSuggestOpen(true)} className="mt-2 text-[13px] font-semibold text-accent">
+                ¿Quieres ver algo más?
+              </button>
+            )}
+          </RestCard>
+        </div>
+      )}
+    </>
+  )
   const currentRealStop = allDone ? null : realStops[currentIndex]
   const currentDisplayStop = allDone ? null : displayStops[currentIndex]
   // El siguiente índice SIN check-in, no simplemente currentIndex+1 — una parada insertada desde
@@ -204,6 +243,7 @@ export function TodayView({ route }: TodayViewProps) {
           <p className="text-body font-semibold text-text">Has completado todas las paradas de hoy 🎉</p>
           <p className="mt-1 text-small text-text-soft">Buen ritmo — puedes revisar el resto del día en la pestaña Días.</p>
         </div>
+        {timeBlock}
         {wandBlock}
         {eveRain}
         <PlaceFinderPanel
@@ -240,6 +280,8 @@ export function TodayView({ route }: TodayViewProps) {
         onCheckIn={() => handleCheckIn(currentRealStop, currentIndex)}
         onNoteDelay={() => handleNoteDelay(currentRealStop)}
       />
+
+      {timeBlock}
 
       <ReservationCountdown stops={realStops} nowMin={nowMin} />
       <TodayClosureNotices stops={realStops} />

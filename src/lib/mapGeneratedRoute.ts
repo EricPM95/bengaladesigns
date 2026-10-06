@@ -41,7 +41,7 @@ interface GeneratedTravelToNext {
   description: string
 }
 
-interface GeneratedStop {
+export interface GeneratedStop {
   /** Ver Stop.isZoneWalk — solo pipeline v2. */
   is_zone_walk?: boolean
   /** «Pasea y piérdete por {zona}»: Stop.isFreeWalk, con el consejo del aperitivo (Stop.aperitivoTip). */
@@ -140,6 +140,9 @@ interface GeneratedStop {
   reservation_time?: string | null
   /** Tanda 6: solo en day.spare_stops — Stop.spareReason. */
   spare_reason?: string | null
+  /** Tanda 6b: Stop.franja y Stop.addNote. */
+  franja?: 'manana' | 'tarde' | 'noche'
+  add_note?: string | null
   break_icon?: string | null
   break_suggestions?: { name: string; walk_minutes: number; address?: string | null }[]
   /** Nombre del paseo nocturno curado — Stop.nightWalkName. */
@@ -199,6 +202,9 @@ export interface GeneratedDay {
   rainy_alternative?: string
   /** Tanda 6: paradas que no caben y pasan a «Si te sobra tiempo» (misma forma que stops, más spare_reason). */
   spare_stops?: GeneratedStop[]
+  /** Tanda 6b: las franjas del día y la tarjeta de descanso. */
+  franjas?: { id: 'manana' | 'tarde' | 'cena'; label: string; from: string; to?: string | null }[]
+  rest_card?: { title: string; text: string; night_name?: string | null } | null
   /** Tanda 6: «Hoy el sol se pone a las 17:05». */
   sunset_text?: string | null
   /** Tanda 6: la alternativa de lluvia — text, remove (nombres), add (paradas), slot. */
@@ -423,7 +429,7 @@ function uniqueStopIds(stops: Stop[]): Stop[] {
   })
 }
 
-function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
+export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
   return {
     id: generated.id || `stop-${dayNumber}-${slugify(generated.name)}`,
     time: generated.suggested_time,
@@ -485,6 +491,8 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.orientative_time ? { orientativeTime: true } : {}),
     ...(generated.reservation_time ? { reservationTime: generated.reservation_time } : {}),
     ...(generated.spare_reason ? { spareReason: generated.spare_reason } : {}),
+    ...(generated.franja ? { franja: generated.franja } : {}),
+    ...(generated.add_note ? { addNote: generated.add_note } : {}),
     ...(generated.is_break
       ? {
           isBreak: true,
@@ -706,6 +714,8 @@ function mapDay(
     poolNotices: poolNoticesByDay?.get(generated.day_number),
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     ...(generated.spare_stops?.length ? { spareStops: generated.spare_stops.map((stop) => mapStop(generated.day_number, stop)) } : {}),
+    ...(generated.franjas?.length ? { franjas: generated.franjas.map((f) => ({ id: f.id, label: f.label, from: f.from, to: f.to ?? null })) } : {}),
+    ...(generated.rest_card?.text ? { restCard: { title: generated.rest_card.title, text: generated.rest_card.text, nightName: generated.rest_card.night_name ?? null } } : {}),
     ...(generated.sunset_text ? { sunsetText: generated.sunset_text } : {}),
     ...(generated.rain_plan?.text
       ? {

@@ -11,13 +11,12 @@ import { TrazoCard } from './TrazoCards'
  * va entre medias. No abre ficha ampliada (no hay nada que enseñar: el barrio entero no es un lugar) y
  * sí tiene botón de quitar, porque el algoritmo propone y el viajero dispone.
  */
-export function ZoneWalkCard({ stop, startTime, onDismiss }: { stop: MockStopDetail; startTime?: string; onDismiss: () => void }) {
+export function ZoneWalkCard({ stop, onDismiss }: { stop: MockStopDetail; startTime?: string; onDismiss: () => void }) {
   return (
     <TrazoCard
       kind="monumento"
       iconPath={KIND_ICON.walk}
       dashed
-      time={startTime ?? null}
       name={stop.name}
       sub={stop.tips?.[0] ?? null}
       meta={[{ icon: 'hour', text: `~${formatDuration(stop.durationMinutes)} · sugerencia para este hueco` }]}

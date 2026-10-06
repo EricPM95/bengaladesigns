@@ -58,8 +58,6 @@ interface TrazoCardProps {
   reserved?: boolean
   /** El número en el color del día (PROMPT_UI, Parte 2): relleno claro, número fuerte y borde blanco. */
   numberColors?: { bg: string; text: string }
-  /** Tanda 6: la hora es solo orientativa — pequeña, «hacia las 10:30», sin negrita. */
-  timeOrientative?: boolean
 }
 
 const SUNSET_PANEL = 'linear-gradient(170deg, oklch(0.78 0.15 70), oklch(0.62 0.19 22))'
@@ -67,7 +65,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved, timeOrientative }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const night = variant === 'night'
   const sunset = variant === 'sunset'
@@ -104,12 +102,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
       </div>
       <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
         {reserved && <ReservedMarks compact className="mb-0.5" />}
-        {time && timeOrientative && (
-          <span className="whitespace-nowrap text-[10.5px] font-normal" style={{ color: night ? "oklch(0.82 0.1 285)" : undefined, opacity: 0.7 }}>
-            hacia las {time}
-          </span>
-        )}
-        {time && !timeOrientative && (
+        {time && (
           <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[10.5px] max-[479px]:tracking-normal" style={{ color: timeColor }}>
             {time}
           </span>

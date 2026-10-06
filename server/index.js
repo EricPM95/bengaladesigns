@@ -5355,9 +5355,9 @@ app.post('/api/rebuild-day', async (req, res) => {
 
 // HOY (Tanda 6): «Voy con retraso» y «Estoy cansado». El día se recalcula con lo ya hecho y la hora de ahora: lo de menos importancia pasa a «Si te sobra tiempo». Sin Claude.
 app.post('/api/adjust-day', async (req, res) => {
-  const { destination, answers, all_days, day_number, done_names, now_minutes, mode, must_include_places } = req.body ?? {}
+  const { destination, answers, all_days, day_number, done_names, now_minutes, mode, must_include_places, drop_names } = req.body ?? {}
   const destData = findPipelineV2Data(destination)
-  if (!destination || !answers || !destData || !Number.isInteger(Number(day_number)) || !['retraso', 'cansado'].includes(mode) || !Number.isFinite(Number(now_minutes))) {
+  if (!destination || !answers || !destData || !Number.isInteger(Number(day_number)) || !['retraso', 'justo', 'cansado'].includes(mode) || !Number.isFinite(Number(now_minutes))) {
     res.status(400).json({ error: 'Faltan datos para ajustar el día.' })
     return
   }
@@ -5370,7 +5370,7 @@ app.post('/api/adjust-day', async (req, res) => {
       month: Number.isInteger(answers.month) ? answers.month : null,
       season: answers.season ?? null,
       ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
-      ajuste: { dayNumber: Number(day_number), doneNames: Array.isArray(done_names) ? done_names.map(String) : [], nowMinutes: Number(now_minutes), mode },
+      ajuste: { dayNumber: Number(day_number), doneNames: Array.isArray(done_names) ? done_names.map(String) : [], nowMinutes: Number(now_minutes), mode, dropNames: Array.isArray(drop_names) ? drop_names.map(String) : [] },
     })
     if (!day) {
       res.status(422).json({ error: 'Este día no se puede ajustar.' })
@@ -5380,6 +5380,38 @@ app.post('/api/adjust-day', async (req, res) => {
   } catch (error) {
     console.error('[adjust-day]', error)
     res.status(500).json({ error: 'No se pudo ajustar el día.' })
+  }
+})
+
+// HOY (Tanda 6b): «Vas bien de tiempo» / «Vas justo». Cada vez que el viajero marca «Visto», compara la hora real con lo que le queda de la franja. Nunca cambia nada: solo cuenta y propone. Sin Claude.
+app.post('/api/check-time', async (req, res) => {
+  const { destination, answers, all_days, day_number, done_names, now_minutes, must_include_places } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destination || !answers || !destData || !Number.isInteger(Number(day_number)) || !Number.isFinite(Number(now_minutes))) {
+    res.status(400).json({ error: 'Faltan datos para mirar el tiempo.' })
+    return
+  }
+  try {
+    const totalDays = Array.isArray(all_days) && all_days.length > 0 ? all_days.length + 1 : Number(day_number) + 1
+    const day = await buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), Number(day_number), MAPBOX_TOKEN, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
+      city: destination,
+      scheduler: 'v3',
+      engine: 'v4',
+      month: Number.isInteger(answers.month) ? answers.month : null,
+      season: answers.season ?? null,
+      ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+      chequeo: { dayNumber: Number(day_number), doneNames: Array.isArray(done_names) ? done_names.map(String) : [], nowMinutes: Number(now_minutes) },
+    })
+    const check = day?.time_check
+    if (!check) {
+      res.json({ status: 'normal', message: '', spare_minutes: 0, before_meal: false, suggestions: [], drop: null })
+      return
+    }
+    const message = check.status === 'bien' ? 'Vas bien de tiempo' : check.status === 'justo' ? (check.drop ? `Vas justo. ¿Dejamos ${check.drop.name} para si te sobra tiempo?` : 'Vas justo') : ''
+    res.json({ status: check.status, message, spare_minutes: check.spare_minutes, before_meal: check.before_meal, suggestions: check.status === 'bien' ? check.suggestions : [], drop: check.status === 'justo' ? check.drop : null })
+  } catch (error) {
+    console.error('[check-time]', error)
+    res.status(500).json({ error: 'No se pudo mirar el tiempo.' })
   }
 })
 

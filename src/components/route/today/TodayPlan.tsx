@@ -3,8 +3,9 @@ import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import { minutesToTime, parseTimeToMinutes } from '../../../lib/time'
 import { displayStopName } from '../../../lib/format'
 import { legLabelBetween, walkMinutesBetween } from '../../../lib/legLabel'
-import { adjustDay, type AdjustMode } from '../../../lib/adjustDay'
+import { adjustDay } from '../../../lib/adjustDay'
 import { Button } from '../../ui/Button'
+import type { CheckTimeResult } from '../../../lib/checkTime'
 
 /** Icono lineal fino de andar / trayecto, gris (regla de iconos del proyecto). */
 function LegIcon() {
@@ -124,34 +125,134 @@ export function ReservationCountdown({ stops, nowMin }: { stops: Stop[]; nowMin:
   )
 }
 
-/** «Voy con retraso» y «Estoy cansado»: el servidor recalcula el día (lo de menos importancia pasa a «Si te sobra tiempo»). */
+/** «Estoy cansado»: el servidor recalcula el día (lo de menos importancia pasa a «Si te sobra tiempo»). */
 export function TodayAdjust({ day, nowMin }: { day: DayPlan; nowMin: number }) {
-  const [busy, setBusy] = useState<AdjustMode | null>(null)
+  const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
-  const run = async (mode: AdjustMode) => {
-    setBusy(mode)
+  const run = async () => {
+    setBusy(true)
     setMessage(null)
-    const result = await adjustDay(day.id, mode, nowMin)
-    setBusy(null)
+    const result = await adjustDay(day.id, 'cansado', nowMin)
+    setBusy(false)
     setMessage(
       result.ok
-        ? `Hemos ajustado tu día para que no pierdas lo importante.${result.newSpare > 0 ? ' Lo que ha salido está en «Si te sobra tiempo», en la pestaña Días.' : ''}`
+        ? `Tu día, con lo importante primero.${result.newSpare > 0 ? ' Lo demás está en «Si te sobra tiempo», en la pestaña Días.' : ''}`
         : 'Ahora mismo no hemos podido ajustar tu día. Inténtalo de nuevo en un momento.',
     )
   }
 
   return (
     <div className="mx-4 space-y-2">
-      <div className="flex gap-2">
-        <Button variant="secondary" disabled={busy !== null} onClick={() => run('retraso')} className="flex-1 !px-3">
-          {busy === 'retraso' ? 'Ajustando…' : 'Voy con retraso'}
-        </Button>
-        <Button variant="secondary" disabled={busy !== null} onClick={() => run('cansado')} className="flex-1 !px-3">
-          {busy === 'cansado' ? 'Ajustando…' : 'Estoy cansado'}
-        </Button>
-      </div>
+      <Button variant="secondary" disabled={busy} onClick={run} className="w-full !px-3">
+        {busy ? 'Ajustando…' : 'Estoy cansado'}
+      </Button>
       {message && <p className="text-small leading-snug text-text-soft">{message}</p>}
+    </div>
+  )
+}
+
+interface TodayTimeCheckProps {
+  day: DayPlan
+  nowMin: number
+  /** Lo último que dijo /api/check-time tras marcar «Visto» (null = nada que decir). */
+  result: CheckTimeResult | null
+  /** Las sugerencias están abiertas (también las abre «¿Quieres ver algo más?» de la tarjeta de descanso). */
+  suggestOpen: boolean
+  onSuggestOpen: (open: boolean) => void
+  /** «Voy al restaurante»: vuelve a calcular con la hora de ahora. */
+  onRecheck: () => void
+  /** Una sugerencia entra en el día tras la parada actual. */
+  onAdd: (stop: Stop) => void
+  /** Se acepta o rechaza dejar algo para después: el aviso se cierra. */
+  onResolved: () => void
+}
+
+/**
+ * HOY (Tanda 6b): «Vas bien de tiempo» / «Vas justo». El viajero decide siempre; nunca cambia nada solo.
+ */
+export function TodayTimeCheck({ day, nowMin, result, suggestOpen, onSuggestOpen, onRecheck, onAdd, onResolved }: TodayTimeCheckProps) {
+  const [adjusting, setAdjusting] = useState(false)
+  const [error, setError] = useState(false)
+  const [askedMeal, setAskedMeal] = useState(false)
+  if (!result || result.status === 'normal') return null
+
+  if (result.status === 'justo') {
+    const drop = result.drop
+    return (
+      <div className="mx-4 space-y-3 rounded-2xl border border-accent-gold/40 bg-accent-gold/10 p-4">
+        <p className="text-body font-semibold text-text">Vas justo</p>
+        <p className="text-small leading-snug text-text-soft">{drop ? `¿Dejamos ${drop.name} para si te sobra tiempo?` : result.message}</p>
+        {drop?.reason && <p className="text-caption text-text-muted">{drop.reason}</p>}
+        {drop && (
+          <div className="flex gap-2">
+            <Button
+              disabled={adjusting}
+              className="flex-1 !px-3"
+              onClick={async () => {
+                setAdjusting(true)
+                setError(false)
+                const done = await adjustDay(day.id, 'justo', nowMin, [drop.name])
+                setAdjusting(false)
+                if (done.ok) onResolved()
+                else setError(true)
+              }}
+            >
+              {adjusting ? 'Ajustando…' : 'Sí, déjalo'}
+            </Button>
+            <Button variant="secondary" disabled={adjusting} className="flex-1 !px-3" onClick={onResolved}>
+              No, sigo con todo
+            </Button>
+          </div>
+        )}
+        {error && <p className="text-small text-text-soft">Ahora mismo no hemos podido ajustar tu día. Inténtalo de nuevo en un momento.</p>}
+      </div>
+    )
+  }
+
+  const showQuestion = result.beforeMeal && !suggestOpen && !askedMeal
+  return (
+    <div className="mx-4 space-y-3 rounded-2xl border border-accent-green/40 bg-accent-green-soft p-4">
+      <p className="text-body font-semibold text-text">Vas bien de tiempo</p>
+      {result.message && <p className="text-small leading-snug text-text-soft">{result.message}</p>}
+      {showQuestion && (
+        <>
+          <p className="text-small leading-snug text-text">¿Vas ya al restaurante o quieres ver algo más?</p>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              className="flex-1 !px-3"
+              onClick={() => {
+                setAskedMeal(true)
+                onRecheck()
+              }}
+            >
+              Voy al restaurante
+            </Button>
+            <Button className="flex-1 !px-3" onClick={() => onSuggestOpen(true)}>
+              Ver algo más
+            </Button>
+          </div>
+        </>
+      )}
+      {(suggestOpen || (!result.beforeMeal && result.suggestions.length > 0)) && (
+        <ul className="divide-y divide-text/[.08]">
+          {result.suggestions.map((stop) => (
+            <li key={stop.id} className="flex items-center gap-3 py-2.5">
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-[16px] leading-[1.2] text-text [overflow-wrap:anywhere]">{displayStopName(stop.name)}</p>
+                <p className="mt-0.5 text-[12px] leading-[1.35] text-text/60">
+                  {stop.durationMinutes} min{stop.addNote ? ` · ${stop.addNote}` : ''}
+                </p>
+              </div>
+              <button type="button" onClick={() => onAdd(stop)} className="shrink-0 rounded-full border-[1.5px] border-accent px-3.5 py-1.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft">
+                Añadir
+              </button>
+            </li>
+          ))}
+          {result.suggestions.length === 0 && <li className="py-2 text-small text-text-soft">Por ahora no tenemos nada más cerca que proponerte.</li>}
+        </ul>
+      )}
     </div>
   )
 }

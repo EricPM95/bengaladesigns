@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
-import { addMinutesToTime } from '../../../lib/time'
 import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
@@ -54,7 +53,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   if (stop.passThrough) {
     return (
       <div className="relative pr-8">
-        <TimelineNote time={startTime} onClick={onOpen} photoUrl={stop.photoUrl}>
+        <TimelineNote onClick={onOpen} photoUrl={stop.photoUrl}>
           {stop.outsideReason ? (
             <>
               Por fuera: <span className="font-medium text-text">{displayStopName(stop.name)}</span> · {stop.outsideReason}
@@ -78,7 +77,6 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
         number={number}
         numberColors={numberColors}
         time={stop.reservationTime ?? startTime ?? null}
-        timeOrientative={!stop.reservationTime && Boolean(stop.orientativeTime)}
         name={displayStopName(stop.name)}
         sub={stop.arrivalText ?? null}
         meta={[{ icon: 'hour', text: formatDuration(stop.durationMinutes) }]}
@@ -90,7 +88,6 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   }
   const kind = stopKindOf({ name: stop.name, tags: stop.tags, categoryLabel: stop.category, isNightExperience: stop.isNightExperience, isSunset: stop.isSunset, isNightView: stop.isNightView, isFreeWalk: stop.isFreeWalk })
   const variant = kind === 'noche' ? 'night' : kind === 'atardecer' ? 'sunset' : 'normal'
-  const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
 
   // La tarjeta, más limpia (PROMPT_UI_REPASO 11): la hora, el nombre, una línea con el horario y el tiempo de visita, y las
   // etiquetas. «Reserva…» va en la ficha (Entradas) y «Por dentro / Por fuera» también (Resumen). En la tarjeta solo se
@@ -143,8 +140,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       variant={variant}
       number={number}
       numberColors={numberColors}
-      time={stop.reservationTime ?? (startTime ? (stop.isNightExperience && endTime && !stop.orientativeTime ? `${startTime} – ${endTime}` : startTime) : null)}
-      timeOrientative={!stop.reservationTime && Boolean(stop.orientativeTime)}
+      // Tanda 6b: sin hora por parada; solo la fija (reserva, turno, Free Tour). La franja lleva su hora en la cabecera.
+      time={stop.reservationTime ?? null}
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}

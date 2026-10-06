@@ -30,6 +30,7 @@ import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayC
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { OnTheWayGroupCard, PeriodHeader, TrazoCard } from './TrazoCards'
 import { SpareStopsSection } from './SpareStopsSection'
+import { RestCard } from './RestCard'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
@@ -987,6 +988,11 @@ export function DayDetailPanel({
       if (!hasLunch && phase === 'manana' && start >= AFTERNOON_FROM) phase = 'tarde'
       if (flags.night && phase !== 'manana') phase = 'noche'
       period = phase
+      // Tanda 6b: si el servidor manda la franja de la parada, manda ella.
+      if (realStops[item.index]?.franja) {
+        period = realStops[item.index].franja as DayPeriod
+        if (period === 'noche') phase = 'noche'
+      }
     }
     placed.push({ item, period, start, end })
   }
@@ -1008,7 +1014,13 @@ export function DayDetailPanel({
     // De 5 en 5, como las horas de las paradas: con cuartos, la Tarde decía 14:30 y su primera parada era a las 14:25.
     const step5 = (minutes: number) => Math.round(minutes / 5) * 5
     group.range = `${minutesToTime(step5(from))} — ${minutesToTime(step5(to))}`
-  }
+    // Tanda 6b: la franja con su hora, tal como la manda el servidor («9:00–14:00»).
+    const franja = day.franjas?.find((candidate) => candidate.id === group.period)
+    if (franja) group.range = franja.to ? `${franja.from}–${franja.to}` : franja.from  }
+
+  // Tanda 6b: la tarjeta de descanso va al final del último tramo antes de la cena (o del último tramo si no hay cena).
+  const dinnerGroupIndex = periodGroups.findIndex((group) => group.items.some((entry) => entry.item.type === 'dinner'))
+  const restCardGroupIndex = dinnerGroupIndex > 0 ? dinnerGroupIndex - 1 : periodGroups.length - 1
 
   /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
   /** ¿La parada de este índice viene justo detrás de otra parada en la línea del día? */
@@ -1396,6 +1408,7 @@ export function DayDetailPanel({
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
                 {renderGroupItems(group.items)}
               </div>
+              {day.restCard && groupIndex === restCardGroupIndex && <RestCard card={day.restCard} />}
             </div>
           ))}
           </SortableContext>

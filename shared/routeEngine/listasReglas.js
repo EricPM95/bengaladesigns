@@ -33,14 +33,11 @@ export function crearReglas(env) {
   const esParada = (item) => item.kind === 'stop' && item.lugar && !item.llegada
   const clave = (regla, ...partes) => `${regla}:${partes.join('>')}`
 
-  /** Algo que se podía ver al pasar: de camino, por fuera o de pocos minutos. Una visita con hora (una reserva, un turno) o larga no es eso: se vuelve a ella a propósito. */
-  const sePodiaVerAlPasar = (item) => !item.hora && !item.hora_tipo && (item.modo === 'camino' || item.modo === 'fuera' || (item.min ?? 30) <= 20)
-  /** El zigzag: volver cerca de lo que se dejó atrás para ver algo que se podía ver al pasar. Una parada que es el mismo lugar que la anterior no cuenta (la escalinata de la Plaza de España). */
+  /** El zigzag: volver cerca de lo que se dejó atrás (Tanda 6b: también cuando la vuelta es a una parada con hora fija). Una parada que es el mismo lugar que la anterior no cuenta (la escalinata de la Plaza de España). */
   function zigzag(items) {
     const out = []
     const stops = items.filter(esParada).map((item) => ({ item, c: coordsOf(item) })).filter((s) => s.c)
     for (let j = 2; j < stops.length; j++) {
-      if (!sePodiaVerAlPasar(stops[j].item)) continue
       for (let i = 0; i < j - 1; i++) {
         if (stops[i].item.lugar === stops[j].item.lugar) continue
         if (meters(stops[i].c, stops[j].c) >= ZIGZAG_VUELTA_M) continue
@@ -85,7 +82,8 @@ export function crearReglas(env) {
       if (nivel === 1 && !vistosAntes.has(quitada.lugar) && !quitada.camino_antes) out.push({ regla: 'imprescindible_quitado', clave: clave('imprescindible', quitada.lugar), texto: `«${quitada.lugar}» es un imprescindible y pasa a «Si te sobra tiempo» la primera vez` })
       const mia = valorDe(quitada, nivelDe)
       for (const resto of items.filter(esParada)) {
-        if (resto.franja !== quitada.franja || resto.hora || resto.hora_tipo || resto.llegada || resto.protegido_fijo) continue
+        // (Un «de camino» no ocupa tiempo ni se quita para que quepa nada: no cuenta para la pirámide.)
+        if (resto.franja !== quitada.franja || resto.modo === 'camino' || resto.tipo === 'desayuno' || resto.relleno || resto.hora || resto.hora_tipo || resto.llegada || resto.protegido_fijo) continue
         if (valorDe(resto, nivelDe) < mia) out.push({ regla: 'piramide', clave: clave('piramide', quitada.lugar, resto.id), texto: `«${quitada.titulo ?? quitada.lugar}» se quita y «${resto.titulo ?? resto.lugar}», de menos importancia, se queda` })
       }
     }

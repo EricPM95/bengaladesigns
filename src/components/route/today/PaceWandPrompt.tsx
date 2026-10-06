@@ -44,7 +44,7 @@ export function PaceWandPrompt(props: PaceWandPromptProps) {
     <div className="mx-4 space-y-2.5 rounded-xl border border-accent-red/30 bg-accent-red/10 px-3.5 py-3">
       <p className="flex items-start gap-2 text-small font-medium text-accent-red">
         <span aria-hidden="true">🪄</span>
-        Vas con retraso — ¿reorganizamos el resto del día, o prefieres que quitemos algo?
+        ¿Reorganizamos el resto del día?
       </p>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button variant="secondary" onClick={props.onDismiss} className="flex-1">

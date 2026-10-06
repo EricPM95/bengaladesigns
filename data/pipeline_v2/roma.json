@@ -1174,6 +1174,11 @@
         12.4843
       ],
       "salida_nota": "Salida del Clivo Capitolino, junto al Campidoglio (el texto dice \"sales por el lado del Campidoglio\").",
+      "entrada": [
+        41.8895,
+        12.489
+      ],
+      "entrada_nota": "Entrada de la Vía Sacra, junto al Arco de Constantino y al lado del Coliseo (Tanda 6b: el Foro se entra por el lado del Coliseo y se sale por el Campidoglio). Coordenada aproximada, por revisar.",
       "closed_dates_audit": {
         "01-01": {
           "estado": "abre con horario especial (probable)",
@@ -2109,7 +2114,7 @@
       ],
       "last_entry": "17:45",
       "reservation": "obligatoria",
-      "card_text": "Martes a domingo de 09:00 a 19:00, con entrada por turnos a cada hora en punto (visita de 2 h; el último turno, 17:45, es más corto). Reserva obligatoria. Cerrado lunes, 25 dic y 1 ene.",
+      "card_text": "Martes a domingo de 09:00 a 19:00, con entrada por turnos cada 2 horas (9:00, 11:00, 13:00, 15:00 y 17:00; visita de 2 h). Reserva obligatoria. Cerrado lunes, 25 dic y 1 ene.",
       "ticket_info": [
         "De pago.",
         "Reserva obligatoria."
@@ -2122,10 +2127,10 @@
         "01-01"
       ],
       "turnos": {
-        "cada_minutos": 60,
+        "cada_minutos": 120,
         "desde": "09:00",
         "hasta": "17:00",
-        "nota": "Turnos cada hora de 9:00 a 17:00, con reserva (decisión del usuario, 2026-09-28): se elige el que no deja hueco."
+        "nota": "Turnos cada 2 horas, de 9:00 a 17:00 (9:00, 11:00, 13:00, 15:00 y 17:00), con reserva (decisión del usuario, 6-oct-2026): sin reserva puesta, el motor coge el turno real más cercano."
       },
       "closed_dates_audit": {
         "01-01": {

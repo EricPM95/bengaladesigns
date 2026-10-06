@@ -9,14 +9,14 @@ import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 
 const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
 
-export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [], hasFreeTour = false }) {
+export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [], hasFreeTour = false, listas = null, franjas = {} }) {
   const fallos = []
   const info = []
   const place = (name) => D.places.find((p) => p.name === name)
   const coordsDe = (row) => {
     const p = place(row.lugar)
     if (!p) return null
-    return row.modo === 'fuera' || row.modo === 'camino' ? p.pass_by?.coordinates ?? p.coordinates : p.coordinates
+    return row.modo === 'fuera' || row.modo === 'camino' ? p.pass_by?.coordinates ?? p.coordinates : (Array.isArray(p.entrada) ? p.entrada : null) ?? p.coordinates
   }
   const dias = plan.days.filter((day) => day.curatedDay?.id)
   const cubiertos = new Set(hasFreeTour ? D.default_free_tour?.covers ?? [] : [])
@@ -33,13 +33,24 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const stops = rows.filter((r) => (r.tipo === 'parada' || r.tipo === 'tour' || r.tipo === 'desayuno') && !r.llegada)
     // 1. El orden
     const base = new Map((dia.ordenBase ?? []).map((id, i) => [id, i]))
-    const secuencia = rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado').map((r) => base.get(r.id))
+    const hayFija = rows.some((r) => r.fija && !r.llegada)
+    const secuencia = rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida')).map((r) => base.get(r.id))
     for (let i = 1; i < secuencia.length; i++) if (secuencia[i] < secuencia[i - 1]) { falla('orden', dia, `el orden del día no es el de su lista (${rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija).map((r) => r.titulo ?? r.lugar).slice(0, 6).join(' → ')}…)`); break }
     // Todo lo que falta de la lista tiene su causa (cierre, sobra, pool…)
     const spareIds = new Set((dia.spareRows ?? []).map((r) => r.id))
     for (const id of dia.ordenBase ?? []) {
       if (rows.some((r) => r.id === id) || spareIds.has(id)) continue
       if (!log.some((l) => l.id === id && (l.que === 'quitada' || l.que === 'sobra'))) falla('sin_explicar', dia, `«${id}» está en la lista y no sale ni tiene causa en el registro`)
+    }
+    // 2b. (Tanda 6b) Nada cerrado a la hora de llegada: una visita por dentro con la llegada orientativa fuera de su horario es un fallo; se espera 15 min como mucho (y entonces la hora ya es la de abrir).
+    for (const r of stops) {
+      if (r.modo === 'fuera' || r.modo === 'camino' || r.tipo !== 'parada' || r.hora_tipo === 'reserva' || r.llegada) continue
+      const p = place(r.lugar)
+      if (!p || p.type !== 'interior') continue
+      const sesiones = parseHoursSessions(effectiveSchedule(p, dia.hours))
+      if (sesiones.length === 0) continue
+      const dentro = sesiones.some((x) => r.t0 >= x.open && r.t0 + r.min <= x.close + 1)
+      if (!dentro) falla('cerrado_a_la_llegada', dia, `«${r.titulo ?? r.lugar}» sale por dentro hacia las ${Math.floor(r.t0 / 60)}:${String(r.t0 % 60).padStart(2, '0')} y su horario ese día es ${sesiones.map((x) => `${Math.floor(x.open / 60)}:${String(x.open % 60).padStart(2, '0')}-${Math.floor(x.close / 60)}:${String(x.close % 60).padStart(2, '0')}`).join(' y ')}`)
     }
     // 2. Nada cerrado
     for (const r of stops) {
@@ -58,10 +69,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const zig = (lista) => {
       const puntos = lista.map((r) => ({ r, c: coordsDe(r) })).filter((x) => x.c)
       const out = new Set()
-      // (Solo cuenta volver para ver algo que se podía ver al pasar: de camino, por fuera o de pocos minutos; no una visita con hora ni una larga.)
-      const alPasar = (r) => !r.fija && !r.hora_tipo && (r.modo === 'camino' || r.modo === 'fuera' || (r.min ?? 30) <= 20)
+      // (Cuenta también la vuelta a una parada con hora fija: Tanda 6b.)
       for (let j = 2; j < puntos.length; j++) for (let i = 0; i < j - 1; i++) {
-        if (!alPasar(puntos[j].r)) continue
         if (puntos[i].r.lugar === puntos[j].r.lugar) continue
         if (straightLineMeters(puntos[i].c, puntos[j].c) >= 300) continue
         let lejos = 0
@@ -82,9 +91,10 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       if (nivel === 1) return 100
       return (nivel === 2 ? 50 : 10) - (r.modo === 'camino' ? 5 : 0)
     }
-    for (const s of dia.spareRows ?? []) {
+    // (La pirámide manda cuando lo que se quita es por falta de tiempo; un cierre o la hora fija de otra parada tienen su propia regla.)
+    for (const s of (dia.spareRows ?? []).filter((x) => x.razon === 'cabe' || x.razon == null)) {
       if ((s.nivel ?? 3) === 1 && !vistos.has(s.lugar) && !rows.some((r) => r.lugar === s.lugar)) falla('piramide', dia, `«${s.titulo ?? s.lugar}» es un imprescindible y pasa a «Si te sobra tiempo» la primera vez`)
-      for (const r of stops) if (r.franja === s.franja && !r.fija && !r.hora_tipo && !r.llegada && valor(r) < valor(s)) falla('piramide', dia, `«${s.titulo ?? s.lugar}» pasa a «Si te sobra tiempo» y «${r.titulo ?? r.lugar}», de menos importancia, se queda`)
+      for (const r of stops) if (r.franja === s.franja && r.modo !== 'camino' && r.tipo !== 'desayuno' && !r.relleno && !r.fija && !r.hora_tipo && !r.llegada && valor(r) < valor(s)) falla('piramide', dia, `«${s.titulo ?? s.lugar}» pasa a «Si te sobra tiempo» y «${r.titulo ?? r.lugar}», de menos importancia, se queda`)
     }
     // 5. Por dentro una sola vez (en el viaje)
     for (const r of stops) if (r.modo === 'dentro') { const dd = dentro.get(r.lugar); if (dd) falla('dentro_dos_veces', dia, `«${r.lugar}» va por dentro también el ${dd}`); dentro.set(r.lugar, dia.hours?.dateIso ?? `día ${dia.dayNumber}`) }
@@ -111,10 +121,28 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       if (!previa?.llegada || previa.lugar !== lugar) falla('reserva', dia, `${lugar}: la reserva no lleva su «Llegada a…» delante`)
       if (r.tarde > 0) avisa('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}`)
     }
+    // 7b. (Tanda 6b) La comida nunca detrás de una visita larga con hora fija que empieza entre las 13:30 y las 15:00 (si empieza antes de las 13:30 no cabe comer antes: se apunta); y 0 días que empiezan más tarde por una reserva.
+    {
+      const comidaIdx = rows.findIndex((x) => x.tipo === 'comida')
+      for (const f of rows.filter((x) => x.fija && !x.llegada && x.min > 60 && (x.tipo === 'parada' || x.tipo === 'tour'))) {
+        const i = rows.indexOf(f)
+        if (comidaIdx >= 0 && comidaIdx > i && f.t0 < 15 * 60) (f.t0 >= 13 * 60 + 30 ? falla : avisa)('comida_tras_hora_fija', dia, `la comida va detrás de «${f.titulo ?? f.lugar}», que empieza a las ${f.hora_fija}`)
+      }
+      const primera = rows.find((x) => x.tipo !== 'traslado')
+      const parte = listas?.days?.[dia.curatedDay.id]?.partes
+      const empiezaDoc = parte ? Object.values(parte).map((x) => x.empieza).find(Boolean) : null
+      const variantes = dia.curatedDay.variantes ?? []
+      const esperado = toMin(variantes.includes('lunes_sin_galeria') ? '09:30' : variantes.includes('con_free_tour_de_manana') ? '09:00' : empiezaDoc ?? (dia.halfDayExcursion?.soloTarde ? '16:00' : (franjas.inicio ?? '09:00')))
+      const excusado = variantes.includes('miercoles_audiencia') || (dia.curatedDay.id === 'D0-medio' && (dia.written?.grupo === 'tarde')) || (dia.curatedDay.id === 'DT-medio' && dia.written?.grupo === 'tarde')
+      // (Si lo primero del día es una hora fija —o su «Llegada a…»—, el día empieza a esa hora: no hay nada que hacer antes y no se inventa.)
+      if (primera && !excusado && !dia.halfDayExcursion && !primera.llegada && !primera.fija && primera.t0 > esperado + 15) falla('dia_empieza_tarde', dia, `el día empieza a las ${Math.floor(primera.t0 / 60)}:${String(primera.t0 % 60).padStart(2, '0')} y debería empezar a las ${Math.floor(esperado / 60)}:${String(esperado % 60).padStart(2, '0')}`)
+    }
+    // (Un «de camino» no va a «Si te sobra tiempo».)
+    for (const sp of dia.spareRows ?? []) if (sp.modo === 'camino') falla('camino_en_sobra', dia, `«${sp.titulo ?? sp.lugar}» va de camino y está en «Si te sobra tiempo»`)
     // 8. La comida, como muy tarde a las 14:30
     const comida = rows.find((x) => x.tipo === 'comida')
     if (comida && comida.llegaA > 14 * 60 + 30) {
-      const delante = rows.slice(0, rows.indexOf(comida)).filter((x) => (x.tipo === 'parada' || x.tipo === 'tour') && !x.llegada)
+      const delante = rows.slice(0, rows.indexOf(comida)).filter((x) => (x.tipo === 'parada' || x.tipo === 'tour') && !x.llegada && x.modo !== 'camino' && !x.relleno && !x.protegido)
       const soloImprescindibles = delante.length > 0 && delante.every((x) => (x.nivel ?? 3) === 1 || x.fija)
       ;(soloImprescindibles ? avisa : falla)('comida_tarde', dia, `la comida es a las ${Math.floor(comida.llegaA / 60)}:${String(comida.llegaA % 60).padStart(2, '0')}${soloImprescindibles ? ' (delante solo hay imprescindibles)' : ''}`)
     }

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
-import { addMinutesToTime } from '../../../lib/time'
 import { KIND_ICON } from '../../../lib/stopKind'
 import { TrazoCard } from './TrazoCards'
 import { BREAKFAST_PHOTO_URL } from '../../../lib/breakfastPhoto'
@@ -20,14 +19,12 @@ interface BreakCardProps {
  * (BREAKFAST_PHOTO_URL; decisión del usuario, 2026-09-29). Su texto va en la ficha; la ficha de una pausa nunca pide nada
  * al servidor ni a Claude.
  */
-export function BreakCard({ stop, startTime, menu, onOpen }: BreakCardProps) {
-  const endTime = startTime ? addMinutesToTime(startTime, stop.durationMinutes) : null
+export function BreakCard({ stop, menu, onOpen }: BreakCardProps) {
   const suggestions = stop.breakSuggestions ?? []
   return (
     <TrazoCard
       kind="comida"
       iconPath={KIND_ICON.coffee}
-      time={startTime ? (endTime ? `${startTime} – ${endTime}` : startTime) : null}
       name={stop.name}
       meta={suggestions.map((item) => ({ icon: 'pin' as const, text: `${item.name} · ${item.walkMinutes} min` }))}
       photoUrl={BREAKFAST_PHOTO_URL}

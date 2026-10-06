@@ -505,6 +505,8 @@ interface RouteStoreState {
 
   /** Tanda 6 — «Si te sobra tiempo» → «Añadir»: la parada pasa al día (al final de su franja, por su hora orientativa) y sale de la lista. */
   addSpareStop: (dayId: string, stopId: string) => void
+  /** Tanda 6b — HOY: una sugerencia entra en el día tras la parada `afterIndex` y, si venía de «Si te sobra tiempo», sale de esa lista. */
+  addSuggestedStop: (dayId: string, stop: Stop, afterIndex: number) => void
   /** Tanda 6 — HOY: sustituye el día por el que devuelve /api/adjust-day (retraso / cansado). */
   applyAdjustedDay: (dayId: string, day: DayPlan) => void
   /** Tanda 6 — «Usar esta alternativa» (lluvia): quita lo que sale, mete lo que entra y guarda lo de antes para volver. */
@@ -1435,6 +1437,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     get().insertStopAt(dayId, spareInsertIndex(day.stops, stop), { ...stop, addedByUser: true })
     set((state) => (state.route ? { route: updateDay(state.route, dayId, (current) => ({ ...current, spareStops: (current.spareStops ?? []).filter((other) => other.id !== stopId) })) } : state))
   },
+  addSuggestedStop: (dayId, stop, afterIndex) => {
+    const { spareReason: _reason, ...clean } = stop
+    void _reason
+    get().insertStopAt(dayId, afterIndex + 1, { ...clean, addedByUser: true })
+    set((state) => (state.route ? { route: updateDay(state.route, dayId, (current) => ({ ...current, spareStops: (current.spareStops ?? []).filter((other) => other.name !== stop.name) })) } : state))
+  },
   applyAdjustedDay: (dayId, day) =>
     set((state) =>
       state.route
@@ -1598,7 +1606,7 @@ const MANUAL_EDIT_ACTIONS = [
   'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'addReservation', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
-  'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',
+  'addSuggestedStop', 'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',
 ] as const
 for (const name of MANUAL_EDIT_ACTIONS) {
   const original = useRouteStore.getState()[name] as (...args: unknown[]) => unknown
