@@ -256,7 +256,7 @@ export async function enrichRoutePhotos(route: Route): Promise<Route> {
   // (La fecha real de cada día, si el viaje la tiene: las fotos de Navidad solo salen en sus fechas.)
   const startIso = route.answers.dateRange?.start ?? null
   const jobs = route.days.flatMap((day) =>
-    day.stops.map((stop) =>
+    [...day.stops, ...(day.spareStops ?? []), ...(day.rainPlan?.add ?? [])].map((stop) =>
       // `regular`: la foto de una parada se ve a pantalla completa en su ficha.
       // (La «Llegada a…» no lleva foto propia.)
       stop.isBreak || stop.isArrival || stop.fixedPhotoUrl || (stop.isFreeWalk && !stop.photoName)

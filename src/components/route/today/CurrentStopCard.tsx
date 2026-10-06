@@ -9,6 +9,7 @@ import { TipBox } from '../dayDetail/TipBox'
 import { PurchaseSection } from '../dayDetail/PurchaseSection'
 import { StopMenu } from '../dayDetail/StopMenu'
 import { HowToGetThereSheet } from './HowToGetThereSheet'
+import { LegLine } from './TodayPlan'
 
 interface CurrentStopCardProps {
   day: DayPlan
@@ -19,6 +20,8 @@ interface CurrentStopCardProps {
   nowMin: number
   realStops: Stop[]
   otherDays: { id: string; dayNumber: number; city: string }[]
+  /** La parada anterior del día: de ahí sale el trayecto hasta esta. */
+  previousStop?: Stop
   onCheckIn: () => void
   onNoteDelay: () => void
 }
@@ -28,7 +31,7 @@ interface CurrentStopCardProps {
  * "upcoming" cuenta atrás suave, "now" el diseño completo ya validado, "confirm" el aviso discreto
  * "¿Sigues aquí?". Nunca recibe `state === 'done'` (TodayView ya avanza a la siguiente parada).
  */
-export function CurrentStopCard({ day, index, realStop, displayStop, state, nowMin, realStops, otherDays, onCheckIn, onNoteDelay }: CurrentStopCardProps) {
+export function CurrentStopCard({ day, index, realStop, displayStop, state, nowMin, realStops, otherDays, previousStop, onCheckIn, onNoteDelay }: CurrentStopCardProps) {
   const [distance, setDistance] = useState<StopDistance | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [mapsOpen, setMapsOpen] = useState(false)
@@ -53,8 +56,12 @@ export function CurrentStopCard({ day, index, realStop, displayStop, state, nowM
         <p className="text-caption font-semibold uppercase tracking-wide text-text-muted">Próxima parada</p>
         <p className="text-body font-semibold text-text">{displayStop.name}</p>
         <p className="text-small text-text-soft">
-          Empieza sobre las {realStop.time} — te quedan {minutesLeft} min
+          {realStop.orientativeTime ? `Hacia las ${realStop.time}` : `Empieza sobre las ${realStop.time}`} — te quedan {minutesLeft} min
         </p>
+        <LegLine from={previousStop?.coordinates} to={realStop} />
+        <Button variant="secondary" onClick={onCheckIn} className="w-full">
+          Marcar como hecha
+        </Button>
       </div>
     )
   }
@@ -96,6 +103,8 @@ export function CurrentStopCard({ day, index, realStop, displayStop, state, nowM
           <StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} />
         </div>
 
+        <LegLine from={previousStop?.coordinates} to={realStop} />
+
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => setMapsOpen(true)} className="flex-1">
             Cómo llegar
@@ -122,7 +131,7 @@ export function CurrentStopCard({ day, index, realStop, displayStop, state, nowM
         )}
 
         <Button onClick={onCheckIn} className="w-full font-bold shadow-sm">
-          ✓ Ya he estado aquí — siguiente parada
+          Marcar como hecha
         </Button>
       </div>
 

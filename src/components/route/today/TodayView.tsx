@@ -27,6 +27,9 @@ import { MealRecommendationCard } from './MealRecommendationCard'
 import { FreeTimeBanner } from './FreeTimeBanner'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { PaceWandPrompt } from './PaceWandPrompt'
+import { RainAlert } from './RainAlert'
+import { ReservationCountdown, TodayAdjust, TodayClosureNotices } from './TodayPlan'
+import { addDaysToIso, todayIso } from '../../../lib/dateRange'
 
 const CLOCK_TICK_MS = 30_000
 
@@ -73,11 +76,16 @@ export function TodayView({ route }: TodayViewProps) {
       <div className="flex-1 space-y-4 overflow-y-auto pb-6 pt-4">
         {devSimulator}
         <TodayEmptyState phase={tripStatus.phase} startIso={tripStatus.startIso} />
+        {/* La víspera: si el viaje empieza mañana y hay lluvia prevista, ya se avisa (Tanda 6). */}
+        {tripStatus.phase === 'before' && route.days[0] && tripStatus.startIso === addDaysToIso(devSimulatedTodayIso ?? todayIso(), 1) && <RainAlert day={route.days[0]} dateIso={tripStatus.startIso} when="manana" />}
       </div>
     )
   }
 
   const { day, dateIso } = tripStatus.context
+  // La víspera (desde las 18:00): el día de mañana, por si hay lluvia prevista.
+  const tomorrowDay = route.days[tripStatus.context.dayIndex + 1]
+  const eveRain = now.getHours() >= 18 && tomorrowDay && !tomorrowDay.isReturnLeg ? <RainAlert day={tomorrowDay} dateIso={addDaysToIso(dateIso, 1)} when="manana" /> : null
   const nowMin = minutesSinceMidnight(now)
   const realStops = resolveRealStops(day)
   const displayStops = resolveDisplayStops(day)
@@ -197,6 +205,7 @@ export function TodayView({ route }: TodayViewProps) {
           <p className="mt-1 text-small text-text-soft">Buen ritmo — puedes revisar el resto del día en la pestaña Días.</p>
         </div>
         {wandBlock}
+        {eveRain}
         <PlaceFinderPanel
           open={poolOpen}
           onClose={() => setPoolOpen(false)}
@@ -215,6 +224,9 @@ export function TodayView({ route }: TodayViewProps) {
       {devSimulator}
       <TodayProgressBar current={currentIndex + 1} total={total} />
 
+      <RainAlert day={day} dateIso={dateIso} when="hoy" />
+      {eveRain}
+
       <CurrentStopCard
         day={day}
         index={currentIndex}
@@ -224,19 +236,25 @@ export function TodayView({ route }: TodayViewProps) {
         nowMin={nowMin}
         realStops={realStops}
         otherDays={otherDays}
+        previousStop={currentIndex > 0 ? realStops[currentIndex - 1] : undefined}
         onCheckIn={() => handleCheckIn(currentRealStop, currentIndex)}
         onNoteDelay={() => handleNoteDelay(currentRealStop)}
       />
 
+      <ReservationCountdown stops={realStops} nowMin={nowMin} />
+      <TodayClosureNotices stops={realStops} />
+
       {wandBlock}
 
-      {nextRealStop && nextDisplayStop && <NextStopPreview realStop={nextRealStop} displayStop={nextDisplayStop} />}
+      {nextRealStop && nextDisplayStop && <NextStopPreview realStop={nextRealStop} displayStop={nextDisplayStop} from={currentRealStop.coordinates} />}
 
       {showFreeGapBlock && (
         <div className="mx-4">
           {passiveMeal ? <MealRecommendationCard meal={passiveMeal} /> : <FreeTimeBanner minutes={gapMinutes!} onAddNearby={() => setPoolOpen(true)} />}
         </div>
       )}
+
+      <TodayAdjust day={day} nowMin={nowMin} />
 
       <PlaceFinderPanel
         open={poolOpen}

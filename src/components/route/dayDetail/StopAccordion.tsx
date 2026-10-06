@@ -77,7 +77,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
         kind="monumento"
         number={number}
         numberColors={numberColors}
-        time={startTime ?? null}
+        time={stop.reservationTime ?? startTime ?? null}
+        timeOrientative={!stop.reservationTime && Boolean(stop.orientativeTime)}
         name={displayStopName(stop.name)}
         sub={stop.arrivalText ?? null}
         meta={[{ icon: 'hour', text: formatDuration(stop.durationMinutes) }]}
@@ -142,7 +143,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       variant={variant}
       number={number}
       numberColors={numberColors}
-      time={startTime ? (stop.isNightExperience && endTime ? `${startTime} – ${endTime}` : startTime) : null}
+      time={stop.reservationTime ?? (startTime ? (stop.isNightExperience && endTime && !stop.orientativeTime ? `${startTime} – ${endTime}` : startTime) : null)}
+      timeOrientative={!stop.reservationTime && Boolean(stop.orientativeTime)}
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}

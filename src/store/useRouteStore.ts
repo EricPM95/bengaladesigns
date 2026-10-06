@@ -34,6 +34,7 @@ import { triggerBudgetFly } from '../lib/budgetFlyBus'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../lib/time'
 import { optimizeDayWithRealTransport as computeOptimizedDay, overflowToDidntMakeCut } from '../lib/stopScheduling'
 import { fitMealsToStops } from '../lib/arrivalReturn'
+import { spareInsertIndex } from '../lib/spareStops'
 import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
 import { daysBetweenInclusive } from '../lib/dateRange'
@@ -501,6 +502,15 @@ interface RouteStoreState {
   removeBudgetItem: (itemId: string) => void
 
   markDidntMakeCutAdded: (dayId: string, itemId: string) => void
+
+  /** Tanda 6 — «Si te sobra tiempo» → «Añadir»: la parada pasa al día (al final de su franja, por su hora orientativa) y sale de la lista. */
+  addSpareStop: (dayId: string, stopId: string) => void
+  /** Tanda 6 — HOY: sustituye el día por el que devuelve /api/adjust-day (retraso / cansado). */
+  applyAdjustedDay: (dayId: string, day: DayPlan) => void
+  /** Tanda 6 — «Usar esta alternativa» (lluvia): quita lo que sale, mete lo que entra y guarda lo de antes para volver. */
+  applyRainPlan: (dayId: string) => void
+  /** Tanda 6 — vuelve al plan original del día tras usar la alternativa de lluvia. */
+  revertRainPlan: (dayId: string) => void
 
   /** Wishlist — añade un lugar guardado desde el buscador (panel Pool/Wishlist/Buscar). */
   addToWishlist: (item: WishlistItem) => void
@@ -1415,6 +1425,44 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         })),
       }
     }),
+
+  addSpareStop: (dayId, stopId) => {
+    const day = get().route?.days.find((other) => other.id === dayId)
+    const spare = day?.spareStops?.find((stop) => stop.id === stopId)
+    if (!day || !spare) return
+    const { spareReason: _reason, ...stop } = spare
+    void _reason
+    get().insertStopAt(dayId, spareInsertIndex(day.stops, stop), { ...stop, addedByUser: true })
+    set((state) => (state.route ? { route: updateDay(state.route, dayId, (current) => ({ ...current, spareStops: (current.spareStops ?? []).filter((other) => other.id !== stopId) })) } : state))
+  },
+  applyAdjustedDay: (dayId, day) =>
+    set((state) =>
+      state.route
+        ? {
+            route: reapplyReservations(
+              { ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, id: other.id, dayNumber: other.dayNumber, colorIndex: other.colorIndex, originalSnapshot: other.originalSnapshot ?? null } : other)) },
+              state.reservations,
+            ),
+          }
+        : state,
+    ),
+  applyRainPlan: (dayId) =>
+    set((state) => {
+      const day = state.route?.days.find((other) => other.id === dayId)
+      if (!state.route || !day?.rainPlan || day.rainBackup) return state
+      const plan = day.rainPlan
+      const norm = (text: string) => text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim()
+      const out = plan.remove.map(norm)
+      let stops = day.stops.filter((stop) => stop.reservedId || !out.some((name) => name && (norm(stop.name) === name || norm(stop.name).includes(name))))
+      for (const entering of plan.add) {
+        if (stops.some((stop) => stop.id === entering.id)) continue
+        stops = [...stops]
+        stops.splice(spareInsertIndex(stops, entering), 0, { ...entering, nextLegPending: true })
+      }
+      return { route: updateDay(state.route, dayId, (current) => ({ ...current, stops, rainBackup: { stops: current.stops } })) }
+    }),
+  revertRainPlan: (dayId) =>
+    set((state) => (state.route ? { route: updateDay(state.route, dayId, (current) => (current.rainBackup ? { ...current, stops: current.rainBackup.stops, rainBackup: null } : current)) } : state)),
 
   addToWishlist: (item) => set((state) => ({ wishlist: [...state.wishlist, item] })),
   removeFromWishlist: (itemId) => set((state) => ({ wishlist: state.wishlist.filter((item) => item.id !== itemId) })),

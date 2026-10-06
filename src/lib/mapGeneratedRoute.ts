@@ -134,6 +134,12 @@ interface GeneratedStop {
   /** «Llegada a {sitio}»: ver Stop.isArrival. */
   is_arrival?: boolean
   arrival_text?: string | null
+  /** Tanda 6: hora solo orientativa — Stop.orientativeTime. */
+  orientative_time?: boolean
+  /** Tanda 6: hora fija de reserva o turno ("HH:MM") — Stop.reservationTime. */
+  reservation_time?: string | null
+  /** Tanda 6: solo en day.spare_stops — Stop.spareReason. */
+  spare_reason?: string | null
   break_icon?: string | null
   break_suggestions?: { name: string; walk_minutes: number; address?: string | null }[]
   /** Nombre del paseo nocturno curado — Stop.nightWalkName. */
@@ -191,6 +197,12 @@ export interface GeneratedDay {
   stops: GeneratedStop[]
   meals: GeneratedMeal[]
   rainy_alternative?: string
+  /** Tanda 6: paradas que no caben y pasan a «Si te sobra tiempo» (misma forma que stops, más spare_reason). */
+  spare_stops?: GeneratedStop[]
+  /** Tanda 6: «Hoy el sol se pone a las 17:05». */
+  sunset_text?: string | null
+  /** Tanda 6: la alternativa de lluvia — text, remove (nombres), add (paradas), slot. */
+  rain_plan?: { text: string; remove?: string[]; add?: GeneratedStop[]; slot?: string } | null
   /** Solo pipeline v2 (ver routeAlgorithm.js) — DayPlan.timesAreFinal en types.ts. */
   times_are_final?: boolean
   /** Solo días de excursión del pipeline v2 — ver DayPlan.excursionEssential. */
@@ -470,6 +482,9 @@ function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.closed_notice || generated.notice ? { closedNotice: generated.closed_notice ?? generated.notice } : {}),
     ...(generated.pass_through ? { passThrough: true } : {}),
     ...(generated.is_arrival ? { isArrival: true, arrivalText: generated.arrival_text ?? null } : {}),
+    ...(generated.orientative_time ? { orientativeTime: true } : {}),
+    ...(generated.reservation_time ? { reservationTime: generated.reservation_time } : {}),
+    ...(generated.spare_reason ? { spareReason: generated.spare_reason } : {}),
     ...(generated.is_break
       ? {
           isBreak: true,
@@ -690,6 +705,18 @@ function mapDay(
     didntMakeCut: generated.day_number === 1 ? didntMakeCut : undefined,
     poolNotices: poolNoticesByDay?.get(generated.day_number),
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
+    ...(generated.spare_stops?.length ? { spareStops: generated.spare_stops.map((stop) => mapStop(generated.day_number, stop)) } : {}),
+    ...(generated.sunset_text ? { sunsetText: generated.sunset_text } : {}),
+    ...(generated.rain_plan?.text
+      ? {
+          rainPlan: {
+            text: generated.rain_plan.text,
+            remove: generated.rain_plan.remove ?? [],
+            add: (generated.rain_plan.add ?? []).map((stop) => mapStop(generated.day_number, stop)),
+            slot: generated.rain_plan.slot === "manana" || generated.rain_plan.slot === "tarde" ? generated.rain_plan.slot : ("dia" as const),
+          },
+        }
+      : {}),
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     isExcursionDay: generated.type === 'excursion',
     dayType: asDayType(generated.type),

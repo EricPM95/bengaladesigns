@@ -262,6 +262,9 @@ export interface MockStopDetail {
   /** Ver Stop.isArrival en types.ts. */
   isArrival?: boolean
   arrivalText?: string | null
+  /** Ver Stop.orientativeTime / reservationTime en types.ts. */
+  orientativeTime?: boolean
+  reservationTime?: string | null
   /** Ver Stop.experience en types.ts. */
   experience?: ExperienceCategoryId | null
   /** Ver Stop.why en types.ts. */
@@ -517,6 +520,8 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     closedNotice: stop.closedNotice ?? null,
     passThrough: stop.passThrough ?? false,
     ...(stop.isArrival ? { isArrival: true, arrivalText: stop.arrivalText ?? null } : {}),
+    ...(stop.orientativeTime ? { orientativeTime: true } : {}),
+    ...(stop.reservationTime ? { reservationTime: stop.reservationTime } : {}),
     experience: stop.experience ?? null,
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
@@ -609,6 +614,8 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       closedNotice: detail.closedNotice ?? null,
       passThrough: detail.passThrough ?? false,
       ...(detail.isArrival ? { isArrival: true, arrivalText: detail.arrivalText ?? null } : {}),
+      ...(detail.orientativeTime ? { orientativeTime: true } : {}),
+      ...(detail.reservationTime ? { reservationTime: detail.reservationTime } : {}),
       experience: detail.experience ?? null,
       why: detail.why ?? null,
       ticketInfo: detail.ticketInfo ?? null,
@@ -633,15 +640,17 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
 export type TransportMode = 'walking' | 'transit' | 'driving'
 
 export const TRANSPORT_MODE_LABEL: Record<TransportMode, string> = {
-  driving: 'Conducción',
+  driving: 'Taxi',
   transit: 'Transporte público',
-  walking: 'Caminar',
+  walking: 'Andando',
 }
 
 export interface TransportModeOption {
   mode: TransportMode
   durationLabel: string
   distanceLabel: string
+  /** Tiempo estimado (sin datos reales de la línea): se enseña con «~» y «estimado». */
+  estimated?: boolean
 }
 
 /**
@@ -691,7 +700,8 @@ function buildRealDisplacement(seed: string): ConnectorInfo {
 
   const modeOptions: TransportModeOption[] = [
     { mode: 'driving', durationLabel: `${driveMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km` },
-    ...(transitSavesTime ? [{ mode: 'transit' as const, durationLabel: `${transitMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km` }] : []),
+    // Transporte público SIEMPRE se ofrece (Tanda 6), aunque no ahorre frente a andar; el tiempo es una estimación y se marca.
+    { mode: 'transit' as const, durationLabel: `~${transitMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km`, estimated: true },
     { mode: 'walking', durationLabel: `${walkMinutes} min`, distanceLabel: `${meters} m` },
   ]
 
@@ -745,7 +755,7 @@ export async function refineConnectorWithRealDistance(fromCoords: Coordinates | 
 
   const modeOptions: TransportModeOption[] = [
     { mode: 'driving', durationLabel: `${driving.minutes} min`, distanceLabel: formatMeters(driving.meters) },
-    ...(transitSavesTime ? [{ mode: 'transit' as const, durationLabel: `${transitMinutes} min`, distanceLabel: formatMeters(driving.meters) }] : []),
+    { mode: 'transit' as const, durationLabel: `~${transitMinutes} min`, distanceLabel: formatMeters(driving.meters), estimated: true },
     { mode: 'walking', durationLabel: `${walking.minutes} min`, distanceLabel: formatMeters(walking.meters) },
   ]
 

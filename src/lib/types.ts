@@ -339,6 +339,12 @@ export interface Stop {
   /** «Llegada a {sitio}» (Tanda 5): el margen antes de una reserva o un turno. Su propio tipo de parada: lleva su texto de llegada (`arrivalText`), ni «por fuera» ni «visita», y no lleva foto propia. */
   isArrival?: boolean
   arrivalText?: string | null
+  /** Tanda 6: la hora de la parada es solo orientativa (suma de duraciones y trayectos): se enseña pequeña, «hacia las 10:30», y nunca mueve nada. */
+  orientativeTime?: boolean
+  /** Tanda 6: hora fija de una reserva o un turno ("HH:MM"): sale en HOY con la cuenta atrás. */
+  reservationTime?: string | null
+  /** Tanda 6: solo en las de «Si te sobra tiempo» — por qué no cabía en su franja. */
+  spareReason?: string | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
   experience?: ExperienceCategoryId | null
   /** Por qué está en la ruta (motor v3, Paso 6): una línea fija según el motivo — "Uno de los
@@ -615,6 +621,14 @@ export interface RainPlanB {
   alternativeStopIds?: string[]
 }
 
+/** Tanda 6: «Si llueve»: su línea, lo que sale o se acorta (nombres), lo que entra y en qué franja. */
+export interface RainPlan {
+  text: string
+  remove: string[]
+  add: Stop[]
+  slot: "manana" | "tarde" | "dia"
+}
+
 // ── Day plan ──────────────────────────────────────────────
 
 export interface DayPlan {
@@ -641,6 +655,14 @@ export interface DayPlan {
   poolNotices?: { name: string; reason: string }[]
   recommendedRevisits?: RecommendedRevisit[]
   rainPlanB?: RainPlanB
+  /** Tanda 6: las paradas que no caben y pasan a «Si te sobra tiempo» (plegado, con «Añadir»). */
+  spareStops?: Stop[]
+  /** Tanda 6: «Hoy el sol se pone a las 17:05» — solo dato, en la cabecera del día. */
+  sunsetText?: string | null
+  /** Tanda 6: la alternativa de lluvia del día (HOY la enseña si hay previsión; nunca se aplica sola). */
+  rainPlan?: RainPlan | null
+  /** Tanda 6: las paradas de antes de «Usar esta alternativa» de lluvia, para volver al plan original. */
+  rainBackup?: { stops: Stop[] } | null
   isExcursionDay?: boolean
   /** Prompt 4 — ver DayType. Ausente = 'normal' (todos los días anteriores a esta función). */
   dayType?: DayType

@@ -29,6 +29,7 @@ import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { OnTheWayGroupCard, PeriodHeader, TrazoCard } from './TrazoCards'
+import { SpareStopsSection } from './SpareStopsSection'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
@@ -281,6 +282,7 @@ export function DayDetailPanel({
   )
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
+  const addSpareStop = useRouteStore((state) => state.addSpareStop)
   const convertDayType = useRouteStore((state) => state.convertDayType)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   const focusStopId = useAddFlowStore((state) => state.focusStopId)
@@ -1009,6 +1011,11 @@ export function DayDetailPanel({
   }
 
   /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
+  /** ¿La parada de este índice viene justo detrás de otra parada en la línea del día? */
+  const stopBefore = (index: number) => {
+    const at = placed.findIndex((entry) => entry.item.type === 'stop' && entry.item.index === index)
+    return at > 0 && placed[at - 1].item.type === 'stop'
+  }
   const renderTimelineItem = ({ item, start }: PlacedItem, firstInPeriod: boolean) => {
     if (item.type === 'end') {
       return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length, dinnerInsertionIndex !== null)
@@ -1080,7 +1087,7 @@ export function DayDetailPanel({
     // alojamiento de anoche. Al abrir franja tampoco (la cabecera ya separa). El paseo por barrio no
     // lleva conector: "6 min · 540 m" hasta un barrio entero no significa nada.
     // Día libre: siempre los minutos andando entre una parada y la siguiente (no hay franjas).
-    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? fromAccommodation : freeDay || !firstInPeriod
+    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? fromAccommodation : freeDay || !firstInPeriod || stopBefore(index)
     const walkDismissed = Boolean(realStop?.isZoneWalk) && dismissedWalks.has(stop.name)
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
@@ -1123,6 +1130,11 @@ export function DayDetailPanel({
     return Boolean(stop?.passThrough && !stop.outsideReason && !stop.isBreak)
   }
   /** Los elementos de un tramo del día: dos o más «de camino» seguidos van en una sola tarjeta («De camino a {siguiente parada}»), cada sitio en una línea con su frase. */
+  /** ¿Lo de justo antes, en la línea del día, es otra parada (no una comida)? Entonces el trayecto entre las dos tarjetas se enseña aunque cambie la franja (Tanda 6: el trayecto, siempre). */
+  const afterStop = (entry: PlacedItem) => {
+    const at = placed.indexOf(entry)
+    return at > 0 && placed[at - 1].item.type === 'stop'
+  }
   const renderGroupItems = (items: PlacedItem[]) => {
     const salida: ReactNode[] = []
     for (let i = 0; i < items.length; i++) {
@@ -1134,7 +1146,7 @@ export function DayDetailPanel({
         const ultimo = indices[indices.length - 1]
         const siguiente = stops[ultimo + 1]
         const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[primero]
-        const showConnector = primero === 0 ? fromAccommodation : freeDay || i > 0
+        const showConnector = primero === 0 ? fromAccommodation : freeDay || i > 0 || afterStop(items[i])
         salida.push(
           <SortableStop
             key={`camino-${stops[primero].id}`}
@@ -1151,7 +1163,7 @@ export function DayDetailPanel({
         i = fin
         continue
       }
-      salida.push(renderTimelineItem(items[i], i === 0))
+      salida.push(renderTimelineItem(items[i], i === 0 && !afterStop(items[i])))
     }
     return salida
   }
@@ -1165,6 +1177,8 @@ export function DayDetailPanel({
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
             decisión que haya que tomar. */}
         {showsRoute && day.dayNotice && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.dayNotice}</p>}
+        {/* Tanda 6: la puesta de sol, solo como dato. */}
+        {showsRoute && day.sunsetText && <p className="px-1 text-[12.5px] leading-[1.4] text-text/55">{day.sunsetText}</p>}
         {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
@@ -1189,7 +1203,7 @@ export function DayDetailPanel({
 
         <div className="space-y-2 pt-1">
           {/* Regla de oro del pool: lo marcado que no ha cabido se dice aquí, en su día, con su motivo. */}
-          {(day.poolNotices ?? []).map((notice) => (
+          {(day.poolNotices ?? []).filter((notice) => !(day.spareStops ?? []).some((spare) => spare.name === notice.name)).map((notice) => (
             <div key={notice.name} className="mt-2 flex items-start gap-2.5 rounded-2xl border border-accent-gold/40 bg-accent-gold/10 px-3.5 py-3">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-gold" aria-hidden="true">
                 <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
@@ -1387,6 +1401,9 @@ export function DayDetailPanel({
           </SortableContext>
           </DndContext>
           )}
+
+          {/* Tanda 6: lo que no cabía, plegado al final del día. */}
+          {muestraParadas && <SpareStopsSection stops={day.spareStops ?? []} onAdd={(stopId) => addSpareStop(day.id, stopId)} />}
 
           {/* Día libre sin paradas con su comida o su cena ya elegida: se ve igual. */}
           {dayType === 'manual' && day.meals.some((meal) => meal.chosenRestaurant) && (

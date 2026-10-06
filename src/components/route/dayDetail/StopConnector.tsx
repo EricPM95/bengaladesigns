@@ -27,7 +27,7 @@ interface StopConnectorProps {
 const MODE_LABEL: Record<TransportMode, string> = {
   walking: 'a pie',
   transit: 'transporte público',
-  driving: 'en coche',
+  driving: 'en taxi',
 }
 
 /** El botón de la derecha de cada hueco. Ver `StopConnector`: el hueco se pinta siempre, así que este botón está en TODOS los huecos del día, con o sin información de desplazamiento al lado. */
