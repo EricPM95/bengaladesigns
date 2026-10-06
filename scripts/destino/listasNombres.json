@@ -222,5 +222,15 @@
   "Fontana de Trevi sin gente": {
     "lugar": "Fontana de Trevi",
     "titulo": "Fontana de Trevi, sin gente"
+  },
+  "Via Garibaldi": {
+    "lugar": "Mirador del Janículo",
+    "titulo": "Via Garibaldi: se sube andando",
+    "modo": "camino"
+  },
+  "bajada a Trastevere": {
+    "lugar": "Iglesia de Santa Maria in Trastevere",
+    "titulo": "Bajada a Trastevere",
+    "modo": "camino"
   }
 }

@@ -23,6 +23,7 @@ const norm = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 const places = new Map(D.places.map((place) => [norm(place.name), place]))
 const restaurantes = new Map(D.restaurants.map((restaurant) => [norm(restaurant.name), restaurant]))
 const noches = new Map((D.night_experiences ?? []).map((night) => [norm(night.name), night]))
+const MES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 }
 const dudas = []
 const duda = (dia, texto, donde) => dudas.push({ dia, texto, donde })
 
@@ -97,22 +98,27 @@ function paradaDe(texto, dia, { camino = false } = {}) {
     const lugar = (D.curated_breaks ?? [])[0]?.name ?? 'Desayuno romano'
     return { tipo: 'desayuno', lugar, titulo: t.replace(/\s*\(.*$/, ''), min: minutosDe(/~\s*(\d+)/.exec(t)?.[1] ?? '') ?? 30, modo: null, doc: raw }
   }
-  const tilde = /~\s*((?:\d+\s*h(?:\s*\d+)?)|\d+)/.exec(t)
-  const min = tilde ? minutosDe(tilde[1]) : null
+  // «Via Garibaldi (se sube andando, ~20 min)»: los minutos dentro del paréntesis de un «de camino» son los suyos.
+  const enParentesis = camino ? /\(([^)]*)~\s*(\d+)[^)]*\)/.exec(t) : null
+  if (enParentesis) t = t.replace(enParentesis[0], '').trim()
+  const tilde = enParentesis ? null : /~\s*((?:\d+\s*h(?:\s*\d+)?)|\d+)/.exec(t)
+  const min = enParentesis ? Number(enParentesis[2]) : tilde ? minutosDe(tilde[1]) : null
   const cabeza = tilde ? t.slice(0, tilde.index).trim() : t
   const cola = tilde ? t.slice(tilde.index + tilde[0].length) : ''
   let modo = camino ? 'camino' : null
   let nombre = cabeza.replace(/\s*,\s*(\d{1,2}:\d{2})$/, '')
   const hora = /,\s*(\d{1,2}:\d{2})\s*$/.exec(cabeza)?.[1] ?? null
-  const m = /,\s*por (dentro|fuera)\s*$/.exec(nombre)
-  if (m) { modo = m[1] === 'dentro' ? 'dentro' : 'fuera'; nombre = nombre.slice(0, m.index).trim() }
+  // («Basílica de San Pedro, por dentro (gratis; …) ~1 h»: el modo va delante del paréntesis.)
+  const sinP = sinParentesis(nombre)
+  const m = /,\s*por (dentro|fuera)\s*$/.exec(sinP)
+  if (m) { modo = m[1] === 'dentro' ? 'dentro' : 'fuera'; nombre = sinP.slice(0, m.index).trim() }
   // «Castillo, por fuera» sin ~: ya cubierto; «..., ya iluminada» etc. se resuelven por la coma.
   const sitio = resolver(nombre, dia)
   if (!sitio) {
     duda(dia, `No sé a qué sitio de roma.json corresponde «${nombre}» (línea: «${raw}»).`, 'paradas')
     return { tipo: 'parada', lugar: null, titulo: nombre, min: min ?? 15, modo, sin_resolver: true, doc: raw }
   }
-  const notas = [...parentesis(cola), ...parentesis(cabeza).filter((p) => !nombres[`${sinParentesis(nombre)} (${p})`])]
+  const notas = [...parentesis(cola), ...parentesis(cabeza).filter((p) => !nombres[`${sinParentesis(nombre)} (${p})`] && nombres[nombre] === undefined)]
   const frases = cola.replace(/\([^)]*\)/g, '').split('.').map((s) => s.trim()).filter(Boolean)
   const place = places.get(norm(sitio.lugar))
   const stop = { tipo: sitio.lugar === 'Free Tour Centro Histórico' ? 'tour' : 'parada', lugar: sitio.lugar, ...(sitio.titulo ? { titulo: sitio.titulo } : {}), ...(sitio.foto ? { foto: sitio.foto } : {}), modo: modo ?? sitio.modo ?? null, doc: raw }
@@ -128,7 +134,14 @@ function paradaDe(texto, dia, { camino = false } = {}) {
     if (hora) stop.hora = hora
   }
   for (const nota of notas) {
+    // «el día empieza a las 7:30» (Trevi sin gente): cuándo empieza el día que empieza con esta parada.
+    const empieza = /el d[ií]a empieza a las (\d{1,2}:\d{2})/i.exec(nota)
+    if (empieza) { stop.empieza_dia = empieza[1].padStart(5, '0'); continue }
+    // «cierra a las 18:30 de octubre a marzo y a las 19:00 de abril a septiembre»: el cierre depende del mes.
+    const porMeses = [...nota.matchAll(/cierra a las (\d{1,2}:\d{2}) de (\w+) a (\w+)/gi)]
+    if (porMeses.length > 0) { stop.cierra_meses = porMeses.map((m) => ({ hora: m[1].padStart(5, '0'), desde: MES[norm(m[2])], hasta: MES[norm(m[3])] })); continue }
     const aviso = /^⚠️\s*(.*)$/.exec(nota)
+    if (aviso && /^en invierno\b/i.test(aviso[1])) { stop.aviso_invierno = aviso[1].charAt(0).toUpperCase() + aviso[1].slice(1); continue }
     if (aviso) {
       ;(stop.avisos ??= []).push(aviso[1])
       const abre = /abre a las (\d{1,2}:\d{2})/i.exec(aviso[1])
@@ -262,7 +275,9 @@ for (const seccion of secciones) {
       }
       continue
     }
-    destino.push(paradaDe(texto, id))
+    const nueva = paradaDe(texto, id)
+    destino.push(nueva)
+    if (nueva.empieza_dia && !parte.empieza) parte.empieza = nueva.empieza_dia
   }
   // sin_resolver: las dudas ya están; la parada no se queda en el día.
   for (const p of Object.values(dia.partes)) for (const key of ['manana', 'tarde']) p[key] = p[key].filter((stop) => !stop.sin_resolver)

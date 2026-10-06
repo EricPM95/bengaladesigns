@@ -28,7 +28,7 @@ const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
 const lluvia = (...entradas) => entradas
 
 // ── Piezas que se repiten en varios días ─────────────────────────────────────────────────────────────────────────────
-const museosMananaBorgo = [P(MUSEOS, 180, null, { hora_tipo: 'turno' }), P('Plaza de San Pedro', 20), P('Basílica de San Pedro', 75, 'dentro')]
+const museosMananaBorgo = [P(MUSEOS, 180, null, { hora_tipo: 'turno' }), P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro')]
 const museosTardeBorgo = camino('Via della Conciliazione', "Castillo de Sant'Angelo", "Puente Sant'Angelo")
 const luces = P('Luces de Navidad del Tridente', 30, 'fuera', { protegido: false })
 const aracoeliCamino = P('Santo Bambino de Aracoeli', 5, 'camino')
@@ -37,7 +37,6 @@ export default {
   dias: {
     // ── Roma en un día ────────────────────────────────────────────────────────────────────────────────────────────
     D0: {
-      empieza: '09:30',
       variantes: [
         {
           id: 'con_museos', doc: 'Con los Museos marcados: la mañana con Museos del D0-medio y la tarde desde Piazza Navona.',
@@ -45,23 +44,23 @@ export default {
           ops: {
             manana: { paradas: museosMananaBorgo },
             comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
-            tarde: { insertar: [{ al_principio: true, parada: [...museosTardeBorgo, P('Piazza Navona', 25), P('Panteón', 15, 'fuera')] }] },
+            tarde: { insertar: [{ al_principio: true, parada: [...museosTardeBorgo, P('Piazza Navona', 45), P('Panteón', 45, 'dentro')] }] },
           },
         },
         {
           id: 'coliseo_por_la_manana', doc: 'Con el Coliseo reservado por la mañana',
           cuando: { reserva: { lugar: 'Coliseo', hasta: '12:30' } },
           ops: {
-            manana: { paradas: [P('Coliseo', 75, 'dentro', { hora_tipo: 'reserva' }), P('Arco de Constantino', 10, 'fuera'), ...camino('Via dei Fori Imperiali'), P('Foro Romano y Palatino', 15, 'fuera'), P('Plaza del Campidoglio', 15), ...camino('Plaza Venecia'), P('Altar de la Patria', 15, 'fuera')] },
-            tarde: { paradas: [P('Panteón', 15, 'fuera'), P('Piazza Navona', 25), ...camino("Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 15, 'fuera'), ...camino('Via della Conciliazione'), P('Plaza de San Pedro', 20), ...camino('Basílica'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 20), P('Trinità dei Monti', 15, null), ...camino('bajar la escalinata', 'Via Condotti')] },
+            manana: { paradas: [P('Coliseo', 75, 'dentro', { hora_tipo: 'reserva' }), P('Arco de Constantino', 10, 'fuera'), ...camino('Via dei Fori Imperiali'), P('Foro Romano y Palatino', 30, 'fuera'), P('Plaza del Campidoglio', 30), ...camino('Plaza Venecia'), P('Altar de la Patria', 30, 'fuera')] },
+            tarde: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), ...camino("Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 30, 'fuera'), ...camino('Via della Conciliazione'), P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15, null), ...camino('bajar la escalinata', 'Via Condotti')] },
           },
         },
       ],
       experiencias: {
         mercadillos_navidenos: { clave: 'navona', doc: 'Mercadillos (8 dic – 6 ene): «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } }, tarde: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } } } },
       },
-      lluvia_doc: 'la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.',
-      lluvia_ops: lluvia({ ops: { manana: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { Panteón: { modo: 'dentro', min: 30 } } }, tarde: { ajustar: { 'Foro Romano y Palatino': { min: 10 }, Coliseo: { min: 10 } } } } }),
+      lluvia_doc: 'la Basílica y el Panteón ya van por dentro; el Foro desde la terraza, el Coliseo y Navona, más cortos.',
+      lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Piazza Navona': { min: 30 } } }, tarde: { ajustar: { 'Foro Romano y Palatino': { min: 15 }, Coliseo: { min: 20 } } } } }),
     },
 
     // ── Medio día del Vaticano (1,5 días) ─────────────────────────────────────────────────────────────────────────────
@@ -75,25 +74,25 @@ export default {
         {
           id: 'museos_tarde', doc: 'Con los Museos marcados o reservados:',
           cuando: [{ parte: 'tarde', pool: MUSEOS }, { parte: 'tarde', reserva: { lugar: MUSEOS } }],
-          ops: { tarde: { paradas: [P('Plaza de San Pedro', 20), P('Basílica de San Pedro', 75, 'dentro'), P(MUSEOS, 150, null, { hora_tipo: 'turno' })] }, noche: { lista: ["El Puente y el Castillo de Sant'Angelo (noche)"] } },
+          ops: { tarde: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro'), P(MUSEOS, 150, null, { hora_tipo: 'turno' })] }, noche: { lista: ["El Puente y el Castillo de Sant'Angelo (noche)"] } },
         },
         {
           id: 'miercoles_audiencia', doc: 'Miércoles por la mañana (audiencia del Papa),',
           cuando: { parte: 'manana', dia_semana: ['miércoles'] },
-          ops: { manana: { paradas: [P('Fontana de Trevi', 20, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Plaza de España', 20), ...camino('Via dei Coronari', "Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 15, 'fuera'), P('Plaza de San Pedro', 20, null, { no_antes: '12:00' }), ...camino('Basílica')] }, comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'), tarde: { paradas: [] } },
+          ops: { manana: { paradas: [P('Fontana de Trevi', 45, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Plaza de España', 45), ...camino('Via dei Coronari', "Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 30, 'fuera'), P('Plaza de San Pedro', 30, null, { no_antes: '12:00' }), ...camino('Basílica')] }, comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'), tarde: { paradas: [] } },
         },
       ],
       experiencias: {
         mercadillos_navidenos: { clave: 'presepi', doc: 'Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } }, tarde: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
       },
-      lluvia_doc: 'la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.',
-      lluvia_ops: lluvia({ ops: { manana: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { "Castillo de Sant'Angelo": { modo: 'camino', min: 5 } } }, tarde: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { "Castillo de Sant'Angelo": { modo: 'camino', min: 5 } } } } }),
+      lluvia_doc: 'por la mañana, la Basílica por dentro (gratis, ~45) en vez de la fachada; por la tarde ya va por dentro. El Castillo, de camino.',
+      lluvia_ops: lluvia({ ops: { manana: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { "Castillo de Sant'Angelo": { modo: 'camino', min: 5 } } }, tarde: { ajustar: { "Castillo de Sant'Angelo": { modo: 'camino', min: 5 } } } } }),
     },
 
     // ── Un día entero (1,5 días) ──────────────────────────────────────────────────────────────────────────────────────
     'D1-corto': {
-      lluvia_doc: 'el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino.',
-      lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Isla Tiberina': { modo: 'camino', min: 5 } } }, tarde: { ajustar: { Panteón: { modo: 'dentro', min: 30 }, 'Ponte Sisto': { modo: 'camino', min: 5 } }, cambiar: { 'Iglesia de Santa Maria in Trastevere::camino': P('Santa Maria in Trastevere', 25, 'dentro') } } } }),
+      lluvia_doc: 'el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.',
+      lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Isla Tiberina': { modo: 'camino', min: 5 } } }, tarde: { ajustar: { 'Ponte Sisto': { modo: 'camino', min: 5 } }, quitar: ['Mirador del Janículo', 'Via Garibaldi: se sube andando'] } } }),
     },
 
     // ── La Roma antigua ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -131,12 +130,12 @@ export default {
         {
           id: 'sin_museos', doc: 'si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas, y el miércoles la Plaza y la Basílica van después de la audiencia (desde las 12:30).',
           cuando: { cerrado: MUSEOS },
-          ops: { manana: { paradas: [P('Plaza de San Pedro', 20), P('Basílica de San Pedro', 90, 'dentro', { titulo: 'Basílica de San Pedro y las Grutas Vaticanas' })] } },
+          ops: { manana: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 90, 'dentro', { titulo: 'Basílica de San Pedro y las Grutas Vaticanas' })] } },
         },
         {
           id: 'miercoles_audiencia', doc: 'y el miércoles la Plaza y la Basílica van después de la audiencia (desde las 12:30).',
           cuando: { dia_semana: ['miércoles'] },
-          ops: { manana: { paradas: [P('Plaza de San Pedro', 20, null, { no_antes: '12:30' }), P('Basílica de San Pedro', 90, 'dentro', { titulo: 'Basílica de San Pedro y las Grutas Vaticanas' })] } },
+          ops: { manana: { paradas: [P('Plaza de San Pedro', 30, null, { no_antes: '12:30' }), P('Basílica de San Pedro', 90, 'dentro', { titulo: 'Basílica de San Pedro y las Grutas Vaticanas' })] } },
         },
       ],
       pool: {
@@ -154,7 +153,6 @@ export default {
 
     // ── El Free Tour y el Vaticano por la tarde ──────────────────────────────────────────────────────────────────────────
     D3: {
-      empieza: '08:00',
       variantes: [
         { id: 'domingo_sin_museos', doc: 'Domingo (Museos cerrados):** se cambia de día; si no se puede, la tarde sin Museos.', cuando: { cerrado: MUSEOS }, ops: { tarde: { quitar: [MUSEOS] } } },
       ],
@@ -183,9 +181,6 @@ export default {
 
     // ── El Tridente y el Pincio (medio día) ──────────────────────────────────────────────────────────────────────────────
     'DT-medio': {
-      variantes: [
-        { id: 'empieza_temprano', doc: 'Fontana de Trevi sin gente ~20', cuando: { parte: 'manana' }, ops: { empieza: '08:00' } },
-      ],
       pool: {
         'Galería Borghese': { doc: 'Pool:** la Galería Borghese, 🎟 por la mañana (turno de las 9:00) o por la tarde, va antes del Pincio. Santa Maria del Popolo, por la tarde.', ops: { manana: { insertar: [{ antes_de: 'Terraza del Pincio', parada: P('Galería Borghese', 120, 'dentro', { hora: '09:00', hora_tipo: 'turno', protegido: true }) }] }, tarde: { insertar: [{ antes_de: 'Terraza del Pincio', parada: P('Galería Borghese', 120, 'dentro', { hora_tipo: 'reserva', protegido: true }) }] } } },
       },
@@ -208,7 +203,6 @@ export default {
 
     // ── Villa Borghese, el Popolo y la Plaza de España ────────────────────────────────────────────────────────────────────────
     D4: {
-      empieza: '08:00',
       variantes: [
         { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45), después de la Fuente del Tritón;', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] }, empieza: '09:30' } },
         { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno; la Plaza de España y Via Condotti van de camino (el tour ya pasó).', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },

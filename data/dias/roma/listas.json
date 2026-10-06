@@ -15,16 +15,18 @@
        "tipo": "parada",
        "lugar": "Plaza de San Pedro",
        "modo": null,
-       "doc": "Plaza de San Pedro ~20",
-       "min": 20
+       "doc": "Plaza de San Pedro ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
        "lugar": "Basílica de San Pedro",
-       "titulo": "Basílica de San Pedro, la fachada",
-       "modo": "camino",
-       "doc": "Basílica de San Pedro (la fachada)",
-       "min": 5
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro (gratis; a primera hora la cola es corta) ~1 h",
+       "min": 60,
+       "notas": [
+        "gratis; a primera hora la cola es corta"
+       ]
       },
       {
        "tipo": "parada",
@@ -37,8 +39,8 @@
        "tipo": "parada",
        "lugar": "Castillo de Sant'Angelo",
        "modo": "fuera",
-       "doc": "Castillo de Sant'Angelo, por fuera ~15",
-       "min": 15
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -51,15 +53,18 @@
        "tipo": "parada",
        "lugar": "Piazza Navona",
        "modo": null,
-       "doc": "Piazza Navona ~25",
-       "min": 25
+       "doc": "Piazza Navona ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
        "lugar": "Panteón",
-       "modo": "fuera",
-       "doc": "Panteón, por fuera ~15",
-       "min": 15
+       "modo": "dentro",
+       "doc": "Panteón, por dentro (entrada de 5 €) ~45",
+       "min": 45,
+       "notas": [
+        "entrada de 5 €"
+       ]
       }
      ],
      "comida": {
@@ -81,23 +86,23 @@
        "tipo": "parada",
        "lugar": "Altar de la Patria",
        "modo": "fuera",
-       "doc": "Altar de la Patria, por fuera ~15",
-       "min": 15
+       "doc": "Altar de la Patria, por fuera ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
        "lugar": "Plaza del Campidoglio",
        "modo": null,
-       "doc": "Plaza del Campidoglio ~15",
-       "min": 15
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
        "lugar": "Foro Romano y Palatino",
        "titulo": "El Foro Romano, desde la terraza del Campidoglio",
        "modo": "fuera",
-       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
-       "min": 15
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -110,8 +115,8 @@
        "tipo": "parada",
        "lugar": "Coliseo",
        "modo": "fuera",
-       "doc": "Coliseo, por fuera ~15",
-       "min": 15
+       "doc": "Coliseo, por fuera ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -130,8 +135,8 @@
        "tipo": "parada",
        "lugar": "Plaza de España",
        "modo": null,
-       "doc": "Plaza de España ~20",
-       "min": 20
+       "doc": "Plaza de España ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -173,23 +178,14 @@
     }
    },
    "lluvia": {
-    "texto": "la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.",
-    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.",
+    "texto": "la Basílica y el Panteón ya van por dentro; el Foro desde la terraza, el Coliseo y Navona, más cortos.",
+    "doc": "**🌧 Si llueve:** la Basílica y el Panteón ya van por dentro; el Foro desde la terraza, el Coliseo y Navona, más cortos.",
     "ops": [
      {
       "ops": {
        "manana": {
-        "cambiar": {
-         "Basílica de San Pedro::camino": {
-          "tipo": "parada",
-          "lugar": "Basílica de San Pedro",
-          "min": 45,
-          "modo": "dentro"
-         }
-        },
         "ajustar": {
-         "Panteón": {
-          "modo": "dentro",
+         "Piazza Navona": {
           "min": 30
          }
         }
@@ -197,10 +193,10 @@
        "tarde": {
         "ajustar": {
          "Foro Romano y Palatino": {
-          "min": 10
+          "min": 15
          },
          "Coliseo": {
-          "min": 10
+          "min": 20
          }
         }
        }
@@ -229,7 +225,7 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null
         },
         {
@@ -271,14 +267,14 @@
           {
            "tipo": "parada",
            "lugar": "Piazza Navona",
-           "min": 25,
+           "min": 45,
            "modo": null
           },
           {
            "tipo": "parada",
            "lugar": "Panteón",
-           "min": 15,
-           "modo": "fuera"
+           "min": 45,
+           "modo": "dentro"
           }
          ]
         }
@@ -320,13 +316,13 @@
         {
          "tipo": "parada",
          "lugar": "Foro Romano y Palatino",
-         "min": 15,
+         "min": 30,
          "modo": "fuera"
         },
         {
          "tipo": "parada",
          "lugar": "Plaza del Campidoglio",
-         "min": 15,
+         "min": 30,
          "modo": null
         },
         {
@@ -338,7 +334,7 @@
         {
          "tipo": "parada",
          "lugar": "Altar de la Patria",
-         "min": 15,
+         "min": 30,
          "modo": "fuera"
         }
        ]
@@ -348,13 +344,13 @@
         {
          "tipo": "parada",
          "lugar": "Panteón",
-         "min": 15,
-         "modo": "fuera"
+         "min": 45,
+         "modo": "dentro"
         },
         {
          "tipo": "parada",
          "lugar": "Piazza Navona",
-         "min": 25,
+         "min": 45,
          "modo": null
         },
         {
@@ -366,7 +362,7 @@
         {
          "tipo": "parada",
          "lugar": "Castillo de Sant'Angelo",
-         "min": 15,
+         "min": 30,
          "modo": "fuera"
         },
         {
@@ -378,14 +374,14 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null
         },
         {
          "tipo": "parada",
          "lugar": "Basílica de San Pedro",
-         "min": 5,
-         "modo": "camino"
+         "min": 60,
+         "modo": "dentro"
         },
         {
          "tipo": "traslado",
@@ -395,7 +391,7 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de España",
-         "min": 20,
+         "min": 45,
          "modo": null
         },
         {
@@ -448,8 +444,7 @@
       }
      }
     }
-   },
-   "empieza": "09:30"
+   }
   },
   "D1-corto": {
    "id": "D1-corto",
@@ -462,8 +457,8 @@
        "tipo": "parada",
        "lugar": "Coliseo",
        "modo": "fuera",
-       "doc": "Coliseo, por fuera ~20",
-       "min": 20
+       "doc": "Coliseo, por fuera ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -483,16 +478,16 @@
        "tipo": "parada",
        "lugar": "Plaza del Campidoglio",
        "modo": null,
-       "doc": "Plaza del Campidoglio ~15",
-       "min": 15
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
        "lugar": "Foro Romano y Palatino",
        "titulo": "El Foro Romano, desde la terraza del Campidoglio",
        "modo": "fuera",
-       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
-       "min": 15
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -505,8 +500,8 @@
        "tipo": "parada",
        "lugar": "Altar de la Patria",
        "modo": "fuera",
-       "doc": "Altar de la Patria, por fuera ~10",
-       "min": 10
+       "doc": "Altar de la Patria, por fuera ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -584,16 +579,19 @@
       {
        "tipo": "parada",
        "lugar": "Panteón",
-       "modo": "fuera",
-       "doc": "Panteón, por fuera ~15",
-       "min": 15
+       "modo": "dentro",
+       "doc": "Panteón, por dentro (entrada de 5 €) ~45",
+       "min": 45,
+       "notas": [
+        "entrada de 5 €"
+       ]
       },
       {
        "tipo": "parada",
        "lugar": "Piazza Navona",
        "modo": null,
-       "doc": "Piazza Navona ~30",
-       "min": 30
+       "doc": "Piazza Navona ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -611,11 +609,33 @@
       },
       {
        "tipo": "parada",
-       "lugar": "Iglesia de Santa Maria in Trastevere",
-       "titulo": "Santa Maria in Trastevere, la plaza y la fachada",
+       "lugar": "Mirador del Janículo",
+       "titulo": "Via Garibaldi: se sube andando",
        "modo": "camino",
-       "doc": "Santa Maria in Trastevere (la plaza y la fachada)",
+       "doc": "Via Garibaldi (se sube andando, ~20 min)",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Mirador del Janículo",
+       "modo": null,
+       "doc": "Mirador del Janículo ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria in Trastevere",
+       "titulo": "Bajada a Trastevere",
+       "modo": "camino",
+       "doc": "bajada a Trastevere",
        "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de Santa Maria in Trastevere",
+       "modo": "dentro",
+       "doc": "Santa Maria in Trastevere, por dentro (gratis) ~20",
+       "min": 20
       }
      ],
      "cena": {
@@ -636,8 +656,8 @@
     }
    },
    "lluvia": {
-    "texto": "el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino.",
-    "doc": "**🌧 Si llueve:** el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino.",
+    "texto": "el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.",
+    "doc": "**🌧 Si llueve:** el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.",
     "ops": [
      {
       "ops": {
@@ -651,23 +671,15 @@
        },
        "tarde": {
         "ajustar": {
-         "Panteón": {
-          "modo": "dentro",
-          "min": 30
-         },
          "Ponte Sisto": {
           "modo": "camino",
           "min": 5
          }
         },
-        "cambiar": {
-         "Iglesia de Santa Maria in Trastevere::camino": {
-          "tipo": "parada",
-          "lugar": "Iglesia de Santa Maria in Trastevere",
-          "min": 25,
-          "modo": "dentro"
-         }
-        }
+        "quitar": [
+         "Mirador del Janículo",
+         "Via Garibaldi: se sube andando"
+        ]
        }
       }
      }
@@ -686,8 +698,8 @@
        "tipo": "parada",
        "lugar": "Plaza de San Pedro",
        "modo": null,
-       "doc": "Plaza de San Pedro ~20",
-       "min": 20
+       "doc": "Plaza de San Pedro ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -710,8 +722,8 @@
        "tipo": "parada",
        "lugar": "Castillo de Sant'Angelo",
        "modo": "fuera",
-       "doc": "Castillo de Sant'Angelo, por fuera ~15",
-       "min": 15
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -731,15 +743,15 @@
        "tipo": "parada",
        "lugar": "Fontana de Trevi",
        "modo": null,
-       "doc": "Fontana de Trevi ~20",
-       "min": 20
+       "doc": "Fontana de Trevi ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
        "lugar": "Plaza de España",
        "modo": null,
-       "doc": "Plaza de España ~20",
-       "min": 20
+       "doc": "Plaza de España ~45",
+       "min": 45
       }
      ],
      "comida": {
@@ -761,17 +773,21 @@
        "tipo": "parada",
        "lugar": "Plaza de San Pedro",
        "modo": null,
-       "doc": "Plaza de San Pedro ~20",
-       "min": 20
+       "doc": "Plaza de San Pedro ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
        "lugar": "Basílica de San Pedro",
-       "modo": "camino",
-       "doc": "Basílica (la fachada)",
-       "min": 5,
-       "notas": [
-        "la fachada"
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro (gratis; cierra a las 18:30 de octubre a marzo y a las 19:00 de abril a septiembre) ~1 h",
+       "min": 60,
+       "cierra_meses": [
+        {
+         "hora": "18:30",
+         "desde": 10,
+         "hasta": 3
+        }
        ]
       },
       {
@@ -785,8 +801,8 @@
        "tipo": "parada",
        "lugar": "Castillo de Sant'Angelo",
        "modo": "fuera",
-       "doc": "Castillo de Sant'Angelo, por fuera ~15",
-       "min": 15
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -816,8 +832,8 @@
     }
    },
    "lluvia": {
-    "texto": "la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.",
-    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.",
+    "texto": "por la mañana, la Basílica por dentro (gratis, ~45) en vez de la fachada; por la tarde ya va por dentro. El Castillo, de camino.",
+    "doc": "**🌧 Si llueve:** por la mañana, la Basílica por dentro (gratis, ~45) en vez de la fachada; por la tarde ya va por dentro. El Castillo, de camino.",
     "ops": [
      {
       "ops": {
@@ -838,14 +854,6 @@
         }
        },
        "tarde": {
-        "cambiar": {
-         "Basílica de San Pedro::camino": {
-          "tipo": "parada",
-          "lugar": "Basílica de San Pedro",
-          "min": 45,
-          "modo": "dentro"
-         }
-        },
         "ajustar": {
          "Castillo de Sant'Angelo": {
           "modo": "camino",
@@ -887,7 +895,7 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null
         },
         {
@@ -948,7 +956,7 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null
         },
         {
@@ -988,14 +996,14 @@
         {
          "tipo": "parada",
          "lugar": "Fontana de Trevi",
-         "min": 20,
+         "min": 45,
          "modo": null,
          "titulo": "Fontana de Trevi, sin gente"
         },
         {
          "tipo": "parada",
          "lugar": "Plaza de España",
-         "min": 20,
+         "min": 45,
          "modo": null
         },
         {
@@ -1013,13 +1021,13 @@
         {
          "tipo": "parada",
          "lugar": "Castillo de Sant'Angelo",
-         "min": 15,
+         "min": 30,
          "modo": "fuera"
         },
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null,
          "no_antes": "12:00"
         },
@@ -1109,8 +1117,8 @@
        "tipo": "parada",
        "lugar": "Plaza del Campidoglio",
        "modo": null,
-       "doc": "Plaza del Campidoglio ~15",
-       "min": 15
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -1123,8 +1131,8 @@
        "tipo": "parada",
        "lugar": "Altar de la Patria",
        "modo": "dentro",
-       "doc": "Altar de la Patria, por dentro ~30",
-       "min": 30
+       "doc": "Altar de la Patria, por dentro ~45",
+       "min": 45
       }
      ],
      "comida": {
@@ -1200,8 +1208,8 @@
        "tipo": "parada",
        "lugar": "Panteón",
        "modo": "dentro",
-       "doc": "Panteón, por dentro ~40",
-       "min": 40
+       "doc": "Panteón, por dentro ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -1690,8 +1698,8 @@
        "tipo": "parada",
        "lugar": "Plaza de San Pedro",
        "modo": null,
-       "doc": "Plaza de San Pedro ~20",
-       "min": 20
+       "doc": "Plaza de San Pedro ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -1720,8 +1728,8 @@
        "tipo": "parada",
        "lugar": "Castillo de Sant'Angelo",
        "modo": "fuera",
-       "doc": "Castillo de Sant'Angelo, por fuera ~20",
-       "min": 20
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
       },
       {
        "tipo": "parada",
@@ -1850,7 +1858,7 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null
         },
         {
@@ -1878,7 +1886,7 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 20,
+         "min": 30,
          "modo": null,
          "no_antes": "12:30"
         },
@@ -1996,8 +2004,9 @@
        "lugar": "Fontana de Trevi",
        "titulo": "Fontana de Trevi, sin gente",
        "modo": null,
-       "doc": "Fontana de Trevi sin gente ~20",
-       "min": 20
+       "doc": "Fontana de Trevi sin gente ~45 (el día empieza a las 7:30)",
+       "min": 45,
+       "empieza_dia": "07:30"
       },
       {
        "tipo": "desayuno",
@@ -2011,8 +2020,8 @@
        "tipo": "parada",
        "lugar": "Panteón",
        "modo": "dentro",
-       "doc": "Panteón, por dentro ~20 (abre a las 9:00)",
-       "min": 20,
+       "doc": "Panteón, por dentro ~30 (abre a las 9:00)",
+       "min": 30,
        "notas": [
         "abre a las 9:00"
        ]
@@ -2048,8 +2057,8 @@
        "tipo": "parada",
        "lugar": "Basílica de San Pedro",
        "modo": "dentro",
-       "doc": "Basílica de San Pedro, por dentro ~45 (se cruza la Plaza)",
-       "min": 45,
+       "doc": "Basílica de San Pedro, por dentro ~1 h (se cruza la Plaza)",
+       "min": 60,
        "notas": [
         "se cruza la Plaza"
        ]
@@ -2086,7 +2095,8 @@
        "El Puente y el Castillo de Sant'Angelo (noche)"
       ],
       "doc": "el Puente y el Castillo de Sant'Angelo iluminados"
-     }
+     },
+     "empieza": "07:30"
     }
    },
    "lluvia": {
@@ -2136,8 +2146,7 @@
       }
      }
     }
-   },
-   "empieza": "08:00"
+   }
   },
   "D1-FT": {
    "id": "D1-FT",
@@ -2482,8 +2491,9 @@
        "lugar": "Fontana de Trevi",
        "titulo": "Fontana de Trevi, sin gente",
        "modo": null,
-       "doc": "Fontana de Trevi sin gente ~20",
-       "min": 20
+       "doc": "Fontana de Trevi sin gente ~45 (el día empieza a las 7:30)",
+       "min": 45,
+       "empieza_dia": "07:30"
       },
       {
        "tipo": "desayuno",
@@ -2497,8 +2507,8 @@
        "tipo": "parada",
        "lugar": "Plaza de España",
        "modo": null,
-       "doc": "Plaza de España ~20",
-       "min": 20
+       "doc": "Plaza de España ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -2575,7 +2585,8 @@
      },
      "tarde": [],
      "cena": null,
-     "noche": null
+     "noche": null,
+     "empieza": "07:30"
     },
     "tarde": {
      "manana": [],
@@ -2585,8 +2596,8 @@
        "tipo": "parada",
        "lugar": "Plaza de España",
        "modo": null,
-       "doc": "Plaza de España ~20",
-       "min": 20
+       "doc": "Plaza de España ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -2723,18 +2734,6 @@
     ]
    },
    "quedarme": null,
-   "variantes": [
-    {
-     "id": "empieza_temprano",
-     "doc": "Fontana de Trevi sin gente ~20",
-     "cuando": {
-      "parte": "manana"
-     },
-     "ops": {
-      "empieza": "08:00"
-     }
-    }
-   ],
    "pool": {
     "Galería Borghese": {
      "doc": "Pool:** la Galería Borghese, 🎟 por la mañana (turno de las 9:00) o por la tarde, va antes del Pincio. Santa Maria del Popolo, por la tarde.",
@@ -2865,7 +2864,6 @@
       {
        "tipo": "parada",
        "lugar": "Iglesia de San Pietro in Vincoli",
-       "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
        "modo": "dentro",
        "doc": "San Pietro in Vincoli (el Moisés), por dentro ~20",
        "min": 20
@@ -2949,8 +2947,9 @@
        "lugar": "Fontana de Trevi",
        "titulo": "Fontana de Trevi, sin gente",
        "modo": null,
-       "doc": "Fontana de Trevi sin gente ~20",
-       "min": 20
+       "doc": "Fontana de Trevi sin gente ~45 (el día empieza a las 7:30)",
+       "min": 45,
+       "empieza_dia": "07:30"
       },
       {
        "tipo": "desayuno",
@@ -3078,8 +3077,8 @@
        "tipo": "parada",
        "lugar": "Plaza de España",
        "modo": null,
-       "doc": "Plaza de España ~20",
-       "min": 20
+       "doc": "Plaza de España ~45",
+       "min": 45
       },
       {
        "tipo": "parada",
@@ -3118,7 +3117,8 @@
       ],
       "doc": "Coliseo iluminado (taxi)",
       "taxi": true
-     }
+     },
+     "empieza": "07:30"
     }
    },
    "lluvia": {
@@ -3247,8 +3247,7 @@
       }
      }
     }
-   },
-   "empieza": "08:00"
+   }
   },
   "DA-medio": {
    "id": "DA-medio",
@@ -3412,7 +3411,6 @@
       {
        "tipo": "parada",
        "lugar": "Iglesia de San Pietro in Vincoli",
-       "titulo": "San Pietro in Vincoli (el Moisés de Miguel Ángel)",
        "modo": "dentro",
        "doc": "San Pietro in Vincoli (el Moisés), por dentro ~20",
        "min": 20
@@ -3457,9 +3455,7 @@
        "modo": "dentro",
        "doc": "Termas de Caracalla, por dentro ~1 h 15 (⚠️ en invierno cierra pronto)",
        "min": 75,
-       "avisos": [
-        "en invierno cierra pronto"
-       ]
+       "aviso_invierno": "En invierno cierra pronto"
       },
       {
        "tipo": "parada",
