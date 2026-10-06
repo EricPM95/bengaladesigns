@@ -174,9 +174,281 @@
    },
    "lluvia": {
     "texto": "la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.",
-    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos."
+    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "cambiar": {
+         "Basílica de San Pedro::camino": {
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "min": 45,
+          "modo": "dentro"
+         }
+        },
+        "ajustar": {
+         "Panteón": {
+          "modo": "dentro",
+          "min": 30
+         }
+        }
+       },
+       "tarde": {
+        "ajustar": {
+         "Foro Romano y Palatino": {
+          "min": 10
+         },
+         "Coliseo": {
+          "min": 10
+         }
+        }
+       }
+      }
+     }
+    ]
    },
-   "quedarme": null
+   "quedarme": null,
+   "variantes": [
+    {
+     "id": "con_museos",
+     "doc": "Con los Museos marcados: la mañana con Museos del D0-medio y la tarde desde Piazza Navona.",
+     "cuando": {
+      "pool": "Museos Vaticanos y Capilla Sixtina"
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null,
+         "hora_tipo": "turno"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "parada",
+           "lugar": "Via della Conciliazione",
+           "min": 5,
+           "modo": "camino"
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Castillo de Sant'Angelo",
+           "min": 5,
+           "modo": "camino"
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Puente Sant'Angelo",
+           "min": 5,
+           "modo": "camino"
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Piazza Navona",
+           "min": 25,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Panteón",
+           "min": 15,
+           "modo": "fuera"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "coliseo_por_la_manana",
+     "doc": "Con el Coliseo reservado por la mañana",
+     "cuando": {
+      "reserva": {
+       "lugar": "Coliseo",
+       "hasta": "12:30"
+      }
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Coliseo",
+         "min": 75,
+         "modo": "dentro",
+         "hora_tipo": "reserva"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Arco de Constantino",
+         "min": 10,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "min": 15,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza del Campidoglio",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza Venecia",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "min": 15,
+         "modo": "fuera"
+        }
+       ]
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 15,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 25,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 15,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a la Plaza de España"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trinità dei Monti",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "titulo": "Bajar la escalinata de la Plaza de España",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Condotti",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "experiencias": {
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos (8 dic – 6 ene): «Piazza Navona y su mercadillo navideño».",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "manana": {
+       "ajustar": {
+        "Piazza Navona": {
+         "titulo": "Piazza Navona y su mercadillo navideño",
+         "texto": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa."
+        }
+       }
+      },
+      "tarde": {
+       "ajustar": {
+        "Piazza Navona": {
+         "titulo": "Piazza Navona y su mercadillo navideño",
+         "texto": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa."
+        }
+       }
+      }
+     }
+    }
+   },
+   "empieza": "09:30"
   },
   "D1-corto": {
    "id": "D1-corto",
@@ -364,7 +636,41 @@
    },
    "lluvia": {
     "texto": "el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino.",
-    "doc": "**🌧 Si llueve:** el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino."
+    "doc": "**🌧 Si llueve:** el Panteón por dentro (~30) y Santa Maria in Trastevere por dentro; la Isla Tiberina y el Ponte Sisto, de camino.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "ajustar": {
+         "Isla Tiberina": {
+          "modo": "camino",
+          "min": 5
+         }
+        }
+       },
+       "tarde": {
+        "ajustar": {
+         "Panteón": {
+          "modo": "dentro",
+          "min": 30
+         },
+         "Ponte Sisto": {
+          "modo": "camino",
+          "min": 5
+         }
+        },
+        "cambiar": {
+         "Iglesia de Santa Maria in Trastevere::camino": {
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "min": 25,
+          "modo": "dentro"
+         }
+        }
+       }
+      }
+     }
+    ]
    },
    "quedarme": null
   },
@@ -510,9 +816,257 @@
    },
    "lluvia": {
     "texto": "la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.",
-    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino."
+    "doc": "**🌧 Si llueve:** la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "cambiar": {
+         "Basílica de San Pedro::camino": {
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "min": 45,
+          "modo": "dentro"
+         }
+        },
+        "ajustar": {
+         "Castillo de Sant'Angelo": {
+          "modo": "camino",
+          "min": 5
+         }
+        }
+       },
+       "tarde": {
+        "cambiar": {
+         "Basílica de San Pedro::camino": {
+          "tipo": "parada",
+          "lugar": "Basílica de San Pedro",
+          "min": 45,
+          "modo": "dentro"
+         }
+        },
+        "ajustar": {
+         "Castillo de Sant'Angelo": {
+          "modo": "camino",
+          "min": 5
+         }
+        }
+       }
+      }
+     }
+    ]
    },
-   "quedarme": null
+   "quedarme": null,
+   "variantes": [
+    {
+     "id": "museos_manana",
+     "doc": "Con los Museos marcados o reservados:",
+     "cuando": [
+      {
+       "parte": "manana",
+       "pool": "Museos Vaticanos y Capilla Sixtina"
+      },
+      {
+       "parte": "manana",
+       "reserva": {
+        "lugar": "Museos Vaticanos y Capilla Sixtina"
+       }
+      }
+     ],
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null,
+         "hora_tipo": "turno"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "museos_tarde",
+     "doc": "Con los Museos marcados o reservados:",
+     "cuando": [
+      {
+       "parte": "tarde",
+       "pool": "Museos Vaticanos y Capilla Sixtina"
+      },
+      {
+       "parte": "tarde",
+       "reserva": {
+        "lugar": "Museos Vaticanos y Capilla Sixtina"
+       }
+      }
+     ],
+     "ops": {
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 150,
+         "modo": null,
+         "hora_tipo": "turno"
+        }
+       ]
+      },
+      "noche": {
+       "lista": [
+        "El Puente y el Castillo de Sant'Angelo (noche)"
+       ]
+      }
+     }
+    },
+    {
+     "id": "miercoles_audiencia",
+     "doc": "Miércoles por la mañana (audiencia del Papa),",
+     "cuando": {
+      "parte": "manana",
+      "dia_semana": [
+       "miércoles"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 20,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 15,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null,
+         "no_antes": "12:00"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": []
+      }
+     }
+    }
+   ],
+   "experiencias": {
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño».",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "manana": {
+       "ajustar": {
+        "Plaza de San Pedro": {
+         "titulo": "Plaza de San Pedro y los 100 Presepi",
+         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
+        }
+       }
+      },
+      "tarde": {
+       "ajustar": {
+        "Plaza de San Pedro": {
+         "titulo": "Plaza de San Pedro y los 100 Presepi",
+         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
+        }
+       }
+      }
+     }
+    }
+   }
   },
   "D1": {
    "id": "D1",
@@ -673,7 +1227,52 @@
    },
    "lluvia": {
     "texto": "el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.",
-    "doc": "**🌧 Si llueve:** el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos."
+    "doc": "**🌧 Si llueve:** el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "ajustar": {
+         "Foro Romano y Palatino": {
+          "min": 60
+         }
+        }
+       },
+       "tarde": {
+        "ajustar": {
+         "Barrio Judío": {
+          "min": 20
+         },
+         "Piazza Navona": {
+          "min": 25
+         }
+        }
+       }
+      }
+     },
+     {
+      "cuando": {
+       "viaje_sin": [
+        "D6"
+       ]
+      },
+      "ops": {
+       "manana": {
+        "insertar": [
+         {
+          "despues_de": "Plaza del Campidoglio",
+          "parada": {
+           "tipo": "parada",
+           "lugar": "Museos Capitolinos",
+           "min": 60,
+           "modo": "dentro"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
    },
    "quedarme": null,
    "fechas_malas": {
@@ -681,6 +1280,378 @@
      "06-02",
      "12-25"
     ]
+   },
+   "variantes": [
+    {
+     "id": "sabado_panteon",
+     "doc": "el sábado el Panteón cierra a las 17:00 por la misa: aviso «entra antes».",
+     "cuando": {
+      "dia_semana": [
+       "sábado"
+      ]
+     },
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Panteón": {
+         "cierra": "17:00"
+        }
+       }
+      }
+     }
+    },
+    {
+     "id": "free_tour_tarde",
+     "doc": "Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.",
+     "cuando": {
+      "free_tour_despues": "tarde"
+     },
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "min": 150,
+          "modo": null,
+          "hora": "$free_tour",
+          "hora_tipo": "turno"
+         }
+        }
+       ]
+      },
+      "quitar_cubierto_por_tour": true
+     }
+    },
+    {
+     "id": "free_tour_noche",
+     "doc": "Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.",
+     "cuando": {
+      "free_tour_despues": "noche"
+     },
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "tour",
+          "lugar": "Free Tour Centro Histórico",
+          "min": 150,
+          "modo": null,
+          "hora": "$free_tour",
+          "hora_tipo": "turno"
+         }
+        }
+       ]
+      },
+      "quitar_cubierto_por_tour": true
+     }
+    }
+   ],
+   "pool": {
+    "Museos Capitolinos": {
+     "doc": "Museos Capitolinos:** por la mañana, después del Campidoglio ~60.",
+     "cuando": {
+      "viaje_sin": [
+       "D6"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Plaza del Campidoglio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "min": 60,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "Basílica de San Juan de Letrán": {
+     "doc": "San Juan de Letrán:** a primera hora, antes del Coliseo (metro B de San Giovanni a Colosseo).",
+     "cuando": {
+      "viaje_sin": [
+       "D5"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "parada",
+           "lugar": "Basílica de San Juan de Letrán",
+           "titulo": "San Juan de Letrán y la Escalera Santa",
+           "min": 40,
+           "modo": "dentro",
+           "protegido": true
+          },
+          {
+           "tipo": "traslado",
+           "como": "metro B",
+           "texto": "Metro B de San Giovanni a Colosseo"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    "Boca de la Verdad": {
+     "doc": "Boca de la Verdad, Jardín de los Naranjos y Ojo de la Cerradura:** por la tarde, después del Barrio Judío (taxi de vuelta a Largo Argentina).",
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "despues_de": "Barrio Judío",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Boca de la Verdad",
+          "min": 20,
+          "modo": null,
+          "protegido": true
+         }
+        },
+        {
+         "antes_de": "Largo di Torre Argentina",
+         "parada": {
+          "tipo": "traslado",
+          "como": "taxi",
+          "texto": "Taxi de vuelta a Largo Argentina"
+         }
+        }
+       ]
+      }
+     }
+    },
+    "Jardín de los Naranjos": {
+     "doc": "Boca de la Verdad, Jardín de los Naranjos y Ojo de la Cerradura:** por la tarde, después del Barrio Judío (taxi de vuelta a Largo Argentina).",
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "despues_de": [
+          "Boca de la Verdad",
+          "Barrio Judío"
+         ],
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Jardín de los Naranjos",
+          "min": 30,
+          "modo": null,
+          "protegido": true
+         }
+        },
+        {
+         "antes_de": "Largo di Torre Argentina",
+         "parada": {
+          "tipo": "traslado",
+          "como": "taxi",
+          "texto": "Taxi de vuelta a Largo Argentina"
+         }
+        }
+       ]
+      }
+     }
+    },
+    "Ojo de la Cerradura del Aventino": {
+     "doc": "Boca de la Verdad, Jardín de los Naranjos y Ojo de la Cerradura:** por la tarde, después del Barrio Judío (taxi de vuelta a Largo Argentina).",
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "despues_de": [
+          "Jardín de los Naranjos",
+          "Boca de la Verdad",
+          "Barrio Judío"
+         ],
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Ojo de la Cerradura del Aventino",
+          "min": 15,
+          "modo": null,
+          "protegido": true
+         }
+        },
+        {
+         "antes_de": "Largo di Torre Argentina",
+         "parada": {
+          "tipo": "traslado",
+          "como": "taxi",
+          "texto": "Taxi de vuelta a Largo Argentina"
+         }
+        }
+       ]
+      }
+     }
+    },
+    "Galería Borghese": {
+     "doc": "Galería Borghese:** 🎟 por la tarde, después del Panteón (taxi). Lo que no quepa, a «Si te sobra tiempo». Cena en el Tridente.",
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "despues_de": "Panteón",
+         "parada": [
+          {
+           "tipo": "traslado",
+           "como": "taxi",
+           "texto": "Taxi a la Galería Borghese"
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Galería Borghese",
+           "min": 120,
+           "modo": "dentro",
+           "hora_tipo": "reserva",
+           "protegido": true
+          }
+         ]
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "Il Gabriello",
+       "alternativa": "Poldo e Gianna Osteria",
+       "zona": "en el Tridente"
+      }
+     }
+    },
+    "Parque de Villa Borghese": {
+     "doc": "Parque de Villa Borghese:** al final de la tarde (taxi), con el Pincio. Cena en el Tridente.",
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": [
+          {
+           "tipo": "traslado",
+           "como": "taxi",
+           "texto": "Taxi a Villa Borghese"
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Parque de Villa Borghese",
+           "min": 40,
+           "modo": null,
+           "protegido": true
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Terraza del Pincio",
+           "min": 20,
+           "modo": null,
+           "protegido": true
+          }
+         ]
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "Il Gabriello",
+       "alternativa": "Poldo e Gianna Osteria",
+       "zona": "en el Tridente"
+      }
+     }
+    }
+   },
+   "experiencias": {
+    "arte_museos": {
+     "doc": "Arte y Museos:** los Capitolinos.",
+     "lugar": "Museos Capitolinos",
+     "cuando": {
+      "viaje_sin": [
+       "D6"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Plaza del Campidoglio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "min": 60,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "barrios_sabores": {
+     "doc": "Barrios y Sabores:** el Barrio Judío ~45.",
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Barrio Judío": {
+         "min": 45
+        }
+       }
+      }
+     }
+    },
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** el ascensor panorámico del Altar.",
+     "ops": {
+      "manana": {
+       "cambiar": {
+        "Altar de la Patria": {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "titulo": "Terraza del Altar de la Patria",
+         "foto": "Terraza del Altar de la Patria",
+         "min": 45,
+         "modo": "dentro",
+         "protegido": true
+        }
+       }
+      }
+     }
+    },
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Plaza del Campidoglio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Santo Bambino de Aracoeli",
+          "min": 5,
+          "modo": "camino"
+         }
+        }
+       ]
+      },
+      "tarde": {
+       "ajustar": {
+        "Piazza Navona": {
+         "titulo": "Piazza Navona y su mercadillo navideño",
+         "texto": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa."
+        }
+       }
+      }
+     }
+    }
    }
   },
   "D2": {
@@ -809,7 +1780,38 @@
    },
    "lluvia": {
     "texto": "el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
-    "doc": "**🌧 Si llueve:** el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda."
+    "doc": "**🌧 Si llueve:** el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
+    "ops": [
+     {
+      "ops": {
+       "tarde": {
+        "quitar": [
+         "Mirador del Janículo",
+         "San Pietro in Montorio y Tempietto de Bramante",
+         "Fontana dell'Acqua Paola",
+         "Isla Tiberina"
+        ]
+       }
+      }
+     },
+     {
+      "cuando": {
+       "viaje_sin": [
+        "D6"
+       ]
+      },
+      "ops": {
+       "tarde": {
+        "ajustar": {
+         "Castillo de Sant'Angelo": {
+          "modo": "dentro",
+          "min": 90
+         }
+        }
+       }
+      }
+     }
+    ]
    },
    "quedarme": null,
    "fechas_malas": {
@@ -820,6 +1822,151 @@
     "cerrado": [
      "Museos Vaticanos y Capilla Sixtina"
     ]
+   },
+   "variantes": [
+    {
+     "id": "sin_museos",
+     "doc": "si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas, y el miércoles la Plaza y la Basílica van después de la audiencia (desde las 12:30).",
+     "cuando": {
+      "cerrado": "Museos Vaticanos y Capilla Sixtina"
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 90,
+         "modo": "dentro",
+         "titulo": "Basílica de San Pedro y las Grutas Vaticanas"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "miercoles_audiencia",
+     "doc": "y el miércoles la Plaza y la Basílica van después de la audiencia (desde las 12:30).",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null,
+         "no_antes": "12:30"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 90,
+         "modo": "dentro",
+         "titulo": "Basílica de San Pedro y las Grutas Vaticanas"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "pool": {
+    "Cúpula de San Pedro": {
+     "doc": "Cúpula:** después de la Basílica ~45.",
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Basílica de San Pedro",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "min": 45,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "Castillo de Sant'Angelo": {
+     "doc": "Castillo por dentro:** ~60, en lugar de por fuera.",
+     "ops": {
+      "tarde": {
+       "cambiar": {
+        "Castillo de Sant'Angelo": {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 60,
+         "modo": "dentro",
+         "protegido": true
+        }
+       }
+      }
+     }
+    }
+   },
+   "experiencias": {
+    "arte_museos": {
+     "doc": "Arte y Museos:** los Museos con la Pinacoteca ~4 h.",
+     "ops": {
+      "manana": {
+       "ajustar": {
+        "Museos Vaticanos y Capilla Sixtina": {
+         "min": 240,
+         "titulo": "Museos Vaticanos y Capilla Sixtina, con la Pinacoteca"
+        }
+       }
+      }
+     }
+    },
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** la Cúpula.",
+     "lugar": "Cúpula de San Pedro",
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Basílica de San Pedro",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "min": 45,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** «Plaza de San Pedro y los 100 Presepi».",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "manana": {
+       "ajustar": {
+        "Plaza de San Pedro": {
+         "titulo": "Plaza de San Pedro y los 100 Presepi",
+         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
+        }
+       }
+      }
+     }
+    }
    }
   },
   "D3": {
@@ -939,7 +2086,42 @@
     "cerrado": [
      "Museos Vaticanos y Capilla Sixtina"
     ]
-   }
+   },
+   "variantes": [
+    {
+     "id": "domingo_sin_museos",
+     "doc": "Domingo (Museos cerrados):** se cambia de día; si no se puede, la tarde sin Museos.",
+     "cuando": {
+      "cerrado": "Museos Vaticanos y Capilla Sixtina"
+     },
+     "ops": {
+      "tarde": {
+       "quitar": [
+        "Museos Vaticanos y Capilla Sixtina"
+       ]
+      }
+     }
+    }
+   ],
+   "experiencias": {
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** «Plaza de San Pedro y los 100 Presepi».",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Plaza de San Pedro": {
+         "titulo": "Plaza de San Pedro y los 100 Presepi",
+         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
+        }
+       }
+      }
+     }
+    }
+   },
+   "empieza": "08:00"
   },
   "D1-FT": {
    "id": "D1-FT",
@@ -1033,7 +2215,47 @@
    },
    "lluvia": {
     "texto": "el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.",
-    "doc": "**🌧 Si llueve:** el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina."
+    "doc": "**🌧 Si llueve:** el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "ajustar": {
+         "Foro Romano y Palatino": {
+          "min": 60
+         }
+        }
+       },
+       "tarde": {
+        "quitar": [
+         "Mirador del Janículo",
+         "San Pietro in Montorio y Tempietto de Bramante",
+         "Fontana dell'Acqua Paola",
+         "Isla Tiberina"
+        ],
+        "cambiar": {
+         "Iglesia de Santa Maria in Trastevere": {
+          "tipo": "parada",
+          "lugar": "Iglesia de Santa Maria in Trastevere",
+          "min": 20,
+          "modo": "dentro"
+         }
+        },
+        "insertar": [
+         {
+          "despues_de": "Iglesia de Santa Maria in Trastevere",
+          "parada": {
+           "tipo": "parada",
+           "lugar": "Basílica de Santa Cecilia in Trastevere",
+           "min": 40,
+           "modo": "dentro"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
    },
    "quedarme": null,
    "hereda_manana_de": "D1",
@@ -1042,6 +2264,193 @@
      "06-02",
      "12-25"
     ]
+   },
+   "pool": {
+    "Museos Capitolinos": {
+     "doc": "Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.",
+     "cuando": {
+      "viaje_sin": [
+       "D6"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Plaza del Campidoglio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "min": 60,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "Basílica de San Juan de Letrán": {
+     "doc": "Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.",
+     "cuando": {
+      "viaje_sin": [
+       "D5"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "parada",
+           "lugar": "Basílica de San Juan de Letrán",
+           "titulo": "San Juan de Letrán y la Escalera Santa",
+           "min": 40,
+           "modo": "dentro",
+           "protegido": true
+          },
+          {
+           "tipo": "traslado",
+           "como": "metro B",
+           "texto": "Metro B de San Giovanni a Colosseo"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    "Ojo de la Cerradura del Aventino": {
+     "doc": "Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.",
+     "ops": {
+      "tarde": {
+       "cambiar": {
+        "Isla Tiberina": {
+         "tipo": "parada",
+         "lugar": "Ojo de la Cerradura del Aventino",
+         "min": 15,
+         "modo": null,
+         "protegido": true
+        }
+       }
+      }
+     }
+    },
+    "Galería Borghese": {
+     "doc": "Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.",
+     "ops": {
+      "tarde": {
+       "quitar": [
+        "Iglesia de Santa Maria in Trastevere"
+       ],
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": [
+          {
+           "tipo": "traslado",
+           "como": "taxi",
+           "texto": "Taxi a la Galería Borghese"
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Galería Borghese",
+           "min": 120,
+           "modo": "dentro",
+           "hora_tipo": "reserva",
+           "protegido": true
+          }
+         ]
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "Il Gabriello",
+       "alternativa": "Poldo e Gianna Osteria",
+       "zona": "en el Tridente"
+      }
+     }
+    }
+   },
+   "experiencias": {
+    "arte_museos": {
+     "doc": "Arte y Museos:** los Capitolinos.",
+     "lugar": "Museos Capitolinos",
+     "cuando": {
+      "viaje_sin": [
+       "D6"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Plaza del Campidoglio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Museos Capitolinos",
+          "min": 60,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** el ascensor del Altar.",
+     "ops": {
+      "manana": {
+       "cambiar": {
+        "Altar de la Patria": {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "titulo": "Terraza del Altar de la Patria",
+         "foto": "Terraza del Altar de la Patria",
+         "min": 45,
+         "modo": "dentro",
+         "protegido": true
+        }
+       }
+      }
+     }
+    },
+    "barrios_sabores": {
+     "doc": "Barrios y Sabores:** el Barrio Judío ~45.",
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Barrio Judío": {
+         "min": 45
+        }
+       }
+      }
+     }
+    },
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** el Santo Bambino de Aracoeli de camino.",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Plaza del Campidoglio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Santo Bambino de Aracoeli",
+          "min": 5,
+          "modo": "camino"
+         }
+        }
+       ]
+      }
+     }
+    }
    }
   },
   "DT-medio": {
@@ -1238,9 +2647,173 @@
    },
    "lluvia": {
     "texto": "el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España.",
-    "doc": "**🌧 Si llueve:** el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España."
+    "doc": "**🌧 Si llueve:** el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "quitar": [
+         "Terraza del Pincio",
+         "Jardines del Pincio"
+        ],
+        "ajustar": {
+         "Santa Maria del Popolo": {
+          "modo": "dentro"
+         },
+         "Trinità dei Monti": {
+          "modo": "dentro"
+         }
+        },
+        "insertar": [
+         {
+          "despues_de": "Santa Maria del Popolo",
+          "parada": {
+           "tipo": "parada",
+           "lugar": "Ara Pacis",
+           "min": 45,
+           "modo": "dentro"
+          }
+         }
+        ]
+       },
+       "tarde": {
+        "quitar": [
+         "Terraza del Pincio",
+         "Jardines del Pincio"
+        ],
+        "ajustar": {
+         "Santa Maria del Popolo": {
+          "modo": "dentro"
+         },
+         "Trinità dei Monti": {
+          "modo": "dentro"
+         }
+        },
+        "insertar": [
+         {
+          "despues_de": "Santa Maria del Popolo",
+          "parada": {
+           "tipo": "parada",
+           "lugar": "Ara Pacis",
+           "min": 45,
+           "modo": "dentro"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
    },
-   "quedarme": null
+   "quedarme": null,
+   "variantes": [
+    {
+     "id": "empieza_temprano",
+     "doc": "Fontana de Trevi sin gente ~20",
+     "cuando": {
+      "parte": "manana"
+     },
+     "ops": {
+      "empieza": "08:00"
+     }
+    }
+   ],
+   "pool": {
+    "Galería Borghese": {
+     "doc": "Pool:** la Galería Borghese, 🎟 por la mañana (turno de las 9:00) o por la tarde, va antes del Pincio. Santa Maria del Popolo, por la tarde.",
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "antes_de": "Terraza del Pincio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Galería Borghese",
+          "min": 120,
+          "modo": "dentro",
+          "hora": "09:00",
+          "hora_tipo": "turno",
+          "protegido": true
+         }
+        }
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "antes_de": "Terraza del Pincio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Galería Borghese",
+          "min": 120,
+          "modo": "dentro",
+          "hora_tipo": "reserva",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   "experiencias": {
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** el Parque de Villa Borghese antes del Pincio.",
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "antes_de": "Terraza del Pincio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Parque de Villa Borghese",
+          "min": 40,
+          "modo": null,
+          "protegido": true
+         }
+        }
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "antes_de": "Terraza del Pincio",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Parque de Villa Borghese",
+          "min": 40,
+          "modo": null,
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    },
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).",
+     "cuando": {
+      "fechas": "12-08..01-06",
+      "parte": "tarde"
+     },
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Luces de Navidad del Tridente",
+          "min": 30,
+          "modo": "fuera",
+          "protegido": false
+         }
+        }
+       ]
+      }
+     }
+    }
+   }
   },
   "DM-medio": {
    "id": "DM-medio",
@@ -1302,9 +2875,49 @@
    },
    "lluvia": {
     "texto": "igual (casi todo es por dentro), con más rato en Santa Maria Maggiore.",
-    "doc": "**🌧 Si llueve:** igual (casi todo es por dentro), con más rato en Santa Maria Maggiore."
+    "doc": "**🌧 Si llueve:** igual (casi todo es por dentro), con más rato en Santa Maria Maggiore.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "ajustar": {
+         "Basílica de Santa María la Mayor": {
+          "min": 60
+         }
+        }
+       }
+      }
+     }
+    ]
    },
-   "quedarme": null
+   "quedarme": null,
+   "pool": {
+    "Basílica de San Juan de Letrán": {
+     "doc": "Pool:** San Juan de Letrán y la Escalera Santa, al final; comida en San Giovanni (SantoPalato o Il Bocconcino).",
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Basílica de San Juan de Letrán",
+          "titulo": "San Juan de Letrán y la Escalera Santa",
+          "min": 40,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "SantoPalato",
+       "alternativa": "Il Bocconcino",
+       "zona": "en San Giovanni"
+      }
+     }
+    }
+   }
   },
   "D4": {
    "id": "D4",
@@ -1492,14 +3105,131 @@
    },
    "lluvia": {
     "texto": "el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.",
-    "doc": "**🌧 Si llueve:** el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis."
+    "doc": "**🌧 Si llueve:** el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "quitar": [
+         "Lago de Villa Borghese y el Templo de Esculapio",
+         "Reloj de agua del Pincio"
+        ],
+        "ajustar": {
+         "Terraza del Pincio": {
+          "modo": "camino",
+          "min": 5
+         }
+        }
+       },
+       "tarde": {
+        "ajustar": {
+         "Santa Maria del Popolo": {
+          "min": 30
+         },
+         "Ara Pacis": {
+          "min": 60
+         }
+        }
+       }
+      }
+     }
+    ]
    },
    "quedarme": null,
    "fechas_malas": {
     "cerrado": [
      "Galería Borghese"
     ]
-   }
+   },
+   "variantes": [
+    {
+     "id": "lunes_sin_galeria",
+     "doc": "si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45), después de la Fuente del Tritón;",
+     "cuando": {
+      "cerrado": "Galería Borghese"
+     },
+     "ops": {
+      "manana": {
+       "quitar": [
+        "Galería Borghese"
+       ],
+       "insertar": [
+        {
+         "despues_de": "Fuente del Tritón",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cripta de los Capuchinos",
+          "min": 45,
+          "modo": "dentro"
+         }
+        }
+       ]
+      },
+      "empieza": "09:30"
+     }
+    },
+    {
+     "id": "con_free_tour_de_manana",
+     "doc": "Con Free Tour de mañana:** sin Trevi ni desayuno; la Plaza de España y Via Condotti van de camino (el tour ya pasó).",
+     "cuando": {
+      "free_tour": true
+     },
+     "ops": {
+      "manana": {
+       "quitar": [
+        "Fontana de Trevi",
+        "Desayuno romano"
+       ]
+      },
+      "tarde": {
+       "ajustar": {
+        "Plaza de España": {
+         "modo": "camino",
+         "min": 5
+        }
+       }
+      },
+      "empieza": "09:00"
+     }
+    }
+   ],
+   "experiencias": {
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** el lago de Villa Borghese ~60.",
+     "ops": {
+      "manana": {
+       "ajustar": {
+        "Lago de Villa Borghese y el Templo de Esculapio": {
+         "min": 60
+        }
+       }
+      }
+     }
+    },
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Luces de Navidad del Tridente",
+          "min": 30,
+          "modo": "fuera",
+          "protegido": false
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   "empieza": "08:00"
   },
   "DA-medio": {
    "id": "DA-medio",
@@ -1569,9 +3299,73 @@
    },
    "lluvia": {
     "texto": "Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto.",
-    "doc": "**🌧 Si llueve:** Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto."
+    "doc": "**🌧 Si llueve:** Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "ajustar": {
+         "Boca de la Verdad": {
+          "modo": "dentro",
+          "min": 20,
+          "titulo": "Santa Maria in Cosmedin, la iglesia de la Boca de la Verdad"
+         },
+         "Jardín de los Naranjos": {
+          "min": 20
+         },
+         "Ojo de la Cerradura del Aventino": {
+          "min": 10
+         }
+        }
+       }
+      }
+     }
+    ]
    },
-   "quedarme": null
+   "quedarme": null,
+   "variantes": [
+    {
+     "id": "lunes_sin_caracalla",
+     "doc": "Lunes (Caracalla cierra):** empieza en el Circo Máximo y al final, el Cementerio Protestante ~30.",
+     "cuando": {
+      "cerrado": "Termas de Caracalla"
+     },
+     "ops": {
+      "manana": {
+       "quitar": [
+        "Termas de Caracalla"
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cementerio Protestante",
+          "min": 30,
+          "modo": null
+         }
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "experiencias": {
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** el Jardín de los Naranjos ~45.",
+     "ops": {
+      "manana": {
+       "ajustar": {
+        "Jardín de los Naranjos": {
+         "min": 45
+        }
+       }
+      }
+     }
+    }
+   }
   },
   "D5": {
    "id": "D5",
@@ -1695,13 +3489,112 @@
    },
    "lluvia": {
     "texto": "la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro.",
-    "doc": "**🌧 Si llueve:** la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro."
+    "doc": "**🌧 Si llueve:** la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro.",
+    "ops": [
+     {
+      "ops": {
+       "tarde": {
+        "ajustar": {
+         "Boca de la Verdad": {
+          "modo": "dentro",
+          "min": 20,
+          "titulo": "Santa Maria in Cosmedin, la iglesia de la Boca de la Verdad"
+         },
+         "Jardín de los Naranjos": {
+          "min": 20
+         },
+         "Ojo de la Cerradura del Aventino": {
+          "min": 10
+         },
+         "Termas de Caracalla": {
+          "min": 45
+         }
+        }
+       }
+      }
+     }
+    ]
    },
    "quedarme": null,
    "fechas_malas": {
     "cerrado": [
      "Termas de Caracalla"
     ]
+   },
+   "variantes": [
+    {
+     "id": "domingo_san_clemente",
+     "doc": "Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.",
+     "cuando": {
+      "dia_semana": [
+       "domingo"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "quitar": [
+        "Basílica de San Clemente"
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Basílica de San Clemente",
+          "titulo": "Basílica de San Clemente, con las excavaciones",
+          "min": 40,
+          "modo": "dentro"
+         }
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "pool": {
+    "Domus Aurea": {
+     "doc": "Pool:** la Domus Aurea, 🎟 solo con reserva y de viernes a domingo, por la mañana entre San Pietro in Vincoli y San Clemente.",
+     "cuando": {
+      "dia_semana": [
+       "viernes",
+       "sábado",
+       "domingo"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "despues_de": "Iglesia de San Pietro in Vincoli",
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Domus Aurea",
+          "min": 75,
+          "modo": "dentro",
+          "hora_tipo": "reserva",
+          "protegido": true
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   "experiencias": {
+    "naturaleza_vistas": {
+     "doc": "Naturaleza y Vistas:** el Jardín de los Naranjos ~45.",
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Jardín de los Naranjos": {
+         "min": 45
+        }
+       }
+      }
+     }
+    }
    }
   },
   "D6": {
@@ -1856,7 +3749,28 @@
    },
    "lluvia": {
     "texto": "la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa.",
-    "doc": "**🌧 Si llueve:** la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa."
+    "doc": "**🌧 Si llueve:** la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa.",
+    "ops": [
+     {
+      "ops": {
+       "manana": {
+        "quitar": [
+         "Cúpula de San Pedro"
+        ]
+       },
+       "tarde": {
+        "quitar": [
+         "Terraza del Altar de la Patria"
+        ],
+        "ajustar": {
+         "Museos Capitolinos": {
+          "min": 150
+         }
+        }
+       }
+      }
+     }
+    ]
    },
    "quedarme": [
     "Cúpula de San Pedro",
@@ -1875,6 +3789,121 @@
       "hora": "08:00"
      }
     ]
+   },
+   "variantes": [
+    {
+     "id": "miercoles_audiencia",
+     "doc": "Miércoles (audiencia):** la mañana va al revés y la Cúpula al final, cuando acaba la audiencia (desde las 12:30)",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "mes": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       8,
+       9,
+       10,
+       11,
+       12
+      ]
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 90,
+         "modo": "dentro",
+         "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 5,
+         "modo": "camino",
+         "no_antes": "12:30"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Cúpula de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Ristorante Arlù",
+       "alternativa": "200 Gradi",
+       "zona": "en el Borgo"
+      }
+     }
+    }
+   ],
+   "experiencias": {
+    "arte_museos": {
+     "doc": "Arte y Museos:** los Capitolinos ~2 h 30.",
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Museos Capitolinos": {
+         "min": 150
+        }
+       }
+      }
+     }
+    },
+    "mercadillos_navidenos": {
+     "doc": "Mercadillos:** el Santo Bambino en Santa Maria in Aracoeli.",
+     "cuando": {
+      "fechas": "12-08..01-06"
+     },
+     "ops": {
+      "tarde": {
+       "ajustar": {
+        "Santo Bambino de Aracoeli": {
+         "titulo": "Santa Maria in Aracoeli y el Santo Bambino",
+         "min": 30
+        }
+       }
+      }
+     }
+    }
    }
   },
   "D7": {
@@ -1992,7 +4021,29 @@
    },
    "lluvia": {
     "texto": "sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.",
-    "doc": "**🌧 Si llueve:** sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra."
+    "doc": "**🌧 Si llueve:** sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.",
+    "ops": [
+     {
+      "ops": {
+       "tarde": {
+        "cambiar": {
+         "Via Appia Antica": {
+          "tipo": "parada",
+          "lugar": "Via Appia Antica",
+          "titulo": "La Vía Appia en taxi hasta la tumba de Cecilia Metela",
+          "min": 30,
+          "modo": "fuera"
+         }
+        },
+        "ajustar": {
+         "Catacumbas de San Calixto": {
+          "min": 90
+         }
+        }
+       }
+      }
+     }
+    ]
    },
    "quedarme": [
     "Villa Farnesina",
@@ -2006,7 +4057,30 @@
      "Villa Farnesina",
      "Catacumbas de San Calixto"
     ]
-   }
+   },
+   "variantes": [
+    {
+     "id": "domingo_farnesina",
+     "doc": "Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello.",
+     "cuando": {
+      "dia_semana": [
+       "domingo"
+      ]
+     },
+     "ops": {
+      "manana": {
+       "cambiar": {
+        "Iglesia de Santa Maria in Trastevere": {
+         "tipo": "parada",
+         "lugar": "Iglesia de Santa Maria in Trastevere",
+         "min": 25,
+         "modo": "dentro"
+        }
+       }
+      }
+     }
+    }
+   ]
   }
  }
 }

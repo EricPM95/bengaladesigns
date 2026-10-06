@@ -13,7 +13,7 @@ const OUT = 'data/dias/roma/listas.json'
 const DUDAS = 'docs/dias/PREGUNTAS_TANDA6_CONVERTIDOR.md'
 const D = JSON.parse(fs.readFileSync('data/pipeline_v2/roma.json', 'utf8'))
 const nombres = JSON.parse(fs.readFileSync('scripts/destino/listasNombres.json', 'utf8'))
-const variantes = fs.existsSync('scripts/destino/listasVariantes.json') ? JSON.parse(fs.readFileSync('scripts/destino/listasVariantes.json', 'utf8')) : { dias: {} }
+const variantes = (await import('./listasVariantes.mjs')).default
 const antiguo = (id) => {
   const file = `data/archivo/dias_roma/${id}.json`
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null

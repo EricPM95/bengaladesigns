@@ -5353,6 +5353,36 @@ app.post('/api/rebuild-day', async (req, res) => {
   }
 })
 
+// HOY (Tanda 6): «Voy con retraso» y «Estoy cansado». El día se recalcula con lo ya hecho y la hora de ahora: lo de menos importancia pasa a «Si te sobra tiempo». Sin Claude.
+app.post('/api/adjust-day', async (req, res) => {
+  const { destination, answers, all_days, day_number, done_names, now_minutes, mode, must_include_places } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destination || !answers || !destData || !Number.isInteger(Number(day_number)) || !['retraso', 'cansado'].includes(mode) || !Number.isFinite(Number(now_minutes))) {
+    res.status(400).json({ error: 'Faltan datos para ajustar el día.' })
+    return
+  }
+  try {
+    const totalDays = Array.isArray(all_days) && all_days.length > 0 ? all_days.length + 1 : Number(day_number) + 1
+    const day = await buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), Number(day_number), MAPBOX_TOKEN, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
+      city: destination,
+      scheduler: 'v3',
+      engine: 'v4',
+      month: Number.isInteger(answers.month) ? answers.month : null,
+      season: answers.season ?? null,
+      ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+      ajuste: { dayNumber: Number(day_number), doneNames: Array.isArray(done_names) ? done_names.map(String) : [], nowMinutes: Number(now_minutes), mode },
+    })
+    if (!day) {
+      res.status(422).json({ error: 'Este día no se puede ajustar.' })
+      return
+    }
+    res.json({ day })
+  } catch (error) {
+    console.error('[adjust-day]', error)
+    res.status(500).json({ error: 'No se pudo ajustar el día.' })
+  }
+})
+
 // Fechas puestas después, con la ruta editada a mano y "Mejor no": la ruta se queda igual y sin avisos; solo qué
 // paradas cierran ese día (su marca "Hoy cierra"). Sin Claude.
 app.post('/api/kept-route-closures', (req, res) => {

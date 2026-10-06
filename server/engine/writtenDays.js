@@ -1,8 +1,8 @@
 /**
- * Los días escritos de un destino (docs/DIAS_ESCRITOS_FORMATO.md): `data/dias/<destino>/`, un fichero por día más
- * `_destino.json` (cortes de luz, fechas especiales, pool, reparto). Se leen una vez y se guardan en memoria.
+ * Los días de un destino, escritos como listas de paradas por franjas (Tanda 6): `data/dias/<destino>/listas.json` (lo genera
+ * scripts/destino/listasConvertir.mjs desde docs/dias/DIAS_<DESTINO>_PARADAS.md) más `_destino.json` (llegadas, textos). Se leen una vez y se guardan en memoria.
  *
- * El motor v4 (shared/routeEngine/writtenTrip.js) los recibe ya leídos: el motor es puro y puede correr sin Node.
+ * El motor (shared/routeEngine/listasTrip.js) los recibe ya leídos: el motor es puro y puede correr sin Node.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
@@ -27,8 +27,8 @@ export function writtenDaysFor(destinationKey) {
     for (const file of readdirSync(dir).filter((name) => name.endsWith('.json')).sort()) {
       const data = JSON.parse(readFileSync(join(dir, file), 'utf8'))
       if (file === '_destino.json') destino = data
+      else if (file === 'listas.json') Object.assign(days, data.dias ?? {})
       else if (file === '_pool_d0.json') extraPool = data
-      else if (data?.id) days[data.id] = data
     }
     // (El sitio de cada extra del pool en el viaje de 1 día, D0: `_pool_d0.json` se suma a `_destino.json › pool`.)
     if (extraPool) {

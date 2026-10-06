@@ -30,7 +30,7 @@ import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
 import { planCuratedTrip } from '../../shared/routeEngine/curatedTrip.js'
-import { planWrittenTrip, poolStatusFor } from '../../shared/routeEngine/writtenTrip.js'
+import { planListasTrip, poolStatusFor } from '../../shared/routeEngine/listasTrip.js'
 import { writtenDaysFor } from './writtenDays.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
@@ -80,7 +80,7 @@ function writtenPlanFor(written, destKey, args) {
   const { destData, ...rest } = args
   const key = JSON.stringify([destKey, rest])
   if (writtenPlanCache.has(key)) return writtenPlanCache.get(key)
-  const plan = planWrittenTrip({ ...args, written, travel: travelTimesFor(destKey) })
+  const plan = planListasTrip({ ...args, written, travel: travelTimesFor(destKey) })
   writtenPlanCache.set(key, plan)
   if (writtenPlanCache.size > 64) writtenPlanCache.delete(writtenPlanCache.keys().next().value)
   return plan
@@ -340,7 +340,7 @@ async function buildDayBlockV3Inner(
   // «Prefiero quedarme en Roma» (tanda 3): el día de excursión pasa a ser de ciudad (D6 en 5 días, D7 en 6) y los demás días se quedan como estaban: se pide el mismo orden de siempre con el día nuevo
   // en el hueco de la excursión (así el viaje que ya está en pantalla no se reordena por el día que entra).
   const forceOrder = options.forceOrder ?? (written && (options.sinExcursion === true || options.mediaExcursion?.id) ? ordenSinExcursion(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null)
-  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, sinExcursion: options.sinExcursion === true, mediaExcursion: options.mediaExcursion?.id ? { id: options.mediaExcursion.id, dia: options.mediaExcursion.dia ?? null } : null }) : null
+  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, sinExcursion: options.sinExcursion === true, mediaExcursion: options.mediaExcursion?.id ? { id: options.mediaExcursion.id, dia: options.mediaExcursion.dia ?? null } : null, ajuste: options.ajuste ?? null }) : null
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)

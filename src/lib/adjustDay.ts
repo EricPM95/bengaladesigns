@@ -30,6 +30,7 @@ export async function adjustDay(dayId: string, mode: AdjustMode, nowMinutes: num
         all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
         day_number: day.dayNumber,
         done_ids: done.map((stop) => stop.id),
+        done_names: done.flatMap((stop) => [stop.name, stop.fullName].filter(Boolean)),
         now_minutes: nowMinutes,
         mode,
       }),

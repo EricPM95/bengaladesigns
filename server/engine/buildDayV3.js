@@ -351,7 +351,7 @@ function transitFields({ how, minutes }) {
   const text = String(how).replace(/^(el|la)\s+/i, '')
   const detail = text.match(/\(([^)]*)\)/)?.[1] ?? null
   const line = text.replace(/\s*\([^)]*\)/, '').trim()
-  const icon = /metro/i.test(line) ? '🚇' : /tranv/i.test(line) ? '🚊' : '🚌'
+  const icon = /taxi/i.test(line) && !/bus|metro/i.test(line) ? '🚕' : /metro/i.test(line) ? '🚇' : /tranv/i.test(line) ? '🚊' : '🚌'
   return { icon, label: `${line.charAt(0).toUpperCase()}${line.slice(1)}, unos ${minutes} min`, minutes, detail }
 }
 
@@ -375,7 +375,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
   const lunchEnd = schedule.meals.find((meal) => meal.type === 'lunch')?.end ?? 0
   const tour = destData.default_free_tour ?? null
   const tourToday = schedule.visits.some((visit) => visit.place.isFreeTour)
-  const stops = schedule.visits.map((visit, visitIndex) => {
+  // (La misma ficha para una parada de la ruta, una de «Si te sobra tiempo» y una del plan de lluvia.)
+  const buildVisitStop = (visit, visitIndex, visitList) => {
     const stop = buildStop(visit.place, visit.start, visit.end - visit.start, unitById.get(visit.unitId)?.revisitReason ?? null)
     // La estirable que se lleva un buen rato (decisión del usuario, 2026-09-28): con su nombre y su texto, nunca
     // tiempo libre suelto ("Tiempo libre en Villa Borghese: barca en el lago, bici…").
@@ -565,10 +566,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       // `solo_si_viene_de` / `solo_si_sigue` (decisión del usuario, 2026-09-28): un texto que habla de lo de antes o de
       // después solo sale si se cumple; si no, su texto general ("general" o el del lugar).
       // (Si entre medias se come, lo de antes es la comida: la Plaza de San Pedro después de comer no "sale de los Museos".)
-      const previousVisit = schedule.visits[visitIndex - 1] ?? null
+      const previousVisit = visitList[visitIndex - 1] ?? null
       const lunchBetween = previousVisit && schedule.meals.some((meal) => meal.type === 'lunch' && meal.start >= previousVisit.end - 1 && meal.start < visit.start)
       const previousName = lunchBetween ? 'la comida' : previousVisit?.place.name ?? null
-      const nextName = schedule.visits[visitIndex + 1]?.place.name ?? null
+      const nextName = visitList[visitIndex + 1]?.place.name ?? null
       const condition = typeof why === 'object' && why ? (why.solo_si_viene_de ? { lista: why.solo_si_viene_de, nombre: previousName, tipo: 'viene_de' } : why.solo_si_sigue ? { lista: why.solo_si_sigue, nombre: nextName, tipo: 'sigue' } : null) : null
       const holds = !condition || condition.lista.includes(condition.nombre)
       const general = condition && !holds ? (why.general ?? generalWhyOf(destData, visit.place.name)) : null
@@ -603,8 +604,18 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (tripDay.hours?.weekday && tripDay.hours?.dateIso && !anyTransitRuns(destData, tripDay.hours.dateIso, visit.start, visit.start)) {
       for (const field of ['why', 'note', 'description']) if (/\b(bus|autobús|metro|tranvía)\b/i.test(stop[field] ?? '')) stop[field] = withoutPublicTransit(stop[field])
     }
+    // Motor de listas (Tanda 6): la hora es orientativa (la suma de lo que dura cada parada y el trayecto); solo una reserva, un turno o el Free Tour tienen hora fija.
+    if (tripDay.listas) {
+      if (visit.fixedAt != null && !visit.place.isArrival) stop.reservation_time = toHHMM(visit.fixedAt)
+      else stop.orientative_time = true
+    }
     return stop
-  })
+  }
+  const stops = schedule.visits.map((visit, visitIndex) => buildVisitStop(visit, visitIndex, schedule.visits))
+  // «Si te sobra tiempo» (Tanda 6): lo que no cupo en su franja, con su motivo, sin hora.
+  const spareStops = (tripDay.spare ?? []).map((visit, index) => ({ ...buildVisitStop(visit, index, tripDay.spare), suggested_time: '', spare_reason: visit.spareReason ?? 'No cabía en el día' }))
+  // El plan de lluvia del día (Tanda 6): su línea, lo que sale y lo que entra.
+  const rainPlan = tripDay.rainPlan ? { text: tripDay.rainPlan.text, remove: tripDay.rainPlan.remove ?? [], add: (tripDay.rainPlan.add ?? []).map((visit, index) => ({ ...buildVisitStop(visit, index, tripDay.rainPlan.add), suggested_time: '' })), slot: tripDay.rainPlan.slot ?? 'dia' } : null
   // REGLAS_RUTAS 6 (4-oct-2026): de noche, varios sitios pegados pueden ser UNA parada. Si «El Puente y el Castillo iluminados» enseña un
   // sitio que salió justo antes (el Castillo por fuera, 25 min antes), esa parada se funde en la iluminada: una sola, con la hora y los
   // minutos de las dos. Así el mismo sitio no sale dos veces seguidas.
@@ -770,7 +781,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
     // (Un día escrito: las horas son las del documento, sin redondear.)
-    stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops, ...nightStops].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
+    stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops, ...nightStops.map((stop) => (tripDay.listas ? { ...stop, orientative_time: true } : stop))].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
+    ...(tripDay.listas ? { spare_stops: spareStops, sunset_text: tripDay.sunsetText ?? null, rain_plan: rainPlan } : {}),
     // (La cena es una hora fija: de 5 en 5, como siempre; la comida, de 10 en 10.)
     afternoon_free: tripDay.tardeLibre === true,
     meals: (tripDay.tardeLibre ? [] : meals).map((meal) => {

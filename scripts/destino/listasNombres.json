@@ -129,7 +129,8 @@
   "Santa Maria in Aracoeli y su escalinata": {
     "lugar": "Santo Bambino de Aracoeli",
     "titulo": "Santa Maria in Aracoeli y su escalinata",
-    "foto": "Santa Maria in Aracoeli"
+    "foto": "Santa Maria in Aracoeli",
+    "ignora_temporada": true
   },
   "Terraza del Altar de la Patria (ascensor panorámico)": {
     "lugar": "Altar de la Patria",
