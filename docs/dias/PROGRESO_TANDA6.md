@@ -11,3 +11,4 @@ Una línea por bloque: hora · qué he terminado · qué falta · si algo ha fal
 - 14:40 · Terminado: relanzada la prueba entera con el arreglo, en 5 procesos. Falta: ver el resultado, regenerar la página, reiniciar el api-server, escribir `INFORME_TANDA6.md`, commits. Fallos: ninguno.
 - 15:15 · Terminado: prueba entera de 1 a 5 días con el arreglo (0 fallos salvo 3 comidas tarde del 25-dic con Free Tour y la reserva del Coliseo a las 12:00, 18 min de más, apuntadas en el registro). Falta: grupo de 6 días, página, api-server, informe, commits. Fallos: el proceso de 5 y 6 días de antes seguía vivo y dejó un resultado viejo; descartado.
 - 16:30 · Terminado: prueba entera (125.925 viajes; 7 comidas tarde del 25-dic apuntadas, el resto a 0), pagina VIAJES_LISTAS.html regenerada, api-server reiniciado y probado, PRUEBA_LISTAS.md, PREGUNTAS_TANDA6.md e INFORME_TANDA6.md escritos. Falta: commits. Fallos: ninguno.
+TERMINADO
