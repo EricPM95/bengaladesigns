@@ -285,10 +285,14 @@
     {
      "id": "coliseo_por_la_manana",
      "doc": "Con el Coliseo reservado por la mañana",
+     "horas": [
+      "9:00",
+      "11:00"
+     ],
      "cuando": {
       "reserva": {
        "lugar": "Coliseo",
-       "hasta": "12:30"
+       "hasta": "12:15"
       }
      },
      "ops": {
@@ -416,6 +420,380 @@
        ]
       }
      }
+    },
+    {
+     "id": "coliseo_12_30_14_00_manana",
+     "doc": "Con el Coliseo reservado de 12:30 a 14:00:",
+     "horas": [
+      "12:30",
+      "13:00"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Coliseo",
+       "desde": "12:16",
+       "hasta": "13:29"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 45,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza Venecia",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Coliseo",
+         "min": 75,
+         "modo": "dentro"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "La Taverna dei Fori Imperiali",
+       "alternativa": "Trattoria Valentino",
+       "zona": "en Monti"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza del Campidoglio",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a la Plaza de España"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trinità dei Monti",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "titulo": "Bajar la escalinata de la Plaza de España",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Condotti",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "coliseo_13_30_14_00",
+     "doc": "Con el Coliseo reservado de 12:30 a 14:00:",
+     "horas": [
+      "14:00"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Coliseo",
+       "desde": "13:30",
+       "hasta": "14:15"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 45,
+         "modo": "dentro"
+        }
+       ]
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza Venecia",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Coliseo",
+         "min": 75,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza del Campidoglio",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a la Plaza de España"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trinità dei Monti",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "titulo": "Bajar la escalinata de la Plaza de España",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Condotti",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "coliseo_14_30_15_30",
+     "doc": "Con el Coliseo reservado de 14:30 a 15:30:",
+     "horas": [
+      "14:30",
+      "15:30"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Coliseo",
+       "desde": "14:16",
+       "hasta": "15:30"
+      }
+     },
+     "ops": {
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza Venecia",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza del Campidoglio",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Coliseo",
+         "min": 75,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a la Plaza de España"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trinità dei Monti",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "titulo": "Bajar la escalinata de la Plaza de España",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Condotti",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      }
+     }
     }
    ],
    "experiencias": {
@@ -443,6 +821,16 @@
        }
       }
      }
+    }
+   },
+   "reservas": {
+    "Coliseo": {
+     "mejores": [
+      "12:30",
+      "14:00",
+      "14:30",
+      "15:30"
+     ]
     }
    }
   },
@@ -1293,18 +1681,86 @@
    },
    "variantes": [
     {
-     "id": "coliseo_media_manana",
-     "doc": "A media mañana (de 10:30 a 12:00):",
+     "id": "coliseo_10_30_11_00",
+     "doc": "A media mañana, de 10:30 a 11:00:",
+     "horas": [
+      "10:30",
+      "11:00"
+     ],
      "cuando": {
       "reserva": {
        "lugar": "Coliseo",
        "desde": "10:16",
+       "hasta": "11:15"
+      }
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de San Pietro in Vincoli",
+         "min": 20,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Arco de Constantino",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Coliseo",
+         "min": 75,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "min": 90,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza del Campidoglio",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "min": 30,
+         "modo": "fuera",
+         "acortable": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "coliseo_11_30_12_00",
+     "doc": "De 11:30 a 12:00:",
+     "horas": [
+      "11:30",
+      "12:00"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Coliseo",
+       "desde": "11:16",
        "hasta": "12:15"
       }
      },
      "ops": {
       "manana": {
        "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de San Pietro in Vincoli",
+         "min": 20,
+         "modo": "dentro"
+        },
         {
          "tipo": "parada",
          "lugar": "Arco de Constantino",
@@ -1342,8 +1798,9 @@
         {
          "tipo": "parada",
          "lugar": "Altar de la Patria",
-         "min": 45,
-         "modo": "dentro"
+         "min": 30,
+         "modo": "fuera",
+         "acortable": true
         }
        ]
       }
@@ -1352,11 +1809,15 @@
     {
      "id": "coliseo_mediodia",
      "doc": "A mediodía (de 12:30 a 15:00):",
+     "horas": [
+      "12:30",
+      "14:00"
+     ],
      "cuando": {
       "reserva": {
        "lugar": "Coliseo",
        "desde": "12:16",
-       "hasta": "15:30"
+       "hasta": "15:15"
       }
      },
      "ops": {
@@ -1372,7 +1833,8 @@
          "tipo": "parada",
          "lugar": "Altar de la Patria",
          "min": 45,
-         "modo": "dentro"
+         "modo": "dentro",
+         "acortable": true
         },
         {
          "tipo": "parada",
@@ -1423,6 +1885,19 @@
         },
         {
          "tipo": "parada",
+         "lugar": "Iglesia del Gesù",
+         "min": 20,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de San Luigi dei Francesi",
+         "min": 20,
+         "modo": null,
+         "titulo": "San Luigi dei Francesi (los Caravaggio)"
+        },
+        {
+         "tipo": "parada",
          "lugar": "Panteón",
          "min": 45,
          "modo": "dentro"
@@ -1441,30 +1916,27 @@
         "lugar": "Barrio Judío",
         "min": 30,
         "modo": null
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Iglesia del Gesù",
-        "min": 20,
-        "modo": "dentro"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Iglesia de San Luigi dei Francesi",
-        "min": 20,
-        "modo": null,
-        "titulo": "San Luigi dei Francesi (los Caravaggio)"
        }
       ]
      }
     },
     {
      "id": "coliseo_tarde",
-     "doc": "Por la tarde (16:00 o más tarde):",
+     "doc": "Por la tarde (a las 15:30 o más tarde):",
+     "horas": [
+      "16:00",
+      "17:00"
+     ],
      "cuando": {
       "reserva": {
        "lugar": "Coliseo",
-       "desde": "15:31"
+       "desde": "15:16"
+      },
+      "abierto_tras_reserva": {
+       "lugar": "Foro Romano y Palatino",
+       "reserva": "Coliseo",
+       "despues_min": 90,
+       "min": 60
       }
      },
      "ops": {
@@ -1521,6 +1993,25 @@
          "tipo": "parada",
          "lugar": "Altar de la Patria",
          "min": 45,
+         "modo": "dentro",
+         "acortable": true
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Arco de Constantino",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Coliseo",
+         "min": 75,
          "modo": "dentro"
         },
         {
@@ -1529,13 +2020,105 @@
          "min": 90,
          "modo": "dentro",
          "entrada_en": [
-          41.8938,
-          12.4857
-         ],
-         "salida_en": [
           41.8895,
           12.489
          ]
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "La Taverna dei Fori Imperiali",
+       "alternativa": "Trattoria Valentino",
+       "zona": "en Monti"
+      }
+     }
+    },
+    {
+     "id": "coliseo_tarde_foro_antes",
+     "doc": "Si no, el Foro desde la terraza del Campidoglio ~30, antes",
+     "horas": [],
+     "cuando": {
+      "reserva": {
+       "lugar": "Coliseo",
+       "desde": "15:16"
+      },
+      "abierto_tras_reserva": {
+       "lugar": "Foro Romano y Palatino",
+       "reserva": "Coliseo",
+       "despues_min": 90,
+       "min": 60,
+       "negado": true
+      }
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 45,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de San Luigi dei Francesi",
+         "min": 20,
+         "modo": null,
+         "titulo": "San Luigi dei Francesi (los Caravaggio)"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Largo di Torre Argentina",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia del Gesù",
+         "min": 20,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Barrio Judío",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza del Campidoglio",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Altar de la Patria",
+         "min": 45,
+         "modo": "dentro",
+         "acortable": true
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Fori Imperiali",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -1943,18 +2526,28 @@
    },
    "sugerencias": [
     {
-     "doc": "HOY sugiere San Pietro in Vincoli (el Moisés de Miguel Ángel, a 10 min del Coliseo)",
-     "lugar": "Iglesia de San Pietro in Vincoli",
-     "antes_de": "Coliseo"
-    },
-    {
      "doc": "la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.",
      "lugar": "Mercados de Trajano",
      "titulo": "Columna de Trajano y Mercados de Trajano",
      "min": 60,
      "salvo_dia": "D6"
     }
-   ]
+   ],
+   "reservas": {
+    "Coliseo": {
+     "normal": {
+      "hasta": "10:15"
+     },
+     "mejores": [
+      "9:00",
+      "10:30",
+      "11:30",
+      "12:30",
+      "14:00",
+      "16:00"
+     ]
+    }
+   }
   },
   "D2": {
    "id": "D2",
@@ -2153,8 +2746,52 @@
      }
     },
     {
+     "id": "museos_media_manana",
+     "doc": "Museos reservados a media mañana (de 10:00 a 12:00):",
+     "horas": [
+      "10:00",
+      "11:00"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "09:45",
+       "hasta": "12:00"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null
+        }
+       ]
+      }
+     }
+    },
+    {
      "id": "museos_tarde",
      "doc": "Museos reservados por la tarde (a las 15:00 o más tarde):",
+     "horas": [
+      "15:00",
+      "16:00"
+     ],
      "cuando": {
       "reserva": {
        "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -2204,8 +2841,8 @@
        ]
       },
       "comida": {
-       "restaurante": "L'Arcangelo",
-       "alternativa": "Osteria dell'Angelo",
+       "restaurante": "Il Sorpasso",
+       "alternativa": "Dal Toscano",
        "zona": "en Prati"
       },
       "tarde": {
@@ -2433,6 +3070,31 @@
       }
      }
     }
+   },
+   "sugerencias": [
+    {
+     "fuente": "docs/dias/PARA_CODE_TANDA6E.md",
+     "doc": "con sugerencias cercanas (Borgo Pio, los Coronari)",
+     "antes_de": "Plaza de San Pedro",
+     "lugares": [
+      "Borgo Pio",
+      "Via dei Coronari"
+     ]
+    }
+   ],
+   "reservas": {
+    "Museos Vaticanos y Capilla Sixtina": {
+     "normal": {
+      "hasta": "09:44"
+     },
+     "mejores": [
+      "9:00",
+      "10:00",
+      "11:00",
+      "15:00",
+      "16:00"
+     ]
+    }
    }
   },
   "D3": {
@@ -2557,6 +3219,66 @@
    },
    "variantes": [
     {
+     "id": "museos_13_30_14_30",
+     "fuente": "docs/dias/PARA_CODE_TANDA6E.md",
+     "doc": "taxi de Navona al Borgo, comida de ~45, Museos y la Basílica al salir",
+     "horas": [
+      "13:30",
+      "14:00",
+      "14:30"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "13:30",
+       "hasta": "14:30"
+      }
+     },
+     "ops": {
+      "manana": {
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "traslado",
+          "como": "taxi",
+          "texto": "Taxi de Navona al Borgo"
+         }
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo",
+       "min": 45
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 150,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 20,
+         "modo": null,
+         "titulo": "Plaza de San Pedro, ya iluminada"
+        }
+       ]
+      }
+     }
+    },
+    {
      "id": "domingo_sin_museos",
      "doc": "Domingo (Museos cerrados):** se cambia de día; si no se puede, la tarde sin Museos.",
      "cuando": {
@@ -2588,6 +3310,19 @@
        }
       }
      }
+    }
+   },
+   "reservas": {
+    "Museos Vaticanos y Capilla Sixtina": {
+     "normal": {
+      "desde": "14:31"
+     },
+     "no_cabe_antes": "13:30",
+     "mejores": [
+      "13:30",
+      "14:00",
+      "14:30"
+     ]
     }
    }
   },
@@ -3490,10 +4225,10 @@
        "tipo": "parada",
        "lugar": "Santa Maria del Popolo",
        "modo": null,
-       "doc": "Santa Maria del Popolo (los Caravaggio) ~20 (⚠️ abre a las 16:00: si se llega un poco antes, se espera)",
+       "doc": "Santa Maria del Popolo (los Caravaggio) ~20 (⚠️ abre a las 16:00: si se llega antes, se espera en la Piazza del Popolo, hasta 40 min)",
        "min": 20,
        "avisos": [
-        "abre a las 16:00: si se llega un poco antes, se espera"
+        "abre a las 16:00: si se llega antes, se espera en la Piazza del Popolo, hasta 40 min"
        ],
        "abre": "16:00",
        "notas": [
@@ -3605,6 +4340,234 @@
    },
    "variantes": [
     {
+     "id": "galeria_9",
+     "doc": "A las 9:00:",
+     "horas": [
+      "9:00"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Galería Borghese",
+       "hasta": "10:00"
+      }
+     },
+     "ops": {
+      "empieza": "07:30",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 30,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "desayuno",
+         "lugar": "Desayuno romano",
+         "min": 30,
+         "modo": null,
+         "titulo": "Desayuno"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fuente del Tritón",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Veneto",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Porta Pinciana",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Galería Borghese",
+         "min": 120,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Parque de Villa Borghese",
+         "min": 30,
+         "modo": null,
+         "titulo": "Lago de Villa Borghese y el Templo de Esculapio"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Parque de Villa Borghese",
+         "min": 5,
+         "modo": "camino",
+         "titulo": "La Piazza di Siena"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Parque de Villa Borghese",
+         "min": 10,
+         "modo": null,
+         "titulo": "Reloj de agua del Pincio"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Terraza del Pincio",
+         "min": 20,
+         "modo": null
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "galeria_tarde",
+     "doc": "A las 15:00 o a las 17:00:",
+     "horas": [
+      "15:00",
+      "17:00"
+     ],
+     "cuando": {
+      "reserva": {
+       "lugar": "Galería Borghese",
+       "desde": "14:01"
+      }
+     },
+     "ops": {
+      "empieza": "07:30",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 30,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "desayuno",
+         "lugar": "Desayuno romano",
+         "min": 30,
+         "modo": null,
+         "titulo": "Desayuno"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trinità dei Monti",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Condotti",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Ara Pacis",
+         "min": 45,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via di Ripetta",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza del Popolo",
+         "min": 30,
+         "modo": null,
+         "titulo": "Piazza del Popolo, con el obelisco y las iglesias gemelas"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Santa Maria del Popolo",
+         "min": 20,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Sgarro Bistrot",
+       "alternativa": "Buccone Vini e Olii",
+       "zona": "junto a la Piazza del Popolo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Terraza del Pincio",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Parque de Villa Borghese",
+         "min": 10,
+         "modo": null,
+         "titulo": "Reloj de agua del Pincio"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Parque de Villa Borghese",
+         "min": 30,
+         "modo": null,
+         "titulo": "Lago de Villa Borghese y el Templo de Esculapio"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Parque de Villa Borghese",
+         "min": 5,
+         "modo": "camino",
+         "titulo": "La Piazza di Siena"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Galería Borghese",
+         "min": 120,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Porta Pinciana",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Veneto",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fuente del Tritón",
+         "min": 5,
+         "modo": "camino"
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "Il Gabriello",
+       "alternativa": "Poldo e Gianna Osteria",
+       "zona": "en el Tridente"
+      }
+     }
+    },
+    {
      "id": "lunes_sin_galeria",
      "doc": "si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.",
      "cuando": {
@@ -3689,6 +4652,20 @@
        ]
       }
      }
+    }
+   },
+   "reservas": {
+    "Galería Borghese": {
+     "normal": {
+      "desde": "10:01",
+      "hasta": "11:30"
+     },
+     "mejores": [
+      "9:00",
+      "11:00",
+      "15:00",
+      "17:00"
+     ]
     }
    }
   },

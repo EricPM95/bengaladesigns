@@ -1285,6 +1285,17 @@
     {
       "id": "fontana_de_trevi",
       "name": "Fontana de Trevi",
+      "entrada_de_pago": {
+        "desde": "2026-02-02",
+        "precio": "2 €",
+        "que": "la zona de dentro, junto al agua",
+        "horario_de_pago": "09:00-22:00",
+        "viernes_desde": "11:30",
+        "ultima_entrada": "21:00",
+        "gratis": "fuera de ese horario; también para los menores de 6 años, las personas con discapacidad y su acompañante, y los residentes de Roma",
+        "como_se_paga": "online o allí mismo, solo con tarjeta",
+        "_fuente": "Tanda 6e, punto 2c (docs/dias/PARA_CODE_TANDA6E.md)"
+      },
       "por_el_camino": [
         {"texto":"De camino, en Via del Corso, cerca de Trevi, está la tienda de Venchi: chocolate y helado artesanos si te apetece un capricho.","una_vez":"venchi"}
       ],
@@ -1937,6 +1948,29 @@
       "coordinates_checked": true
     },
     {
+      "id": "via_di_ripetta",
+      "name": "Via di Ripetta",
+      "level": 3,
+      "zone": "tridente",
+      "coordinates": [
+        41.9068,
+        12.4745
+      ],
+      "duration_minutes": 10,
+      "min_max": 10,
+      "type": "exterior",
+      "tip": "La calle que baja desde la Piazza del Popolo hacia el Ara Pacis, recta y tranquila. Se hace andando, sin parar.",
+      "tags": [
+        "calle"
+      ],
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "via de ripetta"
+      ],
+      "search_en": "Via di Ripetta Rome",
+      "_nota_ficha": "Tanda 6e: sitio nuevo para la Galería Borghese por la tarde (de camino). Coordenadas aproximadas, por comprobar."
+    },
+    {
       "id": "via_della_conciliazione",
       "name": "Via della Conciliazione",
       "level": 3,
@@ -2403,6 +2437,7 @@
     {
       "id": "altar_de_la_patria",
       "name": "Altar de la Patria",
+      "acortable": true,
       "level": 1,
       "zone": "roma_antigua",
       "coordinates": [
@@ -8452,7 +8487,7 @@
     {
       "name": "Osteria dell'Angelo",
       "sub_category": "trattoria", "tipo_local": "restaurante",
-      "meal": "ambos",
+      "meal": "cena",
       "address": "Via Giovanni Bettolo 24-32",
       "coordinates": {
         "lat": 41.9116,
@@ -8466,7 +8501,7 @@
       ],
       "hours_audit": {
         "fuente": "https://www.touringclub.it/destinazioni/roma/mangiare/240317-osteria-dellangelo + OpenStreetMap (coordenadas)",
-        "nota": "Touring Club: \"sempre aperto\", sin horas. No se sabía si abre a mediodía; el documento de días (Tanda 6d, «sin prisas en Prati») la pone a la comida: pasa a \"ambos\".",
+        "nota": "Touring Club: \"sempre aperto\", sin horas. No se sabe si abre a mediodía: queda como \"cena\" (decidido en la Tanda 6e: a la comida en Prati, Il Sorpasso o Dal Toscano).",
         "fecha": "2026-09-26"
       },
       "comprobado": "2026-09-28"

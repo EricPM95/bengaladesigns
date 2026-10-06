@@ -233,7 +233,7 @@ for (const seccion of secciones) {
     if (!linea.trim()) continue
     // Cabeceras en negrita sueltas (no son un punto de lista)
     if (/^\*\*/.test(linea)) {
-      bloqueVariante = /^\*\*(El Coliseo reservado a otra hora|Museos reservados por la tarde)/.test(linea)
+      bloqueVariante = /^\*\*(El Coliseo reservado a otra hora|Con el Coliseo reservado|Con los Museos reservados|Museos reservados|La Galería Borghese a otra hora)/.test(linea)
       const lq = /^\*\*Lista de «Prefiero quedarme en Roma»:\*\*\s*(.+)$/.exec(linea)
       if (lq) { dia.quedarme = lq[1].split('·').map((s) => s.trim()).filter(Boolean); continue }
       if (/^\*\*De mañana\b/.test(linea)) { parte = tomarParte('manana'); franja = 'manana'; modo = 'lista'; continue }
@@ -294,12 +294,18 @@ for (const seccion of secciones) {
 // ── Variantes, pool, experiencias (prosa del documento escrita como datos, con su frase citada) ──────────────────────
 for (const [id, extra] of Object.entries(variantes.dias ?? {})) {
   if (!dias[id]) { duda(id, `Las variantes hablan de un día que no está en el documento: ${id}.`, 'variantes'); continue }
-  for (const key of ['variantes', 'pool', 'experiencias', 'sugerencias']) if (extra[key]) dias[id][key] = extra[key]
+  for (const key of ['variantes', 'pool', 'experiencias', 'sugerencias', 'reservas']) if (extra[key]) dias[id][key] = extra[key]
   if (extra.empieza) dias[id].empieza = extra.empieza
   if (extra.lluvia_ops && dias[id].lluvia) dias[id].lluvia.ops = extra.lluvia_ops
   // Cada frase citada tiene que seguir en el documento.
-  const citas = [...(extra.variantes ?? []).map((v) => v.doc), ...Object.values(extra.pool ?? {}).map((p) => p.doc), ...Object.values(extra.experiencias ?? {}).map((p) => p.doc), ...(extra.sugerencias ?? []).map((x) => x.doc), extra.lluvia_doc].filter(Boolean)
-  for (const cita of citas) if (!md.includes(cita)) duda(id, `La frase citada ya no está en el documento: «${cita}».`, 'variantes')
+  // (Lo que cita otro fichero —`fuente`: lo que el usuario pidió en una tanda— se comprueba en ese fichero.)
+  const sinNegritas = (t) => String(t).split('**').join('')
+  const citasDe = (lista) => lista.filter((x) => x?.doc).map((x) => ({ doc: x.doc, fuente: x.fuente ?? null }))
+  const citas = [...citasDe(extra.variantes ?? []), ...citasDe(Object.values(extra.pool ?? {})), ...citasDe(Object.values(extra.experiencias ?? {}).flat()), ...citasDe(extra.sugerencias ?? []), ...(extra.lluvia_doc ? [{ doc: extra.lluvia_doc, fuente: null }] : [])]
+  for (const { doc, fuente } of citas) {
+    const texto = fuente ? (fs.existsSync(fuente) ? fs.readFileSync(fuente, 'utf8') : '') : md
+    if (!sinNegritas(texto).includes(sinNegritas(doc))) duda(id, `La frase citada ya no está en ${fuente ?? 'el documento'}: «${doc}».`, 'variantes')
+  }
 }
 
 // ── Cambios pedidos en la tanda (cada uno cita su frase en el fichero de la tanda) ──────────────────────────────────────
