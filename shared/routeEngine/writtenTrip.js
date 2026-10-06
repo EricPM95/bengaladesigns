@@ -1210,6 +1210,8 @@ export function planWrittenTrip(args) {
   const problems = []
 
   function sourceOf(stop) {
+    // (La llegada al punto de encuentro del Free Tour: un sitio sin visita, en el punto de encuentro.)
+    if (stop.llegada && tour && stop.lugar === tour.name) return { name: tour.name, coordinates: tour.coordinates, level: 3, type: 'exterior', isArrival: true, duration_minutes: stop.min }
     if (tour && stop.lugar === tour.name) return { ...tour, isFreeTour: true, level: 1, type: 'exterior', duration_minutes: tour.duration_minutes ?? 150 }
     const pause = (destData.curated_breaks ?? []).find((item) => item.name === stop.lugar)
     if (pause) return { ...pause, isBreak: true, level: 3, type: 'exterior', is_free_access: true }
@@ -1224,6 +1226,9 @@ export function planWrittenTrip(args) {
   function readyPlace(stop, source, outsideReason, hours) {
     const modo = stop.modo ?? 'parada'
     let ready = { ...source }
+    if (stop.llegada) {
+      return { ...source, isArrival: true, arrivalText: stop.texto ?? null, arrivalTitle: stop.titulo ?? null, visitOutside: true, outsideKind: 'a_proposito', outsideReason: null, outsideAuthored: true, duration_minutes: stop.min, windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior' }
+    }
     if (outsideReason || modo === 'fuera') {
       const reason = outsideReason ?? (stop.motivoFuera === 'viaje_corto' ? OUTSIDE_REASONS.viaje_corto : OUTSIDE_REASONS.no_cabe)
       ready = {
@@ -1857,6 +1862,8 @@ export function planWrittenTrip(args) {
     // (El texto del colchón: lo que hay dentro, de la tabla «Qué hay en cada colchón» del documento.)
     if (row.texto) stop.texto = row.texto
     if (row.turno) stop.turno = true
+    // «Llegada a {sitio}»: su propio tipo de parada, con su texto; ni «por fuera» ni «visita», sin foto propia.
+    if (row.llegada) { stop.llegada = true; stop.minLlegada = row.min }
     // (El nombre con el que se pide su foto, si no es el del lugar: la terraza del Altar, el paseo por el Aventino… Hueco en _fotos.json.)
     if (row.foto) stop.foto = row.foto
     if (row.modo === 'dentro') {
@@ -2218,6 +2225,8 @@ export function planWrittenTrip(args) {
   /** Una fila de «Llegada a {sitio}» para una reserva o un turno, con su motivo (los datos de `llegadas` del destino). */
   const llegadaDe = (row) => {
     const cfg = written.destino?.llegadas
+    // (El Free Tour también: «Llegada al punto de encuentro», con la hora de antes del turno.)
+    if (cfg && row.tipo === 'tour' && cfg.free_tour) return { min: cfg.free_tour.min, titulo: cfg.free_tour.titulo, texto: `${cfg.free_tour.texto}${tour?.meeting_point ? ` Punto de encuentro: ${tour.meeting_point}.` : ''}`, tour: true }
     if (!cfg || row.tipo === 'tour' || !placeByName.has(row.lugar)) return null
     const base = row.hora_tipo === 'reserva' ? cfg.reserva : cfg.turno
     if (!base) return null

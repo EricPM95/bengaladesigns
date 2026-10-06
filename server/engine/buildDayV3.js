@@ -515,6 +515,15 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice
     }
+    // «Llegada a {sitio}» (Tanda 5): su propio tipo de parada, con su texto de llegada. Ni «por fuera» ni «visita»: sin motivo de por fuera, sin horario ni etiquetas y sin foto propia.
+    if (visit.place.isArrival) {
+      stop.is_arrival = true
+      stop.arrival_text = visit.place.arrivalText ?? null
+      stop.description = visit.place.arrivalText ?? ''
+      stop.no_photo = true
+      for (const key of ['visit_mode', 'outside', 'outside_reason', 'outside_kind', 'outside_authored', 'closed_notice', 'why', 'why_source', 'place_text', 'tip', 'hours', 'schedule', 'hours_card', 'tags', 'category', 'category_label', 'wikipedia_title', 'reservation', 'ticket_info', 'experience', 'free_access', 'in_free_tour', 'photo_name', 'min_minutes', 'max_minutes']) delete stop[key]
+      stop.display_title = visit.place.arrivalTitle ?? stop.display_title
+    }
     // El aviso del día curado ("a esta hora ya hay gente; si puedes, pásate temprano"). La `nota` es INTERNA
     // (instrucciones para nosotros y el motor): nunca sale (PROMPT_AJUSTES_20_RUTAS A.2).
     if (visit.place.stopNotice) stop.notice = visit.place.stopNotice

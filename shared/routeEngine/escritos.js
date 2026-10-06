@@ -143,6 +143,12 @@ export function correrHoras(rows, { desde = 1, walk, orden = [], protegidas = ()
       return { rows: lista, quitadas, problemas }
     }
     if (hit.row.imprescindible === true && !(hit.row.modo === 'camino' && hit.row.min <= 5)) {
+      // Un imprescindible no se aprieta hasta «de camino» de golpe (Tanda 5): antes se acorta su visita, sin bajar de 10 min (por dentro, de tres cuartos de lo escrito); «de camino» es lo último.
+      const suelo = hit.row.modo === 'dentro' ? Math.max(15, Math.ceil((hit.row.min_doc ?? hit.row.min) * 0.75 / 5) * 5) : 10
+      if (hit.row.modo !== 'camino' && hit.row.min > suelo) {
+        lista[hit.i] = { ...hit.row, min: Math.max(suelo, hit.row.min - Math.max(5, up5(falta))) }
+        continue
+      }
       lista[hit.i] = { ...hit.row, modo: 'camino', min: 5 }
       continue
     }

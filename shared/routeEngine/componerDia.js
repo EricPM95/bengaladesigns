@@ -29,7 +29,7 @@ export const COMIDA_MAXIMA = 75
 export const COMIDA_MINIMA = 45
 /** Lo que se tolera que llegue tarde el mirador del atardecer (el sol menos 25 min): pasado esto se quita por la pirámide lo que no cabe. */
 const TARDE_SOLAR = 10
-const SOL_MUY_TARDE = 45
+const SOL_MUY_TARDE = 90
 const CENA_TARDE = 30
 const LUNCH_EARLIEST = 12 * 60 + 30
 
@@ -113,7 +113,7 @@ function componer(rows0, env, retrasos) {
   {
     const lista = []
     for (const row of rows) {
-      const llega = esFija(row) && row.tipo === 'parada' && !row.llegada ? env.llegada?.(row) : null
+      const llega = esFija(row) && (row.tipo === 'parada' || row.tipo === 'tour') && !row.llegada ? env.llegada?.(row) : null
       const yaTiene = lista.at(-1)?.llegada === true && lista.at(-1).lugar === row.lugar
       if (llega && !yaTiene) {
         const hora = toHHMM(toMin(row.hora) - llega.min)
@@ -132,7 +132,7 @@ function componer(rows0, env, retrasos) {
     if (row.tipo === 'cena') return Math.max(env.cenaDesde ?? 0, env.mesaDesde?.(row) ?? 0)
     return 0
   }
-  const solarIdx = env.sunset != null ? rows.findIndex(esSolar) : -1
+  let solarIdx = env.sunset != null ? rows.findIndex(esSolar) : -1
   const solarId = solarIdx >= 0 ? rows[solarIdx].id : null
   const esPunto = (row) => esFija(row) || row.llegada === true || row.tipo === 'cena' || row.id === solarId
   const llegadaA = (prev, row) => up5(finDe(prev) + hueco(prev, row, walk))
@@ -368,7 +368,9 @@ function componer(rows0, env, retrasos) {
     }
     // (Lo que de verdad se quedó fuera, después de devolver lo que cabía.)
     for (const q of r.quitadas) quitadas.push({ ...q, causa: `no cabe antes de ${nombreDe(Fb)} (${toHHMM(sb)}) con los márgenes` })
-    return { inner: interior, sb }
+    const nqAntes = quitadas.length - r.quitadas.length
+    const apretaImprescindible = interior.some((row) => row.imprescindible === true && row.modo === 'camino' && (colocadas.find((x) => x.id === row.id)?.modo ?? 'camino') !== 'camino')
+    return { inner: interior, sb, apretaImprescindible, nqAntes }
   }
 
   for (const row of rows) {
@@ -381,13 +383,22 @@ function componer(rows0, env, retrasos) {
       deseada = near5(env.sunset - (row.lead ?? lead))
     } else if (row.tipo === 'cena') {
       flexible = 'cena'
-      deseada = Math.max(deseada + sunShift, suelo(row))
+      // (La cena sigue al mirador cuando el sol se adelanta —se adelanta lo mismo—; si el sol se retrasa, la cena se queda a su hora salvo que no se llegue: el resto de la tabla ya deja ese margen. Tanda 5.)
+      deseada = Math.max(deseada + Math.min(sunShift, 0), suelo(row))
       deseada = Math.min(deseada, Math.max(CENA_MAXIMA, toMin(row.hora)))
     } else if (row.llegada === true || esFija(row)) {
       // (Una hora fija no se mueve; su llegada va justo antes.)
     }
-    const { inner, sb } = resolver(pend, Fa, row, deseada, flexible)
+    const resuelto = resolver(pend, Fa, row, deseada, flexible)
     if (turnoPorMover) return { rows: rows0, causas, nuevas, quitadas, avisos, problemas, turnoPorMover }
+    // El mirador del atardecer que solo se alcanza apretando un imprescindible hasta «de camino» se quita él (es de nivel más bajo): la pirámide quita lo de abajo antes que apretar lo de arriba.
+    if (resuelto.apretaImprescindible && row.id === solarId && (row.nivel ?? 3) >= 2 && !row.imprescindible) {
+      quitadas.length = resuelto.nqAntes ?? quitadas.length
+      quitadas.push({ ...row, causa: `para llegar a ${nombreDe(row)} con el sol habría que apretar un imprescindible hasta «de camino»: se quita el atardecer` })
+      solarIdx = -1
+      continue
+    }
+    const { inner, sb } = resuelto
     pend = []
     salida.push(...inner)
     const fila = { ...row, hora: toHHMM(sb) }
