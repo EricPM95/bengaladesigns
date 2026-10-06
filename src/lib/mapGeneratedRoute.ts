@@ -143,6 +143,10 @@ export interface GeneratedStop {
   /** Tanda 6b: Stop.franja y Stop.addNote. */
   franja?: 'manana' | 'tarde' | 'noche'
   add_note?: string | null
+  /** Tanda 6c: turno que propone el motor (no una reserva del viajero). */
+  recommended_turn?: string | null
+  /** Tanda 6c: una sugerencia de HOY lejana cambia también la comida o la cena a su zona. */
+  meal_change?: { meal_time: 'lunch' | 'dinner'; restaurant: { name: string; coordinates: { lat: number; lng: number }; zone?: string | null } } | null
   break_icon?: string | null
   break_suggestions?: { name: string; walk_minutes: number; address?: string | null }[]
   /** Nombre del paseo nocturno curado — Stop.nightWalkName. */
@@ -493,6 +497,8 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.spare_reason ? { spareReason: generated.spare_reason } : {}),
     ...(generated.franja ? { franja: generated.franja } : {}),
     ...(generated.add_note ? { addNote: generated.add_note } : {}),
+    ...(generated.recommended_turn ? { recommendedTurn: generated.recommended_turn } : {}),
+    ...(generated.meal_change ? { mealChange: generated.meal_change.restaurant ? { mealTime: generated.meal_change.meal_time, restaurant: generated.meal_change.restaurant } : null } : {}),
     ...(generated.is_break
       ? {
           isBreak: true,

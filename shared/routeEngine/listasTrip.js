@@ -43,7 +43,7 @@ const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera 
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
   inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
-  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15,
+  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
 /** Cuántos extras del pool se pueden elegir: 2 días, 2; 3, 3; 4, 4; 5 o más, 5. */
@@ -107,6 +107,21 @@ export function planListasTrip(args) {
   const freeTourDespues = shortNoTour ? null : freeTourDespuesIn
   const tourCovers = new Set(hasFreeTour || freeTourDespues ? tour?.covers ?? [] : [])
   const nivelDe = (name) => placeByName.get(name)?.level ?? null
+  // Para llenar huecos y para las sugerencias solo valen sitios conocidos: los que salen en algún día escrito del documento o de nivel 1 o 2 (nunca un sitio poco conocido).
+  const lugaresDocumento = new Set()
+  const restaurantesDocumento = new Set()
+  {
+    const recorrer = (o) => {
+      if (Array.isArray(o)) o.forEach(recorrer)
+      else if (o && typeof o === 'object') {
+        if (typeof o.lugar === 'string') lugaresDocumento.add(o.lugar)
+        for (const clave of ['restaurante', 'alternativa', 'tercera']) if (typeof o[clave] === 'string') restaurantesDocumento.add(o[clave])
+        Object.values(o).forEach(recorrer)
+      }
+    }
+    recorrer(written.days)
+  }
+  const esConocido = (place) => (place.level ?? 3) <= 2 || lugaresDocumento.has(place.name)
 
   const hoursOf = (day) => {
     const dateIso = calendar.dateOfDay(day.dayNumber)
@@ -778,7 +793,7 @@ export function planListasTrip(args) {
       const prev = [...prefijo].reverse().find((it) => it.kind !== 'traslado')
       const prevC = prev ? endCoordsOf(prev) : null
       const candidatos = (destData.places ?? [])
-        .filter((place) => !yaSale.has(place.name) && (place.type === 'exterior' || place.minutos_fuera != null) && Array.isArray(place.coordinates) && !closedThatDay(place.name, skeletonDay) && !place.available && !place.capa_de && !(place.tags ?? []).includes('mercadillo_navideno'))
+        .filter((place) => !yaSale.has(place.name) && esConocido(place) && (place.type === 'exterior' || place.minutos_fuera != null) && Array.isArray(place.coordinates) && !closedThatDay(place.name, skeletonDay) && !place.available && !place.capa_de && !(place.tags ?? []).includes('mercadillo_navideno'))
         .map((place) => ({ place, d: meters(c, place.coordinates), min: Math.min(place.minutos_fuera ?? place.duration_minutes ?? 15, 30) }))
         .filter(({ d, min, place }) => d <= cfg.cerca_m && min >= 10 && (prevC ? walkLeg(prevC, place.coordinates) : 0) + min + walkLeg(place.coordinates, c) <= hueco + 5)
         .sort((a, b) => (a.place.level ?? 3) - (b.place.level ?? 3) || a.d - b.d)
@@ -794,7 +809,13 @@ export function planListasTrip(args) {
       const at = lista.findIndex((other) => other.id === item.id)
       return !lista.slice(0, at < 0 ? lista.length : at).some((other) => other.kind === 'stop' && other.lugar === item.lugar)
     }
-    const fueraMin = (item) => Math.min(item.min, placeByName.get(item.lugar)?.minutos_fuera ?? OUTSIDE_MINUTES)
+    // Cuánto se tarda en verlo por fuera: lo que dice el propio documento donde ya lo pone por fuera («Altar de la Patria, por fuera ~30»); si no, el dato del sitio.
+    const fueraDelDocumento = new Map()
+    for (const d of Object.values(written.days)) for (const parte of Object.values(d.partes ?? {})) for (const lista of Object.values(parte ?? {})) {
+      if (!Array.isArray(lista)) continue
+      for (const st of lista) if (st?.lugar && st.modo === 'fuera' && st.min && !fueraDelDocumento.has(st.lugar)) fueraDelDocumento.set(st.lugar, st.min)
+    }
+    const fueraMin = (item) => Math.min(item.min, fueraDelDocumento.get(item.lugar) ?? placeByName.get(item.lugar)?.minutos_fuera ?? OUTSIDE_MINUTES)
     const exceso = (lista) => {
       const sim = simular(lista)
       const comida = sim.find((it) => it.kind === 'comida')
@@ -841,8 +862,12 @@ export function planListasTrip(args) {
         .sort((a, b) => valorDe(a, nivelDe) - valorDe(b, nivelDe) || b.n - a.n)
       // Mañana: antes de quitar, se acorta lo de menos (por dentro → por fuera, y lo de por fuera se queda de camino).
       if (franja === 'manana') {
-        for (const item of candidatos) {
-          if (item.modo === 'dentro' && !item.protegido) {
+        // (Pasar de por dentro a por fuera no quita nada: vale también para un imprescindible la primera vez, que se sigue viendo.)
+        const dentroAcortables = lista
+          .filter((it) => it.kind === 'stop' && it.franja === franja && it.modo === 'dentro' && !esFijo(it) && !it.protegido && it.tipo !== 'desayuno' && !it.relleno_no_quitar)
+          .sort((a, b) => valorDe(a, nivelDe) - valorDe(b, nivelDe) || b.n - a.n)
+        for (const item of dentroAcortables) {
+          {
             const nuevo = lista.map((it) => (it.id === item.id ? { ...it, modo: 'fuera', min: fueraMin(it) } : it))
             if (reglas.nuevas(antes, baseReglas(nuevo)).length === 0 && fueraMin(item) < item.min) {
               log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'modo+min', causa: 'la comida iba a caer tarde: lo de menos de la mañana pasa de por dentro a por fuera' })
@@ -850,8 +875,12 @@ export function planListasTrip(args) {
             }
           }
         }
-        for (const item of candidatos) {
-          if (item.modo === 'fuera' && !esPrimeraVez(lista, item) && (nivelDe(item.lugar) ?? 3) >= 2 && item.min > 5) {
+        // (Lo de por fuera se queda de camino: se sigue viendo, solo se tarda menos; por eso vale también para un imprescindible la primera vez, empezando por lo de menos.)
+        const fueraAcortables = lista
+          .filter((it) => it.kind === 'stop' && it.franja === franja && it.modo === 'fuera' && !esFijo(it) && !it.protegido && it.tipo !== 'desayuno' && !it.relleno_no_quitar)
+          .sort((a, b) => valorDe(a, nivelDe) - valorDe(b, nivelDe) || b.n - a.n)
+        for (const item of fueraAcortables) {
+          if (item.min > 5) {
             const nuevo = lista.map((it) => (it.id === item.id ? { ...it, modo: 'camino', min: 5 } : it))
             if (reglas.nuevas(antes, baseReglas(nuevo)).length === 0) {
               log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'modo+min', causa: 'la comida iba a caer tarde: lo de menos de la mañana se queda de camino' })
@@ -925,7 +954,7 @@ export function planListasTrip(args) {
         // 2. por fuera (o de camino si es de poca importancia), con su aviso
         if (source.minutos_fuera != null || source.pass_by || source.type === 'exterior') {
           const camino = (nivelDe(malo.lugar) ?? 3) >= 3
-          out = out.map((it) => (it.id === malo.id ? { ...it, modo: camino ? 'camino' : 'fuera', min: camino ? 5 : Math.min(it.min, source.minutos_fuera ?? OUTSIDE_MINUTES), aviso_horario: aviso, motivo_fuera: horaAbre ? `A esta hora aún no ha abierto (abre a las ${horaAbre})` : 'A esta hora ya ha cerrado', fuera_por_horario: true } : it))
+          out = out.map((it) => (it.id === malo.id ? { ...it, previo_horario: { modo: it.modo, min: it.min }, modo: camino ? 'camino' : 'fuera', min: camino ? 5 : Math.min(it.min, source.minutos_fuera ?? OUTSIDE_MINUTES), aviso_horario: aviso, motivo_fuera: horaAbre ? `A esta hora aún no ha abierto (abre a las ${horaAbre})` : 'A esta hora ya ha cerrado', fuera_por_horario: true } : it))
           log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'modo+min', causa: `llega hacia las ${toHHMM(malo.t0)} y ${horaAbre ? `no abre hasta las ${horaAbre}` : 'ya ha cerrado'}: va por ${camino ? 'de camino' : 'fuera'} con su aviso` })
           continue
         }
@@ -939,7 +968,7 @@ export function planListasTrip(args) {
           continue
         }
         // 4. Un imprescindible la primera vez no puede pasar a «Si te sobra tiempo»: se ve por fuera (la fachada), con su aviso, y el orden no cambia.
-        out = out.map((it) => (it.id === malo.id ? { ...it, modo: 'fuera', min: Math.min(it.min, OUTSIDE_MINUTES * 2), aviso_horario: aviso, motivo_fuera: horaAbre ? `A esta hora aún no ha abierto (abre a las ${horaAbre})` : 'A esta hora ya ha cerrado', fuera_por_horario: true } : it))
+        out = out.map((it) => (it.id === malo.id ? { ...it, previo_horario: { modo: it.modo, min: it.min }, modo: 'fuera', min: Math.min(it.min, OUTSIDE_MINUTES * 2), aviso_horario: aviso, motivo_fuera: horaAbre ? `A esta hora aún no ha abierto (abre a las ${horaAbre})` : 'A esta hora ya ha cerrado', fuera_por_horario: true } : it))
         log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'modo+min', causa: `llega hacia las ${toHHMM(malo.t0)} y ${horaAbre ? `no abre hasta las ${horaAbre}` : 'ya ha cerrado'}: es un imprescindible de la primera vez: va por fuera con su aviso` })
       }
       return out
@@ -967,6 +996,29 @@ export function planListasTrip(args) {
       return out
     }
 
+    /**
+     * El cierre se mira con la hora que SE ENSEÑA: si al quepar lo demás (ajustar) la visita cae antes y ya está abierta, vuelve a ir por dentro; y al revés.
+     * Se repite hasta que la hora y el aviso dicen lo mismo.
+     */
+    const reabrirHorarios = (lista) => lista.map((it) => {
+      if (!it.fuera_por_horario || !it.previo_horario) return it
+      const { previo_horario: previo, aviso_horario: _a, motivo_fuera: _m, fuera_por_horario: _f, ...resto } = it
+      return { ...resto, modo: previo.modo, min: previo.min }
+    })
+    const firmaHorarios = (lista) => JSON.stringify(lista.map((it) => [it.id, it.modo, it.min, it.fuera_por_horario === true, it.no_antes ?? null]))
+    const horariosCoherentes = (lista) => {
+      let out = lista
+      for (let vuelta = 0; vuelta < 5; vuelta++) {
+        const antes = firmaHorarios(out)
+        const volver = out.filter((it) => it.fuera_por_horario && it.previo_horario).map((it) => it.id)
+        // (El registro de lo que se decidió con una hora que ya no es la buena se borra: no puede quedar un aviso que dice otra cosa.)
+        for (let i = log.length - 1; i >= 0; i--) if (volver.includes(log[i].id) && log[i].que === 'modo+min' && /llega hacia|imprescindible de la primera vez/.test(log[i].causa ?? '')) log.splice(i, 1)
+        out = ajustar(resolverHorarios(reabrirHorarios(out)))
+        if (firmaHorarios(out) === antes) break
+      }
+      return out
+    }
+
     // El orden: el día tal cual → fijas a su hora → horarios de llegada → restaurantes → que quepa (con las mesas elegidas) → mesas otra vez con las horas hechas.
     items = elegirMesas(items)
     items = turnosReales(items)
@@ -975,8 +1027,9 @@ export function planListasTrip(args) {
     items = ajustar(items)
     items = elegirMesas(items)
     items = ajustar(items)
-    items = resolverHorarios(items)
+    items = horariosCoherentes(items)
     items = elegirMesas(items)
+    items = horariosCoherentes(items)
     let final = simular(items)
     // HOY: «Voy con retraso» y «Estoy cansado». Lo hecho se queda; lo que falta se recalcula desde ahora.
     if (ajuste && ajuste.dayNumber === dayNumber) {
@@ -1063,28 +1116,52 @@ export function planListasTrip(args) {
       if (estadoTiempo === 'bien') {
         const vistosHoy = new Set(marcada.filter((it) => it.kind === 'stop').map((it) => it.lugar))
         const hechasHoy = marcada.filter((it) => it.hecho).map((it) => it.lugar)
-        const nota = (nombre) => {
+        const otro1 = (nombre) => {
           const otro = drafts.find((d) => d !== draft && stopsOfTrabajo(d.trabajo).some((x) => x.lugar === nombre && x.modo !== 'camino'))
           return otro ? { dia: otro.day.dayNumber, futuro: otro.day.dayNumber > dayNumber } : null
         }
         const salida = []
+        // Cuánto de lejos puede estar: en mitad de una franja, lo cercano (5-10 min andando); justo antes de comer o de cenar con 1 h 30 o más de sobra, hasta 15-20 min andando o 15 min en bus o metro.
+        const antesDeMesa = quedan.length === 0
+        const lejos = antesDeMesa && holgura >= cfg.sugerencia_lejos_min
+        const enTransporte = (a, b) => 6 + Math.round((meters(a, b) * 1.3) / 330)
+        const mesa = marcada.find((it) => !it.hecho && it.kind === (franjaActual === 'manana' ? 'comida' : 'cena'))
+        const tipoMesa = franjaActual === 'manana' ? 'comida' : 'cena'
+        const mesaDeAhora = mesa ? simular(resto, ahora, posActual).find((it) => it.id === mesa.id) : null
+        const usadas = new Set([...estado.mesas, ...restaurantesDocumento])
+        for (const it of marcada) if (it.kind === 'comida' || it.kind === 'cena') usadas.delete(it.restaurante)
         // 1º, lo de «Si te sobra tiempo» de ese día
         for (const sp of spare) salida.push({ item: { ...sp, kind: 'stop' }, nota: null })
-        // 2º, sitios del destino cerca de lo que le queda o a 5 min o menos de donde está, abiertos y con tiempo, que no hayan salido ya en el viaje
+        // 2º, lo que el documento sugiere para este día (salvo que el viaje lleve el día propio de ese sitio)
+        for (const sg of written.days[draft.id]?.sugerencias ?? []) {
+          const place = placeByName.get(sg.lugar)
+          if (!place || salida.some((x) => x.item.lugar === sg.lugar) || vistosHoy.has(sg.lugar) || hechasHoy.includes(sg.lugar) || estado.vistos.has(sg.lugar)) continue
+          if (sg.salvo_dia && drafts.some((d) => d !== draft && d.id === sg.salvo_dia)) continue
+          if (otro1(sg.lugar)) continue
+          const aqui = posActual && place.coordinates ? walkLeg(posActual, place.coordinates) : 0
+          const minutos = Math.min(sg.min ?? place.duration_minutes ?? 60, 60)
+          if (aqui + minutos > holgura + 5 || closedThatDay(place.name, skeletonDay) || (place.type === 'interior' && openCheck(place, ahora + aqui, minutos, hours).ok !== true)) continue
+          salida.push({ item: { kind: 'stop', tipo: 'parada', lugar: place.name, titulo: sg.titulo ?? undefined, modo: null, min: minutos, franja: franjaActual, id: idDe({ tipo: 'parada', lugar: place.name }) }, nota: null })
+        }
+        // 3º, sitios CONOCIDOS de todo el destino (no solo de los días del viaje), abiertos y con tiempo de verlos
         const puntos = [posActual, ...quedan.map((it) => coordsOf(it))].filter(Boolean)
         const candidatos = (destData.places ?? [])
-          .filter((place) => !vistosHoy.has(place.name) && !hechasHoy.includes(place.name) && !estado.vistos.has(place.name) && !spare.some((x) => x.lugar === place.name) && Array.isArray(place.coordinates) && !place.capa_de && !(place.tags ?? []).includes('mercadillo_navideno') && !place.available && place.level !== undefined)
+          .filter((place) => !vistosHoy.has(place.name) && !hechasHoy.includes(place.name) && !estado.vistos.has(place.name) && !spare.some((x) => x.lugar === place.name) && Array.isArray(place.coordinates) && !place.capa_de && !(place.tags ?? []).includes('mercadillo_navideno') && !place.available && place.level !== undefined && esConocido(place))
           .map((place) => {
             const aqui = posActual ? walkLeg(posActual, place.coordinates) : 99
-            const cerca = Math.min(aqui <= 5 ? aqui : 99, ...puntos.map((c) => walkLeg(c, place.coordinates)).filter((m) => m <= 8))
-            return { place, aqui, cerca, otro: nota(place.name) }
+            const cercaDeLoQueQueda = Math.min(99, ...puntos.map((c) => walkLeg(c, place.coordinates)).filter((m) => m <= cfg.sugerencia_cerca_min))
+            const cerca = Math.min(aqui <= cfg.sugerencia_cerca_min ? aqui : 99, cercaDeLoQueQueda)
+            const viaje = posActual ? (aqui <= cfg.sugerencia_lejos_andar_min ? aqui : enTransporte(posActual, place.coordinates) <= cfg.sugerencia_lejos_transporte_min ? enTransporte(posActual, place.coordinates) : 99) : 99
+            return { place, aqui, cerca, viaje, otro: otro1(place.name) }
           })
-          .filter(({ place, cerca, otro }) => cerca < 99 && !(otro && !otro.futuro) && !closedThatDay(place.name, skeletonDay))
-          .sort((a, b) => (a.place.level ?? 3) - (b.place.level ?? 3) || a.cerca - b.cerca)
-        for (const { place, aqui, otro } of candidatos) {
+          .filter(({ place, cerca, viaje, otro }) => (cerca < 99 || (lejos && viaje < 99)) && !(otro && !otro.futuro) && !closedThatDay(place.name, skeletonDay))
+          .sort((a, b) => (a.place.level ?? 3) - (b.place.level ?? 3) || Math.min(a.cerca, a.viaje) - Math.min(b.cerca, b.viaje))
+        for (const { place, aqui, cerca, viaje, otro } of candidatos) {
           if (salida.length >= 6) break
+          const esLejos = cerca >= 99
           const minutos = Math.min(place.minutos_fuera ?? place.duration_minutes ?? 20, 30)
-          const llega = ahora + (posActual ? aqui : 0)
+          const trayecto = esLejos ? viaje : aqui
+          const llega = ahora + (posActual ? trayecto : 0)
           // abierto a la hora a la que llegaría y con tiempo de verlo antes de que cierre
           if (place.type === 'interior' && openCheck(place, llega, minutos, hours).ok !== true) continue
           const item = { kind: 'stop', tipo: 'parada', lugar: place.name, modo: place.type === 'interior' && place.minutos_fuera != null ? 'fuera' : null, min: minutos, franja: franjaActual, id: idDe({ tipo: 'parada', lugar: place.name }) }
@@ -1092,7 +1169,23 @@ export function planListasTrip(args) {
           const iPos = marcada.findIndex((it) => !it.hecho)
           const probando = [...marcada.slice(0, iPos < 0 ? marcada.length : iPos), item, ...marcada.slice(iPos < 0 ? marcada.length : iPos)]
           if (reglas.nuevas(baseReglas(marcada), reglas.todas(probando, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })).length > 0) continue
-          salida.push({ item, nota: otro ? `Lo tienes el día ${otro.dia}` : null })
+          let nota = otro ? `Lo tienes el día ${otro.dia}` : null
+          let cambioMesa = null
+          if (esLejos) {
+            // Si lo que se propone queda lejos, la comida o la cena se cambia a esa zona: un restaurante de verdad, abierto y que no salga ya en el viaje.
+            if (!mesa || !mesaDeAhora) continue
+            const buena = (destData.restaurants ?? [])
+              .filter((r) => recambio.tipos.includes(r.tipo_local) && !usadas.has(r.name) && restaurantCoords(r.name) && abiertoA(r.name, tipoMesa, Math.max(mesaDeAhora.t0, llega + minutos)))
+              .map((r) => ({ r, andar: walkLeg(place.coordinates, restaurantCoords(r.name)) }))
+              .filter((x) => x.andar <= cfg.comida_junto_min)
+              .sort((a, b) => a.andar - b.andar || a.r.name.localeCompare(b.r.name, 'es'))[0]
+            if (!buena) continue
+            // tiempo: ir, verlo y llegar al restaurante antes de la hora de la mesa
+            if (llega + minutos + buena.andar > Math.max(mesaDeAhora.t0, finFranja) + 15) continue
+            cambioMesa = { comida: tipoMesa === 'comida', restaurante: buena.r.name, zona: buena.r.zone ?? null, coordenadas: restaurantCoords(buena.r.name) }
+            nota = [nota, `Y ${tipoMesa === 'comida' ? 'comes' : 'cenas'} en ${buena.r.zone ?? buena.r.name}`].filter(Boolean).join(' · ')
+          } else if (trayecto + minutos > holgura + 5) continue
+          salida.push({ item, nota, cambioMesa })
         }
         sugerencias = salida
       }
@@ -1240,7 +1333,7 @@ export function planListasTrip(args) {
         const duration = Math.max(5, item.t1 - item.t0)
         const level = place.level ?? 3
         units.push({ id: unitId, group: null, places: [place], slot: item.franja, blockId: draft.id, role: place.passThrough ? 'de_paso' : 'parada', dropRank: 1, priority: level === 1 ? PRIORITY.ESSENTIAL : item.protegido ? PRIORITY.POOL : PRIORITY.THEME, curatedIndex: index, poolIndex: null, ...(item.titulo && !item.llegada ? { stretchTitle: item.titulo, stretchWhy: item.texto_titulo ?? null, stretchBase: -100000 } : {}) })
-        visits.push({ unitId, place, start, end: start + duration, chained: false, walkMinutes: item.leg ?? 0, walkSource: 'matrix', ...(item.hora && !item.llegada ? { fixedAt: toMin(item.hora), fixedMargin: 0, horaTipo: item.hora_tipo ?? 'turno' } : {}), orientative: !item.hora, franja: item.franja })
+        visits.push({ unitId, place, start, end: start + duration, chained: false, walkMinutes: item.leg ?? 0, walkSource: 'matrix', ...(item.hora && !item.llegada ? { fixedAt: toMin(item.hora), fixedMargin: 0, horaTipo: item.hora_tipo ?? 'turno', ...(item.turno_real ? { turnoRecomendado: true } : {}) } : {}), orientative: !item.hora, franja: item.franja })
         lastEnd = start
       } else if (item.kind === 'comida' || item.kind === 'cena') {
         const r = restaurantByName.get(item.restaurante)
@@ -1308,7 +1401,7 @@ export function planListasTrip(args) {
       untypedAfternoon: false, reorderedBlocks: [], closedAnchors: [], otherRestaurants: [],
       written: { version: null, escrito: true, tabla: draft.id, grupo: draft.parteKey },
       escritoNights, escritoLog: log.map((entry) => ({ ...entry, fecha: fecha ?? null })),
-      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true })),
+      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null })),
       tardeLibre,
       spare: spareVisits,
       spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true })),
@@ -1317,7 +1410,7 @@ export function planListasTrip(args) {
       rainPlan: lluvia,
       franjas,
       restCard,
-      timeCheck: comprobacionTiempo ? { ...comprobacionTiempo, sugerencias: comprobacionTiempo.sugerencias.map(({ item, nota }) => ({ item, nota, place: lugarListo({ ...item, kind: 'stop' }, hours) })).filter((x) => x.place) } : null,
+      timeCheck: comprobacionTiempo ? { ...comprobacionTiempo, sugerencias: comprobacionTiempo.sugerencias.map(({ item, nota, cambioMesa }) => ({ item, nota, cambioMesa: cambioMesa ?? null, place: lugarListo({ ...item, kind: 'stop' }, hours) })).filter((x) => x.place) } : null,
     }
     return dayPlan
   }

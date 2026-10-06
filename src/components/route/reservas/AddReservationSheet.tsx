@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
-import { dayLineOf, dayOnDate, shortDateEs, type Reservation } from '../../../lib/bookings'
+import { dateOfDay, dayLineOf, dayOnDate, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
@@ -87,6 +87,36 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
   const outside = hasDates && Boolean(fields.dateIso) && !resolvedDay
   const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId)
   const ready = Boolean(resolvedDay && fields.time && /^\d{1,2}:\d{2}$/.test(fields.time))
+
+  // Tanda 6c: un Free Tour de mañana y los Museos Vaticanos a media tarde el mismo día no caben bien: se pregunta si los Museos pasan a otro día (el viajero decide).
+  const [keepSameDay, setKeepSameDay] = useState(false)
+  const timeMinutes = /^\d{1,2}:\d{2}$/.test(fields.time) ? Number(fields.time.split(':')[0]) * 60 + Number(fields.time.split(':')[1]) : null
+  const tourMuseumClash = Boolean(
+    resolvedDay &&
+      !isExcursion &&
+      !keepSameDay &&
+      target.placeNames.some((name) => /Museos Vaticanos/i.test(name)) &&
+      resolvedDay.stops.some((stop) => stop.isFreeTour) &&
+      timeMinutes !== null &&
+      timeMinutes >= 13 * 60 &&
+      timeMinutes <= 15 * 60,
+  )
+  const moveMuseumsToAnotherDay = () => {
+    if (!resolvedDay) return
+    // El día más cercano que no lleva el Free Tour (ni es de excursión).
+    const candidates = days
+      .filter((day) => day.id !== resolvedDay.id && !day.stops.some((stop) => stop.isFreeTour) && day.dayType !== 'excursion')
+      .sort((a, b) => Math.abs(a.dayNumber - resolvedDay.dayNumber) - Math.abs(b.dayNumber - resolvedDay.dayNumber))
+    const other = candidates[0]
+    if (!other) {
+      setKeepSameDay(true)
+      return
+    }
+    if (hasDates) {
+      const iso = dateOfDay(route, other)
+      if (iso) set({ dateIso: iso })
+    } else set({ dayNumber: String(other.dayNumber) })
+  }
 
   const applyRead = (data: { fecha: string | null; hora: string | null; hora_vuelta: string | null; punto_encuentro: string | null; localizador: string | null }) => {
     setFields((previous) => ({
@@ -259,6 +289,19 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
                   Tu reserva es del {shortDateEs(fields.dateIso)}, fuera de las fechas de tu viaje. Revisa la fecha.
                 </p>
               )}
+              {tourMuseumClash && resolvedDay && !outside && (
+                <div className="mt-2 rounded-xl border border-accent-red/40 bg-bg-hover px-3 py-2.5">
+                  <p className="text-[13px] leading-snug text-text">El Free Tour y los Museos a las 14:00 el mismo día no caben bien. ¿Pasamos los Museos a otro día?</p>
+                  <div className="mt-2 flex gap-2">
+                    <button type="button" onClick={moveMuseumsToAnotherDay} className="h-9 flex-1 rounded-full bg-text text-[13px] font-medium text-bg">
+                      Sí, a otro día
+                    </button>
+                    <button type="button" onClick={() => setKeepSameDay(true)} className="h-9 flex-1 rounded-full border border-text/20 text-[13px] font-medium text-text">
+                      No, dejarlos
+                    </button>
+                  </div>
+                </div>
+              )}
               {moved && resolvedDay && !outside && (
                 <p className="mt-1.5 text-[13px] leading-snug text-accent-hover">
                   Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a tu Día {resolvedDay.dayNumber}.
@@ -291,7 +334,7 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
         </div>
 
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-          <button type="button" disabled={!ready} onClick={save} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+          <button type="button" disabled={!ready || tourMuseumClash} onClick={save} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
             {resolvedDay ? `Guardar y ponerla en el Día ${resolvedDay.dayNumber}` : 'Guardar y ponerla en su día'}
           </button>
         </div>

@@ -64,6 +64,7 @@ export function TodayView({ route }: TodayViewProps) {
   const [timeCheck, setTimeCheck] = useState<CheckTimeResult | null>(null)
   const [suggestOpen, setSuggestOpen] = useState(false)
   const addSuggestedStop = useRouteStore((state) => state.addSuggestedStop)
+  const setMealRestaurant = useRouteStore((state) => state.setMealRestaurant)
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), CLOCK_TICK_MS)
@@ -144,6 +145,7 @@ export function TodayView({ route }: TodayViewProps) {
   const handleAddSuggestion = (stop: Stop, afterIndex: number) => {
     ensureSeeded()
     addSuggestedStop(day.id, stop, afterIndex)
+    if (stop.mealChange) setMealRestaurant(day.id, stop.mealChange.mealTime, stop.mealChange.restaurant)
     setTimeCheck((prev) => (prev ? { ...prev, suggestions: prev.suggestions.filter((other) => other.id !== stop.id) } : prev))
   }
 

@@ -606,7 +606,9 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     // Motor de listas (Tanda 6): la hora es orientativa (la suma de lo que dura cada parada y el trayecto); solo una reserva, un turno o el Free Tour tienen hora fija.
     if (tripDay.listas) {
-      if (visit.fixedAt != null && !visit.place.isArrival) stop.reservation_time = toHHMM(visit.fixedAt)
+      // Un turno que propone el motor (sin reserva puesta por el viajero) no es una reserva: «Turno recomendado: 11:00», sin la hora en negrita.
+      if (visit.fixedAt != null && !visit.place.isArrival && visit.turnoRecomendado) stop.recommended_turn = toHHMM(visit.fixedAt)
+      else if (visit.fixedAt != null && !visit.place.isArrival) stop.reservation_time = toHHMM(visit.fixedAt)
       else stop.orientative_time = true
       if (visit.franja) stop.franja = visit.franja
     }
@@ -793,7 +795,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
             before_meal: tripDay.timeCheck.antesDeComer,
             franja: tripDay.timeCheck.franja,
             drop: tripDay.timeCheck.drop,
-            suggestions: tripDay.timeCheck.sugerencias.map(({ item, nota, place }, index) => ({ ...buildVisitStop({ unitId: `${tripDay.curatedDay?.id ?? 'dia'}:sugerencia:${index}`, place, start: 0, end: item.min ?? 20 }, index, [{ place }]), suggested_time: '', ...(nota ? { add_note: nota } : {}) })),
+            suggestions: tripDay.timeCheck.sugerencias.map(({ item, nota, place, cambioMesa }, index) => ({ ...buildVisitStop({ unitId: `${tripDay.curatedDay?.id ?? 'dia'}:sugerencia:${index}`, place, start: 0, end: item.min ?? 20 }, index, [{ place }]), suggested_time: '', ...(nota ? { add_note: nota } : {}), ...(cambioMesa ? { meal_change: { meal_time: cambioMesa.comida ? 'lunch' : 'dinner', restaurant: { name: cambioMesa.restaurante, coordinates: { lat: cambioMesa.coordenadas[0], lng: cambioMesa.coordenadas[1] }, zone: cambioMesa.zona } } } : {}) })),
           },
         }
       : {}),

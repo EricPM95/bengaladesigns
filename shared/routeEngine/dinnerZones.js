@@ -161,7 +161,10 @@ export function recommendedRestaurant(destData, { names = null, meal, near, week
   const serves = meal === 'cena' ? servesDinner : servesLunch
   const all = (destData?.restaurants ?? []).filter((restaurant) => serves(restaurant) && restaurantCoordinates(restaurant))
   // (`exclude`: los que ya salen en el viaje; solo si no queda otro, se repite. `at`: la hora (minutos) a la que se llega a la mesa: tiene que estar abierto a esa hora.)
-  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso) && !exclude?.has(restaurant.name) && (at == null || restaurantOpenAt(restaurant, at))
+  // (Algunos restaurantes solo abren a una de las dos comidas ciertos días: `closed_comida_on` / `closed_cena_on`.)
+  const sinTildes = (d) => String(d ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  const cerradaLaMesa = (restaurant) => (Array.isArray(restaurant[meal === 'cena' ? 'closed_cena_on' : 'closed_comida_on']) ? restaurant[meal === 'cena' ? 'closed_cena_on' : 'closed_comida_on'] : []).some((d) => sinTildes(d) === sinTildes(weekday))
+  const open = (restaurant) => !closedOnDay(restaurant, weekday, dateIso) && !cerradaLaMesa(restaurant) && !exclude?.has(restaurant.name) && (at == null || restaurantOpenAt(restaurant, at))
   const wanted = names?.length ? all.filter((restaurant) => names.includes(restaurant.name)) : all
   const mains = new Set(wanted.map((restaurant) => mainZoneOf(restaurant.zone ?? '')))
   const sameZone = all.filter((restaurant) => mains.has(mainZoneOf(restaurant.zone ?? '')))

@@ -265,6 +265,8 @@ export interface MockStopDetail {
   /** Ver Stop.orientativeTime / reservationTime en types.ts. */
   orientativeTime?: boolean
   reservationTime?: string | null
+  /** Ver Stop.recommendedTurn en types.ts. */
+  recommendedTurn?: string | null
   /** Ver Stop.experience en types.ts. */
   experience?: ExperienceCategoryId | null
   /** Ver Stop.why en types.ts. */
@@ -522,6 +524,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     ...(stop.isArrival ? { isArrival: true, arrivalText: stop.arrivalText ?? null } : {}),
     ...(stop.orientativeTime ? { orientativeTime: true } : {}),
     ...(stop.reservationTime ? { reservationTime: stop.reservationTime } : {}),
+    ...(stop.recommendedTurn ? { recommendedTurn: stop.recommendedTurn } : {}),
     experience: stop.experience ?? null,
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
@@ -616,6 +619,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       ...(detail.isArrival ? { isArrival: true, arrivalText: detail.arrivalText ?? null } : {}),
       ...(detail.orientativeTime ? { orientativeTime: true } : {}),
       ...(detail.reservationTime ? { reservationTime: detail.reservationTime } : {}),
+      ...(detail.recommendedTurn ? { recommendedTurn: detail.recommendedTurn } : {}),
       experience: detail.experience ?? null,
       why: detail.why ?? null,
       ticketInfo: detail.ticketInfo ?? null,
