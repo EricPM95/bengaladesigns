@@ -1,5 +1,5 @@
 // Qué sugerencias de «Vas bien de tiempo» salen en los viajes de 3 y 4 días, al acabar la mañana y la tarde del D4 y del D1 con tiempo de sobra (Tanda 6c, punto 2).
-//   node scripts/destino/sugerenciasListas.mjs [inicio=2027-04-13] [salida=docs/dias/INFORME_TANDA6C_SUGERENCIAS.md]
+//   node scripts/destino/sugerenciasListas.mjs [inicio=2027-04-13] [salida=docs/dias/INFORME_TANDA6D_SUGERENCIAS.md]
 import fs from 'node:fs'
 import { planListasTrip } from '../../shared/routeEngine/listasTrip.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
@@ -13,7 +13,7 @@ const travel = travelTimesFor('roma')
 const FECHAS = (args.fechas ?? '2027-04-13,2027-07-20,2027-11-09').split(',')
 const hhmm = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 const base = (dias, inicio, extra = {}) => ({ destData: D, written, travel, totalDays: dias + 1, hasFreeTour: false, poolNames: [], experiencesPositive: [], dateRangeStartIso: inicio, entradas: {}, mediaJornada: null, ...extra })
-const lineas = ['# Sugerencias de «Vas bien de tiempo» (Tanda 6c)', '', 'Viajes de 3 y 4 días, al marcar «Visto» en la última parada antes de comer y antes de cenar del D4 y del D1, con tiempo de sobra. «Cerca» = 5-10 min andando; «lejos» (solo antes de comer o cenar con 1 h 30 o más de sobra) = hasta 20 min andando o 15 min en bus o metro, y entonces la comida o la cena pasa a la zona.', '']
+const lineas = ['# Sugerencias de «Vas bien de tiempo» (Tanda 6d)', '', 'Viajes de 3 y 4 días, al marcar «Visto» en la última parada antes de comer y antes de cenar del D4 y del D1, con tiempo de sobra. «Cerca» = 5-10 min andando; «lejos» (solo antes de comer o cenar con 1 h 30 o más de sobra) = hasta 20 min andando o 15 min en bus o metro, y entonces la comida o la cena pasa a la zona.', '']
 let total = 0
 for (const dias of [3, 4]) {
   for (const inicio of FECHAS) {
@@ -42,5 +42,25 @@ for (const dias of [3, 4]) {
     }
   }
 }
-fs.writeFileSync(args.salida ?? 'docs/dias/INFORME_TANDA6C_SUGERENCIAS.md', lineas.join('\n') + '\n')
+// El hueco antes de una entrada: el D1 con el Coliseo a las 12:00 (el día empieza a las 9:00; el viajero acaba el Foro y aún falta rato para la «Llegada a…»).
+lineas.push('## El hueco antes de una entrada', '', 'D1 con el Coliseo reservado a las 12:00, en un viaje de 3 días: el viajero marca «Visto» en lo último que va antes de la «Llegada a…».', '')
+for (const inicio of FECHAS) {
+  const plan = planListasTrip(base(3, inicio, { entradas: { Coliseo: '12:00' } }))
+  const day = plan?.days.find((x) => x.curatedDay?.id === 'D1')
+  if (!day) continue
+  const rows = day.escritoRows
+  const iLleg = rows.findIndex((r) => r.llegada)
+  const antes = rows.slice(0, iLleg).filter((r) => !['comida', 'cena', 'traslado', 'noche'].includes(r.tipo))
+  const ahora = Math.max(...antes.map((r) => r.t1))
+  const hechas = antes.flatMap((r) => [r.lugar, r.titulo].filter(Boolean))
+  const conChequeo = planListasTrip(base(3, inicio, { entradas: { Coliseo: '12:00' }, chequeo: { dayNumber: day.dayNumber, doneNames: hechas, nowMinutes: ahora } }))
+  const tc = conChequeo?.days.find((x) => x.dayNumber === day.dayNumber)?.timeCheck
+  lineas.push(`### ${inicio} · a las ${hhmm(ahora)}`, '')
+  if (!tc) { lineas.push('- (sin comprobación)', ''); continue }
+  lineas.push(`- Estado: ${tc.estado}${tc.estado === 'hueco' ? ` · «Tienes ${Math.round(tc.holgura)} min antes de tu entrada»` : `, sobran ${Math.round(tc.holgura)} min`}`)
+  if (tc.sugerencias.length === 0) lineas.push('- Sin sugerencias.')
+  for (const s of tc.sugerencias) { lineas.push(`- ${s.item.titulo ?? s.item.lugar} (${s.item.min} min)${s.nota ? ` · ${s.nota}` : ''}`); total++ }
+  lineas.push('')
+}
+fs.writeFileSync(args.salida ?? 'docs/dias/INFORME_TANDA6D_SUGERENCIAS.md', lineas.join('\n') + '\n')
 console.log(JSON.stringify({ sugerencias: total }))

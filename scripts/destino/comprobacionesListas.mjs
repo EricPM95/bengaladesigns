@@ -126,8 +126,11 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const previa = rows.slice(0, i).reverse().find((x) => x.tipo !== 'traslado')
       if (!previa?.llegada || previa.lugar !== lugar) falla('reserva', dia, `${lugar}: la reserva no lleva su «Llegada a…» delante`)
       // (Tanda 6b) Llegar tarde a una reserva es un fallo; la única excepción apuntada: un Free Tour de mañana y los Museos a las 14:00 el mismo día, donde la comida y el tour no caben juntos.
-      const excusada = rows.some((x) => x.tipo === 'tour') && /Museos Vaticanos/.test(lugar)
-      if (r.tarde > 0) (excusada ? avisa : falla)('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}${excusada ? ' (con Free Tour el mismo día)' : ''}`)
+      // (Tanda 6d: la segunda excepción apuntada: Roma en un día (D0) con el Coliseo a media tarde; todo lo que va antes es imprescindible la primera vez y no hay nada que quitar sin romper la pirámide.)
+      const excusadaFt = rows.some((x) => x.tipo === 'tour') && /Museos Vaticanos/.test(lugar)
+      const excusadaD0 = dia.curatedDay.id === 'D0' && lugar === 'Coliseo' && toMin(hora) >= 13 * 60 && toMin(hora) <= 15 * 60 + 30
+      const excusada = excusadaFt || excusadaD0
+      if (r.tarde > 0) (excusada ? avisa : falla)('reserva_tarde', dia, `${lugar}: se llega ${r.tarde} min tarde a la reserva de las ${hora}${excusadaFt ? ' (con Free Tour el mismo día)' : excusadaD0 ? ' (Roma en un día: todo lo de antes es imprescindible)' : ''}`)
     }
     // 2c. (Tanda 6c) La hora que se enseña y la que decide el cierre son la misma: una parada que sale «por fuera» por su horario tiene que estar de verdad cerrada a esa hora.
     for (const r of rows.filter((x) => x.por_horario)) {
@@ -160,8 +163,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const variantes = dia.curatedDay.variantes ?? []
       const esperado = toMin(variantes.includes('con_free_tour_de_manana') ? '09:00' : empiezaDoc ?? (dia.halfDayExcursion?.soloTarde ? '16:00' : (franjas.inicio ?? '09:00')))
       // (Tanda 6c: el documento ya no dice «el día empieza más tarde» en ningún sitio; el lunes del D4 y los miércoles de audiencia empiezan a su hora.)
-      // (La única que queda: el D2 sin Museos en miércoles; el documento dice que la Plaza y la Basílica van después de la audiencia, desde las 12:30.)
-      const excusado = (dia.curatedDay.id === 'D2' && variantes.includes('miercoles_audiencia')) || (dia.curatedDay.id === 'D0-medio' && (dia.written?.grupo === 'tarde')) || (dia.curatedDay.id === 'DT-medio' && dia.written?.grupo === 'tarde')
+      // (Tanda 6d: el miércoles del D2 sin Museos también empieza a su hora; solo quedan los medios días de tarde.)
+      const excusado = (dia.curatedDay.id === 'D0-medio' && (dia.written?.grupo === 'tarde')) || (dia.curatedDay.id === 'DT-medio' && dia.written?.grupo === 'tarde')
       // (Si lo primero del día es una hora fija —o su «Llegada a…»—, el día empieza a esa hora: no hay nada que hacer antes y no se inventa.)
       if (primera && !excusado && !dia.halfDayExcursion && !primera.llegada && !primera.fija && primera.t0 > esperado + 15) falla('dia_empieza_tarde', dia, `el día empieza a las ${Math.floor(primera.t0 / 60)}:${String(primera.t0 % 60).padStart(2, '0')} y debería empezar a las ${Math.floor(esperado / 60)}:${String(esperado % 60).padStart(2, '0')}`)
     }

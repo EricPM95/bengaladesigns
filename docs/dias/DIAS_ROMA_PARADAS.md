@@ -230,6 +230,27 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 - **Naturaleza y Vistas:** el ascensor panorámico del Altar.
 - **Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.
 
+**El Coliseo reservado a otra hora** (escrito como lo haría un guía; el motor no se lo inventa). El Coliseo y el Foro van con la misma entrada: el Foro y el Palatino se pueden ver antes o después de la hora del Coliseo.
+- **A primera hora (hasta las 10:00):** el día normal.
+- **A media mañana (de 10:30 a 12:00):**
+  - **mañana:** Arco de Constantino y Foro Romano y Palatino (se entra por el lado del Arco), «Llegada a…» y el Coliseo a su hora;
+  - **después:** de camino los Fori Imperiali, la Plaza del Campidoglio, el Altar de la Patria (por fuera si va justo) y la comida en el Gueto;
+  - **la tarde, la de siempre;**
+  - si antes de la «Llegada a…» sobran más de 30 min, HOY sugiere San Pietro in Vincoli (el Moisés de Miguel Ángel, a 10 min del Coliseo).
+- **A mediodía (de 12:30 a 15:00):**
+  - **mañana:** Plaza del Campidoglio, Altar de la Patria por dentro y Foro Romano y Palatino (se entra por Via dei Fori Imperiali y se sale junto al Arco);
+  - **comida:** en Monti, al lado del Coliseo (La Taverna dei Fori Imperiali o Trattoria Valentino);
+  - **después:** «Llegada a…», el Coliseo y el Arco;
+  - **tarde:** de camino los Fori Imperiali y Largo di Torre Argentina, el Panteón por dentro y Piazza Navona;
+  - **cena y noche:** las de siempre;
+  - el Barrio Judío y las iglesias (el Gesù, San Luigi) pasan a «Si te sobra tiempo».
+- **Por la tarde (16:00 o más tarde):** el día va al revés y acaba en el Coliseo.
+  - **mañana:** el centro: el Panteón por dentro (abre a las 9:00), Piazza Navona, San Luigi dei Francesi, Largo di Torre Argentina, el Gesù (por la mañana está abierto) y el Barrio Judío;
+  - **comida:** en el Gueto;
+  - **tarde:** Plaza del Campidoglio, Altar de la Patria, Foro Romano y Palatino (se entra por Via dei Fori Imperiali y se sale junto al Arco), el Arco, «Llegada a…» y el Coliseo;
+  - **cena:** en Monti (La Taverna dei Fori Imperiali o Trattoria Valentino);
+  - **noche:** Trevi y la Plaza de España (15 min andando o taxi).
+
 **Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde. Lo que el tour recorre (el centro) sale de la lista con «Lo ves en el Free Tour».
 
 - **🌧 Si llueve:** el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.
@@ -257,7 +278,8 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 - **Noche:** Trastevere de noche (o la imprescindible que falte)
 - **Cierres:**
   - el domingo, el miércoles (audiencia) y los días que cierran los Museos, este día se cambia con otro;
-  - si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas, y el miércoles la Plaza y la Basílica van después de la audiencia (desde las 12:30).
+  - si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas;
+  - **el miércoles sin Museos** el día empieza a su hora, con el Castillo de Sant'Angelo por dentro (abre a las 9:00; por fuera si el viaje ya lo lleva por dentro), el Puente y el Lungotevere. Después, la Plaza y la Basílica cuando acaba la audiencia (desde las 12:30), la comida en el Borgo y la tarde de siempre.
 
 **Pool:**
 - **Cúpula:** después de la Basílica ~45.
@@ -268,7 +290,25 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
 - **Naturaleza y Vistas:** la Cúpula.
 - **Mercadillos:** «Plaza de San Pedro y los 100 Presepi».
 
-**Reserva de los Museos a otra hora:** la regla general. La mañana se hace sin los Museos y los Museos van a su hora; después, lo de la tarde en su orden.
+**Reserva de los Museos a otra hora:** la regla general (la regla 4). La mañana se hace sin los Museos y los Museos van a su hora; después, lo de la tarde en su orden.
+
+**Museos reservados por la tarde (a las 15:00 o más tarde):** el día cambia entero y va así:
+- **Mañana:**
+  - Cúpula de San Pedro, a primera hora ~1 h 15 (se baja directamente a la Basílica; si el viaje lleva el D6, aquí no va y la mañana empieza en la Basílica)
+  - Basílica de San Pedro, por dentro (abre a las 7:00, casi sin cola) ~1 h
+  - Plaza de San Pedro ~30
+  - *de camino:* Via della Conciliazione
+  - Castillo de Sant'Angelo, por dentro ~1 h 30 (por fuera ~30 si el viaje ya lo lleva por dentro otro día)
+  - Puente Sant'Angelo ~15
+  - *de camino:* el Lungotevere, por la orilla del Tíber
+- **Comida:** sin prisas en Prati (L'Arcangelo o Osteria dell'Angelo)
+- **Tarde:**
+  - «Llegada a…» 30 min antes
+  - 🎟 Museos Vaticanos y Capilla Sixtina ~3 h
+  - Plaza de San Pedro al salir, ya con las luces ~15
+- **Cena:** en Trastevere (Tonnarello o Da Enzo al 29), en taxi
+- **Noche:** Trastevere de noche
+- **Por qué así:** la Basílica cierra a las 18:30 (de octubre a marzo) o a las 19:00 (de abril a septiembre), y al salir de los Museos ya estaría cerrada. Por eso va por la mañana. La Isla Tiberina, Santa Maria in Trastevere y el Janículo van a «Si te sobra tiempo»: se pueden ver antes de cenar si se sale pronto.
 
 - **🌧 Si llueve:** el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.
 
@@ -389,8 +429,8 @@ Qué días lleva cada viaje, el orden de los días (el Vaticano no en domingo ni
   - Terraza del Pincio ~20
 - **Comida:** Sgarro Bistrot (o Buccone Vini e Olii), junto a la Piazza del Popolo
 - **Tarde:**
-  - Piazza del Popolo ~15
-  - Santa Maria del Popolo (los Caravaggio) ~20 (⚠️ abre a las 16:00)
+  - Piazza del Popolo, con el obelisco y las iglesias gemelas ~30
+  - Santa Maria del Popolo (los Caravaggio) ~20 (⚠️ abre a las 16:00: si se llega un poco antes, se espera)
   - Ara Pacis, por dentro ~45 (⚠️ última entrada a las 18:30)
   - *de camino:* Via Condotti
   - Plaza de España ~45

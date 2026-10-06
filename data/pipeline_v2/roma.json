@@ -1517,6 +1517,7 @@
     {
       "id": "piazza_del_popolo",
       "name": "Piazza del Popolo",
+      "texto_espera": "haz unas fotos en la Piazza del Popolo",
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
         {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."}
@@ -1961,6 +1962,30 @@
       "search_en_keywords": [
         "conciliazione"
       ]
+    },
+    {
+      "id": "lungotevere",
+      "name": "Lungotevere",
+      "level": 3,
+      "zone": "vaticano",
+      "coordinates": [
+        41.9027,
+        12.4655
+      ],
+      "duration_minutes": 10,
+      "min_max": 10,
+      "type": "exterior",
+      "tip": "El paseo por la orilla del Tíber, con los plátanos y el Castillo de Sant'Angelo al otro lado del río. Se hace andando, sin parar, camino de la Plaza de San Pedro.",
+      "tags": [
+        "calle"
+      ],
+      "filter_category": "monumentos",
+      "search_aliases": [
+        "orilla del tiber",
+        "lungotevere"
+      ],
+      "search_en": "Lungotevere Castello Rome",
+      "_nota_ficha": "Tanda 6d: sitio nuevo para el miércoles del D2 y los Museos por la tarde (de camino). Coordenadas aproximadas, por comprobar."
     },
     {
       "id": "castillo_de_santangelo",
@@ -7908,8 +7933,8 @@
     },
     {
       "name": "Coming Out",
-      "sub_category": "pizza", "tipo_local": "pizzeria",
-      "meal": "ambos",
+      "sub_category": "pub", "tipo_local": "pub",
+      "meal": "copa",
       "address": "Via di S. Giovanni in Laterano 8, 00184 Roma",
       "coordinates": {
         "lat": 41.89006,
@@ -7918,10 +7943,10 @@
       "zone": "Coliseo / Celio",
       "price_range": "€",
       "avg_price_person": null,
-      "what_to_order": "Pizza",
-      "tip": "Probado por nosotros: muy buenas pizzas a un paso del Coliseo.",
+      "what_to_order": "Una cerveza o una copa",
+      "tip": "Un pub junto al Coliseo para tomar algo; no es un sitio para cenar.",
       "hours": null,
-      "best_for": "Pizza rápida y buena junto al Coliseo",
+      "best_for": "Tomar algo cerca del Coliseo",
       "comprobado": "2026-09-28"
     },
     {
@@ -8427,7 +8452,7 @@
     {
       "name": "Osteria dell'Angelo",
       "sub_category": "trattoria", "tipo_local": "restaurante",
-      "meal": "cena",
+      "meal": "ambos",
       "address": "Via Giovanni Bettolo 24-32",
       "coordinates": {
         "lat": 41.9116,
@@ -8441,7 +8466,7 @@
       ],
       "hours_audit": {
         "fuente": "https://www.touringclub.it/destinazioni/roma/mangiare/240317-osteria-dellangelo + OpenStreetMap (coordenadas)",
-        "nota": "Touring Club: \"sempre aperto\", sin horas. No se sabe si abre a mediodía: queda como \"cena\".",
+        "nota": "Touring Club: \"sempre aperto\", sin horas. No se sabía si abre a mediodía; el documento de días (Tanda 6d, «sin prisas en Prati») la pone a la comida: pasa a \"ambos\".",
         "fecha": "2026-09-26"
       },
       "comprobado": "2026-09-28"

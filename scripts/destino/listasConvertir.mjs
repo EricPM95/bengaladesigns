@@ -227,10 +227,13 @@ for (const seccion of secciones) {
   let franja = FLAT.has(id) ? 'manana' : null
   let modo = FLAT.has(id) ? 'lista' : 'prosa'
   const tomarParte = (nombre) => (dia.partes[nombre] ??= { manana: [], comida: null, tarde: [], cena: null, noche: null })
+  // (Tanda 6d) Los bloques escritos para una reserva a otra hora («El Coliseo reservado a otra hora», «Museos reservados por la tarde») son variantes: llevan sus propias listas y NO son la lista base del día.
+  let bloqueVariante = false
   for (const linea of seccion.cuerpo) {
     if (!linea.trim()) continue
     // Cabeceras en negrita sueltas (no son un punto de lista)
     if (/^\*\*/.test(linea)) {
+      bloqueVariante = /^\*\*(El Coliseo reservado a otra hora|Museos reservados por la tarde)/.test(linea)
       const lq = /^\*\*Lista de «Prefiero quedarme en Roma»:\*\*\s*(.+)$/.exec(linea)
       if (lq) { dia.quedarme = lq[1].split('·').map((s) => s.trim()).filter(Boolean); continue }
       if (/^\*\*De mañana\b/.test(linea)) { parte = tomarParte('manana'); franja = 'manana'; modo = 'lista'; continue }
@@ -244,7 +247,8 @@ for (const seccion of secciones) {
     const texto = b[2].trim()
     const etiqueta = /^\*\*([^*]+?):\*\*\s*(.*)$/.exec(texto)
     const lluvia = /^\*\*🌧\s*Si llueve:\*\*\s*(.*)$/.exec(texto)
-    if (lluvia) { dia.lluvia = { texto: lluvia[1].trim(), doc: texto }; continue }
+    if (lluvia) { dia.lluvia = { texto: lluvia[1].trim(), doc: texto }; bloqueVariante = false; continue }
+    if (bloqueVariante) continue
     if (etiqueta && profundidad === 0) {
       const nombreEt = norm(etiqueta[1])
       const resto = etiqueta[2].trim()

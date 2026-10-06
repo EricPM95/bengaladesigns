@@ -33,6 +33,9 @@ for (const forma of FORMAS) {
   viajes.push({ ...forma, id: `${forma.dias}${forma.medio ? 'm' : ''}-verano`, estacion: 'verano', inicio: VERANO })
 }
 viajes.push({ clave: '3 días con la entrada del Coliseo reservada a las 12:00', dias: 3, id: 'reserva', estacion: 'verano', inicio: addDays(VERANO, 1), entradas: { Coliseo: '12:00' }, extra: 'Con la entrada del Coliseo reservada a las 12:00 y los Museos Vaticanos reservados a las 14:00 en el día del Vaticano.', entradas2: { [MUSEOS]: '14:00' } })
+// Las reservas a otra hora, un viaje por cada hora (Tanda 6d): el D2 con los Museos y el D1 con el Coliseo.
+for (const hora of ['09:00', '11:00', '14:00', '16:00']) viajes.push({ clave: `3 días con los Museos Vaticanos reservados a las ${hora}`, dias: 3, id: `museos-${hora.replace(':', '')}`, estacion: 'verano', inicio: addDays(VERANO, 2), entradas: { [MUSEOS]: hora }, extra: `El D2 con los Museos a las ${hora}.` })
+for (const hora of ['09:00', '11:00', '12:00', '14:00', '16:00']) viajes.push({ clave: `3 días con el Coliseo reservado a las ${hora}`, dias: 3, id: `coliseo-${hora.replace(':', '')}`, estacion: 'verano', inicio: addDays(VERANO, 1), entradas: { Coliseo: hora }, extra: `El D1 con el Coliseo a las ${hora}.` })
 viajes.push({ clave: '3 días con un ejemplo de HOY («Vas bien de tiempo»: al acabar la tarde del primer día con tiempo de sobra)', dias: 3, id: 'hoy', estacion: 'verano', inicio: addDays(VERANO, 0), ejemploHoy: { dia: 1, restoMin: 100 } })
 viajes.push({ clave: '2 días con lluvia (la alternativa de cada día aplicada)', dias: 2, id: 'lluvia', estacion: 'invierno', inicio: addDays(IVNO, 7), lluvia: true })
 
