@@ -123,7 +123,9 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // Lo que el viajero marcó en el pool y no sale
   }
   for (const name of poolNames) {
-    const sale = dias.some((d) => (d.escritoRows ?? []).some((r) => r.lugar === name && r.modo !== 'camino') || (d.spareRows ?? []).some((r) => r.lugar === name) || (d.escritoLog ?? []).some((l) => l.sitio === name && l.que === 'quitada')) || plan.unplacedPool.some((u) => u.name === name) || (hasFreeTour && cubiertos.has(name) && place(name)?.type !== 'interior')
+    // (Sale si lo enseña la ruta —de camino también—, su nocturna, o una parada de su mismo barrio; o si está en «Si te sobra tiempo» o en «No incluido».)
+    const barrio = place(name)?.tags?.includes('barrio') ? place(name)?.zone : null
+    const sale = dias.some((d) => (d.escritoRows ?? []).some((r) => r.lugar === name || (barrio && place(r.lugar)?.zone === barrio && r.modo !== 'camino')) || (d.escritoNights ?? []).some((n) => (n.conflicts_with ?? []).includes(name)) || (d.spareRows ?? []).some((r) => r.lugar === name) || (d.escritoLog ?? []).some((l) => l.sitio === name && l.que === 'quitada')) || plan.unplacedPool.some((u) => u.name === name) || (hasFreeTour && cubiertos.has(name) && place(name)?.type !== 'interior')
     if (!sale) fallos.push({ regla: 'pool', texto: `${etiqueta}: «${name}» marcado en el pool no sale ni está en «No incluido»` })
   }
   // «Si te sobra tiempo» y lo que cuentan los avisos

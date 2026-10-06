@@ -424,6 +424,7 @@
    ],
    "experiencias": {
     "mercadillos_navidenos": {
+     "clave": "navona",
      "doc": "Mercadillos (8 dic – 6 ene): «Piazza Navona y su mercadillo navideño».",
      "cuando": {
       "fechas": "12-08..01-06"
@@ -1043,6 +1044,7 @@
    ],
    "experiencias": {
     "mercadillos_navidenos": {
+     "clave": "presepi",
      "doc": "Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño».",
      "cuando": {
       "fechas": "12-08..01-06"
@@ -1570,7 +1572,7 @@
    "experiencias": {
     "arte_museos": {
      "doc": "Arte y Museos:** los Capitolinos.",
-     "lugar": "Museos Capitolinos",
+     "añade": "Museos Capitolinos",
      "cuando": {
       "viaje_sin": [
        "D6"
@@ -1623,35 +1625,47 @@
       }
      }
     },
-    "mercadillos_navidenos": {
-     "doc": "Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.",
-     "cuando": {
-      "fechas": "12-08..01-06"
-     },
-     "ops": {
-      "manana": {
-       "insertar": [
-        {
-         "despues_de": "Plaza del Campidoglio",
-         "parada": {
-          "tipo": "parada",
-          "lugar": "Santo Bambino de Aracoeli",
-          "min": 5,
-          "modo": "camino"
-         }
-        }
-       ]
+    "mercadillos_navidenos": [
+     {
+      "clave": "aracoeli",
+      "doc": "Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.",
+      "cuando": {
+       "fechas": "12-08..01-06"
       },
-      "tarde": {
-       "ajustar": {
-        "Piazza Navona": {
-         "titulo": "Piazza Navona y su mercadillo navideño",
-         "texto": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa."
+      "ops": {
+       "manana": {
+        "insertar": [
+         {
+          "despues_de": "Plaza del Campidoglio",
+          "parada": {
+           "tipo": "parada",
+           "lugar": "Santo Bambino de Aracoeli",
+           "min": 5,
+           "modo": "camino"
+          }
+         }
+        ]
+       }
+      }
+     },
+     {
+      "clave": "navona",
+      "doc": "Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.",
+      "cuando": {
+       "fechas": "12-08..01-06"
+      },
+      "ops": {
+       "tarde": {
+        "ajustar": {
+         "Piazza Navona": {
+          "titulo": "Piazza Navona y su mercadillo navideño",
+          "texto": "En Navidad, Navona es de la Befana: puestos de dulces, figuritas para el belén y carbón de azúcar, con la Fuente de los Cuatro Ríos iluminada en medio. Date una vuelta entre los puestos, sin prisa."
+         }
         }
        }
       }
      }
-    }
+    ]
    }
   },
   "D2": {
@@ -1933,7 +1947,7 @@
     },
     "naturaleza_vistas": {
      "doc": "Naturaleza y Vistas:** la Cúpula.",
-     "lugar": "Cúpula de San Pedro",
+     "añade": "Cúpula de San Pedro",
      "ops": {
       "manana": {
        "insertar": [
@@ -1952,6 +1966,7 @@
      }
     },
     "mercadillos_navidenos": {
+     "clave": "presepi",
      "doc": "Mercadillos:** «Plaza de San Pedro y los 100 Presepi».",
      "cuando": {
       "fechas": "12-08..01-06"
@@ -2105,6 +2120,7 @@
    ],
    "experiencias": {
     "mercadillos_navidenos": {
+     "clave": "presepi",
      "doc": "Mercadillos:** «Plaza de San Pedro y los 100 Presepi».",
      "cuando": {
       "fechas": "12-08..01-06"
@@ -2377,7 +2393,7 @@
    "experiencias": {
     "arte_museos": {
      "doc": "Arte y Museos:** los Capitolinos.",
-     "lugar": "Museos Capitolinos",
+     "añade": "Museos Capitolinos",
      "cuando": {
       "viaje_sin": [
        "D6"
@@ -2431,6 +2447,7 @@
      }
     },
     "mercadillos_navidenos": {
+     "clave": "aracoeli",
      "doc": "Mercadillos:** el Santo Bambino de Aracoeli de camino.",
      "cuando": {
       "fechas": "12-08..01-06"
@@ -2791,6 +2808,7 @@
      }
     },
     "mercadillos_navidenos": {
+     "clave": "luces",
      "doc": "Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).",
      "cuando": {
       "fechas": "12-08..01-06",
@@ -3207,6 +3225,7 @@
      }
     },
     "mercadillos_navidenos": {
+     "clave": "luces",
      "doc": "Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).",
      "cuando": {
       "fechas": "12-08..01-06"
@@ -3889,6 +3908,7 @@
      }
     },
     "mercadillos_navidenos": {
+     "clave": "aracoeli",
      "doc": "Mercadillos:** el Santo Bambino en Santa Maria in Aracoeli.",
      "cuando": {
       "fechas": "12-08..01-06"

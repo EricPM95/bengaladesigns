@@ -58,7 +58,7 @@ export default {
         },
       ],
       experiencias: {
-        mercadillos_navidenos: { doc: 'Mercadillos (8 dic – 6 ene): «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } }, tarde: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } } } },
+        mercadillos_navidenos: { clave: 'navona', doc: 'Mercadillos (8 dic – 6 ene): «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } }, tarde: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } } } },
       },
       lluvia_doc: 'la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada, y el Panteón por dentro (~30); el Foro desde la terraza y el Coliseo, más cortos.',
       lluvia_ops: lluvia({ ops: { manana: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { Panteón: { modo: 'dentro', min: 30 } } }, tarde: { ajustar: { 'Foro Romano y Palatino': { min: 10 }, Coliseo: { min: 10 } } } } }),
@@ -84,7 +84,7 @@ export default {
         },
       ],
       experiencias: {
-        mercadillos_navidenos: { doc: 'Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } }, tarde: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
+        mercadillos_navidenos: { clave: 'presepi', doc: 'Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } }, tarde: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
       },
       lluvia_doc: 'la Basílica de San Pedro por dentro (gratis, ~45) en vez de la fachada; el Castillo, de camino.',
       lluvia_ops: lluvia({ ops: { manana: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { "Castillo de Sant'Angelo": { modo: 'camino', min: 5 } } }, tarde: { cambiar: { 'Basílica de San Pedro::camino': P('Basílica de San Pedro', 45, 'dentro') }, ajustar: { "Castillo de Sant'Angelo": { modo: 'camino', min: 5 } } } } }),
@@ -113,10 +113,13 @@ export default {
         'Parque de Villa Borghese': { doc: 'Parque de Villa Borghese:** al final de la tarde (taxi), con el Pincio. Cena en el Tridente.', ops: { tarde: { insertar: [{ al_final: true, parada: [taxi('Taxi a Villa Borghese'), P('Parque de Villa Borghese', 40, null, { protegido: true }), P('Terraza del Pincio', 20, null, { protegido: true })] }] }, cena: mesa('Il Gabriello', 'Poldo e Gianna Osteria', 'en el Tridente') } },
       },
       experiencias: {
-        arte_museos: { doc: 'Arte y Museos:** los Capitolinos.', lugar: 'Museos Capitolinos', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
+        arte_museos: { doc: 'Arte y Museos:** los Capitolinos.', añade: 'Museos Capitolinos', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
         barrios_sabores: { doc: 'Barrios y Sabores:** el Barrio Judío ~45.', ops: { tarde: { ajustar: { 'Barrio Judío': { min: 45 } } } } },
         naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el ascensor panorámico del Altar.', ops: { manana: { cambiar: { 'Altar de la Patria': P('Terraza del Altar de la Patria (ascensor panorámico)', 45, 'dentro', { protegido: true }) } } } },
-        mercadillos_navidenos: { doc: 'Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.', cuando: { fechas: NAVIDAD }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Santo Bambino de Aracoeli', 5, 'camino') }] }, tarde: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } } } },
+        mercadillos_navidenos: [
+          { clave: 'aracoeli', doc: 'Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.', cuando: { fechas: NAVIDAD }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Santo Bambino de Aracoeli', 5, 'camino') }] } } },
+          { clave: 'navona', doc: 'Mercadillos:** «Piazza Navona y su mercadillo navideño» y el Santo Bambino de Aracoeli de camino.', cuando: { fechas: NAVIDAD }, ops: { tarde: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } } } },
+        ],
       },
       lluvia_doc: 'el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.',
       lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Foro Romano y Palatino': { min: 60 } } }, tarde: { ajustar: { 'Barrio Judío': { min: 20 }, 'Piazza Navona': { min: 25 } } } } }, { cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro') }] } } }),
@@ -142,8 +145,8 @@ export default {
       },
       experiencias: {
         arte_museos: { doc: 'Arte y Museos:** los Museos con la Pinacoteca ~4 h.', ops: { manana: { ajustar: { [MUSEOS]: { min: 240, titulo: 'Museos Vaticanos y Capilla Sixtina, con la Pinacoteca' } } } } },
-        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** la Cúpula.', lugar: 'Cúpula de San Pedro', ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
-        mercadillos_navidenos: { doc: 'Mercadillos:** «Plaza de San Pedro y los 100 Presepi».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
+        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** la Cúpula.', añade: 'Cúpula de San Pedro', ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
+        mercadillos_navidenos: { clave: 'presepi', doc: 'Mercadillos:** «Plaza de San Pedro y los 100 Presepi».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
       },
       lluvia_doc: "el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
       lluvia_ops: lluvia({ ops: { tarde: { quitar: ['Mirador del Janículo', 'San Pietro in Montorio y Tempietto de Bramante', "Fontana dell'Acqua Paola", 'Isla Tiberina'] } } }, { cuando: { viaje_sin: ['D6'] }, ops: { tarde: { ajustar: { "Castillo de Sant'Angelo": { modo: 'dentro', min: 90 } } } } }),
@@ -156,7 +159,7 @@ export default {
         { id: 'domingo_sin_museos', doc: 'Domingo (Museos cerrados):** se cambia de día; si no se puede, la tarde sin Museos.', cuando: { cerrado: MUSEOS }, ops: { tarde: { quitar: [MUSEOS] } } },
       ],
       experiencias: {
-        mercadillos_navidenos: { doc: 'Mercadillos:** «Plaza de San Pedro y los 100 Presepi».', cuando: { fechas: NAVIDAD }, ops: { tarde: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
+        mercadillos_navidenos: { clave: 'presepi', doc: 'Mercadillos:** «Plaza de San Pedro y los 100 Presepi».', cuando: { fechas: NAVIDAD }, ops: { tarde: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
       },
     },
 
@@ -169,10 +172,10 @@ export default {
         'Galería Borghese': { doc: 'Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.', ops: { tarde: { quitar: ['Iglesia de Santa Maria in Trastevere'], insertar: [{ al_final: true, parada: [taxi('Taxi a la Galería Borghese'), P('Galería Borghese', 120, 'dentro', { hora_tipo: 'reserva', protegido: true })] }] }, cena: mesa('Il Gabriello', 'Poldo e Gianna Osteria', 'en el Tridente') } },
       },
       experiencias: {
-        arte_museos: { doc: 'Arte y Museos:** los Capitolinos.', lugar: 'Museos Capitolinos', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
+        arte_museos: { doc: 'Arte y Museos:** los Capitolinos.', añade: 'Museos Capitolinos', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
         naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el ascensor del Altar.', ops: { manana: { cambiar: { 'Altar de la Patria': P('Terraza del Altar de la Patria (ascensor panorámico)', 45, 'dentro', { protegido: true }) } } } },
         barrios_sabores: { doc: 'Barrios y Sabores:** el Barrio Judío ~45.', ops: { tarde: { ajustar: { 'Barrio Judío': { min: 45 } } } } },
-        mercadillos_navidenos: { doc: 'Mercadillos:** el Santo Bambino de Aracoeli de camino.', cuando: { fechas: NAVIDAD }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Santo Bambino de Aracoeli', 5, 'camino') }] } } },
+        mercadillos_navidenos: { clave: 'aracoeli', doc: 'Mercadillos:** el Santo Bambino de Aracoeli de camino.', cuando: { fechas: NAVIDAD }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Santo Bambino de Aracoeli', 5, 'camino') }] } } },
       },
       lluvia_doc: 'el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.',
       lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Foro Romano y Palatino': { min: 60 } } }, tarde: { quitar: ['Mirador del Janículo', 'San Pietro in Montorio y Tempietto de Bramante', "Fontana dell'Acqua Paola", 'Isla Tiberina'], cambiar: { 'Iglesia de Santa Maria in Trastevere': P('Santa Maria in Trastevere', 20, 'dentro') }, insertar: [{ despues_de: 'Iglesia de Santa Maria in Trastevere', parada: P('Santa Cecilia in Trastevere', 40, 'dentro') }] } } }),
@@ -188,7 +191,7 @@ export default {
       },
       experiencias: {
         naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el Parque de Villa Borghese antes del Pincio.', ops: { manana: { insertar: [{ antes_de: 'Terraza del Pincio', parada: P('Parque de Villa Borghese', 40, null, { protegido: true }) }] }, tarde: { insertar: [{ antes_de: 'Terraza del Pincio', parada: P('Parque de Villa Borghese', 40, null, { protegido: true }) }] } } },
-        mercadillos_navidenos: { doc: 'Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).', cuando: { fechas: NAVIDAD, parte: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: luces }] } } },
+        mercadillos_navidenos: { clave: 'luces', doc: 'Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).', cuando: { fechas: NAVIDAD, parte: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: luces }] } } },
       },
       lluvia_doc: 'el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España.',
       lluvia_ops: lluvia({ ops: { manana: { quitar: ['Terraza del Pincio', 'Jardines del Pincio'], ajustar: { 'Santa Maria del Popolo': { modo: 'dentro' }, 'Trinità dei Monti': { modo: 'dentro' } }, insertar: [{ despues_de: 'Santa Maria del Popolo', parada: P('Ara Pacis', 45, 'dentro') }] }, tarde: { quitar: ['Terraza del Pincio', 'Jardines del Pincio'], ajustar: { 'Santa Maria del Popolo': { modo: 'dentro' }, 'Trinità dei Monti': { modo: 'dentro' } }, insertar: [{ despues_de: 'Santa Maria del Popolo', parada: P('Ara Pacis', 45, 'dentro') }] } } }),
@@ -212,7 +215,7 @@ export default {
       ],
       experiencias: {
         naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el lago de Villa Borghese ~60.', ops: { manana: { ajustar: { 'Lago de Villa Borghese y el Templo de Esculapio': { min: 60 } } } } },
-        mercadillos_navidenos: { doc: 'Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).', cuando: { fechas: NAVIDAD }, ops: { tarde: { insertar: [{ al_final: true, parada: luces }] } } },
+        mercadillos_navidenos: { clave: 'luces', doc: 'Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).', cuando: { fechas: NAVIDAD }, ops: { tarde: { insertar: [{ al_final: true, parada: luces }] } } },
       },
       lluvia_doc: 'el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.',
       lluvia_ops: lluvia({ ops: { manana: { quitar: ['Lago de Villa Borghese y el Templo de Esculapio', 'Reloj de agua del Pincio'], ajustar: { 'Terraza del Pincio': { modo: 'camino', min: 5 } } }, tarde: { ajustar: { 'Santa Maria del Popolo': { min: 30 }, 'Ara Pacis': { min: 60 } } } } }),
@@ -259,7 +262,7 @@ export default {
       ],
       experiencias: {
         arte_museos: { doc: 'Arte y Museos:** los Capitolinos ~2 h 30.', ops: { tarde: { ajustar: { 'Museos Capitolinos': { min: 150 } } } } },
-        mercadillos_navidenos: { doc: 'Mercadillos:** el Santo Bambino en Santa Maria in Aracoeli.', cuando: { fechas: NAVIDAD }, ops: { tarde: { ajustar: { 'Santo Bambino de Aracoeli': { titulo: 'Santa Maria in Aracoeli y el Santo Bambino', min: 30 } } } } },
+        mercadillos_navidenos: { clave: 'aracoeli', doc: 'Mercadillos:** el Santo Bambino en Santa Maria in Aracoeli.', cuando: { fechas: NAVIDAD }, ops: { tarde: { ajustar: { 'Santo Bambino de Aracoeli': { titulo: 'Santa Maria in Aracoeli y el Santo Bambino', min: 30 } } } } },
       },
       lluvia_doc: 'la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa.',
       lluvia_ops: lluvia({ ops: { manana: { quitar: ['Cúpula de San Pedro'] }, tarde: { quitar: ['Terraza del Altar de la Patria'], ajustar: { 'Museos Capitolinos': { min: 150 } } } } }),

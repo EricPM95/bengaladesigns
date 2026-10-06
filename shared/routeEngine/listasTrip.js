@@ -41,8 +41,8 @@ const OUTSIDE_MINUTES = 15
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
-  inicio: '09:00', comida_desde: '12:00', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:30', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
-  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25,
+  inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:30', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, tarde_medio_desde: '16:00',
 }
 
 /** Cuántos extras del pool se pueden elegir: 2 días, 2; 3, 3; 4, 4; 5 o más, 5. */
@@ -233,6 +233,8 @@ export function planListasTrip(args) {
     let base = copiarParte(parte)
     if (dia.hereda_manana_de) base.manana = clone(written.days[dia.hereda_manana_de].partes.unica.manana)
     if (!base.empieza && dia.empieza) base.empieza = dia.empieza
+    // La tarde de un medio día (la de llegada) empieza a las 16:00 (provisional: las llegadas y salidas se piensan aparte).
+    if (parteKey === 'tarde' && dia.partes.manana && !base.empieza) base.empieza = cfg.tarde_medio_desde
     const aplicadas = []
     const ctx = contextoDe(dia, day, hours, parteKey === 'unica' ? null : parteKey, index)
     let trabajo = aplicarVariantes(base, dia, ctx, aplicadas)
@@ -295,20 +297,20 @@ export function planListasTrip(args) {
   }
 
   // ── 4. Experiencias: lo que cada una añade o cambia, una vez por viaje, en el primer día que lo trae ─────────────
+  // (Cada cosa que una experiencia cambia —su `clave`— se hace una vez por viaje, en el primer día que la trae.)
+  const hechasExp = new Set()
   for (const exp of selected) {
     for (const d of drafts) {
-      const def = d.dia.experiencias?.[exp]
-      if (!def || !cumple(def.cuando, d.ctx)) continue
-      // (Lo que la experiencia añade y el viaje ya lleva no se repite.)
-      if (def.lugar && drafts.some((o) => stopsOfTrabajo(o.trabajo).some((s) => s.lugar === def.lugar && s.modo !== 'camino' && s.tipo !== 'traslado' && !s.capa))) continue
-      if (def.lugar && closedThatDay(def.lugar, d.day)) continue
-      if (def.lugar) {
-        const fit = seasonFit(placeByName.get(def.lugar)?.available, calendar, hoursOf(d.day).dateIso)
-        if (placeByName.get(def.lugar)?.available && !(fit.enters && !fit.notice)) continue
+      for (const def of [].concat(d.dia.experiencias?.[exp] ?? [])) {
+        const clave = `${exp}:${def.clave ?? def.añade ?? ''}`
+        if (hechasExp.has(clave) || !cumple(def.cuando, d.ctx)) continue
+        // (Lo que la experiencia añade y el viaje ya lleva no se repite, ni se añade un día en que cierra.)
+        if (def.añade && drafts.some((o) => stopsOfTrabajo(o.trabajo).some((s) => s.lugar === def.añade && s.modo !== 'camino' && s.tipo !== 'traslado'))) continue
+        if (def.añade && closedThatDay(def.añade, d.day)) continue
+        d.trabajo = aplicarOps(d.trabajo, def.ops)
+        d.aplicadas.push(`experiencia:${exp}`)
+        hechasExp.add(clave)
       }
-      d.trabajo = aplicarOps(d.trabajo, def.ops)
-      d.aplicadas.push(`experiencia:${exp}`)
-      break
     }
   }
 
@@ -382,6 +384,16 @@ export function planListasTrip(args) {
       const ventana = item.franja === 'manana' ? [7 * 60, toMin(cfg.comida_hasta)] : [toMin(cfg.comida_desde), 22 * 60]
       return !sesiones.some((s) => Math.min(s.close, ventana[1]) - Math.max(s.open, ventana[0]) >= Math.min(item.min ?? 20, 20))
     }
+    // De temporada: lo que va de camino y solo está en sus fechas (el Santo Bambino, las luces de Navidad) no sale fuera de ellas.
+    items = items.filter((item) => {
+      if (item.kind !== 'stop' || item.modo !== 'camino') return true
+      const available = placeByName.get(item.lugar)?.available
+      if (!available || item.ignora_temporada) return true
+      const fit = seasonFit(available, calendar, hours.dateIso)
+      if (fit.enters && !fit.notice) return true
+      log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'quitada', causa: `fuera de temporada: ${item.lugar} solo está en sus fechas` })
+      return false
+    })
     // 5.3 Cierres: lo cerrado ese día sale con «Cerrado hoy» (o por fuera si se ve desde la calle, o su alternativa escrita).
     const sinTraslado = (lista, destinoId) => lista.filter((it, i) => !(it.kind === 'traslado' && lista[i + 1]?.id === destinoId))
     items = items.flatMap((item) => {
@@ -501,10 +513,13 @@ export function planListasTrip(args) {
         }
         if (!name) {
           name = candidatas.find((candidata) => abiertoA(candidata, meal, start)) ?? original
-          if (!libre(name)) log.push({ id: item.id, lugar: name, sitio: null, que: 'aviso', causa: `restaurante repetido en el viaje: ${name} (no hay un restaurante de verdad abierto a menos de ${recambio.max_andar_min} min andando)` })
+          const causaRepetido = `restaurante repetido en el viaje: ${name} (no hay un restaurante de verdad abierto a menos de ${recambio.max_andar_min} min andando)`
+          if (!libre(name) && !log.some((l) => l.id === item.id && l.causa === causaRepetido)) log.push({ id: item.id, lugar: name, sitio: null, que: 'aviso', causa: causaRepetido })
         }
+        // (El motivo se cuenta ANTES de dar por usado el que va: si no, «el que va ya sale en el viaje».)
+        const motivoFinal = motivo ?? `${descartadas()}: va ${name}`
         usadasHoy.add(name)
-        if (name !== original && !log.some((l) => l.id === item.id && l.que === 'restaurante')) log.push({ id: item.id, lugar: original, sitio: null, que: 'restaurante', causa: motivo ?? `${descartadas()}: va ${name}` })
+        if (name !== original && !log.some((l) => l.id === item.id && l.que === 'restaurante')) log.push({ id: item.id, lugar: original, sitio: null, que: 'restaurante', causa: motivoFinal })
         return name === item.restaurante ? item : { ...item, restaurante: name }
       })
     }
@@ -570,10 +585,11 @@ export function planListasTrip(args) {
         }
         if (!valido) continue
         const resta = relleno ? limite - llegadaDe([...resto.slice(0, p), relleno]) : hueco
-        candidatos.push({ p, hueco, relleno, nuevo, sobran, resta: Math.max(0, resta) })
+        // (Si la hora fija es antes de que empiece el día y no va nada delante, el día empieza antes.)
+        candidatos.push({ p, hueco, relleno, nuevo, sobran, resta: p === 0 ? resta : Math.max(0, resta) })
       }
       // El que más deja en su sitio: cada parada que pasa a «Si te sobra tiempo» cuenta como 45 min de día que empieza más tarde; a igual, más de lo que ya iba antes.
-      const coste = (c) => c.sobran.length + c.resta / 45
+      const coste = (c) => c.sobran.length + Math.abs(c.resta) / 45
       candidatos.sort((x, y) => coste(x) - coste(y) || y.p - x.p)
       const elegido = candidatos[0]
       if (!elegido) return null
@@ -585,9 +601,9 @@ export function planListasTrip(args) {
       }
       // Lo que queda después de la parada corta (o todo el hueco, si no hay ninguna): el día empieza más tarde.
       const resta = elegido.resta
-      if (resta > 0) {
+      if (resta !== 0) {
         startPoint.t += resta
-        log.push({ id: F.id, lugar: F.titulo ?? F.lugar, sitio: F.lugar, que: 'hora', causa: `${F.titulo ?? F.lugar} es a las ${F.hora}: el día empieza ${resta} min más tarde` })
+        log.push({ id: F.id, lugar: F.titulo ?? F.lugar, sitio: F.lugar, que: 'hora', causa: resta > 0 ? `${F.titulo ?? F.lugar} es a las ${F.hora}: el día empieza ${resta} min más tarde` : `${F.titulo ?? F.lugar} es a las ${F.hora}: el día empieza ${-resta} min antes` })
       }
       return nuevo
     }
@@ -996,6 +1012,21 @@ export function planListasTrip(args) {
   // ── Lo que no salió del todo ─────────────────────────────────────────────────────────────────────────────────────
   const vistoEnViaje = new Set([...estado.vistos])
   const seenAtNight = new Set([...nightsByDay.values()].flat().flatMap((entry) => entry.conflicts_with ?? []))
+  // Lo marcado en el pool que no tiene sitio escrito pero el viaje ya enseña (pasa de camino, sale de noche, o es un barrio del que se ve una parada) no «queda fuera».
+  {
+    const mostrados = new Set()
+    const zonasVistas = new Set()
+    for (const day of cityPlanned) {
+      for (const row of day.escritoRows ?? []) if (row.lugar) { mostrados.add(row.lugar); if (row.modo !== 'camino') { const zone = placeByName.get(row.lugar)?.zone; if (zone) zonasVistas.add(zone) } }
+      for (const row of day.spareRows ?? []) mostrados.add(row.lugar)
+    }
+    for (let i = unplacedPool.length - 1; i >= 0; i--) {
+      const entry = unplacedPool[i]
+      if (entry.reason !== 'no_room') continue
+      const place = placeByName.get(entry.name)
+      if (mostrados.has(entry.name) || seenAtNight.has(entry.name) || ((place?.tags ?? []).includes('barrio') && place?.zone && zonasVistas.has(place.zone))) unplacedPool.splice(i, 1)
+    }
+  }
   const unplacedEssentials = (destData.places ?? [])
     .filter((place) => place.level === 1 && !vistoEnViaje.has(place.name) && !tourCovers.has(place.name) && !seenAtNight.has(place.name))
     .map((place) => ({ unitId: place.name, name: place.name, reason: closedAll(place.name) ? 'closed_every_day' : 'no_room', closedOn: place.closed_on ?? [] }))

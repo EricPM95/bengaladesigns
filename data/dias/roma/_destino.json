@@ -37,7 +37,7 @@
   "franjas": {
     "_nota": "Provisional (PREGUNTAS_TANDA6): cuándo empieza el día y hasta cuándo cabe cada franja. El motor solo suma minutos contra esto; nunca mueve nada por la hora.",
     "inicio": "09:00",
-    "comida_desde": "12:00",
+    "comida_desde": "12:30",
     "comida_hasta": "14:30",
     "comida_min": 60,
     "cena_min": 90,
@@ -59,7 +59,8 @@
     "excursion_tarde_desde": "16:00",
     "hueco_para_parada_corta": 20,
     "cerca_m": 450,
-    "andar_max_min": 25
+    "andar_max_min": 25,
+    "tarde_medio_desde": "16:00"
   },
   "minutos_por_dentro": {
     "_nota": "Cuánto dura por dentro lo que el viajero marca en el pool o reserva y la lista lleva por fuera o de camino.",
