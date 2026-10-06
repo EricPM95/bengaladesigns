@@ -180,7 +180,8 @@ const TRASLADOS = [
 // Los paseos no son un sitio: para andar usan las coordenadas de un sitio de su zona (el título es el del documento).
 const PASEO_LUGAR = [
   // (El tercer dato es el nombre con el que se pide la foto del paseo —hueco en _fotos.json—; sin él, la foto del lugar.)
-  [/Trastevere tranquilo/, 'Trastevere', 'Trastevere tranquilo'],
+  // (Un paseo no lleva foto propia: «Trastevere tranquilo» usa la del barrio, dia_trastevere.jpg: Tanda 5.)
+  [/Trastevere tranquilo/, 'Trastevere', 'Trastevere'],
   [/Testaccio/, 'Testaccio', 'Paseo por Testaccio'],
   [/Aventino/, 'Ojo de la Cerradura del Aventino', 'Paseo por el Aventino'],
   [/Gueto/, 'Teatro de Marcelo'],

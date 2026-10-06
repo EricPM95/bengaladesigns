@@ -2,8 +2,6 @@
   "_que_es": "Fotos propias del destino (PARA_CODE_FOTOS, 2026-10-01): van antes que las de Unsplash y Wikipedia. Los ficheros están en public/fotos/<destino>/: <archivo> (1600 px de ancho como máximo, para la ficha) y <archivo sin .jpg>_p.jpg (640 px, para la tarjeta). `lugares`: el nombre con el que la app pide la foto; las experiencias y paseos nocturnos lo piden con « (noche)» (INVARIANTES 411: una parada lleva siempre su foto de día, aunque caiga después del atardecer). `fechas`: solo entre esas fechas (MM-DD) y solo con fechas reales de viaje. `verificar: true`: no sale hasta confirmar que ese año hay lo que se ve en la foto (una foto también es una promesa). `fuente`, `autor` y `enlace`: el crédito; mientras estén vacíos, la foto va sin línea de crédito, nunca con un autor o una web inventados.",
   "carpeta": "/fotos/roma",
   "sin_foto": [
-    "Via Margutta",
-    "Via Margutta y Via del Babuino",
     "Pasear por San Giovanni",
     "Terraza del Altar de la Patria"
   ],
@@ -789,15 +787,6 @@
       "estrella": true
     },
     {
-      "archivo": "dia_piazza_venezia.jpg",
-      "lugares": [
-        "Plaza Venecia"
-      ],
-      "cuando": "dia",
-      "sitio": "Piazza Venezia, de día",
-      "grupo": "Día «Roma desde arriba» (5 y 6 días)"
-    },
-    {
       "archivo": "dia_santa_maria_aracoeli.jpg",
       "lugares": [
         "Santo Bambino de Aracoeli",
@@ -849,30 +838,12 @@
       "estrella": true
     },
     {
-      "archivo": "dia_escalera_santa.jpg",
-      "lugares": [
-        "Escalera Santa"
-      ],
-      "cuando": "dia",
-      "sitio": "Escalera Santa",
-      "grupo": "Día de las basílicas y el Aventino (4 días)"
-    },
-    {
       "archivo": "dia_san_clemente.jpg",
       "lugares": [
         "Basílica de San Clemente"
       ],
       "cuando": "dia",
       "sitio": "San Clemente (si es posible, las excavaciones de abajo)",
-      "grupo": "Día de las basílicas y el Aventino (4 días)"
-    },
-    {
-      "archivo": "dia_monti.jpg",
-      "lugares": [
-        "Monti"
-      ],
-      "cuando": "dia",
-      "sitio": "Monti (la Piazza Madonna dei Monti o Via Panisperna)",
       "grupo": "Día de las basílicas y el Aventino (4 días)"
     },
     {
@@ -904,25 +875,6 @@
       "sitio": "Boca de la Verdad",
       "grupo": "Día de las basílicas y el Aventino (4 días)",
       "estrella": true
-    },
-    {
-      "archivo": "dia_paseo_aventino.jpg",
-      "lugares": [
-        "Paseo por el Aventino"
-      ],
-      "cuando": "dia",
-      "sitio": "Paseo por el Aventino (Santa Sabina, el Parque Savello; la Rosaleda en mayo y junio)",
-      "grupo": "Día de las basílicas y el Aventino (4 días)",
-      "nota": "La Rosaleda solo en mayo y junio: si es otra foto, se dice."
-    },
-    {
-      "archivo": "dia_paseo_testaccio.jpg",
-      "lugares": [
-        "Paseo por Testaccio"
-      ],
-      "cuando": "dia",
-      "sitio": "Paseo por Testaccio (la Piazza Testaccio, el Monte dei Cocci y el antiguo matadero)",
-      "grupo": "Día de las basílicas y el Aventino (4 días)"
     },
     {
       "archivo": "dia_mercado_de_testaccio.jpg",
@@ -994,39 +946,12 @@
       "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
     },
     {
-      "archivo": "dia_via_condotti.jpg",
+      "archivo": "dia_via_margutta.jpg",
       "lugares": [
-        "Via Condotti"
+        "Via Margutta"
       ],
       "cuando": "dia",
-      "sitio": "Via Condotti",
-      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
-    },
-    {
-      "archivo": "dia_fuente_del_triton.jpg",
-      "lugares": [
-        "Fuente del Tritón"
-      ],
-      "cuando": "dia",
-      "sitio": "Fuente del Tritón",
-      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
-    },
-    {
-      "archivo": "dia_via_veneto.jpg",
-      "lugares": [
-        "Via Veneto"
-      ],
-      "cuando": "dia",
-      "sitio": "Via Veneto",
-      "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
-    },
-    {
-      "archivo": "dia_porta_pinciana.jpg",
-      "lugares": [
-        "Porta Pinciana"
-      ],
-      "cuando": "dia",
-      "sitio": "Porta Pinciana",
+      "sitio": "Via Margutta (la calle de los artistas)",
       "grupo": "Día de Villa Borghese, el Popolo y la Plaza de España (3 días)"
     },
     {
@@ -1078,15 +1003,6 @@
       "sitio": "Vía Appia Antica (los pinos y las tumbas)",
       "grupo": "La Vía Appia y Trastevere tranquilo (6 días en Roma)",
       "estrella": true
-    },
-    {
-      "archivo": "dia_trastevere_tranquilo.jpg",
-      "lugares": [
-        "Trastevere tranquilo"
-      ],
-      "cuando": "dia",
-      "sitio": "Trastevere tranquilo (la Piazza in Piscinula)",
-      "grupo": "La Vía Appia y Trastevere tranquilo (6 días en Roma)"
     },
     {
       "archivo": "dia_plaza_del_quirinal.jpg",

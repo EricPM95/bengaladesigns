@@ -9,17 +9,29 @@
     "un_dia": {
       "_nota": "Viaje de 1 día (INVARIANTES 453, escrito en D0): todo lo que tiene entrada va por fuera. Solo va por dentro lo que el viajero marcó en el pool (y con algo marcado el día se monta como antes, con short_trips).",
       "siempre_dentro": [],
-      "siempre_dentro_con_free_tour": ["Panteón"],
+      "siempre_dentro_con_free_tour": [
+        "Panteón"
+      ],
       "dentro_sin_marcar": [],
       "marcables": {}
     },
     "_nota": "Viaje de 2 días (INVARIANTES 449): por dentro solo lo que sigue. Sin nada marcado en el pool, lo de dentro_sin_marcar; con algo marcado (una clave de marcables), lo marcado y sus acompañantes; el Panteón (siempre_dentro) en todos los casos. Lo demás con entrada va por fuera. Un cierre va siempre por fuera.",
     "dos_dias": {
-      "siempre_dentro": ["Panteón"],
-      "dentro_sin_marcar": ["Coliseo", "Foro Romano y Palatino"],
+      "siempre_dentro": [
+        "Panteón"
+      ],
+      "dentro_sin_marcar": [
+        "Coliseo",
+        "Foro Romano y Palatino"
+      ],
       "marcables": {
-        "Coliseo": ["Coliseo", "Foro Romano y Palatino"],
-        "Museos Vaticanos y Capilla Sixtina": ["Museos Vaticanos y Capilla Sixtina"]
+        "Coliseo": [
+          "Coliseo",
+          "Foro Romano y Palatino"
+        ],
+        "Museos Vaticanos y Capilla Sixtina": [
+          "Museos Vaticanos y Capilla Sixtina"
+        ]
       }
     }
   },
@@ -861,6 +873,11 @@
       "Basílica de San Pedro": "El control de seguridad de la entrada: hombros y rodillas cubiertas.",
       "Coliseo": "El control de seguridad y la cola de entrada.",
       "Foro Romano y Palatino": "El control de la entrada."
+    },
+    "free_tour": {
+      "min": 15,
+      "titulo": "Llegada al punto de encuentro del Free Tour",
+      "texto": "Llegas 15 minutos antes al punto de encuentro: el guía sale a su hora y no espera. Busca el paraguas o el cartel del tour."
     }
   },
   "noches": {
