@@ -53,23 +53,43 @@ Parada · de qué foto sale (si no tiene propia, la de su zona; si tampoco hay, 
 
 ## Días que, sin reserva, sin cierre y sin pool, ya no caben enteros
 
-Día · franja · lo que pasaría a «Si te sobra tiempo» · minutos que aún se pasa después de quitarlo · en cuántas fechas (una de cada 4) · formas de viaje
+Día · franja · lo que pasaría a «Si te sobra tiempo» · minutos que aún se pasa después de quitarlo · en cuántas fechas (una de cada 3) · formas de viaje
 
-- **D1-corto** · tarde · Ponte Sisto · 68 fechas · 1,5 días de tarde; 1,5 días de mañana; 2 días; 2,5 días de mañana; 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
+- **D1-corto** · tarde · Ponte Sisto · 88 fechas · 1,5 días de tarde; 1,5 días de mañana; 2 días; 2,5 días de mañana; 3 días; 3,5 días de mañana; 4 días; 5 días; 6 días
 
 ## El orden de los días: cuándo el D1 y el D2 (o el D3 y el D1-FT) no caen en los dos primeros días completos
 
 Día que se retrasa · motivo · en cuántas fechas · formas de viaje
 
-- **D1** · SIN MOTIVO · 7 fechas · 3,5 días de tarde; 4 días; 5 días; 6 días
-- **D1-FT** · SIN MOTIVO · 103 fechas · 3 días con Free Tour; 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
-- **D1-FT** · fecha mala (06-02) · 1 fechas · 6 días con Free Tour
-- **D2** · cierra los miércoles · 96 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
-- **D2** · cierra los domingo · 71 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
-- **D2** · Museos Vaticanos y Capilla Sixtina cerrado · 14 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
-- **D2** · SIN MOTIVO · 34 fechas · 3 días; 3,5 días de mañana; 4 días; 5 días; 6 días
-- **D3** · Museos Vaticanos y Capilla Sixtina cerrado · 6 fechas · 3 días con Free Tour; 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
-- **D3** · SIN MOTIVO · 2 fechas · 5 días con Free Tour; 6 días con Free Tour
+- **D1** · D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento · 4 fechas · 3,5 días de tarde; 4 días; 5 días; 6 días
+- **D1** · D4: Ara Pacis cerrado · 1 fechas · 3,5 días de tarde
+- **D1** · D1: Coliseo cerrado, Foro Romano y Palatino cerrado, Panteón cerrado, mala fecha del documento; D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento · 1 fechas · 3,5 días de tarde
+- **D1** · D5: Termas de Caracalla cerrado, mala fecha del documento · 4 fechas · 4 días; 5 días; 6 días
+- **D1** · D6: Castillo de Sant'Angelo cerrado, mala fecha del documento · 1 fechas · 6 días
+- **D1-FT** · D4: Galería Borghese cerrado, mala fecha del documento · 62 fechas · 3 días con Free Tour; 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
+- **D1-FT** · D5: Termas de Caracalla cerrado, mala fecha del documento · 53 fechas · 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
+- **D1-FT** · D3: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento · 3 fechas · 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
+- **D1-FT** · D4: Galería Borghese cerrado, mala fecha del documento; D5: Termas de Caracalla cerrado, mala fecha del documento · 2 fechas · 5 días con Free Tour; 6 días con Free Tour
+- **D1-FT** · D6: Castillo de Sant'Angelo cerrado, mala fecha del documento · 17 fechas · 6 días con Free Tour
+- **D1-FT** · D4: Galería Borghese cerrado, mala fecha del documento; D6: horario especial (easter-3), mala fecha del documento · 1 fechas · 6 días con Free Tour
+- **D1-FT** · D6: Castillo de Sant'Angelo cerrado, horario especial (01-01), mala fecha del documento · 1 fechas · 6 días con Free Tour
+- **D2** · D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento · 79 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
+- **D2** · D2: mala fecha del documento · 91 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
+- **D2** · D2: mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento · 21 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
+- **D2** · D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento · 9 fechas · 3 días; 3,5 días de mañana; 3,5 días de tarde; 4 días; 5 días; 6 días
+- **D2** · D2: horario especial (easter-3) · 1 fechas · 3,5 días de tarde
+- **D2** · D1: Panteón cerrado; D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento · 1 fechas · 3,5 días de tarde
+- **D2** · D1: horario especial (01-01); D5: Termas de Caracalla cerrado, mala fecha del documento · 1 fechas · 4 días
+- **D2** · D5: Termas de Caracalla cerrado, mala fecha del documento · 47 fechas · 4 días; 5 días; 6 días
+- **D2** · D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D5: Termas de Caracalla cerrado, mala fecha del documento · 1 fechas · 4 días
+- **D2** · D4: Galería Borghese cerrado, mala fecha del documento; D5: Termas de Caracalla cerrado, mala fecha del documento · 2 fechas · 5 días; 6 días
+- **D2** · D6: Castillo de Sant'Angelo cerrado, mala fecha del documento · 16 fechas · 6 días
+- **D2** · D2: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento; D6: horario especial (easter-3), mala fecha del documento · 1 fechas · 6 días
+- **D3** · D3: Museos Vaticanos y Capilla Sixtina cerrado, mala fecha del documento; D4: Galería Borghese cerrado, mala fecha del documento · 7 fechas · 3 días con Free Tour; 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
+- **D3** · D3: mala fecha del documento · 4 fechas · 3 días con Free Tour; 4 días con Free Tour; 5 días con Free Tour; 6 días con Free Tour
+- **D3** · D3: Museos Vaticanos y Capilla Sixtina cerrado, horario especial (01-01), mala fecha del documento; D5: Termas de Caracalla cerrado, mala fecha del documento · 1 fechas · 4 días con Free Tour
+- **D3** · D5: Termas de Caracalla cerrado, mala fecha del documento · 1 fechas · 4 días con Free Tour
+- **D3** · D4: Galería Borghese cerrado, mala fecha del documento; D5: Termas de Caracalla cerrado, mala fecha del documento · 2 fechas · 5 días con Free Tour; 6 días con Free Tour
 
 ## Los trayectos
 
