@@ -13,7 +13,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { toHHMM, toMinutes } from '../../shared/routeEngine/time.js'
-import { mealZoneInfo } from '../routeAlgorithm.js'
+import { findPipelineV2Key, mealZoneInfo } from '../routeAlgorithm.js'
+import { ownPhotoFile, photosFor } from './writtenDays.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
 
@@ -490,12 +491,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     }
     // Un imprescindible cerrado ese día que se enseña por fuera (decisión del 2026-09-26): con su motivo.
     const sourcePlace = destData.places?.find((candidate) => candidate.name === visit.place.name)
-    // Un monumento (lo que tiene interior: el Altar, el Tempietto, el Castillo) nunca va "por el camino": sale
-    // "Por fuera" y dice por qué (PROMPT_RUTAS_CURADAS B2.3). Lo de acera (plazas, fuentes, ruinas) sí es camino.
-    if (stop.pass_through && sourcePlace?.type === 'interior') {
-      stop.outside = true
-      stop.outside_reason = visit.place.outsideReason ?? 'Hoy lo ves por fuera para llegar a todo lo del día'
-    }
+    // (Tanda 6i: lo escrito «de camino» va siempre en la tarjeta de camino, también un monumento; ya no sale suelta una línea «Por fuera: … · hoy no toca entrar».)
     // Todo monumento es parada, por dentro o por fuera (PROMPT_PENDIENTE B): `visit_mode` para la cabecera del acordeón
     // ("Por dentro · 75 min" / "Por fuera · 15 min") y el motivo, que la ficha enseña en Resumen.
     if (visit.place.visitOutside) {
@@ -506,6 +502,13 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       // (Lo escrito «por fuera» es una decisión del día, el Castillo de Sant'Angelo: no es «por fuera para llegar a todo».)
       if (visit.place.outsideAuthored) stop.outside_authored = true
     } else if ((sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 || visit.place.writtenInside) && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'
+    // La foto de la tarjeta, la de su forma de visita (Tanda 6i): un sitio con una foto de dentro y otra de fuera (el Castillo de Sant'Angelo: la terraza o el puente) lleva la suya. El lugar declara
+    // `search_en_fuera` / `search_en_dentro` (o hay una foto propia con ese nombre en _fotos.json) y la parada pide su foto con «(por fuera)» o «(por dentro)», como las nocturnas piden «(noche)».
+    {
+      const modoFoto = stop.visit_mode === 'fuera' ? 'fuera' : stop.visit_mode === 'dentro' ? 'dentro' : null
+      const conFoto = modoFoto && sourcePlace && (sourcePlace[`search_en_${modoFoto}`] || ownPhotoFile(photosFor(findPipelineV2Key(destData.destination ?? '') ?? ''), `${sourcePlace.name} (por ${modoFoto})`, null))
+      if (conFoto && !stop.photo_name && !stop.is_night_experience) stop.photo_name = `${sourcePlace.name} (por ${modoFoto})`
+    }
     // Un imprescindible es parada de verdad: 20 min como mínimo (la Plaza de España no se ve en 10), salvo por fuera.
     if (sourcePlace?.level === 1 && !visit.place.visitOutside && !stop.pass_through && !visit.place.passBy && !stop.is_night_experience) stop.min_minutes = IMPRESCINDIBLE_MIN_MINUTES
     if (visit.place.maxMinutes) stop.max_minutes = visit.place.maxMinutes

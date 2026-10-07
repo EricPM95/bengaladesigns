@@ -21,7 +21,8 @@
   "El Foro Romano, desde la terraza del Campidoglio": {
     "lugar": "Foro Romano y Palatino",
     "titulo": "El Foro Romano, desde la terraza del Campidoglio",
-    "modo": "fuera"
+    "modo": "fuera",
+    "coordenadas": [41.8927, 12.4838]
   },
   "Trinità dei Monti y su mirador": {
     "lugar": "Trinità dei Monti",
@@ -76,7 +77,8 @@
   "Reloj de agua del Pincio": {
     "lugar": "Parque de Villa Borghese",
     "titulo": "Reloj de agua del Pincio",
-    "foto": "Reloj de agua del Pincio"
+    "foto": "Reloj de agua del Pincio",
+    "coordenadas": [41.91205, 12.47955]
   },
   "los Jardines del Pincio": {
     "lugar": "Jardines del Pincio",

@@ -5058,12 +5058,15 @@ async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOver
   }
 
   const destData = findPipelineV2Data(city)
-  const place = (destData?.places ?? []).find((candidate) => candidate.name === name) ?? null
+  // «Castillo de Sant'Angelo (por fuera)»: la foto de su forma de visita (Tanda 6i): el lugar es el de antes del paréntesis y la búsqueda, su `search_en_fuera` (o `search_en_dentro`).
+  const porModo = /^(.*?)s*(por (fuera|dentro))$/.exec(name)
+  const place = (destData?.places ?? []).find((candidate) => candidate.name === (porModo ? porModo[1] : name)) ?? null
+  const consulta = (porModo && place?.[`search_en_${porModo[2]}`]) || place?.search_en
 
-  let resultado = await searchUnsplashPhoto(place?.search_en ?? `${name} ${city}`, photoKeywords(place?.search_en ?? name, place?.search_en_keywords))
+  let resultado = await searchUnsplashPhoto(consulta ?? `${porModo ? porModo[1] : name} ${city}`, photoKeywords(place?.search_en ?? name, place?.search_en_keywords))
   // El destino curado manda; el override solo cubre destinos SIN JSON, donde el servidor no
   // tiene de dónde sacar el título y es la parada la que lo trae.
-  if (!resultado) resultado = await searchWikipediaPhoto(name, city, place?.wikipedia_title ?? wikipediaTitleOverride)
+  if (!resultado) resultado = await searchWikipediaPhoto(porModo ? porModo[1] : name, city, place?.wikipedia_title ?? wikipediaTitleOverride)
   if (!resultado) resultado = { photo_source: 'none' }
 
   const fila = { place_name: name, city: cityKey, ...resultado }

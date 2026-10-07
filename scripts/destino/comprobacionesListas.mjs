@@ -213,7 +213,9 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const soloImprescindibles = delante.length > 0 && delante.every((x) => (x.nivel ?? 3) === 1 || x.fija)
       // (La mañana larga de los Museos por la tarde —la Cúpula, la Basílica, la Plaza, el Castillo por dentro y el Puente— deja la comida hasta 20 min tarde: lo escribe así el documento.)
       const mananaLargaEscrita = (dia.curatedDay.variantes ?? []).includes('museos_tarde_cupula') && comida.llegaA <= 14 * 60 + 50
-      ;(soloImprescindibles || sinLista || listaNoCabe || mananaLargaEscrita ? avisa : falla)('comida_tarde', dia, `la comida es a las ${Math.floor(comida.llegaA / 60)}:${String(comida.llegaA % 60).padStart(2, '0')}${soloImprescindibles ? ' (delante solo hay imprescindibles)' : ''}`)
+      // (Tanda 6i: si el motor ya avisa en su registro de que no cabe del todo y no queda nada que quitar sin romper una comprobación, se apunta: es un aviso que sale al viajero, no un fallo callado.)
+      const yaAvisado = (dia.escritoLog ?? []).some((l) => l.que === 'aviso' && /no cabe del todo \(\d+ min de más\) y no queda nada que quitar/.test(l.causa ?? '')) && comida.llegaA <= comidaLimite + 5
+      ;(soloImprescindibles || sinLista || listaNoCabe || mananaLargaEscrita || yaAvisado ? avisa : falla)('comida_tarde', dia, `la comida es a las ${Math.floor(comida.llegaA / 60)}:${String(comida.llegaA % 60).padStart(2, '0')}${soloImprescindibles ? ' (delante solo hay imprescindibles)' : ''}`)
     }
     // (Tanda 6f, 3) Ningún nombre de parada dice «iluminada», «de noche» o «ya con las luces»: eso es de las nocturnas, no del día.
     for (const r of rows.filter((x) => x.tipo === 'parada' || x.tipo === 'tour' || x.tipo === 'desayuno')) if (/iluminad|de noche|ya con las luces/i.test(`${r.titulo ?? ''} ${r.lugar ?? ''}`)) falla('nombre_de_noche', dia, `«${r.titulo ?? r.lugar}» lleva en el nombre una palabra de noche`)

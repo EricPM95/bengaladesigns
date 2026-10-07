@@ -4,7 +4,7 @@ import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
-import { OnTheWayCard, TimelineNote, TrazoCard, type CardMeta } from './TrazoCards'
+import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
 
 interface StopAccordionProps {
   /** El número de su pin en el mapa (ver stopNumbersOf) — null en lo que no lleva número. */
@@ -47,26 +47,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
   // (calles, plazas, fuentes, ruinas que se ven desde la acera). Un monumento que ese día no se visita sale
   // "Por fuera" con su motivo (PROMPT_RUTAS_CURADAS B2).
-  if (stop.passThrough && !stop.outsideReason) {
-    return <OnTheWayCard name={displayStopName(stop.name)} onOpen={onOpen} menu={menu} />
-  }
   if (stop.passThrough) {
-    return (
-      <div className="relative pr-8">
-        <TimelineNote onClick={onOpen} photoUrl={stop.photoUrl}>
-          {stop.outsideReason ? (
-            <>
-              Por fuera: <span className="font-medium text-text">{displayStopName(stop.name)}</span> · {stop.outsideReason}
-            </>
-          ) : (
-            <>
-              Por el camino: <span className="font-medium text-text">{displayStopName(stop.name)}</span>
-            </>
-          )}
-        </TimelineNote>
-        {menu && <div className="absolute right-0 top-1 z-20">{menu}</div>}
-      </div>
-    )
+    return <OnTheWayCard name={displayStopName(stop.name)} onOpen={onOpen} menu={menu} />
   }
 
   // «Llegada a {sitio}» (Tanda 5): su propia tarjeta, con el texto de llegada (cuánto antes, por qué, dónde se entra) y sin foto.

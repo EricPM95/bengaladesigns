@@ -1,0 +1,14 @@
+# Lo que he decidido yo en la Tanda 6i
+
+1. **El espacio entre el título de la franja y la primera tarjeta** es de 8 px más lo que mide el título (con su «+ Añadir parada» en la misma fila): unos 20 px hasta la tarjeta. Entre dos tarjetas con trayecto hay 44 px porque en medio va la fila del trayecto («3 min · 227 m»); sin trayecto que enseñar, la fila de solo «+ Añadir parada» baja a 36 px y ya no deja la línea punteada suelta como un puntito.
+2. **Si la primera parada de la franja viene de otra parada o del alojamiento** (un trayecto que enseñar, un taxi), el título no repite el botón: el de la fila del trayecto es el único. Así nunca hay dos «+ Añadir parada» seguidos.
+3. **El hueco de antes de la comida o la cena** es el de la propia tarjeta de la mesa; el hueco suelto que se pintaba además (el de «tiempo libre antes de cenar») ya no sale.
+4. **«De camino» siempre en la tarjeta de camino.** El servidor ya no marca «por fuera» a un monumento que va de camino, y la pantalla ya no tiene la línea «Por fuera: … · hoy no toca entrar». La tarjeta de camino agrupa todo lo de camino seguido (también los monumentos) y dice «De camino a» la parada de verdad que viene después, o la comida o la cena.
+5. **La foto según cómo se visita.** Un sitio con dos fotos declara en sus datos `search_en_fuera` (o `search_en_dentro`): la parada pide su foto con «(por fuera)» o «(por dentro)» detrás del nombre, igual que las nocturnas piden «(noche)». Hoy solo el Castillo de Sant'Angelo la tiene (`Castel Sant Angelo Ponte Sant Angelo bridge Rome`: la foto con el puente). La terraza sigue saliendo por dentro, en el D6. La foto del puente se busca la primera vez y queda guardada; no he podido ver cuál sale, y si no te gusta se cambia en una línea de los datos o con una foto propia llamada «Castillo de Sant'Angelo (por fuera)» en `_fotos.json`.
+6. **El Parque de Villa Borghese** pasa al Templo de Esculapio (41.91491, 12.48279), como pedías.
+7. **«0 m» entre dos paradas seguidas.** La prueba de la 6f no lo cazó porque miraba los minutos de trayecto, no la distancia entre los dos puntos. Ahora mira la distancia y encontró tres sitios con el mismo punto que su vecino; los he separado:
+   - **Reloj de agua del Pincio** (estaba en el mismo punto que el Parque): punto propio dentro de los Jardines del Pincio (41.91205, 12.47955). Es un punto de la parada, no un sitio nuevo.
+   - **Museos Capitolinos** (en el mismo punto que la Plaza del Campidoglio): su entrada, en el Palazzo dei Conservatori (41.89305, 12.4833).
+   - **El Foro Romano desde la terraza del Campidoglio** (en el mismo punto que Via dei Fori Imperiali): la terraza (41.8927, 12.4838).
+   Los tres puntos son aproximados: hay que confirmarlos en el mapa.
+8. **Para que una parada pueda llevar su propio punto** he añadido el campo `coordenadas` a las paradas de las listas (en `listasNombres.json` y en las variantes).

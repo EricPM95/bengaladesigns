@@ -57,11 +57,11 @@ Ninguna.
 
 ## Parejas de sitios con línea, por línea
 
-- Bus 23: 1489
-- Bus 40 y 64: 2930
+- Bus 23: 1488
+- Bus 40 y 64: 2936
 - Bus 64: 2282
-- Metro A: 2492
-- Metro B: 1416
-- Tranvía 8: 3428
+- Metro A: 2590
+- Metro B: 1419
+- Tranvía 8: 3420
 
 ## Primeros fallos de cada regla

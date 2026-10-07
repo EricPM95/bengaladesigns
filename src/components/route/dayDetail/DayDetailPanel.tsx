@@ -1045,7 +1045,7 @@ export function DayDetailPanel({
     const at = placed.findIndex((entry) => entry.item.type === 'stop' && entry.item.index === index)
     return at > 0 && placed[at - 1].item.type === 'stop'
   }
-  const renderTimelineItem = ({ item, start }: PlacedItem, firstInPeriod: boolean) => {
+  const renderTimelineItem = ({ item, start }: PlacedItem, firstInPeriod: boolean, omitGap = false) => {
     if (item.type === 'end') {
       return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length, dinnerInsertionIndex !== null)
     }
@@ -1065,7 +1065,8 @@ export function DayDetailPanel({
       }
       return renderFreeTime(item.entry, index, minutesToTime(start))
     }
-    if (item.type === 'mealGap') return <div key={`meal-gap-${item.index}-${start}`}>{renderMealGap(item.index + 1)}</div>
+    // (Tanda 6i: el hueco de antes de la comida o la cena es el de la propia tarjeta; con este, saldrían dos «+ Añadir parada» seguidos.)
+    if (item.type === 'mealGap') return null
     if (item.type === 'lunch') {
       const index = item.index
       return (
@@ -1126,7 +1127,7 @@ export function DayDetailPanel({
         disabled={Boolean(realStop?.isZoneWalk)}
         // El hueco SIEMPRE se pinta (es desde donde se inserta una parada ahí); `showConnector` decide solo si además lleva
         // el trayecto. Un paseo quitado no deja ni rastro. (Fuera de la tarjeta: el asa, centrada en ella.)
-        gap={walkDismissed ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
+        gap={walkDismissed || omitGap ? null : transitMovedBeforeFree.has(index) ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stop.name, index, dinnerInsertionIndex !== null && index > dinnerInsertionIndex, realStop?.transitLabel ?? null)}
       >
         <div data-stop-id={realStop?.id ?? stop.id}>
           {realStop?.isZoneWalk ? (
@@ -1156,7 +1157,7 @@ export function DayDetailPanel({
   const esDeCamino = (entry: PlacedItem) => {
     if (entry.item.type !== 'stop') return false
     const stop = stops[entry.item.index]
-    return Boolean(stop?.passThrough && !stop.outsideReason && !stop.isBreak)
+    return Boolean(stop?.passThrough && !stop.isBreak)
   }
   /** Los elementos de un tramo del día: dos o más «de camino» seguidos van en una sola tarjeta («De camino a {siguiente parada}»), cada sitio en una línea con su frase. */
   /** ¿Lo de justo antes, en la línea del día, es otra parada (no una comida)? Entonces el trayecto entre las dos tarjetas se enseña aunque cambie la franja (Tanda 6: el trayecto, siempre). */
@@ -1164,7 +1165,7 @@ export function DayDetailPanel({
     const at = placed.indexOf(entry)
     return at > 0 && placed[at - 1].item.type === 'stop'
   }
-  const renderGroupItems = (items: PlacedItem[]) => {
+  const renderGroupItems = (items: PlacedItem[], omitFirstGap = false) => {
     const salida: ReactNode[] = []
     for (let i = 0; i < items.length; i++) {
       // (Tanda 6f: también uno solo va en la tarjeta plegada de «De camino a…»; el título cuenta la comida y la cena.)
@@ -1185,7 +1186,7 @@ export function DayDetailPanel({
             key={`camino-${stops[primero].id}`}
             id={realStops[primero]?.id ?? stops[primero].id}
             disabled
-            gap={renderGap(connectorKey, showConnector ? connector : null, fromName, stops[primero].name, primero, dinnerInsertionIndex !== null && primero > dinnerInsertionIndex, realStops[primero]?.transitLabel ?? null)}
+            gap={omitFirstGap && i === 0 ? null : renderGap(connectorKey, showConnector ? connector : null, fromName, stops[primero].name, primero, dinnerInsertionIndex !== null && primero > dinnerInsertionIndex, realStops[primero]?.transitLabel ?? null)}
           >
             <OnTheWayGroupCard
               toName={nombreSiguiente}
@@ -1196,7 +1197,7 @@ export function DayDetailPanel({
         i = fin
         continue
       }
-      salida.push(renderTimelineItem(items[i], i === 0 && !afterStop(items[i])))
+      salida.push(renderTimelineItem(items[i], i === 0 && !afterStop(items[i]), omitFirstGap && i === 0))
     }
     return salida
   }
@@ -1437,20 +1438,43 @@ export function DayDetailPanel({
           {muestraParadas && (
           <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
           <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
-          {periodGroups.map((group, groupIndex) => (
+          {periodGroups.map((group, groupIndex) => {
+            // El título de la franja lleva «+ Añadir parada» a la derecha y la primera tarjeta va justo debajo (Tanda 6i): el hueco de antes de la primera parada, cuando no tiene
+            // trayecto que enseñar, es el del título. Si lo tiene (viene de otra parada o del alojamiento), el título no repite el botón.
+            const hasHeader = !freeDay && PERIOD_WITH_HEADER.has(group.period)
+            const first = group.items[0]
+            const firstIndex = first?.item.type === 'stop' ? first.item.index : null
+            const firstHasGapInfo =
+              firstIndex === null || Boolean(realStops[firstIndex]?.isZoneWalk) || Boolean(realStops[firstIndex]?.transitLabel) || (firstIndex === 0 ? connectorEntries[0].fromAccommodation : stopBefore(firstIndex))
+            const headerAddIndex = hasHeader && !firstHasGapInfo ? firstIndex : null
+            return (
             // (50 px encima de cada tramo y de la comida y la cena: cinco bloques bien separados.)
             // (PROMPT_UI_REPASO 7-8: 50 px encima de cada cabecera; la comida y la cena, 50 encima y 50 debajo, como bloque propio.)
             // (PROMPT_UI_REPASO_3, 5 y 6: la comida y la cena, dentro de la línea del día y con el mismo hueco que dos paradas;
             // la separación de cada tramo la pone su cabecera, 28 px arriba.)
             <div key={`${group.period}-${groupIndex}`}>
-              {!freeDay && PERIOD_WITH_HEADER.has(group.period) && <PeriodHeader period={group.period} range={day.untimed ? null : group.range} />}
+              {hasHeader && (
+                <PeriodHeader
+                  period={group.period}
+                  range={day.untimed ? null : group.range}
+                  onAddStop={
+                    headerAddIndex !== null
+                      ? () => {
+                          setInsertAt(headerAddIndex)
+                          setInsertAfterDinner(dinnerInsertionIndex !== null && headerAddIndex > dinnerInsertionIndex)
+                        }
+                      : undefined
+                  }
+                />
+              )}
               {/* La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena. */}
               <div className="relative flex flex-col pl-[26px]">
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
-                {renderGroupItems(group.items)}
+                {renderGroupItems(group.items, headerAddIndex !== null)}
               </div>
             </div>
-          ))}
+            )
+          })}
           </SortableContext>
           </DndContext>
           )}

@@ -185,6 +185,8 @@ export function planListasTrip(args) {
     if (item.llegada && item.tipo === 'tour' && tour) return tour.coordinates ?? null
     const source = sourceOf(item)
     if (!source) return null
+    // (Un sitio dentro de otro, con su propio punto —el Reloj de agua del Pincio dentro de «Villa Borghese»—: sus coordenadas mandan, o dos paradas seguidas salen a «0 m».)
+    if (Array.isArray(item.coordenadas)) return item.coordenadas
     if (item.modo === 'fuera' || item.modo === 'camino') return source.pass_by?.coordinates ?? source.coordinates ?? null
     // (Por dentro se llega por la entrada, si el sitio tiene una distinta de su centro: el Foro, por el lado del Coliseo.)
     return (Array.isArray(item.entrada_en) ? item.entrada_en : null) ?? (Array.isArray(source.entrada) ? source.entrada : null) ?? source.coordinates ?? null
@@ -1457,6 +1459,7 @@ export function planListasTrip(args) {
     if (item.transit) ready = { ...ready, transitMinutes: item.transit.min, transitHow: transitHow(item.transit.como), transit: { how: transitHow(item.transit.como), minutes: item.transit.min } }
     const aviso = stopNota(item, hours)
     if (aviso) ready.stopNotice = aviso
+    if (Array.isArray(item.coordenadas)) ready = { ...ready, coordinates: item.coordenadas, entrada: undefined, pass_by: undefined }
     if (item.foto) ready.photoName = item.foto
     if (item.visitado_dia) ready.visitedDay = item.visitado_dia
     // Si se llega antes de que abra: HOY dice «abre en n min. Mientras, …»; el texto sale de la parada de antes (su `texto_espera`) o, si no lo tiene, «aprovecha {la parada de antes}».

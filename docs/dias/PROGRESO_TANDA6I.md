@@ -1,0 +1,2 @@
+- Terminado: bloques 1 a 6 de la 6i (título de franja con «+ Añadir parada» y sin puntitos, fuera «Por fuera… hoy no toca entrar», nunca dos «+ Añadir parada» seguidos, foto del Castillo por forma de visita, Parque en el lago y puntos propios para el Reloj de agua, los Museos Capitolinos y el Foro desde la terraza; prueba de la 6i en 0 fallos; el Parque antes que la Galería no cabe y se explica en el informe). Fallos: ninguno.
+TERMINADO: prueba de siempre (56.210 viajes), de la 6g y de la 6h: 0 fallos; informe y preguntas escritos.

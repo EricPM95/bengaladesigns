@@ -81,7 +81,7 @@ const D1_TRAMOS = [
           cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 90, min: 60, negado: true } },
           ops: {
             manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
-            tarde: { paradas: [P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), P('Altar de la Patria', 45, 'dentro', { acortable: true }), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro')] },
+            tarde: { paradas: [P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera', { coordenadas: [41.8927, 12.4838] }), P('Altar de la Patria', 45, 'dentro', { acortable: true }), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro')] },
             cena: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
           },
         },
@@ -131,7 +131,7 @@ export default {
             empieza: '08:00',
             manana: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), ...camino('Via della Conciliazione'), P("Castillo de Sant'Angelo", 30, 'fuera'), ...camino("Puente Sant'Angelo"), P('Piazza Navona', 45), P('Panteón', 45, 'dentro'), ...camino('Plaza Venecia', 'Via dei Fori Imperiali'), P('Coliseo', 75, 'dentro')] },
             comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-            tarde: { paradas: [...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), P('Altar de la Patria', 30, 'fuera'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
+            tarde: { paradas: [...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera', { coordenadas: [41.8927, 12.4838] }), P('Altar de la Patria', 30, 'fuera'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
           },
         },
         {
@@ -140,14 +140,14 @@ export default {
           ops: {
             empieza: '08:00',
             manana: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), ...camino('Via della Conciliazione'), P("Castillo de Sant'Angelo", 30, 'fuera'), ...camino("Puente Sant'Angelo"), P('Piazza Navona', 45), P('Panteón', 45, 'dentro')] },
-            tarde: { paradas: [...camino('Plaza Venecia', 'Via dei Fori Imperiali'), P('Coliseo', 75, 'dentro'), ...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), P('Altar de la Patria', 30, 'fuera'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
+            tarde: { paradas: [...camino('Plaza Venecia', 'Via dei Fori Imperiali'), P('Coliseo', 75, 'dentro'), ...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera', { coordenadas: [41.8927, 12.4838] }), P('Altar de la Patria', 30, 'fuera'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
           },
         },
         {
           id: 'coliseo_14_30_15_30', doc: 'Con el Coliseo reservado de 14:30 en adelante:', horas: ['14:30', '15:30', '17:00'],
           cuando: { reserva: { lugar: 'Coliseo', desde: '14:16' } },
           ops: {
-            tarde: { paradas: [...camino('Plaza Venecia'), P('Altar de la Patria', 30, 'fuera'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), ...camino('Via dei Fori Imperiali'), P('Coliseo', 75, 'dentro'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
+            tarde: { paradas: [...camino('Plaza Venecia'), P('Altar de la Patria', 30, 'fuera'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera', { coordenadas: [41.8927, 12.4838] }), ...camino('Via dei Fori Imperiali'), P('Coliseo', 75, 'dentro'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
           },
         },
       ],
@@ -364,7 +364,7 @@ export default {
         {
           id: 'galeria_9', doc: 'A las 9:00:', horas: ['9:00'],
           cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:00' } },
-          ops: { empieza: '08:00', manana: { paradas: [P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), ...camino('Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'), P('Galería Borghese', 120), P('Parque de Villa Borghese', 45), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio' }), P('Terraza del Pincio', 20)] } },
+          ops: { empieza: '08:00', manana: { paradas: [P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), ...camino('Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'), P('Galería Borghese', 120), P('Parque de Villa Borghese', 45), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio', coordenadas: [41.91205, 12.47955] }), P('Terraza del Pincio', 20)] } },
         },
         // …y Trevi, si el viaje no la lleva otro día, va al final de la tarde, de camino desde la Plaza de España a la cena (~7 min).
         {
@@ -380,7 +380,7 @@ export default {
             empieza: '07:30',
             manana: { paradas: [P('Fontana de Trevi', 30, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), P('Plaza de España', 45), P('Escalinata y Trinità dei Monti', 20), ...camino('Via Condotti'), P('Ara Pacis', 45, 'dentro'), ...camino('Via di Ripetta'), P('Piazza del Popolo', 30, null, { titulo: 'Piazza del Popolo, con el obelisco y las iglesias gemelas' }), P('Santa Maria del Popolo', 20)] },
             comida: mesa('Sgarro Bistrot', 'Buccone Vini e Olii', 'junto a la Piazza del Popolo'),
-            tarde: { paradas: [P('Terraza del Pincio', 20), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio' }), P('Parque de Villa Borghese', 45), P('Galería Borghese', 120), ...camino('Porta Pinciana', 'Via Veneto', 'Fuente del Tritón')] },
+            tarde: { paradas: [P('Terraza del Pincio', 20), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio', coordenadas: [41.91205, 12.47955] }), P('Parque de Villa Borghese', 45), P('Galería Borghese', 120), ...camino('Porta Pinciana', 'Via Veneto', 'Fuente del Tritón')] },
             cena: mesa('Il Gabriello', 'Poldo e Gianna Osteria', 'en el Tridente'),
           },
         },

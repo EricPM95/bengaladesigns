@@ -178,12 +178,12 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
 }
 
 /** Cabecera de una franja del día: "MAÑANA · 08:00 — 12:30". */
-export function PeriodHeader({ period, range }: { period: DayPeriod; range?: string | null }) {
+export function PeriodHeader({ period, range, onAddStop }: { period: DayPeriod; range?: string | null; onAddStop?: () => void }) {
   const style = PERIOD_STYLE[period]
   return (
     // (40 px arriba, para que se vea dónde empieza cada parte del día, también la primera; 12 hasta lo primero de la
     // franja: PROMPT_UI_REPASO_4, 2.)
-    <div className="mb-3 mt-[40px] flex items-center gap-2 pl-0.5">
+    <div className="mb-2 mt-[40px] flex items-center gap-2 pl-0.5">
       <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full" style={{ background: style.soft, color: style.color }}>
         <Icon d={style.icon} />
       </span>
@@ -191,6 +191,12 @@ export function PeriodHeader({ period, range }: { period: DayPeriod; range?: str
         {style.label}
         {range ? ` · ${range}` : ''}
       </span>
+      {/* (Tanda 6i: «+ Añadir parada» en la misma línea que el título de la franja, a la derecha.) */}
+      {onAddStop && (
+        <button type="button" onClick={onAddStop} className="ml-auto shrink-0 py-2 text-[12.5px] font-medium text-text/50 transition-colors hover:text-text">
+          + Añadir parada
+        </button>
+      )}
     </div>
   )
 }

@@ -100,6 +100,10 @@
        "tipo": "parada",
        "lugar": "Foro Romano y Palatino",
        "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "coordenadas": [
+        41.8927,
+        12.4838
+       ],
        "modo": "fuera",
        "doc": "El Foro Romano, desde la terraza del Campidoglio ~30",
        "min": 30
@@ -517,7 +521,11 @@
          "lugar": "Foro Romano y Palatino",
          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
          "min": 30,
-         "modo": "fuera"
+         "modo": "fuera",
+         "coordenadas": [
+          41.8927,
+          12.4838
+         ]
         },
         {
          "tipo": "parada",
@@ -657,7 +665,11 @@
          "lugar": "Foro Romano y Palatino",
          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
          "min": 30,
-         "modo": "fuera"
+         "modo": "fuera",
+         "coordenadas": [
+          41.8927,
+          12.4838
+         ]
         },
         {
          "tipo": "parada",
@@ -739,7 +751,11 @@
          "lugar": "Foro Romano y Palatino",
          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
          "min": 30,
-         "modo": "fuera"
+         "modo": "fuera",
+         "coordenadas": [
+          41.8927,
+          12.4838
+         ]
         },
         {
          "tipo": "parada",
@@ -865,6 +881,10 @@
        "tipo": "parada",
        "lugar": "Foro Romano y Palatino",
        "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "coordenadas": [
+        41.8927,
+        12.4838
+       ],
        "modo": "fuera",
        "doc": "El Foro Romano, desde la terraza del Campidoglio ~30",
        "min": 30
@@ -2439,7 +2459,11 @@
          "lugar": "Foro Romano y Palatino",
          "titulo": "El Foro Romano, desde la terraza del Campidoglio",
          "min": 30,
-         "modo": "fuera"
+         "modo": "fuera",
+         "coordenadas": [
+          41.8927,
+          12.4838
+         ]
         },
         {
          "tipo": "parada",
@@ -4987,6 +5011,10 @@
        "lugar": "Parque de Villa Borghese",
        "titulo": "Reloj de agua del Pincio",
        "foto": "Reloj de agua del Pincio",
+       "coordenadas": [
+        41.91205,
+        12.47955
+       ],
        "modo": null,
        "doc": "Reloj de agua del Pincio ~10",
        "min": 10
@@ -5183,7 +5211,11 @@
          "lugar": "Parque de Villa Borghese",
          "min": 10,
          "modo": null,
-         "titulo": "Reloj de agua del Pincio"
+         "titulo": "Reloj de agua del Pincio",
+         "coordenadas": [
+          41.91205,
+          12.47955
+         ]
         },
         {
          "tipo": "parada",
@@ -5319,7 +5351,11 @@
          "lugar": "Parque de Villa Borghese",
          "min": 10,
          "modo": null,
-         "titulo": "Reloj de agua del Pincio"
+         "titulo": "Reloj de agua del Pincio",
+         "coordenadas": [
+          41.91205,
+          12.47955
+         ]
         },
         {
          "tipo": "parada",
@@ -6026,6 +6062,10 @@
        "tipo": "parada",
        "lugar": "Foro Romano y Palatino",
        "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "coordenadas": [
+        41.8927,
+        12.4838
+       ],
        "modo": "fuera",
        "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
        "min": 15

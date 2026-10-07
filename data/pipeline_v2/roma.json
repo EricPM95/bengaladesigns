@@ -2048,6 +2048,7 @@
         "mausoleo de adriano"
       ],
       "search_en": "Castel Sant Angelo Rome",
+      "search_en_fuera": "Castel Sant Angelo Ponte Sant Angelo bridge Rome",
       "search_en_keywords": [
         "castel",
         "angelo"
@@ -2215,8 +2216,8 @@
       "level": 2,
       "zone": "villa_borghese",
       "coordinates": [
-        41.9142,
-        12.4856
+        41.91491,
+        12.48279
       ],
       "duration_minutes": 90,
       "min_max": 90,
@@ -3496,8 +3497,8 @@
       "minimo_dentro": 60, "min_max": 150,
       "zone": "roma_antigua",
       "coordinates": [
-        41.8933,
-        12.4828
+        41.89305,
+        12.4833
       ],
       "level": 2,
       "type": "interior",
