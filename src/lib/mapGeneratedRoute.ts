@@ -147,6 +147,7 @@ export interface GeneratedStop {
   wait_opens_at?: string | null
   arrival_note?: string | null
   arrival_time?: string | null
+  arrival_minutes?: number | null
   visited_day?: number | null
   wait_hint?: string | null
   /** Tanda 6c: turno que propone el motor (no una reserva del viajero). */
@@ -502,7 +503,7 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.spare_reason ? { spareReason: generated.spare_reason } : {}),
     ...(generated.franja ? { franja: generated.franja } : {}),
     ...(generated.add_note ? { addNote: generated.add_note } : {}),
-    ...(generated.arrival_note ? { arrivalNote: generated.arrival_note, arrivalTime: generated.arrival_time ?? null } : {}),
+    ...(generated.arrival_note ? { arrivalNote: generated.arrival_note, arrivalTime: generated.arrival_time ?? null, arrivalMinutes: generated.arrival_minutes ?? null } : {}),
     ...(generated.visited_day ? { visitedDay: generated.visited_day } : {}),
     ...(generated.wait_opens_at ? { waitOpensAt: generated.wait_opens_at, waitHint: generated.wait_hint ?? null } : {}),
     ...(generated.recommended_turn ? { recommendedTurn: generated.recommended_turn } : {}),

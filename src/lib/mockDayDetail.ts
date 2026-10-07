@@ -1,3 +1,4 @@
+import { findTransitOption } from './transitLines'
 import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, ExperienceCategoryId } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
@@ -271,6 +272,7 @@ export interface MockStopDetail {
   waitOpensAt?: string | null
   arrivalNote?: string | null
   arrivalTime?: string | null
+  arrivalMinutes?: number | null
   visitedDay?: number | null
   waitHint?: string | null
   /** Ver Stop.experience en types.ts. */
@@ -532,7 +534,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     ...(stop.reservationTime ? { reservationTime: stop.reservationTime } : {}),
     ...(stop.recommendedTurn ? { recommendedTurn: stop.recommendedTurn } : {}),
     ...(stop.waitOpensAt ? { waitOpensAt: stop.waitOpensAt, waitHint: stop.waitHint ?? null } : {}),
-    ...(stop.arrivalNote ? { arrivalNote: stop.arrivalNote, arrivalTime: stop.arrivalTime ?? null } : {}),
+    ...(stop.arrivalNote ? { arrivalNote: stop.arrivalNote, arrivalTime: stop.arrivalTime ?? null, arrivalMinutes: stop.arrivalMinutes ?? null } : {}),
     ...(stop.visitedDay ? { visitedDay: stop.visitedDay } : {}),
     experience: stop.experience ?? null,
     why: stop.why ?? null,
@@ -630,7 +632,7 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       ...(detail.reservationTime ? { reservationTime: detail.reservationTime } : {}),
       ...(detail.recommendedTurn ? { recommendedTurn: detail.recommendedTurn } : {}),
       ...(detail.waitOpensAt ? { waitOpensAt: detail.waitOpensAt, waitHint: detail.waitHint ?? null } : {}),
-      ...(detail.arrivalNote ? { arrivalNote: detail.arrivalNote, arrivalTime: detail.arrivalTime ?? null } : {}),
+      ...(detail.arrivalNote ? { arrivalNote: detail.arrivalNote, arrivalTime: detail.arrivalTime ?? null, arrivalMinutes: detail.arrivalMinutes ?? null } : {}),
       ...(detail.visitedDay ? { visitedDay: detail.visitedDay } : {}),
       experience: detail.experience ?? null,
       why: detail.why ?? null,
@@ -665,8 +667,10 @@ export interface TransportModeOption {
   mode: TransportMode
   durationLabel: string
   distanceLabel: string
-  /** Tiempo estimado (sin datos reales de la línea): se enseña con «~» y «estimado». */
+  /** Tiempo estimado (sin datos reales de la línea): se enseña con «~» y «estimado». (Desde la Tanda 6f ya no hay estimaciones de transporte público: solo hay una opción si existe una línea de verdad.) */
   estimated?: boolean
+  /** Solo en el transporte público: la línea real que une los dos sitios («Tranvía 8», «Metro A», «Bus 40»). */
+  line?: string
 }
 
 /**
@@ -687,8 +691,7 @@ export function transitDoorToDoorMinutes(drivingMinutes: number): number {
 
 export interface ConnectorInfo {
   hasRealDisplacement: boolean
-  /** true si el transporte público ahorra tiempo real puerta a puerta (ver TRANSIT_MIN_SAVING_MINUTES):
-      si no, el tramo va a pie y la opción de transporte no se enseña. */
+  /** true si hay una línea de transporte público real entre los dos sitios (Tanda 6f); si no, la opción no se enseña. */
   transitSavesTime?: boolean
   /** Solo cuando NO hay desplazamiento real — texto simple, sin icono ni selector de modo. */
   label: string
@@ -711,19 +714,15 @@ function buildRealDisplacement(seed: string): ConnectorInfo {
   const walkMinutes = 3 + Math.floor(rand() * 12)
   const meters = walkMinutes * (60 + Math.floor(rand() * 40))
   const driveMinutes = Math.max(2, Math.round(walkMinutes / 3.5))
-  const transitMinutes = transitDoorToDoorMinutes(driveMinutes)
-  const transitSavesTime = walkMinutes - transitMinutes >= TRANSIT_MIN_SAVING_MINUTES
 
   const modeOptions: TransportModeOption[] = [
     { mode: 'driving', durationLabel: `${driveMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km` },
-    // Transporte público SIEMPRE se ofrece (Tanda 6), aunque no ahorre frente a andar; el tiempo es una estimación y se marca.
-    { mode: 'transit' as const, durationLabel: `~${transitMinutes} min`, distanceLabel: `${(meters / 1000).toFixed(1)} km`, estimated: true },
     { mode: 'walking', durationLabel: `${walkMinutes} min`, distanceLabel: `${meters} m` },
   ]
 
   return {
     hasRealDisplacement: true,
-    transitSavesTime,
+    transitSavesTime: false,
     label: `${walkMinutes} min a pie · ${meters} m`,
     modeOptions,
     meters,
@@ -757,7 +756,7 @@ function formatMeters(meters: number): string {
  * el trayecto real. Devuelve null (el llamador se queda con el mock) si falta alguna coordenada
  * real o si la API falla.
  */
-export async function refineConnectorWithRealDistance(fromCoords: Coordinates | undefined, toCoords: Coordinates | undefined): Promise<ConnectorInfo | null> {
+export async function refineConnectorWithRealDistance(fromCoords: Coordinates | undefined, toCoords: Coordinates | undefined, city?: string): Promise<ConnectorInfo | null> {
   if (!hasRealCoordinates(fromCoords) || !hasRealCoordinates(toCoords)) return null
 
   const [walking, driving] = await Promise.all([
@@ -766,12 +765,13 @@ export async function refineConnectorWithRealDistance(fromCoords: Coordinates | 
   ])
   if (!walking || !driving) return null
 
-  const transitMinutes = transitDoorToDoorMinutes(driving.minutes)
-  const transitSavesTime = walking.minutes - transitMinutes >= TRANSIT_MIN_SAVING_MINUTES
+  // El transporte público solo si existe una línea de verdad entre los dos sitios (con su número); el taxi siempre está en las opciones.
+  const transit = city ? findTransitOption(city, fromCoords, toCoords) : null
+  const transitSavesTime = Boolean(transit)
 
   const modeOptions: TransportModeOption[] = [
     { mode: 'driving', durationLabel: `${driving.minutes} min`, distanceLabel: formatMeters(driving.meters) },
-    { mode: 'transit' as const, durationLabel: `~${transitMinutes} min`, distanceLabel: formatMeters(driving.meters), estimated: true },
+    ...(transit ? [{ mode: 'transit' as const, durationLabel: `${transit.line} · ${transit.minutes} min`, distanceLabel: formatMeters(driving.meters), line: transit.line }] : []),
     { mode: 'walking', durationLabel: `${walking.minutes} min`, distanceLabel: formatMeters(walking.meters) },
   ]
 

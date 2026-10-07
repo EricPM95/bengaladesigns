@@ -354,6 +354,7 @@ export interface Stop {
   /** Tanda 6f: la línea de la tarjeta de una reserva puesta (o del Free Tour añadido): «🕘 Entrada a las 9:00 · llega a las 8:30: …»; la hora de llegada para la cuenta atrás de HOY. */
   arrivalNote?: string | null
   arrivalTime?: string | null
+  arrivalMinutes?: number | null
   /** Tanda 6f: «Ya lo visitaste el día 2» (un «de camino» que ya fue parada otro día). */
   visitedDay?: number | null
   waitHint?: string | null

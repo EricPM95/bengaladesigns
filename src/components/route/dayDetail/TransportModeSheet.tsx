@@ -38,8 +38,7 @@ export function TransportModeSheet({ open, onClose, options, selectedMode, onSel
             >
               <TransportModeIcon mode={option.mode} className="h-5 w-5 shrink-0 text-text-muted" />
               <span className="min-w-0 flex-1 text-small font-medium text-text">
-                {TRANSPORT_MODE_LABEL[option.mode]}
-                {option.estimated && <span className="block text-caption font-normal text-text-muted">Autobús, metro, tranvía o tren · tiempo estimado</span>}
+                {option.line ?? TRANSPORT_MODE_LABEL[option.mode]}
               </span>
               <span className="shrink-0 text-caption font-medium text-text-soft">
                 {option.durationLabel} · {option.distanceLabel}

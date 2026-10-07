@@ -11,7 +11,7 @@ import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeS
 import { haversineMeters, estimateWalkMinutes, hasRealCoordinates } from '../../../lib/distanceMock'
 import { formatDuration } from '../../../lib/format'
 import { POI_CATEGORY_CHIPS, MAX_ACTIVE_POI_FILTERS, findPoiCategoryChip } from '../../../lib/poiCategories'
-import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
+import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../../map/StopsMapView'
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 
@@ -42,6 +42,8 @@ interface AddStopScreenProps {
   anchorCoordinates: Coordinates | null
   /** Paradas YA existentes del día, numeradas igual que en DIAS — se pintan en el mapa como contexto. */
   dayMarkers: StopsMapMarker[]
+  /** Las líneas de la ruta del día (y el hueco marcado) — el mismo dibujo que el mapa de la ruta. */
+  dayLines?: StopsMapMarkerLine[]
   /** Precarga el buscador con este texto y dispara la búsqueda al abrir — usado por la tarjeta de "segunda visita recomendada" (RecommendedRevisit) para que el lugar ya salga sin que el viajero tenga que escribirlo. */
   initialQuery?: string
   onPick: (stop: Stop) => void
@@ -154,6 +156,7 @@ export function AddStopScreen({
   afterStopName,
   anchorCoordinates,
   dayMarkers,
+  dayLines = [],
   initialQuery,
   onPick,
   onClose,
@@ -364,7 +367,7 @@ export function AddStopScreen({
 
         {/* Mapa + filtros */}
         <div className="relative shrink-0" style={{ height: '42vh' }}>
-          <StopsMapView markers={markers} activeStopId={selected ? `poi-${selected.id}` : null} onSelectStop={() => {}} />
+          <StopsMapView markers={markers} lines={dayLines} activeStopId={selected ? `poi-${selected.id}` : null} onSelectStop={() => {}} />
 
           <div className="pointer-events-none absolute inset-x-0 top-2 flex gap-2 overflow-x-auto px-3 pb-1">
             {POI_CATEGORY_CHIPS.map((chip) => {

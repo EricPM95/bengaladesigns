@@ -118,7 +118,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
             <span className="flex items-center gap-1.5">
               <TransportModeIcon mode={selectedOption.mode} className="h-[15px] w-[15px] shrink-0" />
               <span className="font-mono text-[12px] font-medium">
-                {selectedOption.durationLabel} · {selectedOption.mode === 'walking' ? selectedOption.distanceLabel : MODE_LABEL[selectedOption.mode]}
+                {selectedOption.mode === 'transit' && selectedOption.line ? selectedOption.durationLabel : `${selectedOption.durationLabel} · ${selectedOption.mode === 'walking' ? selectedOption.distanceLabel : MODE_LABEL[selectedOption.mode]}`}
               </span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0">
                 <polyline points="6 9 12 15 18 9" />

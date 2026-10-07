@@ -73,16 +73,16 @@ export function TodayClosureNotices({ stops }: { stops: Stop[] }) {
 export function ReservationCountdown({ stops, nowMin }: { stops: Stop[]; nowMin: number }) {
   const pending = stops
     .map((stop, index) => ({ stop, index }))
-    .filter(({ stop }) => stop.reservationTime && !stop.checkedInAt && /^\d{1,2}:\d{2}$/.test(stop.reservationTime))
+    // (Tanda 6f: la cuenta atrás sale solo con la reserva puesta —o el Free Tour añadido— y cuenta desde la hora de llegada.)
+    .filter(({ stop }) => stop.reservationTime && stop.arrivalNote && !stop.checkedInAt && /^\d{1,2}:\d{2}$/.test(stop.reservationTime))
   const key = pending.map(({ stop }) => stop.id).join('|')
   const [walks, setWalks] = useState<Record<string, number | null>>({})
 
   useEffect(() => {
     let cancelled = false
     for (const { stop, index } of pending) {
-      // Desde donde estarás: la parada de antes (saltando la tarjeta de llegada).
-      let before = index - 1
-      if (stops[before]?.isArrival) before--
+      // Desde donde estarás: la parada de antes.
+      const before = index - 1
       const origin = before >= 0 ? stops[before].coordinates : undefined
       walkMinutesBetween(origin, stop.coordinates).then((minutes) => {
         if (!cancelled) setWalks((prev) => ({ ...prev, [stop.id]: minutes }))
@@ -97,9 +97,9 @@ export function ReservationCountdown({ stops, nowMin }: { stops: Stop[]; nowMin:
   if (pending.length === 0) return null
   return (
     <div className="mx-4 space-y-3 rounded-2xl border border-border bg-bg-card p-4">
-      {pending.map(({ stop, index }) => {
+      {pending.map(({ stop }) => {
         const at = parseTimeToMinutes(stop.reservationTime!)
-        const arrivalMargin = stops[index - 1]?.isArrival ? stops[index - 1].durationMinutes : 0
+        const arrivalMargin = stop.arrivalMinutes ?? 0
         const walk = walks[stop.id]
         const name = displayStopName(stop.name)
         const lead = stop.isFreeTour ? `Tu Free Tour sale a las ${stop.reservationTime}` : `Tu entrada en ${name} es a las ${stop.reservationTime}`

@@ -17,7 +17,7 @@ import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
 import { haversineMeters, hasRealCoordinates } from '../../../lib/distanceMock'
 import { formatDuration } from '../../../lib/format'
-import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
+import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../../map/StopsMapView'
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
@@ -45,6 +45,8 @@ interface PlaceExplorerScreenProps {
   subtitle?: string | null
   /** Paradas ya existentes del día, numeradas igual que en DIAS — contexto en el mapa. Vacío desde EXPLORAR (no se está mirando ningún día concreto). */
   dayMarkers?: StopsMapMarker[]
+  /** Las líneas de la ruta del día (y el hueco marcado), como en el mapa de la ruta. */
+  dayLines?: StopsMapMarkerLine[]
   /** Solo para el texto del CTA "Añadir a Día N" y la ficha; null desde EXPLORAR. */
   dayNumber?: number | null
   dateIso?: string | null
@@ -298,6 +300,7 @@ export function PlaceExplorerScreen({
   title,
   subtitle,
   dayMarkers = [],
+  dayLines = [],
   dayNumber = null,
   dateIso = null,
   route = null,
@@ -875,6 +878,7 @@ export function PlaceExplorerScreen({
           {visibleMarkerCount > 0 || markers.length > 0 ? (
             <StopsMapView
               markers={markers}
+              lines={dayLines}
               hiddenMarkerIds={hiddenMarkerIds}
               ringIds={inRouteIds}
               userPosition={position}

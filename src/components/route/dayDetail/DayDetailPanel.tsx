@@ -135,7 +135,7 @@ const DEFAULT_MODE: TransportMode = 'walking'
  * pasa a mostrar el transporte propio del destino (ver Route.defaultTransport) con el tiempo a pie
  * debajo como alternativa — nunca desaparece, solo deja de ser lo primero.
  */
-const LONG_WALK_MINUTES = 20
+const LONG_WALK_MINUTES = 25
 /** Hora asumida de inicio de la jornada cuando la primera parada no trae una `time` real (rutas dev/plantilla) — ver `computeStopSchedule`. */
 const DAY_START_MINUTES = 9 * 60
 /** Sin comida en el día (media jornada, día libre), la tarde empieza aquí. */
@@ -425,7 +425,7 @@ export function DayDetailPanel({
         if (previousStop.nextLegPending && known.walkMinutes != null) setLegToNext(day.id, previousStop.id, known.walkMinutes)
         continue
       }
-      refineConnectorWithRealDistance(previousStop.coordinates, realStops[index].coordinates).then((refined) => {
+      refineConnectorWithRealDistance(previousStop.coordinates, realStops[index].coordinates, day.city).then((refined) => {
         if (cancelled || !refined) return
         setRefinedConnectors((prev) => ({ ...prev, [connectorKey]: refined }))
         if (previousStop.nextLegPending && refined.walkMinutes != null) setLegToNext(day.id, previousStop.id, refined.walkMinutes)
@@ -742,12 +742,12 @@ export function DayDetailPanel({
    * el botón sigue estando.
    */
   /** Modo que se enseña en un hueco mientras el viajero no elija otro — ver LONG_WALK_MINUTES. */
+  // Tanda 6f, 4k (regla 2): por defecto, andando si son 25 min o menos; si son más, transporte público si hay una línea de verdad; solo si no hay ninguna de las dos, taxi.
+  // El taxi siempre está en las opciones, pero nunca es lo primero si se puede ir andando o en transporte público.
   const defaultModeFor = (connector: ConnectorInfo | null): TransportMode => {
     const walkMinutes = connector?.walkMinutes
     if (walkMinutes === undefined || walkMinutes <= LONG_WALK_MINUTES) return DEFAULT_MODE
-    if ((route?.defaultTransport ?? 'public') === 'car') return 'driving'
-    // Transporte público solo si ahorra tiempo real puerta a puerta; si no, a pie.
-    return connector?.transitSavesTime ? 'transit' : DEFAULT_MODE
+    return connector?.transitSavesTime ? 'transit' : 'driving'
   }
 
   const renderGap = (
@@ -853,6 +853,16 @@ export function DayDetailPanel({
     dayType === 'excursion' ? buildExcursionDayMarkers(day.id, dayIndex, cityBaseCoords, excursionTarget) : routeDayMarkers
   const dayMapLines =
     dayType === 'excursion' ? buildExcursionDayLines(day.id, dayIndex, cityBaseCoords, excursionTarget?.coordinates ?? null) : routeDayLines
+  // Tanda 6f, 4n: el mapa de «+ Añadir parada» es el mismo de la ruta (pines numerados + líneas) con el hueco marcado:
+  // el tramo entre la parada de antes y la de después, más grueso y del color del día, y un «+» en medio.
+  const gapBefore = insertAt !== null && insertAt > 0 ? realStops[insertAt - 1]?.coordinates : undefined
+  const gapAfter = insertAt !== null && insertAt < realStops.length ? realStops[insertAt]?.coordinates : undefined
+  const gapLines: StopsMapMarkerLine[] = gapBefore && gapAfter ? [{ id: 'hueco', coordinates: [gapBefore, gapAfter], color: dayColorStrong(dayIndex), width: 6 }] : []
+  const gapPoint = gapBefore && gapAfter ? { lat: (gapBefore.lat + gapAfter.lat) / 2, lng: (gapBefore.lng + gapAfter.lng) / 2 } : (gapBefore ?? gapAfter)
+  const addStopMarkers: StopsMapMarker[] = gapPoint
+    ? [...dayMarkers, { id: 'hueco-nueva-parada', name: 'Aquí irá la parada nueva', coordinates: gapPoint, number: 0, bg: '#FFFFFF', text: dayColorStrong(dayIndex), icon: '+', size: 30 }]
+    : dayMarkers
+  const addStopLines = [...dayMapLines, ...gapLines]
   // Un día libre sin montar no tiene pines: el mapa enseña la ciudad y ya.
   const dayMapCenter = dayMarkers.length === 0 ? cityBaseCoords : null
 
@@ -1167,7 +1177,7 @@ export function DayDetailPanel({
           >
             <OnTheWayGroupCard
               toName={nombreSiguiente}
-              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: stops[index].why ?? stops[index].placeText ?? null, onOpen: () => setDetailIndex(index) }))}
+              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: realStops[index]?.visitedDay ? `Ya lo visitaste el día ${realStops[index].visitedDay}` : stops[index].why ?? stops[index].placeText ?? null, onOpen: () => setDetailIndex(index) }))}
             />
           </SortableStop>,
         )
@@ -1539,7 +1549,8 @@ export function DayDetailPanel({
               title={`${mealPicker.mealTime === 'dinner' ? 'Cena' : 'Comida'} — Día ${day.dayNumber}`}
               subtitle={mealPicker.zone}
               route={route}
-              dayMarkers={dayMarkers}
+              dayMarkers={addStopMarkers}
+              dayLines={addStopLines}
               dayNumber={day.dayNumber}
               dateIso={dateIso}
               initialFilters={['restaurantes']}
@@ -1587,7 +1598,8 @@ export function DayDetailPanel({
               beforeStopName={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.name ?? null) : null}
               afterStopName={insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null}
               anchorCoordinates={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.coordinates ?? null) : null}
-              dayMarkers={dayMarkers}
+              dayMarkers={addStopMarkers}
+              dayLines={addStopLines}
               initialQuery={addStopInitialQuery}
               onPick={addPickedStop}
               onClose={closeAddStop}
