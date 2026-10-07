@@ -57,7 +57,10 @@ import { AddStopScreen } from '../addStop/AddStopScreen'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { MealDetailSheet } from './MealDetailSheet'
-import { organizarDiaConMediaJornada, organizarDiaEnCiudad } from '../../../lib/rebuildDay'
+import { ExcursionDayPage } from './excursion/ExcursionDayPage'
+import { ExtraDaySheet } from '../freeDay/ExtraDaySheet'
+import { confirmarExcursion, elegirExcursion, excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
+import { useInterruptorUiStore } from '../../../store/useInterruptorUiStore'
 import { MealTimeAccordion } from './MealTimeAccordion'
 import { StopAccordion } from './StopAccordion'
 import { WantInsideDialog, useWantInside } from './WantInsideDialog'
@@ -314,6 +317,11 @@ export function DayDetailPanel({
   const declineHalfDayExcursion = useRouteStore((state) => state.declineHalfDayExcursion)
   const addBlankDayExcursion = useRouteStore((state) => state.addBlankDayExcursion)
   const route = useRouteStore((state) => state.route)
+  const reservations = useRouteStore((state) => state.reservations)
+  const openOwnDayFlow = useAddFlowStore((state) => state.openOwnDayFlow)
+  const pedirInterruptor = useInterruptorUiStore((state) => state.pedir)
+  // Del día 7 en adelante (días en blanco del destino): al abrir el día sale la hoja «Ya has visto lo mejor de…» (Tanda 6g, punto 8).
+  const [extraSheet, setExtraSheet] = useState(Boolean(day.beyondAutoDays && day.stops.length === 0 && !day.ownDay))
   // "Quiero entrar" (PROMPT_PENDIENTE F): rehacer este día con una parada por dentro.
   const wantInside = useWantInside(route, day)
 
@@ -809,7 +817,9 @@ export function DayDetailPanel({
   const dayType = day.dayType ?? 'normal'
   // Un día de excursión o libre no enseña paradas: las suyas (si las tenía) siguen guardadas para
   // poder volver a la ruta, pero el contenido del día es otro.
-  const showsRoute = dayType === 'normal' || dayType === 'smart_route'
+  // (El día 4 con el interruptor en Excursión, de medio día, enseña los lugares que el viajero añade a la tarde.)
+  const showsRoute = dayType === 'normal' || dayType === 'smart_route' || (dayType === 'excursion' && Boolean(day.interruptor) && day.stops.length > 0)
+  const enExcursion = day.interruptor?.mode === 'excursion'
   const excursionOptions = day.excursions ?? []
   const convertDay = (next: typeof dayType) => convertDayType(day.id, next)
 
@@ -1195,6 +1205,7 @@ export function DayDetailPanel({
     // Acordeón dentro de la tarjeta del día (diseño "Trazo Itinerario"): sin mapa propio (el de arriba
     // enseña este día) ni cabecera propia (ya la lleva la tarjeta del día en DayList).
     <div ref={panelRef} className="border-t border-dashed border-text/[.12] px-3 pb-4" style={{ animation: 'trazo-pop .45s cubic-bezier(.2,.8,.2,1) backwards' }}>
+      {extraSheet && <ExtraDaySheet destination={day.city} onClose={() => setExtraSheet(false)} onChoose={() => { setExtraSheet(false); openOwnDayFlow(day.id) }} />}
       <WantInsideDialog route={route} day={day} state={wantInside.state} onClose={wantInside.close} onAccepted={() => setDetailIndex(null)} />
       <div className="pt-3">
         {/* Por qué hoy se madruga: una línea discreta, no un banner — es una explicación, no una
@@ -1205,19 +1216,18 @@ export function DayDetailPanel({
         {/* "Volver al día original" va en el menú "···" del día (PROMPT_UI, Parte 2). */}
         {/* Día libre: con horas sugeridas o "Sin hora" (las paradas en orden, con el paseo entre ellas). */}
         {showsRoute && day.transferNotice && <p className="whitespace-pre-line px-1 text-[12.5px] leading-[1.4] text-text/55">{day.transferNotice}</p>}
-        {/* Las cifras del día (PROMPT_UI_REPASO 5): tres en fila, separadas por una línea fina, el número en Instrument Serif y
-            la palabra debajo en mono; sin iconos ni caja, centradas. */}
-        {showsRoute && stops.length > 0 && (
-          // (20 px hasta lo siguiente: PROMPT_UI_REPASO_4, 1.)
-          <div className="mb-5 flex items-stretch justify-center pt-2">
+        {/* El resumen del día (Tanda 6g, 3b): a todo el ancho del bloque, con el mismo margen que «Hoy el sol se pone…», con su fondo beige y las esquinas redondeadas, tres columnas iguales
+            separadas por una línea fina; el número en Instrument Serif y debajo la palabra en mono y en mayúsculas, centrados. Con el interruptor en Excursión no sale: ya está la línea de horas. */}
+        {showsRoute && !enExcursion && stops.length > 0 && (
+          <div className="mx-1 mb-5 mt-3 grid grid-cols-3 rounded-2xl bg-bg-hover py-3.5">
             {[
               { value: String(visitCount), label: visitCount === 1 ? 'parada' : 'paradas' },
               { value: formatWalkKm(totalWalkMeters).replace(' km', ''), label: 'km a pie' },
               { value: formatActivityDuration(totalActivityMinutes), label: 'de actividad' },
             ].map((figure, index) => (
-              <div key={figure.label} className={`flex flex-col items-center px-4 max-[479px]:px-3 ${index > 0 ? 'border-l border-text/[.12]' : ''}`}>
-                <span className="font-display text-[18px] leading-none text-text">{figure.value}</span>
-                <span className="mt-1 whitespace-nowrap font-mono text-[9.5px] font-semibold uppercase tracking-[.1em] text-text/50">{figure.label}</span>
+              <div key={figure.label} className={`flex min-w-0 flex-col items-center justify-center px-1 ${index > 0 ? 'border-l border-text/[.12]' : ''}`}>
+                <span className="font-display text-[24px] leading-none text-text">{figure.value}</span>
+                <span className="mt-1.5 whitespace-nowrap font-mono text-[9px] font-semibold uppercase tracking-[.08em] text-text/50 max-[359px]:text-[8.5px] max-[359px]:tracking-[.04em]">{figure.label}</span>
               </div>
             ))}
           </div>
@@ -1260,8 +1270,27 @@ export function DayDetailPanel({
           {dayType === 'excursion' && !excursionEnteraEnBlanco && (
             <div className="space-y-3 pt-1">
               {/* Regla 10: si este día tenía ruta curada, SIEMPRE se ofrece volver a ella. */}
-              {day.curatedAlternative && !day.stayInCity && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
-              {esDiaEnBlanco ? (
+              {day.curatedAlternative && !day.interruptor && <CuratedAlternativeBanner alternative={day.curatedAlternative} onRestore={() => convertDay('normal')} />}
+              {day.interruptor && viewedExcursion(day) ? (
+                // La página de la excursión del día 4 (Tanda 6g): la del diseño, con el interruptor en la tarjeta.
+                <ExcursionDayPage
+                  destination={day.city}
+                  tripDays={route?.answers.days ?? route?.days.filter((other) => !other.isReturnLeg).length ?? 0}
+                  options={excursionOptions}
+                  viewed={viewedExcursion(day)!}
+                  percentPhrase={day.interruptor.percentPhrase}
+                  reservation={(() => {
+                    const found = route ? excursionReservationOf(route, reservations, day) : null
+                    return found ? { locator: found.locator ?? null, excursionId: found.refId } : null
+                  })()}
+                  onSelect={(id) => elegirExcursion(day.id, id)}
+                  onConfirm={(id, code) => confirmarExcursion(day.id, id, code)}
+                  onStayInRoma={() => void pedirInterruptor(day.id, 'roma')}
+                  onOwnDay={() => openOwnDayFlow(day.id)}
+                  onAddPlaces={() => openAddFlow(day.id)}
+                />
+              ) : null}
+              {day.interruptor ? null : esDiaEnBlanco ? (
                 // En un día en blanco no se propone: el viajero vino a elegir. Y no lleva la salida
                 // "te montamos otro día de ruta" — este día está en blanco justamente porque el
                 // destino ya no da para más, así que sería prometerle algo que no existe.
@@ -1290,16 +1319,11 @@ export function DayDetailPanel({
                   options={excursionOptions}
                   selectedId={day.selectedExcursionId ?? null}
                   socialProof={day.excursionSocialProof}
-                  // (Una excursión de medio día no es el día entero: el día pasa a ser el de ciudad que la sustituye, con su tarde desde las 16:00.)
-                  onSelect={(id) => (excursionOptions.find((option) => option.id === id)?.length === 'half-day' ? void organizarDiaConMediaJornada(day.id, id) : selectDayExcursion(day.id, id))}
+                  onSelect={(id) => selectDayExcursion(day.id, id)}
                   // Rechazar no decide por el viajero: "ruta" devuelve el día a ciudad (el motor ya
                   // tiene el core day desplazado esperando, así que no queda vacío ni repetido) y
                   // "vacío" lo deja libre para que lo monte él.
                   onDecline={(fill) => convertDay(fill === 'route' ? 'normal' : 'manual')}
-                  // «Prefiero quedarme en Roma» (Tanda 3): la pantalla con las paradas emblemáticas; «Organízame este día» pide el día escrito, «Prefiero crear mi propio día» lo deja en blanco.
-                  stayInCity={day.stayInCity ?? null}
-                  onStayOrganize={() => organizarDiaEnCiudad(day.id)}
-                  onStayOwnDay={() => convertDay('manual')}
                 />
               ) : (
                 <p className="py-6 text-center text-small text-text-soft">Todavía no tenemos excursiones seleccionadas para {day.city}.</p>
@@ -1320,7 +1344,13 @@ export function DayDetailPanel({
                   A partir del día {day.dayNumber}, tú decides. Añade las paradas que quieras y nosotros organizamos los tiempos.
                 </p>
               )}
-              <ManualDayOptions onSearchPlaces={() => setInsertAt(0)} onSearchExcursions={() => convertDay('excursion')} />
+              {day.beyondAutoDays ? (
+                <button type="button" onClick={() => setExtraSheet(true)} className="flex h-12 w-full items-center justify-center rounded-2xl bg-text text-[14px] font-medium text-bg transition-transform active:scale-[.98]">
+                  Elegir mis sitios
+                </button>
+              ) : (
+                <ManualDayOptions onSearchPlaces={() => setInsertAt(0)} onSearchExcursions={() => convertDay('excursion')} />
+              )}
             </div>
           )}
 
@@ -1468,11 +1498,6 @@ export function DayDetailPanel({
           {/* (Sin «¿Prefieres una excursión este día?»: las excursiones se abren desde el botón flotante del autobús, PARA_CODE_EXCURSIONES 1.) */}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}
           {showsRoute && day.excursionDeclined && <ExcursionLink label="Añadir excursión" onClick={() => convertDay('excursion')} />}
-          {/* No en un día en blanco: está en blanco porque el destino ya no da para más contenido
-              nuevo, así que "generamos una ruta" sería prometerle algo que no existe. */}
-          {dayType === 'excursion' && !esDiaEnBlanco && (
-            <ExcursionLink label="Generar una ruta para este día" onClick={() => convertDay('smart_route')} />
-          )}
           {/* "Montar día manualmente" ya no sale: para eso está "+ Añadir día" (PROMPT_UI, Parte 2). */}
 
           {day.recommendedRevisits && day.recommendedRevisits.length > 0 && (

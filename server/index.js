@@ -5571,10 +5571,8 @@ app.post('/api/generate-day-block', async (req, res) => {
         answers.experiencesPositive,
       )
       if (dayBlockV2) {
-        // 'smart_route' es una ruta normal marcada: mismas paradas reales, pero el cliente sabe que
-        // es el día "de propina" tras la excursión y ofrece convertirlo igual que los demás.
+        // (Tanda 6g: ya no hay generador de rutas del día: el día de después de la excursión no se marca como `smart_route`.)
         const dayConfig = getDayConfig(blockDayNumbers[0], pipelineV2Data)
-        if (dayConfig.type === 'smart_route') dayBlockV2.type = 'smart_route'
         dayBlockV2.excursion_prominence = dayConfig.excursionProminence
         // Solo los días prominentes llevan las destacadas: en los sutiles el banner no existe y
         // mandarlas sería peso muerto en la respuesta.

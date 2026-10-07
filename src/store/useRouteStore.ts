@@ -43,6 +43,7 @@ import { addDaysToIso } from '../lib/dateRange'
 import {
   addFreeDay as addFreeDayTo,
   placeExcursionIn,
+  withExcursionOnSwitchDay,
   isFreeDay,
   moveDay,
   removeFreeDay as removeFreeDayFrom,
@@ -364,10 +365,8 @@ interface RouteStoreState {
   replaceDayRebuilt: (dayId: string, day: DayPlan) => void
   /** Tanda 6f, 5: el Free Tour se añade (o se quita) desde la app: el viaje se acuerda de la franja (mañana = el de siempre, tarde/noche = su hora) y los días se rehacen aparte. */
   setFreeTourChoice: (choice: { franja: 'manana' | 'tarde' | 'noche'; hora: string } | null) => void
-  /** «Prefiero quedarme en Roma» → «Organízame este día»: el día de excursión pasa a ser el día de ciudad que trae el servidor, y el viaje se acuerda de que ya no lleva excursión. */
-  replaceExcursionWithCityDay: (dayId: string, day: DayPlan) => void
-  /** El día de excursión pasa a ser el día de ciudad con una excursión de MEDIO día (de 8:00 a 14:00) y su tarde desde las 16:00. */
-  replaceExcursionWithHalfDay: (dayId: string, day: DayPlan, excursionId: string, dia: number | null) => void
+  /** Tanda 6g: pone el día tal cual (con su interruptor y el otro lado guardado) y, si se pide, cambia lo que el viaje recuerda de las respuestas (`diaCuatro`). Lo usan el interruptor del día 4, «Crear mi propio día» y «Volver al día propuesto» (src/lib/dayInterruptor.ts). */
+  replaceDayExact: (dayId: string, day: DayPlan, answersPatch?: Partial<QuestionnaireAnswers>) => void
   /** "Volver a la ruta original": el día exactamente como lo dio el motor (su copia), sin regenerar. */
   restoreOriginalDay: (dayId: string) => void
   /** "Volver a mi ruta original" (la varita del mapa): el viaje entero como se creó, su copia guardada, sin recalcular. */
@@ -789,11 +788,28 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return { route: { ...state.route, answers } }
     }),
   replaceDayRebuilt: (dayId, day) =>
-    set((state) => (state.route ? { route: reapplyReservations({ ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)) }, state.reservations) } : state)),
-  replaceExcursionWithCityDay: (dayId, day) =>
-    set((state) => (state.route ? { route: reapplyReservations({ ...state.route, answers: { ...state.route.answers, sinExcursion: true }, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null, selectedExcursionId: null, excursionDeclined: true } : other)) }, state.reservations) } : state)),
-  replaceExcursionWithHalfDay: (dayId, day, excursionId, dia) =>
-    set((state) => (state.route ? { route: reapplyReservations({ ...state.route, answers: { ...state.route.answers, mediaExcursion: { id: excursionId, dia } }, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null, selectedExcursionId: null, excursionDeclined: true } : other)) }, state.reservations) } : state)),
+    set((state) =>
+      state.route
+        ? {
+            route: reapplyReservations(
+              {
+                ...state.route,
+                // (El día 4 rehecho conserva su interruptor: el otro lado guardado y la excursión que se estaba viendo.)
+                days: state.route.days.map((other) =>
+                  other.id === dayId ? { ...day, originalSnapshot: null, ...(day.interruptor && other.interruptor ? { interruptor: { ...day.interruptor, other: other.interruptor.other, excursionId: other.interruptor.excursionId ?? day.interruptor.excursionId } } : {}) } : other,
+                ),
+              },
+              state.reservations,
+            ),
+          }
+        : state,
+    ),
+  replaceDayExact: (dayId, day, answersPatch) =>
+    set((state) =>
+      state.route
+        ? { route: reapplyReservations({ ...state.route, answers: answersPatch ? { ...state.route.answers, ...answersPatch } : state.route.answers, days: state.route.days.map((other) => (other.id === dayId ? { ...day, id: other.id } : other)) }, state.reservations) }
+        : state,
+    ),
   restoreOriginalDay: (dayId) =>
     set((state) => {
       if (!state.route) return state
@@ -870,7 +886,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return
     }
     const day = dayOfReservation(route, reservation)
-    if (day && excursion) get().placeExcursion(excursion, { dayId: day.id })
+    // (El día 4 lleva su interruptor: la excursión reservada se queda elegida en su página, sin cambiar el día por otro.)
+    if (day?.interruptor && excursion) set({ route: withExcursionOnSwitchDay(route, day.id, excursion) })
+    else if (day && excursion) get().placeExcursion(excursion, { dayId: day.id })
   },
   removeReservation: (id) => {
     const removed = get().reservations.find((reservation) => reservation.id === id)
@@ -1612,7 +1630,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 // Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,
 // antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
 const MANUAL_EDIT_ACTIONS = [
-  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'addReservation', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
+  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'replaceDayExact', 'addReservation', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
   'addSuggestedStop', 'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',

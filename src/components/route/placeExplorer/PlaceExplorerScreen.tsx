@@ -76,6 +76,19 @@ interface PlaceExplorerScreenProps {
   quickAddLabel?: string
   /** Con él, los baños públicos (OpenStreetMap) entran como un filtro más: solo desde Explorar (no se pueden añadir a un día). */
   toiletsEnabled?: boolean
+  /**
+   * Modo «elegir varios sitios» (Tanda 6g, «Crear mi propio día»): cada atracción lleva una marca de selección en vez del «+ Añadir»,
+   * los marcados se resaltan en el mapa y una barra fija abajo confirma con todos a la vez. Restaurantes, excursiones, baños y fuentes
+   * solo se ven. Sin esta prop la pantalla se comporta como siempre.
+   */
+  pickMode?: {
+    confirmLabel: (n: number) => string
+    selected: string[]
+    onToggle: (placeName: string) => void
+    onConfirm: () => void
+    busy?: boolean
+    hint?: string
+  }
   onClose: () => void
 }
 
@@ -318,8 +331,12 @@ export function PlaceExplorerScreen({
   recommendedZone = null,
   quickAddLabel = '+ Añadir',
   toiletsEnabled = false,
+  pickMode,
   onClose,
 }: PlaceExplorerScreenProps) {
+  /** Solo las atracciones se pueden marcar en el modo elegir varios. */
+  const pickable = (place: DestinationPlace) => Boolean(pickMode) && place.kind === 'place'
+  const pickedNames = useMemo(() => new Set(pickMode?.selected ?? []), [pickMode?.selected])
   // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
   const places = useMemo(() => (toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')), [allPlaces, toiletsEnabled])
   const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
@@ -672,9 +689,11 @@ export function PlaceExplorerScreen({
         .flatMap((place) => [poiId(place), ticketId(place)]),
       // Una excursión que ya está en la ruta (la elegida en su día) lleva el aro igual.
       ...excursions.filter((excursion) => route?.days.some((day) => day.selectedExcursionId === excursion.id)).map((excursion) => `excursion-${excursion.id}`),
+      // Modo elegir varios: los marcados llevan el mismo aro que lo que ya está en la ruta, para distinguirlos en el mapa.
+      ...poiPlaces.filter((place) => pickedNames.has(place.name) && place.kind === 'place').flatMap((place) => [poiId(place), ticketId(place)]),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [poiPlaces, stopEntries, excursions, route],
+    [poiPlaces, stopEntries, excursions, route, pickedNames],
   )
   const visibleMarkerCount = dayMarkers.length + visiblePinIds.size + (excursionsActive ? excursionMarkers.length : 0)
   // Con Excursiones encendido el mapa se aleja lo justo para ver los destinos (a veces lejos de la ciudad); si hay más filtros, también sus pines.
@@ -721,7 +740,7 @@ export function PlaceExplorerScreen({
   const inRouteCount = route ? places.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).length : 0
   const toiletsAvailable = toiletsEnabled && places.some((place) => isOsmPoint(place))
   const fountainsAvailable = toiletsEnabled && places.some((place) => place.kind === 'fountain')
-  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || excursions.length > 0) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
+  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode)) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
   const iconBox = (name: ExploreIconName, size = 15) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d={EXPLORE_ICONS[name]} />
@@ -774,6 +793,8 @@ export function PlaceExplorerScreen({
             <span aria-hidden="true" />
           )}
         </header>
+
+        {pickMode?.hint && <p className="shrink-0 px-4 pb-2 text-center text-small text-text-soft">{pickMode.hint}</p>}
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-1.5 px-4 pb-3">
@@ -1041,7 +1062,7 @@ export function PlaceExplorerScreen({
             )}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto" style={{ padding: '12px 16px 40px', scrollbarWidth: 'none' }}>
+          <div className="min-h-0 flex-1 overflow-y-auto" style={{ padding: pickMode ? '12px 16px 110px' : '12px 16px 40px', scrollbarWidth: 'none' }}>
             {!trimmedQuery && tab === 'nearby' && geoStatus === 'asking' && (
               <p className="flex items-center justify-center gap-2 py-8 text-small text-text-soft">
                 <Spinner className="text-accent" />
@@ -1108,7 +1129,7 @@ export function PlaceExplorerScreen({
                     excursion={excursion}
                     open={selectedExcursion?.id === excursion.id}
                     onToggle={() => setSelectedExcursion((prev) => (prev?.id === excursion.id ? null : excursion))}
-                    onAdd={onQuickAddExcursion ? () => onQuickAddExcursion(excursion) : undefined}
+                    onAdd={onQuickAddExcursion && !pickMode ? () => onQuickAddExcursion(excursion) : undefined}
                   />
                 ))}
               </div>
@@ -1148,13 +1169,14 @@ export function PlaceExplorerScreen({
                 const active = toilet ? selectedToilet === poiId(place) : selected?.name === place.name
                 const addLabel = alreadyInRoute && quickAddLabel === '+ Añadir' ? '✓ En ruta' : quickAddLabel
                 const addDone = addLabel === '✓ En ruta'
+                const picked = pickable(place) && pickedNames.has(place.name)
                 return (
                   <div
                     key={toilet ? poiId(place) : place.name}
                     className="relative flex h-[88px] shrink-0 bg-white transition-[border-color,box-shadow]"
                     style={{
                       borderRadius: 18,
-                      border: `1px solid ${active ? color : 'rgba(28,34,48,.08)'}`,
+                      border: `${picked ? 2 : 1}px solid ${picked ? warm : active ? color : 'rgba(28,34,48,.08)'}`,
                       boxShadow: active ? `0 14px 28px -16px ${color}` : '0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)',
                       animation: `explore-pop .4s cubic-bezier(.2,.8,.2,1) ${Math.min(index, 8) * 30}ms both`,
                     }}
@@ -1268,7 +1290,27 @@ export function PlaceExplorerScreen({
                           </svg>
                           {likeCount > 0 && <span className="tabular-nums">{likeCount}</span>}
                         </button>
-                        {onQuickAdd ? (
+                        {pickable(place) ? (
+                          <button
+                            type="button"
+                            onClick={() => pickMode?.onToggle(place.name)}
+                            aria-pressed={picked}
+                            aria-label={picked ? `Quitar ${place.name} de tu día` : `Marcar ${place.name} para tu día`}
+                            className="flex h-11 w-11 items-center justify-center"
+                            style={{ margin: '0 -8px -8px 0' }}
+                          >
+                            <span
+                              className="flex h-7 w-7 items-center justify-center rounded-full transition-colors"
+                              style={{ border: `1.5px solid ${picked ? warm : 'rgba(28,34,48,.35)'}`, background: picked ? warm : 'transparent', color: '#FFFDF8' }}
+                            >
+                              {picked && (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                                </svg>
+                              )}
+                            </span>
+                          </button>
+                        ) : onQuickAdd && !pickMode ? (
                           <button
                             type="button"
                             onClick={() => onQuickAdd(place)}
@@ -1348,9 +1390,30 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
+            footerAction={pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
+        )}
+
+        {/* Barra fija del modo elegir varios: por encima de la zona segura. */}
+        {pickMode && (
+          <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-bg via-bg to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6">
+            <button
+              type="button"
+              disabled={pickMode.selected.length === 0 || pickMode.busy}
+              onClick={pickMode.onConfirm}
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-accent text-[15px] font-semibold text-white shadow-[0_10px_24px_-10px_rgba(28,34,48,.45)] transition-transform active:scale-[.98] disabled:opacity-45"
+            >
+              {pickMode.busy ? (
+                <>
+                  <Spinner className="text-white" />
+                  Montando tu día…
+                </>
+              ) : (
+                pickMode.confirmLabel(pickMode.selected.length)
+              )}
+            </button>
+          </div>
         )}
       </motion.div>
     </AnimatePresence>,

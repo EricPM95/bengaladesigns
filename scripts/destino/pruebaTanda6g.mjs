@@ -148,6 +148,46 @@ for (const dias of [4, 5, 6]) {
   }
 }
 
+// 1 (de los de pantalla). Lo que ya no puede salir en ningún destino ni duración: el generador y sus días de mentira. 11. Ninguna etiqueta de día en rojo. 12. El resumen del día, con su fondo.
+const leer = (ruta) => fs.readFileSync(ruta, 'utf8')
+const recorrer = (dir, salida = []) => {
+  for (const nombre of fs.readdirSync(dir)) {
+    const ruta = `${dir}/${nombre}`
+    if (fs.statSync(ruta).isDirectory()) recorrer(ruta, salida)
+    else if (/.(ts|tsx|js|mjs|json)$/.test(nombre)) salida.push(ruta)
+  }
+  return salida
+}
+for (const ruta of [...recorrer('src'), ...recorrer('server'), ...recorrer('shared/routeEngine'), ...recorrer('data/dias'), 'data/pipeline_v2/roma.json']) {
+  const texto = leer(ruta)
+  for (const frase of ['Generar una ruta para este día', 'Casco histórico de', 'Museo de Arte de', 'Organízame este día', 'StayInCity']) if (texto.includes(frase)) falla('generador_fuera', `${ruta}: sigue saliendo «${frase}»`)
+}
+viajes++
+const lista = leer('src/components/route/DayList.tsx')
+for (const linea of lista.split(String.fromCharCode(10))) if (/Día de (viaje|excursión)/.test(linea) && /accent-red/.test(linea)) falla('etiqueta_roja', `DayList.tsx: una etiqueta de día en rojo: ${linea.trim().slice(0, 90)}`)
+if (!/text-accent">Día de viaje/.test(lista)) falla('etiqueta_roja', 'DayList.tsx: «Día de viaje» no va en el naranja de la app')
+if (/accent-red/.test(leer('src/components/route/dayDetail/excursion/ExcursionCardMeta.tsx'))) falla('etiqueta_roja', 'ExcursionCardMeta.tsx: «Día de excursión» en rojo')
+const panel = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
+if (!/grid grid-cols-3 rounded-2xl bg-bg-hover/.test(panel) || !/showsRoute && !enExcursion && stops.length > 0/.test(panel)) falla('resumen_del_dia', 'DayDetailPanel.tsx: el resumen del día no tiene su fondo y sus tres columnas, o sale en el día de excursión')
+viajes++
+
+// 7 (servidor). «Crear mi propio día»: el día se monta con los sitios elegidos, con su comida, sin repetir restaurantes del viaje y sin sitios cerrados por dentro.
+const { buildDayBlockV3 } = await import('../../server/engine/index.js')
+const JUEGOS = [['Coliseo', 'Foro Romano y Palatino', 'Panteón', 'Piazza Navona'], ['Galería Borghese', 'Terraza del Pincio', 'Plaza de España'], ["Castillo de Sant'Angelo", 'Cúpula de San Pedro', 'Trastevere', 'Isla Tiberina', 'Mirador del Janículo']]
+for (const juego of JUEGOS) {
+  for (const inicio of fechas.filter((_, i) => i % 8 === 0)) {
+    viajes++
+    const etiqueta = `día propio ${juego.length} sitios · inicio ${inicio}`
+    const day = await buildDayBlockV3(D, 6, false, 4, null, inicio, [], ['imprescindibles'], { city: 'Roma', scheduler: 'v3', engine: 'v4', diaCuatro: 'roma', sitiosPropios: juego, nombreDiaPropio: 'Mi día en Roma' })
+    if (!day || day.own_day !== true) { falla('dia_propio', `${etiqueta}: no sale el día propio`); continue }
+    const nombres = new Set([...(day.stops ?? []).map((x) => x.name), ...(day.spare_stops ?? []).map((x) => x.name), ...(day.not_included ?? []).map((x) => x.name)])
+    for (const sitio of juego) if (!nombres.has(sitio) && !(day.engine_log ?? []).some((l) => (l.sitio ?? l.lugar) === sitio)) falla('dia_propio', `${etiqueta}: «${sitio}» no sale ni tiene causa`)
+    if ((day.meals ?? []).length === 0) falla('dia_propio', `${etiqueta}: el día no lleva comida`)
+    const mesas = (day.meals ?? []).map((m) => m.restaurant)
+    if (new Set(mesas).size !== mesas.length) falla('dia_propio', `${etiqueta}: la comida y la cena son el mismo restaurante`)
+  }
+}
+
 // 10. La excursión de medio día: la línea de horas acaba a las 14:00 (datos de la página).
 const datos = excursionsFor('roma')
 for (const excursion of datos?.excursiones ?? []) {

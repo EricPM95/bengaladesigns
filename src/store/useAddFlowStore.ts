@@ -11,6 +11,10 @@ interface AddFlowState {
   addFlow: { dayId: string | null } | null
   openAddFlow: (dayId: string | null) => void
   closeAddFlow: () => void
+  /** «Crear mi propio día»: la pantalla de elegir varios sitios para este día (Tanda 6g). */
+  ownDayFlow: { dayId: string } | null
+  openOwnDayFlow: (dayId: string) => void
+  closeOwnDayFlow: () => void
   /** La parada recién añadida: DayDetailPanel se desplaza hasta ella. */
   focusStopId: string | null
   setFocusStopId: (id: string | null) => void
@@ -24,6 +28,9 @@ export const useAddFlowStore = create<AddFlowState>((set, get) => ({
   addFlow: null,
   openAddFlow: (dayId) => set({ addFlow: { dayId } }),
   closeAddFlow: () => set({ addFlow: null }),
+  ownDayFlow: null,
+  openOwnDayFlow: (dayId) => set({ ownDayFlow: { dayId } }),
+  closeOwnDayFlow: () => set({ ownDayFlow: null }),
   focusStopId: null,
   setFocusStopId: (id) => set({ focusStopId: id }),
   toast: null,

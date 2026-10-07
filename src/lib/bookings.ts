@@ -6,7 +6,7 @@
  */
 import type { DayPlan, Excursion, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
-import { placeExcursionIn } from './freeDays'
+import { placeExcursionIn, withExcursionOnSwitchDay } from './freeDays'
 
 /** Lo que el viajero ha reservado. Fijado: tiene fecha y hora, y nada del motor ni del viajero lo mueve (se quita y se vuelve a crear). */
 export interface Reservation {
@@ -223,6 +223,8 @@ export function unpinReservedStops(route: Route, reservationId: string): Route {
 
 /** ¿Está este día fijado por una reserva (una excursión reservada)? Ese día no se mueve, no se sustituye y la varita no lo toca. */
 export function isDayPinned(route: Route, reservations: Reservation[], day: DayPlan): boolean {
+  // (El día 4 con el interruptor en Roma no está fijado: el viajero lo cambió a propósito y la reserva se queda en Reservas.)
+  if (day.interruptor?.mode === 'roma') return false
   return reservations.some((reservation) => reservation.kind === 'excursion' && dayOfReservation(route, reservation)?.id === day.id)
 }
 
@@ -239,6 +241,11 @@ export function reapplyReservations(route: Route, reservations: Reservation[]): 
       continue
     }
     const day = dayOfReservation(next, reservation)
+    // (El día 4 lleva su interruptor: la excursión reservada se queda elegida en su página; el día no se cambia por otro.)
+    if (day?.interruptor) {
+      if (reservation.excursionData && (day.interruptor.excursionId !== reservation.refId || (day.interruptor.mode === 'excursion' && day.selectedExcursionId !== reservation.refId))) next = withExcursionOnSwitchDay(next, day.id, reservation.excursionData)
+      continue
+    }
     if (day && reservation.excursionData && day.selectedExcursionId !== reservation.refId) next = placeExcursionIn(next, reservation.excursionData, { dayId: day.id })?.route ?? next
   }
   return next

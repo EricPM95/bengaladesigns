@@ -11,6 +11,8 @@ export interface FreeDayMenuActions {
 interface DayMenuProps {
   /** «Recuperar este día»: solo en los días con cambios (undefined: la opción no sale). */
   onRestoreDay?: () => void
+  /** «Volver al día propuesto»: solo en el día 4 cuando es un día que montó el viajero con sus sitios (Tanda 6g). */
+  onBackToProposed?: () => void
   /** "Eliminar día": en todos los días, también el de llegada y el de vuelta (PROMPT_UI, Parte 1). */
   onDelete: (() => void) | null
   freeDay?: FreeDayMenuActions
@@ -22,7 +24,7 @@ const menuItemClass = 'flex h-[42px] w-full items-center gap-2.5 rounded-[10px] 
 /**
  * Menú "···" de CABECERA de un día completo (a diferencia de StopMenu.tsx, que es por parada): en un día libre, añadir lugares, cambiar el nombre y moverlo; y en todos, "Eliminar día".
  */
-export function DayMenu({ onDelete, freeDay, onRestoreDay }: DayMenuProps) {
+export function DayMenu({ onDelete, freeDay, onRestoreDay, onBackToProposed }: DayMenuProps) {
   const [open, setOpen] = useState(false)
 
   const close = () => setOpen(false)
@@ -72,6 +74,7 @@ export function DayMenu({ onDelete, freeDay, onRestoreDay }: DayMenuProps) {
                 {item('Mover el día después', freeDay.onMoveAfter)}
               </>
             )}
+            {onBackToProposed && item('Volver al día propuesto', onBackToProposed)}
             {onRestoreDay && item('Recuperar este día', onRestoreDay)}
             {item('Eliminar día', onDelete, { danger: true })}
           </div>

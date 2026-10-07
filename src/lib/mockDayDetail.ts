@@ -2,7 +2,6 @@ import { findTransitOption } from './transitLines'
 import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, ExperienceCategoryId } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
-import { minutesToTime } from './time'
 
 /**
  * Contenido "rico" de un día en la pestaña DIAS — acordeón de llegada/vuelta y acordeones de
@@ -301,180 +300,6 @@ export interface MockStopDetail {
   fixedPhotoUrl?: string | null
 }
 
-type StopTemplate = (city: string, rand: () => number) => MockStopDetail
-
-const STOP_TEMPLATES: StopTemplate[] = [
-  (city) => ({
-    id: 'casco-historico',
-    name: `Casco histórico de ${city}`,
-    category: 'Paseo urbano',
-    hours: null,
-    durationMinutes: 120,
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-casco/600/400`,
-    description: `El corazón antiguo de ${city} — calles estrechas, plazas con terrazas y la mejor forma de hacerse una idea de cómo vivía la ciudad antes de convertirse en destino turístico. Se recorre bien sin prisa, parando donde apetezca.`,
-    tips: ['Ve a primera hora de la mañana o al atardecer — a mediodía se llena de grupos y pierde parte de la magia.'],
-    purchase: {
-      lugar: `Casco histórico de ${city}`,
-      afiliacion_disponible: true,
-      entradas: [],
-      tours: [
-        { nombre: 'Free tour a pie (propina voluntaria)', precio: 0, imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-freetour/300/200` },
-        { nombre: 'Visita guiada en pequeño grupo', precio: 22, imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-guiada/300/200` },
-      ],
-    },
-  }),
-  (city) => ({
-    id: 'catedral',
-    name: `Catedral de ${city}`,
-    category: 'Monumento religioso',
-    hours: '09:00–19:00',
-    durationMinutes: 60,
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-catedral/600/400`,
-    description: `La catedral principal de ${city}, con siglos de historia superpuestos en su propia arquitectura. Merece la pena tanto por el interior (altares, vidrieras, cripta) como por las vistas desde su torre o cúpula.`,
-    tips: ['La entrada a la torre/cúpula suele agotarse por franjas — resérvala con antelación si no quieres quedarte sin sitio.'],
-    purchase: {
-      lugar: `Catedral de ${city}`,
-      afiliacion_disponible: true,
-      entradas: [
-        {
-          nombre: 'Entrada general',
-          nota: 'Acceso a la nave principal',
-          precio: 5,
-          imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-catedral-general/300/200`,
-        },
-        {
-          nombre: 'Entrada + torre/cúpula',
-          nota: 'Incluye subida con vistas panorámicas',
-          precio: 12,
-          imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-catedral-torre/300/200`,
-        },
-      ],
-      tours: [{ nombre: 'Visita guiada con acceso a zonas restringidas', precio: 28, imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-catedral-tour/300/200` }],
-    },
-  }),
-  (city) => ({
-    id: 'museo-arte',
-    name: `Museo de Arte de ${city}`,
-    category: 'Museo de arte',
-    hours: '10:00–18:00 (cerrado lunes)',
-    durationMinutes: 120,
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-museo/600/400`,
-    description: `Una de las colecciones de referencia de ${city}, con obras que abarcan varios siglos repartidas en salas temáticas. No hace falta ser experto en arte para disfrutarlo — el recorrido está pensado para que cada sala cuente una época distinta.`,
-    sections: [
-      {
-        heading: 'Cómo verlo bien',
-        body: 'Calcula 2 horas si quieres ver lo esencial, o media jornada si te gusta detenerte. Empieza por las salas del segundo piso (suelen tener menos gente a primera hora) y baja hacia la planta principal según avanza la mañana.',
-      },
-      {
-        heading: 'Qué no te puedes perder',
-        body: 'La sala central de la primera planta reúne las piezas más conocidas de la colección — es el punto donde más se llena a partir de las 12:00, así que si solo tienes tiempo para una sala, que sea esa y a primera hora.',
-      },
-    ],
-    tips: [
-      'La entrada combinada con otros museos de la ciudad suele salir más barata si vas a visitar más de uno — consúltalo en taquilla antes de comprar por separado.',
-    ],
-    purchase: {
-      lugar: `Museo de Arte de ${city}`,
-      afiliacion_disponible: true,
-      entradas: [
-        {
-          nombre: 'Entrada general',
-          nota: 'Acceso a la colección permanente',
-          precio: 12,
-          imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-museo-general/300/200`,
-        },
-        {
-          nombre: 'Entrada sin colas',
-          nota: 'Mismo acceso, evita la fila de taquilla',
-          precio: 18,
-          imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-museo-sincolas/300/200`,
-        },
-      ],
-      tours: [{ nombre: 'Visita guiada temática (1h30)', precio: 25, imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-museo-tour/300/200` }],
-    },
-  }),
-  (city) => ({
-    id: 'mirador',
-    name: `Mirador de ${city}`,
-    category: 'Mirador panorámico',
-    hours: null,
-    durationMinutes: 45,
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-mirador/600/400`,
-    description: `El mejor punto elevado de ${city} para ver la ciudad de un vistazo — especialmente recomendable al atardecer, cuando la luz baja da un color distinto a los tejados.`,
-    tips: ['Llega unos 30 minutos antes de la puesta de sol para hacerte con un buen sitio sin agobios de última hora.'],
-    purchase: null,
-  }),
-  (city, rand) => ({
-    id: 'mercado',
-    name: `Mercado Central de ${city}`,
-    category: 'Mercado local',
-    hours: '08:00–15:00',
-    durationMinutes: 60,
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-mercado/600/400`,
-    description: `Mercado de toda la vida donde compra parte de la propia ciudad — buena parada para probar producto local, desayunar algo distinto o simplemente ver el ritmo diario de ${city} sin filtro turístico.`,
-    tips: ['Va perdiendo puestos abiertos según se acerca el mediodía — ve por la mañana si quieres verlo en su mejor momento.'],
-    purchase: {
-      lugar: `Mercado Central de ${city}`,
-      afiliacion_disponible: false,
-      entradas: rand() > 0.5 ? [{ nombre: 'Entrada', nota: 'Acceso libre al mercado', precio: 0 }] : [],
-    },
-  }),
-  (city) => ({
-    id: 'yacimiento',
-    name: `Yacimiento arqueológico de ${city}`,
-    category: 'Yacimiento arqueológico',
-    hours: '09:00–17:00',
-    durationMinutes: 90,
-    photoUrl: `https://picsum.photos/seed/${encodeURIComponent(city)}-yacimiento/600/400`,
-    description: `Restos arqueológicos que documentan la historia más antigua de ${city}, hoy integrados en el propio paisaje urbano. Un recorrido pausado permite reconstruir mentalmente cómo era la zona hace siglos.`,
-    sections: [
-      {
-        heading: 'Cómo verlo bien',
-        body: 'El recorrido señalizado dura entre 45 y 60 minutos — merece la pena seguir el orden marcado, ya que los paneles explicativos están pensados como una secuencia, no como puntos sueltos.',
-      },
-    ],
-    tips: ['Hay poca sombra en todo el recorrido — evita ir en las horas centrales del día en verano.'],
-    purchase: {
-      lugar: `Yacimiento arqueológico de ${city}`,
-      afiliacion_disponible: true,
-      entradas: [
-        {
-          nombre: 'Entrada general',
-          nota: 'Acceso al recorrido señalizado',
-          precio: 10,
-          imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-yacimiento-general/300/200`,
-        },
-        {
-          nombre: 'Entrada + audioguía',
-          nota: 'Incluye explicación punto por punto',
-          precio: 16,
-          imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-yacimiento-audio/300/200`,
-        },
-      ],
-      tours: [{ nombre: 'Visita guiada con arqueólogo local', precio: 35, imagen: `https://picsum.photos/seed/${encodeURIComponent(city)}-yacimiento-tour/300/200` }],
-    },
-  }),
-]
-
-/** 2-3 paradas mock para este día, deterministas por `day.id` — vacío para el día sintético de vuelta (isReturnLeg). */
-export function buildMockStopsForDay(day: DayPlan): MockStopDetail[] {
-  if (day.isReturnLeg) return []
-
-  const rand = seededRandom(day.id)
-  const count = 2 + Math.floor(rand() * 2) // 2 o 3
-  const indices = [...STOP_TEMPLATES.keys()]
-  // Baraja determinista (Fisher-Yates con el mismo rand seedeado por día)
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1))
-    ;[indices[i], indices[j]] = [indices[j], indices[i]]
-  }
-
-  return indices.slice(0, count).map((templateIndex) => {
-    const detail = STOP_TEMPLATES[templateIndex](day.city, rand)
-    return { ...detail, id: `${day.id}-${detail.id}` }
-  })
-}
-
 /**
  * Convierte una parada real (`Stop`) en la forma rica que consume StopAccordion. Cubre dos casos
  * distintos con el mismo tipo de entrada:
@@ -561,96 +386,16 @@ function mapStopTicketsToPurchase(stop: Stop): PlacePurchaseInfo | null {
 }
 
 /**
- * Paradas a mostrar para un día — la plantilla mock por defecto MIENTRAS `day.stops` esté vacío
- * (nunca se ha editado nada todavía); en cuanto `day.stops` tiene contenido (tras cualquier
- * inserción/edición vía el "+" o el menú "..." de una parada, ver DayDetailPanel.tsx), pasa a ser
- * la fuente de verdad — conservando el contenido rico de las paradas de plantilla originales que
- * sigan presentes (mismo id) y usando un "shell" más simple para las nuevas.
+ * Paradas a mostrar para un día: las del propio día. (Hasta la Tanda 6g, un día sin paradas enseñaba una plantilla de mentira —los dos sitios de mentira del generador,
+ * «Hora de comer»—; ya no hay plantillas: un día vacío está vacío.)
  */
 export function resolveDisplayStops(day: DayPlan): MockStopDetail[] {
-  // Prompt 4: un día LIBRE está vacío a propósito — el viajero lo monta él. El pool de plantilla es
-  // para días que aún no se han editado, no para días que se han vaciado queriendo.
-  if (day.dayType === 'manual') return day.stops.map((stop) => shellFromStop(stop))
-  const templatePool = buildMockStopsForDay(day)
-  if (day.stops.length === 0) return templatePool
-  const richById = new Map(templatePool.map((stop) => [stop.id, stop]))
-  // La marca de revisita es dato de la RUTA, no de la plantilla: si la parada resuelve a su
-  // versión rica, se le vuelve a pegar encima o se perdería el badge.
-  return day.stops.map((stop) => {
-    const rich = richById.get(stop.id)
-    if (!rich) return shellFromStop(stop)
-    return stop.isRevisit ? { ...rich, isRevisit: true, revisitReason: stop.revisitReason } : rich
-  })
+  return day.stops.map((stop) => shellFromStop(stop))
 }
 
-/** Minutos a pie entre paradas de plantilla cuando se cristalizan (sin coordenadas reales todavía, así que no hay conector real que consultar) — mismo valor de reserva que el resto del cálculo horario de la app, ver DEFAULT_WALK_MINUTES en DayDetailPanel.tsx. */
-const TEMPLATE_WALK_GAP_MINUTES = 15
-
-/**
- * "Cristaliza" el pool de plantilla en `Stop[]` reales — la primera vez que se edita algo en un día
- * sin ediciones previas, para que la edición tenga algo real sobre lo que operar en el store. La
- * hora de cada parada se acumula desde las 09:00 usando la duración REAL de su plantilla (antes
- * quedaba en franjas fijas de 1h por posición, "09:00, 10:00, 11:00...", ignorando que p. ej. un
- * museo dura 120 min) — así el horario no da un salto raro justo al hacer la primera edición de un
- * día, sea cual sea el sitio desde el que venía mostrándose (DayDetailPanel.tsx usa este mismo
- * cálculo mientras el día sigue siendo 100% plantilla).
- */
+/** Las paradas del día tal cual (antes cristalizaba la plantilla de mentira; ya no la hay). */
 export function seedStopsFromTemplate(day: DayPlan): Stop[] {
-  const details = buildMockStopsForDay(day)
-  let cursor = 9 * 60
-  return details.map((detail) => {
-    const time = minutesToTime(cursor)
-    cursor += detail.durationMinutes + TEMPLATE_WALK_GAP_MINUTES
-    return {
-      id: detail.id,
-      time,
-      name: detail.name,
-      description: detail.description,
-      durationMinutes: detail.durationMinutes,
-      coordinates: { lat: 0, lng: 0 },
-      photoUrl: detail.photoUrl,
-      // El horario del lugar viaja con la parada. Sin esto, cristalizar un día lo borraba: la
-      // tarjeta lo seguía enseñando (lo saca del pool de plantilla), pero todo lo que opera sobre
-      // `Stop` —el aviso al reordenar, el menú, la ficha— veía `hours: undefined` y se quedaba
-      // mudo sin dar ningún error.
-      hours: detail.hours,
-      scheduleText: detail.scheduleText ?? null,
-      hoursCard: detail.hoursCard ?? null,
-      reservation: detail.reservation ?? null,
-      hoursWarning: detail.hoursWarning ?? null,
-      seasonNotice: detail.seasonNotice ?? null,
-      seasonLine: detail.seasonLine ?? null,
-      seasonLineIcon: detail.seasonLineIcon ?? null,
-      freeAccess: detail.freeAccess,
-      inFreeTour: detail.inFreeTour ?? null,
-      noAiText: detail.noAiText,
-      placeText: detail.placeText ?? null,
-      closedNotice: detail.closedNotice ?? null,
-      passThrough: detail.passThrough ?? false,
-      ...(detail.isArrival ? { isArrival: true, arrivalText: detail.arrivalText ?? null } : {}),
-      ...(detail.orientativeTime ? { orientativeTime: true } : {}),
-      ...(detail.reservationTime ? { reservationTime: detail.reservationTime } : {}),
-      ...(detail.recommendedTurn ? { recommendedTurn: detail.recommendedTurn } : {}),
-      ...(detail.waitOpensAt ? { waitOpensAt: detail.waitOpensAt, waitHint: detail.waitHint ?? null } : {}),
-      ...(detail.arrivalNote ? { arrivalNote: detail.arrivalNote, arrivalTime: detail.arrivalTime ?? null, arrivalMinutes: detail.arrivalMinutes ?? null } : {}),
-      ...(detail.visitedDay ? { visitedDay: detail.visitedDay } : {}),
-      experience: detail.experience ?? null,
-      why: detail.why ?? null,
-      ticketInfo: detail.ticketInfo ?? null,
-      tags: detail.tags,
-      isRevisit: detail.isRevisit,
-      optional: detail.optional,
-      revisitReason: detail.revisitReason,
-      isNightExperience: detail.isNightExperience,
-      isSunset: detail.isSunset,
-      isNightView: detail.isNightView,
-      nightViewTitle: detail.nightViewTitle,
-      visitMode: detail.visitMode,
-      freeTourEnd: detail.freeTourEnd,
-      outsideReason: detail.outsideReason ?? null,
-      outsideKind: detail.outsideKind,
-    }
-  })
+  return day.stops
 }
 
 // ── Conectores entre paradas ──────────────────────────────────

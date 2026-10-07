@@ -7,7 +7,7 @@ import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { isDayPinned } from '../../../lib/bookings'
 import { dayOptionLabel } from '../freeDay/AddToDaySheet'
-import { organizarDiaConMediaJornada } from '../../../lib/rebuildDay'
+import { ponerExcursionEnElDia } from '../../../lib/dayInterruptor'
 
 /**
  * «¿Dónde la ponemos?» (PARA_CODE_EXCURSIONES, 3): sube desde abajo con su tirador y su cruz. Sin avisos: el viajero decide. Sustituir un
@@ -26,8 +26,8 @@ export function WhereSheet({ route, excursion, onClose }: { route: Route; excurs
   const confirm = async () => {
     if (choice === 'new') placeExcursion(excursion, { newDay: true })
     else if (chosenDay) {
-      // Una excursión de medio día en un día de ciudad (el D5 en 4 días, el día de excursión en 5 y 6): de 8:00 a 14:00 la excursión y desde las 16:00 la tarde de ese día, calculada por el motor.
-      const hecho = excursion.length === 'half-day' && chosenDay.dayType !== 'manual' ? await organizarDiaConMediaJornada(chosenDay.id, excursion.id) : false
+      // El día 4 lleva su interruptor [Roma | Excursión]: la excursión se pone en su página y el interruptor pasa a Excursión (Tanda 6g). Los demás días, como siempre.
+      const hecho = chosenDay.interruptor ? await ponerExcursionEnElDia(chosenDay.id, excursion) : false
       if (!hecho) placeExcursion(excursion, { dayId: chosenDay.id })
     } else return
     closePage()

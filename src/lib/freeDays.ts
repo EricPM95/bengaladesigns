@@ -45,6 +45,13 @@ export function timeForStopAfter(previous: Stop | undefined, fallback: string, n
   return minutesToTime(walk < 3 ? end + walk : roundUpToQuarterHour(end + walk))
 }
 
+/** El día 4 con una excursión de medio día: la hora a la que vuelve el viajero (14:00), desde la que va la tarde que él añade. Null en cualquier otro día. */
+export function halfDayReturnTime(day: DayPlan): string | null {
+  if (day.interruptor?.mode !== 'excursion') return null
+  const viewed = (day.excursions ?? []).find((option) => option.id === (day.interruptor?.excursionId ?? day.selectedExcursionId))
+  return viewed?.page?.halfDay ? (viewed.page.returnTime ?? '14:00') : null
+}
+
 export const isFreeDay = (day: DayPlan): boolean => (day.dayType ?? 'normal') === 'manual'
 
 /**
@@ -57,7 +64,7 @@ export const hasOwnTime = (stop: Stop): boolean => /^\d{1,2}:\d{2}$/.test(stop.t
 export function suggestedTimeFor(day: DayPlan, stop: Stop): string {
   if (isFreeDay(day)) return ''
   const previous = [...day.stops].reverse().find((candidate) => !candidate.isNightExperience)
-  return timeForStopAfter(previous, day.stops[0]?.time ?? FREE_DAY_FIRST_STOP, stop)
+  return timeForStopAfter(previous, halfDayReturnTime(day) ?? day.stops[0]?.time ?? FREE_DAY_FIRST_STOP, stop)
 }
 
 /**
@@ -122,6 +129,26 @@ export function placeExcursionIn(route: Route, excursion: Excursion, target: { d
     ),
   }
   return { route: next, dayId }
+}
+
+/**
+ * El día 4 con su interruptor y una excursión de su página (reservada, o elegida): se queda elegida y, con el interruptor en Excursión, es la que enseña el día. Con el interruptor en Roma no cambia
+ * el día (el viajero lo dejó así a propósito): solo se acuerda de la excursión para cuando vuelva.
+ */
+export function withExcursionOnSwitchDay(route: Route, dayId: string, excursion: Excursion): Route {
+  return {
+    ...route,
+    days: route.days.map((day) => {
+      if (day.id !== dayId || !day.interruptor) return day
+      const excursions = (day.excursions ?? []).some((other) => other.id === excursion.id) ? day.excursions : [...(day.excursions ?? []), excursion]
+      return {
+        ...day,
+        excursions,
+        interruptor: { ...day.interruptor, excursionId: excursion.id },
+        ...(day.interruptor.mode === 'excursion' ? { selectedExcursionId: excursion.id } : {}),
+      }
+    }),
+  }
 }
 
 /** ¿Se puede añadir otro día? */

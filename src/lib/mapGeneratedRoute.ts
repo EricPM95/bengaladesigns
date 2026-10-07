@@ -249,12 +249,37 @@ export interface GeneratedDay {
   free_times?: { minutes: number; after: string; before: string; suggestions: { name: string; walk_minutes: number; requires_ticket: boolean }[]; hint?: string | null; title?: string | null }[] | null
   /** Solo días prominentes — ver DayPlan.excursionHighlights. */
   excursion_highlights?: GeneratedExcursion[]
-  /** Viaje sin excursión: el día en que se ofrece, con su texto — ver DayPlan.excursionOffer. */
-  excursion_offer?: { title: string; text: string } | null
+  /** El interruptor del día 4 (Tanda 6g) — ver DayPlan.interruptor — y las excursiones de la página. */
+  interruptor?: { mode: 'roma' | 'excursion'; default: 'roma' | 'excursion'; by_date?: boolean } | null
+  excursion_page?: { phrase: string | null; options: GeneratedExcursionPage[] } | null
+  /** El viajero montó este día con sus sitios — ver DayPlan.ownDay. */
+  own_day?: boolean
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
   curated_alternative?: { title: string; places: string[] } | null
-  /** Solo días de excursión (Roma): el día de ciudad que entraría en su lugar — ver DayPlan.stayInCity. */
-  stay_in_city?: { day_id: string; title: string; text?: string | null; stops: { name: string; photo_name: string }[] } | null
+}
+
+/** Una excursión de la página del día 4, tal como viaja del servidor (server/engine/excursionPage.js). */
+export interface GeneratedExcursionPage {
+  id: string
+  example: boolean
+  name_before: string
+  name_destination: string
+  name_after: string
+  short_name: string
+  duration_hours: number | null
+  return_time: string | null
+  half_day: boolean
+  price_from: number | null
+  price_label: string
+  affiliate_url: string | null
+  tags: { kind: string; text: string }[]
+  stops: { time: string; name: string }[]
+  text: string
+  photo: { url: string; credit: string } | null
+  color: string
+  percentage: number | null
+  meeting_point: string | null
+  coords: { lat: number; lng: number } | null
 }
 
 interface GeneratedFeasibilityLeg {
@@ -601,6 +626,44 @@ export function mapExcursionList(excursions: GeneratedExcursion[]): Excursion[] 
   return [...mapExcursionsByDay(excursions).values()].flat()
 }
 
+/** Una excursión de la página del día 4 como la entiende la app (la misma que usa Reservas: id, título, precio…, más lo que enseña la página). */
+export function mapExcursionPage(option: GeneratedExcursionPage): Excursion {
+  const title = `${option.name_before} ${option.name_destination}${option.name_after}`.trim()
+  return {
+    id: option.id,
+    title,
+    length: option.half_day ? 'half-day' : 'full-day',
+    durationLabel: option.duration_hours ? `${option.duration_hours} h` : option.half_day ? 'Medio día' : 'Día completo',
+    price: option.price_from ?? 0,
+    priceLabel: option.price_from != null ? `${option.price_from}€` : null,
+    description: option.text,
+    durationHours: option.duration_hours,
+    destinationCoords: option.coords,
+    meetingPoint: option.meeting_point,
+    bookUrl: option.affiliate_url ?? undefined,
+    page: {
+      nameBefore: option.name_before,
+      nameDestination: option.name_destination,
+      nameAfter: option.name_after,
+      shortName: option.short_name,
+      durationHours: option.duration_hours,
+      returnTime: option.return_time,
+      halfDay: option.half_day,
+      priceFrom: option.price_from,
+      priceLabel: option.price_label,
+      affiliateUrl: option.affiliate_url,
+      tags: option.tags,
+      stops: option.stops,
+      text: option.text,
+      photoUrl: option.photo?.url ?? null,
+      photoCredit: option.photo?.credit ?? '',
+      color: option.color,
+      percentage: option.percentage,
+      example: option.example,
+    },
+  }
+}
+
 function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excursion[]> {
   const byDay = new Map<number, Excursion[]>()
   for (const [index, excursion] of (excursions ?? []).entries()) {
@@ -725,7 +788,7 @@ function mapDay(
     // lista salen de él.)
     stops: uniqueStopIds(generated.stops.map((stop) => mapStop(generated.day_number, stop))),
     meals: generated.meals.map((meal) => mapMeal(generated.day_number, meal)),
-    excursions: excursionsByDay.get(generated.day_number),
+    excursions: generated.excursion_page ? generated.excursion_page.options.map(mapExcursionPage) : excursionsByDay.get(generated.day_number),
     didntMakeCut: generated.day_number === 1 ? didntMakeCut : undefined,
     poolNotices: poolNoticesByDay?.get(generated.day_number),
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
@@ -747,7 +810,7 @@ function mapDay(
     dayType: asDayType(generated.type),
     // La preseleccionada entra YA elegida: el día de excursión no es un formulario en blanco, es
     // una propuesta concreta que el viajero acepta, cambia o rechaza.
-    selectedExcursionId: generated.excursion_preselected ?? null,
+    selectedExcursionId: generated.interruptor?.mode === 'excursion' ? (generated.excursion_page?.options[0]?.id ?? null) : (generated.excursion_preselected ?? null),
     excursionPreselectedId: generated.excursion_preselected ?? null,
     excursionSocialProof: generated.excursion_social_proof ?? null,
     beyondAutoDays: generated.beyond_auto_days ?? false,
@@ -779,9 +842,19 @@ function mapDay(
     excursionEssential: generated.excursion_essential,
     excursionProminence: asProminence(generated.excursion_prominence),
     excursionHighlights: generated.excursion_highlights ? mapExcursionList(generated.excursion_highlights) : undefined,
-    excursionOffer: generated.excursion_offer ?? null,
     curatedAlternative: generated.curated_alternative ?? null,
-    stayInCity: generated.stay_in_city ? { dayId: generated.stay_in_city.day_id, title: generated.stay_in_city.title, text: generated.stay_in_city.text ?? null, stops: generated.stay_in_city.stops.map((stop) => ({ name: stop.name, photoName: stop.photo_name })) } : null,
+    ...(generated.interruptor && generated.excursion_page
+      ? {
+          interruptor: {
+            mode: generated.interruptor.mode,
+            default: generated.interruptor.default,
+            excursionId: generated.excursion_page.options[0]?.id ?? null,
+            percentPhrase: generated.excursion_page.phrase ?? null,
+            other: null,
+          },
+        }
+      : {}),
+    ...(generated.own_day ? { ownDay: true } : {}),
     isRelaxedDay: generated.type === 'relax',
     timesAreFinal: generated.times_are_final,
   }
@@ -797,7 +870,7 @@ export function mapSingleGeneratedDay(destination: string, generated: GeneratedD
     ...day,
     id: previous.id,
     transport: previous.transport,
-    excursions: previous.excursions,
+    excursions: day.excursions ?? previous.excursions,
     didntMakeCut: previous.didntMakeCut,
     poolNotices: previous.poolNotices,
     recommendedRevisits: previous.recommendedRevisits,

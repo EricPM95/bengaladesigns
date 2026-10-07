@@ -33,6 +33,9 @@ import { DayReservedTag } from './reservas/ReservedMarks'
 import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
+import { DayCardSwitch } from './DayCardSwitch'
+import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
+import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
 
 interface DayListProps {
   route: Route
@@ -215,7 +218,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const expanded = activeDayId === day.id
         // Título real del día curado ("Roma Antigua y el centro barroco"); de viaje, el trayecto.
         // (Un día que crea el viajero, una excursión en un día nuevo, se llama como lo llamó, aunque quede el último.)
-        const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
+        // (El día 4 con el interruptor en Excursión se llama «Excursión desde Roma», Tanda 6g.)
+        const enExcursion = day.interruptor?.mode === 'excursion'
+        const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
         const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
         // El color va con el día, no con su posición (PROMPT_UI, Parte 1).
@@ -259,9 +264,11 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{dayLabel(day.dayNumber, dateIso)}</p>
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
-                {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent-red">Día de viaje</p>}
-                {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3). */}
-                {day.dayType === 'excursion' && !travel && <p className="text-[12.5px] font-medium text-accent-red">Día de excursión</p>}
+                {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). */}
+                {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent">Día de viaje</p>}
+                {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
+                {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)s+/i, '') ?? null} />}
+                {day.dayType === 'excursion' && !enExcursion && !travel && <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>}
                 {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
                 {(route.dateNotices ?? []).some((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)) && (
                   <span className="mt-1 flex flex-wrap gap-1.5">
@@ -274,7 +281,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 {!expanded && (
                   <DayReservedTag
                     items={reservations
-                      .filter((reservation) => dayOfReservation(route, reservation)?.id === day.id)
+                      // (El día 4 con interruptor ya dice «✓ Reservada · …» debajo del título: la excursión no se repite en la etiqueta verde.)
+                      .filter((reservation) => dayOfReservation(route, reservation)?.id === day.id && !(day.interruptor && reservation.kind === 'excursion'))
                       .map((reservation) => ({
                         name: reservation.kind === 'entrada' ? displayStopName(day.stops.find((stop) => stop.reservedId === reservation.id)?.name ?? reservation.placeNames[0] ?? reservation.name) : reservation.name,
                         time: reservation.time,
@@ -297,6 +305,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               <span onClick={(event) => event.stopPropagation()}>
                 <DayMenu
                   // «Recuperar este día»: solo en los días con cambios; nunca en uno del viajero (no hay ruta nuestra que recuperar) ni en uno fijado por una reserva.
+                  onBackToProposed={day.interruptor && day.ownDay ? () => void volverAlDiaPropuesto(day.id) : undefined}
                   onRestoreDay={!isFreeDay(day) && !day.userAdded && !isDayPinned(route, reservations, day) && day.originalSnapshot ? () => setAskRestore({ dayId: day.id, dayNumber: day.dayNumber }) : undefined}
                   onDelete={isDayPinned(route, reservations, day) ? null : () => setRemoveDayId(day.id)}
                   freeDay={
@@ -316,6 +325,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 <ChevronIcon />
               </span>
             </div>
+
+            {/* El interruptor [Roma | Excursión] del día 4: debajo del título, a la vista aunque la tarjeta esté plegada (Tanda 6g). */}
+            {day.interruptor && <DayCardSwitch day={day} route={route} reservations={reservations} />}
 
             {expanded && (
               <DayDetailPanel

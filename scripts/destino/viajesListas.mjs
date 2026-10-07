@@ -23,14 +23,19 @@ const FORMAS = [
   { clave: '2,5 días (medio día de tarde)', dias: 3, medio: { franja: 'tarde' } },
   { clave: '3 días', dias: 3 },
   { clave: '3,5 días (medio día de vuelta)', dias: 4, medio: { franja: 'manana', salida: '15:00' } },
-  { clave: '4 días', dias: 4 },
-  { clave: '5 días', dias: 5 },
-  { clave: '6 días', dias: 6 },
+  // El día 4 con su interruptor [Roma | Excursión] (Tanda 6g): cada viaje con el interruptor en las dos posiciones; el de medio día, con Ostia Antica.
+  { clave: '4 días (interruptor en Roma, el de por defecto)', dias: 4, diaCuatro: 'roma' },
+  { clave: '4 días, interruptor en Excursión', dias: 4, diaCuatro: 'excursion' },
+  { clave: '5 días (interruptor en Excursión, el de por defecto)', dias: 5, diaCuatro: 'excursion' },
+  { clave: '5 días, interruptor en Roma', dias: 5, diaCuatro: 'roma' },
+  { clave: '5 días, interruptor en Excursión con una excursión de medio día (Ostia Antica)', dias: 5, diaCuatro: 'excursion', medioDia: 'ostia_antica' },
+  { clave: '6 días (interruptor en Excursión, el de por defecto)', dias: 6, diaCuatro: 'excursion' },
+  { clave: '6 días, interruptor en Roma', dias: 6, diaCuatro: 'roma' },
 ]
 const viajes = []
 for (const forma of FORMAS) {
-  viajes.push({ ...forma, id: `${forma.dias}${forma.medio ? 'm' : ''}-invierno`, estacion: 'invierno', inicio: IVNO })
-  viajes.push({ ...forma, id: `${forma.dias}${forma.medio ? 'm' : ''}-verano`, estacion: 'verano', inicio: VERANO })
+  viajes.push({ ...forma, id: `${forma.dias}${forma.medio ? 'm' : ''}${forma.diaCuatro ? `-${forma.diaCuatro}${forma.medioDia ? '-medio' : ''}` : ''}-invierno`, estacion: 'invierno', inicio: IVNO })
+  viajes.push({ ...forma, id: `${forma.dias}${forma.medio ? 'm' : ''}${forma.diaCuatro ? `-${forma.diaCuatro}${forma.medioDia ? '-medio' : ''}` : ''}-verano`, estacion: 'verano', inicio: VERANO })
 }
 viajes.push({ clave: '3 días con la entrada del Coliseo reservada a las 12:00', dias: 3, id: 'reserva', estacion: 'verano', inicio: addDays(VERANO, 1), entradas: { Coliseo: '12:00' }, extra: 'Con la entrada del Coliseo reservada a las 12:00 y los Museos Vaticanos reservados a las 14:00 en el día del Vaticano.', entradas2: { [MUSEOS]: '14:00' } })
 // Las reservas a otra hora, un viaje por cada hora (Tanda 6d): el D2 con los Museos y el D1 con el Coliseo.
@@ -55,7 +60,7 @@ const trips = []
 for (const viaje of viajes) {
   const dias = []
   for (let d = 1; d <= viaje.dias; d++) {
-    const day = await buildDayBlockV3(D, viaje.dias + 1, false, d, null, viaje.inicio, [], [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', entradas: { ...(viaje.entradas ?? {}), ...(viaje.entradas2 ?? {}) }, mediaJornada: viaje.medio ?? null })
+    const day = await buildDayBlockV3(D, viaje.dias + 1, false, d, null, viaje.inicio, [], [], { city: 'Roma', scheduler: 'v3', month: null, engine: 'v4', diaCuatro: viaje.diaCuatro ?? null, entradas: { ...(viaje.entradas ?? {}), ...(viaje.entradas2 ?? {}) }, mediaJornada: viaje.medio ?? null })
     const iso = addDays(viaje.inicio, d - 1)
     let hoy = null
     if (viaje.ejemploHoy && viaje.ejemploHoy.dia === d && day?.stops) {
@@ -76,7 +81,13 @@ const cuerpo = trips.map(({ viaje, dias }) => {
   const cab = `<h2 id="${viaje.id}">${esc(viaje.clave)} · ${viaje.estacion}</h2><p class="fechas">Del ${DIAS[new Date(`${viaje.inicio}T12:00:00Z`).getUTCDay()]} ${viaje.inicio} al ${addDays(viaje.inicio, viaje.dias - 1)}${viaje.extra ? `. ${esc(viaje.extra)}` : ''}</p>`
   const dd = dias.map(({ d, iso, day, hoy, lluvia: conLluvia }) => {
     if (!day) return `<h3>Día ${d} · ${iso}</h3><p>Sin día.</p>`
-    if (day.excursion_options) return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · día de excursión</h3><p class="m">El viajero elige entre las excursiones.</p>`
+    if (day.type === 'excursion') {
+      // La excursión del día 4 (Tanda 6g): solo la excursión, con su línea de horas; ni comida, ni cena, ni noche.
+      const opciones = day.excursion_page?.options ?? []
+      const ver = (viaje.medioDia ? opciones.find((o) => o.id === viaje.medioDia) : null) ?? opciones[0]
+      const linea = ver ? ver.stops.map((p) => `${esc(p.time)} ${esc(p.name)}`).join(' → ') : ''
+      return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · Excursión desde Roma <em>Día de excursión</em></h3><p><b>${ver ? esc(`${ver.name_before} ${ver.name_destination}${ver.name_after}`) : 'Excursión'}</b> · ${ver ? esc(ver.price_label) : ''}</p><p class="m">${linea}</p>${ver?.half_day ? '<p class="m">Vuelves a Roma a las 14:00. La tarde es para ti. [+ Añadir lugares]</p>' : ''}<p class="m">Otras excursiones: ${opciones.filter((o) => o !== ver).map((o) => esc(`${o.name_destination}${o.name_after}`)).join(', ')}.</p>`
+    }
     // Con lluvia: lo que sale se va y lo que entra va al final de su franja (la alternativa aplicada).
     const sale = new Set(conLluvia ? day.rain_plan?.remove ?? [] : [])
     const entran = conLluvia ? (day.rain_plan?.add ?? []) : []
@@ -85,7 +96,7 @@ const cuerpo = trips.map(({ viaje, dias }) => {
     const llu = day.rain_plan ? `<p class="lluvia">🌧 <b>Si llueve:</b> ${esc(day.rain_plan.text)}${day.rain_plan.remove?.length ? ` <span class="m">Sale: ${esc(day.rain_plan.remove.join(', '))}.</span>` : ''}${day.rain_plan.add?.length ? ` <span class="m">Entra: ${esc(day.rain_plan.add.map((s) => `${s.display_title ?? s.name}`).join(', '))}.</span>` : ''}</p>` : ''
     const registro = (day.engine_log ?? []).filter((l) => ['quitada', 'modo', 'modo+min', 'titulo', 'restaurante', 'noche', 'hora', 'sobra', 'nueva', 'aviso'].includes(l.que) && l.causa).map((l) => `<li><b>${esc(l.que)}</b> ${esc(l.lugar ?? '')}: ${esc(l.causa)}</li>`).join('')
     const noInc = (day.not_included ?? []).length ? `<p class="m">No incluido: ${esc(day.not_included.map((n) => `${n.name}${n.reason ? ` (${n.reason})` : ''}`).join('; '))}</p>` : ''
-    return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · ${esc(day.curated_day?.id ?? '')} ${esc(day.curated_day?.name ?? '')}</h3>${day.sunset_text ? `<p class="sol">${esc(day.sunset_text)}</p>` : ''}${day.day_notice ? `<p>${esc(day.day_notice)}</p>` : ''}<table>${paradas.map((p) => p.html).join('')}</table>${conLluvia && sale.size ? `<p class="lluvia">☔ <b>Con lluvia aplicada:</b> salen ${esc([...sale].join(', '))}${entran.length ? `; entran ${esc(entran.map((s) => s.display_title ?? s.name).join(', '))}` : ''}.</p>` : ''}${hoy?.tc ? `<div class="hoy"><b>HOY · a las ${Math.floor(hoy.ahora / 60)}:${String(hoy.ahora % 60).padStart(2, '0')} marcas «Visto» en la última parada</b><br>${hoy.tc.status === 'bien' ? 'Vas bien de tiempo' : hoy.tc.status === 'justo' ? 'Vas justo' : 'Vas bien'} (te sobran ${hoy.tc.spare_minutes} min).${hoy.tc.before_meal ? ' ¿Vas ya al restaurante o quieres ver algo más?' : ''}<ul>${(hoy.tc.suggestions ?? []).map((x) => `<li>${esc(x.display_title ?? x.name)} <span class="m">(${x.duration_minutes} min${x.add_note ? ` · ${esc(x.add_note)}` : ''})</span></li>`).join('') || '<li class="m">Sin sugerencias.</li>'}</ul></div>` : ''}${sobra}${llu}${noInc}${registro ? `<details><summary>Lo que ha hecho el motor</summary><ul class="reg">${registro}</ul></details>` : ''}`
+    return `<h3>Día ${d} · ${iso} ${DIAS[new Date(`${iso}T12:00:00Z`).getUTCDay()]} · ${esc(day.curated_day?.id ?? '')} ${esc(day.curated_day?.name ?? '')}${day.interruptor ? ' <em>Roma</em>' : ''}</h3>${day.sunset_text ? `<p class="sol">${esc(day.sunset_text)}</p>` : ''}${day.day_notice ? `<p>${esc(day.day_notice)}</p>` : ''}<table>${paradas.map((p) => p.html).join('')}</table>${conLluvia && sale.size ? `<p class="lluvia">☔ <b>Con lluvia aplicada:</b> salen ${esc([...sale].join(', '))}${entran.length ? `; entran ${esc(entran.map((s) => s.display_title ?? s.name).join(', '))}` : ''}.</p>` : ''}${hoy?.tc ? `<div class="hoy"><b>HOY · a las ${Math.floor(hoy.ahora / 60)}:${String(hoy.ahora % 60).padStart(2, '0')} marcas «Visto» en la última parada</b><br>${hoy.tc.status === 'bien' ? 'Vas bien de tiempo' : hoy.tc.status === 'justo' ? 'Vas justo' : 'Vas bien'} (te sobran ${hoy.tc.spare_minutes} min).${hoy.tc.before_meal ? ' ¿Vas ya al restaurante o quieres ver algo más?' : ''}<ul>${(hoy.tc.suggestions ?? []).map((x) => `<li>${esc(x.display_title ?? x.name)} <span class="m">(${x.duration_minutes} min${x.add_note ? ` · ${esc(x.add_note)}` : ''})</span></li>`).join('') || '<li class="m">Sin sugerencias.</li>'}</ul></div>` : ''}${sobra}${llu}${noInc}${registro ? `<details><summary>Lo que ha hecho el motor</summary><ul class="reg">${registro}</ul></details>` : ''}`
   }).join('')
   return `<section>${cab}${dd}</section>`
 }).join('\n')

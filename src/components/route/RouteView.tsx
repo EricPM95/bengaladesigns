@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
+import { useAddFlowStore } from '../../store/useAddFlowStore'
+import type { Route } from '../../lib/types'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
 import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
@@ -21,6 +23,7 @@ import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { TodayView } from './today/TodayView'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
+import { OwnDayScreen } from './freeDay/OwnDayScreen'
 import { UndoToast } from './freeDay/UndoToast'
 import { ExcursionsFab } from './excursions/ExcursionsFab'
 import { ExcursionsPage } from './excursions/ExcursionsPage'
@@ -347,9 +350,18 @@ export function RouteView() {
       <TripTipsSheet open={tipsOpen} destination={route.destination} onClose={closeTips} />
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
       <AddToTripScreen route={route} />
+      <OwnDayHost route={route} />
       <ExcursionsPage route={route} />
       <UndoToast />
       {datesDialog}
     </div>
   )
+}
+
+/** «Crear mi propio día»: monta la pantalla de elegir sitios cuando el flujo está abierto. */
+function OwnDayHost({ route }: { route: Route }) {
+  const ownDayFlow = useAddFlowStore((state) => state.ownDayFlow)
+  const closeOwnDayFlow = useAddFlowStore((state) => state.closeOwnDayFlow)
+  if (!ownDayFlow) return null
+  return <OwnDayScreen route={route} dayId={ownDayFlow.dayId} onClose={closeOwnDayFlow} />
 }

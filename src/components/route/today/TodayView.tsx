@@ -26,6 +26,7 @@ import { MealRecommendationCard } from './MealRecommendationCard'
 import { FreeTimeBanner } from './FreeTimeBanner'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { PaceWandPrompt } from './PaceWandPrompt'
+import { TodayExcursion } from './TodayExcursion'
 import { RainAlert } from './RainAlert'
 import { ReservationCountdown, TodayAdjust, TodayClosureNotices, TodayTimeCheck } from './TodayPlan'
 import { checkTime, type CheckTimeResult } from '../../../lib/checkTime'
@@ -87,6 +88,15 @@ export function TodayView({ route }: TodayViewProps) {
   }
 
   const { day, dateIso } = tripStatus.context
+  // El día de excursión (el día 4 con el interruptor en Excursión): solo la excursión (Tanda 6g).
+  if (day.interruptor?.mode === 'excursion') {
+    return (
+      <div className="flex-1 space-y-4 overflow-y-auto pb-6 pt-4">
+        {devSimulator}
+        <TodayExcursion route={route} day={day} />
+      </div>
+    )
+  }
   // La víspera (desde las 18:00): el día de mañana, por si hay lluvia prevista.
   const tomorrowDay = route.days[tripStatus.context.dayIndex + 1]
   const eveRain = now.getHours() >= 18 && tomorrowDay && !tomorrowDay.isReturnLeg ? <RainAlert day={tomorrowDay} dateIso={addDaysToIso(dateIso, 1)} when="manana" /> : null

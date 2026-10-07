@@ -163,10 +163,8 @@ export interface QuestionnaireAnswers {
   budgetLevel: BudgetLevel
   /** Free Tour de tarde o de noche, con su hora (el viaje usa el Día de la Roma antigua con el tour a esa hora). Lo rellenará quien conozca la hora; el motor ya lo lee. */
   freeTourDespues?: { franja: 'manana' | 'tarde' | 'noche'; hora: string }
-  /** «Prefiero quedarme en Roma» (días de excursión de 5 y 6 días): el día de excursión pasó a ser un día de ciudad escrito (D6 en 5 días, D7 en 6); el motor lo tiene en cuenta al rehacer cualquier día. */
-  sinExcursion?: boolean
-  /** Una excursión de medio día (Ostia, Tívoli) en el día de la excursión: de 8:00 a 14:00 la excursión y desde las 16:00 la tarde del día de ciudad que la sustituye. `dia`: solo en 4 días (el último día de ciudad). */
-  mediaExcursion?: { id: string; dia?: number | null }
+  /** El interruptor [Roma | Excursión] del día 4 (Tanda 6g) tal como lo ha dejado el viajero; sin él, el de por defecto del viaje (Roma en 4 días, Excursión desde 5). Se guarda con el viaje y el motor lo tiene en cuenta al rehacer cualquier día. */
+  diaCuatro?: 'roma' | 'excursion'
   /** Viaje de 1,5 días: el medio día cae por la tarde (llegada) o por la mañana (salida). */
   mediaJornada?: { franja: 'manana' | 'tarde'; llegada?: string; salida?: string; /** Dónde cae el medio día: 'primero' (llegada) o 'ultimo' (salida); sin él, la tarde es la llegada y la mañana la salida. */ posicion?: 'primero' | 'ultimo' }
 }
@@ -546,15 +544,6 @@ export interface CuratedAlternative {
   places: string[]
 }
 
-/** «Prefiero quedarme en Roma» (día de excursión): el día de ciudad que entraría en su lugar y sus paradas emblemáticas, sin horas (la pantalla las enseña con su foto). */
-export interface StayInCity {
-  /** El día escrito que entra (D6, D7): solo lo usa el servidor. */
-  dayId: string
-  title: string
-  text?: string | null
-  stops: { name: string; photoName: string }[]
-}
-
 export interface Excursion {
   id: string
   title: string
@@ -585,6 +574,54 @@ export interface Excursion {
   provisionalPricing?: boolean
   /** La más reservada del destino: solo si el dato es real (PARA_CODE_EXCURSIONES, 2). */
   bestSeller?: boolean
+  /** Tanda 6g: lo que enseña la página de la excursión del día 4 (datos de `_excursiones.json`). */
+  page?: ExcursionPage
+}
+
+/** La página de la excursión del día 4 (Tanda 6g): el diseño de `docs/diseno/excursion/`. Nada se inventa: sin precio, «XX€»; sin enlace, «Enlace pendiente»; sin porcentaje, la frase no sale. */
+export interface ExcursionPage {
+  /** Las tres partes del nombre, para la cursiva: «Excursión a» + «Pompeya» + « y Sorrento». */
+  nameBefore: string
+  nameDestination: string
+  nameAfter: string
+  shortName: string
+  durationHours: number | null
+  /** «20:00» (en las de medio día, «14:00»). */
+  returnTime: string | null
+  halfDay: boolean
+  priceFrom: number | null
+  /** «65€» o «XX€». */
+  priceLabel: string
+  /** El enlace de afiliado de Civitatis de ESTA excursión (null: «Enlace pendiente»). */
+  affiliateUrl: string | null
+  /** Transporte, guía y entrada incluida (la duración sale de `durationHours`). */
+  tags: { kind: string; text: string }[]
+  /** La línea de horas: Roma 07:00, Pompeya 10:30, Sorrento 14:30, Roma 20:00. */
+  stops: { time: string; name: string }[]
+  text: string
+  photoUrl: string | null
+  photoCredit: string
+  /** El color del recuadro cuando no hay foto propia. */
+  color: string
+  /** El % de viajeros que la hacen; null = la frase no sale. */
+  percentage: number | null
+  /** Dato de prueba: precio, enlace y porcentaje por llegar. */
+  example: boolean
+}
+
+/**
+ * El interruptor [Roma | Excursión] del día 4 (Tanda 6g). El día guarda lo que lleva AHORA; el otro lado queda en `other` (el día entero, tal como estaba) para volver sin perder nada,
+ * ni lo que el viajero cambió ni el día que montó con sus sitios.
+ */
+export interface DayInterruptor {
+  mode: 'roma' | 'excursion'
+  /** El lado que el viaje trae por defecto (Roma en 4 días, Excursión desde 5; Roma en una fecha en que nadie se va de excursión). */
+  default: 'roma' | 'excursion'
+  /** La excursión que se está viendo (la primera de los datos mientras el viajero no elija otra): su foto va en el interruptor. */
+  excursionId: string | null
+  /** La frase del porcentaje, con {dias}, {porcentaje} y {corto}. */
+  percentPhrase: string | null
+  other: DayPlan | null
 }
 
 /**
@@ -703,12 +740,12 @@ export interface DayPlan {
   excursionProminence?: ExcursionProminence
   /** Solo días prominentes: las 2-3 destacadas del banner. */
   excursionHighlights?: Excursion[]
-  /** Viaje sin excursión (Roma en 4 días): el día en que se ofrece cambiarlo por una, con su título y texto, sin precios. */
-  excursionOffer?: { title: string; text: string } | null
   /** Solo días de excursión que tenían ruta curada — ver CuratedAlternative. */
   curatedAlternative?: CuratedAlternative | null
-  /** Solo días de excursión de un destino con días escritos: lo que enseña «Prefiero quedarme en Roma». */
-  stayInCity?: StayInCity | null
+  /** El interruptor [Roma | Excursión] del día 4 (Tanda 6g): ver DayInterruptor. Solo el día 4 de un destino con días escritos. */
+  interruptor?: DayInterruptor
+  /** El viajero ha montado este día con sus sitios («Crear mi propio día»): en su menú sale «Volver al día propuesto». */
+  ownDay?: boolean
   /** El día tal como lo dio el motor, antes del primer cambio del viajero (decisión del usuario, 2026-09-28): "Volver a
       la ruta original" lo recupera EXACTAMENTE, sin regenerar. Solo en los días nuestros; se guarda con el viaje. */
   originalSnapshot?: DayPlan | null
