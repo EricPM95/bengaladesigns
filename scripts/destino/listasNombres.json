@@ -237,5 +237,18 @@
     "lugar": "Mercados de Trajano",
     "titulo": "Columna de Trajano y Mercados de Trajano",
     "modo": "dentro"
+  },
+  "Escalinata y Trinità dei Monti": {
+    "lugar": "Trinità dei Monti",
+    "titulo": "Escalinata y Trinità dei Monti"
+  },
+  "Paseo por Trastevere": {
+    "lugar": "Trastevere",
+    "titulo": "Paseo por Trastevere"
+  },
+  "bajada a Testaccio": {
+    "lugar": "Testaccio",
+    "titulo": "Bajada a Testaccio",
+    "modo": "camino"
   }
 }

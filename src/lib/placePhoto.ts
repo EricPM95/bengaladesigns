@@ -190,7 +190,7 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
           small: data.photo_small ?? data.photo_url,
           regular: data.photo_url,
           blurHash: null,
-          attribution: credit?.autor && credit.enlace ? { photographer: credit.autor, photographerUrl: credit.enlace, unsplashUrl: credit.enlace, site: credit.fuente } : null,
+          attribution: credit?.autor ? { photographer: credit.autor, photographerUrl: credit.enlace ?? '', unsplashUrl: credit.enlace ?? '', site: credit.licencia ?? credit.fuente ?? undefined } : null,
         }
         return photo
       }

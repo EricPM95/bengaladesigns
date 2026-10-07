@@ -49,7 +49,8 @@ export function ordenarDias(env) {
     halfPosition = halfFirst ? 0 : 2
   } else if (mediaJornada && cityDays.length === 4 && written.days['DA-medio']) {
     const whole = (routeTable['3'] ?? {})[hasFreeTour ? 'con_free_tour' : 'sin_free_tour'] ?? ['D1', 'D2', 'D4']
-    const half = halfFirst ? 'DT-medio' : 'DA-medio'
+    // (Tanda 6f, 4m: el medio día del viaje de 3,5 días es siempre el DA-medio; si es la tarde de llegada, va su versión «De tarde».)
+    const half = 'DA-medio'
     chosen = halfFirst ? [half, ...whole] : [...whole, half]
     halfPosition = halfFirst ? 0 : 3
   } else chosen = row.map((item) => (typeof item === 'string' ? item : sinGaleria && contentDays < 4 ? item.sin_galeria : item.con_galeria)).slice(0, cityDays.length)

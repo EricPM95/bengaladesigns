@@ -351,6 +351,11 @@ export interface Stop {
   addNote?: string | null
   /** Tanda 6d: la hora a la que abre si se llega antes («16:00») y qué hacer mientras. */
   waitOpensAt?: string | null
+  /** Tanda 6f: la línea de la tarjeta de una reserva puesta (o del Free Tour añadido): «🕘 Entrada a las 9:00 · llega a las 8:30: …»; la hora de llegada para la cuenta atrás de HOY. */
+  arrivalNote?: string | null
+  arrivalTime?: string | null
+  /** Tanda 6f: «Ya lo visitaste el día 2» (un «de camino» que ya fue parada otro día). */
+  visitedDay?: number | null
   waitHint?: string | null
   /** Tanda 6c: «Turno recomendado: 11:00» (lo propone el motor; no es una reserva del viajero, no va en negrita). */
   recommendedTurn?: string | null
@@ -680,7 +685,6 @@ export interface DayPlan {
   /** Tanda 6b: las franjas del día con su hora («Mañana · 9:00–14:00»). */
   franjas?: DayFranja[]
   /** Tanda 6b: tarjeta de descanso entre la tarde y la cena (texto ya montado por el servidor). */
-  restCard?: { title: string; text: string; nightName: string | null } | null
   /** Tanda 6: «Hoy el sol se pone a las 17:05» — solo dato, en la cabecera del día. */
   sunsetText?: string | null
   /** Tanda 6: la alternativa de lluvia del día (HOY la enseña si hay previsión; nunca se aplica sola). */

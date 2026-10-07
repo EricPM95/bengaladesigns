@@ -148,8 +148,9 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       tags={tags}
       reserved={Boolean(stop.reservedId)}
       photoUrl={stop.photoUrl}
-      // (Un paseo no lleva foto propia ni el recuadro con su nombre: usa la del barrio si la hay y, si no, va sin foto. Tanda 5.)
-      noPhoto={!stop.photoUrl && (stop.isFreeWalk || /^(Pasea y piérdete|Paseo por|La Passeggiata)/.test(stop.nightViewTitle ?? stop.name ?? ''))}
+      topNote={stop.arrivalNote ?? null}
+      // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)
+      noPhoto={!stop.photoUrl}
       iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.walk : undefined}
       onOpen={onOpen}
       menu={menu}

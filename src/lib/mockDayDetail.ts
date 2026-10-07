@@ -269,6 +269,9 @@ export interface MockStopDetail {
   recommendedTurn?: string | null
   /** Ver Stop.waitOpensAt / waitHint en types.ts. */
   waitOpensAt?: string | null
+  arrivalNote?: string | null
+  arrivalTime?: string | null
+  visitedDay?: number | null
   waitHint?: string | null
   /** Ver Stop.experience en types.ts. */
   experience?: ExperienceCategoryId | null
@@ -529,6 +532,8 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     ...(stop.reservationTime ? { reservationTime: stop.reservationTime } : {}),
     ...(stop.recommendedTurn ? { recommendedTurn: stop.recommendedTurn } : {}),
     ...(stop.waitOpensAt ? { waitOpensAt: stop.waitOpensAt, waitHint: stop.waitHint ?? null } : {}),
+    ...(stop.arrivalNote ? { arrivalNote: stop.arrivalNote, arrivalTime: stop.arrivalTime ?? null } : {}),
+    ...(stop.visitedDay ? { visitedDay: stop.visitedDay } : {}),
     experience: stop.experience ?? null,
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
@@ -625,6 +630,8 @@ export function seedStopsFromTemplate(day: DayPlan): Stop[] {
       ...(detail.reservationTime ? { reservationTime: detail.reservationTime } : {}),
       ...(detail.recommendedTurn ? { recommendedTurn: detail.recommendedTurn } : {}),
       ...(detail.waitOpensAt ? { waitOpensAt: detail.waitOpensAt, waitHint: detail.waitHint ?? null } : {}),
+      ...(detail.arrivalNote ? { arrivalNote: detail.arrivalNote, arrivalTime: detail.arrivalTime ?? null } : {}),
+      ...(detail.visitedDay ? { visitedDay: detail.visitedDay } : {}),
       experience: detail.experience ?? null,
       why: detail.why ?? null,
       ticketInfo: detail.ticketInfo ?? null,

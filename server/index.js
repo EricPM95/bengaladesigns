@@ -5191,11 +5191,35 @@ function ownPhotoFor(name, city, dateIso) {
   const foto = ownPhotoFile(table, name, dateIso)
   if (!foto) return null
   const base = `${table.carpeta}/${foto.archivo}`
-  const credit = foto.autor && foto.enlace && foto.fuente ? { autor: foto.autor, enlace: foto.enlace, fuente: foto.fuente } : null
+  // El crédito (Tanda 6f): `credito` {autor, licencia, enlace}; sin autor, la foto va sin línea de crédito. (Los campos antiguos autor/enlace/fuente siguen valiendo.)
+  const credit = foto.credito?.autor ? { autor: foto.credito.autor, licencia: foto.credito.licencia || null, enlace: foto.credito.enlace || null } : foto.autor && foto.enlace && foto.fuente ? { autor: foto.autor, enlace: foto.enlace, fuente: foto.fuente } : null
   // (La versión pequeña es opcional en los huecos: sin ella, la grande.)
   const smallPath = base.replace(/\.jpg$/, '_p.jpg')
   const small = foto.hueco && !existsSync(join(__dirname, '../public', smallPath)) ? base : smallPath
   return { photo_source: 'propia', photo_url: versionedPhotoUrl(base), photo_small: versionedPhotoUrl(small), photo_credit: credit, photo_night: foto.cuando === 'noche' }
+}
+
+/**
+ * La foto de su barrio o su zona (Tanda 6f, punto 2): si una parada no tiene foto propia ni otra, se usa una foto propia de DÍA de otro sitio de su misma zona (primero uno de nivel 1).
+ * Si tampoco hay, null: la tarjeta va sin recuadro de foto.
+ */
+function zonePhotoFor(name, city, dateIso) {
+  const key = findPipelineV2Key(city)
+  const destData = key ? findPipelineV2Data(city) : null
+  const table = photosFor(key ?? '')
+  if (!destData || !table) return null
+  const base = String(name).replace(/ \(noche\)$/, '')
+  const place = destData.places?.find((candidate) => candidate.name === name || candidate.name === base)
+  if (!place?.zone) return null
+  const delaZona = (table.fotos ?? [])
+    .filter((foto) => foto.cuando !== 'noche' && !foto.verificar && !foto.fechas)
+    .map((foto) => ({ foto, lugar: (foto.lugares ?? []).map((n) => destData.places?.find((candidate) => candidate.name === n)).find((candidate) => candidate && candidate.zone === place.zone && candidate.name !== place.name) }))
+    .filter((x) => x.lugar)
+    .sort((a, b) => (a.lugar.level ?? 3) - (b.lugar.level ?? 3) || a.foto.archivo.localeCompare(b.foto.archivo))[0]
+  if (!delaZona) return null
+  const own = ownPhotoFile(table, delaZona.lugar.name, dateIso)
+  if (!own) return null
+  return { ...ownPhotoFor(delaZona.lugar.name, city, dateIso), photo_zone: true }
 }
 
 /**
@@ -5273,6 +5297,14 @@ app.post('/api/place-photo', async (req, res) => {
       return
     }
     const foto = await resolvePlacePhoto(name, city, { force: Boolean(force), wikipediaTitleOverride })
+    // Sin foto propia ni de Unsplash o Wikipedia: la de su barrio o su zona; si tampoco hay, sin foto.
+    if (!foto || foto.photo_source === 'none') {
+      const deLaZona = excludeOwn ? null : zonePhotoFor(name, city, date)
+      if (deLaZona) {
+        res.json(deLaZona)
+        return
+      }
+    }
     res.json(foto)
   } catch (error) {
     // Nunca debe romper una pantalla: sin foto, el componente enseña su icono de categoría.

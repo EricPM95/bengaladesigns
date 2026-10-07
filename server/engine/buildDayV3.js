@@ -533,6 +533,9 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     const pagoEntrada = avisoPagoEntrada(visit.place.entrada_de_pago, visit.start, tripDay.hours?.weekday)
     if (pagoEntrada) stop.notice = [stop.notice, pagoEntrada].filter(Boolean).join('. ')
     if (visit.place.waitOpensAt) stop.wait_opens_at = visit.place.waitOpensAt
+    if (visit.place.visitedDay) stop.visited_day = visit.place.visitedDay
+    // La línea de la llegada (solo con la reserva puesta o el Free Tour añadido): «🕘 Entrada a las 9:00 · llega a las 8:30: …».
+    if (visit.arrivalNote) { stop.arrival_note = visit.arrivalNote.texto; stop.arrival_time = visit.arrivalNote.hora; stop.arrival_minutes = visit.arrivalNote.minutos }
     if (visit.place.waitHint) stop.wait_hint = visit.place.waitHint
     // Lo de pago de su grupo que se ve por fuera (el Castillo, desde el Puente; hueco a mitad de día).
     if (visit.place.outsideOf?.length) stop.outside_of = visit.place.outsideOf
@@ -797,8 +800,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     title: `${city} — día ${tripDay.dayNumber}`,
     type: 'city',
     // (Un día escrito: las horas son las del documento, sin redondear.)
-    stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops, ...nightStops.map((stop) => (tripDay.listas ? { ...stop, orientative_time: true, franja: 'noche' } : stop))].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
-    ...(tripDay.listas ? { spare_stops: spareStops, sunset_text: tripDay.sunsetText ?? null, rain_plan: rainPlan, franjas: tripDay.franjas ?? [], rest_card: tripDay.restCard ?? null } : {}),
+    stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops.filter((stop) => !stop.is_arrival), ...nightStops.map((stop) => (tripDay.listas ? { ...stop, orientative_time: true, franja: 'noche' } : stop))].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
+    ...(tripDay.listas ? { spare_stops: spareStops, sunset_text: tripDay.sunsetText ?? null, rain_plan: rainPlan, franjas: tripDay.franjas ?? [] } : {}),
     // HOY: «Vas bien de tiempo» / «Vas justo» (solo cuando el servidor lo pide con `chequeo`).
     ...(tripDay.timeCheck
       ? {

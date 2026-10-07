@@ -145,6 +145,9 @@ export interface GeneratedStop {
   add_note?: string | null
   /** Tanda 6d: si se llega antes de que abra, la hora a la que abre y qué hacer mientras. */
   wait_opens_at?: string | null
+  arrival_note?: string | null
+  arrival_time?: string | null
+  visited_day?: number | null
   wait_hint?: string | null
   /** Tanda 6c: turno que propone el motor (no una reserva del viajero). */
   recommended_turn?: string | null
@@ -211,7 +214,6 @@ export interface GeneratedDay {
   spare_stops?: GeneratedStop[]
   /** Tanda 6b: las franjas del día y la tarjeta de descanso. */
   franjas?: { id: 'manana' | 'tarde' | 'cena'; label: string; from: string; to?: string | null }[]
-  rest_card?: { title: string; text: string; night_name?: string | null } | null
   /** Tanda 6: «Hoy el sol se pone a las 17:05». */
   sunset_text?: string | null
   /** Tanda 6: la alternativa de lluvia — text, remove (nombres), add (paradas), slot. */
@@ -500,6 +502,8 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.spare_reason ? { spareReason: generated.spare_reason } : {}),
     ...(generated.franja ? { franja: generated.franja } : {}),
     ...(generated.add_note ? { addNote: generated.add_note } : {}),
+    ...(generated.arrival_note ? { arrivalNote: generated.arrival_note, arrivalTime: generated.arrival_time ?? null } : {}),
+    ...(generated.visited_day ? { visitedDay: generated.visited_day } : {}),
     ...(generated.wait_opens_at ? { waitOpensAt: generated.wait_opens_at, waitHint: generated.wait_hint ?? null } : {}),
     ...(generated.recommended_turn ? { recommendedTurn: generated.recommended_turn } : {}),
     ...(generated.meal_change ? { mealChange: generated.meal_change.restaurant ? { mealTime: generated.meal_change.meal_time, restaurant: generated.meal_change.restaurant, ...(generated.meal_change.night_stops?.length ? { nightStops: generated.meal_change.night_stops.map((night) => mapStop(0, night)) } : {}) } : null } : {}),
@@ -726,7 +730,6 @@ function mapDay(
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     ...(generated.spare_stops?.length ? { spareStops: generated.spare_stops.map((stop) => mapStop(generated.day_number, stop)) } : {}),
     ...(generated.franjas?.length ? { franjas: generated.franjas.map((f) => ({ id: f.id, label: f.label, from: f.from, to: f.to ?? null })) } : {}),
-    ...(generated.rest_card?.text ? { restCard: { title: generated.rest_card.title, text: generated.rest_card.text, nightName: generated.rest_card.night_name ?? null } } : {}),
     ...(generated.sunset_text ? { sunsetText: generated.sunset_text } : {}),
     ...(generated.rain_plan?.text
       ? {

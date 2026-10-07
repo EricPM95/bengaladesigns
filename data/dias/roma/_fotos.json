@@ -16,7 +16,12 @@
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_panteon.jpg",
@@ -27,7 +32,12 @@
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_fontana_trevi.jpg",
@@ -38,7 +48,12 @@
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_castillo_desde_puente_sant_angelo.jpg",
@@ -48,7 +63,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "Sin uso desde la regla 411: el Castillo es una parada normal (foto de día) y el paseo «El Castillo y el Tíber» usa la del río."
+      "nota": "Sin uso desde la regla 411: el Castillo es una parada normal (foto de día) y el paseo «El Castillo y el Tíber» usa la del río.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_castillo_y_puente_sant_angelo_rio.jpg",
@@ -58,7 +78,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "Sin uso desde el 3-oct-2026: «Puente Sant'Angelo (noche)» ya no existe como parada suelta; la de noche es «El Puente y el Castillo de Sant'Angelo (noche)», con la foto nueva del usuario."
+      "nota": "Sin uso desde el 3-oct-2026: «Puente Sant'Angelo (noche)» ya no existe como parada suelta; la de noche es «El Puente y el Castillo de Sant'Angelo (noche)», con la foto nueva del usuario.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_foro_romano.jpg",
@@ -69,7 +94,12 @@
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_basilica_san_pedro_arbol_dia.jpg",
@@ -84,7 +114,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "Sin uso desde PARA_CODE_TODO_2026-10-01 (paso 5): la Plaza de San Pedro lleva en Navidad navidad_noche_plaza_san_pedro.jpg y la Basílica, dia_basilica_san_pedro.jpg todo el año."
+      "nota": "Sin uso desde PARA_CODE_TODO_2026-10-01 (paso 5): la Plaza de San Pedro lleva en Navidad navidad_noche_plaza_san_pedro.jpg y la Basílica, dia_basilica_san_pedro.jpg todo el año.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_plaza_espana_arbol_noche.jpg",
@@ -100,7 +135,12 @@
       "verificar_fechas": "El árbol de la escalinata se pone todos los años; las fechas exactas cambian. La foto sale desde el 8 de diciembre, cuando se encienden los árboles de las plazas; revisar cada diciembre en turismoroma.it.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_plaza_venecia_altar_patria_arbol_noche.jpg",
@@ -117,7 +157,12 @@
       "verificar_nota": "Solo si ese año hay árbol en Plaza Venecia. En la lista oficial de 2025-26 (turismoroma.it) no sale: la foto no se usa hasta confirmarlo.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_coliseo_arbol_noche.jpg",
@@ -134,7 +179,12 @@
       "verificar_nota": "Solo si ese año hay árbol junto al Coliseo: no se pone todos los años. Sin confirmar, sale noche_coliseo.jpg.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -146,7 +196,12 @@
         "Trastevere"
       ],
       "ancho": 1200,
-      "nota": "La trattoria con la Vespa: es Trastevere (3-oct-2026: ya no sale en la iglesia). Santa Cecilia sigue con ella de momento: pendiente de una foto propia de la basílica."
+      "nota": "La trattoria con la Vespa: es Trastevere (3-oct-2026: ya no sale en la iglesia). Santa Cecilia sigue con ella de momento: pendiente de una foto propia de la basílica.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_iglesia_santa_maria_trastevere.jpg",
@@ -158,7 +213,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La fuente de la plaza delante de la iglesia (3-oct-2026). Wikimedia Commons, File:Santa Maria in Trastevere fountain.jpg, de Jensens: dominio público, sin crédito obligatorio. Es la que antes salía en Trastevere (venía de Wikipedia)."
+      "nota": "La fuente de la plaza delante de la iglesia (3-oct-2026). Wikimedia Commons, File:Santa Maria in Trastevere fountain.jpg, de Jensens: dominio público, sin crédito obligatorio. Es la que antes salía en Trastevere (venía de Wikipedia).",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "noche",
@@ -169,7 +229,12 @@
       "lugares": [
         "Trastevere de noche"
       ],
-      "ancho": 1600
+      "ancho": 1600,
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -180,7 +245,12 @@
       "lugares": [
         "Altar de la Patria"
       ],
-      "ancho": 1600
+      "ancho": 1600,
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -196,7 +266,12 @@
         "desde": "12-01",
         "hasta": "01-05"
       },
-      "nota": "La foto principal de «Piazza Navona y su mercadillo navideño»: la plaza desde arriba, con los puestos y el tiovivo. Solo en las fechas del mercadillo (turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre al 6 de enero; el 6 cierra a las 14:00). Sustituye a la de Wikimedia."
+      "nota": "La foto principal de «Piazza Navona y su mercadillo navideño»: la plaza desde arriba, con los puestos y el tiovivo. Solo en las fechas del mercadillo (turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre al 6 de enero; el 6 cierra a las 14:00). Sustituye a la de Wikimedia.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "noche",
@@ -212,7 +287,12 @@
         "desde": "12-01",
         "hasta": "01-05"
       },
-      "nota": "Los paseos nocturnos por Navona, solo en las fechas del mercadillo."
+      "nota": "Los paseos nocturnos por Navona, solo en las fechas del mercadillo.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "noche",
@@ -224,7 +304,12 @@
         "Plaza de España (noche)"
       ],
       "ancho": 1600,
-      "nota": "Cielo rosa y farolas encendidas: solo en la experiencia nocturna de Plaza de España (paso 5, punto 3). En Navidad, de noche, sigue la del árbol (con fechas va antes). La Plaza de España de día no lleva foto propia: la de siempre."
+      "nota": "Cielo rosa y farolas encendidas: solo en la experiencia nocturna de Plaza de España (paso 5, punto 3). En Navidad, de noche, sigue la del árbol (con fechas va antes). La Plaza de España de día no lleva foto propia: la de siempre.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -235,7 +320,12 @@
       "lugares": [
         "Mirador del Janículo"
       ],
-      "ancho": 1200
+      "ancho": 1200,
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -246,7 +336,12 @@
       "lugares": [
         "Jardín de los Naranjos"
       ],
-      "ancho": 1200
+      "ancho": 1200,
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -257,7 +352,12 @@
       "lugares": [
         "Fontana dell'Acqua Paola"
       ],
-      "ancho": 1600
+      "ancho": 1600,
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "cuando": "dia",
@@ -269,7 +369,12 @@
         "Trinità dei Monti"
       ],
       "ancho": 664,
-      "nota": "Pequeña (664 px): tal cual, sin ampliarla. Sale con las azaleas de la escalinata, que solo están en primavera."
+      "nota": "Pequeña (664 px): tal cual, sin ampliarla. Sale con las azaleas de la escalinata, que solo están en primavera.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_noche_plaza_san_pedro.jpg",
@@ -287,7 +392,12 @@
       "nota": "Mide 1.500 px: tal cual, sin ampliarla.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_plaza_san_pedro.jpg",
@@ -299,7 +409,12 @@
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_basilica_san_pedro.jpg",
@@ -311,7 +426,12 @@
       "nota": "Todo el año, también en Navidad.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "cupula_basilica_san_pedro.jpg",
@@ -324,7 +444,12 @@
       "nota": "Todas las tarjetas y fichas de la Cúpula, todo el año.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_terraza_pincio.jpg",
@@ -336,7 +461,12 @@
       "nota": "De día, todo el año. La nocturna del Pincio (Terraza del Pincio (noche)) no la lleva.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_parque_villa_borghese_templo_esculapio.jpg",
@@ -346,7 +476,12 @@
       "nota": "Sin uso desde el 3-oct-2026: el Parque lleva la foto del usuario y el lago y el Templo de Esculapio, una de Commons.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_jardines_pincio_hidrocronometro.jpg",
@@ -358,7 +493,12 @@
       "nota": "El reloj de agua (Hidrocronómetro). Pequeña (783 px): tal cual, sin ampliarla.",
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_coliseo.jpg",
@@ -369,7 +509,12 @@
       "ancho": 1600,
       "fuente": "Unsplash",
       "autor": "David Libeert",
-      "enlace": "https://unsplash.com/photos/colosseum-under-white-clouds-during-daytime-CzKI2-nejUk"
+      "enlace": "https://unsplash.com/photos/colosseum-under-white-clouds-during-daytime-CzKI2-nejUk",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_puente_sant_angelo.jpg",
@@ -380,7 +525,12 @@
       "ancho": 1600,
       "fuente": "",
       "autor": "",
-      "enlace": ""
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_ojo_cerradura_aventino.jpg",
@@ -392,7 +542,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La del usuario (3-oct-2026), sustituye a la de Wikipedia (el edificio con el jardín, que no era el ojo). Original en docs/archivo/fotos_2026-10-03/."
+      "nota": "La del usuario (3-oct-2026), sustituye a la de Wikipedia (el edificio con el jardín, que no era el ojo). Original en docs/archivo/fotos_2026-10-03/.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_piramide_cestia.jpg",
@@ -404,7 +559,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 3.0",
       "autor": "Joris",
       "enlace": "https://commons.wikimedia.org/wiki/File:Porta_San_Paolo_-_Piramid_Cestius.JPG",
-      "nota": "La pirámide con la Porta San Paolo (3-oct-2026). Es la que salía en el Mercado de Testaccio (venía de Wikipedia). Licencia CC BY-SA 3.0: pide crédito, y lleva el de Joris (autor «asumido» por Commons según los derechos reclamados). Sustituye a la de Unsplash, a contraluz y oscura."
+      "nota": "La pirámide con la Porta San Paolo (3-oct-2026). Es la que salía en el Mercado de Testaccio (venía de Wikipedia). Licencia CC BY-SA 3.0: pide crédito, y lleva el de Joris (autor «asumido» por Commons según los derechos reclamados). Sustituye a la de Unsplash, a contraluz y oscura.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_piazza_navona.jpg",
@@ -416,7 +576,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La del usuario (3-oct-2026), de noche, para todo el año. En las fechas del mercadillo (12-01 a 01-05) sigue ganando la de Navidad."
+      "nota": "La del usuario (3-oct-2026), de noche, para todo el año. En las fechas del mercadillo (12-01 a 01-05) sigue ganando la de Navidad.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_mercadillo_piazza_navona.jpg",
@@ -432,7 +597,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La del usuario (3-oct-2026), con las fechas del mercadillo (del 1 de diciembre al 6 de enero, las de la fecha especial «mercadillo_navona»). La anterior se queda solo para «Piazza Navona»."
+      "nota": "La del usuario (3-oct-2026), con las fechas del mercadillo (del 1 de diciembre al 6 de enero, las de la fecha especial «mercadillo_navona»). La anterior se queda solo para «Piazza Navona».",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_puente_y_castillo_sant_angelo.jpg",
@@ -444,7 +614,12 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La del usuario (3-oct-2026). Es la foto de la parada de noche única del Puente y el Castillo de Sant'Angelo; la usan también el paseo «El Castillo y el Tíber» y el mirador que llega de noche (night_view_overrides)."
+      "nota": "La del usuario (3-oct-2026). Es la foto de la parada de noche única del Puente y el Castillo de Sant'Angelo; la usan también el paseo «El Castillo y el Tíber» y el mirador que llega de noche (night_view_overrides).",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_100_presepi_vaticano.jpg",
@@ -456,7 +631,12 @@
       "fuente": "Wikimedia Commons · CC BY 3.0",
       "autor": "Dguendel",
       "enlace": "https://commons.wikimedia.org/wiki/File%3AVatikan%2C_Petersdom%2C_die_Weihnachtskrippe.JPG",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «100 Presepi in Vaticano»): Wikimedia Commons, File:Vatikan, Petersdom, die Weihnachtskrippe.JPG, CC BY 3.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «100 Presepi in Vaticano»): Wikimedia Commons, File:Vatikan, Petersdom, die Weihnachtskrippe.JPG, CC BY 3.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_altar_de_la_patria.jpg",
@@ -468,7 +648,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "Charlie27it",
       "enlace": "https://commons.wikimedia.org/wiki/File%3AVittoriano_di_Notte_(cropped).jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Altar de la Patria (noche)»): Wikimedia Commons, File:Vittoriano di Notte (cropped).jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Altar de la Patria (noche)»): Wikimedia Commons, File:Vittoriano di Notte (cropped).jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_barrio_judio.jpg",
@@ -480,7 +665,12 @@
       "fuente": "Wikimedia Commons · CC BY 2.0",
       "autor": "Jorge Franganillo",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma-_Portico_d'Ottavia_-_52350512476.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Barrio Judío»): Wikimedia Commons, File:Roma- Portico d'Ottavia - 52350512476.jpg, CC BY 2.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Barrio Judío»): Wikimedia Commons, File:Roma- Portico d'Ottavia - 52350512476.jpg, CC BY 2.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_basilica_santa_cecilia_trastevere.jpg",
@@ -492,7 +682,12 @@
       "fuente": "Wikimedia Commons · CC BY 4.0",
       "autor": "NateBergin",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ASanta_Cecilia_in_Trastevere_Facade.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Basílica de Santa Cecilia in Trastevere»): Wikimedia Commons, File:Santa Cecilia in Trastevere Facade.jpg, CC BY 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Basílica de Santa Cecilia in Trastevere»): Wikimedia Commons, File:Santa Cecilia in Trastevere Facade.jpg, CC BY 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_cementerio_protestante.jpg",
@@ -504,7 +699,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "Pierrette13",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ATombes_orthodoxes%2C_cimeti%C3%A8re_anglais_de_Rome.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Cementerio Protestante»): Wikimedia Commons, File:Tombes orthodoxes, cimetière anglais de Rome.jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Cementerio Protestante»): Wikimedia Commons, File:Tombes orthodoxes, cimetière anglais de Rome.jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_domus_aurea.jpg",
@@ -516,7 +716,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "Davide Mauro",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ADomus_Aurea_03.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Domus Aurea»): Wikimedia Commons, File:Domus Aurea 03.jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Domus Aurea»): Wikimedia Commons, File:Domus Aurea 03.jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_galeria_nacional_arte_moderno.jpg",
@@ -528,7 +733,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "Krzysztof Golik",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ANational_Gallery_of_Modern_Art_in_Rome_01.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Galería Nacional de Arte Moderno»): Wikimedia Commons, File:National Gallery of Modern Art in Rome 01.jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Galería Nacional de Arte Moderno»): Wikimedia Commons, File:National Gallery of Modern Art in Rome 01.jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "navidad_luces_tridente.jpg",
@@ -540,7 +750,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 3.0",
       "autor": "sailko",
       "enlace": "https://commons.wikimedia.org/wiki/File%3AIlluminazione_via_del_corso_natale_2011%2C_03.JPG",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Luces de Navidad del Tridente»): Wikimedia Commons, File:Illuminazione via del corso natale 2011, 03.JPG, CC BY-SA 3.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Luces de Navidad del Tridente»): Wikimedia Commons, File:Illuminazione via del corso natale 2011, 03.JPG, CC BY-SA 3.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_mercado_testaccio.jpg",
@@ -552,7 +767,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 3.0",
       "autor": "Lalupa",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ATestaccio_-_il_nuovo_mercato_1280317.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Mercado de Testaccio»): Wikimedia Commons, File:Testaccio - il nuovo mercato 1280317.jpg, CC BY-SA 3.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Mercado de Testaccio»): Wikimedia Commons, File:Testaccio - il nuovo mercato 1280317.jpg, CC BY-SA 3.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_mirador_janiculo.jpg",
@@ -564,7 +784,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 3.0",
       "autor": "Desmatron at Italian Wikipedia",
       "enlace": "https://commons.wikimedia.org/wiki/File%3AGianicolo_roma_di_notte.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Mirador del Janículo (noche)»): Wikimedia Commons, File:Gianicolo roma di notte.jpg, CC BY-SA 3.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Mirador del Janículo (noche)»): Wikimedia Commons, File:Gianicolo roma di notte.jpg, CC BY-SA 3.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_napoles.jpg",
@@ -576,7 +801,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "PaestumPaestum",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ACastel_dell'_Ovo.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Nápoles (Naples Italy)»): Wikimedia Commons, File:Castel dell' Ovo.jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Nápoles (Naples Italy)»): Wikimedia Commons, File:Castel dell' Ovo.jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_ostia_antica.jpg",
@@ -588,7 +818,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "Rabax63",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ATheater_(Ostia_Antica).jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Ostia Antica (excursión)»): Wikimedia Commons, File:Theater (Ostia Antica).jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Ostia Antica (excursión)»): Wikimedia Commons, File:Theater (Ostia Antica).jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_palazzo_doria_pamphilj.jpg",
@@ -600,19 +835,29 @@
       "fuente": "Wikimedia Commons · CC BY 2.0",
       "autor": "antmoose",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma-palazzodoriapamphili.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Palazzo Doria Pamphilj (fachada)»): Wikimedia Commons, File:Roma-palazzodoriapamphili.jpg, CC BY 2.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Palazzo Doria Pamphilj (fachada)»): Wikimedia Commons, File:Roma-palazzodoriapamphili.jpg, CC BY 2.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_villa_borghese_lago_templo.jpg",
       "lugares": [
-        "Parque de Villa Borghese: el lago y el Templo de Esculapio"
+        "Parque de Villa Borghese"
       ],
       "cuando": "dia",
       "ancho": 1600,
       "fuente": "Wikimedia Commons · CC BY 4.0",
       "autor": "Pierre-Selim Huard",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma_-_2016-05-21_-_Villa_Borghese_-_0697.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Parque de Villa Borghese: el lago y el Templo de Esculapio»): Wikimedia Commons, File:Roma - 2016-05-21 - Villa Borghese - 0697.jpg, CC BY 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Parque de Villa Borghese: el lago y el Templo de Esculapio»): Wikimedia Commons, File:Roma - 2016-05-21 - Villa Borghese - 0697.jpg, CC BY 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_esquilino.jpg",
@@ -624,7 +869,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 4.0",
       "autor": "Cezar Suceveanu",
       "enlace": "https://commons.wikimedia.org/wiki/File%3APiazza_Santa_Maria_Maggiore_din_Roma1.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Pasear por el Esquilino»): Wikimedia Commons, File:Piazza Santa Maria Maggiore din Roma1.jpg, CC BY-SA 4.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «Pasear por el Esquilino»): Wikimedia Commons, File:Piazza Santa Maria Maggiore din Roma1.jpg, CC BY-SA 4.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_roma_antigua.jpg",
@@ -636,7 +886,12 @@
       "fuente": "Wikimedia Commons · CC BY 2.0",
       "autor": "Jorge Franganillo",
       "enlace": "https://commons.wikimedia.org/wiki/File%3ARoma-_Via_dei_Fori_Imperiali_-_52345440539.jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Pasear por la Roma Antigua»): Wikimedia Commons, File:Roma- Via dei Fori Imperiali - 52345440539.jpg, CC BY 2.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Pasear por la Roma Antigua»): Wikimedia Commons, File:Roma- Via dei Fori Imperiali - 52345440539.jpg, CC BY 2.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_pasear_trastevere.jpg",
@@ -648,7 +903,12 @@
       "fuente": "Wikimedia Commons · CC BY-SA 2.0",
       "autor": "daryl_mitchell from Saskatoon, Saskatchewan, Canada",
       "enlace": "https://commons.wikimedia.org/wiki/File%3AFront_Entrance_(15116765677).jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Pasear por Trastevere (calle con color)»): Wikimedia Commons, File:Front Entrance (15116765677).jpg, CC BY-SA 2.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 1 de «Pasear por Trastevere (calle con color)»): Wikimedia Commons, File:Front Entrance (15116765677).jpg, CC BY-SA 2.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "noche_terraza_pincio.jpg",
@@ -660,19 +920,155 @@
       "fuente": "Wikimedia Commons · CC BY-SA 2.0",
       "autor": "Jamie Heath from United Kingdom",
       "enlace": "https://commons.wikimedia.org/wiki/File%3APiazza_del_Popolo_(49347286317).jpg",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Terraza del Pincio (noche)»): Wikimedia Commons, File:Piazza del Popolo (49347286317).jpg, CC BY-SA 2.0, pide crédito."
+      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 3 de «Terraza del Pincio (noche)»): Wikimedia Commons, File:Piazza del Popolo (49347286317).jpg, CC BY-SA 2.0, pide crédito.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     },
     {
       "archivo": "dia_parque_villa_borghese.jpg",
+      "lugares": [],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "La del usuario (3-oct-2026). Original en docs/archivo/fotos_2026-10-03/. Comprobado que no se parece a la de Jardines del Pincio, que sale el mismo día.",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_via_conciliazione.jpg",
       "lugares": [
-        "Parque de Villa Borghese"
+        "Via della Conciliazione"
       ],
       "cuando": "dia",
       "ancho": 1600,
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La del usuario (3-oct-2026). Original en docs/archivo/fotos_2026-10-03/. Comprobado que no se parece a la de Jardines del Pincio, que sale el mismo día."
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_teatro_de_marcelo.jpg",
+      "lugares": [
+        "Teatro de Marcelo"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_porta_pinciana.jpg",
+      "lugares": [
+        "Porta Pinciana"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_plaza_venecia.jpg",
+      "lugares": [
+        "Plaza Venecia"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_via_dei_fori_imperiali.jpg",
+      "lugares": [
+        "Via dei Fori Imperiali"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_via_condotti.jpg",
+      "lugares": [
+        "Via Condotti"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_via_veneto.jpg",
+      "lugares": [
+        "Via Veneto"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_fuente_del_triton.jpg",
+      "lugares": [
+        "Fuente del Tritón"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
     }
   ],
   "notas_revision": {
@@ -1024,5 +1420,6 @@
       "nota": "Solo si quieres una distinta de la del Puente."
     }
   ],
-  "_huecos": "Huecos para las fotos propias que faltan (docs/dias/FOTOS_PENDIENTES.md): cada sitio tiene un archivo FIJO en public/fotos/roma/. Se suelta la foto (1600 px de ancho o más) con ese nombre y sale sola, sin tocar nada más (el servidor mira si el archivo existe; la versión pequeña, <archivo>_p.jpg, es opcional: sin ella se usa la grande). `sin_foto_hasta_llegar`: hasta que llegue la foto, el sitio va con un recuadro neutro con su nombre y no con una buscada (su nombre no es el de un lugar que ya tenga foto). Se genera con scripts/destino/fotosHuecos.mjs."
+  "_huecos": "Huecos para las fotos propias que faltan (docs/dias/FOTOS_PENDIENTES.md): cada sitio tiene un archivo FIJO en public/fotos/roma/. Se suelta la foto (1600 px de ancho o más) con ese nombre y sale sola, sin tocar nada más (el servidor mira si el archivo existe; la versión pequeña, <archivo>_p.jpg, es opcional: sin ella se usa la grande). `sin_foto_hasta_llegar`: hasta que llegue la foto, el sitio va con un recuadro neutro con su nombre y no con una buscada (su nombre no es el de un lugar que ya tenga foto). Se genera con scripts/destino/fotosHuecos.mjs.",
+  "_credito": "Tanda 6f: `credito` {autor, licencia, enlace} de cada foto, vacío por defecto. Si tiene autor, sale en letra pequeña al abrir la foto o la ficha del sitio: «Foto: {autor} · {licencia}». Nunca un autor o una licencia inventados."
 }

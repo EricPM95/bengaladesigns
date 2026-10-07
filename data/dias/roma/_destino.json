@@ -20,8 +20,14 @@
     "free_tour": {
       "min": 15,
       "titulo": "Llegada al punto de encuentro del Free Tour",
-      "texto": "Llegas 15 minutos antes al punto de encuentro: el guía sale a su hora y no espera. Busca el paraguas o el cartel del tour."
-    }
+      "texto": "Llegas 15 minutos antes al punto de encuentro: el guía sale a su hora y no espera. Busca el paraguas o el cartel del tour.",
+      "punto": "la Plaza de España",
+      "frase": "Busca el paraguas o el cartel del tour"
+    },
+    "linea_reserva": {
+      "generico": "recoger las entradas y pasar el control"
+    },
+    "_linea": "Tanda 6f, punto 1: la tarjeta «Llegada a…» ya no existe; solo si el viajero tiene la reserva puesta (o el Free Tour añadido), la tarjeta de la visita lleva una línea arriba: «🕘 Entrada a las 9:00 · llega a las 8:30: el control de seguridad y la cola de entrada». Sin reserva puesta (también el «Turno recomendado»), no sale."
   },
   "solo_explorar": {
     "_nota": "Lugares de nivel 2 sin sitio en los días, a propósito, con el motivo: salen en Explorar y en Añadir parada.",
@@ -94,5 +100,40 @@
     "El Puente y el Castillo de Sant'Angelo (noche)": "el Puente y el Castillo de Sant'Angelo iluminados",
     "Terraza del Pincio (noche)": "Roma desde el Pincio, de noche",
     "Mirador del Janículo (noche)": "Roma desde el Janículo, de noche"
-  }
+  },
+  "paradas_con_nombre": [
+    "Via della Conciliazione",
+    "Teatro de Marcelo",
+    "Columna de Trajano",
+    "Porta Pinciana",
+    "Plaza Venecia",
+    "Via dei Fori Imperiali",
+    "Arco de Constantino",
+    "Puente Sant'Angelo",
+    "Via Condotti",
+    "Via Veneto",
+    "Fuente del Tritón"
+  ],
+  "_paradas_con_nombre": "Tanda 6f, 4j (regla 9 del documento): en Roma estos sitios dejan de ir «de camino» y son paradas (~10 min, salvo lo que diga el documento), con su tarjeta y su foto. Se quedan de camino: las calles de paso sin fama (Via del Babuino, Via dei Coronari, Via di Ripetta, el Lungotevere, Via Garibaldi, Via Margutta), los rincones pequeños (la Fuente de las Tortugas, el Elefantino, la Piazza in Piscinula) y las fachadas.",
+  "noches_parejas": [
+    [
+      "Fontana de Trevi (noche)",
+      "Plaza de España (noche)"
+    ],
+    [
+      "Coliseo (noche)",
+      "Foro Romano desde el Campidoglio (noche)"
+    ],
+    [
+      "Panteón (noche)",
+      "Piazza Navona (noche)"
+    ],
+    [
+      "El Puente y el Castillo de Sant'Angelo (noche)"
+    ],
+    [
+      "Trastevere de noche"
+    ]
+  ],
+  "_noches_parejas": "Tanda 6f, 4b (regla 13 del documento): las nocturnas van por parejas cercanas. Una noche lleva una pareja, o solo una de las dos (si la otra ya salió o no vale por la regla 11c); nunca se mezclan parejas y entre las dos de una noche no hay más de 15 min andando."
 }

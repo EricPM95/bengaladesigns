@@ -476,6 +476,20 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
               {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
                   que exigen sus condiciones. Las de Wikipedia no la llevan (dominio público o CC). */}
               {(photo?.source === 'unsplash' || photo?.source === 'propia') && photo.attribution && (
+                photo.source === 'propia' ? (
+                  // Nuestra foto, con su crédito: «Foto: {autor} · {licencia}» (letra pequeña; el enlace, si lo hay).
+                  <p className="text-caption text-text-muted">
+                    Foto:{' '}
+                    {photo.attribution.photographerUrl ? (
+                      <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
+                        {photo.attribution.photographer}
+                      </a>
+                    ) : (
+                      photo.attribution.photographer
+                    )}
+                    {photo.attribution.site ? ` · ${photo.attribution.site}` : ''}
+                  </p>
+                ) : (
                 <p className="text-caption text-text-muted">
                   Foto de{' '}
                   <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
@@ -486,6 +500,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                     {photo.attribution.site ?? 'Unsplash'}
                   </a>
                 </p>
+                )
               )}
 
               {visibleTabs.length > 1 && (

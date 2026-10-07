@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { ReservedMarks } from '../reservas/ReservedMarks'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
@@ -36,6 +37,8 @@ interface TrazoCardProps {
   name: string
   /** Línea opcional bajo el nombre (por qué está, el paseo nocturno…). */
   sub?: string | null
+  /** Tanda 6f: la línea de arriba de una reserva puesta («🕘 Entrada a las 9:00 · llega a las 8:30: …»). */
+  topNote?: string | null
   /** Línea de horario, duración y notas (reserva, atardecer…). */
   meta?: CardMeta[]
   /** Píldoras de tipo de lugar (del JSON curado). */
@@ -65,7 +68,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const night = variant === 'night'
   const sunset = variant === 'sunset'
@@ -94,13 +97,11 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, m
         </span>
         <div className="absolute bottom-0 left-[30px] right-0 top-0" style={{ clipPath: 'polygon(26px 0, 100% 0, calc(100% - 20px) 100%, 0 100%)', background: photoBg }}>
           {photoUrl && !noPhoto && <img src={photoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
-          {/* Sin foto del sitio: el recuadro neutro con su nombre (nunca una foto que no sea del sitio; las fotos propias que faltan salen solas al llegar). */}
-          {!photoUrl && !noPhoto && !iconPath && !dashed && typeof name === 'string' && (
-            <span className={`absolute inset-0 flex items-center justify-center px-7 text-center font-display text-[12px] leading-[1.15] [overflow-wrap:anywhere] ${night ? 'text-white/60' : 'text-text/45'}`}>{name}</span>
-          )}
+          {/* (Tanda 6f: sin foto no hay recuadro vacío: la tarjeta va sin foto, con la franja de color.) */}
         </div>
       </div>
       <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
+        {topNote && <span className={`text-[11.5px] font-medium leading-[1.3] ${night ? '' : 'text-text/75'}`} style={{ color: ink2 }}>{topNote}</span>}
         {reserved && <ReservedMarks compact className="mb-0.5" />}
         {time && (
           <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[10.5px] max-[479px]:tracking-normal" style={{ color: timeColor }}>
@@ -303,24 +304,36 @@ export interface OnTheWayLine {
   onOpen?: () => void
 }
 export function OnTheWayGroupCard({ toName, lines }: { toName: string | null; lines: OnTheWayLine[] }) {
+  // Plegada por defecto, en una sola línea: «De camino a Parque de Villa Borghese · pasas por la Fuente del Tritón, Via Veneto y Porta Pinciana ▾». Al tocarla se despliega.
+  const [open, setOpen] = useState(false)
+  const names = lines.map((line) => line.name)
+  const pasas = names.length <= 1 ? names[0] ?? '' : `${names.slice(0, -1).join(', ')} y ${names.at(-1)}`
   return (
-    <div className="relative my-4 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] px-2 py-2">
-      <span className="block whitespace-nowrap px-1 pb-1 font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50 max-[479px]:tracking-[.06em]">
-        {toName ? `De camino a ${toName}` : 'De camino'}
-      </span>
-      <ul className="flex flex-col">
-        {lines.map((line) => (
-          <li key={line.id} data-stop-id={line.id}>
-            <button type="button" onClick={line.onOpen} className="flex w-full min-w-0 items-center gap-3 rounded-[12px] px-1 py-1.5 text-left">
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="line-clamp-1 font-display text-[16px] leading-[1.15] text-text">{line.name}</span>
-                {line.phrase && <span className="line-clamp-2 text-[12.5px] leading-[1.35] text-text/60">{line.phrase}</span>}
-              </span>
-              <span className="shrink-0 pr-1 text-[12.5px] font-semibold text-accent">Ver ›</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+    <div className="relative my-3 rounded-[16px] border-[1.5px] border-dashed border-text/[.18] bg-[#FFFEFB] px-2 py-1.5">
+      <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} className="flex w-full items-start gap-2 px-1 py-1 text-left">
+        <span className="min-w-0 flex-1 text-[12.5px] leading-[1.35] text-text/70">
+          <span className="font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50">{toName ? `De camino a ${toName}` : 'De camino'}</span>
+          {!open && <span> · pasas por {pasas}</span>}
+        </span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`mt-0.5 h-3.5 w-3.5 shrink-0 text-text/50 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <ul className="flex flex-col">
+          {lines.map((line) => (
+            <li key={line.id} data-stop-id={line.id}>
+              <button type="button" onClick={line.onOpen} className="flex w-full min-w-0 items-center gap-3 rounded-[12px] px-1 py-1.5 text-left">
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="line-clamp-1 font-display text-[16px] leading-[1.15] text-text">{line.name}</span>
+                  {line.phrase && <span className="line-clamp-2 text-[12.5px] leading-[1.35] text-text/60">{line.phrase}</span>}
+                </span>
+                <span className="shrink-0 pr-1 text-[12.5px] font-semibold text-accent">Ver ›</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

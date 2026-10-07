@@ -13,6 +13,7 @@ const OUT = 'data/dias/roma/listas.json'
 const DUDAS = 'docs/dias/PREGUNTAS_TANDA6_CONVERTIDOR.md'
 const D = JSON.parse(fs.readFileSync('data/pipeline_v2/roma.json', 'utf8'))
 const nombres = JSON.parse(fs.readFileSync('scripts/destino/listasNombres.json', 'utf8'))
+const paradasConNombre = new Set(JSON.parse(fs.readFileSync('data/dias/roma/_destino.json', 'utf8')).paradas_con_nombre ?? [])
 const variantes = (await import('./listasVariantes.mjs')).default
 const antiguo = (id) => {
   const file = `data/archivo/dias_roma/${id}.json`
@@ -180,7 +181,8 @@ function nocheDe(texto, dia) {
   const doc = texto.trim()
   let t = doc.replace(/\.$/, '')
   const out = { lista: [], doc }
-  if (/^la que no haya salido/i.test(t)) return { ...out, libre: true, texto: t }
+  // «la que no haya salido» / «la pareja de nocturnas que toque (regla 13)»: la elige el motor por las parejas cercanas (regla 13).
+  if (/^la que no haya salido|^la pareja( de nocturnas)? que toque/i.test(t)) return { ...out, libre: true, texto: t }
   const o = /\(o la imprescindible que falte\)/i.exec(t)
   if (o) { out.o_imprescindible = true; t = t.replace(o[0], '').trim() }
   if (/\(taxi\)/i.test(t)) { out.taxi = true; t = t.replace(/\s*\(taxi\)/i, '') }
@@ -283,6 +285,8 @@ for (const seccion of secciones) {
     destino.push(nueva)
     if (nueva.empieza_dia && !parte.empieza) parte.empieza = nueva.empieza_dia
   }
+  // Paradas con nombre (Tanda 6f, 4j): lo que antes iba «de camino» y ahora es parada (~10 min).
+  for (const parte of Object.values(dia.partes)) for (const key of ['manana', 'tarde']) for (const stop of parte[key]) if (stop.lugar && stop.modo === 'camino' && paradasConNombre.has(stop.lugar)) { stop.modo = null; stop.min = 10; delete stop.min_sin_escribir }
   // sin_resolver: las dudas ya están; la parada no se queda en el día.
   for (const p of Object.values(dia.partes)) for (const key of ['manana', 'tarde']) p[key] = p[key].filter((stop) => !stop.sin_resolver)
   // Lo que el orden de los días mira de cada día (cierres y fechas que le van mal): se conserva de la tabla anterior, que ya vale («Qué días lleva cada viaje y el orden: igual que en DIAS_ESCRITOS_ROMA.md»).

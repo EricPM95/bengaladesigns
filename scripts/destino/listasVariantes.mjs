@@ -15,7 +15,9 @@ const P = (nombre, min, modo = null, extra = {}) => {
   if (!D.places.some((place) => place.name === lugar) && !['Free Tour Centro Histórico', 'Desayuno romano'].includes(lugar)) throw new Error(`listasVariantes: «${nombre}» no está en roma.json`)
   return { tipo: lugar === 'Free Tour Centro Histórico' ? 'tour' : 'parada', lugar, ...(alias?.titulo ? { titulo: alias.titulo } : {}), ...(alias?.foto ? { foto: alias.foto } : {}), ...(alias?.ignora_temporada ? { ignora_temporada: true } : {}), min, modo, ...extra }
 }
-const camino = (...lista) => lista.map((nombre) => P(nombre, 5, 'camino'))
+// Paradas con nombre (Tanda 6f, 4j): en Roma, estos sitios dejan de ser «de camino»: son paradas de ~10 min (salvo lo que diga el documento).
+const PARADAS_CON_NOMBRE = new Set(JSON.parse(fs.readFileSync('data/dias/roma/_destino.json', 'utf8')).paradas_con_nombre ?? [])
+const camino = (...lista) => lista.map((nombre) => (PARADAS_CON_NOMBRE.has((nombres[nombre]?.lugar ?? nombre)) ? P(nombre, 10) : P(nombre, 5, 'camino')))
 const taxi = (texto = 'Taxi') => ({ tipo: 'traslado', como: 'taxi', texto })
 const mesa = (restaurante, alternativa, zona, tercera = null) => ({ restaurante, alternativa, ...(tercera ? { tercera } : {}), zona })
 /** La capa de una experiencia de temporada (su título y su texto, del propio lugar): «Piazza Navona y su mercadillo navideño». */
@@ -39,6 +41,62 @@ const aracoeliCamino = P('Santo Bambino de Aracoeli', 5, 'camino')
 // Lo que el usuario pidió en una tanda aparte (docs/dias/PARA_CODE_TANDA6C.md) y que el documento no trae: cada cambio CITA la frase de la tanda de la que sale.
 const TANDA_6C = 'docs/dias/PARA_CODE_TANDA6C.md'
 const TANDA_6E = 'docs/dias/PARA_CODE_TANDA6E.md'
+
+/** Los tramos del Coliseo reservado a otra hora en el D1 (cada uno cita su frase del documento). El D1-corto y el D1-FT los reusan: la mañana es la del D1 con la lista de su hora y la tarde es la suya. */
+const D1_TRAMOS = [
+        // El Coliseo reservado a otra hora (escrito en el documento; el motor no se lo inventa). Los cortes entre tramos (Tanda 6e): hasta las 10:15 el día normal; de 10:16 a 11:15 la lista de 10:30–11:00;
+        // de 11:16 a 12:15 la de 11:30–12:00; de 12:16 a 15:15 la de mediodía; desde las 15:16 la de tarde.
+        {
+          id: 'coliseo_10_30_11_00', doc: 'A media mañana, de 10:30 a 11:00:', horas: ['10:30', '11:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '10:16', hasta: '11:15' } },
+          ops: { manana: { paradas: [P('Iglesia de San Pietro in Vincoli', 20, 'dentro'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro'), P('Foro Romano y Palatino', 90, 'dentro'), P('Plaza del Campidoglio', 30), P('Altar de la Patria', 30, 'fuera', { acortable: true })] } },
+        },
+        {
+          id: 'coliseo_11_30_12_00', doc: 'De 11:30 a 12:00:', horas: ['11:30', '12:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '11:16', hasta: '12:15' } },
+          ops: { manana: { paradas: [P('Iglesia de San Pietro in Vincoli', 20, 'dentro'), P('Arco de Constantino', 10), P('Foro Romano y Palatino', 90, 'dentro', { salida_en: FORO_LADO_ARCO }), P('Coliseo', 75, 'dentro'), ...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('Altar de la Patria', 30, 'fuera', { acortable: true })] } },
+        },
+        {
+          id: 'coliseo_mediodia', doc: 'A mediodía (de 12:30 a 15:00):', horas: ['12:30', '14:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '12:16', hasta: '15:15' } },
+          ops: {
+            manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO })] },
+            comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
+            tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia del Gesù', 20, 'dentro'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45)] },
+            sobra: [P('Barrio Judío', 30)],
+          },
+        },
+        // De 15:16 en adelante: el Foro va DESPUÉS del Coliseo (la misma entrada) si aún se puede entrar; si no, el Foro desde la terraza del Campidoglio, antes.
+        {
+          id: 'coliseo_tarde', doc: 'Por la tarde (a las 15:30 o más tarde):', horas: ['16:00', '17:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 90, min: 60 } },
+          ops: {
+            manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
+            tarde: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro'), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_ARCO })] },
+            cena: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
+          },
+        },
+        {
+          id: 'coliseo_tarde_foro_antes', doc: 'Si no, el Foro desde la terraza del Campidoglio ~30, antes', horas: [],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 90, min: 60, negado: true } },
+          ops: {
+            manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
+            tarde: { paradas: [P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), P('Altar de la Patria', 45, 'dentro', { acortable: true }), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro')] },
+            cena: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
+          },
+        },
+]
+
+/** El D1-corto y el D1-FT con el Coliseo reservado (Tanda 6f): «la mañana es la del D1 con la lista de su hora (por dentro), y la tarde es la suya». */
+const tramosDelD1Reducido = D1_TRAMOS.filter((t) => t.id !== 'coliseo_tarde_foro_antes').map((t) => {
+  const ops = t.ops
+  const corto = t.id === 'coliseo_10_30_11_00' || t.id === 'coliseo_11_30_12_00'
+  const mediodia = t.id === 'coliseo_mediodia'
+  return {
+    id: t.id, doc: 'D1-corto y D1-FT con el Coliseo reservado:', horas: t.horas, cuando: t.cuando,
+    ops: corto ? { manana: ops.manana, ...(ops.comida ? { comida: ops.comida } : {}) } : mediodia ? { manana: ops.manana, comida: ops.comida, tarde: { insertar: [{ al_principio: true, parada: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10)] }] } } : ops,
+  }
+})
 
 export default {
   ajustes_base: [
@@ -86,14 +144,14 @@ export default {
           },
         },
         {
-          id: 'coliseo_14_30_15_30', doc: 'Con el Coliseo reservado de 14:30 a 15:30:', horas: ['14:30', '15:30'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '14:16', hasta: '15:30' } },
+          id: 'coliseo_14_30_15_30', doc: 'Con el Coliseo reservado de 14:30 en adelante:', horas: ['14:30', '15:30', '17:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '14:16' } },
           ops: {
             tarde: { paradas: [...camino('Plaza Venecia'), P('Altar de la Patria', 30, 'fuera'), P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), ...camino('Via dei Fori Imperiali'), P('Coliseo', 75, 'dentro'), taxi('Taxi a la Plaza de España'), P('Plaza de España', 45), P('Trinità dei Monti', 15), P('bajar la escalinata', 5, 'camino'), ...camino('Via Condotti')] },
           },
         },
       ],
-      reservas: { Coliseo: { mejores: ['12:30', '14:00', '14:30', '15:30'] } },
+      reservas: { Coliseo: { mejores: ['12:30', '14:00', '14:30', '16:00'] } },
       experiencias: {
         mercadillos_navidenos: { clave: 'navona', doc: 'Mercadillos (8 dic – 6 ene): «Piazza Navona y su mercadillo navideño».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } }, tarde: { ajustar: { 'Piazza Navona': capa('Mercadillo de Navidad de Piazza Navona') } } } },
       },
@@ -129,6 +187,8 @@ export default {
 
     // ── Un día entero (1,5 días) ──────────────────────────────────────────────────────────────────────────────────────
     'D1-corto': {
+      variantes: tramosDelD1Reducido,
+      reservas: { Coliseo: { normal: { hasta: '10:15' }, mejores: ['9:00', '10:30', '11:30', '12:30', '14:00', '16:00'] } },
       lluvia_doc: 'el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.',
       lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Isla Tiberina': { modo: 'camino', min: 5 } } }, tarde: { ajustar: { 'Ponte Sisto': { modo: 'camino', min: 5 } }, quitar: ['Mirador del Janículo', 'Via Garibaldi: se sube andando'] } } }),
     },
@@ -139,47 +199,7 @@ export default {
       reservas: { Coliseo: { normal: { hasta: '10:15' }, mejores: ['9:00', '10:30', '11:30', '12:30', '14:00', '16:00'] } },
       sugerencias: [{ doc: 'la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.', lugar: 'Mercados de Trajano', titulo: 'Columna de Trajano y Mercados de Trajano', min: 60, salvo_dia: 'D6' }],
       variantes: [
-        // El Coliseo reservado a otra hora (escrito en el documento; el motor no se lo inventa). Los cortes entre tramos (Tanda 6e): hasta las 10:15 el día normal; de 10:16 a 11:15 la lista de 10:30–11:00;
-        // de 11:16 a 12:15 la de 11:30–12:00; de 12:16 a 15:15 la de mediodía; desde las 15:16 la de tarde.
-        {
-          id: 'coliseo_10_30_11_00', doc: 'A media mañana, de 10:30 a 11:00:', horas: ['10:30', '11:00'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '10:16', hasta: '11:15' } },
-          ops: { manana: { paradas: [P('Iglesia de San Pietro in Vincoli', 20, 'dentro'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro'), P('Foro Romano y Palatino', 90, 'dentro'), P('Plaza del Campidoglio', 30), P('Altar de la Patria', 30, 'fuera', { acortable: true })] } },
-        },
-        {
-          id: 'coliseo_11_30_12_00', doc: 'De 11:30 a 12:00:', horas: ['11:30', '12:00'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '11:16', hasta: '12:15' } },
-          ops: { manana: { paradas: [P('Iglesia de San Pietro in Vincoli', 20, 'dentro'), P('Arco de Constantino', 10), P('Foro Romano y Palatino', 90, 'dentro', { salida_en: FORO_LADO_ARCO }), P('Coliseo', 75, 'dentro'), ...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('Altar de la Patria', 30, 'fuera', { acortable: true })] } },
-        },
-        {
-          id: 'coliseo_mediodia', doc: 'A mediodía (de 12:30 a 15:00):', horas: ['12:30', '14:00'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '12:16', hasta: '15:15' } },
-          ops: {
-            manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO })] },
-            comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-            tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia del Gesù', 20, 'dentro'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45)] },
-            sobra: [P('Barrio Judío', 30)],
-          },
-        },
-        // De 15:16 en adelante: el Foro va DESPUÉS del Coliseo (la misma entrada) si aún se puede entrar; si no, el Foro desde la terraza del Campidoglio, antes.
-        {
-          id: 'coliseo_tarde', doc: 'Por la tarde (a las 15:30 o más tarde):', horas: ['16:00', '17:00'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 90, min: 60 } },
-          ops: {
-            manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
-            tarde: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro'), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_ARCO })] },
-            cena: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-          },
-        },
-        {
-          id: 'coliseo_tarde_foro_antes', doc: 'Si no, el Foro desde la terraza del Campidoglio ~30, antes', horas: [],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 90, min: 60, negado: true } },
-          ops: {
-            manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
-            tarde: { paradas: [P('Plaza del Campidoglio', 30), P('El Foro Romano, desde la terraza del Campidoglio', 30, 'fuera'), P('Altar de la Patria', 45, 'dentro', { acortable: true }), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro')] },
-            cena: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-          },
-        },
+        ...D1_TRAMOS,
         { id: 'sabado_panteon', doc: 'el sábado el Panteón cierra a las 17:00 por la misa: aviso «entra antes».', cuando: { dia_semana: ['sábado'] }, ops: { tarde: { ajustar: { Panteón: { cierra: '17:00' } } } } },
         { id: 'free_tour_tarde', doc: 'Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
         { id: 'free_tour_noche', doc: 'Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.', cuando: { free_tour_despues: 'noche' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
@@ -208,7 +228,7 @@ export default {
 
     // ── El Vaticano y Trastevere ───────────────────────────────────────────────────────────────────────────────────────
     D2: {
-      reservas: { [MUSEOS]: { normal: { hasta: '09:44' }, mejores: ['9:00', '10:00', '11:00', '15:00', '16:00'] } },
+      reservas: { [MUSEOS]: { normal: { hasta: '09:44' }, mejores: ['9:00', '10:00', '11:00', '12:30', '14:00', '16:00'] } },
       // El miércoles sin Museos deja 1 h 40 libre antes de las 12:30: HOY lo dice («Tienes … antes de la Plaza de San Pedro») con sugerencias cercanas.
       sugerencias: [{ fuente: TANDA_6E, doc: 'con sugerencias cercanas (Borgo Pio, los Coronari)', antes_de: 'Plaza de San Pedro', lugares: ['Borgo Pio', 'Via dei Coronari'] }],
       variantes: [
@@ -220,8 +240,18 @@ export default {
         // Los Museos reservados a media mañana (de 9:45 a 12:00): la Basílica y la Plaza van ANTES de los Museos (nunca de camino para que quepa la comida).
         {
           id: 'museos_media_manana', doc: 'Museos reservados a media mañana (de 10:00 a 12:00):', horas: ['10:00', '11:00'],
-          cuando: { reserva: { lugar: MUSEOS, desde: '09:45', hasta: '12:00' } },
+          cuando: { reserva: { lugar: MUSEOS, desde: '09:45', hasta: '12:15' } },
           ops: { empieza: '08:00', manana: { paradas: [P('Basílica de San Pedro', 60, 'dentro'), P('Plaza de San Pedro', 30), P(MUSEOS, 180)] } },
+        },
+        // Los Museos reservados a mediodía (de 12:30 a 14:30): la comida en el Borgo antes (entre las 12:00 y las 12:30) y, después de los Museos, el bus 23 a Trastevere.
+        {
+          id: 'museos_mediodia', doc: 'Museos reservados a mediodía (de 12:30 a 14:30):', horas: ['12:30', '14:00'],
+          cuando: { reserva: { lugar: MUSEOS, desde: '12:16', hasta: '14:59' } },
+          ops: {
+            manana: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro'), ...camino('Via della Conciliazione'), P("Castillo de Sant'Angelo", 30, 'fuera'), P("Puente Sant'Angelo", 15)] },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P(MUSEOS, 180), { tipo: 'traslado', como: 'bus 23', texto: 'Bus 23 por el Lungotevere hasta la Isla Tiberina' }, P('Isla Tiberina', 20), P('Iglesia de Santa Maria in Trastevere', 25, 'dentro'), P('San Pietro in Montorio y Tempietto de Bramante', 10, null, { titulo: 'San Pietro in Montorio y el Tempietto' }), P("Fontana dell'Acqua Paola", 10), P('Mirador del Janículo', 30)] },
+          },
         },
         // Los Museos reservados por la tarde (15:00 o más tarde): el día cambia entero (la Basílica cierra a las 18:30 o a las 19:00 y al salir de los Museos estaría cerrada).
         {
@@ -230,7 +260,7 @@ export default {
           ops: {
             manana: { paradas: [P('Basílica de San Pedro', 60, 'dentro'), P('Plaza de San Pedro', 30), ...camino('Via della Conciliazione'), P("Castillo de Sant'Angelo", 90, 'dentro', { titulo: "Castillo de Sant'Angelo, hasta la terraza del ángel" }), P("Puente Sant'Angelo", 15), ...camino('Lungotevere')] },
             comida: mesa('Il Sorpasso', 'Dal Toscano', 'en Prati'),
-            tarde: { paradas: [P(MUSEOS, 180), P('Plaza de San Pedro', 15, null, { titulo: 'Plaza de San Pedro, ya con las luces' }), taxi('Taxi a Trastevere')] },
+            tarde: { paradas: [P(MUSEOS, 180), P('Plaza de San Pedro', 15), taxi('Taxi a Trastevere')] },
             cena: mesa('Tonnarello', 'Trattoria Da Enzo al 29', 'en Trastevere'),
             noche: { lista: ['Trastevere de noche'] },
             sobra: [P('Isla Tiberina', 20), P('Iglesia de Santa Maria in Trastevere', 25, 'dentro'), P('Mirador del Janículo', 30)],
@@ -269,12 +299,12 @@ export default {
       reservas: { [MUSEOS]: { normal: { desde: '14:31' }, no_cabe_antes: '13:30', mejores: ['13:30', '14:00', '14:30'] } },
       variantes: [
         {
-          id: 'museos_13_30_14_30', fuente: TANDA_6E, doc: 'taxi de Navona al Borgo, comida de ~45, Museos y la Basílica al salir', horas: ['13:30', '14:00', '14:30'],
+          id: 'museos_13_30_14_30', doc: 'Con los Museos reservados de 13:30 a 14:30:', horas: ['13:30', '14:00', '14:30'],
           cuando: { reserva: { lugar: MUSEOS, desde: '13:30', hasta: '14:30' } },
           ops: {
             manana: { insertar: [{ al_final: true, parada: taxi('Taxi de Navona al Borgo') }] },
             comida: { ...mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'), min: 45 },
-            tarde: { paradas: [P(MUSEOS, 150), P('Basílica de San Pedro', 60, 'dentro'), P('Plaza de San Pedro', 20, null, { titulo: 'Plaza de San Pedro, ya iluminada' })] },
+            tarde: { paradas: [P(MUSEOS, 150), P('Basílica de San Pedro', 60, 'dentro'), P('Plaza de San Pedro', 20)] },
           },
         },
         { id: 'domingo_sin_museos', doc: 'Domingo (Museos cerrados):** se cambia de día; si no se puede, la tarde sin Museos.', cuando: { cerrado: MUSEOS }, ops: { tarde: { quitar: [MUSEOS] } } },
@@ -286,6 +316,8 @@ export default {
 
     // ── La Roma antigua, el Gueto y Trastevere (con Free Tour de mañana) ───────────────────────────────────────────────────
     'D1-FT': {
+      variantes: tramosDelD1Reducido,
+      reservas: { Coliseo: { normal: { hasta: '10:15' }, mejores: ['9:00', '10:30', '11:30', '12:30', '14:00', '16:00'] } },
       pool: {
         'Museos Capitolinos': { doc: 'Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
         'Basílica de San Juan de Letrán': { doc: 'Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.', cuando: { viaje_sin: ['D5'] }, ops: { manana: { insertar: [{ al_principio: true, parada: [P('San Juan de Letrán y la Escalera Santa', 40, 'dentro', { protegido: true }), { tipo: 'traslado', como: 'metro B', texto: 'Metro B de San Giovanni a Colosseo' }] }] } } },
@@ -328,11 +360,17 @@ export default {
     D4: {
       reservas: { 'Galería Borghese': { normal: { desde: '10:01', hasta: '11:30' }, mejores: ['9:00', '11:00', '15:00', '17:00'] } },
       variantes: [
-        // La Galería a las 9:00 (turno de las 9:00): Trevi «sin gente» a las 7:30, desayuno rápido, de camino el Tritón, Via Veneto y Porta Pinciana; después, el lago, la Piazza di Siena, el reloj de agua y el Pincio.
+        // La Galería a las 9:00: desayuno cerca de Via Veneto, de camino el Tritón, Via Veneto y Porta Pinciana, «Llegada a…» y la Galería; después, el parque, el reloj de agua y el Pincio. Trevi no cabe a primera hora.
         {
           id: 'galeria_9', doc: 'A las 9:00:', horas: ['9:00'],
           cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:00' } },
-          ops: { empieza: '07:30', manana: { paradas: [P('Fontana de Trevi', 30, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), P('Fuente del Tritón', 5, 'camino'), ...camino('Via Veneto', 'Porta Pinciana'), P('Galería Borghese', 120), P('Parque de Villa Borghese', 30, null, { titulo: 'Lago de Villa Borghese y el Templo de Esculapio' }), P('Parque de Villa Borghese', 5, 'camino', { titulo: 'La Piazza di Siena' }), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio' }), P('Terraza del Pincio', 20)] } },
+          ops: { empieza: '08:00', manana: { paradas: [P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), ...camino('Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'), P('Galería Borghese', 120), P('Parque de Villa Borghese', 45), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio' }), P('Terraza del Pincio', 20)] } },
+        },
+        // …y Trevi, si el viaje no la lleva otro día, va al final de la tarde, de camino desde la Plaza de España a la cena (~7 min).
+        {
+          id: 'galeria_9_trevi', doc: 'Si el viaje no la lleva otro día, va al final de la tarde', horas: [],
+          cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:00' }, viaje_sin: ['D3'] },
+          ops: { tarde: { insertar: [{ al_final: true, parada: P('Fontana de Trevi', 20) }] } },
         },
         // A las 15:00 o a las 17:00 el día va al revés: la mañana en el Tridente y el Popolo, y la tarde en Villa Borghese acabando en la Galería.
         {
@@ -340,21 +378,21 @@ export default {
           cuando: { reserva: { lugar: 'Galería Borghese', desde: '14:01' } },
           ops: {
             empieza: '07:30',
-            manana: { paradas: [P('Fontana de Trevi', 30, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), P('Plaza de España', 45), P('Trinità dei Monti', 15), ...camino('Via Condotti'), P('Ara Pacis', 45, 'dentro'), ...camino('Via di Ripetta'), P('Piazza del Popolo', 30, null, { titulo: 'Piazza del Popolo, con el obelisco y las iglesias gemelas' }), P('Santa Maria del Popolo', 20)] },
+            manana: { paradas: [P('Fontana de Trevi', 30, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), P('Plaza de España', 45), P('Escalinata y Trinità dei Monti', 20), ...camino('Via Condotti'), P('Ara Pacis', 45, 'dentro'), ...camino('Via di Ripetta'), P('Piazza del Popolo', 30, null, { titulo: 'Piazza del Popolo, con el obelisco y las iglesias gemelas' }), P('Santa Maria del Popolo', 20)] },
             comida: mesa('Sgarro Bistrot', 'Buccone Vini e Olii', 'junto a la Piazza del Popolo'),
-            tarde: { paradas: [P('Terraza del Pincio', 20), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio' }), P('Parque de Villa Borghese', 30, null, { titulo: 'Lago de Villa Borghese y el Templo de Esculapio' }), P('Parque de Villa Borghese', 5, 'camino', { titulo: 'La Piazza di Siena' }), P('Galería Borghese', 120), ...camino('Porta Pinciana', 'Via Veneto', 'Fuente del Tritón')] },
+            tarde: { paradas: [P('Terraza del Pincio', 20), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio' }), P('Parque de Villa Borghese', 45), P('Galería Borghese', 120), ...camino('Porta Pinciana', 'Via Veneto', 'Fuente del Tritón')] },
             cena: mesa('Il Gabriello', 'Poldo e Gianna Osteria', 'en el Tridente'),
           },
         },
         { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] } } },
-        { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno; la Plaza de España y Via Condotti van de camino (el tour ya pasó).', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },
+        { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el «de camino» del principio: **el día empieza directamente en el Parque de Villa Borghese**', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano', 'Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },
       ],
       experiencias: {
-        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el lago de Villa Borghese ~60.', ops: { manana: { ajustar: { 'Lago de Villa Borghese y el Templo de Esculapio': { min: 60 } } } } },
+        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el lago de Villa Borghese ~60.', ops: { manana: { ajustar: { 'Parque de Villa Borghese': { min: 60 } } } } },
         mercadillos_navidenos: { clave: 'luces', doc: 'Mercadillos:** antes de cenar, «Luces de Navidad del Tridente» ~30 (Via Condotti y Via del Corso iluminadas).', cuando: { fechas: NAVIDAD }, ops: { tarde: { insertar: [{ al_final: true, parada: luces }] } } },
       },
       lluvia_doc: 'el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.',
-      lluvia_ops: lluvia({ ops: { manana: { quitar: ['Lago de Villa Borghese y el Templo de Esculapio', 'Reloj de agua del Pincio'], ajustar: { 'Terraza del Pincio': { modo: 'camino', min: 5 } } }, tarde: { ajustar: { 'Santa Maria del Popolo': { min: 30 }, 'Ara Pacis': { min: 60 } } } } }),
+      lluvia_ops: lluvia({ ops: { manana: { quitar: ['Parque de Villa Borghese', 'Reloj de agua del Pincio'], ajustar: { 'Terraza del Pincio': { modo: 'camino', min: 5 } } }, tarde: { ajustar: { 'Santa Maria del Popolo': { min: 30 }, 'Ara Pacis': { min: 60 } } } } }),
     },
 
     // ── El Aventino y Testaccio (medio día de vuelta) ──────────────────────────────────────────────────────────────────────────

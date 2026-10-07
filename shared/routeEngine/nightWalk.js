@@ -354,7 +354,7 @@ export function nightStopsFor(chain, dayVisitedNames, timing = {}) {
       ...(dateText ? { date_text: true } : {}),
       // (Sin «Revisita»: ver de noche lo que viste de día es la gracia de la nocturna, no una repetición. PARA_CODE_TARDE_VATICANO, 4.)
       category: 'landmark',
-      category_label: 'De noche',
+      category_label: 'Experiencia nocturna',
     })
   }
   return stops

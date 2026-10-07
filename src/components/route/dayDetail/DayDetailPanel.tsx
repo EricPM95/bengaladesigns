@@ -30,7 +30,6 @@ import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayC
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { OnTheWayGroupCard, PeriodHeader, TrazoCard } from './TrazoCards'
 import { SpareStopsSection } from './SpareStopsSection'
-import { RestCard } from './RestCard'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
@@ -1018,11 +1017,7 @@ export function DayDetailPanel({
     const franja = day.franjas?.find((candidate) => candidate.id === group.period)
     if (franja) group.range = franja.to ? `${franja.from}–${franja.to}` : franja.from  }
 
-  // Tanda 6b: la tarjeta de descanso va al final del último tramo antes de la cena (o del último tramo si no hay cena).
-  const dinnerGroupIndex = periodGroups.findIndex((group) => group.items.some((entry) => entry.item.type === 'dinner'))
-  const restCardGroupIndex = dinnerGroupIndex > 0 ? dinnerGroupIndex - 1 : periodGroups.length - 1
-
-  /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
+    /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
   /** ¿La parada de este índice viene justo detrás de otra parada en la línea del día? */
   const stopBefore = (index: number) => {
     const at = placed.findIndex((entry) => entry.item.type === 'stop' && entry.item.index === index)
@@ -1150,13 +1145,17 @@ export function DayDetailPanel({
   const renderGroupItems = (items: PlacedItem[]) => {
     const salida: ReactNode[] = []
     for (let i = 0; i < items.length; i++) {
-      if (esDeCamino(items[i]) && i + 1 < items.length && esDeCamino(items[i + 1])) {
+      // (Tanda 6f: también uno solo va en la tarjeta plegada de «De camino a…»; el título cuenta la comida y la cena.)
+      if (esDeCamino(items[i])) {
         let fin = i
         while (fin + 1 < items.length && esDeCamino(items[fin + 1])) fin++
         const indices = items.slice(i, fin + 1).map((entry) => (entry.item as { type: 'stop'; index: number }).index)
         const primero = indices[0]
         const ultimo = indices[indices.length - 1]
         const siguiente = stops[ultimo + 1]
+        const despuesDelGrupo = placed[placed.indexOf(items[fin]) + 1]?.item
+        const nombreSiguiente =
+          despuesDelGrupo?.type === 'lunch' ? `la comida${restaurantOf('lunch')?.name ? `, en ${restaurantOf('lunch')!.name}` : ''}` : despuesDelGrupo?.type === 'dinner' ? `la cena${restaurantOf('dinner')?.name ? `, en ${restaurantOf('dinner')!.name}` : ''}` : despuesDelGrupo?.type === 'stop' ? displayStopName(stops[despuesDelGrupo.index].name) : siguiente ? displayStopName(siguiente.name) : null
         const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[primero]
         const showConnector = primero === 0 ? fromAccommodation : freeDay || i > 0 || afterStop(items[i])
         salida.push(
@@ -1167,7 +1166,7 @@ export function DayDetailPanel({
             gap={renderGap(connectorKey, showConnector ? connector : null, fromName, stops[primero].name, primero, dinnerInsertionIndex !== null && primero > dinnerInsertionIndex, realStops[primero]?.transitLabel ?? null)}
           >
             <OnTheWayGroupCard
-              toName={siguiente ? displayStopName(siguiente.name) : null}
+              toName={nombreSiguiente}
               lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: stops[index].why ?? stops[index].placeText ?? null, onOpen: () => setDetailIndex(index) }))}
             />
           </SortableStop>,
@@ -1408,7 +1407,6 @@ export function DayDetailPanel({
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
                 {renderGroupItems(group.items)}
               </div>
-              {day.restCard && groupIndex === restCardGroupIndex && <RestCard card={day.restCard} />}
             </div>
           ))}
           </SortableContext>

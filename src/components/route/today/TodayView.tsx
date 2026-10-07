@@ -28,7 +28,6 @@ import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { PaceWandPrompt } from './PaceWandPrompt'
 import { RainAlert } from './RainAlert'
 import { ReservationCountdown, TodayAdjust, TodayClosureNotices, TodayTimeCheck } from './TodayPlan'
-import { RestCard } from '../dayDetail/RestCard'
 import { checkTime, type CheckTimeResult } from '../../../lib/checkTime'
 import { addDaysToIso, todayIso } from '../../../lib/dateRange'
 
@@ -197,18 +196,6 @@ export function TodayView({ route }: TodayViewProps) {
         onAdd={(stop) => handleAddSuggestion(stop, allDone ? realStops.length - 1 : currentIndex)}
         onResolved={() => setTimeCheck(null)}
       />
-      {/* Tanda 6b: la tarjeta de descanso, cuando solo queda lo de la noche; con tiempo de sobra, «¿Quieres ver algo más?». */}
-      {day.restCard && realStops.every((stop) => stop.checkedInAt || stop.franja === 'noche') && (
-        <div className="mx-4">
-          <RestCard card={day.restCard}>
-            {timeCheck?.status === 'bien' && (
-              <button type="button" onClick={() => setSuggestOpen(true)} className="mt-2 text-[13px] font-semibold text-accent">
-                ¿Quieres ver algo más?
-              </button>
-            )}
-          </RestCard>
-        </div>
-      )}
     </>
   )
   const currentRealStop = allDone ? null : realStops[currentIndex]
