@@ -159,14 +159,15 @@ function paradaDe(texto, dia, { camino = false } = {}) {
 
 // ── Comida, cena y noche ───────────────────────────────────────────────────────────────────────────────────────
 function mesaDe(texto, dia) {
-  let t = texto.trim().replace(/\.$/, '')
+  // (Lo que sigue al primer punto es otra frase —«Tonnarello no, si ya es la cena del D2»—: no es un restaurante.)
+  let t = texto.trim().split(/\.\s+(?=[A-ZÁÉÍÓÚ])/)[0].replace(/\.$/, '')
   let zona = null
   // «en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio)»: primero la alternativa (el paréntesis) y después la zona.
   let alternativas = []
   const par = /\(([^)]*)\)/.exec(t)
   if (par) {
     // («Tonnarello, solo si no ha salido en el viaje: es la cena del D2»: lo de después de la coma es la condición, no el nombre.)
-    alternativas = par[1].split(';').flatMap((p) => p.trim().replace(/^si cierran los dos,\s*/i, '').replace(/^o\s+/i, '').replace(/,\s*solo si .*$/i, '').split(/\s+o\s+/)).map((p) => p.trim()).filter(Boolean)
+    alternativas = par[1].split(';').flatMap((p) => p.trim().replace(/^si cierran los dos,\s*/i, '').replace(/^o\s+/i, '').replace(/,\s*solo si .*$/i, '').split(/\s*,\s*o\s+|\s+o\s+/)).map((p) => p.trim()).filter(Boolean)
     t = t.replace(par[0], '').trim()
   }
   const z = /,\s*(en el [^,(]+|en [^,(]+|junto a [^,(]+)\s*$/i.exec(t)
@@ -175,7 +176,7 @@ function mesaDe(texto, dia) {
   const antes = /^en el ([^,]+),\s*(.+)$/i.exec(t)
   if (antes) { zona ??= `en el ${antes[1]}`; principal = antes[2] }
   const nombres0 = [principal, ...alternativas].map((n) => restauranteDe(n, dia)).filter(Boolean)
-  return { restaurante: nombres0[0] ?? null, alternativa: nombres0[1] ?? null, tercera: nombres0[2] ?? null, zona, doc: texto.trim() }
+  return { restaurante: nombres0[0] ?? null, alternativa: nombres0[1] ?? null, tercera: nombres0[2] ?? null, ...(nombres0.length > 3 ? { otras: nombres0.slice(3) } : {}), zona, doc: texto.trim() }
 }
 
 function nocheDe(texto, dia) {

@@ -12,6 +12,5 @@ Ninguna.
 
 - noches_con_otro_orden: 2375
 - noches_con_noche_especial: 108
-- restaurante_repetido_sin_recambio: 2
 
 ## Primeros fallos de cada regla

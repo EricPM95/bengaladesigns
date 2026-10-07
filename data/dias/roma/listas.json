@@ -3010,10 +3010,10 @@
      ],
      "cena": {
       "restaurante": "Tonnarello",
-      "alternativa": null,
-      "tercera": null,
+      "alternativa": "Checco er Carettiere",
+      "tercera": "Da Lucia",
       "zona": "en Trastevere",
-      "doc": "Tonnarello, en Trastevere"
+      "doc": "Tonnarello (o Checco er Carettiere, o Da Lucia), en Trastevere"
      },
      "noche": {
       "lista": [
@@ -3890,9 +3890,9 @@
      "cena": {
       "restaurante": "Trattoria Da Enzo al 29",
       "alternativa": "Tonnarello",
-      "tercera": null,
+      "tercera": "Checco er Carettiere",
       "zona": null,
-      "doc": "Da Enzo al 29 (o Tonnarello)"
+      "doc": "Da Enzo al 29 (o Tonnarello, o Checco er Carettiere)"
      },
      "noche": {
       "lista": [
@@ -6319,10 +6319,13 @@
      ],
      "comida": {
       "restaurante": "Trattoria Da Enzo al 29",
-      "alternativa": "Tonnarello",
-      "tercera": null,
+      "alternativa": "Da Lucia",
+      "tercera": "Checco er Carettiere",
+      "otras": [
+       "Da Teo"
+      ],
       "zona": "en Trastevere",
-      "doc": "Da Enzo al 29, en Trastevere (Tonnarello, solo si no ha salido en el viaje: es la cena del D2)"
+      "doc": "Da Enzo al 29 (o Da Lucia, o Checco er Carettiere, o Da Teo), en Trastevere. Tonnarello no, si ya es la cena del D2."
      },
      "tarde": [
       {
@@ -6423,7 +6426,7 @@
    "variantes": [
     {
      "id": "domingo_farnesina",
-     "doc": "Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello si no ha salido en el viaje; si ha salido, un recambio de verdad a menos de 10 min (regla 6).",
+     "doc": "Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: la siguiente alternativa abierta (Da Lucia abre el domingo a mediodía; Checco er Carettiere, todos los días).",
      "cuando": {
       "dia_semana": [
        "domingo"

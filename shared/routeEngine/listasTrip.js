@@ -119,6 +119,7 @@ export function planListasTrip(args) {
       else if (o && typeof o === 'object') {
         if (typeof o.lugar === 'string') lugaresDocumento.add(o.lugar)
         for (const clave of ['restaurante', 'alternativa', 'tercera']) if (typeof o[clave] === 'string') restaurantesDocumento.add(o[clave])
+        for (const name of Array.isArray(o.otras) ? o.otras : []) restaurantesDocumento.add(name)
         Object.values(o).forEach(recorrer)
       }
     }
@@ -534,7 +535,7 @@ export function planListasTrip(args) {
         const meal = item.kind === 'cena' ? 'cena' : 'comida'
         const start = sim[i].t0
         const original = item.restaurante_escrito ?? item.restaurante
-        const candidatas = [original, item.alternativa, item.tercera].filter(Boolean)
+        const candidatas = [original, item.alternativa, item.tercera, ...(item.otras ?? [])].filter(Boolean)
         const libre = (name) => !estado.mesas.has(name) && !usadasHoy.has(name)
         const porque = (name) => (!abiertoA(name, meal, start) ? 'cierra ese día o a esa hora' : 'ya sale en el viaje')
         const descartadas = () => candidatas.filter((name) => !libre(name) || !abiertoA(name, meal, start)).map((name) => `${name} ${porque(name)}`).join('; ')
@@ -654,7 +655,7 @@ export function planListasTrip(args) {
             .sort((a, b) => a.andar - b.andar || a.name.localeCompare(b.name, 'es'))[0]
           if (cerca) {
             log.push({ id: comidaAntes.id, lugar: comidaAntes.restaurante_escrito ?? comidaAntes.restaurante, sitio: null, que: 'restaurante', causa: `la comida va antes de ${F.titulo ?? F.lugar} (a las ${F.hora}), en su zona: va ${cerca.name}, un restaurante de verdad a ${cerca.andar} min andando` })
-            comidaAntes = { ...comidaAntes, restaurante: cerca.name, restaurante_escrito: cerca.name, alternativa: null, tercera: null }
+            comidaAntes = { ...comidaAntes, restaurante: cerca.name, restaurante_escrito: cerca.name, alternativa: null, otras: null, tercera: null }
             objetivoC = coordsOf(comidaAntes)
           }
         }

@@ -81,9 +81,17 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 **Líneas de transporte público de Roma que usa la app** (de momento solo estas; el resto, andando o taxi, y el botón «Rutas» abre el mapa). Cuentan si se llega a la parada de la línea en **12 min andando o menos** en cada punta:
 - **Metro A:** Ottaviano (Vaticano) · Flaminio (Piazza del Popolo) · Spagna (Plaza de España) · Barberini (Tritón, Via Veneto) · Termini · San Giovanni (Letrán).
 - **Metro B:** Termini · Cavour (Monti) · Colosseo (Coliseo) · Circo Massimo · Piramide (Testaccio, Ostiense).
-- **Tranvía 8:** Trastevere (Viale Trastevere) · Largo di Torre Argentina · Piazza Venezia.
-- **Bus 40 y 64:** Termini · Piazza Venezia · Largo di Torre Argentina · Corso Vittorio · el Borgo y San Pedro.
-- **Bus 23:** por el Lungotevere, del Castillo de Sant'Angelo a la Isla Tiberina, Trastevere y Testaccio.
+- **Tranvía 8:** Trastevere (paradas Belli y Trastevere/Mastai, en Viale Trastevere) · Largo di Torre Argentina · Piazza Venezia.
+- **Bus 64:** Termini · Piazza Venezia · Largo di Torre Argentina · Corso Vittorio (Sant'Andrea della Valle, Chiesa Nuova) · Lungotevere de Sassia (el Borgo) · estación de San Pietro (junto a la Plaza de San Pedro).
+- **Bus 40:** Termini · Piazza Venezia · Largo di Torre Argentina · Chiesa Nuova · Lungotevere de Sassia (el Borgo, a ~400 m de Via della Conciliazione). Ya no llega a la Traspontina.
+- **Bus 23:** por el Lungotevere, entre el Castillo de Sant'Angelo y Testaccio y la Pirámide. Cada sentido va por una orilla:
+  - **hacia el sur** (Castillo → Pirámide), por la orilla de Trastevere: Lungotevere de Sassia, Lungotevere Farnesina/Trilussa, Lungotevere Sanzio (Trastevere), la Isla Tiberina (Lungotevere Alberteschi), Marmorata (Testaccio) y Piramide;
+  - **hacia el norte** (Pirámide → Castillo), por la otra orilla: Piramide, Marmorata, Lungotevere Aventino, Monte Savello (la Isla Tiberina), Lungotevere Tebaldi y la Traspontina (el Castillo). **No pasa por Trastevere.**
+
+**Restaurantes nuevos de Trastevere** (añadidos el 7-oct-2026; horarios sacados de guías, a confirmar antes de publicar):
+- **Da Lucia** · Vicolo del Mattonato 2b. Cierra el lunes; el domingo, solo a mediodía (12:30–15:00); de martes a sábado, comida (12:30–15:00) y cena (19:30–23:00).
+- **Checco er Carettiere** · Via Benedetta 10. Abre todos los días, comida y cena.
+- **Da Teo** · Piazza dei Ponziani 7. De lunes a sábado, comida (13:00–15:00) y cena (19:30–23:30); cierra el domingo.
 
 **Qué días lleva cada viaje** (decidido el 7-oct-2026; sustituye a la tabla de `DIAS_ESCRITOS_ROMA.md`):
 
@@ -349,7 +357,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Mirador del Janículo ~30
   - *de camino:* bajada a Trastevere
   - Paseo por Trastevere ~30
-- **Cena:** Tonnarello, en Trastevere
+- **Cena:** Tonnarello (o Checco er Carettiere, o Da Lucia), en Trastevere
 - **Noche:** Trastevere de noche (o la imprescindible que falte)
 - **Cierres:**
   - el domingo, el miércoles (audiencia) y los días que cierran los Museos, este día se cambia con otro;
@@ -453,7 +461,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Mirador del Janículo ~30
   - *de camino:* bajada a Trastevere
   - Paseo por Trastevere ~30
-- **Cena:** Da Enzo al 29 (o Tonnarello)
+- **Cena:** Da Enzo al 29 (o Tonnarello, o Checco er Carettiere)
 - **Noche:** Fontana de Trevi iluminada (taxi) y la Plaza de España de noche
 
 **Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.
@@ -669,7 +677,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - *de camino:* Santa Maria in Trastevere
   - Santa Cecilia in Trastevere ~40
   - *de camino:* la Piazza in Piscinula
-- **Comida:** Da Enzo al 29, en Trastevere (Tonnarello, solo si no ha salido en el viaje: es la cena del D2)
+- **Comida:** Da Enzo al 29 (o Da Lucia, o Checco er Carettiere, o Da Teo), en Trastevere. Tonnarello no, si ya es la cena del D2.
 - **Tarde:**
   - Taxi a las Catacumbas de San Calixto
   - Catacumbas de San Calixto (visita guiada) ~1 h (⚠️ cierran el miércoles)
@@ -679,7 +687,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - *de camino:* Monti
 - **Cena:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti
 - **Noche:** la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna. En 6 días suele ser el Puente y el Castillo de Sant'Angelo (taxi, ~15 min desde Monti).
-- **Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello si no ha salido en el viaje; si ha salido, un recambio de verdad a menos de 10 min (regla 6).
+- **Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: la siguiente alternativa abierta (Da Lucia abre el domingo a mediodía; Checco er Carettiere, todos los días).
 - **Miércoles:** sin catacumbas; la Vía Appia empieza antes.
 
 - **🌧 Si llueve:** sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.

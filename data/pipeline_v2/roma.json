@@ -7284,6 +7284,56 @@
       "comprobado": "2026-09-28"
     },
     {
+      "name": "Da Lucia",
+      "sub_category": "trattoria",
+      "tipo_local": "restaurante",
+      "meal": "ambos",
+      "address": "Vicolo del Mattonato, 2b, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8895,
+        "lng": 12.4685
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "hours": "Mar-Sáb 12:30-15:00, 19:30-23:00. Domingo 12:30-15:00. Lunes cerrado.",
+      "best_for": "trattoria romana de Trastevere",
+      "closed_on": ["lunes"],
+      "comprobado": "2026-10-07 (horario de guías, a confirmar; coordenadas aproximadas)"
+    },
+    {
+      "name": "Checco er Carettiere",
+      "sub_category": "trattoria",
+      "tipo_local": "restaurante",
+      "meal": "ambos",
+      "address": "Via Benedetta, 10, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8899,
+        "lng": 12.4691
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "hours": "Todos los días 12:30-15:00, 19:30-23:30.",
+      "best_for": "trattoria romana de Trastevere",
+      "comprobado": "2026-10-07 (horario de guías, a confirmar; coordenadas aproximadas)"
+    },
+    {
+      "name": "Da Teo",
+      "sub_category": "trattoria",
+      "tipo_local": "restaurante",
+      "meal": "ambos",
+      "address": "Piazza dei Ponziani, 7, 00153 Roma",
+      "coordinates": {
+        "lat": 41.8875,
+        "lng": 12.4718
+      },
+      "zone": "Trastevere",
+      "price_range": "€€",
+      "hours": "Lun-Sáb 13:00-15:00, 19:30-23:30. Domingo cerrado.",
+      "best_for": "trattoria romana de Trastevere",
+      "closed_on": ["domingo"],
+      "comprobado": "2026-10-07 (horario de guías, a confirmar; coordenadas aproximadas)"
+    },
+    {
       "name": "Taverna Trilussa",
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",

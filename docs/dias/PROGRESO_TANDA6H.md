@@ -1,0 +1,2 @@
+- Terminado: bloque 1 (la prueba avisa del Coliseo y el Vaticano; noches del D5 al D7 también con otro orden), bloque 2 (Da Lucia, Checco er Carettiere y Da Teo en los datos y como alternativas; Da Enzo ya no se repite) y bloque 3 (paradas de transporte con las coordenadas de la tabla y el recorrido nuevo de los buses 40, 64 y 23). Prueba de la 6h: 0 fallos; prueba de la 6g: 0 fallos. Fallos: ninguno.
+TERMINADO: prueba de siempre (56.210 viajes): 0 fallos; informe y preguntas escritos.
