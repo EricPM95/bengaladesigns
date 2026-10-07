@@ -47,6 +47,8 @@ interface PlaceExplorerScreenProps {
   dayMarkers?: StopsMapMarker[]
   /** Las líneas de la ruta del día (y el hueco marcado), como en el mapa de la ruta. */
   dayLines?: StopsMapMarkerLine[]
+  /** Tanda 6f, 5: «Free Tour» desde aquí (pregunta la hora y rehace los días). Sin esto, no sale el botón. */
+  onFreeTour?: () => void
   /** Solo para el texto del CTA "Añadir a Día N" y la ficha; null desde EXPLORAR. */
   dayNumber?: number | null
   dateIso?: string | null
@@ -301,6 +303,7 @@ export function PlaceExplorerScreen({
   subtitle,
   dayMarkers = [],
   dayLines = [],
+  onFreeTour,
   dayNumber = null,
   dateIso = null,
   route = null,
@@ -765,7 +768,11 @@ export function PlaceExplorerScreen({
               </span>
             )}
           </div>
-          <span aria-hidden="true" />
+          {onFreeTour ? (
+            <button type="button" onClick={onFreeTour} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-caption font-semibold text-text hover:bg-bg-hover">Free Tour</button>
+          ) : (
+            <span aria-hidden="true" />
+          )}
         </header>
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}

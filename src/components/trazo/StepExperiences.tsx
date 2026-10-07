@@ -15,21 +15,12 @@ interface StepExperiencesProps {
   /** Días de calendario del viaje (el último es el de la vuelta): con ellos se sabe si hay 1, 1,5, 2 o 2,5 días de ruta. */
   days?: number
   mediaJornada?: QuestionnaireAnswers['mediaJornada']
-  freeTourDespues?: QuestionnaireAnswers['freeTourDespues']
   onMediaJornada?: (value: QuestionnaireAnswers['mediaJornada']) => void
-  onFreeTourDespues?: (value: QuestionnaireAnswers['freeTourDespues']) => void
   onChange: (selected: ExperienceCategoryId[]) => void
   onNext: () => void
 }
 
-/** El Free Tour de tarde o de noche tiene su hora habitual; el de mañana sale a las 10:00 y es el de siempre. */
-const FRANJAS_FREE_TOUR = [
-  { id: 'manana', label: 'Por la mañana', note: '10:00', hora: null },
-  { id: 'tarde', label: 'Por la tarde', note: '17:00', hora: '17:00' },
-  { id: 'noche', label: 'De noche', note: '18:30', hora: '18:30' },
-] as const
-
-/** Pastillas de elección única (el medio día del viaje y la franja del Free Tour). */
+/** Pastillas de elección única (el medio día del viaje). */
 function Pastillas<T extends string>({ opciones, valor, onChange }: { opciones: { id: T; label: string; note?: string }[]; valor: T; onChange: (id: T) => void }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -68,7 +59,7 @@ function isWinterTrip(season: Season | undefined, dateRange: DateRange | undefin
  * marcada y bloqueada; se pueden añadir hasta 2 más, o ninguna. Las de temporada siguen las ventanas
  * del destino (seasonalAvailability) y, sin ventana, la regla de invierno de siempre.
  */
-export function StepExperiences({ destinationName, season, month, dateRange, selected, days, mediaJornada, freeTourDespues, onMediaJornada, onFreeTourDespues, onChange, onNext }: StepExperiencesProps) {
+export function StepExperiences({ destinationName, season, month, dateRange, selected, days, mediaJornada, onMediaJornada, onChange, onNext }: StepExperiencesProps) {
   const [windows, setWindows] = useState<Record<string, SeasonalWindow>>({})
   useEffect(() => {
     let alive = true
@@ -85,14 +76,11 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
   // Con 3 o 4 días de calendario (2 o 3 de ruta) el viaje puede tener un medio día: se pregunta aquí. Con 1 día o con 1,5, el Free Tour no se ofrece (desde 2 días, sí).
   const puedeTenerMedioDia = days === 3 || days === 4
   const medioDia = puedeTenerMedioDia ? mediaJornada : undefined
-  const sinFreeTour = days != null && (days <= 2 || (days === 3 && Boolean(medioDia)))
+  // Tanda 6f, 5: el Free Tour ya no se pregunta aquí; se añade desde la app (RESERVAS o «+ Añadir parada»).
   const shown = EXPERIENCE_CATEGORY_BANK.filter((category) =>
-    category.id === 'free_tour' && sinFreeTour ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
+    category.id === 'free_tour' ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
   )
-  // El Free Tour, segundo, justo debajo de Imprescindibles y con la etiqueta «Recomendado» (solo cambia el orden en que se ven).
-  const freeTour = shown.find((category) => category.id === 'free_tour')
-  const rest = shown.filter((category) => category.id !== 'free_tour')
-  const visible = freeTour ? [...rest.slice(0, 1), freeTour, ...rest.slice(1)] : shown
+  const visible = shown
 
   // Imprescindibles siempre dentro, y fuera lo que ya no cabe en el mes elegido.
   useEffect(() => {
@@ -100,12 +88,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
     const next = [LOCKED, ...selected.filter((id) => id !== LOCKED && visibleIds.includes(id))].slice(0, MAX_POSITIVE_CATEGORIES)
     if (next.length !== selected.length || next.some((id, i) => id !== selected[i])) onChange(next)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [windows, month, winter, dateRange?.start, dateRange?.end, selected.join(','), sinFreeTour])
-  // Sin Free Tour en la lista (o sin marcarlo), no queda una franja suya guardada.
-  useEffect(() => {
-    if (freeTourDespues && (!selected.includes('free_tour') || sinFreeTour)) onFreeTourDespues?.(undefined)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected.join(','), sinFreeTour])
+  }, [windows, month, winter, dateRange?.start, dateRange?.end, selected.join(',')])
 
   const full = selected.length >= MAX_POSITIVE_CATEGORIES
   const toggle = (id: ExperienceCategoryId) => {
@@ -116,7 +99,6 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
 
   const descriptionOf = (id: ExperienceCategoryId, fallback: string) => {
     if (id === 'imprescindibles') return `Lo que no te puedes perder en ${destinationName}`
-    if (id === 'free_tour') return `Ideal si es tu primera vez en ${destinationName}: un guía local te descubre la ciudad a pie.`
     // Lo que esa experiencia es en este destino, si el destino lo dice (los mercadillos de Roma: Navona, los belenes y las luces).
     return windows[id]?.descripcion ?? fallback
   }
@@ -189,23 +171,6 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
               <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ font: `400 25px/1 ${SERIF}` }}>{category.title}</span>
-                  {category.id === 'free_tour' && (
-                    <span
-                      style={{
-                        flex: 'none',
-                        padding: '3px 8px',
-                        borderRadius: 999,
-                        font: `500 10px/1 ${MONO}`,
-                        letterSpacing: '.08em',
-                        textTransform: 'uppercase',
-                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(255,190,30,.22)',
-                        color: active ? DARK : INK,
-                        transition: 'background .45s,color .45s',
-                      }}
-                    >
-                      Recomendado
-                    </span>
-                  )}
                 </span>
                 <span style={{ font: "400 12.5px/1.3 'Geist'", opacity: 0.78 }}>{descriptionOf(category.id, category.description)}</span>
                 {notice && <span style={{ font: "400 12px/1.3 'Geist'", opacity: 0.9 }}>{notice}</span>}
@@ -241,19 +206,6 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
           )
         })}
       </div>
-      {selected.includes('free_tour') && !sinFreeTour && onFreeTourDespues && (
-        <div style={{ margin: '0 0 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>¿A qué hora prefieres el Free Tour?</span>
-          <Pastillas
-            valor={freeTourDespues?.franja ?? 'manana'}
-            onChange={(id) => {
-              const franja = FRANJAS_FREE_TOUR.find((item) => item.id === id)
-              onFreeTourDespues(franja?.hora ? { franja: id, hora: franja.hora } : undefined)
-            }}
-            opciones={FRANJAS_FREE_TOUR.map((item) => ({ id: item.id, label: item.label, note: item.note }))}
-          />
-        </div>
-      )}
       <Cta onClick={onNext}>Continuar</Cta>
     </>
   )

@@ -362,6 +362,8 @@ interface RouteStoreState {
   replaceDayWithInside: (dayId: string, day: DayPlan, insideName: string) => void
   /** El día rehecho por el motor con las reservas del viajero (misma ruta original, sin nombre «por dentro»). */
   replaceDayRebuilt: (dayId: string, day: DayPlan) => void
+  /** Tanda 6f, 5: el Free Tour se añade (o se quita) desde la app: el viaje se acuerda de la franja (mañana = el de siempre, tarde/noche = su hora) y los días se rehacen aparte. */
+  setFreeTourChoice: (choice: { franja: 'manana' | 'tarde' | 'noche'; hora: string } | null) => void
   /** «Prefiero quedarme en Roma» → «Organízame este día»: el día de excursión pasa a ser el día de ciudad que trae el servidor, y el viaje se acuerda de que ya no lleva excursión. */
   replaceExcursionWithCityDay: (dayId: string, day: DayPlan) => void
   /** El día de excursión pasa a ser el día de ciudad con una excursión de MEDIO día (de 8:00 a 14:00) y su tarde desde las 16:00. */
@@ -779,6 +781,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         ? { route: { ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)), insideNames: [...new Set([...(state.route.insideNames ?? []), insideName])] } }
         : state,
     ),
+  setFreeTourChoice: (choice) =>
+    set((state) => {
+      if (!state.route) return state
+      const others = (state.route.answers.experiencesPositive ?? ['imprescindibles']).filter((id) => id !== 'free_tour')
+      const answers = { ...state.route.answers, experiencesPositive: choice ? [...others, 'free_tour' as const] : others, freeTourDespues: choice && choice.franja !== 'manana' ? choice : undefined }
+      return { route: { ...state.route, answers } }
+    }),
   replaceDayRebuilt: (dayId, day) =>
     set((state) => (state.route ? { route: reapplyReservations({ ...state.route, days: state.route.days.map((other) => (other.id === dayId ? { ...day, originalSnapshot: null } : other)) }, state.reservations) } : state)),
   replaceExcursionWithCityDay: (dayId, day) =>

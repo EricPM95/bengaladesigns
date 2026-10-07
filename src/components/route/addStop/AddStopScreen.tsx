@@ -44,6 +44,8 @@ interface AddStopScreenProps {
   dayMarkers: StopsMapMarker[]
   /** Las líneas de la ruta del día (y el hueco marcado) — el mismo dibujo que el mapa de la ruta. */
   dayLines?: StopsMapMarkerLine[]
+  /** Tanda 6f, 5: «Free Tour» desde aquí (pregunta la hora y rehace los días). Sin esto, no sale el botón. */
+  onFreeTour?: () => void
   /** Precarga el buscador con este texto y dispara la búsqueda al abrir — usado por la tarjeta de "segunda visita recomendada" (RecommendedRevisit) para que el lugar ya salga sin que el viajero tenga que escribirlo. */
   initialQuery?: string
   onPick: (stop: Stop) => void
@@ -157,6 +159,7 @@ export function AddStopScreen({
   anchorCoordinates,
   dayMarkers,
   dayLines = [],
+  onFreeTour,
   initialQuery,
   onPick,
   onClose,
@@ -346,7 +349,11 @@ export function AddStopScreen({
             <p className="truncate text-body font-semibold text-text">Añadir parada — Día {dayNumber}</p>
             <p className="truncate text-caption text-text-muted">{title}</p>
           </div>
-          <span className="h-9 w-9 shrink-0" aria-hidden="true" />
+          {onFreeTour ? (
+            <button type="button" onClick={onFreeTour} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-caption font-semibold text-text hover:bg-bg-hover">Free Tour</button>
+          ) : (
+            <span className="h-9 w-9 shrink-0" aria-hidden="true" />
+          )}
         </div>
 
         {/* Buscador fijo */}

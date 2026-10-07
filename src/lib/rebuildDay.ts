@@ -77,6 +77,56 @@ export async function organizarDiaConMediaJornada(dayId: string, excursionId: st
 }
 
 /**
+ * Añade (o quita) el Free Tour desde la app (Tanda 6f, 5): el viaje se acuerda de la franja y cada día de ciudad se rehace con las reglas de siempre
+ * (D3, D1-FT o DM-medio con Free Tour; los días normales sin él). Un día que el viajero ya cambió a mano no se toca. Devuelve false si no se pudo.
+ */
+export async function aplicarFreeTour(choice: { franja: 'manana' | 'tarde' | 'noche'; hora: string } | null): Promise<boolean> {
+  const { useRouteStore } = await import('../store/useRouteStore')
+  const antes = useRouteStore.getState().route
+  if (!antes) return false
+  useRouteStore.getState().setFreeTourChoice(choice)
+  const { route, reservations } = useRouteStore.getState()
+  if (!route) return false
+  const cityDays = route.days.filter((day) => !day.isReturnLeg)
+  let ok = true
+  for (const day of cityDays) {
+    if (day.originalSnapshot || day.dayType === 'excursion') continue
+    try {
+      const response = await fetch('/api/rebuild-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destination: route.destination,
+          answers: route.answers,
+          all_days: cityDays.map((other) => ({ day_number: other.dayNumber, city: other.city })),
+          day_number: day.dayNumber,
+          must_include_places: route.mustIncludePlaces ?? [],
+          inside_names: route.insideNames ?? [],
+          reservas: reservasParaMotor(reservations),
+        }),
+      })
+      if (!response.ok) {
+        ok = false
+        continue
+      }
+      const body = (await response.json()) as { day?: GeneratedDay }
+      if (!body.day) {
+        ok = false
+        continue
+      }
+      const next = mapSingleGeneratedDay(route.destination, body.day, day)
+      await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
+      const actual = useRouteStore.getState().route?.days.find((other) => other.id === day.id)
+      if (!actual || actual.originalSnapshot) continue
+      useRouteStore.getState().replaceDayRebuilt(day.id, next)
+    } catch {
+      ok = false
+    }
+  }
+  return ok
+}
+
+/**
  * Rehace un día con las reservas del viajero (5-oct-2026): el motor corre las horas con los márgenes alrededor de la hora que puso.
  * Un día que el viajero ya ha cambiado a mano no se toca (lo suyo manda; la reserva ya se coloca en su sitio). Sin conexión o en un
  * destino sin días escritos, no hace nada y el día se queda como está.

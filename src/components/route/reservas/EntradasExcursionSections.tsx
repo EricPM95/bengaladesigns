@@ -7,6 +7,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { ReservaCard } from './ReservasItemRow'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
+import { FreeTourSheet, freeTourAvailable, routeHasFreeTour } from './FreeTourSheet'
 
 /** Una tarjeta de «ENTRADAS» o «EXCURSIÓN»: la misma de todo Reservas (ReservaCard); reservada, en verde con «✓ Reservado». */
 function ReservaRow({
@@ -38,6 +39,9 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
   const info = useDestinationExcursions(route.destination)
   const [showMore, setShowMore] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
+  const [freeTourOpen, setFreeTourOpen] = useState(false)
+  const freeTourOffered = freeTourAvailable(route)
+  const freeTourDay = route.days.find((day) => day.stops.some((stop) => stop.isFreeTour))
 
   const { main, more } = buildEntryRows(route, info.entradas, reservations)
   const excursionsAvailable = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
@@ -57,10 +61,25 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
 
   const ratingLine = info.rating ? `${info.excursions.length} excursiones · ${info.rating.percent} % de valoración media` : `${info.excursions.length} excursiones`
 
-  if (main.length === 0 && more.length === 0 && !excursionsAvailable) return null
+  if (main.length === 0 && more.length === 0 && !excursionsAvailable && !freeTourOffered) return null
 
   return (
     <>
+      {freeTourOffered && (
+        <div className="space-y-2">
+          <h3 className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>Free Tour</h3>
+          <ReservaCard
+            kind="excursion"
+            name="Free Tour"
+            subtitle={routeHasFreeTour(route) ? (freeTourDay ? dayLineOf(route, freeTourDay) : 'Añadido a tu ruta') : 'Un guía local te enseña la ciudad a pie'}
+            resolved={routeHasFreeTour(route)}
+            resolvedLabel="✓ Añadido"
+            priority="gray"
+            onAdd={() => setFreeTourOpen(true)}
+          />
+        </div>
+      )}
+
       {(main.length > 0 || more.length > 0) && (
         <div className="space-y-2">
           <h3 className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>Entradas</h3>
@@ -112,6 +131,7 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
         </div>
       )}
 
+      {freeTourOpen && <FreeTourSheet route={route} onClose={() => setFreeTourOpen(false)} />}
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
     </>
   )

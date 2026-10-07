@@ -26,6 +26,7 @@ import {
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
+import { FreeTourSheet, freeTourAvailable } from '../reservas/FreeTourSheet'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { OnTheWayGroupCard, PeriodHeader, TrazoCard } from './TrazoCards'
@@ -340,6 +341,7 @@ export function DayDetailPanel({
   const [dayDefaultMode, setDayDefaultMode] = useState<TransportMode | null>(null)
   const [hiddenConnectors, setHiddenConnectors] = useState<Set<string>>(new Set())
   const [insertAt, setInsertAt] = useState<number | null>(null)
+  const [freeTourOpen, setFreeTourOpen] = useState(false)
   // El "+" que se ha pulsado está después de la cena: lo que se puede ver de noche entra como nocturna.
   const [insertAfterDinner, setInsertAfterDinner] = useState(false)
   /** Dónde centrar "Añadir parada" cuando se abre desde el bloque de tiempo libre: donde está el viajero. */
@@ -1551,6 +1553,7 @@ export function DayDetailPanel({
               route={route}
               dayMarkers={addStopMarkers}
               dayLines={addStopLines}
+              onFreeTour={route && freeTourAvailable(route) && !day.isReturnLeg ? () => setFreeTourOpen(true) : undefined}
               dayNumber={day.dayNumber}
               dateIso={dateIso}
               initialFilters={['restaurantes']}
@@ -1589,6 +1592,8 @@ export function DayDetailPanel({
             />
           )}
 
+          {route && freeTourOpen && <FreeTourSheet route={route} onClose={() => { setFreeTourOpen(false); closeAddStop() }} />}
+
           {route && curatedPoolResolved && curatedPool.length === 0 && (
             <AddStopScreen
               route={route}
@@ -1600,6 +1605,7 @@ export function DayDetailPanel({
               anchorCoordinates={insertAt !== null && insertAt > 0 ? (realStops[insertAt - 1]?.coordinates ?? null) : null}
               dayMarkers={addStopMarkers}
               dayLines={addStopLines}
+              onFreeTour={route && freeTourAvailable(route) && !day.isReturnLeg ? () => setFreeTourOpen(true) : undefined}
               initialQuery={addStopInitialQuery}
               onPick={addPickedStop}
               onClose={closeAddStop}
