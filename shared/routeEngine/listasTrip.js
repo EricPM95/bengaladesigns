@@ -158,7 +158,7 @@ export function planListasTrip(args) {
     cerradoA: (lugar, hora, day) => placeByName.get(lugar) && openCheck(placeByName.get(lugar), toMin(hora), 15, hoursOf(day)).ok !== true,
   })
   if (!ordenado) return null
-  const { order, dateMoves } = ordenado
+  const { order, dateMoves, motivosOrden } = ordenado
 
   // ── Utilidades de coordenadas y trayectos ────────────────────────────────────────────────────────────────────
   const walkLeg = (from, to) => (Array.isArray(from) && Array.isArray(to) ? Math.round(travel?.leg(from, to)?.minutes ?? Math.round((straightLineMeters(from, to) * 1.3) / 80)) : 0)
@@ -1008,8 +1008,14 @@ export function planListasTrip(args) {
         const malaC = coordsOf(malo)
         const previaAlAireLibre = Boolean(previa) && (previa.modo === 'fuera' || sourceOf(previa)?.type === 'exterior') && previaC && malaC && walkLeg(previaC, malaC) <= cfg.espera_plaza_cerca_min
         const esperaMax = previaAlAireLibre ? cfg.espera_plaza_max_min : cfg.espera_max_min
-        if (abre != null && abre - malo.t0 <= esperaMax && proxima && abre + (malo.min ?? 20) <= proxima.close) {
-          out = out.map((it) => (it.id === malo.id ? { ...it, no_antes: toHHMM(abre), ...(abre - malo.t0 > cfg.espera_max_min && previa ? { espera_en: { lugar: previa.lugar, titulo: previa.titulo ?? null } } : {}), espera_abre: toHHMM(abre), espera_tras: previa ? { lugar: previa.lugar, titulo: previa.titulo ?? null } : null } : it))
+        const conEspera = abre != null && abre - malo.t0 <= esperaMax && proxima && abre + (malo.min ?? 20) <= proxima.close
+          ? out.map((it) => (it.id === malo.id ? { ...it, no_antes: toHHMM(abre), ...(abre - malo.t0 > cfg.espera_max_min && previa ? { espera_en: { lugar: previa.lugar, titulo: previa.titulo ?? null } } : {}), espera_abre: toHHMM(abre), espera_tras: previa ? { lugar: previa.lugar, titulo: previa.titulo ?? null } : null } : it))
+          : null
+        // (Esperar nunca hace llegar tarde a una hora fija —una reserva—: si la espera empeora una llegada tarde, no se espera y se ve por fuera.)
+        const tardesAntes = new Map(sim.filter((it) => it.hora).map((it) => [it.id, it.tarde ?? 0]))
+        const empeora = conEspera != null && simular(conEspera).some((it) => it.hora && (it.tarde ?? 0) > (tardesAntes.get(it.id) ?? 0))
+        if (conEspera && !empeora) {
+          out = conEspera
           log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'hora', causa: `${malo.titulo ?? malo.lugar} abre a las ${horaAbre}: se espera ${abre - malo.t0} min` })
           continue
         }
@@ -1094,17 +1100,26 @@ export function planListasTrip(args) {
     items = elegirMesas(items)
     items = horariosCoherentes(items)
     // «De camino» (Tanda 6f, 4i): nunca es un sitio que ese día ya sale como parada (ese rato es el trayecto), y un día nunca empieza con una tarjeta de «de camino».
-    items = items.filter((it) => {
-      if (it.kind !== 'stop' || it.modo !== 'camino' || it.llegada || it.tipo === 'tour') return true
-      const repetido = items.some((o) => o !== it && o.kind === 'stop' && !o.llegada && o.modo !== 'camino' && o.lugar === it.lugar)
-      if (repetido) log.push({ id: it.id, lugar: it.titulo ?? it.lugar, sitio: it.lugar, que: 'quitada', causa: 'ya sale ese día como parada: ese rato es el trayecto' })
-      return !repetido
-    })
-    {
-      const primera = items.findIndex((it) => !(it.kind === 'traslado' || (it.kind === 'stop' && it.modo === 'camino' && !it.llegada)))
-      const sobran = items.slice(0, primera < 0 ? 0 : primera).filter((it) => it.kind === 'stop' && it.modo === 'camino')
-      for (const it of sobran) log.push({ id: it.id, lugar: it.titulo ?? it.lugar, sitio: it.lugar, que: 'quitada', causa: 'el día no empieza con un «de camino»: ese rato es el trayecto hasta la primera parada' })
-      if (primera > 0) items = items.slice(primera)
+    const limpiarCaminos = () => {
+      items = items.filter((it) => {
+        if (it.kind !== 'stop' || it.modo !== 'camino' || it.llegada || it.tipo === 'tour') return true
+        const repetido = items.some((o) => o !== it && o.kind === 'stop' && !o.llegada && o.modo !== 'camino' && o.lugar === it.lugar)
+        if (repetido) log.push({ id: it.id, lugar: it.titulo ?? it.lugar, sitio: it.lugar, que: 'quitada', causa: 'ya sale ese día como parada: ese rato es el trayecto' })
+        return !repetido
+      })
+      {
+        const primera = items.findIndex((it) => !(it.kind === 'traslado' || (it.kind === 'stop' && it.modo === 'camino' && !it.llegada)))
+        const sobran = items.slice(0, primera < 0 ? 0 : primera).filter((it) => it.kind === 'stop' && it.modo === 'camino')
+        for (const it of sobran) log.push({ id: it.id, lugar: it.titulo ?? it.lugar, sitio: it.lugar, que: 'quitada', causa: 'el día no empieza con un «de camino»: ese rato es el trayecto hasta la primera parada' })
+        if (primera > 0) items = items.slice(primera)
+      }
+    }
+    // (Quitar un «de camino» adelanta lo que viene detrás: las horas y los avisos de apertura se rehacen con las horas nuevas, hasta que no se quite nada más.)
+    for (let vuelta = 0; vuelta < 4; vuelta++) {
+      const antes = items.length
+      limpiarCaminos()
+      if (items.length === antes) break
+      items = horariosCoherentes(items)
     }
     // Lo de camino que ya fue parada otro día del viaje lleva «Ya lo visitaste el día n».
     items = items.map((it) => (it.kind === 'stop' && it.modo === 'camino' && !it.llegada && estado.visitadoEn.has(it.lugar) ? { ...it, visitado_dia: estado.visitadoEn.get(it.lugar) } : it))
@@ -1686,6 +1701,7 @@ export function planListasTrip(args) {
     untypedHalves: 0,
     calendar: { hasDates: calendar.hasDates, month: calendar.month, season: calendar.season, referenceIso: calendar.referenceIso },
     dateMoves,
+    motivosOrden,
     problems,
     dayNotices,
     ...(ftFranja ? { freeTourInfo: { franja: ftFranja, hora: freeTourDespues?.hora ?? null, dayId: ftDayIndex >= 0 ? order[ftDayIndex] : null, order: [...order], motivo: ftDayIndex >= 0 ? null : 'ningún día lo lleva' } } : {}),

@@ -33,6 +33,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
   const falla = (regla, dia, texto) => fallos.push({ regla, texto: `${etiqueta} · ${dia.hours?.dateIso ?? `día ${dia.dayNumber}`} ${dia.curatedDay.id}: ${texto}` })
   const avisa = (regla, dia, texto) => info.push({ regla, texto: `${etiqueta} · ${dia.hours?.dateIso ?? `día ${dia.dayNumber}`} ${dia.curatedDay.id}: ${texto}` })
 
+  const fallaOrden = (dia, texto) => fallos.push({ regla: 'orden_dias', texto: `${etiqueta}: ${texto}` })
+  const avisaOrden = (dia, texto) => info.push({ regla: 'orden_dias_cierre', texto: `${etiqueta}: ${texto}` })
   for (const dia of dias) {
     const rows = dia.escritoRows ?? []
     const log = dia.escritoLog ?? []
@@ -42,7 +44,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // Una lista escrita que, con los trayectos de la prueba, no cabe del todo (la comida cae tarde): se apunta, no es un fallo del motor.
     // (Por tramo y hora: las listas escritas que, con los trayectos de la prueba, dejan la comida tarde.)
     const horaDe = (lugar) => (entradas[lugar] ? toMin(entradas[lugar]) : null)
-    const NO_CABE = { coliseo_12_30_14_00_manana: [0, 24 * 60], coliseo_13_30_14_00: [0, 24 * 60], coliseo_14_30_15_30: [0, 24 * 60], museos_13_30_14_30: [0, 24 * 60], coliseo_mediodia: [0, 13 * 60], coliseo_11_30_12_00: [0, 11 * 60 + 30], galeria_tarde: [0, 15 * 60] }
+    const NO_CABE = { coliseo_12_30_14_00_manana: [0, 24 * 60], coliseo_13_30_14_00: [0, 24 * 60], coliseo_14_30_15_30: [0, 24 * 60], museos_13_30_14_30: [0, 24 * 60], museos_mediodia: [0, 13 * 60], coliseo_mediodia: [0, 13 * 60], coliseo_11_30_12_00: [0, 11 * 60 + 30], galeria_tarde: [0, 15 * 60] }
     const listaNoCabe = (dia.curatedDay.variantes ?? []).some((v) => NO_CABE[v] && Object.keys(entradas).some((lugar) => horaDe(lugar) != null && horaDe(lugar) >= NO_CABE[v][0] && horaDe(lugar) <= NO_CABE[v][1]))
     const stops = rows.filter((r) => (r.tipo === 'parada' || r.tipo === 'tour' || r.tipo === 'desayuno') && !r.llegada)
     // 1. El orden
@@ -54,6 +56,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const spareIds = new Set((dia.spareRows ?? []).map((r) => r.id))
     for (const id of dia.ordenBase ?? []) {
       if (rows.some((r) => r.id === id) || spareIds.has(id)) continue
+      if (/^traslado_/.test(id)) continue // (un traslado no es una parada: si lo que le sigue se quita o no existe ese día, el traslado se va con ello)
       if (!log.some((l) => l.id === id && (l.que === 'quitada' || l.que === 'sobra'))) falla('sin_explicar', dia, `«${id}» está en la lista y no sale ni tiene causa en el registro`)
     }
     // 2b. (Tanda 6b) Nada cerrado a la hora de llegada: una visita por dentro con la llegada orientativa fuera de su horario es un fallo; se espera 15 min como mucho (y entonces la hora ya es la de abrir).
@@ -195,7 +198,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const esperado = toMin(variantes.includes('con_free_tour_de_manana') ? '09:00' : empiezaDoc ?? (dia.halfDayExcursion?.soloTarde ? '16:00' : (franjas.inicio ?? '09:00')))
       // (Tanda 6c: el documento ya no dice «el día empieza más tarde» en ningún sitio; el lunes del D4 y los miércoles de audiencia empiezan a su hora.)
       // (Tanda 6d: el miércoles del D2 sin Museos también empieza a su hora; solo quedan los medios días de tarde.)
-      const excusado = (dia.curatedDay.id === 'D0-medio' && (dia.written?.grupo === 'tarde')) || (dia.curatedDay.id === 'DT-medio' && dia.written?.grupo === 'tarde')
+      const excusado = /medio/.test(dia.curatedDay.id) && dia.written?.grupo === 'tarde'
       // (Si lo primero del día es una hora fija —o su «Llegada a…»—, el día empieza a esa hora: no hay nada que hacer antes y no se inventa.)
       if (primera && !excusado && !dia.halfDayExcursion && !primera.llegada && !primera.fija && primera.t0 > esperado + 15) falla('dia_empieza_tarde', dia, `el día empieza a las ${Math.floor(primera.t0 / 60)}:${String(primera.t0 % 60).padStart(2, '0')} y debería empezar a las ${Math.floor(esperado / 60)}:${String(esperado % 60).padStart(2, '0')}`)
     }
@@ -203,12 +206,36 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     for (const sp of dia.spareRows ?? []) if (sp.modo === 'camino') falla('camino_en_sobra', dia, `«${sp.titulo ?? sp.lugar}» va de camino y está en «Si te sobra tiempo»`)
     // 8. La comida, como muy tarde a las 14:30
     const comida = rows.find((x) => x.tipo === 'comida')
-    if (comida && comida.llegaA > 14 * 60 + 30) {
+    // (Tanda 6f: en un día con una reserva —una hora fija— la comida puede ser hasta las 15:00.)
+    const comidaLimite = rows.some((x) => x.fija && !x.llegada) ? 15 * 60 : 14 * 60 + 30
+    if (comida && comida.llegaA > comidaLimite) {
       const delante = rows.slice(0, rows.indexOf(comida)).filter((x) => (x.tipo === 'parada' || x.tipo === 'tour') && !x.llegada && x.modo !== 'camino' && !x.relleno && !x.protegido)
       const soloImprescindibles = delante.length > 0 && delante.every((x) => (x.nivel ?? 3) === 1 || x.fija)
       // (La mañana larga de los Museos por la tarde —la Cúpula, la Basílica, la Plaza, el Castillo por dentro y el Puente— deja la comida hasta 20 min tarde: lo escribe así el documento.)
       const mananaLargaEscrita = (dia.curatedDay.variantes ?? []).includes('museos_tarde_cupula') && comida.llegaA <= 14 * 60 + 50
       ;(soloImprescindibles || sinLista || listaNoCabe || mananaLargaEscrita ? avisa : falla)('comida_tarde', dia, `la comida es a las ${Math.floor(comida.llegaA / 60)}:${String(comida.llegaA % 60).padStart(2, '0')}${soloImprescindibles ? ' (delante solo hay imprescindibles)' : ''}`)
+    }
+    // (Tanda 6f, 3) Ningún nombre de parada dice «iluminada», «de noche» o «ya con las luces»: eso es de las nocturnas, no del día.
+    for (const r of rows.filter((x) => x.tipo === 'parada' || x.tipo === 'tour' || x.tipo === 'desayuno')) if (/iluminad|de noche|ya con las luces/i.test(`${r.titulo ?? ''} ${r.lugar ?? ''}`)) falla('nombre_de_noche', dia, `«${r.titulo ?? r.lugar}» lleva en el nombre una palabra de noche`)
+    // (Tanda 6f, 4i y 4g) Un «de camino» nunca repite una parada del día (de antes ni de después) y el día nunca empieza con un «de camino».
+    for (const r of rows.filter((x) => x.modo === 'camino' && x.tipo === 'parada' && !x.llegada)) if (rows.some((x) => x !== r && x.lugar === r.lugar && x.modo !== 'camino' && x.tipo === 'parada' && !x.llegada)) falla('camino_repetido', dia, `«${r.lugar}» va de camino y es también una parada del día`)
+    {
+      const primera = rows.find((x) => x.tipo !== 'traslado' && !x.llegada)
+      if (primera?.modo === 'camino') falla('dia_empieza_de_camino', dia, `el día empieza con «${primera.titulo ?? primera.lugar}» de camino`)
+    }
+    // (Tanda 6f, 4b y 4) Las nocturnas, por parejas cercanas (a 15 minutos andando como mucho: en línea recta 1.200 m), y en un viaje de 2,5 días o más ninguna de un sitio visto ese día.
+    {
+      const nocturnas = (dia.escritoNights ?? []).map((n) => ({ n, c: place(String(n.name).replace(/ (noche)$/, ''))?.coordinates ?? null }))
+      for (let i = 0; i < nocturnas.length; i++) for (let j = i + 1; j < nocturnas.length; j++) {
+        if (nocturnas[i].c && nocturnas[j].c && straightLineMeters(nocturnas[i].c, nocturnas[j].c) > 1200) falla('noches_lejos', dia, `las nocturnas «${nocturnas[i].n.name}» y «${nocturnas[j].n.name}» están a más de 15 minutos andando`)
+      }
+      if (dias.length >= 3) {
+        const delDia = new Set(rows.filter((x) => (x.tipo === 'parada' || x.tipo === 'tour') && !x.llegada).map((x) => x.lugar))
+        for (const n of dia.escritoNights ?? []) {
+          const base = String(n.name).replace(/ (noche)$/, '')
+          if (delDia.has(base)) falla('noche_de_lo_visto', dia, `la nocturna «${n.name}» es de un sitio que se ve ese mismo día`)
+        }
+      }
     }
     // El plan de lluvia pasa las mismas comprobaciones
     for (const texto of dia.rainPlan?.checks ?? []) falla('lluvia', dia, `la alternativa de lluvia rompe: ${texto}`)
@@ -219,6 +246,21 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const barrio = place(name)?.tags?.includes('barrio') ? place(name)?.zone : null
     const sale = dias.some((d) => (d.escritoRows ?? []).some((r) => r.lugar === name || (barrio && place(r.lugar)?.zone === barrio && r.modo !== 'camino')) || (d.escritoNights ?? []).some((n) => (n.conflicts_with ?? []).includes(name)) || (d.spareRows ?? []).some((r) => r.lugar === name) || (d.escritoLog ?? []).some((l) => l.sitio === name && l.que === 'quitada')) || plan.unplacedPool.some((u) => u.name === name) || (hasFreeTour && cubiertos.has(name) && place(name)?.type !== 'interior')
     if (!sale) fallos.push({ regla: 'pool', texto: `${etiqueta}: «${name}» marcado en el pool no sale ni está en «No incluido»` })
+  }
+  // (Tanda 6f, 4f) El orden de los días: lo imprescindible primero. Los dos primeros días completos son el D1 y el D2 (con Free Tour de mañana, el D3 y el D1-FT); solo cambia por un cierre o una fecha mala que marca el documento.
+  {
+    const completos = dias.filter((d) => !/medio|^D0$/.test(d.curatedDay.id) && !d.isExcursion && !d.halfDayExcursion).sort((a, b) => a.dayNumber - b.dayNumber)
+    const buscados = hasFreeTour ? ['D3', 'D1-FT'] : ['D1', 'D2']
+    const primeros = completos.slice(0, 2)
+    const faltan = buscados.filter((id) => completos.length >= 2 && !primeros.some((d) => d.curatedDay.id === id) && completos.some((d) => d.curatedDay.id === id))
+    for (const id of faltan) {
+      // (Lo que el documento marca como mala fecha de ese día: días de la semana, fechas y sitios que cierran; con eso el motor lo cambia por el día siguiente.)
+      // (El motor dice por qué retrasó el día: lo que le cuesta en su sitio de la tabla —un sitio cerrado, una mala fecha del documento, un horario especial—; sin motivo es un fallo.)
+      const motivo = Object.entries(plan.motivosOrden ?? {}).map(([otro, razones]) => `${otro}: ${razones.join(', ')}`).join('; ')
+      const cierre = Boolean(motivo)
+      const dia = primeros[0]
+      ;(cierre ? avisaOrden : fallaOrden)(dia, `el ${id} no cae en los dos primeros días completos (${primeros.map((d) => `${d.hours.dateIso} ${d.curatedDay.id}`).join(', ')})${motivo ? ` (${motivo})` : ''}`)
+    }
   }
   // «Si te sobra tiempo» y lo que cuentan los avisos
   for (const dia of dias) {

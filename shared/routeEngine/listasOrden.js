@@ -74,23 +74,29 @@ export function ordenarDias(env) {
   }
   const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
+  let fixedWhy = new Map()
   if (Array.isArray(forceOrder) && forceOrder.length === chosen.length && forceOrder.every((id) => written.days[id])) order = forceOrder
   else if (chosen.length > 1) {
     const fixedCost = new Map()
+    // (Por qué cada día no va en cada fecha: lo que le cuesta ahí; con eso el informe y la prueba explican cada cambio de orden.)
+    fixedWhy = new Map()
     for (const id of chosen) {
       const dia = written.days[id]
       const entries = [...new Set(paradasDelDia(dia).filter((stop) => stop.modo === 'dentro' || stop.hora_tipo).map((stop) => stop.lugar))]
-      fixedCost.set(id, cityDays.map((day) => {
+      const whyByDay = []
+      fixedWhy.set(id, whyByDay)
+      fixedCost.set(id, cityDays.map((day, dayIndex) => {
         let cost = 0
-        if (violates(dia, day)) cost += 1000
+        const why = (text) => { (whyByDay[dayIndex] ??= []).push(text) }
+        if (violates(dia, day)) { cost += 1000; why('el Free Tour no sale ese día') }
         const halfId = day.halfDayExcursion?.id ?? null
         if (day.halfDayExcursion?.soloTarde) { /* (la tarde de un día de ciudad con excursión de medio día: ese día va donde toca) */ }
-        else if (halfId ? halfDayOwner[halfId] !== id : Object.values(halfDayOwner).includes(id)) cost += 5000
-        for (const name of entries) if (closedThatDay(name, day)) cost += EVITAR_COST
-        for (const rule of avoidSpecial) if (hoursOf(day).dateIso && matchesDateRange(rule.fecha, rule.hasta, hoursOf(day).dateIso) && rule.lugares.some((name) => carries(dia, name))) cost += SPECIAL_HOURS_COST
-        cost += badDateCost(dia, day)
+        else if (halfId ? halfDayOwner[halfId] !== id : Object.values(halfDayOwner).includes(id)) { cost += 5000; why('día de excursión de medio día') }
+        for (const name of entries) if (closedThatDay(name, day)) { cost += EVITAR_COST; why(`${name} cerrado`) }
+        for (const rule of avoidSpecial) if (hoursOf(day).dateIso && matchesDateRange(rule.fecha, rule.hasta, hoursOf(day).dateIso) && rule.lugares.some((name) => carries(dia, name))) { cost += SPECIAL_HOURS_COST; why(`horario especial (${rule.fecha})`) }
+        { const bad = badDateCost(dia, day); if (bad > 0) { cost += bad; why('mala fecha del documento') } }
         // (Lo marcado en el pool que ese día no abre —la Galería Borghese el lunes— va mejor en el otro día.)
-        for (const name of poolNames) if (dia.pool?.[name] && closedThatDay(name, day)) cost += 600
+        for (const name of poolNames) if (dia.pool?.[name] && closedThatDay(name, day)) { cost += 600; why(`${name} (del pool) cerrado`) }
         return cost
       }))
     }
@@ -130,5 +136,8 @@ export function ordenarDias(env) {
       }
     })
   }
-  return { chosen, order, halfPosition, dateMoves }
+  // Los días que cambian de sitio respecto a la tabla y por qué: lo que les cuesta en su fecha de la tabla (un sitio cerrado, una mala fecha, un horario especial). Para el informe y la prueba del orden.
+  const motivosOrden = {}
+  chosen.forEach((id, slot) => { const why = fixedWhy.get(id)?.[slot] ?? []; if (order.indexOf(id) !== slot && why.length > 0) motivosOrden[id] = why })
+  return { chosen, order, halfPosition, dateMoves, motivosOrden }
 }

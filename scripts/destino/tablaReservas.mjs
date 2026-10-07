@@ -17,6 +17,8 @@ const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
 const hhmm = (m) => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`
 const HORAS = []
 for (let m = 8 * 60; m <= 18 * 60; m += 30) HORAS.push(hhmm(m))
+// La Galería Borghese solo tiene turnos reales cada 2 horas (9:00, 11:00, 13:00, 15:00 y 17:00): una reserva a otra hora no existe.
+const TURNOS_GALERIA = ['9:00', '11:00', '13:00', '15:00', '17:00']
 
 // Dónde está cada día en un viaje (una fecha y un viaje en los que sale en martes/jueves, sin cierres) y qué reservas lleva
 const CASOS = [
@@ -37,7 +39,7 @@ let totalSinLista = 0
 for (const caso of CASOS) {
   const dia = written.days[caso.dia]
   salida.push(`## ${caso.dia} · ${caso.lugar}`, '', 'Hora | Clase | Lista | En el motor', '--- | --- | --- | ---')
-  for (const hora of HORAS) {
+  for (const hora of caso.lugar === 'Galería Borghese' ? TURNOS_GALERIA : HORAS) {
     const clase = claseDeReserva(dia, caso.lugar, hora, { tieneFreeTour: Boolean(caso.ft) })
     let motor = ''
     try {
@@ -47,7 +49,7 @@ for (const caso of CASOS) {
       else {
         const fila = (day.escritoRows ?? []).find((r) => r.lugar === caso.lugar && r.hora_tipo === 'reserva' && !r.llegada)
         const r = comprobarViaje({ D, plan: p, etiqueta: `${caso.dia} ${hora}`, entradas: { [caso.lugar]: hora.length === 4 ? `0${hora}` : hora }, hasFreeTour: Boolean(caso.ft), listas: written, franjas: written.destino?.franjas })
-        const notas = [...new Set([...r.fallos, ...r.info].map((f) => f.regla))].filter((n) => !['sobra', 'no_cabe_del_todo', 'comida_tras_hora_fija'].includes(n))
+        const notas = [...new Set([...r.fallos, ...r.info].map((f) => f.regla))].filter((n) => !['sobra', 'no_cabe_del_todo', 'comida_tras_hora_fija', 'orden_dias_cierre'].includes(n))
         motor = `${fila ? (fila.tarde > 5 ? `llega ${fila.tarde} min tarde` : 'a su hora') : 'no entra'}${r.fallos.length ? ` · FALLOS: ${[...new Set(r.fallos.map((f) => f.regla))].join(', ')}` : ''}${notas.length ? ` · ${notas.join(', ')}` : ''}`
       }
     } catch (error) {
