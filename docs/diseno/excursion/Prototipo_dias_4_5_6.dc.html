@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Día de excursión</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#A8480F}a:hover{color:#1C2230}
+</style>
+</helmet>
+<div style="width:390px;height:2000px;background:#F5EFE4;font-family:'Geist',system-ui,sans-serif;color:#1C2230;position:relative;overflow:hidden">
+  <div style="height:100%;overflow-y:auto;box-sizing:border-box;padding:22px 14px 80px;display:flex;flex-direction:column;gap:12px">
+
+    <div style="display:flex;flex-direction:column;gap:4px;padding:4px 6px 8px">
+      <span style="font:500 10.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.6)">Tu viaje · pestaña Días</span>
+      <span style="font:400 32px/1.05 'Instrument Serif',serif">{{ tripTitle }}</span>
+      <span style="font:400 12px/1.4 'Geist';color:rgba(28,34,48,.62)">Horas y precios de ejemplo, hasta tener los de Civitatis.</span>
+    </div>
+
+    <sc-for list="{{ before }}" as="d" hint-placeholder-count="3">
+      <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.3);min-height:76px;display:flex;align-items:center;gap:14px;padding:12px 14px 12px 16px;box-sizing:border-box">
+        <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#F1EADC;display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif">{{ d.n }}</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.6)">Día {{ d.n }}</span>
+          <span style="font:400 20px/1.1 'Instrument Serif',serif">{{ d.t }}</span>
+        </span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      </div>
+    </sc-for>
+
+    <div style="border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.16);box-shadow:0 1px 2px rgba(28,34,48,.05),0 16px 34px -22px rgba(28,34,48,.35)">
+      <button onClick="{{ toggleOpen }}" aria-expanded="{{ open }}" style="width:100%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 14px 12px 16px;text-align:left;color:#1C2230;font-family:'Geist',system-ui,sans-serif">
+        <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif">4</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.6)">Día 4</span>
+          <span style="font:400 23px/1.08 'Instrument Serif',serif">{{ d4Title }}</span>
+          <sc-if value="{{ isExc }}" hint-placeholder-val="{{ true }}">
+            <span style="font:600 12.5px 'Geist';color:#A8480F">Día de excursión</span>
+          </sc-if>
+          <span style="font:400 12px 'Geist';color:rgba(28,34,48,.62)">{{ d4Meta }}</span>
+        </span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ chevRot }};transition:transform .2s"><path d="M9 6l6 6-6 6"></path></svg>
+      </button>
+
+      <div style="padding:0 14px 14px">
+        <div style="display:flex;gap:4px;padding:4px;border-radius:999px;background:#EFE7D8">
+          <button onClick="{{ goRoma }}" aria-pressed="{{ isRoma }}" style="flex:1;height:44px;border:none;border-radius:999px;background:{{ romaBg }};box-shadow:{{ romaSh }};color:{{ romaC }};font:600 13.5px 'Geist';display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"></path></svg>
+            Roma
+          </button>
+          <button onClick="{{ goExc }}" aria-pressed="{{ isExc }}" style="flex:1;height:44px;border:none;border-radius:999px;background:{{ excBg }};box-shadow:{{ excSh }};color:{{ excC }};font:600 13.5px 'Geist';display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer">
+            <span style="width:16px;height:16px;border-radius:50%;background:{{ ex.bg }}"></span>
+            Excursión
+          </button>
+        </div>
+      </div>
+
+      <sc-if value="{{ warn }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:0 14px 14px;padding:14px;border-radius:16px;background:#FBEFE6;border:1px solid rgba(168,72,15,.28);display:flex;flex-direction:column;gap:10px">
+          <span style="font:400 13.5px/1.5 'Geist'">Tienes reservada la excursión a {{ bookedName }} ({{ code }}). Si cambias a Roma, la reserva sigue en Civitatis: si no vas a ir, cancélala allí.</span>
+          <span style="display:flex;gap:8px">
+            <button onClick="{{ confirmRoma }}" style="flex:1;height:44px;border:none;border-radius:999px;background:#1C2230;color:#F3EEE4;font:600 13px 'Geist';cursor:pointer">Cambiar a Roma</button>
+            <button onClick="{{ cancelWarn }}" style="flex:1;height:44px;border:1px solid rgba(28,34,48,.2);border-radius:999px;background:#FFFDF8;color:#1C2230;font:600 13px 'Geist';cursor:pointer">Seguir con la excursión</button>
+          </span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ open }}" hint-placeholder-val="{{ true }}">
+        <div style="border-top:1px dashed rgba(28,34,48,.14);padding:14px 12px 16px;display:flex;flex-direction:column;gap:12px">
+
+          <sc-if value="{{ isExc }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:12px">
+
+              <div style="display:flex;align-items:center;gap:12px;padding:2px 4px">
+                <span style="width:44px;height:44px;flex:none;border-radius:50%;border:3px solid #A8480F;border-right-color:#EFE7D8;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:600 11px 'Geist Mono',monospace;color:#A8480F">x%</span>
+                <span style="font:400 13px/1.45 'Geist';color:rgba(28,34,48,.72)">{{ pctText }}</span>
+              </div>
+
+              <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);overflow:hidden;box-shadow:0 14px 30px -24px rgba(28,34,48,.45)">
+                <div style="height:176px;position:relative;background:{{ ex.bg }}">
+                  <span style="position:absolute;left:12px;top:12px;height:30px;padding:0 12px;border-radius:999px;background:rgba(255,253,248,.92);display:flex;align-items:center;gap:7px;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"></path></svg>
+                    Excursión del día
+                  </span>
+                  <span style="position:absolute;right:12px;top:12px;padding:7px 12px 8px;border-radius:14px;background:#1C2230;color:#F3EEE4;display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+                    <span style="font:500 9px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.75">desde</span>
+                    <span style="font:400 26px/1 'Instrument Serif',serif">{{ ex.precio }}</span>
+                  </span>
+                  <span style="position:absolute;left:14px;bottom:12px;font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,253,248,.9)">Foto · {{ ex.corto }}</span>
+                  <sc-if value="{{ booked }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:absolute;right:12px;bottom:12px;height:30px;padding:0 12px;border-radius:999px;background:#2F6B45;color:#fff;display:flex;align-items:center;gap:6px;font:600 12px 'Geist'">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>
+                      Reservada · {{ code }}
+                    </span>
+                  </sc-if>
+                </div>
+
+                <div style="padding:16px 16px 18px;display:flex;flex-direction:column;gap:14px">
+                  <span style="font:400 27px/1.1 'Instrument Serif',serif">{{ ex.pre }} <em style="color:#A8480F">{{ ex.dest }}</em>{{ ex.post }}</span>
+
+                  <span style="display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{ tags }}" as="tg" hint-placeholder-count="4">
+                      <span style="height:28px;padding:0 10px;border-radius:999px;background:#F1EADC;display:flex;align-items:center;gap:6px;font:400 12px 'Geist';color:rgba(28,34,48,.8)">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ tg.d }}"></path></svg>
+                        {{ tg.t }}
+                      </span>
+                    </sc-for>
+                  </span>
+
+                  <div style="position:relative;border-radius:16px;background:#F6F0E5;padding:16px 14px 12px">
+                    <div style="position:absolute;left:20px;right:20px;top:21px;border-top:2px dashed rgba(168,72,15,.5)"></div>
+                    <div style="position:relative;display:flex;justify-content:space-between;gap:6px">
+                      <sc-for list="{{ stops }}" as="p" hint-placeholder-count="4">
+                        <span style="display:flex;flex-direction:column;align-items:{{ p.al }};text-align:{{ p.ta }};gap:5px;min-width:0">
+                          <span style="width:12px;height:12px;border-radius:50%;background:{{ p.c }};border:2px solid #F6F0E5"></span>
+                          <span style="font:600 11px 'Geist Mono',monospace;color:#A8480F">{{ p.h }}</span>
+                          <span style="font:400 15px/1.1 'Instrument Serif',serif">{{ p.n }}</span>
+                        </span>
+                      </sc-for>
+                    </div>
+                  </div>
+
+                  <p style="margin:0;font:400 13.5px/1.55 'Geist';color:rgba(28,34,48,.72)">{{ ex.texto }}</p>
+
+                  <sc-if value="{{ notBooked }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ verDisp }}" style="height:54px;border:none;border-radius:999px;background:#A8480F;color:#fff;font:600 16px 'Geist';cursor:pointer;box-shadow:0 12px 24px -12px rgba(168,72,15,.7)">Ver disponibilidad</button>
+                  </sc-if>
+
+                  <sc-if value="{{ confOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;background:#F6F0E5">
+                      <label style="display:flex;flex-direction:column;gap:6px;font:500 12px 'Geist';color:rgba(28,34,48,.75)">
+                        ¿Qué excursión has reservado?
+                        <select value="{{ selIdx }}" onChange="{{ onSel }}" style="height:44px;border-radius:12px;border:1px solid rgba(28,34,48,.18);background:#FFFDF8;padding:0 10px;font:400 14px 'Geist';color:#1C2230">
+                          <sc-for list="{{ selOpts }}" as="o" hint-placeholder-count="5">
+                            <option value="{{ o.v }}">{{ o.t }}</option>
+                          </sc-for>
+                        </select>
+                      </label>
+                      <label style="display:flex;flex-direction:column;gap:6px;font:500 12px 'Geist';color:rgba(28,34,48,.75)">
+                        Código de reserva
+                        <input value="{{ codeIn }}" onChange="{{ onCode }}" placeholder="Por ejemplo, CIV-48213" style="height:44px;border-radius:12px;border:1px solid rgba(28,34,48,.18);background:#FFFDF8;padding:0 12px;font:400 14px 'Geist';color:#1C2230">
+                      </label>
+                      <button onClick="{{ saveCode }}" style="height:44px;border:none;border-radius:999px;background:#1C2230;color:#F3EEE4;font:600 14px 'Geist';cursor:pointer">Guardar</button>
+                    </div>
+                  </sc-if>
+
+                  <button onClick="{{ toggleConf }}" style="align-self:center;min-height:44px;border:none;background:transparent;display:flex;align-items:center;gap:7px;font:400 13px 'Geist';color:rgba(28,34,48,.72);text-decoration:underline;text-underline-offset:3px;cursor:pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>
+                    {{ confLabel }}
+                  </button>
+                </div>
+              </div>
+
+              <sc-if value="{{ isMedio }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <span style="text-align:center;font:400 13px 'Geist';color:rgba(28,34,48,.68)">Vuelves a Roma a las {{ ex.vuelta }}. La tarde es para ti.</span>
+                  <button onClick="{{ addPlaces }}" style="height:58px;border-radius:18px;border:1.5px dashed rgba(168,72,15,.5);background:transparent;display:flex;align-items:center;justify-content:center;gap:10px;font:500 15px 'Geist';color:#A8480F;cursor:pointer">
+                    <span style="width:28px;height:28px;border-radius:50%;background:#A8480F;color:#fff;display:flex;align-items:center;justify-content:center">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    </span>
+                    Añadir lugares
+                  </button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ notBooked }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ toggleMore }}" aria-expanded="{{ more }}" style="height:62px;border-radius:18px;border:1px solid rgba(28,34,48,.1);background:#FFFDF8;display:flex;align-items:center;gap:12px;padding:0 14px;cursor:pointer;color:#1C2230;font-family:'Geist'">
+                  <span style="display:flex">
+                    <sc-for list="{{ others }}" as="m" hint-placeholder-count="4">
+                      <span style="width:30px;height:30px;border-radius:50%;background:{{ m.bg }};border:2px solid #FFFDF8;margin-right:-9px"></span>
+                    </sc-for>
+                  </span>
+                  <span style="flex:1;text-align:left;padding-left:12px;font:500 14px 'Geist'">Ver más excursiones (4)</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ moreRot }};transition:transform .2s"><path d="M9 6l6 6-6 6"></path></svg>
+                </button>
+              </sc-if>
+
+              <sc-if value="{{ showMore }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{ others }}" as="o" hint-placeholder-count="4">
+                    <button onClick="{{ o.pick }}" style="min-height:66px;border-radius:16px;border:1px solid rgba(28,34,48,.1);background:#FFFDF8;display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;text-align:left;color:#1C2230">
+                      <span style="width:46px;height:46px;flex:none;border-radius:12px;background:{{ o.bg }}"></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                        <span style="font:400 17px/1.1 'Instrument Serif',serif">{{ o.nombre }}</span>
+                        <span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.62)">{{ o.meta }}</span>
+                      </span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+                <span style="flex:1;height:1px;background:rgba(28,34,48,.14)"></span>
+                <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.6)">O sin excursión</span>
+                <span style="flex:1;height:1px;background:rgba(28,34,48,.14)"></span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px">
+                <button onClick="{{ goRoma }}" style="min-height:132px;border-radius:20px;border:1px solid rgba(28,34,48,.1);background:#FFFDF8;padding:14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:12px;cursor:pointer;text-align:left;color:#1C2230">
+                  <span style="width:34px;height:34px;border-radius:10px;background:#F1EADC;display:flex;align-items:center;justify-content:center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"></path></svg>
+                  </span>
+                  <span style="display:flex;flex-direction:column;gap:4px">
+                    <span style="font:400 18px/1.12 'Instrument Serif',serif">Prefiero quedarme en Roma</span>
+                    <span style="font:400 11.5px/1.35 'Geist';color:rgba(28,34,48,.65)">Te preparamos un día por Roma</span>
+                  </span>
+                </button>
+                <button onClick="{{ ownDay }}" style="min-height:132px;border-radius:20px;border:none;background:#1C2230;padding:14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:12px;cursor:pointer;text-align:left;color:#F3EEE4">
+                  <span style="width:34px;height:34px;border-radius:10px;background:#E8A54B;color:#1C2230;display:flex;align-items:center;justify-content:center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z"></path></svg>
+                  </span>
+                  <span style="display:flex;flex-direction:column;gap:4px">
+                    <span style="font:400 18px/1.12 'Instrument Serif',serif">Crear mi propio día</span>
+                    <span style="font:400 11.5px/1.35 'Geist';color:rgba(243,238,228,.75)">Elige tus sitios en el mapa</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isRoma }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:2px 4px">
+              <sc-for list="{{ franjas }}" as="f" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#A8480F">{{ f.l }}</span>
+                  <sc-for list="{{ f.items }}" as="it" hint-placeholder-count="3">
+                    <span style="min-height:48px;border-radius:14px;background:{{ it.bg }};border:1px solid rgba(28,34,48,.08);display:flex;align-items:center;gap:12px;padding:8px 12px">
+                      <span style="width:26px;height:26px;flex:none;border-radius:50%;background:{{ it.badge }};color:{{ it.badgeC }};display:flex;align-items:center;justify-content:center;font:600 11px 'Geist Mono',monospace">{{ it.n }}</span>
+                      <span style="font:400 16px/1.15 'Instrument Serif',serif">{{ it.name }}</span>
+                    </span>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <span style="text-align:center;font:400 12.5px/1.45 'Geist';color:rgba(28,34,48,.65);padding-top:4px">¿Te apetece salir de Roma? Pasa el interruptor a Excursión.</span>
+            </div>
+          </sc-if>
+
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-for list="{{ after }}" as="d" hint-placeholder-count="1">
+      <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.3);min-height:76px;display:flex;align-items:center;gap:14px;padding:12px 14px 12px 16px;box-sizing:border-box">
+        <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#F1EADC;display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif">{{ d.n }}</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.6)">Día {{ d.n }}</span>
+          <span style="font:400 20px/1.1 'Instrument Serif',serif">{{ d.t }}</span>
+        </span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position:absolute;left:16px;right:16px;bottom:24px;padding:14px 16px;border-radius:14px;background:#1C2230;color:#F3EEE4;font:400 13.5px/1.45 'Geist';box-shadow:0 16px 30px -12px rgba(28,34,48,.6)">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dias":{"editor":"enum","options":["4","5","6"],"default":"4"},"$preview":{"width":390,"height":2000}}'>
+const I = {
+  clock: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
+  bus: 'M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3',
+  train: 'M7 3h10a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 10h14M8 21l2-4M16 21l-2-4',
+  guide: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
+  ticket: 'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12'
+};
+const EX = [
+  { pre: 'Excursión a', dest: 'Pompeya', post: ' y Sorrento', nombre: 'Pompeya y Sorrento', corto: 'Pompeya', horas: '13 h', vuelta: '20:00', precio: '65€', medio: false, bg: '#B4704A',
+    tags: [['clock', '13 h'], ['bus', 'Autobús'], ['guide', 'Guía'], ['ticket', 'Entrada incluida']],
+    stops: [['07:00', 'Roma'], ['10:30', 'Pompeya'], ['14:30', 'Sorrento'], ['20:00', 'Roma']],
+    texto: 'Descubre las ruinas de Pompeya con guía y pasea por Sorrento, la joya de la costa napolitana. Incluye transporte en autobús, entrada a Pompeya y tiempo libre en Sorrento.' },
+  { pre: 'Excursión a', dest: 'Tívoli', post: '', nombre: 'Tívoli: Villa d’Este y Villa Adriana', corto: 'Tívoli', horas: '6 h', vuelta: '14:00', precio: 'XX€', medio: true, bg: '#6E8759',
+    tags: [['clock', '6 h'], ['bus', 'Autobús'], ['guide', 'Guía'], ['ticket', 'Entrada incluida']],
+    stops: [['08:00', 'Roma'], ['09:00', 'Villa Adriana'], ['11:30', 'Villa d’Este'], ['14:00', 'Roma']],
+    texto: 'Los jardines y las fuentes de Villa d’Este y las ruinas de la villa del emperador Adriano, con guía. Vuelves a Roma a la hora de comer.' },
+  { pre: 'Excursión a', dest: 'Ostia Antica', post: '', nombre: 'Ostia Antica', corto: 'Ostia Antica', horas: '6 h', vuelta: '14:00', precio: 'XX€', medio: true, bg: '#B98F55',
+    tags: [['clock', '6 h'], ['train', 'Tren'], ['guide', 'Guía'], ['ticket', 'Entrada incluida']],
+    stops: [['08:00', 'Roma'], ['09:00', 'Ostia Antica'], ['14:00', 'Roma']],
+    texto: 'El puerto de la antigua Roma: calles, termas, un teatro y casas de hace 2.000 años, con guía. Vuelves a Roma a la hora de comer.' },
+  { pre: 'Excursión a', dest: 'Florencia', post: '', nombre: 'Florencia', corto: 'Florencia', horas: '13 h', vuelta: '20:30', precio: 'XX€', medio: false, bg: '#7B6A96',
+    tags: [['clock', '13 h'], ['train', 'Tren'], ['guide', 'Guía']],
+    stops: [['07:30', 'Roma'], ['09:30', 'Florencia'], ['20:30', 'Roma']],
+    texto: 'La catedral de Santa Maria del Fiore, el Ponte Vecchio y la Piazza della Signoria, con guía y tiempo libre. Ida y vuelta en tren de alta velocidad.' },
+  { pre: 'Excursión a la', dest: 'Costa Amalfitana', post: '', nombre: 'Costa Amalfitana', corto: 'la Costa Amalfitana', horas: '14 h', vuelta: '21:00', precio: 'XX€', medio: false, bg: '#3D7A90',
+    tags: [['clock', '14 h'], ['bus', 'Autobús'], ['guide', 'Guía']],
+    stops: [['06:30', 'Roma'], ['11:00', 'Positano'], ['14:00', 'Amalfi'], ['21:00', 'Roma']],
+    texto: 'Positano y Amalfi, los pueblos de colores sobre el mar, con guía y tiempo libre en cada uno.' }
+];
+const RD = {
+  d5: { t: 'Las basílicas y el Aventino', f: [
+    ['Mañana', ['Santa Maria Maggiore', 'San Pietro in Vincoli', 'Basílica de San Clemente', 'San Juan de Letrán y la Escalera Santa']],
+    ['Comida', 'SantoPalato'],
+    ['Tarde', ['Termas de Caracalla', 'Circo Máximo', 'Boca de la Verdad', 'Jardín de los Naranjos', 'Ojo de la Cerradura del Aventino', 'Pirámide Cestia']],
+    ['Cena', 'Felice a Testaccio'] ] },
+  d6: { t: 'Roma desde arriba', f: [
+    ['Mañana', ['Cúpula de San Pedro', 'Castillo de Sant’Angelo', 'Piazza Navona']],
+    ['Comida', 'Enoteca Corsi'],
+    ['Tarde', ['Plaza del Campidoglio', 'Museos Capitolinos', 'El Foro desde el Campidoglio', 'Santa Maria in Aracoeli', 'Columna y Mercados de Trajano', 'Terraza del Altar de la Patria']],
+    ['Cena', 'Nonna Betta'] ] },
+  d7: { t: 'La Vía Appia y Trastevere tranquilo', f: [
+    ['Mañana', ['Campo de’ Fiori', 'Plaza Farnese', 'Villa Farnesina', 'Santa Cecilia in Trastevere']],
+    ['Comida', 'Da Enzo al 29'],
+    ['Tarde', ['Catacumbas de San Calixto', 'Vía Appia Antica en bici', 'El Coliseo desde Largo Gaetana Agnesi']],
+    ['Cena', 'La Taverna dei Fori Imperiali'] ] }
+};
+const BEFORE = [
+  { n: 1, t: 'La Roma antigua' },
+  { n: 2, t: 'El Vaticano y Trastevere' },
+  { n: 3, t: 'Villa Borghese, el Popolo y la Plaza de España' }
+];
+const TRIP = {
+  4: { key: 'd5', after: [], def: 'roma' },
+  5: { key: 'd6', after: [{ n: 5, t: RD.d5.t }], def: 'exc' },
+  6: { key: 'd7', after: [{ n: 5, t: RD.d5.t }, { n: 6, t: RD.d6.t }], def: 'exc' }
+};
+class Component extends DCLogic {
+  state = { mode: null, open: true, ex: 0, more: false, conf: false, code: '', sel: null, booked: null, warn: false, toast: '' };
+  componentWillUnmount() { clearTimeout(this.tt); }
+  say(msg) {
+    clearTimeout(this.tt);
+    this.setState({ toast: msg });
+    this.tt = setTimeout(() => this.setState({ toast: '' }), 2800);
+  }
+  renderVals() {
+    const s = this.state;
+    const dias = [4, 5, 6].includes(Number(this.props.dias)) ? Number(this.props.dias) : 4;
+    const trip = TRIP[dias];
+    const mode = s.mode || trip.def;
+    const isExc = mode === 'exc';
+    const isRoma = !isExc;
+    const exIdx = s.booked ? s.booked.i : s.ex;
+    const ex = EX[exIdx];
+    const roma = RD[trip.key];
+    let n = 0;
+    const franjas = roma.f.map(([l, v]) => {
+      const meal = !Array.isArray(v);
+      const items = (meal ? [v] : v).map((name) => {
+        if (meal) return { name, n: l === 'Comida' ? 'C' : 'N', bg: '#F6F0E5', badge: '#E8A54B', badgeC: '#1C2230' };
+        n += 1;
+        return { name, n: String(n), bg: '#FFFDF8', badge: '#1C2230', badgeC: '#F3EEE4' };
+      });
+      return { l, items };
+    });
+    const last = ex.stops.length - 1;
+    const on = { bg: '#FFFDF8', sh: '0 1px 3px rgba(28,34,48,.18)', c: '#1C2230' };
+    const off = { bg: 'transparent', sh: 'none', c: 'rgba(28,34,48,.62)' };
+    const booked = !!s.booked;
+    return {
+      tripTitle: dias + ' días en Roma',
+      before: BEFORE,
+      after: trip.after,
+      open: s.open,
+      toggleOpen: () => this.setState({ open: !s.open }),
+      chevRot: s.open ? 'rotate(90deg)' : 'none',
+      isExc, isRoma,
+      d4Title: isExc ? 'Excursión desde Roma' : roma.t,
+      d4Meta: isExc ? (booked ? 'Reservada · ' + ex.nombre : ex.horas + ' · vuelta a Roma ' + ex.vuelta) : n + ' paradas',
+      romaBg: isRoma ? on.bg : off.bg, romaSh: isRoma ? on.sh : off.sh, romaC: isRoma ? on.c : off.c,
+      excBg: isExc ? on.bg : off.bg, excSh: isExc ? on.sh : off.sh, excC: isExc ? on.c : off.c,
+      goRoma: () => {
+        if (isExc && booked) this.setState({ warn: true, open: true });
+        else this.setState({ mode: 'roma', warn: false, more: false, conf: false, open: true });
+      },
+      goExc: () => this.setState({ mode: 'exc', warn: false, open: true }),
+      warn: s.warn,
+      confirmRoma: () => this.setState({ mode: 'roma', warn: false, more: false, conf: false }),
+      cancelWarn: () => this.setState({ warn: false }),
+      bookedName: ex.nombre,
+      code: booked ? s.booked.code : '',
+      ex,
+      pctText: 'En un viaje de ' + dias + ' días a Roma, el x% de la gente dedica al menos uno a visitar ' + ex.corto + '.',
+      tags: ex.tags.map(([k, t]) => ({ d: I[k], t })),
+      stops: ex.stops.map(([h, nm], i) => ({
+        h, n: nm,
+        al: i === 0 ? 'flex-start' : i === last ? 'flex-end' : 'center',
+        ta: i === 0 ? 'left' : i === last ? 'right' : 'center',
+        c: i === 0 || i === last ? '#1C2230' : (i % 2 ? '#A8480F' : '#3D7A90')
+      })),
+      booked,
+      notBooked: !booked,
+      verDisp: () => this.say('Aquí se abre Civitatis en la excursión «' + ex.nombre + '», con tu enlace de afiliado.'),
+      confOpen: s.conf && !booked,
+      confLabel: booked ? 'Cambiar confirmación' : '¿Ya la has reservado? Añade tu confirmación',
+      toggleConf: () => this.setState(booked ? { booked: null, conf: true, sel: exIdx, ex: exIdx } : { conf: !s.conf, sel: exIdx }),
+      selIdx: String(s.sel == null ? exIdx : s.sel),
+      selOpts: EX.map((e, i) => ({ v: String(i), t: e.nombre })),
+      onSel: (e) => this.setState({ sel: Number(e.target.value) }),
+      codeIn: s.code,
+      onCode: (e) => this.setState({ code: e.target.value }),
+      saveCode: () => {
+        const c = s.code.trim();
+        if (!c) return;
+        const i = s.sel == null ? exIdx : s.sel;
+        this.setState({ booked: { code: c.toUpperCase(), i }, ex: i, conf: false, more: false, code: '' });
+      },
+      isMedio: ex.medio,
+      addPlaces: () => this.say('Aquí se abre EXPLORAR para añadir lugares a tu tarde.'),
+      more: s.more,
+      moreRot: s.more ? 'rotate(90deg)' : 'none',
+      toggleMore: () => this.setState({ more: !s.more }),
+      showMore: s.more && !booked,
+      others: EX.map((e, i) => ({ ...e, i, meta: e.horas + ' · desde ' + e.precio, pick: () => this.setState({ ex: i, more: false }) })).filter((e) => e.i !== exIdx),
+      ownDay: () => this.say('Aquí se abre EXPLORAR con el mapa para crear tu propio día.'),
+      franjas,
+      hasToast: !!s.toast,
+      toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

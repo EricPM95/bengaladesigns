@@ -15,7 +15,7 @@
  */
 
 import { buildExcursionDayV2, buildManualDayV2 } from '../routeAlgorithm.js'
-import { preselectedExcursionId } from './excursions.js'
+import { excursionPagePayload } from './excursionPage.js'
 import { preplanTrip } from './preplan.js'
 import { buildDayFromPlan } from './buildDay.js'
 import { planNightWalks } from './nightWalk.js'
@@ -30,6 +30,8 @@ import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
 import { planCuratedTrip } from '../../shared/routeEngine/curatedTrip.js'
+import { interruptorDia4 } from '../../shared/routeEngine/tripSkeleton.js'
+import { diaPropio } from '../../shared/routeEngine/diaPropio.js'
 import { planListasTrip, poolStatusFor } from '../../shared/routeEngine/listasTrip.js'
 import { writtenDaysFor } from './writtenDays.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
@@ -38,7 +40,6 @@ import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
 import { availabilityLabel, availableForTrip, seasonFit } from '../../shared/routeEngine/availability.js'
 import { applySeasonLines, seasonLinesOn } from '../../shared/routeEngine/seasonLines.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
-import { sunsetFor } from '../../shared/routeEngine/sunset.js'
 import { closedOnDay, earliestVisitStart, effectiveSchedule, lastEntryMinutes, parseClosingMinutes } from '../../shared/routeEngine/openingHours.js'
 import { joinSpanish, placeWithArticle } from '../../shared/routeEngine/whyTexts.js'
 import { MODE_V3 } from '../../shared/routeEngine/modes.js'
@@ -74,6 +75,19 @@ export function useWrittenDays(requestEngine) {
   return WRITTEN_DAYS_DEFAULT
 }
 
+/**
+ * El interruptor del día 4 en lo que viaja con el día (Tanda 6g): en qué lado está (`mode`), cuál es el de por defecto del viaje y las excursiones de la página (`excursion_page`),
+ * tanto con el interruptor en Excursión como en Roma. Sin excursiones escritas para el destino, el día no lleva interruptor.
+ */
+function attachInterruptor(day, { destData, destKey, dayNumber, totalDays, dateRangeStartIso, mediaJornada, mode }) {
+  const sw = interruptorDia4(destData, { totalDays, dateRangeStartIso, mediaJornada: Boolean(mediaJornada) })
+  if (!sw || sw.dia !== dayNumber) return
+  const page = excursionPagePayload(destKey)
+  if (!page) return
+  day.interruptor = { mode, default: sw.defecto, by_date: sw.porFecha }
+  day.excursion_page = page
+}
+
 /** El plan v4 de un viaje, una vez aunque se pidan sus días por separado (los últimos 64 viajes). */
 const writtenPlanCache = new Map()
 function writtenPlanFor(written, destKey, args) {
@@ -84,49 +98,6 @@ function writtenPlanFor(written, destKey, args) {
   writtenPlanCache.set(key, plan)
   if (writtenPlanCache.size > 64) writtenPlanCache.delete(writtenPlanCache.keys().next().value)
   return plan
-}
-/** El día escrito que entra cuando el viajero cambia la excursión por un día en la ciudad: el que la tabla del destino añade al pasar de N a N+1 días de ciudad (D6 en 5 días, D7 en 6). */
-function diaQueEntraSinExcursion(destData, ciudadDias, hasFreeTour) {
-  const table = destData.curated_routes?.por_dias_ciudad ?? {}
-  const fila = (n) => table[String(n)]?.[hasFreeTour ? 'con_free_tour' : 'sin_free_tour'] ?? null
-  return (fila(ciudadDias + 1) ?? []).filter((id) => !(fila(ciudadDias) ?? []).includes(id)).at(-1) ?? null
-}
-/**
- * El día que se pondría en lugar de la excursión y lo que se enseña de él en la pantalla «Prefiero quedarme en Roma»: su título y sus paradas emblemáticas (sin horas, con el nombre de su foto).
- * Null si el destino no lo tiene escrito.
- */
-function quedarmeEnCiudad(written, destData, plan, hasFreeTour, dateIso, season) {
-  const ciudad = plan.days.filter((day) => day.curatedDay?.id).length
-  const id = diaQueEntraSinExcursion(destData, ciudad, hasFreeTour)
-  const cfg = id ? destData.destination_config?.quedarme_en_ciudad?.[id] : null
-  if (!cfg || !written?.days?.[id]) return null
-  const sunset = sunsetFor(destData, { dateIso, season })
-  const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
-  const paradas = (cfg.paradas ?? []).filter((parada) => !parada.solo_tardes || (sunset != null && sunset >= toMin(parada.solo_tardes)))
-  return { day_id: id, title: cfg.titulo, text: cfg.texto ?? null, stops: paradas.map((parada) => ({ name: parada.nombre, photo_name: parada.foto ?? parada.nombre })) }
-}
-/**
- * El orden de los días de ciudad cuando el viajero cambia la excursión por un día en la ciudad: el que el viaje tenía con la excursión (días de ciudad en su orden) con el día nuevo
- * (el que la tabla del destino añade al pasar de N a N+1 días de ciudad) en el día de la excursión. Null si no se puede.
- */
-function ordenSinExcursion(written, destKey, args) {
-  try {
-    const base = writtenPlanFor(written, destKey, { ...args, sinExcursion: false, forceOrder: null })
-    if (!base) return null
-    const ordenBase = base.days.filter((day) => day.curatedDay?.id).map((day) => day.curatedDay.id)
-    const excursion = base.days.find((day) => day.isExcursion)
-    const nuevo = diaQueEntraSinExcursion(args.destData, ordenBase.length, args.hasFreeTour)
-    if (!excursion || !nuevo || !written.days[nuevo]) return null
-    const orden = []
-    let cursor = 0
-    for (const day of base.days) {
-      if (day.dayNumber === excursion.dayNumber) orden.push(nuevo)
-      else if (day.curatedDay?.id) orden.push(ordenBase[cursor++])
-    }
-    return orden.length === ordenBase.length + 1 ? orden : null
-  } catch {
-    return null
-  }
 }
 /** El pool de un viaje con días escritos: qué va ya incluido y cuántos extras caben (null sin días escritos). */
 export function writtenPoolStatus(destData, city, { days, hasFreeTour = false, dateRangeStartIso = null }) {
@@ -337,10 +308,23 @@ async function buildDayBlockV3Inner(
   const planner = curated ? planCuratedTrip : isV3 && Array.isArray(destData.morning_flows) && destData.morning_flows.length > 0 ? planBlockTrip : planTrip
   const destKey = findPipelineV2Key(destData.destination ?? options.city ?? '')
   const written = curated && useWrittenDays(options.engine) ? writtenDaysFor(destKey) : null
-  // «Prefiero quedarme en Roma» (tanda 3): el día de excursión pasa a ser de ciudad (D6 en 5 días, D7 en 6) y los demás días se quedan como estaban: se pide el mismo orden de siempre con el día nuevo
-  // en el hueco de la excursión (así el viaje que ya está en pantalla no se reordena por el día que entra).
-  const forceOrder = options.forceOrder ?? (written && (options.sinExcursion === true || options.mediaExcursion?.id) ? ordenSinExcursion(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null }) : null)
-  const writtenPlan = written ? writtenPlanFor(written, destKey, { ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, sinExcursion: options.sinExcursion === true, mediaExcursion: options.mediaExcursion?.id ? { id: options.mediaExcursion.id, dia: options.mediaExcursion.dia ?? null } : null, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null }) : null
+  // El interruptor del día 4 (Tanda 6g): `options.diaCuatro` = 'roma' | 'excursion' (sin él, el de por defecto del viaje). Los demás días no se mueven con el interruptor: el día 4 está fijo en su sitio.
+  const forceOrder = options.forceOrder ?? null
+  // «Crear mi propio día» (Tanda 6g): `options.sitiosPropios` = los sitios que el viajero ha elegido para ESTE día; el día se monta con ellos y va fijo en su sitio del viaje.
+  const insideMinutes = written?.destino?.minutos_por_dentro ?? destData.destination_config?.minutos_por_dentro ?? {}
+  const montarPropio = (overrides = {}) => ({ dayNumber, ...diaPropio({ destData, placeNames: options.sitiosPropios, insideMinutes, id: 'DX', name: options.nombreDiaPropio ?? 'Mi día', overrides }) })
+  let propio = written && Array.isArray(options.sitiosPropios) && options.sitiosPropios.length > 0 ? montarPropio() : null
+  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null })
+  let writtenPlan = written ? writtenPlanFor(written, destKey, planArgs()) : null
+  // «Crear mi propio día»: una segunda vuelta con lo que el motor hizo de verdad en la primera (un sitio ya visto por dentro en el viaje pasa a verse por fuera, y dura menos), para repartir bien la mañana y la tarde.
+  if (propio && writtenPlan) {
+    const hecho = writtenPlan.days.find((day) => day.curatedDay?.id === propio.id)
+    const overrides = Object.fromEntries((hecho?.escritoRows ?? []).filter((row) => row.tipo === 'parada' && row.lugar && !row.llegada).map((row) => [row.lugar, { modo: row.modo ?? null, min: row.min }]))
+    if (Object.keys(overrides).length > 0) {
+      propio = montarPropio(overrides)
+      writtenPlan = writtenPlanFor(written, destKey, planArgs())
+    }
+  }
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
@@ -362,36 +346,21 @@ async function buildDayBlockV3Inner(
     return day
   }
 
-  // Día de excursión: no tiene paradas de ciudad, tiene OPCIONES, con una ya preseleccionada — la
-  // más popular del destino. El viajero puede cambiarla, o rechazarla y recuperar un día de ruta.
+  // Día de excursión: no tiene paradas de ciudad, tiene la excursión (Tanda 6g: la página del día 4, con las del archivo `_excursiones.json`). Ni comida, ni cena, ni noche: lo que
+  // quiera el viajero lo añade él.
   if (dayPlan.isExcursion) {
-    const config = destData.destination_config ?? {}
     const day = buildExcursionDayV2(destData, dayNumber, totalDays)
-    // Fuera de temporada (`available` de la excursión, Estaciones Parte 4): no se ofrece. Con solo el
-    // mes, el mes frontera tampoco (no la ha elegido el viajero).
-    const calendar = tripCalendar({ dateRangeStartIso, month: options.month ?? null, season: options.season ?? null })
-    const sourceOf = (id) => destData.excursions?.options?.[id] ?? null
-    day.excursion_options = day.excursion_options
-      .map((option) => ({ option, fit: seasonFit(sourceOf(option.id)?.available ?? option.available, calendar, calendar.dateOfDay(dayNumber), false) }))
-      .filter(({ fit }) => fit.enters)
-      .map(({ option, fit }) => (fit.notice ? { ...option, season_notice: fit.notice } : option))
-    const preferida =day.excursion_options.find((option) => option.id === preselectedExcursionId(destData))
-    if (preferida) {
-      // La preseleccionada va la primera: es la que la ficha enseña en grande y el resto quedan
-      // como alternativas.
-      day.excursion_options = [preferida, ...day.excursion_options.filter((option) => option.id !== preferida.id)]
-      day.excursion_preselected = preferida.id
-    }
-    day.excursion_social_proof = config.excursion_social_proof ?? null
-    // «Prefiero quedarme en Roma» (tanda 3): el día de ciudad que entraría en lugar de la excursión, con sus paradas emblemáticas para la pantalla.
-    if (writtenPlan && options.sinExcursion !== true && !options.mediaExcursion?.id) {
-      const stay = quedarmeEnCiudad(written, destData, writtenPlan, hasFreeTour, calendar.dateOfDay(dayNumber), options.season ?? null)
-      if (stay) day.stay_in_city = stay
-    }
+    attachInterruptor(day, { destData, destKey, dayNumber, totalDays, dateRangeStartIso, mediaJornada: options.mediaJornada, mode: 'excursion' })
     return day
   }
 
-  if (isV3) return buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] })
+  if (isV3) {
+    const cityDay = buildCityDayV3(destData, plan, dayPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] })
+    if (propio && dayPlan.curatedDay?.id === propio.id) cityDay.own_day = true
+    // (El día 4 en Roma: lleva el interruptor, para pasar a la excursión.)
+    if (dayPlan.interruptor) attachInterruptor(cityDay, { destData, destKey, dayNumber, totalDays, dateRangeStartIso, mediaJornada: options.mediaJornada, mode: 'roma' })
+    return cityDay
+  }
 
   const nights = planNightWalks(destData, plan)
   const dayVisitedNames = new Set()

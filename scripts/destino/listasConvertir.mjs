@@ -122,7 +122,7 @@ function paradaDe(texto, dia, { camino = false } = {}) {
   const notas = [...parentesis(cola), ...parentesis(cabeza).filter((p) => !nombres[`${sinParentesis(nombre)} (${p})`] && nombres[nombre] === undefined)]
   const frases = cola.replace(/\([^)]*\)/g, '').split('.').map((s) => s.trim()).filter(Boolean)
   const place = places.get(norm(sitio.lugar))
-  const stop = { tipo: sitio.lugar === 'Free Tour Centro Histórico' ? 'tour' : 'parada', lugar: sitio.lugar, ...(sitio.titulo ? { titulo: sitio.titulo } : {}), ...(sitio.foto ? { foto: sitio.foto } : {}), modo: modo ?? sitio.modo ?? null, doc: raw }
+  const stop = { tipo: sitio.lugar === 'Free Tour Centro Histórico' ? 'tour' : 'parada', lugar: sitio.lugar, ...(sitio.titulo ? { titulo: sitio.titulo } : {}), ...(sitio.foto ? { foto: sitio.foto } : {}), ...(sitio.no_quita_noche ? { no_quita_noche: true } : {}), modo: modo ?? sitio.modo ?? null, doc: raw }
   stop.min = min ?? (stop.modo === 'camino' ? 5 : null)
   if (stop.min == null) {
     stop.min = place?.minutos_fuera ?? Math.min(place?.duration_minutes ?? 15, 20)
@@ -161,15 +161,16 @@ function paradaDe(texto, dia, { camino = false } = {}) {
 function mesaDe(texto, dia) {
   let t = texto.trim().replace(/\.$/, '')
   let zona = null
-  const z = /,\s*(en el [^,(]+|en [^,(]+|junto a [^,(]+)\s*$/i.exec(t)
-  if (z) { zona = z[1].trim(); t = t.slice(0, z.index) }
-  // «en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio)»
+  // «en el Mercado de Testaccio, Mordi e Vai (o Felice a Testaccio)»: primero la alternativa (el paréntesis) y después la zona.
   let alternativas = []
   const par = /\(([^)]*)\)/.exec(t)
   if (par) {
-    alternativas = par[1].split(';').flatMap((p) => p.trim().replace(/^si cierran los dos,\s*/i, '').replace(/^o\s+/i, '').split(/\s+o\s+/)).map((p) => p.trim()).filter(Boolean)
+    // («Tonnarello, solo si no ha salido en el viaje: es la cena del D2»: lo de después de la coma es la condición, no el nombre.)
+    alternativas = par[1].split(';').flatMap((p) => p.trim().replace(/^si cierran los dos,\s*/i, '').replace(/^o\s+/i, '').replace(/,\s*solo si .*$/i, '').split(/\s+o\s+/)).map((p) => p.trim()).filter(Boolean)
     t = t.replace(par[0], '').trim()
   }
+  const z = /,\s*(en el [^,(]+|en [^,(]+|junto a [^,(]+)\s*$/i.exec(t)
+  if (z) { zona = z[1].trim(); t = t.slice(0, z.index) }
   let principal = t
   const antes = /^en el ([^,]+),\s*(.+)$/i.exec(t)
   if (antes) { zona ??= `en el ${antes[1]}`; principal = antes[2] }

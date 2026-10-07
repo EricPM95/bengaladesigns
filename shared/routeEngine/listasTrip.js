@@ -84,12 +84,14 @@ function avisoDe(stop, mes = null, invierno = MESES_INVIERNO) {
 
 /**
  * @param {object} args  destData, written ({ destino, days }), totalDays, hasFreeTour, poolNames, experiencesPositive, dateRangeStartIso, month, season, travel, forceOrder, entradas,
- *                       freeTourDespues, mediaJornada, sinExcursion, mediaExcursion
+ *                       freeTourDespues, mediaJornada, diaCuatro, diaPropio
  * @returns el plan (misma forma que el motor anterior) o null si falta algún día escrito
  */
 export function planListasTrip(args) {
-  const { destData, written, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, sinExcursion = false, mediaExcursion = null, ajuste = null, chequeo = null } = args
-  if (!written?.days) return null
+  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null } = args
+  if (!writtenIn?.days) return null
+  // («Crear mi propio día»: el día que el viajero monta con sus sitios es un día escrito más, hecho al vuelo (diaPropio.js), y va fijo en su día.)
+  const written = diaPropio ? { ...writtenIn, days: { ...writtenIn.days, [diaPropio.id]: diaPropio.dia } } : writtenIn
   const poolNames = poolNamesIn
   const franjasDestino = written.destino?.franjas ?? destData.destination_config?.franjas ?? {}
   const cfg = { ...FRANJAS, ...franjasDestino, llegada: { ...FRANJAS.llegada, ...(franjasDestino.llegada ?? {}) } }
@@ -99,7 +101,7 @@ export function planListasTrip(args) {
   const catalogueByName = new Map((destData.night_experiences ?? []).map((entry) => [entry.name, entry]))
   const selected = (experiencesPositive ?? []).filter((id) => id in TAG_INTEREST_MAP && id !== 'free_tour')
   const tour = destData.default_free_tour ?? null
-  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, sinExcursion, mediaExcursion })
+  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, interruptor: { modo: diaCuatro, mediaJornada: Boolean(mediaJornada) }, propios: diaPropio ? [diaPropio.dayNumber] : [] })
   const contentDays = skeleton.length
   const cityDays = skeleton.filter((day) => !day.isBlank && !day.isExcursion)
   // Free Tour: en un viaje de 1,5 días o menos NO se ofrece.
@@ -154,6 +156,7 @@ export function planListasTrip(args) {
 
   // ── 1. Qué días van y en qué orden ───────────────────────────────────────────────────────────────────────────
   const ordenado = ordenarDias({
+    propios: diaPropio ? { [diaPropio.dayNumber]: diaPropio.id } : {},
     destData, written, cityDays, contentDays, hasFreeTour, hoursOf, realDateIso, closedThatDay, calendar, poolNames, selected, mediaJornada, forceOrder, noTourOn, tour,
     cerradoA: (lugar, hora, day) => placeByName.get(lugar) && openCheck(placeByName.get(lugar), toMin(hora), 15, hoursOf(day)).ok !== true,
   })
@@ -1341,7 +1344,7 @@ export function planListasTrip(args) {
     const origen = cena ?? ultimo
     const origenC = opts.origenC ?? (origen ? endCoordsOf(origen) : null)
     // Todo lo visto ese día, de cualquier forma (por dentro, por fuera, de camino, «sin gente»): una nocturna no puede ser un sitio de esos en un viaje de 2,5 días o más (regla 11c).
-    const vistoHoy = new Set(final.filter((it) => it.kind === 'stop' && !it.llegada).flatMap((it) => [it.lugar, it.titulo].filter(Boolean)))
+    const vistoHoy = new Set(final.filter((it) => it.kind === 'stop' && !it.llegada && !it.no_quita_noche).flatMap((it) => [it.lugar, it.titulo].filter(Boolean)))
     const especial = destData.destination_config?.noche_especial?.[String(fecha ?? '').slice(5)] ?? null
     const usadasHoy = new Set()
     const larga = cityDays.length >= 3
@@ -1377,8 +1380,11 @@ export function planListasTrip(args) {
     let causa = null
     if (especial && escrita && escrita === especial.noche) { elegidos = [escrita]; usadasHoy.add(escrita) } // (Nochebuena: solo Trevi, y esa noche puede repetir.)
     else {
-      // 1. La primera pareja imprescindible que aún no ha salido y queda a 15 min en taxi o menos de la cena.
+      // 1. La primera pareja imprescindible que aún no ha salido y queda a 15 min en taxi o menos de la cena. «La imprescindible que falte»: la que ningún día de después del viaje lleve como su
+      //    noche escrita (Tanda 6g: el D4 escribe el Coliseo, así que en un viaje con el D4 el D2 se queda con su Trastevere de noche y no le quita el Coliseo).
+      const escritasDespues = new Set(drafts.filter((other) => other.index > draft.index).flatMap((other) => { const e = other.trabajo.noche?.lista?.[0]; return e ? parejaDe(e) : [] }))
       for (const name of imprescindiblesNoche) {
+        if (escritasDespues.has(name)) continue
         const m = miembros(parejaDe(name))
         if (m.length > 0 && cercaDeLaCena(m[0])) { elegidos = m; causa = `${m.join(' y ')}: la primera pareja de nocturnas imprescindible que aún no ha salido de noche en el viaje`; break }
       }
@@ -1548,7 +1554,7 @@ export function planListasTrip(args) {
     if (cenaIt) franjas.push({ id: 'cena', label: 'Cena', from: toHHMM(media(cenaIt.t0)), to: null })
     // (Tanda 6f, 4d: sin tarjeta de descanso antes de cenar; si sobra tiempo, solo HOY lo dice con «Vas bien de tiempo».)
     const dayPlan = {
-      dayNumber: skeletonDay.dayNumber, weekday: skeletonDay.weekday, allowsRepetition: false, isBlank: false, isExcursion: false, halfDayExcursion: skeletonDay.halfDayExcursion ?? null,
+      dayNumber: skeletonDay.dayNumber, weekday: skeletonDay.weekday, allowsRepetition: false, isBlank: false, isExcursion: false, interruptor: skeletonDay.interruptor === true, halfDayExcursion: skeletonDay.halfDayExcursion ?? null,
       curated: true, escrito: true, listas: true, hours,
       units, schedule: { visits, meals, kept: units, dropped: [], walkMinutes: 0, meters: 0, idleMinutes: 0, idleBeforeDinner: 0, modeFallback: null },
       lunchZone: null, dinnerZone, dinnerPlaceZone: null, dinnerCoords: dinnerRestaurant?.coordinates ?? null, dinnerRestaurant, nightNames: [], blocks: null,
@@ -1556,7 +1562,7 @@ export function planListasTrip(args) {
       untypedAfternoon: false, reorderedBlocks: [], closedAnchors: [], otherRestaurants: [],
       written: { version: null, escrito: true, tabla: draft.id, grupo: draft.parteKey },
       escritoNights, escritoLog: log.map((entry) => ({ ...entry, fecha: fecha ?? null })),
-      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null })),
+      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true })),
       tardeLibre,
       spare: spareVisits,
       spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true })),

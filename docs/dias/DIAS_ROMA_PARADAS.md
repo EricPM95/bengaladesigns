@@ -78,7 +78,33 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
     - **Un imprescindible que se visita por dentro nunca pasa a «de camino» ni a «por fuera» por una reserva:** se mueve antes o después de ella.
 16. **Plan de lluvia.** Cada día lleva su línea «🌧 Si llueve»: qué parada al aire libre se acorta o sale y qué parada por dentro entra, siempre cerca de la ruta y con las comprobaciones del punto 14. La app mira la previsión (la víspera y esa mañana). Si hay previsión de lluvia en una franja, HOY avisa: «Hay previsión de lluvia esta tarde. Si llueve, aquí tienes una alternativa» **[Ver alternativa]**. Nunca cambia sola: decide el viajero.
 
-Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **igual que en `DIAS_ESCRITOS_ROMA.md`**.
+**Líneas de transporte público de Roma que usa la app** (de momento solo estas; el resto, andando o taxi, y el botón «Rutas» abre el mapa). Cuentan si se llega a la parada de la línea en **12 min andando o menos** en cada punta:
+- **Metro A:** Ottaviano (Vaticano) · Flaminio (Piazza del Popolo) · Spagna (Plaza de España) · Barberini (Tritón, Via Veneto) · Termini · San Giovanni (Letrán).
+- **Metro B:** Termini · Cavour (Monti) · Colosseo (Coliseo) · Circo Massimo · Piramide (Testaccio, Ostiense).
+- **Tranvía 8:** Trastevere (Viale Trastevere) · Largo di Torre Argentina · Piazza Venezia.
+- **Bus 40 y 64:** Termini · Piazza Venezia · Largo di Torre Argentina · Corso Vittorio · el Borgo y San Pedro.
+- **Bus 23:** por el Lungotevere, del Castillo de Sant'Angelo a la Isla Tiberina, Trastevere y Testaccio.
+
+**Qué días lleva cada viaje** (decidido el 7-oct-2026; sustituye a la tabla de `DIAS_ESCRITOS_ROMA.md`):
+
+| Viaje | Sin Free Tour | Con Free Tour de mañana |
+|---|---|---|
+| 1 día | D0 | no se ofrece |
+| 1,5 días | D1-corto + D0-medio | no se ofrece |
+| 2 días | D1 + D2 | D3 + D1-FT |
+| 2,5 días | D1 + D2 + DT-medio | D3 + D1-FT + DM-medio (de mañana) o DT-medio (de tarde) |
+| 3 días | D1 + D2 + D4 | D3 + D1-FT + D4 (versión con Free Tour) |
+| 3,5 días | D1 + D2 + D4 + DA-medio | D3 + D1-FT + D4 + DA-medio |
+| 4 días | D1 + D2 + D4 + **día 4 con interruptor** (Roma por defecto: D5) | D3 + D1-FT + D4 + día 4 con interruptor |
+| 5 días | D1 + D2 + D4 + **día 4 con interruptor** (Excursión por defecto; en Roma: D6) + D5 | D3 + D1-FT + D4 + día 4 + D5 |
+| 6 días | D1 + D2 + D4 + **día 4 con interruptor** (Excursión por defecto; en Roma: D7) + D5 + D6 | D3 + D1-FT + D4 + día 4 + D5 + D6 |
+| 7 días o más | lo de 6 días; del día 7 en adelante, la hoja «Ya has visto lo mejor de Roma» y EXPLORAR | igual |
+
+**El día de excursión** (decidido el 7-oct-2026):
+- Es siempre el **día 4** en los viajes de 4, 5 y 6 días. Nunca el día de llegada ni el de vuelta (las llegadas, en la Tanda 7).
+- **El interruptor [Roma | Excursión]** solo cambia ese día: los demás días no se mueven.
+- **Con el interruptor en Roma:** el D5 en 4 días, el D6 en 5 días y el D7 en 6 días, con las reglas de siempre (lo ya visto pasa a «de camino» con «Ya lo visitaste el día n», sin repetir restaurantes ni nocturnas).
+- **Con el interruptor en Excursión:** ese día lleva **solo la excursión**: ni comida, ni cena, ni noche propuestas. Si es de medio día, ver «Excursión de medio día», al final.
 
 **El orden de los días** (decidido el 7-oct-2026, vale para todos los destinos): **lo imprescindible, primero**.
 - Los días con más imprescindibles van en los primeros días completos del viaje: en Roma, la Roma antigua (D1) y el Vaticano (D2), o sus versiones con Free Tour (D1-FT y D3).
@@ -174,7 +200,7 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
   - Panteón, por dentro (entrada de 5 €) ~45
   - Piazza Navona ~45
   - Campo de' Fiori ~20
-  - Ponte Sisto ~15
+  - *de camino:* Ponte Sisto (se cruza el Tíber hacia Trastevere)
   - *de camino:* Via Garibaldi (se sube andando, ~20 min)
   - Mirador del Janículo ~20
   - *de camino:* bajada a Trastevere
@@ -343,7 +369,9 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
 - **tarde:** la de siempre (la Conciliazione, el Castillo, el Puente y Trastevere).
 - **La Basílica nunca pasa a «de camino»** para que quepa la comida: va antes de los Museos.
 
-**Museos reservados a mediodía (de 12:30 a 14:30):**
+**Museos reservados de 12:30 a 13:00:** no tiene lista: la comida no cabe ni antes ni después a una hora normal. Al meter la reserva, la app propone las 11:00 o las 14:00 (regla 17).
+
+**Museos reservados a mediodía (de 13:30 a 14:30):**
 - **mañana:** Plaza de San Pedro ~30, Basílica por dentro ~1 h 15, de camino la Conciliazione, el Castillo por fuera ~30 y el Puente ~15;
 - **comida:** en el Borgo, entre las 12:00 y las 12:30 (Borghiciana o Dal Toscano);
 - «Llegada a…» y 🎟 los Museos;
@@ -582,7 +610,7 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
   - Ojo de la Cerradura del Aventino ~15
   - Pirámide Cestia ~15, de camino a la cena (por fuera; el Cementerio Protestante, al lado, cierra a las 17:00 y no da tiempo)
 - **Cena:** Felice a Testaccio
-- **Noche:** la pareja que toque (regla 13). En 4 días suele ser Trastevere de noche, a ~20 min andando de Testaccio.
+- **Noche:** la pareja que toque (regla 13). En 4 y 5 días suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min). En 6 días con el D7 en el día 4, el Puente y el Castillo de Sant'Angelo (taxi, ~15 min).
 - **Lunes:** Caracalla cierra: sale con «Cerrado hoy».
 - **Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.
 - **Ya no van** el paseo por el Aventino ni el de Testaccio (decidido el 6-oct: sin paseos).
@@ -597,27 +625,25 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
 
 ## Roma desde arriba · D6
 
-**Lista de «Prefiero quedarme en Roma»:** Cúpula de San Pedro · Castillo de Sant'Angelo · Plaza del Campidoglio · Museos Capitolinos · Terraza del Altar de la Patria.
-
 - **Mañana:**
   - Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)
   - *de camino:* Plaza de San Pedro, Via della Conciliazione
   - Castillo de Sant'Angelo, hasta la terraza del ángel, por dentro ~1 h 30
   - *de camino:* Puente Sant'Angelo, Via dei Coronari
-  - Piazza Navona ~20
+  - *de camino:* Piazza Navona («Ya lo visitaste el día 1»)
   - *de camino:* Panteón
 - **Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia)
 - **Tarde:**
-  - Plaza del Campidoglio ~15
+  - *de camino:* Plaza del Campidoglio («Ya lo visitaste el día 1»)
   - Museos Capitolinos, con la terraza sobre los Foros ~1 h 30
   - El Foro Romano, desde la terraza del Campidoglio ~15
   - Santa Maria in Aracoeli y su escalinata ~20
   - *de camino:* Piazza Venezia
   - Columna de Trajano y Mercados de Trajano ~1 h
-  - Terraza del Altar de la Patria (ascensor panorámico) ~45 (⚠️ última subida a las 18:45)
-  - *de camino:* Teatro de Marcelo
-- **Cena:** Nonna Betta (o Giggetto), en el Barrio Judío
-- **Noche:** Panteón de noche
+  - Terraza del Altar de la Patria (ascensor panorámico) ~45 (⚠️ última subida a las 18:45). Cuenta como un sitio aparte del Altar por dentro del D1: es otra entrada y otra visita, así que no la quita la regla de «por dentro una sola vez».
+  - Teatro de Marcelo ~10, de camino a la cena
+- **Cena:** Giggetto al Portico d'Ottavia, en el Barrio Judío (Nonna Betta, solo si no ha salido en el viaje: es la comida del D1)
+- **Noche:** la que no haya salido en el viaje y no se haya visto ese día (regla 11c). En 5 y 6 días no queda ninguna: sin nocturna. El día acaba pronto (hacia las 17:00–17:30) y va con «mejor que sobre»: en HOY, «Vas bien de tiempo» con sugerencias.
 - **Lunes:** el Castillo cierra: por fuera ~30, y lo de después se adelanta.
 - **Miércoles (audiencia):** la mañana va al revés y la Cúpula al final, cuando acaba la audiencia (desde las 12:30): Piazza Navona, de camino el Panteón y Via dei Coronari, el Puente, el Castillo por dentro, la Plaza de San Pedro, la Cúpula y comida en el Borgo (Arlù o 200 Gradi). El día empieza a su hora. En julio no hay audiencias.
 - **Experiencias:**
@@ -630,8 +656,6 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
 
 ## La Vía Appia y Trastevere tranquilo · D7
 
-**Lista de «Prefiero quedarme en Roma»:** Villa Farnesina · Santa Cecilia in Trastevere · Catacumbas de San Calixto · Vía Appia Antica · el Coliseo desde la terraza de Largo Gaetana Agnesi.
-
 - **Mañana:**
   - Campo de' Fiori, con su mercado (solo por la mañana, de lunes a sábado) ~30
   - Plaza Farnese ~15
@@ -640,7 +664,7 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
   - *de camino:* Santa Maria in Trastevere
   - Santa Cecilia in Trastevere ~40
   - *de camino:* la Piazza in Piscinula
-- **Comida:** Da Enzo al 29 (o Tonnarello), en Trastevere
+- **Comida:** Da Enzo al 29, en Trastevere (Tonnarello, solo si no ha salido en el viaje: es la cena del D2)
 - **Tarde:**
   - Taxi a las Catacumbas de San Calixto
   - Catacumbas de San Calixto (visita guiada) ~1 h (⚠️ cierran el miércoles)
@@ -650,7 +674,7 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
   - *de camino:* Monti
 - **Cena:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti
 - **Noche:** la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna.
-- **Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello.
+- **Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello si no ha salido en el viaje; si ha salido, un recambio de verdad a menos de 10 min (regla 6).
 - **Miércoles:** sin catacumbas; la Vía Appia empieza antes.
 
 - **🌧 Si llueve:** sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.
@@ -659,8 +683,7 @@ Qué días lleva cada viaje, la excursión y «Prefiero quedarme en Roma»: **ig
 
 ## Excursión de medio día (Ostia, Tívoli)
 
-Si el viajero elige una excursión de medio día en el día de excursión (o en el D5 en 4 días):
-- **De 8:00 a 14:00:** la excursión.
-- **La comida:** su bloque, «¿Tu excursión incluye comida? Si no, …».
-- **Por la tarde,** la tarde del día que se pondría con «Prefiero quedarme en Roma» (4 días: D5, 5 días: D6, 6 días: D7), con la misma regla de franjas: lo que no quepa, a «Si te sobra tiempo».
-- **Si no queda ninguna parada de nivel 1 o 2:** «Tu tarde en Roma está libre», con «Añadir parada».
+Si el viajero elige una excursión de medio día en el día de excursión (el día 4 con el interruptor en Excursión):
+- **De 8:00 a 14:00:** la excursión (su línea de horas acaba a las 14:00).
+- **Después:** el texto «Vuelves a Roma a las 14:00. La tarde es para ti.» y el botón **«+ Añadir lugares»** (como el de «Añadir día» de la pestaña DÍAS), que abre EXPLORAR.
+- **Nada más:** ni comida ni tarde propuestas. Lo que añada el viajero se monta con las reglas de siempre.

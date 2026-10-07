@@ -244,7 +244,8 @@
   },
   "Paseo por Trastevere": {
     "lugar": "Trastevere",
-    "titulo": "Paseo por Trastevere"
+    "titulo": "Paseo por Trastevere",
+    "no_quita_noche": true
   },
   "bajada a Testaccio": {
     "lugar": "Testaccio",

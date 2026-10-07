@@ -34,17 +34,19 @@ const FORMAS = [
   { g: '3.5', clave: '3,5 días, medio día de mañana', dias: 4, medio: { franja: 'manana', salida: '15:00' } },
   { g: '3.5', clave: '3,5 días con Free Tour, medio día de mañana', dias: 4, ft: true, medio: { franja: 'manana', salida: '15:00' } },
   { g: '3.5', clave: '3,5 días, medio día de tarde', dias: 4, medio: { franja: 'tarde' } },
-  { g: '4', clave: '4 días', dias: 4 },
-  { g: '4', clave: '4 días con Free Tour', dias: 4, ft: true },
-  { g: '4', clave: '4 días con excursión de medio día', dias: 4, mediaExcursion: { id: 'ostia_antica', dia: 4 } },
-  { g: '5', clave: '5 días', dias: 5 },
-  { g: '5', clave: '5 días con Free Tour', dias: 5, ft: true },
-  { g: '5', clave: '5 días, «Prefiero quedarme en Roma»', dias: 5, sinExcursion: true },
-  { g: '5', clave: '5 días con excursión de medio día', dias: 5, mediaExcursion: { id: 'tivoli_villas', dia: null } },
-  { g: '6', clave: '6 días', dias: 6 },
-  { g: '6', clave: '6 días con Free Tour', dias: 6, ft: true },
-  { g: '6', clave: '6 días, «Prefiero quedarme en Roma»', dias: 6, sinExcursion: true },
-  { g: '6', clave: '6 días con excursión de medio día', dias: 6, mediaExcursion: { id: 'ostia_antica', dia: null } },
+  // El día 4 lleva el interruptor [Roma | Excursión] (Tanda 6g): por defecto Roma en 4 días y Excursión en 5 y 6; cada forma, con el interruptor en las dos posiciones.
+  { g: '4', clave: '4 días', dias: 4, diaCuatro: 'roma' },
+  { g: '4', clave: '4 días con Free Tour', dias: 4, ft: true, diaCuatro: 'roma' },
+  { g: '4', clave: '4 días, interruptor en Excursión', dias: 4, diaCuatro: 'excursion' },
+  { g: '4', clave: '4 días con Free Tour, interruptor en Excursión', dias: 4, ft: true, diaCuatro: 'excursion' },
+  { g: '5', clave: '5 días', dias: 5, diaCuatro: 'excursion' },
+  { g: '5', clave: '5 días con Free Tour', dias: 5, ft: true, diaCuatro: 'excursion' },
+  { g: '5', clave: '5 días, interruptor en Roma', dias: 5, diaCuatro: 'roma' },
+  { g: '5', clave: '5 días con Free Tour, interruptor en Roma', dias: 5, ft: true, diaCuatro: 'roma' },
+  { g: '6', clave: '6 días', dias: 6, diaCuatro: 'excursion' },
+  { g: '6', clave: '6 días con Free Tour', dias: 6, ft: true, diaCuatro: 'excursion' },
+  { g: '6', clave: '6 días, interruptor en Roma', dias: 6, diaCuatro: 'roma' },
+  { g: '6', clave: '6 días con Free Tour, interruptor en Roma', dias: 6, ft: true, diaCuatro: 'roma' },
 ]
 // Lo que el viajero puede añadir a cada forma (cada uno es una variante del mismo viaje).
 const EXTRAS = [
@@ -100,7 +102,7 @@ for (const forma of FORMAS) {
       const poolNames = extra.pool ?? []
       const entradas = extra.entradas ?? {}
       const exp = [...(forma.ft ? ['imprescindibles', 'free_tour'] : []), ...(extra.exp ?? [])]
-      const plan = planListasTrip({ destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames, experiencesPositive: exp, dateRangeStartIso: inicio, travel, entradas, freeTourDespues: extra.ftDespues ?? null, mediaJornada: forma.medio ?? null, sinExcursion: forma.sinExcursion === true, mediaExcursion: forma.mediaExcursion ?? null })
+      const plan = planListasTrip({ destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames, experiencesPositive: exp, dateRangeStartIso: inicio, travel, entradas, freeTourDespues: extra.ftDespues ?? null, mediaJornada: forma.medio ?? null, diaCuatro: forma.diaCuatro ?? null })
       resumen.viajes++
       if (!plan) { nulos++; fallos.push({ regla: 'sin_plan', texto: `${forma.clave}${extra.clave ? ` + ${extra.clave}` : ''} · ${inicio}: el motor no devuelve plan` }); porRegla.set('sin_plan', (porRegla.get('sin_plan') ?? 0) + 1); continue }
       const etiqueta = `${forma.clave}${extra.clave ? ` + ${extra.clave}` : ''} · inicio ${inicio}`

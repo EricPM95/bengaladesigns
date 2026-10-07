@@ -37,72 +37,65 @@ export function curatedFranja(destData, totalDays, hasFreeTour, dayNumber) {
 }
 
 /**
- * @returns {{dayNumber:number, weekday:string|null, allowsRepetition:boolean, isBlank:boolean,
- *            isExcursion:boolean, halfDayExcursion:object|null, curated:object|null}[]}
+ * El interruptor [Roma | Excursión] del día 4 (Tanda 6g, 7-oct-2026): en los viajes de 4 días o más (sin medio día) el día 4 es SIEMPRE el del interruptor y los demás
+ * días no se mueven. Por defecto: Roma en 4 días y Excursión desde 5 (`destination_config.excursion_interruptor`); en una fecha en que nadie se va de excursión
+ * (`excursion_fechas_no`: Nochebuena, Navidad, Nochevieja y Año Nuevo) el día 4 sale en Roma. Null si el destino o el viaje no llevan interruptor.
+ *
+ * @returns {{ dia:number, defecto:'roma'|'excursion', porFecha:boolean } | null}
  */
-export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso = null, sinExcursion = false, mediaExcursion = null }) {
+export function interruptorDia4(destData, { totalDays, dateRangeStartIso = null, mediaJornada = false } = {}) {
+  const config = destData?.destination_config ?? {}
+  const sw = config.excursion_interruptor
+  const contentDays = Math.max(1, totalDays - 1)
+  if (!sw || mediaJornada || contentDays < (sw.desde_dias ?? 4)) return null
+  const mmdd = monthDayForDay(dateRangeStartIso, sw.dia)
+  const porFecha = mmdd != null && (config.excursion_fechas_no ?? []).includes(mmdd)
+  const defecto = porFecha || contentDays <= (sw.roma_hasta_dias ?? 4) ? 'roma' : 'excursion'
+  return { dia: sw.dia, defecto, porFecha }
+}
+
+/**
+ * @param {object} args  `propios`: los días que el viajero monta con sus sitios («Crear mi propio día»): un día en blanco (del 7 en adelante) con uno de estos deja de estarlo. `interruptor`: { modo: 'roma' | 'excursion' | null, mediaJornada } — lo que el viajero ha puesto en el interruptor del día 4 (modo null = el de por defecto).
+ * @returns {{dayNumber:number, weekday:string|null, allowsRepetition:boolean, isBlank:boolean,
+ *            isExcursion:boolean, interruptor:boolean, halfDayExcursion:object|null, curated:object|null}[]}
+ */
+export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso = null, interruptor = null, propios = [] }) {
   const config = destData?.destination_config ?? {}
   const coreDays = config.core_days ?? totalDays
   const maxAutoDays = config.max_auto_days ?? totalDays
   // El último día es la vuelta y no lleva ruta (invariante 21).
   const contentDays = Math.max(1, totalDays - 1)
 
-  // Dónde cae la excursión de día completo: SIEMPRE en el día `core_days` del destino, y el core
-  // day que desplaza pasa al siguiente. Es universal y escala con cada destino — Roma (core 4) la
-  // pone el día 4, Lisboa (core 3) el día 3.
-  //
-  // Se mide en días de CONTENIDO, no en días de viaje: el último día del viaje es la vuelta y no
-  // lleva ruta (invariante 21), así que un viaje de 5 días tiene 4 de contenido y la excursión cae
-  // en el último de ellos. Un viaje que no llega a `core_days` de contenido no lleva excursión:
-  // con tres días en Roma nadie se va a Pompeya.
-  //
-  // Nunca el ÚLTIMO día del viaje (revisión del 2026-09-25): suele ser el de la vuelta. Si `core_days`
-  // cae ahí (4 días en Roma), la excursión se adelanta un día y ese día curado pasa al último.
-  //
-  // Y solo desde `excursion_desde_dias` días de contenido, si el destino lo fija (Roma, 5; decisión del
-  // 2026-09-29): con 4 días todo es ciudad y la excursión se ofrece, no se pone.
+  // El día del interruptor (Roma): el día 4 es o la excursión o un día de Roma.
+  const sw = interruptor ? interruptorDia4(destData, { totalDays, dateRangeStartIso, mediaJornada: interruptor.mediaJornada === true }) : null
+  const modo = sw ? (interruptor.modo ?? sw.defecto) : null
+
+  // Sin interruptor (los demás destinos): la excursión de día completo cae SIEMPRE en el día `core_days` del destino, y el core day que desplaza pasa al siguiente.
+  // Se mide en días de CONTENIDO, no en días de viaje: el último día del viaje es la vuelta y no lleva ruta (invariante 21). Un viaje que no llega a `core_days` de
+  // contenido no lleva excursión. Nunca el ÚLTIMO día del viaje (revisión del 2026-09-25): si `core_days` cae ahí, la excursión se adelanta un día. Solo desde
+  // `excursion_desde_dias` días de contenido, si el destino lo fija. Ni en una fecha en que nadie se va de excursión (`excursion_fechas_no`): pasa al día siguiente
+  // que no sea el último de contenido y, si no hay, al anterior (desde el día 2). Si ninguno vale, el viaje va sin excursión.
   const excursionFrom = Math.max(coreDays, config.excursion_desde_dias ?? coreDays)
   const excursionAtCore = contentDays >= excursionFrom ? coreDays : null
   const plannedExcursion = excursionAtCore !== null && excursionAtCore === contentDays && contentDays > 2 ? excursionAtCore - 1 : excursionAtCore
-  // Ni en una fecha en que nadie se va de excursión (Roma: el 24, el 25 y el 31 de diciembre y el 1 de enero,
-  // `excursion_fechas_no`; PROMPT_REPASO_LOCAL_ROMA, 3): pasa al día siguiente que no sea el último de contenido y, si
-  // no hay, al anterior (desde el día 2). Si ninguno vale, el viaje va sin excursión.
   const bannedExcursion = (dayNumber) => {
     const mmdd = monthDayForDay(dateRangeStartIso, dayNumber)
     return mmdd != null && (config.excursion_fechas_no ?? []).includes(mmdd)
   }
-  // («Prefiero quedarme en Roma», tanda 3: el viajero cambia la excursión por un día en la ciudad; ese día pasa a ser de ciudad.)
-  // Una excursión de MEDIO DÍA (Ostia, Tívoli) en lugar de la de día completo (5 y 6 días) o en el último día de ciudad (4 días, `mediaExcursion.dia`): de 8:00 a 14:00 la excursión y desde las 16:00 la tarde del
-  // día de ciudad que entraría en su lugar («Prefiero quedarme»: D5 en 4 días, D6 en 5, D7 en 6). Regla general: la tarde es la del día que sustituye a la excursión, en cualquier destino.
-  const mediaElegida = mediaExcursion?.id ? halfDayExcursions(destData).find((option) => option.id === mediaExcursion.id) ?? null : null
-  let excursionDay = sinExcursion || (mediaElegida && plannedExcursion !== null) ? null : plannedExcursion
-  if (mediaElegida && plannedExcursion !== null) {
-    // (El día de la excursión de día completo, con la misma regla de fechas en que nadie se va.)
-    let dia = plannedExcursion
-    if (bannedExcursion(dia)) {
-      const later = []
-      for (let day = dia + 1; day < contentDays; day++) later.push(day)
-      const earlier = []
-      for (let day = dia - 1; day >= 2; day--) earlier.push(day)
-      dia = [...earlier, ...later].find((day) => !bannedExcursion(day)) ?? null
-    }
-    mediaExcursion = { ...mediaExcursion, dia }
-  }
-  if (excursionDay !== null && bannedExcursion(excursionDay)) {
+  let excursionDay = sw ? (modo === 'excursion' ? sw.dia : null) : plannedExcursion
+  if (!sw && excursionDay !== null && bannedExcursion(excursionDay)) {
     const later = []
     for (let day = excursionDay + 1; day < contentDays; day++) later.push(day)
     const earlier = []
     for (let day = excursionDay - 1; day >= 2; day--) earlier.push(day)
     excursionDay = [...earlier, ...later].find((day) => !bannedExcursion(day)) ?? null
   }
-  const excursionMoved = excursionDay !== excursionAtCore
+  const excursionMoved = !sw && excursionDay !== excursionAtCore
 
   // Las de MEDIO DÍA van en los días de revisitas y en ningún otro: son la mañana de un día en el
   // que ya no queda ciudad nueva que enseñar, no una alternativa a un día de ruta. Una por día y sin
-  // repetir en el viaje — se reparten en orden editorial y cuando se acaban, se acabaron. Roma tiene
-  // dos (Ostia y Tívoli), así que un viaje de 8 días cubre sus dos días de revisitas y uno de 9 ya
-  // no: el tercer día de revisitas se queda como estaba, con la mañana en la ciudad.
-  // (`sin_media_jornada`: Roma, tanda 3, no pone las medias jornadas de Ostia y Tívoli: esos días son ahora días escritos de ciudad.)
+  // repetir en el viaje — se reparten en orden editorial y cuando se acaban, se acabaron.
+  // (`sin_media_jornada`: Roma no pone las medias jornadas de Ostia y Tívoli en los días de ciudad.)
   const mediaJornada = config.sin_media_jornada ? [] : halfDayExcursions(destData)
   let siguienteMediaJornada = 0
 
@@ -112,21 +105,19 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
     // repetición empieza un día después.
     const esRepeticion = dayNumber > Math.max(coreDays, excursionDay ?? 0) + (excursionDay ? 1 : 0) - (excursionDay && excursionDay > coreDays ? 1 : 0)
     const esExcursion = dayNumber === excursionDay
-    const esBlanco = dayNumber > maxAutoDays
-    // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero,
-    // y colocarle una propuesta encima es lo contrario de dejárselo en blanco.
-    const mediaJornadaDelDia = mediaElegida && mediaExcursion?.dia === dayNumber
-      ? { ...mediaElegida, soloTarde: true }
-      : esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
+    const esBlanco = dayNumber > maxAutoDays && !propios.includes(dayNumber)
+    // Un día en blanco no recibe excursión: está en blanco porque a partir de ahí manda el viajero.
+    const mediaJornadaDelDia = esRepeticion && !esBlanco && siguienteMediaJornada < mediaJornada.length ? mediaJornada[siguienteMediaJornada++] : null
     days.push({
       dayNumber,
       weekday: weekdayForDay(dateRangeStartIso, dayNumber),
-      // Pasado el contenido nuevo del destino, repetir deja de ser un defecto: a Roma le quedan 10
-      // lugares en 5 zonas fuera del curado, así que los días 5+ se montan con revisitas.
+      // Pasado el contenido nuevo del destino, repetir deja de ser un defecto.
       allowsRepetition: esRepeticion,
       isBlank: esBlanco,
       // Un día de excursión no tiene paradas de ciudad: el viajero está fuera.
       isExcursion: esExcursion,
+      // El día 4 del interruptor (con la excursión o con un día de Roma): el que cambia con el interruptor.
+      interruptor: sw ? dayNumber === sw.dia : false,
       // La mañana se la lleva la excursión y la ciudad arranca a las 16:00.
       halfDayExcursion: mediaJornadaDelDia,
       curated: esExcursion ? null : curatedFranja(destData, totalDays, hasFreeTour, excursionMoved && dayNumber > excursionDay ? dayNumber - 1 : dayNumber),

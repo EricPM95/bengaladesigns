@@ -983,9 +983,12 @@
       {
        "tipo": "parada",
        "lugar": "Ponte Sisto",
-       "modo": null,
-       "doc": "Ponte Sisto ~15",
-       "min": 15
+       "modo": "camino",
+       "doc": "Ponte Sisto (se cruza el Tíber hacia Trastevere)",
+       "min": 5,
+       "notas": [
+        "se cruza el Tíber hacia Trastevere"
+       ]
       },
       {
        "tipo": "parada",
@@ -1021,6 +1024,7 @@
        "tipo": "parada",
        "lugar": "Trastevere",
        "titulo": "Paseo por Trastevere",
+       "no_quita_noche": true,
        "modo": null,
        "doc": "Paseo por Trastevere ~30",
        "min": 30
@@ -2998,6 +3002,7 @@
        "tipo": "parada",
        "lugar": "Trastevere",
        "titulo": "Paseo por Trastevere",
+       "no_quita_noche": true,
        "modo": null,
        "doc": "Paseo por Trastevere ~30",
        "min": 30
@@ -3133,15 +3138,16 @@
     },
     {
      "id": "museos_mediodia",
-     "doc": "Museos reservados a mediodía (de 12:30 a 14:30):",
+     "doc": "Museos reservados a mediodía (de 13:30 a 14:30):",
      "horas": [
-      "12:30",
-      "14:00"
+      "13:30",
+      "14:00",
+      "14:30"
      ],
      "cuando": {
       "reserva": {
        "lugar": "Museos Vaticanos y Capilla Sixtina",
-       "desde": "12:16",
+       "desde": "13:16",
        "hasta": "14:59"
       }
      },
@@ -3538,7 +3544,6 @@
       "9:00",
       "10:00",
       "11:00",
-      "12:30",
       "14:00",
       "16:00"
      ]
@@ -3876,6 +3881,7 @@
        "tipo": "parada",
        "lugar": "Trastevere",
        "titulo": "Paseo por Trastevere",
+       "no_quita_noche": true,
        "modo": null,
        "doc": "Paseo por Trastevere ~30",
        "min": 30
@@ -5803,9 +5809,9 @@
      },
      "noche": {
       "lista": [],
-      "doc": "la pareja que toque (regla 13). En 4 días suele ser Trastevere de noche, a ~20 min andando de Testaccio.",
+      "doc": "la pareja que toque (regla 13). En 4 y 5 días suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min). En 6 días con el D7 en el día 4, el Puente y el Castillo de Sant'Angelo (taxi, ~15 min).",
       "libre": true,
-      "texto": "la pareja que toque (regla 13). En 4 días suele ser Trastevere de noche, a ~20 min andando de Testaccio"
+      "texto": "la pareja que toque (regla 13). En 4 y 5 días suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min). En 6 días con el D7 en el día 4, el Puente y el Castillo de Sant'Angelo (taxi, ~15 min)"
      }
     }
    },
@@ -5975,9 +5981,12 @@
       {
        "tipo": "parada",
        "lugar": "Piazza Navona",
-       "modo": null,
-       "doc": "Piazza Navona ~20",
-       "min": 20
+       "modo": "camino",
+       "doc": "Piazza Navona («Ya lo visitaste el día 1»)",
+       "min": 5,
+       "notas": [
+        "«Ya lo visitaste el día 1»"
+       ]
       },
       {
        "tipo": "parada",
@@ -5998,9 +6007,12 @@
       {
        "tipo": "parada",
        "lugar": "Plaza del Campidoglio",
-       "modo": null,
-       "doc": "Plaza del Campidoglio ~15",
-       "min": 15
+       "modo": "camino",
+       "doc": "Plaza del Campidoglio («Ya lo visitaste el día 1»)",
+       "min": 5,
+       "notas": [
+        "«Ya lo visitaste el día 1»"
+       ]
       },
       {
        "tipo": "parada",
@@ -6048,32 +6060,38 @@
        "titulo": "Terraza del Altar de la Patria",
        "foto": "Terraza del Altar de la Patria",
        "modo": null,
-       "doc": "Terraza del Altar de la Patria (ascensor panorámico) ~45 (⚠️ última subida a las 18:45)",
+       "doc": "Terraza del Altar de la Patria (ascensor panorámico) ~45 (⚠️ última subida a las 18:45). Cuenta como un sitio aparte del Altar por dentro del D1: es otra entrada y otra visita, así que no la quita la regla de «por dentro una sola vez»",
        "min": 45,
        "avisos": [
         "última subida a las 18:45"
+       ],
+       "notas": [
+        "Cuenta como un sitio aparte del Altar por dentro del D1: es otra entrada y otra visita, así que no la quita la regla de «por dentro una sola vez»"
        ]
       },
       {
        "tipo": "parada",
        "lugar": "Teatro de Marcelo",
        "modo": null,
-       "doc": "Teatro de Marcelo",
-       "min": 10
+       "doc": "Teatro de Marcelo ~10, de camino a la cena",
+       "min": 10,
+       "notas": [
+        ", de camino a la cena"
+       ]
       }
      ],
      "cena": {
-      "restaurante": "Nonna Betta",
-      "alternativa": "Giggetto al Portico d'Ottavia",
+      "restaurante": "Giggetto al Portico d'Ottavia",
+      "alternativa": "Nonna Betta",
       "tercera": null,
       "zona": "en el Barrio Judío",
-      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+      "doc": "Giggetto al Portico d'Ottavia, en el Barrio Judío (Nonna Betta, solo si no ha salido en el viaje: es la comida del D1)"
      },
      "noche": {
-      "lista": [
-       "Panteón (noche)"
-      ],
-      "doc": "Panteón de noche"
+      "lista": [],
+      "doc": "la que no haya salido en el viaje y no se haya visto ese día (regla 11c). En 5 y 6 días no queda ninguna: sin nocturna. El día acaba pronto (hacia las 17:00–17:30) y va con «mejor que sobre»: en HOY, «Vas bien de tiempo» con sugerencias.",
+      "libre": true,
+      "texto": "la que no haya salido en el viaje y no se haya visto ese día (regla 11c). En 5 y 6 días no queda ninguna: sin nocturna. El día acaba pronto (hacia las 17:00–17:30) y va con «mejor que sobre»: en HOY, «Vas bien de tiempo» con sugerencias"
      }
     }
    },
@@ -6102,13 +6120,7 @@
      }
     ]
    },
-   "quedarme": [
-    "Cúpula de San Pedro",
-    "Castillo de Sant'Angelo",
-    "Plaza del Campidoglio",
-    "Museos Capitolinos",
-    "Terraza del Altar de la Patria."
-   ],
+   "quedarme": null,
    "fechas_malas": {
     "cerrado": [
      "Castillo de Sant'Angelo"
@@ -6310,7 +6322,7 @@
       "alternativa": "Tonnarello",
       "tercera": null,
       "zona": "en Trastevere",
-      "doc": "Da Enzo al 29 (o Tonnarello), en Trastevere"
+      "doc": "Da Enzo al 29, en Trastevere (Tonnarello, solo si no ha salido en el viaje: es la cena del D2)"
      },
      "tarde": [
       {
@@ -6401,13 +6413,7 @@
      }
     ]
    },
-   "quedarme": [
-    "Villa Farnesina",
-    "Santa Cecilia in Trastevere",
-    "Catacumbas de San Calixto",
-    "Vía Appia Antica",
-    "el Coliseo desde la terraza de Largo Gaetana Agnesi."
-   ],
+   "quedarme": null,
    "fechas_malas": {
     "cerrado": [
      "Villa Farnesina",
@@ -6417,7 +6423,7 @@
    "variantes": [
     {
      "id": "domingo_farnesina",
-     "doc": "Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello.",
+     "doc": "Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello si no ha salido en el viaje; si ha salido, un recambio de verdad a menos de 10 min (regla 6).",
      "cuando": {
       "dia_semana": [
        "domingo"

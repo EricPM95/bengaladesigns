@@ -8927,7 +8927,14 @@
     "core_days": 4,
     "sin_media_jornada": true,
     "_sin_media_jornada": "Tanda 3 (provisional): las medias jornadas de Ostia y Tívoli dejan de ponerse en los días 6 y siguientes: esos días son ahora D6 (Roma desde arriba) y D7 (la Vía Appia). Ver PREGUNTAS_TANDA3.",
-    "excursion_desde_dias": 5,
+    "excursion_desde_dias": 99,
+    "_excursion_desde_dias": "Tanda 6g: Roma ya no pone la excursión por la regla de core_days; el día 4 lo decide el interruptor (excursion_interruptor).",
+    "excursion_interruptor": {
+      "_nota": "Tanda 6g (7-oct-2026): el día 4 de los viajes de 4 días o más lleva un interruptor [Roma | Excursión]. Por defecto Roma en 4 días y Excursión desde 5 (roma_hasta_dias). Con el interruptor en Roma el día 4 es el último día de la tabla de días de ciudad (D5 en 4 días, D6 en 5, D7 en 6).",
+      "dia": 4,
+      "desde_dias": 4,
+      "roma_hasta_dias": 4
+    },
     "excursion_fechas_no": [
       "12-24",
       "12-25",
@@ -8935,42 +8942,10 @@
       "01-01"
     ],
     "_excursion_fechas_no": "Ninguna excursión de día completo en Nochebuena, Navidad, Nochevieja ni Año Nuevo (PROMPT_REPASO_LOCAL_ROMA, 3): el transporte va recortado y se cena en la ciudad. La excursión pasa al día siguiente que valga o, si no, al anterior.",
-    "excursion_oferta": {
-      "_nota": "Viajes sin excursión (4 días): en el día de D5 se ofrece cambiarlo por una excursión (decisión del usuario, 2026-09-29). Sin precios.",
-      "dia": "D5",
-      "titulo": "¿Te apetece salir de Roma un día?",
-      "texto": "Puedes cambiar este día por una excursión: Pompeya, Florencia, la Costa Amalfitana…"
-    },
-    "quedarme_en_ciudad": {
-      "_nota": "«Prefiero quedarme en Roma» (tanda 3, docs/dias/DIAS_ESCRITOS_ROMA.md): lo que se enseña al viajero que cambia el día de excursión por un día en la ciudad. La clave es el día escrito que entra (D6 en 5 días, D7 en 6). La pantalla enseña las paradas emblemáticas, sin horas y con su foto; las horas salen luego en la ruta. 'foto' es el nombre con el que se pide la foto; 'solo_tardes': solo si el sol se pone después de ese corte (el Coliseo desde el Colle Oppio, en C y D).",
-      "D6": {
-        "titulo": "Roma desde arriba",
-        "texto": "Lo más alto de Roma, sin salir de la ciudad: las vistas y los museos del Campidoglio.",
-        "paradas": [
-          { "nombre": "Cúpula de San Pedro", "foto": "Cúpula de San Pedro" },
-          { "nombre": "Castillo de Sant'Angelo", "foto": "Castillo de Sant'Angelo" },
-          { "nombre": "Plaza del Campidoglio", "foto": "Plaza del Campidoglio" },
-          { "nombre": "Museos Capitolinos", "foto": "Museos Capitolinos" },
-          { "nombre": "Terraza del Altar de la Patria", "foto": "Terraza del Altar de la Patria" }
-        ]
-      },
-      "D7": {
-        "titulo": "La Vía Appia y Trastevere tranquilo",
-        "texto": "Un día más pausado: los frescos de Rafael, las catacumbas y la Vía Appia.",
-        "paradas": [
-          { "nombre": "Villa Farnesina", "foto": "Villa Farnesina" },
-          { "nombre": "Santa Cecilia in Trastevere", "foto": "Basílica de Santa Cecilia in Trastevere" },
-          { "nombre": "Catacumbas de San Calixto", "foto": "Catacumbas de San Calixto" },
-          { "nombre": "Vía Appia Antica", "foto": "Via Appia Antica" },
-          { "nombre": "El Coliseo desde el Colle Oppio", "foto": "Coliseo", "solo_tardes": "18:45" }
-        ]
-      }
-    },
     "max_auto_days": 6,
     "size": "grande",
     "category_cap_selected": 4,
     "category_cap_default": 2,
-    "excursion_social_proof": "El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya",
     "unrelated_pairs": [
       [
         "Coliseo",

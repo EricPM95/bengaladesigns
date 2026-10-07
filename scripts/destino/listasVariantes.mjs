@@ -228,7 +228,7 @@ export default {
 
     // ── El Vaticano y Trastevere ───────────────────────────────────────────────────────────────────────────────────────
     D2: {
-      reservas: { [MUSEOS]: { normal: { hasta: '09:44' }, mejores: ['9:00', '10:00', '11:00', '12:30', '14:00', '16:00'] } },
+      reservas: { [MUSEOS]: { normal: { hasta: '09:44' }, mejores: ['9:00', '10:00', '11:00', '14:00', '16:00'] } },
       // El miércoles sin Museos deja 1 h 40 libre antes de las 12:30: HOY lo dice («Tienes … antes de la Plaza de San Pedro») con sugerencias cercanas.
       sugerencias: [{ fuente: TANDA_6E, doc: 'con sugerencias cercanas (Borgo Pio, los Coronari)', antes_de: 'Plaza de San Pedro', lugares: ['Borgo Pio', 'Via dei Coronari'] }],
       variantes: [
@@ -243,10 +243,10 @@ export default {
           cuando: { reserva: { lugar: MUSEOS, desde: '09:45', hasta: '12:15' } },
           ops: { empieza: '08:00', manana: { paradas: [P('Basílica de San Pedro', 60, 'dentro'), P('Plaza de San Pedro', 30), P(MUSEOS, 180)] } },
         },
-        // Los Museos reservados a mediodía (de 12:30 a 14:30): la comida en el Borgo antes (entre las 12:00 y las 12:30) y, después de los Museos, el bus 23 a Trastevere.
+        // Los Museos reservados a mediodía (de 13:30 a 14:30; de 12:30 a 13:00 no hay lista: la app propone otra hora, regla 17): la comida en el Borgo antes (entre las 12:00 y las 12:30) y, después de los Museos, el bus 23 a Trastevere.
         {
-          id: 'museos_mediodia', doc: 'Museos reservados a mediodía (de 12:30 a 14:30):', horas: ['12:30', '14:00'],
-          cuando: { reserva: { lugar: MUSEOS, desde: '12:16', hasta: '14:59' } },
+          id: 'museos_mediodia', doc: 'Museos reservados a mediodía (de 13:30 a 14:30):', horas: ['13:30', '14:00', '14:30'],
+          cuando: { reserva: { lugar: MUSEOS, desde: '13:16', hasta: '14:59' } },
           ops: {
             manana: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro'), ...camino('Via della Conciliazione'), P("Castillo de Sant'Angelo", 30, 'fuera'), P("Puente Sant'Angelo", 15)] },
             comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
@@ -445,7 +445,7 @@ export default {
     // ── La Vía Appia y Trastevere tranquilo ───────────────────────────────────────────────────────────────────────────────────────
     D7: {
       variantes: [
-        { id: 'domingo_farnesina', doc: 'Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello.', cuando: { dia_semana: ['domingo'] }, ops: { manana: { ajustar: { "Campo de' Fiori": { modo: 'camino', min: 5 } }, cambiar: { 'Iglesia de Santa Maria in Trastevere': P('Santa Maria in Trastevere', 25, 'dentro') } } } },
+        { id: 'domingo_farnesina', doc: 'Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello si no ha salido en el viaje; si ha salido, un recambio de verdad a menos de 10 min (regla 6).', cuando: { dia_semana: ['domingo'] }, ops: { manana: { ajustar: { "Campo de' Fiori": { modo: 'camino', min: 5 } }, cambiar: { 'Iglesia de Santa Maria in Trastevere': P('Santa Maria in Trastevere', 25, 'dentro') } } } },
       ],
       lluvia_doc: 'sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.',
       lluvia_ops: lluvia({ ops: { tarde: { cambiar: { 'Via Appia Antica': P('Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela', 30, 'fuera', { titulo: 'La Vía Appia en taxi hasta la tumba de Cecilia Metela' }) }, ajustar: { 'Catacumbas de San Calixto': { min: 90 } } } } }),

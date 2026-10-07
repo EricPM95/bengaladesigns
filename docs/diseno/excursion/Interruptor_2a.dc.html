@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes shimmer{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 40%,#F1E8D6 0%,#E0D3BA 75%);display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start;justify-content:center;padding:48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+
+<sc-for list="{{ variants }}" as="v" hint-placeholder-count="3">
+<div id="{{ v.id }}" style="display:flex;flex-direction:column;gap:14px">
+  <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ v.label }}</span>
+  <div data-screen-label="{{ v.label }}" style="width:390px;height:844px;border-radius:52px;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);position:relative;overflow:hidden;background:#F5EFE4;display:flex;flex-direction:column">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+    <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:10px 14px 40px 22px;display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ v.days }}" as="d" hint-placeholder-count="4">
+        <div style="position:relative;display:flex;flex-direction:column">
+          <div style="position:relative;z-index:2;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.06);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -20px rgba(28,34,48,.3);display:flex;flex-direction:column">
+            <span style="position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:22px 0 0 22px;background:{{ d.c }};transition:background .5s"></span>
+            <span style="position:absolute;left:-18px;top:30px;color:rgba(28,34,48,.35)"><svg width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 9h14M5 12h14M5 15h14"></path></svg></span>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 10px 14px 16px">
+              <span style="width:38px;height:38px;flex:none;border-radius:12px;background:#F1EADC;display:flex;align-items:center;justify-content:center;font:400 21px/1 'Instrument Serif',serif">{{ d.n }}</span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                <span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">Día {{ d.n }}</span>
+                <span style="font:400 19px/1.08 'Instrument Serif',serif;text-wrap:balance">{{ d.t }}</span>
+                <sc-if value="{{ d.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font:500 11.5px 'Geist';color:{{ d.subC }}">{{ d.sub }}</span></sc-if>
+                <span style="display:flex;align-items:center;gap:3px;margin-top:3px">
+                  <sc-for list="{{ d.dots }}" as="c" hint-placeholder-count="10"><span style="width:6px;height:6px;border-radius:50%;background:{{ c }}"></span></sc-for>
+                  <span style="margin-left:5px;font:400 11px 'Geist';color:rgba(28,34,48,.55)">{{ d.count }}</span>
+                </span>
+              </span>
+              <span style="width:34px;height:34px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:#fff;color:rgba(28,34,48,.6);font:700 12px/34px 'Geist';text-align:center;letter-spacing:1px">···</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+            </div>
+
+            <sc-if value="{{ d.toggle }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 14px 14px 66px">
+                <div style="position:relative;height:36px;border-radius:999px;background:#EFE7D8;padding:3px;display:grid;grid-template-columns:1fr 1fr">
+                  <span style="position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:{{ d.knobBg }};box-shadow:0 3px 8px -3px rgba(28,34,48,.35);transform:{{ d.knobT }};transition:transform .45s cubic-bezier(.3,1.3,.5,1),background .45s"></span>
+                  <button onClick="{{ d.toRome }}" style="position:relative;border:none;background:transparent;display:flex;align-items:center;justify-content:center;gap:6px;font:{{ d.rW }} 12.5px 'Geist';color:{{ d.rC }};cursor:pointer;transition:color .3s">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9h16v12M8 21v-6a4 4 0 0 1 8 0v6M3 9l9-5 9 5M3 21h18"></path></svg>Roma
+                  </button>
+                  <button onClick="{{ d.toExc }}" style="position:relative;border:none;background:transparent;display:flex;align-items:center;justify-content:center;gap:6px;font:{{ d.eW }} 12.5px 'Geist';color:{{ d.eC }};cursor:pointer;transition:color .3s">
+                    <span style="width:18px;height:18px;border-radius:50%;background:{{ pomp }};box-shadow:0 0 0 1.5px #fff"></span>Excursión
+                  </button>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ d.line }}" hint-placeholder-val="{{ false }}">
+              <button style="margin:0 14px 12px 66px;padding:10px 0 0;border:none;border-top:1px solid rgba(28,34,48,.08);background:transparent;display:flex;align-items:center;gap:8px;text-align:left;cursor:pointer;color:#1C2230">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.52 0.15 45)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"></path></svg>
+                <span style="flex:1;min-width:0;font:400 12.5px 'Geist';color:rgba(28,34,48,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">¿Y si sales de Roma? <em style="font:italic 400 15px 'Instrument Serif',serif;color:#1C2230">Pompeya, Tívoli…</em></span>
+                <span style="font:600 12px 'Geist';color:oklch(0.5 0.15 45)">Ver ›</span>
+              </button>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ d.postal }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;z-index:1;margin:-16px 18px 0 26px;transform:rotate(-1.6deg);transform-origin:50% 0;animation:pop .7s cubic-bezier(.2,.8,.2,1) .2s both">
+              <div style="position:relative;border-radius:0 0 16px 16px;background:#FFFFFF;padding:22px 10px 10px;box-shadow:0 14px 26px -14px rgba(60,40,10,.45)">
+                <div style="position:relative;height:96px;border-radius:10px;overflow:hidden;background:{{ pomp }}">
+                  <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,8,0) 40%,rgba(20,14,8,.55))"></span>
+                  <span style="position:absolute;left:10px;bottom:8px;font:italic 400 21px/1 'Instrument Serif',serif;color:#FFFDF8">¿Cambias tu día 4 por Pompeya?</span>
+                  <span style="position:absolute;right:8px;top:8px;width:46px;height:52px;background:#FFFDF8;border:1.5px dashed oklch(0.55 0.15 45 / .6);border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(5deg)">
+                    <span style="font:500 7.5px 'Geist Mono',monospace;letter-spacing:.1em;color:oklch(0.5 0.15 45)">DESDE</span>
+                    <span style="font:400 19px/1 'Instrument Serif',serif;color:#1C2230">65€</span>
+                  </span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 2px 0">
+                  <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(28,34,48,.55)">Tu ruta por Roma ya está lista</span>
+                  <span style="font:600 12px 'Geist';color:oklch(0.5 0.15 45)">Ver ›</span>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+      <button style="height:56px;border-radius:20px;border:1.5px dashed oklch(0.55 0.15 45 / .5);background:transparent;display:flex;align-items:center;justify-content:center;gap:10px;font:500 14px 'Geist';color:oklch(0.5 0.15 45);cursor:pointer"><span style="width:28px;height:28px;border-radius:50%;background:oklch(0.52 0.15 45);color:#fff;display:flex;align-items:center;justify-content:center;font:600 18px/1 'Geist'">+</span>Añadir día</button>
+    </div>
+  </div>
+</div>
+</sc-for>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+  <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">B · Día 4 abierto</span>
+  <div data-screen-label="B Día 4 abierto" style="width:390px;height:844px;border-radius:52px;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);position:relative;overflow:hidden;background:#F5EFE4;display:flex;flex-direction:column">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+    <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:10px 14px 40px 22px">
+      <div style="position:relative;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.12);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -20px rgba(28,34,48,.3)">
+        <span style="position:absolute;left:-18px;top:30px;color:rgba(28,34,48,.35)"><svg width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 9h14M5 12h14M5 15h14"></path></svg></span>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 10px 12px 16px">
+          <span style="width:38px;height:38px;flex:none;border-radius:12px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;justify-content:center;font:400 21px/1 'Instrument Serif',serif">4</span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+            <span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">Día 4</span>
+            <span style="font:400 22px/1.05 'Instrument Serif',serif">Roma → Barcelona</span>
+            <span style="font:500 11.5px 'Geist';color:oklch(0.55 0.2 25)">Día de viaje</span>
+          </span>
+          <span style="width:34px;height:34px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:#fff;color:rgba(28,34,48,.6);font:700 12px/34px 'Geist';text-align:center;letter-spacing:1px">···</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(90deg)"><path d="M9 6l6 6-6 6"></path></svg>
+        </div>
+        <div style="border-top:1px dashed rgba(28,34,48,.12);padding:12px 12px 16px;display:flex;flex-direction:column;gap:12px">
+          <span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">Hoy el sol se pone a las 20:44</span>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);border-radius:16px;background:#F5EFE4">
+            <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+              <span style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-left:{{ s.bl }}"><span style="font:400 22px/1 'Instrument Serif',serif">{{ s.v }}</span><span style="font:500 9px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ s.k }}</span></span>
+            </sc-for>
+          </div>
+
+          <div style="border-radius:20px;overflow:hidden;background:#FFFFFF;border:1px solid oklch(0.58 0.1 150 / .3);box-shadow:0 14px 30px -22px oklch(0.4 0.1 150 / .7)">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(100deg,oklch(0.95 0.04 150),oklch(0.97 0.03 95))">
+              <span style="width:28px;height:28px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px 'Geist'">✓</span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
+                <span style="font:400 17px/1.1 'Instrument Serif',serif">Hemos creado tu día en Roma</span>
+                <span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.62)">¿Te apetece salir de la ciudad? Cámbialo por una excursión.</span>
+              </span>
+            </div>
+            <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px">
+              <sc-for list="{{ excs }}" as="x" hint-placeholder-count="3">
+                <button onClick="{{ x.pick }}" style="flex:none;width:118px;border-radius:16px;border:1.5px solid {{ x.bd }};background:#FFFDF8;padding:0;overflow:hidden;text-align:left;cursor:pointer;color:#1C2230;transition:border-color .3s,transform .3s;transform:{{ x.tf }}">
+                  <span style="display:block;height:64px;clip-path:polygon(0 0,100% 0,100% 100%,0 78%);background:{{ x.ph }}"></span>
+                  <span style="display:flex;flex-direction:column;gap:1px;padding:5px 9px 9px">
+                    <span style="font:400 15px/1.05 'Instrument Serif',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ x.n }}</span>
+                    <span style="font:500 10px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ x.m }}</span>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasPick }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;padding:0 12px 12px;animation:pop .35s ease both">
+                <span style="flex:1;min-width:0;font:400 12px/1.35 'Geist';color:rgba(28,34,48,.7)">{{ pickNote }}</span>
+                <a href="Excursion Dia 4.dc.html" style="flex:none;height:38px;padding:0 14px;border-radius:999px;background:oklch(0.52 0.15 45);color:#FFFDF8;font:600 13px 'Geist';display:flex;align-items:center;text-decoration:none">Ver excursión</a>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0 0 2px">
+            <span style="width:22px;height:22px;border-radius:50%;background:oklch(0.72 0.15 70 / .18);color:oklch(0.55 0.15 60);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg></span>
+            <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.6)">Mañana · 09:00 — 12:30</span>
+          </div>
+          <div style="position:relative;padding-left:22px;display:flex;flex-direction:column">
+            <div style="position:absolute;left:9px;top:0;bottom:0;border-left:1.5px dashed rgba(28,34,48,.18)"></div>
+            <div style="position:relative;display:flex;height:88px;border-radius:18px;background:#fff;border:1px solid rgba(28,34,48,.08);box-shadow:0 10px 24px -18px rgba(28,34,48,.35)">
+              <span style="position:absolute;left:-8px;top:-8px;width:22px;height:22px;border-radius:50%;background:oklch(0.56 0.14 295);color:#fff;border:2.5px solid #FFFDF8;font:600 10.5px/17px 'Geist';text-align:center;z-index:2">1</span>
+              <div style="position:relative;width:104px;flex:none;margin-right:-14px;border-radius:17px 0 0 17px;overflow:hidden">
+                <span style="position:absolute;inset:0;clip-path:polygon(0 0,58px 0,32px 100%,0 100%);background:oklch(0.56 0.14 295)"></span>
+                <span style="position:absolute;left:0;top:0;bottom:0;width:32px;display:flex;align-items:center;justify-content:center;color:#fff"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M10 4h4M6 22V11l6-5 6 5v11M10 22v-5a2 2 0 0 1 4 0v5M3 22h18"></path></svg></span>
+                <span style="position:absolute;left:30px;top:0;bottom:0;right:0;clip-path:polygon(26px 0,100% 0,calc(100% - 20px) 100%,0 100%);background:{{ smm }}"></span>
+              </div>
+              <div style="flex:1;min-width:0;padding:9px 36px 9px 18px;display:flex;flex-direction:column;justify-content:center;gap:3px">
+                <span style="font:400 17px/1.1 'Instrument Serif',serif">Santa Maria Maggiore</span>
+                <span style="font:400 11px 'Geist';color:rgba(28,34,48,.62)">07:00–19:00 · 30min</span>
+                <span style="display:flex;gap:4px"><span style="height:19px;padding:0 8px;border-radius:999px;background:oklch(0.56 0.14 295 / .15);color:oklch(0.42 0.14 295);font:500 10.5px/19px 'Geist'">Iglesia</span><span style="height:19px;padding:0 8px;border-radius:999px;background:oklch(0.54 0.11 245 / .15);color:oklch(0.4 0.11 245);font:500 10.5px/19px 'Geist'">Arte</span></span>
+              </div>
+            </div>
+            <div style="height:40px;display:flex;align-items:center;gap:6px;font:500 12px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">9 min · 814 m <a href="#" style="font:500 12px 'Geist';color:oklch(0.5 0.15 45)">Rutas</a></div>
+            <div style="height:52px;border-radius:14px;border:1px dashed rgba(28,34,48,.18);display:flex;align-items:center;justify-content:space-between;padding:0 14px">
+              <span style="display:flex;flex-direction:column;gap:2px"><span style="font:500 9.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.5)">De camino · sin desvío</span><span style="font:400 16px/1 'Instrument Serif',serif">Monti</span></span>
+              <span style="font:600 12px 'Geist';color:oklch(0.5 0.15 45)">Ver ›</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span style="position:absolute;right:16px;bottom:120px;width:48px;height:48px;border-radius:50%;background:#FFFDF8;border:1.5px solid oklch(0.55 0.15 45);color:oklch(0.52 0.15 45);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -10px rgba(28,34,48,.4)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3"></path></svg></span>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const W_={pompeya:'Pompeii',tivoli:"Villa_d'Este",ostia:'Ostia_Antica',smm:'Santa_Maria_Maggiore'};
+const PH={};
+const bg=(k,fb)=>PH[k]?`url("${PH[k]}") center/cover, ${fb}`:fb;
+const DC=['oklch(0.62 0.14 45)','oklch(0.56 0.14 295)','oklch(0.54 0.11 245)','oklch(0.72 0.15 65)','oklch(0.58 0.12 150)','oklch(0.5 0.14 285)'];
+const dots=n=>Array.from({length:n},(_,i)=>DC[(i*5+n)%6]);
+class Component extends DCLogic {
+  state={pick:null,on:false};
+  componentDidMount(){Object.entries(W_).forEach(([k,t])=>fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)).then(r=>r.ok?r.json():{}).then(j=>{const u=j.thumbnail&&j.thumbnail.source;if(u){PH[k]=u.split('?')[0].replace('//thumb.wikimedia.org/','//upload.wikimedia.org/');this.forceUpdate();}}).catch(()=>{}));}
+  renderVals(){const s=this.state;
+    const EX=[{k:'pompeya',n:'Pompeya y Sorrento',m:'13h · desde 65€',note:'Día completo con guía. Vuelves a Roma a las 20:00.'},{k:'tivoli',n:'Tívoli',m:'6h · desde 39€',note:'Medio día: llegas a tiempo para tu vuelo.'},{k:'ostia',n:'Ostia Antica',m:'4h · desde 25€',note:'De camino al aeropuerto, sin perder tiempo.'}];
+    const P=EX.find(e=>e.k===s.pick);
+    return{
+      variants:[['2a','2a · Interruptor','toggle'],['2b','2b · Línea discreta','line'],['2c','2c · Postal','postal']].map(([id,label,kind])=>({id,label,days:[
+        {n:'1',t:'Barcelona → Roma',c:'oklch(0.62 0.15 240)',hasSub:true,sub:'Día de viaje',subC:'oklch(0.5 0.15 45)',dots:dots(14),count:'14 paradas'},
+        {n:'2',t:'Día del Vaticano y Trastevere',c:'oklch(0.75 0.16 65)',dots:dots(12),count:'12 paradas'},
+        {n:'3',t:'Día de Villa Borghese, el Popolo y la Plaza de España',c:'oklch(0.6 0.13 150)',dots:dots(12),count:'12 paradas'},
+        (()=>{const ex=kind==='toggle'&&s.on;return{n:'4',t:ex?'Excursión a Pompeya y Sorrento':'Roma → Barcelona',c:ex?'oklch(0.62 0.15 45)':'oklch(0.55 0.17 310)',hasSub:true,sub:ex?'Día de excursión · desde 65€':'Día de viaje',subC:ex?'oklch(0.55 0.2 25)':'oklch(0.5 0.15 45)',dots:ex?dots(4):dots(10),count:ex?'4 paradas':'10 paradas',
+          toggle:kind==='toggle',line:kind==='line',postal:kind==='postal',
+          knobT:ex?'translateX(100%)':'none',knobBg:ex?'#1C2230':'#FFFDF8',rW:ex?'500':'600',eW:ex?'600':'500',rC:ex?'rgba(28,34,48,.55)':'#1C2230',eC:ex?'#FFFDF8':'rgba(28,34,48,.6)',
+          toRome:()=>this.setState({on:false}),toExc:()=>this.setState({on:true})};})()]})),
+      pomp:bg('pompeya','oklch(0.72 0.1 60)'),
+      stats:[{v:'10',k:'Paradas',bl:'none'},{v:'10,0',k:'Km a pie',bl:'1px solid rgba(28,34,48,.1)'},{v:'5h 25',k:'De actividad',bl:'1px solid rgba(28,34,48,.1)'}],
+      excs:EX.map(e=>{const a=s.pick===e.k;return{n:e.n,m:e.m,ph:bg(e.k,'linear-gradient(135deg,oklch(0.75 0.08 150),oklch(0.9 0.04 95))'),bd:a?'oklch(0.55 0.15 45)':'rgba(28,34,48,.08)',tf:a?'translateY(-2px)':'none',pick:()=>this.setState({pick:a?null:e.k})};}),
+      hasPick:!!P,pickNote:P?P.note:'',smm:bg('smm','oklch(0.75 0.06 295)')};
+  }
+}
+</script>
+</body>
+</html>

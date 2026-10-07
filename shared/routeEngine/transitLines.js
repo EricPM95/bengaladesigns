@@ -1,12 +1,13 @@
 /**
- * Las líneas de transporte público de un destino (Tanda 6f, 4k): «Transporte público» solo se ofrece en un trayecto si existe una línea de verdad que une los dos sitios, con su número
- * («Tranvía 8 · 15 min», «Metro A · 10 min», «Bus 40 · 15 min»). Una línea cuenta si los dos sitios quedan a 8 min andando o menos de una parada de ella. El tiempo es la caminata
- * hasta la línea, el viaje y la caminata hasta el sitio. Sin línea, la opción no sale (nada de estimaciones de bus o metro).
+ * Las líneas de transporte público de un destino (Tanda 6f, 4k; completadas en la 6g con la sección «Líneas de transporte público de Roma que usa la app» de DIAS_ROMA_PARADAS.md):
+ * «Transporte público» solo se ofrece en un trayecto si existe una línea de verdad que une los dos sitios, con su número («Tranvía 8 · 15 min», «Metro A · 10 min», «Bus 40 y 64 · 15 min»).
+ * Una línea cuenta si los dos sitios quedan a 12 min andando o menos de una parada de ella (en cada punta). El tiempo es la caminata hasta la línea, el viaje y la caminata hasta el sitio.
+ * Sin línea, la opción no sale (nada de estimaciones de bus o metro): se queda andando o en taxi.
  *
- * ROMA: la sección «Líneas de transporte público de Roma que usa la app» no está en DIAS_ROMA_PARADAS.md; estas son las líneas y paradas que la app conoce hoy (con coordenadas
- * aproximadas): hay que revisarlas y completarlas (PREGUNTAS_TANDA6F.md). Lo comparten el cliente (los trayectos) y los scripts (el informe).
+ * ROMA: de momento solo estas líneas y estas paradas (las del documento); las coordenadas son aproximadas. `pos` es el número de parada a lo largo de la línea (cuenta también las
+ * paradas intermedias que la app no enseña), para calcular lo que se tarda. Lo comparten el cliente (los trayectos) y los scripts (el informe).
  */
-const WALK_TO_LINE_MAX_MIN = 8
+const WALK_TO_LINE_MAX_MIN = 12
 const METERS_PER_WALK_MIN = 80
 const WALK_FACTOR = 1.3
 
@@ -16,16 +17,12 @@ const ROMA = [
     kind: 'metro',
     minutesPerStop: 2.5,
     stops: [
-      { name: 'Ottaviano', coordinates: [41.9086, 12.4574] },
-      { name: 'Lepanto', coordinates: [41.9102, 12.4644] },
-      { name: 'Flaminio', coordinates: [41.9117, 12.4764] },
-      { name: 'Spagna', coordinates: [41.9061, 12.4824] },
-      { name: 'Barberini', coordinates: [41.9035, 12.4888] },
-      { name: 'Repubblica', coordinates: [41.9028, 12.4953] },
-      { name: 'Termini', coordinates: [41.9009, 12.5018] },
-      { name: 'Vittorio Emanuele', coordinates: [41.8956, 12.5052] },
-      { name: 'Manzoni', coordinates: [41.8912, 12.5086] },
-      { name: 'San Giovanni', coordinates: [41.8855, 12.5093] },
+      { name: 'Ottaviano', pos: 0, coordinates: [41.9086, 12.4574] },
+      { name: 'Flaminio', pos: 2, coordinates: [41.9117, 12.4764] },
+      { name: 'Spagna', pos: 3, coordinates: [41.9061, 12.4824] },
+      { name: 'Barberini', pos: 4, coordinates: [41.9035, 12.4888] },
+      { name: 'Termini', pos: 6, coordinates: [41.9009, 12.5018] },
+      { name: 'San Giovanni', pos: 9, coordinates: [41.8855, 12.5093] },
     ],
   },
   {
@@ -33,11 +30,11 @@ const ROMA = [
     kind: 'metro',
     minutesPerStop: 2.5,
     stops: [
-      { name: 'Termini', coordinates: [41.9009, 12.5018] },
-      { name: 'Cavour', coordinates: [41.8957, 12.4924] },
-      { name: 'Colosseo', coordinates: [41.8912, 12.493] },
-      { name: 'Circo Massimo', coordinates: [41.883, 12.488] },
-      { name: 'Piramide', coordinates: [41.8765, 12.4811] },
+      { name: 'Termini', pos: 0, coordinates: [41.9009, 12.5018] },
+      { name: 'Cavour', pos: 1, coordinates: [41.8957, 12.4924] },
+      { name: 'Colosseo', pos: 2, coordinates: [41.8912, 12.493] },
+      { name: 'Circo Massimo', pos: 3, coordinates: [41.883, 12.488] },
+      { name: 'Piramide', pos: 4, coordinates: [41.8765, 12.4811] },
     ],
   },
   {
@@ -45,24 +42,21 @@ const ROMA = [
     kind: 'tranvia',
     minutesPerStop: 2.5,
     stops: [
-      { name: 'Largo Argentina', coordinates: [41.8957, 12.4766] },
-      { name: 'Arenula', coordinates: [41.8935, 12.4715] },
-      { name: 'Belli', coordinates: [41.8905, 12.4696] },
-      { name: 'Trastevere', coordinates: [41.8879, 12.4697] },
-      { name: 'Induno', coordinates: [41.8845, 12.4675] },
+      { name: 'Trastevere (Viale Trastevere)', pos: 0, coordinates: [41.8828, 12.4693] },
+      { name: 'Largo di Torre Argentina', pos: 4, coordinates: [41.8957, 12.4766] },
+      { name: 'Piazza Venezia', pos: 5, coordinates: [41.8957, 12.4823] },
     ],
   },
   {
-    name: 'Bus 40',
+    name: 'Bus 40 y 64',
     kind: 'bus',
     minutesPerStop: 3,
     stops: [
-      { name: 'Termini', coordinates: [41.9009, 12.5018] },
-      { name: 'Nazionale', coordinates: [41.9005, 12.4909] },
-      { name: 'Piazza Venezia', coordinates: [41.8957, 12.4823] },
-      { name: 'Largo Argentina', coordinates: [41.8957, 12.4766] },
-      { name: 'Corso Vittorio Emanuele', coordinates: [41.8985, 12.4713] },
-      { name: 'Piazza Pia (Vaticano)', coordinates: [41.9022, 12.4666] },
+      { name: 'Termini', pos: 0, coordinates: [41.9009, 12.5018] },
+      { name: 'Piazza Venezia', pos: 3, coordinates: [41.8957, 12.4823] },
+      { name: 'Largo di Torre Argentina', pos: 4, coordinates: [41.8957, 12.4766] },
+      { name: 'Corso Vittorio Emanuele', pos: 5, coordinates: [41.8985, 12.4713] },
+      { name: 'El Borgo y San Pedro', pos: 7, coordinates: [41.9022, 12.4666] },
     ],
   },
   {
@@ -70,10 +64,10 @@ const ROMA = [
     kind: 'bus',
     minutesPerStop: 3,
     stops: [
-      { name: 'Piramide', coordinates: [41.8765, 12.4811] },
-      { name: 'Ponte Garibaldi (Isla Tiberina)', coordinates: [41.8913, 12.4742] },
-      { name: 'Lungotevere Prati', coordinates: [41.906, 12.469] },
-      { name: 'Castel Sant\'Angelo', coordinates: [41.9022, 12.4663] },
+      { name: "Castillo de Sant'Angelo (Lungotevere)", pos: 0, coordinates: [41.9022, 12.4663] },
+      { name: 'Isla Tiberina', pos: 4, coordinates: [41.8913, 12.4742] },
+      { name: 'Trastevere (Lungotevere)', pos: 6, coordinates: [41.8886, 12.4721] },
+      { name: 'Testaccio', pos: 9, coordinates: [41.8795, 12.4770] },
     ],
   },
 ]
@@ -99,13 +93,13 @@ export function findTransitLine(city, a, b) {
   for (const line of lines) {
     const near = (point) =>
       line.stops
-        .map((stop, index) => ({ index, walk: walkMin(point, stop.coordinates) }))
+        .map((stop, index) => ({ index, pos: stop.pos ?? index, walk: walkMin(point, stop.coordinates) }))
         .filter((candidate) => candidate.walk <= WALK_TO_LINE_MAX_MIN)
         .sort((x, y) => x.walk - y.walk)[0] ?? null
     const boarding = near(a)
     const alighting = near(b)
     if (!boarding || !alighting || boarding.index === alighting.index) continue
-    const minutes = Math.round(boarding.walk + Math.abs(boarding.index - alighting.index) * line.minutesPerStop + alighting.walk)
+    const minutes = Math.round(boarding.walk + Math.abs(boarding.pos - alighting.pos) * line.minutesPerStop + alighting.walk)
     if (!best || minutes < best.minutes) best = { line: line.name, kind: line.kind, minutes }
   }
   return best

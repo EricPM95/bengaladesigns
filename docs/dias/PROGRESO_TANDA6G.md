@@ -1,0 +1,3 @@
+# Progreso de la Tanda 6g
+
+- Terminado: bloque 1 (motor y datos): documento pasado por el convertidor (0 dudas; arreglado «(Tonnarello, solo si…)» y la zona de la comida), interruptor del día 4 en el motor (Roma en 4 días, Excursión en 5 y 6; el día 4 fijo, los demás días no se mueven), nocturnas (el D2 y el D4 respetan su noche escrita y el D5, D6 y D7 salen como pide el documento), archivo de excursiones `data/dias/roma/_excursiones.json`, líneas de transporte del documento con 12 min andando, museos de 13:30 a 14:30 y «Crear mi propio día» en el servidor. Prueba de la 6g: 4.385 viajes, 0 fallos. Fallos: ninguno.

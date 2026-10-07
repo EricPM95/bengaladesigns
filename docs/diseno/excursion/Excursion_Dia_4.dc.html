@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+input::placeholder{color:rgba(28,34,48,.4)}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes drawL{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+@keyframes ring{from{stroke-dasharray:0 100}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 60% 40%,#F1E8D6 0%,#E0D3BA 70%);display:flex;align-items:center;justify-content:center;padding:{{ rootPad }};font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<div style="width:{{ sw }};height:{{ sh }};flex:none;position:relative">
+<div style="position:absolute;left:0;top:0;transform:{{ scaleT }};transform-origin:0 0">
+<div data-screen-label="Día 4 · Excursión" style="width:{{ pw }};height:{{ ph }};border-radius:{{ pr }};box-shadow:{{ psh }};position:relative;overflow:hidden;background:#F5EFE4;isolation:isolate;display:flex;flex-direction:column">
+
+  <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'">
+      <span>9:41</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:4px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:6px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:8px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:11px;background:#1C2230;border-radius:1px"></span></span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></span>
+    </div>
+  </sc-if>
+
+  <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:8px 14px 40px;display:flex;flex-direction:column;gap:12px">
+
+    <div style="border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.06);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -20px rgba(28,34,48,.3);height:80px;display:flex;align-items:center;gap:14px;padding:0 12px 0 16px">
+      <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#F1EADC;display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif">3</span>
+      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+        <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">Día 3</span>
+        <span style="font:400 22px/1.05 'Instrument Serif',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Roma</span>
+      </span>
+      <span style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:#fff;color:rgba(28,34,48,.6);font:700 14px/38px 'Geist';text-align:center;letter-spacing:1px">···</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+
+    <div style="border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.14);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -20px rgba(28,34,48,.3)">
+      <div style="height:80px;display:flex;align-items:center;gap:14px;padding:0 12px 0 16px">
+        <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif">4</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">Día 4</span>
+          <span style="font:400 24px/1.05 'Instrument Serif',serif">Roma</span>
+          <span style="font:500 12.5px 'Geist';color:{{ dayTagC }}">{{ dayTag }}</span>
+        </span>
+        <button aria-label="Opciones del día" style="width:38px;height:38px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:#fff;color:rgba(28,34,48,.6);font:700 14px/1 'Geist';letter-spacing:1px;cursor:pointer">···</button>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(90deg)"><path d="M9 6l6 6-6 6"></path></svg>
+      </div>
+
+      <div style="border-top:1px dashed rgba(28,34,48,.12);padding:14px 12px 16px;display:flex;flex-direction:column;gap:12px">
+
+        <sc-if value="{{ inRome }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius:18px;background:#F1EADC;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;animation:pop .4s ease both">
+            <span style="font:400 20px/1.15 'Instrument Serif',serif">Te quedas en Roma este día</span>
+            <button onClick="{{ backExc }}" style="border:none;background:transparent;font:italic 400 17px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px">Volver a la excursión a Pompeya</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showExc }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px;padding:2px 4px">
+              <span style="position:relative;width:46px;height:46px;flex:none">
+                <svg viewBox="0 0 36 36" width="46" height="46" style="transform:rotate(-90deg)"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(28,34,48,.1)" stroke-width="3"></circle><circle cx="18" cy="18" r="15.9" fill="none" stroke="oklch(0.62 0.15 45)" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="87 100" style="animation:ring 1.4s cubic-bezier(.2,.8,.2,1) both"></circle></svg>
+                <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 11px 'Geist Mono',monospace;color:oklch(0.5 0.15 45)">87%</span>
+              </span>
+              <span style="font:400 13px/1.4 'Geist';color:rgba(28,34,48,.75);text-wrap:pretty">El 87% de los viajeros que visitan Roma 5 días o más dedican uno de ellos a visitar Pompeya</span>
+            </div>
+
+            <div style="position:relative;border-radius:22px;background:#FFFFFF;overflow:hidden;box-shadow:0 1px 2px rgba(28,34,48,.06),0 22px 44px -26px oklch(0.5 0.12 40 / .6)">
+              <div style="position:relative;height:196px">
+                <div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 80%);background:{{ heroBg }}"></div>
+                <div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 100%,0 80%);background:linear-gradient(180deg,rgba(20,14,8,.35) 0%,rgba(20,14,8,0) 40%,rgba(20,14,8,.25) 100%)"></div>
+                <div style="position:absolute;right:12px;bottom:18px;width:64px;height:64px;border-radius:16px;overflow:hidden;border:3px solid #fff;box-shadow:0 10px 20px -8px rgba(0,0,0,.45);transform:rotate(4deg);background:{{ sorBg }}"></div>
+                <span style="position:absolute;left:12px;top:12px;height:26px;padding:0 10px;border-radius:999px;background:rgba(255,253,248,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;gap:6px;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#1C2230">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9h16v12M8 21v-6a4 4 0 0 1 8 0v6M3 9l9-5 9 5M3 21h18"></path></svg>Excursión del día
+                </span>
+                <span style="position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;padding:7px 11px;border-radius:14px;background:#1C2230;color:#FFFDF8">
+                  <span style="font:500 9px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.7">desde</span>
+                  <span style="font:400 26px/1 'Instrument Serif',serif">65€</span>
+                </span>
+                <sc-if value="{{ booked }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;left:12px;bottom:52px;height:28px;padding:0 12px;border-radius:999px;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;gap:6px;font:600 12px 'Geist';animation:pop .4s ease both">✓ Reservada · {{ code }}</span>
+                </sc-if>
+              </div>
+
+              <div style="padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px;position:relative">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font:400 28px/1.02 'Instrument Serif',serif;letter-spacing:-.01em">Excursión a <em style="color:oklch(0.52 0.15 45)">Pompeya</em> y Sorrento</span>
+                  <span style="display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{ facts }}" as="x" hint-placeholder-count="4">
+                      <span style="height:26px;padding:0 9px;border-radius:999px;background:#F5EFE4;display:inline-flex;align-items:center;gap:5px;font:500 11.5px 'Geist';color:rgba(28,34,48,.8)">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ x.i }}"></path></svg>{{ x.t }}
+                      </span>
+                    </sc-for>
+                  </span>
+                </div>
+
+                <div style="border-radius:16px;background:linear-gradient(180deg,#FBF7EF,#F5EFE4);padding:14px 12px 10px">
+                  <div style="position:relative;height:44px">
+                    <svg viewBox="0 0 100 44" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+                      <path d="M6 30 C 22 4, 34 4, 46 22 S 68 40, 70 22 S 86 6, 94 30" fill="none" stroke="rgba(28,34,48,.18)" stroke-width="1.4" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"></path>
+                      <path d="M6 30 C 22 4, 34 4, 46 22 S 68 40, 70 22 S 86 6, 94 30" fill="none" stroke="oklch(0.62 0.15 45)" stroke-width="2.2" stroke-linecap="round" pathLength="100" stroke-dasharray="100" vector-effect="non-scaling-stroke" style="animation:drawL 2.2s cubic-bezier(.4,0,.2,1) .3s both"></path>
+                    </svg>
+                    <sc-for list="{{ stops }}" as="p" hint-placeholder-count="4">
+                      <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.s }};height:{{ p.s }};margin:{{ p.m }};border-radius:50%;background:{{ p.bg }};border:2.5px solid #fff;box-shadow:0 3px 8px -2px rgba(28,34,48,.35)"></span>
+                    </sc-for>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px">
+                    <sc-for list="{{ stops }}" as="p" hint-placeholder-count="4">
+                      <span style="display:flex;flex-direction:column;align-items:{{ p.al }};gap:1px;text-align:{{ p.ta }}">
+                        <span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.5 0.15 45)">{{ p.h }}</span>
+                        <span style="font:400 15px/1.05 'Instrument Serif',serif">{{ p.n }}</span>
+                      </span>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <p style="margin:0;font:400 13.5px/1.55 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">Descubre las ruinas de Pompeya con guía y pasea por Sorrento, la joya de la costa napolitana. Incluye transporte en autobús, entrada a Pompeya y tiempo libre en Sorrento.</p>
+
+                <sc-if value="{{ showSlots }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:8px;animation:pop .35s ease both">
+                    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ slotsTitle }}</span>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+                      <sc-for list="{{ slots }}" as="o" hint-placeholder-count="3">
+                        <button onClick="{{ o.pick }}" style="height:62px;border-radius:14px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:#1C2230;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background .25s,border-color .25s">
+                          <span style="font:400 20px/1 'Instrument Serif',serif">{{ o.t }}</span>
+                          <span style="font:500 10px 'Geist';color:{{ o.lc }}">{{ o.l }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ notBooked }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ cta }}" style="height:56px;border:none;border-radius:999px;background:oklch(0.52 0.15 45);color:#FFFDF8;font:600 16px 'Geist';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 24px -12px oklch(0.52 0.15 45)" style-active="transform:scale(.98)">{{ ctaLabel }}</button>
+                </sc-if>
+
+                <sc-if value="{{ confOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:6px;animation:pop .35s ease both">
+                    <input value="{{ codeIn }}" onChange="{{ onCode }}" placeholder="Código de reserva" style="flex:1;min-width:0;height:46px;border-radius:14px;border:1.5px solid rgba(28,34,48,.14);background:#FFFDF8;padding:0 14px;font:500 15px 'Geist Mono',monospace;color:#1C2230;outline:none">
+                    <button onClick="{{ saveCode }}" style="height:46px;padding:0 16px;border:none;border-radius:14px;background:#1C2230;color:#FFFDF8;font:600 14px 'Geist';cursor:pointer;opacity:{{ saveO }}">Guardar</button>
+                  </div>
+                </sc-if>
+
+                <button onClick="{{ toggleConf }}" style="align-self:center;border:none;background:transparent;display:flex;align-items:center;gap:7px;padding:6px 4px;font:500 13px 'Geist';color:rgba(28,34,48,.7);cursor:pointer">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>
+                  <span style="text-decoration:underline;text-underline-offset:3px">{{ confLabel }}</span>
+                </button>
+              </div>
+            </div>
+
+            <button style="height:56px;border-radius:18px;border:1px solid rgba(28,34,48,.1);background:#FFFDF8;display:flex;align-items:center;gap:12px;padding:0 14px 0 18px;cursor:pointer;color:#1C2230">
+              <span style="display:flex">
+                <sc-for list="{{ more }}" as="m" hint-placeholder-count="4">
+                  <span style="width:28px;height:28px;margin-left:-8px;border-radius:50%;border:2px solid #FFFDF8;background:{{ m }}"></span>
+                </sc-for>
+              </span>
+              <span style="flex:1;text-align:left;font:500 14px 'Geist'">Ver más excursiones (4)</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+            </button>
+
+
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showExc }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="flex:1;height:1px;background:rgba(28,34,48,.1)"></span>
+              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">O sin excursión</span>
+              <span style="flex:1;height:1px;background:rgba(28,34,48,.1)"></span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button onClick="{{ stayRome }}" style="position:relative;height:118px;border-radius:18px;border:1px solid rgba(28,34,48,.08);background:#FFFFFF;overflow:hidden;padding:0;text-align:left;cursor:pointer;color:#1C2230;box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 22px -16px rgba(28,34,48,.35)" style-active="transform:scale(.98)">
+                <span style="position:absolute;left:0;right:0;top:0;height:52px;clip-path:polygon(0 0,100% 0,100% 100%,0 70%);background:{{ romeBg }}"></span>
+                <span style="position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:10px;background:rgba(255,253,248,.92);color:#1C2230;display:flex;align-items:center;justify-content:center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v10H3zM9 21v-6h6v6"></path></svg>
+                </span>
+                <span style="position:absolute;left:12px;right:10px;bottom:11px;display:flex;flex-direction:column;gap:2px">
+                  <span style="font:400 17px/1.05 'Instrument Serif',serif">Prefiero quedarme en Roma</span>
+                  <span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">Día libre, a tu aire</span>
+                </span>
+              </button>
+              <button style="position:relative;height:118px;border-radius:18px;border:none;background:#1C2230;overflow:hidden;padding:0;text-align:left;cursor:pointer;color:#F3EEE4;box-shadow:0 12px 24px -14px rgba(28,34,48,.7)" style-active="transform:scale(.98)">
+                <svg viewBox="0 0 160 62" preserveAspectRatio="none" style="position:absolute;left:0;right:0;top:0;width:100%;height:62px">
+                  <path d="M12 46 C 40 10, 64 52, 90 26 S 136 14, 150 34" fill="none" stroke="oklch(0.8 0.14 70)" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round"></path>
+                  <circle cx="12" cy="46" r="3.5" fill="oklch(0.8 0.14 70)"></circle><circle cx="90" cy="26" r="3" fill="#F3EEE4"></circle><circle cx="150" cy="34" r="3.5" fill="oklch(0.8 0.14 70)"></circle>
+                </svg>
+                <span style="position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:10px;background:oklch(0.8 0.14 70);color:#1C2230;display:flex;align-items:center;justify-content:center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg>
+                </span>
+                <span style="position:absolute;left:12px;right:10px;bottom:11px;display:flex;flex-direction:column;gap:2px">
+                  <span style="font:400 17px/1.05 'Instrument Serif',serif">Generar una ruta para este día →</span>
+                  <span style="font:400 11px 'Geist';color:rgba(243,238,228,.65)">Hecha a tu medida</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const W_={roma:'Trastevere',pompeya:'Pompeii',sorrento:'Sorrento',m1:'Amalfi',m2:'Positano',m3:'Naples',m4:'Capri'};
+const PH={};
+const I={clock:'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',bus:'M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3',guide:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',ticket:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12'};
+const bg=(k,fb)=>PH[k]?`url("${PH[k]}") center/cover, ${fb}`:fb;
+class Component extends DCLogic {
+  state={slots:false,slot:null,conf:false,code:'',booked:'',rome:false,vw:window.innerWidth||390,vh:window.innerHeight||844};
+  componentDidMount(){this.onR=()=>{const w=window.innerWidth,h=window.innerHeight;if(w&&h&&(w!==this.state.vw||h!==this.state.vh))this.setState({vw:w,vh:h});};window.addEventListener('resize',this.onR);this.onR();requestAnimationFrame(this.onR);setTimeout(this.onR,300);setTimeout(this.onR,1000);
+    Object.entries(W_).forEach(([k,t])=>fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)).then(r=>r.ok?r.json():{}).then(j=>{const u=(j.originalimage&&j.originalimage.source)||(j.thumbnail&&j.thumbnail.source);if(u){PH[k]=(j.thumbnail&&k!=='pompeya'?j.thumbnail.source:u).split('?')[0].replace('//thumb.wikimedia.org/','//upload.wikimedia.org/');this.forceUpdate();}}).catch(()=>{}));}
+  componentWillUnmount(){window.removeEventListener('resize',this.onR);}
+  renderVals(){const s=this.state;const vw=s.vw||390,vh=s.vh||844;const desk=vw>=520;const W=desk?390:vw,H=desk?844:vh;const Z=desk?Math.max(.4,Math.min(1,(vh-40)/844)):1;
+    const SL=[{t:'07:00',l:'Quedan 6 plazas',hot:1},{t:'07:30',l:'12 plazas'},{t:'08:15',l:'Últimas 2',hot:1}];
+    const booked=!!s.booked;
+    return{
+      rootPad:desk?'20px':'0',desk,scaleT:Z===1?'none':'scale('+Z+')',sw:(W*Z)+'px',sh:(H*Z)+'px',pw:W+'px',ph:H+'px',pr:desk?'52px':'0',
+      psh:desk?'0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)':'none',
+      dayTag:s.rome?'Día libre en Roma':'Día de excursión',dayTagC:s.rome?'rgba(28,34,48,.55)':'oklch(0.55 0.2 25)',
+      inRome:s.rome,showExc:!s.rome,backExc:()=>this.setState({rome:false}),stayRome:()=>this.setState({rome:true}),
+      romeBg:bg('roma','linear-gradient(135deg,oklch(0.75 0.1 60),oklch(0.62 0.12 40))'),heroBg:bg('pompeya','linear-gradient(135deg,oklch(0.72 0.1 60),oklch(0.55 0.12 35))'),sorBg:bg('sorrento','oklch(0.7 0.1 220)'),
+      facts:[{i:I.clock,t:'13h'},{i:I.bus,t:'Autobús'},{i:I.guide,t:'Guía'},{i:I.ticket,t:'Entrada incluida'}],
+      stops:[{n:'Roma',h:'07:00',x:'6%',y:'68%',s:'12px',m:'-6px 0 0 -6px',bg:'#1C2230',al:'flex-start',ta:'left'},{n:'Pompeya',h:'10:30',x:'46%',y:'50%',s:'16px',m:'-8px 0 0 -8px',bg:'oklch(0.62 0.15 45)',al:'center',ta:'center'},{n:'Sorrento',h:'14:30',x:'70%',y:'50%',s:'16px',m:'-8px 0 0 -8px',bg:'oklch(0.6 0.12 220)',al:'center',ta:'center'},{n:'Roma',h:'20:00',x:'94%',y:'68%',s:'12px',m:'-6px 0 0 -6px',bg:'#1C2230',al:'flex-end',ta:'right'}],
+      showSlots:s.slots&&!booked,slotsTitle:'Sáb 22 oct · elige la salida',
+      slots:SL.map((o,i)=>{const a=s.slot===i;return{t:o.t,l:o.l,lc:o.hot?'oklch(0.55 0.2 25)':'rgba(28,34,48,.55)',bd:a?'oklch(0.55 0.15 45)':'rgba(28,34,48,.1)',bg:a?'oklch(0.8 0.14 70 / .18)':'#FFFDF8',pick:()=>this.setState({slot:i})};}),
+      notBooked:!booked,ctaLabel:!s.slots?'Ver disponibilidad':s.slot==null?'Elige una hora':`Reservar a las ${SL[s.slot].t} · 65€`,
+      cta:()=>{if(!s.slots)this.setState({slots:true});else if(s.slot!=null)this.setState({booked:'PMP-'+Math.random().toString(36).slice(2,7).toUpperCase(),slots:false,conf:false});},
+      booked,code:s.booked,
+      confOpen:s.conf&&!booked,confLabel:booked?'Cambiar confirmación':'¿Ya la has reservado? Añade tu confirmación',
+      toggleConf:()=>this.setState(st=>booked?{booked:'',conf:true}:{conf:!st.conf}),
+      codeIn:s.code,onCode:e=>this.setState({code:e.target.value}),saveO:s.code.trim()?1:.4,
+      saveCode:()=>{if(s.code.trim())this.setState({booked:s.code.trim().toUpperCase(),conf:false,slots:false});},
+      more:['m1','m2','m3','m4'].map(k=>bg(k,'oklch(0.8 0.06 200)'))};
+  }
+}
+</script>
+</body>
+</html>

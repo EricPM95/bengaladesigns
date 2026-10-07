@@ -43,6 +43,7 @@ export function writtenDaysFor(destinationKey) {
 
 /** Para las pruebas: vuelve a leer los ficheros (después de editarlos). */
 export function clearWrittenDaysCache() {
+  excursionsCache.clear()
   cache.clear()
 }
 
@@ -126,4 +127,20 @@ export function ownPhotoFile(table, name, dateIso) {
   const md = /^\d{4}-\d{2}-\d{2}$/.test(String(dateIso ?? '')) ? Number(dateIso.slice(5, 7)) * 100 + Number(dateIso.slice(8, 10)) : null
   const valid = (table.fotos ?? []).filter((foto) => (foto.lugares ?? []).includes(name) && !foto.verificar && (!foto.fechas || (md != null && withinMonthDays(md, foto.fechas.desde, foto.fechas.hasta))))
   return valid.find((candidate) => candidate.fechas) ?? valid[0] ?? null
+}
+
+const excursionsCache = new Map()
+
+/**
+ * Las excursiones del día 4 de un destino (Tanda 6g): `data/dias/<destino>/_excursiones.json`. Null si el destino no las tiene escritas.
+ * Se lee una vez; para las pruebas, `clearWrittenDaysCache` lo vacía.
+ */
+export function excursionsFor(destinationKey) {
+  const key = String(destinationKey ?? '').trim().toLowerCase()
+  if (!key) return null
+  if (excursionsCache.has(key)) return excursionsCache.get(key)
+  const file = join(DIAS_DIR, key, '_excursiones.json')
+  const value = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  excursionsCache.set(key, value)
+  return value
 }

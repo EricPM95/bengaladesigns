@@ -1,0 +1,147 @@
+{
+  "_nota": "Las excursiones del día 4 de Roma (Tanda 6g, 7-oct-2026). Se rellena SIN tocar código. 'orden': la primera es la que sale por defecto. 'ejemplo': true = dato de prueba (precio, enlace y porcentaje por llegar); en cuanto lo pones a false (o lo quitas) el precio sale tal cual. 'nombre': tres partes para la cursiva («Excursión a» + «Pompeya» + « y Sorrento»). 'precio_desde': número en euros; sin él sale «XX€». 'enlace': el enlace de afiliado de Civitatis de ESA excursión; sin él, «Ver disponibilidad» solo enseña «Enlace pendiente». 'porcentaje': el % de viajeros que la hacen (número entero); sin él la frase del porcentaje NO sale (nunca un número inventado). 'etiquetas': transporte, guía y entrada incluida (la duración sale sola de 'duracion_h'). 'paradas': la línea de horas. 'foto': { archivo (en public/fotos/roma/excursiones/), credito }; sin foto sale un recuadro de color ('color'). 'medio_dia': true = vuelta a las 14:00 y la tarde es del viajero.",
+  "porcentaje_frase": "En un viaje de {dias} días a Roma, el {porcentaje}% de la gente dedica al menos uno a visitar {corto}",
+  "excursiones": [
+    {
+      "id": "pompeya_sorrento",
+      "orden": 1,
+      "ejemplo": true,
+      "nombre": { "antes": "Excursión a", "destino": "Pompeya", "despues": " y Sorrento" },
+      "corto": "Pompeya",
+      "duracion_h": 13,
+      "vuelta": "20:00",
+      "medio_dia": false,
+      "precio_desde": 65,
+      "enlace": "",
+      "etiquetas": [
+        { "tipo": "transporte", "texto": "Autobús" },
+        { "tipo": "guia", "texto": "Guía" },
+        { "tipo": "entrada", "texto": "Entrada incluida" }
+      ],
+      "paradas": [
+        { "hora": "07:00", "nombre": "Roma" },
+        { "hora": "10:30", "nombre": "Pompeya" },
+        { "hora": "14:30", "nombre": "Sorrento" },
+        { "hora": "20:00", "nombre": "Roma" }
+      ],
+      "texto": "Descubre las ruinas de Pompeya con guía y pasea por Sorrento, la joya de la costa napolitana. Incluye transporte en autobús, entrada a Pompeya y tiempo libre en Sorrento.",
+      "foto": { "archivo": "", "credito": "" },
+      "color": "#B4704A",
+      "porcentaje": null,
+      "punto_de_encuentro": "Estación de Termini",
+      "coords": [40.7497, 14.4869]
+    },
+    {
+      "id": "tivoli",
+      "orden": 2,
+      "ejemplo": true,
+      "nombre": { "antes": "Excursión a", "destino": "Tívoli", "despues": "" },
+      "corto": "Tívoli",
+      "duracion_h": 6,
+      "vuelta": "14:00",
+      "medio_dia": true,
+      "precio_desde": null,
+      "enlace": "",
+      "etiquetas": [
+        { "tipo": "transporte", "texto": "Autobús" },
+        { "tipo": "guia", "texto": "Guía" },
+        { "tipo": "entrada", "texto": "Entrada incluida" }
+      ],
+      "paradas": [
+        { "hora": "08:00", "nombre": "Roma" },
+        { "hora": "09:00", "nombre": "Villa Adriana" },
+        { "hora": "11:30", "nombre": "Villa d’Este" },
+        { "hora": "14:00", "nombre": "Roma" }
+      ],
+      "texto": "Los jardines y las fuentes de Villa d’Este y las ruinas de la villa del emperador Adriano, con guía. Vuelves a Roma a la hora de comer.",
+      "foto": { "archivo": "", "credito": "" },
+      "color": "#6E8759",
+      "porcentaje": null,
+      "punto_de_encuentro": null,
+      "coords": [41.9631, 12.7961]
+    },
+    {
+      "id": "ostia_antica",
+      "orden": 3,
+      "ejemplo": true,
+      "nombre": { "antes": "Excursión a", "destino": "Ostia Antica", "despues": "" },
+      "corto": "Ostia Antica",
+      "duracion_h": 6,
+      "vuelta": "14:00",
+      "medio_dia": true,
+      "precio_desde": null,
+      "enlace": "",
+      "etiquetas": [
+        { "tipo": "transporte", "texto": "Tren" },
+        { "tipo": "guia", "texto": "Guía" },
+        { "tipo": "entrada", "texto": "Entrada incluida" }
+      ],
+      "paradas": [
+        { "hora": "08:00", "nombre": "Roma" },
+        { "hora": "09:00", "nombre": "Ostia Antica" },
+        { "hora": "14:00", "nombre": "Roma" }
+      ],
+      "texto": "El puerto de la antigua Roma: calles, termas, un teatro y casas de hace 2.000 años, con guía. Vuelves a Roma a la hora de comer.",
+      "foto": { "archivo": "", "credito": "" },
+      "color": "#B98F55",
+      "porcentaje": null,
+      "punto_de_encuentro": "Piazzale Ostiense (metro Pirámide)",
+      "coords": [41.7556, 12.2917]
+    },
+    {
+      "id": "florencia",
+      "orden": 4,
+      "ejemplo": true,
+      "nombre": { "antes": "Excursión a", "destino": "Florencia", "despues": "" },
+      "corto": "Florencia",
+      "duracion_h": 13,
+      "vuelta": "20:30",
+      "medio_dia": false,
+      "precio_desde": null,
+      "enlace": "",
+      "etiquetas": [
+        { "tipo": "transporte", "texto": "Tren" },
+        { "tipo": "guia", "texto": "Guía" }
+      ],
+      "paradas": [
+        { "hora": "07:30", "nombre": "Roma" },
+        { "hora": "09:30", "nombre": "Florencia" },
+        { "hora": "20:30", "nombre": "Roma" }
+      ],
+      "texto": "La catedral de Santa Maria del Fiore, el Ponte Vecchio y la Piazza della Signoria, con guía y tiempo libre. Ida y vuelta en tren de alta velocidad.",
+      "foto": { "archivo": "", "credito": "" },
+      "color": "#7B6A96",
+      "porcentaje": null,
+      "punto_de_encuentro": "Estación de Termini",
+      "coords": [43.7696, 11.2558]
+    },
+    {
+      "id": "costa_amalfitana",
+      "orden": 5,
+      "ejemplo": true,
+      "nombre": { "antes": "Excursión a la", "destino": "Costa Amalfitana", "despues": "" },
+      "corto": "la Costa Amalfitana",
+      "duracion_h": 14,
+      "vuelta": "21:00",
+      "medio_dia": false,
+      "precio_desde": null,
+      "enlace": "",
+      "etiquetas": [
+        { "tipo": "transporte", "texto": "Autobús" },
+        { "tipo": "guia", "texto": "Guía" }
+      ],
+      "paradas": [
+        { "hora": "06:30", "nombre": "Roma" },
+        { "hora": "11:00", "nombre": "Positano" },
+        { "hora": "14:00", "nombre": "Amalfi" },
+        { "hora": "21:00", "nombre": "Roma" }
+      ],
+      "texto": "Positano y Amalfi, los pueblos de colores sobre el mar, con guía y tiempo libre en cada uno.",
+      "foto": { "archivo": "", "credito": "" },
+      "color": "#3D7A90",
+      "porcentaje": null,
+      "punto_de_encuentro": "Estación de Termini",
+      "coords": [40.634, 14.6027]
+    }
+  ]
+}
