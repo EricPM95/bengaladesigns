@@ -16,16 +16,17 @@ export async function aplicarFreeTour(choice: { franja: 'manana' | 'tarde' | 'no
 
 /**
  * Rehace cada día de ciudad con lo que el viaje recuerda ahora (el Free Tour, el interruptor del día 4…): lo que el viajero ya ha cambiado a mano, la excursión, un día suyo y los días
- * que ha añadido no se tocan. `exceptDayId`: un día que ya viene rehecho. Devuelve false si algún día no se pudo rehacer (sin conexión o sin respuesta).
+ * que ha añadido no se tocan. `except`: los días que ya vienen rehechos. Devuelve false si algún día no se pudo rehacer (sin conexión o sin respuesta).
  */
-export async function rehacerDiasSinTocar(exceptDayId: string | null): Promise<boolean> {
+export async function rehacerDiasSinTocar(except: string | string[] | null): Promise<boolean> {
+  const exceptIds = new Set([except].flat().filter((id): id is string => Boolean(id)))
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route, reservations } = useRouteStore.getState()
   if (!route) return false
   const cityDays = route.days.filter((day) => !day.isReturnLeg)
   let ok = true
   for (const day of cityDays) {
-    if (day.id === exceptDayId || day.originalSnapshot || day.dayType === 'excursion' || day.userAdded || day.ownDay) continue
+    if (exceptIds.has(day.id) || day.originalSnapshot || day.dayType === 'excursion' || day.userAdded || day.ownDay) continue
     try {
       const response = await fetch('/api/rebuild-day', {
         method: 'POST',

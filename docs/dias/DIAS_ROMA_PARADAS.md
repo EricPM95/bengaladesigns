@@ -96,14 +96,19 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 | 3 días | D1 + D2 + D4 | D3 + D1-FT + D4 (versión con Free Tour) |
 | 3,5 días | D1 + D2 + D4 + DA-medio | D3 + D1-FT + D4 + DA-medio |
 | 4 días | D1 + D2 + D4 + **día 4 con interruptor** (Roma por defecto: D5) | D3 + D1-FT + D4 + día 4 con interruptor |
-| 5 días | D1 + D2 + D4 + **día 4 con interruptor** (Excursión por defecto; en Roma: D6) + D5 | D3 + D1-FT + D4 + día 4 + D5 |
-| 6 días | D1 + D2 + D4 + **día 4 con interruptor** (Excursión por defecto; en Roma: D7) + D5 + D6 | D3 + D1-FT + D4 + día 4 + D5 + D6 |
+| 5 días | D1 + D2 + D4 + **día 4 con interruptor** + D5 (Excursión por defecto). Con Roma: D1 + D2 + D4 + D5 + D6 | D3 + D1-FT + D4 + … (igual) |
+| 6 días | D1 + D2 + D4 + **día 4 con interruptor** + D5 + D6 (Excursión por defecto). Con Roma: D1 + D2 + D4 + D5 + D6 + D7 | D3 + D1-FT + D4 + … (igual) |
 | 7 días o más | lo de 6 días; del día 7 en adelante, la hoja «Ya has visto lo mejor de Roma» y EXPLORAR | igual |
 
 **El día de excursión** (decidido el 7-oct-2026):
 - Es siempre el **día 4** en los viajes de 4, 5 y 6 días. Nunca el día de llegada ni el de vuelta (las llegadas, en la Tanda 7).
-- **El interruptor [Roma | Excursión]** solo cambia ese día: los demás días no se mueven.
-- **Con el interruptor en Roma:** el D5 en 4 días, el D6 en 5 días y el D7 en 6 días, con las reglas de siempre (lo ya visto pasa a «de camino» con «Ya lo visitaste el día n», sin repetir restaurantes ni nocturnas).
+- **El interruptor [Roma | Excursión]** va en el día 4.
+- **Con el interruptor en Roma, los días de Roma van en su orden (D5, D6, D7):** el día de Roma que se gana va **al final** y lo que había del día 5 en adelante se corre un día. Así lo mejor sigue primero.
+  - 4 días: el día 4 es el D5.
+  - 5 días: D5 el día 4 y D6 el día 5.
+  - 6 días: D5 el día 4, D6 el día 5 y D7 el día 6.
+  - Con las reglas de siempre: lo ya visto pasa a «de camino» con «Ya lo visitaste el día n», sin repetir restaurantes ni nocturnas.
+- **Con una reserva en un día que se movería** (el día 5 o el 6), el interruptor no deja pasar a Roma: no se mueve nada y sale el aviso «Tienes una reserva el día {n} ({sitio}, {hora}): no puedes mover este día».
 - **Con el interruptor en Excursión:** ese día lleva **solo la excursión**: ni comida, ni cena, ni noche propuestas. Si es de medio día, ver «Excursión de medio día», al final.
 
 **El orden de los días** (decidido el 7-oct-2026, vale para todos los destinos): **lo imprescindible, primero**.
@@ -610,7 +615,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Ojo de la Cerradura del Aventino ~15
   - Pirámide Cestia ~15, de camino a la cena (por fuera; el Cementerio Protestante, al lado, cierra a las 17:00 y no da tiempo)
 - **Cena:** Felice a Testaccio
-- **Noche:** la pareja que toque (regla 13). En 4 y 5 días suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min). En 6 días con el D7 en el día 4, el Puente y el Castillo de Sant'Angelo (taxi, ~15 min).
+- **Noche:** la pareja que toque (regla 13). Suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min).
 - **Lunes:** Caracalla cierra: sale con «Cerrado hoy».
 - **Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.
 - **Ya no van** el paseo por el Aventino ni el de Testaccio (decidido el 6-oct: sin paseos).
@@ -673,7 +678,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - El Coliseo desde la terraza de Largo Gaetana Agnesi ~20
   - *de camino:* Monti
 - **Cena:** La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti
-- **Noche:** la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna.
+- **Noche:** la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna. En 6 días suele ser el Puente y el Castillo de Sant'Angelo (taxi, ~15 min desde Monti).
 - **Domingo:** la Farnesina cierra: la mañana empieza en Santa Maria in Trastevere; Da Enzo cierra: Tonnarello si no ha salido en el viaje; si ha salido, un recambio de verdad a menos de 10 min (regla 6).
 - **Miércoles:** sin catacumbas; la Vía Appia empieza antes.
 

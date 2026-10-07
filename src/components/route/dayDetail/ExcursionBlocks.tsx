@@ -12,7 +12,7 @@ import type { CuratedAlternative, Excursion } from '../../../lib/types'
  *   primary   -> ExcursionOptions como contenido del día + CuratedAlternativeBanner si había ruta.
  *   manual    -> ManualDayOptions.
  *
- * Los precios y valoraciones son PLACEHOLDER hasta integrar Civitatis/GYG — nunca se presentan como
+ * Los precios y valoraciones son PLACEHOLDER hasta integrar los operadores — nunca se presentan como
  * una tarifa cerrada, siempre como "desde".
  */
 
@@ -232,7 +232,7 @@ export function ExcursionOptions({
       {selected && (
         <button
           type="button"
-          // Placeholder deliberado: hasta que estén los enlaces de afiliado (Civitatis/GYG) esto no
+          // Placeholder deliberado: hasta que estén los enlaces de afiliado (del operador) esto no
           // lleva a ninguna parte, y prometer una reserva que no existe sería peor que no ofrecerla.
           disabled
           className="w-full cursor-not-allowed rounded-xl bg-accent px-3 py-3 text-small font-semibold text-white opacity-70"

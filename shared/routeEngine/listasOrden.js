@@ -30,14 +30,14 @@ export const paradasDelDia = (dia, { sinCamino = false } = {}) =>
  */
 export function ordenarDias(env) {
   const { destData, written, cityDays: todosLosDias, contentDays, hasFreeTour, hoursOf, realDateIso, closedThatDay, calendar, poolNames, selected, mediaJornada, forceOrder, noTourOn, tour } = env
-  // Los días fijos (Tanda 6g) no entran en el reparto de fechas, así los demás se ordenan igual pase lo que pase con ellos:
-  //   · el día del interruptor (el día 4): con el interruptor en Roma lleva siempre el último día de la tabla (D5 en 4 días, D6 en 5, D7 en 6);
-  //   · el día propio del viajero («Crear mi propio día»): `env.propios` = { número de día: id del día escrito que se monta con sus sitios }.
+  // El día propio del viajero («Crear mi propio día», Tanda 6g) no entra en el reparto de fechas: va fijo en su día y los demás se ordenan como si ese día fuera el de la excursión.
+  // `env.propios` = { número de día: id del día escrito que se monta con sus sitios }. Con el interruptor en Roma sin día propio, los días de Roma van en su orden de la tabla
+  // (D5, D6, D7) y el día que se gana va al final: no hay nada fijo.
   const propios = env.propios ?? {}
   const pins = []
-  todosLosDias.forEach((day, index) => { if (propios[day.dayNumber]) pins.push({ index, id: propios[day.dayNumber] }); else if (day.interruptor) pins.push({ index, id: null }) })
+  todosLosDias.forEach((day, index) => { if (propios[day.dayNumber]) pins.push({ index, id: propios[day.dayNumber] }) })
   const cityDays = todosLosDias.filter((_, index) => !pins.some((pin) => pin.index === index))
-  const tablaLen = todosLosDias.length - pins.filter((pin) => pin.id != null && !todosLosDias[pin.index].interruptor).length
+  const tablaLen = todosLosDias.length - pins.length
   const sinGaleria = !poolNames.includes('Galería Borghese') && !selected.includes('arte_museos')
   const routeTable = destData.curated_routes?.por_dias_ciudad ?? {}
   const keys = Object.keys(routeTable).map(Number).sort((a, b) => a - b)
@@ -62,9 +62,6 @@ export function ordenarDias(env) {
     chosen = halfFirst ? [half, ...whole] : [...whole, half]
     halfPosition = halfFirst ? 0 : 3
   } else chosen = row.map((item) => (typeof item === 'string' ? item : sinGaleria && contentDays < 4 ? item.sin_galeria : item.con_galeria)).slice(0, tablaLen)
-  // (El día del interruptor en Roma lleva el último de la tabla, salvo que sea el día propio del viajero.)
-  const interruptorPin = pins.find((pin) => pin.id == null)
-  const interruptorId = interruptorPin ? chosen.pop() : null
   if (chosen.some((id) => !written.days[id])) return null
   const halfDayOwner = Object.fromEntries(Object.entries(destData.curated_routes?.excursiones?.media_jornada ?? {}).map(([id, excursion]) => [excursion, id]))
 
@@ -92,7 +89,7 @@ export function ordenarDias(env) {
     let cursor = 0
     for (let index = 0; index < todosLosDias.length; index++) {
       const pin = pins.find((candidate) => candidate.index === index)
-      todo.push(pin ? pin.id ?? interruptorId : rest[cursor++])
+      todo.push(pin ? pin.id : rest[cursor++])
     }
     return todo
   }

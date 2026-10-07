@@ -5809,9 +5809,9 @@
      },
      "noche": {
       "lista": [],
-      "doc": "la pareja que toque (regla 13). En 4 y 5 días suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min). En 6 días con el D7 en el día 4, el Puente y el Castillo de Sant'Angelo (taxi, ~15 min).",
+      "doc": "la pareja que toque (regla 13). Suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min).",
       "libre": true,
-      "texto": "la pareja que toque (regla 13). En 4 y 5 días suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min). En 6 días con el D7 en el día 4, el Puente y el Castillo de Sant'Angelo (taxi, ~15 min)"
+      "texto": "la pareja que toque (regla 13). Suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min)"
      }
     }
    },
@@ -6381,9 +6381,9 @@
      },
      "noche": {
       "lista": [],
-      "doc": "la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna.",
+      "doc": "la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna. En 6 días suele ser el Puente y el Castillo de Sant'Angelo (taxi, ~15 min desde Monti).",
       "libre": true,
-      "texto": "la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna"
+      "texto": "la que no haya salido en el viaje, la más cerca de la cena; si no queda ninguna, sin nocturna. En 6 días suele ser el Puente y el Castillo de Sant'Angelo (taxi, ~15 min desde Monti)"
      }
     }
    },

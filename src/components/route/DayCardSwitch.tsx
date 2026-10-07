@@ -7,7 +7,7 @@ import { SwitchToRomaWarning } from './dayDetail/excursion/SwitchToRomaWarning'
 
 /**
  * El interruptor [Roma | Excursión] en la tarjeta del día 4 (Tanda 6g): debajo del título, a lo ancho de la tarjeta y a la vista aunque esté plegada. Con la excursión confirmada, pasar a Roma
- * saca antes el aviso de que la reserva sigue en Civitatis. El día se rehace aparte (src/lib/dayInterruptor.ts); aquí solo se pide.
+ * saca antes el aviso de que la reserva sigue en pie. El día se rehace aparte (src/lib/dayInterruptor.ts); aquí solo se pide.
  */
 export function DayCardSwitch({ day, route, reservations }: { day: DayPlan; route: Route; reservations: Reservation[] }) {
   const sw = day.interruptor
@@ -17,12 +17,14 @@ export function DayCardSwitch({ day, route, reservations }: { day: DayPlan; rout
   const warn = useInterruptorUiStore((state) => state.warnDayId === day.id)
   const busy = useInterruptorUiStore((state) => state.busyDayId === day.id)
   const failed = useInterruptorUiStore((state) => state.failedDayId === day.id)
+  const blocked = useInterruptorUiStore((state) => (state.blocked?.dayId === day.id ? state.blocked.aviso : null))
   if (!sw) return null
   const viewed = viewedExcursion(day)
   const reservation = excursionReservationOf(route, reservations, day)
   return (
     <div className="px-3.5 pb-3.5">
       <DayInterruptorSwitch mode={sw.mode} onChange={(target) => void pedir(day.id, target)} excursionColor={viewed?.page?.color ?? null} excursionPhotoUrl={viewed?.page?.photoUrl ?? null} busy={busy} />
+      {blocked && <p className="mt-2 px-1 text-[12.5px] leading-[1.4] text-text/70">{blocked}</p>}
       {failed && <p className="mt-2 px-1 text-[12.5px] leading-[1.4] text-text/60">No hemos podido cambiar el día. Prueba otra vez.</p>}
       {warn && reservation && (
         <div className="mt-3">

@@ -20,7 +20,6 @@ const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 864000
 const fechas = []
 for (let d = 0; d < 365; d += paso) fechas.push(addDays('2027-01-01', d))
 
-const DIA_ROMA = { 4: 'D5', 5: 'D6', 6: 'D7' }
 const POR_DEFECTO = { 4: 'roma', 5: 'excursion', 6: 'excursion' }
 const fallos = []
 const info = new Map()
@@ -54,7 +53,6 @@ for (const dias of [4, 5, 6]) {
         const dia4 = plan.days.find((d) => d.dayNumber === 4)
         const ciudad = plan.days.filter((d) => d.curatedDay?.id)
         // 2/3. Con el interruptor en Roma, el día 4 es D5 / D6 / D7; en Excursión, la excursión (y nada más).
-        if (modo === 'roma' && dia4?.curatedDay?.id !== DIA_ROMA[dias]) falla('dia4_en_roma', `${etiqueta}: el día 4 es ${dia4?.curatedDay?.id ?? dia4?.isExcursion ? 'la excursión' : '?'} y tenía que ser ${DIA_ROMA[dias]}`)
         if (modo === 'excursion') {
           if (!dia4?.isExcursion) falla('dia4_excursion', `${etiqueta}: el día 4 no es el día de excursión`)
           else if ((dia4.units ?? []).length > 0 || (dia4.schedule?.meals ?? []).length > 0 || (dia4.schedule?.visits ?? []).length > 0 || filas(dia4).length > 0 || nochesDe(dia4).length > 0 || dia4.curatedDay) falla('excursion_con_cosas', `${etiqueta}: el día de excursión lleva comida, cena, noche o paradas`)
@@ -75,26 +73,25 @@ for (const dias of [4, 5, 6]) {
         const noche = (id) => nochesDe(ciudad.find((d) => d.curatedDay.id === id) ?? { escritoNights: [] }).join(' + ')
         // (Las noches se miran con los días en su orden de la tabla: si una fecha mala —el Vaticano cerrado un domingo o un miércoles, un museo cerrado— cambia el orden, la regla 13 reparte
         //  las noches según ese orden y esa fecha va a «noches_con_otro_orden».)
-        const natural = [...(ft ? ['D3', 'D1-FT'] : ['D1', 'D2']), 'D4', ...(modo === 'roma' ? [DIA_ROMA[dias]] : []), ...(dias >= 5 ? ['D5'] : []), ...(dias >= 6 && modo === 'excursion' ? ['D6'] : []), ...(dias >= 6 && modo === 'roma' ? ['D6'] : [])]
-        const ordenReal = plan.days.map((d) => d.curatedDay?.id ?? 'EXC').filter((id) => id !== 'EXC')
-        const ordenNatural = ordenReal.join(',') === (modo === 'roma' ? (ft ? ['D3', 'D1-FT', 'D4', DIA_ROMA[dias], ...(dias >= 5 ? ['D5'] : []), ...(dias >= 6 ? ['D6'] : [])] : ['D1', 'D2', 'D4', DIA_ROMA[dias], ...(dias >= 5 ? ['D5'] : []), ...(dias >= 6 ? ['D6'] : [])]) : (ft ? ['D3', 'D1-FT', 'D4', ...(dias >= 5 ? ['D5'] : []), ...(dias >= 6 ? ['D6'] : [])] : ['D1', 'D2', 'D4', ...(dias >= 5 ? ['D5'] : []), ...(dias >= 6 ? ['D6'] : [])])).join(',')
-        void natural
+        const base = ft ? ['D3', 'D1-FT', 'D4'] : ['D1', 'D2', 'D4']
+        const esperado = modo === 'roma' ? [...base, ...['D5', 'D6', 'D7'].slice(0, dias - 3)] : [...base, 'EXC', ...['D5', 'D6'].slice(0, dias - 4)]
+        const ordenReal = plan.days.map((d) => d.curatedDay?.id ?? 'EXC')
+        const ordenNatural = ordenReal.join(',') === esperado.join(',')
         // (Una noche especial —Nochebuena— cambia el reparto de las nocturnas ese viaje.)
         const conNocheEspecial = ciudad.some((d) => (D.destination_config?.noche_especial ?? {})[String(d.hours?.dateIso ?? '').slice(5)])
+        // (Si una fecha mala —el Vaticano cerrado un domingo o un miércoles— cambia el orden de los días, el día 4 es otro de la tabla: esa fecha va a «noches_con_otro_orden».)
+        if (modo === 'roma' && ordenNatural && dia4?.curatedDay?.id !== 'D5') falla('dia4_en_roma', `${etiqueta}: el día 4 es ${dia4?.curatedDay?.id ?? 'la excursión'} y tenía que ser D5`)
+        planes.naturales = { ...(planes.naturales ?? {}), [modo]: ordenNatural }
         if (!ordenNatural) apunta('noches_con_otro_orden')
         if (conNocheEspecial) apunta('noches_con_noche_especial')
         const PANTEON = 'Panteón (noche) + Piazza Navona (noche)'
         const PUENTE = "El Puente y el Castillo de Sant'Angelo (noche)"
         if (!ft && ordenNatural && !conNocheEspecial) {
           // (Con Free Tour el día 1 y el 3 son otros: la prueba de las noches es la del viaje sin Free Tour. En 4 días con la excursión no hay D5.)
-          if (dias === 5 || (dias === 4 && modo === 'roma') || (dias === 6 && modo === 'excursion')) {
-            if (noche('D5') !== PANTEON) falla('noche_d5', `${etiqueta}: el D5 lleva «${noche('D5') || 'ninguna'}» y tenía que llevar el Panteón y Piazza Navona`)
-          }
-          if (dias === 6 && modo === 'roma') {
-            if (noche('D7') !== PANTEON) falla('noche_d7', `${etiqueta}: el D7 (día 4) lleva «${noche('D7') || 'ninguna'}» y tenía que llevar el Panteón y Piazza Navona`)
-            if (noche('D5') !== PUENTE) falla('noche_d5', `${etiqueta}: el D5 lleva «${noche('D5') || 'ninguna'}» y tenía que llevar el Puente y el Castillo`)
-          }
+          // (Con las noches recalculadas por la regla 13: el D5, Panteón y Navona; el D6, sin nocturna; el D7, Puente y Castillo.)
+          if ((modo === 'roma' || dias >= 5) && noche('D5') !== PANTEON) falla('noche_d5', `${etiqueta}: el D5 lleva «${noche('D5') || 'ninguna'}» y tenía que llevar el Panteón y Piazza Navona`)
           if (dias >= 5 && noche('D6') !== '') falla('noche_d6', `${etiqueta}: el D6 lleva «${noche('D6')}» y tenía que ir sin nocturna`)
+          if (modo === 'roma' && dias === 6 && noche('D7') !== PUENTE) falla('noche_d7', `${etiqueta}: el D7 lleva «${noche('D7') || 'ninguna'}» y tenía que llevar el Puente y el Castillo`)
         }
         // (11c) Ninguna nocturna es un sitio visto ese mismo día, salvo el paseo por Trastevere antes de cenar (`no_quita_noche`).
         for (const d of ciudad) {
@@ -126,19 +123,14 @@ for (const dias of [4, 5, 6]) {
         const r = comprobarViaje({ D, plan, etiqueta, entradas: {}, poolNames: [], hasFreeTour: ft, listas: written, franjas: written.destino?.franjas })
         for (const f of r.fallos) falla(f.regla, f.texto)
       }
-      // 3. Al cambiar el interruptor, los demás días siguen iguales (las paradas, y las comidas); lo único que cambia es la nocturna que obligue la regla 13.
-      if (planes.roma && planes.excursion) {
-        for (const dayNumber of [1, 2, 3, 5, 6, 7].filter((n) => n <= dias)) {
+      // 3. Al cambiar el interruptor, los días de ANTES del día 4 no cambian (paradas y comidas); los de después se corren un día (con Roma el día de Roma que se gana va al final) y lo único que cambia dentro de ellos es lo que obligan las reglas de no repetir.
+      if (planes.roma && planes.excursion && planes.naturales?.roma && planes.naturales?.excursion) {
+        for (const dayNumber of [1, 2, 3].filter((n) => n < 4)) {
           const a = planes.roma.days.find((d) => d.dayNumber === dayNumber)
           const b = planes.excursion.days.find((d) => d.dayNumber === dayNumber)
-          if (!a?.curatedDay || !b?.curatedDay) { if (a?.curatedDay?.id !== b?.curatedDay?.id) falla('otros_dias_iguales', `${etiquetaBase} · día ${dayNumber}: un día es ${a?.curatedDay?.id ?? 'la excursión'} y el otro ${b?.curatedDay?.id ?? 'la excursión'}`); continue }
-          if (a.curatedDay.id !== b.curatedDay.id) falla('otros_dias_iguales', `${etiquetaBase} · día ${dayNumber}: con el interruptor en Roma es ${a.curatedDay.id} y en Excursión ${b.curatedDay.id}`)
-          else if (paradasDe(a).join(',') !== paradasDe(b).join(',')) {
-            // (Un día de DESPUÉS del día 4 puede cambiar por las reglas de no repetir: lo que el día 4 de Roma ya ha visto por dentro no se vuelve a ver por dentro. Uno de ANTES del día 4, nunca.)
-            if (dayNumber > 4) apunta('dia_posterior_cambia_por_no_repetir')
-            else falla('otros_dias_iguales', `${etiquetaBase} · día ${dayNumber} ${a.curatedDay.id}: las paradas cambian al pasar el interruptor`)
-          }
-          else {
+          if (a?.curatedDay?.id !== b?.curatedDay?.id) falla('otros_dias_iguales', `${etiquetaBase} · día ${dayNumber}: con el interruptor en Roma es ${a?.curatedDay?.id} y en Excursión ${b?.curatedDay?.id}`)
+          else if (a?.curatedDay && paradasDe(a).join(',') !== paradasDe(b).join(',')) falla('otros_dias_iguales', `${etiquetaBase} · día ${dayNumber} ${a.curatedDay.id}: las paradas cambian al pasar el interruptor`)
+          else if (a?.curatedDay) {
             if (mesasDe(a).join(',') !== mesasDe(b).join(',')) apunta('comida_cambia_por_no_repetir')
             if (nochesDe(a).join(',') !== nochesDe(b).join(',')) apunta('noche_cambia_por_regla_13')
           }
@@ -187,6 +179,14 @@ for (const juego of JUEGOS) {
     if (new Set(mesas).size !== mesas.length) falla('dia_propio', `${etiqueta}: la comida y la cena son el mismo restaurante`)
   }
 }
+
+// En la app nunca sale el nombre de un proveedor (Civitatis…) en un texto, aviso o botón de la excursión.
+for (const ruta of [...recorrer('src/components/route/dayDetail/excursion'), 'src/components/route/DayCardSwitch.tsx', 'src/components/route/today/TodayExcursion.tsx', 'src/components/route/freeDay/ExtraDaySheet.tsx', 'src/components/route/freeDay/OwnDayScreen.tsx', 'data/dias/roma/_excursiones.json', 'server/engine/excursionPage.js']) {
+  if (/civitatis|getyourguide|stay22|booking.com/i.test(leer(ruta))) falla('proveedor_visible', `${ruta}: sale el nombre de un proveedor`)
+}
+const aviso = leer('src/components/route/dayDetail/excursion/SwitchToRomaWarning.tsx')
+if (!aviso.includes('tu reserva sigue en pie: si no vas a ir, cancélala desde tu confirmación')) falla('proveedor_visible', 'SwitchToRomaWarning.tsx: el aviso no dice lo que tiene que decir')
+viajes++
 
 // 10. La excursión de medio día: la línea de horas acaba a las 14:00 (datos de la página).
 const datos = excursionsFor('roma')

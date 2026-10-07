@@ -40,16 +40,16 @@ Esta tanda cambia el día de excursión de los viajes de 4, 5 y 6 días y quita 
 
 Es la tabla nueva del documento («Qué días lleva cada viaje» y «El día de excursión»). Lo importante:
 
-| Viaje | Día 4 | Por defecto | Con el interruptor en Roma |
+| Viaje | Por defecto | Con excursión | Con Roma |
 |---|---|---|---|
-| 4 días | con interruptor | **Roma** | D5 |
-| 5 días | con interruptor | **Excursión** | D6 |
-| 6 días | con interruptor | **Excursión** | D7 |
+| 4 días | **Roma** | D1 · D2 · D4 · Excursión | D1 · D2 · D4 · D5 |
+| 5 días | **Excursión** | D1 · D2 · D4 · Excursión · D5 | D1 · D2 · D4 · D5 · D6 |
+| 6 días | **Excursión** | D1 · D2 · D4 · Excursión · D5 · D6 | D1 · D2 · D4 · D5 · D6 · D7 |
 
 - **Con Free Tour,** los días 1 y 2 son D3 y D1-FT. El día 4 funciona igual.
-- **El interruptor solo cambia el día 4.** Los demás días no se mueven ni se recalculan, salvo lo que obliguen las reglas de no repetir:
-  - si el día 4 pasa a ser un día de Roma, ese día no puede repetir los restaurantes ni las nocturnas de los demás;
-  - y si el día 4 se queda con una nocturna, la del día que venía detrás cambia a la siguiente que toque (regla 13). Pasa en 6 días: el D7 se queda con el Panteón y Navona, y el D5 pasa al Puente y el Castillo.
+- **Con Roma, los días de Roma van en su orden (D5, D6, D7):** el día de Roma que se gana va al final, y lo del día 5 en adelante se corre un día. Así lo mejor sigue primero.
+- **Con una reserva en un día que se movería** (el día 5 o el 6), el interruptor no deja pasar a Roma: no se mueve nada y sale el aviso «Tienes una reserva el día {n} ({sitio}, {hora}): no puedes mover este día».
+- **Las nocturnas se recalculan** con la regla 13: el D5, el Panteón y Navona; el D6, sin nocturna; el D7, el Puente y el Castillo.
 - **El día de excursión nunca es el de llegada ni el de vuelta.** Las llegadas son de la Tanda 7: ahora déjalo en el día 4.
 
 ## 3. La tarjeta del día 4 (pestaña DÍAS)
@@ -67,7 +67,7 @@ Es la tabla nueva del documento («Qué días lleva cada viaje» y «El día de 
   - debajo, «13 h · vuelta a Roma 20:00», con los datos de la excursión elegida;
   - con la excursión confirmada, «✓ Reservada · {nombre de la excursión}»;
   - al abrirla, la página del punto 4.
-- **Si la excursión está confirmada y el viajero pasa el interruptor a Roma,** antes de cambiar sale este aviso: «Tienes reservada la excursión a {nombre} ({código}). Si cambias a Roma, la reserva sigue en Civitatis: si no vas a ir, cancélala allí». Lleva dos botones:
+- **Si la excursión está confirmada y el viajero pasa el interruptor a Roma,** antes de cambiar sale este aviso: «Tienes reservada la excursión a {nombre} ({código}). Si cambias a Roma, tu reserva sigue en pie: si no vas a ir, cancélala desde tu confirmación». **En la app nunca sale «Civitatis» ni el nombre de ningún proveedor.** Lleva dos botones:
   - **«Cambiar a Roma»:** cambia el día; la reserva se queda en RESERVAS;
   - **«Seguir con la excursión»:** no cambia nada.
 - **El interruptor se guarda con el viaje,** como cualquier otro cambio del viajero.
@@ -184,20 +184,21 @@ En los viajes de 4, 5 y 6 días, las 365 fechas de 2027, con y sin Free Tour, y 
 
 1. **0 veces «Generar una ruta para este día»,** «Casco histórico de Roma» o «Museo de Arte de Roma», en ningún destino ni duración.
 2. **El día 4 sale por defecto como dice la tabla:** Roma en 4 días; Excursión en 5 y 6.
-3. **Con el interruptor en Roma,** el día 4 es D5 (4 días), D6 (5 días) o D7 (6 días). Al cambiar el interruptor, los demás días siguen iguales, salvo la nocturna que obligue la regla 13.
+3. **Con el interruptor en Roma,** los días van D5, D6 y D7, en su orden (tabla del punto 2). Con una reserva en el día 5 o 6, el interruptor no pasa a Roma y sale el aviso.
 4. **El día de excursión:** 0 comidas, 0 cenas y 0 nocturnas propuestas.
 5. **0 restaurantes repetidos y 0 nocturnas repetidas** en todo el viaje, con el interruptor en las dos posiciones. Por ejemplo:
    - el D6 cena en Giggetto (Nonna Betta es la comida del D1);
    - el D7 no usa Tonnarello si ya es la cena del D2.
 6. **Las noches:**
-   - el D5 lleva el Panteón y Navona en 4 y 5 días, y el Puente y el Castillo en 6 días con el D7 en el día 4;
-   - en 5 y 6 días el D6 va sin nocturna;
+   - el D5 lleva el Panteón y Navona; el D6 va sin nocturna; el D7, el Puente y el Castillo;
    - ninguna nocturna es un sitio visto ese mismo día (regla 11c).
 7. **La terraza del Altar sigue en el D6** aunque el D1 lleve el Altar por dentro.
 8. **En el D6, la Piazza Navona y el Campidoglio salen como «de camino»,** con «Ya lo visitaste el día 1».
 9. **Lo de siempre:** nada cerrado, sin zigzag y por dentro una sola vez.
 10. **La excursión de medio día:** la línea de horas acaba a las 14:00 y sale «+ Añadir lugares».
-11. **La página de simulación:** añade los viajes de 4, 5 y 6 días, cada uno con el interruptor en Roma y en Excursión, y uno con una excursión de medio día.
+11. **0 etiquetas de día en rojo** («Día de viaje» y «Día de excursión», en naranja).
+12. **El resumen del día** (punto 3b) sale en todos los días, con su fondo y sus tres columnas, y no sale en el día de excursión.
+13. **La página de simulación:** añade los viajes de 4, 5 y 6 días, cada uno con el interruptor en Roma y en Excursión, y uno con una excursión de medio día.
 
 **Comprobación a mano en el móvil**, y apunta en el informe lo que no hayas podido probar:
 - el interruptor;
@@ -206,7 +207,8 @@ En los viajes de 4, 5 y 6 días, las 365 fechas de 2027, con y sin Free Tour, y 
 - el aviso al pasar a Roma con la excursión confirmada;
 - «Crear mi propio día»;
 - «Añadir lugares»;
-- la hoja del día 7.
+- la hoja del día 7;
+- el resumen del día, en un móvil estrecho (las tres columnas no se cortan).
 
 Al final, **reinicia el api-server.**
 
