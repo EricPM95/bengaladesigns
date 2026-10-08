@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react'
+import { useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
@@ -11,15 +11,6 @@ const LONG = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric'
 export function formatDateField(iso: string): string {
   return LONG.format(isoToLocalDate(iso)).replace(/\./g, '')
 }
-
-/** Los colores de la app para el calendario (react-day-picker 10 los lee de estas variables). */
-const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'rgb(var(--accent))',
-  '--rdp-accent-background-color': 'rgb(var(--accent-soft))',
-  '--rdp-today-color': 'rgb(var(--accent))',
-  '--rdp-day_button-border-radius': '999px',
-  color: 'rgb(var(--text))',
-} as CSSProperties
 
 /**
  * El selector de fecha de toda la app (Tanda 6k, punto 8): un botón que abre una hoja desde abajo con el mismo calendario que el formulario («Añadir fechas»),
@@ -78,7 +69,7 @@ export function DateField({
             close()
           }}
         >
-          <div className="calendar-scope flex justify-center" style={CALENDAR_STYLE}>
+          <div className="date-field-calendar flex justify-center">
             <DayPicker
               mode="single"
               selected={draft ? isoToLocalDate(draft) : undefined}

@@ -141,6 +141,8 @@ export function ordenarDias(env) {
       candidate.forEach((id, index) => {
         cost += fixedCost.get(id)[index]
         cost += Math.abs(index - chosen.indexOf(id))
+        // (Tanda 6k: a igual coste, cambian de sitio los menos días posibles: dos días enteros, uno por otro, y algún día más solo si un cierre lo obliga.)
+        if (id !== chosen[index]) cost += 0.01
       })
       if (!best || cost < best.cost) best = { candidate, cost }
     }

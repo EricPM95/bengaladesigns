@@ -28,7 +28,7 @@ import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { straightLineMeters } from './travelTimes.js'
 import { nocheValida } from './nightLimit.js'
-import { availableForTrip, seasonFit } from './availability.js'
+import { availabilityLabel, availableForTrip, seasonFit } from './availability.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
@@ -438,6 +438,8 @@ export function planListasTrip(args) {
       return false
     })
     // 5.3 Cierres: lo cerrado ese día sale con «Cerrado hoy» (o por fuera si se ve desde la calle, o su alternativa escrita).
+    // (Tanda 6k, punto 3: sin fechas no hay «hoy»: un sitio de temporada que no abre en ese mes no «cierra hoy», solo está en sus fechas.)
+    const motivoCierre = (source) => (calendar.hasDates ? OUTSIDE_REASONS.cerrado : source.available && availabilityLabel(source.available) ? `Solo está ${availabilityLabel(source.available)}` : 'Fuera de temporada en ese mes')
     const sinTraslado = (lista, destinoId) => lista.filter((it, i) => !(it.kind === 'traslado' && lista[i + 1]?.id === destinoId))
     items = items.flatMap((item) => {
       if (item.kind !== 'stop' || item.llegada) return [item]
@@ -451,12 +453,12 @@ export function planListasTrip(args) {
       }
       if (item.si_cerrado?.cambiar_titulo) {
         log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'titulo', causa: `${item.lugar} está cerrado hoy: la parada es «${item.si_cerrado.cambiar_titulo}»` })
-        return [{ ...item, titulo: item.si_cerrado.cambiar_titulo, modo: 'fuera', min: item.si_cerrado.min ?? Math.min(item.min, source.minutos_fuera ?? 10), motivo_fuera: OUTSIDE_REASONS.cerrado }]
+        return [{ ...item, titulo: item.si_cerrado.cambiar_titulo, modo: 'fuera', min: item.si_cerrado.min ?? Math.min(item.min, source.minutos_fuera ?? 10), motivo_fuera: motivoCierre(source) }]
       }
       const sePuedeFuera = source.minutos_fuera != null || source.pass_by || source.type === 'exterior'
       if (sePuedeFuera) {
         log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'modo', causa: `cierre de ${item.lugar}: hoy cierra, por fuera` })
-        return [{ ...item, modo: 'fuera', min: Math.min(item.min, source.minutos_fuera ?? OUTSIDE_MINUTES), motivo_fuera: OUTSIDE_REASONS.cerrado }]
+        return [{ ...item, modo: 'fuera', min: Math.min(item.min, source.minutos_fuera ?? OUTSIDE_MINUTES), motivo_fuera: motivoCierre(source) }]
       }
       log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'quitada', causa: `cierre de ${item.lugar}` })
       quitadas.push({ ...item, motivo: 'Cerrado hoy' })
@@ -1447,7 +1449,7 @@ export function planListasTrip(args) {
       // el tour es una parada con su hora
     } else if (modo === 'fuera' || item.motivo_fuera) {
       ready = {
-        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera ? 'cerrado' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
+        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera === OUTSIDE_REASONS.cerrado ? 'cerrado' : item.motivo_fuera ? 'no_abre' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
         coordinates: source.pass_by?.coordinates ?? source.coordinates, duration_minutes: item.min, windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
       }
     } else if (modo === 'camino') {
@@ -1481,6 +1483,12 @@ export function planListasTrip(args) {
   function construirSalida(draft, skeletonDay, final, spare, quitadas, escritoNights, hours, fecha, dateIso, comprobacionTiempo = null) {
     const log = draft.log
     const visits = []
+    // La franja de cada parada es la de su sitio en el día (Tanda 6k, punto 2): antes de la comida, «Mañana»; después, «Tarde». Con una reserva, el día cambia de lista y una parada que el documento
+    // escribe en la tarde puede quedar antes de la comida (o al revés): sin esto, el día saldría con dos franjas «Mañana», o con una franja con horas que no son las suyas.
+    {
+      const comidaAt = final.findIndex((it) => it.kind === 'comida')
+      if (comidaAt >= 0) final = final.map((it, at) => (it.kind === 'stop' && (it.franja === 'manana' || it.franja === 'tarde') && it.franja !== (at < comidaAt ? 'manana' : 'tarde') ? { ...it, franja: at < comidaAt ? 'manana' : 'tarde' } : it))
+    }
     const units = []
     const meals = []
     let dinnerRestaurant = null

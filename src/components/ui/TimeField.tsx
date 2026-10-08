@@ -17,7 +17,8 @@ function Wheel({ label, items, index, onIndex }: { label: string; items: string[
     const el = ref.current
     if (el && Math.abs(el.scrollTop - index * ITEM_H) > 1) el.scrollTo({ top: index * ITEM_H, behavior: el.dataset.ready ? 'smooth' : 'auto' })
     if (el) el.dataset.ready = '1'
-  }, [index, items])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, items.length, items[0], items[items.length - 1]])
   const settle = () => {
     window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => {
