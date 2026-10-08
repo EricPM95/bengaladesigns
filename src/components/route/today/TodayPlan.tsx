@@ -240,7 +240,7 @@ export function TodayTimeCheck({ day, nowMin, result, suggestOpen, onSuggestOpen
           {result.suggestions.map((stop) => (
             <li key={stop.id} className="flex items-center gap-3 py-2.5">
               <div className="min-w-0 flex-1">
-                <p className="font-display text-[16px] leading-[1.2] text-text [overflow-wrap:anywhere]">{displayStopName(stop.name)}</p>
+                <p className="font-display text-[16px] leading-[1.2] max-[479px]:text-[15px] text-text [overflow-wrap:anywhere]">{displayStopName(stop.name)}</p>
                 <p className="mt-0.5 text-[12px] leading-[1.35] text-text/60">
                   {stop.durationMinutes} min{stop.addNote ? ` · ${stop.addNote}` : ''}
                 </p>

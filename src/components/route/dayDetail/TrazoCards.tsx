@@ -111,9 +111,9 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
           </span>
         )}
         {/* El nombre en una línea si cabe; si no, en las que haga falta: la tarjeta crece y nunca se corta. */}
-        <span className="font-display text-[17px] leading-[1.12] [overflow-wrap:anywhere]">{name}</span>
+        <span className="font-display text-[17px] leading-[1.12] max-[479px]:text-[16px] [overflow-wrap:anywhere]">{name}</span>
         {sub && (
-          <span title={sub} className={`line-clamp-2 text-[11px] leading-[1.3] max-[479px]:text-[12px] ${night ? '' : 'text-text/60'}`} style={{ color: ink2 }}>
+          <span title={sub} className={`line-clamp-2 text-[11px] leading-[1.3] max-[479px]:text-[11px] ${night ? '' : 'text-text/60'}`} style={{ color: ink2 }}>
             {sub}
           </span>
         )}
@@ -122,7 +122,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
             {meta.map((item, index) => (
               <span
                 key={`${item.text}-${index}`}
-                className={`flex items-center gap-1 text-[11px] leading-[1.3] ${item.warn ? 'text-accent-red' : night ? '' : 'text-text/60'}`}
+                className={`flex items-center gap-1 text-[11px] leading-[1.3] max-[479px]:text-[10px] ${item.warn ? 'text-accent-red' : night ? '' : 'text-text/60'}`}
                 style={item.warn ? undefined : { color: ink2 }}
               >
                 {item.icon && <Icon d={KIND_ICON[item.icon]} />}
@@ -136,7 +136,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
             {tags.map((tag) => (
               <span
                 key={tag.label}
-                className="inline-flex h-[19px] items-center rounded-full px-2 text-[10.5px] font-medium"
+                className="inline-flex min-h-[19px] shrink-0 items-center whitespace-nowrap rounded-full px-2 py-[2px] text-[10.5px] font-medium"
                 style={tag.green ? { background: 'rgb(var(--accent-green-soft))', color: 'rgb(var(--accent-green))' } : night ? { background: 'rgba(200,190,255,.16)', color: 'oklch(0.88 0.07 285)' } : { background: KIND_STYLE[tag.kind].soft, color: KIND_STYLE[tag.kind].ink }}
               >
                 {tag.label}

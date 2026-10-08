@@ -100,7 +100,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
         <ConfirmDialog
           eyebrow="Ruta original"
           text={`¿Recuperar tu ruta de ${askRestoreCity}?`}
-          detail="Volverás a la ruta inicial y se perderá todo lo modificado, únicamente mantendremos tus reservas."
+          detail="Volverás a la ruta inicial y se perderá todo lo modificado."
           confirmLabel="Recuperar"
           cancelLabel="Cancelar"
           onCancel={() => setAskRestoreCity(null)}

@@ -845,14 +845,28 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route || (day && isDayPinned(state.route, state.reservations, day))) return state
       return { route: removeAnyDay(state.route, dayId) }
     }),
-  restoreOriginalRoute: (city) =>
+  restoreOriginalRoute: (city) => {
+    // La varita lo borra todo (Tanda 6l, punto 2), también las reservas guardadas en la app: las de ese destino (con un solo destino, todas) y sus avisos de la campana. Nada queda como «cambiado a mano».
+    const removedIds: string[] = []
     set((state) => {
       const original = state.route?.originalRoute
       if (!state.route || !original) return state
-      if (city) return { route: withDayColors(reapplyReservations(recuperarDestino(state.route, city), state.reservations)), activeDayId: null }
+      const route = state.route
+      const cities = new Set(route.days.filter((day) => !day.isReturnLeg).map((day) => day.city))
+      const removed = state.reservations.filter((reservation) => !city || cities.size <= 1 || dayOfReservation(route, reservation)?.city === city)
+      removedIds.push(...removed.map((reservation) => reservation.id))
+      const remaining = state.reservations.filter((reservation) => !removedIds.includes(reservation.id))
+      const withoutHandEdits = (next: Route): Route => ({ ...next, days: next.days.map((day) => (day.originalSnapshot ? { ...day, originalSnapshot: null } : day)).map((day) => ({ ...day, stops: day.stops.map((stop) => (stop.reservedId && removedIds.includes(stop.reservedId) ? { ...stop, reservedId: null } : stop)) })), editedManually: false })
+      if (city) return { route: withDayColors(reapplyReservations(withoutHandEdits(recuperarDestino(route, city)), remaining)), reservations: remaining, activeDayId: null }
       const copy = JSON.parse(JSON.stringify(original)) as NonNullable<Route['originalRoute']>
-      return { route: reapplyReservations({ ...state.route, days: copy.days, answers: copy.answers, editedManually: false }, state.reservations), activeDayId: null }
-    }),
+      return { route: reapplyReservations(withoutHandEdits({ ...route, days: copy.days, answers: copy.answers }), remaining), reservations: remaining, activeDayId: null }
+    })
+    if (removedIds.length > 0) {
+      void import('./useNoticesStore').then(({ useNoticesStore }) => {
+        for (const notice of useNoticesStore.getState().pushed) if (removedIds.some((id) => notice.id.includes(id))) useNoticesStore.getState().remove(notice.id)
+      })
+    }
+  },
   renameDay: (dayId, name) => set((state) => (state.route ? { route: renameDayIn(state.route, dayId, name) } : state)),
   moveFreeDay: (dayId, direction) =>
     set((state) => {

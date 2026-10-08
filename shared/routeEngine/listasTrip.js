@@ -44,7 +44,7 @@ const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera 
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
   inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
-  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_hasta_con_hora_fija: '15:00', comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
+  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, tolerancia_tour_min: 5, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_hasta_con_hora_fija: '15:00', comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
 /** Cuántos extras del pool se pueden elegir: 2 días, 2; 3, 3; 4, 4; 5 o más, 5. */
@@ -1020,9 +1020,12 @@ export function planListasTrip(args) {
         const conEspera = abre != null && abre - malo.t0 <= esperaMax && proxima && abre + (malo.min ?? 20) <= proxima.close
           ? out.map((it) => (it.id === malo.id ? { ...it, no_antes: toHHMM(abre), ...(abre - malo.t0 > cfg.espera_max_min && previa ? { espera_en: { lugar: previa.lugar, titulo: previa.titulo ?? null } } : {}), espera_abre: toHHMM(abre), espera_tras: previa ? { lugar: previa.lugar, titulo: previa.titulo ?? null } : null } : it))
           : null
-        // (Esperar nunca hace llegar tarde a una hora fija —una reserva—: si la espera empeora una llegada tarde, no se espera y se ve por fuera.)
+        // (Esperar nunca hace llegar tarde a una hora fija —una reserva—: si la espera empeora una llegada tarde, no se espera y se ve por fuera.
+        //  Tanda 6l: con el Free Tour, unos minutos de margen no son llegar tarde: el guía espera en el punto y el viajero llega con el margen de 15 min ya gastado; hasta 5 min no cuentan.
+        //  Sin esto, el Panteón del D3, que llega 6 min antes de abrir, se veía por fuera para no gastar 3 min del margen del tour, contra la regla 7.)
+        const toleranciaDe = (it) => (it.tipo === 'tour' ? cfg.tolerancia_tour_min : 0)
         const tardesAntes = new Map(sim.filter((it) => it.hora).map((it) => [it.id, it.tarde ?? 0]))
-        const empeora = conEspera != null && simular(conEspera).some((it) => it.hora && (it.tarde ?? 0) > (tardesAntes.get(it.id) ?? 0))
+        const empeora = conEspera != null && simular(conEspera).some((it) => it.hora && (it.tarde ?? 0) > Math.max(tardesAntes.get(it.id) ?? 0, toleranciaDe(it)))
         if (conEspera && !empeora) {
           out = conEspera
           log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'hora', causa: `${malo.titulo ?? malo.lugar} abre a las ${horaAbre}: se espera ${abre - malo.t0} min` })

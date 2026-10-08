@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { Route } from '../lib/types'
+import type { Reservation } from '../lib/bookings'
 import { useRouteStore } from './useRouteStore'
 
 /**
@@ -19,7 +20,7 @@ interface AddFlowState {
   focusStopId: string | null
   setFocusStopId: (id: string | null) => void
   /** Aviso con "Deshacer": la ruta de antes del cambio. */
-  toast: { message: string; previous: Route | null; id: number } | null
+  toast: { message: string; previous: Route | null; previousReservations?: Reservation[]; id: number } | null
   dismissToast: () => void
   undo: () => void
 }
@@ -37,7 +38,9 @@ export const useAddFlowStore = create<AddFlowState>((set, get) => ({
   dismissToast: () => set({ toast: null }),
   undo: () => {
     const previous = get().toast?.previous
-    if (previous) useRouteStore.setState({ route: previous })
+    const previousReservations = get().toast?.previousReservations
+    // (Con las reservas de antes: si el cambio las borró —la varita—, volver atrás las devuelve.)
+    if (previous) useRouteStore.setState({ route: previous, ...(previousReservations ? { reservations: previousReservations } : {}) })
     set({ toast: null })
   },
 }))
@@ -45,6 +48,7 @@ export const useAddFlowStore = create<AddFlowState>((set, get) => ({
 /** Hace el cambio y deja el aviso con "Deshacer" (vuelve la ruta tal cual estaba). */
 export function withUndo(message: string, change: () => void): void {
   const previous = useRouteStore.getState().route
+  const previousReservations = useRouteStore.getState().reservations
   change()
-  useAddFlowStore.setState({ toast: { message, previous, id: Date.now() } })
+  useAddFlowStore.setState({ toast: { message, previous, previousReservations, id: Date.now() } })
 }
