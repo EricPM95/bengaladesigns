@@ -216,6 +216,14 @@ export type PriceTier = '€' | '€€' | '€€€'
 
 export type StopCategory = 'sight' | 'landmark' | 'nature' | 'shopping' | 'experience' | 'vibes'
 
+/** Una entrada de los datos (Tanda 6n): `desde` en euros, `url` el enlace de compra (null = la búsqueda del sitio). */
+export interface StopEntrada {
+  nombre: string
+  incluye: string | null
+  desde: number | null
+  url: string | null
+}
+
 export interface Stop {
   id: string
   time: string
@@ -358,8 +366,6 @@ export interface Stop {
   waitHint?: string | null
   /** Tanda 6c: «Turno recomendado: 11:00» (lo propone el motor; no es una reserva del viajero, no va en negrita). */
   recommendedTurn?: string | null
-  /** Tanda 6j: hay que reservar en estas fechas (el Coliseo del 25 oct al 28 feb): «Reserva obligatoria en estas fechas» mientras no esté reservado. */
-  reservationRequiredNow?: boolean
   /** Tanda 6c: al añadir esta sugerencia de HOY, la comida o la cena pasa a un restaurante de su zona. */
   mealChange?: { mealTime: 'lunch' | 'dinner'; restaurant: ChosenRestaurant; /** Si la cena cambia de zona y la noche tiene que seguir cerca: las nocturnas nuevas. */ nightStops?: Stop[] } | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */
@@ -369,6 +375,8 @@ export interface Stop {
   why?: string | null
   /** Precio y condiciones de entrada ("Entrada ~15€.") — solo se enseñan en la pestaña Tickets. */
   ticketInfo?: string[] | null
+  /** Las entradas que se pueden comprar de este sitio (data/dias/<destino>/_entradas.json): pestaña «Entradas» y pestañita de la tarjeta. */
+  entradas?: StopEntrada[] | null
   /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
       sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
   isBreak?: boolean

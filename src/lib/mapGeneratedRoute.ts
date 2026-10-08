@@ -14,6 +14,7 @@ import type {
   Restaurant,
   Route,
   Stop,
+  StopEntrada,
   StopCategory,
   TicketOption,
   TransportContext,
@@ -111,6 +112,8 @@ export interface GeneratedStop {
   outside_reason?: string | null
   /** Precio y condiciones de entrada — Stop.ticketInfo. */
   ticket_info?: string[] | null
+  /** Las entradas de los datos (_entradas.json) — Stop.entradas. */
+  entradas?: StopEntrada[] | null
   /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
   hours_warning?: string | null
   /** Temporada aproximada, en el margen: Stop.seasonNotice. */
@@ -152,8 +155,6 @@ export interface GeneratedStop {
   wait_hint?: string | null
   /** Tanda 6c: turno que propone el motor (no una reserva del viajero). */
   recommended_turn?: string | null
-  /** Tanda 6j: hay que reservar en estas fechas (el Coliseo en invierno). */
-  reservation_required_now?: boolean
   /** Tanda 6c: una sugerencia de HOY lejana cambia también la comida o la cena a su zona. */
   meal_change?: { meal_time: 'lunch' | 'dinner'; restaurant: { name: string; coordinates: { lat: number; lng: number }; zone?: string | null }; night_stops?: GeneratedStop[] } | null
   break_icon?: string | null
@@ -534,7 +535,6 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.visited_day ? { visitedDay: generated.visited_day } : {}),
     ...(generated.wait_opens_at ? { waitOpensAt: generated.wait_opens_at, waitHint: generated.wait_hint ?? null } : {}),
     ...(generated.recommended_turn ? { recommendedTurn: generated.recommended_turn } : {}),
-    ...(generated.reservation_required_now ? { reservationRequiredNow: true } : {}),
     ...(generated.meal_change ? { mealChange: generated.meal_change.restaurant ? { mealTime: generated.meal_change.meal_time, restaurant: generated.meal_change.restaurant, ...(generated.meal_change.night_stops?.length ? { nightStops: generated.meal_change.night_stops.map((night) => mapStop(0, night)) } : {}) } : null } : {}),
     ...(generated.is_break
       ? {
@@ -551,6 +551,7 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
     ...(generated.ticket_info?.length ? { ticketInfo: generated.ticket_info } : {}),
+    ...(generated.entradas?.length ? { entradas: generated.entradas } : {}),
   }
 }
 

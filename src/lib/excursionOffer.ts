@@ -8,9 +8,3 @@ export function excursionTargetDays(route: Route): DayPlan[] {
   const days = route.days.filter((day) => !day.isReturnLeg)
   return days.length <= 2 ? [] : days.slice(1, -1)
 }
-
-/** ¿Sale el botón de excursiones? Con los días suficientes que marca el destino (null: este destino no tiene excursiones). */
-export function showsExcursionsButton(route: Route, fromDays: number | null): boolean {
-  if (fromDays == null) return false
-  return route.days.filter((day) => !day.isReturnLeg).length >= fromDays
-}

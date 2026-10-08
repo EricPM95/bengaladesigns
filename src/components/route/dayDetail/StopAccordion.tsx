@@ -4,6 +4,7 @@ import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
+import { EntradaEdgeTab } from '../reservas/EntradaEdgeTab'
 import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
 
 interface StopAccordionProps {
@@ -11,6 +12,8 @@ interface StopAccordionProps {
   number: number | null
   stop: MockStopDetail
   onOpen: () => void
+  /** La pestañita naranja de entrada: abre la ficha directamente en su pestaña «Entradas». */
+  onOpenEntradas?: () => void
   /** Menú "···" (Cambiar/Quitar/Mover/Cambiar hora) — fuera del botón de abrir para que no lo dispare, ver StopMenu.tsx. */
   menu?: ReactNode
   /** Hora de inicio calculada para esta parada concreta ("09:00") — distinta de `stop.hours` (horario de apertura del lugar). */
@@ -40,7 +43,7 @@ const OUTSIDE_SHORT: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
@@ -114,7 +117,6 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
-  if (stop.reservationRequiredNow && !stop.reservedId) meta.unshift({ text: 'Reserva obligatoria en estas fechas', warn: true })
   if (stop.recommendedTurn && !stop.reservationTime) meta.unshift({ icon: 'hour', text: `Turno recomendado: ${stop.recommendedTurn}` })
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
 
@@ -129,8 +131,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}
-      reserved={Boolean(stop.reservedId)}
-      reservedTime={stop.reservationTime ?? null}
+      edgeTab={<EntradaEdgeTab stop={stop} onOpenEntradas={onOpenEntradas ?? onOpen} />}
       photoUrl={stop.photoUrl}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)
       noPhoto={!stop.photoUrl}

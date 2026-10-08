@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { toHHMM, toMinutes } from '../../shared/routeEngine/time.js'
 import { findPipelineV2Key, mealZoneInfo } from '../routeAlgorithm.js'
-import { ownPhotoFile, photosFor } from './writtenDays.js'
+import { entradasFor, ownPhotoFile, photosFor } from './writtenDays.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
 
@@ -191,7 +191,7 @@ function quarterHourStops(stops) {
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones, recommendedRestaurant } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
-import { hoursWarning, lastEntryMinutes, parseClosingMinutes, parseHoursSessions, scheduleForDay, withinMonthDays } from '../../shared/routeEngine/openingHours.js'
+import { hoursWarning, lastEntryMinutes, parseClosingMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -465,6 +465,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Free Tour (entonces va en ella ese tour) o tenga una parte de pago (la cúpula, la cripta).
     if (source && !visit.place.isFreeTour && !visit.place.isBreak) {
       if (!(source.ticket_info ?? []).some((line) => /de pago|se pagan?\b/i.test(line))) stop.free_access = true
+      const entradas = entradasFor(findPipelineV2Key(destData.destination ?? '') ?? '', source.name)
+      if (entradas.length) stop.entradas = entradas
       const tourCfg = destData.default_free_tour
       if ((tourCfg?.covers ?? []).includes(source.name)) stop.in_free_tour = { name: tourCfg.name, duration_minutes: tourCfg.duration_minutes ?? null, meeting_point: tourCfg.meeting_point ?? null, url: tourCfg.url ?? null }
       // (La ficha, solo con nuestro texto: sin el que escribe la IA bajo demanda.)
@@ -616,8 +618,6 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (tripDay.hours?.weekday && tripDay.hours?.dateIso && !anyTransitRuns(destData, tripDay.hours.dateIso, visit.start, visit.start)) {
       for (const field of ['why', 'note', 'description']) if (/\b(bus|autobús|metro|tranvía)\b/i.test(stop[field] ?? '')) stop[field] = withoutPublicTransit(stop[field])
     }
-    // Reserva obligatoria solo en unas fechas (el Coliseo del 25 de octubre al 28 de febrero, Tanda 6j): la tarjeta y la línea de Reservas lo dicen mientras no esté reservado.
-    if (sourcePlace?.reserva_obligatoria_entre && tripDay.hours?.dateIso && stop.visit_mode !== 'fuera' && withinMonthDays(Number(tripDay.hours.dateIso.slice(5, 7)) * 100 + Number(tripDay.hours.dateIso.slice(8, 10)), sourcePlace.reserva_obligatoria_entre.from, sourcePlace.reserva_obligatoria_entre.to)) stop.reservation_required_now = true
     // Motor de listas (Tanda 6): la hora es orientativa (la suma de lo que dura cada parada y el trayecto); solo una reserva, un turno o el Free Tour tienen hora fija.
     if (tripDay.listas) {
       // Un turno que propone el motor (sin reserva puesta por el viajero) no es una reserva: «Turno recomendado: 11:00», sin la hora en negrita.

@@ -11,9 +11,7 @@ import { describeStop, type StopDescription } from '../../../lib/describeStopApi
 import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
 import { fetchPlaceDetail, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
 import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
-import { buildMockStopTickets } from '../../../lib/mockStopTickets'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
-import { StopTicketCard } from './StopTicketCard'
 import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { TipBox } from './TipBox'
 import { LocalSecretBox } from './LocalSecretBox'
@@ -21,7 +19,7 @@ import { Spinner } from '../../ui/Spinner'
 import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
-import { StopReservationBlock, useStopReservation } from '../reservas/StopReservation'
+import { StopEntradasTab } from '../reservas/StopReservation'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -46,6 +44,8 @@ type Tab = 'resumen' | 'tickets' | 'tips'
 interface StopDetailSheetProps {
   /** null = cerrado. */
   stop: MockStopDetail | null
+  /** La pestaña con la que se abre (la pestañita naranja de la tarjeta abre «Entradas»). */
+  initialTab?: 'tickets' | null
   /** Hora de la visita ("HH:MM") si la ficha se abre desde una parada de la ruta: el "abierto /
       cerrado" se calcula a esa hora, no a la del móvil. */
   visitTime?: string | null
@@ -139,11 +139,11 @@ function BusIcon() {
  * (tirador gris) ya usado en DIAS (ver RouteView.tsx), sustituye al acordeón inline que expandía
  * contenido bajo la tarjeta en la lista. El mapa muestra TODAS las paradas del día (contexto, en
  * gris) con la actual resaltada (color sólido + escala 1.2 vía activeStopId, ver StopsMapView.tsx).
- * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache); "Tickets &
- * Entradas" sigue siendo mock (mockStopTickets.ts) hasta conectar Civitatis/GetYourGuide reales.
+ * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache);
+ * "Entradas" son las de los datos del destino (_entradas.json), ver StopEntradasTab.
  */
-export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
-  const [tab, setTab] = useState<Tab>('resumen')
+export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'resumen')
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
@@ -218,7 +218,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
 
   useEffect(() => {
     if (!stop) return
-    setTab('resumen')
+    setTab(initialTab ?? 'resumen')
     setDescFailed(false)
     // externalContent presente (aunque sea null) = AddStopScreen.tsx ya gestiona su propio fetch
     // (poiContentApi.ts) — esta llamada interna a describeStop() no debe dispararse en absoluto.
@@ -245,7 +245,7 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
     return () => {
       cancelled = true
     }
-  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city, hasExternalContent, curatedResolved, hasCurated])
+  }, [stop?.id, stop?.name, stop?.category, stop?.isFreeTour, city, hasExternalContent, curatedResolved, hasCurated, initialTab])
 
   // Tips de ancla — llamada aparte (caché en Supabase + búsqueda web, ver anchorTipsApi.ts), solo
   // para lugares obligatorios del destino. Las paradas normales no llaman aquí: su tip (si lo hay)
@@ -343,10 +343,10 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // Civitatis/GetYourGuide — un mercado local con solo entrada libre (afiliacion_disponible:false)
   // no debe mostrar tarjetas de tours inventadas. En real, esto será "la API de afiliación devolvió
   // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
-  const tickets = stop?.purchase?.afiliacion_disponible ? buildMockStopTickets(stop.id, stop.name) : []
   // La entrada oficial (precio y condiciones del lugar) va siempre en Tickets, haya o no proveedores.
   const ticketInfo = stop?.ticketInfo ?? []
-  const hasTickets = tickets.length > 0 || ticketInfo.length > 0
+  const hasEntradas = Boolean(stop?.entradas?.length)
+  const hasTickets = hasEntradas || ticketInfo.length > 0
   // Free Tour: 3 tips nativos del pipeline (persuasivo/propina/práctico), nunca bajo demanda.
   // Ancla: tips reales con búsqueda web (0-3, práctico/secreto), ver anchorTipsApi.ts. Parada
   // normal: 0-3 tips de describeStopApi.ts (entradas combinadas, acceso gratuito parcial, horarios
@@ -368,8 +368,8 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
   // sale con su texto de "todavía no". El Free Tour sigue con las suyas.
   // «Entradas» (PARA_CODE_NAVONA 6) nunca sale en un sitio de acceso libre, salvo que esté en el recorrido de un Free
   // Tour, una visita guiada o una actividad: entonces sí, y en ella va ese tour o esa visita.
-  const stopReservation = useStopReservation(stop?.id)
-  const showTickets = !stop?.freeAccess || Boolean(stop.inFreeTour) || tickets.length > 0
+  // La pestaña «Entradas» solo sale en sitios con entradas en los datos (o en el recorrido de un Free Tour).
+  const showTickets = hasEntradas || Boolean(stop?.inFreeTour)
   const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', ...(showTickets ? (['tickets'] as const) : []), 'tips']
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
   // contenido), cae a "resumen".
@@ -786,17 +786,10 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       )}
                     </div>
                   )}
-                  {ticketInfo.length === 0 && tickets.length === 0 && !stop.inFreeTour && (
-                    <p className="text-small text-text-soft">Aquí saldrán las entradas y las visitas guiadas de este lugar.</p>
-                  )}
-                  {/* «Reserva recomendada» (PROMPT_UI_REPASO 11: ya no va en la tarjeta); la obligatoria ya la dice la entrada. */}
-                  {stop.reservation === 'recomendada' && !ticketInfo.some((line) => /reserva/i.test(line)) && (
-                    <p className="rounded-xl bg-bg-hover px-3 py-2 text-small text-text">Reserva recomendada.</p>
-                  )}
-                  {stop.reservation === 'obligatoria' && !ticketInfo.some((line) => /reserva/i.test(line)) && (
-                    <p className="rounded-xl bg-bg-hover px-3 py-2 text-small text-text">Reserva obligatoria.</p>
-                  )}
-                  {ticketInfo.length > 0 && (
+                  {/* Las entradas de los datos (Tanda 6n): una debajo de otra, con [Reservar] y «¿Ya la tienes? Añádela». */}
+                  {hasEntradas && <StopEntradasTab stop={stop} />}
+                  {/* El Free Tour de la ruta: su ticketInfo, como hasta ahora. */}
+                  {stop.isFreeTour && ticketInfo.length > 0 && (
                     <div className="rounded-xl border border-border p-3">
                       <p className="text-small font-semibold text-text">Entrada</p>
                       <ul className="mt-1 space-y-0.5">
@@ -808,11 +801,6 @@ export function StopDetailSheet({ stop, visitTime = null, city, dayNumber, dateI
                       </ul>
                     </div>
                   )}
-                  {/* Reservada: «Ya tienes entrada · hora» en lugar de los enlaces para comprar (PARA_CODE_RESERVAS, 6). */}
-                  {dayNumber !== null && <StopReservationBlock stopId={stop.id} />}
-                  {!stopReservation && tickets.map((ticket, index) => (
-                    <StopTicketCard key={`${ticket.proveedor}-${index}`} ticket={ticket} />
-                  ))}
                 </div>
               )}
 

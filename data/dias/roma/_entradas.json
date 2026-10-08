@@ -1,0 +1,165 @@
+{
+  "_que_es": "Las entradas que se pueden comprar de cada sitio (Tanda 6n). La pestaña «Entradas» de la ficha de cada sitio enseña estas, una debajo de otra: nombre, qué incluye, precio «desde» y [Reservar]. Un sitio sin entradas aquí no lleva pestaña ni la pestañita de la tarjeta. Primera versión sacada de lo que ya decían los datos de cada sitio (ticket_info); Eric añade o cambia entradas a mano, como las excursiones. Cada entrada: nombre, incluye (una línea; null si no hay), desde (euros; null si no se sabe) y url (el enlace de compra; null = la búsqueda de ese sitio).",
+  "lugares": {
+    "Coliseo": [
+      {
+        "nombre": "Coliseo, Foro y Palatino",
+        "incluye": "Entrada conjunta: Coliseo, Foro Romano y Palatino.",
+        "desde": 18,
+        "url": null
+      }
+    ],
+    "Foro Romano y Palatino": [
+      {
+        "nombre": "Coliseo, Foro y Palatino",
+        "incluye": "Entrada conjunta: Coliseo, Foro Romano y Palatino.",
+        "desde": 18,
+        "url": null
+      }
+    ],
+    "Fontana de Trevi": [
+      {
+        "nombre": "Zona junto a la fuente",
+        "incluye": "Entrada a la zona de dentro, junto al agua.",
+        "desde": 2,
+        "url": null
+      }
+    ],
+    "Panteón": [
+      {
+        "nombre": "Panteón",
+        "incluye": "Se compra online o en taquilla (taquilla hasta las 18:00).",
+        "desde": 7,
+        "url": null
+      }
+    ],
+    "Museos Vaticanos y Capilla Sixtina": [
+      {
+        "nombre": "Museos Vaticanos y Capilla Sixtina",
+        "incluye": "Museos Vaticanos y Capilla Sixtina.",
+        "desde": 20,
+        "url": null
+      }
+    ],
+    "Castillo de Sant'Angelo": [
+      {
+        "nombre": "Castillo de Sant'Angelo",
+        "incluye": null,
+        "desde": 18,
+        "url": null
+      }
+    ],
+    "Galería Borghese": [
+      {
+        "nombre": "Galería Borghese",
+        "incluye": null,
+        "desde": 16,
+        "url": null
+      }
+    ],
+    "Bioparque de Roma": [
+      {
+        "nombre": "Bioparque de Roma",
+        "incluye": null,
+        "desde": null,
+        "url": null
+      }
+    ],
+    "Galería Nacional de Arte Moderno": [
+      {
+        "nombre": "Galería Nacional de Arte Moderno",
+        "incluye": "Gratis el primer domingo de mes, con reserva.",
+        "desde": null,
+        "url": null
+      }
+    ],
+    "Altar de la Patria": [
+      {
+        "nombre": "Terraza panorámica con ascensor",
+        "incluye": "Terraza panorámica con ascensor, de 09:30 a 19:30 (última subida 19:00).",
+        "desde": 18,
+        "url": null
+      }
+    ],
+    "Mercados de Trajano": [
+      {
+        "nombre": "Mercados de Trajano",
+        "incluye": null,
+        "desde": 15,
+        "url": null
+      }
+    ],
+    "Cúpula de San Pedro": [
+      {
+        "nombre": "Cúpula de San Pedro",
+        "incluye": "Con ascensor o solo por escaleras.",
+        "desde": 10,
+        "url": null
+      }
+    ],
+    "Ara Pacis": [
+      {
+        "nombre": "Ara Pacis",
+        "incluye": null,
+        "desde": 14,
+        "url": null
+      }
+    ],
+    "Museos Capitolinos": [
+      {
+        "nombre": "Museos Capitolinos",
+        "incluye": null,
+        "desde": 15,
+        "url": null
+      }
+    ],
+    "Domus Aurea": [
+      {
+        "nombre": "Domus Aurea",
+        "incluye": "Solo con visita guiada reservada online.",
+        "desde": 26,
+        "url": null
+      }
+    ],
+    "Termas de Caracalla": [
+      {
+        "nombre": "Termas de Caracalla",
+        "incluye": null,
+        "desde": 8,
+        "url": null
+      }
+    ],
+    "Villa Farnesina": [
+      {
+        "nombre": "Villa Farnesina",
+        "incluye": null,
+        "desde": 12,
+        "url": null
+      }
+    ],
+    "Palazzo Doria Pamphilj": [
+      {
+        "nombre": "Palazzo Doria Pamphilj",
+        "incluye": null,
+        "desde": null,
+        "url": null
+      }
+    ],
+    "Catacumbas de San Calixto": [
+      {
+        "nombre": "Catacumbas de San Calixto",
+        "incluye": null,
+        "desde": 10,
+        "url": null
+      }
+    ],
+    "Cripta de los Capuchinos": [
+      {
+        "nombre": "Cripta de los Capuchinos",
+        "incluye": null,
+        "desde": 10,
+        "url": null
+      }
+    ]
+  }
+}

@@ -24,11 +24,7 @@ import { TodayView } from './today/TodayView'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
 import { OwnDayScreen } from './freeDay/OwnDayScreen'
 import { UndoToast } from './freeDay/UndoToast'
-import { ExcursionsFab } from './excursions/ExcursionsFab'
 import { ExcursionsPage } from './excursions/ExcursionsPage'
-import { useDestinationExcursions } from '../../lib/destinationExcursions'
-import { showsExcursionsButton } from '../../lib/excursionOffer'
-import { useExcursionsStore } from '../../store/useExcursionsStore'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 
 // Límites del tirador gris (móvil) entre mapa y panel inferior — ninguno de los dos lados puede
@@ -66,8 +62,6 @@ export function RouteView() {
   // Fechas desde el mapa: en los curados, la ruta se rehace (y se pregunta si ya estaba editada a mano).
   const { onChangeDateRange: setRouteDateRange, dialog: datesDialog } = useDatesChange(route)
   // El botón flotante de las excursiones: solo si el destino las tiene y el viaje llega a los días que marca (PARA_CODE_EXCURSIONES, 1).
-  const destinationExcursionInfo = useDestinationExcursions(route?.destination)
-  const openExcursions = useExcursionsStore((state) => state.openPage)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeStopId, setActiveStopId] = useState<string | null>(null)
@@ -309,10 +303,6 @@ export function RouteView() {
             />
           )}
 
-
-          {mode === 'days' && showsExcursionsButton(route, destinationExcursionInfo.fromDays) && (
-            <ExcursionsFab destination={route.destination} onClick={() => openExcursions(false)} />
-          )}
 
           {mode === 'days' && (
             <>

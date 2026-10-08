@@ -67,6 +67,22 @@ export function tipsFor(destinationKey) {
 const tipsCache = new Map()
 
 /**
+ * Las entradas que se pueden comprar de cada sitio (Tanda 6n): `data/dias/<destino>/_entradas.json`, por nombre de sitio.
+ * Devuelve la lista del sitio (nombre, incluye, desde, url) o [] si no tiene: sin entradas, ni pestaña ni pestañita.
+ */
+export function entradasFor(destinationKey, placeName) {
+  const key = String(destinationKey ?? '').trim().toLowerCase()
+  if (!key) return []
+  if (!entradasCache.has(key)) {
+    const file = join(DIAS_DIR, key, '_entradas.json')
+    entradasCache.set(key, existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')).lugares ?? {} : {})
+  }
+  return entradasCache.get(key)[placeName] ?? []
+}
+
+const entradasCache = new Map()
+
+/**
  * Las fotos propias de un destino (PARA_CODE_FOTOS): `data/dias/<destino>/_fotos.json`. Null si no las tiene.
  */
 export function photosFor(destinationKey) {

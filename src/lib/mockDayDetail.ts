@@ -1,5 +1,5 @@
 import { findTransitOption } from './transitLines'
-import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, ExperienceCategoryId } from './types'
+import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, StopEntrada, ExperienceCategoryId } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
 
@@ -267,7 +267,6 @@ export interface MockStopDetail {
   reservationTime?: string | null
   /** Ver Stop.recommendedTurn en types.ts. */
   recommendedTurn?: string | null
-  reservationRequiredNow?: boolean
   /** Ver Stop.waitOpensAt / waitHint en types.ts. */
   waitOpensAt?: string | null
   arrivalNote?: string | null
@@ -281,6 +280,7 @@ export interface MockStopDetail {
   why?: string | null
   /** Ver Stop.ticketInfo en types.ts. */
   ticketInfo?: string[] | null
+  entradas?: StopEntrada[] | null
   /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
   isRevisit?: boolean
   /** Ver Stop.optional. */
@@ -359,13 +359,13 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     ...(stop.orientativeTime ? { orientativeTime: true } : {}),
     ...(stop.reservationTime ? { reservationTime: stop.reservationTime } : {}),
     ...(stop.recommendedTurn ? { recommendedTurn: stop.recommendedTurn } : {}),
-    ...(stop.reservationRequiredNow ? { reservationRequiredNow: true } : {}),
     ...(stop.waitOpensAt ? { waitOpensAt: stop.waitOpensAt, waitHint: stop.waitHint ?? null } : {}),
     ...(stop.arrivalNote ? { arrivalNote: stop.arrivalNote, arrivalTime: stop.arrivalTime ?? null, arrivalMinutes: stop.arrivalMinutes ?? null } : {}),
     ...(stop.visitedDay ? { visitedDay: stop.visitedDay } : {}),
     experience: stop.experience ?? null,
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
+    entradas: stop.entradas ?? null,
     isRevisit: stop.isRevisit,
     optional: stop.optional,
     revisitReason: stop.revisitReason,

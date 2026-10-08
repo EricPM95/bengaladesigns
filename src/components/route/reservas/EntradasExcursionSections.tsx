@@ -60,10 +60,8 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
   }
 
   const entryRow = (row: EntryRow) => {
-    const stop = row.day?.stops.find((candidate) => row.placeNames.includes(candidate.name))
     const notes: { text: string; warn?: boolean }[] = []
     if (row.reservation?.aviso) notes.push({ text: row.reservation.aviso })
-    if (!row.reservation && stop?.reservationRequiredNow) notes.push({ text: 'Reserva obligatoria en estas fechas', warn: true })
     const target = { kind: 'entrada' as const, refId: row.id, name: row.name, placeNames: row.placeNames, currentDayId: row.day?.id ?? null }
     return (
       <EntradaCard

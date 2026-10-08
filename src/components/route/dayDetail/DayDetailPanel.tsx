@@ -326,6 +326,8 @@ export function DayDetailPanel({
   const wantInside = useWantInside(route, day)
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null)
+  // La pestañita naranja de la tarjeta abre la ficha ya en «Entradas».
+  const [detailTab, setDetailTab] = useState<'tickets' | null>(null)
   const [arrivalSheetOpen, setArrivalSheetOpen] = useState(false)
   // Qué bloque de comida/cena está abierto a pantalla completa (MealDetailSheet) — `stopIndex` es la
   // parada tras la que cae esa franja (ancla geográfica), mismo dato que antes recibía
@@ -1144,7 +1146,14 @@ export function DayDetailPanel({
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
               tripWarning={tripWarningOf(startMinutes, startMinutes + stop.durationMinutes, stop.passThrough) ?? (movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}
-              onOpen={() => setDetailIndex(index)}
+              onOpen={() => {
+                setDetailTab(null)
+                setDetailIndex(index)
+              }}
+              onOpenEntradas={() => {
+                setDetailTab('tickets')
+                setDetailIndex(index)
+              }}
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} />}
             />
           )}
@@ -1668,6 +1677,7 @@ export function DayDetailPanel({
         <>
       <StopDetailSheet
         stop={detailIndex !== null ? stops[detailIndex] : null}
+        initialTab={detailTab}
         visitTime={detailIndex !== null && schedule[detailIndex] ? minutesToTime(schedule[detailIndex].startMinutes) : null}
         city={day.city}
         dayNumber={day.dayNumber}

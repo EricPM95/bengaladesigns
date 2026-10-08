@@ -70,7 +70,7 @@ export function ReservaCard({
   trailing?: ReactNode
   /** El puntito de urgencia junto a la categoría (rojo, ámbar o gris) mientras no está reservado. */
   priority?: ReadinessPriority
-  /** Líneas de más bajo el subtítulo (Tanda 6j): «Reserva obligatoria en estas fechas»… */
+  /** Líneas de más bajo el subtítulo (Tanda 6j): el aviso de una reserva… */
   notes?: { text: string; warn?: boolean }[]
 }) {
   const style = KIND_STYLE[kind]

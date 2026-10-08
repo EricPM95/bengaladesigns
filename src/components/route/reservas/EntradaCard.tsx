@@ -2,7 +2,7 @@ import { useAddFlowStore } from '../../../store/useAddFlowStore'
 
 const ROSE = 'oklch(0.55 0.17 5)'
 const ROSE_DEEP = 'oklch(0.52 0.17 5)'
-const GREEN = 'oklch(0.55 0.11 150)'
+export const GREEN = 'oklch(0.55 0.11 150)'
 const GREEN_INK = 'oklch(0.45 0.11 150)'
 
 function TicketIcon() {
@@ -11,6 +11,12 @@ function TicketIcon() {
       <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12" />
     </svg>
   )
+}
+
+/** Abre la compra en otra pestaña con el aviso corto; nunca el nombre del proveedor. Lo usan RESERVAS y la pestaña «Entradas» de la ficha. */
+export function openTicketShop(href: string | null) {
+  useAddFlowStore.setState({ toast: { message: 'Abriendo la tienda de entradas…', previous: null, id: Date.now() } })
+  if (href) window.open(href, '_blank', 'noopener,noreferrer')
 }
 
 /**
@@ -43,10 +49,7 @@ export function EntradaCard({
 }) {
   const reserved = reservedTime != null
   const accent = reserved ? GREEN : ROSE
-  const buy = () => {
-    useAddFlowStore.setState({ toast: { message: 'Abriendo la tienda de entradas…', previous: null, id: Date.now() } })
-    if (buyHref) window.open(buyHref, '_blank', 'noopener,noreferrer')
-  }
+  const buy = () => openTicketShop(buyHref)
   return (
     <div
       className="relative flex min-h-[112px] w-full bg-white"
