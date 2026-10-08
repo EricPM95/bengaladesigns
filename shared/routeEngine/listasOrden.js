@@ -133,19 +133,25 @@ export function ordenarDias(env) {
       fijos.set(slot, id)
       reservasColocadas.push({ name: reserva.name, id, slot })
     }
-    let best = null
-    const libres = chosen.filter((id) => ![...fijos.values()].includes(id))
-    const candidates = permutations(libres).map((perm) => { let k = 0; return chosen.map((_, index) => (fijos.has(index) ? fijos.get(index) : perm[k++])) })
-    for (const candidate of candidates) {
-      let cost = 0
-      candidate.forEach((id, index) => {
-        cost += fixedCost.get(id)[index]
-        cost += Math.abs(index - chosen.indexOf(id))
-        // (Tanda 6k: a igual coste, cambian de sitio los menos días posibles: dos días enteros, uno por otro, y algún día más solo si un cierre lo obliga.)
-        if (id !== chosen[index]) cost += 0.01
-      })
-      if (!best || cost < best.cost) best = { candidate, cost }
+    // El mejor orden con unos días fijos, midiendo lo que se aleja cada día de `referencia` (Tanda 6k): sin reservas, de la tabla; con una reserva, del orden que el viajero ya veía sin ella,
+    // para que cambien de sitio los menos días posibles (dos días enteros, uno por otro, y algún día más solo si un cierre lo obliga).
+    const mejorOrden = (fijosDe, referencia) => {
+      let best = null
+      const libres = chosen.filter((id) => ![...fijosDe.values()].includes(id))
+      const candidates = permutations(libres).map((perm) => { let k = 0; return chosen.map((_, index) => (fijosDe.has(index) ? fijosDe.get(index) : perm[k++])) })
+      for (const candidate of candidates) {
+        let cost = 0
+        candidate.forEach((id, index) => {
+          cost += fixedCost.get(id)[index]
+          cost += Math.abs(index - referencia.indexOf(id))
+          if (id !== referencia[index]) cost += 0.01
+        })
+        if (!best || cost < best.cost) best = { candidate, cost }
+      }
+      return best
     }
+    const sinReservas = mejorOrden(new Map(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]]), chosen)
+    const best = fijos.size > (halfPosition == null ? 0 : 1) ? mejorOrden(fijos, sinReservas.candidate) : sinReservas
     order = best.candidate
   }
   const orderSinPin = order
