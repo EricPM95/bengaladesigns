@@ -10,3 +10,5 @@
 - **La tanda:** `PARA_CODE_TANDA7.md`, que va después de la 6j.
 
 Este archivo queda solo como aviso: lo que vale es lo de esos dos.
+
+**Antes de pasar la Tanda 7 (para Claude):** en `DIAS_ROMA_PARADAS.md`, sustituir arriba «Qué días lleva cada viaje», «El día de excursión» y «El orden de los días» por «El orden nuevo de los días» (que ahora está dentro de «Llegadas y vueltas»), para que quede una sola versión.

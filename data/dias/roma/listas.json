@@ -3638,18 +3638,8 @@
       {
        "tipo": "traslado",
        "como": "bus 40 o taxi",
-       "texto": "Bus 40 o taxi al Vaticano",
-       "doc": "Bus 40 o taxi al Vaticano"
-      },
-      {
-       "tipo": "parada",
-       "lugar": "Basílica de San Pedro",
-       "modo": "dentro",
-       "doc": "Basílica de San Pedro, por dentro ~1 h (se cruza la Plaza)",
-       "min": 60,
-       "notas": [
-        "se cruza la Plaza"
-       ]
+       "texto": "Bus 40 o taxi a la entrada de los Museos",
+       "doc": "Bus 40 o taxi a la entrada de los Museos"
       },
       {
        "tipo": "parada",
@@ -3666,8 +3656,21 @@
        "tipo": "parada",
        "lugar": "Plaza de San Pedro",
        "modo": null,
-       "doc": "Plaza de San Pedro ~20",
-       "min": 20
+       "doc": "Plaza de San Pedro ~30 (al salir de los Museos, ~10 min andando junto a la muralla; la cola de la Basílica se hace aquí)",
+       "min": 30,
+       "notas": [
+        "al salir de los Museos, ~10 min andando junto a la muralla; la cola de la Basílica se hace aquí"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00 todo el año)",
+       "min": 60,
+       "notas": [
+        "abre hasta las 20:00 todo el año"
+       ]
       },
       {
        "tipo": "parada",

@@ -109,14 +109,14 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 | 7 días o más | lo de 6 días; del día 7 en adelante, la hoja «Ya has visto lo mejor de Roma» y EXPLORAR | igual |
 
 **El día de excursión** (decidido el 7-oct-2026):
-- Es siempre el **día 4** en los viajes de 4, 5 y 6 días. Nunca el día de llegada ni el de vuelta (las llegadas, en la Tanda 7).
+- Es siempre el **día 4** en los viajes de 4, 5 y 6 días. Con vuelos, ver «Llegadas y vueltas». Nunca el día de llegada ni el de vuelta.
 - **El interruptor [Roma | Excursión]** va en el día 4.
 - **Con el interruptor en Roma, los días de Roma van en su orden (D5, D6, D7):** el día de Roma que se gana va **al final** y lo que había del día 5 en adelante se corre un día. Así lo mejor sigue primero.
   - 4 días: el día 4 es el D5.
   - 5 días: D5 el día 4 y D6 el día 5.
   - 6 días: D5 el día 4, D6 el día 5 y D7 el día 6.
   - Con las reglas de siempre: lo ya visto pasa a «de camino» con «Ya lo visitaste el día n», sin repetir restaurantes ni nocturnas.
-- **Con una reserva en un día que se movería** (el día 5 o el 6), el interruptor no deja pasar a Roma: no se mueve nada y sale el aviso «Tienes una reserva el día {n} ({sitio}, {hora}): no puedes mover este día».
+- **Con una reserva en un día que se movería** (los días de después del de la excursión), el interruptor no deja pasar a Roma: no se mueve nada y sale el aviso «Tienes una reserva el día {n} ({sitio}, {hora}): no puedes mover este día».
 - **Con el interruptor en Excursión:** ese día lleva **solo la excursión**: ni comida, ni cena, ni noche propuestas. Si es de medio día, ver «Excursión de medio día», al final.
 
 **El orden de los días** (decidido el 7-oct-2026, vale para todos los destinos): **lo imprescindible, primero**.
@@ -421,11 +421,11 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Panteón, por dentro ~30 (abre a las 9:00)
   - 🎟 Free Tour Centro Histórico, 10:00 ~2 h 30. Sale de la Plaza de España y acaba en Navona.
 - **Comida:** Armando al Pantheon (o Supplizio)
-- **Tarde:**
-  - Bus 40 o taxi al Vaticano
-  - Basílica de San Pedro, por dentro ~1 h (se cruza la Plaza)
+- **Tarde** (cambiado el 8-oct-2026: antes iba la Basílica primero, y de la Basílica a los Museos y vuelta a la Plaza eran 30 min de ir y volver):
+  - Bus 40 o taxi a la entrada de los Museos
   - 🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de tarde)
-  - Plaza de San Pedro ~20
+  - Plaza de San Pedro ~30 (al salir de los Museos, ~10 min andando junto a la muralla; la cola de la Basílica se hace aquí)
+  - Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00 todo el año)
   - *de camino:* Via della Conciliazione
   - Castillo de Sant'Angelo, por fuera ~30
   - Puente Sant'Angelo ~15
@@ -704,101 +704,241 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
 
 ---
 
-## Llegadas y vueltas (decidido el 8-oct-2026)
+## Llegadas y vueltas (decidido el 8-oct-2026, repasado por la tarde)
 
-**Los datos los pone el viajero dentro de la app** (en RESERVAS), nunca en el formulario:
-- la llegada (día, hora y por dónde: aeropuerto, estación, puerto o coche);
-- la vuelta (día, hora y por dónde);
-- **«¿En qué barrio te alojas?»:** Centro (Panteón, Trevi, Navona) · Plaza de España (Plaza de España, Popolo, Via del Corso) · Prati (Vaticano) · Trastevere · Termini · Monti (Coliseo) · Otro / Aún no lo sé (= Centro).
+**Toda esta sección es de la Tanda 7.** Hasta entonces, la app sigue como está: sin vuelos, días enteros, y una reserva en otro día cambia un día entero por otro.
 
-Sin estos datos, el viaje sale con días enteros, como hasta ahora.
+### El orden nuevo de los días (entra con la Tanda 7; sustituye entonces a «Qué días lleva cada viaje», «El día de excursión» y «El orden de los días» de arriba)
 
-### La hora a la que está libre
-- **Libre** = la hora de llegada más el margen. El margen incluye pasar por el alojamiento y dejar la maleta (si duerme allí al menos una noche):
+**Qué días lleva cada viaje** (8-oct-2026: el día 1 es el del centro y el Coliseo y el Vaticano van en los días 2 y 3):
+
+| Viaje | Sin Free Tour | Con Free Tour |
+|---|---|---|
+| 1 día | D0 | no se ofrece |
+| 2 días | D1 + D2 | D3 + D1-FT |
+| 3 días | Centro + D1 + D2 | Centro con Free Tour + D1 + D2 |
+| 4 días | Centro + D1 + D2 + **día 4 con interruptor** (Roma por defecto: D4) | Centro con Free Tour + D1 + D2 + día 4 con interruptor |
+| 5 días | Centro + D1 + D2 + **día 4 con interruptor** (Excursión por defecto) + D4. Con Roma: Centro + D1 + D2 + D4 + D5 | igual, con el Centro con Free Tour |
+| 6 días | Centro + D1 + D2 + **día 4 con interruptor** (Excursión por defecto) + D4 + D5. Con Roma: Centro + D1 + D2 + D4 + D5 + D6 | igual, con el Centro con Free Tour |
+| 7 días o más | lo de 6 días; del día 7 en adelante, la hoja «Ya has visto lo mejor de Roma» y EXPLORAR | igual |
+
+- **El Centro** es la «Llegada a Roma»: la ruta del centro histórico entera, con la comida, la cena y la nocturna, empezando a las 9:00, para todos (ver «Llegadas y vueltas»). **Con Free Tour,** el Free Tour a las 10:00 y, de la lista, lo que el guía no enseña.
+- **Con vuelos,** la misma tabla: el día 1 se recorta por la hora de llegada y el último pasa a ser la última mañana o el traslado (ver «Llegadas y vueltas»). Los medios días (D0-medio, DT-medio, DA-medio, DM-medio) solo salen ahí.
+- **El D4 detrás del día del Centro** va siempre en su versión «Con Free Tour de mañana»: empieza en Villa Borghese y la Plaza de España va de camino, porque ya se vio el día 1.
+- **El D1-corto** ya no se usa: el centro lo ve el día 1.
+
+**El día de excursión,** con el orden nuevo:
+- Es el **día 4** en los viajes de 4, 5 y 6 días, también con vuelos, si ese día es entero.
+- **Con el interruptor en Roma, los días de Roma van en su orden (D4, D5, D6):**
+  - 4 días: el día 4 es el D4.
+  - 5 días: D4 el día 4 y D5 el día 5.
+  - 6 días: D4 el día 4, D5 el día 5 y D6 el día 6.
+- Lo demás, como arriba (la reserva que bloquea el interruptor, solo la excursión ese día).
+
+**El orden de los días** (decidido el 7-oct-2026; cambiado el 8-oct-2026, vale para todos los destinos):
+- **Día 1, el centro** (en viajes de 3 días o más): lo que más rápido se ve y casi sin entradas. Es lo que hace casi todo el mundo el día que llega.
+- **Días 2 y 3, lo imprescindible con reserva:** en Roma, la Roma antigua (D1) y el Vaticano (D2).
+- **Día 4, el interruptor;** después, Villa Borghese (D4), las basílicas (D5) y Roma desde arriba (D6).
+- **Por qué:** el día 1 y el último casi nunca son enteros. Así, cuando el viajero pone sus vuelos, solo cambian esos dos días, y el Coliseo y el Vaticano (y lo que haya reservado) se quedan donde estaban.
+- **Los cierres** (el Vaticano no en domingo ni en miércoles, la Galería no en lunes): primero se cambian entre sí el D1 y el D2 (días 2 y 3); si aun así no se puede, con el día siguiente. Lo imprescindible, lo más pronto posible, y nunca en el día 1.
+- **En viajes de 2 días,** como antes: D1 + D2 (con Free Tour, D3 + D1-FT).
+
+---
+
+
+**La idea de fondo:** nosotros ponemos **las paradas**; el viajero decide cuándo las empieza. **No calculamos al minuto:** el día de llegada se monta por tramos de hora, y lo que pase luego (si descansa, si va más rápido) lo ajusta HOY, quitando o añadiendo paradas.
+
+### Lo que pone el viajero (en RESERVAS, nunca en el formulario)
+- **La hora de llegada y la de salida,** con su aeropuerto, estación o puerto. Ya existen en RESERVAS («+ AÑADIR VUELO», los botones de Fiumicino y Ciampino); se usan esas, no otras nuevas.
+  - **El día** es el primero y el último del viaje. Debajo de la hora, en pequeño: «¿Llegas o te vas otro día? Cambia las fechas del viaje», que abre el cambio de fechas que ya existe.
+  - **La vuelta usa su propio medio,** que puede no ser el de la ida (como ya hace la app).
+  - **En coche no se pide hora,** como ahora: el viaje sale con días enteros.
+- **«¿En qué zona te alojas?»,** en el bloque del alojamiento de RESERVAS (sirve para saber por dónde empieza la ruta del día 1 y para «Cómo llegar a tu zona», abajo): Centro (Panteón, Trevi, Navona) · Plaza de España (Plaza de España, Popolo, Via del Corso) · Prati (Vaticano) · Trastevere · Termini · Monti (Coliseo) · Aún no lo sé. «Aún no lo sé» cuenta como Centro.
+- **Sin hora de llegada ni de salida,** el viaje sale con días enteros, como hasta ahora.
+
+### Las horas: libre y salir
+- **Todas las horas salen de `_llegada.json`,** que ya tiene los tiempos comprobados de cada punto. No se escriben en ningún otro sitio.
+- **Libre** = la hora de llegada + el traslado de ese punto (`al_centro_min`) + 30 min para dejar la maleta. Queda así:
   - Fiumicino, 1:30;
-  - Ciampino, 1:15;
-  - Termini y Tiburtina, 0:45;
-  - coche, 1:00;
-  - crucero en Civitavecchia, 2:00.
-- **Los tiempos se cuentan siempre desde el centro,** que es lo que más tarda. En los textos nunca sale la palabra «centro».
+  - Ciampino, 1:20;
+  - Termini, 0:45;
+  - Tiburtina y la estación de autobuses, 0:55;
+  - Civitavecchia, 2:30.
+- **Salir** = la hora de salida menos lo de `_llegada.json`:
+  - Fiumicino, 3:00;
+  - Ciampino, 2:50;
+  - Termini, 0:45;
+  - Tiburtina y la estación de autobuses, 0:55;
+  - Civitavecchia, el embarque más el trayecto al puerto (unas 3:50).
+- **La hora a la que está libre no se enseña nunca:** es solo para elegir el tramo.
+- **Los tiempos se cuentan siempre desde el centro.** En los textos para el viajero no sale nunca la palabra «centro» (los nombres de zona, como «Centro (Panteón, Trevi, Navona)», sí).
+- **Vuelos de madrugada** (de 0:00 a 5:00):
+  - **a la llegada,** el día 1 es un día entero normal (se duerme y se empieza a su hora);
+  - **a la vuelta,** se cuenta como la noche anterior: el último día solo lleva el traslado, y el día de antes acaba sin nocturna.
+- **Vuelos de vuelta de 5:00 a 9:00:** el día de antes es normal, con su noche, y el último día solo lleva el traslado.
+- **Llegar y irse el mismo día** (un viaje de un día): de momento, el D0 de siempre, como sin vuelos, con las dos barras.
+
+### Lo que se ve en el día
+- **La barra de llegada que ya existe,** sin la hora de la derecha: «LLEGADA · VUELO 09:00 · FIUMICINO». Fuera «EN EL CENTRO 10:00».
+- **La de vuelta,** como ahora: «VUELTA · VUELO 17:00 · FIUMICINO · SAL A LAS 14:00».
+- **La etiqueta «Día de viaje»,** como ahora, en el primer día y en el último.
 
 ### Los días reales
-- **El día que llega nunca es un día entero:** es su «Llegada a Roma» (abajo).
+- **La idea:** con vuelos, el viaje es el mismo que sin vuelos (la tabla de «El orden nuevo de los días», arriba). Solo cambian el primer día y el último:
+  - **el día 1** (el Centro, la «Llegada a Roma») se recorta por la hora a la que está libre (abajo); con un vuelo de madrugada, entero;
+  - **el último día** pasa a ser la última mañana o solo el traslado;
+  - **los días de en medio no se mueven:** el día 2, el D1; el día 3, el D2; el día 4, el interruptor; luego, D4, D5 y D6.
+- **En viajes de 2 días** con vuelos, el día 1 es la llegada y el día 2 la vuelta: el D1 y el D2 no caben enteros. Van como «Sin ningún día entero» (abajo).
 - **El día que se va:**
-  - **Hay «última mañana»** si quedan 3 h o más entre las 9:00 y la hora de salir. La hora de salir es la del vuelo o el tren menos su margen, y menos 1:00 para recoger la maleta. Márgenes: Fiumicino 3:00, Ciampino 2:30, Termini y Tiburtina 1:00, coche 1:00, Civitavecchia 3:00. Con Fiumicino, hay mañana si el vuelo sale a las 16:00 o más tarde.
-  - **Si no da para una mañana,** ese día solo lleva el traslado.
-- **Los días de en medio son los días enteros,** con la tabla de «Qué días lleva cada viaje», contando solo los días enteros.
-- **La última mañana** es el medio día de mañana que toque:
-  - con 2 días enteros, el DT-medio de mañana (con Free Tour, el DM-medio);
-  - con 3, el DA-medio de mañana;
-  - con 4 o más, la mañana del siguiente día escrito que no haya salido, por este orden: D6 y D7. Si ya han salido todos, la hoja «Ya has visto lo mejor de Roma».
-- **El Coliseo y el Vaticano:**
-  - **con un solo día entero,** ese día es el D1 y el Vaticano va en la última mañana (el D0-medio);
-  - **con un solo día entero y sin última mañana,** ese día es el D0 (Roma en un día).
-- **Los viajes de 1 y 1,5 días** siguen con sus días propios.
-- **La excursión** va en el 4.º día completo. Si no hay 4 días completos, no hay interruptor.
+  - **hay «última mañana»** si quedan 3 h o más entre las 9:00 y la hora de salir menos 1:00 (para recoger la maleta). Con Fiumicino, si el vuelo sale a las 16:00 o más tarde;
+  - **si no da para una mañana,** ese día solo lleva el traslado.
+- **La última mañana** es el medio día de mañana que toque, tal como está escrito y a su hora de empezar (el DT-medio, a las 7:30), con su versión de cierres (el D0-medio del miércoles, el DA-medio del lunes):
+  - si el viaje no lleva el Vaticano (D2) en un día entero, el D0-medio;
+  - con el D1 y el D2, el DT-medio;
+  - con el D4 también, el DA-medio;
+  - con el D5 también, la mañana del D6. Si ya han salido todos, la hoja «Ya has visto lo mejor de Roma».
+  - **Si no cabe entera** antes de la hora de salir menos 1:00, lo del final pasa a «Si te sobra tiempo» (regla 5).
+- **La comida de la última mañana** solo sale si la hora de salir es a las 14:30 o más tarde.
+- **Con un solo día entero** (el día 2):
+  - con última mañana, el D1 y, en la última mañana, el D0-medio. Es la ruta de 1,5 días, con el centro ya visto el día 1;
+  - sin última mañana, el D0 (Roma en un día).
+- **Sin ningún día entero:** la llegada y, si la hay, la última mañana (el D0-medio).
+- **Una reserva grande en la última mañana** (decidido el 8-oct-2026, por la noche). La reserva manda: aunque la mañana no llegue a 3 h, si hay una reserva, esa mañana existe.
+  - **A la última mañana va solo su bloque:**
+    - Coliseo: el Coliseo a su hora, el Arco de Constantino y el Foro y Palatino;
+    - Museos: los Museos a su hora, la Plaza de San Pedro y la Basílica;
+    - Galería: la Galería a su hora y el parque de Villa Borghese.
+  - **Se mira si el bloque cabe** antes de la hora de salir menos 1:00. Con un vuelo a las 15:00 o más tarde desde Fiumicino, el del Coliseo cabe entero (justo, pero la reserva manda).
+  - **Lo que no cabe se queda en su día** (la Basílica, el parque), salvo el Foro y Palatino: va con la misma entrada y empieza en el Coliseo, así que no puede ir otro día antes. Si no cabe, al guardar la reserva sale la hoja: «Ese día sales hacia el aeropuerto a las 12:00. Te da tiempo al Coliseo, pero no al Foro y el Palatino, que van con la misma entrada.» [De acuerdo] · [Cambiar la reserva].
+  - **Si no cabe ni la reserva,** el aviso de siempre: «… no te da tiempo. Revisa tu reserva.».
+  - **El resto de su día escrito se queda en su día,** sin el bloque. Nada se pierde, nada se repite y nada se inventa. Ese día queda más corto y HOY propone qué añadir.
+    - el día del Coliseo empieza en el Campidoglio (el Altar, la comida en el Gueto y la tarde del centro);
+    - el del Vaticano, con su versión sin Museos (la del miércoles: el Castillo, el Puente y Trastevere);
+    - el de Villa Borghese, con su versión sin Galería (la del lunes).
+  - **La comida de la última mañana,** solo si se sale a las 14:30 o más tarde, como siempre.
+- **Una reserva grande el día de llegada:**
+  - **si está libre antes de las 13:00,** ese día pasa a ser el día escrito de ese sitio entero, desde la hora a la que está libre, con la lista de la hora de la reserva, y el día que lo llevaba pasa a ser el del Centro: se cambian uno por otro, como sin vuelos;
+  - **si está libre más tarde,** como en la última mañana: la reserva con su bloque, el resto de la llegada según el tramo, y el resto de su día escrito se queda en su día.
+- **La excursión** va en el día 4, como sin vuelos, si ese día es entero. El interruptor sale como sin vuelos (4 días, en «Roma»; 5 o más, en «Excursión»), así no cambia al poner los vuelos.
+  - **Si con los vuelos el día 4 pasa a ser el de vuelta,** no hay interruptor (ver «La excursión y los vuelos»).
+- **La regla 11c** (la noche y lo visto ese día) cuenta los días del viaje por sus fechas.
 
-### La «Llegada a Roma», según el barrio
-Todo por fuera. **Se empieza en el barrio y, si hay menos tiempo, se quita lo del final (lo que queda más lejos).** La comida y la cena van en la zona donde está en ese momento (las de cada lista). Lo que se ve en la llegada **no cuenta como «ya visitado»** para los días siguientes. Las nocturnas sí cuentan: no se repiten.
+### La «Llegada a Roma» (el día 1)
+**Una sola ruta para todos, el centro histórico** (decidido el 8-oct-2026, por la noche). Es lo que mejor se adapta a cualquier hora de llegada, porque está todo cerca, y no repite lo de los días 2 y 3. La zona donde duerme solo decide **por dónde empieza**:
+- **Centro, Prati, Trastevere, Monti y Termini** (y «Aún no lo sé»): empieza en Navona. Desde Prati se cruza el Puente; desde Trastevere, el Ponte Sisto; desde Monti y Termini, el bus 40 o 64. Para el Centro, este orden deja el Pincio para el atardecer, la cena en el Tridente y Trevi de vuelta al alojamiento.
+- **Plaza de España:** empieza en la Plaza de España y da la vuelta sin volver atrás (sube a la Trinità y al Pincio, baja al Popolo y vuelve por Via del Corso a Trevi, el Panteón y Navona).
 
-- **Plaza de España:** Piazza del Popolo · Terraza del Pincio · Trinità dei Monti y la Escalinata · Plaza de España · *de camino* Via Condotti · Fontana de Trevi · Panteón · Piazza Navona.
-  - Comida: Poldo e Gianna (o Edy).
-  - Cena: si acaba en Trevi o antes, Il Gabriello; si llega a Navona, Armando al Pantheon (o Da Baffetto).
-- **Centro:** Piazza Navona · Panteón · Fontana de Trevi · *de camino* Via Condotti · Plaza de España · la Escalinata y Trinità dei Monti · Terraza del Pincio (al atardecer) · Piazza del Popolo.
+**Sin vuelos, también:** el día 1 de los viajes de 3 días o más es esta ruta entera, empezando a las 9:00. Al poner los vuelos, solo se recorta por el tramo. El día se llama «Llegada a Roma», con o sin vuelos.
+
+**La ruta:** todo por fuera.
+- **Empezando en Navona:** Piazza Navona · Panteón · Fontana de Trevi · *de camino* Via Condotti · Plaza de España · la Escalinata y Trinità dei Monti · Terraza del Pincio · Piazza del Popolo.
   - Comida: Armando al Pantheon (o Da Baffetto).
-  - Cena: si acaba en Trevi o antes, Armando o Da Baffetto; si llega al Tridente, Il Gabriello (o Poldo e Gianna).
-- **Prati (Vaticano):** Plaza de San Pedro · Via della Conciliazione · Castillo de Sant'Angelo · Puente Sant'Angelo · *de camino* Via dei Coronari · Piazza Navona · Panteón · Fontana de Trevi.
-  - Comida: Borghiciana (o Dal Toscano).
-  - Cena: si acaba en el Puente o antes, L'Arcangelo (o Osteria dell'Angelo); si llega a Navona, Armando o Da Baffetto.
-- **Trastevere:** Santa Maria in Trastevere · Paseo por Trastevere · *de camino* Ponte Sisto · Campo de' Fiori · Piazza Navona · Panteón · Fontana de Trevi.
-  - Comida: Da Enzo al 29 (o Checco er Carettiere).
-  - Cena: si acaba en Campo de' Fiori o antes, en Trastevere (Tonnarello, Da Lucia o Checco er Carettiere); si llega a Navona, Armando o Da Baffetto.
-- **Monti (Coliseo):** Coliseo · Arco de Constantino · Via dei Fori Imperiali · Piazza Venezia · Fontana de Trevi · Panteón · Piazza Navona.
-  - Comida: La Taverna dei Fori Imperiali (o Trattoria Valentino).
-  - Cena: si acaba en Piazza Venezia o antes, en Monti; si llega a Trevi o más allá, Armando o Da Baffetto.
-- **Termini:** Santa Maria Maggiore · *de camino* Monti · Coliseo · Arco de Constantino · Via dei Fori Imperiali · Piazza Venezia · Fontana de Trevi · Panteón.
-  - Comida: SantoPalato (o Il Bocconcino).
-  - Cena: como en Monti.
+  - Cena: si acaba en Trevi o antes, Armando o Da Baffetto; si llega a la Plaza de España o más allá, Il Gabriello (o Poldo e Gianna).
+- **Empezando en la Plaza de España:** Plaza de España · la Escalinata y Trinità dei Monti · Terraza del Pincio · Piazza del Popolo · *de camino* Via del Corso · Fontana de Trevi · Panteón · Piazza Navona.
+  - Comida: Poldo e Gianna (o Edy).
+  - Cena: si acaba en el Popolo o antes, Il Gabriello (o Poldo e Gianna); si llega a Trevi o más allá, Armando o Da Baffetto.
+- **Sin repetir** el restaurante de la comida.
+- **Si llega tarde, lo primero que se quita es el Pincio y el Popolo,** que son lo menos vistoso. Los imprescindibles del centro (Navona, el Panteón, Trevi y la Plaza de España con la Trinità) se quedan siempre que esté libre antes de las 20:30: de día o, lo que no quepa, de noche.
 
-**Según la hora a la que está libre:**
+**Qué ve según la hora a la que está libre** (cada tramo empieza en su hora: libre a las 13:00 en punto ya es el segundo):
 
-| Libre a las… | Qué lleva la llegada |
+| Libre a las… | Qué ve el día 1 |
 |---|---|
-| antes de las 12:00 | Paradas de su lista antes de comer; la comida hacia las 12:30–13:30, donde esté; el resto de la lista; la cena; la noche |
-| de 12:00 a 15:00 | La comida nada más llegar; su lista; la cena; la noche |
-| de 15:00 a 17:00 | Sin comida; su lista (recortada por el final); la cena; la noche |
-| de 17:00 a 19:00 | 2 o 3 paradas de su lista; la cena; la noche |
-| de 19:00 a 20:30 | 1 o 2 paradas rápidas de su lista; la cena; la noche |
-| de 20:30 a 22:30 | La cena y la noche (si no quiere, no va) |
-| después de las 22:30 | Nada: solo la llegada |
+| antes de las 13:00 | toda la ruta, con el Pincio y el Popolo, la comida, la cena y la nocturna. Si está libre antes de las 9:00, empieza a las 9:00 |
+| de 13:00 a 14:30 | la comida nada más llegar y los imprescindibles: Navona, el Panteón, Trevi y la Plaza de España con la Trinità (sin el Pincio ni el Popolo); la cena y la nocturna |
+| de 14:30 a 17:00 | los imprescindibles, sin comida; la cena y la nocturna |
+| de 17:00 a 20:30 | **desde Navona:** Navona y el Panteón, la cena, y de noche Trevi y la Plaza de España. **Desde la Plaza de España:** la Plaza de España y la Trinità, el Panteón y Navona, la cena, y de noche Trevi |
+| de 20:30 a 23:00 | Trevi de noche, «para un primer contacto» (texto abajo) |
+| después de las 23:00 | nada (texto abajo) |
 
-**La noche:** una nocturna a 15 min o menos de donde cena (regla 13), sin repetir en el viaje y, en viajes de 2,5 días o más, sin un sitio visto ese día (regla 11c).
+**La noche:**
+- **Si Trevi y la Plaza de España ya se han visto ese día** (los tres primeros tramos), en viajes de 2,5 días o más la nocturna no puede ser un sitio visto ese día (regla 11c). Va otra a 15 min o menos de la cena, andando o en taxi, como en el D3 (regla 13): primero las imprescindibles, así que suele ser el Coliseo. En viajes más cortos, Trevi y la Plaza de España de noche.
+- **De 20:30 a 23:00:** «{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope.» Ejemplo: «Aterrizas a las 21:00. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope.»
+- **{Llegada}** según cómo llega: avión, «Aterrizas»; tren o autobús, «Llegas a {punto}» (Termini, Tiburtina…); barco, «Desembarcas».
+- **Después de las 23:00:** «{Llegada} a las {hora}. Descansa, que mañana empezamos a tope.» Ejemplo: «Aterrizas a las 23:30. Descansa, que mañana empezamos a tope.»
+- **La nocturna de la llegada cuenta para el viaje:** no se repite otra noche.
+
+**Lo visto en la llegada sí cuenta como visto (regla 9),** como en cualquier otro día:
+- los días siguientes lo pasan a «de camino», con «Ya lo visitaste el día 1»;
+- **salvo si ese día se entra por dentro** (el Panteón del D1, la Basílica del D2): entonces se queda como parada, igual.
 
 ### El Free Tour y otras reservas el día de llegada
 - **Las horas del Free Tour en Roma:** 10:00, 12:00, 15:00, 17:00 y, a veces, 21:00. Sale de la Plaza de España y dura 2 h 30.
-- **Si está reservado,** manda su hora. Lo mismo con cualquier otra reserva de ese día: queda fija y la llegada se ajusta (regla 4). Lo que cabe antes, antes; lo demás, después. Si no cabe, se quita lo del final.
-- **Si solo está marcado en Experiencias,** la app elige la primera hora que le pille libre, contando 30 min para llegar a la Plaza de España:
+- **Se ofrece como ahora:** en viajes de 2 días o más (por sus fechas).
+- **Si está reservado,** manda su hora.
+- **Si solo está en el viaje** (marcado en Experiencias o añadido con «+ Añadir parada»), la app elige la primera hora que le pille libre, con 30 min para llegar a la Plaza de España:
 
   | Libre a las… | Free Tour |
   |---|---|
   | antes de las 9:30 | 10:00 |
-  | de 9:30 a 11:30 | 12:00 (la comida después, a las 14:30–15:00) |
-  | de 11:30 a 14:30 | 15:00 (la comida antes, si está libre antes de las 14:00) |
+  | de 9:30 a 11:30 | 12:00 |
+  | de 11:30 a 14:30 | 15:00 |
   | de 14:30 a 16:30 | 17:00 |
-  | después de las 16:30 | al día siguiente a las 10:00 (D3) |
+  | después de las 16:30 | al día siguiente a las 10:00: el día 2 es el D3 y el día 3 el D1-FT (el único caso en que el Coliseo y el Vaticano se cambian de día al poner los vuelos) |
 
-  El de las 21:00 solo si lo reserva el viajero.
+  - El de las 21:00, solo si lo reserva el viajero.
+  - Texto: «Te proponemos el Free Tour de las {hora}, nada más llegar», con el botón para reservarlo.
+- **La llegada con Free Tour:**
+  - el Free Tour a su hora;
+  - de la ruta, solo lo que el guía no enseña (la Trinità, el Pincio y el Popolo); Plaza de España, Trevi, el Panteón y Navona salen con «Lo ves en el Free Tour»;
+  - la comida, la cena y la nocturna según el tramo.
+- **Si el Free Tour se hace el día de llegada,** los días enteros son el D1 y el D2 (sin el D3), y los demás en su versión con Free Tour (el D4 «Con Free Tour de mañana»). Lo del D1 que ya enseñó el guía (Navona; el Panteón por fuera) va «de camino»; el Panteón por dentro se queda. No se usa el D1-FT: su tarde (Trastevere) repetiría la del D2.
+- **Con uno o ningún día entero,** el Free Tour solo va el día de llegada. Si ahí no cabe, no se pone, y la hoja del resumen lo dice: «Con tus vuelos, el Free Tour no cabe sin quitarte el Coliseo o el Vaticano. Si aun así lo quieres, añádelo desde «+ Añadir parada».»
+- **Cualquier otra reserva de ese día** queda fija a su hora y la llegada se ajusta alrededor (regla 4).
+- **Si el día de llegada tiene reservado el Coliseo, los Museos o la Galería:** ver «Una reserva grande el día de llegada», en «Los días reales».
 
-  Texto: «Te proponemos el Free Tour de las {hora}, nada más llegar», con el botón para reservarlo.
-- **Lo que enseña el guía** (Plaza de España, Trevi, el Panteón y Navona) sale con «Lo ves en el Free Tour».
-- **Si el Free Tour se hace el día de llegada,** los días enteros son sus versiones con Free Tour: D1-FT y D2 (en lugar del D3).
-
-### Los textos de la vuelta
-- **Había excursión:** «Tienes el vuelo a las 17:00, hacer una excursión no es viable, pero te hemos organizado una última mañana por Roma para que te vayas con buen sabor de boca.»
-- **No había excursión:** «Tienes el vuelo a las 17:00, te hemos organizado una última mañana por Roma para que te vayas con buen sabor de boca.»
-- **No da tiempo a nada:** «Tienes el vuelo a las 11:00: hoy toca volver a casa. ¡Buen viaje!»
-- **Excursión confirmada y el vuelo antes de la vuelta:** «Tienes el vuelo a las 17:00 y tu excursión a Pompeya vuelve a Roma a las 20:00: no te da tiempo. Revisa tu reserva de la excursión.»
-  - Botones: [Ver mi reserva] · [Pasar este día a Roma].
+### La excursión y los vuelos
+- **Con los vuelos, el día 4 pasa a ser el de vuelta y la excursión no está reservada:**
+  - **si la puso la app por defecto** (el viajero no tocó el interruptor ni eligió excursión), ese día pasa a Roma solo, con la última mañana, y sale el texto de la vuelta «Había excursión»: «Tienes el vuelo a las 17:00, hacer una excursión no es viable, pero te hemos organizado una última mañana por Roma para que te vayas con buen sabor de boca.»;
+  - **si la eligió el viajero,** la hoja pregunta: «Con tus vuelos, el día 4 (jueves 13) es el de tu vuelta: no da tiempo a la excursión a Pompeya.» [Pasar este día a Roma] · [Mantener la excursión]. Si la mantiene, sale el aviso de la excursión que vuelve después de salir.
+- **Excursión reservada:** no se toca nunca, y los demás días se quedan donde estaban.
+- **Excursión reservada el día de llegada, antes de que esté libre:** «Aterrizas a las 9:00 y tu excursión a Pompeya sale a las 7:30: no llegas. Revisa tu reserva.» [Ver mi reserva].
+- **Excursión reservada el día de vuelta, que vuelve después de la hora de salir:** «Tienes el vuelo a las 17:00 y tu excursión a Pompeya vuelve a Roma a las 20:00: no te da tiempo. Revisa tu reserva de la excursión.» [Ver mi reserva] · [Pasar este día a Roma].
   - No se cambia nada solo.
-- **Ostia o Tívoli** (medio día, vuelta a las 14:00): solo con el vuelo a las 18:00 o más tarde.
+  - El mismo aviso sale si añade la confirmación de una excursión en un día que su vuelo no permite.
+- **Ostia o Tívoli** (medio día, vuelta a las 14:00) el día de vuelta: solo con el vuelo a las 18:00 o más tarde.
 
+### Las reservas y los vuelos
+- **Una reserva antes de estar libre:** «Tu entrada al Coliseo es a las 10:00 y aterrizas a las 9:30: no llegas a tiempo. Revisa tu reserva.» [Ver mi reserva].
+- **Una reserva después de la hora de salir:** «Tu entrada a los Museos Vaticanos es a las 15:00 y ese día sales hacia el aeropuerto a las 14:00. Revisa tu reserva.» [Ver mi reserva].
+  - Según cómo se vaya, «hacia el aeropuerto», «hacia la estación» o «hacia el puerto».
+- **Una reserva en un día en que ese sitio cierra** (vale también sin vuelos): «La Galería Borghese cierra los lunes: revisa la fecha de tu reserva.» [Ver mi reserva].
+
+### Cómo salen los avisos
+- **La hoja de abajo:** lo que acaba de pasar. Sale en el momento en que el viajero hace algo (pone el vuelo, guarda una reserva). Lleva su texto y la X; solo lleva botones si tiene que elegir. Todas las hojas de la app son la misma, también las de la 6j.
+- **La campana de avisos:** lo que sigue mal. Si cierra la hoja sin arreglarlo, el aviso se queda en la campana (con su número) hasta que lo arregla. Solo van ahí los que son un problema: no llega a una reserva, una reserva después de salir, un sitio cerrado, la excursión que no cuadra.
+- **Dentro del día,** lo pequeño, como siempre («Lo ves en el Free Tour», «Cerrado hoy»).
+- **Al poner o cambiar los vuelos, el punto o la zona,** sale **una sola hoja** con todo lo que ha cambiado, no una por cosa. Por ejemplo:
+  - «El martes 10 es tu llegada a Roma.»
+  - «El sábado 14 tienes una última mañana por Roma, antes de salir hacia el aeropuerto a las 15:00.»
+  - «Te proponemos el Free Tour de las 15:00, nada más llegar.»
+  - «El día 3 lo has cambiado tú: lo dejamos como está.»
+
+  Termina con [De acuerdo], o con los dos botones de la excursión si hay que elegir.
+- **Los días que el viajero ha cambiado a mano** no se rehacen (lo suyo manda).
+- **Si borra la hora del vuelo,** los días vuelven a ser enteros, con la misma hoja, y las reservas se quedan.
+
+### Cómo llegar a tu zona
+En la ventana de llegada que ya existe (Resumen · Traslados · Tips), arriba del todo, una línea «Para tu zona» con lo más cómodo según su punto de llegada y su zona. Debajo, las demás formas, como ahora. A la vuelta, lo mismo al revés.
+
+| Zona | Desde Fiumicino | Desde Termini |
+|---|---|---|
+| Termini | Leonardo Express a Termini | ya estás: andando |
+| Monti | Leonardo Express y metro B hasta Cavour (1 parada) | metro B hasta Cavour |
+| Centro | Leonardo Express y bus 40 o 64 hasta Largo di Torre Argentina | bus 40 o 64 hasta Largo di Torre Argentina |
+| Plaza de España | Leonardo Express y metro A hasta Spagna (3 paradas) | metro A hasta Spagna |
+| Prati | Leonardo Express y metro A hasta Ottaviano | metro A hasta Ottaviano |
+| Trastevere | tren FL1 hasta Roma Trastevere y tranvía 8 | bus 40 o 64 hasta Largo di Torre Argentina y tranvía 8 |
+
+- **Desde Ciampino,** primero el Airlink a Termini y luego la columna «Desde Termini».
+- **Desde Tiburtina,** el metro B a Termini y luego la columna «Desde Termini» (a Monti, directo en el B hasta Cavour).
+- **Desde Civitavecchia,** el tren regional: a Prati, bajando en San Pietro; a las demás zonas, hasta Termini y luego la columna «Desde Termini».
+- **El taxi de precio fijo** (55 € desde Fiumicino y 40 € desde Ciampino, dentro de las murallas) sale siempre como opción. A Prati va por taxímetro.
+- **Si llega después del último tren** (la hora está en `_llegada.json`: el último Leonardo Express sale del aeropuerto a las 23:23), lo más cómodo es el taxi.
+- **Los textos de la ventana** que hoy dicen «centro» («Cómo llegar al centro…», «De Fiumicino al centro», «casi todo el centro») pasan a decir «a Roma» o «a tu zona».
+
+### Lo que no entra todavía
+- La escala de crucero (llegar y salir el mismo día por Civitavecchia, sin dormir en Roma). De momento, se monta como un viaje de 1 día sin vuelos.
+- Los viajes con varias ciudades. Las reglas de esta sección se escriben para que mañana sirvan para cada ciudad, pero de momento hay una sola llegada y una sola salida por viaje.
+- La zona del alojamiento para el día de vuelta. La vuelta se cuenta desde el centro.
+- Lo que sea gratis o de pago: se decide al final.

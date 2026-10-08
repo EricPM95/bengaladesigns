@@ -249,7 +249,9 @@ for (const seccion of secciones) {
     if (!b) continue
     const profundidad = Math.floor(b[1].length / 2)
     const texto = b[2].trim()
-    const etiqueta = /^\*\*([^*]+?):\*\*\s*(.*)$/.exec(texto)
+    // («**Tarde** (cambiado el 8-oct-2026: …):»: la etiqueta con una nota entre paréntesis detrás; la nota no es parte del nombre.)
+    const conNota = /^\*\*([^*:]+)\*\*\s*\([^)]*\):?\s*$/.exec(texto)
+    const etiqueta = /^\*\*([^*]+?):\*\*\s*(.*)$/.exec(texto) ?? (conNota ? [texto, conNota[1], ''] : null)
     const lluvia = /^\*\*🌧\s*Si llueve:\*\*\s*(.*)$/.exec(texto)
     if (lluvia) { dia.lluvia = { texto: lluvia[1].trim(), doc: texto }; bloqueVariante = false; continue }
     if (bloqueVariante) continue
