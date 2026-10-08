@@ -1488,8 +1488,8 @@ export function DayDetailPanel({
                 />
               )}
               {/* La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena. */}
-              <div className="relative flex flex-col pl-[26px]">
-                <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18]" aria-hidden="true" />
+              <div className="relative flex flex-col pl-[26px] max-[430px]:pl-[22px]">
+                <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18] max-[430px]:left-[12px]" aria-hidden="true" />
                 {renderGroupItems(group.items, headerAddIndex !== null)}
               </div>
             </div>
