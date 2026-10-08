@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type { Reservation } from '../../../lib/bookings'
-import { BIG_RESERVATION_PLACES, entranceTargetFor, stopHasEntrance } from '../../../lib/bookings'
-import { bestHoursLine, useBestHours } from '../../../lib/bestHours'
+import { entranceTargetFor, stopHasEntrance } from '../../../lib/bookings'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { AddReservationSheet } from './AddReservationSheet'
@@ -36,11 +35,6 @@ export function StopReservationBlock({ stopId }: { stopId: string }) {
   const reservation = useStopReservation(stopId)
   const info = useDestinationExcursions(route?.destination)
   const [adding, setAdding] = useState(false)
-  // Las mejores horas para reservar, solo mientras no está reservado (Tanda 6j, 9b.3).
-  const big = found ? entranceTargetFor(found.stop.name, info.entradas).placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null : null
-  const curatedId = found?.day.curatedId ?? null
-  const bestItems = useMemo(() => (big && curatedId && !reservation ? [{ curatedId, place: big }] : []), [big, curatedId, reservation])
-  const bestHours = useBestHours(route?.destination, bestItems)
   if (!route || !found) return null
 
   if (reservation) {
@@ -56,11 +50,9 @@ export function StopReservationBlock({ stopId }: { stopId: string }) {
   }
   if (!stopHasEntrance(found.stop)) return null
   const target = { kind: 'entrada' as const, ...entranceTargetFor(found.stop.name, info.entradas), currentDayId: found.day.id }
-  const best = big && curatedId ? bestHoursLine(bestHours[`${curatedId}|${big}`]) : null
   return (
     <>
       {found.stop.reservationRequiredNow && <p className="mb-2 rounded-xl bg-bg-hover px-3 py-2 text-small text-accent-red">Reserva obligatoria en estas fechas</p>}
-      {best && <p className="mb-2 text-small text-text-soft">{best}</p>}
       <button type="button" onClick={() => setAdding(true)} className="w-full rounded-xl border border-text/15 bg-bg-card py-2.5 text-center text-small font-semibold text-text-soft transition-colors hover:bg-bg-hover">
         ¿Ya la has reservado? Añade tu confirmación
       </button>

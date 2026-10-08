@@ -67,7 +67,7 @@ function Wheel({ label, items, index, onIndex }: { label: string; items: string[
 /**
  * El selector de hora de toda la app (Tanda 6k, punto 8): un botón que abre una hoja desde abajo con dos ruedas (horas y minutos, de 5 en 5) como el reloj del iPhone; o, cuando las
  * horas posibles son pocas (`options`: el Free Tour), esas horas como botones. `min` y `max` limitan las horas (el Coliseo, los Museos y la Galería: de la apertura a la última
- * entrada) y `best` marca las mejores. Sustituye al campo de hora del sistema.
+ * entrada). Sustituye al campo de hora del sistema.
  */
 export function TimeField({
   value,
@@ -76,7 +76,6 @@ export function TimeField({
   min,
   max,
   step = 5,
-  best,
   options,
   placeholder = 'Elige la hora',
   className = FIELD_BUTTON_CLASS,
@@ -88,7 +87,6 @@ export function TimeField({
   min?: string
   max?: string
   step?: number
-  best?: string[]
   options?: string[]
   placeholder?: string
   className?: string
@@ -110,7 +108,7 @@ export function TimeField({
         (options && options.length > 0 ? (
           <OptionsSheet title={title} options={options} value={shown} onPick={(hhmm) => { onChange(hhmm); close() }} onClose={close} />
         ) : (
-          <WheelSheet title={title} value={shown} min={min} max={max} step={step} best={best} onDone={(hhmm) => { onChange(hhmm); close() }} onClose={close} />
+          <WheelSheet title={title} value={shown} min={min} max={max} step={step} onDone={(hhmm) => { onChange(hhmm); close() }} onClose={close} />
         ))}
     </>
   )
@@ -133,7 +131,7 @@ function OptionsSheet({ title, options, value, onPick, onClose }: { title: strin
   )
 }
 
-function WheelSheet({ title, value, min, max, step, best, onDone, onClose }: { title: string; value: string; min?: string; max?: string; step: number; best?: string[]; onDone: (hhmm: string) => void; onClose: () => void }) {
+function WheelSheet({ title, value, min, max, step, onDone, onClose }: { title: string; value: string; min?: string; max?: string; step: number; onDone: (hhmm: string) => void; onClose: () => void }) {
   const minMin = min && validTime(min) ? toMin(min) : 0
   const maxMin = max && validTime(max) ? toMin(max) : 23 * 60 + 55
   // Las horas y, para cada hora, los minutos que se pueden elegir (de 5 en 5 y dentro de lo permitido).
@@ -148,30 +146,15 @@ function WheelSheet({ title, value, min, max, step, best, onDone, onClose }: { t
     return out.length > 0 ? out : [0]
   }
   const start = (() => {
-    const wanted = value ? toMin(value) : best && best[0] && validTime(best[0]) ? toMin(best[0]) : minMin > 0 ? minMin : 9 * 60
+    const wanted = value ? toMin(value) : minMin > 0 ? minMin : 9 * 60
     return Math.max(minMin, Math.min(maxMin, wanted))
   })()
   const [hour, setHour] = useState(Math.floor(start / 60))
   const [minute, setMinute] = useState(start % 60)
   const minutes = minutesFor(hour)
   const safeMinute = minutes.includes(minute) ? minute : (minutes.reduce((nearest, m) => (Math.abs(m - minute) < Math.abs(nearest - minute) ? m : nearest), minutes[0]))
-  const chips = (best ?? []).filter((text) => validTime(text) && toMin(text) >= minMin && toMin(text) <= maxMin)
-  const set = (total: number) => {
-    setHour(Math.floor(total / 60))
-    setMinute(total % 60)
-  }
   return (
     <PickerSheet title={title} onClose={onClose} onDone={() => onDone(toText(hour * 60 + safeMinute))}>
-      {chips.length > 0 && (
-        <div className="mb-3 flex flex-wrap items-center gap-1.5">
-          <span className="text-[12.5px] text-text-soft">Mejor hora este día:</span>
-          {chips.map((chip) => (
-            <button key={chip} type="button" onClick={() => set(toMin(chip))} className="h-8 rounded-full border border-accent/40 bg-accent-soft px-3 text-[13px] font-medium text-accent-hover">
-              {toText(toMin(chip))}
-            </button>
-          ))}
-        </div>
-      )}
       <div className="relative mx-auto flex w-full max-w-[260px] items-stretch justify-center" style={{ height: ITEM_H * VISIBLE }}>
         {/* El centro resaltado: lo que se elige. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 z-0 rounded-2xl bg-bg-hover" style={{ top: ITEM_H * ((VISIBLE - 1) / 2), height: ITEM_H }} />

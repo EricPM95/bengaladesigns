@@ -73,8 +73,9 @@ export async function rehacerDiasSinTocar(except: string | string[] | null): Pro
  * Rehace un día con las reservas del viajero (5-oct-2026): el motor corre las horas con los márgenes alrededor de la hora que puso.
  * Un día que el viajero ya ha cambiado a mano no se toca (lo suyo manda; la reserva ya se coloca en su sitio). Sin conexión o en un
  * destino sin días escritos, no hace nada y el día se queda como está.
+ * `mantenerOrden` (Tanda 6m, «Eliminar reserva»): el día se rehace en su sitio, con el orden de días que el viajero ya ve; sin la reserva el motor no reordena nada.
  */
-export async function rehacerDiaConReservas(dayId: string): Promise<void> {
+export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerOrden?: boolean } = {}): Promise<void> {
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route, reservations } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
@@ -91,6 +92,7 @@ export async function rehacerDiaConReservas(dayId: string): Promise<void> {
         must_include_places: route.mustIncludePlaces ?? [],
         inside_names: route.insideNames ?? [],
         reservas: reservasParaMotor(reservations),
+        ...(opciones.mantenerOrden ? { force_order: ordenDeLosDias(route) } : {}),
       }),
     })
     if (!response.ok) return
@@ -105,4 +107,10 @@ export async function rehacerDiaConReservas(dayId: string): Promise<void> {
   } catch {
     // Sin respuesta del servidor: el día se queda como está.
   }
+}
+
+/** El orden de los días escritos que el viajero ya ve (sin la vuelta ni las excursiones); vacío si algún día no es de los escritos. */
+function ordenDeLosDias(route: { days: { isReturnLeg?: boolean; curatedId?: string; dayType?: string }[] }): string[] {
+  const days = route.days.filter((day) => !day.isReturnLeg && day.dayType !== 'excursion')
+  return days.every((day) => day.curatedId) ? days.map((day) => day.curatedId as string) : []
 }

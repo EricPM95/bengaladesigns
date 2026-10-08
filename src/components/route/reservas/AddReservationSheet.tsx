@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
 import { BIG_RESERVATION_PLACES, dateOfDay, dayLineOf, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { reservasParaMotor } from '../../../lib/engineReservas'
-import { bestHoursLine, useBestHours } from '../../../lib/bestHours'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
+import { TimeListWheel } from '../../ui/TimeListWheel'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -18,6 +18,8 @@ export interface ReservationTarget {
   excursion?: Excursion | null
   /** El día en que está ahora en la ruta (para decir «la pasamos a tu Día 3» solo si cambia). */
   currentDayId?: string | null
+  /** «Cambiar»: la reserva que ya hay (la hoja sale con su día y su hora, y con «Eliminar reserva»). */
+  existing?: Reservation | null
 }
 
 /** La regla 17 (Tanda 6k): la lista escrita del día que llevará el sitio, a la hora de la reserva. */
@@ -40,6 +42,8 @@ interface ReservationPlan {
 interface EntryHours {
   cerrado: boolean
   ventanas: { desde: string; hasta: string }[]
+  /** Los sitios con turnos propios (la Galería): solo esas horas. */
+  turnos?: string[] | null
 }
 
 type Tab = 'email' | 'file' | 'manual'
@@ -130,6 +134,7 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
 
 function AddReservationSheetInner({ route, target, onClose }: { route: Route; target: ReservationTarget; onClose: () => void }) {
   const addReservation = useRouteStore((state) => state.addReservation)
+  const removeReservation = useRouteStore((state) => state.removeReservation)
   const reservations = useRouteStore((state) => state.reservations)
   const [confirming, setConfirming] = useState(false)
   const [rule17, setRule17] = useState(false)
@@ -145,11 +150,20 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const isExcursion = target.kind === 'excursion'
   // El día donde está ahora ese sitio: sale ya elegido (Tanda 6k, punto 4), con «· aquí está ahora»; así se sabe que se pone en el día bueno y no se mueve nada.
   const currentDay = useMemo(() => days.find((day) => day.id === target.currentDayId) ?? null, [days, target.currentDayId])
+  const existing = target.existing ?? null
   const [fields, setFields] = useState<Fields>(() => ({
     ...EMPTY,
-    dateIso: hasDates && currentDay ? (dateOfDay(route, currentDay) ?? '') : '',
-    dayNumber: !hasDates && currentDay ? String(currentDay.dayNumber) : '',
+    dateIso: existing?.dateIso ?? (hasDates && currentDay ? (dateOfDay(route, currentDay) ?? '') : ''),
+    dayNumber: existing?.dayNumber != null ? String(existing.dayNumber) : !hasDates && currentDay ? String(currentDay.dayNumber) : '',
+    time: existing?.time ?? '',
+    returnTime: existing?.returnTime ?? '',
+    meetingPoint: existing?.meetingPoint ?? '',
+    locator: existing?.locator ?? '',
   }))
+  // La hoja de la hora (Tanda 6m) es lo primero para una entrada; el formulario de siempre (email, captura, a mano) sigue detrás de «Rellenar desde el email o el PDF» y para las excursiones.
+  const [view, setView] = useState<'hora' | 'form'>(target.kind === 'excursion' ? 'form' : 'hora')
+  const [showDay, setShowDay] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const set = (patch: Partial<Fields>) => setFields((previous) => ({ ...previous, ...patch }))
@@ -162,15 +176,17 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const ready = Boolean(resolvedDay && validTime)
   const bigPlace = target.placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null
   const isFreeTour = target.refId === 'Free Tour'
+  // El sitio cuyas horas de entrada se piden al servidor: el grande, o el primero que cubre la entrada (el Free Tour no tiene: sus cinco horas son fijas).
+  const hoursPlace = isExcursion || isFreeTour ? null : (bigPlace ?? target.placeNames[0] ?? null)
   const tripDates = hasDates && days.length > 0 ? { min: dateOfDay(route, days[0]) ?? undefined, max: dateOfDay(route, days[days.length - 1]) ?? undefined } : null
 
   const dayLabel = (day: (typeof days)[number]) => `${dayLineOf(route, day)}${day.id === target.currentDayId ? ' · aquí está ahora' : ''}`
 
-  // Las horas a las que se puede entrar ese día y las mejores (Coliseo, Museos, Galería): la rueda solo enseña esas.
+  // Las horas a las que se puede entrar ese día (Coliseo, Museos, Galería y el resto de entradas): la rueda solo enseña esas.
   const [entryHours, setEntryHours] = useState<EntryHours | null>(null)
-  const hoursKey = bigPlace && !isExcursion && resolvedDay ? `${bigPlace}|${fields.dateIso}|${resolvedDay.id}` : null
+  const hoursKey = hoursPlace && resolvedDay ? `${hoursPlace}|${fields.dateIso}|${resolvedDay.id}` : null
   useEffect(() => {
-    if (!hoursKey || !bigPlace) {
+    if (!hoursKey || !hoursPlace) {
       setEntryHours(null)
       return
     }
@@ -178,7 +194,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     fetch('/api/reservation-hours', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ destination: route.destination, place: bigPlace, date_iso: hasDates ? fields.dateIso : null, month: route.answers.month ?? null, season: route.answers.season ?? null }),
+      body: JSON.stringify({ destination: route.destination, place: hoursPlace, date_iso: hasDates ? fields.dateIso : null, month: route.answers.month ?? null, season: route.answers.season ?? null }),
     })
       .then((response) => (response.ok ? (response.json() as Promise<EntryHours>) : null))
       .then((body) => {
@@ -192,10 +208,30 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoursKey])
-  const bestItems = useMemo(() => (bigPlace && currentDay?.curatedId ? [{ curatedId: currentDay.curatedId, place: bigPlace }] : []), [bigPlace, currentDay?.curatedId])
-  const bestHours = useBestHours(route.destination, bestItems)
-  const best = bigPlace && currentDay?.curatedId ? (bestHours[`${currentDay.curatedId}|${bigPlace}`] ?? []) : []
   const window0 = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? { min: entryHours.ventanas[0].desde, max: entryHours.ventanas[entryHours.ventanas.length - 1].hasta } : null
+  /** Las horas de la rueda: los turnos del sitio (la Galería) o, de la apertura a la última entrada, de 15 en 15 (sin datos, de 8:00 a 19:45). */
+  const wheelItems = useMemo(() => {
+    const two = (n: number) => String(n).padStart(2, '0')
+    const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
+    // (La hora de la reserva que ya hay siempre está en la rueda, aunque no caiga en una de las horas de siempre.)
+    const propia = existing && /^d{1,2}:d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
+    const conPropia = (list: string[]) => (propia && !list.includes(propia) ? [...list, propia].sort((x, y) => asMin(x) - asMin(y)) : list)
+    if (entryHours?.turnos && entryHours.turnos.length > 0) return conPropia(entryHours.turnos)
+    const windows = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? entryHours.ventanas : [{ desde: '08:00', hasta: '19:45' }]
+    const out: string[] = []
+    for (const window of windows) for (let m = Math.ceil(asMin(window.desde) / 15) * 15; m <= asMin(window.hasta); m += 15) out.push(`${two(Math.floor(m / 60))}:${two(m % 60)}`)
+    return conPropia(out.length > 0 ? out : ['09:00'])
+  }, [entryHours])
+  // La hora de partida de la rueda: la de la reserva que ya hay, o la más cercana a las 10:00; si esa hora no está entre las del sitio, la más cercana.
+  useEffect(() => {
+    if (isFreeTour || isExcursion || view !== 'hora') return
+    const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
+    const wanted = validTime ? asMin(fields.time) : 10 * 60
+    const nearest = wheelItems.reduce((best, item) => (Math.abs(asMin(item) - wanted) < Math.abs(asMin(best) - wanted) ? item : best), wheelItems[0])
+    const current = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
+    if (nearest !== current) set({ time: nearest })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wheelItems, view])
 
   const [plan, setPlan] = useState<ReservationPlan | null>(null)
   const planKey = resolvedDay && bigPlace && !isExcursion && validTime ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
@@ -359,11 +395,34 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   }, [plan, fields.time, validTime])
 
   const showForm = tab === 'manual' || read
+  /** «Eliminar reserva» (solo dentro de «Cambiar»): la tarjeta vuelve a sin reservar, el día se queda donde está y la parada vuelve a su lista normal. */
+  const deleteReservation = () => {
+    if (!existing) return
+    try {
+      removeReservation(existing.id)
+    } catch (error) {
+      console.error('[AddReservationSheet] no se pudo eliminar', error)
+    }
+    onClose()
+  }
   const shownTime = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
   const dateLabel = (iso: string) => {
     const day = dayOnDate(route, iso)
     return day ? dayLabel(day) : shortDateEs(iso)
   }
+
+  const dayField = hasDates ? (
+    <DateField value={fields.dateIso} onChange={(iso) => set({ dateIso: iso })} title="Día de tu reserva" min={tripDates?.min} max={tripDates?.max} format={dateLabel} />
+  ) : (
+    <select value={fields.dayNumber} onChange={(event) => set({ dayNumber: event.target.value })} className={inputClass}>
+      {!currentDay && <option value="">Elige el día</option>}
+      {days.map((day) => (
+        <option key={day.id} value={day.dayNumber}>
+          {dayLabel(day)}
+        </option>
+      ))}
+    </select>
+  )
 
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-reservation-heading">
@@ -378,7 +437,108 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           </svg>
         </button>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
+          {view === 'hora' ? (
+            <div>
+              <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                ¿A qué hora es tu entrada?
+              </p>
+              <h2 id="add-reservation-heading" className="mt-1.5 font-display text-[24px] leading-[1.05] text-text">
+                {target.name}
+              </h2>
+              <p className="mt-1 text-[12px] text-text/60">{resolvedDay ? dayLabel(resolvedDay) : 'Elige el día'}</p>
+
+              <div className="mt-3.5">
+                {isFreeTour ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {FREE_TOUR_HOURS.map((hour) => (
+                      <button
+                        key={hour}
+                        type="button"
+                        onClick={() => set({ time: hour })}
+                        className={`h-12 rounded-2xl border text-[16px] font-medium ${fields.time === hour ? 'border-text bg-text text-bg' : 'border-text/15 bg-bg text-text hover:bg-bg-hover'}`}
+                      >
+                        {hour}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <TimeListWheel items={wheelItems} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : wheelItems[0]} onChange={(hhmm) => set({ time: hhmm })} />
+                )}
+              </div>
+
+              {outside && (
+                <p className="mt-2 text-[13px] leading-snug text-accent-red">
+                  Tu reserva es del {shortDateEs(fields.dateIso)}, fuera de las fechas de tu viaje. Revisa la fecha.
+                </p>
+              )}
+              {plan?.sinMover?.motivo === 'excursion' && !outside && resolvedDay && (
+                <p className="mt-2 text-[13px] leading-snug text-text">
+                  El día {resolvedDay.dayNumber} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
+                </p>
+              )}
+              {moved && hasDates && resolvedDay && !outside && longWeekday(fields.dateIso) && (
+                <p className="mt-2 text-[13px] leading-snug text-text">
+                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a tu Día {resolvedDay.dayNumber}.
+                </p>
+              )}
+
+              <button type="button" disabled={!ready} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+                {validTime ? `Guardar · ${fields.time.length === 4 ? `0${fields.time}` : fields.time}` : 'Guardar'}
+              </button>
+
+              <div className="mt-4 space-y-2.5 text-center text-[13px] text-text/60">
+                {showDay ? (
+                  <div className="text-left">
+                    <span className="text-[12px] font-medium text-text-soft">{hasDates ? 'Día' : 'Día del viaje'}</span>
+                    {dayField}
+                  </div>
+                ) : (
+                  <p>
+                    ¿Es para otro día?{' '}
+                    <button type="button" onClick={() => setShowDay(true)} className="font-semibold text-text underline underline-offset-2">
+                      Cambiar el día
+                    </button>
+                  </p>
+                )}
+                <p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView('form')
+                      setTab('email')
+                    }}
+                    className="font-semibold text-text underline underline-offset-2"
+                  >
+                    Rellenar desde el email o el PDF
+                  </button>
+                </p>
+              </div>
+
+              {target.existing && (
+                <div className="mt-5 border-t border-text/10 pt-4 text-center">
+                  {confirmDelete ? (
+                    <div>
+                      <p className="text-[14.5px] leading-snug text-text">¿Estás seguro de que quieres eliminar tu reserva?</p>
+                      <div className="mt-3 flex gap-2">
+                        <button type="button" onClick={() => setConfirmDelete(false)} className="h-11 flex-1 rounded-full border border-text/15 text-[14.5px] font-medium text-text hover:bg-bg-hover">
+                          Cancelar
+                        </button>
+                        <button type="button" onClick={deleteReservation} className="h-11 flex-1 rounded-full bg-accent-red text-[14.5px] font-semibold text-white active:scale-[.98]">
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => setConfirmDelete(true)} className="text-[13.5px] font-medium text-accent-red underline underline-offset-2">
+                      Eliminar reserva
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+          <>
           <p className="max-w-[calc(100%-2.5rem)] font-mono text-[10.5px] font-medium uppercase tracking-[.12em] text-accent">{target.name}</p>
           <h2 id="add-reservation-heading" className="mt-1.5 font-display text-[26px] leading-[1.15] text-text">
             Añade tu reserva
@@ -487,7 +647,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     options={isFreeTour ? FREE_TOUR_HOURS : undefined}
                     min={window0?.min}
                     max={window0?.max}
-                    best={best}
                   />
                 </div>
                 {isExcursion && (
@@ -497,7 +656,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   </div>
                 )}
               </div>
-              {bigPlace && best.length > 0 && <p className="mt-1.5 text-[12.5px] text-text-soft">{bestHoursLine(best)}</p>}
               {isExcursion && (
                 <label className="mt-3 block">
                   <span className="text-[12px] font-medium text-text-soft">Punto de encuentro (opcional)</span>
@@ -510,13 +668,17 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               </label>
             </div>
           )}
+          </>
+          )}
         </div>
 
-        <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-          <button type="button" disabled={!ready} onClick={() => save()} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
-            {resolvedDay ? `Guardar y ponerla en el Día ${resolvedDay.dayNumber}` : 'Guardar y ponerla en su día'}
-          </button>
-        </div>
+        {view === 'form' && (
+          <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
+            <button type="button" disabled={!ready} onClick={() => save()} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+              {resolvedDay ? `Guardar y ponerla en el Día ${resolvedDay.dayNumber}` : 'Guardar y ponerla en su día'}
+            </button>
+          </div>
+        )}
       </div>
       {rule17 && plan?.consejo && proposals.length > 0 && (
         <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="rule17-heading">

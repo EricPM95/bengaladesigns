@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react'
-import type { Route } from '../../../lib/types'
-import { BIG_RESERVATION_PLACES, buildEntryRows, buildExcursionRow, dayLineOf, hasEnoughDaysForExcursions, reservedLine, type EntryRow } from '../../../lib/bookings'
-import { bestHoursLine, useBestHours, type BestHoursItem } from '../../../lib/bestHours'
+import { useState } from 'react'
+import type { DayPlan, Route } from '../../../lib/types'
+import { buildEntryRows, buildExcursionRow, dateOfDay, dayLineOf, dayOfReservation, hasEnoughDaysForExcursions, reservedLine, shortDateEs, type EntryRow } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { ReservaCard } from './ReservasItemRow'
+import { EntradaCard } from './EntradaCard'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 
 /** Una tarjeta de «ENTRADAS» o «EXCURSIÓN»: la misma de todo Reservas (ReservaCard); reservada, en verde con «✓ Reservado». */
@@ -47,36 +47,35 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
   const freeTourReservation = reservations.find((reservation) => reservation.kind === 'entrada' && reservation.refId === 'Free Tour') ?? null
 
   const { main, more } = buildEntryRows(route, info.entradas, reservations)
-  // Las mejores horas para reservar un sitio grande, solo mientras no está reservado (9b.3).
-  const bigOf = (row: EntryRow) => row.placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null
-  const bestItems = useMemo<BestHoursItem[]>(
-    () => [...main, ...more].filter((row) => !row.reservation && bigOf(row) && row.day?.curatedId).map((row) => ({ curatedId: row.day!.curatedId!, place: bigOf(row)! })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [route, reservations],
-  )
-  const bestHours = useBestHours(route.destination, bestItems)
   const excursionsAvailable = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
   const excursionRow = excursionsAvailable ? buildExcursionRow(route, reservations) : null
 
+  /** «Día 1» sin fechas; con fechas, «Mar 12 ene». */
+  const whenOf = (day: DayPlan | null): string => {
+    if (!day) return ''
+    const iso = route.answers.dateRange ? dateOfDay(route, day) : null
+    if (!iso) return `Día ${day.dayNumber}`
+    const text = shortDateEs(iso)
+    return text.charAt(0).toUpperCase() + text.slice(1)
+  }
+
   const entryRow = (row: EntryRow) => {
-    const big = bigOf(row)
     const stop = row.day?.stops.find((candidate) => row.placeNames.includes(candidate.name))
     const notes: { text: string; warn?: boolean }[] = []
     if (row.reservation?.aviso) notes.push({ text: row.reservation.aviso })
     if (!row.reservation && stop?.reservationRequiredNow) notes.push({ text: 'Reserva obligatoria en estas fechas', warn: true })
-    const best = !row.reservation && big && row.day?.curatedId ? bestHoursLine(bestHours[`${row.day.curatedId}|${big}`]) : null
-    if (best) notes.push({ text: best })
+    const target = { kind: 'entrada' as const, refId: row.id, name: row.name, placeNames: row.placeNames, currentDayId: row.day?.id ?? null }
     return (
-    <ReservaRow
-      key={row.id}
-      kind="entrada"
-      label={row.name}
-      notes={notes}
-      subtitle={row.reservation ? reservedLine(route, row.reservation) : row.day ? dayLineOf(route, row.day) : ''}
-      reserved={Boolean(row.reservation)}
-      bookHref={buildActivitySearchUrl(`${row.name} ${route.destination}`)}
-      onAdd={() => setTarget({ kind: 'entrada', refId: row.id, name: row.name, placeNames: row.placeNames, currentDayId: row.day?.id ?? null })}
-    />
+      <EntradaCard
+        key={row.id}
+        when={whenOf((row.reservation ? dayOfReservation(route, row.reservation) : null) ?? row.day)}
+        name={row.name}
+        reservedTime={row.reservation ? row.reservation.time : null}
+        buyHref={buildActivitySearchUrl(`${row.name} ${route.destination}`)}
+        notes={notes}
+        onAdd={() => setTarget(target)}
+        onChange={() => setTarget({ ...target, existing: row.reservation })}
+      />
     )
   }
 
@@ -89,14 +88,14 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
       {freeTourStop && freeTourDay && (
         <div className="space-y-2">
           <h3 className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>Free Tour</h3>
-          <ReservaCard
-            kind="excursion"
+          <EntradaCard
+            when={whenOf((freeTourReservation ? dayOfReservation(route, freeTourReservation) : null) ?? freeTourDay)}
             name="Free Tour"
-            subtitle={freeTourReservation ? reservedLine(route, freeTourReservation) : dayLineOf(route, freeTourDay)}
-            resolved={Boolean(freeTourReservation)}
-            resolvedLabel="✓ Reservado"
-            priority="gray"
-            onAdd={() => setTarget({ kind: 'entrada', refId: 'Free Tour', name: 'Free Tour', placeNames: [freeTourStop.name], currentDayId: freeTourDay.id })}
+            buyLabel="Reservar Free Tour"
+            buyHref={buildActivitySearchUrl(`Free Tour ${route.destination}`)}
+            reservedTime={freeTourReservation ? freeTourReservation.time : null}
+            onAdd={() => setTarget({ kind: 'entrada' as const, refId: 'Free Tour', name: 'Free Tour', placeNames: [freeTourStop.name], currentDayId: freeTourDay.id })}
+            onChange={() => setTarget({ ...{ kind: 'entrada' as const, refId: 'Free Tour', name: 'Free Tour', placeNames: [freeTourStop.name], currentDayId: freeTourDay.id }, existing: freeTourReservation })}
           />
         </div>
       )}

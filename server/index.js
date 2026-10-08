@@ -4,7 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
-import { RESERVAS_GRANDES, consejoDeReserva, mejoresHoras } from '../shared/routeEngine/listasReservas.js'
+import { RESERVAS_GRANDES, consejoDeReserva } from '../shared/routeEngine/listasReservas.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -2556,7 +2556,9 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
   // El interruptor del día 4 (Tanda 6g): lo que el viajero ha puesto, 'roma' o 'excursion'; sin él, el de por defecto del viaje.
   const diaCuatro = answers?.diaCuatro === 'roma' || answers?.diaCuatro === 'excursion' ? answers.diaCuatro : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes }
+  // «Eliminar reserva» (Tanda 6m): el día se rehace en su sitio, con el orden de días que el viajero ya ve (`force_order`); sin esto, al faltar la reserva el motor reordenaría los días.
+  const forceOrder = Array.isArray(body?.force_order) && body.force_order.length > 0 && body.force_order.every((id) => typeof id === 'string') ? body.force_order : null
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, forceOrder }
 }
 
 function hasRequiredAnswers(answers) {
@@ -5439,21 +5441,6 @@ app.post('/api/reservation-advice', (req, res) => {
     return
   }
   res.json({ ...consejoDeReserva(dia, lugar, String(time), { tieneFreeTour: Boolean(has_free_tour), excursionManana: Boolean(excursion_morning) }), lugar })
-})
-
-// Las mejores horas para reservar (Tanda 6j, 9b.3): las de las listas escritas de ese día (TABLA_RESERVAS), nunca una hora sin lista. Solo los sitios con reserva grande.
-app.post('/api/reservation-best-hours', (req, res) => {
-  const { destination, items } = req.body ?? {}
-  const written = typeof destination === 'string' ? writtenDaysFor(destination.toLowerCase()) : null
-  const hours = {}
-  for (const item of Array.isArray(items) ? items.slice(0, 20) : []) {
-    const lugar = typeof item?.place === 'string' ? item.place : null
-    const dia = written?.days?.[item?.curated_day_id]
-    if (!lugar || !dia || !RESERVAS_GRANDES.has(lugar)) continue
-    const mejores = mejoresHoras(dia, lugar)
-    if (mejores.length > 0) hours[`${item.curated_day_id}|${lugar}`] = mejores
-  }
-  res.json({ hours })
 })
 
 // Las horas a las que se puede entrar a un sitio grande ese día (Tanda 6k): de la apertura a la última entrada. La rueda de la hora solo enseña esas.

@@ -112,15 +112,17 @@ const hhmm = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String
  */
 export function horasDeEntrada(destData, placeName, { dateIso = null, month = null, season = null } = {}) {
   const place = (destData.places ?? []).find((candidate) => candidate.name === placeName)
-  if (!place) return { cerrado: false, ventanas: [] }
+  if (!place) return { cerrado: false, ventanas: [], turnos: null }
   const calendar = tripCalendar({ dateRangeStartIso: dateIso, month, season })
   const iso = calendar.hasDates ? dateIso : calendar.referenceIso
   const weekday = calendar.hasDates ? weekdayOf(dateIso) : null
   const hours = { weekday, dateIso: iso, season: calendar.season }
-  if (calendar.hasDates && closedOnDay(place, weekday, dateIso)) return { cerrado: true, ventanas: [] }
+  if (calendar.hasDates && closedOnDay(place, weekday, dateIso)) return { cerrado: true, ventanas: [], turnos: null }
   const ventanas = parseHoursSessions(scheduleForDay(place, hours)).sort((a, b) => a.open - b.open).map((session) => {
     const last = lastEntryMinutes(place, session.open, hours)
     return { desde: hhmm(session.open), hasta: hhmm(Math.min(session.close, last ?? session.close)) }
   })
-  return { cerrado: false, ventanas }
+  // Los sitios con turnos de entrada propios (la Galería Borghese: uno cada hora y el de las 17:45): solo esos.
+  const turnos = Array.isArray(place.turnos_reserva) ? place.turnos_reserva.filter((turno) => ventanas.length === 0 || ventanas.some((v) => turno >= v.desde && turno <= v.hasta)) : null
+  return { cerrado: false, ventanas, turnos }
 }

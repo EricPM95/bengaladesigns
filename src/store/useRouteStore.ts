@@ -932,9 +932,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       reservations: state.reservations.filter((reservation) => reservation.id !== id),
       route: state.route ? unpinReservedStops(state.route, id) : state.route,
     }))
-    // (Quitar una reserva grande devuelve cada día a su sitio: se rehacen todos, o un día quedaría repetido.)
-    if (removed && isBigReservation(removed) && !removed.noMueve) void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null))
-    else if (removedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id))
+    // Sus avisos de la campana se van con ella.
+    void import('./useNoticesStore').then(({ useNoticesStore }) => {
+      for (const notice of useNoticesStore.getState().pushed) if (notice.id.includes(id)) useNoticesStore.getState().remove(notice.id)
+    })
+    // (Tanda 6m: quitar una reserva no mueve ningún día: ese día se rehace en su sitio, con el orden que el viajero ya ve, y la parada vuelve a su lista normal, sin hora fija.)
+    if (removedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: Boolean(removed && isBigReservation(removed)) }))
   },
   receiveSale: (sale) =>
     set((state) => {
