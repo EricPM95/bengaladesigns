@@ -1,6 +1,6 @@
 # Prueba de la Tanda 6k
 
-3259 viajes y 14542 días montados con el motor del servidor (13 fechas de 2027 y los 12 meses sin fechas).
+4483 viajes y 19744 días montados con el motor del servidor (13 fechas de 2027 y los 12 meses sin fechas).
 
 **Fallos: 0.**
 
@@ -11,8 +11,8 @@ Ninguna.
 ## Lo que se apunta (no es un fallo)
 
 - d3_orden_ok: 26
-- cambio_de_dos_dias: 2358
-- cambio_de_mas_de_dos_dias_por_cierres: 360
+- cambio_de_dos_dias: 3339
+- cambio_de_mas_de_dos_dias_por_cierres: 504
   - 3 días · inicio 2027-01-01 · Galería Borghese el día 2 a las 09:00: D1,D2,D4 → D2,D4,D1
   - 3 días · inicio 2027-01-01 · Galería Borghese el día 2 a las 12:00: D1,D2,D4 → D2,D4,D1
   - 3 días · inicio 2027-01-01 · Galería Borghese el día 2 a las 15:00: D1,D2,D4 → D2,D4,D1

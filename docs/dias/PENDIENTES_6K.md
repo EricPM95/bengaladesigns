@@ -71,3 +71,14 @@
 
 ## Para la próxima tanda (después de la 6k) · ya pasado a la 6l
 1. **El Panteón del D3 llega 5 min antes de abrir y pasa a «por fuera».** Va contra la regla 7 del documento: si se llega antes de que abra, se espera hasta 15 min (y hasta 40 si al lado hay una plaza para hacer fotos, como la Piazza della Rotonda). Tiene que esperar y entrar por dentro. Comprobar que no les pasa a otros sitios con la misma regla.
+
+## Para la siguiente (después de la 6l) · ya pasado a la 6m
+1. **Fuera «Mejor hora este día» en toda la app** (Eric, 8-oct noche): en la rueda de «Hora de entrada», en la tarjeta de RESERVAS y en la ficha de cada sitio. Quien añade su reserva ya tiene su hora en la entrada que ha comprado.
+   - **La rueda se queda** con las horas a las que se puede entrar ese día (6k, punto 2).
+   - **Se queda también la hoja de la regla 17** (la que propone otras dos horas cuando la hora elegida no tiene día escrito): es otra cosa y sigue haciendo falta.
+2. **RESERVAS · la tarjeta de cada entrada, más clara** (Eric, 8-oct noche):
+   - **Sin la entrada todavía:** el nombre entero (en dos líneas si hace falta, sin «…»), el botón grande **[Reservar entrada]** (lleva a comprarla) y, al lado, en pequeño, «¿Ya la tienes? **Añádela**» (abre «Añade tu reserva»). Fuera el «Añadir» gris de ahora.
+   - **Sin la línea de la mejor hora** en la tarjeta.
+   - **El día, siempre en la tarjeta:** sin fechas, «Día 1»; con fechas, la fecha en su lugar («Mar 12 ene»).
+   - **Con la entrada puesta:** «Mar 12 ene · ✓ Reservada · 14:00» (sin fechas, «Día 1 · ✓ Reservada · 14:00») y «Cambiar». Ya no sale «Reservar».
+   - **Sin la mejor hora** (punto 1).

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 40%,#F1E8D6 0%,#E0D3BA 75%);display:flex;align-items:center;justify-content:center;padding:48px 32px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+  <div style="display:grid;grid-template-columns:110px 360px 360px;gap:18px 22px;align-items:center">
+    <span></span>
+    <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Sin fechas</span>
+    <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Con fechas</span>
+
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="2">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ r.label }}</span>
+      <sc-for list="{{ r.cards }}" as="c" hint-placeholder-count="2">
+        <div style="position:relative;height:122px;display:flex;border-radius:18px;background:#FFFFFF;border:1px solid {{ c.bd }};box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 26px -18px rgba(28,34,48,.4);transition:border-color .4s">
+          <div style="position:relative;width:78px;flex:none;margin-right:-8px;border-radius:17px 0 0 17px;overflow:hidden">
+            <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%);background:{{ c.panel }};transition:background .4s"></span>
+            <span style="position:absolute;left:0;top:0;bottom:0;width:58px;display:flex;align-items:center;justify-content:center;color:#fff">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>
+            </span>
+          </div>
+          <div style="flex:1;min-width:0;padding:12px 14px 12px 10px;display:flex;flex-direction:column;justify-content:center;gap:5px">
+            <span style="display:flex;align-items:center;gap:6px;font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)"><span style="width:6px;height:6px;border-radius:50%;background:{{ c.dot }}"></span>Entrada<span style="opacity:.5">·</span><span style="letter-spacing:.04em;text-transform:none;font-weight:500;color:rgba(28,34,48,.65)">{{ c.when }}</span></span>
+            <span style="font:400 18px/1.08 'Instrument Serif',serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.name }}</span>
+            <sc-if value="{{ c.open }}" hint-placeholder-val="{{ true }}">
+              <span style="display:flex;align-items:center;gap:8px;margin-top:2px">
+                <button onClick="{{ c.buy }}" style="flex:none;height:32px;padding:0 13px;border:none;border-radius:999px;background:oklch(0.52 0.17 5);color:#fff;font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer;box-shadow:0 8px 16px -8px oklch(0.52 0.17 5)" style-active="transform:scale(.97)">Reservar entrada</button>
+                <button onClick="{{ c.add }}" style="flex:none;border:none;background:transparent;padding:0;text-align:left;font:400 11px/1 'Geist';color:rgba(28,34,48,.6);white-space:nowrap;cursor:pointer">¿Ya la tienes? <span style="color:#1C2230;text-decoration:underline;text-underline-offset:2px">Añádela</span></button>
+              </span>
+            </sc-if>
+            <sc-if value="{{ c.done }}" hint-placeholder-val="{{ false }}">
+              <span style="display:flex;align-items:center;gap:6px;margin-top:2px;font:400 12px 'Geist';color:rgba(28,34,48,.65);white-space:nowrap;animation:pop .35s ease both">
+                <span style="display:inline-flex;align-items:center;gap:4px;color:oklch(0.45 0.11 150);font-weight:600">✓ Reservada</span><span>·</span>
+                <span style="font:600 12px 'Geist Mono',monospace;color:#1C2230">{{ c.time }}</span><span>·</span>
+                <button onClick="{{ c.add }}" style="border:none;background:transparent;padding:0;font:italic 400 15px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+              </span>
+            </sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:32px;height:42px;padding:0 18px;border-radius:999px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;gap:8px;font:500 13px 'Geist';animation:toast 2.2s ease both;z-index:90">Abriendo la tienda de entradas…</div>
+  </sc-if>
+
+  <div style="position:fixed;inset:0;z-index:80;pointer-events:{{ shPe }}">
+    <div onClick="{{ close }}" style="position:absolute;inset:0;background:rgba(28,34,48,.35);opacity:{{ shO }};transition:opacity .35s"></div>
+    <div style="position:absolute;left:50%;bottom:0;width:390px;margin-left:-195px;border-radius:28px 28px 0 0;background:#FFFDF8;padding:12px 20px 24px;transform:{{ shT }};transition:transform .5s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:14px">
+      <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">¿A qué hora es tu entrada?</span>
+        <span style="font:400 24px/1.05 'Instrument Serif',serif">{{ shName }}</span>
+        <span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ shWhen }}</span>
+      </div>
+      <div style="position:relative;height:200px;border-radius:18px;background:#F5EFE4;overflow:hidden">
+        <span style="position:absolute;left:12px;right:12px;top:80px;height:40px;border-radius:12px;background:#fff;box-shadow:0 2px 8px -3px rgba(28,34,48,.2)"></span>
+        <div ref="{{ wheelRef }}" onScroll="{{ onWheel }}" style="position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;padding:80px 0;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent)">
+          <sc-for list="{{ times }}" as="t" hint-placeholder-count="12">
+            <div onClick="{{ t.pick }}" style="position:relative;height:40px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;font:400 {{ t.fs }}/1 'Instrument Serif',serif;color:{{ t.c }};cursor:pointer;transition:color .2s,font-size .2s">{{ t.t }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <button onClick="{{ save }}" style="height:54px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 15px 'Geist';cursor:pointer">Guardar · {{ selT }}</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TIMES=Array.from({length:21},(_,i)=>{const m=480+i*30;return String(Math.floor(m/60)).padStart(2,'0')+':'+(m%60?'30':'00');});
+const CARDS=[
+{k:'a',name:'Museos Vaticanos y Capilla Sixtina',when:'Día 1',time:null},
+{k:'b',name:'Museos Vaticanos y Capilla Sixtina',when:'Mar 12 ene',time:null},
+{k:'c',name:'Museos Vaticanos y Capilla Sixtina',when:'Día 1',time:'14:00'},
+{k:'d',name:'Museos Vaticanos y Capilla Sixtina',when:'Mar 12 ene',time:'14:00'}];
+class Component extends DCLogic {
+  state={times:Object.fromEntries(CARDS.map(c=>[c.k,c.time])),edit:null,sel:12,toast:0};
+  wheelRef=React.createRef();
+  openWheel(k){const cur=this.state.times[k];const i=cur?Math.max(0,TIMES.indexOf(cur)):12;this.setState({edit:k,sel:i});
+    setTimeout(()=>{const el=this.wheelRef.current;if(el)el.scrollTop=i*40;},40);}
+  renderVals(){const s=this.state;const E=CARDS.find(c=>c.k===s.edit);
+    const card=c=>{const t=s.times[c.k];return{name:c.name,when:c.when,time:t||'',open:!t,done:!!t,
+      panel:t?'oklch(0.55 0.11 150)':'oklch(0.55 0.17 5)',dot:t?'oklch(0.55 0.11 150)':'rgba(28,34,48,.35)',bd:t?'oklch(0.55 0.11 150 / .4)':'rgba(28,34,48,.08)',
+      buy:()=>{this.setState({toast:Date.now()});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:0}),2200);},
+      add:()=>this.openWheel(c.k)};};
+    return{
+      rows:[{label:'Sin reservar',cards:[card(CARDS[0]),card(CARDS[1])]},{label:'Reservada',cards:[card(CARDS[2]),card(CARDS[3])]}],
+      toastOn:!!s.toast,
+      shPe:E?'auto':'none',shO:E?1:0,shT:E?'none':'translateY(105%)',shName:E?E.name:'',shWhen:E?E.when:'',
+      wheelRef:this.wheelRef,
+      onWheel:e=>{const i=Math.round(e.target.scrollTop/40);if(i!==s.sel)this.setState({sel:Math.max(0,Math.min(TIMES.length-1,i))});},
+      times:TIMES.map((t,i)=>{const d=Math.abs(i-s.sel);return{t,fs:d===0?'26px':'20px',c:d===0?'#1C2230':d===1?'rgba(28,34,48,.5)':'rgba(28,34,48,.28)',pick:()=>{const el=this.wheelRef.current;if(el)el.scrollTo({top:i*40,behavior:'smooth'});}};}),
+      selT:TIMES[s.sel],close:()=>this.setState({edit:null}),
+      save:()=>this.setState(st=>({times:{...st.times,[st.edit]:TIMES[st.sel]},edit:null}))};
+  }
+}
+</script>
+</body>
+</html>

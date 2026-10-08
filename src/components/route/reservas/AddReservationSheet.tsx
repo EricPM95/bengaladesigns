@@ -275,7 +275,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         inside_names: route.insideNames ?? [],
         reserva: { placeNames: draft.placeNames, dateIso: draft.dateIso, dayNumber: draft.dayNumber, time: draft.time },
         reservas: reservasParaMotor([...others, draft]),
-        reservas_antes: reservasParaMotor(others),
+        // (Cambiar una reserva que ya hay: el «antes» es el viaje como está ahora, con ella; así «mover el día» solo sale si la nueva hora o el nuevo día cambian algo.)
+        reservas_antes: reservasParaMotor(existing && existing.refId === draft.refId ? [...others, existing] : others),
       }),
     })
       .then((response) => (response.ok ? (response.json() as Promise<ReservationPlan>) : null))
