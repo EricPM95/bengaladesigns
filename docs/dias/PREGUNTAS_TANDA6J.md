@@ -1,0 +1,20 @@
+# Lo que he decidido yo en la Tanda 6j
+
+1. **Cómo se guardan los horarios nuevos.** El motor no sabía decir «cierra del 13 de enero al 10 de febrero de 2027», «cierra dos semanas de agosto», «el 2.º domingo abre de 9:00 a 17:00» ni «el 1.er domingo cierra». He añadido tres cosas a `openingHours.js`, para todos los destinos: rangos en `closed_dates` (`08-10..08-24` cada año, `2027-01-13..2027-02-10` un solo año), `nth_sunday` (Villa Farnesina) y `closed_nth_sunday` (Domus Aurea). Los precios no tenían campo: van como una línea «Entrada: …» en la lista de datos de la entrada de cada sitio.
+2. **Cementerio Protestante.** La auditoría dice «dos semanas a mediados de agosto» sin fechas. He puesto del 10 al 24 de agosto. Hay que confirmarlas.
+3. **Iglesia del Gesù, domingos.** La auditoría solo da el horario de lunes a viernes (16:30 por la tarde de octubre a junio, 17:00 de julio a septiembre). He puesto el domingo por la tarde a las 16:30 (antes 16:00) para que sea coherente; no está confirmado.
+4. **Boca de la Verdad.** No tenía horario en los datos. He puesto el de la auditoría (9:30–17:50, cierra el 1 de enero) porque la boca está en el pórtico de la iglesia y solo se ve con la iglesia abierta.
+5. **Lo que no he metido, aunque estaba en la auditoría:**
+   - Fontana de Trevi «junto a la fuente», 2 €: la parada es la plaza y no tiene entrada ni horario en los datos.
+   - San Luigi dei Francesi cerrado «el primer miércoles del mes por la mañana»: no hay una regla de «miércoles n del mes por la mañana». Queda apuntado.
+   - Escalera Santa: no es un sitio de los datos de Roma.
+6. **Los ❓ no se han tocado:** Santa Maria sopra Minerva, Santa Maria in Aracoeli, Santa Maria del Popolo, y el precio de la cripta y el fresco de Santa Cecilia. Santa Maria in Trastevere y Santa Maria Maggiore (🟡) sí: Maggiore ahora cierra a las 18:45.
+7. **Free Tour por hora.** En la hoja del Free Tour (desde «+ Añadir parada») las horas son: mañana 10:00, tarde 15:00 o 17:00, noche 21:00.
+8. **El Free Tour en RESERVAS** se reserva como una entrada más (nombre «Free Tour», con su hora). Su fecha no mueve el día entero (eso es solo para el Coliseo, los Museos y la Galería): la parada va a ese día y a esa hora, como cualquier entrada.
+9. **Reserva de un sitio grande en un día en que ese sitio cierra** (la Galería un lunes, el Coliseo el 1 de enero): no se fija nada; el viaje se queda como estaba y la reserva se guarda como hasta ahora.
+10. **Reserva de los Museos un miércoles.** El documento dice que el miércoles el D2 va «sin Museos». Si el viajero ya tiene los Museos reservados ese miércoles, la reserva manda: esa versión del día no se aplica (condición nueva `sin_reserva` en la variante del miércoles).
+11. **Dos reservas grandes el mismo día:** no se mueve el día entero; cada una va a su hora en ese día, y queda apuntado en el registro del servidor (`[reservation-plan] dos reservas grandes el mismo día…`).
+12. **Si el viajero ya había cambiado un día a mano**, ese día no se rehace al mover un día por una reserva (es lo de siempre: lo suyo manda). Si el día movido y uno de esos días se pisan, la parada reservada se coloca sola en su día, como antes.
+13. **Un fallo de la 6i que he corregido de paso:** la foto «(por fuera)» del Castillo nunca llegaba a pedirse bien, porque la expresión que separa el nombre de «(por fuera)» había perdido sus barras al escribirla. Ahora funciona (con petición real). Y en la tarjeta de día del DIAS había otra expresión igual de rota (el nombre de la excursión sin «Excursión a la…»); también arreglada.
+14. **Prueba de la 6i:** su comprobación decía «el Parque va antes que la Galería con la Galería a las 11:00». La 6j lo invierte; la 6i ahora solo cuenta, y la 6j es la que lo exige.
+15. **TABLA_RESERVAS:** la hoja de Museos a las 12:30 y a las 13:00 sale ahora «sin lista» (en el documento que has cambiado, el tramo del mediodía empieza a las 13:16). Y la comprobación «el día empieza tarde» ahora respeta la hora de inicio de la propia versión del día (la lista de las 9:00 de la Galería empieza a las 8:00).
