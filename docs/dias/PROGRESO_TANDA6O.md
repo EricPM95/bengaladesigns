@@ -1,0 +1,9 @@
+# Progreso de la Tanda 6o
+
+1. **«Entradas» en todas las fichas.** Las entradas de cada sitio ya no viajan dentro de cada parada: las lee el cliente del destino (`entradas_por_sitio` en `/api/destination-excursions`, de `_entradas.json`). La ficha de cualquier sitio con entradas lleva la pestaña con su lista y sus [Reservar], se abra desde un día, EXPLORAR o «+ Añadir parada». «¿Ya la tienes? Añádela» solo sale si el sitio está ya en algún día del viaje. Visto a 375 px (Coliseo y Cúpula desde EXPLORAR; Ara Pacis desde «+ Añadir parada»). Hecho.
+2. **El Free Tour, como una entrada más.** En `_entradas.json` con la clave «Free Tour» y el enlace de Civitatis. Su tarjeta lleva la pestañita (naranja: abre su ficha en «Entradas» con [Reservar Free Tour]; verde con ✓ y la hora: abre «Cambiar» con sus cinco botones). Visto en un viaje sin fechas. Hecho.
+3. **El Foro sin hora fija.** Con la entrada conjunta, la tarjeta del Foro ya no lleva la hora encima del nombre: solo el ✓ verde de su pestañita. Visto. Hecho.
+4. **El código de afiliado, siempre.** Una sola regla para todos los destinos (`shared/affiliate/civitatis.js`): todo enlace de Civitatis sale con `aid=5206`, lo lleve ya o no, y si trae otro se cambia. Se aplica antes de seguir cualquier enlace (también sin viaje abierto) y en los botones [Reservar] que abren la tienda. Los enlaces que no son de Civitatis, apuntados en PREGUNTAS. Hecho.
+5. **Pruebas.** `pruebaTanda6o.mjs` recorre todos los enlaces de Civitatis (escritos y construidos) y comprueba que salen con `aid=5206`; las de siempre, a 0 fallos (ver informe). A mano a 375 px: «Entradas» desde EXPLORAR y «+ Añadir parada»; «Añádela» solo con el sitio en el viaje; el Free Tour naranja y verde; el Foro sin hora; un viaje sin fechas con la pestañita; la rueda de la Galería y la de los Museos. Hecho.
+
+TERMINADO
