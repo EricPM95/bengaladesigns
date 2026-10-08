@@ -60,7 +60,7 @@ const apunta = (regla, texto) => {
 
 const GRANDES = {
   Coliseo: { ids: ['D1', 'D1-FT'], horas: ['09:00', '12:30', '15:00'] },
-  'Museos Vaticanos y Capilla Sixtina': { ids: ['D2'], horas: ['09:00', '13:30', '15:30'] },
+  'Museos Vaticanos y Capilla Sixtina': { ids: ['D2', 'D3'], horas: ['09:00', '13:30', '15:30'] },
   'Galería Borghese': { ids: ['D4'], horas: ['09:00', '12:00', '15:00'] },
 }
 
@@ -135,11 +135,11 @@ for (let mes = 0; mes < 12; mes++) {
 }
 
 // ── C. Reservas movidas a cada día, con y sin fechas ─────────────────────────────────────────────────────
-for (const forma of [{ dias: 2 }, { dias: 3 }, { dias: 4 }, { dias: 5 }, { dias: 6 }]) {
+for (const forma of [{ dias: 2 }, { dias: 3 }, { dias: 4 }, { dias: 5 }, { dias: 6 }, { dias: 3, ft: true }, { dias: 5, ft: true }]) {
   const casos = [...fechas.map((inicio) => ({ inicio })), ...[0, 3, 6, 9].map((mes) => ({ mes }))]
   for (const caso of casos) {
     let base
-    try { base = await viaje({ dias: forma.dias, ...caso }) } catch { continue }
+    try { base = await viaje({ dias: forma.dias, ft: forma.ft, ...caso }) } catch { continue }
     const norm = (id) => (id === 'D1-corto' ? 'D1' : id)
     const idsBase = base.map((d) => norm(d?.curated_day?.id ?? null))
     const idsBaseRaw = base.map((d) => d?.curated_day?.id ?? null)
@@ -150,7 +150,7 @@ for (const forma of [{ dias: 2 }, { dias: 3 }, { dias: 4 }, { dias: 5 }, { dias:
           const reserva = { placeNames: [lugar], dateIso, dayNumber: caso.inicio ? null : i + 1, time }
           const donde = `${forma.dias} días · ${caso.inicio ? `inicio ${caso.inicio}` : `sin fechas, mes ${caso.mes + 1}`} · ${lugar} el día ${i + 1} a las ${time}`
           let trip
-          try { trip = await viaje({ dias: forma.dias, ...caso, reservas: [reserva] }) } catch (error) { falla('error', `${donde}: ${error.message}`); continue }
+          try { trip = await viaje({ dias: forma.dias, ft: forma.ft, ...caso, reservas: [reserva] }) } catch (error) { falla('error', `${donde}: ${error.message}`); continue }
           viajes++
           revisa(trip, { inicio: caso.inicio ?? null, donde, reservas: idsBase.some((id) => ids.includes(id) || (id === 'D1' && ids.includes('D1'))) ? [reserva] : [] })
           const idsAhora = trip.map((d) => norm(d?.curated_day?.id ?? null))
@@ -167,7 +167,7 @@ for (const forma of [{ dias: 2 }, { dias: 3 }, { dias: 4 }, { dias: 5 }, { dias:
               const carrier = idsBase.findIndex((id) => ids.includes(id))
               const simple = [...idsBaseRaw]
               ;[simple[i], simple[carrier]] = [simple[carrier], simple[i]]
-              const tripSimple = await viaje({ dias: forma.dias, ...caso, reservas: [reserva], forceOrder: simple })
+              const tripSimple = await viaje({ dias: forma.dias, ft: forma.ft, ...caso, reservas: [reserva], forceOrder: simple })
               let cierres = simple.filter((id, k) => malEnEsaFecha(id, caso.inicio ? addDays(caso.inicio, k) : null)).length
               // (La fecha de la reserva es del sitio reservado: ese día no cuenta como mal.)
               if (simple[i] && malEnEsaFecha(simple[i], dateIso) && !closedOnDay(placeByName.get(lugar), weekdayOf(dateIso ?? '2027-03-02'), dateIso)) cierres = Math.max(cierres, 1)

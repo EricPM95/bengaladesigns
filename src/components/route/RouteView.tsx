@@ -122,6 +122,8 @@ export function RouteView() {
         <ReservasPanel route={route} onClose={() => setMode('route')} />
         {/* La página de excursiones se abre también desde la fila «Excursiones desde {destino}» de Reservas. */}
         <ExcursionsPage route={route} />
+        {/* (Tanda 6m: el aviso corto también en RESERVAS —«Abriendo la tienda de entradas…»—, que es una pantalla aparte.) */}
+        <UndoToast />
       </>
     )
   }

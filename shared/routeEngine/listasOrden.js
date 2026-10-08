@@ -124,8 +124,10 @@ export function ordenarDias(env) {
     const fijos = new Map(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]])
     for (const reserva of env.reservasGrandes ?? []) {
       const slot = cityDays.findIndex((day) => (reserva.dateIso ? hoursOf(day).dateIso === reserva.dateIso : day.dayNumber === Number(reserva.dayNumber)))
-      const dentro = (id) => paradasDelDia(written.days[id], { sinCamino: true }).some((stop) => stop.lugar === reserva.name && stop.modo === 'dentro')
-      const id = chosen.find((candidate) => candidate !== 'D1-corto' && dentro(candidate)) ?? chosen.find((candidate) => candidate !== 'D1-corto' && carries(written.days[candidate], reserva.name))
+      // (Un día que hereda su mañana de otro —el D1-FT, la de la Roma antigua— lleva también las paradas de esa mañana.)
+      const conHerencia = (dia) => [...paradasDelDia(dia, { sinCamino: true }), ...(dia.hereda_manana_de && written.days[dia.hereda_manana_de] ? paradasDelDia(written.days[dia.hereda_manana_de], { sinCamino: true }) : [])]
+      const dentro = (id) => conHerencia(written.days[id]).some((stop) => stop.lugar === reserva.name && stop.modo === 'dentro')
+      const id = chosen.find((candidate) => candidate !== 'D1-corto' && dentro(candidate)) ?? chosen.find((candidate) => candidate !== 'D1-corto' && conHerencia(written.days[candidate]).some((stop) => stop.lugar === reserva.name))
       // (Un sitio cerrado ese día no se fija: la reserva no puede ser de ese día; se guarda con su aviso y el viaje se queda como está.)
       if (slot >= 0 && closedThatDay(reserva.name, cityDays[slot])) { reservasSinDia.push({ name: reserva.name, motivo: 'cerrado' }); continue }
       if (slot < 0 || !id || [...fijos.values()].includes(id)) { reservasSinDia.push({ name: reserva.name, motivo: slot < 0 ? 'fecha_sin_dia' : !id ? 'sin_dia_escrito' : 'ya_fijado' }); continue }

@@ -234,6 +234,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   }, [wheelItems, view])
 
   const [plan, setPlan] = useState<ReservationPlan | null>(null)
+  // La respuesta del servidor para esta hora y este día aún no ha llegado: no se guarda hasta entonces (la hoja de «mover el día» y la regla 17 salen con ella).
+  const [planDoneKey, setPlanDoneKey] = useState<string | null>(null)
   const planKey = resolvedDay && bigPlace && !isExcursion && validTime ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
@@ -278,16 +280,23 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     })
       .then((response) => (response.ok ? (response.json() as Promise<ReservationPlan>) : null))
       .then((body) => {
-        if (!cancelled) setPlan(body)
+        if (!cancelled) {
+          setPlan(body)
+          setPlanDoneKey(planKey)
+        }
       })
       .catch(() => {
-        if (!cancelled) setPlan(null)
+        if (!cancelled) {
+          setPlan(null)
+          setPlanDoneKey(planKey)
+        }
       })
     return () => {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planKey])
+  const planPending = Boolean(planKey) && planDoneKey !== planKey
 
   const applyRead = (data: { fecha: string | null; hora: string | null; hora_vuelta: string | null; punto_encuentro: string | null; localizador: string | null }) => {
     setFields((previous) => ({
@@ -483,7 +492,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </p>
               )}
 
-              <button type="button" disabled={!ready} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+              <button type="button" disabled={!ready || planPending} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40">
                 {validTime ? `Guardar · ${fields.time.length === 4 ? `0${fields.time}` : fields.time}` : 'Guardar'}
               </button>
 
@@ -674,7 +683,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
 
         {view === 'form' && (
           <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-            <button type="button" disabled={!ready} onClick={() => save()} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
+            <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
               {resolvedDay ? `Guardar y ponerla en el Día ${resolvedDay.dayNumber}` : 'Guardar y ponerla en su día'}
             </button>
           </div>
