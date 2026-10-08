@@ -375,8 +375,6 @@ export interface Stop {
   why?: string | null
   /** Precio y condiciones de entrada ("Entrada ~15€.") — solo se enseñan en la pestaña Tickets. */
   ticketInfo?: string[] | null
-  /** Las entradas que se pueden comprar de este sitio (data/dias/<destino>/_entradas.json): pestaña «Entradas» y pestañita de la tarjeta. */
-  entradas?: StopEntrada[] | null
   /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
       sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
   isBreak?: boolean

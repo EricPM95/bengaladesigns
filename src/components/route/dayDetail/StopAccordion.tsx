@@ -5,6 +5,7 @@ import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { EntradaEdgeTab } from '../reservas/EntradaEdgeTab'
+import { useIsSecondOfReservation } from '../reservas/useStopEntradas'
 import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
 
 interface StopAccordionProps {
@@ -45,6 +46,8 @@ const OUTSIDE_SHORT: Record<string, string> = {
  */
 export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
+  // El Foro con la entrada conjunta del Coliseo: sin hora fija en la tarjeta (solo el ✓ de su pestañita).
+  const secondOfEntrance = useIsSecondOfReservation(stop.name)
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -127,7 +130,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       number={number}
       numberColors={numberColors}
       // Tanda 6b: sin hora por parada; solo la fija (reserva, turno, Free Tour). La franja lleva su hora en la cabecera.
-      time={stop.reservationTime ?? null}
+      time={secondOfEntrance ? null : (stop.reservationTime ?? null)}
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}

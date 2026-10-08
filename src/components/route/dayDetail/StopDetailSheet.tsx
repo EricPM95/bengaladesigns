@@ -20,6 +20,7 @@ import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeI
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
+import { useStopEntradas } from '../reservas/useStopEntradas'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -345,7 +346,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // 0 resultados para este lugar" — mismo efecto: sin tickets, sin pestaña (ver hasTickets abajo).
   // La entrada oficial (precio y condiciones del lugar) va siempre en Tickets, haya o no proveedores.
   const ticketInfo = stop?.ticketInfo ?? []
-  const hasEntradas = Boolean(stop?.entradas?.length)
+  const hasEntradas = useStopEntradas(stop) != null
   const hasTickets = hasEntradas || ticketInfo.length > 0
   // Free Tour: 3 tips nativos del pipeline (persuasivo/propina/práctico), nunca bajo demanda.
   // Ancla: tips reales con búsqueda web (0-3, práctico/secreto), ver anchorTipsApi.ts. Parada

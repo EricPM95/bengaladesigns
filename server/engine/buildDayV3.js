@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { createTravelTimes, straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { toHHMM, toMinutes } from '../../shared/routeEngine/time.js'
 import { findPipelineV2Key, mealZoneInfo } from '../routeAlgorithm.js'
-import { entradasFor, ownPhotoFile, photosFor } from './writtenDays.js'
+import { ownPhotoFile, photosFor } from './writtenDays.js'
 import { HALF_DAY_EXCURSION_END, HALF_DAY_EXCURSION_START, HALF_DAY_ROUTE_START } from './modeConfig.js'
 import { buildStop } from './buildDay.js'
 
@@ -465,8 +465,6 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Free Tour (entonces va en ella ese tour) o tenga una parte de pago (la cúpula, la cripta).
     if (source && !visit.place.isFreeTour && !visit.place.isBreak) {
       if (!(source.ticket_info ?? []).some((line) => /de pago|se pagan?\b/i.test(line))) stop.free_access = true
-      const entradas = entradasFor(findPipelineV2Key(destData.destination ?? '') ?? '', source.name)
-      if (entradas.length) stop.entradas = entradas
       const tourCfg = destData.default_free_tour
       if ((tourCfg?.covers ?? []).includes(source.name)) stop.in_free_tour = { name: tourCfg.name, duration_minutes: tourCfg.duration_minutes ?? null, meeting_point: tourCfg.meeting_point ?? null, url: tourCfg.url ?? null }
       // (La ficha, solo con nuestro texto: sin el que escribe la IA bajo demanda.)

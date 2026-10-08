@@ -1,5 +1,5 @@
 {
-  "_que_es": "Las entradas que se pueden comprar de cada sitio (Tanda 6n). La pestaña «Entradas» de la ficha de cada sitio enseña estas, una debajo de otra: nombre, qué incluye, precio «desde» y [Reservar]. Un sitio sin entradas aquí no lleva pestaña ni la pestañita de la tarjeta. Primera versión sacada de lo que ya decían los datos de cada sitio (ticket_info); Eric añade o cambia entradas a mano, como las excursiones. Cada entrada: nombre, incluye (una línea; null si no hay), desde (euros; null si no se sabe) y url (el enlace de compra; null = la búsqueda de ese sitio).",
+  "_que_es": "Las entradas que se pueden comprar de cada sitio (Tanda 6n). La pestaña «Entradas» de la ficha de cada sitio enseña estas, una debajo de otra: nombre, qué incluye, precio «desde» y [Reservar]. Un sitio sin entradas aquí no lleva pestaña ni la pestañita de la tarjeta. Primera versión sacada de lo que ya decían los datos de cada sitio (ticket_info); Eric añade o cambia entradas a mano, como las excursiones. Cada entrada: nombre, incluye (una línea; null si no hay), desde (euros; null si no se sabe) y url (el enlace de compra; null = la búsqueda de ese sitio). El Free Tour va como un sitio más, con la clave «Free Tour».",
   "lugares": {
     "Coliseo": [
       {
@@ -159,6 +159,14 @@
         "incluye": null,
         "desde": 10,
         "url": null
+      }
+    ],
+    "Free Tour": [
+      {
+        "nombre": "Free Tour Roma",
+        "incluye": "Recorrido a pie por el centro histórico, de 2 h 30 min.",
+        "desde": null,
+        "url": "https://www.civitatis.com/es/roma/free-tour-roma/?aid=5206&cmp=Routy"
       }
     ]
   }

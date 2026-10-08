@@ -67,17 +67,17 @@ export function tipsFor(destinationKey) {
 const tipsCache = new Map()
 
 /**
- * Las entradas que se pueden comprar de cada sitio (Tanda 6n): `data/dias/<destino>/_entradas.json`, por nombre de sitio.
- * Devuelve la lista del sitio (nombre, incluye, desde, url) o [] si no tiene: sin entradas, ni pestaña ni pestañita.
+ * Las entradas que se pueden comprar de cada sitio (Tanda 6n): `data/dias/<destino>/_entradas.json`, por nombre de sitio (el Free Tour, como «Free Tour»).
+ * Cada una: nombre, incluye, desde y url. Un sitio que no sale aquí no tiene entradas: ni pestaña ni pestañita. {} si el destino no tiene el archivo.
  */
-export function entradasFor(destinationKey, placeName) {
+export function entradasDe(destinationKey) {
   const key = String(destinationKey ?? '').trim().toLowerCase()
-  if (!key) return []
+  if (!key) return {}
   if (!entradasCache.has(key)) {
     const file = join(DIAS_DIR, key, '_entradas.json')
     entradasCache.set(key, existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')).lugares ?? {} : {})
   }
-  return entradasCache.get(key)[placeName] ?? []
+  return entradasCache.get(key)
 }
 
 const entradasCache = new Map()

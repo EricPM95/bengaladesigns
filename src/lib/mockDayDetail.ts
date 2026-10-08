@@ -1,5 +1,5 @@
 import { findTransitOption } from './transitLines'
-import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, StopEntrada, ExperienceCategoryId } from './types'
+import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, ExperienceCategoryId } from './types'
 import { hasRealCoordinates } from './distanceMock'
 import { getRoutedDistance } from './mapboxDirections'
 
@@ -280,7 +280,6 @@ export interface MockStopDetail {
   why?: string | null
   /** Ver Stop.ticketInfo en types.ts. */
   ticketInfo?: string[] | null
-  entradas?: StopEntrada[] | null
   /** Ver Stop.isRevisit — segunda visita al mismo sitio a otra hora, con su motivo. */
   isRevisit?: boolean
   /** Ver Stop.optional. */
@@ -365,7 +364,6 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     experience: stop.experience ?? null,
     why: stop.why ?? null,
     ticketInfo: stop.ticketInfo ?? null,
-    entradas: stop.entradas ?? null,
     isRevisit: stop.isRevisit,
     optional: stop.optional,
     revisitReason: stop.revisitReason,

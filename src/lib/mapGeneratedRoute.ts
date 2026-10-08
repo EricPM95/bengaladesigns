@@ -14,7 +14,6 @@ import type {
   Restaurant,
   Route,
   Stop,
-  StopEntrada,
   StopCategory,
   TicketOption,
   TransportContext,
@@ -112,8 +111,6 @@ export interface GeneratedStop {
   outside_reason?: string | null
   /** Precio y condiciones de entrada — Stop.ticketInfo. */
   ticket_info?: string[] | null
-  /** Las entradas de los datos (_entradas.json) — Stop.entradas. */
-  entradas?: StopEntrada[] | null
   /** Sin fechas: los días que a esa hora está cerrado — Stop.hoursWarning. */
   hours_warning?: string | null
   /** Temporada aproximada, en el margen: Stop.seasonNotice. */
@@ -551,7 +548,6 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.experience ? { experience: generated.experience as ExperienceCategoryId } : {}),
     ...(generated.why ? { why: generated.why } : {}),
     ...(generated.ticket_info?.length ? { ticketInfo: generated.ticket_info } : {}),
-    ...(generated.entradas?.length ? { entradas: generated.entradas } : {}),
   }
 }
 

@@ -2,6 +2,7 @@
 // No inventa ninguna entrada: solo los sitios que los datos dicen que son de pago. Después, el archivo es de Eric: añade o cambia entradas ahí, como las excursiones.
 //   node scripts/destino/entradasDeRoma.mjs
 import fs from 'node:fs'
+if (fs.existsSync('data/dias/roma/_entradas.json')) throw new Error('_entradas.json ya existe y es tuyo: este generador solo sirvió para la primera versión.')
 
 const roma = JSON.parse(fs.readFileSync('data/pipeline_v2/roma.json', 'utf8'))
 const grupos = roma.entradas_reservas ?? []

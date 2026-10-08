@@ -409,6 +409,17 @@ export function DayDetailPanel({
   }
 
   const stops = resolveDisplayStops(day)
+  // La ficha abierta sigue con su parada aunque el día se rehaga (al guardar una entrada, por ejemplo): si la parada cambia de sitio se busca por su nombre; si ya no está, se cierra.
+  const previousStopsRef = useRef(stops)
+  useEffect(() => {
+    const before = previousStopsRef.current
+    previousStopsRef.current = stops
+    if (detailIndex === null || before === stops) return
+    const name = before[detailIndex]?.name
+    if (name == null || stops[detailIndex]?.name === name) return
+    const next = stops.findIndex((stop) => stop.name === name)
+    setDetailIndex(next >= 0 ? next : null)
+  })
   // Un día LIBRE está vacío a propósito y no tiene plantilla que cristalizar — misma distinción que
   // hace resolveDisplayStops, y tiene que ser la misma o los dos arrays dejan de ir en paralelo.
   //

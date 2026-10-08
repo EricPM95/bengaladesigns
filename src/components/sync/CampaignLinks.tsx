@@ -12,9 +12,9 @@ export function CampaignLinks() {
     const stamp = (event: Event) => {
       const link = (event.target as Element | null)?.closest?.('a[href*="civitatis.com"]') as HTMLAnchorElement | null
       if (!link) return
+      // (Sin viaje abierto también: el código de afiliado va siempre; el de campaña, solo con viaje.)
       const { campaignCode, route } = useRouteStore.getState()
-      if (!route) return
-      const stamped = withCampaign(link.href, campaignCode)
+      const stamped = withCampaign(link.href, route ? campaignCode : null)
       if (stamped !== link.href) link.href = stamped
     }
     // (Solo en desarrollo: para probar una venta de ejemplo con el código del viaje abierto.)

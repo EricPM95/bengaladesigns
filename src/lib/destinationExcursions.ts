@@ -5,7 +5,7 @@
  * y las opiniones salen de ahí sin cambiar el diseño.
  */
 import { useEffect, useState } from 'react'
-import type { Excursion } from './types'
+import type { Excursion, StopEntrada } from './types'
 import { mapExcursionList, type GeneratedExcursion } from './mapGeneratedRoute'
 import type { EssentialEntry } from './bookings'
 
@@ -15,6 +15,8 @@ export interface DestinationExcursions {
   excursions: Excursion[]
   /** Las tres entradas imprescindibles del destino para Reservas (`entradas_reservas`). */
   entradas: EssentialEntry[]
+  /** Las entradas que se pueden comprar de cada sitio (`_entradas.json`), por nombre de sitio; el Free Tour, como «Free Tour». Un sitio que no sale no tiene entradas. */
+  entradasPorSitio: Record<string, StopEntrada[]>
   /** Los sitios de excursión del destino, en una línea («Pompeya, Florencia…»), de los datos del destino. */
   examples: string | null
   /** El ejemplo del campo «Nombre del día» (+ Añadir día), de los datos del destino. */
@@ -23,7 +25,7 @@ export interface DestinationExcursions {
   rating: { percent: number; excursions: number; reviews: number } | null
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], examples: null, dayNameExample: null, rating: null }
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, examples: null, dayNameExample: null, rating: null }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
@@ -35,10 +37,10 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
       const result: DestinationExcursions = data?.found
-        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
-        : { ...EMPTY, dayNameExample: data?.day_name_example ?? null }
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
+        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, dayNameExample: data?.day_name_example ?? null }
       cache.set(key, result)
       return result
     })

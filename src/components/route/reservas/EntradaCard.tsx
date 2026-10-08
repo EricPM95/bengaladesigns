@@ -1,4 +1,6 @@
+import { withCampaign } from '../../../lib/affiliateLinks'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 const ROSE = 'oklch(0.55 0.17 5)'
 const ROSE_DEEP = 'oklch(0.52 0.17 5)'
@@ -16,7 +18,8 @@ function TicketIcon() {
 /** Abre la compra en otra pestaña con el aviso corto; nunca el nombre del proveedor. Lo usan RESERVAS y la pestaña «Entradas» de la ficha. */
 export function openTicketShop(href: string | null) {
   useAddFlowStore.setState({ toast: { message: 'Abriendo la tienda de entradas…', previous: null, id: Date.now() } })
-  if (href) window.open(href, '_blank', 'noopener,noreferrer')
+  // (Con el código de afiliado y el de campaña del viaje, como los enlaces que se pulsan: ver CampaignLinks.)
+  if (href) window.open(withCampaign(href, useRouteStore.getState().campaignCode), '_blank', 'noopener,noreferrer')
 }
 
 /**

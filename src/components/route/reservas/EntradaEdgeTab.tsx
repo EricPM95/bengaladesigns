@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
-import type { StopEntrada } from '../../../lib/types'
 import { AddReservationSheet } from './AddReservationSheet'
 import { GREEN } from './EntradaCard'
 import { useStopEntradas } from './useStopEntradas'
@@ -19,7 +18,7 @@ function TicketIcon() {
  * La pestañita de entrada de la tarjeta de DÍAS (Tanda 6n): pegada al borde derecho, a media altura. Sin reservar, naranja con el icono de entrada: abre la
  * ficha en su pestaña «Entradas». Reservada, verde con ✓ y la hora: abre la hoja de «Cambiar». Sin entradas en los datos, no sale.
  */
-export function EntradaEdgeTab({ stop, onOpenEntradas }: { stop: { id: string; name: string; entradas?: StopEntrada[] | null }; onOpenEntradas: () => void }) {
+export function EntradaEdgeTab({ stop, onOpenEntradas }: { stop: { id: string; name: string; isFreeTour?: boolean }; onOpenEntradas: () => void }) {
   const route = useRouteStore((state) => state.route)
   const data = useStopEntradas(stop)
   const [changing, setChanging] = useState(false)

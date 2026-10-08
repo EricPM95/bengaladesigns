@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
-import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
+import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
 import { RESERVAS_GRANDES, consejoDeReserva } from '../shared/routeEngine/listasReservas.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
@@ -4395,8 +4395,10 @@ app.post('/api/destination-excursions', (req, res) => {
   // El ejemplo del campo «Nombre del día» de «+ Añadir día» (dato de cada destino: `destination_config.ejemplo_nombre_dia`).
   const dayNameExample = data?.destination_config?.ejemplo_nombre_dia ?? null
   const entradas = Array.isArray(data?.entradas_reservas) ? data.entradas_reservas.map((entry) => ({ name: entry.nombre, places: entry.lugares ?? [] })) : []
+  // Las entradas de cada sitio (Tanda 6n, `_entradas.json`): las lee la pestaña «Entradas» de cualquier ficha y la pestañita de la tarjeta.
+  const entradasPorSitio = entradasDe(findPipelineV2Key(destination ?? '') ?? '')
   if (!data || (options.length === 0 && entradas.length === 0)) {
-    res.json({ found: false, from_days: null, excursions: [], entradas: [], day_name_example: dayNameExample })
+    res.json({ found: false, from_days: null, excursions: [], entradas: [], entradas_por_sitio: entradasPorSitio, day_name_example: dayNameExample })
     return
   }
   const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
@@ -4405,6 +4407,7 @@ app.post('/api/destination-excursions', (req, res) => {
     found: true,
     from_days: options.length > 0 ? (data.excursions?.excursiones_desde_dias ?? null) : null,
     entradas,
+    entradas_por_sitio: entradasPorSitio,
     examples: data.excursions?.ejemplos_linea ?? null,
     day_name_example: dayNameExample,
     excursions: excursionsAvailablePayload(data, null, options).map((entry, index) => ({ ...entry, best_seller: options[index].mas_reservada === true })),
