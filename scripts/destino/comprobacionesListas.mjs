@@ -111,7 +111,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // (La pirámide manda cuando lo que se quita es por falta de tiempo; un cierre o la hora fija de otra parada tienen su propia regla.)
     for (const s of (dia.spareRows ?? []).filter((x) => x.razon === 'cabe' || x.razon == null)) {
       if ((s.nivel ?? 3) === 1 && !vistos.has(s.lugar) && !rows.some((r) => r.lugar === s.lugar)) falla('piramide', dia, `«${s.titulo ?? s.lugar}» es un imprescindible y pasa a «Si te sobra tiempo» la primera vez`)
-      for (const r of stops) if (r.franja === s.franja && r.modo !== 'camino' && r.tipo !== 'desayuno' && !r.relleno && !r.fija && !r.hora_tipo && !r.llegada && valor(r) < valor(s)) falla('piramide', dia, `«${s.titulo ?? s.lugar}» pasa a «Si te sobra tiempo» y «${r.titulo ?? r.lugar}», de menos importancia, se queda`)
+      for (const r of stops) if ((r.franja_doc ?? r.franja) === (s.franja_doc ?? s.franja) && r.modo !== 'camino' && r.tipo !== 'desayuno' && !r.relleno && !r.fija && !r.hora_tipo && !r.llegada && valor(r) < valor(s)) falla('piramide', dia, `«${s.titulo ?? s.lugar}» pasa a «Si te sobra tiempo» y «${r.titulo ?? r.lugar}», de menos importancia, se queda`)
     }
     // 5. Por dentro una sola vez (en el viaje)
     for (const r of stops) if (r.modo === 'dentro') { const dd = dentro.get(r.lugar); if (dd) falla('dentro_dos_veces', dia, `«${r.lugar}» va por dentro también el ${dd}`); dentro.set(r.lugar, dia.hours?.dateIso ?? `día ${dia.dayNumber}`) }

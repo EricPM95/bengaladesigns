@@ -11,6 +11,7 @@ import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 
 /** «del Coliseo», «del Vaticano», «de la Galería Borghese»: cómo se nombra el día por su sitio grande. */
 const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese' }
+const DIAS_DEL_SITIO = { Coliseo: ['D1', 'D1-FT'], 'Museos Vaticanos y Capilla Sixtina': ['D2', 'D3'], 'Galería Borghese': ['D4'] }
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -57,7 +58,8 @@ export async function planDeReservas({ destData, destKey, body, answers, hasFree
   if (otra) console.info(`[reservation-plan] dos reservas grandes el mismo día (${nueva.dateIso ?? `día ${nueva.dayNumber}`}): ${grande} y ${otra.placeNames.find((name) => RESERVAS_GRANDES.has(name))}; cada una a su hora, sin mover el día entero`)
   const reservaDay = (nueva.dateIso ? dayNumbers.find((n) => dateOf(n) === nueva.dateIso) : Number(nueva.dayNumber)) ?? null
   if (!reservaDay) return result
-  const diaDelSitio = (lista) => lista.find((entry) => entry.curatedId && written?.days?.[entry.curatedId] && JSON.stringify(written.days[entry.curatedId]).includes(`"lugar":"${grande}"`) && ['D1', 'D1-FT', 'D2', 'D4'].includes(entry.curatedId))
+  // (El día de cada sitio grande es el suyo escrito, no cualquiera que lo nombre en su pool: el Coliseo es del D1, los Museos del D2 —o del D3 con Free Tour— y la Galería del D4.)
+  const diaDelSitio = (lista) => lista.find((entry) => entry.curatedId && DIAS_DEL_SITIO[grande]?.includes(entry.curatedId))
   const antesDia = diaDelSitio(antes)
   const despuesDia = despues.find((entry) => entry.dayNumber === reservaDay)
   // (Ya estaba en ese día, o ese día es una excursión: no se mueve nada.)

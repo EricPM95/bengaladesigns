@@ -1487,7 +1487,7 @@ export function planListasTrip(args) {
     // escribe en la tarde puede quedar antes de la comida (o al revés): sin esto, el día saldría con dos franjas «Mañana», o con una franja con horas que no son las suyas.
     {
       const comidaAt = final.findIndex((it) => it.kind === 'comida')
-      if (comidaAt >= 0) final = final.map((it, at) => (it.kind === 'stop' && (it.franja === 'manana' || it.franja === 'tarde') && it.franja !== (at < comidaAt ? 'manana' : 'tarde') ? { ...it, franja: at < comidaAt ? 'manana' : 'tarde' } : it))
+      if (comidaAt >= 0) final = final.map((it, at) => (it.kind === 'stop' && (it.franja === 'manana' || it.franja === 'tarde') && it.franja !== (at < comidaAt ? 'manana' : 'tarde') ? { ...it, franja: at < comidaAt ? 'manana' : 'tarde', franja_doc: it.franja_doc ?? it.franja } : it))
     }
     const units = []
     const meals = []
@@ -1575,7 +1575,7 @@ export function planListasTrip(args) {
       untypedAfternoon: false, reorderedBlocks: [], closedAnchors: [], otherRestaurants: [],
       written: { version: null, escrito: true, tabla: draft.id, grupo: draft.parteKey },
       escritoNights, escritoLog: log.map((entry) => ({ ...entry, fecha: fecha ?? null })),
-      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true })),
+      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, franja_doc: item.franja_doc ?? item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true })),
       tardeLibre,
       spare: spareVisits,
       spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true })),
