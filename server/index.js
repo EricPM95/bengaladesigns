@@ -5059,7 +5059,7 @@ async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOver
 
   const destData = findPipelineV2Data(city)
   // «Castillo de Sant'Angelo (por fuera)»: la foto de su forma de visita (Tanda 6i): el lugar es el de antes del paréntesis y la búsqueda, su `search_en_fuera` (o `search_en_dentro`).
-  const porModo = /^(.*?)s*(por (fuera|dentro))$/.exec(name)
+  const porModo = /^(.*?)\s*\(por (fuera|dentro)\)$/.exec(name)
   const place = (destData?.places ?? []).find((candidate) => candidate.name === (porModo ? porModo[1] : name)) ?? null
   const consulta = (porModo && place?.[`search_en_${porModo[2]}`]) || place?.search_en
 

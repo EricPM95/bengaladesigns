@@ -204,7 +204,7 @@
       }
     },
     {
-      "archivo": "dia_iglesia_santa_maria_trastevere.jpg",
+      "archivo": "dia_santa_maria_in_trastevere.jpg",
       "lugares": [
         "Iglesia de Santa Maria in Trastevere"
       ],
@@ -213,7 +213,7 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
-      "nota": "La fuente de la plaza delante de la iglesia (3-oct-2026). Wikimedia Commons, File:Santa Maria in Trastevere fountain.jpg, de Jensens: dominio público, sin crédito obligatorio. Es la que antes salía en Trastevere (venía de Wikipedia).",
+      "nota": "La fachada y la plaza (foto propia del usuario, 8-oct-2026, Tanda 6j). Antes salía la fuente de la plaza (dia_iglesia_santa_maria_trastevere.jpg).",
       "credito": {
         "autor": "",
         "licencia": "",
@@ -1064,6 +1064,23 @@
       "fuente": "",
       "autor": "",
       "enlace": "",
+      "credito": {
+        "autor": "",
+        "licencia": "",
+        "enlace": ""
+      }
+    },
+    {
+      "archivo": "dia_iglesia_del_gesu.jpg",
+      "lugares": [
+        "Iglesia del Gesù (por dentro)"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "",
+      "autor": "",
+      "enlace": "",
+      "nota": "La cúpula y el techo, por dentro (foto propia del usuario, 8-oct-2026, Tanda 6j). Solo cuando la parada se visita por dentro (nombre con « (por dentro)»); de camino o por fuera no la usa.",
       "credito": {
         "autor": "",
         "licencia": "",

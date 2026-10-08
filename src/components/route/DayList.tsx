@@ -9,7 +9,7 @@ import type { DateNotice } from '../../lib/types'
 /** Una fecha especial va con su FECHA, no con el número del día: si se borra el día 1, la audiencia del miércoles sigue en el miércoles. */
 const noticeIsForDay = (notice: DateNotice, dayNumber: number, dateIso: string | null) =>
   notice.dateIso && dateIso ? notice.dateIso === dateIso : notice.dayNumber === dayNumber
-import { KIND_STYLE, numberedStopsOf, stopKindOf } from '../../lib/stopKind'
+import { numberedStopsOf } from '../../lib/stopKind'
 import { dayColor, dayColorIndex } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
@@ -267,7 +267,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). */}
                 {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent">Día de viaje</p>}
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
-                {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)s+/i, '') ?? null} />}
+                {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '') ?? null} />}
                 {day.dayType === 'excursion' && !enExcursion && !travel && <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>}
                 {/* Fechas especiales de este día ("Todos los Santos"): al tocarla vuelve a salir su tarjeta. */}
                 {(route.dateNotices ?? []).some((notice) => noticeIsForDay(notice, day.dayNumber, dateIso)) && (
@@ -289,15 +289,10 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                       }))}
                   />
                 )}
-                {/* Cerrado: un puntito por parada, del color de su tipo, y cuántas son. */}
+                {/* Cerrado: cuántas paradas son (sin puntitos de colores, Tanda 6j). */}
                 {!expanded && numbered.length > 0 && (
-                  <span className="mt-1 flex flex-wrap items-center gap-1">
-                    {numbered.map((stop) => (
-                      <span key={stop.id} className="h-[7px] w-[7px] rounded-full" style={{ background: KIND_STYLE[stopKindOf(stop)].color }} />
-                    ))}
-                    <span className="ml-1 text-[12px] text-text/55">
-                      {numbered.length} parada{numbered.length === 1 ? '' : 's'}
-                    </span>
+                  <span className="mt-1 text-[12px] text-text/55">
+                    {numbered.length} parada{numbered.length === 1 ? '' : 's'}
                   </span>
                 )}
               </div>
