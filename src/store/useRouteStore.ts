@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { dayCountryCode } from '../lib/flagColors'
 import type { MockHotelResult } from '../lib/mockAffiliateData'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
-import { dayOfReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
+import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
   ChosenRestaurant,
   AccommodationMode,
@@ -884,7 +884,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       set({ route: placeReservedEntrance(previous ? unpinReservedStops(route, previous.id) : route, reservation) })
       // El motor rehace ese día corriendo las horas alrededor de la hora de la reserva.
       const reservedDay = dayOfReservation(route, reservation)
-      if (reservedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(reservedDay.id))
+      // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija.
+      if (isBigReservation(reservation) && !reservation.noMueve) void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null))
+      else if (reservedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(reservedDay.id))
       return
     }
     const day = dayOfReservation(route, reservation)
@@ -899,7 +901,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       reservations: state.reservations.filter((reservation) => reservation.id !== id),
       route: state.route ? unpinReservedStops(state.route, id) : state.route,
     }))
-    if (removedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id))
+    // (Quitar una reserva grande devuelve cada día a su sitio: se rehacen todos, o un día quedaría repetido.)
+    if (removed && isBigReservation(removed) && !removed.noMueve) void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null))
+    else if (removedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id))
   },
   receiveSale: (sale) =>
     set((state) => {

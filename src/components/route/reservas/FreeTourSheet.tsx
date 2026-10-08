@@ -3,11 +3,12 @@ import { createPortal } from 'react-dom'
 import type { Route } from '../../../lib/types'
 import { aplicarFreeTour } from '../../../lib/rebuildDay'
 
-/** Las tres horas del Free Tour (Tanda 6f, 5): el de mañana es el de siempre (10:00); el de tarde y el de noche tienen su hora. */
+/** Las horas del Free Tour (Tanda 6j): el de mañana es el de siempre (10:00); el de tarde sale a las 15:00 o a las 17:00 y el de noche a las 21:00 (solo si el viajero lo reserva). */
 const FRANJAS = [
   { id: 'manana', label: 'Por la mañana', hora: '10:00' },
+  { id: 'tarde', label: 'Por la tarde', hora: '15:00' },
   { id: 'tarde', label: 'Por la tarde', hora: '17:00' },
-  { id: 'noche', label: 'De noche', hora: '18:30' },
+  { id: 'noche', label: 'De noche', hora: '21:00' },
 ] as const
 
 /** ¿La ruta ya lleva un Free Tour? Sirve para enseñar «Añadido» y ofrecer quitarlo. */
@@ -59,7 +60,7 @@ export function FreeTourSheet({ route, onClose }: { route: Route; onClose: () =>
           <div className="mt-4 flex flex-col gap-2">
             {FRANJAS.map((franja) => (
               <button
-                key={franja.id}
+                key={`${franja.id}-${franja.hora}`}
                 type="button"
                 disabled={busy}
                 onClick={() => run({ franja: franja.id, hora: franja.hora })}

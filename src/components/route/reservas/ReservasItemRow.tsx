@@ -57,6 +57,7 @@ export function ReservaCard({
   resolvedLabel = '✓ Añadido',
   trailing,
   priority,
+  notes,
 }: {
   kind: ReadinessItemKind
   eyebrow?: string
@@ -69,6 +70,8 @@ export function ReservaCard({
   trailing?: ReactNode
   /** El puntito de urgencia junto a la categoría (rojo, ámbar o gris) mientras no está reservado. */
   priority?: ReadinessPriority
+  /** Líneas de más bajo el subtítulo (Tanda 6j): «Reserva obligatoria en estas fechas», «Mejor hora este día: 9:00 o 16:00»… */
+  notes?: { text: string; warn?: boolean }[]
 }) {
   const style = KIND_STYLE[kind]
   return (
@@ -95,6 +98,11 @@ export function ReservaCard({
           {name}
         </span>
         {subtitle && <span className="truncate text-text/55" style={{ font: "400 11.5px 'Geist'" }}>{subtitle}</span>}
+        {(notes ?? []).map((note) => (
+          <span key={note.text} className={note.warn ? 'text-accent-red' : 'text-text/55'} style={{ font: "400 11.5px 'Geist'", lineHeight: 1.3 }}>
+            {note.text}
+          </span>
+        ))}
       </button>
       {trailing ? (
         <div className="flex shrink-0 items-center pr-3">{trailing}</div>

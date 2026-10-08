@@ -358,6 +358,8 @@ export interface Stop {
   waitHint?: string | null
   /** Tanda 6c: «Turno recomendado: 11:00» (lo propone el motor; no es una reserva del viajero, no va en negrita). */
   recommendedTurn?: string | null
+  /** Tanda 6j: hay que reservar en estas fechas (el Coliseo del 25 oct al 28 feb): «Reserva obligatoria en estas fechas» mientras no esté reservado. */
+  reservationRequiredNow?: boolean
   /** Tanda 6c: al añadir esta sugerencia de HOY, la comida o la cena pasa a un restaurante de su zona. */
   mealChange?: { mealTime: 'lunch' | 'dinner'; restaurant: ChosenRestaurant; /** Si la cena cambia de zona y la noche tiene que seguir cerca: las nocturnas nuevas. */ nightStops?: Stop[] } | null
   /** Entró por una experiencia elegida (motor v3, Paso 3): la parada lleva su etiqueta ("Arte y Museos"). */

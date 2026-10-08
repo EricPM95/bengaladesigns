@@ -20,8 +20,22 @@ export function LockIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) 
 }
 
 /** Las dos marcas de lo reservado: «Reservada ✓» en verde y un candado con «Fijada» (PARA_CODE_RESERVAS, 6). */
-export function ReservedMarks({ className = '', compact = false }: { className?: string; compact?: boolean }) {
+export function ReservedMarks({ className = '', compact = false, time = null }: { className?: string; compact?: boolean; time?: string | null }) {
   const pill = compact ? 'px-2 py-0.5 text-[10.5px]' : 'px-2.5 py-1 text-[12px]'
+  // En la tarjeta de un día, una sola etiqueta con la hora: «✓ Reservada · 13:30» (Tanda 6j, 9.4). Sin «Fijada» aparte.
+  if (compact) {
+    return (
+      <div className={`flex flex-wrap items-center gap-1 ${className}`}>
+        <span className={`inline-flex items-center gap-1 rounded-full bg-accent-green font-semibold text-white ${pill}`}>
+          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Reservada{time ? ` · ${time}` : ''}
+          <LockIcon className="h-3 w-3" />
+        </span>
+      </div>
+    )
+  }
   return (
     <div className={`flex flex-wrap items-center ${compact ? 'gap-1' : 'gap-1.5'} ${className}`}>
       <span className={`inline-flex items-center gap-1 rounded-full bg-accent-green font-semibold text-white ${pill}`}>

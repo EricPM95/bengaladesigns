@@ -59,6 +59,8 @@ interface TrazoCardProps {
   action?: ReactNode
   /** Reservada (una entrada, una excursión): la franja de color, en verde, y arriba «Reservada ✓» con el candado de «Fijada». Lo añadido sin reservar no lo lleva. */
   reserved?: boolean
+  /** La hora de la reserva, dentro de la etiqueta «✓ Reservada · 13:30». */
+  reservedTime?: string | null
   /** El número en el color del día (PROMPT_UI, Parte 2): relleno claro, número fuerte y borde blanco. */
   numberColors?: { bg: string; text: string }
 }
@@ -68,7 +70,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, reserved, reservedTime }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const night = variant === 'night'
   const sunset = variant === 'sunset'
@@ -102,8 +104,8 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
       </div>
       <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
         {topNote && <span className={`text-[11.5px] font-medium leading-[1.3] ${night ? '' : 'text-text/75'}`} style={{ color: ink2 }}>{topNote}</span>}
-        {reserved && <ReservedMarks compact className="mb-0.5" />}
-        {time && (
+        {reserved && <ReservedMarks compact time={reservedTime ?? time} className="mb-0.5" />}
+        {time && !reserved && (
           <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[10.5px] max-[479px]:tracking-normal" style={{ color: timeColor }}>
             {time}
           </span>

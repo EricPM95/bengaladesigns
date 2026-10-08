@@ -114,6 +114,7 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
   if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
+  if (stop.reservationRequiredNow && !stop.reservedId) meta.unshift({ text: 'Reserva obligatoria en estas fechas', warn: true })
   if (stop.recommendedTurn && !stop.reservationTime) meta.unshift({ icon: 'hour', text: `Turno recomendado: ${stop.recommendedTurn}` })
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
 
@@ -129,8 +130,8 @@ export function StopAccordion({ number, stop, onOpen, menu, startTime, addedByUs
       meta={meta}
       tags={tags}
       reserved={Boolean(stop.reservedId)}
+      reservedTime={stop.reservationTime ?? null}
       photoUrl={stop.photoUrl}
-      topNote={stop.arrivalNote ?? null}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)
       noPhoto={!stop.photoUrl}
       iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.walk : undefined}

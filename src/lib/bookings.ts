@@ -29,6 +29,17 @@ export interface Reservation {
   /** Para las excursiones: su id y sus datos, para volver a ponerla en su día si la ruta se rehace. */
   excursionId?: string | null
   excursionData?: Excursion | null
+  /** Tanda 6j: una reserva que cae en un día de excursión: se guarda en Reservas con este aviso y la ruta no cambia (el sitio no se pone en ese día). */
+  noMueve?: boolean
+  aviso?: string | null
+}
+
+/** Las reservas grandes: tienen su día escrito, y su fecha mueve el día entero (Tanda 6j, punto 9). */
+export const BIG_RESERVATION_PLACES = ['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese']
+
+/** ¿Es una reserva de entrada de un sitio grande? */
+export function isBigReservation(reservation: Pick<Reservation, 'kind' | 'placeNames'>): boolean {
+  return reservation.kind === 'entrada' && reservation.placeNames.some((name) => BIG_RESERVATION_PLACES.includes(name))
 }
 
 /** Las tres entradas imprescindibles de un destino (`entradas_reservas` de sus datos). */
@@ -186,9 +197,17 @@ export function newCampaignCode(): string {
  */
 export function placeReservedEntrance(route: Route, reservation: Reservation): Route {
   const target = dayOfReservation(route, reservation)
-  if (!target || reservation.kind !== 'entrada') return route
+  if (!target || reservation.kind !== 'entrada' || reservation.noMueve) return route
   let found: { day: DayPlan; stop: Stop } | null = null
+  // (Si el día de la reserva ya lleva el sitio —porque el motor movió el día entero—, esa parada es la que se fija: no se trae otra de otro día.)
   for (const name of reservation.placeNames) {
+    const stop = target.stops.find((candidate) => candidate.name === name)
+    if (stop) {
+      found = { day: target, stop }
+      break
+    }
+  }
+  for (const name of found ? [] : reservation.placeNames) {
     for (const day of route.days) {
       const stop = day.stops.find((candidate) => candidate.name === name)
       if (stop) {

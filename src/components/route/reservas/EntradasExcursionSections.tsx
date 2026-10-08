@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Route } from '../../../lib/types'
-import { buildEntryRows, buildExcursionRow, dayLineOf, hasEnoughDaysForExcursions, reservedLine, type EntryRow } from '../../../lib/bookings'
+import { BIG_RESERVATION_PLACES, buildEntryRows, buildExcursionRow, dayLineOf, hasEnoughDaysForExcursions, reservedLine, type EntryRow } from '../../../lib/bookings'
+import { bestHoursLine, useBestHours, type BestHoursItem } from '../../../lib/bestHours'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { ReservaCard } from './ReservasItemRow'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
-import { FreeTourSheet, freeTourAvailable, routeHasFreeTour } from './FreeTourSheet'
 
 /** Una tarjeta de «ENTRADAS» o «EXCURSIÓN»: la misma de todo Reservas (ReservaCard); reservada, en verde con «✓ Reservado». */
 function ReservaRow({
@@ -17,6 +17,7 @@ function ReservaRow({
   reserved,
   bookHref,
   onAdd,
+  notes,
 }: {
   kind: 'entrada' | 'excursion'
   label: string
@@ -24,8 +25,9 @@ function ReservaRow({
   reserved: boolean
   bookHref: string | null
   onAdd: () => void
+  notes?: { text: string; warn?: boolean }[]
 }) {
-  return <ReservaCard kind={kind} name={label} subtitle={subtitle || undefined} resolved={reserved} resolvedLabel="✓ Reservado" priority="gray" onAdd={onAdd} bookAction={{ label: 'Reservar', href: bookHref }} />
+  return <ReservaCard kind={kind} name={label} subtitle={subtitle || undefined} notes={notes} resolved={reserved} resolvedLabel="✓ Reservado" priority="gray" onAdd={onAdd} bookAction={{ label: 'Reservar', href: bookHref }} />
 }
 
 /**
@@ -39,43 +41,62 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
   const info = useDestinationExcursions(route.destination)
   const [showMore, setShowMore] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
-  const [freeTourOpen, setFreeTourOpen] = useState(false)
-  const freeTourOffered = freeTourAvailable(route)
+  // El Free Tour solo sale si está en el viaje (lo marcó en Experiencias o lo añadió desde la app): va como las demás entradas (Tanda 6j, 9b.1).
   const freeTourDay = route.days.find((day) => day.stops.some((stop) => stop.isFreeTour))
+  const freeTourStop = freeTourDay?.stops.find((stop) => stop.isFreeTour) ?? null
+  const freeTourReservation = reservations.find((reservation) => reservation.kind === 'entrada' && reservation.refId === 'Free Tour') ?? null
 
   const { main, more } = buildEntryRows(route, info.entradas, reservations)
+  // Las mejores horas para reservar un sitio grande, solo mientras no está reservado (9b.3).
+  const bigOf = (row: EntryRow) => row.placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null
+  const bestItems = useMemo<BestHoursItem[]>(
+    () => [...main, ...more].filter((row) => !row.reservation && bigOf(row) && row.day?.curatedId).map((row) => ({ curatedId: row.day!.curatedId!, place: bigOf(row)! })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [route, reservations],
+  )
+  const bestHours = useBestHours(route.destination, bestItems)
   const excursionsAvailable = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
   const excursionRow = excursionsAvailable ? buildExcursionRow(route, reservations) : null
 
-  const entryRow = (row: EntryRow) => (
+  const entryRow = (row: EntryRow) => {
+    const big = bigOf(row)
+    const stop = row.day?.stops.find((candidate) => row.placeNames.includes(candidate.name))
+    const notes: { text: string; warn?: boolean }[] = []
+    if (row.reservation?.aviso) notes.push({ text: row.reservation.aviso })
+    if (!row.reservation && stop?.reservationRequiredNow) notes.push({ text: 'Reserva obligatoria en estas fechas', warn: true })
+    const best = !row.reservation && big && row.day?.curatedId ? bestHoursLine(bestHours[`${row.day.curatedId}|${big}`]) : null
+    if (best) notes.push({ text: best })
+    return (
     <ReservaRow
       key={row.id}
       kind="entrada"
       label={row.name}
+      notes={notes}
       subtitle={row.reservation ? reservedLine(route, row.reservation) : row.day ? dayLineOf(route, row.day) : ''}
       reserved={Boolean(row.reservation)}
       bookHref={buildActivitySearchUrl(`${row.name} ${route.destination}`)}
       onAdd={() => setTarget({ kind: 'entrada', refId: row.id, name: row.name, placeNames: row.placeNames, currentDayId: row.day?.id ?? null })}
     />
-  )
+    )
+  }
 
   const ratingLine = info.rating ? `${info.excursions.length} excursiones · ${info.rating.percent} % de valoración media` : `${info.excursions.length} excursiones`
 
-  if (main.length === 0 && more.length === 0 && !excursionsAvailable && !freeTourOffered) return null
+  if (main.length === 0 && more.length === 0 && !excursionsAvailable && !freeTourStop) return null
 
   return (
     <>
-      {freeTourOffered && (
+      {freeTourStop && freeTourDay && (
         <div className="space-y-2">
           <h3 className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>Free Tour</h3>
           <ReservaCard
             kind="excursion"
             name="Free Tour"
-            subtitle={routeHasFreeTour(route) ? (freeTourDay ? dayLineOf(route, freeTourDay) : 'Añadido a tu ruta') : 'Un guía local te enseña la ciudad a pie'}
-            resolved={routeHasFreeTour(route)}
-            resolvedLabel="✓ Añadido"
+            subtitle={freeTourReservation ? reservedLine(route, freeTourReservation) : dayLineOf(route, freeTourDay)}
+            resolved={Boolean(freeTourReservation)}
+            resolvedLabel="✓ Reservado"
             priority="gray"
-            onAdd={() => setFreeTourOpen(true)}
+            onAdd={() => setTarget({ kind: 'entrada', refId: 'Free Tour', name: 'Free Tour', placeNames: [freeTourStop.name], currentDayId: freeTourDay.id })}
           />
         </div>
       )}
@@ -131,7 +152,6 @@ export function EntradasExcursionSections({ route }: { route: Route }) {
         </div>
       )}
 
-      {freeTourOpen && <FreeTourSheet route={route} onClose={() => setFreeTourOpen(false)} />}
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
     </>
   )

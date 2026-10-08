@@ -267,6 +267,7 @@ export interface MockStopDetail {
   reservationTime?: string | null
   /** Ver Stop.recommendedTurn en types.ts. */
   recommendedTurn?: string | null
+  reservationRequiredNow?: boolean
   /** Ver Stop.waitOpensAt / waitHint en types.ts. */
   waitOpensAt?: string | null
   arrivalNote?: string | null
@@ -358,6 +359,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     ...(stop.orientativeTime ? { orientativeTime: true } : {}),
     ...(stop.reservationTime ? { reservationTime: stop.reservationTime } : {}),
     ...(stop.recommendedTurn ? { recommendedTurn: stop.recommendedTurn } : {}),
+    ...(stop.reservationRequiredNow ? { reservationRequiredNow: true } : {}),
     ...(stop.waitOpensAt ? { waitOpensAt: stop.waitOpensAt, waitHint: stop.waitHint ?? null } : {}),
     ...(stop.arrivalNote ? { arrivalNote: stop.arrivalNote, arrivalTime: stop.arrivalTime ?? null, arrivalMinutes: stop.arrivalMinutes ?? null } : {}),
     ...(stop.visitedDay ? { visitedDay: stop.visitedDay } : {}),
