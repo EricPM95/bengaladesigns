@@ -8,7 +8,7 @@
 import fs from 'node:fs'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
-import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
 import { comprobarDiaServidor, nombresConocidos, weekdayOf } from './invariantes6k.mjs'
 import { writtenDaysFor } from '../../server/engine/writtenDays.js'
 
@@ -23,6 +23,14 @@ function malEnEsaFecha(idRaw, iso) {
   if ((malas.dias_semana ?? []).map(sinTildes).includes(sinTildes(weekdayOf(iso)))) return true
   if ((malas.fechas ?? []).some((token) => String(token) === iso.slice(5) || String(token) === iso)) return true
   const lugares = [...new Set([...JSON.stringify(dia).matchAll(/"lugar":"([^"]+)"/g)].map((m) => m[1]))]
+  // («cerrado_a»: un sitio que a esa hora no abre ese día —la Cúpula a las 8:00 el miércoles de la audiencia—.)
+  for (const { lugar, hora } of malas.cerrado_a ?? []) {
+    const place = placeByName.get(lugar)
+    if (!place) continue
+    const sessions = parseHoursSessions(scheduleForDay(place, { weekday: weekdayOf(iso), dateIso: iso }))
+    const t = Number(hora.split(':')[0]) * 60 + Number(hora.split(':')[1])
+    if (closedOnDay(place, weekdayOf(iso), iso) || (sessions.length > 0 && !sessions.some((x) => t >= x.open && t + 15 <= x.close))) return true
+  }
   // (Cualquier sitio de la lista de ese día que ese día cierra: el motor lo cuenta aunque luego lo vea por fuera.)
   return lugares.some((lugar) => {
     const place = placeByName.get(lugar)
