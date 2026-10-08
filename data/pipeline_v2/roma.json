@@ -907,7 +907,6 @@
         12.4922
       ],
       "duration_minutes": 90,
-      "min_max": 60,
       "min_max": 120,
       "type": "interior",
       "group": "roma_antigua_core",
@@ -972,7 +971,8 @@
       "ticket_info": [
         "De pago.",
         "Reserva obligatoria.",
-        "Entrada conjunta con el Foro Romano y el Palatino."
+        "Entrada conjunta con el Foro Romano y el Palatino.",
+        "Entrada: 18 € (con el Foro Romano y el Palatino)."
       ],
       "by_period": [
         {
@@ -1017,7 +1017,8 @@
         }
       ],
       "closed_dates": [
-        "12-25"
+        "12-25",
+        "01-01"
       ],
       "hours_audit": {
         "confianza": "alta (marzo 1-28: media)",
@@ -1112,7 +1113,8 @@
       "ticket_info": [
         "De pago.",
         "Reserva obligatoria.",
-        "Entrada conjunta con el Coliseo."
+        "Entrada conjunta con el Coliseo.",
+        "Entrada: incluida en la del Coliseo (18 €)."
       ],
       "by_period": [
         {
@@ -1157,7 +1159,8 @@
         }
       ],
       "closed_dates": [
-        "12-25"
+        "12-25",
+        "01-01"
       ],
       "hours_audit": {
         "confianza": "alta (marzo 1-28: media)",
@@ -1252,6 +1255,13 @@
       "search_en_keywords": [
         "bocca",
         "mouth of truth"
+      ],
+      "schedule": "09:30-17:50",
+      "windows": [
+        "09:30-17:50"
+      ],
+      "closed_dates": [
+        "01-01"
       ]
     },
     {
@@ -1387,14 +1397,15 @@
           "11:45-19:00"
         ]
       },
-      "last_entry": "18:45",
+      "last_entry": "18:30",
       "closed_on": [],
       "reservation": "recomendada",
-      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:45). Durante las misas solo entran fieles y la venta de entradas se corta una hora antes: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 1 ene, 15 ago y 25 dic.",
+      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Durante las misas solo entran fieles y la venta de entradas se corta una hora antes: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 1 ene, 15 ago y 25 dic. Entrada: 7 €.",
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
-        "Se compra online o en taquilla (taquilla hasta las 18:00)."
+        "Se compra online o en taquilla (taquilla hasta las 18:00).",
+        "Entrada: 7 € (desde el 1 de julio de 2026)."
       ],
       "misas_festivos": [
         "01-01",
@@ -1413,7 +1424,8 @@
       "_misas_festivos": "Festivos nacionales de Italia. La web oficial del Panteón: misa a las 17:00 los sábados y las vísperas de festivo (venta cortada a las 16:00) y a las 10:30 los domingos y los festivos (venta cortada a las 09:30). El motor lee el festivo como un domingo y su víspera como un sábado (massWeekday, openingHours.js). Pendiente de decidir: el 29 de junio (San Pedro y San Pablo, festivo solo en Roma).",
       "closed_dates": [
         "08-15",
-        "12-25"
+        "12-25",
+        "01-01"
       ],
       "hours_audit": {
         "confianza": "alta (sábado y domingo: media)",
@@ -1670,7 +1682,8 @@
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
-        "Último domingo de mes: entrada gratis de 09:00 a 12:30 (última entrada), sin reserva y con mucha cola. No vale si cae en Pascua, el 29 de junio, el 25 o el 26 de diciembre ni el 31 de diciembre."
+        "Último domingo de mes: entrada gratis de 09:00 a 12:30 (última entrada), sin reserva y con mucha cola. No vale si cae en Pascua, el 29 de junio, el 25 o el 26 de diciembre ni el 31 de diciembre.",
+        "Entrada: 20 € en taquilla, 25 € en línea."
       ],
       "closed_dates": [
         "01-01",
@@ -1793,7 +1806,7 @@
       "windows": [
         "07:00-20:00"
       ],
-      "last_entry": "19:00",
+      "last_entry": "19:15",
       "closed_on": [],
       "reservation": "no",
       "card_text": "Todos los días de 07:00 a 20:00. La última entrada depende de la cola del control de seguridad. Los miércoles por la mañana, con audiencia papal en la plaza, el acceso suele estar restringido hasta mediodía. Puede cerrar por celebraciones.",
@@ -1808,7 +1821,7 @@
           "windows": [
             "07:00-20:00"
           ],
-          "last_entry": "19:00"
+          "last_entry": "19:15"
         }
       ],
       "hours_audit": {
@@ -2065,7 +2078,8 @@
       "card_text": "Martes a domingo de 09:00 a 19:30 (última entrada 18:30). Cerrado los lunes, salvo el primer lunes de cada mes entre agosto y diciembre de 2026 (14:00-20:00). Cierra 1 ene y 25 dic.",
       "ticket_info": [
         "De pago.",
-        "Reserva recomendada."
+        "Reserva recomendada.",
+        "Entrada: 18 €."
       ],
       "minutos_fuera": 20,
       "solo_por_fuera": true,
@@ -2177,7 +2191,8 @@
       "card_text": "Martes a domingo de 09:00 a 19:00, con entrada por turnos cada 2 horas (9:00, 11:00, 13:00, 15:00 y 17:00; visita de 2 h). Reserva obligatoria. Cerrado lunes, 25 dic y 1 ene.",
       "ticket_info": [
         "De pago.",
-        "Reserva obligatoria."
+        "Reserva obligatoria.",
+        "Entrada: 16 € más 2 € de gestión."
       ],
       "minutos_fuera": 10,
       "por_fuera": "La villa del cardenal Borghese, en mitad del parque, con su fachada llena de estatuas. Dentro está la mejor colección de Bernini del mundo: si quieres entrar, añádela a tus imprescindibles.",
@@ -2492,7 +2507,8 @@
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:45). La terraza panorámica con ascensor ('Roma dal cielo'): 09:30-19:30, última subida 19:00.",
       "ticket_info": [
         "La entrada al monumento es libre.",
-        "Solo es de pago la terraza panorámica con ascensor, de 09:30 a 19:30 (última subida 19:00)."
+        "Solo es de pago la terraza panorámica con ascensor, de 09:30 a 19:30 (última subida 19:00).",
+        "Entrada: la terraza con ascensor, 18 € (entrada conjunta VIVE)."
       ],
       "minutos_fuera": 15,
       "por_fuera": "La gran mole de mármol blanco que preside Plaza Venecia. Al pie está la tumba del Soldado Desconocido, con su guardia de honor siempre de pie.",
@@ -2741,7 +2757,8 @@
       "reservation": "no",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
-        "De pago."
+        "De pago.",
+        "Entrada: 15 €."
       ],
       "minutos_fuera": 10,
       "por_fuera": "El centro comercial de la Roma imperial. Desde Via dei Fori Imperiali lo ves entero, con sus tiendas en semicírculo, tal y como lo veían los romanos.",
@@ -2817,7 +2834,8 @@
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
-        "Con ascensor o solo por escaleras."
+        "Con ascensor o solo por escaleras.",
+        "Entrada: 10 € por las escaleras, 15 € con ascensor (precios sin confirmar)."
       ],
       "by_period": [
         {
@@ -2860,7 +2878,7 @@
       ],
       "level": 2,
       "type": "interior",
-      "schedule": "07:30-12:30, 16:00-19:30",
+      "schedule": "07:30-12:30, 16:30-19:30",
       "tags": [
         "iglesia",
         "arte"
@@ -2878,19 +2896,15 @@
       ],
       "windows": [
         "07:30-12:30",
-        "16:00-19:30"
+        "16:30-19:30"
       ],
       "closed_on": [],
       "reservation": "no",
-      "card_text": "Lunes a sábado de 07:30 a 12:30 y de 16:00 a 19:30; domingos y festivos de 07:45 a 13:30 y de 16:00 a 20:00 (horario oficial, chiesadelgesu.org). Durante las misas no se hacen visitas.",
+      "card_text": "De octubre a junio, de lunes a sábado de 07:30 a 12:30 y de 16:30 a 19:30; de julio a septiembre, de 07:30 a 12:00 y de 17:00 a 19:30. Domingos y festivos, de 07:45 a 13:30 y por la tarde hasta las 20:00. Durante las misas no se hacen visitas (horario oficial, chiesadelgesu.org).",
       "by_day": {
-        "lun-sab": [
-          "07:30-12:30",
-          "16:00-19:30"
-        ],
         "dom": [
           "07:45-13:30",
-          "16:00-20:00"
+          "16:30-20:00"
         ]
       },
       "ticket_info": [
@@ -2898,7 +2912,27 @@
       ],
       "is_free_access": true,
       "minutos_fuera": 10,
-      "por_fuera": "La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco."
+      "por_fuera": "La iglesia madre de los jesuitas, con una de las fachadas más copiadas del mundo. Si está abierta, entra: el techo pintado parece que se sale del marco.",
+      "by_period": [
+        {
+          "from": "10-01",
+          "to": "06-30",
+          "windows": [
+            "07:30-12:30",
+            "16:30-19:30"
+          ],
+          "last_entry": null
+        },
+        {
+          "from": "07-01",
+          "to": "09-30",
+          "windows": [
+            "07:30-12:00",
+            "17:00-19:30"
+          ],
+          "last_entry": null
+        }
+      ]
     },
     {
       "id": "iglesia_de_san_luigi_dei_francesi",
@@ -2915,7 +2949,7 @@
       ],
       "level": 2,
       "type": "interior",
-      "schedule": "09:30-12:45, 14:30-18:15",
+      "schedule": "09:30-12:45, 14:30-18:30",
       "tags": [
         "iglesia",
         "arte"
@@ -2941,7 +2975,7 @@
       "by_day": {
         "lun-vie": [
           "09:30-12:45",
-          "14:30-18:15"
+          "14:30-18:30"
         ],
         "sab": [
           "09:30-12:00",
@@ -2999,7 +3033,8 @@
       "reservation": "no",
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
-        "De pago."
+        "De pago.",
+        "Entrada: 14 €."
       ],
       "closed_dates": [
         "05-01",
@@ -3494,7 +3529,8 @@
       "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
       "duration_minutes": 120,
-      "minimo_dentro": 60, "min_max": 150,
+      "minimo_dentro": 60,
+      "min_max": 150,
       "zone": "roma_antigua",
       "coordinates": [
         41.89305,
@@ -3530,7 +3566,8 @@
       "card_text": "Todos los días de 09:30 a 19:30 (última entrada 18:30). 24 y 31 dic hasta las 14:00. Cierra 1 may y 25 dic.",
       "ticket_info": [
         "De pago.",
-        "Reserva recomendada."
+        "Reserva recomendada.",
+        "Entrada: 15 € (16,50 € hasta el 1 de noviembre de 2026, por una exposición)."
       ],
       "closed_dates": [
         "05-01",
@@ -3631,10 +3668,11 @@
       "last_entry": "17:30",
       "closed_on": [],
       "reservation": "obligatoria",
-      "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Las excavaciones se visitan con reserva online (plazas limitadas). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde.",
+      "card_text": "Lunes a sábado 09:00-12:30 y 14:00-18:00; domingos y festivos 12:00-18:00. Reserva las excavaciones en línea: las plazas son limitadas (10 €). Última entrada a excavaciones: 12:00 por la mañana y 17:30 por la tarde.",
       "ticket_info": [
         "La entrada a la basílica es libre.",
-        "Solo son de pago las excavaciones, con reserva online (plazas limitadas)."
+        "Reserva las excavaciones en línea: las plazas son limitadas.",
+        "Entrada a las excavaciones: 10 €."
       ],
       "comprobado": "2026-09-28",
       "_ticket_info_antes": [
@@ -3776,7 +3814,7 @@
         "miércoles",
         "jueves"
       ],
-      "schedule": "09:15-16:30",
+      "schedule": "09:00-16:30",
       "tags": [
         "museo",
         "ruinas"
@@ -3797,14 +3835,18 @@
       "booking_required": true,
       "booking_note": "Solo vie-dom, visita guiada con reserva",
       "windows": [
-        "09:15-16:30"
+        "09:00-16:30"
       ],
       "reservation": "obligatoria",
       "card_text": "Solo viernes, sábado y domingo, con visita guiada en turnos cada 15 min y reserva previa. Última entrada 15:30. Cerrada el primer domingo de cada mes.",
       "ticket_info": [
         "De pago.",
         "Reserva obligatoria.",
-        "Solo con visita guiada reservada online."
+        "Solo con visita guiada reservada online.",
+        "Entrada: 26 € con guía."
+      ],
+      "closed_nth_sunday": [
+        1
       ]
     },
     {
@@ -3861,30 +3903,23 @@
         "otono": "15:30"
       },
       "reservation": "recomendada",
-      "card_text": "Martes a domingo. 1-28 mar 09:00-17:30; 29 mar-31 ago 09:00-19:15; sep 09:00-19:00; 1-24 oct 09:00-18:30; 25 oct-28 feb 09:00-16:30. Última entrada 1 h antes aprox. Cerrado los lunes.",
+      "card_text": "Martes a domingo. 26 oct-28 feb 09:00-16:30; 1-28 mar 09:00-17:30; 29 mar-31 ago 09:00-19:15; sep 09:00-19:00; 1-25 oct 09:00-18:30. Última entrada 1 h antes aprox. Cerrado los lunes, el 25 dic y el 1 ene.",
       "ticket_info": [
         "De pago.",
-        "Reserva recomendada."
+        "Reserva recomendada.",
+        "Entrada: 8 € (10 € con exposición, hasta el 10 de enero de 2027)."
       ],
       "by_period": [
         {
-          "from": "10-25",
-          "to": "02-15",
+          "from": "10-26",
+          "to": "02-28",
           "windows": [
             "09:00-16:30"
           ],
           "last_entry": "15:30"
         },
         {
-          "from": "02-16",
-          "to": "03-15",
-          "windows": [
-            "09:00-17:00"
-          ],
-          "last_entry": "16:00"
-        },
-        {
-          "from": "03-16",
+          "from": "03-01",
           "to": "03-28",
           "windows": [
             "09:00-17:30"
@@ -3897,7 +3932,7 @@
           "windows": [
             "09:00-19:15"
           ],
-          "last_entry": "18:30"
+          "last_entry": "18:15"
         },
         {
           "from": "09-01",
@@ -3909,7 +3944,7 @@
         },
         {
           "from": "10-01",
-          "to": "10-24",
+          "to": "10-25",
           "windows": [
             "09:00-18:30"
           ],
@@ -3918,7 +3953,8 @@
       ],
       "closed_dates": [
         "05-01",
-        "12-25"
+        "12-25",
+        "01-01"
       ],
       "hours_audit": {
         "confianza": "media",
@@ -4074,8 +4110,8 @@
       "name": "Basílica de Santa María la Mayor",
       "duration_minutes": 30,
       "min_max": 40,
-      "schedule": "07:00-19:00",
-      "last_entry": "18:30",
+      "schedule": "07:00-18:45",
+      "last_entry": "18:15",
       "is_free_access": true,
       "zone": "esquilino",
       "coordinates": [
@@ -4101,7 +4137,7 @@
         "maggiore"
       ],
       "windows": [
-        "07:00-19:00"
+        "07:00-18:45"
       ],
       "closed_on": [],
       "reservation": "no",
@@ -4425,8 +4461,15 @@
       "card_text": "Lunes a sábado de 09:00 a 14:00 (última entrada 13:15). El segundo domingo de cada mes abre de 09:00 a 17:00. Cierra en algunos festivos.",
       "ticket_info": [
         "De pago.",
-        "Reserva recomendada."
-      ]
+        "Reserva recomendada.",
+        "Entrada: 12 €."
+      ],
+      "nth_sunday": {
+        "n": 2,
+        "windows": [
+          "09:00-17:00"
+        ]
+      }
     },
     {
       "id": "ponte_sisto",
@@ -4821,7 +4864,7 @@
       ],
       "last_entry": {
         "manana": "12:00",
-        "tarde": "16:50"
+        "tarde": "17:00"
       },
       "closed_on": [
         "miércoles"
@@ -4830,12 +4873,14 @@
       "card_text": "Solo con visita guiada (salidas cada 30 min, unos 40 min). 09:00-12:00 y 14:00-17:00. Cerrado los miércoles, 1 ene, Pascua, 25 dic y de mediados de enero a mediados de febrero.",
       "ticket_info": [
         "De pago.",
-        "Reserva recomendada."
+        "Reserva recomendada.",
+        "Entrada: 10 €."
       ],
       "closed_dates": [
         "01-01",
         "easter",
-        "12-25"
+        "12-25",
+        "2027-01-13..2027-02-10"
       ],
       "hours_audit": {
         "confianza": "alta",
@@ -4911,7 +4956,8 @@
         "12-24",
         "12-25",
         "12-26",
-        "12-31"
+        "12-31",
+        "08-10..08-24"
       ],
       "special_hours": [
         {
@@ -4985,7 +5031,10 @@
         "confianza": "alta",
         "fuente": "https://www.cemeteryrome.it/ («Dal Lunedi al Sabato dalle 9 alle 17 (Ultimo ingresso 16:30) | Domenica e giorni festivi dalle 9 alle 13») y https://cemeteryrome.it/informazioni/pianifica-la-tua-visita/ (cierra «1 gennaio, 6 gennaio», «8, 24, 25, 26 e 31 dicembre» y quince días a mediados de agosto, sin fechas: verificar cada año)",
         "fecha": "2026-09-30"
-      }
+      },
+      "ticket_info": [
+        "Donativo mínimo de 5 €."
+      ]
     },
     {
       "id": "san_pietro_in_montorio_y_tempietto_de_bramante",
@@ -5406,7 +5455,8 @@
       "tip": "Se visita en unos 45 minutos. No se pueden hacer fotos. Abre todos los días de 10:00 a 19:00 (la taquilla cierra a las 18:30).",
       "card_text": "Todos los días de 10:00 a 19:00 (la taquilla cierra a las 18:30).",
       "ticket_info": [
-        "De pago (entrada de pocos euros)."
+        "De pago.",
+        "Entrada: 10 €."
       ],
       "search_aliases": [
         "cripta dei cappuccini",
@@ -9398,7 +9448,7 @@
         "aprox": true,
         "notice_before": "Es probable que algunos mercadillos aún no hayan abierto.",
         "notice_after": "Es probable que algunos mercadillos ya hayan cerrado.",
-        "descripcion": "El mercadillo de Piazza Navona, los belenes y las luces de Navidad",
+        "descripcion": "Disfruta de la verdadera Navidad de Roma",
         "fuente": "turismoroma.it, «Festa di Piazza Navona 2025»: del 1 de diciembre de 2025 al 6 de enero de 2026, todos los días de 9:00 a 1:00 (hasta las 2:00 en festivos y vísperas); el 6 de enero a las 14:00 llega la Befana y se cierra la fiesta (dato comprobado por el usuario).",
         "comprobado": "2026-09-30",
         "verificar": true

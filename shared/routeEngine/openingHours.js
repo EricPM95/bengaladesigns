@@ -272,6 +272,13 @@ export function specialHoursOn(place, dateIso) {
  */
 export function matchesDateToken(token, dateIso) {
   if (!dateIso) return false
+  // Un rango ("08-10..08-24" cada año, o "2027-01-13..2027-02-10" de un solo año): ambos extremos incluidos.
+  const range = /^(\S+?)\.\.(\S+)$/.exec(String(token).trim())
+  if (range) {
+    const iso = String(dateIso).slice(0, 10)
+    if (/^\d{4}-/.test(range[1])) return iso >= range[1] && iso <= range[2]
+    return withinMonthDays(monthDayOf(iso), range[1], range[2])
+  }
   // Una fecha completa ("2027-11-01"): solo ese año (los Museos Vaticanos, el lunes 1 de noviembre de 2027).
   if (/^\d{4}-\d{2}-\d{2}$/.test(String(token).trim())) return String(token).trim() === String(dateIso).slice(0, 10)
   const movable = /^easter([+-]\d+)?$/.exec(String(token).trim())
@@ -307,7 +314,10 @@ export function massWeekday(place, hours = {}) {
  * reales: sin ellas el día 15 del mes es una referencia, no un día del viaje.
  */
 export function closedOnDate(place, dateIso) {
-  if (!dateIso || !Array.isArray(place?.closed_dates)) return false
+  if (!dateIso) return false
+  // `closed_nth_sunday`: [1] → cierra el 1.er domingo de cada mes (la Domus Aurea).
+  if (Array.isArray(place?.closed_nth_sunday) && place.closed_nth_sunday.some((n) => isNthSundayOfMonth(dateIso, n))) return true
+  if (!Array.isArray(place?.closed_dates)) return false
   return place.closed_dates.some((token) => matchesDateToken(token, dateIso))
 }
 
@@ -319,6 +329,14 @@ function isLastSundayOfMonth(dateIso) {
   return date.getUTCDay() === 0 && new Date(t + 7 * 86400000).getUTCMonth() !== date.getUTCMonth()
 }
 
+/** ¿Es el n-ésimo domingo de su mes (1 = el primero)? */
+function isNthSundayOfMonth(dateIso, n) {
+  const t = Date.parse(`${String(dateIso).slice(0, 10)}T12:00:00Z`)
+  if (!Number.isFinite(t)) return false
+  const date = new Date(t)
+  return date.getUTCDay() === 0 && Math.ceil(date.getUTCDate() / 7) === n
+}
+
 /**
  * `last_sunday`: el lugar cierra los domingos (`closed_on`) pero abre el último domingo del mes con
  * este horario ({ windows, last_entry, except: [fechas en las que esa excepción no vale] }). Los
@@ -326,8 +344,12 @@ function isLastSundayOfMonth(dateIso) {
  * Devuelve el horario de ese día si aplica, o null.
  */
 export function lastSundayOpening(place, dateIso) {
+  if (!dateIso) return null
+  // `nth_sunday` { n, windows, last_entry }: el n-ésimo domingo del mes abre con su horario (la Villa Farnesina, el 2.º).
+  const nth = place?.nth_sunday
+  if (nth && isNthSundayOfMonth(dateIso, nth.n)) return nth
   const rule = place?.last_sunday
-  if (!rule || !dateIso || !isLastSundayOfMonth(dateIso)) return null
+  if (!rule || !isLastSundayOfMonth(dateIso)) return null
   if ((rule.except ?? []).some((token) => matchesDateToken(token, dateIso))) return null
   return rule
 }

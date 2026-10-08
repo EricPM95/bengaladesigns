@@ -62,7 +62,7 @@ const D1_TRAMOS = [
           ops: {
             manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO })] },
             comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-            tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia del Gesù', 20, 'dentro'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45)] },
+            tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia del Gesù', 20, 'dentro')] },
             sobra: [P('Barrio Judío', 30)],
           },
         },
@@ -200,9 +200,9 @@ export default {
       sugerencias: [{ doc: 'la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.', lugar: 'Mercados de Trajano', titulo: 'Columna de Trajano y Mercados de Trajano', min: 60, salvo_dia: 'D6' }],
       variantes: [
         ...D1_TRAMOS,
-        { id: 'sabado_panteon', doc: 'el sábado el Panteón cierra a las 17:00 por la misa: aviso «entra antes».', cuando: { dia_semana: ['sábado'] }, ops: { tarde: { ajustar: { Panteón: { cierra: '17:00' } } } } },
-        { id: 'free_tour_tarde', doc: 'Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
-        { id: 'free_tour_noche', doc: 'Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.', cuando: { free_tour_despues: 'noche' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
+        { id: 'sabado_panteon', doc: 'el sábado (y la víspera de festivo) el Panteón no deja entrar desde las 17:00 por la misa: aviso «entra antes».', cuando: { dia_semana: ['sábado'] }, ops: { tarde: { ajustar: { Panteón: { cierra: '17:00' } } } } },
+        { id: 'free_tour_tarde', doc: 'Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
+        { id: 'free_tour_noche', doc: 'Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.', cuando: { free_tour_despues: 'noche' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
       ],
       pool: {
         'Museos Capitolinos': { doc: 'Museos Capitolinos:** por la mañana, después del Campidoglio ~60.', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },
@@ -358,24 +358,26 @@ export default {
 
     // ── Villa Borghese, el Popolo y la Plaza de España ────────────────────────────────────────────────────────────────────────
     D4: {
-      reservas: { 'Galería Borghese': { normal: { desde: '10:01', hasta: '11:30' }, mejores: ['9:00', '11:00', '15:00', '17:00'] } },
+      // Las entradas de la Galería empiezan cada hora (Tanda 6j): 9:00 y 10:00 → la lista de las 9:00; 11:00 → el día normal; 12:00 y 13:00 → sin lista (la app propone las 11:00 o las 15:00);
+      // de 14:00 a 17:45 → el día al revés.
+      reservas: { 'Galería Borghese': { normal: { desde: '10:46', hasta: '11:30' }, mejores: ['9:00', '11:00', '15:00', '17:00'] } },
       variantes: [
         // La Galería a las 9:00: desayuno cerca de Via Veneto, de camino el Tritón, Via Veneto y Porta Pinciana, «Llegada a…» y la Galería; después, el parque, el reloj de agua y el Pincio. Trevi no cabe a primera hora.
         {
-          id: 'galeria_9', doc: 'A las 9:00:', horas: ['9:00'],
-          cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:00' } },
+          id: 'galeria_9', doc: 'A las 9:00:', horas: ['9:00', '10:00'],
+          cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:45' } },
           ops: { empieza: '08:00', manana: { paradas: [P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), ...camino('Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'), P('Galería Borghese', 120), P('Parque de Villa Borghese', 45), P('Parque de Villa Borghese', 10, null, { titulo: 'Reloj de agua del Pincio', coordenadas: [41.91205, 12.47955] }), P('Terraza del Pincio', 20)] } },
         },
         // …y Trevi, si el viaje no la lleva otro día, va al final de la tarde, de camino desde la Plaza de España a la cena (~7 min).
         {
           id: 'galeria_9_trevi', doc: 'Si el viaje no la lleva otro día, va al final de la tarde', horas: [],
-          cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:00' }, viaje_sin: ['D3'] },
+          cuando: { reserva: { lugar: 'Galería Borghese', hasta: '10:45' }, viaje_sin: ['D3'] },
           ops: { tarde: { insertar: [{ al_final: true, parada: P('Fontana de Trevi', 20) }] } },
         },
         // A las 15:00 o a las 17:00 el día va al revés: la mañana en el Tridente y el Popolo, y la tarde en Villa Borghese acabando en la Galería.
         {
-          id: 'galeria_tarde', doc: 'A las 15:00 o a las 17:00:', horas: ['15:00', '17:00'],
-          cuando: { reserva: { lugar: 'Galería Borghese', desde: '14:01' } },
+          id: 'galeria_tarde', doc: 'De las 14:00 a las 17:45:', horas: ['14:00', '15:00', '16:00', '17:00', '17:45'],
+          cuando: { reserva: { lugar: 'Galería Borghese', desde: '13:46' } },
           ops: {
             empieza: '07:30',
             manana: { paradas: [P('Fontana de Trevi', 30, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Desayuno romano', 30, null, { tipo: 'desayuno', titulo: 'Desayuno' }), P('Plaza de España', 45), P('Escalinata y Trinità dei Monti', 20), ...camino('Via Condotti'), P('Ara Pacis', 45, 'dentro'), ...camino('Via di Ripetta'), P('Piazza del Popolo', 30, null, { titulo: 'Piazza del Popolo, con el obelisco y las iglesias gemelas' }), P('Santa Maria del Popolo', 20)] },
@@ -384,8 +386,8 @@ export default {
             cena: mesa('Il Gabriello', 'Poldo e Gianna Osteria', 'en el Tridente'),
           },
         },
-        { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] } } },
-        { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el «de camino» del principio: **el día empieza directamente en el Parque de Villa Borghese**', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano', 'Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },
+        { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 10:00), después de la Fuente del Tritón.', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] } } },
+        { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el «de camino» del principio: **el día empieza directamente en Villa Borghese**', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano', 'Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },
       ],
       experiencias: {
         naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el lago de Villa Borghese ~60.', ops: { manana: { ajustar: { 'Parque de Villa Borghese': { min: 60 } } } } },

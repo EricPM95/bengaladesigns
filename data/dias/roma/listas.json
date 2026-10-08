@@ -60,10 +60,10 @@
        "tipo": "parada",
        "lugar": "Panteón",
        "modo": "dentro",
-       "doc": "Panteón, por dentro (entrada de 5 €) ~45",
+       "doc": "Panteón, por dentro (entrada de 7 €) ~45",
        "min": 45,
        "notas": [
-        "entrada de 5 €"
+        "entrada de 7 €"
        ]
       }
      ],
@@ -980,10 +980,10 @@
        "tipo": "parada",
        "lugar": "Panteón",
        "modo": "dentro",
-       "doc": "Panteón, por dentro (entrada de 5 €) ~45",
+       "doc": "Panteón, por dentro (entrada de 7 €) ~45",
        "min": 45,
        "notas": [
-        "entrada de 5 €"
+        "entrada de 7 €"
        ]
       },
       {
@@ -1522,14 +1522,10 @@
        "tipo": "parada",
        "lugar": "Basílica de San Pedro",
        "modo": "dentro",
-       "doc": "Basílica de San Pedro, por dentro (gratis; cierra a las 18:30 de octubre a marzo y a las 19:00 de abril a septiembre) ~1 h",
+       "doc": "Basílica de San Pedro, por dentro (gratis; abre de 7:00 a 20:00 todo el año) ~1 h",
        "min": 60,
-       "cierra_meses": [
-        {
-         "hora": "18:30",
-         "desde": 10,
-         "hasta": 3
-        }
+       "notas": [
+        "gratis; abre de 7:00 a 20:00 todo el año"
        ]
       },
       {
@@ -1908,17 +1904,6 @@
       },
       {
        "tipo": "parada",
-       "lugar": "Iglesia del Gesù",
-       "modo": "dentro",
-       "doc": "Iglesia del Gesù, por dentro ~20 (⚠️ abre a las 16:00)",
-       "min": 20,
-       "avisos": [
-        "abre a las 16:00"
-       ],
-       "abre": "16:00"
-      },
-      {
-       "tipo": "parada",
        "lugar": "Elefantino de Bernini",
        "modo": "camino",
        "doc": "Elefantino de Bernini",
@@ -1936,12 +1921,13 @@
        "lugar": "Iglesia de San Luigi dei Francesi",
        "titulo": "San Luigi dei Francesi (los Caravaggio)",
        "modo": null,
-       "doc": "San Luigi dei Francesi (los Caravaggio) ~20 (⚠️ cierra a las 18:15). Va antes que el Panteón por eso",
+       "doc": "San Luigi dei Francesi (los Caravaggio) ~20 (⚠️ abre a las 14:30 y cierra a las 18:30). Va antes que el Panteón por eso",
        "min": 20,
        "avisos": [
-        "cierra a las 18:15"
+        "abre a las 14:30 y cierra a las 18:30"
        ],
-       "cierra": "18:15",
+       "abre": "14:30",
+       "cierra": "18:30",
        "notas": [
         "Va antes que el Panteón por eso"
        ]
@@ -1950,8 +1936,11 @@
        "tipo": "parada",
        "lugar": "Panteón",
        "modo": "dentro",
-       "doc": "Panteón, por dentro ~45",
-       "min": 45
+       "doc": "Panteón, por dentro ~45 (el sábado, antes de las 17:00)",
+       "min": 45,
+       "notas": [
+        "el sábado, antes de las 17:00"
+       ]
       },
       {
        "tipo": "parada",
@@ -1959,6 +1948,22 @@
        "modo": null,
        "doc": "Piazza Navona ~45",
        "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "modo": "dentro",
+       "doc": "Iglesia del Gesù, por dentro ~20, de camino a la cena (⚠️ por la tarde abre a las 16:30; de julio a septiembre, a las 17:00). Va al final por su hora de abrir: así no hay esperas. Desde Navona son ~12 min, y la cena está a ~5 min",
+       "min": 20,
+       "avisos": [
+        "por la tarde abre a las 16:30; de julio a septiembre, a las 17:00"
+       ],
+       "abre": "16:30",
+       "notas": [
+        ", de camino a la cena",
+        "Va al final por su hora de abrir: así no hay esperas",
+        "Desde Navona son ~12 min, y la cena está a ~5 min"
+       ]
       }
      ],
      "cena": {
@@ -2239,12 +2244,6 @@
         },
         {
          "tipo": "parada",
-         "lugar": "Iglesia del Gesù",
-         "min": 20,
-         "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
          "lugar": "Iglesia de San Luigi dei Francesi",
          "min": 20,
          "modo": null,
@@ -2261,6 +2260,12 @@
          "lugar": "Piazza Navona",
          "min": 45,
          "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia del Gesù",
+         "min": 20,
+         "modo": "dentro"
         }
        ]
       },
@@ -2501,7 +2506,7 @@
     },
     {
      "id": "sabado_panteon",
-     "doc": "el sábado el Panteón cierra a las 17:00 por la misa: aviso «entra antes».",
+     "doc": "el sábado (y la víspera de festivo) el Panteón no deja entrar desde las 17:00 por la misa: aviso «entra antes».",
      "cuando": {
       "dia_semana": [
        "sábado"
@@ -2519,7 +2524,7 @@
     },
     {
      "id": "free_tour_tarde",
-     "doc": "Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.",
+     "doc": "Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.",
      "cuando": {
       "free_tour_despues": "tarde"
      },
@@ -2544,7 +2549,7 @@
     },
     {
      "id": "free_tour_noche",
-     "doc": "Free Tour de tarde (17:00) o de noche (18:30):** es una reserva en la tarde.",
+     "doc": "Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.",
      "cuando": {
       "free_tour_despues": "noche"
      },
@@ -4986,24 +4991,26 @@
       },
       {
        "tipo": "parada",
-       "lugar": "Parque de Villa Borghese",
+       "lugar": "Galería Borghese",
        "modo": null,
-       "doc": "Parque de Villa Borghese ~45: la Piazza di Siena y el lago con el Templo de Esculapio (barcas de remos)",
-       "min": 45,
+       "doc": "🎟 Galería Borghese ~2 h (reserva con hora; está dentro del parque, junto a la entrada de Porta Pinciana). Si se llega antes de la hora, se espera en el parque (hasta 40 min, regla 7)",
+       "min": 120,
+       "hora_tipo": "reserva",
        "notas": [
-        "barcas de remos",
-        ": la Piazza di Siena y el lago con el Templo de Esculapio"
+        "reserva con hora; está dentro del parque, junto a la entrada de Porta Pinciana",
+        "hasta 40 min, regla 7",
+        "Si se llega antes de la hora, se espera en el parque"
        ]
       },
       {
        "tipo": "parada",
-       "lugar": "Galería Borghese",
+       "lugar": "Parque de Villa Borghese",
        "modo": null,
-       "doc": "🎟 Galería Borghese ~2 h (reserva con hora; está dentro del parque)",
-       "min": 120,
-       "hora_tipo": "reserva",
+       "doc": "Parque de Villa Borghese ~45: la Piazza di Siena y el lago con el Templo de Esculapio (barcas de remos), de camino hacia el Pincio",
+       "min": 45,
        "notas": [
-        "reserva con hora; está dentro del parque"
+        "barcas de remos",
+        ": la Piazza di Siena y el lago con el Templo de Esculapio , de camino hacia el Pincio"
        ]
       },
       {
@@ -5157,12 +5164,13 @@
      "id": "galeria_9",
      "doc": "A las 9:00:",
      "horas": [
-      "9:00"
+      "9:00",
+      "10:00"
      ],
      "cuando": {
       "reserva": {
        "lugar": "Galería Borghese",
-       "hasta": "10:00"
+       "hasta": "10:45"
       }
      },
      "ops": {
@@ -5234,7 +5242,7 @@
      "cuando": {
       "reserva": {
        "lugar": "Galería Borghese",
-       "hasta": "10:00"
+       "hasta": "10:45"
       },
       "viaje_sin": [
        "D3"
@@ -5258,15 +5266,18 @@
     },
     {
      "id": "galeria_tarde",
-     "doc": "A las 15:00 o a las 17:00:",
+     "doc": "De las 14:00 a las 17:45:",
      "horas": [
+      "14:00",
       "15:00",
-      "17:00"
+      "16:00",
+      "17:00",
+      "17:45"
      ],
      "cuando": {
       "reserva": {
        "lugar": "Galería Borghese",
-       "desde": "14:01"
+       "desde": "13:46"
       }
      },
      "ops": {
@@ -5398,7 +5409,7 @@
     },
     {
      "id": "lunes_sin_galeria",
-     "doc": "si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 9:00), después de la Fuente del Tritón.",
+     "doc": "si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 10:00), después de la Fuente del Tritón.",
      "cuando": {
       "cerrado": "Galería Borghese"
      },
@@ -5423,7 +5434,7 @@
     },
     {
      "id": "con_free_tour_de_manana",
-     "doc": "Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el «de camino» del principio: **el día empieza directamente en el Parque de Villa Borghese**",
+     "doc": "Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el «de camino» del principio: **el día empieza directamente en Villa Borghese**",
      "cuando": {
       "free_tour": true
      },
@@ -5489,7 +5500,7 @@
    "reservas": {
     "Galería Borghese": {
      "normal": {
-      "desde": "10:01",
+      "desde": "10:46",
       "hasta": "11:30"
      },
      "mejores": [
