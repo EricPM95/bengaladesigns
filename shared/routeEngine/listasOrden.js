@@ -83,6 +83,8 @@ export function ordenarDias(env) {
   const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
   let fixedWhy = new Map()
+  const reservasColocadas = []
+  const reservasSinDia = []
   const pinnedOrder = (rest) => {
     if (pins.length === 0) return rest
     const todo = []
@@ -118,8 +120,22 @@ export function ordenarDias(env) {
         return cost
       }))
     }
+    // Las reservas grandes (Tanda 6j, punto 9): el día escrito que lleva el sitio reservado va FIJO en la fecha de la reserva; los demás se ordenan con las reglas de siempre en los huecos que quedan.
+    const fijos = new Map(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]])
+    for (const reserva of env.reservasGrandes ?? []) {
+      const slot = cityDays.findIndex((day) => (reserva.dateIso ? hoursOf(day).dateIso === reserva.dateIso : day.dayNumber === Number(reserva.dayNumber)))
+      const dentro = (id) => paradasDelDia(written.days[id], { sinCamino: true }).some((stop) => stop.lugar === reserva.name && stop.modo === 'dentro')
+      const id = chosen.find((candidate) => candidate !== 'D1-corto' && dentro(candidate)) ?? chosen.find((candidate) => candidate !== 'D1-corto' && carries(written.days[candidate], reserva.name))
+      // (Un sitio cerrado ese día no se fija: la reserva no puede ser de ese día; se guarda con su aviso y el viaje se queda como está.)
+      if (slot >= 0 && closedThatDay(reserva.name, cityDays[slot])) { reservasSinDia.push({ name: reserva.name, motivo: 'cerrado' }); continue }
+      if (slot < 0 || !id || [...fijos.values()].includes(id)) { reservasSinDia.push({ name: reserva.name, motivo: slot < 0 ? 'fecha_sin_dia' : !id ? 'sin_dia_escrito' : 'ya_fijado' }); continue }
+      if (fijos.has(slot)) { reservasSinDia.push({ name: reserva.name, motivo: 'dos_reservas_grandes' }); continue }
+      fijos.set(slot, id)
+      reservasColocadas.push({ name: reserva.name, id, slot })
+    }
     let best = null
-    const candidates = halfPosition == null ? permutations(chosen) : permutations(chosen.filter((_, index) => index !== halfPosition)).map((whole) => [...whole.slice(0, halfPosition), chosen[halfPosition], ...whole.slice(halfPosition)])
+    const libres = chosen.filter((id) => ![...fijos.values()].includes(id))
+    const candidates = permutations(libres).map((perm) => { let k = 0; return chosen.map((_, index) => (fijos.has(index) ? fijos.get(index) : perm[k++])) })
     for (const candidate of candidates) {
       let cost = 0
       candidate.forEach((id, index) => {
@@ -159,5 +175,5 @@ export function ordenarDias(env) {
   // Los días que cambian de sitio respecto a la tabla y por qué: lo que les cuesta en su fecha de la tabla (un sitio cerrado, una mala fecha, un horario especial). Para el informe y la prueba del orden.
   const motivosOrden = {}
   chosen.forEach((id, slot) => { const why = fixedWhy.get(id)?.[slot] ?? []; if (orderSinPin.indexOf(id) !== slot && why.length > 0) motivosOrden[id] = why })
-  return { chosen, order, halfPosition, dateMoves, motivosOrden }
+  return { chosen, order, halfPosition, dateMoves, motivosOrden, reservasColocadas, reservasSinDia }
 }

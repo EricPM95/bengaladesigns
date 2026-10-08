@@ -1,0 +1,98 @@
+/**
+ * Qué día va en qué fecha cuando el viajero mete una reserva grande (Tanda 6j, punto 9): si el sitio tiene su día escrito y la fecha cae en otro día del viaje, se mueve el día
+ * ENTERO a esa fecha y los demás se ordenan con las reglas de siempre (cierres, miércoles del Vaticano, nocturnas). Aquí se calcula el antes y el después con el mismo motor que
+ * rehace los días (sin Claude) y se explica, en palabras del viajero, qué se mueve y por qué.
+ */
+import { buildDayBlockV3 } from './index.js'
+import { writtenDaysFor } from './writtenDays.js'
+import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
+import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
+
+/** «del Coliseo», «del Vaticano», «de la Galería Borghese»: cómo se nombra el día por su sitio grande. */
+const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese' }
+const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+const weekdayOf = (iso) => WEEKDAYS[new Date(`${iso}T12:00:00Z`).getUTCDay()]
+const dateText = (iso) => `${weekdayOf(iso)} ${Number(iso.slice(8, 10))} de ${MONTHS[Number(iso.slice(5, 7)) - 1]}`
+
+async function ordenDe({ destData, answers, totalDays, dayNumbers, body, extras }) {
+  const days = []
+  for (const dayNumber of dayNumbers) {
+    const day = await buildDayBlockV3(destData, totalDays, extras.hasFreeTour, dayNumber, null, answers.dateRange?.start, body.must_include_places ?? [], answers.experiencesPositive, {
+      city: body.destination,
+      scheduler: 'v3',
+      engine: 'v4',
+      month: Number.isInteger(answers.month) ? answers.month : null,
+      season: answers.season ?? null,
+      insideNames: Array.isArray(body.inside_names) ? body.inside_names : [],
+      ...extras.engineExtras(dayNumber),
+    })
+    days.push({ dayNumber, curatedId: day?.curated_day?.id ?? null, name: day?.curated_day?.name ?? null, isExcursion: Boolean(day?.interruptor?.mode === 'excursion' || day?.day_type === 'excursion') })
+  }
+  return days
+}
+
+/**
+ * @returns {{ antes, despues, cambia: boolean, principal: null | { sitio, dayNumber, dateIso }, mensaje: string | null, motivos: string[], sinMover: null | { motivo: string } }}
+ */
+export async function planDeReservas({ destData, destKey, body, answers, hasFreeTour, engineExtras, nueva }) {
+  const allDays = Array.isArray(body.all_days) ? body.all_days : []
+  const dayNumbers = allDays.map((day) => Number(day.day_number))
+  const totalDays = allDays.length + 1
+  const start = answers.dateRange?.start ?? null
+  const dateOf = (dayNumber) => (start ? addDays(start, dayNumber - 1) : null)
+  const grande = (nueva?.placeNames ?? []).find((name) => RESERVAS_GRANDES.has(name)) ?? null
+  const base = { antes: [], despues: [], cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null }
+  if (!grande || dayNumbers.length === 0) return base
+  const written = writtenDaysFor(destKey)
+  const reservasAntes = (body.reservas_antes ?? []).filter((r) => r && r.dateIso !== undefined)
+  const antes = await ordenDe({ destData, answers, totalDays, dayNumbers, body, extras: { hasFreeTour, engineExtras: (n) => engineExtras({ ...body, reservas: reservasAntes }, answers, n) } })
+  const despues = await ordenDe({ destData, answers, totalDays, dayNumbers, body, extras: { hasFreeTour, engineExtras: (n) => engineExtras(body, answers, n) } })
+  const result = { ...base, antes, despues }
+  // Dos reservas grandes el mismo día (el Coliseo por la mañana y los Museos por la tarde, o al revés): no se mueve el día entero, cada una va a su hora en ese día. Se apunta en el registro.
+  const otra = reservasAntes.find((r) => (nueva.dateIso ? r.dateIso === nueva.dateIso : Number(r.dayNumber) === Number(nueva.dayNumber)) && (r.placeNames ?? []).some((name) => RESERVAS_GRANDES.has(name) && name !== grande))
+  if (otra) console.info(`[reservation-plan] dos reservas grandes el mismo día (${nueva.dateIso ?? `día ${nueva.dayNumber}`}): ${grande} y ${otra.placeNames.find((name) => RESERVAS_GRANDES.has(name))}; cada una a su hora, sin mover el día entero`)
+  const reservaDay = (nueva.dateIso ? dayNumbers.find((n) => dateOf(n) === nueva.dateIso) : Number(nueva.dayNumber)) ?? null
+  if (!reservaDay) return result
+  const diaDelSitio = (lista) => lista.find((entry) => entry.curatedId && written?.days?.[entry.curatedId] && JSON.stringify(written.days[entry.curatedId]).includes(`"lugar":"${grande}"`) && ['D1', 'D1-FT', 'D2', 'D4'].includes(entry.curatedId))
+  const antesDia = diaDelSitio(antes)
+  const despuesDia = despues.find((entry) => entry.dayNumber === reservaDay)
+  // (Ya estaba en ese día, o ese día es una excursión: no se mueve nada.)
+  if (!antesDia || !despuesDia) return result
+  if (despuesDia.isExcursion) return { ...result, sinMover: { motivo: 'excursion' } }
+  const cambios = despues.filter((entry, index) => entry.curatedId !== antes[index]?.curatedId)
+  if (cambios.length === 0) return result
+  result.cambia = true
+  const fecha = dateOf(reservaDay)
+  result.principal = { sitio: grande, dayNumber: reservaDay, dateIso: fecha }
+  const nombre = (entry) => `el día ${entry.name ? `${String(entry.name).replace(/^D[ií]a /i, '')}` : entry.curatedId}`
+  const ciudad = body.destination
+  result.mensaje = `Para que tengas una buena experiencia en ${ciudad}, vamos a mover el día ${DEL[grande]} al día ${reservaDay}${fecha ? ` (${dateText(fecha)})` : ''}, con tu reserva.`
+  // Los demás días que se mueven: si no es solo el hueco que dejó el día reservado (un cambio sencillo de dos), el motivo es un cierre real de ese día en su fecha.
+  const slotAntes = antes.find((entry) => entry.curatedId === despuesDia.curatedId)?.dayNumber ?? null
+  for (const entry of despues) {
+    const index = despues.indexOf(entry)
+    if (entry.dayNumber === reservaDay || entry.curatedId === antes[index]?.curatedId) continue
+    const sencillo = entry.dayNumber === slotAntes
+    const dia = written?.days?.[entry.curatedId]
+    const fechaAhora = dateOf(entry.dayNumber)
+    const razones = []
+    if (!sencillo && dia && start) {
+      // Por qué no se quedó en el hueco sencillo (el que dejó el día reservado): lo que cierra ese día.
+      const huecoSencillo = slotAntes ? dateOf(slotAntes) : null
+      if (huecoSencillo) {
+        const lugares = [...new Set(JSON.stringify(dia).match(/"lugar":"([^"]+)"/g)?.map((m) => m.slice(9, -1)) ?? [])]
+        for (const lugar of lugares) {
+          const place = (destData.places ?? []).find((candidate) => candidate.name === lugar)
+          if (place && closedOnDay(place, weekdayOf(huecoSencillo), huecoSencillo)) razones.push(`${lugar} cierra el ${weekdayOf(huecoSencillo)}`)
+        }
+        const malas = dia.fechas_malas?.dias_semana ?? []
+        if (malas.map(norm).includes(norm(weekdayOf(huecoSencillo)))) razones.push(`el día ${String(entry.name ?? '').replace(/^D[ií]a /i, '')} no va el ${weekdayOf(huecoSencillo)}`)
+      }
+    }
+    result.motivos.push(`${razones.length ? `${[...new Set(razones)].join(' y ')}: te hemos puesto ` : 'Hemos puesto '}${nombre(entry)} el ${fechaAhora ? dateText(fechaAhora) : `día ${entry.dayNumber}`}.`)
+  }
+  return result
+}

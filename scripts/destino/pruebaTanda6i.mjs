@@ -108,8 +108,9 @@ for (const forma of FORMAS) {
         const parque = stops.findIndex((s) => s.name === 'Parque de Villa Borghese' && s.display_title !== 'Reloj de agua del Pincio' && s.duration_minutes >= 30)
         const galeria11 = galeria >= 0 && /^(11:00|11:00:00)$/.test(String(stops[galeria].reservation_time ?? stops[galeria].suggested_time ?? '').slice(0, 5))
         if (galeria11 && parque >= 0) {
-          if (parque < galeria) apunta('d4_parque_antes_que_galeria_ok')
-          else apunta('d4_galeria_antes_que_parque', `${donde}: el Parque va después de la Galería`)
+          // (Tanda 6j: el orden se invirtió, primero la Galería y después el parque; la prueba de la 6j lo comprueba. Aquí solo se cuenta.)
+          if (galeria < parque) apunta('d4_galeria_antes_que_parque_ok')
+          else apunta('d4_parque_antes_que_galeria', `${donde}: el Parque va antes que la Galería`)
         }
       }
     }

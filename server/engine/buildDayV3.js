@@ -191,7 +191,7 @@ function quarterHourStops(stops) {
 import { dinnerZoneOf, nightStopsFor, nightTiming } from '../../shared/routeEngine/nightWalk.js'
 import { dinnerZones, recommendedRestaurant } from '../../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
-import { hoursWarning, lastEntryMinutes, parseClosingMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { hoursWarning, lastEntryMinutes, parseClosingMinutes, parseHoursSessions, scheduleForDay, withinMonthDays } from '../../shared/routeEngine/openingHours.js'
 import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { isStreet } from '../../shared/routeEngine/localRules.js'
 import { joinSpanish, placeWithArticle, whyTexts } from '../../shared/routeEngine/whyTexts.js'
@@ -616,6 +616,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     if (tripDay.hours?.weekday && tripDay.hours?.dateIso && !anyTransitRuns(destData, tripDay.hours.dateIso, visit.start, visit.start)) {
       for (const field of ['why', 'note', 'description']) if (/\b(bus|autobús|metro|tranvía)\b/i.test(stop[field] ?? '')) stop[field] = withoutPublicTransit(stop[field])
     }
+    // Reserva obligatoria solo en unas fechas (el Coliseo del 25 de octubre al 28 de febrero, Tanda 6j): la tarjeta y la línea de Reservas lo dicen mientras no esté reservado.
+    if (sourcePlace?.reserva_obligatoria_entre && tripDay.hours?.dateIso && stop.visit_mode !== 'fuera' && withinMonthDays(Number(tripDay.hours.dateIso.slice(5, 7)) * 100 + Number(tripDay.hours.dateIso.slice(8, 10)), sourcePlace.reserva_obligatoria_entre.from, sourcePlace.reserva_obligatoria_entre.to)) stop.reservation_required_now = true
     // Motor de listas (Tanda 6): la hora es orientativa (la suma de lo que dura cada parada y el trayecto); solo una reserva, un turno o el Free Tour tienen hora fija.
     if (tripDay.listas) {
       // Un turno que propone el motor (sin reserva puesta por el viajero) no es una reserva: «Turno recomendado: 11:00», sin la hora en negrita.

@@ -1037,6 +1037,10 @@
           "comprobado": "2026-09-30",
           "antes": "[\"12-25\",\"01-01\"]"
         }
+      },
+      "reserva_obligatoria_entre": {
+        "from": "10-25",
+        "to": "02-29"
       }
     },
     {

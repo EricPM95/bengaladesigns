@@ -274,7 +274,8 @@ export default {
         // El miércoles sin Museos: el día empieza a su hora (el Castillo abre a las 9:00) y la Plaza y la Basílica van cuando acaba la audiencia.
         {
           id: 'miercoles_audiencia', doc: 'el miércoles sin Museos',
-          cuando: { dia_semana: ['miércoles'] },
+          // (Si el viajero ya tiene los Museos reservados ese miércoles, la reserva manda y el día no va «sin Museos»: Tanda 6j, punto 9.)
+          cuando: { dia_semana: ['miércoles'], sin_reserva: MUSEOS },
           ops: {
             manana: { paradas: [P("Castillo de Sant'Angelo", 90, 'dentro', { titulo: "Castillo de Sant'Angelo, hasta la terraza del ángel" }), P("Puente Sant'Angelo", 15), ...camino('Lungotevere'), P('Plaza de San Pedro', 30, null, { no_antes: '12:30' }), P('Basílica de San Pedro', 75, 'dentro')] },
             tarde: { quitar: ['Via della Conciliazione', "Castillo de Sant'Angelo", "Puente Sant'Angelo"] },

@@ -314,7 +314,7 @@ async function buildDayBlockV3Inner(
   const insideMinutes = written?.destino?.minutos_por_dentro ?? destData.destination_config?.minutos_por_dentro ?? {}
   const montarPropio = (overrides = {}) => ({ dayNumber, ...diaPropio({ destData, placeNames: options.sitiosPropios, insideMinutes, id: 'DX', name: options.nombreDiaPropio ?? 'Mi día', overrides }) })
   let propio = written && Array.isArray(options.sitiosPropios) && options.sitiosPropios.length > 0 ? montarPropio() : null
-  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null })
+  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null, reservasGrandes: options.reservasGrandes ?? [] })
   let writtenPlan = written ? writtenPlanFor(written, destKey, planArgs()) : null
   // «Crear mi propio día»: una segunda vuelta con lo que el motor hizo de verdad en la primera (un sitio ya visto por dentro en el viaje pasa a verse por fuera, y dura menos), para repartir bien la mañana y la tarde.
   if (propio && writtenPlan) {

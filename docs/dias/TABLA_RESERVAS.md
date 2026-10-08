@@ -2,7 +2,7 @@
 
 Generada por `scripts/destino/tablaReservas.mjs`. Cada celda dice cómo sale esa reserva con las listas escritas (regla 17):
 
-- **lista** = el tramo tiene lista escrita en el documento; **normal** = el día normal; **sin lista** = el documento no lo escribe: al meter la reserva la app avisa y propone otra hora, y si el viajero insiste se aplica la regla 4 y queda apuntado; **no cabe** = una combinación que no cabe (Free Tour de mañana + Museos antes de las 13:30; excursión de medio día + Coliseo a las 16:00).
+- **lista** = el tramo tiene lista escrita en el documento; **normal** = el día normal; **sin lista** = el documento no lo escribe: al meter la reserva la app la acepta y adapta el día con la regla 4, en silencio (desde la Tanda 6j ya no avisa al viajero), y queda apuntado en el registro del día; **no cabe** = una combinación que no cabe (Free Tour de mañana + Museos antes de las 13:30; excursión de medio día + Coliseo a las 16:00).
 - Después, lo que hace el motor de verdad: «a su hora» o los minutos de retraso, y las notas de la prueba (imprescindible movido, comida tarde…).
 
 ## D0 · Coliseo
@@ -70,8 +70,8 @@ Hora | Clase | Lista | En el motor
 11:00 | **lista** | museos_media_manana | a su hora
 11:30 | **lista** | museos_media_manana | a su hora
 12:00 | **lista** | museos_media_manana | a su hora · comida_tarde
-12:30 | **lista** | museos_mediodia | a su hora · comida_tarde
-13:00 | **lista** | museos_mediodia | a su hora · comida_tarde
+12:30 | sin_lista |  | a su hora · sin_lista, comida_tarde
+13:00 | sin_lista |  | a su hora · sin_lista, comida_tarde
 13:30 | **lista** | museos_mediodia | a su hora
 14:00 | **lista** | museos_mediodia | a su hora
 14:30 | **lista** | museos_mediodia | a su hora
@@ -114,10 +114,15 @@ Hora | Clase | Lista | En el motor
 Hora | Clase | Lista | En el motor
 --- | --- | --- | ---
 9:00 | **lista** | galeria_9 | a su hora
+10:00 | **lista** | galeria_9 | a su hora
 11:00 | normal |  | a su hora
+12:00 | sin_lista |  | a su hora · sin_lista
 13:00 | sin_lista |  | a su hora · sin_lista, comida_tarde
+14:00 | **lista** | galeria_tarde | a su hora · comida_tarde
 15:00 | **lista** | galeria_tarde | a su hora
+16:00 | **lista** | galeria_tarde | a su hora
 17:00 | **lista** | galeria_tarde | a su hora
+17:45 | **lista** | galeria_tarde | a su hora
 
 ## D1-corto · Coliseo
 

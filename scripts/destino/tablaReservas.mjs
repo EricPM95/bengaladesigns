@@ -17,8 +17,8 @@ const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
 const hhmm = (m) => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`
 const HORAS = []
 for (let m = 8 * 60; m <= 18 * 60; m += 30) HORAS.push(hhmm(m))
-// La Galería Borghese solo tiene turnos reales cada 2 horas (9:00, 11:00, 13:00, 15:00 y 17:00): una reserva a otra hora no existe.
-const TURNOS_GALERIA = ['9:00', '11:00', '13:00', '15:00', '17:00']
+// La Galería Borghese tiene un turno cada hora, de 9:00 a 17:00, y otro a las 17:45 (auditoría de octubre de 2026): una reserva a otra hora no existe.
+const TURNOS_GALERIA = ['9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '17:45']
 
 // Dónde está cada día en un viaje (una fecha y un viaje en los que sale en martes/jueves, sin cierres) y qué reservas lleva
 const CASOS = [
@@ -33,7 +33,7 @@ const CASOS = [
 const plan = (caso, hora) => planListasTrip({ destData: D, written, travel, totalDays: caso.viaje.dias + 1, hasFreeTour: Boolean(caso.viaje.ft), poolNames: [], experiencesPositive: caso.viaje.ft ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso: caso.inicio, entradas: hora ? { [caso.lugar]: hora.length === 4 ? `0${hora}` : hora } : {}, mediaJornada: caso.viaje.medio ?? null })
 
 const salida = ['# Tabla de reservas (sitio × día × hora)', '', 'Generada por `scripts/destino/tablaReservas.mjs`. Cada celda dice cómo sale esa reserva con las listas escritas (regla 17):', '',
-  '- **lista** = el tramo tiene lista escrita en el documento; **normal** = el día normal; **sin lista** = el documento no lo escribe: al meter la reserva la app avisa y propone otra hora, y si el viajero insiste se aplica la regla 4 y queda apuntado; **no cabe** = una combinación que no cabe (Free Tour de mañana + Museos antes de las 13:30; excursión de medio día + Coliseo a las 16:00).',
+  '- **lista** = el tramo tiene lista escrita en el documento; **normal** = el día normal; **sin lista** = el documento no lo escribe: al meter la reserva la app la acepta y adapta el día con la regla 4, en silencio (desde la Tanda 6j ya no avisa al viajero), y queda apuntado en el registro del día; **no cabe** = una combinación que no cabe (Free Tour de mañana + Museos antes de las 13:30; excursión de medio día + Coliseo a las 16:00).',
   '- Después, lo que hace el motor de verdad: «a su hora» o los minutos de retraso, y las notas de la prueba (imprescindible movido, comida tarde…).', '']
 let totalSinLista = 0
 for (const caso of CASOS) {

@@ -193,8 +193,10 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       }
       const primera = rows.find((x) => x.tipo !== 'traslado')
       const parte = listas?.days?.[dia.curatedDay.id]?.partes
-      const empiezaDoc = parte ? Object.values(parte).map((x) => x.empieza).find(Boolean) : null
       const variantes = dia.curatedDay.variantes ?? []
+      // (Una versión del día con su propia hora de inicio —la lista de las 9:00 de la Galería empieza a las 8:00— manda sobre la del día normal.)
+      const empiezaVariante = (listas?.days?.[dia.curatedDay.id]?.variantes ?? []).find((v) => variantes.includes(v.id) && v.ops?.empieza)?.ops.empieza ?? null
+      const empiezaDoc = empiezaVariante ?? (parte ? Object.values(parte).map((x) => x.empieza).find(Boolean) : null)
       const esperado = toMin(variantes.includes('con_free_tour_de_manana') ? '09:00' : empiezaDoc ?? (dia.halfDayExcursion?.soloTarde ? '16:00' : (franjas.inicio ?? '09:00')))
       // (Tanda 6c: el documento ya no dice «el día empieza más tarde» en ningún sitio; el lunes del D4 y los miércoles de audiencia empiezan a su hora.)
       // (Tanda 6d: el miércoles del D2 sin Museos también empieza a su hora; solo quedan los medios días de tarde.)

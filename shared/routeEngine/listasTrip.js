@@ -88,7 +88,7 @@ function avisoDe(stop, mes = null, invierno = MESES_INVIERNO) {
  * @returns el plan (misma forma que el motor anterior) o null si falta algún día escrito
  */
 export function planListasTrip(args) {
-  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null } = args
+  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [] } = args
   if (!writtenIn?.days) return null
   // («Crear mi propio día»: el día que el viajero monta con sus sitios es un día escrito más, hecho al vuelo (diaPropio.js), y va fijo en su día.)
   const written = diaPropio ? { ...writtenIn, days: { ...writtenIn.days, [diaPropio.id]: diaPropio.dia } } : writtenIn
@@ -158,6 +158,7 @@ export function planListasTrip(args) {
   // ── 1. Qué días van y en qué orden ───────────────────────────────────────────────────────────────────────────
   const ordenado = ordenarDias({
     propios: diaPropio ? { [diaPropio.dayNumber]: diaPropio.id } : {},
+    reservasGrandes,
     destData, written, cityDays, contentDays, hasFreeTour, hoursOf, realDateIso, closedThatDay, calendar, poolNames, selected, mediaJornada, forceOrder, noTourOn, tour,
     cerradoA: (lugar, hora, day) => placeByName.get(lugar) && openCheck(placeByName.get(lugar), toMin(hora), 15, hoursOf(day)).ok !== true,
   })

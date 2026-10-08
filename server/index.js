@@ -4,7 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { arrivalInfoFor, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
-import { RESERVAS_GRANDES, consejoDeReserva } from '../shared/routeEngine/listasReservas.js'
+import { RESERVAS_GRANDES, consejoDeReserva, mejoresHoras } from '../shared/routeEngine/listasReservas.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -29,6 +29,7 @@ import {
 import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
+import { planDeReservas } from './engine/reservationPlan.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
 
@@ -2542,13 +2543,20 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
     const time = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
     for (const name of Array.isArray(reserva.placeNames) ? reserva.placeNames : []) if (typeof name === 'string') entradas[name] = time
   }
+  // Las reservas grandes de TODO el viaje (Tanda 6j): fijan en su fecha el día escrito que lleva el sitio (el Coliseo → el día de la Roma antigua…).
+  const reservasGrandes = []
+  for (const reserva of Array.isArray(body?.reservas) ? body.reservas : []) {
+    if (!reserva || (!reserva.dateIso && !Number.isInteger(Number(reserva.dayNumber)))) continue
+    const name = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).find((candidate) => RESERVAS_GRANDES.has(candidate))
+    if (name) reservasGrandes.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null })
+  }
   const ft = answers?.freeTourDespues
   const freeTourDespues = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) ? { franja: ft.franja ?? null, hora: ft.hora } : null
   const mj = answers?.mediaJornada
   const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
   // El interruptor del día 4 (Tanda 6g): lo que el viajero ha puesto, 'roma' o 'excursion'; sin él, el de por defecto del viaje.
   const diaCuatro = answers?.diaCuatro === 'roma' || answers?.diaCuatro === 'excursion' ? answers.diaCuatro : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro }
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes }
 }
 
 function hasRequiredAnswers(answers) {
@@ -5431,6 +5439,38 @@ app.post('/api/reservation-advice', (req, res) => {
     return
   }
   res.json({ ...consejoDeReserva(dia, lugar, String(time), { tieneFreeTour: Boolean(has_free_tour), excursionManana: Boolean(excursion_morning) }), lugar })
+})
+
+// Las mejores horas para reservar (Tanda 6j, 9b.3): las de las listas escritas de ese día (TABLA_RESERVAS), nunca una hora sin lista. Solo los sitios con reserva grande.
+app.post('/api/reservation-best-hours', (req, res) => {
+  const { destination, items } = req.body ?? {}
+  const written = typeof destination === 'string' ? writtenDaysFor(destination.toLowerCase()) : null
+  const hours = {}
+  for (const item of Array.isArray(items) ? items.slice(0, 20) : []) {
+    const lugar = typeof item?.place === 'string' ? item.place : null
+    const dia = written?.days?.[item?.curated_day_id]
+    if (!lugar || !dia || !RESERVAS_GRANDES.has(lugar)) continue
+    const mejores = mejoresHoras(dia, lugar)
+    if (mejores.length > 0) hours[`${item.curated_day_id}|${lugar}`] = mejores
+  }
+  res.json({ hours })
+})
+
+// Reservas grandes (Tanda 6j): qué día se mueve a la fecha de la reserva y por qué (antes de guardarla). El mismo motor que rehace los días, sin Claude.
+app.post('/api/reservation-plan', async (req, res) => {
+  const { destination, answers, all_days, reserva } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destination || !answers || !destData || !reserva || !Array.isArray(all_days) || !destData.curated_routes?.por_dias_ciudad) {
+    res.json({ cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null })
+    return
+  }
+  try {
+    const plan = await planDeReservas({ destData, destKey: findPipelineV2Key(destData.destination ?? destination), body: req.body, answers, hasFreeTour: hasFreeTourFromAnswers(answers), engineExtras: engineExtrasFromRequest, nueva: reserva })
+    res.json({ cambia: plan.cambia, principal: plan.principal, mensaje: plan.mensaje, motivos: plan.motivos, sinMover: plan.sinMover })
+  } catch (error) {
+    console.error('[reservation-plan]', error)
+    res.json({ cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null })
+  }
 })
 
 app.post('/api/check-time', async (req, res) => {
