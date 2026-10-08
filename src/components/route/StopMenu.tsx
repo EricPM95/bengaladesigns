@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { DayPlan, Stop } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
+import { TimeField } from '../ui/TimeField'
 
 interface StopMenuProps {
   stop: Stop
@@ -131,12 +132,7 @@ export function StopMenu({ stop, dayId, days }: StopMenuProps) {
 
             {view === 'time' && (
               <div className="space-y-2 p-1">
-                <input
-                  type="time"
-                  value={time}
-                  onChange={(event) => setTime(event.target.value)}
-                  className="w-full rounded-lg border border-border bg-bg px-2 py-1.5 text-small text-text"
-                />
+                <TimeField value={time} onChange={setTime} title="Hora de la parada" className="flex h-9 w-full items-center justify-between rounded-lg border border-border bg-bg px-2 text-left text-small text-text" />
                 <button
                   type="button"
                   onClick={() => {

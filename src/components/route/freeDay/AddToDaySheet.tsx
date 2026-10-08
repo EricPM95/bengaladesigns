@@ -9,6 +9,7 @@ import { closedWeekdaysFromSchedule, formatDaySessions, nextOpenMinutes, parseCl
 import { hasFullDayExcursion, isEmptyDay, isFreeDay, suggestedTimeFor } from '../../../lib/freeDays'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { TimeField } from '../../ui/TimeField'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 
 /** Lo que se añade: un lugar, un restaurante (va como comida o cena) o una excursión. */
@@ -200,10 +201,10 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
           {draft && day && (
             <div className="mt-5 space-y-4">
               {!freeDay && (
-                <label className="block">
+                <div className="block">
                   <span className="block text-[14px] font-semibold text-text">Hora</span>
-                  <input type="time" value={time} onChange={(event) => setTime(event.target.value)} className="mt-1.5 h-12 w-full rounded-xl border border-text/15 bg-bg px-3.5 text-[15px] text-text" />
-                </label>
+                  <TimeField value={time} onChange={setTime} title="Hora de la parada" className="mt-1.5 flex h-12 w-full items-center justify-between rounded-xl border border-text/15 bg-bg px-3.5 text-left text-[15px] text-text" />
+                </div>
               )}
               <label className="block">
                 <span className="block text-[14px] font-semibold text-text">Minutos</span>

@@ -6,6 +6,7 @@ import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { withUndo } from '../../../store/useAddFlowStore'
 import { hasOwnTime } from '../../../lib/freeDays'
 import { RemoveReservationDialog } from '../reservas/ReservedMarks'
+import { TimeField } from '../../ui/TimeField'
 
 interface StopMenuProps {
   dayId: string
@@ -212,12 +213,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
 
             {view === 'change-time' && (
               <div className="space-y-2 rounded-xl bg-bg-card p-1">
-                <input
-                  type="time"
-                  value={time}
-                  onChange={(event) => setTime(event.target.value)}
-                  className="w-full rounded-lg border border-border bg-bg px-2 py-1.5 text-small text-text"
-                />
+                <TimeField value={time} onChange={setTime} title="Hora de la parada" className="flex h-9 w-full items-center justify-between rounded-lg border border-border bg-bg px-2 text-left text-small text-text" />
                 <button
                   type="button"
                   disabled={!time}

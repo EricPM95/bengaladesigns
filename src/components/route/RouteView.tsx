@@ -4,7 +4,6 @@ import { useAddFlowStore } from '../../store/useAddFlowStore'
 import type { Route } from '../../lib/types'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/routeMapMarkers'
-import { useArrivalMarkers } from '../../lib/useArrivalMarkers'
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
 import { BottomBar } from '../layout/BottomBar'
@@ -111,11 +110,6 @@ export function RouteView() {
     if (window.innerWidth >= 768 && window.innerWidth < 1024) setPanelSplit(40)
   }, [])
 
-  // Calculado ya aquí (antes de los `return` condicionales de abajo) porque useArrivalMarkers es un
-  // hook — debe llamarse siempre, en el mismo orden, en cada render (reglas de los hooks).
-  const segmentsForArrivalMarkers = buildDestinationSegments(route?.days ?? [])
-  const arrivalMarkers = useArrivalMarkers(route, segmentsForArrivalMarkers)
-
   if (!route) return null
 
   // RESERVAS es su propia pantalla completa (mismo patrón ✕ que RUTA/EXPLORAR, ver
@@ -135,7 +129,7 @@ export function RouteView() {
   const hasTripDates = Boolean(route.answers.dateRange)
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
   const activeDay = (mode === 'today' && todayContext ? todayContext.day : route.days.find((day) => day.id === activeDayId)) ?? route.days[0]
-  const segments = segmentsForArrivalMarkers
+  const segments = buildDestinationSegments(route.days)
   const showRouteStyleMap = mode === 'route'
   // El botón de colapsar mapa aplica a DIAS y a EXPLORAR (mismo patrón mapa+tirador+colapsar en
   // ambas, pedido explícitamente para EXPLORAR también) — el resto de pestañas se quedan con el
@@ -216,10 +210,11 @@ export function RouteView() {
           <div className="relative shrink-0 max-md:h-[var(--mobile-map-h)] md:h-auto md:flex-none md:w-[var(--map-w)]">
             {showRouteStyleMap ? (
               <>
+                {/* (Tanda 6k, punto 7: el mapa de RUTA, sin el punto del aeropuerto —el encuadre cuenta solo las paradas de los días—; en la ventana de llegada, sí.) */}
                 {segments.length <= 1 ? (
-                  <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} />
+                  <StopsMapView markers={buildCombinedDaysMarkers(route.days)} />
                 ) : (
-                  <RouteOverviewMap segments={segments} days={route.days} arrivalMarkers={arrivalMarkers} />
+                  <RouteOverviewMap segments={segments} days={route.days} />
                 )}
                 <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
               </>

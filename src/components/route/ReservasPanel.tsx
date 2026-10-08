@@ -191,7 +191,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
               toBig={destinationBig(arrivalPoint)}
               toSmall={destinationSmall(arrivalPoint)}
               value={route.arrivalFlightTime}
-              inputId="reservas-hora-llegada"
               onChange={(value) => {
                 setArrivalFlightTime(value || null)
               }}
@@ -207,7 +206,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
               fromSmall={destinationSmall(departurePoint)}
               toBig={originName}
               value={route.departureFlightTime}
-              inputId="reservas-hora-salida"
               onChange={(value) => {
                 setDepartureFlightTime(value || null)
               }}
