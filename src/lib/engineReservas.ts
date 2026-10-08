@@ -6,7 +6,7 @@ import type { Reservation } from './bookings'
  */
 export function reservasParaMotor(reservations: Reservation[]): { placeNames: string[]; dateIso: string | null; dayNumber: number | null; time: string }[] {
   return reservations
-    .filter((reservation) => reservation.kind === 'entrada' && /^\d{1,2}:\d{2}$/.test(reservation.time))
+    .filter((reservation) => reservation.kind === 'entrada' && !reservation.noMueve && /^\d{1,2}:\d{2}$/.test(reservation.time))
     .map((reservation) => ({ placeNames: reservation.placeNames, dateIso: reservation.dateIso, dayNumber: reservation.dayNumber, time: reservation.time }))
 }
 

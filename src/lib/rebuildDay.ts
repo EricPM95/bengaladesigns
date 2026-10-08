@@ -17,6 +17,7 @@ export async function aplicarFreeTour(choice: { franja: 'manana' | 'tarde' | 'no
 /**
  * Rehace cada día de ciudad con lo que el viaje recuerda ahora (el Free Tour, el interruptor del día 4…): lo que el viajero ya ha cambiado a mano, la excursión, un día suyo y los días
  * que ha añadido no se tocan. `except`: los días que ya vienen rehechos. Devuelve false si algún día no se pudo rehacer (sin conexión o sin respuesta).
+ * Todo o nada (Tanda 6k): primero se piden todos los días y solo si llegan todos se cambian; si uno falla no se cambia ninguno (nunca un día a medias ni dos días iguales).
  */
 export async function rehacerDiasSinTocar(except: string | string[] | null): Promise<boolean> {
   const exceptIds = new Set([except].flat().filter((id): id is string => Boolean(id)))
@@ -25,6 +26,7 @@ export async function rehacerDiasSinTocar(except: string | string[] | null): Pro
   if (!route) return false
   const cityDays = route.days.filter((day) => !day.isReturnLeg)
   let ok = true
+  const rehechos: { id: string; next: ReturnType<typeof mapSingleGeneratedDay> }[] = []
   for (const day of cityDays) {
     if (exceptIds.has(day.id) || day.originalSnapshot || day.dayType === 'excursion' || day.userAdded || day.ownDay) continue
     try {
@@ -52,14 +54,19 @@ export async function rehacerDiasSinTocar(except: string | string[] | null): Pro
       }
       const next = mapSingleGeneratedDay(route.destination, body.day, day)
       await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
-      const actual = useRouteStore.getState().route?.days.find((other) => other.id === day.id)
-      if (!actual || actual.originalSnapshot) continue
-      useRouteStore.getState().replaceDayRebuilt(day.id, next)
+      rehechos.push({ id: day.id, next })
     } catch {
       ok = false
     }
   }
-  return ok
+  if (!ok) return false
+  // (El viajero pudo tocar un día mientras llegaban las respuestas: ese no se pisa.)
+  for (const { id, next } of rehechos) {
+    const actual = useRouteStore.getState().route?.days.find((other) => other.id === id)
+    if (!actual || actual.originalSnapshot) continue
+    useRouteStore.getState().replaceDayRebuilt(id, next)
+  }
+  return true
 }
 
 /**

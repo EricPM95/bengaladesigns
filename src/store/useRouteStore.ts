@@ -881,12 +881,29 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     if (!route) return
     if (reservation.kind === 'entrada') {
       const previous = get().reservations.find((other) => other.kind === 'entrada' && other.refId === reservation.refId && other.id !== reservation.id)
-      set({ route: placeReservedEntrance(previous ? unpinReservedStops(route, previous.id) : route, reservation) })
+      const unpinned = previous ? unpinReservedStops(route, previous.id) : route
+      // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días
+      // y solo si llegan todos se cambian (todo o nada). Nada se arranca antes: una parada sola que se va de su día dejaba el día a medias (Tanda 6k, punto 2).
+      if (isBigReservation(reservation) && !reservation.noMueve) {
+        if (unpinned !== route) set({ route: unpinned })
+        void import('../lib/rebuildDay')
+          .then((module) => module.rehacerDiasSinTocar(null))
+          .then(async (ok) => {
+            // Si no se pudo mover (sin conexión, un día que el viajero cambió), la reserva se queda en su día y la app avisa; la app sigue funcionando.
+            const { useNoticesStore } = await import('./useNoticesStore')
+            if (!ok) {
+              useNoticesStore.getState().push({ id: `reserva-no-mueve-${reservation.id}`, kind: 'info', title: 'Tu reserva está guardada', text: `No hemos podido mover el día de ${reservation.name} a la fecha de tu reserva. La reserva está guardada en Reservas y la ruta se queda como estaba.` })
+              set((state) => ({ reservations: state.reservations.map((other) => (other.id === reservation.id ? { ...other, noMueve: true } : other)) }))
+            }
+            set((state) => (state.route ? { route: reapplyReservations(state.route, state.reservations) } : state))
+          })
+          .catch(() => {})
+        return
+      }
+      set({ route: placeReservedEntrance(unpinned, reservation) })
       // El motor rehace ese día corriendo las horas alrededor de la hora de la reserva.
       const reservedDay = dayOfReservation(route, reservation)
-      // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija.
-      if (isBigReservation(reservation) && !reservation.noMueve) void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null))
-      else if (reservedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(reservedDay.id))
+      if (reservedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(reservedDay.id))
       return
     }
     const day = dayOfReservation(route, reservation)
@@ -1636,7 +1653,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 // Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,
 // antes de rehacerla se le pregunta. Se envuelven las acciones en vez de marcarlo en cada una.
 const MANUAL_EDIT_ACTIONS = [
-  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'replaceDayExact', 'addReservation', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
+  'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'replaceDayExact', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
   'addSuggestedStop', 'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',

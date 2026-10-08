@@ -197,7 +197,7 @@ export function newCampaignCode(): string {
  */
 export function placeReservedEntrance(route: Route, reservation: Reservation): Route {
   const target = dayOfReservation(route, reservation)
-  if (!target || reservation.kind !== 'entrada' || reservation.noMueve) return route
+  if (!target || reservation.kind !== 'entrada') return route
   let found: { day: DayPlan; stop: Stop } | null = null
   // (Si el día de la reserva ya lleva el sitio —porque el motor movió el día entero—, esa parada es la que se fija: no se trae otra de otro día.)
   for (const name of reservation.placeNames) {
@@ -207,6 +207,8 @@ export function placeReservedEntrance(route: Route, reservation: Reservation): R
       break
     }
   }
+  // (Una reserva que no mueve nada —su día no se pudo cambiar— solo marca la parada si ya está en su día: nunca la trae de otro.)
+  if (!found && reservation.noMueve) return route
   for (const name of found ? [] : reservation.placeNames) {
     for (const day of route.days) {
       const stop = day.stops.find((candidate) => candidate.name === name)

@@ -1,7 +1,8 @@
-import { useRef, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { ArrivalMode } from '../../../lib/arrivalReturn'
 import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
+import { TimeField } from '../../ui/TimeField'
 
 /**
  * Los billetes de Reservas y la tarjeta «Tu primer y último día» (diseño «Trazo Reservas», pantalla 13, 3-oct-2026).
@@ -52,7 +53,6 @@ export function FlightTicket({
   toBig,
   toSmall,
   value,
-  inputId,
   onChange,
   onCommit,
   extra,
@@ -66,15 +66,12 @@ export function FlightTicket({
   toBig: string
   toSmall?: string
   value: string | null | undefined
-  inputId: string
   onChange: (value: string) => void
   /** Al salir del campo de la hora, con la hora ya puesta: abre la ventana «¿Ajustamos tu ruta a tu vuelo?». */
   onCommit: () => void
   extra?: ReactNode
 }) {
   const set = Boolean(value)
-  /** La ventana de ajustar solo sale si el viajero ha cambiado la hora (no por tocar el campo y salirse sin más). */
-  const changed = useRef(false)
   const [x, y] = arcPoint(set ? 0.98 : 0.02)
   const icon = mode === 'avion' ? EXPLORE_ICONS.plane : EXPLORE_ICONS.bus
   const big = (text: string) => (text.length > 8 ? 24 : text.length > 5 ? 28 : 34)
@@ -139,9 +136,8 @@ export function FlightTicket({
           <span style={{ font: "600 13px 'Geist'", color: '#1C2230' }}>{label}</span>
           <span className="text-text/50" style={{ font: "500 10.5px 'Geist Mono',monospace", letterSpacing: '.08em', textTransform: 'uppercase' }}>{date}</span>
         </div>
-        <label
-          htmlFor={inputId}
-          className="flex cursor-pointer items-center gap-2"
+        <div
+          className="flex items-center gap-2"
           style={{
             height: 52,
             minWidth: 150,
@@ -155,23 +151,18 @@ export function FlightTicket({
           <span className="text-text/50" style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.08em', textTransform: 'uppercase' }}>
             {kind === 'arrival' ? 'Llega' : 'Sale'}
           </span>
-          <input
-            id={inputId}
-            type="time"
+          {/* La hora, con el selector de toda la app. La ventana de ajustar solo sale si el viajero ha elegido una hora. */}
+          <TimeField
             value={value ?? ''}
-            onChange={(event) => {
-              changed.current = true
-              onChange(event.target.value)
+            onChange={(hhmm) => {
+              onChange(hhmm)
+              window.setTimeout(onCommit, 0)
             }}
-            onBlur={() => {
-              if (!changed.current) return
-              changed.current = false
-              if (set) onCommit()
-            }}
-            className="min-w-0 flex-1 border-none bg-transparent font-display text-text outline-none"
-            style={{ fontSize: 26, lineHeight: 1, colorScheme: 'light' }}
+            title={kind === 'arrival' ? 'Hora de llegada' : 'Hora de salida'}
+            ariaLabel={kind === 'arrival' ? 'Hora de llegada' : 'Hora de salida'}
+            className="flex min-w-0 flex-1 items-center justify-between gap-1 border-none bg-transparent font-display text-[26px] leading-none text-text outline-none"
           />
-        </label>
+        </div>
       </div>
       {extra && <div className="px-4 pb-3.5">{extra}</div>}
     </div>

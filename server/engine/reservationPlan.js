@@ -5,8 +5,9 @@
  */
 import { buildDayBlockV3 } from './index.js'
 import { writtenDaysFor } from './writtenDays.js'
-import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
-import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
+import { RESERVAS_GRANDES, consejoDeReserva } from '../../shared/routeEngine/listasReservas.js'
+import { closedOnDay, lastEntryMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 
 /** «del Coliseo», «del Vaticano», «de la Galería Borghese»: cómo se nombra el día por su sitio grande. */
 const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese' }
@@ -44,7 +45,7 @@ export async function planDeReservas({ destData, destKey, body, answers, hasFree
   const start = answers.dateRange?.start ?? null
   const dateOf = (dayNumber) => (start ? addDays(start, dayNumber - 1) : null)
   const grande = (nueva?.placeNames ?? []).find((name) => RESERVAS_GRANDES.has(name)) ?? null
-  const base = { antes: [], despues: [], cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null }
+  const base = { antes: [], despues: [], cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null, cambios: [], consejo: null }
   if (!grande || dayNumbers.length === 0) return base
   const written = writtenDaysFor(destKey)
   const reservasAntes = (body.reservas_antes ?? []).filter((r) => r && r.dateIso !== undefined)
@@ -62,8 +63,12 @@ export async function planDeReservas({ destData, destKey, body, answers, hasFree
   // (Ya estaba en ese día, o ese día es una excursión: no se mueve nada.)
   if (!antesDia || !despuesDia) return result
   if (despuesDia.isExcursion) return { ...result, sinMover: { motivo: 'excursion' } }
+  // La regla 17: la lista escrita del día que llevará el sitio (el de después de mover), a la hora de la reserva.
+  const lleva = diaDelSitio(despues)
+  if (lleva && lleva.dayNumber === reservaDay) result.consejo = { ...consejoDeReserva(written.days[lleva.curatedId], grande, String(nueva.time), { tieneFreeTour: /FT$|^D3$/.test(lleva.curatedId), excursionManana: false }), lugar: grande, curatedId: lleva.curatedId }
   const cambios = despues.filter((entry, index) => entry.curatedId !== antes[index]?.curatedId)
   if (cambios.length === 0) return result
+  result.cambios = cambios.map((entry) => ({ dayNumber: entry.dayNumber, de: antes.find((candidate) => candidate.dayNumber === entry.dayNumber)?.curatedId ?? null, a: entry.curatedId }))
   result.cambia = true
   const fecha = dateOf(reservaDay)
   result.principal = { sitio: grande, dayNumber: reservaDay, dateIso: fecha }
@@ -95,4 +100,25 @@ export async function planDeReservas({ destData, destKey, body, answers, hasFree
     result.motivos.push(`${razones.length ? `${[...new Set(razones)].join(' y ')}: te hemos puesto ` : 'Hemos puesto '}${nombre(entry)} el ${fechaAhora ? dateText(fechaAhora) : `día ${entry.dayNumber}`}.`)
   }
   return result
+}
+
+const hhmm = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
+
+/**
+ * Las horas a las que se puede entrar a un sitio ese día (Tanda 6k, punto 2): de la apertura a la última entrada. Sin fechas, las del mes de referencia del viaje.
+ * @returns {{ cerrado: boolean, ventanas: { desde: string, hasta: string }[] }}
+ */
+export function horasDeEntrada(destData, placeName, { dateIso = null, month = null, season = null } = {}) {
+  const place = (destData.places ?? []).find((candidate) => candidate.name === placeName)
+  if (!place) return { cerrado: false, ventanas: [] }
+  const calendar = tripCalendar({ dateRangeStartIso: dateIso, month, season })
+  const iso = calendar.hasDates ? dateIso : calendar.referenceIso
+  const weekday = calendar.hasDates ? weekdayOf(dateIso) : null
+  const hours = { weekday, dateIso: iso, season: calendar.season }
+  if (calendar.hasDates && closedOnDay(place, weekday, dateIso)) return { cerrado: true, ventanas: [] }
+  const ventanas = parseHoursSessions(scheduleForDay(place, hours)).sort((a, b) => a.open - b.open).map((session) => {
+    const last = lastEntryMinutes(place, session.open, hours)
+    return { desde: hhmm(session.open), hasta: hhmm(Math.min(session.close, last ?? session.close)) }
+  })
+  return { cerrado: false, ventanas }
 }

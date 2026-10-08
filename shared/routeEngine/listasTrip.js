@@ -1447,7 +1447,7 @@ export function planListasTrip(args) {
       // el tour es una parada con su hora
     } else if (modo === 'fuera' || item.motivo_fuera) {
       ready = {
-        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.motivo_fuera ? 'cerrado' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
+        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera ? 'cerrado' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
         coordinates: source.pass_by?.coordinates ?? source.coordinates, duration_minutes: item.min, windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
       }
     } else if (modo === 'camino') {

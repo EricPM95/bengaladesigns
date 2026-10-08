@@ -29,7 +29,7 @@ import {
 import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
-import { planDeReservas } from './engine/reservationPlan.js'
+import { horasDeEntrada, planDeReservas } from './engine/reservationPlan.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
 
@@ -5456,6 +5456,17 @@ app.post('/api/reservation-best-hours', (req, res) => {
   res.json({ hours })
 })
 
+// Las horas a las que se puede entrar a un sitio grande ese día (Tanda 6k): de la apertura a la última entrada. La rueda de la hora solo enseña esas.
+app.post('/api/reservation-hours', (req, res) => {
+  const { destination, place, date_iso, month, season } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destData || typeof place !== 'string') {
+    res.json({ cerrado: false, ventanas: [] })
+    return
+  }
+  res.json(horasDeEntrada(destData, place, { dateIso: typeof date_iso === 'string' && /^d{4}-d{2}-d{2}$/.test(date_iso) ? date_iso : null, month: Number.isInteger(month) ? month : null, season: typeof season === 'string' ? season : null }))
+})
+
 // Reservas grandes (Tanda 6j): qué día se mueve a la fecha de la reserva y por qué (antes de guardarla). El mismo motor que rehace los días, sin Claude.
 app.post('/api/reservation-plan', async (req, res) => {
   const { destination, answers, all_days, reserva } = req.body ?? {}
@@ -5466,7 +5477,7 @@ app.post('/api/reservation-plan', async (req, res) => {
   }
   try {
     const plan = await planDeReservas({ destData, destKey: findPipelineV2Key(destData.destination ?? destination), body: req.body, answers, hasFreeTour: hasFreeTourFromAnswers(answers), engineExtras: engineExtrasFromRequest, nueva: reserva })
-    res.json({ cambia: plan.cambia, principal: plan.principal, mensaje: plan.mensaje, motivos: plan.motivos, sinMover: plan.sinMover })
+    res.json({ cambia: plan.cambia, principal: plan.principal, mensaje: plan.mensaje, motivos: plan.motivos, sinMover: plan.sinMover, cambios: plan.cambios, consejo: plan.consejo })
   } catch (error) {
     console.error('[reservation-plan]', error)
     res.json({ cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null })

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { GeneralBooking } from '../../../lib/readiness'
 import { Modal } from '../../ui/Modal'
 import { Button } from '../../ui/Button'
+import { DateField } from '../../ui/DateField'
 import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 
 interface GeneralBookingModalProps {
@@ -43,14 +44,14 @@ export function GeneralBookingModal({ open, title, itemLabel, providerLabel, pro
             <input value={provider} onChange={(event) => setProvider(event.target.value)} placeholder={providerPlaceholder} className={inputClasses} />
           </label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block space-y-1.5">
+            <div className="block space-y-1.5">
               <span className="text-small font-medium text-text">Desde</span>
-              <input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} className={inputClasses} />
-            </label>
-            <label className="block space-y-1.5">
+              <DateField value={startDate} onChange={setStartDate} title="Desde" max={endDate || undefined} className="flex w-full items-center justify-between rounded-xl border border-border bg-bg px-3 py-2 text-left text-body text-text" />
+            </div>
+            <div className="block space-y-1.5">
               <span className="text-small font-medium text-text">Hasta</span>
-              <input type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} className={inputClasses} />
-            </label>
+              <DateField value={endDate} onChange={setEndDate} title="Hasta" min={startDate || undefined} className="flex w-full items-center justify-between rounded-xl border border-border bg-bg px-3 py-2 text-left text-body text-text" />
+            </div>
           </div>
           <label className="block space-y-1.5">
             <span className="text-small font-medium text-text">Precio</span>

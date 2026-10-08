@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
-import { BIG_RESERVATION_PLACES, dayLineOf, dayOnDate, shortDateEs, type Reservation } from '../../../lib/bookings'
+import { BIG_RESERVATION_PLACES, dateOfDay, dayLineOf, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { reservasParaMotor } from '../../../lib/engineReservas'
+import { bestHoursLine, useBestHours } from '../../../lib/bestHours'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { useNoticesStore } from '../../../store/useNoticesStore'
+import { DateField } from '../../ui/DateField'
+import { TimeField } from '../../ui/TimeField'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -16,17 +20,26 @@ export interface ReservationTarget {
   currentDayId?: string | null
 }
 
-/** El consejo del servidor para una reserva grande: solo se enseñan las mejores horas del día (Tanda 6j: la app ya no avisa de una hora sin lista; la acepta y adapta el día). */
+/** La regla 17 (Tanda 6k): la lista escrita del día que llevará el sitio, a la hora de la reserva. */
 interface ReservationAdvice {
-  textoMejores: string | null
+  estado: 'bien' | 'sin_lista' | 'no_cabe' | 'sin_definir'
+  mejores: string[]
 }
 
-/** Qué se mueve al meter una reserva grande (/api/reservation-plan, Tanda 6j, punto 9). */
+/** Qué se mueve al meter una reserva grande (/api/reservation-plan). */
 interface ReservationPlan {
   cambia: boolean
   mensaje: string | null
   motivos: string[]
   sinMover: { motivo: string } | null
+  cambios: { dayNumber: number; de: string | null; a: string | null }[]
+  consejo: ReservationAdvice | null
+}
+
+/** Las horas a las que se puede entrar ese día (de la apertura a la última entrada). */
+interface EntryHours {
+  cerrado: boolean
+  ventanas: { desde: string; hasta: string }[]
 }
 
 type Tab = 'email' | 'file' | 'manual'
@@ -42,12 +55,16 @@ interface Fields {
 
 const EMPTY: Fields = { dateIso: '', dayNumber: '', time: '', returnTime: '', meetingPoint: '', locator: '' }
 const MAX_FILE_BYTES = 3_500_000
+/** Las horas del Free Tour: pocas, así que van como botones y no como rueda. */
+const FREE_TOUR_HOURS = ['10:00', '12:00', '15:00', '17:00', '21:00']
 
 const inputClass = 'mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text placeholder:text-text-muted'
 
-/** «Viernes 16 oct». */
+/** «Viernes 16 oct». Con una fecha que no sirve, vacío (nunca rompe la pantalla). */
 function longWeekday(dateIso: string): string {
-  const text = new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(new Date(`${dateIso}T00:00:00`))
+  const date = new Date(`${dateIso}T00:00:00`)
+  if (!dateIso || Number.isNaN(date.getTime())) return ''
+  const text = new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(date)
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
@@ -74,6 +91,29 @@ async function fileToBase64(file: File): Promise<{ media_type: string; data: str
   return { media_type: file.type, data: url.split(',')[1] }
 }
 
+/** El nombre del día de un sitio grande, como se dice en la hoja y en el aviso. */
+const DEL: Record<string, string> = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese' }
+const EL: Record<string, string> = { Coliseo: 'el Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'el Vaticano', 'Galería Borghese': 'la Galería Borghese' }
+
+/**
+ * Red de seguridad de esta ventana (Tanda 6k, punto 1): si algo falla al dibujarla, la ventana se cierra, sale un aviso en la campana y la app sigue funcionando;
+ * nunca la pantalla de «Algo ha ido mal» por una reserva.
+ */
+class SheetBoundary extends Component<{ children: ReactNode; onFail: () => void }, { failed: boolean }> {
+  state = { failed: false }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+  componentDidCatch(error: Error) {
+    console.error('[AddReservationSheet]', error)
+    useNoticesStore.getState().push({ id: `reserva-ventana-${Date.now()}`, kind: 'info', title: 'No se pudo abrir la reserva', text: 'No hemos podido mostrar la ventana de la reserva. Tu ruta no ha cambiado; prueba otra vez desde Reservas.' })
+    this.props.onFail()
+  }
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
+}
+
 /**
  * «Añade tu reserva» (PARA_CODE_RESERVAS, 4): una sola ventana, igual para todo. Pegar el email o subir la captura o el PDF se lee con IA y
  * enseña «Lo hemos leído así» para corregirlo; «A mano» pide solo lo necesario (día y hora; el resto es opcional). El día lo pone la fecha de la
@@ -81,20 +121,36 @@ async function fileToBase64(file: File): Promise<{ media_type: string; data: str
  * en el viaje se elige el día. Lo que se lee del email se queda solo en el viaje, para el viajero.
  */
 export function AddReservationSheet({ route, target, onClose }: { route: Route; target: ReservationTarget; onClose: () => void }) {
+  return (
+    <SheetBoundary onFail={onClose}>
+      <AddReservationSheetInner route={route} target={target} onClose={onClose} />
+    </SheetBoundary>
+  )
+}
+
+function AddReservationSheetInner({ route, target, onClose }: { route: Route; target: ReservationTarget; onClose: () => void }) {
   const addReservation = useRouteStore((state) => state.addReservation)
   const reservations = useRouteStore((state) => state.reservations)
   const [confirming, setConfirming] = useState(false)
+  const [rule17, setRule17] = useState(false)
+  const [rule17Kept, setRule17Kept] = useState(false)
   const [tab, setTab] = useState<Tab>('email')
   const [text, setText] = useState('')
   const [fileName, setFileName] = useState<string | null>(null)
   const [reading, setReading] = useState(false)
   const [readError, setReadError] = useState<string | null>(null)
   const [read, setRead] = useState(false)
-  const [fields, setFields] = useState<Fields>(EMPTY)
-  const fileRef = useRef<HTMLInputElement>(null)
   const hasDates = Boolean(route.answers.dateRange)
   const days = useMemo(() => route.days.filter((day) => !day.isReturnLeg), [route.days])
   const isExcursion = target.kind === 'excursion'
+  // El día donde está ahora ese sitio: sale ya elegido (Tanda 6k, punto 4), con «· aquí está ahora»; así se sabe que se pone en el día bueno y no se mueve nada.
+  const currentDay = useMemo(() => days.find((day) => day.id === target.currentDayId) ?? null, [days, target.currentDayId])
+  const [fields, setFields] = useState<Fields>(() => ({
+    ...EMPTY,
+    dateIso: hasDates && currentDay ? (dateOfDay(route, currentDay) ?? '') : '',
+    dayNumber: !hasDates && currentDay ? String(currentDay.dayNumber) : '',
+  }))
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const set = (patch: Partial<Fields>) => setFields((previous) => ({ ...previous, ...patch }))
 
@@ -102,46 +158,47 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
   const resolvedDay = hasDates ? (fields.dateIso ? dayOnDate(route, fields.dateIso) : null) : (days.find((day) => String(day.dayNumber) === fields.dayNumber) ?? null)
   const outside = hasDates && Boolean(fields.dateIso) && !resolvedDay
   const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId)
-  const ready = Boolean(resolvedDay && fields.time && /^\d{1,2}:\d{2}$/.test(fields.time))
-
-  // Las mejores horas del día de la reserva (de las listas escritas) y qué día se mueve a la fecha de la reserva. Todo sale del servidor, sin Claude.
-  // (Tanda 6j: ya no hay aviso de «a esa hora no tenemos escrito…»: si el viajero pone una hora es porque ya la ha reservado; la app la acepta y adapta el día.)
-  const [advice, setAdvice] = useState<ReservationAdvice | null>(null)
-  const [plan, setPlan] = useState<ReservationPlan | null>(null)
-  const bigPlace = target.placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null
   const validTime = /^\d{1,2}:\d{2}$/.test(fields.time)
-  const adviceKey = resolvedDay && bigPlace && !isExcursion && validTime && resolvedDay.curatedId ? `${resolvedDay.id}|${resolvedDay.curatedId}|${bigPlace}|${fields.time}` : null
-  const planKey = resolvedDay && bigPlace && !isExcursion && validTime ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  const ready = Boolean(resolvedDay && validTime)
+  const bigPlace = target.placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null
+  const isFreeTour = target.refId === 'Free Tour'
+  const tripDates = hasDates && days.length > 0 ? { min: dateOfDay(route, days[0]) ?? undefined, max: dateOfDay(route, days[days.length - 1]) ?? undefined } : null
+
+  const dayLabel = (day: (typeof days)[number]) => `${dayLineOf(route, day)}${day.id === target.currentDayId ? ' · aquí está ahora' : ''}`
+
+  // Las horas a las que se puede entrar ese día y las mejores (Coliseo, Museos, Galería): la rueda solo enseña esas.
+  const [entryHours, setEntryHours] = useState<EntryHours | null>(null)
+  const hoursKey = bigPlace && !isExcursion && resolvedDay ? `${bigPlace}|${fields.dateIso}|${resolvedDay.id}` : null
   useEffect(() => {
-    if (!adviceKey || !resolvedDay) {
-      setAdvice(null)
+    if (!hoursKey || !bigPlace) {
+      setEntryHours(null)
       return
     }
     let cancelled = false
-    fetch('/api/reservation-advice', {
+    fetch('/api/reservation-hours', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        destination: route.destination,
-        curated_day_id: resolvedDay.curatedId,
-        place_names: target.placeNames,
-        time: fields.time,
-        has_free_tour: resolvedDay.stops.some((stop) => stop.isFreeTour),
-        excursion_morning: Boolean(resolvedDay.halfDayExcursion),
-      }),
+      body: JSON.stringify({ destination: route.destination, place: bigPlace, date_iso: hasDates ? fields.dateIso : null, month: route.answers.month ?? null, season: route.answers.season ?? null }),
     })
-      .then((response) => (response.ok ? (response.json() as Promise<ReservationAdvice>) : null))
+      .then((response) => (response.ok ? (response.json() as Promise<EntryHours>) : null))
       .then((body) => {
-        if (!cancelled) setAdvice(body)
+        if (!cancelled) setEntryHours(body)
       })
       .catch(() => {
-        if (!cancelled) setAdvice(null)
+        if (!cancelled) setEntryHours(null)
       })
     return () => {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adviceKey])
+  }, [hoursKey])
+  const bestItems = useMemo(() => (bigPlace && currentDay?.curatedId ? [{ curatedId: currentDay.curatedId, place: bigPlace }] : []), [bigPlace, currentDay?.curatedId])
+  const bestHours = useBestHours(route.destination, bestItems)
+  const best = bigPlace && currentDay?.curatedId ? (bestHours[`${currentDay.curatedId}|${bigPlace}`] ?? []) : []
+  const window0 = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? { min: entryHours.ventanas[0].desde, max: entryHours.ventanas[entryHours.ventanas.length - 1].hasta } : null
+
+  const [plan, setPlan] = useState<ReservationPlan | null>(null)
+  const planKey = resolvedDay && bigPlace && !isExcursion && validTime ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
     return {
@@ -161,6 +218,7 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
     }
   }
   useEffect(() => {
+    setRule17Kept(false)
     const draft = planKey ? draftReservation() : null
     if (!draft) {
       setPlan(null)
@@ -239,27 +297,73 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
     }
   }
 
-  /** Guardar: con un día que se mueve, antes la hoja que lo explica; si el día es una excursión, la reserva se guarda con su aviso y la ruta no cambia. */
-  const save = (confirmed = false) => {
+  /** Los días que cambiarían de sitio y que no se pueden mover sin perder algo (un día que el viajero cambió, una excursión reservada, un día suyo): entonces no se mueve nada. */
+  const blockedDay = (): number | null => {
+    for (const change of plan?.cambios ?? []) {
+      const day = route.days.find((candidate) => candidate.dayNumber === change.dayNumber)
+      if (day && (day.originalSnapshot || day.userAdded || day.ownDay || day.dayType === 'excursion' || isDayPinned(route, reservations, day))) return change.dayNumber
+    }
+    return null
+  }
+
+  /** Guardar: la regla 17 si la hora no tiene lista escrita; después, la hoja que explica qué día se mueve; si no se puede mover, la reserva se guarda en su día con un aviso (y en la campana). */
+  const save = (stage: 'inicio' | 'regla17' | 'mover' = 'inicio') => {
     if (!resolvedDay || !ready) return
-    if (plan?.cambia && !confirmed) {
+    if (stage === 'inicio' && plan?.consejo && (plan.consejo.estado === 'sin_lista' || plan.consejo.estado === 'no_cabe') && !rule17Kept && plan.consejo.mejores.length > 0) {
+      setRule17(true)
+      return
+    }
+    const blocked = plan?.cambia ? blockedDay() : null
+    if (plan?.cambia && blocked == null && stage !== 'mover') {
       setConfirming(true)
       return
     }
     const reservation = draftReservation()
     if (!reservation) return
+    let aviso: string | null = null
+    const sitio = bigPlace ? EL[bigPlace] : 'el sitio'
     if (plan?.sinMover?.motivo === 'excursion') {
       const excursion = resolvedDay.excursions?.find((option) => option.id === resolvedDay.selectedExcursionId)?.title ?? 'la excursión'
-      const sitio = bigPlace === 'Coliseo' ? 'el Coliseo' : bigPlace === 'Galería Borghese' ? 'la Galería Borghese' : 'el Vaticano'
-      reservation.noMueve = true
-      reservation.aviso = `El día ${resolvedDay.dayNumber}${fields.dateIso ? ` (${shortDateEs(fields.dateIso)})` : ''} tienes la excursión a ${excursion.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '')}: no da tiempo a visitar también ${sitio}.`
+      aviso = `El día ${resolvedDay.dayNumber}${fields.dateIso ? ` (${shortDateEs(fields.dateIso)})` : ''} tienes la excursión a ${excursion.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '')}: no da tiempo a visitar también ${sitio}.`
+    } else if (blocked != null) {
+      aviso = `Tienes cambios tuyos en el día ${blocked}: no se puede mover el día ${bigPlace ? DEL[bigPlace] : ''} al día ${resolvedDay.dayNumber} sin perderlos. La reserva queda guardada en Reservas y tu ruta no cambia.`
     }
-    addReservation(reservation, target.excursion ?? null)
+    if (aviso) {
+      reservation.noMueve = true
+      reservation.aviso = aviso
+      // El aviso se queda en la campana.
+      useNoticesStore.getState().push({ id: `reserva-aviso-${reservation.id}`, kind: 'info', title: 'Tu reserva está guardada', text: aviso })
+    }
+    try {
+      addReservation(reservation, target.excursion ?? null)
+    } catch (error) {
+      // Si algo falla al moverla, la reserva se guarda en su día, sale un aviso y la app sigue.
+      console.error('[AddReservationSheet] no se pudo mover', error)
+      useNoticesStore.getState().push({ id: `reserva-error-${reservation.id}`, kind: 'info', title: 'Tu reserva está guardada', text: 'No hemos podido mover el día a la fecha de tu reserva. La reserva está guardada en Reservas y tu ruta se queda como estaba.' })
+      try {
+        useRouteStore.setState((state) => ({ reservations: state.reservations.some((other) => other.id === reservation.id) ? state.reservations : [...state.reservations, { ...reservation, noMueve: true }] }))
+      } catch {
+        // (Sin más que hacer: la reserva ya está en la lista o no se pudo guardar; la pantalla no se rompe.)
+      }
+    }
     onClose()
   }
 
+  // Las dos horas que propone la regla 17: las mejores más cercanas a la elegida.
+  const proposals = useMemo(() => {
+    const options = plan?.consejo?.mejores ?? []
+    if (!validTime || options.length === 0) return []
+    const asMinutes = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
+    const chosen = asMinutes(fields.time)
+    return [...options].sort((a, b) => Math.abs(asMinutes(a) - chosen) - Math.abs(asMinutes(b) - chosen)).slice(0, 2).sort((a, b) => asMinutes(a) - asMinutes(b))
+  }, [plan, fields.time, validTime])
+
   const showForm = tab === 'manual' || read
-  const dayLine = resolvedDay && fields.dateIso && hasDates ? `${longWeekday(fields.dateIso)} ${shortDateEs(fields.dateIso).split(' ').slice(1).join(' ')} → tu Día ${resolvedDay.dayNumber}` : null
+  const shownTime = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
+  const dateLabel = (iso: string) => {
+    const day = dayOnDate(route, iso)
+    return day ? dayLabel(day) : shortDateEs(iso)
+  }
 
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-reservation-heading">
@@ -341,52 +445,59 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
             <div className="mt-5">
               {read && tab !== 'manual' && <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.14em] text-text-muted">Lo hemos leído así</p>}
               {hasDates ? (
-                <label className="mt-2 block">
+                <div className="mt-2 block">
                   <span className="text-[12px] font-medium text-text-soft">Día</span>
-                  <input type="date" value={fields.dateIso} onChange={(event) => set({ dateIso: event.target.value })} className={inputClass} />
-                </label>
+                  <DateField value={fields.dateIso} onChange={(iso) => set({ dateIso: iso })} title="Día de tu reserva" min={tripDates?.min} max={tripDates?.max} format={dateLabel} />
+                </div>
               ) : (
                 <label className="mt-2 block">
                   <span className="text-[12px] font-medium text-text-soft">Día del viaje</span>
                   <select value={fields.dayNumber} onChange={(event) => set({ dayNumber: event.target.value })} className={inputClass}>
-                    <option value="">Elige el día</option>
+                    {!currentDay && <option value="">Elige el día</option>}
                     {days.map((day) => (
                       <option key={day.id} value={day.dayNumber}>
-                        {dayLineOf(route, day)}
+                        {dayLabel(day)}
                       </option>
                     ))}
                   </select>
                 </label>
               )}
-              {dayLine && !outside && <p className="mt-1.5 text-[13px] font-medium text-text">{dayLine}</p>}
               {outside && (
                 <p className="mt-1.5 text-[13px] leading-snug text-accent-red">
                   Tu reserva es del {shortDateEs(fields.dateIso)}, fuera de las fechas de tu viaje. Revisa la fecha.
                 </p>
               )}
-              {advice?.textoMejores && !outside && <p className="mt-1.5 text-[13px] leading-snug text-text-soft">{advice.textoMejores}</p>}
               {plan?.sinMover?.motivo === 'excursion' && !outside && resolvedDay && (
                 <p className="mt-1.5 text-[13px] leading-snug text-text">
                   El día {resolvedDay.dayNumber} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
                 </p>
               )}
-              {moved && resolvedDay && !outside && (
+              {moved && hasDates && resolvedDay && !outside && longWeekday(fields.dateIso) && (
                 <p className="mt-1.5 text-[13px] leading-snug text-text">
                   Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a tu Día {resolvedDay.dayNumber}.
                 </p>
               )}
               <div className="mt-3 flex gap-2">
-                <label className="flex-1">
+                <div className="flex-1">
                   <span className="text-[12px] font-medium text-text-soft">{isExcursion ? 'Hora de recogida' : 'Hora de entrada'}</span>
-                  <input type="time" value={fields.time} onChange={(event) => set({ time: event.target.value })} className={inputClass} />
-                </label>
+                  <TimeField
+                    value={fields.time}
+                    onChange={(hhmm) => set({ time: hhmm })}
+                    title={isExcursion ? 'Hora de recogida' : 'Hora de entrada'}
+                    options={isFreeTour ? FREE_TOUR_HOURS : undefined}
+                    min={window0?.min}
+                    max={window0?.max}
+                    best={best}
+                  />
+                </div>
                 {isExcursion && (
-                  <label className="flex-1">
+                  <div className="flex-1">
                     <span className="text-[12px] font-medium text-text-soft">Hora de vuelta (opcional)</span>
-                    <input type="time" value={fields.returnTime} onChange={(event) => set({ returnTime: event.target.value })} className={inputClass} />
-                  </label>
+                    <TimeField value={fields.returnTime} onChange={(hhmm) => set({ returnTime: hhmm })} title="Hora de vuelta" placeholder="Sin hora" />
+                  </div>
                 )}
               </div>
+              {bigPlace && best.length > 0 && <p className="mt-1.5 text-[12.5px] text-text-soft">{bestHoursLine(best)}</p>}
               {isExcursion && (
                 <label className="mt-3 block">
                   <span className="text-[12px] font-medium text-text-soft">Punto de encuentro (opcional)</span>
@@ -394,7 +505,7 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
                 </label>
               )}
               <label className="mt-3 block">
-                <span className="text-[12px] font-medium text-text-soft">N.º de reserva{isExcursion ? ' (opcional)' : ' (opcional)'}</span>
+                <span className="text-[12px] font-medium text-text-soft">N.º de reserva (opcional)</span>
                 <input value={fields.locator} onChange={(event) => set({ locator: event.target.value })} className={inputClass} />
               </label>
             </div>
@@ -407,6 +518,43 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
           </button>
         </div>
       </div>
+      {rule17 && plan?.consejo && proposals.length > 0 && (
+        <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="rule17-heading">
+          <div className="absolute inset-0 bg-text/25" onClick={() => setRule17(false)} />
+          <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
+            <h2 id="rule17-heading" className="font-display text-[22px] leading-[1.2] text-text">
+              A las {shownTime} la visita no encaja bien en el día. Te proponemos las {proposals.join(' o las ')}.
+            </h2>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {proposals.map((hour) => (
+                <button
+                  key={hour}
+                  type="button"
+                  onClick={() => {
+                    set({ time: hour.length === 4 ? `0${hour}` : hour })
+                    setRule17(false)
+                  }}
+                  className="h-12 flex-1 rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]"
+                >
+                  {hour}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setRule17Kept(true)
+                setRule17(false)
+                // (Regla 4: la deja a esa hora y el día se adapta en silencio.)
+                window.setTimeout(() => save('regla17'), 0)
+              }}
+              className="mt-2 h-12 w-full rounded-full border border-text/15 text-[15px] font-medium text-text hover:bg-bg-hover"
+            >
+              Dejar las {shownTime}
+            </button>
+          </div>
+        </div>
+      )}
       {confirming && plan?.cambia && (
         <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="move-day-heading">
           <div className="absolute inset-0 bg-text/25" onClick={() => setConfirming(false)} />
@@ -415,7 +563,7 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
               {plan.mensaje}
             </h2>
             {plan.motivos.length > 0 && <p className="mt-3 text-[14.5px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
-            <button type="button" onClick={() => save(true)} className="mt-5 h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
+            <button type="button" onClick={() => save('mover')} className="mt-5 h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
               De acuerdo
             </button>
           </div>
