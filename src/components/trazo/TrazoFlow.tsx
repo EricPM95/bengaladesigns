@@ -153,9 +153,8 @@ export function TrazoFlow() {
     if (!destinationName) return
     const experiencesPositive = answers.experiencesPositive?.length ? answers.experiencesPositive : (['imprescindibles'] as ExperienceCategoryId[])
     const experiences = deriveLegacyExperienceIds(experiencesPositive)
-    // (El medio día solo existe con 3 o 4 días de calendario: si las fechas cambiaron, no queda uno de antes.)
-    const medioDiaValido = answers.days === 3 || answers.days === 4 ? answers.mediaJornada : undefined
-    updateAnswers({ experiencesPositive, experiencesNegative: [], experiences, mediaJornada: medioDiaValido, freeTourDespues: undefined })
+    // Sin pregunta de «¿Cómo son tus días?» (los medios días vendrán del vuelo) ni de la hora del Free Tour (de mañana, 10:00; se cambia desde RESERVAS).
+    updateAnswers({ experiencesPositive, experiencesNegative: [], experiences, mediaJornada: undefined, freeTourDespues: undefined })
     // Destino no curado: se pide la sugerencia de lugares ya; curado: el pool del JSON, sin Claude.
     if (curatedPool === false) suggestPlacesOnDemand(destinationName, experiences)
     else store.getState().setPlacesStepStarted(true)
@@ -561,8 +560,6 @@ export function TrazoFlow() {
               dateRange={answers.dateRange}
               selected={answers.experiencesPositive ?? ['imprescindibles']}
               days={answers.days}
-              mediaJornada={answers.mediaJornada}
-              onMediaJornada={(mediaJornada) => updateAnswers({ mediaJornada })}
               onChange={(experiencesPositive) => updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })}
               onNext={confirmExperiences}
             />,

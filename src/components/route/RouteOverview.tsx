@@ -8,6 +8,7 @@ import { DestinationDistanceConnector } from './DestinationDistanceConnector'
 import { DestinationDetailModal } from './DestinationDetailModal'
 import { ConfirmDialog } from './ConfirmDialog'
 import { MagicWandIcon } from './MagicWandIcon'
+import { destinoCambiado } from '../../lib/recuperarDestino'
 import { withUndo } from '../../store/useAddFlowStore'
 
 interface RouteOverviewProps {
@@ -40,15 +41,15 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
   const segments = buildDestinationSegments(route.days).map((segment) => (segment.countryCode ? segment : { ...segment, countryCode: dayCountryCode(fallbackCountry, segment.city) }))
   const detailSegment = detailCity ? segments.find((segment) => segment.city === detailCity) : undefined
   const tripStart = route.answers.dateRange?.start ?? null
-  // La ruta original es la del viaje entero: con varios destinos la varita no sale (no se puede recuperar solo uno).
-  const canRestoreRoute = segments.length === 1 && Boolean(route.originalRoute)
-  const routeChanged = Boolean(route.editedManually && route.originalRoute)
+  // La varita sale en cada destino y recupera solo los días de ese destino (la copia de la ruta inicial se filtra por destino).
+  const canRestoreRoute = Boolean(route.originalRoute)
 
   return (
     <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-6 pt-4">
       {segments.map((segment, index) => {
         const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
         const count = segmentDays.length
+        const cityChanged = destinoCambiado(route, segment.city)
         const firstNumber = segmentDays[0]?.dayNumber ?? 1
         const lastNumber = segmentDays[segmentDays.length - 1]?.dayNumber ?? firstNumber
         const dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1))}` : null
@@ -74,9 +75,9 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
             {canRestoreRoute && (
               <button
                 type="button"
-                disabled={!routeChanged}
+                disabled={!cityChanged}
                 onClick={() => setAskRestoreCity(segment.city)}
-                title={routeChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
+                title={cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
                 aria-label="Recuperar mi ruta"
                 className="group flex h-11 w-11 shrink-0 items-center justify-center disabled:cursor-not-allowed"
               >
@@ -99,13 +100,13 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
         <ConfirmDialog
           eyebrow="Ruta original"
           text={`¿Recuperar tu ruta de ${askRestoreCity}?`}
-          detail="Se pierden los cambios que has hecho en tus días. Lo que tienes reservado se queda en su día y a su hora."
+          detail="Volverás a la ruta inicial y se perderá todo lo modificado, únicamente mantendremos tus reservas."
           confirmLabel="Recuperar"
           cancelLabel="Cancelar"
           onCancel={() => setAskRestoreCity(null)}
           onConfirm={() => {
             setAskRestoreCity(null)
-            withUndo('Ruta recuperada', () => restoreOriginalRoute())
+            withUndo('Ruta recuperada', () => restoreOriginalRoute(askRestoreCity))
           }}
         />
       )}

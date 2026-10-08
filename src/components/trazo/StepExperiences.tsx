@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { DateRange, ExperienceCategoryId, QuestionnaireAnswers, Season } from '../../lib/types'
+import type { DateRange, ExperienceCategoryId, Season } from '../../lib/types'
 import { EXPERIENCE_CATEGORY_BANK, MAX_POSITIVE_CATEGORIES, isCategoryVisible } from '../../lib/experienceCategoryBank'
 import { fetchSeasonalWindows, seasonStatus, type SeasonalWindow } from '../../lib/seasonalAvailability'
 import { ACCENT, AMBER, Cta, DARK, Em, INK, MONO, SERIF, Title } from './trazoUi'
@@ -12,36 +12,10 @@ interface StepExperiencesProps {
   month: number | undefined
   dateRange: DateRange | undefined
   selected: ExperienceCategoryId[]
-  /** Días de calendario del viaje (el último es el de la vuelta): con ellos se sabe si hay 1, 1,5, 2 o 2,5 días de ruta. */
+  /** Días de calendario del viaje (el último es el de la vuelta): con ellos se sabe si hay 1, 1,5 o 2 o más días de ruta. */
   days?: number
-  mediaJornada?: QuestionnaireAnswers['mediaJornada']
-  onMediaJornada?: (value: QuestionnaireAnswers['mediaJornada']) => void
   onChange: (selected: ExperienceCategoryId[]) => void
   onNext: () => void
-}
-
-/** Pastillas de elección única (el medio día del viaje). */
-function Pastillas<T extends string>({ opciones, valor, onChange }: { opciones: { id: T; label: string; note?: string }[]; valor: T; onChange: (id: T) => void }) {
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-      {opciones.map((opcion) => {
-        const activa = opcion.id === valor
-        return (
-          <button
-            key={opcion.id}
-            type="button"
-            className="trazo-press"
-            aria-pressed={activa}
-            onClick={() => onChange(opcion.id)}
-            style={{ padding: '8px 12px', borderRadius: 999, border: `1px solid ${activa ? AMBER : 'rgba(28,34,48,.18)'}`, background: activa ? AMBER : 'rgba(255,255,255,0.85)', color: activa ? DARK : INK, font: "500 13px 'Geist'", cursor: 'pointer' }}
-          >
-            {opcion.label}
-            {opcion.note ? <span style={{ opacity: 0.7, marginLeft: 6, font: `500 11px ${MONO}` }}>{opcion.note}</span> : null}
-          </button>
-        )
-      })}
-    </div>
-  )
 }
 
 /** Mercadillos solo en invierno: con fechas manda el mes real (nov-dic); sin fechas, la estación. Solo para los destinos sin
@@ -59,7 +33,7 @@ function isWinterTrip(season: Season | undefined, dateRange: DateRange | undefin
  * marcada y bloqueada; se pueden añadir hasta 2 más, o ninguna. Las de temporada siguen las ventanas
  * del destino (seasonalAvailability) y, sin ventana, la regla de invierno de siempre.
  */
-export function StepExperiences({ destinationName, season, month, dateRange, selected, days, mediaJornada, onMediaJornada, onChange, onNext }: StepExperiencesProps) {
+export function StepExperiences({ destinationName, season, month, dateRange, selected, days, onChange, onNext }: StepExperiencesProps) {
   const [windows, setWindows] = useState<Record<string, SeasonalWindow>>({})
   useEffect(() => {
     let alive = true
@@ -73,14 +47,15 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
 
   const winter = isWinterTrip(season, dateRange)
   const statusOf = (id: ExperienceCategoryId) => seasonStatus(windows[id], month, dateRange)
-  // Con 3 o 4 días de calendario (2 o 3 de ruta) el viaje puede tener un medio día: se pregunta aquí. Con 1 día o con 1,5, el Free Tour no se ofrece (desde 2 días, sí).
-  const puedeTenerMedioDia = days === 3 || days === 4
-  const medioDia = puedeTenerMedioDia ? mediaJornada : undefined
-  // Tanda 6f, 5: el Free Tour ya no se pregunta aquí; se añade desde la app (RESERVAS o «+ Añadir parada»).
+  // Con 1 día o con 1,5 (2 días de calendario) el Free Tour no se ofrece; desde 2 días de ruta, sí. Va sin pregunta de hora: sale de mañana (10:00) y la hora se cambia después desde RESERVAS.
+  const sinFreeTour = days != null && days <= 2
   const shown = EXPERIENCE_CATEGORY_BANK.filter((category) =>
-    category.id === 'free_tour' ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
+    category.id === 'free_tour' && sinFreeTour ? false : windows[category.id] ? statusOf(category.id).status !== 'out' : isCategoryVisible(category, winter ? 'winter' : season),
   )
-  const visible = shown
+  // El Free Tour, segundo, justo debajo de Imprescindibles y con la etiqueta «Recomendado» (solo cambia el orden en que se ven).
+  const freeTour = shown.find((category) => category.id === 'free_tour')
+  const rest = shown.filter((category) => category.id !== 'free_tour')
+  const visible = freeTour ? [...rest.slice(0, 1), freeTour, ...rest.slice(1)] : shown
 
   // Imprescindibles siempre dentro, y fuera lo que ya no cabe en el mes elegido.
   useEffect(() => {
@@ -88,7 +63,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
     const next = [LOCKED, ...selected.filter((id) => id !== LOCKED && visibleIds.includes(id))].slice(0, MAX_POSITIVE_CATEGORIES)
     if (next.length !== selected.length || next.some((id, i) => id !== selected[i])) onChange(next)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [windows, month, winter, dateRange?.start, dateRange?.end, selected.join(',')])
+  }, [windows, month, winter, dateRange?.start, dateRange?.end, selected.join(','), sinFreeTour])
 
   const full = selected.length >= MAX_POSITIVE_CATEGORIES
   const toggle = (id: ExperienceCategoryId) => {
@@ -99,6 +74,7 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
 
   const descriptionOf = (id: ExperienceCategoryId, fallback: string) => {
     if (id === 'imprescindibles') return `Lo que no te puedes perder en ${destinationName}`
+    if (id === 'free_tour') return `Ideal si es tu primera vez en ${destinationName}: un guía local te descubre la ciudad a pie.`
     // Lo que esa experiencia es en este destino, si el destino lo dice (los mercadillos de Roma: Navona, los belenes y las luces).
     return windows[id]?.descripcion ?? fallback
   }
@@ -117,20 +93,6 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
       <p style={{ margin: '10px 0 0', font: "400 14px/1.4 'Geist'", color: 'rgba(28,34,48,.72)' }}>
         Imprescindibles ya va incluido. Añade hasta 2 más… o ninguna: tu viaje será igual de único, nosotros nos encargamos.
       </p>
-      {puedeTenerMedioDia && onMediaJornada && (
-        <div style={{ margin: '14px 0 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>¿Cómo son tus días?</span>
-          <Pastillas
-            valor={medioDia ? medioDia.franja : 'enteros'}
-            onChange={(id) => onMediaJornada(id === 'enteros' ? undefined : { franja: id, ...(id === 'manana' ? { salida: '15:00' } : {}) })}
-            opciones={[
-              { id: 'enteros', label: days === 3 ? 'Dos días enteros' : 'Tres días enteros' },
-              { id: 'tarde', label: days === 3 ? 'Un día y medio: llego a mediodía' : 'Dos días y medio: llego a mediodía' },
-              { id: 'manana', label: days === 3 ? 'Un día y medio: me voy a mediodía' : 'Dos días y medio: me voy a mediodía' },
-            ]}
-          />
-        </div>
-      )}
       <div className="trazo-noscroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, margin: '16px 0 12px' }}>
         {visible.map((category, index) => {
           const active = selected.includes(category.id)
@@ -171,6 +133,23 @@ export function StepExperiences({ destinationName, season, month, dateRange, sel
               <span style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ font: `400 25px/1 ${SERIF}` }}>{category.title}</span>
+                  {category.id === 'free_tour' && (
+                    <span
+                      style={{
+                        flex: 'none',
+                        padding: '3px 8px',
+                        borderRadius: 999,
+                        font: `500 10px/1 ${MONO}`,
+                        letterSpacing: '.08em',
+                        textTransform: 'uppercase',
+                        background: active ? 'rgba(255,255,255,.2)' : 'rgba(255,190,30,.22)',
+                        color: active ? DARK : INK,
+                        transition: 'background .45s,color .45s',
+                      }}
+                    >
+                      Recomendado
+                    </span>
+                  )}
                 </span>
                 <span style={{ font: "400 12.5px/1.3 'Geist'", opacity: 0.78 }}>{descriptionOf(category.id, category.description)}</span>
                 {notice && <span style={{ font: "400 12px/1.3 'Geist'", opacity: 0.9 }}>{notice}</span>}

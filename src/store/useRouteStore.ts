@@ -58,6 +58,7 @@ import {
   withStopAt,
   withUserDaysBack,
 } from '../lib/freeDays'
+import { recuperarDestino } from '../lib/recuperarDestino'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -369,8 +370,8 @@ interface RouteStoreState {
   replaceDayExact: (dayId: string, day: DayPlan, answersPatch?: Partial<QuestionnaireAnswers>) => void
   /** "Volver a la ruta original": el día exactamente como lo dio el motor (su copia), sin regenerar. */
   restoreOriginalDay: (dayId: string) => void
-  /** "Volver a mi ruta original" (la varita del mapa): el viaje entero como se creó, su copia guardada, sin recalcular. */
-  restoreOriginalRoute: () => void
+  /** «Recuperar mi ruta» (la varita de cada destino): los días de ese destino como se crearon (su copia guardada, sin recalcular); los de los demás destinos no se tocan. Sin destino, el viaje entero. */
+  restoreOriginalRoute: (city?: string) => void
   /** "Eliminar día": cualquier día, también el de llegada y el de vuelta. */
   deleteDay: (dayId: string) => void
   /** Día libre sin horas ("Sin hora"). */
@@ -844,10 +845,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route || (day && isDayPinned(state.route, state.reservations, day))) return state
       return { route: removeAnyDay(state.route, dayId) }
     }),
-  restoreOriginalRoute: () =>
+  restoreOriginalRoute: (city) =>
     set((state) => {
       const original = state.route?.originalRoute
       if (!state.route || !original) return state
+      if (city) return { route: withDayColors(reapplyReservations(recuperarDestino(state.route, city), state.reservations)), activeDayId: null }
       const copy = JSON.parse(JSON.stringify(original)) as NonNullable<Route['originalRoute']>
       return { route: reapplyReservations({ ...state.route, days: copy.days, answers: copy.answers, editedManually: false }, state.reservations), activeDayId: null }
     }),
