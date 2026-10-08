@@ -68,3 +68,6 @@
 9. **El orden de los días (el Centro el día 1, el Coliseo y el Vaticano en los días 2 y 3):** decidido por Eric, pero va en la **Tanda 7**, porque usa las listas de la llegada. En la 6k, nada.
 4. **D3, la tarde del Vaticano:** ahora va Museos → Plaza de San Pedro → Basílica → Conciliazione → Castillo → Puente (antes, Basílica → Museos → Plaza: se iba y se volvía). Es como lo hace un guía, porque el Free Tour ya enseñó el centro por la mañana y la Basílica abre hasta las 20:00.
    - Comprobar que no cambia la versión con los Museos reservados de 13:30 a 14:30, que ya iba así.
+
+## Para la próxima tanda (después de la 6k) · ya pasado a la 6l
+1. **El Panteón del D3 llega 5 min antes de abrir y pasa a «por fuera».** Va contra la regla 7 del documento: si se llega antes de que abra, se espera hasta 15 min (y hasta 40 si al lado hay una plaza para hacer fotos, como la Piazza della Rotonda). Tiene que esperar y entrar por dentro. Comprobar que no les pasa a otros sitios con la misma regla.
