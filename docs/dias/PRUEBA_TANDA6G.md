@@ -10,7 +10,7 @@ Ninguna.
 
 ## Lo que se apunta (no es un fallo)
 
-- noches_con_otro_orden: 2375
+- noches_con_otro_orden: 2361
 - noches_con_noche_especial: 108
 
 ## Primeros fallos de cada regla
