@@ -131,14 +131,14 @@ if (!/\{hasPhoto && \(\s*<div[^>]*photoBg/.test(tarjeta)) falla('foto_vacia', 'e
 const mapa = fs.readFileSync('src/lib/mapGeneratedRoute.ts', 'utf8')
 if (!/function buildPlaceholderPhotoUrl[^{]*\{[^}]*return ''/s.test(mapa)) falla('foto_vacia', 'la foto de relleno de una parada ya no es «sin foto» (cadena vacía)')
 
-// ── 4. «Free Tour Centro Histórico», en ningún archivo de la app (los archivados y los informes viejos se quedan como están).
+// ── 4. «Free Tour Centro Histórico», en ningún archivo de la app (los archivados y los informes viejos se quedan como están; salvo `tripPersistence.ts`, que lo lleva a propósito para pasar los viajes ya guardados al nombre nuevo).
 const IGNORAR = new Set(['node_modules', '.git', 'archivo', 'fotos', 'dist'])
 const recorreArchivos = (dir) => {
   for (const entrada of fs.readdirSync(dir, { withFileTypes: true })) {
     if (IGNORAR.has(entrada.name)) continue
     const completo = path.join(dir, entrada.name)
     if (entrada.isDirectory()) recorreArchivos(completo)
-    else if (/\.(json|js|mjs|ts|tsx|css|html)$/.test(entrada.name) && !/pruebaTanda6r\.mjs$/.test(entrada.name) && fs.readFileSync(completo, 'utf8').includes('Free Tour Centro')) falla('free_tour_nombre_viejo', `${completo.replaceAll('\\', '/')} lleva «Free Tour Centro Histórico»`)
+    else if (/\.(json|js|mjs|ts|tsx|css|html)$/.test(entrada.name) && !/pruebaTanda6r\.mjs$|tripPersistence\.ts$/.test(entrada.name) && fs.readFileSync(completo, 'utf8').includes('Free Tour Centro')) falla('free_tour_nombre_viejo', `${completo.replaceAll('\\', '/')} lleva «Free Tour Centro Histórico»`)
   }
 }
 for (const raiz of ['src', 'server', 'shared', 'data/dias', 'data/pipeline_v2', 'scripts/destino', 'public']) if (fs.existsSync(raiz)) recorreArchivos(raiz)

@@ -19,6 +19,17 @@ function withTripMonth(route: Route): Route {
   return month === undefined ? route : { ...route, answers: { ...answers, month } }
 }
 
+/**
+ * El Free Tour se llamaba «Free Tour Centro Histórico» (Tanda 6r: ahora «Free Tour por Roma» en toda la app). Un viaje guardado con el nombre viejo
+ * (en sus paradas y en la reserva del Free Tour) lo recibe con el nuevo al cargarse. Los ids no cambian, así que la foto y el enlace son los mismos.
+ */
+const FREE_TOUR_ANTIGUO = 'Free Tour Centro Histórico'
+const FREE_TOUR_NUEVO = 'Free Tour por Roma'
+function withCurrentFreeTourName<T>(value: T): T {
+  const texto = JSON.stringify(value)
+  return texto && texto.includes(FREE_TOUR_ANTIGUO) ? (JSON.parse(texto.replaceAll(FREE_TOUR_ANTIGUO, FREE_TOUR_NUEVO)) as T) : value
+}
+
 export interface TripBookings {
   accommodationSelections: Record<string, MockHotelResult>
   transportBookings: Record<string, TransportBooking>
@@ -120,8 +131,8 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
     const generationState = row.generation_state as GenerationResumeState | null
     return {
       id: row.id as string,
-      route: withTripMonth(row.route as Route),
-      bookings: row.bookings as TripBookings,
+      route: withCurrentFreeTourName(withTripMonth(row.route as Route)),
+      bookings: withCurrentFreeTourName(row.bookings as TripBookings),
       wishlist: (row.wishlist ?? []) as WishlistItem[],
       uiState: row.ui_state as TripUiState,
       generationState: generationState && generationState.phase !== 'done' ? generationState : null,
