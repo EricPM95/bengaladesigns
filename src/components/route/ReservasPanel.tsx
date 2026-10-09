@@ -228,7 +228,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
           </div>
         </div>
 
-        {adjustSheetOpen && <FlightAdjustSheet onAuto={adjustForMe} onManual={adjustMyself} onClose={() => setAdjustSheetOpen(false)} />}
+        {pago && adjustSheetOpen && <FlightAdjustSheet onAuto={adjustForMe} onManual={adjustMyself} onClose={() => setAdjustSheetOpen(false)} />}
       </motion.div>
     </AnimatePresence>
   )

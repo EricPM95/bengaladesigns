@@ -26,6 +26,7 @@ interface HeaderProps {
 export function Header({ onTips, onOpenDates }: HeaderProps) {
   const setScreen = useRouteStore((state) => state.setScreen)
   const resetQuestionnaire = useRouteStore((state) => state.resetQuestionnaire)
+  const setMode = useRouteStore((state) => state.setMode)
   const { items, unreadCount } = useAppNotices()
   const [newTripOpen, setNewTripOpen] = useState(false)
   const [noticesOpen, setNoticesOpen] = useState(false)
@@ -86,6 +87,7 @@ export function Header({ onTips, onOpenDates }: HeaderProps) {
           onAction={(action) => {
             setNoticesOpen(false)
             if (action === 'open-dates') onOpenDates()
+            if (action === 'open-reservas') setMode('bookings')
           }}
         />
       )}

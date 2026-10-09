@@ -11,6 +11,7 @@ import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
+import { AvisoSolape } from './components/route/reservas/AvisoSolape'
 
 function LoadingScreenContainer() {
   const destination = useRouteStore((state) => state.destination)
@@ -58,6 +59,7 @@ function RouteScreen() {
       className="h-dvh"
     >
       <RouteView />
+      <AvisoSolape />
     </motion.div>
   )
 }
