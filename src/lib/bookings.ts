@@ -102,39 +102,6 @@ export interface EntryRow {
   reservation: Reservation | null
 }
 
-/**
- * Las filas de «ENTRADAS»: las imprescindibles del destino que están en la ruta (`main`) y, en «Ver {n} más», las demás paradas de la ruta que
- * llevan entrada (`more`). Una entrada que ya no está en ninguna parada de la ruta no sale. Una reservada va en su día, el de su fecha.
- */
-export function buildEntryRows(route: Route, essentials: EssentialEntry[], reservations: Reservation[]): { main: EntryRow[]; more: EntryRow[] } {
-  const entrances = route.days.flatMap((day) => day.stops.filter(stopHasEntrance).map((stop) => ({ day, stop })))
-  const reservationFor = (id: string) => reservations.find((reservation) => reservation.kind === 'entrada' && reservation.refId === id) ?? null
-  const covered = new Set<string>()
-  const main: EntryRow[] = []
-  for (const entry of essentials) {
-    const inRoute = route.days.flatMap((day) => day.stops.filter((stop) => entry.places.includes(stop.name)).map((stop) => ({ day, stop })))
-    const reservation = reservationFor(entry.name)
-    if (inRoute.length === 0 && !reservation) continue
-    for (const place of entry.places) covered.add(place)
-    const day = (reservation && dayOfReservation(route, reservation)) ?? inRoute[0]?.day ?? null
-    main.push({ id: entry.name, name: entry.name, placeNames: entry.places, day, reservation })
-  }
-  const more: EntryRow[] = []
-  const seen = new Set<string>()
-  for (const { day, stop } of entrances) {
-    if (covered.has(stop.name) || seen.has(stop.name)) continue
-    seen.add(stop.name)
-    const reservation = reservationFor(stop.name)
-    more.push({ id: stop.name, name: stop.name, placeNames: [stop.name], day: (reservation && dayOfReservation(route, reservation)) ?? day, reservation })
-  }
-  // Una reservada que ya no está entre las paradas sigue saliendo (lo reservado no desaparece al mover o quitar cosas).
-  for (const reservation of reservations) {
-    if (reservation.kind !== 'entrada' || main.some((row) => row.id === reservation.refId) || more.some((row) => row.id === reservation.refId)) continue
-    more.push({ id: reservation.refId, name: reservation.name, placeNames: reservation.placeNames, day: dayOfReservation(route, reservation), reservation })
-  }
-  return { main, more }
-}
-
 /** Una entrada del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s). */
 export interface BloqueEntrada {
   /** El nombre con el que sale: «Coliseo, Foro y Palatino», «Panteón», «Free Tour por Roma». */

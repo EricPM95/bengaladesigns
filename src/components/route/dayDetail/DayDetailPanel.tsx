@@ -51,6 +51,8 @@ import { SortableStop } from './SortableStop'
 import { AccommodationBlock } from './AccommodationBlock'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
+import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
+import { pagoActivo } from '../../../lib/pago'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { barTextOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
 import { AddStopScreen } from '../addStop/AddStopScreen'
@@ -394,18 +396,15 @@ export function DayDetailPanel({
   const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalPoint, origin, time: modes.arrival === 'coche' ? null : arrivalTime, keyMinutes: centerMinutes })
   const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departurePoint, origin, time: modes.departure === 'coche' ? null : departureTime, keyMinutes: leaveMinutes })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
-  const setArrivalPointId = useRouteStore((state) => state.setArrivalPointId)
+  const pedirReservas = useReservasFocusStore((state) => state.pedir)
+  const pago = pagoActivo()
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const setMode = useRouteStore((state) => state.setMode)
-  /** «+ AÑADIR VUELO» y «Editar»: a Reservas, a la casilla de esa hora. */
+  /** «+ AÑADIR VUELO» y «Editar»: a Reservas, al bloque «Llegada y vuelta» (de pago), con la mitad que se pide abierta. */
   const goToBooking = (which: 'llegada' | 'vuelta') => {
     setArrivalSheet(null)
     setMode('bookings')
-    window.setTimeout(() => {
-      const input = document.getElementById(which === 'llegada' ? 'reservas-hora-llegada' : 'reservas-hora-salida') as HTMLInputElement | null
-      input?.scrollIntoView({ block: 'center', behavior: 'smooth' })
-      input?.focus()
-    }, 450)
+    pedirReservas('llegada', which === 'llegada' ? 'arrival' : 'departure')
   }
 
   const stops = resolveDisplayStops(day)
@@ -1386,7 +1385,7 @@ export function DayDetailPanel({
           {isFirstDayOfTrip && route && (
             // (Hasta «MAÑANA», los 28 px de la cabecera: PROMPT_UI_REPASO_3, 2.)
             <div className="space-y-1.5 pt-2">
-              <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
+              <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={pago ? () => goToBooking('llegada') : undefined} />
               {arrivalConflict && centerMinutes != null && (
                 <button
                   type="button"
@@ -1604,7 +1603,7 @@ export function DayDetailPanel({
                   Ajustar este día a tu vuelta
                 </button>
               )}
-              <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => setArrivalSheet('vuelta')} onAdd={() => goToBooking('vuelta')} />
+              <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => setArrivalSheet('vuelta')} onAdd={pago ? () => goToBooking('vuelta') : undefined} />
               <p className="pt-4 text-center font-display text-[19px] italic text-text/60">
                 Fin del viaje.{arrivalInfo.despedida ? ` ${arrivalInfo.despedida}` : ''}
               </p>
@@ -1737,7 +1736,6 @@ export function DayDetailPanel({
           dateIso={dateIso}
           time={arrivalSheet === 'vuelta' ? departureTime : arrivalTime}
           pointId={arrivalSheet === 'vuelta' ? (route.departurePointId ?? null) : (route.arrivalPointId ?? null)}
-          onPickPoint={(pointId) => setArrivalPointId(arrivalSheet === 'vuelta' ? 'departure' : 'arrival', pointId)}
           keyMinutes={arrivalSheet === 'vuelta' ? leaveMinutes : centerMinutes}
           firstStop={firstStopForSheet}
           onEditBooking={() => goToBooking(arrivalSheet ?? 'llegada')}

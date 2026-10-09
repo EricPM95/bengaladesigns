@@ -1,95 +1,113 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
+import { useReservasFocusStore, type BloqueReservasId } from '../../store/useReservasFocusStore'
+import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import { detectFlightOpportunities } from '../../lib/flightOpportunity'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
-import { InsuranceRow } from './reservas/InsuranceRow'
-import { RentalVehicleRow } from './reservas/RentalVehicleRow'
-import { TransportRow } from './reservas/TransportRow'
-import { AccommodationRow } from './reservas/AccommodationRow'
-import { N26Row } from './reservas/N26Row'
-import { EsimRow } from './reservas/EsimRow'
-import { EntradasExcursionSections } from './reservas/EntradasExcursionSections'
-import { FirstLastDayCard, FlightAdjustSheet, FlightTicket, hhmmToMinutes, ticketDate } from './reservas/FlightTickets'
-import { TripReadinessBadge } from './reservas/TripReadinessBadge'
+import { buildEntradasBloque } from '../../lib/bookings'
+import { useDestinationExcursions } from '../../lib/destinationExcursions'
+import { centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
+import { legsOf, type LegKind } from '../../lib/reservasLegs'
+import { pagoActivo } from '../../lib/pago'
 import { EXPLORE_ICONS } from '../../lib/exploreStyle'
-import { bookingLabelsOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
+import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
+import { FlightAdjustSheet } from './reservas/FlightAdjustSheet'
+import { TripReadinessBadge } from './reservas/TripReadinessBadge'
+import { ResumenViaje } from './reservas/ResumenViaje'
+import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
+import { AlojamientoReservas, alojamientoHecho } from './reservas/AlojamientoReservas'
+import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
+import { ExcursionesReservas } from './reservas/ExcursionesReservas'
+import { UtilParaElViaje } from './reservas/UtilParaElViaje'
 
 interface ReservasPanelProps {
   route: Route
   onClose: () => void
 }
 
-const sectionTitleStyle = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const }
+const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
+
+/** «10 – 14 ago 2027», «30 sep – 3 oct 2027» o, sin fechas, «5 días». */
+function rangoDelViaje(route: Route): string {
+  const range = route.answers.dateRange
+  if (!range?.start || !range?.end) return `${route.days.filter((day) => !day.isReturnLeg).length} días`
+  const start = new Date(`${range.start}T12:00:00`)
+  const end = new Date(`${range.end}T12:00:00`)
+  const mes = (date: Date) => MES.format(date).replace('.', '')
+  return start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()
+    ? `${start.getDate()} – ${end.getDate()} ${mes(end)} ${end.getFullYear()}`
+    : `${start.getDate()} ${mes(start)} – ${end.getDate()} ${mes(end)} ${end.getFullYear()}`
+}
 
 /**
- * Pestaña RESERVAS — pantalla completa (mismo patrón ✕ que RUTA/EXPLORAR, ver DestinationDetailModal
- * / AttractionsFinder), sin mapa. Horarios de vuelo con "doble camino" (Optimizar ruta / Añadir yo
- * mismo, ver `manualAddDayId`) SOLO cuando la oportunidad es accionable (ver `actionable` en
- * flightOpportunity.ts — una llegada de madrugada no ofrece nada real que optimizar, solo un aviso
- * neutro sin botones), "Imprescindibles" (solo Seguro de viaje, rojo), lista plana si el
- * viaje es de un único destino o acordeón por destino si son varios (ver DestinationReservasAccordion),
- * y el vehículo de alquiler general (fuera de "Imprescindibles" — no cuenta para su alerta). El % de
- * "viaje listo" se calcula en useTripReadiness.ts y se muestra en la cabecera (TripReadinessBadge).
+ * Pestaña RESERVAS (Tanda 6s, diseño «Reservas v4») — pantalla completa (mismo ✕ que RUTA/EXPLORAR), sin mapa. De arriba abajo: el resumen (solo de pago), Llegada y vuelta (solo de pago), Alojamiento,
+ * Entradas y Free Tour, Excursiones y Útil para el viaje. Todo lo de pago va detrás del mismo interruptor (`pagoActivo`, src/lib/pago.ts). En el ordenador, en dos columnas. Los viajes de varios
+ * destinos conservan además el acordeón de cada destino. El % de «viaje listo» se calcula en useTripReadiness.ts y sale en la cabecera (TripReadinessBadge).
  */
 export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
-  const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
-  const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
-  const setArrivalPointId = useRouteStore((state) => state.setArrivalPointId)
+  const pago = pagoActivo()
+  const setMode = useRouteStore((state) => state.setMode)
+  const setActiveDayId = useRouteStore((state) => state.setActiveDayId)
   const setFlightAdjust = useRouteStore((state) => state.setFlightAdjust)
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
-  const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
-  const transportBookings = useRouteStore((state) => state.transportBookings)
-  const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
-  const [, setRecalculatingId] = useState<string | null>(null)
+  const reservations = useRouteStore((state) => state.reservations)
+  const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
+  const pedido = useReservasFocusStore((state) => state.pedido)
+  const limpiarPedido = useReservasFocusStore((state) => state.limpiar)
+  const pedir = useReservasFocusStore((state) => state.pedir)
   const [openCity, setOpenCity] = useState<string | null>(null)
-  /** La ventana «¿Ajustamos tu ruta a tu vuelo?»: sale al terminar de poner la hora de llegada o de salida (se vuelve a abrir si la cambia otra vez). */
+  const [abiertos, setAbiertos] = useState<Record<string, boolean>>({})
+  /** La mitad de «Llegada y vuelta» abierta: undefined = la que falta; null = ninguna. */
+  const [mitad, setMitad] = useState<LegKind | null | undefined>(undefined)
+  /** La ventana «¿Ajustamos tu ruta a tu vuelo?»: sale al terminar de poner la hora de llegada o de salida. */
   const [adjustSheetOpen, setAdjustSheetOpen] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const opportunities = detectFlightOpportunities(route)
-  const modes = tripModes(route)
-  const bookingLabels = bookingLabelsOf(modes)
+  const info = useDestinationExcursions(route.destination)
   const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
+  const modes = tripModes(route)
+  const opportunities = detectFlightOpportunities(route)
   const segments = buildDestinationSegments(route.days)
-  // El aeropuerto o la estación de cada trayecto (Fiumicino a la ida y Ciampino a la vuelta): lo que se elige aquí manda en las barras y en las ventanas.
-  const pointPicks = (['arrival', 'departure'] as const).map((kind) => {
-    const medio = medioOf(arrivalInfo, kind === 'arrival' ? modes.arrival : modes.departure)
-    const points = medio?.puntos ?? []
-    const time = kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime
-    const chosenId = (kind === 'arrival' ? route.arrivalPointId : route.departurePointId) ?? points[0]?.id
-    return { kind, points, time, chosenId, show: Boolean(time) && points.length > 1 && modes[kind] !== 'coche' }
-  })
-  const arrivalPoint = pointPicks[0].points.find((point) => point.id === pointPicks[0].chosenId) ?? pointPicks[0].points[0] ?? null
-  const departurePoint = pointPicks[1].points.find((point) => point.id === pointPicks[1].chosenId) ?? pointPicks[1].points[0] ?? null
-  const firstFree = centerMinutesOf(route.arrivalFlightTime, arrivalPoint)
-  const lastFree = leaveMinutesOf(route.departureFlightTime, modes.departure, medioOf(arrivalInfo, modes.departure), departurePoint)
-  const dateRange = route.answers.dateRange
-  const isCamper = route.transportContext.vehicle_type === 'camper'
-  const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
-  const firstSegment = segments[0]
-  const lastDay = route.days[route.days.length - 1]
-
+  const unDestino = segments.length <= 1
+  const ciudad = route.days[0]?.city ?? route.destination
   const day1Id = route.days[0]?.id
 
+  const abrir = (bloque: string, valor = true) => setAbiertos((previous) => ({ ...previous, [bloque]: valor }))
+  const alternar = (bloque: string) => setAbiertos((previous) => ({ ...previous, [bloque]: !previous[bloque] }))
+
+  // Las fichas del resumen, el «+ AÑADIR VUELO» de DÍAS y el «Editar» de la ventana de llegada piden un bloque: se abre y se baja hasta él.
+  useEffect(() => {
+    if (!pedido) return
+    const bloque: BloqueReservasId = pedido.bloque
+    abrir(bloque)
+    if (bloque === 'llegada') setMitad(pedido.mitad ?? undefined)
+    limpiarPedido()
+    window.setTimeout(() => {
+      const destino = scrollRef.current?.querySelector(`[data-blk="${bloque}"]`) as HTMLElement | null
+      destino?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    }, 80)
+  }, [pedido, limpiarPedido])
+
+  /** «¿Llegas o te vas otro día? Cambia las fechas del viaje»: el cambio de fechas que ya existe (el calendario de la cabecera del mapa, en Días). */
+  const abrirFechas = () => {
+    setActiveDayId(null)
+    setMode('days')
+    useDatesCalendarStore.getState().request()
+  }
+
   const handleRecalculate = async (dayId: string) => {
-    setRecalculatingId(dayId)
-    // Recalcula el horario REAL de ESTE día a partir del vuelo introducido (ver stopScheduling.ts,
-    // "Optimizar ruta") — día 1 usa la hora de llegada, el último día la de vuelta; el resto del
-    // viaje no se toca.
+    // Recalcula el horario REAL de ESTE día a partir del vuelo introducido (ver stopScheduling.ts, "Optimizar ruta") — día 1 usa la hora de llegada, el último día la de vuelta.
     const kind = dayId === day1Id ? 'arrival' : 'departure'
     const flightTime = kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime
-    // Las mismas horas que la barra del día: en el centro (llegada) o la de salir (vuelta).
     const medio = medioOf(arrivalInfo, kind === 'arrival' ? modes.arrival : modes.departure)
     const pointId = kind === 'arrival' ? route.arrivalPointId : route.departurePointId
     const point = medio?.puntos.find((candidate) => candidate.id === pointId) ?? medio?.puntos[0] ?? null
     const keyMinutes = kind === 'arrival' ? centerMinutesOf(flightTime, point) : leaveMinutesOf(flightTime, modes.departure, medio, point)
     if (keyMinutes != null) await fitDayToTrip(dayId, kind, keyMinutes)
-    setRecalculatingId(null)
   }
-
-  /** «Sí, ajústala por mí»: lo que la app ya hacía con «Optimizar ruta», en cada día con oportunidad (llegada temprano, salida por la tarde), con las horas que ya hay. */
+  /** «Sí, ajústala por mí»: lo que la app ya hacía con «Optimizar ruta», en cada día con oportunidad, con las horas que ya hay. */
   const adjustForMe = async () => {
     setAdjustSheetOpen(false)
     setFlightAdjust('auto')
@@ -100,193 +118,112 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
     setFlightAdjust('manual')
   }
 
-  // Banner ámbar de bienvenida — solo mientras falte lo esencial (vuelo de llegada + alojamiento/
-  // camper del primer destino); nunca menciona ambas palabras a la vez, solo la que aplica a este viaje.
-  const arrivalMissing = firstSegment ? !transportBookings[firstSegment.dayIds[0]] : false
-  const accommodationOrCamperMissing = isCamper ? !rentalVehicleBooking : firstSegment ? !accommodationSelections[firstSegment.dayIds[0]] : false
-  const showWelcomeBanner = arrivalMissing || accommodationOrCamperMissing
+  // El resumen de arriba (de pago): tres fichas.
+  const { arriba, mas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
+  const entradas = [...arriba, ...mas]
+  const legs = legsOf(route, arrivalInfo)
+  const fichas = [
+    { bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done },
+    { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoHecho(accommodationZone) },
+    ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
+  ]
 
-  const flightsSet = (route.arrivalFlightTime ? 1 : 0) + (route.departureFlightTime ? 1 : 0)
-  const cityName = firstSegment?.city ?? route.destination
-  const destinationBig = (point: typeof arrivalPoint) => point?.codigo ?? cityName
-  const destinationSmall = (point: typeof arrivalPoint) => (point?.codigo ? cityName : point?.nombre)
-  const originName = route.origin
-
-  const pointPills = (index: 0 | 1, kind: 'arrival' | 'departure') =>
-    pointPicks[index].show ? (
-      <div className="flex flex-wrap gap-1.5">
-        {pointPicks[index].points.map((point) => (
-          <button
-            key={point.id}
-            type="button"
-            onClick={() => setArrivalPointId(kind, point.id)}
-            className={`rounded-full border px-2.5 py-1 text-caption font-medium transition-colors ${
-              point.id === pointPicks[index].chosenId ? 'border-text bg-text text-bg' : 'border-text/20 text-text/70 hover:border-text/40'
-            }`}
-          >
-            {point.nombre}
-          </button>
+  const llegada = pago && unDestino && (
+    <>
+      <LlegadaYVuelta
+        route={route}
+        info={arrivalInfo}
+        abierto={Boolean(abiertos.llegada)}
+        onToggle={() => alternar('llegada')}
+        onAbrir={() => abrir('llegada')}
+        mitadAbierta={mitad}
+        onMitad={setMitad}
+        onGuardada={() => setAdjustSheetOpen(true)}
+        onFechas={abrirFechas}
+      />
+      {opportunities
+        .filter((opportunity) => !opportunity.actionable)
+        .map((opportunity) => (
+          <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-border bg-bg-hover p-3.5">
+            <span aria-hidden="true" className="mt-0.5 shrink-0 text-body">
+              🌙
+            </span>
+            <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
+          </div>
         ))}
-      </div>
-    ) : null
+    </>
+  )
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex flex-col overflow-hidden overflow-x-hidden bg-bg"
-      >
-        <div className="flex shrink-0 items-center justify-between px-4 pb-2 pt-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex flex-col overflow-hidden overflow-x-hidden bg-bg">
+        <div className="flex shrink-0 items-center gap-3 px-4 pb-2 pt-4 md:px-8">
           <button
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
             title="Cerrar"
-            className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-bg-card text-accent"
+            className="flex h-[42px] w-[42px] flex-none items-center justify-center rounded-full bg-bg-card text-accent"
             style={{ border: '1.5px solid oklch(0.55 0.15 45)' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d={EXPLORE_ICONS.close} />
             </svg>
           </button>
+          <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+            <span className="font-display" style={{ fontSize: 30, lineHeight: 1 }}>
+              Reservas
+            </span>
+            <span className="truncate text-text/55" style={{ font: "500 11px 'Geist Mono',monospace", letterSpacing: '.06em' }}>
+              {route.origin} → {route.destination} · {rangoDelViaje(route)}
+            </span>
+          </span>
           <TripReadinessBadge />
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-1">
-          <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5">
-            {showWelcomeBanner && (
-              <div className="flex flex-none items-start gap-3" style={{ borderRadius: 20, padding: '16px 18px', background: 'linear-gradient(120deg,oklch(0.93 0.06 75),oklch(0.9 0.07 55))' }}>
-                <span className="mt-0.5 flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full bg-[#1C2230]" style={{ color: 'oklch(0.8 0.14 70)' }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={EXPLORE_ICONS.plane} />
-                  </svg>
-                </span>
-                <p className="m-0" style={{ font: "400 14px/1.5 'Geist'", color: '#3A2A14' }}>
-                  Para darte una ruta personalizada adaptada a tu viaje, añade cuanto antes tu vuelo y tu {isCamper ? 'camper/autocaravana' : 'alojamiento'}. Si todavía no los tienes,
-                  puedes reservarlos desde aquí. <strong style={{ fontWeight: 600 }}>¡Corre que vuelan!</strong>
-                </p>
-              </div>
-            )}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
+          <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
+            {pago && unDestino && <ResumenViaje ciudad={ciudad} fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
 
-            <div className="mt-1.5 flex flex-none flex-col gap-1">
-              <div className="flex items-baseline justify-between">
-                <span className="font-display" style={{ fontSize: 32, lineHeight: 1 }}>{bookingLabels.heading}</span>
-                <span style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase', color: flightsSet === 2 ? 'oklch(0.5 0.13 150)' : 'rgba(28,34,48,.5)' }}>
-                  {flightsSet === 2 ? '2 de 2 ✓' : flightsSet === 1 ? '1 de 2' : 'Sin añadir'}
-                </span>
+            <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+              <div className="flex min-w-0 flex-col gap-3.5">
+                {llegada}
+                {unDestino ? (
+                  <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onAbrir={() => abrir('aloj')} onCerrar={() => abrir('aloj', false)} />
+                ) : (
+                  <div className="flex flex-col gap-2.5">
+                    <span className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                      Destinos
+                    </span>
+                    {segments.map((segment, index) => (
+                      <DestinationReservasAccordion
+                        key={segment.id}
+                        route={route}
+                        segment={segment}
+                        isFirstSegment={index === 0}
+                        isLastSegment={index === segments.length - 1}
+                        expanded={openCity === segment.id}
+                        onToggle={() => setOpenCity((current) => (current === segment.id ? null : segment.id))}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-              <span className="text-text/65" style={{ font: "400 13.5px/1.45 'Geist'" }}>
-                Si ya tienes el billete, indica las horas de llegada y de salida para ajustar el primer y el último día.
-              </span>
+              <div className="flex min-w-0 flex-col gap-3.5">
+                <EntradasYFreeTour route={route} info={info} abierto={Boolean(abiertos.entradas)} onToggle={() => alternar('entradas')} />
+              </div>
             </div>
 
-            <FlightTicket
-              kind="arrival"
-              mode={modes.arrival}
-              label={bookingLabels.arrival}
-              date={ticketDate(dateRange?.start)}
-              fromBig={originName}
-              toBig={destinationBig(arrivalPoint)}
-              toSmall={destinationSmall(arrivalPoint)}
-              value={route.arrivalFlightTime}
-              onChange={(value) => {
-                setArrivalFlightTime(value || null)
-              }}
-              onCommit={() => setAdjustSheetOpen(true)}
-              extra={pointPills(0, 'arrival')}
-            />
-            <FlightTicket
-              kind="departure"
-              mode={modes.departure}
-              label={bookingLabels.departure}
-              date={ticketDate(dateRange?.end)}
-              fromBig={destinationBig(departurePoint)}
-              fromSmall={destinationSmall(departurePoint)}
-              toBig={originName}
-              value={route.departureFlightTime}
-              onChange={(value) => {
-                setDepartureFlightTime(value || null)
-              }}
-              onCommit={() => setAdjustSheetOpen(true)}
-              extra={pointPills(1, 'departure')}
-            />
-
-            <FirstLastDayCard
-              adjusted={route.flightAdjust === 'auto' && flightsSet > 0}
-              adjustLabel={route.flightAdjust === 'auto' && flightsSet > 0 ? 'Ajustado' : route.flightAdjust === 'manual' && flightsSet > 0 ? 'Lo ajustas tú' : 'Por ajustar'}
-              first={{ day: `Día 1${dateRange?.start ? ` · ${ticketDate(dateRange.start).split(' · ')[1]}` : ''}`, flightTime: route.arrivalFlightTime ?? null, startMinutes: hhmmToMinutes(route.arrivalFlightTime) == null ? null : firstFree }}
-              last={{ day: `Día ${lastDay?.dayNumber ?? ''}${dateRange?.end ? ` · ${ticketDate(dateRange.end).split(' · ')[1]}` : ''}`, flightTime: route.departureFlightTime ?? null, endMinutes: hhmmToMinutes(route.departureFlightTime) == null ? null : lastFree }}
-            />
-
-            {opportunities
-              .filter((opportunity) => !opportunity.actionable)
-              .map((opportunity) => (
-                <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-border bg-bg-hover p-3.5">
-                  <span aria-hidden="true" className="mt-0.5 shrink-0 text-body">
-                    🌙
-                  </span>
-                  <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
-                </div>
-              ))}
-
-            <span className="mt-2 flex-none text-text/55" style={sectionTitleStyle}>
-              Imprescindibles
-            </span>
-            <div className="space-y-2.5">
-              <InsuranceRow />
-            </div>
-
-            {hasRentalVehicle && (
-              <div className="space-y-2.5">
-                <RentalVehicleRow />
+            <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+              <div className="flex min-w-0 flex-col gap-2.5" data-blk="excursiones">
+                <ExcursionesReservas route={route} info={info} />
               </div>
-            )}
-
-            {segments.length <= 1 && firstSegment ? (
-              <>
-                <span className="mt-2 flex-none text-text/55" style={sectionTitleStyle}>
-                  Para tu viaje a {firstSegment.city}
-                </span>
-                <div className="space-y-2.5">
-                  <TransportRow dayId={firstSegment.dayIds[0]} label={`${route.origin} → ${firstSegment.city}`} />
-                  <TransportRow dayId={lastDay.id} label={`${firstSegment.city} → ${route.origin}`} />
-                  {!isCamper && firstSegment.nights > 0 && (
-                    <AccommodationRow segmentDayId={firstSegment.dayIds[0]} city={firstSegment.city} totalNights={firstSegment.nights} />
-                  )}
-                  <N26Row />
-                  {firstSegment.countryCode && <EsimRow countryCode={firstSegment.countryCode} />}
-                </div>
-              </>
-            ) : (
-              <>
-                <span className="mt-2 flex-none text-text/55" style={sectionTitleStyle}>
-                  Destinos
-                </span>
-                <div className="space-y-2.5">
-                  {segments.map((segment, index) => (
-                    <DestinationReservasAccordion
-                      key={segment.id}
-                      route={route}
-                      segment={segment}
-                      isFirstSegment={index === 0}
-                      isLastSegment={index === segments.length - 1}
-                      expanded={openCity === segment.id}
-                      onToggle={() => setOpenCity((current) => (current === segment.id ? null : segment.id))}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-
-            {/* «ENTRADAS» y «EXCURSIÓN»: se calculan desde la ruta (PARA_CODE_RESERVAS, 1 y 2). */}
-            <EntradasExcursionSections route={route} />
+              <UtilParaElViaje route={route} pago={pago} />
+            </div>
           </div>
         </div>
 
         {adjustSheetOpen && <FlightAdjustSheet onAuto={adjustForMe} onManual={adjustMyself} onClose={() => setAdjustSheetOpen(false)} />}
-
       </motion.div>
     </AnimatePresence>
   )

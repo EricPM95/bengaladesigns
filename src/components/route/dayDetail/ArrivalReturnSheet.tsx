@@ -7,6 +7,7 @@ import { useArrivalMarkers } from '../../../lib/useArrivalMarkers'
 import { StopsMapView } from '../../map/StopsMapView'
 import {
   minutesToHHMM,
+  puntoCorto,
   type ArrivalInfo,
   type ArrivalMedio,
   type ArrivalMode,
@@ -15,6 +16,7 @@ import {
   type ArrivalTip,
 } from '../../../lib/arrivalReturn'
 import { Button } from '../../ui/Button'
+import { pagoActivo } from '../../../lib/pago'
 import { ARRIVAL_PETROL, ModeIcon } from './ArrivalReturnBar'
 
 type Tab = 'resumen' | 'traslados' | 'tips'
@@ -45,9 +47,8 @@ export interface ArrivalReturnSheetProps {
   dateIso: string | null
   /** La hora de la reserva (vuelo, tren, a bordo…) o null. */
   time: string | null
-  /** El punto elegido (con reserva) o null: sin reserva se enseñan todos. */
+  /** El punto elegido en RESERVAS (de pago) o null: sin él se enseñan todos. */
   pointId: string | null
-  onPickPoint: (pointId: string) => void
   /** Hora en el centro (llegada) o de salir (vuelta), en minutos; null sin reserva. */
   keyMinutes: number | null
   /** La primera parada del día, con su número del mapa y cómo llegar. */
@@ -142,16 +143,22 @@ function TipList({ tips }: { tips: ArrivalTip[] }) {
  * con su fuente. Traslados, solo si ese punto tiene traslado privado (nunca en coche).
  */
 export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
-  const { open, kind, route, mode, info, medio, origin, dateIso, time, pointId, onPickPoint, keyMinutes, firstStop, onEditBooking, onClose } = props
+  const { open, kind, route, mode, info, medio, origin, dateIso, time, pointId, keyMinutes, firstStop, onEditBooking, onClose } = props
   const [tab, setTab] = useState<Tab>('resumen')
 
+  const pago = pagoActivo()
+  const [verOtro, setVerOtro] = useState(false)
   const points = medio?.puntos ?? []
   const chosen: ArrivalPoint | null = points.find((point) => point.id === pointId) ?? null
-  // Con reserva, un punto (el elegido o el primero); sin reserva, todos.
-  const shownPoints: ArrivalPoint[] = time ? [chosen ?? points[0]].filter(Boolean) : points
+  const otro: ArrivalPoint | null = chosen ? (points.find((point) => point.id !== chosen.id) ?? null) : null
+  // De pago y con el punto elegido, solo ese punto (o el otro, si el viajero lo quiere mirar); sin elegir, o en la versión gratis, todos.
+  const shownPoints: ArrivalPoint[] = pago && chosen ? [verOtro && otro ? otro : chosen] : points
 
   useEffect(() => {
-    if (open) setTab('resumen')
+    if (open) {
+      setTab('resumen')
+      setVerOtro(false)
+    }
   }, [open, kind])
 
   // Arriba, el mapa del viaje entero (el de la pestaña Ruta): los días con sus líneas y el punto de llegada.
@@ -175,7 +182,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const tabs: Tab[] = ['resumen', ...(privatePoints.length > 0 ? (['traslados'] as const) : []), ...(tips.length > 0 ? (['tips'] as const) : [])]
   const activeTab = tabs.includes(tab) ? tab : 'resumen'
   const eyebrow = [arrival ? 'LLEGADA' : 'VUELTA', eyebrowDate(dateIso)].filter(Boolean).join(' · ')
-  const bookingLine = time ? `${BOOKING_NAME[mode]} ${time}${shownPoints[0] ? ` · ${shownPoints[0].nombre}` : ''}` : null
+  const bookingLine = time ? `${BOOKING_NAME[mode]} ${time}${chosen ? ` · ${chosen.nombre}` : ''}` : null
   // La estación, la consigna, la maleta y «Tu última hora» hablan de Termini: solo si lo que se ve pasa por Termini.
   const viaTermini = mode !== 'coche' && shownPoints.every((point) => point.termini !== false)
 
@@ -218,7 +225,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                     <p className="text-[13px] text-text/60">{arrival ? medio.textos.llegada_sub : medio.textos.vuelta_sub}</p>
                   </div>
                 </div>
-                {mode !== 'coche' && (
+                {pago && mode !== 'coche' && (
                   <div className="flex items-center justify-between gap-3 rounded-2xl border border-text/[.10] bg-bg-card px-3.5 py-2.5">
                     {/* Los datos se cortan si no caben; la hora clave, nunca. */}
                     <p className="flex min-w-0 items-center gap-1.5 font-mono text-[12px] font-medium uppercase tracking-[.05em] text-text/75 max-[479px]:text-[11px] max-[479px]:tracking-[.02em]">
@@ -232,23 +239,6 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                     <button type="button" onClick={onEditBooking} className={`shrink-0 text-[13px] font-semibold ${time ? 'text-accent' : 'text-[#2563A8]'} hover:underline`}>
                       {time ? 'Editar' : `+ ${ADD_LABEL[mode]}`}
                     </button>
-                  </div>
-                )}
-                {/* Con reserva: ¿a cuál de los puntos llegas? (Fiumicino o Ciampino). */}
-                {time && points.length > 1 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {points.map((point) => (
-                      <button
-                        key={point.id}
-                        type="button"
-                        onClick={() => onPickPoint(point.id)}
-                        className={`rounded-full border px-3 py-1 text-[12.5px] font-medium transition-colors ${
-                          point.id === (chosen ?? points[0]).id ? 'border-text bg-text text-bg' : 'border-text/20 text-text/70 hover:border-text/40'
-                        }`}
-                      >
-                        {point.nombre}
-                      </button>
-                    ))}
                   </div>
                 )}
               </div>
@@ -365,6 +355,14 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
               )}
 
               {activeTab === 'tips' && <TipList tips={tips} />}
+              {pago && chosen && otro && mode !== 'coche' && (
+                <p className="pt-1 text-center text-[12px] text-text/60">
+                  {verOtro ? '¿Prefieres el tuyo?' : '¿Llegas por otro sitio?'}{' '}
+                  <button type="button" onClick={() => setVerOtro((value) => !value)} className="font-semibold text-text underline underline-offset-2">
+                    Ver {puntoCorto(verOtro ? chosen : otro)}
+                  </button>
+                </p>
+              )}
             </div>
           </div>
         </motion.div>

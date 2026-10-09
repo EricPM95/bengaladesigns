@@ -26,8 +26,8 @@ interface ArrivalReturnBarProps {
   mode: ArrivalMode
   text: ArrivalBarText
   onOpen: () => void
-  /** "+ AÑADIR VUELO": a Reservas, a la casilla de la hora. */
-  onAdd: () => void
+  /** "+ AÑADIR VUELO": a Reservas, al bloque de llegada y vuelta. Sin él (la versión gratis) no sale el botón. */
+  onAdd?: () => void
 }
 
 /**
@@ -62,7 +62,7 @@ export function ArrivalReturnBar({ mode, text, onOpen, onAdd }: ArrivalReturnBar
       <span className="flex min-w-0 flex-1 items-center gap-2 pl-3 pr-2 max-[479px]:gap-1.5 max-[479px]:pl-2.5">
         <span className="min-w-0 flex-1 truncate font-mono text-[11px] font-medium uppercase tracking-[.06em] text-text/75 max-[479px]:text-[10.5px] max-[479px]:tracking-[.02em]">{text.data}</span>
         {text.key && <span className="shrink-0 whitespace-nowrap font-mono text-[11px] font-semibold uppercase tracking-[.06em] text-accent max-[479px]:text-[10.5px] max-[479px]:tracking-[.02em]">{text.key}</span>}
-        {text.add && (
+        {text.add && onAdd && (
           <button
             type="button"
             onClick={(event) => {

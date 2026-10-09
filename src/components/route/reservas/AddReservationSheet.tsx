@@ -1,8 +1,9 @@
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
-import { BIG_RESERVATION_PLACES, dateOfDay, dayLineOf, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
+import { BIG_RESERVATION_PLACES, dateOfDay, dayLineOf, dayOfReservation, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { reservasParaMotor } from '../../../lib/engineReservas'
+import { excursionTargetDays } from '../../../lib/excursionOffer'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
@@ -20,6 +21,8 @@ export interface ReservationTarget {
   currentDayId?: string | null
   /** «Cambiar»: la reserva que ya hay (la hoja sale con su día y su hora, y con «Eliminar reserva»). */
   existing?: Reservation | null
+  /** «Añadir una excursión · 2 de 2»: viene de elegir la excursión en la hoja de «¿Qué excursión tienes?». */
+  paso2?: boolean
 }
 
 /** La regla 17 (Tanda 6k): la lista escrita del día que llevará el sitio, a la hora de la reserva. */
@@ -150,19 +153,20 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const isExcursion = target.kind === 'excursion'
   // El día donde está ahora ese sitio: sale ya elegido (Tanda 6k, punto 4), con «· aquí está ahora»; así se sabe que se pone en el día bueno y no se mueve nada.
   const currentDay = useMemo(() => days.find((day) => day.id === target.currentDayId) ?? null, [days, target.currentDayId])
+  // Una excursión sin día en la ruta parte del primer día donde puede ir (nunca el de llegada ni el de vuelta).
+  const startDay = currentDay ?? (isExcursion ? (excursionTargetDays(route)[0] ?? null) : null)
   const existing = target.existing ?? null
   const [fields, setFields] = useState<Fields>(() => ({
     ...EMPTY,
-    dateIso: existing?.dateIso ?? (hasDates && currentDay ? (dateOfDay(route, currentDay) ?? '') : ''),
-    dayNumber: existing?.dayNumber != null ? String(existing.dayNumber) : !hasDates && currentDay ? String(currentDay.dayNumber) : '',
+    dateIso: existing?.dateIso ?? (hasDates && startDay ? (dateOfDay(route, startDay) ?? '') : ''),
+    dayNumber: existing?.dayNumber != null ? String(existing.dayNumber) : !hasDates && startDay ? String(startDay.dayNumber) : '',
     time: existing?.time ?? '',
     returnTime: existing?.returnTime ?? '',
     meetingPoint: existing?.meetingPoint ?? '',
     locator: existing?.locator ?? '',
   }))
   // La hoja de la hora (Tanda 6m) es lo primero para una entrada; el formulario de siempre (email, captura, a mano) sigue detrás de «Rellenar desde el email o el PDF» y para las excursiones.
-  const [view, setView] = useState<'hora' | 'form'>(target.kind === 'excursion' ? 'form' : 'hora')
-  const [showDay, setShowDay] = useState(false)
+  const [view, setView] = useState<'hora' | 'form'>('hora')
   const [confirmDelete, setConfirmDelete] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -181,6 +185,58 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const tripDates = hasDates && days.length > 0 ? { min: dateOfDay(route, days[0]) ?? undefined, max: dateOfDay(route, days[days.length - 1]) ?? undefined } : null
 
   const dayLabel = (day: (typeof days)[number]) => `${dayLineOf(route, day)}${day.id === target.currentDayId ? ' · aquí está ahora' : ''}`
+  /** La ficha de cada día (Tanda 6s): «Mar 10» con fechas, «Día 1» sin ellas. */
+  const chipText = (day: (typeof days)[number]) => {
+    const iso = hasDates ? dateOfDay(route, day) : null
+    if (!iso) return `Día ${day.dayNumber}`
+    const date = new Date(`${iso}T12:00:00`)
+    const weekday = new Intl.DateTimeFormat('es-ES', { weekday: 'short' }).format(date).replace('.', '')
+    return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} ${date.getDate()}`
+  }
+  // Los días en que ese sitio está cerrado (con los horarios de los datos): la ficha sale apagada con «Cerrado». Sin fechas no se sabe qué día de la semana es: ninguno.
+  const [closedIsos, setClosedIsos] = useState<Set<string>>(() => new Set())
+  const tripIsos = useMemo(() => (hasDates ? days.map((day) => dateOfDay(route, day)).filter((iso): iso is string => Boolean(iso)) : []), [days, hasDates, route])
+  const chipDays = isExcursion ? excursionTargetDays(route).filter((day) => !isDayPinned(route, reservations, day) || existing?.id === reservations.find((item) => item.kind === 'excursion' && dayOfReservation(route, item)?.id === day.id)?.id) : days
+  const closedKey = hoursPlace && tripIsos.length > 0 ? `${hoursPlace}|${tripIsos.join(',')}` : null
+  useEffect(() => {
+    if (!closedKey || !hoursPlace) {
+      setClosedIsos(new Set())
+      return
+    }
+    let cancelled = false
+    fetch('/api/reservation-hours', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destination: route.destination, place: hoursPlace, month: route.answers.month ?? null, season: route.answers.season ?? null, dates: tripIsos }),
+    })
+      .then((response) => (response.ok ? (response.json() as Promise<{ cerrados?: string[] }>) : null))
+      .then((body) => {
+        if (!cancelled) setClosedIsos(new Set(body?.cerrados ?? []))
+      })
+      .catch(() => {
+        if (!cancelled) setClosedIsos(new Set())
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [closedKey])
+  const isClosedDay = (day: (typeof days)[number]) => {
+    const iso = hasDates ? dateOfDay(route, day) : null
+    return Boolean(iso) && closedIsos.has(iso as string)
+  }
+  const pickDay = (day: (typeof days)[number]) => {
+    if (isClosedDay(day)) return
+    if (hasDates) set({ dateIso: dateOfDay(route, day) ?? '' })
+    else set({ dayNumber: String(day.dayNumber) })
+  }
+  // Si el día de partida está cerrado, se parte del primero que abre.
+  useEffect(() => {
+    if (closedIsos.size === 0 || !resolvedDay || !isClosedDay(resolvedDay)) return
+    const open = days.find((day) => !isClosedDay(day))
+    if (open) pickDay(open)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [closedIsos])
 
   // Las horas a las que se puede entrar ese día (Coliseo, Museos, Galería y el resto de entradas): la rueda solo enseña esas.
   const [entryHours, setEntryHours] = useState<EntryHours | null>(null)
@@ -222,6 +278,19 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     for (const window of windows) for (let m = Math.ceil(asMin(window.desde) / 15) * 15; m <= asMin(window.hasta); m += 15) out.push(`${two(Math.floor(m / 60))}:${two(m % 60)}`)
     return conPropia(out.length > 0 ? out : ['09:00'])
   }, [entryHours])
+  const pickupItems = useMemo(() => {
+    const out: string[] = []
+    for (let m = 300; m <= 660; m += 5) out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
+    return out
+  }, [])
+  const rueda = isExcursion ? pickupItems : wheelItems
+  // Una excursión parte de su hora de salida (la primera de su línea) o, si no la hay, de las 07:00.
+  useEffect(() => {
+    if (!isExcursion || view !== 'hora' || validTime) return
+    const first = target.excursion?.page?.stops?.[0]?.time
+    set({ time: first && pickupItems.includes(first) ? first : '07:00' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view])
   // La hora de partida de la rueda: la de la reserva que ya hay, o la más cercana a las 10:00; si esa hora no está entre las del sitio, la más cercana.
   useEffect(() => {
     if (isFreeTour || isExcursion || view !== 'hora') return
@@ -421,18 +490,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     return day ? dayLabel(day) : shortDateEs(iso)
   }
 
-  const dayField = hasDates ? (
-    <DateField value={fields.dateIso} onChange={(iso) => set({ dateIso: iso })} title="Día de tu reserva" min={tripDates?.min} max={tripDates?.max} format={dateLabel} />
-  ) : (
-    <select value={fields.dayNumber} onChange={(event) => set({ dayNumber: event.target.value })} className={inputClass}>
-      {!currentDay && <option value="">Elige el día</option>}
-      {days.map((day) => (
-        <option key={day.id} value={day.dayNumber}>
-          {dayLabel(day)}
-        </option>
-      ))}
-    </select>
-  )
 
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-reservation-heading">
@@ -451,12 +508,45 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           {view === 'hora' ? (
             <div>
               <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
-                ¿A qué hora es tu entrada?
+                {isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
               </p>
               <h2 id="add-reservation-heading" className="mt-1.5 font-display text-[24px] leading-[1.05] text-text">
                 {target.name}
               </h2>
-              <p className="mt-1 text-[12px] text-text/60">{resolvedDay ? dayLabel(resolvedDay) : 'Elige el día'}</p>
+
+              {/* Los días del viaje, en fichas que se deslizan de lado: el día que tiene en la ruta ya va marcado («En tu ruta»); un sitio cerrado ese día sale apagado. */}
+              <div className="-mx-6 mt-3.5 flex gap-1.5 overflow-x-auto px-6 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Día de tu reserva">
+                {chipDays.map((day) => {
+                  const selected = resolvedDay?.id === day.id
+                  const closed = isClosedDay(day)
+                  const inRoute = day.id === target.currentDayId
+                  return (
+                    <button
+                      key={day.id}
+                      type="button"
+                      disabled={closed}
+                      aria-pressed={selected}
+                      onClick={() => pickDay(day)}
+                      className="flex h-11 flex-none items-center gap-[7px] rounded-full px-3.5 transition-colors"
+                      style={{
+                        border: `1.5px solid ${selected ? '#1C2230' : 'rgba(28,34,48,.12)'}`,
+                        background: selected ? '#1C2230' : closed ? '#F1EADC' : '#FFFFFF',
+                        color: selected ? '#FFFDF8' : '#1C2230',
+                        opacity: closed ? 0.5 : 1,
+                        cursor: closed ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      <span className="text-[13.5px] font-semibold" style={{ textDecoration: closed ? 'line-through' : 'none' }}>
+                        {chipText(day)}
+                      </span>
+                      {(closed || inRoute) && <span className="text-[10.5px] font-medium opacity-70">{closed ? 'Cerrado' : 'En tu ruta'}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+              <p className="mt-3 text-center text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                {isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora de inicio' : 'Hora de entrada'}
+              </p>
 
               <div className="mt-3.5">
                 {isFreeTour ? (
@@ -473,7 +563,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     ))}
                   </div>
                 ) : (
-                  <TimeListWheel items={wheelItems} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : wheelItems[0]} onChange={(hhmm) => set({ time: hhmm })} />
+                  <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => set({ time: hhmm })} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
                 )}
               </div>
 
@@ -493,37 +583,26 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </p>
               )}
 
+              <p className="mt-1 text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setView('form')
+                    setTab('email')
+                  }}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 text-[12px] font-medium text-text/65"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 6h16v12H4zM4 7l8 6 8-6" />
+                  </svg>
+                  <span className="underline underline-offset-2">Rellenar desde el email o el PDF</span>
+                </button>
+              </p>
+
               <button type="button" disabled={!ready || planPending} onClick={() => save()} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98] disabled:opacity-40">
                 {validTime ? `Guardar · ${fields.time.length === 4 ? `0${fields.time}` : fields.time}` : 'Guardar'}
               </button>
 
-              <div className="mt-4 space-y-2.5 text-center text-[13px] text-text/60">
-                {showDay ? (
-                  <div className="text-left">
-                    <span className="text-[12px] font-medium text-text-soft">{hasDates ? 'Día' : 'Día del viaje'}</span>
-                    {dayField}
-                  </div>
-                ) : (
-                  <p>
-                    ¿Es para otro día?{' '}
-                    <button type="button" onClick={() => setShowDay(true)} className="font-semibold text-text underline underline-offset-2">
-                      Cambiar el día
-                    </button>
-                  </p>
-                )}
-                <p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setView('form')
-                      setTab('email')
-                    }}
-                    className="font-semibold text-text underline underline-offset-2"
-                  >
-                    Rellenar desde el email o el PDF
-                  </button>
-                </p>
-              </div>
 
               {target.existing && (
                 <div className="mt-5 border-t border-text/10 pt-4 text-center">
