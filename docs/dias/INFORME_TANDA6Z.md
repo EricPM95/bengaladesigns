@@ -32,7 +32,9 @@ Sin `?prueba=1`: 85 corazones en EXPLORAR y **0 números** (probado en el navega
 
 ## Pruebas (todas a 0 fallos)
 
-RESULTADOS_PRUEBAS
+6g, 6h, 6i, 6j, 6k, 6l, 6o, 6r (3.289 viajes), 6s (2.475 comprobaciones), 6t (1.054), 6u (1.884 viajes), 6v (83: se ha actualizado al bloque de alojamiento cerrado, que es el diseño nuevo), la prueba de listas completa en 4 trozos (una de cada 5 fechas: 6.497, 4.380, 8.760 y 8.760 viajes), la prueba de franjas (32 pantallas, 0 horas) y `tsc`.
+
+Nueva: `pruebaTanda6z.mjs`: sin `?prueba=1`, 0 números inventados; con él, números fijos por nivel en todos los lugares de Roma; en producción, nada (tres dominios de ejemplo y `VITE_VERCEL_ENV=production`); ningún enlace de hoteles a otra web ni dato de ejemplo en `src`; el Free Tour viaja con el catálogo, marcado «solo entradas», con foto y ficha; las cuentas del alojamiento.
 
 ## Capturas a 375 px (`docs/dias/img/`)
 
