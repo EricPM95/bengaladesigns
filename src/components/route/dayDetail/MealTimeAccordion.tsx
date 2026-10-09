@@ -15,8 +15,8 @@ interface MealTimeAccordionProps {
   /** Texto legible curado a mano para el TÍTULO (ver MealSlot.curatedZoneDisplay, Regla E — "en el Centro Histórico") — solo para mostrar, nunca para buscar. */
   curatedZoneDisplay?: string | null
   franja: 'comida' | 'cena'
-  /** Franja de la comida ("13:00 – 14:30"): llegar, comer y andar a la siguiente parada. */
-  timeRange?: string | null
+  /** Hora que el viajero ha reservado en el restaurante («21:00»). La franja de la comida no se enseña nunca. */
+  reservedTime?: string | null
   /** Texto propio en lugar de "Recomendaciones de restaurantes cerca" (día con excursión de medio día). */
   subtitle?: string | null
   /** El restaurante que ha elegido el viajero para esta comida o cena: sustituye a las recomendaciones. */
@@ -40,7 +40,7 @@ interface MealTimeAccordionProps {
  * vea correcto en la fila cerrada sin tener que abrir la pantalla — MealDetailSheet vuelve a
  * resolverlo por su cuenta al abrir (mismo hook, prácticamente gratis gracias al caché).
  */
-export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, timeRange, subtitle, chosenName = null, walkNote = null, onChange, onOpen }: MealTimeAccordionProps) {
+export function MealTimeAccordion({ destino, city, coordinates, curatedZone, curatedZoneDisplay, franja, reservedTime, subtitle, chosenName = null, walkNote = null, onChange, onOpen }: MealTimeAccordionProps) {
   const { zonaMostrada } = useZonaTuristica(destino, city, coordinates, curatedZone)
   const franjaLabel = franja === 'cena' ? 'Hora de cenar' : 'Hora de comer'
   // Regla E: con zona curada, el texto ya viene formateado y listo ("en el Centro Histórico") — solo
@@ -56,7 +56,7 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
     return (
       <MealCard
         label={label}
-        timeRange={timeRange ?? null}
+        reservedTime={reservedTime ?? null}
         name={chosenName}
         sub={walkNote ?? (zoneText ? zoneText.replace(/^en /, 'En ') : null)}
         iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}
@@ -68,7 +68,7 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
   return (
     <MealCard
       label={label}
-      timeRange={timeRange ?? null}
+      reservedTime={reservedTime ?? null}
       name={zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}
       sub={subtitle ?? 'Recomendaciones de restaurantes cerca'}
       iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}

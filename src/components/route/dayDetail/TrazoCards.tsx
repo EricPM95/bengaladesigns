@@ -176,8 +176,8 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
   )
 }
 
-/** Cabecera de una franja del día: "MAÑANA · 08:00 — 12:30". */
-export function PeriodHeader({ period, range, onAddStop }: { period: DayPeriod; range?: string | null; onAddStop?: () => void }) {
+/** Cabecera de una franja del día: "MAÑANA" (sin hora: las horas de las franjas solo las usa el motor por dentro). */
+export function PeriodHeader({ period, onAddStop }: { period: DayPeriod; onAddStop?: () => void }) {
   const style = PERIOD_STYLE[period]
   return (
     // (40 px arriba, para que se vea dónde empieza cada parte del día, también la primera; 12 hasta lo primero de la
@@ -188,7 +188,6 @@ export function PeriodHeader({ period, range, onAddStop }: { period: DayPeriod; 
       </span>
       <span className="font-mono text-[11px] font-semibold uppercase tracking-[.12em] text-text/60">
         {style.label}
-        {range ? ` · ${range}` : ''}
       </span>
       {/* (Tanda 6i: «+ Añadir parada» en la misma línea que el título de la franja, a la derecha.) */}
       {onAddStop && (
@@ -221,13 +220,14 @@ export function TimelineNote({ time, children, onClick, photoUrl }: { time?: str
 
 /**
  * La comida, la cena y el desayuno (PROMPT_UI, Parte 2: "Comidas A · Mesa"): una tarjeta terracota suave, sin foto ni
- * número. Arriba, "COMIDA · 13:15 – 14:15" en mono; el restaurante en grande (Instrument Serif); debajo, a cuántos
+ * número. Arriba, "COMIDA" en mono (con hora solo si el viajero ha reservado el restaurante); el restaurante en grande (Instrument Serif); debajo, a cuántos
  * minutos está; a la derecha, "Cambiar". El desayuno, en pequeño: más baja, el nombre en letra normal y "Cambiar" como
  * enlace.
  */
-export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChange, small = false, menu }: {
+export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onChange, small = false, menu }: {
   label: string
-  timeRange?: string | null
+  /** Solo la hora que el viajero ha reservado en el restaurante; la franja de la comida no se enseña. */
+  reservedTime?: string | null
   name: string
   sub?: string | null
   iconPath: string
@@ -255,7 +255,7 @@ export function MealCard({ label, timeRange, name, sub, iconPath, onOpen, onChan
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
         <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold uppercase tracking-[.08em] text-accent max-[479px]:text-[10px] max-[479px]:tracking-[.04em]">
           {label}
-          {timeRange ? ` · ${timeRange}` : ''}
+          {reservedTime ? ` · ${reservedTime}` : ''}
         </span>
         <span className={small ? 'text-[14px] font-medium leading-[1.25] text-text [overflow-wrap:anywhere]' : 'line-clamp-2 font-display text-[22px] leading-[1.1] text-text [overflow-wrap:anywhere] max-[479px]:text-[18px]'}>{name}</span>
         {sub && <span className="line-clamp-2 text-[12px] leading-[1.3] text-text/60">{sub}</span>}

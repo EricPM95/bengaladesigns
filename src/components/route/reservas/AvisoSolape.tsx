@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { reservationOverlaps, type ReservationOverlap } from '../../../lib/reservationOverlaps'
+import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { HojaAbajo } from './HojaAbajo'
 
 /**
  * El aviso de dos reservas que se pisan (Tanda 6v): lo único que avisa de las horas de las reservas (la app nunca propone otra hora). Sube desde abajo cuando, al guardar una reserva, aparece un solape nuevo
- * («Tu Free Tour y tu entrada a Museos Vaticanos y Capilla Sixtina coinciden. Revisa una de las dos reservas.» con [Ver mis reservas]); y el mismo texto sale en la campana (useAppNotices.ts) mientras siga habiéndolo.
+ * («Tu Free Tour y tu entrada a los Museos coinciden. Revisa una de las dos reservas.» con [Ver mis reservas]); y el mismo texto sale en la campana (useAppNotices.ts) mientras siga habiéndolo.
  * Se va solo cuando se arregla. Al abrir un viaje que ya tenía un solape no sube la hoja (solo la campana).
  */
 export function AvisoSolape() {
   const route = useRouteStore((state) => state.route)
   const reservations = useRouteStore((state) => state.reservations)
   const setMode = useRouteStore((state) => state.setMode)
-  const solapes = useMemo(() => (route ? reservationOverlaps(route, reservations) : []), [route, reservations])
+  const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
+  const solapes = useMemo(() => (route ? reservationOverlaps(route, reservations, nombresCortos) : []), [route, reservations, nombresCortos])
   const vistos = useRef<{ viaje: string | null; ids: Set<string> }>({ viaje: null, ids: new Set() })
   const [aviso, setAviso] = useState<ReservationOverlap | null>(null)
 

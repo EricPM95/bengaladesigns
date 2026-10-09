@@ -4413,6 +4413,8 @@ app.post('/api/destination-excursions', (req, res) => {
   const entradasPorSitio = entradasDe(findPipelineV2Key(destination ?? '') ?? '')
   // Tanda 6s: el orden del bloque de entradas, las zonas del alojamiento y el mapa de alojamientos (datos del destino).
   const reservasExtra = {
+    // Los nombres cortos de las reservas para los avisos «coinciden» y «vas justo» (dato del destino; sin ellos, el aviso usa el nombre completo).
+    nombres_cortos: Object.fromEntries(Object.entries(data?.entradas_nombres_cortos ?? {}).filter(([key, value]) => !key.startsWith('_') && typeof value === 'string')),
     entradas_orden: data?.entradas_reservas_orden ? { arriba: data.entradas_reservas_orden.arriba ?? [], mas: data.entradas_reservas_orden.mas ?? [] } : { arriba: [], mas: [] },
     zonas_alojamiento: data?.destination_config?.zonas_alojamiento ?? [],
     mapa_alojamiento: data?.destination_config?.mapa_alojamiento ?? null,

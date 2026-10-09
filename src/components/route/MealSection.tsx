@@ -9,7 +9,7 @@ export function MealSection({ meal }: MealSectionProps) {
   return (
     <div className="px-4 py-4">
       <p className="text-body font-medium text-text">
-        🍽 {meal.time} → {meal.label}
+        🍽 {meal.label}
       </p>
       {meal.nearbyNote && <p className="mt-1 text-small text-text-soft">{meal.nearbyNote}</p>}
 

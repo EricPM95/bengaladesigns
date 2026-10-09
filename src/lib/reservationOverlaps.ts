@@ -30,8 +30,33 @@ function durationOf(route: Route, reservation: Reservation): number {
   return total > 0 ? total : DEFAULT_MINUTES
 }
 
-/** «tu Free Tour» o «tu entrada a Museos Vaticanos y Capilla Sixtina»: el nombre sale de la propia reserva. */
-const labelOf = (reservation: Reservation): string => (reservation.refId === 'Free Tour' ? 'tu Free Tour' : `tu entrada a ${reservation.name}`)
+type ShortNames = Record<string, string> | undefined
+
+/** El nombre corto con artículo de una reserva («los Museos»): el suyo o el de los datos del destino; null si no hay (se usa el nombre completo). */
+const shortOf = (reservation: Reservation, shortNames: ShortNames): string | null => reservation.shortName?.trim() || shortNames?.[reservation.refId]?.trim() || null
+
+/** «a los Museos», «al Coliseo» (a + el = al). */
+const withA = (short: string): string => `a ${short}`.replace(/^a el /, 'al ')
+
+/** «tu Free Tour» o «tu entrada a los Museos» (sin nombre corto, «tu entrada a Museos Vaticanos y Capilla Sixtina»). */
+const labelOf = (reservation: Reservation, shortNames: ShortNames): string => {
+  if (reservation.refId === 'Free Tour') return 'tu Free Tour'
+  const short = shortOf(reservation, shortNames)
+  return short ? `tu entrada ${withA(short)}` : `tu entrada a ${reservation.name}`
+}
+
+/** A quién no llegas: «a los Museos» / «al Coliseo»; el Free Tour, «a tu Free Tour»; sin nombre corto, «a tu entrada a X». */
+const arrivalLabelOf = (reservation: Reservation, shortNames: ShortNames): string => {
+  if (reservation.refId === 'Free Tour') return 'a tu Free Tour'
+  const short = shortOf(reservation, shortNames)
+  return short ? withA(short) : `a tu entrada a ${reservation.name}`
+}
+
+/** Lo que dura: «el Free Tour», «los Museos»; sin nombre corto, «tu entrada a X». */
+const durationLabelOf = (reservation: Reservation, shortNames: ShortNames): string => {
+  if (reservation.refId === 'Free Tour') return 'el Free Tour'
+  return shortOf(reservation, shortNames) ?? `tu entrada a ${reservation.name}`
+}
 
 /** Lo que hace falta entre el final de una reserva y el principio de la siguiente para llegar: 30 min de trayecto y 30 de llegada a la entrada (el documento del Roma, «Si los dos están reservados»). */
 const GAP_MINUTES = 60
@@ -61,7 +86,7 @@ function formatDuration(minutes: number): string {
  * Las reservas de entrada que se pisan: del mismo día y con las horas cruzadas (de su hora a su hora más lo que dura la visita). Es lo único que avisa (la app nunca propone otra hora: el viajero compra la entrada cuando
  * le va bien y la app se adapta). El Free Tour va primero en el texto; si no, la de antes. Se calcula del estado del viaje, así que se va sola cuando se arregla.
  */
-export function reservationOverlaps(route: Route, reservations: Reservation[]): ReservationOverlap[] {
+export function reservationOverlaps(route: Route, reservations: Reservation[], shortNames?: Record<string, string>): ReservationOverlap[] {
   const entries = reservations
     .filter((reservation) => reservation.kind === 'entrada')
     .map((reservation) => {
@@ -83,20 +108,20 @@ export function reservationOverlaps(route: Route, reservations: Reservation[]): 
           kind: 'coinciden',
           first: first.reservation,
           second: second.reservation,
-          text: `${labelOf(first.reservation).replace(/^t/, 'T')} y ${labelOf(second.reservation)} coinciden. Revisa una de las dos reservas.`,
+          text: `${labelOf(first.reservation, shortNames).replace(/^t/, 'T')} y ${labelOf(second.reservation, shortNames)} coinciden. Revisa una de las dos reservas.`,
         })
         continue
       }
       // Sin cruzarse: la primera es la que empieza antes; si no da tiempo a llegar de una a otra, vas justo (solo avisa).
       const [first, second] = a.start <= b.start ? [a, b] : [b, a]
       if (!vanJustas(first, second)) continue
-      const firstLabel = first.reservation.refId === 'Free Tour' ? 'el Free Tour' : labelOf(first.reservation)
+      const firstLabel = durationLabelOf(first.reservation, shortNames)
       found.push({
         id: `justo:${first.reservation.id}:${second.reservation.id}`,
         kind: 'justo',
         first: first.reservation,
         second: second.reservation,
-        text: `Es posible que no llegues a ${labelOf(second.reservation)}: ${firstLabel} dura ${formatDuration(first.end - first.start)} y vas justo.`,
+        text: `Es posible que no llegues ${arrivalLabelOf(second.reservation, shortNames)}: ${firstLabel} dura ${formatDuration(first.end - first.start)} y vas justo.`,
       })
     }
   }

@@ -326,14 +326,10 @@ export function ManualDayLink({ onClick }: { onClick: () => void }) {
  */
 export function HalfDayExcursionBlock({
   excursion,
-  startsAt,
-  endsAt,
   onDismiss,
   dismissLabel = 'Prefiero quedarme en la ciudad',
 }: {
   excursion: Excursion
-  startsAt: string
-  endsAt: string
   onDismiss: () => void
   /** En un día que el viajero montó él, "quitar" es lo que ha hecho, no "quedarse en la ciudad". */
   dismissLabel?: string
@@ -342,7 +338,7 @@ export function HalfDayExcursionBlock({
   return (
     <div>
       <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">
-        Mañana · {startsAt} — {endsAt}
+        Mañana
       </p>
       <div className="rounded-xl border border-accent bg-accent-soft p-3">
         <ExcursionReservedTop excursion={excursion} />
@@ -492,16 +488,14 @@ export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excu
  */
 export function FreeAfternoonBlock({
   destination,
-  startsAt,
   onAddStops,
 }: {
   destination: string
-  startsAt: string
   onAddStops: () => void
 }) {
   return (
     <div>
-      <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">Tarde · desde {startsAt}</p>
+      <p className="px-1 pb-1 pt-6 text-caption font-semibold uppercase tracking-wide text-text-muted">Tarde</p>
       <div className="space-y-2 rounded-xl border border-border bg-bg-card p-3">
         <p className="text-small leading-relaxed text-text-soft">
           Tu tarde en {destination} está libre — añade las paradas que quieras y organizamos los tiempos.

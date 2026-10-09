@@ -59,7 +59,8 @@ export function exportRouteToPdf(route: Route) {
     })
 
     day.meals.forEach((meal) => {
-      writeLine(`${meal.time} — ${meal.label}`, { size: 10.5, bold: true, gap: 1 })
+      // Sin hora: la comida y la cena van como «Comida» y «Cena» (la hora solo la lleva una reserva del viajero).
+      writeLine(meal.label, { size: 10.5, bold: true, gap: 1 })
       meal.restaurants.forEach((restaurant) => {
         writeLine(
           `  ${restaurant.priceTier} ${restaurant.name} (${restaurant.cuisine}) — ${restaurant.priceRange}`,

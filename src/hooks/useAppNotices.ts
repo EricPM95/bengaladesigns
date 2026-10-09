@@ -3,6 +3,7 @@ import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { useNoticesStore, type NoticeKind } from '../store/useNoticesStore'
 import { reservationOverlaps } from '../lib/reservationOverlaps'
+import { useDestinationExcursions } from '../lib/destinationExcursions'
 
 export interface AppNotice {
   id: string
@@ -33,6 +34,8 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const route = useRouteStore((state) => state.route)
   const reservations = useRouteStore((state) => state.reservations)
   const dismissContextBanner = useRouteStore((state) => state.dismissContextBanner)
+  // Los nombres cortos de las reservas (datos del destino) para los avisos «coinciden» y «vas justo».
+  const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
   const syncStatus = useSyncStore((state) => state.status)
   const readIds = useNoticesStore((state) => state.readIds)
   const pushed = useNoticesStore((state) => state.pushed)
@@ -58,7 +61,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           canMarkRead: false,
         })
       }
-      for (const solape of reservationOverlaps(route, reservations)) {
+      for (const solape of reservationOverlaps(route, reservations, nombresCortos)) {
         items.push({ id: solape.id, kind: 'warning', title: solape.kind === 'justo' ? 'Vas justo entre dos reservas' : 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
       }
       if (route.contextBanner) {
@@ -83,5 +86,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, syncStatus, readIds, pushed, dismissContextBanner])
+  }, [route, reservations, nombresCortos, syncStatus, readIds, pushed, dismissContextBanner])
 }

@@ -19,6 +19,8 @@ export interface DestinationExcursions {
   entradasPorSitio: Record<string, StopEntrada[]>
   /** El orden del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s): las de arriba y las de «Ver n más». Nombres de entrada, de lugar o «Free Tour por Roma». */
   entradasOrden: { arriba: string[]; mas: string[] }
+  /** El nombre corto de cada reserva con su artículo («los Museos», «el Free Tour»), por nombre de reserva (`entradas_nombres_cortos`); lo usan los avisos de reservas. Sin él, el aviso usa el nombre completo. */
+  nombresCortos: Record<string, string>
   /** Las zonas para elegir alojamiento (id, nombre y, si lo hay, una pista: «Vaticano»); la última es «Aún no lo sé». */
   zonasAlojamiento: { id: string; nombre: string; sub?: string }[]
   /** El mapa de alojamientos de la hoja (datos del destino). */
@@ -31,7 +33,7 @@ export interface DestinationExcursions {
   rating: { percent: number; excursions: number; reviews: number } | null
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, zonasAlojamiento: [], mapaAlojamiento: null, examples: null, dayNameExample: null, rating: null }
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, nombresCortos: {}, zonasAlojamiento: [], mapaAlojamiento: null, examples: null, dayNameExample: null, rating: null }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
@@ -43,10 +45,10 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
       const result: DestinationExcursions = data?.found
-        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
-        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, dayNameExample: data?.day_name_example ?? null }
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data.nombres_cortos ?? {}, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
+        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data?.nombres_cortos ?? {}, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, dayNameExample: data?.day_name_example ?? null }
       cache.set(key, result)
       return result
     })

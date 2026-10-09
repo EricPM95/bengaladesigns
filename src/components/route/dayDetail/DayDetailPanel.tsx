@@ -755,7 +755,6 @@ export function DayDetailPanel({
     return at != null && at >= -1 && at < schedule.length ? at : null
   }
   const lunchInsertionIndex = mealDroppedByTrip('lunch') ? null : movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW))
-  const lunchTimeRange = lunchMeal?.windowEnd ? `${lunchMeal.time} – ${lunchMeal.windowEnd}` : null
   const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
   const dinnerInsertionIndex = mealDroppedByTrip('dinner') ? null : movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day))
@@ -1026,23 +1025,13 @@ export function DayDetailPanel({
   const sortableIds = placed.flatMap((entry) =>
     entry.item.type === 'stop' ? [realStops[entry.item.index]?.id ?? stops[entry.item.index].id] : entry.item.type === 'lunch' ? [MEAL_DRAG_ID.lunch] : entry.item.type === 'dinner' ? [MEAL_DRAG_ID.dinner] : [],
   )
-  const periodGroups: { period: DayPeriod; range: string; items: PlacedItem[] }[] = []
+  // (Las franjas ya no enseñan su hora: «Mañana», «Tarde», «Noche». Las horas siguen dentro para ordenar el día.)
+  const periodGroups: { period: DayPeriod; items: PlacedItem[] }[] = []
   for (const entry of placed) {
     const last = periodGroups[periodGroups.length - 1]
     if (last && last.period === entry.period) last.items.push(entry)
-    else periodGroups.push({ period: entry.period, range: '', items: [entry] })
+    else periodGroups.push({ period: entry.period, items: [entry] })
   }
-  for (const group of periodGroups) {
-    const timed = group.items.filter((entry) => entry.item.type !== 'end' && entry.item.type !== 'mealGap')
-    if (timed.length === 0) continue
-    const from = Math.min(...timed.map((entry) => entry.start))
-    const to = Math.max(...timed.map((entry) => entry.end))
-    // De 5 en 5, como las horas de las paradas: con cuartos, la Tarde decía 14:30 y su primera parada era a las 14:25.
-    const step5 = (minutes: number) => Math.round(minutes / 5) * 5
-    group.range = `${minutesToTime(step5(from))} — ${minutesToTime(step5(to))}`
-    // Tanda 6b: la franja con su hora, tal como la manda el servidor («9:00–14:00»).
-    const franja = day.franjas?.find((candidate) => candidate.id === group.period)
-    if (franja) group.range = franja.to ? `${franja.from}–${franja.to}` : franja.from  }
 
     /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
   /** ¿La parada de este índice viene justo detrás de otra parada en la línea del día? */
@@ -1083,7 +1072,6 @@ export function DayDetailPanel({
             curatedZone={lunchCuratedZone}
             curatedZoneDisplay={lunchCuratedZoneDisplay}
             franja="comida"
-            timeRange={lunchTimeRange}
             chosenName={restaurantOf('lunch')?.name ?? null}
             walkNote={[mealWalkNote('lunch', index), lunchReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('lunch')}
@@ -1103,7 +1091,6 @@ export function DayDetailPanel({
             curatedZone={dinnerCuratedZone}
             curatedZoneDisplay={dinnerCuratedZoneDisplay}
             franja="cena"
-            timeRange={Number.isNaN(dinnerStartMinutes) ? null : minutesToTime(dinnerStartMinutes)}
             chosenName={restaurantOf('dinner')?.name ?? null}
             walkNote={[mealWalkNote('dinner', index), dinnerReservationNote].filter(Boolean).join(' · ') || null}
             onChange={() => openMealPicker('dinner')}
@@ -1417,8 +1404,6 @@ export function DayDetailPanel({
           {halfDayExcursion && (
             <HalfDayExcursionBlock
               excursion={halfDayExcursion}
-              startsAt={day.halfDayExcursion!.startsAt}
-              endsAt={day.halfDayExcursion!.endsAt}
               onDismiss={() => declineHalfDayExcursion(day.id)}
               dismissLabel={esDiaEnBlanco ? 'Quitar esta excursión' : undefined}
             />
@@ -1442,7 +1427,6 @@ export function DayDetailPanel({
           {tardeLibreEnBlanco && (
             <FreeAfternoonBlock
               destination={day.city}
-              startsAt={day.halfDayExcursion!.routeStartsAt}
               onAddStops={() => setInsertAt(0)}
             />
           )}
@@ -1468,7 +1452,6 @@ export function DayDetailPanel({
               {hasHeader && (
                 <PeriodHeader
                   period={group.period}
-                  range={day.untimed ? null : group.range}
                   onAddStop={
                     headerAddIndex !== null
                       ? () => {
@@ -1507,7 +1490,6 @@ export function DayDetailPanel({
                     city={day.city}
                     coordinates={meal.chosenRestaurant!.coordinates}
                     franja={meal.mealTime === 'dinner' ? 'cena' : 'comida'}
-                    timeRange={null}
                     chosenName={meal.chosenRestaurant!.name}
                     onChange={() => openMealPicker(meal.mealTime === 'dinner' ? 'dinner' : 'lunch')}
                     onOpen={() => setMealSheet({ franja: meal.mealTime === 'dinner' ? 'cena' : 'comida', stopIndex: 0, coordinates: meal.chosenRestaurant!.coordinates })}

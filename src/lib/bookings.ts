@@ -19,6 +19,8 @@ export interface Reservation {
   name: string
   /** Las paradas de la ruta que cubre (una entrada). */
   placeNames: string[]
+  /** Opcional: nombre corto con artículo para los avisos («los Museos»). Si falta, se busca en los datos del destino por `refId`; si tampoco está, el aviso usa `name`. */
+  shortName?: string | null
   /** El día del viaje lo pone esta fecha, nunca la app. null: el viaje no tiene fechas y se eligió el día (`dayNumber`). */
   dateIso: string | null
   dayNumber: number | null
