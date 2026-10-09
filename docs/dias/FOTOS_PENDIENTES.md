@@ -17,3 +17,9 @@ Son los sitios que antes iban «de camino» y ahora pasan a ser parada, con su t
 ## Opcionales (de antes)
 - La Plaza del Quirinal, con la vista de San Pedro.
 - La Cripta de los Capuchinos.
+
+## Nuevas (9-oct-2026, Free Tour de las 12:00)
+9. **Templo de Adriano (Piazza di Pietra):** las once columnas corintias de la fachada. Ojo: desde marzo de 2026 las columnas están en restauración; si salen con andamios, buscar una foto de antes.
+10. **Piazza Colonna y la Columna de Marco Aurelio:** la columna con sus relieves en espiral, con el Palazzo Chigi detrás.
+- **Via Condotti** ya tiene foto (Eric, 9-oct).
+- Las dos nuevas las pasa Eric (fotos suyas).
