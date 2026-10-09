@@ -119,7 +119,8 @@ function paradaDe(texto, dia, { camino = false } = {}) {
     duda(dia, `No sé a qué sitio de roma.json corresponde «${nombre}» (línea: «${raw}»).`, 'paradas')
     return { tipo: 'parada', lugar: null, titulo: nombre, min: min ?? 15, modo, sin_resolver: true, doc: raw }
   }
-  const notas = [...parentesis(cola), ...parentesis(cabeza).filter((p) => !nombres[`${sinParentesis(nombre)} (${p})`] && nombres[nombre] === undefined)]
+  // (Un paréntesis puede traer varias notas separadas por «;»: «abre a las 10:00 y cierra el lunes; si está cerrado: «El mirador…»».)
+  const notas = [...parentesis(cola), ...parentesis(cabeza).filter((p) => !nombres[`${sinParentesis(nombre)} (${p})`] && nombres[nombre] === undefined)].flatMap((n) => n.split(/;s*(?=si est[aá] cerrado)/i))
   const frases = cola.replace(/\([^)]*\)/g, '').split('.').map((s) => s.trim()).filter(Boolean)
   const place = places.get(norm(sitio.lugar))
   const stop = { tipo: sitio.lugar === 'Free Tour por Roma' ? 'tour' : 'parada', lugar: sitio.lugar, ...(sitio.titulo ? { titulo: sitio.titulo } : {}), ...(sitio.foto ? { foto: sitio.foto } : {}), ...(sitio.no_quita_noche ? { no_quita_noche: true } : {}), ...(Array.isArray(sitio.coordenadas) ? { coordenadas: sitio.coordenadas } : {}), modo: modo ?? sitio.modo ?? null, doc: raw }
@@ -184,7 +185,7 @@ function nocheDe(texto, dia) {
   let t = doc.replace(/\.$/, '')
   const out = { lista: [], doc }
   // «la que no haya salido» / «la pareja de nocturnas que toque (regla 13)»: la elige el motor por las parejas cercanas (regla 13).
-  if (/^la que no haya salido|^la pareja( de nocturnas)? que toque/i.test(t)) return { ...out, libre: true, texto: t }
+  if (/^la que no haya salido|^la (pareja|nocturna)( de nocturnas)? que toque/i.test(t)) return { ...out, libre: true, texto: t }
   const o = /\(o la imprescindible que falte\)/i.exec(t)
   if (o) { out.o_imprescindible = true; t = t.replace(o[0], '').trim() }
   if (/\(taxi\)/i.test(t)) { out.taxi = true; t = t.replace(/\s*\(taxi\)/i, '') }

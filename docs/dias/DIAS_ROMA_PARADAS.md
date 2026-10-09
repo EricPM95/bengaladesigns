@@ -19,11 +19,11 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
      - si un sitio repite en el viaje, va más corto.
    - Si al viajero le sobra tiempo, HOY le propone qué añadir por el camino (regla 15).
 4. **Lo que tiene hora fija** (una reserva, un turno, el Free Tour) va a su hora:
-   - antes va «Llegada a {sitio}», 30 min antes si es reserva y 15 si es turno, con su propio texto;
+   - antes va «Llegada a {sitio}», con su propio texto: 30 min antes en las reservas grandes (el Coliseo, los Museos, la Galería), por las colas de seguridad; 15 min en el Free Tour y en los turnos (decidido el 9-oct-2026). Si se va justo, el viajero irá más deprisa: la app no quita nada;
    - lo que cabe antes de la hora fija va antes, y lo demás después, siempre en el mismo orden;
    - si antes queda un rato, entra una parada corta que esté al lado (el Arco antes del Coliseo);
    - si aún queda más de 1 h, se adelantan las paradas de después que están cerca (a 15 min andando o menos del sitio), en su orden y sin zigzag. Ejemplo: Museos a las 14:00 → por la mañana San Pedro, la Basílica, el Castillo y el Puente; comida en el Borgo a las 12:30; Museos; y por la tarde, Trastevere;
-   - si la hora fija cae a mediodía (empieza entre las 12:30 y las 15:00 y dura más de 1 h), la comida va antes, entre las 12:00 y las 12:30, en su zona;
+   - si la hora fija cae a mediodía (empieza entre las 12:00 y las 15:00 y dura más de 1 h), la comida va antes, en su zona: entre las 12:00 y las 12:30 si la reserva es desde las 13:30; antes y rápida (hacia las 11:30) si es de 12:00 a 13:00 (decidido el 9-oct-2026: mejor comer antes);
    - **el día nunca empieza más tarde por una reserva** (decidido el 6-oct-2026): empieza a su hora, y la mañana se llena con lo de antes y lo cercano de después. La app nunca mete una parada que no esté escrita ese día para llenar un hueco (decidido el 9-oct-2026, tanda 6r). Si la reserva es antes de que empiece el día, el día empieza antes.
 5. **Días con cabeza, mejor que sobre** (decidido el 6-oct-2026): cada día se escribe para que quepa con holgura, con los minutos de la regla 3. Mejor que la app diga «Vas bien de tiempo, ¿quieres añadir algo?» que «hemos quitado…». La app **nunca dice «hemos eliminado» ni «hemos quitado»**: lo que no entra es «Si te sobra tiempo», un extra.
    **Si aun así una franja no cabe** (por un cierre; nunca por una reserva, ver la regla 17), lo de menos importancia de esa franja (la pirámide, de abajo arriba) pasa a **«Si te sobra tiempo»**. Nunca un imprescindible la primera vez que sale en el viaje.
@@ -35,7 +35,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 8. **Atardecer:** solo un dato en la cabecera del día, «Hoy el sol se pone a las 17:05». Los miradores tienen un texto que vale de día, al atardecer y de noche. No se mueve nada.
 9. **«De camino»:** pasas por delante sin pararte. Dos o más seguidos van en una sola tarjeta, «De camino a {siguiente}», sin foto propia. Un «de camino» nunca es un sitio que ese día ya sale como parada (se sube y se baja la escalinata de la Plaza de España, pero no se nombra otra vez: ese rato es el trayecto).
    - **Qué es parada y qué es de camino** (decidido el 7-oct-2026): parada es todo sitio con nombre propio, con historia y conocido, aunque sean 5–10 min (en Roma: la Conciliazione, el Teatro de Marcelo, la Columna de Trajano, Porta Pinciana, Piazza Venezia, Via dei Fori Imperiali, el Arco de Constantino, el Puente Sant'Angelo, Via Condotti, Via Veneto, la Fuente del Tritón). De camino son solo las calles de paso sin fama (Via del Babuino, Via dei Coronari, Via Margutta…), los rincones pequeños (la Fuente de las Tortugas, el Elefantino), las fachadas de iglesias en las que no se entra y lo ya visitado otro día del viaje, con «Ya lo visitaste el día {n}».
-10. **Sin paseos** (decidido el 6-oct-2026; con una excepción, el paseo por Trastevere antes de cenar, decidido el 7-oct-2026): solo paradas y «de camino». Una calle de paso o un barrio por el que se pasa (Monti, Via Margutta…) va «de camino», aunque se tarde más de 5 min andando: ese rato es el trayecto. Las calles con fama de la regla 9 (la Conciliazione, Via Condotti, Via Veneto…) son paradas (decidido el 7-oct-2026, corregido en los días el 9-oct-2026). Un sitio que se visita (el lago de Villa Borghese, el reloj de agua, el Barrio Judío) es una parada con su nombre.
+10. **Sin paseos** (decidido el 6-oct-2026; con una excepción, el paseo por Trastevere antes de cenar, decidido el 7-oct-2026; cuando Trastevere va por la mañana, el paseo se queda para antes de la cena, en Trastevere, decidido el 9-oct-2026): solo paradas y «de camino». Una calle de paso o un barrio por el que se pasa (Monti, Via Margutta…) va «de camino», aunque se tarde más de 5 min andando: ese rato es el trayecto. Las calles con fama de la regla 9 (la Conciliazione, Via Condotti, Via Veneto…) son paradas (decidido el 7-oct-2026, corregido en los días el 9-oct-2026). Un sitio que se visita (el lago de Villa Borghese, el reloj de agua, el Barrio Judío) es una parada con su nombre.
 11. **Restaurantes:**
     - la comida y la cena llevan su alternativa escrita;
     - si cierran los dos, otro restaurante de verdad de la misma zona, a menos de 10 min andando;
@@ -55,7 +55,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
     - **se come y se cena donde acaba** esa parte del día;
     - **nada cerrado** a la hora a la que se llega.
 
-    Si una recolocación rompe alguna, no se hace: lo que no cabe pasa a «Si te sobra tiempo».
+    Si una recolocación rompe alguna, no se hace: lo que no cabe pasa a «Si te sobra tiempo». **Con una reserva, no:** no se quita nada, solo se ordena (regla 17).
 15. **Pestaña HOY:**
     - la siguiente parada y cuánto se tarda andando;
     - marcar como hecha;
@@ -72,14 +72,16 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
       - **Si le falta:** «Vas justo. ¿Dejamos {lo de menos importancia} para si te sobra tiempo?». El viajero decide.
       - Nunca cambia nada sola.
 
+16. **Plan de lluvia.** Cada día lleva su línea «🌧 Si llueve»: qué parada al aire libre se acorta o sale y qué parada por dentro entra, siempre cerca de la ruta y con las comprobaciones del punto 14. La app mira la previsión (la víspera y esa mañana). Si hay previsión de lluvia en una franja, HOY avisa: «Hay previsión de lluvia esta tarde. Si llueve, aquí tienes una alternativa» **[Ver alternativa]**. Nunca cambia sola: decide el viajero.
 17. **Reservas: solo lo escrito** (decidido el 6-oct-2026, vale para todos los destinos). Cada reserva grande tiene su día escrito para cada tramo de hora, y el motor no se inventa otro.
     - **Las reservas mandan y el día lo lleva todo** (decidido el 9-oct-2026, vale para todos los destinos): con una reserva, el día lleva todo lo que tiene escrito. La app **solo lo ordena para que tenga sentido** (qué va antes y qué después, por dónde se empieza). No quita nada, no lo pasa a «Si te sobra tiempo» y no acorta la comida porque no dé tiempo: hay quien sale a las 6:00 y vuelve a las 22:00. El viajero quita o añade lo que quiera.
     - **La app nunca propone otra hora** (decidido el 9-oct-2026, vale para todos los destinos): el viajero compra la entrada cuando le va bien y la app se adapta. Por eso cada reserva grande tiene su día escrito para todas sus horas, de la primera a la última entrada.
-    - **Si aun así una hora no tuviera lista,** la reserva manda (regla 4), sin preguntar y sin inventar paradas.
     - **Si las horas de dos reservas se cruzan** (por ejemplo, el Free Tour de 10:00 a 12:30 y los Museos a las 11:45), es un hecho, no una propuesta: aviso «Tu Free Tour y tu entrada a los Museos coinciden. Revisa una de las dos reservas.» [Ver mis reservas], y se queda en la campana hasta que se arregla.
     - **Si no se cruzan pero se va justo** (no da tiempo a llegar de una a otra, o no queda el margen de 30 min o tiempo de comer; por ejemplo, el Free Tour a las 12:00 y los Museos a las 15:30 o a las 16:00), aviso: «Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.» (con los nombres y la duración de la primera reserva). Solo avisa: las dos reservas mandan y el día se queda como está, con todo (decidido el 9-oct-2026).
     - **Un imprescindible que se visita por dentro nunca pasa a «de camino» ni a «por fuera» por una reserva:** se mueve antes o después de ella.
-16. **Plan de lluvia.** Cada día lleva su línea «🌧 Si llueve»: qué parada al aire libre se acorta o sale y qué parada por dentro entra, siempre cerca de la ruta y con las comprobaciones del punto 14. La app mira la previsión (la víspera y esa mañana). Si hay previsión de lluvia en una franja, HOY avisa: «Hay previsión de lluvia esta tarde. Si llueve, aquí tienes una alternativa» **[Ver alternativa]**. Nunca cambia sola: decide el viajero.
+    - **Lo nuestro nunca te hace llegar tarde a tu reserva** (decidido el 9-oct-2026, vale para todos los destinos). Antes de una reserva, primero va la reserva con su margen (regla 4), luego la comida (regla 4) y luego nuestras paradas. Lo que no cabe antes pasa detrás de la reserva, en su orden escrito. Si detrás ya está cerrado, es un cierre (regla 5). El aviso «vas justo» es solo para las reservas del viajero: sale cuando no da tiempo de una a otra con el trayecto, el margen y la comida, nunca por nuestras paradas.
+    - **La comida nunca pasa detrás por nuestras paradas:** va donde dice la regla 4. Solo va detrás de una reserva cuando las reservas del viajero no dejan comer antes de las 15:00 (por ejemplo, un Free Tour de 12:00 a 14:30: se come al acabar).
+    - **La noche tampoco se quita por la hora:** con una reserva, la nocturna se queda aunque el día acabe tarde. El viajero la quita si quiere.
 
 **Líneas de transporte público de Roma que usa la app** (de momento solo estas; el resto, andando o taxi, y el botón «Rutas» abre el mapa). Cuentan si se llega a la parada de la línea en **12 min andando o menos** en cada punta:
 - **Metro A:** Ottaviano (Vaticano) · Flaminio (Piazza del Popolo) · Spagna (Plaza de España) · Barberini (Tritón, Via Veneto) · Termini · San Giovanni (Letrán).
@@ -163,27 +165,26 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Escalinata y Trinità dei Monti ~20
   - Via Condotti ~15
 - **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** Fontana de Trevi iluminada
+- **Noche:** Fontana de Trevi
 
 **Con el Coliseo reservado por la mañana**, el día va al revés y acaba en San Pedro:
 - Coliseo (reserva) y Arco
 - Fori Imperiali
+- la Plaza del Campidoglio y el Foro desde la terraza
 - Piazza Venezia y el Altar
 - comida en Armando
 - Panteón, Navona, Puente, Castillo, Conciliazione y San Pedro
 - y luego la misma tarde (taxi a la Plaza de España…) y la misma noche.
 
-**Con el Coliseo reservado de 12:30 a 14:00:**
-- el día empieza a las 8:00, en San Pedro;
-- **mañana:** Plaza de San Pedro ~30 y Basílica ~1 h, la Conciliazione ~10, el Castillo por fuera ~30, el Puente ~10, Piazza Navona ~45 y el Panteón por dentro ~45;
-- **comida:** si la reserva es a las 13:30 o más tarde, antes, en Armando al Pantheon; si es antes, después del Coliseo, en Monti (La Taverna dei Fori Imperiali);
-- Piazza Venezia ~10 y Via dei Fori Imperiali ~15, «Llegada a…» y 🎟 el Coliseo por dentro;
-- **tarde:** Via dei Fori Imperiali ~15, la Plaza del Campidoglio y el Foro desde la terraza ~30, el Altar por fuera ~30, el taxi a la Plaza de España y la Escalinata y Trinità dei Monti;
+**Con el Coliseo reservado de 12:30 a 14:00** (cambiado el 9-oct-2026: la Roma antigua por la mañana, San Pedro por la tarde):
+- **mañana:** Piazza Venezia ~10, el Altar por fuera ~30, la Plaza del Campidoglio ~30, el Foro desde la terraza ~30, Via dei Fori Imperiali ~15, «Llegada a…», 🎟 el Coliseo por dentro y el Arco ~10;
+- **comida:** en Monti (La Taverna dei Fori Imperiali o Trattoria Valentino), después del Coliseo;
+- **tarde:** taxi a Navona; el Panteón por dentro ~45, Piazza Navona ~45, el Puente ~10, el Castillo por fuera ~30, la Conciliazione ~10, la Plaza de San Pedro ~30 y la Basílica por dentro ~1 h (última entrada a las 19:15); taxi a la Plaza de España, la Escalinata y Trinità dei Monti ~20 y Via Condotti ~15;
 - **cena y noche:** las de siempre.
 
 **Con el Coliseo reservado de 14:30 en adelante:**
 - la mañana y la comida de siempre;
-- **tarde:** Piazza Venezia ~10, el Altar por fuera, la Plaza del Campidoglio y el Foro desde la terraza, Via dei Fori Imperiali ~15, «Llegada a…» y 🎟 el Coliseo por dentro, el taxi a la Plaza de España y la Escalinata y Trinità dei Monti;
+- **tarde:** Piazza Venezia ~10, Via dei Fori Imperiali ~15, «Llegada a…», 🎟 el Coliseo por dentro y el Arco ~10; después, la Plaza del Campidoglio y el Foro desde la terraza ~30 y el Altar por fuera ~30 (al aire libre, se ven a cualquier hora); taxi a la Plaza de España ~45, la Escalinata y Trinità dei Monti ~20 y Via Condotti ~15;
 - **cena y noche:** las de siempre.
 
 **Pool y experiencias:**
@@ -225,7 +226,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Santa Maria in Trastevere, por dentro (gratis) ~20
   - Paseo por Trastevere ~30
 - **Cena:** Da Enzo al 29 (o Tonnarello), en Trastevere
-- **Noche:** Fontana de Trevi iluminada (taxi) y la Plaza de España de noche
+- **Noche:** Fontana de Trevi (taxi) y la Plaza de España
 - **🌧 Si llueve:** el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.
 
 
@@ -249,7 +250,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - Castillo de Sant'Angelo, por fuera ~30
 - Puente Sant'Angelo ~15
 - **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati
-- **Noche:** Fontana de Trevi iluminada y la Plaza de España de noche, si el día entero no las ha llevado; si no, Piazza Navona de noche.
+- **Noche:** Fontana de Trevi y la Plaza de España, si el día entero no las ha llevado; si no, Piazza Navona.
 
 **Con los Museos marcados o reservados:**
 - **Mañana:** 🎟 Museos Vaticanos y Capilla Sixtina ~3 h, Plaza de San Pedro ~30, Basílica por dentro ~1 h 15, comida en el Borgo (Borghiciana o Dal Toscano), la Conciliazione ~10, el Castillo por fuera y el Puente ~10.
@@ -291,7 +292,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Piazza Navona ~45
   - Iglesia del Gesù, por dentro ~20, de camino a la cena (⚠️ por la tarde abre a las 16:30; de julio a septiembre, a las 17:00). Va al final por su hora de abrir: así no hay esperas. Desde Navona son ~12 min, y la cena está a ~5 min.
 - **Cena:** Armando al Pantheon (o Da Baffetto)
-- **Noche:** Fontana de Trevi iluminada y la Plaza de España de noche
+- **Noche:** Fontana de Trevi y la Plaza de España
   - **Con el Free Tour de las 21:00** (decidido el 9-oct-2026): la noche es el 🎟 Free Tour por Roma, 21:00 ~2 h 30, en lugar de Trevi y la Plaza de España (el tour pasa por allí). Sale de la Plaza de España: de Armando, a pie (~15 min). Lo que el tour recorre y ya se ha visto por la tarde (el Panteón, Navona) se queda: de noche se ve distinto.
 - **Cierres:** el sábado (y la víspera de festivo) el Panteón no deja entrar desde las 17:00 por la misa: aviso «entra antes». El domingo y los festivos, tampoco durante la misa de las 10:30. Si una iglesia cierra (domingo o festivo), por fuera.
 
@@ -321,23 +322,25 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - si no, antes.
 - **La comida, antes de las 15:00:** en el Gueto si la Roma antigua acaba a mediodía; en Monti, entre el Foro y el Coliseo, si el Coliseo es a mediodía.
 
+Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de la hora de antes (decidido el 9-oct-2026, vale para todas las tablas de horas).
+
 | Coliseo a las… | La Roma antigua va… | El Foro y el Palatino | La comida |
 |---|---|---|---|
 | hasta las 10:00 | por la mañana | después del Coliseo | en el Gueto |
 | 10:30 – 11:00 | por la mañana | después del Coliseo | en el Gueto |
 | 11:30 – 12:00 | por la mañana | antes del Coliseo | en el Gueto |
 | 12:30 – 15:00 | a mediodía | antes del Coliseo | en Monti, antes del Coliseo |
-| 15:30 en adelante | por la tarde | después si da tiempo (regla de arriba); si no, antes | en la otra parte (el Gueto o Trastevere) |
+| 15:30 en adelante | por la tarde | después si da tiempo (regla de arriba); si no, antes | en el Gueto |
 
 - **A primera hora (hasta las 10:00):** el día normal.
 - **A media mañana, de 10:30 a 11:00:** el Foro (~1 h 30) no cabe antes, así que va después.
   - **mañana:** San Pietro in Vincoli, por dentro (el Moisés de Miguel Ángel; abre a las 8:00) ~20, el Arco de Constantino, «Llegada a…» y el Coliseo a su hora;
-  - **después:** Foro Romano y Palatino, por dentro (se entra junto al Arco y se sale por el Campidoglio), la Plaza del Campidoglio y el Altar de la Patria de camino o por fuera;
+  - **después:** Foro Romano y Palatino, por dentro (se entra junto al Arco y se sale por el Campidoglio), la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar de la Patria por dentro (si la comida pasaría de las 15:00, el Altar va después de comer: está a 5 min del Gueto);
   - **comida:** en el Gueto;
   - **la tarde, la de siempre.**
 - **De 11:30 a 12:00:**
   - **mañana:** San Pietro in Vincoli, por dentro ~20, el Arco, el Foro Romano y Palatino por dentro (se entra junto al Arco), «Llegada a…» y el Coliseo;
-  - **después:** Via dei Fori Imperiali ~15, la Plaza del Campidoglio y el Altar (por fuera si va justo);
+  - **después:** Via dei Fori Imperiali ~15, la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar por dentro (si la comida pasaría de las 15:00, el Altar va después de comer);
   - **comida:** en el Gueto;
   - **la tarde, la de siempre.**
 - **A mediodía (de 12:30 a 15:00):**
@@ -348,16 +351,14 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - **cena y noche:** las de siempre;
   - el Barrio Judío, al final de la tarde (está a 5 min de Torre Argentina).
 - **Por la tarde (a las 15:30 o más tarde):** el día va al revés.
-  - **mañana:** el centro: el Panteón por dentro (abre a las 9:00), Piazza Navona, San Luigi dei Francesi, Largo di Torre Argentina, el Gesù (por la mañana está abierto) y el Barrio Judío;
+  - **mañana:** el Panteón por dentro (abre a las 9:00), Piazza Navona, San Luigi dei Francesi, Largo di Torre Argentina, el Gesù (por la mañana está abierto), el Barrio Judío, Piazza Venezia ~10 y el Altar de la Patria por dentro;
   - **comida:** en el Gueto;
-  - **tarde:** Plaza del Campidoglio, Altar de la Patria por dentro, Via dei Fori Imperiali ~15, el Arco ~10, «Llegada a…» y el Coliseo; **después del Coliseo, el Foro Romano y Palatino por dentro** (se entra junto al Arco, con la misma entrada), si queda al menos 1 h 30 hasta su última entrada (en verano, hacia las 18:15; en invierno, mucho antes). Si no, el Foro y el Palatino por dentro antes del Coliseo (se entra por Via dei Fori Imperiali y se sale junto al Arco);
+  - **tarde:** Plaza del Campidoglio, Via dei Fori Imperiali ~15, el Arco ~10, «Llegada a…» y el Coliseo; **después del Coliseo, el Foro Romano y Palatino por dentro** (se entra junto al Arco, con la misma entrada), si queda al menos 1 h 30 hasta su última entrada (en verano, hacia las 18:15; en invierno, mucho antes). Si no, el Foro y el Palatino por dentro antes del Coliseo (se entra por Via dei Fori Imperiali y se sale junto al Arco);
   - **cena:** en Monti (La Taverna dei Fori Imperiali o Trattoria Valentino);
   - **noche:** Trevi y la Plaza de España (15 min andando o taxi).
 - **Nunca** se pasa el Foro y el Palatino a «de camino» o «por fuera» para que quepa: va antes o después del Coliseo, que para eso es la misma entrada.
 
 **D1-corto y D1-FT con el Coliseo reservado:** la Roma antigua es la del D1 con la lista de su hora (por dentro), y la otra parte es la suya. Si la lista del D1 manda la comida a Monti, la tarde del D1-corto empieza en el Gueto, igual. **Con el Coliseo por la tarde (15:30 en adelante), en el D1-FT va al revés:** ver el D1-FT.
-
-**Comer un poco más tarde vale** en los días con reserva: si la comida cae entre las 14:30 y las 15:00 por una hora fija, se deja así. Para un viajero español es normal. Solo se toca si pasa de las 15:00.
 
 **Free Tour de tarde (15:00 o 17:00), si va en este día:** es una reserva en la tarde. Lo que el tour recorre (el centro) sale de la lista con «Lo ves en el Free Tour».
 
@@ -402,14 +403,14 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 
 **Reserva de los Museos a otra hora:** la regla general (la regla 4). La mañana se hace sin los Museos y los Museos van a su hora; después, lo de la tarde en su orden.
 
-**Museos reservados a media mañana (de 9:00 a 12:00):**
-- **mañana:** la Basílica de San Pedro por dentro a primera hora (abre a las 7:00; desde las 8:00, casi sin cola) ~1 h y la Plaza ~30 (con los Museos a las 9:00, el día empieza a las 7:30);
+**Museos reservados a media mañana (de 9:30 a 11:30):**
+- **mañana:** la Basílica de San Pedro por dentro a primera hora (abre a las 7:00; desde las 8:00, casi sin cola) ~1 h y la Plaza ~30;
 - «Llegada a…» y 🎟 los Museos a su hora;
-- **comida:** en el Borgo (Borghiciana o Dal Toscano), antes de las 15:00 (con los Museos a las 12:00, se sale hacia las 14:30);
+- **comida:** en el Borgo (Borghiciana o Dal Toscano), al salir;
 - **tarde:** la de siempre (la Conciliazione, el Castillo, el Puente y Trastevere).
 - **La Basílica nunca pasa a «de camino»** para que quepa la comida: va antes de los Museos.
 
-**Museos reservados a mediodía (de 12:30 a 14:30):** la comida va antes, porque al salir ya serían más de las 15:00.
+**Museos reservados a mediodía (de 12:00 a 14:30):** la comida va antes, porque al salir ya serían más de las 15:00 (de 12:00 a 13:00, rápida, hacia las 11:30; regla 4).
 - **mañana:** Plaza de San Pedro ~30, Basílica por dentro ~1 h 15, la Conciliazione ~10, el Castillo por fuera ~30 y el Puente ~15 (con los Museos a las 12:30 o a las 13:00, el Castillo y el Puente pasan a después de los Museos, de camino a Trastevere);
 - **comida:** en el Borgo, antes de los Museos (Borghiciana o Dal Toscano; con los Museos a las 12:30, hacia las 11:45, rápida);
 - «Llegada a…» y 🎟 los Museos;
@@ -422,22 +423,23 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - **Mañana:**
   - Isla Tiberina ~20
   - Santa Maria in Trastevere, por dentro ~25
-  - Paseo por Trastevere ~30
-- **Comida:** Tonnarello (o Da Enzo al 29), en Trastevere
+- **Comida:** Da Lucia (o Checco er Carettiere), en Trastevere
 - **Tarde:**
   - San Pietro in Montorio y el Tempietto ~10
   - Fontana dell'Acqua Paola ~10
   - Mirador del Janículo ~30
   - *de camino:* el paseo del Janículo, bajando hasta San Pedro (~20 min)
-  - «Llegada a…» y 🎟 Museos Vaticanos y Capilla Sixtina ~3 h (con los Museos a las 17:00 o más tarde, la Plaza y la Basílica van antes)
+  - «Llegada a…» y 🎟 Museos Vaticanos y Capilla Sixtina ~3 h (con los Museos a las 16:00 o más tarde, la Plaza y la Basílica van antes: su última entrada es a las 19:15)
   - Plaza de San Pedro ~30
-  - Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00)
+  - Basílica de San Pedro, por dentro ~1 h (última entrada a las 19:15)
   - Via della Conciliazione ~10
   - Castillo de Sant'Angelo, por fuera ~30
   - Puente Sant'Angelo ~15 (ya de noche)
-- **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati
-- **Noche:** la nocturna que toque (regla 13): Trastevere ya se ha visto ese día.
-- **La Cúpula** (si el viaje no lleva el D6): después de la Basílica.
+  - Taxi a Trastevere
+  - Paseo por Trastevere ~30 (antes de cenar, regla 10)
+- **Cena:** Tonnarello (o Da Enzo al 29), en Trastevere
+- **Noche:** Trastevere de noche (el paseo ya lo es).
+- **La Cúpula** (si el viaje no lleva el D6): no va este día, porque cierra a las 17:00 (a las 18:00 en verano) y el Vaticano va por la tarde.
 
 - **🌧 Si llueve:** el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.
 
@@ -452,21 +454,15 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - 🎟 Free Tour por Roma, 10:00 ~2 h 30. Sale de la Plaza de España y acaba en Navona.
 - **Comida:** Armando al Pantheon (o Supplizio)
 - **Tarde** (cambiado el 8-oct-2026: antes iba la Basílica primero, y de la Basílica a los Museos y vuelta a la Plaza eran 30 min de ir y volver):
-  - Bus 40 o taxi a la entrada de los Museos
+  - Taxi a la entrada de los Museos
   - 🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de tarde)
   - Plaza de San Pedro ~30 (al salir de los Museos, ~10 min andando junto a la muralla; la cola de la Basílica se hace aquí)
-  - Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00 todo el año)
+  - Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00; última entrada a las 19:15)
   - Via della Conciliazione ~10
   - Castillo de Sant'Angelo, por fuera ~30
   - Puente Sant'Angelo ~15
 - **Cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati, a ~10 min del Castillo
 - **Noche:** la pareja de nocturnas que toque (regla 13), con taxi de 15 min o menos. El Puente y el Castillo ya se han visto de tarde. En un viaje de 3 días suele ser el Coliseo y el Foro desde el Campidoglio, si no se han visto ese día.
-- **Con los Museos reservados de 13:30 a 14:30:**
-  - la mañana igual, con el Free Tour;
-  - al acabar en Navona (hacia las 12:30), taxi al Borgo (~15 min);
-  - **comida** sin entretenerse en el Borgo (Borghiciana o Dal Toscano, ~45);
-  - «Llegada a…» y 🎟 los Museos;
-  - al salir, la **Basílica** (abre hasta las 20:00) y la Plaza de San Pedro.
 - **Domingo (Museos cerrados):** se cambia de día; si no se puede, la tarde sin Museos.
 
 **Cómo se monta este día** (decidido el 9-oct-2026). Son dos partes, y da igual qué se reserve primero:
@@ -477,7 +473,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 
 **Con una reserva, la otra parte se va a la otra mitad del día:**
 - **Free Tour reservado por la mañana (10:00 o 12:00):** el Vaticano entero pasa a la tarde, y acaba con el Castillo y el Puente ya de noche.
-- **Free Tour reservado por la tarde (15:00 o 17:00):** el Vaticano pasa a la mañana, con todo: el Castillo y el Puente, después de la Conciliazione, antes de ir al Free Tour (regla 17: las reservas mandan, la app no quita nada).
+- **Free Tour reservado por la tarde (15:00 o 17:00):** el Vaticano pasa a la mañana, con todo. El Castillo y el Puente van después del Free Tour, que acaba en Navona, a 10 min del Puente (cambiado el 9-oct-2026; regla 17: la app no quita nada, solo ordena).
 - **Museos reservados por la mañana:** el Free Tour pasa a la tarde. **Museos reservados por la tarde:** el Free Tour pasa a la mañana.
 
 **Las horas de los Museos** (la última entrada es a las 18:00; cierran a las 20:00):
@@ -485,21 +481,18 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 | Museos a las… | Van… | Free Tour (si no está reservado) | La Basílica | La comida |
 |---|---|---|---|---|
 | 8:00 – 9:00 | por la mañana | 15:00 | después de los Museos | en el Borgo, después |
-| 9:30 – 12:00 | por la mañana | 17:00 | antes de los Museos (abre a las 7:00) | en el Borgo, después |
-| 12:30 – 13:30 | por la mañana | 17:00 | antes de los Museos | en el Borgo, antes de los Museos |
-| 14:00 – 16:30 | por la tarde | 10:00 | después de los Museos | junto a Navona, después del Free Tour |
-| 17:00 – 18:00 | por la tarde | 12:00 | antes de los Museos (si no, ya habría cerrado) | junto a Navona, después del Free Tour |
+| 9:30 – 11:30 | por la mañana | 17:00 | antes de los Museos (abre a las 7:00) | en el Borgo, después |
+| 12:00 – 13:30 | por la mañana | 17:00 | antes de los Museos | en el Borgo, antes de los Museos (regla 4) |
+| 14:00 – 15:30 | por la tarde | 10:00 | después de los Museos | junto a Navona, después del Free Tour |
+| 16:00 – 17:00 | por la tarde | 10:00 | antes de los Museos (su última entrada es a las 19:15) | junto a Navona, después del Free Tour |
+| 17:30 – 18:00 | por la tarde | 12:00 | antes de los Museos | junto a Navona, después del Free Tour |
 
 **Si el Free Tour y los Museos se reservan en días distintos** (raro; decidido el 9-oct-2026):
-- **el día de los Museos** lleva este día (D3) sin el Free Tour: lo que enseña el guía (la Plaza de España, Trevi, el Panteón, Navona) se hace por libre, en la mitad del día que deja libre el Vaticano;
+- **el día de los Museos** lleva este día (D3) sin el Free Tour: lo que enseña el guía se hace por libre, como paradas, en la mitad del día que deja libre el Vaticano: Plaza de España ~45, Escalinata y Trinità dei Monti ~20, Fontana de Trevi ~30, Panteón por dentro ~30 y Piazza Navona ~45;
 - **el día del Free Tour** lleva el D1-FT, y el Free Tour hace de «otra parte»: con el Free Tour por la mañana, la Roma antigua por la tarde; por la tarde, al revés. El Gueto y Trastevere se quedan, al final de la tarde;
 - si el viaje no tiene D1-FT, el Free Tour va en el día del centro que haya (el D1), en la mitad del día que deje libre la Roma antigua.
 
-**Si los dos están reservados,** cada uno a su hora, con la misma tabla. Si las horas se cruzan, el aviso «coinciden» de la regla 17; si no se cruzan pero no da tiempo a llegar de uno a otro, el aviso «vas justo» (30 min para llegar a la Plaza de España, ~2 h 30 de Museos y ~2 h 30 de Free Tour). Por ejemplo:
-- Free Tour a las 10:00 y Museos antes de las 13:30;
-- Free Tour a las 12:00 y Museos antes de las 15:30;
-- Free Tour a las 15:00 y Museos después de las 11:00;
-- Free Tour a las 17:00 y Museos después de las 13:30.
+**Si los dos están reservados,** cada uno a su hora, con la misma tabla. Si las horas se cruzan, el aviso «coinciden» de la regla 17; si no se cruzan pero no da tiempo a llegar de uno a otro, el aviso «vas justo». Para saberlo cuenta: ~2 h 30 de Museos, ~2 h 30 de Free Tour, el trayecto (~20 min en taxi), 15 min antes del Free Tour y 30 antes de los Museos (regla 4), y la comida si va en medio.
 
 **El Free Tour a otra hora** (decidido el 9-oct-2026). Sin reservar, el de las 10:00 (el día de arriba).
 - **A las 12:00:** el mismo día, corrido.
@@ -515,10 +508,10 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
     - 🎟 Free Tour por Roma, 12:00 ~2 h 30. Acaba en Navona.
   - **comida:** Armando al Pantheon (o Supplizio), antes de las 15:00;
   - **tarde:**
-    - Bus 40 o taxi a la entrada de los Museos
-    - 🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de 15:30 a 16:30)
+    - Taxi a la entrada de los Museos
+    - 🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de 16:00 a 16:30; a las 15:30, aviso «vas justo»)
     - Plaza de San Pedro ~30
-    - Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00)
+    - Basílica de San Pedro, por dentro ~1 h (última entrada a las 19:15)
     - Via della Conciliazione ~10
     - Castillo de Sant'Angelo, por fuera ~30
     - Puente Sant'Angelo ~15
@@ -532,27 +525,27 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - **comida:** Borghiciana (o Dal Toscano), en el Borgo;
   - **tarde:**
     - Via della Conciliazione ~10
-    - Castillo de Sant'Angelo, por fuera ~30
-    - Puente Sant'Angelo ~15
     - Taxi a la Plaza de España
     - 🎟 Free Tour por Roma, 15:00 ~2 h 30. Acaba en Navona.
     - Panteón, por dentro ~30 (el sábado no deja entrar desde las 17:00: ese día, «Cerrado hoy»)
-  - **cena:** Armando al Pantheon (o Da Baffetto);
+    - Puente Sant'Angelo ~15
+    - Castillo de Sant'Angelo, por fuera ~30
+  - **cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati, a ~10 min del Castillo;
   - **noche:** la nocturna que toque (regla 13), que no sea de lo visto ese día (regla 11c);
   - sin Trevi «sin gente»: sale de noche otro día;
-- **A las 17:00:** como el de las 15:00, con el Panteón y el camino de la Plaza de España antes del tour.
+- **A las 17:00:** como el de las 15:00, con el Panteón y el camino de la Plaza de España antes del tour, y el Puente y el Castillo después.
   - **mañana y comida:** las del de las 15:00;
   - **tarde:**
     - Via della Conciliazione ~10
-    - Castillo de Sant'Angelo, por fuera ~30
-    - Puente Sant'Angelo ~15
-    - *de camino:* Via dei Coronari
+    - Taxi al Panteón
     - Panteón, por dentro ~30
     - Templo de Adriano, por fuera ~10
     - Piazza Colonna y la Columna de Marco Aurelio ~10
     - Via Condotti ~15
     - 🎟 Free Tour por Roma, 17:00 ~2 h 30. Sale de la Plaza de España y acaba en Navona.
-  - **cena:** Da Baffetto (o Armando al Pantheon), junto a Navona;
+    - Puente Sant'Angelo ~15 (ya de noche)
+    - Castillo de Sant'Angelo, por fuera ~30
+  - **cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati;
   - **noche:** la nocturna que toque (reglas 13 y 11c);
 - **A las 21:00:** no hay D3: el Free Tour va en la noche del D1 (ver el D1 y la tabla «Qué días lleva cada viaje»).
 - **Pool:** la Cúpula y el Castillo por dentro no caben: van a otro día del viaje o a «No incluido».
@@ -579,26 +572,25 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - *de camino:* bajada a Trastevere
   - Paseo por Trastevere ~30
 - **Cena:** Da Enzo al 29 (o Tonnarello, o Checco er Carettiere)
-- **Noche:** Fontana de Trevi iluminada (taxi) y la Plaza de España de noche
+- **Noche:** Fontana de Trevi (taxi) y la Plaza de España
 
 **Con el Coliseo reservado por la tarde (15:30 en adelante)** (decidido el 9-oct-2026): Trastevere por la mañana y la Roma antigua por la tarde.
 - **mañana:**
   - Santa Maria in Trastevere, por dentro ~20
-  - San Pietro in Montorio y el Tempietto ~10
+  - San Pietro in Montorio y el Tempietto ~10 (abre a las 10:00 y cierra el lunes; si está cerrado: «El mirador de San Pietro in Montorio»)
   - Fontana dell'Acqua Paola ~10
   - Mirador del Janículo ~30
   - *de camino:* bajada a Trastevere
-  - Paseo por Trastevere ~30
   - Isla Tiberina ~20
   - Teatro de Marcelo ~10
   - Barrio Judío ~25
 - **comida:** Giggetto al Portico d'Ottavia (o Nonna Betta), en el Gueto;
-- **tarde:** la Roma antigua de la lista del D1 «Por la tarde»: la Plaza del Campidoglio, el Altar de la Patria por dentro, Piazza Venezia, Via dei Fori Imperiali, el Arco, «Llegada a…» y el Coliseo; el Foro y el Palatino antes o después, según la regla del D1;
-- **cena:** en Monti (La Taverna dei Fori Imperiali o Trattoria Valentino);
-- **noche:** Fontana de Trevi iluminada (taxi) y la Plaza de España de noche.
+- **tarde:** la Roma antigua de la lista del D1 «Por la tarde»: Piazza Venezia, el Altar de la Patria por dentro, la Plaza del Campidoglio, Via dei Fori Imperiali, el Arco, «Llegada a…» y el Coliseo; el Foro y el Palatino antes o después, según la regla del D1; después, taxi a Trastevere y el Paseo por Trastevere ~30 (antes de cenar, regla 10);
+- **cena:** Da Enzo al 29 (o Tonnarello), en Trastevere;
+- **noche:** la nocturna que toque (regla 13): Trastevere ya se ve en el paseo.
 - **Con el Coliseo a mediodía (12:30 – 15:00):** la mañana y la comida de la lista del D1 «A mediodía», y por la tarde el Gueto y Trastevere, enteros.
 
-**Pool:** como el D1, con el Ojo y la Galería por la tarde, en lugar de la Isla Tiberina y Trastevere.
+**Pool:** como el D1, con el Ojo por la tarde. La Galería, 🎟 con su lista de horas del D4, en la mitad del día que deje libre la Roma antigua; la Isla Tiberina y Trastevere se quedan (regla 17: no se quita nada).
 
 **Experiencias:**
 - **Arte y Museos:** los Capitolinos.
@@ -636,7 +628,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - Escalinata y Trinità dei Monti ~20
 - Via Condotti ~15
 - **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** Coliseo iluminado (taxi)
+- **Noche:** Coliseo (taxi)
 
 **Pool:** la Galería Borghese, 🎟 por la mañana (turno de las 9:00) o por la tarde, va antes del Pincio. Santa Maria del Popolo, por la tarde.
 
@@ -683,32 +675,32 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Escalinata y Trinità dei Monti ~20
   - *de camino:* Via Margutta
 - **Cena:** Il Gabriello (o Poldo e Gianna Osteria), en el Tridente
-- **Noche:** Coliseo iluminado (taxi)
+- **Noche:** Coliseo (taxi)
 
 **Lunes (la Galería cierra):**
 - primero, el cambio de orden de los días;
 - si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 10:00), después de la Fuente del Tritón.
 
-**La Galería Borghese a otra hora** (las entradas empiezan cada hora, de 9:00 a 17:00, y hay una a las 17:45; cada visita dura 2 h):
-- **Qué lista usa cada hora:** 9:00 y 10:00 → la de las 9:00; 11:00 → el día normal; 12:00 → la de las 12:00; 13:00, 14:00, 15:00, 16:00, 17:00 y 17:45 → el día al revés (con la entrada a las 13:00 o a las 14:00, la comida antes, entre las 12:00 y las 12:30).
+**La Galería Borghese a otra hora** (las entradas empiezan cada hora, de 9:00 a 17:00, y hay una a las 17:45; cada visita dura 2 h, y la de las 17:45, 1 h 15, porque cierra a las 19:00):
+- **Qué lista usa cada hora:** 9:00 y 10:00 → la de las 9:00; 11:00 → el día normal; 12:00 → la de las 12:00; 13:00, 14:00, 15:00, 16:00, 17:00 y 17:45 → el día al revés (con la entrada a las 13:00 o a las 14:00, la comida antes: ver la lista).
 - **A las 9:00:**
   - **mañana:** desayuno cerca de Via Veneto, la Fuente del Tritón ~10, Via Veneto ~10 y Porta Pinciana ~10, «Llegada a…» y la Galería; después, el lago, la Piazza di Siena, el reloj de agua y el Pincio;
   - **tarde:** la de siempre;
-  - **Trevi:** no cabe a primera hora. Si el viaje no la lleva otro día, va al final de la tarde, de camino desde la Plaza de España a la cena (~7 min).
+  - **Trevi:** no cabe a primera hora. Si el viaje no la lleva otro día, va al final de la tarde como parada (Fontana de Trevi ~30), entre la Plaza de España y la cena (~7 min).
 - **A las 11:00:** el día normal (la Galería y después el parque, de camino al Pincio).
-- **De las 14:00 a las 17:45:** el día va al revés.
+- **De las 13:00 a las 17:45:** el día va al revés.
   - **mañana:** Trevi «sin gente» a las 7:30, desayuno, la Plaza de España, la Escalinata y Trinità dei Monti, Via Condotti ~15, el Ara Pacis por dentro (abre a las 9:30), de camino Via di Ripetta, la Piazza del Popolo y Santa Maria del Popolo (por la mañana abre);
   - **comida:** junto a la Piazza del Popolo (Sgarro Bistrot o Buccone);
-  - **tarde:** la Terraza del Pincio, el reloj de agua, el lago y la Piazza di Siena, «Llegada a…» y la Galería; al salir, Porta Pinciana ~10, Via Veneto ~10 y la Fuente del Tritón ~10;
+  - **comida:** con la entrada a las 13:00, rápida, hacia las 11:45; a las 14:00, entre las 12:00 y las 12:30 (regla 4);
+  - **tarde:** la Terraza del Pincio y el reloj de agua, «Llegada a…» y la Galería; al salir, el lago y la Piazza di Siena, Porta Pinciana ~10, Via Veneto ~10 y la Fuente del Tritón ~10 (cambiado el 9-oct-2026: el lago, después de la Galería, para no comer demasiado pronto);
   - **cena:** en el Tridente.
 - **A las 12:00** (decidido el 9-oct-2026): el parque antes y la comida después.
-  - **mañana:** Trevi «sin gente» a las 7:30, desayuno, la Plaza de España ~45, la Escalinata y Trinità dei Monti ~20, la Terraza del Pincio ~20, el reloj de agua ~10, el lago y la Piazza di Siena ~30, «Llegada a…» y la Galería;
-  - **comida:** junto a la Piazza del Popolo (Sgarro Bistrot o Buccone), bajando por el Pincio (~20 min), antes de las 15:00;
-  - **tarde:** la Piazza del Popolo ~30, Santa Maria del Popolo ~20 (abre a las 16:00), el Ara Pacis por dentro ~45, Via Condotti ~15 y *de camino* Via Margutta;
-  - **cena y noche:** las de siempre;
-  - Porta Pinciana, Via Veneto y el Tritón (si el viaje no los lleva otro día): justo después de la Galería, antes de bajar a comer.
+  - **mañana:** Trevi «sin gente» a las 7:30, desayuno, la Fuente del Tritón ~10, Via Veneto ~10, Porta Pinciana ~10, el lago y la Piazza di Siena ~30, el reloj de agua ~10, la Terraza del Pincio ~20, y vuelta por el parque: «Llegada a…» y la Galería (cambiado el 9-oct-2026: así se llega a la entrada y se come antes de las 15:00);
+  - **comida:** junto a la Piazza del Popolo (Sgarro Bistrot o Buccone), bajando por el Pincio (~20 min);
+  - **tarde:** la Piazza del Popolo ~30, Santa Maria del Popolo ~20 (abre a las 16:00), el Ara Pacis por dentro ~45, Via Condotti ~15, la Plaza de España ~45 y la Escalinata y Trinità dei Monti ~20, y *de camino* Via Margutta;
+  - **cena y noche:** las de siempre.
 
-**Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el Tritón, Via Veneto ni Porta Pinciana del principio: **el día empieza directamente en Villa Borghese** (taxi o metro hasta Porta Pinciana), con la Galería primero. Después, el parque (la Piazza di Siena y el lago), el reloj de agua y la Terraza del Pincio. La Plaza de España va de camino por la tarde (el tour ya pasó); Via Condotti ~15, como parada.
+**Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el Tritón, Via Veneto ni Porta Pinciana del principio: **el día empieza directamente en Villa Borghese** (taxi hasta Porta Pinciana), con la Galería primero. Después, el parque (la Piazza di Siena y el lago), el reloj de agua y la Terraza del Pincio. La Plaza de España va de camino por la tarde (el tour ya pasó); Via Condotti ~15, como parada.
 
 **Experiencias:**
 - **Naturaleza y Vistas:** el lago de Villa Borghese ~60.
@@ -732,7 +724,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 
 **De tarde (si el medio día es la tarde de llegada):**
 - Circo Máximo ~20
-- Boca de la Verdad ~20 (⚠️ cierra a las 17:50 en verano y a las 16:50 en invierno: si no da tiempo, por fuera)
+- Boca de la Verdad ~20 (⚠️ abre de 9:30 a 17:50 todo el año: si no da tiempo, por fuera)
 - Ojo de la Cerradura del Aventino ~15
 - Jardín de los Naranjos ~30, con la vista de Roma (⚠️ abre de 7:00 a 18:00 de octubre a febrero, a 20:00 en marzo y septiembre, y a 21:00 de abril a agosto; casi todo octubre cierra antes de que se ponga el sol: aviso «Cierra a las 18:00: entra antes»)
 - *de camino:* bajada a Testaccio
@@ -753,7 +745,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Santa Maria Maggiore, por dentro ~30
   - *de camino:* Monti (Via Panisperna y la Piazza Madonna dei Monti)
   - San Pietro in Vincoli (el Moisés), por dentro ~20
-  - Basílica de San Clemente, con las excavaciones ~40 (⚠️ cierra de 12:30 a 14:00)
+  - Basílica de San Clemente, con las excavaciones ~40 (⚠️ cierra de 12:30 a 14:00; las excavaciones, con reserva en línea y última entrada a las 12:00 por la mañana)
   - San Juan de Letrán y la Escalera Santa ~40
 - **Comida:** SantoPalato (o Il Bocconcino), en San Giovanni
 - **Tarde:**
@@ -765,11 +757,11 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Ojo de la Cerradura del Aventino ~15
   - Pirámide Cestia ~15, de camino a la cena (por fuera; el Cementerio Protestante, al lado, cierra a las 17:00 y no da tiempo)
 - **Cena:** Felice a Testaccio
-- **Noche:** la pareja que toque (regla 13). Suele ser el Panteón y Piazza Navona de noche (taxi, ~10 min).
+- **Noche:** la pareja que toque (regla 13). Suele ser el Panteón y Piazza Navona (taxi, ~10 min).
 - **Lunes:** Caracalla cierra: sale con «Cerrado hoy».
 - **Domingo:** San Clemente solo abre por la tarde: va después de comer y el taxi sale de allí.
 - **Ya no van** el paseo por el Aventino ni el de Testaccio (decidido el 6-oct: sin paseos).
-- **Pool:** la Domus Aurea, 🎟 solo con reserva y de viernes a domingo, por la mañana entre San Pietro in Vincoli y San Clemente.
+- **Pool:** la Domus Aurea, 🎟 solo con reserva y de viernes a domingo (el primer domingo de cada mes cierra), por la mañana entre San Pietro in Vincoli y San Clemente.
 - **Experiencias:**
   - **Naturaleza y Vistas:** el Jardín de los Naranjos ~45.
   - **Mercadillos:** el belén de Santa Maria Maggiore.
@@ -824,7 +816,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - **Comida:** Da Enzo al 29 (o Da Lucia, o Checco er Carettiere, o Da Teo), en Trastevere. Tonnarello no, si ya es la cena del D2.
 - **Tarde:**
   - Taxi a las Catacumbas de San Calixto
-  - Catacumbas de San Calixto (visita guiada) ~1 h (⚠️ cierran el miércoles)
+  - Catacumbas de San Calixto (visita guiada) ~1 h (⚠️ cierran el miércoles, y del 13 de enero al 10 de febrero de 2027)
   - Vía Appia Antica en bici: los pinos, las tumbas y la de Cecilia Metela ~2 h
   - Taxi a Monti
   - El Coliseo desde la terraza de Largo Gaetana Agnesi ~20

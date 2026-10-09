@@ -9,7 +9,6 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - **Parada o «de camino»:**
   - parada, un sitio con nombre, que se visita;
   - de camino, las calles de paso, los rincones pequeños, las fachadas en las que no se entra y lo ya visto otro día («Ya lo visitaste el día n»).
-  - (En Roma está pendiente cuadrar la regla 9 con los días.)
 - **Cada parada lleva sus minutos aproximados.** Las horas solo se usan por dentro. Lo único que se ve es la franja («Mañana · 9:00–14:00») y la hora de lo reservado, en la pestañita verde.
 - **La comida, antes de las 15:00** (decidido por Eric el 9-oct, tras su viaje a Roma).
 - **Con lluvia, cierres o días de la semana sin abrir:** cada día lleva su variante escrita.
@@ -20,11 +19,14 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - **Si una reserva cae en otro día,** se cambian los dos días enteros (todo o nada). Los días cambiados a mano no se tocan.
 - **La app nunca propone otra hora** (Eric, 9-oct): el viajero compra cuando le va bien. Las reservas grandes (en Roma: el Coliseo, los Museos y la Galería) llevan una lista escrita para todas sus horas, de la primera a la última entrada. Si dos reservas se pisan, solo un aviso.
 - **Un día con dos reservas largas (en Roma, el Free Tour y los Museos):** dos partes, mañana y tarde. Da igual qué se reserve primero: la reservada manda y la otra pasa a la otra mitad del día. Se escribe una tabla con las horas de la visita larga (por la mañana o por la tarde, qué va antes o después, dónde se come). Si las dos se pisan, solo un aviso.
+- **Las reservas mandan y el día lo lleva todo** (Eric, 9-oct): con una reserva no se quita ni se acorta nada porque no dé tiempo; la app solo ordena. Cada franja (mañana, tarde) lleva una parte, y la reserva decide en cuál va cada una. El viajero quita o añade lo que quiera.
 - **Solo las visitas largas** (más de ~1 h 30: museos grandes, tours) llevan listas y tablas por hora. Las cortas (el Panteón, una iglesia, un mirador) se colocan solas en su ruta.
 - **El Free Tour (o el tour gratis del destino), según su hora** (Roma, 9-oct): cada hora lleva su día escrito.
   - Si es a media mañana, el mismo día, corrido, con algo de camino al punto de salida. La visita grande de la tarde se reserva más tarde (en Roma, los Museos a las 16:00).
   - Si es por la tarde, la visita grande pasa a la mañana.
   - Si es de noche, sustituye a la nocturna del día que pasa por los mismos sitios, y no hace falta el día del Free Tour.
+- **Lo nuestro nunca te hace llegar tarde a tu reserva** (9-oct): antes de una reserva va primero la reserva con su margen, luego la comida y luego nuestras paradas. Lo que no cabe pasa detrás, en su orden. «Vas justo» solo por las reservas del viajero.
+- **La comida y la noche no se quitan ni se mueven por nuestras paradas** (9-oct): la comida, antes de las 15:00, salvo que las reservas del viajero no dejen; la nocturna se queda aunque el día acabe tarde.
 - **Todo lo que se reserva se puede eliminar,** y al eliminar no se mueve ningún día.
 
 ## 3. RESERVAS (la pestaña)

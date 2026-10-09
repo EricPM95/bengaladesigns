@@ -3900,6 +3900,9 @@
         "miércoles",
         "jueves"
       ],
+      "closed_dates": [
+        "first_sunday"
+      ],
       "schedule": "09:00-16:30",
       "tags": [
         "museo",
@@ -8774,6 +8777,17 @@
     { "nombre": "Museos Vaticanos y Capilla Sixtina", "lugares": ["Museos Vaticanos y Capilla Sixtina"] },
     { "nombre": "Panteón", "lugares": ["Panteón"] }
   ],
+  "entradas_nombres_cortos": {
+    "_nota": "Los avisos «coinciden» y «vas justo» de las reservas llaman a cada una por su nombre corto, con su artículo («Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.»). La clave es el nombre de la reserva: una entrada de entradas_reservas, un lugar del destino o «Free Tour». Sin nombre corto, el aviso usa el nombre completo.",
+    "Coliseo, Foro y Palatino": "el Coliseo",
+    "Museos Vaticanos y Capilla Sixtina": "los Museos",
+    "Panteón": "el Panteón",
+    "Free Tour": "el Free Tour",
+    "Cúpula de San Pedro": "la Cúpula",
+    "Galería Borghese": "la Galería",
+    "Termas de Caracalla": "las Termas",
+    "Castillo de Sant'Angelo": "el Castillo"
+  },
   "entradas_reservas_orden": {
     "_nota": "Tanda 6s. El orden del bloque «Entradas y Free Tour» de RESERVAS, siempre este y solo las que estén en la ruta del viajero. Cada nombre es una entrada de entradas_reservas (Coliseo, Foro y Palatino), un lugar del destino o «Free Tour por Roma» (el Free Tour de la ruta). «arriba» sale siempre; «mas» va detrás de «Ver n más».",
     "arriba": ["Coliseo, Foro y Palatino", "Museos Vaticanos y Capilla Sixtina", "Panteón", "Free Tour por Roma"],

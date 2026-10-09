@@ -32,7 +32,7 @@ import { availabilityLabel, availableForTrip, seasonFit } from './availability.j
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
-import { claseDeReserva } from './listasReservas.js'
+import { claseDeReserva, RESERVAS_GRANDES } from './listasReservas.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 import { COMIDA_HASTA } from './comida.js'
@@ -44,7 +44,7 @@ const MESES_INVIERNO = [11, 12, 1, 2]
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
-  inicio: '09:00', comida_desde: '12:30', comida_hasta: COMIDA_HASTA, cena_antes_de_hora_fija: '20:30', cena_antes_desde: '19:00', cena_junto_min: 20, comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  inicio: '09:00', comida_desde: '12:30', comida_antes_mediodia: '12:00', comida_rapida_hasta: '13:15', comida_rapida_min: 45, comida_rapida_desde: '10:30', comida_hasta: COMIDA_HASTA, cena_antes_de_hora_fija: '20:30', cena_antes_desde: '19:00', cena_junto_min: 20, comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
   llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, tolerancia_tour_min: 5, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
@@ -505,7 +505,8 @@ export function planListasTrip(args) {
     const conLlegada = (lista) => lista.flatMap((item) => {
       if (item.kind !== 'stop' || item.llegada || !(item.hora_tipo || item.tipo === 'tour')) return [item]
       if (item.llegada_incluida) return [item]
-      const tipoLlegada = item.tipo === 'tour' ? 'tour' : item.hora_tipo === 'reserva' ? 'reserva' : 'turno'
+      // (30 min en las reservas grandes —el Coliseo, los Museos, la Galería—, por las colas de seguridad; 15 en el Free Tour y en los turnos.)
+      const tipoLlegada = item.tipo === 'tour' ? 'tour' : item.hora_tipo === 'reserva' && RESERVAS_GRANDES.has(item.lugar) ? 'reserva' : 'turno'
       const margen = cfg.llegada[tipoLlegada]
       const info = written.destino?.llegadas ?? {}
       const texto = tipoLlegada === 'tour' ? `${info.free_tour?.texto ?? ''}${tour?.meeting_point ? ` Punto de encuentro: ${tour.meeting_point}.` : ''}`.trim() : info.por_lugar?.[item.lugar] ?? info[tipoLlegada]?.texto ?? null
@@ -594,6 +595,43 @@ export function planListasTrip(args) {
       })
     }
 
+    // La comida empieza antes de las 15:00 (regla 6): con una reserva del viajero nuestras paradas nunca la empujan más allá; si lo de antes la retrasa, la comida pasa delante de esas paradas (Tanda 6x).
+    // Solo cuando la hora fija del viajero ocupa la hora de comer (un Free Tour de 12:00 a 14:30) la comida va después.
+    const comidaAntesDeLas15 = (lista) => {
+      if (!lista.some((it) => it.kind === 'stop' && it.hora_tipo === 'reserva')) return lista
+      let out = lista
+      for (let guard = 0; guard < 40; guard++) {
+        const iC = out.findIndex((it) => it.kind === 'comida')
+        if (iC < 0) return out
+        const sim = simular(out)
+        if (sim[iC].t0 <= toMin(cfg.comida_hasta)) return out
+        let k = iC - 1
+        while (k >= 0 && out[k].kind === 'traslado') k--
+        if (k < 0) return out
+        const previa = out[k]
+        if (previa.kind !== 'stop' || previa.hora || previa.hora_tipo || previa.tipo === 'tour' || previa.llegada || previa.fijo_colocado) return out
+        // la unidad de la parada: sus traslados de delante viajan con ella
+        let inicio = k
+        while (inicio > 0 && out[inicio - 1].kind === 'traslado') inicio--
+        out = [...out.slice(0, inicio), out[iC], ...out.slice(inicio, iC), ...out.slice(iC + 1)]
+      }
+      return out
+    }
+    const paseoAntesDeCenar = (lista) => {
+      let out = lista
+      for (const nombre of cfg.paseo_antes_de_cenar ?? []) {
+        const iPaseo = out.findIndex((it) => it.kind === 'stop' && it.lugar === nombre && !it.llegada)
+        const iCena = out.findIndex((it) => it.kind === 'cena')
+        if (iPaseo < 0 || iCena < 0 || iPaseo === iCena - 1) continue
+        // (Un traslado escrito justo delante del paseo viaja con él.)
+        const desde = iPaseo > 0 && out[iPaseo - 1].kind === 'traslado' ? iPaseo - 1 : iPaseo
+        const bloque = out.slice(desde, iPaseo + 1)
+        const resto = out.filter((_, k) => k < desde || k > iPaseo)
+        const donde = resto.findIndex((it) => it.kind === 'cena')
+        out = [...resto.slice(0, donde), ...bloque, ...resto.slice(donde)]
+      }
+      return out
+    }
     // 5.7 Lo que tiene hora fija va a su hora (3.3).
     const baseSinColocar = items
     const anclar = (lista) => {
@@ -659,7 +697,9 @@ export function planListasTrip(args) {
       const esCena = Boolean(cenaU)
       const sinQuitar = conReservaDelViajero(lista)
       const comidaU = cenaU ?? unidades.find((u) => u.head.kind === 'comida' && !u.head.piso_fijo) ?? null
-      const comidaPiso = toMin(esCena ? cfg.cena_antes_desde : cfg.comida_antes_desde)
+      // (Regla 4: con la hora fija de 12:00 a 13:00, la comida va antes y rápida —hacia las 11:30—; desde las 13:30, antes y entera, entre las 12:00 y las 12:30.)
+      const comidaRapida = !esCena && sinQuitar && H <= toMin(cfg.comida_rapida_hasta)
+      const comidaPiso = toMin(esCena ? cfg.cena_antes_desde : comidaRapida ? cfg.comida_rapida_desde : cfg.comida_antes_desde)
       let mediodia = false
       let objetivoT = limite
       let objetivoC = coordsF
@@ -667,16 +707,18 @@ export function planListasTrip(args) {
       // (La comida va antes si iría detrás de la hora fija —en la lista va después— y entonces caería después de su límite, las 15:00.)
       // (La comida escrita justo antes de la hora fija —el documento la pone delante— también se queda delante: si no cabe, una más corta.)
       const comidaJustoAntes = Boolean(comidaU) && comidaU.i < kPos && !unidades.some((u) => u.i > comidaU.i && u.i < kPos)
-      if (comidaU && ((comidaU.i >= kPos && H >= toMin(cfg.comida_desde) && H + (F.min ?? 0) + 10 > toMin(cfg.comida_hasta)) || (comidaJustoAntes && H >= toMin(cfg.comida_desde)))) {
+      if (comidaU && ((comidaU.i >= kPos && H >= toMin(cfg.comida_antes_mediodia) && H + (F.min ?? 0) + 25 > toMin(cfg.comida_hasta)) || (comidaJustoAntes && H >= toMin(cfg.comida_antes_mediodia)) || (sinQuitar && comidaU.i < kPos && H >= toMin(cfg.comida_antes_mediodia) && H <= toMin(cfg.comida_hasta)))) {
         const rc = coordsOf(comidaU.head)
         const andar = rc && coordsF ? walkLeg(rc, coordsF) : 5
         // (Lo que ya está colocado delante, una hora fija anterior, también cuenta: la comida no puede empezar antes de que acabe.)
         const congelado = unidades.filter((u) => u.i < desde)
         const libreDesde = congelado.length > 0 ? llegadaA(plano(congelado), rc) : startPoint.t
         // La comida de siempre (60 min) o, si no cabe, una rápida (45 o 30).
-        for (const dur of sinQuitar ? [esCena ? cfg.cena_min : cfg.comida_min] : esCena ? [cfg.cena_min, 75, 60, 45] : [cfg.comida_min, 45, 30]) {
-          const inicioComida = limite - dur - andar
-          if (inicioComida >= Math.max(comidaPiso, libreDesde)) { mediodia = true; objetivoT = inicioComida; objetivoC = rc; duracionComida = dur; break }
+        for (const dur of sinQuitar ? [esCena ? cfg.cena_min : comidaRapida ? cfg.comida_rapida_min : cfg.comida_min] : esCena ? [cfg.cena_min, 75, 60, 45] : [cfg.comida_min, 45, 30]) {
+          // (Con una reserva la comida empieza cuando dice la regla 4 y, si se va justo, el margen de la «Llegada a…» se acorta —el viajero irá más deprisa— pero no se quita nada: basta con llegar a la puerta antes de la hora de entrada.)
+          const inicioIdeal = limite - dur - andar
+          const inicioComida = sinQuitar ? Math.max(inicioIdeal, comidaPiso, libreDesde) : inicioIdeal
+          if (sinQuitar ? inicioComida + dur + andar <= H : inicioComida >= Math.max(comidaPiso, libreDesde)) { mediodia = true; objetivoT = inicioComida; objetivoC = rc; duracionComida = dur; break }
         }
       }
       // (La comida va lo más tarde que deja la hora fija, entre las 12:00 y las 12:30.)
@@ -744,10 +786,11 @@ export function planListasTrip(args) {
       // y nunca lo que ya habrá cerrado cuando se llegue (el Foro y el Palatino nunca por fuera por la hora): antes se mueve lo que va delante de ello.
       if (sinQuitar) {
         const horaDespues = H + (F.min ?? 0) + 15
-        const cerrariaDespues = (u) => { const place = placeByName.get(u.head.lugar); return Boolean(place) && u.head.modo === 'dentro' && openCheck(place, horaDespues, u.head.min ?? 30, hours).ok !== true }
+        // (Se mira si se puede ENTRAR a esa hora —la última entrada—, no si cabe la visita entera: la Basílica deja entrar hasta las 19:15 y cierra a las 20:00.)
+        const cerrariaDespues = (u) => { const place = placeByName.get(u.head.lugar); return Boolean(place) && u.head.modo === 'dentro' && openCheck(place, horaDespues, 1, hours).ok !== true }
         // (La comida también puede irse detrás de la hora fija si antes no cabe —una entrada a las 12:30 no deja comer antes—: se ordena, no se acorta.)
-        // (Solo si se llegaría con más de 1 h de retraso: con menos, es mejor llegar un poco justo que comer a las 18:00.)
-        const movible = (u, tardanza = 0) => (u.head.kind === 'stop' ? u.head.modo !== 'camino' && !esFijo(u.head) && u.head.tipo !== 'desayuno' && !u.head.relleno_no_quitar : u.head.kind === 'comida' && !u.head.piso_fijo && tardanza > 60)
+        // (La comida nunca pasa detrás de la reserva por nuestras paradas, Tanda 6x: son ellas las que pasan detrás. Solo va detrás cuando las reservas del viajero no dejan comer antes de las 15:00.)
+        const movible = (u) => u.head.kind === 'stop' && u.head.modo !== 'camino' && !esFijo(u.head) && u.head.tipo !== 'desayuno' && !u.head.relleno_no_quitar
         const quedan = [...candidatas]
         const cierraAlLlegar = (u, lista) => {
           if (!protegidaPorReserva(lista, u.head)) return false
@@ -773,7 +816,14 @@ export function planListasTrip(args) {
             // (Solo se mueve lo que de verdad adelanta la llegada: si la comida no puede empezar antes de las 12:30, quitar lo de antes no cambia nada y se llega justo.)
             const adelanta = (i) => llegadaA(plano([...A, ...quedan.filter((_, k) => k !== i)]), objetivoC) < llegadaA(lista2, objetivoC)
             for (let i = quedan.length - 1; i >= 0; i--) if (movible(quedan[i], tardanza) && !cerrariaDespues(quedan[i]) && !protegidaPorReserva(lista2, quedan[i].head) && adelanta(i)) { elegido = i; break }
-            // (Un imprescindible por dentro, como el Foro, no se manda detrás de la hora fija solo para llegar unos minutos antes: se llega justo y sale el aviso «vas justo».)
+            // Lo nuestro nunca hace llegar tarde a una reserva (Tanda 6x): si aún se llega con más de 5 min de retraso, también pasan detrás los imprescindibles por dentro (la Basílica, el Panteón…),
+            // primero los que seguirán abiertos; si detrás ya está cerrado, es un cierre (regla 5). Lo que el documento pone ANTES de la reserva por su horario (el Foro antes del Coliseo) no pasa detrás.
+            if (elegido < 0 && tardanza > 5) {
+              for (const exigeAbierto of [true, false]) {
+                for (let i = quedan.length - 1; i >= 0 && elegido < 0; i--) if (movible(quedan[i]) && !quedan[i].head.no_pasa_detras && (!exigeAbierto || !cerrariaDespues(quedan[i])) && adelanta(i)) elegido = i
+                if (elegido >= 0) break
+              }
+            }
           }
           if (elegido < 0) break
           quedan.splice(elegido, 1)
@@ -1162,6 +1212,9 @@ export function planListasTrip(args) {
     items = elegirMesas(items)
     items = turnosReales(items)
     items = anclar(items)
+    // El paseo que el destino pone siempre antes de cenar (en Roma, el Paseo por Trastevere, regla 10) va justo antes de la cena, vaya donde vaya lo demás (Tanda 6x).
+    items = paseoAntesDeCenar(items)
+    items = comidaAntesDeLas15(items)
     items = resolverHorarios(items)
     items = ajustar(items)
     items = elegirMesas(items)
@@ -1484,7 +1537,8 @@ export function planListasTrip(args) {
       const c = catalogueByName.get(nocheItem.noche)?.coordinates ?? null
       const leg = prev && c ? (meters(prev, c) > (destData.destination_config?.alcance?.taxi_desde_m ?? 1500) ? transitMin(prev, c, 'taxi') : walkLeg(prev, c)) : 0
       const start = Math.round((t + leg) / 5) * 5
-      if (!nocheValida(destData, fecha, sunset, start, nocheItem.min)) {
+      // (Con una reserva del viajero la nocturna se queda aunque el día acabe tarde, Tanda 6x: el viajero la quita si quiere.)
+      if (!nocheValida(destData, fecha, sunset, start, nocheItem.min) && !final.some((it) => it.kind === 'stop' && it.hora_tipo === 'reserva')) {
         log.push({ id: nocheItem.id, lugar: nocheItem.noche, sitio: null, que: 'quitada', causa: 'hora límite de la noche' })
         continue
       }

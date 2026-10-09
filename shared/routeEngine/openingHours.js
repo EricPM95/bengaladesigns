@@ -281,6 +281,11 @@ export function matchesDateToken(token, dateIso) {
   }
   // Una fecha completa ("2027-11-01"): solo ese año (los Museos Vaticanos, el lunes 1 de noviembre de 2027).
   if (/^\d{4}-\d{2}-\d{2}$/.test(String(token).trim())) return String(token).trim() === String(dateIso).slice(0, 10)
+  // El primer domingo de cada mes (la Domus Aurea cierra ese día).
+  if (String(token).trim() === 'first_sunday') {
+    const d = new Date(`${String(dateIso).slice(0, 10)}T12:00:00Z`)
+    return d.getUTCDay() === 0 && d.getUTCDate() <= 7
+  }
   const movable = /^easter([+-]\d+)?$/.exec(String(token).trim())
   if (movable) {
     const year = Number(String(dateIso).slice(0, 4))
