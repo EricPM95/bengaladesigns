@@ -120,7 +120,52 @@ Diseño: `docs\diseno\reservas\Etiqueta Entrada.dc.html` y `Etiqueta_Entrada.png
 - **Para antes de la Tanda 7** (del informe del revisor B, todo de pago): textos con horas calculadas (doc 928 «SAL A LAS 14:00», 957, 1048, 1058; P7 58, 152; regla 15 «sal de aquí a las 11:15» en HOY); la barra vieja en doc 927 y P7 57; P7 169 (FirstLastDayCard ya quitada); tablas de días duplicadas (99–131 y 854–889); 956 contra 957 (vuelo de las 15:00 → 16:00); la tabla nueva sin 1,5, 2,5 ni 3,5 días; la «Llegada a Roma» con la tarde vacía y sin sitio para la comida; la última mañana DT-medio que repite el día 1; 2 días con vuelos sin Coliseo ni Vaticano; el Free Tour después de las 16:30 el día de llegada; el D4 «Con Free Tour» sin lista de horas de la Galería; «centro» en P7 (prueba 10) contra la regla nueva.
 - **Datos por comprobar:** la cena del D5 (Felice) sin alternativa; el Mercado de Testaccio en domingo; los cierres del Cementerio Protestante; la Farnesina el segundo domingo; el Gesù en sábado; la Cripta de los Capuchinos el lunes (espera de 55 min).
 
-## Después de la 6x (decidido con Eric el 9-oct-2026)
-- La ruta a mano: dos opciones en el formulario, después del origen y el destino («Hazla tú por mí» / «La monto yo»; nombres por cerrar). La de a mano, con el mismo valor: «¿Qué tienes ya reservado?», nuestras paradas con fotos y fichas, entradas y afiliados igual, «Te falta…» solo como idea, y el botón «Reorganizar» (solo ordena, nunca quita, con «Deshacer»). Gratis.
-- El login (Google, Apple, email con enlace), sin obligar al principio, pasando el viaje de ahora a la cuenta. Hace falta antes de activar el pago de cara al público (si no, quien cambia de móvil pierde lo pagado).
-- Más adelante: el mapa de viajes con fotos, el viaje compartido (el admin aprueba), el buzón «Falta este sitio», los avisos en directo y los restaurantes de los viajeros.
+## PARA MAÑANA (10-oct): la ruta a mano y lo que va detrás (decidido con Eric el 9-oct-2026, noche)
+
+**Estado al cerrar el 9-oct:** la 6x está subida (`6b1551a`, con las franjas sin hora). La 6z (EXPLORAR solo con el nombre, el Free Tour primero en Entradas, el alojamiento cerrado y a pantalla completa, «Hoteles» en EXPLORAR, el día 1 abre el mapa, fuera el recuadro lila, la comida «después si da antes de las 15:00») está copiada para pegar. La 6y (la ruta a mano) va después de la 6z: se completa y se pega el 10-oct.
+
+**Cuando Code suba la 6x, copiar al PC:**
+- `docs\dias\DIAS_ROMA_PARADAS.md` (la regla 3 con las franjas sin hora);
+- `docs\dias\GUIA_NUEVOS_DESTINOS.md`;
+- `docs\dias\PENDIENTES_6K.md`;
+- `docs\dias\PROMPT_TANDA6Y_PARA_PEGAR.md`;
+- `docs\diseno\ruta_manual\Itinerario Eleccion.dc.html` + `support.js` (del zip ruta_manual de Eric).
+
+Después, leer el informe de la 6x (los 63 casos, los «Si te sobra tiempo» que quedan y las pruebas que vuelven) y luego pegar la 6y.
+
+**La 6y, cerrada con Eric:**
+- **La pantalla de elegir:** va después del resumen, y «VER MI RUTA» pasa a «CONTINUAR».
+  - «¡Sí, hazla por mí!» (RECOMENDADO).
+  - «Quiero hacerla yo… y compártela con tus amigos». Esto último se queda: no se lanza hasta que esté todo.
+- **La ruta a mano:** los días en acordeón, vacíos, con dos botones:
+  - [Añadir parada]: abre EXPLORAR con toda nuestra lista, ordenada por «me gusta» > imprescindibles > nivel 1 > resto, y se pueden elegir varias;
+  - [Añadir excursión]: abre nuestra página de excursiones.
+- **Fuera:**
+  - la hoja «¿Tienes algo ya reservado?» (parecía otro pool);
+  - el «Te falta…» y las sugerencias (decide el viajero);
+  - «Rellenar con la ruta de Bengala» (sería lo mismo que la primera opción).
+- **Igual que en nuestra ruta:** las entradas, RESERVAS y los afiliados.
+- **«Reorganizar este día»:**
+  - Solo dentro del día. Nunca mueve nada a otro día, y no hay «Reorganizar el viaje».
+  - **Solo ordena, nunca rellena:** Coliseo → Altar, sin meter el Foro ni el Arco. Tampoco añade comida ni cena; si el día ya las tiene, las coloca.
+  - **Ordena con nuestros días escritos:** cada parada va con su grupo (una parte de un día escrito), y dentro del grupo en nuestro orden.
+  - **Entre grupos, manda por este orden:** lo reservado → los momentos (sin gente al principio, Trastevere al final, las nocturnas de noche) → los grupos que ya van juntos en un día escrito (el Vaticano y luego Trastevere, del D2) → la cercanía.
+  - **Ejemplo:** Coliseo, Altar, Museos, Trastevere, Fontana → Trevi → Coliseo → Altar → Museos → Trastevere.
+  - Con «Deshacer». Gratis.
+  - **La prueba:** al desordenar un día escrito, tiene que salir nuestro orden; además, 200 días mezclados, con 5 ejemplos para Eric.
+- **Por contestar Eric:** ¿lo que marcó en el pool del formulario sale arriba en EXPLORAR con «Lo marcaste», o solo su orden?
+
+**Las preguntas de la 6x, sin contestar todavía** (Eric quiso pasar en la 6z solo sus cambios). Están en PREGUNTAS_TANDA6X.md. Lo que propone Claude:
+- 1 y 2, la comida: si al salir de la reserva aún se empieza a comer antes de las 15:00, se come después; si no, antes. Con los Museos a las 12:00, después (no a las 10:45). El texto ya escrito está en el scratchpad (DIAS_con_comida_pendiente.md).
+- 3, lo que pasa detrás y ya está cerrado: por fuera, con su aviso.
+- 4, el Altar después de comer: bien siempre.
+- 5, lo que completó: bien.
+- 6, los viajes de prueba: borrarlos (ya va en la 6z).
+
+**Detrás de la 6y:**
+1. El login: Google, Apple y email con enlace; sin obligar al principio; el viaje de ahora pasa a la cuenta. Hace falta antes de activar el pago.
+2. La Tanda 7.
+3. Activar el pago.
+4. El viaje compartido (el admin aprueba). Es obligatorio antes de lanzar, porque la pantalla de elegir ya promete «compártela con tus amigos».
+5. El mapa de viajes con fotos.
+6. Más adelante: el buzón «Falta este sitio», los avisos en directo y los restaurantes de los viajeros.

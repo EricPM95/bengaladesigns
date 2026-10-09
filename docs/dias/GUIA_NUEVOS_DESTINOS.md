@@ -9,7 +9,7 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - **Parada o «de camino»:**
   - parada, un sitio con nombre, que se visita;
   - de camino, las calles de paso, los rincones pequeños, las fachadas en las que no se entra y lo ya visto otro día («Ya lo visitaste el día n»).
-- **Cada parada lleva sus minutos aproximados.** Las horas solo se usan por dentro. Lo único que se ve es la franja («Mañana · 9:00–14:00») y la hora de lo reservado, en la pestañita verde.
+- **Cada parada lleva sus minutos aproximados.** Las horas solo se usan por dentro. Las franjas van sin hora («Mañana», «Comida», «Tarde», «Cena», «Noche»; Eric, 9-oct). La única hora a la vista es la de lo que ha reservado el viajero, en la pestañita verde.
 - **La comida, antes de las 15:00** (decidido por Eric el 9-oct, tras su viaje a Roma).
 - **Con lluvia, cierres o días de la semana sin abrir:** cada día lleva su variante escrita.
 - **Que el día no se quede corto ni con esperas largas:** si entre dos paradas sobra mucho tiempo, se escribe algo de camino que tenga sentido. Por ejemplo, entre el Panteón y la Plaza de España, Sant'Ignazio y el Templo de Adriano.

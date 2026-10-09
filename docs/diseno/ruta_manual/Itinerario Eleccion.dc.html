@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes draw{from{stroke-dashoffset:600}to{stroke-dashoffset:0}}
+@keyframes pin{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 30%,#F1E8D6 0%,#E0D3BA 75%);display:flex;justify-content:center;align-items:flex-start;padding:40px 20px 60px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+  <div data-screen-label="Itinerario · elección" style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+    <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#000;z-index:20"></div>
+    <div style="height:50px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 28px 0 32px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+
+    <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:4px 16px 0">
+      <button aria-label="Atrás" style="width:44px;height:44px;border-radius:50%;border:none;background:#FFFDF8;box-shadow:0 1px 2px rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1C2230"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+      <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(28,34,48,.55)">Roma · 5 días</span>
+      <span style="width:44px"></span>
+    </div>
+
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 16px 12px;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px">
+        <span style="font:400 34px/1.02 'Instrument Serif',serif;text-wrap:balance">¿Te montamos el itinerario <em style="color:oklch(0.55 0.17 5)">día a día</em>?</span>
+      </div>
+
+      <div style="position:relative;height:236px;flex:none;border-radius:24px;overflow:hidden;background:#EFE7D6;box-shadow:0 1px 2px rgba(28,34,48,.06),0 16px 34px -24px rgba(28,34,48,.45)">
+        <svg viewBox="0 0 343 236" width="100%" height="100%" style="position:absolute;inset:0">
+          <rect width="343" height="236" fill="#F1EADB"></rect>
+          <path d="M-10 60 C40 50 70 80 90 120 S110 200 70 250" fill="none" stroke="#D6E3E6" stroke-width="16" stroke-linecap="round"></path>
+          <path d="M215 -10 L250 40 L330 30 L360 70 L360 -10Z" fill="#DCE5CC"></path>
+          <path d="M250 170 Q290 150 330 175 L360 250 L240 250Z" fill="#DCE5CC"></path>
+          <path d="M120 10 L130 236 M180 0 L170 236 M0 100 L343 120 M0 170 L343 160 M220 0 L300 236 M40 0 L150 236 M0 30 L343 70" stroke="#FFFFFF" stroke-width="5" fill="none" opacity=".85"></path>
+          <path d="M0 140 L343 90 M260 0 L200 236 M80 0 L20 236" stroke="#FFFFFF" stroke-width="2.5" fill="none" opacity=".7"></path>
+          <g style="opacity:{{ routeOp }};transition:opacity .5s">
+            <path d="M58 46 L96 70 L132 64 L146 124 L180 112" fill="none" stroke="oklch(0.55 0.17 5)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ dash }}" style="stroke-dashoffset:0;animation:draw 1.6s .2s cubic-bezier(.4,0,.2,1) both"></path>
+            <path d="M180 112 L214 128 L252 112 L282 92 L304 58" fill="none" stroke="oklch(0.55 0.1 220)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ dash }}" style="animation:draw 1.6s .8s cubic-bezier(.4,0,.2,1) both"></path>
+            <path d="M180 112 L160 150 L190 178 L232 168 L262 200" fill="none" stroke="oklch(0.55 0.11 150)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="{{ dash }}" style="animation:draw 1.6s 1.4s cubic-bezier(.4,0,.2,1) both"></path>
+          </g>
+        </svg>
+        <sc-for list="{{ pins }}" as="p" hint-placeholder-count="12">
+          <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:{{ p.bg }};border:2px solid #FFFDF8;color:#fff;font:700 10px/18px 'Geist';text-align:center;box-shadow:0 3px 8px -3px rgba(28,34,48,.45);animation:pin .4s {{ p.dl }} cubic-bezier(.3,1.6,.5,1) both">{{ p.n }}</span>
+        </sc-for>
+        
+        <div style="position:absolute;left:10px;bottom:10px;display:flex;gap:5px">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3">
+            <span style="height:24px;padding:0 9px 0 7px;border-radius:999px;background:rgba(255,253,248,.92);display:flex;align-items:center;gap:5px;font:600 10.5px 'Geist';color:#1C2230"><span style="width:8px;height:8px;border-radius:50%;background:{{ l.c }}"></span>{{ l.n }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onClick="{{ pickAuto }}" style="position:relative;display:flex;align-items:center;gap:14px;min-height:112px;padding:16px 16px 16px 18px;border-radius:24px;border:none;background:#1C2230;color:#FFFDF8;text-align:left;cursor:pointer;overflow:hidden;box-shadow:0 18px 30px -18px rgba(28,34,48,.7);transform:{{ autoTf }};transition:transform .25s" style-active="transform:scale(.98)">
+          <span style="position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:oklch(0.55 0.17 5 / .35);filter:blur(22px)"></span>
+          <span style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+            <span style="display:flex;align-items:center;gap:8px"><span style="font:400 25px/1 'Instrument Serif',serif">¡Sí, hazla por mí!</span><span style="height:20px;padding:0 7px;border-radius:999px;background:oklch(0.55 0.17 5);font:600 9.5px/20px 'Geist Mono',monospace;letter-spacing:.1em">RECOMENDADO</span></span>
+            <span style="font:400 12.5px/1.4 'Geist';color:rgba(255,253,248,.72);text-wrap:pretty">Lo hacemos todo: el orden de cada día, los tiempos entre sitios, dónde comer y qué reservar.</span>
+          </span>
+          <span style="position:relative;width:40px;height:40px;flex:none;border-radius:50%;background:#FFFDF8;color:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+        </button>
+
+        <button onClick="{{ pickSelf }}" onMouseEnter="{{ hoverSelf }}" onMouseLeave="{{ leaveSelf }}" style="display:flex;align-items:center;gap:14px;min-height:84px;padding:14px 16px 14px 18px;border-radius:22px;border:1.5px solid rgba(28,34,48,.12);background:#FFFDF8;color:#1C2230;text-align:left;cursor:pointer;transform:{{ selfTf }};transition:transform .25s,border-color .25s" style-hover="border-color:rgba(28,34,48,.3)" style-active="transform:scale(.98)">
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+            <span style="font:400 22px/1 'Instrument Serif',serif">Quiero hacerla yo</span>
+            <span style="font:400 12.5px/1.4 'Geist';color:rgba(28,34,48,.62);text-wrap:pretty">Crea una ruta a tu gusto: tú eliges los sitios y el orden, y compártela con tus amigos.</span>
+          </span>
+          <span style="width:40px;height:40px;flex:none;border-radius:50%;background:#F1EADC;color:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1L19 8l-3-3L5 16zM14 7l3 3"></path></svg></span>
+        </button>
+      </div>
+    </div>
+
+    <nav style="flex:none;height:78px;padding:8px 24px 22px;border-top:1px solid rgba(28,34,48,.07);background:#FFFDF8;display:grid;grid-template-columns:repeat(3,1fr)">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+        <button style="border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:{{ t.c }};font:600 11px 'Geist';cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.i }}"></path></svg>{{ t.n }}</button>
+      </sc-for>
+    </nav>
+
+    <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:50%;bottom:96px;height:40px;padding:0 16px;border-radius:999px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;animation:toast 2.2s ease both;z-index:30">{{ toastTxt }}</div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const R='oklch(0.55 0.17 5)',B='oklch(0.55 0.1 220)',G='oklch(0.55 0.11 150)';
+const P=[[R,[[58,46],[96,70],[132,64],[146,124]],.5],[B,[[214,128],[252,112],[282,92],[304,58]],1.1],[G,[[160,150],[190,178],[232,168],[262,200]],1.7]];
+class Component extends DCLogic {
+  state={hov:false,pick:null,k:0};
+  componentWillUnmount(){clearTimeout(this.t);}
+  go(pick,txt){this.setState(s=>({pick,txt,k:s.k+1}));clearTimeout(this.t);this.t=setTimeout(()=>this.setState({pick:null}),2200);}
+  renderVals(){
+    const s=this.state,self=s.hov||s.pick==='self';
+    const pins=[];P.forEach(([c,pts,d])=>pts.forEach(([x,y],i)=>pins.push({x:x+'px',y:y+'px',bg:c,n:i+1,dl:(d+i*.25)+'s'})));
+    return{pins,
+      legend:[{n:'Día 1',c:R},{n:'Día 2',c:B},{n:'Día 3',c:G}],
+      routeOp:self?.25:1,dash:self?'600 0':'600',
+      autoTf:s.pick==='auto'?'scale(.98)':'none',selfTf:s.pick==='self'?'scale(.98)':'none',
+      pickAuto:()=>this.go('auto','Creando tu itinerario…'),
+      pickSelf:()=>this.go('self','Abriendo tu ruta en blanco…'),
+      hoverSelf:()=>this.setState({hov:true}),leaveSelf:()=>this.setState({hov:false}),
+      toastOn:!!s.pick,toastTxt:s.txt||'',
+      tabs:[{n:'Viajes',c:'#1C2230',i:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4'},{n:'Navega',c:'rgba(28,34,48,.45)',i:'M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 15c0-5 12-1 12-6'},{n:'Perfil',c:'rgba(28,34,48,.45)',i:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 4-6 8-6s8 2 8 6'}]};
+  }
+}
+</script>
+</body>
+</html>
