@@ -349,3 +349,7 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 443. **Lo reservado se marca en el día** (PARA_CODE_UI_DIAS, 7). Día cerrado: bajo el título, «🔒 Coliseo · 11:00» en el verde de Reservas (con dos o más, «🔒 2 reservas»). Parada con el día
     abierto: la franja de la tarjeta en verde y arriba «Reservada ✓» y el candado con «Fijada». Lo añadido sin reservar no se marca.
 
+
+479. **Nunca una tarjeta de parada con el recuadro de la foto vacío** (9-oct-2026, Tanda 6r; ya lo pedía la 6f, pero solo se había quitado el texto de dentro y el recuadro de color seguía saliendo). Sin foto (la del sitio no existe, está en `sin_foto` de `_fotos.json` o no ha llegado), la tarjeta sale sin el paralelogramo de la foto: solo la franja de color con su icono, y el texto ocupa el resto. Una sola regla, en `TrazoCard` (`hasPhoto`).
+
+480. **El nombre del Free Tour es «Free Tour por Roma»** en toda la app (9-oct-2026, Tanda 6r): DÍAS, RESERVAS, HOY, fichas, «Añadir parada», hojas y avisos. Sale de `default_free_tour.name` de los datos del destino; el convertidor lo reconoce como el mismo sitio (misma foto: «foto desde Piazza Navona»; mismo enlace). Fuera «Free Tour Centro Histórico»: la prueba 6r da fallo si sale en cualquier sitio.
