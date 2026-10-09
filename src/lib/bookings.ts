@@ -135,6 +135,46 @@ export function buildEntryRows(route: Route, essentials: EssentialEntry[], reser
   return { main, more }
 }
 
+/** Una entrada del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s). */
+export interface BloqueEntrada {
+  /** El nombre con el que sale: «Coliseo, Foro y Palatino», «Panteón», «Free Tour por Roma». */
+  name: string
+  /** Las paradas de la ruta que cubre. */
+  placeNames: string[]
+  isFreeTour: boolean
+  /** El día en que está en la ruta (el de la reserva, si está reservada). */
+  day: DayPlan | null
+  reservation: Reservation | null
+  /** Está en alguna parada de la ruta (una reservada que ya no está, sigue saliendo). */
+  inRoute: boolean
+}
+
+/**
+ * El bloque «Entradas y Free Tour» (Tanda 6s): siempre en el orden de los datos del destino (`entradas_reservas_orden`), solo las que están en la ruta del viajero, las de
+ * siempre arriba y las demás en «Ver n más». Cada nombre es una entrada de `entradas_reservas` (Coliseo, Foro y Palatino), un lugar o el Free Tour de la ruta.
+ */
+export function buildEntradasBloque(
+  route: Route,
+  orden: { arriba: string[]; mas: string[] },
+  essentials: EssentialEntry[],
+  reservations: Reservation[],
+): { arriba: BloqueEntrada[]; mas: BloqueEntrada[] } {
+  const stops = route.days.flatMap((day) => day.stops.filter((stop) => !stop.passThrough).map((stop) => ({ day, stop })))
+  const freeTour = stops.find(({ stop }) => stop.isFreeTour) ?? null
+  const build = (name: string): BloqueEntrada | null => {
+    const isFreeTour = Boolean(freeTour) && name === freeTour!.stop.name
+    const group = essentials.find((entry) => entry.name === name)
+    const placeNames = isFreeTour ? [name] : (group?.places ?? [name])
+    const inRoute = isFreeTour ? true : stops.some(({ stop }) => placeNames.includes(stop.name) && !stop.isFreeTour)
+    const reservation = reservations.find((item) => item.kind === 'entrada' && (isFreeTour ? item.refId === 'Free Tour' : item.refId === name || item.placeNames.some((place) => placeNames.includes(place)))) ?? null
+    if (!inRoute && !reservation) return null
+    const stopDay = (isFreeTour ? freeTour?.day : stops.find(({ stop }) => placeNames.includes(stop.name))?.day) ?? null
+    return { name, placeNames, isFreeTour, day: (reservation && dayOfReservation(route, reservation)) ?? stopDay, reservation, inRoute }
+  }
+  const items = (names: string[]) => names.map(build).filter((item): item is BloqueEntrada => item !== null)
+  return { arriba: items(orden.arriba), mas: items(orden.mas) }
+}
+
 export interface ExcursionRowData {
   /** El día de excursión del viaje, o null si no hay ninguno. */
   day: DayPlan | null

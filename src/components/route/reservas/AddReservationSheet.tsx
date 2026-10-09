@@ -214,7 +214,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     const two = (n: number) => String(n).padStart(2, '0')
     const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
     // (La hora de la reserva que ya hay siempre está en la rueda, aunque no caiga en una de las horas de siempre.)
-    const propia = existing && /^d{1,2}:d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
+    const propia = existing && /^\d{1,2}:\d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
     const conPropia = (list: string[]) => (propia && !list.includes(propia) ? [...list, propia].sort((x, y) => asMin(x) - asMin(y)) : list)
     if (entryHours?.turnos && entryHours.turnos.length > 0) return conPropia(entryHours.turnos)
     const windows = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? entryHours.ventanas : [{ desde: '08:00', hasta: '19:45' }]

@@ -8700,6 +8700,11 @@
     { "nombre": "Museos Vaticanos y Capilla Sixtina", "lugares": ["Museos Vaticanos y Capilla Sixtina"] },
     { "nombre": "Panteón", "lugares": ["Panteón"] }
   ],
+  "entradas_reservas_orden": {
+    "_nota": "Tanda 6s. El orden del bloque «Entradas y Free Tour» de RESERVAS, siempre este y solo las que estén en la ruta del viajero. Cada nombre es una entrada de entradas_reservas (Coliseo, Foro y Palatino), un lugar del destino o «Free Tour por Roma» (el Free Tour de la ruta). «arriba» sale siempre; «mas» va detrás de «Ver n más».",
+    "arriba": ["Coliseo, Foro y Palatino", "Museos Vaticanos y Capilla Sixtina", "Panteón", "Free Tour por Roma"],
+    "mas": ["Cúpula de San Pedro", "Galería Borghese", "Termas de Caracalla", "Castillo de Sant'Angelo"]
+  },
   "excursions": {
     "excursiones_desde_dias": 4,
     "ejemplos_linea": "Pompeya, Florencia, la Costa Amalfitana…",
@@ -9037,6 +9042,21 @@
   ],
   "destination_config": {
     "ejemplo_nombre_dia": "Recorrido por el Centro Histórico",
+    "zonas_alojamiento": [
+      { "id": "centro", "nombre": "Centro (Panteón, Trevi, Navona)" },
+      { "id": "plaza_de_espana", "nombre": "Plaza de España", "sub": "Popolo, Via del Corso" },
+      { "id": "prati", "nombre": "Prati", "sub": "Vaticano" },
+      { "id": "trastevere", "nombre": "Trastevere" },
+      { "id": "termini", "nombre": "Termini" },
+      { "id": "monti", "nombre": "Monti", "sub": "Coliseo" },
+      { "id": "nose", "nombre": "Aún no lo sé" }
+    ],
+    "mapa_alojamiento": {
+      "_nota": "Tanda 6s. El mapa de alojamientos de la hoja de RESERVAS (stay22). 'embed' lleva sus datos fijos; la app añade checkin, checkout y campaign. 'embed_guardado' es el mapa creado en el panel: se prueba primero si acepta esos mismos datos al final.",
+      "embed": "https://www.stay22.com/embed/gm?aid=viajesbengala&address=Roma&ljs=es&currency=EUR&hidemodeswitcher=true",
+      "embed_guardado": "https://www.stay22.com/embed/6ac8bf7c73890e8abbbe9a61",
+      "usar": "embed"
+    },
     "core_days": 4,
     "sin_media_jornada": true,
     "_sin_media_jornada": "Tanda 3 (provisional): las medias jornadas de Ostia y Tívoli dejan de ponerse en los días 6 y siguientes: esos días son ahora D6 (Roma desde arriba) y D7 (la Vía Appia). Ver PREGUNTAS_TANDA3.",

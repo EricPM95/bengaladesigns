@@ -25,6 +25,8 @@ export interface ArrivalOption {
 export interface ArrivalPoint {
   id: string
   nombre: string
+  /** El nombre corto, el de los botones de RESERVAS («Fiumicino», «Termini»). Sin él, el nombre. */
+  corto?: string
   codigo?: string
   /** Lo que sale en la barra ("FIUMICINO"). */
   barra: string
@@ -195,10 +197,20 @@ export function useArrivalInfo(destination: string, city: string, origin: string
   return info ?? fallbackArrivalInfo(city, origin)
 }
 
-/** El medio de ese tramo en los datos: el suyo o, si el destino no lo tiene, el primero que haya. */
+/**
+ * El medio de ese tramo en los datos: el suyo o, si el destino no lo tiene, el primero que haya. Con un solo punto (el autobús de Roma solo trae
+ * Tiburtina), los botones de RESERVAS piden dos: se completan con los del tren, que tienen los mismos tiempos hasta la zona (Tanda 6s).
+ */
 export function medioOf(info: ArrivalInfo, mode: ArrivalMode): ArrivalMedio | null {
-  return info.medios[mode] ?? Object.values(info.medios)[0] ?? null
+  const medio = info.medios[mode] ?? Object.values(info.medios)[0] ?? null
+  if (mode !== 'bus' || !medio || medio.puntos.length >= 2) return medio
+  const nombres = new Set(medio.puntos.map((point) => point.corto ?? point.nombre))
+  const delTren = (info.medios.tren?.puntos ?? []).filter((point) => !nombres.has(point.corto ?? point.nombre))
+  return delTren.length > 0 ? { ...medio, puntos: [...medio.puntos, ...delTren] } : medio
 }
+
+/** El nombre corto de un punto: el de los botones («Fiumicino», «Termini»). */
+export const puntoCorto = (point: ArrivalPoint): string => point.corto ?? point.nombre
 
 const BOOKING_WORD: Record<ArrivalMode, { arrival: string; departure: string }> = {
   avion: { arrival: 'Vuelo de llegada', departure: 'Vuelo de salida' },

@@ -4397,8 +4397,14 @@ app.post('/api/destination-excursions', (req, res) => {
   const entradas = Array.isArray(data?.entradas_reservas) ? data.entradas_reservas.map((entry) => ({ name: entry.nombre, places: entry.lugares ?? [] })) : []
   // Las entradas de cada sitio (Tanda 6n, `_entradas.json`): las lee la pestaña «Entradas» de cualquier ficha y la pestañita de la tarjeta.
   const entradasPorSitio = entradasDe(findPipelineV2Key(destination ?? '') ?? '')
+  // Tanda 6s: el orden del bloque de entradas, las zonas del alojamiento y el mapa de alojamientos (datos del destino).
+  const reservasExtra = {
+    entradas_orden: data?.entradas_reservas_orden ? { arriba: data.entradas_reservas_orden.arriba ?? [], mas: data.entradas_reservas_orden.mas ?? [] } : { arriba: [], mas: [] },
+    zonas_alojamiento: data?.destination_config?.zonas_alojamiento ?? [],
+    mapa_alojamiento: data?.destination_config?.mapa_alojamiento ?? null,
+  }
   if (!data || (options.length === 0 && entradas.length === 0)) {
-    res.json({ found: false, from_days: null, excursions: [], entradas: [], entradas_por_sitio: entradasPorSitio, day_name_example: dayNameExample })
+    res.json({ found: false, from_days: null, excursions: [], entradas: [], entradas_por_sitio: entradasPorSitio, ...reservasExtra, day_name_example: dayNameExample })
     return
   }
   const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
@@ -4408,6 +4414,7 @@ app.post('/api/destination-excursions', (req, res) => {
     from_days: options.length > 0 ? (data.excursions?.excursiones_desde_dias ?? null) : null,
     entradas,
     entradas_por_sitio: entradasPorSitio,
+    ...reservasExtra,
     examples: data.excursions?.ejemplos_linea ?? null,
     day_name_example: dayNameExample,
     excursions: excursionsAvailablePayload(data, null, options).map((entry, index) => ({ ...entry, best_seller: options[index].mas_reservada === true })),
@@ -5448,13 +5455,16 @@ app.post('/api/reservation-advice', (req, res) => {
 
 // Las horas a las que se puede entrar a un sitio grande ese día (Tanda 6k): de la apertura a la última entrada. La rueda de la hora solo enseña esas.
 app.post('/api/reservation-hours', (req, res) => {
-  const { destination, place, date_iso, month, season } = req.body ?? {}
+  const { destination, place, date_iso, month, season, dates } = req.body ?? {}
   const destData = findPipelineV2Data(destination)
   if (!destData || typeof place !== 'string') {
-    res.json({ cerrado: false, ventanas: [] })
+    res.json({ cerrado: false, ventanas: [], cerrados: [] })
     return
   }
-  res.json(horasDeEntrada(destData, place, { dateIso: typeof date_iso === 'string' && /^d{4}-d{2}-d{2}$/.test(date_iso) ? date_iso : null, month: Number.isInteger(month) ? month : null, season: typeof season === 'string' ? season : null }))
+  const esFecha = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+  const base = { month: Number.isInteger(month) ? month : null, season: typeof season === 'string' ? season : null }
+  const cerrados = Array.isArray(dates) ? dates.filter((iso) => esFecha(iso) && horasDeEntrada(destData, place, { dateIso: iso, ...base }).cerrado) : []
+  res.json({ ...horasDeEntrada(destData, place, { dateIso: esFecha(date_iso) ? date_iso : null, ...base }), cerrados })
 })
 
 // Reservas grandes (Tanda 6j): qué día se mueve a la fecha de la reserva y por qué (antes de guardarla). El mismo motor que rehace los días, sin Claude.

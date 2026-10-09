@@ -855,6 +855,8 @@ export interface Route {
   /** El punto de llegada y el de salida elegidos en la ficha (ids de _llegada.json: 'fco', 'cia'…); ausente = el primero. */
   arrivalPointId?: string | null
   departurePointId?: string | null
+  /** La zona del alojamiento elegida en RESERVAS (de pago, Tanda 6s): el id de `zonas_alojamiento` del destino ('prati'…); 'nose' = «Aún no lo sé». Todavía no cambia la ruta (la usará la Tanda 7). Ausente = sin elegir. */
+  accommodationZone?: string | null
   /** Lo que eligió el viajero al poner la hora del vuelo (ventana «¿Ajustamos tu ruta a tu vuelo?»): `auto` = ajustar el primer y el último día a sus horas, `manual` = la ruta se queda como está. Ausente = aún no ha elegido. */
   flightAdjust?: 'auto' | 'manual' | null
   /** Ver TripDefaultTransport. Ausente en rutas generadas antes de este campo y en las rutas dev/manuales — quien lo lee cae a 'public'. */

@@ -28,6 +28,7 @@ export function openTicketShop(href: string | null) {
  * Del diseño se copia lo visual; los datos y las reglas son los de la app.
  */
 export function EntradaCard({
+  eyebrow = 'Entrada',
   when,
   name,
   reservedTime,
@@ -37,7 +38,9 @@ export function EntradaCard({
   onChange,
   notes = [],
 }: {
-  /** «Día 1» o «Mar 12 ene». */
+  /** La etiqueta de arriba: «Entrada», «Free Tour» o «Excursión». */
+  eyebrow?: string
+  /** «Día 1» o «Mar 12 ene» (en RESERVAS, «En tu ruta el mié 11»). */
   when: string
   name: string
   /** La hora de la reserva, si ya está reservada. */
@@ -71,7 +74,7 @@ export function EntradaCard({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-[5px] py-3 pl-2.5 pr-3.5">
         <span className="flex items-center gap-1.5 text-text/50" style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ background: reserved ? GREEN : 'rgba(28,34,48,.35)' }} />
-          Entrada
+          {eyebrow}
           <span className="opacity-50">·</span>
           <span className="text-text/65" style={{ letterSpacing: '.04em', textTransform: 'none', fontWeight: 500 }}>
             {when}

@@ -16,6 +16,7 @@
       "puntos": [
         {
           "id": "fco",
+          "corto": "Fiumicino",
           "nombre": "Fiumicino",
           "codigo": "FCO",
           "barra": "FIUMICINO",
@@ -109,6 +110,7 @@
         },
         {
           "id": "cia",
+          "corto": "Ciampino",
           "nombre": "Ciampino",
           "codigo": "CIA",
           "barra": "CIAMPINO",
@@ -282,6 +284,7 @@
       "puntos": [
         {
           "id": "termini",
+          "corto": "Termini",
           "nombre": "Roma Termini",
           "barra": "TERMINI",
           "foto": "Roma Termini station",
@@ -311,6 +314,7 @@
         },
         {
           "id": "tiburtina",
+          "corto": "Tiburtina",
           "nombre": "Roma Tiburtina",
           "barra": "TIBURTINA",
           "foto": "Roma Tiburtina station",
@@ -399,6 +403,7 @@
       "puntos": [
         {
           "id": "tibus",
+          "corto": "Tiburtina",
           "nombre": "Autostazione Tiburtina (Tibus)",
           "barra": "TIBURTINA",
           "foto": "Roma Tiburtina bus station",
@@ -464,6 +469,7 @@
       "puntos": [
         {
           "id": "civitavecchia",
+          "corto": "Civitavecchia",
           "nombre": "Puerto de Civitavecchia",
           "barra": "CIVITAVECCHIA",
           "foto": "Civitavecchia port",
@@ -533,6 +539,7 @@
       "puntos": [
         {
           "id": "ztl",
+          "corto": "Roma",
           "nombre": "Roma en coche",
           "barra": "ROMA",
           "foto": "Rome traffic Colosseum road",

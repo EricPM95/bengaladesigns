@@ -17,6 +17,12 @@ export interface DestinationExcursions {
   entradas: EssentialEntry[]
   /** Las entradas que se pueden comprar de cada sitio (`_entradas.json`), por nombre de sitio; el Free Tour, como «Free Tour». Un sitio que no sale no tiene entradas. */
   entradasPorSitio: Record<string, StopEntrada[]>
+  /** El orden del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s): las de arriba y las de «Ver n más». Nombres de entrada, de lugar o «Free Tour por Roma». */
+  entradasOrden: { arriba: string[]; mas: string[] }
+  /** Las zonas para elegir alojamiento (id, nombre y, si lo hay, una pista: «Vaticano»); la última es «Aún no lo sé». */
+  zonasAlojamiento: { id: string; nombre: string; sub?: string }[]
+  /** El mapa de alojamientos de la hoja (datos del destino). */
+  mapaAlojamiento: { embed: string; embed_guardado?: string; usar?: 'embed' | 'embed_guardado' } | null
   /** Los sitios de excursión del destino, en una línea («Pompeya, Florencia…»), de los datos del destino. */
   examples: string | null
   /** El ejemplo del campo «Nombre del día» (+ Añadir día), de los datos del destino. */
@@ -25,7 +31,7 @@ export interface DestinationExcursions {
   rating: { percent: number; excursions: number; reviews: number } | null
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, examples: null, dayNameExample: null, rating: null }
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, zonasAlojamiento: [], mapaAlojamiento: null, examples: null, dayNameExample: null, rating: null }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
@@ -37,10 +43,10 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
       const result: DestinationExcursions = data?.found
-        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
-        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, dayNameExample: data?.day_name_example ?? null }
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
+        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, dayNameExample: data?.day_name_example ?? null }
       cache.set(key, result)
       return result
     })

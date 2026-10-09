@@ -538,7 +538,11 @@ interface RouteStoreState {
   setArrivalFlightTime: (time: string | null) => void
   setDepartureFlightTime: (time: string | null) => void
   /** El punto de llegada o de salida elegido en la ficha (Fiumicino o Ciampino…): lo enseña la barra. */
-  setArrivalPointId: (kind: 'arrival' | 'departure', pointId: string) => void
+  setArrivalPointId: (kind: 'arrival' | 'departure', pointId: string | null) => void
+  /** «Eliminar vuelo» (Tanda 6s): borra la hora y el punto de esa mitad; los días se quedan como están. */
+  removeFlightLeg: (kind: 'arrival' | 'departure') => void
+  /** La zona del alojamiento (de pago, Tanda 6s). */
+  setAccommodationZone: (zone: string | null) => void
   setFlightAdjust: (choice: 'auto' | 'manual' | null) => void
   /** "Optimizar ruta" en RESERVAS — recalcula el horario REAL de un único día (llegada o vuelta) a partir de la hora de vuelo introducida, ver stopScheduling.ts. No toca el resto de días. */
   optimizeDayWithRealTransport: (dayId: string, kind: 'arrival' | 'departure', flightTime: string) => Promise<void>
@@ -1623,6 +1627,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setFlightAdjust: (choice) => set((state) => (state.route ? { route: { ...state.route, flightAdjust: choice } } : state)),
   setArrivalPointId: (kind, pointId) =>
     set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPointId' : 'departurePointId']: pointId } } : state)),
+  removeFlightLeg: (kind) =>
+    set((state) =>
+      state.route
+        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null } : { departureFlightTime: null, departurePointId: null }) } }
+        : state,
+    ),
+  setAccommodationZone: (zone) => set((state) => (state.route ? { route: { ...state.route, accommodationZone: zone } } : state)),
 
   optimizeDayWithRealTransport: async (dayId, kind, flightTime) => {
     const state = get()

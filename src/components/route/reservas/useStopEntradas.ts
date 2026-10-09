@@ -38,7 +38,7 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
   const base = reservation
     ? { refId: reservation.refId, name: reservation.name, placeNames: reservation.placeNames }
     : stop.isFreeTour
-      ? { refId: FREE_TOUR_KEY, name: FREE_TOUR_KEY, placeNames: [stop.name] }
+      ? { refId: FREE_TOUR_KEY, name: stop.name, placeNames: [stop.name] }
       : entranceTargetFor(stop.name, info.entradas)
   return {
     entradas,
