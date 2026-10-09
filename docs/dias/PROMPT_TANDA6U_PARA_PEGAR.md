@@ -32,7 +32,10 @@ Cómo funciona:
 3. LAS PARADAS NUEVAS Y SUS FOTOS
 - Paradas nuevas: Templo de Adriano (por fuera) y Piazza Colonna y la Columna de Marco Aurelio. Con sus coordenadas, sus minutos y su ficha, como las demás.
   - El Templo de Adriano no lleva pestaña de entrada (de momento, solo por fuera).
-- Fotos: son del usuario (`fuente: "propia"`, sin crédito). Mira en docs\archivo\fotos_6u\: si están `templo_adriano` y `piazza_colonna` (jpg, png o webp), prepáralas como las demás (1.600 px y 640 px, en public/fotos/roma/) y ponlas. Si no están, las dos paradas van sin foto (sin recuadro, 6r) y me lo dices en el informe: las pondremos después.
+- Fotos:
+  - Piazza Colonna y la Columna de Marco Aurelio: la de Wikimedia Commons «Piazza Colonna - Paricolare.JPG» (https://commons.wikimedia.org/wiki/File:Piazza_Colonna_-_Paricolare.JPG). Igual que la del Templo: bájala, mira su licencia y su autor, y ponla con su crédito. Si la licencia no deja usarla, dímelo y no la pongas. La foto de docs\archivo\fotos_6u\ no se usa: bórrala.
+  - Templo de Adriano: la de Wikimedia Commons «Tempio di Adriano - esterno.jpg» (https://commons.wikimedia.org/wiki/File:Tempio_di_Adriano_-_esterno.jpg). Bájala, mira su licencia y su autor, y ponla con su crédito, como las otras de Commons. Si la licencia no deja usarla, dímelo y no la pongas.
+  - Prepáralas como las demás (1.600 px y 640 px, en public/fotos/roma/).
 - Via Condotti ya tiene foto: no la toques.
 
 4. LAS CALLES CON FAMA, COMO PARADAS (regla 9, decidido el 7-oct)

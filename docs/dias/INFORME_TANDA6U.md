@@ -26,7 +26,8 @@ No: la prueba de listas ya no cuenta ninguna (Coliseo, Museos, Galería y Free T
 
 ## Fotos
 
-- Templo de Adriano y Piazza Colonna: **sin foto** (no existe `docs/archivo/fotos_6u/`). Van sin recuadro.
+- **Piazza Colonna: tu foto** (`piazza_colonna.jpg`, preparada a 1.600 y 640 px, propia, sin crédito).
+- **Templo de Adriano: sin foto** de momento (va sin recuadro). El prompt pide bajarla de Wikimedia Commons; espero tu permiso (PREGUNTAS 6).
 - Las diez calles tienen foto; Via Condotti, como estaba.
 
 ## Pruebas
