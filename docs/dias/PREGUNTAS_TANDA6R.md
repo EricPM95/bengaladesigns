@@ -1,0 +1,19 @@
+# Lo que he decidido yo en la Tanda 6r
+
+1. **El documento y tu orden se contradicen en un punto.** La regla 4 del `DIAS_ROMA_PARADAS.md` nuevo dice, en su última línea, que el día se llena «y, si aún sobra, [con] sitios cercanos del destino que no salgan en el viaje y estén abiertos». Tu mensaje de la 6r dice que la app nunca mete paradas por su cuenta para llenar un hueco. He seguido tu mensaje (y la regla 3: sin rellenos). El documento no lo he tocado: esa línea del documento ya no se cumple y te toca a ti decidir si la quitas.
+2. **Lo que sí se queda de la regla 4:** «si aún queda más de 1 h, se adelantan las paradas de después que están cerca (a 15 min andando o menos), en su orden y sin zigzag». Son paradas que el documento ya escribe ese día, solo cambian de sitio; no es un relleno. Si prefieres que tampoco se adelante nada, es otro cambio.
+3. **Un sitio sin día escrito para esa hora** (el Free Tour a las 12:00 en un día que solo lo tiene a las 10:00): la app ya no se inventa nada. Con la hora fija, el día se monta con lo que ya trae escrito y se espera a la hora. La hoja de la regla 17 (las dos horas propuestas) sale como hasta ahora, desde la 6k; no la he cambiado.
+4. **«Free Tour por Roma» en los viajes ya guardados.** El nombre viejo viaja dentro de las paradas y de la reserva de un viaje guardado, y no se rehace solo. Al cargar un viaje guardado, el nombre viejo se cambia por el nuevo (en la ruta y en las reservas); los ids no cambian, así que la foto y el enlace son los mismos. Es el único sitio que lleva el nombre viejo escrito en el código (`tripPersistence.ts`) y la prueba lo deja pasar a propósito.
+5. **La entrada de la ficha** se llamaba «Free Tour Roma» (la puse yo en la 6n): ahora «Free Tour por Roma».
+6. **Los demás «centro» que lee el viajero** (sin cambiar; los nombres de zona como «Centro Histórico» y los «centro» de «el centro de la plaza» no cuentan):
+   - Ficha del Free Tour: «Dos horas y media **por el centro** con un guía…» (el «por qué» del Free Tour en `curated_days.manana`).
+   - Aviso del Free Tour a las 12:00 en un solo día: «…hemos dejado el día sin él, **con el centro** a tu aire».
+   - `default_free_tour.area_del`: «**del centro histórico**».
+   - La línea de lo que incluye la entrada del Free Tour (mía, de la 6n): «Recorrido a pie **por el centro histórico**».
+   - Excursiones: «…Nápoles, recorre su **centro histórico** con guía…».
+   - Llegada en coche: «ZTL **del centro histórico**»; en la hoja de llegada, «De {punto} **al centro**», «**En el centro** a las 13:00».
+   - Textos de aviso interno o de ejemplo: «Recorrido por el Centro Histórico» (el ejemplo del nombre de un día), «Pasear por el Centro Histórico» (el paseo por barrio), «Completar centro tras el Free Tour» y parecidos (notas de reparto del motor antiguo, que no se ven).
+7. **Con el nombre viejo borrado de la app**, quedan los archivos archivados (`data/archivo`, `scripts/archivo`) y los informes de tandas antiguas con el nombre viejo: no cuentan como app y no los he tocado.
+8. **La prueba 6r y el «documento»:** «escrito ese día» es lo que aparece en cualquier variante de ese día en `listas.json` (el D1-FT hereda las del D1) más las nocturnas y las pausas del destino. Si el documento escribiera una parada solo en otra variante del mismo día, la prueba la dejaría pasar. No he visto ningún caso.
+9. **El recuadro de la foto vacío** salía porque la 6f solo quitó el nombre de dentro del recuadro; el recuadro de color seguía. Ahora, sin foto (no existe, está en la lista «sin foto» o no ha llegado), la tarjeta no pinta el recuadro: solo la franja de color con su icono, y el texto ocupa el resto. Lo comprueba la prueba mirando el código de la tarjeta (no puedo mirar las fotos reales sin red).
+10. **A mano (375 px).** Viaje de 5 días con fechas (16–20 oct) y Free Tour: reservado a las 12:00 en el día 1, sale Panteón → Free Tour por Roma (verde, 12:00) y sin Via del Babuino; antes sí salía.
