@@ -76,7 +76,8 @@ const barra = (kind, mode, version, time, point) => {
 }
 
 // ── 7. Los datos ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-const TRASLADO_EN = new Set(['fco', 'cia', 'civitavecchia'])
+// Por ahora ningún punto lleva traslado (las búsquedas daban resultados malos): sin traslado no hay pestaña «Traslados»; en cuanto un punto lleve `traslado: { url }` sale sola (se prueba más abajo con un punto de prueba).
+const TRASLADO_EN = new Set([])
 for (const [medioNombre, medio] of Object.entries(info.medios)) {
   for (const point of medio.puntos) {
     debe(!('privado' in point), '7 datos', `${point.id}: sigue teniendo «privado»`)
@@ -199,6 +200,23 @@ for (const mode of MODOS) {
         }
       }
     }
+  }
+}
+
+// ── Un punto de prueba CON traslado: la pestaña «Traslados» sale sola; al quitarlo, se va ───────────────────────────────────────────────────
+{
+  const r = route('avion')
+  const puntoPrueba = puntosDe('avion').find((p) => p.id === 'fco')
+  debe(Boolean(puntoPrueba), '3 traslados', 'no hay punto fco para la prueba con traslado')
+  if (puntoPrueba) {
+    debe(!/\nTraslados\n/.test(hoja(r, 'llegada', 'completa', null, null)), '3 traslados', 'sin traslado en los datos sale la pestaña «Traslados»')
+    puntoPrueba.traslado = { url: 'https://example.com/traslado-de-prueba' }
+    try {
+      debe(/\nTraslados\n/.test(hoja(r, 'llegada', 'completa', null, null)), '3 traslados', 'con `traslado: { url }` en un punto no sale la pestaña «Traslados»')
+    } finally {
+      delete puntoPrueba.traslado
+    }
+    debe(!/\nTraslados\n/.test(hoja(r, 'llegada', 'completa', null, null)), '3 traslados', 'al quitar el traslado de prueba sigue saliendo la pestaña «Traslados»')
   }
 }
 

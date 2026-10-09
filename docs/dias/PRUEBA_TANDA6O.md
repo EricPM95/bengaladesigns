@@ -1,12 +1,12 @@
 # Prueba de la Tanda 6o
 
-Enlaces de Civitatis escritos en datos, servidor y cliente: **32**; todos, sellados, llevan `aid=5206` una sola vez.
+Enlaces de Civitatis escritos en datos, servidor y cliente: **29**; todos, sellados, llevan `aid=5206` una sola vez.
 Sitios con entradas en `_entradas.json` (con el Free Tour): **21**.
 Fallos: **0**.
 
 ## Hosts que no son de Civitatis (sin su código de afiliado)
 
-- commons.wikimedia.org (19)
+- commons.wikimedia.org (21)
 - images.unsplash.com (13)
 - www.trenitalia.com (7)
 - unsplash.com (6)

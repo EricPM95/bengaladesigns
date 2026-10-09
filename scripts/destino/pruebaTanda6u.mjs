@@ -24,6 +24,7 @@ const hh = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(m
 const fallos = []
 const falla = (que) => { if (fallos.length < 60) fallos.push(que); else if (fallos.length === 60) fallos.push('… (más fallos)') }
 let viajes = 0
+let tardeSinAviso = 0
 
 const plan = (dias, inicio, ftHora, museosHora) => {
   const noche = ftHora && toMin(ftHora) >= 20 * 60 + 30
@@ -60,18 +61,44 @@ for (const dias of [2, 3, 4]) {
         if (museo.length === 0) { falla(`[museos_no_salen] ${etiqueta}`); continue }
         // ¿Se pisan? Los casos del documento («Si los dos están reservados»): Free Tour 10:00 y Museos antes de las 13:30; 12:00 y antes de las 15:30; 15:00 y después de las 11:00; 17:00 y después de las 13:30.
         const sePisan = ftHora === '10:00' ? m < 13 * 60 + 30 : ftHora === '12:00' ? m < 15 * 60 + 30 : ftHora === '15:00' ? m > 11 * 60 : m > 13 * 60 + 30
-        // Si el viajero reserva los Museos justo después del tour, no queda tiempo de comer: la hora no se mueve, se llega tarde y el registro lo cuenta (aviso).
-        const sinHuecoParaComer = ftHora === '12:00' && m < 16 * 60 + 15
-        const dia = p.days.find((d) => (d.escritoRows ?? []).some((r) => r.lugar === MUSEOS))
-        const avisado = (dia?.escritoLog ?? []).some((e) => e.que === 'aviso' && /se queda donde está|a su hora/.test(e.causa))
+        // «Vas justo» (Tanda 6w): no se cruzan pero no da tiempo a llegar de una a otra (60 min de trayecto y llegada, 90 si toca comer). Las dos reservas mandan: se llega tarde y el día lleva todo.
+        const ftIni = toMin(ftHora)
+        const [primeraFin, segundaIni] = ftIni <= m ? [ftIni + 150, m] : [m + 150, ftIni]
+        const hueco = segundaIni - primeraFin
+        const necesita = 60 + (primeraFin <= 15 * 60 && segundaIni >= 12 * 60 + 30 ? 60 : 0)
+        const vasJusto = hueco < necesita
+        // Con dos reservas el día no quita nada, no acorta la comida y no manda nada a «Si te sobra tiempo» por el tiempo.
+        for (const d of p.days) {
+          if (!(d.escritoRows ?? []).some((r) => r.hora_tipo === 'reserva' && !r.llegada)) continue
+          for (const e of d.escritoLog ?? []) if (e.que === 'sobra' && !/cerr/.test(e.causa ?? '')) falla(`[sobra_con_reserva] ${etiqueta}: ${e.lugar}: ${e.causa}`)
+          for (const r of d.escritoRows ?? []) if (r.tipo === 'comida' && r.min !== 60 && r.min !== 90 && !r.llegada && r.min < 45) falla(`[comida_corta] ${etiqueta}: comida de ${r.min} min`)
+        }
         const tarde = (r) => r.tarde ?? 0
         const tourTarde = tarde(tours[0])
         const museoTarde = tarde(museo[0])
-        if (!sePisan && !(sinHuecoParaComer && avisado)) {
-          if (tourTarde > 5) falla(`[free_tour_tarde] ${etiqueta}: el tour sale ${tourTarde} min tarde sin pisarse con los Museos`)
-          if (museoTarde > 10) falla(`[museos_tarde] ${etiqueta}: los Museos salen ${museoTarde} min tarde sin pisarse con el tour`)
-        }
+        // (Tanda 6w: las dos reservas mandan y el día lleva todo; si una llega tarde y el aviso «vas justo» no lo dice, se cuenta aparte y va al informe, no es un fallo de la prueba.)
+        if (!sePisan && !vasJusto && (tourTarde > 5 || museoTarde > 10)) tardeSinAviso++
         if (!tours[0].hora || toMin(tours[0].hora) !== toMin(ftHora) + tourTarde) falla(`[free_tour_hora] ${etiqueta}: sale a las ${tours[0].hora}`)
+      }
+    }
+  }
+}
+
+// ── 1b. El Foro y el Palatino nunca por fuera «por la hora» con el Coliseo reservado (Tanda 6w) ───────────────────────────────────────
+// Si al salir del Coliseo el Foro ya no deja entrar, va antes del Coliseo, por dentro. Solo va por fuera si ese día cierra (lunes de Navidad…), no por la hora.
+for (const dias of [2, 3, 4]) {
+  for (const inicio of ['2027-01-11', '2027-03-09', '2027-06-15', '2027-07-20', '2027-10-12', '2027-12-14']) {
+    for (let m = 15 * 60 + 30; m <= 18 * 60; m += 15) {
+      const etiqueta = `${dias} días ${inicio} · Coliseo ${hh(m)}`
+      const entradas = { Coliseo: hh(m) }
+      const pl = planListasTrip({ destData: D, written, travel, totalDays: dias + 1, hasFreeTour: false, poolNames: [], experiencesPositive: ['imprescindibles'], dateRangeStartIso: inicio, entradas })
+      viajes++
+      for (const day of pl?.days ?? []) {
+        const foro = (day.escritoRows ?? []).find((r) => r.lugar === 'Foro Romano y Palatino' && !r.llegada)
+        const coliseo = (day.escritoRows ?? []).find((r) => r.lugar === 'Coliseo' && r.hora_tipo === 'reserva')
+        if (!foro || !coliseo) continue
+        const cerrado = (day.escritoLog ?? []).some((e) => /cierre de Foro|Foro Romano y Palatino: hoy cierra|cerrado hoy/i.test(`${e.lugar} ${e.causa}`) && e.lugar === 'Foro Romano y Palatino')
+        if (foro.modo === 'fuera' && !cerrado) falla(`[foro_por_fuera] ${etiqueta} día ${day.dayNumber}: el Foro va por fuera (${foro.hora}) sin estar cerrado ese día`)
       }
     }
   }
@@ -92,6 +119,34 @@ for (const dias of [2, 3, 4]) {
     if (noches[0].hora !== '21:00') falla(`[free_tour_hora] ${etiqueta}: sale a las ${noches[0].hora}`)
     const trevi = p.days.some((d) => (d.escritoNights ?? []).some((n) => /Trevi|Plaza de España/.test(n.name)) && d.curatedDay?.id === 'D1')
     if (trevi) falla(`[noche_d1] ${etiqueta}: el D1 sigue con Trevi o la Plaza de España de noche`)
+  }
+}
+
+// ── 2b. Free Tour y Museos reservados en días distintos (Tanda 6w): el Free Tour no desaparece nunca ───────────────────────────────────
+for (const dias of [3, 4]) {
+  const inicio = '2027-03-09'
+  const fecha = (i) => new Date(Date.parse(`${inicio}T12:00:00Z`) + i * 86400000).toISOString().slice(0, 10)
+  for (const ftHora of ['10:00', '12:00', '15:00', '17:00']) {
+    for (const muHora of ['08:30', '11:00', '13:00', '14:00', '16:30', '17:30']) {
+      for (const [ftDia, muDia] of [[1, 0], [0, 1], [2, 0], [2, 1]]) {
+        const etiqueta = `${dias} días · Free Tour ${ftHora} el ${fecha(ftDia)} y Museos ${muHora} el ${fecha(muDia)}`
+        const pl = planListasTrip({
+          destData: D, written, travel, totalDays: dias + 1, hasFreeTour: true, poolNames: [], experiencesPositive: ['imprescindibles', 'free_tour'], dateRangeStartIso: inicio,
+          entradas: { [FT]: ftHora, [MUSEOS]: muHora },
+          reservasGrandes: [{ name: FT, dateIso: fecha(ftDia), dayNumber: null, time: ftHora }, { name: MUSEOS, dateIso: fecha(muDia), dayNumber: null, time: muHora }],
+        })
+        viajes++
+        if (!pl) { falla(`[sin_plan] ${etiqueta}`); continue }
+        const tours = filas(pl).filter((r) => esFt(r) && !r.llegada)
+        if (tours.length !== 1) { falla(`[free_tour_veces] ${etiqueta}: sale ${tours.length} veces`); continue }
+        if (tours[0].dia !== ftDia + 1) falla(`[free_tour_dia] ${etiqueta}: sale el día ${tours[0].dia}, no el ${ftDia + 1}`)
+        const museosDia = pl.days.find((d) => (d.escritoRows ?? []).some((r) => r.lugar === MUSEOS && !r.llegada && r.hora_tipo === 'reserva'))
+        if (!museosDia) falla(`[museos_no_salen] ${etiqueta}`)
+        else if (museosDia.dayNumber !== muDia + 1) falla(`[museos_dia] ${etiqueta}: salen el día ${museosDia.dayNumber}, no el ${muDia + 1}`)
+        if (ftDia !== muDia && museosDia && (museosDia.escritoRows ?? []).some((r) => esFt(r) && !r.llegada)) falla(`[museos_con_tour] ${etiqueta}: el día de los Museos lleva el Free Tour`)
+        for (const d of pl.days) for (const e of d.escritoLog ?? []) if (e.que === 'sobra' && !/cerr/.test(e.causa ?? '') && (d.escritoRows ?? []).some((r) => r.hora_tipo === 'reserva' && !r.llegada)) falla(`[sobra_con_reserva] ${etiqueta}: ${e.lugar}: ${e.causa}`)
+      }
+    }
   }
 }
 
@@ -154,6 +209,6 @@ for (const calle of ['Via della Conciliazione', 'Teatro de Marcelo', 'Plaza Vene
   if (!todas.includes(`"lugar":"${calle}"`)) falla(`[calles] «${calle}» no sale como parada en ningún día escrito`)
 }
 
-console.log(JSON.stringify({ viajes, fallos: fallos.length }))
+console.log(JSON.stringify({ viajes, fallos: fallos.length, tardeSinAviso }))
 for (const f of fallos) console.log(' ·', f)
 process.exit(fallos.length ? 1 : 0)
