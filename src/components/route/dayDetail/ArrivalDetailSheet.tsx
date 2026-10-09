@@ -1,4 +1,5 @@
 import { useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { formatoImporte, precioTienda } from '../../../lib/dinero'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import type { ArrivalDepartureDetail } from '../../../lib/mockDayDetail'
@@ -40,8 +41,7 @@ function PlaneIcon() {
 }
 
 function formatPrice(precio: number, moneda: string): string {
-  const symbol = moneda === 'EUR' ? '€' : moneda
-  return `${precio.toLocaleString('es-ES')} ${symbol}`
+  return formatoImporte({ amount: precio, currency: moneda })
 }
 
 /**
@@ -246,7 +246,7 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, trans
                               {option.stopName && <span className="text-text-muted"> · {option.stopName}</span>}
                             </p>
                             <p className="text-caption font-medium text-text-soft">
-                              {option.durationLabel} · {option.price === 0 ? 'Gratis' : `${option.price}€`}
+                              {option.durationLabel} · {option.price === 0 ? 'Gratis' : precioTienda(option.price, option.affiliateTicket?.moneda)}
                             </p>
                           </div>
                           {option.affiliateTicket && (

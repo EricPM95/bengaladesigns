@@ -1,0 +1,14 @@
+{
+  "_nota": "Moneda de cada país (código ISO de país en minúsculas → código ISO de moneda). De aquí sale la moneda del viajero a partir de su ciudad de origen (Tanda 6z2). Un país que no esté aquí no tiene moneda propuesta: el viajero la elige.",
+  "ad": "EUR", "at": "EUR", "be": "EUR", "bg": "EUR", "cy": "EUR", "de": "EUR", "ee": "EUR", "es": "EUR", "fi": "EUR", "fr": "EUR",
+  "gr": "EUR", "hr": "EUR", "ie": "EUR", "it": "EUR", "lt": "EUR", "lu": "EUR", "lv": "EUR", "mc": "EUR", "me": "EUR", "mt": "EUR",
+  "nl": "EUR", "pt": "EUR", "si": "EUR", "sk": "EUR", "sm": "EUR", "va": "EUR", "xk": "EUR",
+  "gb": "GBP", "cz": "CZK", "pl": "PLN", "hu": "HUF", "ro": "RON", "dk": "DKK", "se": "SEK", "no": "NOK", "is": "ISK", "ch": "CHF", "li": "CHF",
+  "tr": "TRY", "rs": "RSD", "al": "ALL", "ba": "BAM", "mk": "MKD", "ge": "GEL", "ua": "UAH", "ru": "RUB",
+  "us": "USD", "ca": "CAD", "mx": "MXN", "br": "BRL", "ar": "ARS", "cl": "CLP", "co": "COP", "pe": "PEN", "uy": "UYU", "py": "PYG", "bo": "BOB",
+  "ve": "VES", "ec": "USD", "pa": "USD", "sv": "USD", "gt": "GTQ", "hn": "HNL", "ni": "NIO", "cr": "CRC", "do": "DOP", "cu": "CUP",
+  "au": "AUD", "nz": "NZD", "jp": "JPY", "cn": "CNY", "hk": "HKD", "tw": "TWD", "kr": "KRW", "in": "INR", "id": "IDR", "th": "THB", "my": "MYR",
+  "sg": "SGD", "ph": "PHP", "vn": "VND", "kh": "KHR", "la": "LAK", "mm": "MMK", "lk": "LKR", "np": "NPR", "pk": "PKR", "bd": "BDT",
+  "il": "ILS", "ae": "AED", "sa": "SAR", "qa": "QAR", "kw": "KWD", "bh": "BHD", "om": "OMR", "jo": "JOD",
+  "eg": "EGP", "ma": "MAD", "tn": "TND", "za": "ZAR", "ng": "NGN", "ke": "KES"
+}

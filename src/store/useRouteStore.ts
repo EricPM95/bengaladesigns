@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { dayCountryCode } from '../lib/flagColors'
-import { precioDeAlojamiento, type TuAlojamiento } from '../lib/tuAlojamiento'
+import type { TuAlojamiento } from '../lib/tuAlojamiento'
+import type { Importe } from '../lib/dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
@@ -8,8 +9,7 @@ import type {
   AccommodationMode,
   AppScreen,
   DayType,
-  Budget,
-  BudgetItem,
+  GastoExtra,
   DateRange,
   DayPlan,
   DidntMakeCutItem,
@@ -30,12 +30,10 @@ import type {
   WishlistItem,
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
-import { triggerBudgetFly } from '../lib/budgetFlyBus'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../lib/time'
 import { optimizeDayWithRealTransport as computeOptimizedDay, overflowToDidntMakeCut } from '../lib/stopScheduling'
 import { fitMealsToStops } from '../lib/arrivalReturn'
 import { spareInsertIndex } from '../lib/spareStops'
-import { buildDestinationSegments } from '../lib/destinationSegments'
 import { getTodayTripContext } from '../lib/todayMode'
 import { daysBetweenInclusive } from '../lib/dateRange'
 import { seasonOfMonth } from '../lib/season'
@@ -63,17 +61,6 @@ import { recuperarDestino } from '../lib/recuperarDestino'
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
   return vehicleType === 'camper' ? 'camping' : 'hotel'
-}
-
-const recalculateBudgetTotal = (budget: Budget): Budget => ({
-  ...budget,
-  total: budget.items.reduce((sum, item) => sum + item.amount, 0),
-})
-
-/** Añade/reemplaza (por `id`) o quita (item null) un ítem de presupuesto ligado a una reserva de RESERVAS — mismo `id` en ambas llamadas para poder sustituirlo/borrarlo. */
-function linkBudgetItem(budget: Budget, id: string, item: Omit<BudgetItem, 'id'> | null): Budget {
-  const withoutPrevious = budget.items.filter((existing) => existing.id !== id)
-  return recalculateBudgetTotal({ ...budget, items: item ? [...withoutPrevious, { ...item, id }] : withoutPrevious })
 }
 
 /**
@@ -300,6 +287,8 @@ interface RouteStoreState {
   rentalVehicleBooking: GeneralBooking | null
   /** RESERVAS — clave: código de país en minúsculas, compartida entre todos los destinos de ese país. */
   esimSelections: Record<string, EsimStatus>
+  /** Lo que costó la eSIM de cada país (Tanda 6z2), con la misma clave que `esimSelections`. */
+  esimPrecios: Record<string, Importe>
   /** Entradas y excursiones reservadas: fijadas, con fecha y hora (PARA_CODE_RESERVAS). Lo reservado no se mueve: se quita y se vuelve a crear. */
   reservations: Reservation[]
   /** El código de campaña de este viaje, al azar (`app-8F3K2`): va en todos los enlaces de «Reservar» y así se sabe que alguien ha reservado, sin datos del viajero. */
@@ -500,8 +489,14 @@ interface RouteStoreState {
   /** Deshacer la elección de un tramo — solo tiene efecto cuando hubo alternativas reales entre las que elegir. */
   resetTransportSegment: (dayId: string) => void
 
-  addBudgetItem: (item: BudgetItem) => void
-  removeBudgetItem: (itemId: string) => void
+  /** El presupuesto del viaje (Tanda 6z2): los gastos sueltos («Extras»), la moneda del viajero y el precio de cada billete de llegada y de vuelta. Lo demás (entradas, alojamiento…) guarda su precio con cada cosa. */
+  addGastoExtra: (extra: GastoExtra) => void
+  removeGastoExtra: (id: string) => void
+  setMonedaViajero: (moneda: string | null) => void
+  setPersonas: (personas: number | null) => void
+  setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
+  /** El precio de la eSIM de un país (clave: código de país en minúsculas); null lo quita. */
+  setEsimPrecio: (countryCode: string, precio: Importe | null) => void
 
   markDidntMakeCutAdded: (dayId: string, itemId: string) => void
 
@@ -610,6 +605,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   n26Added: false,
   rentalVehicleBooking: null,
   esimSelections: {},
+  esimPrecios: {},
   reservations: [],
   campaignCode: newCampaignCode(),
   sales: [],
@@ -1006,7 +1002,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       intensity: route.intensity,
       ...(state.keepBookingsOnNextRoute
         ? {}
-        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, reservations: [], campaignCode: newCampaignCode(), sales: [], wishlist: [] }),
+        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, esimPrecios: {}, reservations: [], campaignCode: newCampaignCode(), sales: [], wishlist: [] }),
       keepBookingsOnNextRoute: false,
       dev_simulated_today_iso: null,
       }
@@ -1026,6 +1022,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       n26Added: payload.bookings.n26Added,
       rentalVehicleBooking: payload.bookings.rentalVehicleBooking,
       esimSelections: payload.bookings.esimSelections,
+      esimPrecios: payload.bookings.esimPrecios ?? {},
       reservations: payload.bookings.reservations ?? [],
       campaignCode: payload.bookings.campaignCode ?? newCampaignCode(),
       sales: payload.bookings.sales ?? [],
@@ -1465,27 +1462,22 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
     }),
 
-  addBudgetItem: (item) =>
-    set((state) => {
-      if (!state.route) return state
-      triggerBudgetFly(item.amount)
-      return {
-        route: { ...state.route, budget: recalculateBudgetTotal({ ...state.route.budget, items: [...state.route.budget.items, item] }) },
-      }
-    }),
+  addGastoExtra: (extra) => set((state) => (state.route ? { route: { ...state.route, gastosExtras: [...(state.route.gastosExtras ?? []), extra] } } : state)),
 
-  removeBudgetItem: (itemId) =>
+  removeGastoExtra: (id) => set((state) => (state.route ? { route: { ...state.route, gastosExtras: (state.route.gastosExtras ?? []).filter((extra) => extra.id !== id) } } : state)),
+
+  setPersonas: (personas) => set((state) => (state.route ? { route: { ...state.route, personas } } : state)),
+
+  setMonedaViajero: (moneda) => set((state) => (state.route ? { route: { ...state.route, monedaViajero: moneda } } : state)),
+
+  setLegPrecio: (kind, precio) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPrecio' : 'departurePrecio']: precio } } : state)),
+
+  setEsimPrecio: (countryCode, precio) =>
     set((state) => {
-      if (!state.route) return state
-      return {
-        route: {
-          ...state.route,
-          budget: recalculateBudgetTotal({
-            ...state.route.budget,
-            items: state.route.budget.items.filter((item) => item.id !== itemId),
-          }),
-        },
-      }
+      const next = { ...state.esimPrecios }
+      if (precio) next[countryCode] = precio
+      else delete next[countryCode]
+      return { esimPrecios: next }
     }),
 
   markDidntMakeCutAdded: (dayId, itemId) =>
@@ -1553,18 +1545,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (hotel) next[segmentDayId] = hotel
       else delete next[segmentDayId]
 
-      if (!state.route) return { accommodationSelections: next }
-      const segment = buildDestinationSegments(state.route.days).find((candidate) => candidate.dayIds[0] === segmentDayId)
-      const budgetId = `budget-accommodation-${segmentDayId}`
-      // El precio es el total de la estancia que ha dicho el viajero (si no ha dicho ninguno, el alojamiento no entra en el presupuesto).
-      const price = precioDeAlojamiento(hotel)
-      const budget = linkBudgetItem(
-        state.route.budget,
-        budgetId,
-        hotel && segment && price !== null ? { icon: '🏨', label: `${hotel.name} (${segment.city})`, amount: price, category: 'route', sourceType: 'hotel', refId: segmentDayId } : null,
-      )
-      if (hotel && segment && price !== null) triggerBudgetFly(price)
-      return { accommodationSelections: next, route: { ...state.route, budget } }
+      return { accommodationSelections: next }
     }),
 
   setTransportBooking: (dayId, booking) =>
@@ -1573,44 +1554,14 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (booking) next[dayId] = booking
       else delete next[dayId]
 
-      if (!state.route) return { transportBookings: next }
-      const budgetId = `budget-transport-${dayId}`
-      const budget = linkBudgetItem(
-        state.route.budget,
-        budgetId,
-        booking ? { icon: '✈️', label: booking.operator, amount: booking.price, category: 'route', sourceType: 'flight', refId: dayId } : null,
-      )
-      if (booking) triggerBudgetFly(booking.price)
-      return { transportBookings: next, route: { ...state.route, budget } }
+      return { transportBookings: next }
     }),
 
-  setInsuranceBooking: (booking) =>
-    set((state) => {
-      if (!state.route) return { insuranceBooking: booking }
-      const budget = linkBudgetItem(
-        state.route.budget,
-        'budget-insurance',
-        booking ? { icon: '🛡', label: `Seguro — ${booking.provider}`, amount: booking.price, category: 'route', sourceType: 'other', refId: 'general-insurance' } : null,
-      )
-      if (booking) triggerBudgetFly(booking.price)
-      return { insuranceBooking: booking, route: { ...state.route, budget } }
-    }),
+  setInsuranceBooking: (booking) => set({ insuranceBooking: booking }),
 
   setN26Added: (added) => set({ n26Added: added }),
 
-  setRentalVehicleBooking: (booking) =>
-    set((state) => {
-      if (!state.route) return { rentalVehicleBooking: booking }
-      const budget = linkBudgetItem(
-        state.route.budget,
-        'budget-rental-vehicle',
-        booking
-          ? { icon: '🚗', label: `Vehículo de alquiler — ${booking.provider}`, amount: booking.price, category: 'route', sourceType: 'other', refId: 'general-rental-vehicle' }
-          : null,
-      )
-      if (booking) triggerBudgetFly(booking.price)
-      return { rentalVehicleBooking: booking, route: { ...state.route, budget } }
-    }),
+  setRentalVehicleBooking: (booking) => set({ rentalVehicleBooking: booking }),
 
   setEsimSelection: (countryCode, status) =>
     set((state) => {
@@ -1630,7 +1581,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   removeFlightLeg: (kind) =>
     set((state) =>
       state.route
-        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null } : { departureFlightTime: null, departurePointId: null }) } }
+        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null } : { departureFlightTime: null, departurePointId: null, departurePrecio: null }) } }
         : state,
     ),
   setAccommodationZone: (zone) => set((state) => (state.route ? { route: { ...state.route, accommodationZone: zone } } : state)),

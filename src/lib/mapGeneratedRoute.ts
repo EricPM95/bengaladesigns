@@ -1,8 +1,8 @@
+import { precioTienda } from './dinero'
 import type {
   DateNoticeIcon,
   DayType,
   ExcursionProminence,
-  Budget,
   DayPlan,
   DidntMakeCutItem,
   Excursion,
@@ -635,7 +635,7 @@ export function mapExcursionPage(option: GeneratedExcursionPage): Excursion {
     length: option.half_day ? 'half-day' : 'full-day',
     durationLabel: option.duration_hours ? `${option.duration_hours} h` : option.half_day ? 'Medio día' : 'Día completo',
     price: option.price_from ?? 0,
-    priceLabel: option.price_from != null ? `${option.price_from}€` : null,
+    priceLabel: option.price_from != null ? precioTienda(option.price_from) : null,
     description: option.text,
     durationHours: option.duration_hours,
     destinationCoords: option.coords,
@@ -878,22 +878,6 @@ export function mapSingleGeneratedDay(destination: string, generated: GeneratedD
   }
 }
 
-function mapBudget(estimated?: GeneratedRouteResponse['estimated_budget']): Budget {
-  const amount = parseEuroMidpoint(estimated?.total_estimate)
-  if (amount === 0) return { items: [], total: 0 }
-  const items = [
-    {
-      id: 'budget-ai-estimate',
-      icon: '🤖',
-      label: 'Estimación de la IA (alojamiento + comidas)',
-      amount,
-      category: 'route' as const,
-      sourceType: 'other' as const,
-    },
-  ]
-  return { items, total: amount }
-}
-
 /**
  * Red de seguridad server-side ya existe para "el Free Tour siempre va primero dentro de un día"
  * (enforceFreeTourFirst, server/index.js) — pero ninguna capa protegía contra un Free Tour
@@ -990,7 +974,6 @@ export function mapGeneratedRouteToRoute(
     days,
     answers,
     transportContext,
-    budget: mapBudget(generated.estimated_budget),
     intensity: 5,
     createdAt: new Date().toISOString(),
     defaultTransport: generated.default_transport,

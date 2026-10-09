@@ -1,3 +1,4 @@
+import { rangoImporte } from './dinero'
 import { findTransitOption } from './transitLines'
 import type { Coordinates, DayPlan, MealSlot, Restaurant, Stop, ExperienceCategoryId } from './types'
 import { hasRealCoordinates } from './distanceMock'
@@ -103,7 +104,7 @@ const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
         { name: 'Tren regional FL1', durationLabel: '48 min', durationMinutes: 48, price: 8, transfers: 0, stopName: 'Roma Tiburtina' },
         { name: 'Autobús lanzadera', durationLabel: '55 min', durationMinutes: 55, price: 6, transfers: 0, stopName: 'Roma Termini' },
       ],
-      taxiPriceLabel: '50-55€ (tarifa fija aeropuerto-centro)',
+      taxiPriceLabel: `${rangoImporte(50, 55, 'EUR')} (tarifa fija aeropuerto-centro)`,
       privateTransfer: { proveedor: 'getyourguide', precio: 45, moneda: 'EUR', url_afiliado: '#' },
       officialLinkLabel: 'Horarios y precios oficiales (Trenitalia)',
     },
@@ -115,7 +116,7 @@ const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
         { name: 'Autobús directo a Termini', durationLabel: '40 min', durationMinutes: 40, price: 6, transfers: 0, stopName: 'Roma Termini' },
         { name: 'Autobús + metro', durationLabel: '55 min', durationMinutes: 55, price: 7.5, transfers: 1 },
       ],
-      taxiPriceLabel: '30-35€ (tarifa fija aeropuerto-centro)',
+      taxiPriceLabel: `${rangoImporte(30, 35, 'EUR')} (tarifa fija aeropuerto-centro)`,
       officialLinkLabel: 'Horarios y precios oficiales (Trenitalia)',
     },
   ],
@@ -137,7 +138,7 @@ function genericAirport(cityName: string): AirportOption {
         ...(rand() > 0.5 ? { affiliateTicket: { proveedor: 'civitatis' as const, precio: 10, moneda: 'EUR', url_afiliado: '#' } } : {}),
       },
     ],
-    taxiPriceLabel: '25-35€ orientativo',
+    taxiPriceLabel: `${rangoImporte(25, 35, 'EUR')} orientativo`,
     ...(rand() > 0.4 ? { privateTransfer: { proveedor: 'getyourguide' as const, precio: 40, moneda: 'EUR', url_afiliado: '#' } } : {}),
     officialLinkLabel: 'Horarios y precios oficiales del operador local',
   }
@@ -553,7 +554,7 @@ export function buildMockMealForWindow(day: DayPlan, window: 'lunch' | 'dinner')
     name: template.replace('{city}', day.city),
     cuisine: CUISINES[Math.floor(rand() * CUISINES.length)],
     priceTier: rand() > 0.5 ? '€€' : '€',
-    priceRange: rand() > 0.5 ? '15-25€' : '8-15€',
+    priceRange: rand() > 0.5 ? rangoImporte(15, 25, 'EUR') : rangoImporte(8, 15, 'EUR'),
   }))
 
   return {

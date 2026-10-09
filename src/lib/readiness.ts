@@ -1,4 +1,5 @@
 import type { Route } from './types'
+import type { Importe } from './dinero'
 import { buildDestinationSegments } from './destinationSegments'
 import { computeDayTravelInfo } from './dayTravelInfo'
 import { todayIso } from './dateRange'
@@ -10,7 +11,7 @@ export type ReadinessItemKind = 'transport' | 'accommodation' | 'insurance' | 'n
 export interface TransportBooking {
   operator: string
   dateTime: string
-  price: number
+  precio: Importe | null
   locator: string
 }
 
@@ -19,7 +20,7 @@ export interface GeneralBooking {
   provider: string
   startDate: string
   endDate: string
-  price: number
+  precio: Importe | null
 }
 
 export type EsimStatus = 'have' | 'booked'

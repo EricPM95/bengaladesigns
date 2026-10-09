@@ -3,7 +3,8 @@ import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
-import { estanciasDelViaje, nochesTexto, precioDeAlojamiento, euros } from '../../../lib/tuAlojamiento'
+import { estanciasDelViaje, nochesTexto, precioDeAlojamiento } from '../../../lib/tuAlojamiento'
+import { formatoImporte } from '../../../lib/dinero'
 import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, ICONOS, INK, Icono, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
@@ -94,7 +95,7 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
                 <span className="min-w-0 flex-1 text-[13.5px] leading-[1.4]">
                   <span className="block truncate text-[15px] font-medium">{hotel.name}</span>
                   {noches > 0 && <span className="block text-text/65">{nochesTexto(noches)}</span>}
-                  {precio !== null && <span className="block text-text/65">{euros(precio)}</span>}
+                  {precio !== null && <span className="block text-text/65">{formatoImporte(precio)}</span>}
                 </span>
                 <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
               </div>

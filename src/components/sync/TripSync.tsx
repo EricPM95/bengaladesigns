@@ -20,6 +20,7 @@ export function buildTripPayload(): TripPayload | null {
       n26Added: state.n26Added,
       rentalVehicleBooking: state.rentalVehicleBooking,
       esimSelections: state.esimSelections,
+      esimPrecios: state.esimPrecios,
       reservations: state.reservations,
       campaignCode: state.campaignCode,
       sales: state.sales,

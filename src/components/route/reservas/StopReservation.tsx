@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { precioTienda } from '../../../lib/dinero'
 import type { Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -46,7 +47,7 @@ export function StopEntradasTab({ stop }: { stop: { id: string; name: string; is
           <p className="text-small font-semibold text-text">{entrada.nombre}</p>
           {entrada.incluye && <p className="mt-1 text-small text-text-soft">{entrada.incluye}</p>}
           <div className="mt-2 flex items-center justify-between gap-3">
-            <span className="text-small text-text-soft">{entrada.desde != null ? `Desde ${entrada.desde} €` : ''}</span>
+            <span className="text-small text-text-soft">{entrada.desde != null ? `Desde ${precioTienda(entrada.desde)}` : ''}</span>
             <button
               type="button"
               onClick={() => openTicketShop(entrada.url ?? buildActivitySearchUrl(`${entrada.nombre} ${route.destination}`))}

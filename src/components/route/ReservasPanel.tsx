@@ -18,6 +18,7 @@ import { TripReadinessBadge } from './reservas/TripReadinessBadge'
 import { ResumenViaje } from './reservas/ResumenViaje'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
 import { AlojamientoReservas, alojamientoHecho } from './reservas/AlojamientoReservas'
+import { FilaPresupuesto } from './presupuesto/FilaPresupuesto'
 import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
@@ -30,7 +31,7 @@ interface ReservasPanelProps {
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
 
 /** «10 – 14 ago 2027», «30 sep – 3 oct 2027» o, sin fechas, «5 días». */
-function rangoDelViaje(route: Route): string {
+export function rangoDelViaje(route: Route): string {
   const range = route.answers.dateRange
   if (!range?.start || !range?.end) return `${route.days.filter((day) => !day.isReturnLeg).length} días`
   const start = new Date(`${range.start}T12:00:00`)
@@ -184,6 +185,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
+            <FilaPresupuesto />
             {pago && unDestino && <ResumenViaje ciudad={ciudad} fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">

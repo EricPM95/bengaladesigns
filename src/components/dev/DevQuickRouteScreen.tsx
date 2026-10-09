@@ -241,7 +241,6 @@ export function DevQuickRouteScreen() {
           vehiculo_altamente_recomendado: false,
           travel_pass_confirmed: null,
         },
-        budget: { items: [], total: 0 },
         intensity: 3,
         createdAt: new Date().toISOString(),
         isDevQuickRoute: true,

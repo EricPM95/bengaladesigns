@@ -1,8 +1,9 @@
+import { precioTienda } from '../../shared/dinero/formato.js'
 /**
  * La página de la excursión del día 4 (Tanda 6g): las excursiones de un destino salen de `data/dias/<destino>/_excursiones.json` (se rellena sin tocar código) y viajan con el
  * día 4, tanto con el interruptor en Excursión como en Roma (el viajero puede pasar de uno a otro sin volver a pedir nada).
  *
- * Aquí no se inventa nada: sin precio sale «XX€», sin enlace «Enlace pendiente» y sin porcentaje la frase del porcentaje no sale.
+ * Aquí no se inventa nada: sin precio no sale precio, sin enlace «Enlace pendiente» y sin porcentaje la frase del porcentaje no sale.
  */
 
 import { existsSync } from 'node:fs'
@@ -43,7 +44,7 @@ export function excursionPagePayload(destKey) {
         return_time: excursion.vuelta ?? null,
         half_day: half,
         price_from: price,
-        price_label: price != null ? `${price}€` : 'XX€',
+        price_label: price != null ? precioTienda(price, 'EUR') : '',
         affiliate_url: excursion.enlace ? String(excursion.enlace) : null,
         tags: (excursion.etiquetas ?? []).map((tag) => ({ kind: tag.tipo, text: tag.texto })),
         stops: (excursion.paradas ?? []).map((stop) => ({ time: stop.hora, name: stop.nombre })),

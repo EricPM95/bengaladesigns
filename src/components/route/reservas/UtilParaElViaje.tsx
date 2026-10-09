@@ -3,7 +3,10 @@ import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { countryDisplayName } from '../../../lib/readiness'
 import { buildCamperRentalLink, buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { ICONOS, Icono } from './BloqueReservas'
+import { CambiarBoton, ICONOS, Icono } from './BloqueReservas'
+import { HojaPrecio } from './HojaPrecio'
+import { formatoImporte, leerImporte, precioGuardado, type Importe } from '../../../lib/dinero'
+import { useState } from 'react'
 
 interface Tarjeta {
   id: string
@@ -31,6 +34,9 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   const setEsimSelection = useRouteStore((state) => state.setEsimSelection)
   const rental = useRouteStore((state) => state.rentalVehicleBooking)
   const setRentalVehicleBooking = useRouteStore((state) => state.setRentalVehicleBooking)
+  const esimPrecios = useRouteStore((state) => state.esimPrecios)
+  const setEsimPrecio = useRouteStore((state) => state.setEsimPrecio)
+  const [hojaPrecio, setHojaPrecio] = useState<string | null>(null)
   const countryCode = buildDestinationSegments(route.days)[0]?.countryCode ?? null
   const isCamper = route.transportContext.vehicle_type === 'camper'
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
@@ -45,7 +51,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       color: 'oklch(0.58 0.17 25)',
       enlace: 'https://www.iatiseguros.com',
       hecho: Boolean(insurance),
-      alPulsar: () => setInsuranceBooking({ provider: 'Seguro de viaje (5% dto.)', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', price: 0 }),
+      alPulsar: () => setInsuranceBooking({ provider: 'Seguro de viaje (5% dto.)', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio: null }),
     },
     ...(countryCode
       ? [
@@ -71,12 +77,20 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
             color: 'oklch(0.5 0.08 160)',
             enlace: alquiler.url,
             hecho: Boolean(rental),
-            alPulsar: () => setRentalVehicleBooking({ provider: 'Vehículo de alquiler', startDate: '', endDate: '', price: 0 }),
+            alPulsar: () => setRentalVehicleBooking({ provider: 'Vehículo de alquiler', startDate: '', endDate: '', precio: null }),
           },
         ]
       : []),
     ...(!pago ? [{ id: 'vuelos', nombre: 'Buscar vuelos', icono: ICONOS.avion, color: 'oklch(0.62 0.14 60)', enlace: 'https://www.skyscanner.net', hecho: false, alPulsar: () => undefined }] : []),
   ]
+
+  // (Tanda 6z2) Lo que ya está añadido puede llevar su precio: el seguro, la eSIM y el coche. Pulsar la tarjeta lo marca como añadido sin preguntar (como siempre); el precio se pone después, aquí debajo.
+  const compras: { id: string; nombre: string; precio: Importe | null; guardar: (precio: Importe | null) => void }[] = [
+    ...(insurance ? [{ id: 'seguro', nombre: 'Seguro de viaje', precio: precioGuardado(insurance), guardar: (precio: Importe | null) => setInsuranceBooking({ ...insurance, precio }) }] : []),
+    ...(countryCode && esim[countryCode] ? [{ id: 'esim', nombre: `eSIM ${countryDisplayName(countryCode)}`, precio: leerImporte(esimPrecios[countryCode]), guardar: (precio: Importe | null) => setEsimPrecio(countryCode, precio) }] : []),
+    ...(rental && hasRentalVehicle ? [{ id: 'alquiler', nombre: isCamper ? 'Camper de alquiler' : 'Vehículo de alquiler', precio: precioGuardado(rental), guardar: (precio: Importe | null) => setRentalVehicleBooking({ ...rental, precio }) }] : []),
+  ]
+  const compraAbierta = compras.find((compra) => compra.id === hojaPrecio) ?? null
 
   return (
     <div className="flex min-w-0 flex-col gap-2.5 pt-4" data-blk="util">
@@ -107,6 +121,20 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
           </a>
         ))}
       </div>
+      {compras.length > 0 && (
+        <div className="flex flex-col gap-1 pt-1">
+          {compras.map((compra) => (
+            <div key={compra.id} className="flex min-h-[40px] items-center gap-2 rounded-[12px] bg-[#F7F1E6] py-1 pl-3 pr-1.5">
+              <span className="min-w-0 flex-1 truncate text-[13px] text-text">
+                {compra.nombre}
+                {compra.precio ? <span className="text-text/60"> · {formatoImporte(compra.precio)}</span> : null}
+              </span>
+              <CambiarBoton onClick={() => setHojaPrecio(compra.id)} texto={compra.precio ? 'Cambiar' : 'Añadir precio'} />
+            </div>
+          ))}
+        </div>
+      )}
+      {compraAbierta && <HojaPrecio titulo={compraAbierta.nombre} inicial={compraAbierta.precio} onGuardar={compraAbierta.guardar} onClose={() => setHojaPrecio(null)} />}
     </div>
   )
 }

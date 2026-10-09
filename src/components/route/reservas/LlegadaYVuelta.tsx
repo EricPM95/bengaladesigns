@@ -7,6 +7,9 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, INK, Icono, IconoBloque, PastillaEstado, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
+import { CampoPrecio } from '../../ui/CampoPrecio'
+import { usePrecioEditable } from '../../../lib/useMoneda'
+import { leerImporte, type Importe } from '../../../lib/dinero'
 
 const HORAS = Array.from({ length: (24 * 60 - 360) / 5 }, (_, i) => {
   const m = 360 + i * 5
@@ -20,7 +23,9 @@ const BUSCAR_BILLETE = 'https://www.skyscanner.net'
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
 
 /** La hoja de la hora de una mitad: la rueda de la 6k, de 5 en 5 minutos. */
-function HojaHoraLlegada({ leg, ciudad, onSave, onClose }: { leg: LegState; ciudad: string; onSave: (time: string) => void; onClose: () => void }) {
+function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg: LegState; ciudad: string; precioInicial: Importe | null; onSave: (time: string, precio: Importe | null) => void; onClose: () => void }) {
+  // (Tanda 6z2) El precio del billete, total de todas las personas. Si la ida y la vuelta son un mismo billete, se pone en la ida y la vuelta se queda vacía.
+  const precio = usePrecioEditable(precioInicial)
   const [hora, setHora] = useState(leg.time && HORAS.includes(leg.time) ? leg.time : HORA_POR_DEFECTO[leg.kind])
   const lugar = leg.point ? puntoCorto(leg.point) : ciudad
   const fecha = leg.dateIso ? capitalizar(shortDateEs(leg.dateIso)) : `Día ${leg.dayNumber}`
@@ -36,7 +41,10 @@ function HojaHoraLlegada({ leg, ciudad, onSave, onClose }: { leg: LegState; ciud
       <div className="mt-3.5">
         <TimeListWheel items={HORAS} value={hora} onChange={setHora} label={leg.kind === 'arrival' ? 'Hora de llegada' : 'Hora de salida'} />
       </div>
-      <button type="button" onClick={() => onSave(hora)} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]">
+      <div className="mt-4">
+        <CampoPrecio estado={precio} ayuda={leg.kind === 'arrival' ? 'Si la ida y la vuelta son un mismo billete, ponlo aquí y deja la vuelta vacía.' : 'Déjalo vacío si ya lo pusiste en la ida.'} />
+      </div>
+      <button type="button" onClick={() => onSave(hora, precio.importe)} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]">
         Guardar · {hora}
       </button>
     </HojaAbajo>
@@ -180,6 +188,7 @@ export function LlegadaYVuelta({
 }) {
   const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
   const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
+  const setLegPrecio = useRouteStore((state) => state.setLegPrecio)
   const setPoint = useRouteStore((state) => state.setArrivalPointId)
   const removeLeg = useRouteStore((state) => state.removeFlightLeg)
   const [hoja, setHoja] = useState<LegKind | null>(null)
@@ -323,9 +332,11 @@ export function LlegadaYVuelta({
         <HojaHoraLlegada
           leg={hoja === 'arrival' ? ida : vuelta}
           ciudad={ciudad}
+          precioInicial={leerImporte(hoja === 'arrival' ? route.arrivalPrecio : route.departurePrecio)}
           onClose={() => setHoja(null)}
-          onSave={(time) => {
+          onSave={(time, precio) => {
             ;(hoja === 'arrival' ? setArrivalFlightTime : setDepartureFlightTime)(time)
+            setLegPrecio(hoja, precio)
             setHoja(null)
             onMitad(undefined)
             onGuardada()

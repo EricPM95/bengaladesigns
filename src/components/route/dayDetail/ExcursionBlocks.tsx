@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { precioTienda } from '../../../lib/dinero'
 import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from '../reservas/ReservedMarks'
 import type { CuratedAlternative, Excursion } from '../../../lib/types'
 
@@ -57,7 +58,7 @@ function ClipboardIcon() {
 }
 
 function formatPrice(excursion: Excursion): string {
-  return excursion.priceLabel ?? (excursion.price > 0 ? `${excursion.price}€` : '')
+  return excursion.priceLabel ?? (excursion.price > 0 ? precioTienda(excursion.price) : '')
 }
 
 function RatingLabel({ excursion }: { excursion: Excursion }) {

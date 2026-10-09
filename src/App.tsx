@@ -13,6 +13,7 @@ import { CampaignLinks } from './components/sync/CampaignLinks'
 import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
 import { AvisoSolape } from './components/route/reservas/AvisoSolape'
 import { AlojamientoHost } from './components/route/alojamiento/AlojamientoHost'
+import { PantallaPresupuesto } from './components/route/presupuesto/PantallaPresupuesto'
 
 function LoadingScreenContainer() {
   const destination = useRouteStore((state) => state.destination)
@@ -62,6 +63,7 @@ function RouteScreen() {
       <RouteView />
       <AvisoSolape />
       <AlojamientoHost />
+      <PantallaPresupuesto />
     </motion.div>
   )
 }

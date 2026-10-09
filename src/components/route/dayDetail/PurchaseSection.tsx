@@ -1,4 +1,5 @@
 import type { PlacePurchaseInfo } from '../../../lib/mockDayDetail'
+import { precioTienda } from '../../../lib/dinero'
 import { Button } from '../../ui/Button'
 import { AffiliateCardCarousel } from '../../ui/AffiliateCardCarousel'
 import { TextLink } from './TextLink'
@@ -28,7 +29,7 @@ export function PurchaseSection({ purchase }: PurchaseSectionProps) {
               <p className="font-medium text-text">{officialTicket.nombre}</p>
               {officialTicket.nota && <p className="text-caption text-text-muted">{officialTicket.nota}</p>}
             </div>
-            <span className="shrink-0 font-semibold text-text">{officialTicket.precio === 0 ? 'Gratis' : `${officialTicket.precio}€`}</span>
+            <span className="shrink-0 font-semibold text-text">{officialTicket.precio === 0 ? 'Gratis' : precioTienda(officialTicket.precio)}</span>
           </div>
         )}
         <TextLink href="#">Comprar en la web oficial</TextLink>

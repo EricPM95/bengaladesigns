@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { precioTienda } from '../../../../lib/dinero'
 import type { Excursion } from '../../../../lib/types'
 import { hoursLabel } from './hoursLabel'
 
@@ -83,7 +84,7 @@ function toView(excursion: Excursion): View {
     duration: hoursLabel(excursion.durationHours) ?? excursion.durationLabel ?? null,
     returnTime: null,
     halfDay: excursion.length === 'half-day',
-    priceLabel: excursion.priceLabel ?? (excursion.price ? `${excursion.price}€` : 'XX€'),
+    priceLabel: excursion.priceLabel ?? (excursion.price ? precioTienda(excursion.price) : ''),
     affiliateUrl: excursion.bookUrl ?? null,
     tags: [],
     stops: [],

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, dateOfDay, type BloqueEntrada } from '../../../lib/bookings'
@@ -12,9 +13,11 @@ import { AddReservationSheet, type ReservationTarget } from './AddReservationShe
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
 
 /** «11 oct · 10:00» (con fechas) o «Día 2 · 10:00» (sin ellas): lo que lleva una reservada en su línea verde. */
-export function metaReserva(route: Route, reservation: { dateIso: string | null; dayNumber: number | null; time: string }, prefijoHora = ''): string {
+export function metaReserva(route: Route, reservation: { dateIso: string | null; dayNumber: number | null; time: string; precio?: Importe | null }, prefijoHora = ''): string {
   const fecha = reservation.dateIso && route.answers.dateRange ? `${Number(reservation.dateIso.slice(8, 10))} ${MES.format(new Date(`${reservation.dateIso}T12:00:00`)).replace('.', '')}` : `Día ${reservation.dayNumber ?? ''}`.trim()
-  return `${fecha} · ${prefijoHora}${reservation.time}`
+  // (Tanda 6z2) El precio, al final, si el viajero lo puso: «11 ago · 10:00 · 54 €». Sin precio, como siempre.
+  const precio = leerImporte(reservation.precio)
+  return `${fecha} · ${prefijoHora}${reservation.time}${precio ? ` · ${formatoImporte(precio)}` : ''}`
 }
 
 /** «En tu ruta el mié 11» (con fechas) o «En tu ruta el día 2». */

@@ -4,6 +4,9 @@ import { Modal } from '../../ui/Modal'
 import { Button } from '../../ui/Button'
 import { DateField } from '../../ui/DateField'
 import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
+import { CampoPrecio } from '../../ui/CampoPrecio'
+import { usePrecioEditable } from '../../../lib/useMoneda'
+import { precioGuardado } from '../../../lib/dinero'
 
 interface GeneralBookingModalProps {
   open: boolean
@@ -25,11 +28,11 @@ export function GeneralBookingModal({ open, title, itemLabel, providerLabel, pro
   const [provider, setProvider] = useState(initial?.provider ?? '')
   const [startDate, setStartDate] = useState(initial?.startDate ?? '')
   const [endDate, setEndDate] = useState(initial?.endDate ?? '')
-  const [price, setPrice] = useState(initial ? String(initial.price) : '')
+  const precio = usePrecioEditable(precioGuardado(initial))
 
   const handleSave = () => {
     if (!provider.trim()) return
-    onSave({ provider: provider.trim(), startDate, endDate, price: Number(price) || 0 })
+    onSave({ provider: provider.trim(), startDate, endDate, precio: precio.importe })
     onClose()
   }
 
@@ -53,10 +56,7 @@ export function GeneralBookingModal({ open, title, itemLabel, providerLabel, pro
               <DateField value={endDate} onChange={setEndDate} title="Hasta" min={startDate || undefined} className="flex w-full items-center justify-between rounded-xl border border-border bg-bg px-3 py-2 text-left text-body text-text" />
             </div>
           </div>
-          <label className="block space-y-1.5">
-            <span className="text-small font-medium text-text">Precio</span>
-            <input type="number" min={0} value={price} onChange={(event) => setPrice(event.target.value)} placeholder="€" className={inputClasses} />
-          </label>
+          <CampoPrecio estado={precio} />
         </div>
 
         <Button onClick={handleSave} disabled={!provider.trim()} className="w-full font-bold shadow-sm">

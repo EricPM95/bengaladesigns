@@ -2,6 +2,7 @@
   "destination": "Roma",
   "country": "Italia",
   "timezone": "Europe/Rome",
+  "moneda": "EUR",
   "default_transport": "public",
   "default_free_tour": {
     "name": "Free Tour por Roma",

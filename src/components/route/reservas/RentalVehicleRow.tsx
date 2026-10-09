@@ -1,3 +1,4 @@
+import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { buildCamperRentalLink, buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
@@ -20,13 +21,13 @@ export function RentalVehicleRow() {
         kind="rental-vehicle"
         label="Vehículo de alquiler"
         resolved={Boolean(booking)}
-        subtitle={booking ? `${booking.provider} · €${booking.price}` : undefined}
+        subtitle={booking ? [booking.provider, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority={priority}
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Reservar',
           href: url,
-          onGet: () => setRentalVehicleBooking({ provider: `Reservado vía ${providerLabel}`, startDate: '', endDate: '', price: 0 }),
+          onGet: () => setRentalVehicleBooking({ provider: `Reservado vía ${providerLabel}`, startDate: '', endDate: '', precio: null }),
         }}
       />
       <GeneralBookingModal

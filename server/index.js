@@ -32,6 +32,8 @@ import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { horasDeEntrada, planDeReservas } from './engine/reservationPlan.js'
+import { cambioDelDia } from './cambio.js'
+import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
 
@@ -4428,6 +4430,11 @@ app.post('/api/place-detail', (req, res) => {
 // Las excursiones de un destino para la página «Excursiones desde {destino}» (PARA_CODE_EXCURSIONES): todas, con la valoración media
 // calculada solo con las notas reales (las de precio provisional no cuentan, mismo criterio que en las tarjetas) y, si el destino lo
 // marca, cuál es la más reservada. `from_days`: desde cuántos días de viaje sale el botón (dato de cada destino).
+// El cambio del día para el presupuesto (Tanda 6z2): el del Banco Central Europeo, pedido por el servidor como mucho una vez al día. La app nunca llama a la fuente.
+app.get('/api/cambio', async (_req, res) => {
+  res.json(await cambioDelDia())
+})
+
 app.post('/api/destination-excursions', (req, res) => {
   const destination = req.body?.destination
   const data = destination ? findPipelineV2Data(destination) : null
@@ -4445,6 +4452,8 @@ app.post('/api/destination-excursions', (req, res) => {
     entradas_orden: data?.entradas_reservas_orden ? { arriba: data.entradas_reservas_orden.arriba ?? [], mas: data.entradas_reservas_orden.mas ?? [] } : { arriba: [], mas: [] },
     zonas_alojamiento: data?.destination_config?.zonas_alojamiento ?? [],
     mapa_alojamiento: data?.destination_config?.mapa_alojamiento ?? null,
+    // Tanda 6z2: la moneda del destino (dato de cada destino, «EUR» en Roma): se ofrece en los campos de precio.
+    moneda: data?.moneda ?? null,
   }
   if (!data || (options.length === 0 && entradas.length === 0)) {
     res.json({ found: false, from_days: null, excursions: [], entradas: [], entradas_por_sitio: entradasPorSitio, ...reservasExtra, day_name_example: dayNameExample })
@@ -4978,7 +4987,8 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
     duration_hours: option.duration_hours ?? null,
     emoji: option.emoji ?? null,
     description: option.description ?? '',
-    estimated_price: typeof option.price_from_eur === 'number' ? `${option.price_from_eur}€` : '',
+    // (`price_from_eur`: el dato del destino va en euros por su propio nombre.)
+    estimated_price: typeof option.price_from_eur === 'number' ? precioTienda(option.price_from_eur, 'EUR') : '',
     rating: option.rating ?? null,
     review_count: option.review_count ?? null,
     provisional_pricing: option.provisional_pricing !== false,

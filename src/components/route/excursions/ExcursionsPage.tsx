@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { precioTienda } from '../../../lib/dinero'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
@@ -17,8 +18,8 @@ function detailLine(excursion: Excursion): string {
 }
 
 function priceText(excursion: Excursion): string | null {
-  if (excursion.priceLabel) return `desde ${excursion.priceLabel.replace(/\s*€/, ' €')}`
-  return excursion.price > 0 ? `desde ${excursion.price} €` : null
+  if (excursion.priceLabel) return `desde ${excursion.priceLabel}`
+  return excursion.price > 0 ? `desde ${precioTienda(excursion.price)}` : null
 }
 
 function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; destination: string }) {

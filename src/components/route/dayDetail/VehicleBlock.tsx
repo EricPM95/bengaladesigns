@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { GeneralBookingModal } from '../reservas/GeneralBookingModal'
 
@@ -32,7 +33,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body">{copy.icon}</span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-small font-medium text-text">{booking.provider}</p>
-            <p className="text-caption text-text-soft">Necesaria para todo tu viaje · €{booking.price}</p>
+            <p className="text-caption text-text-soft">Necesaria para todo tu viaje{precioGuardado(booking) ? ` · ${formatoImporte(precioGuardado(booking) as Importe)}` : ''}</p>
           </div>
           <button type="button" onClick={() => setModalOpen(true)} className="shrink-0 text-caption font-medium text-accent-hover underline">
             Cambiar

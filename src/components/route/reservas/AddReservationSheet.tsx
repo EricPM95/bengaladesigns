@@ -9,6 +9,8 @@ import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
 import { TimeListWheel } from '../../ui/TimeListWheel'
+import { CampoPrecio } from '../../ui/CampoPrecio'
+import { usePrecioEditable } from '../../../lib/useMoneda'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -147,6 +149,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // Una excursión sin día en la ruta parte del primer día donde puede ir (nunca el de llegada ni el de vuelta).
   const startDay = currentDay ?? (isExcursion ? (excursionTargetDays(route)[0] ?? null) : null)
   const existing = target.existing ?? null
+  // El precio (Tanda 6z2): opcional, total de todas las personas; el Free Tour no lo lleva (es gratis).
+  const precio = usePrecioEditable(existing?.precio)
   const [fields, setFields] = useState<Fields>(() => ({
     ...EMPTY,
     dateIso: existing?.dateIso ?? (hasDates && startDay ? (dateOfDay(route, startDay) ?? '') : ''),
@@ -313,6 +317,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       locator: fields.locator.trim() || null,
       excursionId: target.excursion?.id ?? null,
       excursionData: target.excursion ?? null,
+      precio: target.refId === 'Free Tour' ? null : precio.importe,
     }
   }
   useEffect(() => {
@@ -542,6 +547,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => set({ time: hhmm })} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
                 )}
               </div>
+
+              {!isFreeTour && (
+                <div className="mt-4">
+                  <CampoPrecio estado={precio} ayuda="Lo que pagaste en total, todas las personas." />
+                </div>
+              )}
 
               {outside && (
                 <p className="mt-2 text-[13px] leading-snug text-accent-red">

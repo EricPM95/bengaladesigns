@@ -1,4 +1,7 @@
 import { jsPDF } from 'jspdf'
+import { presupuestoDeEstado } from './usePresupuesto'
+import { cambioActual } from './useMoneda'
+import { formatoImporte, precioTienda } from './dinero'
 import type { Route } from './types'
 
 const MARGIN = 15
@@ -73,7 +76,7 @@ export function exportRouteToPdf(route: Route) {
     if (day.excursions && day.excursions.length > 0) {
       writeLine('Opciones de excursión:', { size: 10.5, bold: true, gap: 1 })
       day.excursions.forEach((excursion) => {
-        writeLine(`  ${excursion.title} — ${excursion.durationLabel} — €${excursion.price}`, { size: 9, color: [110, 110, 110], gap: 0.5 })
+        writeLine(`  ${excursion.title} — ${excursion.durationLabel} — ${precioTienda(excursion.price)}`, { size: 9, color: [110, 110, 110], gap: 0.5 })
       })
       y += 3
     }
@@ -82,7 +85,9 @@ export function exportRouteToPdf(route: Route) {
   })
 
   ensureSpace(12)
-  writeLine(`Presupuesto estimado: €${route.budget.total}`, { size: 13, bold: true, gap: 2 })
+  // (Tanda 6z2) Solo lo que el viajero puso con su precio, en su moneda; sin gastos, la línea no sale.
+  const presupuesto = presupuestoDeEstado(cambioActual())
+  if (presupuesto && presupuesto.bloques.length > 0) writeLine(`Presupuesto: ${formatoImporte(presupuesto.total)}`, { size: 13, bold: true, gap: 2 })
 
   doc.save(`${route.destination.toLowerCase().replace(/\s+/g, '-')}-route-planner.pdf`)
 }

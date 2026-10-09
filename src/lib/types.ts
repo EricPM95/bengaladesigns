@@ -1,3 +1,4 @@
+import type { Importe } from './dinero'
 // ── App flow ──────────────────────────────────────────────
 
 export type AppScreen = 'destination' | 'myTrips' | 'questionnaire' | 'loading' | 'route' | 'devQuickRoute'
@@ -586,7 +587,7 @@ export interface Excursion {
   page?: ExcursionPage
 }
 
-/** La página de la excursión del día 4 (Tanda 6g): el diseño de `docs/diseno/excursion/`. Nada se inventa: sin precio, «XX€»; sin enlace, «Enlace pendiente»; sin porcentaje, la frase no sale. */
+/** La página de la excursión del día 4 (Tanda 6g): el diseño de `docs/diseno/excursion/`. Nada se inventa: sin precio, no sale precio; sin enlace, «Enlace pendiente»; sin porcentaje, la frase no sale. */
 export interface ExcursionPage {
   /** Las tres partes del nombre, para la cursiva: «Excursión a» + «Pompeya» + « y Sorrento». */
   nameBefore: string
@@ -598,7 +599,7 @@ export interface ExcursionPage {
   returnTime: string | null
   halfDay: boolean
   priceFrom: number | null
-  /** «65€» o «XX€». */
+  /** «65 €», o vacío si el dato no trae precio. */
   priceLabel: string
   /** El enlace de afiliado de Civitatis de ESTA excursión (null: «Enlace pendiente»). */
   affiliateUrl: string | null
@@ -808,23 +809,13 @@ export interface DayPlan {
   timesAreFinal?: boolean
 }
 
-// ── Budget ────────────────────────────────────────────────
+// ── Presupuesto ───────────────────────────────────────────
 
-export type BudgetSourceType = 'flight' | 'hotel' | 'tour' | 'meal' | 'other'
-
-export interface BudgetItem {
+/** Un gasto suelto que apunta el viajero en «Extras» del presupuesto (Tanda 6z2): su nombre y su precio, en la moneda en que lo pagó. */
+export interface GastoExtra {
   id: string
-  icon: string
-  label: string
-  amount: number
-  category: 'route' | 'extra'
-  sourceType?: BudgetSourceType
-  refId?: string
-}
-
-export interface Budget {
-  items: BudgetItem[]
-  total: number
+  nombre: string
+  precio: Importe
 }
 
 // ── Route (top level) ─────────────────────────────────────
@@ -840,13 +831,21 @@ export interface Route {
   days: DayPlan[]
   answers: QuestionnaireAnswers
   transportContext: TransportContext
-  budget: Budget
   intensity: number
   createdAt: string
   isPreview?: boolean
   /** true para rutas creadas desde la pantalla de acceso rápido de desarrollo (sin Claude) — DIAS/RESERVAS muestran un estado vacío. */
   isDevQuickRoute?: boolean
   /** Hora del vuelo de llegada en formato "HH:MM", introducida en Reservas — null/undefined si no se ha registrado. Dispara la comprobación de oportunidad de recálculo del primer día (ver flightOpportunity.ts). */
+  /** Lo que costó el billete de ida y el de vuelta, total de todas las personas (Tanda 6z2); null si no lo dijo. Si es un mismo billete, se pone en la ida y la vuelta se queda vacía. */
+  arrivalPrecio?: Importe | null
+  departurePrecio?: Importe | null
+  /** La moneda del viajero (Tanda 6z2): sale del país de su ciudad de origen y la puede cambiar. Sin ella, se propone por el origen. */
+  monedaViajero?: string | null
+  /** Cuántas personas viajan, si el viajero lo corrige en el presupuesto; manda sobre lo que dice «¿Con quién viajas?». */
+  personas?: number | null
+  /** Los gastos sueltos del presupuesto («Extras»). */
+  gastosExtras?: GastoExtra[]
   arrivalFlightTime?: string | null
   /** Hora del vuelo de salida en formato "HH:MM", introducida en Reservas — null/undefined si no se ha registrado. Dispara la comprobación de oportunidad de recálculo del último día. */
   departureFlightTime?: string | null

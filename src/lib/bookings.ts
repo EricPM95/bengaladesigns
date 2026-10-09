@@ -5,6 +5,7 @@
  * entradas imprescindibles, las excursiones) llega de sus datos.
  */
 import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
+import type { Importe } from './dinero'
 import type { DayPlan, Excursion, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
 import { placeExcursionIn, withExcursionOnSwitchDay } from './freeDays'
@@ -32,6 +33,8 @@ export interface Reservation {
   /** Para las excursiones: su id y sus datos, para volver a ponerla en su día si la ruta se rehace. */
   excursionId?: string | null
   excursionData?: Excursion | null
+  /** Lo que costó, total de todas las personas (Tanda 6z2). Nunca lo pone la app; el Free Tour no lleva precio. */
+  precio?: Importe | null
   /** Tanda 6j: una reserva que cae en un día de excursión: se guarda en Reservas con este aviso y la ruta no cambia (el sitio no se pone en ese día). */
   noMueve?: boolean
   aviso?: string | null

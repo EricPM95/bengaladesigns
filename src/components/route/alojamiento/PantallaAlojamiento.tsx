@@ -4,6 +4,7 @@ import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { mapaAlojamientoUrl } from './mapaAlojamientoUrl'
+import { monedaDelViajero } from '../../../lib/useMoneda'
 import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
 
 /**
@@ -12,7 +13,7 @@ import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
  */
 export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: { route: Route; ciudad: string; mapa: DestinationExcursions['mapaAlojamiento']; onTengo: () => void; onClose: () => void }) {
   const campaignCode = useRouteStore((state) => state.campaignCode)
-  const url = useMemo(() => (mapa ? mapaAlojamientoUrl(mapa, route, campaignCode) : null), [mapa, route, campaignCode])
+  const url = useMemo(() => (mapa ? mapaAlojamientoUrl(mapa, route, campaignCode, monedaDelViajero(route)) : null), [mapa, route, campaignCode])
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()

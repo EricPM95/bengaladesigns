@@ -6,8 +6,7 @@ import { useTripReadiness } from '../../hooks/useTripReadiness'
 import { hasUnresolvedYellowItems } from '../../lib/readiness'
 import { formatCompactDateRangeEs } from '../../lib/dateRange'
 import type { SavedTrip } from '../../lib/tripPersistence'
-import { BudgetPanel } from '../budget/BudgetPanel'
-import { Modal } from '../ui/Modal'
+import { usePresupuestoUi } from '../../store/usePresupuestoUi'
 
 /** Crema sobre la píldora oscura. */
 const CREAM = '#F5EFE4'
@@ -42,7 +41,7 @@ export function BottomBar() {
   const activeTripId = useSyncStore((state) => state.activeTripId)
   const readiness = useTripReadiness()
   const bookingsAlert = readiness ? hasUnresolvedYellowItems(readiness.items) : false
-  const [budgetOpen, setBudgetOpen] = useState(false)
+  const abrirPresupuesto = usePresupuestoUi((state) => state.abrir)
   const [profileOpen, setProfileOpen] = useState(false)
 
   const openTrip = (trip: SavedTrip) => {
@@ -59,7 +58,7 @@ export function BottomBar() {
         className="relative z-30 flex w-full shrink-0 items-center justify-around px-6 pt-1.5"
         style={{ background: '#1F1B16', paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom))' }}
       >
-        <Slot label="Presupuesto" onClick={() => setBudgetOpen(true)}>
+        <Slot label="Presupuesto" onClick={abrirPresupuesto}>
           <Icon>
             <path d="M7 8V7a5 5 0 0 1 10 0v1" />
             <path d="M5 8h14l-1 12H6z" />
@@ -90,10 +89,6 @@ export function BottomBar() {
           )}
         </Slot>
       </nav>
-
-      <Modal open={budgetOpen} onClose={() => setBudgetOpen(false)}>
-        <BudgetPanel />
-      </Modal>
 
       {/* El perfil: una hoja desde abajo. La cuenta llegará más adelante; de momento, los viajes de este dispositivo. */}
       <AnimatePresence>

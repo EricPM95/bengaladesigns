@@ -1,3 +1,4 @@
+import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { ReservasItemRow } from './ReservasItemRow'
@@ -15,14 +16,14 @@ export function InsuranceRow() {
         kind="insurance"
         label="Seguro de viaje"
         resolved={Boolean(booking)}
-        subtitle={booking ? `${booking.provider} · €${booking.price}` : undefined}
+        subtitle={booking ? [booking.provider, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority="red"
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Obtener con 5% dto.',
           href: 'https://www.iatiseguros.com',
           onGet: () =>
-            setInsuranceBooking({ provider: 'IATI Seguros (5% dto.)', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', price: 0 }),
+            setInsuranceBooking({ provider: 'IATI Seguros (5% dto.)', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio: null }),
         }}
       />
       <GeneralBookingModal

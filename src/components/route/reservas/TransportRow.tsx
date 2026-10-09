@@ -1,3 +1,4 @@
+import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { ReservasItemRow } from './ReservasItemRow'
@@ -19,13 +20,13 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         kind="transport"
         label={label}
         resolved={Boolean(booking)}
-        subtitle={booking ? `${booking.operator} · €${booking.price}` : undefined}
+        subtitle={booking ? [booking.operator, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority="yellow"
         onClick={() => setOpen(true)}
         bookAction={{
           label: 'Reservar',
           href: 'https://www.skyscanner.net',
-          onGet: () => setTransportBooking(dayId, { operator: 'Tu reserva', dateTime: '', price: 0, locator: '' }),
+          onGet: () => setTransportBooking(dayId, { operator: 'Tu reserva', dateTime: '', precio: null, locator: '' }),
         }}
       />
       <TransportBookingModal
