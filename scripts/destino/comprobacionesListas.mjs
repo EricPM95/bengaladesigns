@@ -101,7 +101,9 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const final = ordenados(stops.filter((r) => !r.relleno))
     const conSobra = [...final, ...(dia.spareRows ?? []).map((r) => ({ ...r, tipo: 'parada' }))].filter((r) => base.has(r.id)).sort((a, b) => base.get(a.id) - base.get(b.id))
     const antes = zig(conSobra)
-    for (const k of zig(final)) if (!antes.has(k)) falla('zigzag', dia, `zigzag nuevo (${k.replace(/_/g, ' ')})`)
+    // (Un día con la lista escrita de una reserva grande va en el orden del documento, que es sagrado: no se mide el zigzag.)
+    const listaEscrita = (dia.curatedDay.variantes ?? []).some((v) => /^(coliseo_|museos_|galeria_)/.test(v))
+    if (!listaEscrita) for (const k of zig(final)) if (!antes.has(k)) falla('zigzag', dia, `zigzag nuevo (${k.replace(/_/g, ' ')})`)
     // 4. La pirámide
     const valor = (r) => {
       const nivel = r.nivel ?? place(r.lugar)?.level ?? 3

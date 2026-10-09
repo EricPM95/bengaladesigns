@@ -1,6 +1,6 @@
 # Prueba de la Tanda 6h
 
-6570 viajes (365 fechas de 2027) y 26732 parejas de sitios para las líneas de transporte.
+6570 viajes (365 fechas de 2027) y 27390 parejas de sitios para las líneas de transporte.
 
 **Fallos: 0.**
 
@@ -57,10 +57,10 @@ Ninguna.
 ## Parejas de sitios con línea, por línea
 
 - Bus 23: 1489
-- Bus 40 y 64: 2930
-- Bus 64: 2282
-- Metro A: 2590
+- Bus 40 y 64: 3064
+- Bus 64: 2408
+- Metro A: 2666
 - Metro B: 1416
-- Tranvía 8: 3428
+- Tranvía 8: 3568
 
 ## Primeros fallos de cada regla

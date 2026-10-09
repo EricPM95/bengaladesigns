@@ -72,7 +72,7 @@
 - **Comprobación:** `v4_elastica`, `atardecer_corto`, `atardecer_tarde`, `mirador_fuera_de_hora`.
 
 ### 7. La comida — OBLIGATORIA
-- **Texto:** **sin hora fija detrás:** de 45 a 90 min, en la zona donde estás. **Con una entrada detrás:** a mediodía, comida antes y rápida (unos 30 min, desde las 11:30); por la tarde, comida tranquila antes, acabando con margen para llegar (a las 14:30 o las 15:00). **Nunca se estira para llenar un hueco** (90 min como máximo). El restaurante está a 15 min andando o menos y abierto ese día. **Nunca el mismo restaurante dos veces en el viaje.** La zona escrita de cada restaurante es la de sus coordenadas.
+- **Texto:** **sin hora fija detrás:** de 45 a 90 min, en la zona donde estás. **Con una entrada detrás:** a mediodía, comida antes y rápida (unos 30 min, desde las 11:30); por la tarde, comida tranquila antes, acabando con margen para llegar. **La comida no empieza después de las 15:00** (decidido el 9-oct-2026; antes, las 14:30), en todos los días y todos los destinos: el límite está en un solo sitio (`shared/routeEngine/comida.js`). Si la comida de antes de una hora fija no deja llegar a tiempo, se acorta (45 y luego 30 min). **Nunca se estira para llenar un hueco** (90 min como máximo). El restaurante está a 15 min andando o menos y abierto ese día. **Nunca el mismo restaurante dos veces en el viaje.** La zona escrita de cada restaurante es la de sus coordenadas.
 - **Datos:** `restaurants`, `hora_tipo` de la parada de después.
 - **Comprobación:** `comida_menos_45`, `comida_mas_90`, `v4_comida_corta`, `restaurante_repetido`. Faltan los 15 min andando y que esté abierto.
 

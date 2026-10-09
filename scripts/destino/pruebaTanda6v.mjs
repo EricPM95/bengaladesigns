@@ -180,7 +180,10 @@ const diaDe = (route, nombre) => {
     ['10:00 y 11:45 el mismo día', v('11:45'), 1],
     ['10:00 y 14:00 el mismo día', v('14:00'), 0],
     ['10:00 y 10:00 el mismo día', v('10:00'), 1],
-    ['10:00 y 12:30 (justo cuando acaba)', v('12:30'), 0],
+    // (Tanda 6u: se pisan también si no da tiempo a llegar de uno a otro, 30 min de trayecto y 30 de llegada: «Free Tour a las 10:00 y Museos antes de las 13:30».)
+    ['10:00 y 12:30 (justo cuando acaba: no da tiempo a llegar)', v('12:30'), 1],
+    ['10:00 y 13:15 (aún no da tiempo a llegar)', v('13:15'), 1],
+    ['10:00 y 13:30 (justo lo que se tarda en llegar)', v('13:30'), 0],
   ]
   for (const [nombre, reservas, esperadas] of casos) {
     const f = reservationOverlaps(route5, reservas)

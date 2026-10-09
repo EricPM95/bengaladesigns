@@ -1,6 +1,6 @@
 # Prueba del motor de listas (Tanda 6)
 
-17520 viajes (87600 días) en 73 fechas de 2027, con y sin pool, Free Tour, reservas y experiencias. 635 s.
+8760 viajes (39420 días) en 73 fechas de 2027, con y sin pool, Free Tour, reservas y experiencias. 263 s.
 
 **Fallos: 0.**
 
@@ -26,13 +26,10 @@
 
 ## Lo que se apunta (no es un fallo)
 
-- comida_tras_hora_fija: 29169
-- orden_dias_cierre: 7361
-- sobra: 9373
-- no_cabe_del_todo: 6715
-- sin_lista: 1459
-- comida_tarde: 1180
-- restaurante_repetido: 52
-- reserva_tarde: 584
+- comida_tras_hora_fija: 13868
+- orden_dias_cierre: 3909
+- sobra: 4771
+- no_cabe_del_todo: 2792
+- comida_tarde: 298
 
 ## Primeros fallos de cada regla

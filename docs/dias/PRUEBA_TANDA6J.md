@@ -10,7 +10,7 @@ Ninguna.
 
 ## Lo que se apunta (no es un fallo)
 
-- d1_gesu_ok: 73
+- d1_gesu_ok: 71
 - d4_galeria_primero_ok: 91
 - reserva_dia_entero_movido_ok: 664
 
