@@ -3,8 +3,7 @@
   "carpeta": "/fotos/roma",
   "sin_foto": [
     "Pasear por San Giovanni",
-    "Terraza del Altar de la Patria",
-    "Templo de Adriano"
+    "Terraza del Altar de la Patria"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour sigue con la foto de Piazza Navona (photo_from): decisión del usuario del 3-oct-2026, no se toca. · Armando al Pantheon, Trattoria Monti y Felice a Testaccio: sin foto (3-oct-2026) para no repetir la del Panteón, Monti y Testaccio; las fotos de esos tres lugares no se tocan. · 3-oct-2026: TODOS los restaurantes, cafés y heladerías de Roma (el array restaurants de roma.json) van sin foto, también en Explorar y en las tarjetas de comida y cena: ninguno lleva la foto de un sitio que no es suyo. Las fotos de los lugares no se tocan. Si se añade un restaurante nuevo a roma.json, hay que apuntarlo aquí. · 3-oct-2026 (después): los restaurantes, cafés y heladerías ya NO se apuntan aquí. Todo lo que está en la lista `restaurants` de un destino (roma.json y los demás) va sin foto solo, por regla del servidor (isRestaurantName en server/index.js): al añadir uno nuevo o un destino nuevo, nunca busca foto. La tarjeta general «Restaurantes» de Explorar (la foto genérica de una trattoria) no es un restaurante y se queda con su foto.",
   "fotos": [
@@ -1095,14 +1094,31 @@
       ],
       "cuando": "dia",
       "ancho": 1600,
-      "fuente": "propia",
-      "autor": "",
-      "enlace": "",
-      "nota": "Foto del usuario (9-oct-2026, Tanda 6u): docs/archivo/fotos_6u/piazza_colonna.jpg; sin crédito de momento (si no es suya, lo dirá).",
+      "fuente": "Wikimedia Commons · CC BY-SA 3.0",
+      "autor": "William Domenichini",
+      "enlace": "https://commons.wikimedia.org/wiki/File:Piazza_Colonna_-_Paricolare.JPG",
+      "nota": "Wikimedia Commons, Piazza Colonna - Paricolare.JPG, CC BY-SA 3.0, pide crédito (Tanda 6u, 9-oct-2026, a petición del usuario).",
       "credito": {
-        "autor": "",
-        "licencia": "",
-        "enlace": ""
+        "autor": "William Domenichini",
+        "licencia": "CC BY-SA 3.0",
+        "enlace": "https://commons.wikimedia.org/wiki/File:Piazza_Colonna_-_Paricolare.JPG"
+      }
+    },
+    {
+      "archivo": "dia_templo_adriano.jpg",
+      "lugares": [
+        "Templo de Adriano"
+      ],
+      "cuando": "dia",
+      "ancho": 1600,
+      "fuente": "Wikimedia Commons · CC BY 4.0",
+      "autor": "Labicanense",
+      "enlace": "https://commons.wikimedia.org/wiki/File:Tempio_di_Adriano_-_esterno.jpg",
+      "nota": "Wikimedia Commons, Tempio di Adriano - esterno.jpg, CC BY 4.0, pide crédito (Tanda 6u, 9-oct-2026, a petición del usuario).",
+      "credito": {
+        "autor": "Labicanense",
+        "licencia": "CC BY 4.0",
+        "enlace": "https://commons.wikimedia.org/wiki/File:Tempio_di_Adriano_-_esterno.jpg"
       }
     }
   ],
