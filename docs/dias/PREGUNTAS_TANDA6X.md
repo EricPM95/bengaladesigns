@@ -1,0 +1,10 @@
+# Preguntas de la Tanda 6x
+
+1. **El D0 con el Coliseo de 12:30 a 14:00: la comida.** El documento dice «comida en Monti, después del Coliseo»; la regla 4 y la 6 dicen «la comida antes de las 15:00». Con el Coliseo a las 13:30 o más tarde, después del Coliseo ya serían las 15:00, así que la comida va antes (a las 12:00). Con el Coliseo a las 12:30 o a las 13:00 va después, como dice el D0. ¿Bien?
+2. **Los Museos a las 12:00: «hacia las 11:30».** Con la llegada de 30 min, comer «hacia las 11:30» no cabe (a las 11:30 ya hay que estar en la puerta): la comida rápida (45 min) empieza hacia las 10:45. ¿Prefieres que a las 12:00 sea aún más corta o que se quede así?
+3. **Lo que pasa detrás y ya está cerrado.** Con el Free Tour a las 12:00 y los Museos a las 17:00, la Basílica pasa detrás de los Museos y llega cuando ya ha cerrado: sale **por fuera, con su aviso** (lo que ya hacía la app con un imprescindible de la primera vez). La regla 17 dice «es un cierre: otro día del viaje o “No incluido”». ¿Quieres que en este caso salga de la ruta y vaya a «No incluido» en vez de por fuera?
+4. **El D1 con el Coliseo de 10:30 a 12:00: el Altar de la Patria.** Va siempre después de comer (el documento lo dice «si la comida pasaría de las 15:00»; en estas horas siempre pasa). ¿Bien siempre, o solo cuando pase de las 15:00?
+5. **Cosas que el documento no escribe y he completado.** El Paseo por Trastevere al final de las tardes de los Museos a mediodía del D2 (la regla 10 dice «siempre antes de cenar»); la Galería del D1-FT en la mitad del día que deja libre la Roma antigua (como el D1).
+6. **Dos viajes de pruebas en el navegador.** Para las capturas he creado dos viajes «Roma 13–17 oct» (uno con Free Tour y otro sin él). No los he borrado. Dime si los quito.
+7. **Casos que el aviso «vas justo» no cuenta.** Ya no hay llegadas tarde sin explicar en las pruebas. Pero el aviso solo cuenta el trayecto, el margen y la comida entre dos reservas; si en medio hay algo escrito que no cabe, pasa detrás (regla 17), así que no hace falta contarlo.
+8. **Las capturas del D2.** Las dos (`6x-d2-sin-hora-*.jpg`) son de un viaje sin Free Tour, que es donde sale el D2.

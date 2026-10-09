@@ -176,6 +176,12 @@ const diaDe = (route, nombre) => {
   const dia = diaDe(route5, FT)
   const museos = 'Museos Vaticanos y Capilla Sixtina'
   const v = (time) => [res('r-ft', 'Free Tour', FT, [FT], dia, '10:00'), res('r-mu', museos, museos, [museos], dia, time)]
+  // Los nombres cortos salen de los datos del destino (nada escrito en el código): los de disco, que el servidor manda en `nombres_cortos` al arrancar.
+  const cortos = Object.fromEntries(Object.entries(D.entradas_nombres_cortos ?? {}).filter(([k]) => !k.startsWith('_')))
+  debe(cortos[museos] === 'los Museos' && cortos['Free Tour'] === 'el Free Tour' && cortos['Coliseo, Foro y Palatino'] === 'el Coliseo' && cortos['Galería Borghese'] === 'la Galería' && cortos['Cúpula de San Pedro'] === 'la Cúpula', '5 solape', 'faltan nombres cortos en los datos de Roma')
+  const textoCoinciden = (a, b) => `Tu ${a} y tu entrada ${b} coinciden. Revisa una de las dos reservas.`
+  // (Con la API ya reiniciada, el cliente recibe los mismos nombres cortos; si no, se avisa y se prueba la parte de cliente con los de disco.)
+  if (Object.keys(info.nombresCortos ?? {}).length === 0) console.warn('AVISO: la API no manda nombres_cortos todavía: reinicia el api-server (lee los datos y el código al arrancar).')
   const casos = [
     ['10:00 y 11:45 el mismo día', v('11:45'), 1, 0],
     ['10:00 y 14:30 el mismo día (da tiempo a comer y a llegar)', v('14:30'), 0, 0],
@@ -187,25 +193,32 @@ const diaDe = (route, nombre) => {
     ['10:00 y 14:30 (justo lo que se tarda en comer y llegar)', v('14:30'), 0, 0],
   ]
   for (const [nombre, reservas, esperadas, justo = 0] of casos) {
-    const todos = reservationOverlaps(route5, reservas)
+    const todos = reservationOverlaps(route5, reservas, cortos)
+    // Retrocompatibilidad: una reserva sin nombre corto (viaje guardado, destino sin ellos) usa el nombre completo.
+    const sinCortos = reservationOverlaps(route5, reservas)
+    debe(sinCortos.length === todos.length && sinCortos.every((aviso) => !/los Museos/.test(aviso.text) && aviso.text.includes(museos)), '5 solape', `${nombre}: sin nombre corto debería salir el nombre completo («${sinCortos[0]?.text}»)`)
+    debe(reservationOverlaps(route5, reservas.map((r) => (r.refId === museos ? { ...r, shortName: 'los Museos' } : r))).every((aviso) => /los Museos/.test(aviso.text)), '5 solape', `${nombre}: el shortName de la propia reserva no se usa`)
     const f = todos.filter((aviso) => aviso.kind === 'coinciden')
     const j = todos.filter((aviso) => aviso.kind === 'justo')
     debe(f.length === esperadas, '5 solape', `${nombre}: ${f.length} «coinciden» y deberían ser ${esperadas}`)
     debe(j.length === justo, '5 solape', `${nombre}: ${j.length} «vas justo» y deberían ser ${justo}`)
     if (esperadas === 1) {
-      debe(f[0].text === `Tu Free Tour y tu entrada a ${museos} coinciden. Revisa una de las dos reservas.`, '5 solape', `${nombre}: el texto no es el del encargo («${f[0].text}»)`)
+      debe(f[0].text === textoCoinciden('Free Tour', 'a los Museos') && sinCortos[0].text === textoCoinciden('Free Tour', `a ${museos}`), '5 solape', `${nombre}: el texto no es el del encargo («${f[0].text}»)`)
       debe(/^solape:/.test(f[0].id), '5 solape', `${nombre}: el aviso no tiene un id estable`)
     }
     if (justo === 1) {
-      debe(j[0].text === `Es posible que no llegues a tu entrada a ${museos}: el Free Tour dura 2 h 30 y vas justo.`, '5 solape', `${nombre}: el texto de «vas justo» no es el del encargo («${j[0].text}»)`)
+      debe(j[0].text === 'Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.' && sinCortos[0].text === `Es posible que no llegues a tu entrada a ${museos}: el Free Tour dura 2 h 30 y vas justo.`, '5 solape', `${nombre}: el texto de «vas justo» no es el del encargo («${j[0].text}»)`)
       debe(/^justo:/.test(j[0].id), '5 solape', `${nombre}: el aviso «vas justo» no tiene un id estable`)
     }
   }
   // Otro día: no se pisan. Dos entradas: los dos nombres. Una excursión: no cuenta.
   const otroDia = new Date(Date.parse(`${dia}T12:00:00Z`) + 86400000).toISOString().slice(0, 10)
   debe(reservationOverlaps(route5, [res('a', 'Free Tour', FT, [FT], dia, '10:00'), res('b', museos, museos, [museos], otroDia, '10:30')]).length === 0, '5 solape', 'dos reservas de días distintos avisan')
-  const dos = reservationOverlaps(route5, [res('a', 'Panteón', 'Panteón', ['Panteón'], dia, '10:00'), res('b', museos, museos, [museos], dia, '10:15')])
+  const dosReservas = [res('a', 'Panteón', 'Panteón', ['Panteón'], dia, '10:00'), res('b', museos, museos, [museos], dia, '10:15')]
+  const dos = reservationOverlaps(route5, dosReservas)
   debe(dos.length === 1 && dos[0].text === `Tu entrada a Panteón y tu entrada a ${museos} coinciden. Revisa una de las dos reservas.`, '5 solape', `dos entradas: ${dos[0]?.text}`)
+  const dosCortos = reservationOverlaps(route5, dosReservas, cortos)
+  debe(dosCortos.length === 1 && dosCortos[0].text === 'Tu entrada al Panteón y tu entrada a los Museos coinciden. Revisa una de las dos reservas.', '5 solape', `dos entradas con nombre corto (a + el = al): ${dosCortos[0]?.text}`)
   debe(reservationOverlaps(route5, [{ ...res('e', 'x', 'Excursión a Pompeya', [], dia, '10:00'), kind: 'excursion' }, res('b', museos, museos, [museos], dia, '10:30')]).length === 0, '5 solape', 'una excursión cuenta como solape')
   debe(reservationOverlaps(route5, [res('a', 'Free Tour', FT, [FT], '2030-01-01', '10:00'), res('b', museos, museos, [museos], '2030-01-01', '10:30')]).length === 0, '5 solape', 'dos reservas fuera del viaje avisan')
   // La campana: el aviso sale mientras se pisen y se va solo al arreglarlas.
@@ -217,7 +230,7 @@ const diaDe = (route, nombre) => {
     return items.filter((item) => /^(solape|justo):/.test(item.id))
   }
   const justas = avisos(v('12:30'))
-  debe(justas.length === 1 && /^justo:/.test(justas[0].id) && justas[0].kind === 'warning' && justas[0].actionLabel === 'Ver mis reservas' && /vas justo\.$/.test(justas[0].text), '5 solape', `la campana no avisa bien del «vas justo» (${JSON.stringify(justas)})`)
+  debe(justas.length === 1 && /^justo:/.test(justas[0].id) && justas[0].kind === 'warning' && justas[0].actionLabel === 'Ver mis reservas' && /vas justo\.$/.test(justas[0].text) && (Object.keys(info.nombresCortos ?? {}).length === 0 || justas[0].text === 'Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.'), '5 solape', `la campana no avisa bien del «vas justo» (${JSON.stringify(justas)})`)
   const pisadas = avisos(v('11:45'))
   debe(pisadas.length === 1 && pisadas[0].kind === 'warning' && pisadas[0].action === 'open-reservas' && pisadas[0].actionLabel === 'Ver mis reservas' && /coinciden/.test(pisadas[0].text), '5 solape', `la campana no avisa bien (${JSON.stringify(pisadas)})`)
   debe(avisos(v('14:30')).length === 0, '5 solape', 'la campana sigue avisando al arreglarlo')

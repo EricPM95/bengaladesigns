@@ -49,7 +49,7 @@ export function comprobarDiaServidor({ day, iso, D, conocidos, donde, falla, res
   // 2. comidas y cenas en su hora
   for (const meal of day.meals ?? []) {
     const t = toMin(meal.suggested_time ?? '00:00')
-    if (meal.time === 'lunch' && (t < 11 * 60 + 30 || t > 16 * 60 + 30)) falla('comida_fuera_de_hora', `${donde}: la comida a las ${meal.suggested_time}`)
+    if (meal.time === 'lunch' && (t < 10 * 60 + 30 || t > 16 * 60 + 30)) falla('comida_fuera_de_hora', `${donde}: la comida a las ${meal.suggested_time}`)
     if (meal.time === 'dinner' && (t < 18 * 60 + 30 || t > 22 * 60 + 30)) falla('cena_fuera_de_hora', `${donde}: la cena a las ${meal.suggested_time}`)
   }
   // 3. franjas: sin nombres repetidos y cada parada en la suya

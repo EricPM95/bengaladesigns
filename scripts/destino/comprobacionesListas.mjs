@@ -4,6 +4,7 @@
 //   3. Sin zigzag.                                                     7. Las reservas, a su hora, con su «Llegada a…».
 //   4. La pirámide: ningún imprescindible quitado la primera vez.      8. Ninguna comida después de las 15:00 (salvo delante solo imprescindibles).
 // No hay prueba de «huecos»: el tiempo libre es del viajero.
+import { RESERVAS_GRANDES as RESERVAS_GRANDES_PRUEBA } from '../../shared/routeEngine/listasReservas.js'
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
@@ -45,18 +46,37 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // Una lista escrita que, con los trayectos de la prueba, no cabe del todo (la comida cae tarde): se apunta, no es un fallo del motor.
     // (Por tramo y hora: las listas escritas que, con los trayectos de la prueba, dejan la comida tarde.)
     const horaDe = (lugar) => (entradas[lugar] ? toMin(entradas[lugar]) : null)
-    const NO_CABE = { coliseo_12_30_14_00_manana: [0, 24 * 60], coliseo_13_30_14_00: [0, 24 * 60], coliseo_14_30_15_30: [0, 24 * 60], museos_13_30_14_30: [0, 24 * 60], museos_mediodia: [0, 13 * 60], coliseo_mediodia: [0, 13 * 60], coliseo_11_30_12_00: [0, 11 * 60 + 30], galeria_tarde: [0, 15 * 60] }
+    const NO_CABE = { coliseo_12_30_14_00: [0, 24 * 60], coliseo_14_30_15_30: [0, 24 * 60], museos_mediodia: [0, 13 * 60], coliseo_mediodia: [0, 13 * 60], coliseo_11_30_12_00: [0, 11 * 60 + 30], galeria_tarde: [0, 15 * 60] }
     const listaNoCabe = (dia.curatedDay.variantes ?? []).some((v) => NO_CABE[v] && Object.keys(entradas).some((lugar) => horaDe(lugar) != null && horaDe(lugar) >= NO_CABE[v][0] && horaDe(lugar) <= NO_CABE[v][1]))
     const stops = rows.filter((r) => (r.tipo === 'parada' || r.tipo === 'tour' || r.tipo === 'desayuno') && !r.llegada)
-    // (Regla 17, Tanda 6w: con una reserva del viajero el día lleva todo y la app solo lo ordena: lo que no cabe antes de la hora fija va detrás de ella. El orden de la lista, el zigzag y la hora de la comida
-    // dejan de ser un fallo en esos días; lo que sí se sigue midiendo es que no falte nada, que nada cierre y que el día empiece a su hora.)
+    // (Regla 17, Tanda 6w y 6x: con una reserva del viajero el día lleva todo y la app solo lo ordena: lo que no cabe antes de la hora fija va detrás de ella, en su orden escrito. El zigzag no se mide en esos días.)
     const conReserva = rows.some((r) => r.hora_tipo === 'reserva' && !r.llegada)
     const fijasHoy = rows.filter((r) => r.fija && !r.llegada).length
     // 1. El orden
     const base = new Map((dia.ordenBase ?? []).map((id, i) => [id, i]))
     const hayFija = rows.some((r) => r.fija && !r.llegada)
     const secuencia = rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida')).map((r) => base.get(r.id))
-    if (!conReserva) for (let i = 1; i < secuencia.length; i++) if (secuencia[i] < secuencia[i - 1]) { falla('orden', dia, `el orden del día no es el de su lista (${rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija).map((r) => r.titulo ?? r.lugar).slice(0, 6).join(' → ')}…)`); break }
+    {
+      // Con una reserva, lo que iba ANTES de la reserva en la lista y sale DESPUÉS de ella (lo que pasa detrás) va aparte; el resto sigue el orden de la lista, y lo de detrás también.
+      const filasConBase = rows.filter((r) => base.has(r.id) && !r.llegada && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida'))
+      // Lo que pasa detrás: lo que sale después de una hora fija (reserva o Free Tour) y en la lista iba antes de ella.
+      const detras = new Set()
+      filasConBase.forEach((fija, kFija) => {
+        if (!fija.fija) return
+        filasConBase.forEach((r, k) => { if (k > kFija && !r.fija && base.get(r.id) < base.get(fija.id)) detras.add(r.id) })
+      })
+      const sinDetras = filasConBase.filter((r) => !r.fija && !detras.has(r.id)).map((r) => base.get(r.id))
+      const soloDetras = filasConBase.filter((r) => detras.has(r.id)).map((r) => base.get(r.id))
+      const malo = (secuenciaX) => secuenciaX.findIndex((v, k) => k > 0 && v < secuenciaX[k - 1]) >= 0
+      if (malo(sinDetras) || malo(soloDetras)) falla('orden', dia, `el orden del día no es el de su lista (${rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija).map((r) => r.titulo ?? r.lugar).slice(0, 6).join(' → ')}…)`)
+    }
+    // Con una reserva no se quita nada ni se manda a «Si te sobra tiempo» por el tiempo: solo cierres (regla 5, Tanda 6x).
+    if (conReserva) {
+      for (const l of log) {
+        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
+        if (l.que === 'quitada' && /hora límite|no cabe|no cabía/i.test(l.causa ?? '')) falla('quitada_con_reserva', dia, `«${l.lugar}» se quita con una reserva: ${l.causa}`)
+      }
+    }
     // Todo lo que falta de la lista tiene su causa (cierre, sobra, pool…)
     const spareIds = new Set((dia.spareRows ?? []).map((r) => r.id))
     for (const id of dia.ordenBase ?? []) {
@@ -135,7 +155,27 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       if (noches.has(n.name) && !especial) falla('noche_repetida', dia, `«${n.name}» ya salió de noche el ${noches.get(n.name)}`)
       noches.set(n.name, dia.hours?.dateIso ?? `día ${dia.dayNumber}`)
     }
-    // 7. Las reservas, a su hora, con su «Llegada a…»
+    // «La comida empieza antes de las 15:00, salvo que las reservas del viajero no dejen comer antes» (regla 6 y regla 17): una reserva o el Free Tour que ocupan la hora de comer.
+    const reservasBloquean = rows.some((x) => x.fija && !x.llegada && x.t0 <= 15 * 60 && x.t1 >= 13 * 60 + 45)
+    // 6b. El Paseo por Trastevere, siempre antes de cenar (regla 10): lo último antes de la cena.
+    {
+      const iPaseo = rows.findIndex((x) => x.lugar === 'Paseo por Trastevere' && !x.llegada)
+      const iCena = rows.findIndex((x) => x.tipo === 'cena')
+      if (iPaseo >= 0 && iCena >= 0) {
+        const entre = rows.slice(iPaseo + 1, iCena).filter((x) => x.tipo !== 'traslado' && x.tipo !== 'noche')
+        if (iPaseo > iCena || entre.length > 0) falla('paseo_antes_de_cenar', dia, `el Paseo por Trastevere no es lo último antes de cenar (detrás: ${entre.map((x) => x.titulo ?? x.lugar).join(', ')})`)
+      }
+    }
+    // 6c. El Foro y el Palatino, nunca por fuera por la hora (Tanda 6w).
+    for (const x of rows.filter((r) => r.lugar === 'Foro Romano y Palatino' && r.por_horario)) falla('foro_por_fuera', dia, `el Foro y el Palatino van por fuera por la hora (hacia las ${Math.floor(x.t0 / 60)}:${String(x.t0 % 60).padStart(2, '0')})`)
+    // 7. Las reservas, a su hora, con su «Llegada a…» (30 min en las reservas grandes, 15 en el Free Tour y en los turnos: regla 4)
+    for (const x of rows.filter((r) => r.llegada)) {
+      const objetivo = rows.find((r) => r.id && r.fija && r.lugar === x.lugar && !r.llegada && r.hora_tipo)
+      if (!objetivo) continue
+      const grande = RESERVAS_GRANDES_PRUEBA.has(x.lugar) && objetivo.hora_tipo === 'reserva'
+      const esperado = x.tipo === 'tour' || objetivo.tipo === 'tour' ? 15 : grande ? 30 : 15
+      if (x.min !== esperado) falla('llegada', dia, `«Llegada a ${x.lugar}» dura ${x.min} min y debería durar ${esperado}`)
+    }
     for (const [lugar, hora] of Object.entries(entradas)) {
       const r = rows.find((x) => x.lugar === lugar && x.hora_tipo === 'reserva' && !x.llegada)
       if (!r) continue
@@ -226,7 +266,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const mananaLargaEscrita = (dia.curatedDay.variantes ?? []).includes('museos_tarde_cupula') && comida.llegaA <= 14 * 60 + 50
       // (Tanda 6i: si el motor ya avisa en su registro de que no cabe del todo y no queda nada que quitar sin romper una comprobación, se apunta: es un aviso que sale al viajero, no un fallo callado.)
       const yaAvisado = (dia.escritoLog ?? []).some((l) => l.que === 'aviso' && /no cabe del todo \(\d+ min de más\) y no queda nada que quitar/.test(l.causa ?? '')) && comida.llegaA <= comidaLimite + 5
-      ;(soloImprescindibles || sinLista || listaNoCabe || mananaLargaEscrita || yaAvisado || conReserva ? avisa : falla)('comida_tarde', dia, `la comida es a las ${Math.floor(comida.llegaA / 60)}:${String(comida.llegaA % 60).padStart(2, '0')}${soloImprescindibles ? ' (delante solo hay imprescindibles)' : ''}`)
+      ;(soloImprescindibles || sinLista || listaNoCabe || mananaLargaEscrita || yaAvisado || reservasBloquean ? avisa : falla)('comida_tarde', dia, `la comida es a las ${Math.floor(comida.llegaA / 60)}:${String(comida.llegaA % 60).padStart(2, '0')}${soloImprescindibles ? ' (delante solo hay imprescindibles)' : ''}`)
     }
     // (Tanda 6f, 3) Ningún nombre de parada dice «iluminada», «de noche» o «ya con las luces»: eso es de las nocturnas, no del día.
     for (const r of rows.filter((x) => x.tipo === 'parada' || x.tipo === 'tour' || x.tipo === 'desayuno')) if (/iluminad|de noche|ya con las luces/i.test(`${r.titulo ?? ''} ${r.lugar ?? ''}`)) falla('nombre_de_noche', dia, `«${r.titulo ?? r.lugar}» lleva en el nombre una palabra de noche`)
@@ -278,7 +318,14 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
   // «Si te sobra tiempo» y lo que cuentan los avisos
   for (const dia of dias) {
     for (const l of dia.escritoLog ?? []) if (l.que === 'aviso' && /no cabe del todo/.test(l.causa ?? '')) avisa('no_cabe_del_todo', dia, l.causa)
-    for (const s of dia.spareRows ?? []) avisa('sobra', dia, `«${s.titulo ?? s.lugar}» pasa a «Si te sobra tiempo»`)
+    // («Si te sobra tiempo» que queda, y de qué es: un cierre —regla 5—, el documento que lo deja ahí, o el tiempo en un día SIN reserva —regla 6—. Con una reserva, por el tiempo, es un fallo: arriba.)
+    for (const sp of dia.spareRows ?? []) {
+      const conReservaDia = (dia.escritoRows ?? []).some((r) => r.hora_tipo === 'reserva' && !r.llegada)
+      const causa = (dia.escritoLog ?? []).find((l) => l.id === sp.id && l.que === 'sobra')?.causa ?? ''
+      const tipo = /cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(causa) ? 'cierre' : /el documento lo deja/i.test(causa) ? 'documento' : conReservaDia ? 'tiempo_con_reserva' : 'tiempo_sin_reserva'
+      avisa(`sobra_${tipo}`, dia, `«${sp.titulo ?? sp.lugar}» pasa a «Si te sobra tiempo»`)
+      if (tipo === 'tiempo_con_reserva') falla('sobra_con_reserva', dia, `«${sp.titulo ?? sp.lugar}» pasa a «Si te sobra tiempo» con una reserva`)
+    }
   }
   return { fallos, info }
 }
