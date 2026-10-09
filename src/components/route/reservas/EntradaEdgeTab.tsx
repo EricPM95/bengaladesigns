@@ -15,7 +15,7 @@ function TicketIcon() {
 }
 
 /**
- * La pestañita de entrada de la tarjeta de DÍAS (Tanda 6n): pegada al borde derecho, a media altura. Sin reservar, naranja con el icono de entrada: abre la
+ * La pestañita de entrada de la tarjeta de DÍAS (Tanda 6n y 6q): en la esquina de abajo a la derecha, en la misma vertical que el «···» de la esquina de arriba y con el mismo hueco hasta el borde. Sin reservar, naranja con el icono de entrada: abre la
  * ficha en su pestaña «Entradas». Reservada, verde con ✓ y la hora: abre la hoja de «Cambiar». Sin entradas en los datos, no sale.
  */
 export function EntradaEdgeTab({ stop, onOpenEntradas }: { stop: { id: string; name: string; isFreeTour?: boolean }; onOpenEntradas: () => void }) {
@@ -30,7 +30,7 @@ export function EntradaEdgeTab({ stop, onOpenEntradas }: { stop: { id: string; n
         type="button"
         onClick={reserved ? () => setChanging(true) : onOpenEntradas}
         aria-label={reserved ? `Entrada reservada${data.shownTime ? ` a las ${data.shownTime}` : ''}. Cambiar` : 'Ver las entradas'}
-        className="absolute right-0 top-1/2 z-20 flex w-[34px] -translate-y-1/2 flex-col items-center justify-center gap-0.5 rounded-l-xl py-2 text-white shadow-sm"
+        className="absolute bottom-2 right-[5px] z-20 flex w-[34px] flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-white shadow-sm"
         style={{ background: reserved ? GREEN : ORANGE }}
       >
         {reserved ? (

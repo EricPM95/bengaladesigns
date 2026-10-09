@@ -48,11 +48,3 @@ export function useStopEntradas(stop: { id: string; name: string; isFreeTour?: b
     target: { kind: 'entrada', ...base, currentDayId: day?.id ?? null, existing: reservation },
   }
 }
-
-/**
- * ¿Es este sitio el segundo de una entrada conjunta ya reservada (el Foro, con la del Coliseo)? Esa entrada se puede usar antes o después: su tarjeta no
- * lleva hora fija (solo el ✓ de la pestañita).
- */
-export function useIsSecondOfReservation(stopName: string): boolean {
-  return useRouteStore((state) => state.reservations.some((item) => item.kind === 'entrada' && item.placeNames.includes(stopName) && item.placeNames[0] !== stopName))
-}

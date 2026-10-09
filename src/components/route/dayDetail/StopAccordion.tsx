@@ -5,7 +5,6 @@ import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { EntradaEdgeTab } from '../reservas/EntradaEdgeTab'
-import { useIsSecondOfReservation } from '../reservas/useStopEntradas'
 import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
 
 interface StopAccordionProps {
@@ -46,8 +45,6 @@ const OUTSIDE_SHORT: Record<string, string> = {
  */
 export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
-  // El Foro con la entrada conjunta del Coliseo: sin hora fija en la tarjeta (solo el ✓ de su pestañita).
-  const secondOfEntrance = useIsSecondOfReservation(stop.name)
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -64,7 +61,6 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
         kind="monumento"
         number={number}
         numberColors={numberColors}
-        time={stop.reservationTime ?? startTime ?? null}
         name={displayStopName(stop.name)}
         sub={stop.arrivalText ?? null}
         meta={[{ icon: 'hour', text: formatDuration(stop.durationMinutes) }]}
@@ -120,7 +116,6 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   if (stop.visitMode === 'fuera' && stop.outsideKind === 'al_lado') tags.push({ label: 'Por fuera', kind })
   // Una entrada reservada: las dos marcas (PARA_CODE_RESERVAS, 6).
   // (Nunca en una nocturna: ver de noche lo que viste de día no es repetir. PARA_CODE_TARDE_VATICANO, 4.)
-  if (stop.recommendedTurn && !stop.reservationTime) meta.unshift({ icon: 'hour', text: `Turno recomendado: ${stop.recommendedTurn}` })
   if (stop.isRevisit && !stop.isNightExperience) tags.push({ label: 'Revisita', kind })
 
   return (
@@ -130,7 +125,6 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       number={number}
       numberColors={numberColors}
       // Tanda 6b: sin hora por parada; solo la fija (reserva, turno, Free Tour). La franja lleva su hora en la cabecera.
-      time={secondOfEntrance ? null : (stop.reservationTime ?? null)}
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}
