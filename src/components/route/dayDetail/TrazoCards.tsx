@@ -86,17 +86,17 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
     <>
       {/* Franja de color con el icono + la foto en paralelogramo (diseño "Trazo Itinerario"). */}
       {/* (La zona de la foto, el doble de ancha: 208 px, 168 en el móvil. PROMPT_UI_REPASO_4, 3.) */}
-      <div className="relative w-[208px] shrink-0 overflow-hidden rounded-l-[17px] max-[479px]:w-[168px] max-[430px]:w-[150px]" style={{ marginRight: -14 }}>
-        <div className="absolute inset-0 [clip-path:polygon(0_0,58px_0,32px_100%,0_100%)] max-[430px]:[clip-path:polygon(0_0,46px_0,24px_100%,0_100%)]" style={{ background: panel }} />
-        <span className="absolute bottom-0 left-0 top-0 flex w-9 items-center justify-center text-white max-[430px]:w-7">
-          <Icon d={iconPath ?? style.icon} size={20} className="max-[430px]:h-4 max-[430px]:w-4" />
+      <div className="relative w-[208px] shrink-0 overflow-hidden rounded-l-[17px] max-[479px]:w-[168px]" style={{ marginRight: -14 }}>
+        <div className="absolute inset-0" style={{ clipPath: 'polygon(0 0, 58px 0, 32px 100%, 0 100%)', background: panel }} />
+        <span className="absolute bottom-0 left-0 top-0 flex w-9 items-center justify-center text-white">
+          <Icon d={iconPath ?? style.icon} size={20} />
         </span>
-        <div className="absolute bottom-0 left-[30px] right-0 top-0 max-[430px]:left-[24px]" style={{ clipPath: 'polygon(26px 0, 100% 0, calc(100% - 20px) 100%, 0 100%)', background: photoBg }}>
+        <div className="absolute bottom-0 left-[30px] right-0 top-0" style={{ clipPath: 'polygon(26px 0, 100% 0, calc(100% - 20px) 100%, 0 100%)', background: photoBg }}>
           {photoUrl && !noPhoto && <img src={photoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />}
           {/* (Tanda 6f: sin foto no hay recuadro vacío: la tarjeta va sin foto, con la franja de color.) */}
         </div>
       </div>
-      <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[430px]:pl-[14px] max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
+      <div className={`flex min-w-0 flex-1 flex-col justify-center gap-[3px] pl-[18px] pr-9 pt-[11px] text-left max-[479px]:gap-[2px] max-[479px]:pt-2 ${action ? 'pb-10' : 'pb-[11px] max-[479px]:pb-2'}`}>
         {topNote && <span className={`text-[11.5px] font-medium leading-[1.3] ${night ? '' : 'text-text/75'}`} style={{ color: ink2 }}>{topNote}</span>}
         {time && (
           <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold tracking-[.04em] max-[479px]:text-[10.5px] max-[479px]:tracking-normal" style={{ color: timeColor }}>
@@ -167,7 +167,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
         </span>
       )}
       {edgeTab}
-      {menu && <div className="absolute right-2 top-2 z-20 max-[430px]:top-[10px]">{menu}</div>}
+      {menu && <div className="absolute right-2 top-2 z-20">{menu}</div>}
       {action && <div className="absolute bottom-2.5 right-3 z-20">{action}</div>}
     </div>
   )

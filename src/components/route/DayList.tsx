@@ -231,17 +231,17 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
             {(dragHandle) => (
           <div
             data-day-id={day.id}
-            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border bg-bg-card max-[430px]:-mx-3.5 max-[430px]:rounded-none max-[430px]:border-x-0 shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
+            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
           >
             {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). Solo
                 cerrado: abierto, el color del día se queda en los números de las paradas (decisión del usuario, 2026-09-29). */}
             {!day.isReturnLeg && !expanded && (
-              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl max-[430px]:rounded-none">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl">
                 <span className="absolute inset-0" style={{ background: dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
               </span>
             )}
             {/* El asa, a la izquierda del todo y asomando por el borde (44 × 44 de zona de toque). */}
-            {dragHandle && <span className="absolute -left-[34px] top-[18px] z-10 max-[430px]:-left-[10px]">{dragHandle}</span>}
+            {dragHandle && <span className="absolute -left-[34px] top-[18px] z-10">{dragHandle}</span>}
             <div
               role="button"
               tabIndex={0}

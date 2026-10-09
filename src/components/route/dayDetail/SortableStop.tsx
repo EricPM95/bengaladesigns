@@ -37,7 +37,7 @@ export function SortableStop({ id, disabled, label = 'Mover esta parada', gap, c
           {...listeners}
           aria-label={label}
           title={label}
-          className="absolute -left-[27px] top-1/2 z-10 -translate-y-1/2 flex h-7 w-[22px] max-[430px]:-left-[32px] max-[430px]:w-[18px] cursor-grab touch-none items-center justify-center rounded-md bg-bg-card text-text/40 opacity-0 transition-opacity hover:text-text-soft focus-visible:opacity-100 group-hover:opacity-100 active:cursor-grabbing max-[768px]:opacity-60"
+          className="absolute -left-[27px] top-1/2 z-10 -translate-y-1/2 flex h-7 w-[22px] cursor-grab touch-none items-center justify-center rounded-md bg-bg-card text-text/40 opacity-0 transition-opacity hover:text-text-soft focus-visible:opacity-100 group-hover:opacity-100 active:cursor-grabbing max-[768px]:opacity-60"
         >
           <GripIcon />
         </button>

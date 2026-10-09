@@ -95,7 +95,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
         }}
         title="Más opciones"
         aria-label="Opciones de la parada"
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-text/[.14] max-[430px]:h-6 max-[430px]:w-6 bg-bg-card text-[12px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] font-bold leading-none tracking-[1px] text-text/60 hover:bg-bg-hover"
       >
         ···
       </button>
