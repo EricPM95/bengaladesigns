@@ -77,7 +77,7 @@ export function useMonedas() {
   const cambio = useCambio()
   const viajero = monedaDelViajero(route)
   const destino = info.moneda
-  const opciones: OpcionMoneda[] = [{ codigo: viajero, etiqueta: `${viajero} · tu moneda` }]
+  const opciones: OpcionMoneda[] = [{ codigo: viajero, etiqueta: `${viajero} · tuya` }]
   if (destino && destino !== viajero) opciones.push({ codigo: destino, etiqueta: `${destino} · destino` })
   for (const codigo of ['EUR', ...Object.keys(cambio?.tasas ?? {}).sort()]) if (!opciones.some((opcion) => opcion.codigo === codigo)) opciones.push({ codigo, etiqueta: codigo })
   return { viajero, destino, cambio, opciones }

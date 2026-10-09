@@ -22,6 +22,27 @@ const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; ic
   util: { color: 'oklch(0.66 0.1 160)', fondo: 'oklch(0.6 0.1 160 / .14)', tinta: 'oklch(0.42 0.1 160)', icono: ICONOS.shield },
   extras: { color: 'oklch(0.65 0.1 220)', fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)', icono: 'M12 5v14M5 12h14' },
 }
+/** El icono de cada línea según lo que es (el billete, el hotel, la entrada…). */
+function iconoDeLinea(abrir: AbrirLinea, bloque: BloqueId): string {
+  switch (abrir.tipo) {
+    case 'llegada':
+    case 'vuelta':
+    case 'transporte':
+      return ICONOS.avion
+    case 'alojamiento':
+      return ICONOS.hotel
+    case 'coche':
+      return ICONOS.coche
+    case 'reserva':
+      return ICONOS.ticket
+    case 'seguro':
+      return ICONOS.shield
+    case 'esim':
+      return ICONOS.sim
+    default:
+      return ESTILO[bloque].icono
+  }
+}
 const OJO_ABIERTO = 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
 const OJO_CERRADO = 'M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.8 8.4 2 12 2 12s4 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2'
 
@@ -41,7 +62,7 @@ function Linea({ linea, bloque, moneda, onClick }: { linea: LineaPresupuesto; bl
   const contenido = (
     <>
       <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-white text-text/70">
-        <Icono d={ESTILO[bloque].icono} size={15} />
+        <Icono d={iconoDeLinea(linea.abrir, bloque)} size={15} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-px">
         <span className="text-[13px] font-medium leading-[1.25]">{linea.nombre}</span>
@@ -315,18 +336,21 @@ export function PantallaPresupuesto() {
           <div className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[26px] bg-[#1C2230] px-[18px] pb-4 pt-[18px] text-[#FFFDF8]">
             <span aria-hidden="true" className="absolute -right-10 -top-[50px] h-40 w-40 rounded-full" style={{ background: 'oklch(0.55 0.17 5 / .35)', filter: 'blur(28px)' }} />
             <div className="relative flex items-end justify-between gap-3">
-              <span className="flex flex-col gap-1.5">
+              <span className="flex min-w-0 flex-col gap-1.5">
                 <span className="text-[#FFFDF8]/60" style={ojoStyle}>
                   Total del viaje
                 </span>
-                <span style={{ font: "400 54px/.9 'Instrument Serif',serif" }}>{formatoImporte(total)}</span>
+                {/* El total se achica si es largo (489,23 €) para no partirse en dos líneas junto al «por persona». */}
+                <span className="whitespace-nowrap" style={{ font: `400 ${formatoImporte(total).length <= 7 ? 54 : formatoImporte(total).length <= 9 ? 44 : 36}px/.95 'Instrument Serif',serif` }}>
+                  {formatoImporte(total)}
+                </span>
               </span>
               {porPersona || personas === null ? (
                 <button
                   type="button"
                   onClick={() => (porPersona ? setVerPorPersona((valor) => !valor) : setHojaPersonas(true))}
                   aria-label={verPorPersona ? 'Ocultar precio por persona' : 'Ver precio por persona'}
-                  className="mb-1 flex h-[30px] items-center gap-[7px] rounded-full bg-[#FFFDF8]/10 px-2.5 text-[#FFFDF8] hover:bg-[#FFFDF8]/20"
+                  className="mb-1 flex h-[30px] flex-none items-center gap-[7px] rounded-full bg-[#FFFDF8]/10 px-2.5 text-[#FFFDF8] hover:bg-[#FFFDF8]/20"
                 >
                   <span className="whitespace-nowrap text-[12px] font-medium">
                     <span style={{ font: "600 12px 'Geist Mono',monospace", letterSpacing: verPorPersona && porPersona ? 0 : '.08em' }}>{verPorPersona && porPersona ? formatoImporte(porPersona) : `${simbolo} •••`}</span> por persona

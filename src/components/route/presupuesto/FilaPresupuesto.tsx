@@ -1,7 +1,7 @@
 import { usePresupuestoUi } from '../../../store/usePresupuestoUi'
 import { usePresupuesto } from '../../../lib/usePresupuesto'
 import { formatoImporte } from '../../../lib/dinero'
-import { FlechaBloque, ICONOS, IconoBloque, tituloBloqueStyle } from '../reservas/BloqueReservas'
+import { ICONOS, IconoBloque, tituloBloqueStyle } from '../reservas/BloqueReservas'
 
 /**
  * La fila «Presupuesto · 334 €» de arriba de RESERVAS (Tanda 6z2): abre la pantalla del presupuesto, la misma que la bolsa de la barra de abajo. Sin gastos todavía, solo «Presupuesto».
@@ -24,7 +24,11 @@ export function FilaPresupuesto() {
         <span style={tituloBloqueStyle}>Presupuesto</span>
         {hayGastos && presupuesto && <span style={{ font: "600 13px 'Geist Mono',monospace" }}>· {formatoImporte(presupuesto.total)}</span>}
       </span>
-      <FlechaBloque abierto={false} />
+      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#F5EFE4]" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </span>
     </button>
   )
 }

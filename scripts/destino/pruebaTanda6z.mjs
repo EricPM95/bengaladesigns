@@ -106,10 +106,10 @@ console.log('Recomendaciones')
 console.log('Alojamiento (cuentas)')
 {
   const A = require(rutaAloj)
-  ok(A.precioDeTexto('420') === 420 && A.precioDeTexto('420,50') === 420.5 && A.precioDeTexto('') === null && A.precioDeTexto('abc') === null && A.precioDeTexto('0') === null, 'el precio se guarda como número (o ninguno)')
-  ok(A.lineaAlojamiento({ name: 'X', totalPrice: 420 }, 4) === '4 noches · 420 €', 'fila del día 1 con precio')
-  ok(A.lineaAlojamiento({ name: 'X', totalPrice: null }, 1) === '1 noche', 'fila del día 1 sin precio')
+  ok(A.lineaAlojamiento({ name: 'X', precio: { amount: 420, currency: 'EUR' } }, 4) === '4 noches · 420 €', 'fila del día 1 con precio')
+  ok(A.lineaAlojamiento({ name: 'X', precio: null }, 1) === '1 noche', 'fila del día 1 sin precio')
   ok(A.lineaAlojamiento({ name: 'Viejo', pricePerNight: 99 }, 2) === '2 noches', 'un alojamiento guardado de antes no enseña el precio de ejemplo')
+  ok(A.precioDeAlojamiento({ name: 'De la 6z', totalPrice: 300 })?.amount === 300, 'un alojamiento guardado en la 6z (totalPrice) se sigue leyendo')
 }
 
 console.log('Nada de ejemplo ni hoteles a otra web')
