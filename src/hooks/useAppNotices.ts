@@ -59,7 +59,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
         })
       }
       for (const solape of reservationOverlaps(route, reservations)) {
-        items.push({ id: solape.id, kind: 'warning', title: 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
+        items.push({ id: solape.id, kind: 'warning', title: solape.kind === 'justo' ? 'Vas justo entre dos reservas' : 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
       }
       if (route.contextBanner) {
         items.push({

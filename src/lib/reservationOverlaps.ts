@@ -7,7 +7,9 @@ export interface ReservationOverlap {
   id: string
   first: Reservation
   second: Reservation
-  /** «Tu Free Tour y tu entrada a Museos Vaticanos y Capilla Sixtina coinciden. Revisa una de las dos reservas.» */
+  /** 'coinciden': los horarios se cruzan. 'justo': no se cruzan pero no da tiempo a llegar de una a otra (solo avisa). */
+  kind: 'coinciden' | 'justo'
+  /** «Tu Free Tour y tu entrada a Museos Vaticanos y Capilla Sixtina coinciden. Revisa una de las dos reservas.» o «Es posible que no llegues a tu entrada a X: el Free Tour dura 2 h 30 y vas justo.» */
   text: string
 }
 
@@ -33,14 +35,26 @@ const labelOf = (reservation: Reservation): string => (reservation.refId === 'Fr
 
 /** Lo que hace falta entre el final de una reserva y el principio de la siguiente para llegar: 30 min de trayecto y 30 de llegada a la entrada (el documento del Roma, «Si los dos están reservados»). */
 const GAP_MINUTES = 60
-/** Y 30 más si entre una y otra toca comer (la primera acaba antes de las 13:30 y la segunda empieza después de las 14:30). */
-const LUNCH_EXTRA_MINUTES = 30
+/** Y 60 más si entre una y otra toca comer (la primera acaba antes de las 15:00, el límite de la comida, y la segunda empieza después de las 12:30). Por eso el Free Tour de las 12:00 y los Museos a las 15:30 o a las 16:00 van justos. */
+const LUNCH_EXTRA_MINUTES = 60
 
-/** ¿Dos reservas del mismo día se pisan? Si la segunda empieza antes de que dé tiempo a llegar desde el final de la primera (la duración de la visita, el trayecto, la llegada y, si toca, la comida). */
-function seSolapan(a: { start: number; end: number }, b: { start: number; end: number }): boolean {
-  const [first, second] = a.start <= b.start ? [a, b] : [b, a]
-  const lunch = first.end <= 13 * 60 + 30 && second.start >= 14 * 60 + 30 ? LUNCH_EXTRA_MINUTES : 0
-  return second.start < first.end + GAP_MINUTES + lunch
+type Interval = { start: number; end: number }
+
+/** ¿Se cruzan de verdad las dos reservas? Cada una empieza antes de que acabe la otra. */
+const seCruzan = (a: Interval, b: Interval): boolean => a.start < b.end && b.start < a.end
+
+/** ¿Van justas? No se cruzan, pero el hueco entre el final de la primera y el inicio de la segunda no da para llegar (trayecto, llegada y, si toca, la comida). */
+function vanJustas(first: Interval, second: Interval): boolean {
+  const lunch = first.end <= 15 * 60 && second.start >= 12 * 60 + 30 ? LUNCH_EXTRA_MINUTES : 0
+  return second.start - first.end < GAP_MINUTES + lunch
+}
+
+/** «2 h 30», «1 h 30», «2 h», «45 min». */
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m} min`
+  return m === 0 ? `${h} h` : `${h} h ${m}`
 }
 
 /**
@@ -61,13 +75,28 @@ export function reservationOverlaps(route: Route, reservations: Reservation[]): 
     for (let j = i + 1; j < entries.length; j++) {
       const a = entries[i]
       const b = entries[j]
-      if (a.dayId !== b.dayId || !seSolapan(a, b)) continue
-      const [first, second] = a.reservation.refId === 'Free Tour' || (b.reservation.refId !== 'Free Tour' && a.start <= b.start) ? [a, b] : [b, a]
+      if (a.dayId !== b.dayId) continue
+      if (seCruzan(a, b)) {
+        const [first, second] = a.reservation.refId === 'Free Tour' || (b.reservation.refId !== 'Free Tour' && a.start <= b.start) ? [a, b] : [b, a]
+        found.push({
+          id: `solape:${first.reservation.id}:${second.reservation.id}`,
+          kind: 'coinciden',
+          first: first.reservation,
+          second: second.reservation,
+          text: `${labelOf(first.reservation).replace(/^t/, 'T')} y ${labelOf(second.reservation)} coinciden. Revisa una de las dos reservas.`,
+        })
+        continue
+      }
+      // Sin cruzarse: la primera es la que empieza antes; si no da tiempo a llegar de una a otra, vas justo (solo avisa).
+      const [first, second] = a.start <= b.start ? [a, b] : [b, a]
+      if (!vanJustas(first, second)) continue
+      const firstLabel = first.reservation.refId === 'Free Tour' ? 'el Free Tour' : labelOf(first.reservation)
       found.push({
-        id: `solape:${first.reservation.id}:${second.reservation.id}`,
+        id: `justo:${first.reservation.id}:${second.reservation.id}`,
+        kind: 'justo',
         first: first.reservation,
         second: second.reservation,
-        text: `${labelOf(first.reservation).replace(/^t/, 'T')} y ${labelOf(second.reservation)} coinciden. Revisa una de las dos reservas.`,
+        text: `Es posible que no llegues a ${labelOf(second.reservation)}: ${firstLabel} dura ${formatDuration(first.end - first.start)} y vas justo.`,
       })
     }
   }

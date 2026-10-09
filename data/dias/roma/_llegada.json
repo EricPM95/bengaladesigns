@@ -99,11 +99,7 @@
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg/960px-Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg",
           "foto_credito": "Wikimedia Commons",
           "por_que_llegada": "Desde Fiumicino lo más cómodo es el Leonardo Express: 32 min sin paradas hasta Termini por 14 €. Si te alojas cerca de Trastevere u Ostiense, el tren regional FL1 (8 €) te deja más cerca; ojo, el FL1 no para en Termini (sus paradas en Roma son Trastevere, Ostiense y Tiburtina).",
-          "por_que_vuelta": "El Leonardo Express sale de Termini cada 15 min (a algunas horas, cada 30) y tarda 32 min; el último es a las 23:05. El taxi oficial a tarifa fija (55 €) solo si sales de dentro de las murallas (casi todo el centro).",
-          "traslado": {
-            "url": "https://www.civitatis.com/es/buscar?q=traslado+aeropuerto+fiumicino+roma&aid=5206"
-          }
-        },
+          "por_que_vuelta": "El Leonardo Express sale de Termini cada 15 min (a algunas horas, cada 30) y tarda 32 min; el último es a las 23:05. El taxi oficial a tarifa fija (55 €) solo si sales de dentro de las murallas (casi todo el centro)."        },
         {
           "id": "cia",
           "corto": "Ciampino",
@@ -176,11 +172,7 @@
           "foto_credito": "Wikimedia Commons",
           "salir_antes_min": 170,
           "por_que_llegada": "Ciampino es el aeropuerto pequeño de Roma, a unos 15 km: el bus con el tren (Ciampino Airlink, 2,70 €) o un autobús directo a Termini te dejan en el centro en menos de una hora. No hay Leonardo Express: ese tren es solo de Fiumicino.",
-          "por_que_vuelta": "A Ciampino se llega en unos 40 min desde el centro, así que sales un poco más tarde que a Fiumicino. El taxi oficial de dentro de las murallas (casi todo el centro) va a tarifa fija.",
-          "traslado": {
-            "url": "https://www.civitatis.com/es/buscar?q=traslado+aeropuerto+ciampino+roma&aid=5206"
-          }
-        }
+          "por_que_vuelta": "A Ciampino se llega en unos 40 min desde el centro, así que sales un poco más tarde que a Fiumicino. El taxi oficial de dentro de las murallas (casi todo el centro) va a tarifa fija."        }
       ],
       "tips_llegada": [
         {
@@ -503,11 +495,7 @@
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Forte_Michelangelo_2014.jpg/960px-Forte_Michelangelo_2014.jpg",
-          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons",
-          "traslado": {
-            "url": "https://www.civitatis.com/es/buscar?q=traslado+puerto+civitavecchia+roma&aid=5206"
-          }
-        }
+          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons"        }
       ],
       "tips_llegada": [
         {
