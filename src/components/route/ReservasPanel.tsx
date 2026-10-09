@@ -6,7 +6,7 @@ import { useReservasFocusStore, type BloqueReservasId } from '../../store/useRes
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import { detectFlightOpportunities } from '../../lib/flightOpportunity'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { buildEntradasBloque } from '../../lib/bookings'
+import { buildEntradasBloque, hasEnoughDaysForExcursions } from '../../lib/bookings'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
@@ -66,6 +66,8 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const info = useDestinationExcursions(route.destination)
+  // Las excursiones solo salen en los viajes de los días que marca el destino (`excursiones_desde_dias`): si no, ni el hueco.
+  const hayExcursiones = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
   const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
   const modes = tripModes(route)
   const opportunities = detectFlightOpportunities(route)
@@ -215,10 +217,14 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
             </div>
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-              <div className="flex min-w-0 flex-col gap-2.5" data-blk="excursiones">
-                <ExcursionesReservas route={route} info={info} />
+              {hayExcursiones && (
+                <div className="flex min-w-0 flex-col gap-2.5" data-blk="excursiones">
+                  <ExcursionesReservas route={route} info={info} />
+                </div>
+              )}
+              <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
+                <UtilParaElViaje route={route} pago={pago} />
               </div>
-              <UtilParaElViaje route={route} pago={pago} />
             </div>
           </div>
         </div>

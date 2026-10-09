@@ -128,7 +128,7 @@ export const barTextOf: (input: { kind: 'llegada' | 'vuelta'; mode: ArrivalMode;
 const infoCache = new Map<string, ArrivalInfo | null>()
 const inFlight = new Map<string, Promise<ArrivalInfo | null>>()
 
-async function fetchArrivalInfo(destination: string): Promise<ArrivalInfo | null> {
+export async function fetchArrivalInfo(destination: string): Promise<ArrivalInfo | null> {
   const key = destination.trim().toLowerCase()
   if (infoCache.has(key)) return infoCache.get(key) ?? null
   const pending = inFlight.get(key)

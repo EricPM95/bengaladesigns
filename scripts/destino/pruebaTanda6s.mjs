@@ -1,0 +1,310 @@
+// La prueba de la Tanda 6s (PROMPT_TANDA6S_PARA_PEGAR.md): la pestaña RESERVAS nueva, en su versión gratis y en la de pago.
+//   node scripts/destino/pruebaTanda6s.mjs [out=docs/dias/PRUEBA_TANDA6S.md] [fallos=ruta.txt]
+// Hace falta el servidor de la app encendido (http://localhost:8787): de él salen los datos del destino que usa la pestaña, igual que en la app.
+// Pinta el panel RESERVAS en el servidor (react-dom/server, con el código de verdad de la app, empaquetado con esbuild) y mira el texto. Da fallo si:
+//   1. con ?version=gratis sale algo de pago (Llegada y vuelta, el resumen, la zona del alojamiento, los avisos de vuelo) en RESERVAS;
+//   2. sale «null», «undefined» o «NaN» en RESERVAS, en cualquier estado (vacío, a medias, todo hecho) y con o sin fechas;
+//   3. el orden de los bloques no es: resumen · Llegada y vuelta · Alojamiento · Entradas y Free Tour · Excursiones · Útil;
+//   4. las entradas no salen en el orden de los datos del destino, o salen más (o menos) de las que están en la ruta, en viajes de 1 a 6 días;
+//   5. el bloque de excursiones sale (o no) según los días del viaje (`excursiones_desde_dias`) y el interruptor;
+//   6. quitar una reserva mueve algún día;
+//   7. sale el nombre de un proveedor en un texto del viajero, o «centro» suelto.
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import { createRequire } from 'node:module'
+import { build } from 'esbuild'
+import { buildDayBlockV3 } from '../../server/engine/index.js'
+import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
+
+const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
+const out = args.out ?? 'docs/dias/PRUEBA_TANDA6S.md'
+const API = process.env.API_URL ?? 'http://localhost:8787'
+const fallos = []
+const porRegla = new Map()
+let comprobaciones = 0
+const falla = (regla, texto) => {
+  porRegla.set(regla, (porRegla.get(regla) ?? 0) + 1)
+  if (fallos.length < 300) fallos.push({ regla, texto })
+}
+const debe = (cond, regla, texto) => {
+  comprobaciones++
+  if (!cond) falla(regla, texto)
+}
+
+// ── Los sitios del navegador que el código de la app mira (la dirección y el almacén de la pestaña) ─────────────────────────────────────────
+const memoria = new Map()
+let search = ''
+const ubicacion = { get search() { return search }, href: 'http://localhost/', origin: 'http://localhost', pathname: '/' }
+globalThis.SVGElement = class SVGElement {}
+globalThis.HTMLElement = class HTMLElement {}
+Object.defineProperty(globalThis, 'sessionStorage', { value: { getItem: (k) => memoria.get(k) ?? null, setItem: (k, v) => memoria.set(k, String(v)), removeItem: (k) => memoria.delete(k) }, configurable: true })
+globalThis.window = { location: ubicacion, sessionStorage: globalThis.sessionStorage, addEventListener() {}, removeEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {}, removeEventListener() {} }) }
+Object.defineProperty(globalThis, 'localStorage', { value: { getItem: () => null, setItem: () => {}, removeItem: () => {} }, configurable: true })
+globalThis.document = { body: {}, documentElement: { style: {} }, addEventListener() {}, removeEventListener() {}, getElementById: () => null, querySelector: () => null }
+const fetchReal = globalThis.fetch
+globalThis.fetch = (url, opts) => fetchReal(typeof url === 'string' && url.startsWith('/') ? `${API}${url}` : url, opts)
+try {
+  const ping = await fetchReal(`${API}/api/destination-excursions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'Roma' }) })
+  if (!ping.ok) throw new Error(String(ping.status))
+} catch (error) {
+  console.error(`No llego al servidor de la app (${API}): enciéndelo y vuelve a probar. (${error.message})`)
+  process.exit(2)
+}
+
+// ── Se empaqueta el panel con esbuild ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba6s-'))
+const bundle = path.join(carpeta, 'panel.cjs')
+await build({
+  entryPoints: ['scripts/destino/_6s_entrada.tsx'],
+  outfile: bundle,
+  bundle: true,
+  platform: 'node',
+  format: 'cjs',
+  jsx: 'automatic',
+  logLevel: 'error',
+  // (zustand, al pintar en el servidor, lee el estado de partida y no el de ahora: aquí se le dice que lea el de ahora.)
+  plugins: [
+    {
+      name: 'portales-en-su-sitio',
+      setup(b) {
+        const real = path.resolve('node_modules/react-dom/index.js')
+        b.onResolve({ filter: /^react-dom$/ }, () => ({ path: 'react-dom', namespace: 'portales' }))
+        b.onLoad({ filter: /.*/, namespace: 'portales' }, () => ({ contents: `const real = require(${JSON.stringify(real)}); module.exports = { ...real, createPortal: (children) => children }`, loader: 'js', resolveDir: process.cwd() }))
+      },
+    },
+    { name: 'zustand-estado-vivo', setup(b) { b.onLoad({ filter: /zustand[\\/].*\.m?js$/ }, (args) => ({ contents: fs.readFileSync(args.path, 'utf8').replace(/api\.getServerState\s*\|\|\s*api\.getInitialState/g, 'api.getState'), loader: 'js' })) } }],
+  loader: { '.svg': 'dataurl', '.png': 'dataurl', '.jpg': 'dataurl', '.jpeg': 'dataurl', '.webp': 'dataurl', '.css': 'empty', '.woff2': 'dataurl' },
+  define: { 'import.meta.env.DEV': 'false', 'import.meta.env.PROD': 'true', 'import.meta.env.MODE': '"test"', 'import.meta.env.VITE_MAPBOX_TOKEN': '""', 'import.meta.env.VITE_SUPABASE_URL': '"http://localhost"', 'import.meta.env.VITE_SUPABASE_ANON_KEY': '"x"', 'import.meta.env': '{}' },
+})
+const M = createRequire(import.meta.url)(bundle)
+const { createElement, renderToStaticMarkup, ReservasPanel, useRouteStore, fetchDestinationExcursions, fetchArrivalInfo, buildEntradasBloque, hasEnoughDaysForExcursions } = M
+
+const D = findPipelineV2Data('Roma')
+const FT = D.default_free_tour.name
+const info = await fetchDestinationExcursions('Roma')
+await fetchArrivalInfo('Roma')
+const orden = info.entradasOrden
+const desde = info.fromDays ?? 4
+const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+
+// ── Un viaje a Roma de 1 a 6 días: los días de verdad del motor, vestidos como los del cliente (solo lo que mira RESERVAS) ────────────────────
+async function viaje(dias, { fechas, ida = 'flight', vuelta = null, freeTour = true, interruptor = false }) {
+  const inicio = fechas ? '2027-03-10' : null
+  const dayPlans = []
+  for (let n = 1; n <= dias; n++) {
+    const d = await buildDayBlockV3(D, dias + 1, freeTour, n, null, inicio ?? undefined, [], freeTour ? ['imprescindibles', 'free_tour'] : ['imprescindibles'], {
+      city: 'Roma', scheduler: 'v3', engine: 'v4', mediaJornada: null, month: inicio ? null : 2, season: null, diaCuatro: dias >= 4 ? 'roma' : null, entradas: {}, reservasGrandes: [], forceOrder: null,
+    })
+    dayPlans.push({
+      id: `d${n}`, dayNumber: n, city: 'Roma', title: d.title ?? `Día ${n}`, dayType: 'normal', colorIndex: n - 1, meals: [], excursions: [],
+      stops: (d.stops ?? []).map((s, i) => ({ id: `d${n}s${i}`, time: s.suggested_time ?? '10:00', name: s.name, description: '', durationMinutes: s.duration_minutes ?? 60, coordinates: { lat: s.latitude ?? 0, lng: s.longitude ?? 0 }, photoUrl: '', isFreeTour: s.name === FT || Boolean(s.is_free_tour), passThrough: Boolean(s.pass_through) })),
+    })
+  }
+  // El día 4 con excursión elegida (el interruptor puesto en «Excursión»), si el viaje lo pide.
+  if (interruptor && dias >= 4) {
+    const exc = info.excursions[0]
+    if (exc) Object.assign(dayPlans[3], { dayType: 'excursion', selectedExcursionId: exc.id, excursions: [exc] })
+  }
+  return {
+    id: `viaje-${dias}-${fechas ? 'f' : 'n'}`, destination: 'Roma', country: 'Italia', origin: 'Madrid', createdAt: '2027-01-01', intensity: 1, budget: {},
+    days: dayPlans,
+    answers: { dateRange: fechas ? { start: inicio, end: addDays(inicio, dias - 1) } : undefined, days: dias },
+    transportContext: { transport_option: { id: ida }, archetype: null },
+    ...(vuelta ? { returnTransportOptionId: vuelta } : {}),
+  }
+}
+
+const aTexto = (html) =>
+  html
+    .replace(/<style[\s\S]*?<\/style>/g, ' ')
+    .replace(/<[^>]+>/g, '\n')
+    .replace(/&amp;/g, '&')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\s*\n\s*/g, '\n')
+const bloquesDe = (html) => [...html.matchAll(/data-blk="([a-z]+)"/g)].map((m) => m[1])
+
+function pinta(route, { version, reservas = [] }) {
+  search = `?version=${version}`
+  memoria.clear()
+  useRouteStore.setState({ route, screen: 'route', mode: 'bookings', reservations: reservas, accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {} })
+  const html = renderToStaticMarkup(createElement(ReservasPanel, { route, onClose: () => {} }))
+  return { html, texto: aTexto(html), bloques: bloquesDe(html) }
+}
+
+const PAGO = [/Llegada y vuelta/, /Tu viaje a /, /listo\b/i, /Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
+const PROVEEDORES = /Civitatis|Stay22|Booking\.com|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre/i
+const BANDERAS = /null|undefined|NaN/
+
+// El punto de cada medio (ids de _llegada.json): el primero de los dos, y el otro para la vuelta.
+const PUNTOS = { flight: ['fco', 'cia'], train: ['termini', 'tiburtina'], bus: ['tibus', 'termini'], ferry: ['civitavecchia', 'civitavecchia'], own_vehicle: [null, null] }
+const ESTADOS = (route) => {
+  const rango = route.answers.dateRange
+  const idaId = route.transportContext.transport_option?.id ?? 'flight'
+  const vueltaId = route.returnTransportOptionId ?? idaId
+  const hecho = {
+    ...route,
+    arrivalFlightTime: '11:15', departureFlightTime: '18:05', arrivalPointId: PUNTOS[idaId][0], departurePointId: PUNTOS[vueltaId][1], accommodationZone: 'prati',
+  }
+  const aMedias = { ...route, arrivalFlightTime: '09:40', arrivalPointId: null, accommodationZone: 'nose' }
+  const reservas = [
+    { id: 'r1', kind: 'entrada', refId: 'Coliseo, Foro y Palatino', name: 'Coliseo, Foro y Palatino', placeNames: ['Coliseo', 'Foro Romano y Palatino'], dateIso: rango?.start ?? null, dayNumber: rango ? null : 1, time: '10:00' },
+    { id: 'r2', kind: 'entrada', refId: 'Free Tour', name: FT, placeNames: [FT], dateIso: rango?.start ?? null, dayNumber: rango ? null : 1, time: '12:00' },
+  ]
+  return [
+    ['vacío', route, []],
+    ['a medias', aMedias, [reservas[0]]],
+    ['todo hecho', hecho, reservas],
+  ]
+}
+
+const pila = (error) => String(error.stack).split('\n').slice(1, 6).map((x) => x.trim().slice(0, 70)).join(' | ')
+const lineas = []
+const nota = (t) => lineas.push(t)
+
+// ── Los viajes de 1 a 6 días, con y sin fechas, gratis y de pago ──────────────────────────────────────────────────────────────────────────────
+for (const dias of [1, 2, 3, 4, 5, 6]) {
+  for (const fechas of [true, false]) {
+    const base = await viaje(dias, { fechas })
+    for (const [estado, route, reservas] of ESTADOS(base)) {
+      for (const version of ['gratis', 'completa']) {
+        const etiqueta = `${dias} días · ${fechas ? 'con' : 'sin'} fechas · ${estado} · ${version}`
+        let r
+        try {
+          r = pinta(route, { version, reservas })
+        } catch (error) {
+          falla('2 pinta', `${etiqueta}: el panel no se pinta (${error.message}) ${pila(error)}`)
+          continue
+        }
+        // 2. nada de null / undefined / NaN
+        debe(!BANDERAS.test(r.texto), '2 null/undefined', `${etiqueta}: sale «${r.texto.match(BANDERAS)?.[0]}» en RESERVAS`)
+        // 7. proveedores y «centro» suelto
+        debe(!PROVEEDORES.test(r.texto), '7 proveedor', `${etiqueta}: sale un proveedor («${r.texto.match(PROVEEDORES)?.[0]}»)`)
+        const centroSuelto = [...r.texto.matchAll(/(^|[^\wÀ-ÿ])centro(?![\wÀ-ÿ])/gi)].filter((m) => !/Centro \(/.test(r.texto.slice(m.index, m.index + 12)))
+        debe(centroSuelto.length === 0, '7 centro suelto', `${etiqueta}: sale «centro» suelto`)
+        // 3. el orden
+        const orde = ['resumen', 'llegada', 'aloj', 'entradas', 'excursiones', 'util']
+        const pos = r.bloques.map((b) => orde.indexOf(b)).filter((x) => x >= 0)
+        debe(pos.every((x, i) => i === 0 || x > pos[i - 1]), '3 orden', `${etiqueta}: bloques en desorden (${r.bloques.join(' · ')})`)
+        debe(r.bloques.includes('aloj') && r.bloques.includes('entradas'), '3 orden', `${etiqueta}: faltan Alojamiento o Entradas (${r.bloques.join(' · ')})`)
+        // 1. la versión gratis, sin nada de pago
+        if (version === 'gratis') {
+          for (const re of PAGO) debe(!re.test(r.texto), '1 pago en gratis', `${etiqueta}: sale algo de pago (${re})`)
+          debe(!r.bloques.includes('llegada') && !r.bloques.includes('resumen'), '1 pago en gratis', `${etiqueta}: salen los bloques de pago (${r.bloques.join(' · ')})`)
+        } else {
+          debe(r.bloques.includes('llegada'), '1 pago ausente', `${etiqueta}: en la versión de pago no sale «Llegada y vuelta»`)
+          debe(r.bloques.includes('resumen') || /Tu viaje a Roma/.test(r.texto), '1 pago ausente', `${etiqueta}: en la versión de pago no sale el resumen`)
+        }
+        // 4. las entradas: el número y el orden
+        const bloque = buildEntradasBloque(route, orden, info.entradas, reservas)
+        const total = bloque.arriba.length + bloque.mas.length
+        const m = r.texto.match(/(\d+) de (\d+) reservadas/)
+        debe(total === 0 || (m && Number(m[2]) === total), '4 entradas', `${etiqueta}: el bloque dice «${m?.[0]}» y la ruta tiene ${total}`)
+        debe(bloque.arriba.every((x) => orden.arriba.includes(x.name)) && bloque.mas.every((x) => orden.mas.includes(x.name)), '4 entradas', `${etiqueta}: sale una entrada que no está en los datos del destino`)
+        const idx = (lista, arr) => arr.map((x) => lista.indexOf(x.name))
+        debe(idx(orden.arriba, bloque.arriba).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de arriba no siguen el orden de los datos`)
+        debe(idx(orden.mas, bloque.mas).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de «Ver n más» no siguen el orden de los datos`)
+        const enRuta = new Set(route.days.flatMap((d) => d.stops.filter((s) => !s.passThrough).map((s) => s.name)))
+        for (const x of [...bloque.arriba, ...bloque.mas]) debe(x.reservation || x.isFreeTour || x.placeNames.some((p) => enRuta.has(p)), '4 entradas', `${etiqueta}: «${x.name}» sale y no está en la ruta`)
+        for (const nombre of [...orden.arriba, ...orden.mas]) {
+          const grupo = info.entradas.find((e) => e.name === nombre)
+          const lugares = grupo?.places ?? [nombre]
+          const esta = lugares.some((p) => enRuta.has(p)) || (nombre === orden.arriba.find((n) => n.startsWith('Free Tour')) && route.days.some((d) => d.stops.some((s) => s.isFreeTour)))
+          const sale = [...bloque.arriba, ...bloque.mas].some((x) => x.name === nombre)
+          debe(!esta || sale || reservas.length > 0, '4 entradas', `${etiqueta}: «${nombre}» está en la ruta y no sale`)
+        }
+        // 5. las excursiones: según los días del viaje
+        const deberia = hasEnoughDaysForExcursions(route, desde) && info.excursions.length > 0
+        debe(r.bloques.includes('excursiones') === deberia, '5 excursiones', `${etiqueta}: el bloque de excursiones ${r.bloques.includes('excursiones') ? 'sale' : 'no sale'} y con ${dias} días ${deberia ? 'debería' : 'no debería'} (desde ${desde})`)
+        if (version === 'completa' && estado === 'todo hecho' && fechas && dias === 5) nota(`- ${etiqueta}: bloques ${r.bloques.join(' · ')}; entradas ${total}`)
+      }
+    }
+  }
+}
+
+// ── Las excursiones con el interruptor: el día 4 en «Excursión» enseña la tarjeta de esa excursión; sin él, la entrada general ──────────────
+for (const dias of [4, 5, 6]) {
+  const con = await viaje(dias, { fechas: true, interruptor: true })
+  const sin = await viaje(dias, { fechas: true, interruptor: false })
+  let a
+  let b
+  try {
+    a = pinta(con, { version: 'completa' })
+    b = pinta(sin, { version: 'completa' })
+  } catch (error) {
+    falla('5 excursiones', `${dias} días con y sin interruptor: el panel no se pinta (${error.message}) ${String(error.stack).split('\n').slice(1, 4).join(' | ')}`)
+    continue
+  }
+  debe(/En tu ruta el/.test(a.texto.slice(a.texto.indexOf('XCURSI'))) || /Excursi/.test(a.texto), '5 excursiones', `${dias} días con interruptor: no sale la tarjeta de la excursión del día`)
+  debe(/Excursiones desde Roma/.test(b.texto), '5 excursiones', `${dias} días sin interruptor: no sale «Excursiones desde Roma»`)
+  debe(!/Excursiones desde Roma/.test(a.texto), '5 excursiones', `${dias} días con interruptor: sale también «Excursiones desde Roma»`)
+  // Nunca dos «Añádela» en el bloque de excursiones.
+  for (const [nombre, r] of [['con interruptor', a], ['sin interruptor', b]]) {
+    const trozo = r.html.slice(r.html.indexOf('data-blk="excursiones"'))
+    const fin = trozo.indexOf('data-blk="util"')
+    const solo = aTexto(fin > 0 ? trozo.slice(0, fin) : trozo)
+    debe((solo.match(/Añádela/g) ?? []).length <= 1, '5 excursiones', `${dias} días ${nombre}: sale más de un «Añádela» en Excursiones`)
+  }
+}
+
+// ── Los medios de la ida y de la vuelta: tren, autobús, barco y coche, con y sin la hora y el punto ──────────────────────────────────────────
+for (const [ida, vuelta] of [['flight', 'train'], ['train', 'bus'], ['ferry', 'own_vehicle'], ['bus', 'flight'], ['own_vehicle', 'ferry']]) {
+  for (const fechas of [true, false]) {
+    const base = { ...(await viaje(3, { fechas, ida, vuelta })) }
+    for (const [estado, route, reservas] of ESTADOS(base)) {
+      const etiqueta = `medios ${ida}→${vuelta} · ${fechas ? 'con' : 'sin'} fechas · ${estado}`
+      let r
+      try {
+        r = pinta(route, { version: 'completa', reservas })
+      } catch (error) {
+        falla('2 pinta', `${etiqueta}: el panel no se pinta (${error.message}) ${pila(error)}`)
+        continue
+      }
+      if (args.ver && etiqueta.includes(args.ver)) console.log(`--- ${etiqueta}\n${r.texto}`)
+      debe(!BANDERAS.test(r.texto), '2 null/undefined', `${etiqueta}: sale «${r.texto.match(BANDERAS)?.[0]}»`)
+      debe(!PROVEEDORES.test(r.texto), '7 proveedor', `${etiqueta}: sale un proveedor`)
+      // (Con algo hecho, la ficha cerrada enseña las dos líneas, la de la ida y la de la vuelta; sin fechas, «Día 1» y «Día 3» en lugar del día de la semana.)
+      if (estado === 'todo hecho') {
+        const plano = r.texto.replace(/\n/g, ' ').replace(/\s+/g, ' ')
+        debe(/Ida ·/.test(plano) && /Vuelta ·/.test(plano), '2 líneas', `${etiqueta}: faltan las líneas de la ida o la vuelta (${plano.slice(plano.indexOf('Llegada y vuelta'), plano.indexOf('Llegada y vuelta') + 200)})`)
+        if (!fechas) debe(/Ida · Día 1/.test(plano) && /Vuelta · Día 3/.test(plano), '2 líneas', `${etiqueta}: sin fechas las líneas no dicen «Día 1» y «Día 3»`)
+      }
+    }
+  }
+}
+
+// ── Quitar una reserva no mueve ningún día (6): el servidor rehace ese día en su sitio ─────────────────────────────────────────────────────────
+for (const dias of [2, 3, 5]) {
+  const route = await viaje(dias, { fechas: true })
+  const reserva = { id: 'rq', kind: 'entrada', refId: 'Coliseo, Foro y Palatino', name: 'Coliseo, Foro y Palatino', placeNames: ['Coliseo', 'Foro Romano y Palatino'], dateIso: route.days.find((d) => d.stops.some((s) => s.name === 'Coliseo'))?.id ? addDays('2027-03-10', route.days.findIndex((d) => d.stops.some((s) => s.name === 'Coliseo'))) : '2027-03-10', dayNumber: null, time: '10:00' }
+  useRouteStore.setState({ route, screen: 'route', reservations: [reserva] })
+  const antes = useRouteStore.getState().route.days.map((d) => `${d.id}|${d.dayNumber}|${d.city}|${d.dayType}`)
+  const diasConColiseo = useRouteStore.getState().route.days.filter((d) => d.stops.some((s) => s.name === 'Coliseo')).map((d) => d.id)
+  useRouteStore.getState().removeReservation('rq')
+  await new Promise((resolve) => setTimeout(resolve, 6000))
+  const estado = useRouteStore.getState()
+  const despues = estado.route.days.map((d) => `${d.id}|${d.dayNumber}|${d.city}|${d.dayType}`)
+  debe(antes.length === despues.length && antes.every((x, i) => x === despues[i]), '6 quitar reserva', `${dias} días: quitar la reserva cambia los días (${antes.join(' ')} → ${despues.join(' ')})`)
+  debe(estado.reservations.length === 0, '6 quitar reserva', `${dias} días: la reserva sigue después de quitarla`)
+  const ahora = estado.route.days.filter((d) => d.stops.some((s) => s.name === 'Coliseo')).map((d) => d.id)
+  debe(diasConColiseo.length === 0 || ahora.every((id) => diasConColiseo.includes(id)), '6 quitar reserva', `${dias} días: el Coliseo pasa de ${diasConColiseo} a ${ahora}`)
+}
+
+// ── El informe ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+const resumen = [...porRegla.entries()].map(([r, n]) => `${r}: ${n}`).join(' · ')
+const md = [
+  '# Prueba de la Tanda 6s',
+  '',
+  `Comprobaciones: ${comprobaciones} · fallos: ${fallos.length}${resumen ? ` (${resumen})` : ''}`,
+  '',
+  ...(lineas.length ? ['## Muestras', ...lineas, ''] : []),
+  ...(fallos.length ? ['## Fallos', ...fallos.slice(0, 200).map((f) => `- [${f.regla}] ${f.texto}`)] : ['Sin fallos.']),
+  '',
+].join('\n')
+fs.writeFileSync(out, md)
+if (args.fallos) fs.writeFileSync(args.fallos, fallos.map((f) => `[${f.regla}] ${f.texto}`).join('\n'))
+console.log(`6s: ${comprobaciones} comprobaciones, ${fallos.length} fallos${resumen ? ` (${resumen})` : ''}`)
+for (const f of fallos.slice(0, 15)) console.log(` - [${f.regla}] ${f.texto}`)
+fs.rmSync(carpeta, { recursive: true, force: true })
+process.exit(fallos.length ? 1 : 0)
