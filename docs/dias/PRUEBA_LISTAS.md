@@ -1,6 +1,6 @@
 # Prueba del motor de listas (Tanda 6)
 
-17520 viajes (87600 días) en 73 fechas de 2027, con y sin pool, Free Tour, reservas y experiencias. 718 s.
+17520 viajes (87600 días) en 73 fechas de 2027, con y sin pool, Free Tour, reservas y experiencias. 650 s.
 
 **Fallos: 0.**
 

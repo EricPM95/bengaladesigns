@@ -73,7 +73,7 @@ export function ArrivalReturnBar({ mode, text, onOpen, onAdd }: ArrivalReturnBar
         <span className="truncate font-mono text-[9.5px] font-semibold uppercase tracking-[.1em]" style={{ color: AZUL_TINTA }}>
           {text.eyebrow}
         </span>
-        <span className="truncate font-display text-[17px] leading-[1.05] text-text">{text.main}</span>
+        <span className="truncate font-display text-[17px] leading-[1.05] text-text max-[479px]:text-[15px]">{text.main}</span>
       </span>
       {boton && (
         <button

@@ -1,6 +1,6 @@
 # Prueba de la Tanda 6o
 
-Enlaces de Civitatis escritos en datos, servidor y cliente: **29**; todos, sellados, llevan `aid=5206` una sola vez.
+Enlaces de Civitatis escritos en datos, servidor y cliente: **32**; todos, sellados, llevan `aid=5206` una sola vez.
 Sitios con entradas en `_entradas.json` (con el Free Tour): **21**.
 Fallos: **0**.
 

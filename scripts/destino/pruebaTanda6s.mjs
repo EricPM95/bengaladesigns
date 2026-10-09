@@ -10,12 +10,9 @@
 //   6. quitar una reserva mueve algún día;
 //   7. sale el nombre de un proveedor en un texto del viajero, o «centro» suelto.
 import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import { createRequire } from 'node:module'
-import { build } from 'esbuild'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
+import { prepararSSR } from './_ssr.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
 const out = args.out ?? 'docs/dias/PRUEBA_TANDA6S.md'
@@ -32,52 +29,8 @@ const debe = (cond, regla, texto) => {
   if (!cond) falla(regla, texto)
 }
 
-// ── Los sitios del navegador que el código de la app mira (la dirección y el almacén de la pestaña) ─────────────────────────────────────────
-const memoria = new Map()
-let search = ''
-const ubicacion = { get search() { return search }, href: 'http://localhost/', origin: 'http://localhost', pathname: '/' }
-globalThis.SVGElement = class SVGElement {}
-globalThis.HTMLElement = class HTMLElement {}
-Object.defineProperty(globalThis, 'sessionStorage', { value: { getItem: (k) => memoria.get(k) ?? null, setItem: (k, v) => memoria.set(k, String(v)), removeItem: (k) => memoria.delete(k) }, configurable: true })
-globalThis.window = { location: ubicacion, sessionStorage: globalThis.sessionStorage, addEventListener() {}, removeEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {}, removeEventListener() {} }) }
-Object.defineProperty(globalThis, 'localStorage', { value: { getItem: () => null, setItem: () => {}, removeItem: () => {} }, configurable: true })
-globalThis.document = { body: {}, documentElement: { style: {} }, addEventListener() {}, removeEventListener() {}, getElementById: () => null, querySelector: () => null }
-const fetchReal = globalThis.fetch
-globalThis.fetch = (url, opts) => fetchReal(typeof url === 'string' && url.startsWith('/') ? `${API}${url}` : url, opts)
-try {
-  const ping = await fetchReal(`${API}/api/destination-excursions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'Roma' }) })
-  if (!ping.ok) throw new Error(String(ping.status))
-} catch (error) {
-  console.error(`No llego al servidor de la app (${API}): enciéndelo y vuelve a probar. (${error.message})`)
-  process.exit(2)
-}
-
-// ── Se empaqueta el panel con esbuild ─────────────────────────────────────────────────────────────────────────────────────────────────────────
-const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba6s-'))
-const bundle = path.join(carpeta, 'panel.cjs')
-await build({
-  entryPoints: ['scripts/destino/_6s_entrada.tsx'],
-  outfile: bundle,
-  bundle: true,
-  platform: 'node',
-  format: 'cjs',
-  jsx: 'automatic',
-  logLevel: 'error',
-  // (zustand, al pintar en el servidor, lee el estado de partida y no el de ahora: aquí se le dice que lea el de ahora.)
-  plugins: [
-    {
-      name: 'portales-en-su-sitio',
-      setup(b) {
-        const real = path.resolve('node_modules/react-dom/index.js')
-        b.onResolve({ filter: /^react-dom$/ }, () => ({ path: 'react-dom', namespace: 'portales' }))
-        b.onLoad({ filter: /.*/, namespace: 'portales' }, () => ({ contents: `const real = require(${JSON.stringify(real)}); module.exports = { ...real, createPortal: (children) => children }`, loader: 'js', resolveDir: process.cwd() }))
-      },
-    },
-    { name: 'zustand-estado-vivo', setup(b) { b.onLoad({ filter: /zustand[\\/].*\.m?js$/ }, (args) => ({ contents: fs.readFileSync(args.path, 'utf8').replace(/api\.getServerState\s*\|\|\s*api\.getInitialState/g, 'api.getState'), loader: 'js' })) } }],
-  loader: { '.svg': 'dataurl', '.png': 'dataurl', '.jpg': 'dataurl', '.jpeg': 'dataurl', '.webp': 'dataurl', '.css': 'empty', '.woff2': 'dataurl' },
-  define: { 'import.meta.env.DEV': 'false', 'import.meta.env.PROD': 'true', 'import.meta.env.MODE': '"test"', 'import.meta.env.VITE_MAPBOX_TOKEN': '""', 'import.meta.env.VITE_SUPABASE_URL': '"http://localhost"', 'import.meta.env.VITE_SUPABASE_ANON_KEY': '"x"', 'import.meta.env': '{}' },
-})
-const M = createRequire(import.meta.url)(bundle)
+// ── El panel empaquetado con esbuild y los sitios del navegador que mira el código (scripts/destino/_ssr.mjs) ─────────────────────────────────
+const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_6s_entrada.tsx')
 const { createElement, renderToStaticMarkup, ReservasPanel, useRouteStore, fetchDestinationExcursions, fetchArrivalInfo, buildEntradasBloque, hasEnoughDaysForExcursions } = M
 
 const D = findPipelineV2Data('Roma')
@@ -126,8 +79,7 @@ const aTexto = (html) =>
 const bloquesDe = (html) => [...html.matchAll(/data-blk="([a-z]+)"/g)].map((m) => m[1])
 
 function pinta(route, { version, reservas = [] }) {
-  search = `?version=${version}`
-  memoria.clear()
+  ponerVersion(version)
   useRouteStore.setState({ route, screen: 'route', mode: 'bookings', reservations: reservas, accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {} })
   const html = renderToStaticMarkup(createElement(ReservasPanel, { route, onClose: () => {} }))
   return { html, texto: aTexto(html), bloques: bloquesDe(html) }
@@ -306,5 +258,5 @@ fs.writeFileSync(out, md)
 if (args.fallos) fs.writeFileSync(args.fallos, fallos.map((f) => `[${f.regla}] ${f.texto}`).join('\n'))
 console.log(`6s: ${comprobaciones} comprobaciones, ${fallos.length} fallos${resumen ? ` (${resumen})` : ''}`)
 for (const f of fallos.slice(0, 15)) console.log(` - [${f.regla}] ${f.texto}`)
-fs.rmSync(carpeta, { recursive: true, force: true })
+limpiar()
 process.exit(fallos.length ? 1 : 0)

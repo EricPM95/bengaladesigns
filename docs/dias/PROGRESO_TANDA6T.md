@@ -1,0 +1,15 @@
+# Progreso de la Tanda 6t (barra y ventana de llegada y de vuelta)
+
+- ✔ **1. Fuera las fuentes.** La ventana no enseña ningún «Fuente» ni enlace a la fuente (formas de llegar, estación, consigna, maleta, Tips). Los datos siguen en `_llegada.json` para la página de revisión.
+- ✔ **2. Fuera «Tu primera parada».**
+- ✔ **3. Pestaña «Traslados».** Solo en Fiumicino, Ciampino y Civitavecchia (avión y barco), a la llegada y a la vuelta; nunca en tren, autobús ni coche; solo si el punto tiene `traslado: { url }` en los datos (ese campo sustituye a `privado`, que ya no existe). Con el punto elegido en RESERVAS, el de ese punto; sin elegir, los de todos. Los dos textos del encargo, con `{destino}` y `{punto}` sacados de los datos. Una tarjeta por punto («TRASLADO PRIVADO», «De Fiumicino a tu alojamiento», «Puerta a puerta · sin trasbordos», [Reservar traslado]) con el estilo de la tarjeta de entrada. El botón abre el enlace en otra pestaña con el aviso «Abriendo la tienda de traslados…» y lleva nuestro código de afiliado y la campaña del viaje. Sin precio y sin proveedor. Quitado el precio de ejemplo de 45 € (también del que inventaba el dato de reserva si el destino no tiene datos). Orden: Resumen · Traslados · Tips.
+- ✔ **4. La barra nueva (opción 1b).** Barra blanca con borde azul suave, bloque azul con la diagonal y el icono del medio, dos líneas de texto y el botón azul «+ Vuelo» (de pago, sin hora), la pastilla verde «✓ 11:20» (de pago, con hora) o solo la flecha «›» (gratis y coche). Los textos son los del encargo, a la llegada y a la vuelta, en los cinco medios. Al tocarla (fuera del botón) se abre la ventana. En la ventana, la fila «Sin vuelo añadido · + Añadir vuelo» no sale en la gratis, y en la de pago sale solo sin hora; con hora queda «Editar».
+- ✔ **4b. Fila del alojamiento del día 1.** Solo el aspecto del diseño: círculo con la cama, texto en cursiva con su línea pequeña, botón «+» redondo (✓ verde si está puesto) y una línea fina debajo. Lo que hace y sus textos, como antes.
+- ✔ **5. Ninguna hora que ponga la app.** Fuera «En el centro {hora}», «libre hacia las {hora}» (también en la línea cerrada de RESERVAS), «Sal a las {hora}» y la tabla «Libre hasta / Maleta a las / Sal a las» (queda solo el texto general de la última tarde). Regla 487, para todos los destinos. Las horas siguen existiendo por dentro para montar el día (Tanda 7).
+- ✔ **6. Fuera los botones del punto dentro de la ventana** (ya quitados en la 6s; ahora la prueba lo vigila). Con el punto elegido: solo ese y «¿Llegas por otro sitio? Ver Ciampino».
+- ✔ **7. Pruebas.** `scripts/destino/pruebaTanda6t.mjs` (nueva) y todas las de siempre a 0 fallos. Capturas en `docs/dias/img/6t-*.jpg`.
+
+## Otras cosas que cambié
+
+- `scripts/destino/_ssr.mjs`: el arranque que comparten las pruebas 6s y 6t (esbuild + react-dom/server). La 6s ahora lo usa; sigue en 0 fallos.
+- La página de revisión `docs/LLEGADAS_ROMA.html` (`scripts/destino/llegadas.mjs`) se regenera con las barras nuevas y sin horas calculadas.
