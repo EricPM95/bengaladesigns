@@ -112,23 +112,25 @@ debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFi
 // ── 2. La zona del alojamiento ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
 {
   const zonas = info.zonasAlojamiento
+  // Tanda 6z: el bloque de alojamiento es un acordeón que se pinta CERRADO (como «Llegada y vuelta» y «Entradas y Free Tour»): solo el título y una línea de estado. Lo de dentro (el campo de la zona, [Buscar alojamiento]…) se comprueba en el código.
   const sinZona = bloqueDe(pinta(route5, 'completa').html, 'aloj')
   const t = aTexto(sinZona)
-  debe(/¿En qué zona te alojas\?/.test(t) && /Elige tu zona/.test(t) && /Buscar alojamiento/.test(t), '2 zona', `sin zona: falta la línea, el campo o [Buscar alojamiento] (${plano(t)})`)
+  debe(/Alojamiento/.test(t) && /Falta/.test(t) && !/Buscar alojamiento/.test(t) && !/Elige tu zona/.test(t), '2 zona', `sin zona: cerrado, con «Falta» (${plano(t)})`)
   for (const zona of zonas) debe(!t.includes(zona.nombre), '2 zona', `sin zona: salen las fichas de las zonas («${zona.nombre}»)`)
   const prati = pinta({ ...route5, accommodationZone: 'prati' }, 'completa')
   const tp = aTexto(bloqueDe(prati.html, 'aloj'))
-  debe(/Te alojas en Prati/.test(tp) && /Cambiar/.test(tp) && !/Buscar alojamiento/.test(tp) && !/Elige tu zona/.test(tp), '2 zona', `con zona: no es «Te alojas en Prati · Cambiar» (${plano(tp)})`)
+  debe(/✓ Prati/.test(tp) && !/Falta/.test(tp) && !/Buscar alojamiento/.test(tp), '2 zona', `con zona: cerrado, con «✓ Prati» (${plano(tp)})`)
   const nose = pinta({ ...route5, accommodationZone: 'nose' }, 'completa')
   const tn = aTexto(bloqueDe(nose.html, 'aloj'))
-  debe(/Aún no lo sé/.test(tn) && /Buscar alojamiento/.test(tn) && !/Te alojas en/.test(tn), '2 zona', `«Aún no lo sé»: faltan el campo o [Buscar alojamiento] (${plano(tn)})`)
+  debe(/Falta/.test(tn) && !/✓/.test(tn) && !/Te alojas en/.test(tn), '2 zona', `«Aún no lo sé»: sigue en «Falta» (${plano(tn)})`)
   const gratis = pinta(route5, 'gratis')
   const tg = aTexto(bloqueDe(gratis.html, 'aloj'))
-  debe(/Buscar alojamiento/.test(tg) && !/¿En qué zona/.test(tg) && !/Elige tu zona/.test(tg), '2 zona', `gratis: debe tener solo [Buscar alojamiento] (${plano(tg)})`)
+  debe(/Alojamiento/.test(tg) && /Falta/.test(tg) && !/¿En qué zona/.test(tg) && !/Elige tu zona/.test(tg), '2 zona', `gratis: cerrado, con «Falta» y sin la zona (${plano(tg)})`)
   debe(!/<h2[^>]*>[^<]*zona/.test(gratis.html), '2 zona', 'gratis: sale la hoja de zona')
 }
 const codigoAloj = fs.readFileSync('src/components/route/reservas/AlojamientoReservas.tsx', 'utf8')
 debe(/tipo="lista"/.test(codigoAloj) && /Guardar/.test(codigoAloj) && /TimeListWheel/.test(codigoAloj), '2 zona', 'la hoja de la zona no es una rueda con [Guardar]')
+debe(/\{pago && \(/.test(codigoAloj) && /¿En qué zona te alojas\?/.test(codigoAloj) && /Buscar alojamiento/.test(codigoAloj) && /Añadir mi alojamiento/.test(codigoAloj), '2 zona', 'el bloque abierto no lleva la zona (de pago), [Añadir mi alojamiento] y [Buscar alojamiento]')
 
 // ── 3. Excursiones ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 for (const dias of [4, 5]) {

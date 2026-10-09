@@ -9,7 +9,7 @@ import type { MockStopDetail } from './mockDayDetail'
  * y, a la vez, el catálogo completo que muestra la pestaña EXPLORAR. Mismo pool, mismo mecanismo de
  * inserción para ambos (ver StopPickerPanel.tsx / DayPositionPicker.tsx) — determinista por ciudad
  * (mismo seed ⇒ mismos resultados), sin llamada real a Claude todavía (mismo estado que el resto de
- * la app, ver mockDayDetail.ts/mockAffiliateData.ts).
+ * la app, ver mockDayDetail.ts).
  */
 export interface PoolPlace {
   id: string
