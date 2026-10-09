@@ -19,11 +19,12 @@ import type { Excursion } from './types'
 export function useDestinationPool(
   destination: string,
   enabled: boolean,
-): { places: DestinationPlace[]; excursions: Excursion[]; loading: boolean; resolved: boolean } {
+): { places: DestinationPlace[]; excursions: Excursion[]; freeTourEntry: DestinationPlace | null; loading: boolean; resolved: boolean } {
   const [places, setPlaces] = useState<DestinationPlace[]>([])
   // Las excursiones del destino (6 en Roma) — el filtro "Excursiones" de la pantalla de lugares las
   // saca de aquí, no de la ruta: EXPLORAR no está mirando ningún día concreto.
   const [excursions, setExcursions] = useState<Excursion[]>([])
+  const [freeTourEntry, setFreeTourEntry] = useState<DestinationPlace | null>(null)
   const [loading, setLoading] = useState(false)
   const [resolvedFor, setResolvedFor] = useState<string | null>(null)
 
@@ -35,6 +36,7 @@ export function useDestinationPool(
       if (cancelled) return
       setPlaces(found.places)
       setExcursions(found.excursions)
+      setFreeTourEntry(found.freeTourEntry)
       setResolvedFor(destination)
       setLoading(false)
     })
@@ -43,5 +45,5 @@ export function useDestinationPool(
     }
   }, [destination, enabled])
 
-  return { places, excursions, loading, resolved: resolvedFor === destination }
+  return { places, excursions, freeTourEntry, loading, resolved: resolvedFor === destination }
 }

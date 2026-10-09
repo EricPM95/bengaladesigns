@@ -1,10 +1,10 @@
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { DayPlan } from '../../lib/types'
-import { mockActivities, mockHotels } from '../../lib/mockAffiliateData'
 import { FlagIcon } from '../ui/FlagIcon'
 import { AffiliateCardCarousel } from '../ui/AffiliateCardCarousel'
-import { BOOKING_BLUE, CIVITATIS_RED, buildActivitySearchUrl, buildHotelSearchUrl } from '../../lib/affiliateLinks'
+import { BOOKING_BLUE, CIVITATIS_RED, buildActivitySearchUrl } from '../../lib/affiliateLinks'
+import { useAlojamientoUi } from '../../store/useAlojamientoUi'
 import { destinationExcursions } from '../../lib/destinationExcursions'
 
 interface DestinationDetailModalProps {
@@ -21,15 +21,12 @@ interface DestinationDetailModalProps {
 /**
  * Vista de detalle al pulsar una fila de destino — pantalla completa (no un modal recortado), con
  * una ✕ en la esquina superior izquierda para cerrar y volver a RUTA. Cabecera con bandera junto
- * al nombre + noches en la misma línea, "Alojamientos en {destino}" (hoteles vía Stay22, datos
- * mock) y "Actividades en {destino}" (tours vía afiliación, datos mock) — puro escaparate, sin
- * acción de "añadir a mi viaje" aquí (eso se gestiona en DIAS/RESERVAS, ver AccommodationBlock.tsx).
+ * al nombre + noches en la misma línea, "Alojamientos en {destino}" (el botón abre el mapa de alojamientos de la app, Tanda 6z) y "Actividades en {destino}" (el enlace de Civitatis) — sin
+ * datos de ejemplo y sin acción de "añadir a mi viaje" aquí (eso se gestiona en DIAS/RESERVAS, ver AccommodationBlock.tsx).
  */
 export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onClose }: DestinationDetailModalProps) {
   const cityDays = city ? days.filter((day) => day.city === city) : []
   const countryCode = cityDays[0]?.countryCode ?? null
-  const hotels = city ? mockHotels(city) : []
-  const activities = city ? mockActivities(city) : []
   const excursions = city ? destinationExcursions(city) : []
 
   // (En el body, por encima de la barra, la cabecera y el mapa: pantalla completa de verdad. PARA_CODE_TODO_2026-10-01, 6.1.)
@@ -64,24 +61,19 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             {!isCamper && (
               <div>
                 <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🏨 Alojamientos en {city}</p>
-                <AffiliateCardCarousel
-                  cards={hotels.map((hotel) => ({ id: hotel.id, name: hotel.name, photoUrl: hotel.photoUrl }))}
-                />
-                <a href={buildHotelSearchUrl(city)} target="_blank" rel="noopener noreferrer">
-                  <button
-                    type="button"
-                    style={{ backgroundColor: BOOKING_BLUE }}
-                    className="mt-2 w-full rounded-xl py-2.5 text-body font-semibold text-white transition-opacity hover:opacity-90"
-                  >
-                    Ver más hoteles
-                  </button>
-                </a>
+                <button
+                  type="button"
+                  onClick={() => useAlojamientoUi.getState().abrirMapa()}
+                  style={{ backgroundColor: BOOKING_BLUE }}
+                  className="mt-2 w-full rounded-xl py-2.5 text-body font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  Buscar alojamiento
+                </button>
               </div>
             )}
 
             <div>
               <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🎟 Actividades en {city}</p>
-              <AffiliateCardCarousel cards={activities.map((activity) => ({ id: activity.id, name: activity.name, photoUrl: activity.photoUrl }))} />
               <a href={buildActivitySearchUrl(city)} target="_blank" rel="noopener noreferrer">
                 <button
                   type="button"

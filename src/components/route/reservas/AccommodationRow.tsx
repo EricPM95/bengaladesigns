@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
+import { lineaAlojamiento } from '../../../lib/tuAlojamiento'
 import { ReservasItemRow } from './ReservasItemRow'
-import { AccommodationHotelModal } from '../dayDetail/AccommodationHotelModal'
 
 interface AccommodationRowProps {
   segmentDayId: string
@@ -9,11 +9,11 @@ interface AccommodationRowProps {
   totalNights: number
 }
 
-/** Misma clave de store (`accommodationSelections`) y mismo modal de selección que el bloque de alojamiento en DIAS — añadir aquí o allí actualiza ambos sitios. */
+/** Misma clave de store (`accommodationSelections`) y la misma hoja «Tu alojamiento» que la fila del primer día en DIAS — añadir aquí o allí actualiza ambos sitios. El botón de buscar abre el mapa de alojamientos (Tanda 6z). */
 export function AccommodationRow({ segmentDayId, city, totalNights }: AccommodationRowProps) {
   const hotel = useRouteStore((state) => state.accommodationSelections[segmentDayId])
-  const setAccommodationHotel = useRouteStore((state) => state.setAccommodationHotel)
-  const [open, setOpen] = useState(false)
+  const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
+  const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
 
   return (
     <>
@@ -21,33 +21,10 @@ export function AccommodationRow({ segmentDayId, city, totalNights }: Accommodat
         kind="accommodation"
         label={`Alojamiento en ${city}`}
         resolved={Boolean(hotel)}
-        subtitle={hotel ? `${hotel.name} · ${totalNights} noche${totalNights === 1 ? '' : 's'}` : undefined}
+        subtitle={hotel ? `${hotel.name} · ${lineaAlojamiento(hotel, totalNights)}` : undefined}
         priority="yellow"
-        onClick={() => setOpen(true)}
-        bookAction={{
-          label: 'Reservar',
-          href: 'https://www.stay22.com',
-          onGet: () =>
-            setAccommodationHotel(segmentDayId, {
-              id: `stay22-${segmentDayId}`,
-              name: 'Tu reserva',
-              stars: 0,
-              pricePerNight: 0,
-              rating: 0,
-              provider: 'Booking',
-              photoUrl: '',
-            }),
-        }}
-      />
-      <AccommodationHotelModal
-        city={open ? city : null}
-        selected={hotel ?? null}
-        onSelect={(selectedHotel) => {
-          setAccommodationHotel(segmentDayId, selectedHotel)
-          setOpen(false)
-        }}
-        onRemove={() => setAccommodationHotel(segmentDayId, null)}
-        onClose={() => setOpen(false)}
+        onClick={() => abrirTuAlojamiento(segmentDayId)}
+        bookAction={{ label: 'Buscar', href: null, onGet: () => abrirMapa(segmentDayId) }}
       />
     </>
   )

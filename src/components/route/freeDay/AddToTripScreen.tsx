@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
-import { buildHotelSearchUrl } from '../../../lib/affiliateLinks'
+import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { addDaysToIso } from '../../../lib/dateRange'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { AddStopScreen } from '../addStop/AddStopScreen'
+import { FreeTourSheet, freeTourAvailable } from '../reservas/FreeTourSheet'
 import { AddToDaySheet, dayName, type AddItem, type AddedResult } from './AddToDaySheet'
 
 /**
@@ -21,6 +22,7 @@ export function AddToTripScreen({ route }: { route: Route }) {
   const city = day?.city ?? route.days[0]?.city ?? route.destination
   const { places, excursions, resolved } = useDestinationPool(city, addFlow !== null)
   const [item, setItem] = useState<AddItem | null>(null)
+  const [freeTourOpen, setFreeTourOpen] = useState(false)
 
   if (!addFlow) return null
 
@@ -47,7 +49,8 @@ export function AddToTripScreen({ route }: { route: Route }) {
           route={route}
           dayNumber={day?.dayNumber ?? null}
           dateIso={day && range ? addDaysToIso(range.start, day.dayNumber - 1) : null}
-          hotelsUrl={buildHotelSearchUrl(city, range?.start, range?.end)}
+          onHotels={() => useAlojamientoUi.getState().abrirMapa()}
+          onAddFreeTour={freeTourAvailable(route) ? () => setFreeTourOpen(true) : undefined}
           onQuickAdd={(place) => open({ kind: 'place', place })}
           onQuickAddExcursion={(excursion) => open({ kind: 'excursion', excursion })}
           onClose={closeAddFlow}
@@ -74,6 +77,7 @@ export function AddToTripScreen({ route }: { route: Route }) {
           />
         )
       )}
+      {freeTourOpen && <FreeTourSheet route={route} onClose={() => setFreeTourOpen(false)} />}
       {item && <AddToDaySheet route={route} item={item} initialDayId={addFlow.dayId} onClose={() => setItem(null)} onAdded={done} />}
     </>
   )

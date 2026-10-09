@@ -5,6 +5,7 @@ import { useDestinationExcursions } from '../lib/destinationExcursions'
 import { useArrivalInfo } from '../lib/arrivalReturn'
 import { legsOf } from '../lib/reservasLegs'
 import { pagoActivo } from '../lib/pago'
+import { buildDestinationSegments } from '../lib/destinationSegments'
 
 /** null cuando no hay ruta cargada todavía. */
 export function useTripReadiness() {
@@ -30,7 +31,9 @@ export function useTripReadiness() {
   const transportDone = new Set(Object.keys(transportBookings))
   if (pago && legs.arrival.done && firstDayId) transportDone.add(firstDayId)
   if (pago && legs.departure.done && lastDayId) transportDone.add(lastDayId)
-  const accommodationDone = new Set(Object.keys(accommodationSelections))
+  // Alojamiento (Tanda 6z): de pago y con un solo destino cuenta la zona elegida (el hotel que cuenta el viajero solo informa); con varios destinos, el alojamiento que ha puesto en cada uno.
+  const unDestino = buildDestinationSegments(route.days).length <= 1
+  const accommodationDone = new Set(pago && unDestino ? [] : Object.keys(accommodationSelections))
   if (pago && route.accommodationZone && route.accommodationZone !== 'nose' && firstDayId) accommodationDone.add(firstDayId)
 
   const resolved: ReadinessResolvedState = {

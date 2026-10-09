@@ -51,7 +51,7 @@ export function dayOptionLabel(route: Route, day: DayPlan): string {
 function blockedReason(item: AddItem, day: DayPlan): string | null {
   if (hasFullDayExcursion(day)) return 'Tiene una excursión de día entero'
   if (item.kind === 'excursion') return isEmptyDay(day) ? null : 'Este día ya tiene cosas'
-  if (item.place.kind !== 'restaurant' && day.stops.some((stop) => stop.name === item.place.name)) return 'Ya está en este día'
+  if (item.place.kind !== 'restaurant' && day.stops.some((stop) => stop.name === item.place.name)) return `En tu día ${day.dayNumber}`
   return null
 }
 
@@ -161,7 +161,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
         <div className="overflow-y-auto px-6 pt-4">
           <p className="max-w-[calc(100%-2.5rem)] font-mono text-[10.5px] font-medium uppercase tracking-[.12em] text-accent">{name}</p>
           <h2 id="add-to-day-heading" className="mt-1.5 font-display text-[26px] leading-[1.15] text-text">
-            {item.kind === 'excursion' ? '¿A qué día la añades?' : '¿A qué día lo añades?'}
+            {item.kind === 'excursion' ? '¿A qué día la añadimos?' : '¿A qué día lo añadimos?'}
           </h2>
 
           <div className="mt-4 flex flex-col gap-1.5">

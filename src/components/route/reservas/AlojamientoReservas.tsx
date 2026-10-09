@@ -1,46 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { BloqueShell, CambiarBoton, FlechaBloque, GR, ICONOS, INK, Icono, IconoBloque, PastillaEstado, tituloBloqueStyle } from './BloqueReservas'
+import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
+import { estanciasDelViaje, nochesTexto, precioDeAlojamiento, euros } from '../../../lib/tuAlojamiento'
+import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, ICONOS, INK, Icono, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
-
-/**
- * El enlace del mapa de alojamientos (Tanda 6s): el de los datos del destino (`mapa_alojamiento`) con el primer día del viaje (`checkin`), el último (`checkout`) y el código de campaña del
- * viaje (`campaign`, «Routy» si no hay). Sin fechas, sin checkin ni checkout. Sin personas: se eligen dentro del mapa.
- */
-export function mapaAlojamientoUrl(mapa: NonNullable<DestinationExcursions['mapaAlojamiento']>, route: Route, campaignCode: string | null): string {
-  const base = mapa.usar === 'embed_guardado' && mapa.embed_guardado ? mapa.embed_guardado : mapa.embed
-  const url = new URL(base)
-  const rango = route.answers.dateRange
-  if (rango?.start && rango?.end) {
-    url.searchParams.set('checkin', rango.start)
-    url.searchParams.set('checkout', rango.end)
-  }
-  url.searchParams.set('campaign', campaignCode || 'Routy')
-  return url.toString()
-}
-
-/** La hoja «Alojamiento en Roma»: sube desde abajo con su tirador y su cruz y lleva el mapa de alojamientos dentro, a lo ancho. */
-export function HojaMapaAlojamiento({ route, ciudad, mapa, onClose }: { route: Route; ciudad: string; mapa: DestinationExcursions['mapaAlojamiento']; onClose: () => void }) {
-  const campaignCode = useRouteStore((state) => state.campaignCode)
-  const url = useMemo(() => (mapa ? mapaAlojamientoUrl(mapa, route, campaignCode) : null), [mapa, route, campaignCode])
-  return (
-    <HojaAbajo titleId="hoja-alojamiento" onClose={onClose} ancha>
-      <h2 id="hoja-alojamiento" className="max-w-[calc(100%-3rem)] font-display text-[26px] leading-none text-text">
-        Alojamiento en {ciudad}
-      </h2>
-      <div className="mt-3.5 overflow-hidden rounded-[22px] bg-[#F5EFE4]" style={{ height: 428 }}>
-        {url ? (
-          <iframe title={`Alojamientos en ${ciudad}`} src={url} className="h-full w-full border-0" loading="lazy" allow="geolocation" />
-        ) : (
-          <div className="flex h-full items-center justify-center px-6 text-center text-[13px] text-text/60">Todavía no tenemos el mapa de alojamientos de este destino.</div>
-        )}
-      </div>
-    </HojaAbajo>
-  )
-}
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
 function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExcursions['zonasAlojamiento']; actual: string | null; onGuardar: (id: string) => void; onClose: () => void }) {
@@ -72,99 +38,119 @@ function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExc
 }
 
 /**
- * El bloque «Alojamiento» de RESERVAS (Tanda 6s y 6v). De pago: una línea «¿En qué zona te alojas?» con un campo que se toca («Elige tu zona ⌄»), que abre una hoja con las zonas en una rueda y [Guardar]; debajo del
- * campo, [Buscar alojamiento] como botón principal, que abre la hoja del mapa. Con una zona elegida el bloque se cierra («Te alojas en Prati · Cambiar», cuenta como hecho); con «Aún no lo sé» o sin elegir, el
- * campo y el botón siguen a la vista. Gratis: sin el campo, solo [Buscar alojamiento]. La zona se guarda con el viaje; todavía no cambia la ruta (la usará la Tanda 7).
+ * El bloque «Alojamiento» de RESERVAS (Tanda 6s, 6v y 6z). Cerrado, como «Llegada y vuelta» y «Entradas y Free Tour»: el icono, el título y una línea que dice cómo va («Falta», «✓ Hotel Artemide», de pago
+ * «✓ Hotel Artemide · Monti» o «✓ Hotel Artemide · Falta la zona») con su flecha.
+ *
+ * Abierto, sin alojamiento: «¿Ya tienes alojamiento?» con [Añadir mi alojamiento] (la hoja «Tu alojamiento») y «¿Aún no?» con [Buscar alojamiento] (el mapa a pantalla completa). Con alojamiento: su nombre, las
+ * noches del viaje, el precio si lo dijo, [Cambiar] y [Eliminar]. De pago, además, «¿En qué zona te alojas?» con su campo y su rueda (siempre a la vista; «Aún no lo sé» sigue contando «Falta»).
+ * Poner el alojamiento es gratis en las dos versiones; la zona, solo de pago. El alojamiento solo informa: la zona (de pago) es lo que orienta la ruta. Se guarda con el viaje, uno por destino.
  */
-export function AlojamientoReservas({ route, info, pago }: { route: Route; info: DestinationExcursions; pago: boolean }) {
+export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { route: Route; info: DestinationExcursions; pago: boolean; abierto: boolean; onToggle: () => void }) {
   const zona = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const setZona = useRouteStore((state) => state.setAccommodationZone)
-  const [mapaAbierto, setMapaAbierto] = useState(false)
+  const setHotel = useRouteStore((state) => state.setAccommodationHotel)
+  const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
+  const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
   const [zonaAbierta, setZonaAbierta] = useState(false)
-  const ciudad = route.days[0]?.city ?? route.destination
+  const estancia = estanciasDelViaje(route)[0] ?? null
+  const segmentDayId = estancia?.segmentDayId ?? route.days[0]?.id ?? ''
+  const noches = estancia?.noches ?? 0
+  const hotel = useRouteStore((state) => state.accommodationSelections[segmentDayId]) ?? null
   const zonas = info.zonasAlojamiento
   const elegida = zonas.find((candidate) => candidate.id === zona) ?? null
-  const hecho = alojamientoHecho(elegida?.id)
+  const zonaHecha = alojamientoHecho(elegida?.id)
+  const hecho = pago ? zonaHecha : Boolean(hotel)
+  const precio = precioDeAlojamiento(hotel)
 
-  const hoja = mapaAbierto ? <HojaMapaAlojamiento route={route} ciudad={ciudad} mapa={info.mapaAlojamiento} onClose={() => setMapaAbierto(false)} /> : null
-  const hojaZona = zonaAbierta ? (
-    <HojaZona
-      zonas={zonas}
-      actual={zona}
-      onGuardar={(id) => {
-        setZona(id)
-        setZonaAbierta(false)
-      }}
-      onClose={() => setZonaAbierta(false)}
-    />
-  ) : null
-  const buscar = (
-    <button
-      type="button"
-      onClick={() => setMapaAbierto(true)}
-      className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
-    >
-      <Icono d={ICONOS.lupa} size={15} stroke={2} />
-      Buscar alojamiento
-    </button>
-  )
-
-  // Con una zona elegida: la línea verde de siempre.
-  if (pago && hecho) {
-    return (
-      <>
-        <BloqueShell bloque="aloj">
-          <div className="flex items-center gap-2.5 rounded-[22px] py-2.5 pl-3 pr-2" style={{ background: 'oklch(0.97 0.025 150)' }}>
-            <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-white" style={{ background: GR }}>
-              <Icono d={ICONOS.hotel} size={14} stroke={1.9} />
-            </span>
-            <span className="min-w-0 flex-1 text-[13px] leading-[1.4]" style={{ textWrap: 'pretty' as never }}>
-              Te alojas en {elegida?.nombre}
-            </span>
-            <CambiarBoton onClick={() => setZonaAbierta(true)} />
-          </div>
-        </BloqueShell>
-        {hojaZona}
-        {hoja}
-      </>
-    )
-  }
+  const resumen = pago
+    ? hotel
+      ? `✓ ${hotel.name} · ${zonaHecha ? elegida?.nombre : 'Falta la zona'}`
+      : zonaHecha
+        ? `✓ ${elegida?.nombre}`
+        : 'Falta'
+    : hotel
+      ? `✓ ${hotel.name}`
+      : 'Falta'
+  // Con el hotel puesto pero sin la zona (de pago) la línea sigue en rosa: lo que falta es la zona.
+  const resumenVerde = pago ? zonaHecha : Boolean(hotel)
 
   return (
     <>
       <BloqueShell bloque="aloj">
-        <div className="flex items-center gap-3 px-3.5 pt-3.5">
-          <IconoBloque d={ICONOS.hotel} />
-          <span className="min-w-0 flex-1" style={tituloBloqueStyle}>
-            Alojamiento
+        <div onClick={onToggle} className="flex cursor-pointer items-center gap-3 p-3.5">
+          <IconoBloque d={ICONOS.hotel} hecho={hecho} />
+          <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+            <span style={tituloBloqueStyle}>Alojamiento</span>
+            <span className="truncate" style={{ font: "600 11px 'Geist Mono',monospace", color: resumenVerde ? GR : 'oklch(0.5 0.17 5)' }}>
+              {resumen}
+            </span>
           </span>
-          {pago && <PastillaEstado texto="Falta" hecho={false} />}
+          <FlechaBloque abierto={abierto} />
         </div>
-        <div className="flex flex-col gap-3 px-3.5 pb-3.5 pt-3">
-          {pago ? (
-            <>
-              <span className="text-[14px] font-medium">¿En qué zona te alojas?</span>
-              <button
-                type="button"
-                onClick={() => setZonaAbierta(true)}
-                className="flex h-12 w-full items-center justify-between rounded-[14px] border border-text/15 bg-white px-3.5 text-left text-[14.5px]"
-                style={{ color: elegida ? INK : 'rgba(28,34,48,.55)' }}
-              >
-                <span className="min-w-0 truncate">{elegida ? elegida.nombre : 'Elige tu zona'}</span>
-                <FlechaBloque abierto={false} />
-              </button>
-            </>
-          ) : (
-            <span className="text-[13px] leading-[1.4] text-text/65">Busca dónde dormir en {ciudad}, con el mapa y las fechas de tu viaje.</span>
-          )}
-          {buscar}
-        </div>
+        {abierto && (
+          <div className="flex flex-col gap-3.5 px-3.5 pb-3.5">
+            {hotel ? (
+              <div className="flex items-center gap-2.5 rounded-[14px] py-2.5 pl-3 pr-1.5" style={{ background: 'oklch(0.97 0.025 150)' }}>
+                <span className="min-w-0 flex-1 text-[13.5px] leading-[1.4]">
+                  <span className="block truncate text-[15px] font-medium">{hotel.name}</span>
+                  {noches > 0 && <span className="block text-text/65">{nochesTexto(noches)}</span>}
+                  {precio !== null && <span className="block text-text/65">{euros(precio)}</span>}
+                </span>
+                <CambiarBoton onClick={() => abrirTuAlojamiento(segmentDayId)} />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                <span className="text-[14px] font-medium">¿Ya tienes alojamiento?</span>
+                <button
+                  type="button"
+                  onClick={() => abrirTuAlojamiento(segmentDayId)}
+                  className="flex h-12 w-full items-center justify-center rounded-full border border-text/20 bg-white text-[14.5px] font-semibold text-text transition-transform active:scale-[.98]"
+                >
+                  Añadir mi alojamiento
+                </button>
+                <span className="mt-1 text-[14px] font-medium">¿Aún no?</span>
+                <button
+                  type="button"
+                  onClick={() => abrirMapa(segmentDayId)}
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
+                >
+                  <Icono d={ICONOS.lupa} size={15} stroke={2} />
+                  Buscar alojamiento
+                </button>
+              </div>
+            )}
+            {hotel && <EliminarTexto texto="Eliminar" onClick={() => setHotel(segmentDayId, null)} />}
+            {pago && (
+              <div className="flex flex-col gap-2.5">
+                <span className="text-[14px] font-medium">¿En qué zona te alojas?</span>
+                <button
+                  type="button"
+                  onClick={() => setZonaAbierta(true)}
+                  className="flex h-12 w-full items-center justify-between rounded-[14px] border border-text/15 bg-white px-3.5 text-left text-[14.5px]"
+                  style={{ color: zonaHecha ? INK : 'rgba(28,34,48,.55)' }}
+                >
+                  <span className="min-w-0 truncate">{elegida ? elegida.nombre : 'Elige tu zona'}</span>
+                  <FlechaBloque abierto={false} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </BloqueShell>
-      {hojaZona}
-      {hoja}
+      {zonaAbierta && (
+        <HojaZona
+          zonas={zonas}
+          actual={zona}
+          onGuardar={(id) => {
+            setZona(id)
+            setZonaAbierta(false)
+          }}
+          onClose={() => setZonaAbierta(false)}
+        />
+      )}
     </>
   )
 }
 
-/** ¿Está hecho el alojamiento? Con una zona elegida («Aún no lo sé» no cuenta). */
+/** ¿Está hecha la zona del alojamiento? Con una zona elegida («Aún no lo sé» no cuenta). */
 export const alojamientoHecho = (zona: string | null | undefined): boolean => Boolean(zona) && zona !== 'nose'

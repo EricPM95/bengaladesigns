@@ -1,5 +1,5 @@
 import type { Route, RouteMode, WishlistItem } from './types'
-import type { MockHotelResult } from './mockAffiliateData'
+import type { TuAlojamiento } from './tuAlojamiento'
 import type { EsimStatus, GeneralBooking, TransportBooking } from './readiness'
 import type { Reservation, SaleMatch } from './bookings'
 import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
@@ -31,7 +31,7 @@ function withCurrentFreeTourName<T>(value: T): T {
 }
 
 export interface TripBookings {
-  accommodationSelections: Record<string, MockHotelResult>
+  accommodationSelections: Record<string, TuAlojamiento>
   transportBookings: Record<string, TransportBooking>
   insuranceBooking: GeneralBooking | null
   n26Added: boolean

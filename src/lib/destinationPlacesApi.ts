@@ -76,6 +76,10 @@ export interface DestinationPlace {
   what_to_order?: string | null
   tip?: string | null
   best_for?: string | null
+  /** Solo la entrada del Free Tour: no es un lugar del catálogo, solo sale bajo el filtro «Entradas» (Tanda 6z). */
+  solo_entradas?: boolean
+  /** Nombre con el que se pide la foto cuando no es el del lugar (el Free Tour usa la de su punto de encuentro). */
+  photo_name?: string | null
 }
 
 /**
@@ -86,9 +90,11 @@ export interface DestinationPlace {
 export interface DestinationCatalog {
   places: DestinationPlace[]
   excursions: Excursion[]
+  /** El Free Tour del destino como entrada del filtro «Entradas» de EXPLORAR (null si el destino no tiene). */
+  freeTourEntry: DestinationPlace | null
 }
 
-const EMPTY_CATALOG: DestinationCatalog = { places: [], excursions: [] }
+const EMPTY_CATALOG: DestinationCatalog = { places: [], excursions: [], freeTourEntry: null }
 
 const cache = new Map<string, DestinationCatalog>()
 const inFlight = new Map<string, Promise<DestinationCatalog>>()
@@ -114,6 +120,7 @@ export async function fetchDestinationPlaces(destination: string): Promise<Desti
       const catalog: DestinationCatalog = {
         places: found && Array.isArray(data.places) ? data.places : [],
         excursions: found && Array.isArray(data.excursions) ? mapExcursionList(data.excursions as GeneratedExcursion[]) : [],
+        freeTourEntry: found && data.free_tour_entry ? (data.free_tour_entry as DestinationPlace) : null,
       }
       // Un destino sin catálogo curado devuelve vacío y no se cachea: si mañana lo tiene, se verá
       // sin tener que recargar la app.

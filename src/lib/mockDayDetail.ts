@@ -530,23 +530,6 @@ export async function refineConnectorWithRealDistance(fromCoords: Coordinates | 
   }
 }
 
-/**
- * Conector que toca un alojamiento real (noche anterior → primera parada, o última parada → noche
- * de hoy) — sustituye al punto genérico del centro de la ciudad en cuanto se conoce el alojamiento.
- * `seed` debe incorporar el nombre del hotel (no solo el día) para que el resultado sea estable por
- * alojamiento, no solo por día — ver DayDetailPanel.tsx. Recálculo silencioso: nunca decide si este
- * conector se muestra o no (eso ya lo decide quien llama), solo genera su distancia/tiempo mock.
- *
- * A diferencia de `buildConnectorInfo` (parada↔parada), este SIEMPRE se queda en mock — los
- * hoteles (`mockAffiliateData.ts`) son 100% ficticios (nombres de plantilla, sin integración real
- * de Booking/Expedia todavía) y no llevan coordenadas propias, así que no hay ninguna ubicación
- * real a la que pedirle una ruta a Mapbox. El día que haya alojamiento real con coordenadas, esto
- * puede refinarse igual que `refineConnectorWithRealDistance`.
- */
-export function buildAccommodationConnectorInfo(seed: string): ConnectorInfo {
-  return buildRealDisplacement(seed)
-}
-
 // ── Recomendación de comida/cena (Modo Hoy) ────────────────────
 
 const MEAL_WINDOW_META: Record<'lunch' | 'dinner', { time: string; label: string }> = {

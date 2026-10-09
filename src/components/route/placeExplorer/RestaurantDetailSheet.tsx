@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 import { findRestaurantSubCategory } from '../../../lib/placeCategories'
+import { textoRecomendacion } from '../../../lib/recomendaciones'
 import { buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { ClockIcon } from '../../ui/TimeIcons'
 
@@ -9,6 +10,8 @@ interface RestaurantDetailSheetProps {
   /** null = cerrada. */
   restaurant: DestinationPlace | null
   likeCount: number
+  /** El número que se puede enseñar (real desde 20, o el de prueba); null = ninguno. */
+  likeShown: number | null
   liked: boolean
   onToggleLike: () => void
   onClose: () => void
@@ -76,7 +79,7 @@ function Section({ icon, title, children }: { icon: ReactNode; title: string; ch
  * Nunca lleva "Añadir a mi ruta": un restaurante no es una parada del itinerario (ver `kind` en
  * destinationPlacesApi.ts). El botón es "Cómo llegar".
  */
-export function RestaurantDetailSheet({ restaurant, likeCount, liked, onToggleLike, onClose }: RestaurantDetailSheetProps) {
+export function RestaurantDetailSheet({ restaurant, likeCount, likeShown, liked, onToggleLike, onClose }: RestaurantDetailSheetProps) {
   const sub = restaurant ? findRestaurantSubCategory(restaurant.sub_category) : null
 
   return (
@@ -132,9 +135,7 @@ export function RestaurantDetailSheet({ restaurant, likeCount, liked, onToggleLi
                   <HeartIcon filled={liked} />
                 </button>
                 <p className="text-small text-text-soft">
-                  {likeCount === 0
-                    ? 'Sé el primero en recomendarlo'
-                    : `${likeCount} ${likeCount === 1 ? 'viajero lo recomienda' : 'viajeros lo recomiendan'}`}
+                  {textoRecomendacion(likeShown, likeCount)}
                 </p>
               </div>
 

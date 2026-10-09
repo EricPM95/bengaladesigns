@@ -5,7 +5,8 @@ import { ReadinessKindIcon } from './ReadinessIcons'
 export interface ReservasBookAction {
   /** "Reservar" para la mayoría de ítems, "Obtener con 5% dto." para eSIM/Seguro de viaje. */
   label: string
-  href: string
+  /** null = no lleva a ninguna web: es un botón que abre algo de la app (el mapa de alojamientos, Tanda 6z). */
+  href: string | null
   /** Marca el ítem como resuelto — se dispara al pulsar el enlace, no hay forma de confirmar que la compra externa se completó de verdad (mismo principio que el resto de afiliación mock de la app). */
   onGet: () => void
 }
@@ -122,7 +123,16 @@ export function ReservaCard({
               <button type="button" onClick={onAdd} className="text-text/55" style={{ font: "500 11px 'Geist'" }}>
                 Añadir
               </button>
-              {bookAction && bookAction.href ? (
+              {bookAction && bookAction.href === null ? (
+                <button
+                  type="button"
+                  onClick={bookAction.onGet}
+                  className="flex items-center whitespace-nowrap"
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}
+                >
+                  {bookAction.label}
+                </button>
+              ) : bookAction && bookAction.href ? (
                 <a
                   href={bookAction.href}
                   target="_blank"

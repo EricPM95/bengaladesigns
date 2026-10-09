@@ -18,6 +18,7 @@ import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
 import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
+import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
@@ -73,6 +74,8 @@ interface StopDetailSheetProps {
   /** "Quiero entrar" (decisión del usuario, 2026-09-28): arriba del todo en Resumen, debajo del motivo, solo si la
       parada va por fuera por tiempo (`outsideKind: 'no_cabe'`). */
   onWantInside?: () => void
+  /** «Viajeros lo recomiendan» (Tanda 6z): el corazón y el texto junto al nombre. El texto solo lleva un número si es real o del modo de prueba (ver recomendaciones.ts). */
+  recomendacion?: { liked: boolean; texto: string; onToggle: () => void }
 }
 
 function GlobeIcon() {
@@ -143,7 +146,7 @@ function BusIcon() {
  * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache);
  * "Entradas" son las de los datos del destino (_entradas.json), ver StopEntradasTab.
  */
-export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
+export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside, recomendacion }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>(initialTab ?? 'resumen')
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
@@ -462,6 +465,21 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       )
                     })}
                   </div>
+                  {recomendacion && (
+                    <button
+                      type="button"
+                      onClick={recomendacion.onToggle}
+                      aria-pressed={recomendacion.liked}
+                      aria-label={recomendacion.liked ? `Quitar me gusta de ${stop.name}` : `Me gusta ${stop.name}`}
+                      className="flex items-center gap-1.5 text-caption transition-colors"
+                      style={{ color: recomendacion.liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.6)' }}
+                    >
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill={recomendacion.liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
+                        <path d={EXPLORE_ICONS.heart} />
+                      </svg>
+                      {recomendacion.texto}
+                    </button>
+                  )}
                   {stop.scheduleText && (
                     <div className="space-y-0.5">
                       <p className="flex items-center gap-1 text-caption text-text-soft">

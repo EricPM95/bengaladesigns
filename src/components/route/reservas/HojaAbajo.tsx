@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
  * La hoja que sube desde abajo de RESERVAS (Tanda 6s): con su tirador y su cruz, igual que la hoja de la hora de las entradas. En el ordenador, centrada.
  * `titleId` es el id del título que lleva (para los lectores de pantalla); `onClose` también al pulsar fuera o Escape.
  */
-export function HojaAbajo({ titleId, onClose, children, ancha = false }: { titleId: string; onClose: () => void; children: ReactNode; ancha?: boolean }) {
+export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90 }: { titleId: string; onClose: () => void; children: ReactNode; ancha?: boolean; capa?: number }) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
@@ -14,7 +14,7 @@ export function HojaAbajo({ titleId, onClose, children, ancha = false }: { title
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    <div className="fixed inset-0 flex items-end justify-center md:items-center" style={{ zIndex: capa }} role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
       <div className={`trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:rounded-[28px] ${ancha ? 'md:w-[560px]' : 'md:w-[440px]'}`}>
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">

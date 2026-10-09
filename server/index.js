@@ -4265,7 +4265,34 @@ app.post('/api/destination-places', (req, res) => {
     requires_ticket: false,
     osm_id: fountain.id,
   }))
-  res.json({ found: true, places: [...places, ...restaurants, ...toilets, ...fountains], excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })
+  // El Free Tour del destino (`default_free_tour`) no es un lugar de `places`: viaja aparte para el filtro «Entradas» de EXPLORAR
+  // (Tanda 6z), que lo pone el primero. Con los datos que ya tiene el destino; sin Free Tour, null.
+  const ft = data.default_free_tour
+  const freeTourEntry =
+    ft?.name && Array.isArray(ft.coordinates) && ft.coordinates.length === 2
+      ? {
+          kind: 'place',
+          solo_entradas: true,
+          name: ft.name,
+          // La foto del Free Tour es la de su punto de encuentro o de donde acaba, como en la ruta (`photo_from`).
+          photo_name: ft.photo_from ?? null,
+          coordinates: { lat: ft.coordinates[0], lng: ft.coordinates[1] },
+          filter_category: null,
+          zone: ft.zone ?? null,
+          zone_label: data.zones?.[ft.zone]?.name ?? null,
+          duration_min: Number.isFinite(ft.duration_minutes) ? ft.duration_minutes : null,
+          type: null,
+          tags: [],
+          level: null,
+          schedule: null,
+          search_aliases: ['free tour', 'tour gratis', 'tour gratuito', 'visita guiada'],
+          requires_ticket: true,
+          hours_card: [ft.meeting_point ? `Punto de encuentro: ${ft.meeting_point}.` : null, Array.isArray(ft.disponibilidad?.horas) && ft.disponibilidad.horas.length ? `Sale a las ${ft.disponibilidad.horas.join(' y a las ')}.` : null, Array.isArray(ft.covers) && ft.covers.length ? `Recorre: ${ft.covers.join(', ')}.` : null].filter(Boolean).join(' ') || null,
+          reservation: 'recomendada',
+          ticket_info: ft.tip ? [ft.tip] : null,
+        }
+      : null
+  res.json({ found: true, places: [...places, ...restaurants, ...toilets, ...fountains], free_tour_entry: freeTourEntry, excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })
 })
 
 /** Los baños públicos de un destino (data/pipeline_v2/banos/<destino>.json), leídos una vez. Sin fichero, ninguno. */

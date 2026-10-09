@@ -3,6 +3,9 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Excursion, Route, Stop } from '../../../lib/types'
 import { isOsmPoint, type DestinationPlace } from '../../../lib/destinationPlacesApi'
+import { useDestinationPool } from '../../../lib/useDestinationPool'
+import { conMiles, numeroDeRecomendaciones, textoRecomendacion } from '../../../lib/recomendaciones'
+import { routeHasFreeTour } from '../reservas/FreeTourSheet'
 import {
   PLACE_FILTER_CHIPS,
   RESTAURANT_SUB_CATEGORIES,
@@ -49,6 +52,8 @@ interface PlaceExplorerScreenProps {
   dayLines?: StopsMapMarkerLine[]
   /** Tanda 6f, 5: «Free Tour» desde aquí (pregunta la hora y rehace los días). Sin esto, no sale el botón. */
   onFreeTour?: () => void
+  /** El «+» de la tarjeta del Free Tour (filtro «Entradas»): abre la hoja de la hora. Sin esto, se usa `onFreeTour`; sin ninguno, la tarjeta no lleva «+» (Tanda 6z). */
+  onAddFreeTour?: () => void
   /** Solo para el texto del CTA "Añadir a Día N" y la ficha; null desde EXPLORAR. */
   dayNumber?: number | null
   dateIso?: string | null
@@ -65,11 +70,13 @@ interface PlaceExplorerScreenProps {
   focusCoordinates?: Coordinates | null
   /** Presente = modo "añadir": la ficha del lugar muestra el CTA "Añadir a mi ruta". Ausente = solo explorar. */
   onPick?: (stop: Stop) => void
+  /** «Añadir parada» de un día: el «+» redondo de cada tarjeta lo añade directo a ese día, sin preguntar, y la pantalla sigue abierta (Tanda 6z). Sin esto, el «+» usa `onQuickAdd`. */
+  onQuickPick?: (stop: Stop) => void
   /** Modo añadir del viaje ("+ Añadir día", Explorar): cada sitio lleva su "+ Añadir", que abre la ventana del día. */
   onQuickAdd?: (place: DestinationPlace) => void
   onQuickAddExcursion?: (excursion: Excursion) => void
-  /** Con él, el chip "Hoteles": los hoteles no van dentro de los días, llevan a Booking. */
-  hotelsUrl?: string | null
+  /** Con él, el botón "Hoteles" de la fila de filtros: no filtra, abre la pantalla del mapa de alojamientos (Tanda 6z). */
+  onHotels?: () => void
   /** "Cambiar" restaurante de una comida o cena: los de esta zona van primero, con "Recomendado". */
   recommendedZone?: string | null
   /** Texto del botón de cada sitio ("+ Añadir" por defecto; "Elegir" al cambiar un restaurante). */
@@ -180,11 +187,11 @@ function PlacePhotoPanel({ place, city, color, icon }: { place: DestinationPlace
   useEffect(() => {
     if (!inView) return
     let cancelled = false
-    fetchPlacePhoto(place.name, city, place.wikipedia_title).then((url) => !cancelled && setPhoto(url))
+    fetchPlacePhoto(place.photo_name ?? place.name, city, place.wikipedia_title).then((url) => !cancelled && setPhoto(url))
     return () => {
       cancelled = true
     }
-  }, [inView, place.name, place.wikipedia_title, city])
+  }, [inView, place.name, place.photo_name, place.wikipedia_title, city])
   return (
     <span ref={ref} className="relative block shrink-0" style={{ width: 100, margin: '-1px 0 -1px -1px' }}>
       <span
@@ -211,16 +218,6 @@ function LocationIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-text-muted">
       <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
       <circle cx="12" cy="10" r="2.5" />
-    </svg>
-  )
-}
-
-/** Trazo fino y gris, sin relleno — regla de iconos funcionales del proyecto. */
-function TicketIcon({ className = 'h-3 w-3' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M3 9.5V7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 0 0 5V17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2.5a2.5 2.5 0 0 0 0-5Z" />
-      <path d="M14 6v2M14 11v2M14 16v2" />
     </svg>
   )
 }
@@ -317,6 +314,7 @@ export function PlaceExplorerScreen({
   dayMarkers = [],
   dayLines = [],
   onFreeTour,
+  onAddFreeTour,
   dayNumber = null,
   dateIso = null,
   route = null,
@@ -325,9 +323,10 @@ export function PlaceExplorerScreen({
   initialQuery,
   focusCoordinates = null,
   onPick,
+  onQuickPick,
   onQuickAdd,
   onQuickAddExcursion,
-  hotelsUrl = null,
+  onHotels,
   recommendedZone = null,
   quickAddLabel = '+ Añadir',
   toiletsEnabled = false,
@@ -338,13 +337,17 @@ export function PlaceExplorerScreen({
   const pickable = (place: DestinationPlace) => Boolean(pickMode) && place.kind === 'place'
   const pickedNames = useMemo(() => new Set(pickMode?.selected ?? []), [pickMode?.selected])
   // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
-  const places = useMemo(() => (toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')), [allPlaces, toiletsEnabled])
+  // El Free Tour del destino, que solo sale bajo «Entradas» (Tanda 6z): se pide aquí (el cliente lo cachea por destino).
+  const { freeTourEntry } = useDestinationPool(destination, open)
+  const places = useMemo(() => {
+    const base = toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')
+    return freeTourEntry ? [...base, freeTourEntry] : base
+  }, [allPlaces, toiletsEnabled, freeTourEntry])
   const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
   /** De la zona de la comida o la cena que se está cambiando. */
   const isRecommended = (place: DestinationPlace) => Boolean(recommendedZone) && place.kind === 'restaurant' && mainZone(place.zone_label) === mainZone(recommendedZone)
   /** Cierra el día que se mira (solo con fechas): en gris y con "Hoy cierra". */
   const closedToday = (place: DestinationPlace) => Boolean(dateIso && placeHoursOnDate(place.hours_data, dateIso)?.closed)
-  const [hotelsActive, setHotelsActive] = useState(false)
   const [activeFilters, setActiveFilters] = useState<PlaceFilterId[]>(initialFilters)
   /** La excursión abierta en su tarjeta. No usa `selected` (que es un lugar del catálogo) porque no
       comparte nada con él: no tiene ficha ampliada, ni likes, ni "Añadir a mi ruta". */
@@ -444,7 +447,7 @@ export function PlaceExplorerScreen({
     if (!selected || selected.kind === 'restaurant') return
     let cancelled = false
     setSelectedPhoto(null)
-    fetchPlacePhoto(selected.name, destination).then((url) => {
+    fetchPlacePhoto(selected.photo_name ?? selected.name, destination).then((url) => {
       if (!cancelled && url) setSelectedPhoto(url)
     })
     return () => {
@@ -536,7 +539,9 @@ export function PlaceExplorerScreen({
         matchesSubCategory(place) &&
         (activeCategories.length === 0 || (place.filter_category !== null && activeCategories.includes(place.filter_category))) &&
         // "Entradas" acota, no sustituye: se cruza con lo que ya hubiera activo (ver ticketsActive).
-        (!ticketsActive || place.requires_ticket),
+        (!ticketsActive || place.requires_ticket) &&
+        // El Free Tour no es un lugar del catálogo: solo sale con «Entradas» encendido (o al buscarlo por su nombre).
+        (!place.solo_entradas || ticketsActive),
     )
 
     if (tab === 'nearby') {
@@ -547,6 +552,8 @@ export function PlaceExplorerScreen({
     // Recomendados: los más votados primero. Sin likes todavía (o con empate) manda el nivel curado
     // del destino, que es exactamente "lo imprescindible primero" — nunca un orden arbitrario.
     return [...filtered].sort((a, b) => {
+      // «Entradas»: el Free Tour del destino, siempre el primero.
+      if (a.solo_entradas !== b.solo_entradas) return a.solo_entradas ? -1 : 1
       const zoneDiff = Number(isRecommended(b)) - Number(isRecommended(a))
       if (zoneDiff !== 0) return zoneDiff
       const likeDiff = (likes.counts.get(b.name) ?? 0) - (likes.counts.get(a.name) ?? 0)
@@ -717,6 +724,13 @@ export function PlaceExplorerScreen({
     if (confirmed === null) applyLocally(!next)
   }
 
+  /** El «+» de «Añadir parada»: lo añade directo a ese día, sin preguntar (Tanda 6z). */
+  const addDirect = async (place: DestinationPlace) => {
+    if (!onQuickPick) return
+    const photo = await Promise.race([fetchPlacePhoto(place.photo_name ?? place.name, destination), new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500))]).catch(() => null)
+    onQuickPick(stopFromPlace(place, photo ?? placeholderPhoto(place.name)))
+  }
+
   const addSelected = () => {
     if (!selected || !onPick) return
     onPick(stopFromPlace(selected, selectedPhoto ?? placeholderPhoto(selected.name)))
@@ -829,24 +843,23 @@ export function PlaceExplorerScreen({
                 </button>
               )
             })}
-            {hotelsUrl && (
+            {onHotels && (
               <button
                 type="button"
-                onClick={() => setHotelsActive((value) => !value)}
-                aria-pressed={hotelsActive}
+                onClick={onHotels}
                 className="flex shrink-0 items-center gap-2 rounded-full transition-colors"
                 style={{
                   height: 38,
                   padding: '0 14px 0 6px',
-                  border: `1px solid ${hotelsActive ? 'rgb(var(--text))' : 'rgba(28,34,48,.12)'}`,
-                  background: hotelsActive ? 'rgb(var(--text))' : '#FFFDF8',
-                  color: hotelsActive ? '#FFFDF8' : 'rgb(var(--text))',
+                  border: '1px solid rgba(28,34,48,.12)',
+                  background: '#FFFDF8',
+                  color: 'rgb(var(--text))',
                   font: "500 14px 'Geist'",
                 }}
               >
                 <span
                   className="flex h-7 w-7 items-center justify-center rounded-full"
-                  style={{ background: hotelsActive ? 'oklch(0.74 0.16 65)' : '#EFE7D8', color: hotelsActive ? 'rgb(var(--text))' : 'rgba(28,34,48,.7)' }}
+                  style={{ background: '#EFE7D8', color: 'rgba(28,34,48,.7)' }}
                 >
                   {iconBox('hotel')}
                 </span>
@@ -1087,19 +1100,6 @@ export function PlaceExplorerScreen({
 
             {queryTooShort && <p className="py-8 text-center text-small text-text-soft">Escribe al menos {MIN_QUERY_LENGTH} letras para buscar.</p>}
 
-            {hotelsActive && hotelsUrl && (
-              <div className="mb-3 flex items-center gap-3 rounded-[18px] border border-text/[0.08] bg-white p-2.5">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bg-hover text-xl" aria-hidden="true">🛏️</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-small font-semibold text-text">Hoteles en {destination}</span>
-                  <span className="block text-caption text-text-soft">No van dentro de los días: se reservan aparte.</span>
-                </span>
-                <a href={hotelsUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full border border-accent px-2.5 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
-                  Ver hoteles
-                </a>
-              </div>
-            )}
-
             {needle && results.length === 0 && (
               <p className="py-10 text-center font-display text-text/55" style={{ fontSize: 22, lineHeight: 1.2 }}>
                 No hay lugares con ese nombre
@@ -1162,14 +1162,22 @@ export function PlaceExplorerScreen({
                 const style = place.filter_category ? CATEGORY_STYLE[place.filter_category] : null
                 const color = solidOf(style?.color ?? '#6B7280')
                 const toilet = isOsmPoint(place)
-                const likeCount = likes.counts.get(place.name) ?? 0
+                // Solo se enseña un número de recomendaciones si es real (desde 20) o si es el modo de prueba `?prueba=1` (ver recomendaciones.ts).
+                const likeShown = numeroDeRecomendaciones(place, likes.counts.get(place.name) ?? 0)
                 const liked = likes.mine.has(place.name)
-                const alreadyInRoute = !toilet && isNameAlreadyInRoute(place.name, stopEntries)
+                // El Free Tour no es una parada con su nombre: «en ruta» es que la ruta lo lleve (la hora se elige en su hoja).
+                const alreadyInRoute = !toilet && (place.solo_entradas ? Boolean(route && routeHasFreeTour(route)) : isNameAlreadyInRoute(place.name, stopEntries))
                 const distance = position && hasRealCoordinates(place.coordinates) ? haversineMeters(position, place.coordinates) : null
                 const active = toilet ? selectedToilet === poiId(place) : selected?.name === place.name
                 const addLabel = alreadyInRoute && quickAddLabel === '+ Añadir' ? '✓ En ruta' : quickAddLabel
                 const addDone = addLabel === '✓ En ruta'
                 const picked = pickable(place) && pickedNames.has(place.name)
+                // La tarjeta nueva (Tanda 6z) es la de los lugares que se visitan; restaurantes, baños y fuentes siguen como estaban.
+                const visitable = place.kind === 'place'
+                // «Añadir parada» de un día: el lugar ya está en ESE día (el «+» pasa a un ✓ apagado); en otro día el «+» sigue.
+                const dayHere = onQuickPick && dayNumber ? route?.days.find((candidate) => candidate.dayNumber === dayNumber) : undefined
+                const inThisDay = Boolean(dayHere) && !place.solo_entradas && isNameAlreadyInRoute(place.name, stopEntries.filter((entry) => entry.dayId === dayHere?.id))
+                const plusAction = place.solo_entradas ? (onAddFreeTour ?? onFreeTour) : onQuickPick ? () => addDirect(place) : onQuickAdd ? () => onQuickAdd(place) : undefined
                 return (
                   <div
                     key={toilet ? poiId(place) : place.name}
@@ -1197,8 +1205,13 @@ export function PlaceExplorerScreen({
                         <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
                           {place.name}
                         </span>
-                        {(isRecommended(place) || closedToday(place)) && (
+                        {(isRecommended(place) || closedToday(place) || (visitable && alreadyInRoute)) && (
                           <span className="flex items-center gap-1.5">
+                            {visitable && alreadyInRoute && (
+                              <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
+                                ✓ En ruta
+                              </span>
+                            )}
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
                             {closedToday(place) && <span className="text-caption font-semibold text-text-muted">Hoy cierra</span>}
                           </span>
@@ -1241,31 +1254,10 @@ export function PlaceExplorerScreen({
                                 </>
                               )}
                             </>
-                          ) : (
-                            <>
-                              {place.zone_label && <span className="truncate">{place.zone_label}</span>}
-                              {place.duration_min !== null && (
-                                <>
-                                  {place.zone_label && <span>·</span>}
-                                  <span className="shrink-0">{formatDuration(place.duration_min)}</span>
-                                </>
-                              )}
-                              {/* Si cobra entrada se dice aquí y no solo al filtrar: es lo que el
-                                  viajero necesita saber para ir reservando con tiempo. */}
-                              {place.requires_ticket && (
-                                <>
-                                  <span>·</span>
-                                  <span className="inline-flex shrink-0 items-center gap-[3px]">
-                                    <TicketIcon className="h-3 w-3" />
-                                    Entrada
-                                  </span>
-                                </>
-                              )}
-                            </>
-                          )}
+                          ) : null}
                           {distance !== null && (
                             <>
-                              <span>·</span>
+                              {(place.kind === 'fountain' || toilet || place.kind === 'restaurant') && <span>·</span>}
                               <span className="shrink-0" style={{ font: "500 11px 'Geist Mono',monospace", color: warm }}>
                                 {formatDistance(distance)}
                               </span>
@@ -1275,7 +1267,60 @@ export function PlaceExplorerScreen({
                       </span>
                     </button>
 
-                    {!toilet && (
+                    {visitable && (
+                      <div className="flex shrink-0 flex-col items-end justify-between" style={{ padding: '0 4px 0 0' }}>
+                        {pickable(place) ? (
+                          <button
+                            type="button"
+                            onClick={() => pickMode?.onToggle(place.name)}
+                            aria-pressed={picked}
+                            aria-label={picked ? `Quitar ${place.name} de tu día` : `Marcar ${place.name} para tu día`}
+                            className="flex h-11 w-11 items-center justify-center"
+                          >
+                            <span
+                              className="flex h-7 w-7 items-center justify-center rounded-full transition-colors"
+                              style={{ border: `1.5px solid ${picked ? warm : 'rgba(28,34,48,.35)'}`, background: picked ? warm : 'transparent', color: '#FFFDF8' }}
+                            >
+                              {picked && (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                                </svg>
+                              )}
+                            </span>
+                          </button>
+                        ) : inThisDay ? (
+                          <span className="flex h-11 w-11 items-center justify-center" aria-label={`${place.name} ya está en este día`} title="Ya está en este día">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: '1.5px solid rgba(28,34,48,.18)', color: 'rgba(28,34,48,.3)' }}>
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M5 12.5l4.5 4.5L19 7.5" />
+                              </svg>
+                            </span>
+                          </span>
+                        ) : plusAction && !pickMode ? (
+                          <button type="button" onClick={plusAction} aria-label={`Añadir ${place.name}`} className="flex h-11 w-11 items-center justify-center">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'oklch(0.52 0.15 45)' }}>
+                              +
+                            </span>
+                          </button>
+                        ) : (
+                          <span className="h-11 w-11" />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => onToggleLike(place)}
+                          aria-pressed={liked}
+                          aria-label={liked ? `Quitar me gusta de ${place.name}` : `Me gusta ${place.name}`}
+                          className="flex h-11 min-w-11 items-center justify-end gap-[3px] pl-1 pr-2.5 transition-colors"
+                          style={{ color: liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.55)', font: "500 12px 'Geist'" }}
+                        >
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+                            <path d={EXPLORE_ICONS.heart} />
+                          </svg>
+                          {likeShown !== null && <span className="tabular-nums">{conMiles(likeShown)}</span>}
+                        </button>
+                      </div>
+                    )}
+                    {!toilet && !visitable && (
                       <div className="flex shrink-0 flex-col items-end justify-between" style={{ padding: '6px 10px 9px 4px' }}>
                         <button
                           type="button"
@@ -1288,7 +1333,7 @@ export function PlaceExplorerScreen({
                           <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
                             <path d={EXPLORE_ICONS.heart} />
                           </svg>
-                          {likeCount > 0 && <span className="tabular-nums">{likeCount}</span>}
+                          {likeShown !== null && <span className="tabular-nums">{conMiles(likeShown)}</span>}
                         </button>
                         {pickable(place) ? (
                           <button
@@ -1310,10 +1355,10 @@ export function PlaceExplorerScreen({
                               )}
                             </span>
                           </button>
-                        ) : onQuickAdd && !pickMode ? (
+                        ) : (place.solo_entradas ? onFreeTour : onQuickAdd) && !pickMode ? (
                           <button
                             type="button"
-                            onClick={() => onQuickAdd(place)}
+                            onClick={() => (place.solo_entradas ? onFreeTour?.() : onQuickAdd?.(place))}
                             aria-label={`Añadir ${place.name}`}
                             className="whitespace-nowrap transition-colors"
                             style={{
@@ -1357,6 +1402,7 @@ export function PlaceExplorerScreen({
         <RestaurantDetailSheet
           restaurant={selected?.kind === 'restaurant' ? selected : null}
           likeCount={selected ? (likes.counts.get(selected.name) ?? 0) : 0}
+          likeShown={selected ? numeroDeRecomendaciones(selected, likes.counts.get(selected.name) ?? 0) : null}
           liked={selected ? likes.mine.has(selected.name) : false}
           onToggleLike={() => selected && onToggleLike(selected)}
           onClose={() => setSelected(null)}
@@ -1381,6 +1427,11 @@ export function PlaceExplorerScreen({
             city={destination}
             dayNumber={dayNumber}
             dateIso={dateIso}
+            recomendacion={
+              selected.solo_entradas
+                ? undefined
+                : { liked: likes.mine.has(selected.name), texto: textoRecomendacion(numeroDeRecomendaciones(selected, likes.counts.get(selected.name) ?? 0), likes.counts.get(selected.name) ?? 0), onToggle: () => onToggleLike(selected) }
+            }
             // El lugar que se está mirando todavía no es una parada del día, así que se añade al
             // final de la lista del mapa de la ficha: así sale resaltado en su sitio real y, cuando
             // se abre desde el "+", se ve dónde cae respecto a las paradas que ya hay. Desde
@@ -1390,7 +1441,7 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
+            footerAction={selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
         )}

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { dayCountryCode } from '../lib/flagColors'
-import type { MockHotelResult } from '../lib/mockAffiliateData'
+import { precioDeAlojamiento, type TuAlojamiento } from '../lib/tuAlojamiento'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
@@ -292,7 +292,7 @@ interface RouteStoreState {
   intensity: number
   panelSplit: number
   /** Alojamiento mock elegido por estancia (pestaña DIAS/RESERVAS) — clave: id del primer día de la estancia (ver buildDestinationSegments). */
-  accommodationSelections: Record<string, MockHotelResult>
+  accommodationSelections: Record<string, TuAlojamiento>
   /** RESERVAS — clave: id del día de traslado (ver computeDayTravelInfo), vale tanto para tramos de llegada como el de vuelta. */
   transportBookings: Record<string, TransportBooking>
   insuranceBooking: GeneralBooking | null
@@ -524,7 +524,7 @@ interface RouteStoreState {
   setDevSimulatedTodayIso: (iso: string | null) => void
 
   /** Alojamiento mock de una estancia (DIAS/RESERVAS) — hotel null para borrar la selección. Clave: id del primer día de esa estancia. */
-  setAccommodationHotel: (segmentDayId: string, hotel: MockHotelResult | null) => void
+  setAccommodationHotel: (segmentDayId: string, hotel: TuAlojamiento | null) => void
 
   /** RESERVAS — ficha de reserva de un tramo de transporte (llegada o vuelta), null para borrarla. Clave: id del día de traslado. */
   setTransportBooking: (dayId: string, booking: TransportBooking | null) => void
@@ -1556,14 +1556,14 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (!state.route) return { accommodationSelections: next }
       const segment = buildDestinationSegments(state.route.days).find((candidate) => candidate.dayIds[0] === segmentDayId)
       const budgetId = `budget-accommodation-${segmentDayId}`
+      // El precio es el total de la estancia que ha dicho el viajero (si no ha dicho ninguno, el alojamiento no entra en el presupuesto).
+      const price = precioDeAlojamiento(hotel)
       const budget = linkBudgetItem(
         state.route.budget,
         budgetId,
-        hotel && segment
-          ? { icon: '🏨', label: `${hotel.name} (${segment.city})`, amount: hotel.pricePerNight * segment.nights, category: 'route', sourceType: 'hotel', refId: segmentDayId }
-          : null,
+        hotel && segment && price !== null ? { icon: '🏨', label: `${hotel.name} (${segment.city})`, amount: price, category: 'route', sourceType: 'hotel', refId: segmentDayId } : null,
       )
-      if (hotel && segment) triggerBudgetFly(hotel.pricePerNight * segment.nights)
+      if (hotel && segment && price !== null) triggerBudgetFly(price)
       return { accommodationSelections: next, route: { ...state.route, budget } }
     }),
 

@@ -134,8 +134,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
   const segments = buildDestinationSegments(route.days)
   const stayByFirstDayId = new Map(segments.map((segment) => [segment.dayIds[0], segment]))
-  /** Segmento (con su alojamiento) al que pertenece CADA día del tramo, no solo su primer día — para saber qué alojamiento cubre la noche de un día cualquiera (ver DayDetailPanel.tsx, punto 4). */
-  const segmentByDayId = new Map(segments.flatMap((segment) => segment.dayIds.map((dayId) => [dayId, segment])))
   const nonReturnIndex = new Map(route.days.filter((candidate) => !candidate.isReturnLeg).map((candidate, position) => [candidate.id, position]))
   const allDays = route.days.filter((candidate) => !candidate.isReturnLeg).map((candidate) => ({ id: candidate.id, dayNumber: candidate.dayNumber, city: candidate.city }))
 
@@ -335,9 +333,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                     ? { segmentDayId: day.id, totalNights: stayByFirstDayId.get(day.id)!.nights }
                     : null
                 }
-                nightSegmentDayId={!isCamper ? (segmentByDayId.get(day.id)?.dayIds[0] ?? null) : null}
-                previousNightSegmentDayId={!isCamper ? (segmentByDayId.get(route.days[index - 1]?.id ?? '')?.dayIds[0] ?? null) : null}
-                isRoadtripHop={segmentByDayId.get(day.id)?.nights === 1}
                 allDays={allDays}
                 isFirstDayOfTrip={index === 0}
                 showCamperBlock={isCamper && hasRentalVehicle}

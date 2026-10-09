@@ -21,23 +21,7 @@ export const BOOKING_BLUE = '#003580'
 /** Rojo de marca de Civitatis — deliberadamente distinto del azul de Booking, para que quede claro que llevan a sitios distintos. */
 export const CIVITATIS_RED = '#E2231A'
 
-/**
- * Buscador de hoteles de Booking para una ciudad.
- *
- * Se descartó el widget embebido de Stay22 (un iframe con el mapa de hoteles dentro de la app):
- * sin ID de afiliado el widget no carga nada útil, y un iframe de mapa dentro de una pantalla que
- * ya tiene su propio mapa de Mapbox es justo el patrón que ya dio problemas de compositing en esta
- * app (ver la nota de los canvas múltiples en index.css). Un enlace externo funciona hoy, no puede
- * romper la pantalla, y el día que haya ID de Stay22 se cambia solo esta función.
- */
-export function buildHotelSearchUrl(city: string, checkIn?: string | null, checkOut?: string | null): string {
-  const params = new URLSearchParams({ ss: city })
-  // Booking acepta las fechas como checkin/checkout en ISO (YYYY-MM-DD) — si el viaje ya las tiene,
-  // el viajero llega a la búsqueda con sus noches puestas en vez de a una búsqueda genérica.
-  if (checkIn) params.set('checkin', checkIn)
-  if (checkOut) params.set('checkout', checkOut)
-  return `https://www.booking.com/searchresults.html?${params.toString()}`
-}
+// (Tanda 6z: ya no hay enlace de hoteles a otra web; todos los botones de hoteles abren el mapa de alojamientos de la app.)
 
 /** Buscador de Civitatis. `query` es la búsqueda curada del destino ("pompeya desde roma"). */
 export function buildActivitySearchUrl(query: string): string {

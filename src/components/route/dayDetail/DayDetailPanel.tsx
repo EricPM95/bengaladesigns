@@ -17,7 +17,6 @@ import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpTo
 import { parseOpeningMinutes } from '../../../lib/stopHoursTag'
 import { buildCuratedStopDescription } from '../../../lib/describeStopApi'
 import {
-  buildAccommodationConnectorInfo,
   buildArrivalDepartureDetail,
   buildConnectorInfo,
   refineConnectorWithRealDistance,
@@ -72,7 +71,7 @@ import { StopDetailSheet, type DayStopRef } from './StopDetailSheet'
 import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
-import { useAddFlowStore } from '../../../store/useAddFlowStore'
+import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 
@@ -86,12 +85,6 @@ interface DayDetailPanelProps {
   origin: string
   /** Presente solo cuando `day` es el primer día de una estancia (ver DayList.tsx) — dispara el bloque de alojamiento. */
   stay: { segmentDayId: string; totalNights: number } | null
-  /** Clave de `accommodationSelections` (id del primer día del tramo) para el alojamiento de ESTA noche — null si es camper o si el día no tiene noche (día sintético de vuelta). */
-  nightSegmentDayId: string | null
-  /** Igual que `nightSegmentDayId` pero para la noche ANTERIOR (el tramo del día de ayer) — null en el día 1 o si es camper. */
-  previousNightSegmentDayId: string | null
-  /** true cuando el tramo de esta noche es de 1 sola noche (roadtrip: cada día es su propia parada) — la noche anterior y la de hoy son alojamientos distintos que hay que tratar por separado (ver mockDayDetail.ts). */
-  isRoadtripHop: boolean
   /** Todos los días del viaje (menos el sintético de vuelta) — para el "Mover a otro día" del menú "..." de cada parada. */
   allDays: { id: string; dayNumber: number; city: string }[]
   /** true solo para `route.days[0]` — el bloque de vehículo es una reserva única para todo el viaje, nunca se repite por estancia/día (ver VehicleBlock.tsx). */
@@ -271,9 +264,6 @@ export function DayDetailPanel({
   isLastDay,
   origin,
   stay,
-  nightSegmentDayId,
-  previousNightSegmentDayId,
-  isRoadtripHop,
   allDays,
   isFirstDayOfTrip,
   showCamperBlock,
@@ -282,11 +272,6 @@ export function DayDetailPanel({
   onOverlayChange,
   showAllDaysOnMap = false,
 }: DayDetailPanelProps) {
-  const accommodationResolved = useRouteStore((state) => (stay ? Boolean(state.accommodationSelections[stay.segmentDayId]) : false))
-  const tonightHotel = useRouteStore((state) => (nightSegmentDayId ? state.accommodationSelections[nightSegmentDayId] : undefined))
-  const previousNightHotel = useRouteStore((state) =>
-    previousNightSegmentDayId ? state.accommodationSelections[previousNightSegmentDayId] : undefined,
-  )
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
   const addSpareStop = useRouteStore((state) => state.addSpareStop)
@@ -556,7 +541,6 @@ export function DayDetailPanel({
   }
   // El número de cada tarjeta es el de su pin en el mapa: misma lista y mismo orden de hora (stopNumbersOf).
   const stopNumbers = stopNumbersOf(day)
-  const useAccommodationOrigin = Boolean(previousNightHotel) && (!travel || isRoadtripHop)
 
   const tripStartIso = route?.answers.dateRange?.start
   const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
@@ -576,19 +560,11 @@ export function DayDetailPanel({
   // vez y reutilizado tanto para el render como para el resumen "km a pie" de la cabecera.
   const connectorEntries = stops.map((_stop, index) => {
     const connectorKey = pairConnectorKey(day.id, realStops, index)
-    const fromAccommodation = index === 0 && useAccommodationOrigin && previousNightHotel
-    const connector = fromAccommodation
-      ? buildAccommodationConnectorInfo(`${day.id}-from-accommodation-${previousNightHotel.id}`)
-      : (refinedConnectors[connectorKey] ?? buildConnectorInfo(day.id, index))
-    const fromName = fromAccommodation ? previousNightHotel.name : index === 0 ? (arrivalDetail ? arrivalDetail.cityName : day.city) : stops[index - 1].name
-    return { connectorKey, connector, fromName, fromAccommodation: Boolean(fromAccommodation) }
+    const connector = refinedConnectors[connectorKey] ?? buildConnectorInfo(day.id, index)
+    const fromName = index === 0 ? (arrivalDetail ? arrivalDetail.cityName : day.city) : stops[index - 1].name
+    return { connectorKey, connector, fromName }
   })
-  const finalConnector: ConnectorInfo | null =
-    stops.length > 0
-      ? tonightHotel
-        ? buildAccommodationConnectorInfo(`${day.id}-to-accommodation-${tonightHotel.id}`)
-        : { hasRealDisplacement: false, label: 'Fin del día.' }
-      : null
+  const finalConnector: ConnectorInfo | null = stops.length > 0 ? { hasRealDisplacement: false, label: 'Fin del día.' } : null
 
   // Prompt 6: un paseo por barrio es una sugerencia para un hueco, no un lugar que el viaje
   // incluya — no se cuenta ni en "N paradas" ni en el mapa (ver realStops en routeMapMarkers.ts).
@@ -646,7 +622,7 @@ export function DayDetailPanel({
   const addStopAfter = insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null
   const addStopSubtitle = addStopBefore && addStopAfter ? `Entre ${addStopBefore} y ${addStopAfter}` : addStopBefore ? `Después de ${addStopBefore}` : addStopAfter ? `Antes de ${addStopAfter}` : day.city
 
-  const addPickedStop = (picked: Stop) => {
+  const addPickedStop = (picked: Stop, { keepOpen = false } = {}) => {
     if (day.stops.length === 0) seedDayStops(day.id, realStops)
     const newStop = insertAfterDinner && insertAt !== null ? asNightExperience(picked, insertAt) : picked
     // La primera parada de una tarde que arranca tras una excursión de medio día empieza a las
@@ -656,6 +632,12 @@ export function DayDetailPanel({
       day.halfDayExcursion && !day.halfDayExcursionDeclined && day.stops.length === 0
         ? { ...newStop, time: day.halfDayExcursion.routeStartsAt }
         : newStop
+    if (keepOpen) {
+      // El «+» de la tarjeta (Tanda 6z): se añade, sale «Añadido al día N» con Deshacer, y la pantalla sigue abierta (el siguiente cae detrás de este).
+      if (insertAt !== null) withUndo(`Añadido al día ${day.dayNumber}`, () => insertStopAt(day.id, insertAt, conHoraDeTarde))
+      if (insertAt !== null) setInsertAt(insertAt + 1)
+      return
+    }
     if (insertAt !== null) insertStopAt(day.id, insertAt, conHoraDeTarde)
     setInsertAt(null)
     setInsertAfterDinner(false)
@@ -1041,7 +1023,7 @@ export function DayDetailPanel({
   }
   const renderTimelineItem = ({ item, start }: PlacedItem, firstInPeriod: boolean, omitGap = false) => {
     if (item.type === 'end') {
-      return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, tonightHotel?.name ?? '', stops.length, dinnerInsertionIndex !== null)
+      return renderGap(`${day.id}-connector-accommodation`, finalConnector, stops[stops.length - 1].name, '', stops.length, dinnerInsertionIndex !== null)
     }
     if (item.type === 'free') {
       const index = item.index < 0 ? -1 - item.index : item.index
@@ -1103,13 +1085,13 @@ export function DayDetailPanel({
     const index = item.index
     const stop = stops[index]
     const realStop = realStops[index]
-    const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[index]
+    const { connectorKey, connector, fromName } = connectorEntries[index]
     const { startMinutes } = schedule[index]
     // La primera parada del día no lleva el conector de relleno genérico; sí el real desde el
     // alojamiento de anoche. Al abrir franja tampoco (la cabecera ya separa). El paseo por barrio no
     // lleva conector: "6 min · 540 m" hasta un barrio entero no significa nada.
     // Día libre: siempre los minutos andando entre una parada y la siguiente (no hay franjas).
-    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? fromAccommodation : freeDay || !firstInPeriod || stopBefore(index)
+    const showConnector = realStop?.isZoneWalk ? false : index === 0 ? false : freeDay || !firstInPeriod || stopBefore(index)
     const walkDismissed = Boolean(realStop?.isZoneWalk) && dismissedWalks.has(stop.name)
     return (
       // El paseo por barrio no se arrastra: no es una parada del viaje, es una sugerencia para un hueco.
@@ -1178,8 +1160,8 @@ export function DayDetailPanel({
         const despuesDelGrupo = placed[placed.indexOf(items[fin]) + 1]?.item
         const nombreSiguiente =
           despuesDelGrupo?.type === 'lunch' ? `la comida${restaurantOf('lunch')?.name ? `, en ${restaurantOf('lunch')!.name}` : ''}` : despuesDelGrupo?.type === 'dinner' ? `la cena${restaurantOf('dinner')?.name ? `, en ${restaurantOf('dinner')!.name}` : ''}` : despuesDelGrupo?.type === 'stop' ? displayStopName(stops[despuesDelGrupo.index].name) : siguiente ? displayStopName(siguiente.name) : null
-        const { connectorKey, connector, fromName, fromAccommodation } = connectorEntries[primero]
-        const showConnector = primero === 0 ? fromAccommodation : freeDay || i > 0 || afterStop(items[i])
+        const { connectorKey, connector, fromName } = connectorEntries[primero]
+        const showConnector = primero === 0 ? false : freeDay || i > 0 || afterStop(items[i])
         salida.push(
           <SortableStop
             key={`camino-${stops[primero].id}`}
@@ -1356,7 +1338,7 @@ export function DayDetailPanel({
 
           {isFirstDayOfTrip && showCamperBlock && <VehicleBlock kind="camper" />}
 
-          {stay && !accommodationResolved && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} />}
+          {stay && <AccommodationBlock city={day.city} segmentDayId={stay.segmentDayId} totalNights={stay.totalNights} />}
 
           {isFirstDayOfTrip && showRentalCarBlock && <VehicleBlock kind="rental-car" />}
 
@@ -1441,7 +1423,7 @@ export function DayDetailPanel({
             const first = group.items[0]
             const firstIndex = first?.item.type === 'stop' ? first.item.index : null
             const firstHasGapInfo =
-              firstIndex === null || Boolean(realStops[firstIndex]?.isZoneWalk) || Boolean(realStops[firstIndex]?.transitLabel) || (firstIndex === 0 ? connectorEntries[0].fromAccommodation : stopBefore(firstIndex))
+              firstIndex === null || Boolean(realStops[firstIndex]?.isZoneWalk) || Boolean(realStops[firstIndex]?.transitLabel) || (firstIndex === 0 ? false : stopBefore(firstIndex))
             const headerAddIndex = hasHeader && !firstHasGapInfo ? firstIndex : null
             return (
             // (50 px encima de cada tramo y de la comida y la cena: cinco bloques bien separados.)
@@ -1631,6 +1613,7 @@ export function DayDetailPanel({
               initialQuery={addStopInitialQuery}
               focusCoordinates={addStopFocus}
               onPick={addPickedStop}
+              onQuickPick={(stop) => addPickedStop(stop, { keepOpen: true })}
               onClose={closeAddStop}
             />
           )}

@@ -11,6 +11,8 @@ import { PlaceExplorerScreen } from './placeExplorer/PlaceExplorerScreen'
 import { AddToDaySheet, type AddItem } from './freeDay/AddToDaySheet'
 import { confirmAddedStaying } from './freeDay/AddToTripScreen'
 import { useDestinationPool } from '../../lib/useDestinationPool'
+import { useAlojamientoUi } from '../../store/useAlojamientoUi'
+import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { CARD_STYLE, EXPLORE_ICONS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
@@ -30,7 +32,7 @@ interface ExplorePanelProps {
 /**
  * Las tarjetas de EXPLORAR. Todas abren la pantalla de lugares con su filtro ya puesto — el mismo componente
  * y el mismo catálogo que el "+" de DIAS, para que el viajero vea exactamente los mismos sitios busque desde
- * donde busque. Hoteles se quitó (3-oct-2026, a petición del usuario). Baños y Fuentes solo salen si el destino
+ * donde busque. Los hoteles no son una tarjeta (3-oct-2026): el botón «Hoteles» de la fila de filtros abre el mapa de alojamientos (Tanda 6z). Baños y Fuentes solo salen si el destino
  * tiene su descarga de OpenStreetMap.
  */
 const EXPLORE_CARDS: { id: ExploreCardId; label: string }[] = [
@@ -143,6 +145,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [results, setResults] = useState<NearbyPlaceResult[] | null>(null)
   /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
   const [addItem, setAddItem] = useState<AddItem | null>(null)
+  const [freeTourOpen, setFreeTourOpen] = useState(false)
 
   // El catálogo se pide al entrar en la pestaña, no al pulsar una tarjeta: los contadores salen de
   // él y tienen que estar ya en la rejilla. Es una sola petición por destino y sesión (se cachea).
@@ -225,10 +228,13 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         subtitle={EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null}
         route={route}
         initialFilters={[activeCard]}
+        onHotels={() => useAlojamientoUi.getState().abrirMapa()}
+        onAddFreeTour={freeTourAvailable(route) ? () => setFreeTourOpen(true) : undefined}
         onQuickAdd={(place) => setAddItem({ kind: 'place', place })}
         onQuickAddExcursion={(excursion) => setAddItem({ kind: 'excursion', excursion })}
         onClose={backToCards}
       />
+      {freeTourOpen && <FreeTourSheet route={route} onClose={() => setFreeTourOpen(false)} />}
       {addItem && (
         <AddToDaySheet
           route={route}
