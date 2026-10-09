@@ -670,14 +670,14 @@ export function planListasTrip(args) {
       let fueraSet = new Set()
       // (Un taxi escrito hasta la comida —el de Navona al Borgo— viaja con ella.)
       const trasladosDeLaComida = comidaU ? comidaU.items.filter((it) => it !== comidaU.head) : []
-      const montar = (A, extras = []) => {
+      const montar = (A) => {
         const dentro = new Set(A.flatMap((u) => u.items.map((it) => it.id)))
         let despues = unidades.filter((u) => !dentro.has(u.head.id) && !(mediodia && u === comidaU) && !fueraSet.has(u.head.id))
         // Si la hora fija acaba ya pasado el mediodía y la comida no ha cabido antes, la comida va justo después de ella (en la zona), no detrás de lo que quedaba de la mañana.
         const finFija = H + (F.min ?? 0)
         const comidaCercaDeLaFija = Boolean(comidaU) && coordsOf(comidaU.head) && coordsF && walkLeg(coordsOf(comidaU.head), coordsF) <= cfg.comida_junto_min
         if (comidaU && comidaCercaDeLaFija && !mediodia && !dentro.has(comidaU.head.id) && finFija >= toMin(cfg.comida_despues_de_fija_desde)) despues = [...despues.filter((u) => u === comidaU), ...despues.filter((u) => u !== comidaU)]
-        const iniciales = [...plano(A), ...extras]
+        const iniciales = plano(A)
         return { lista: [...iniciales, ...(comidaAntes ? [...trasladosDeLaComida, comidaAntes] : []), ...(L ? [L] : []), F, ...plano(despues)], antesComida: iniciales }
       }
       const nuevasRompe = (lista2) => reglas.nuevas(base, reglas.todas(lista2, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })).length > 0
@@ -819,20 +819,12 @@ export function planListasTrip(args) {
           break
         }
       }
-      // 3. si aún sobra más de 1 h, sitios cercanos del destino que no salen en el viaje y están abiertos
-      const extras = []
-      for (let guard = 0; guard < 4 && sobra([...plano(A), ...extras]) > cfg.hueco_llenar_min; guard++) {
-        const relleno = cercanaA(F, sobra([...plano(A), ...extras]), resto, [...plano(A), ...extras])
-        if (!relleno) break
-        if (nuevasRompe(montar(A, [...extras, relleno]).lista)) break
-        extras.push(relleno)
-        log.push({ id: relleno.id, lugar: relleno.lugar, sitio: relleno.lugar, que: 'nueva', causa: `antes de ${F.titulo ?? F.lugar} (a las ${F.hora}) quedaba más de 1 h libre: entra una parada cercana abierta` })
-      }
-      const { lista: nuevo } = montar(A, extras)
+      // (Tanda 6r: la app nunca mete paradas por su cuenta para llenar un hueco: si aún sobra tiempo antes de la hora fija, se espera —regla 7— o sale «Si te sobra tiempo» —regla 5—.)
+      const { lista: nuevo } = montar(A)
       if (nuevasRompe(nuevo)) return null
       // El día empieza a su hora; solo empieza antes si la hora fija es antes de que pueda llegarse a ella.
-      const llegaF = llegadaA([...plano(A), ...extras], objetivoC)
-      if (A.length === 0 && extras.length === 0 && llegaF > objetivoT) {
+      const llegaF = llegadaA(plano(A), objetivoC)
+      if (A.length === 0 && llegaF > objetivoT) {
         const antes = objetivoT - llegaF
         startPoint.t += antes
         log.push({ id: F.id, lugar: F.titulo ?? F.lugar, sitio: F.lugar, que: 'hora', causa: `${F.titulo ?? F.lugar} es a las ${F.hora}: el día empieza ${-antes} min antes` })
@@ -842,21 +834,6 @@ export function planListasTrip(args) {
     const esFijoSinColocar = (it) => it.kind === 'stop' && it.hora && !it.llegada && !it.fijo_colocado
     // (Una hora fija que aún no se ha colocado, o su «Llegada a…»: nada se adelanta más allá de ella.)
     const esBarrera = (it, lista) => esFijoSinColocar(it) || Boolean(it.llegada && lista.some((x) => x.id === it.de && esFijoSinColocar(x)))
-    /** Una parada corta pegada al sitio (a poca distancia, exterior, que el viaje no lleve ya y que esté abierta), con su sitio en roma.json. */
-    const cercanaA = (F, hueco, resto, prefijo) => {
-      const c = coordsOf(F)
-      if (!c) return null
-      const yaSale = new Set([...estado.vistos, ...lugaresDelViaje, ...items.filter((it) => it.lugar).map((it) => it.lugar), ...resto.map((it) => it.lugar).filter(Boolean), ...prefijo.map((it) => it.lugar).filter(Boolean)])
-      const prev = [...prefijo].reverse().find((it) => it.kind !== 'traslado')
-      const prevC = prev ? endCoordsOf(prev) : null
-      const candidatos = (destData.places ?? [])
-        .filter((place) => !yaSale.has(place.name) && esConocido(place) && (place.type === 'exterior' || place.minutos_fuera != null) && Array.isArray(place.coordinates) && !closedThatDay(place.name, skeletonDay) && !place.available && !place.capa_de && !(place.tags ?? []).includes('mercadillo_navideno'))
-        .map((place) => ({ place, d: meters(c, place.coordinates), min: Math.min(place.minutos_fuera ?? place.duration_minutes ?? 15, 30) }))
-        .filter(({ d, min, place }) => d <= cfg.cerca_m && min >= 10 && (prevC ? walkLeg(prevC, place.coordinates) : 0) + min + walkLeg(place.coordinates, c) <= hueco + 5)
-        .sort((a, b) => (a.place.level ?? 3) - (b.place.level ?? 3) || a.d - b.d)
-      const mejor = candidatos[0]
-      return mejor ? { kind: 'stop', tipo: 'parada', lugar: mejor.place.name, modo: 'fuera', min: mejor.min, franja: F.franja, id: idDe({ tipo: 'parada', lugar: mejor.place.name }), relleno: 'ancla', relleno_no_quitar: true } : null
-    }
 
     // 5.8 Que quepa: por franja; la comida, como muy tarde a las 14:30.
     const esFijo = (item) => Boolean(item.hora || item.hora_tipo || item.tipo === 'tour' || item.llegada || item.fijo_colocado)
