@@ -5,7 +5,7 @@
 //   1. con ?version=gratis sale algo de pago (Llegada y vuelta, el resumen, la zona del alojamiento, los avisos de vuelo) en RESERVAS;
 //   2. sale «null», «undefined» o «NaN» en RESERVAS, en cualquier estado (vacío, a medias, todo hecho) y con o sin fechas;
 //   3. el orden de los bloques no es: resumen · Llegada y vuelta · Alojamiento · Entradas y Free Tour · Excursiones · Útil;
-//   4. las entradas no salen en el orden de los datos del destino, o salen más (o menos) de las que están en la ruta, en viajes de 1 a 6 días;
+//   4. las entradas: «En tu ruta» no son justo las de las paradas por dentro (y el Free Tour si va), en el orden de los datos del destino; «Ver n más» no son justo las demás; el «x de n» (y «Entradas x/n» del resumen) no cuenta solo las de «En tu ruta»; en viajes de 1 a 6 días;
 //   5. el bloque de excursiones sale (o no) según los días del viaje (`excursiones_desde_dias`) y el interruptor;
 //   6. quitar una reserva mueve algún día;
 //   7. sale el nombre de un proveedor en un texto del viajero, o «centro» suelto.
@@ -51,7 +51,7 @@ async function viaje(dias, { fechas, ida = 'flight', vuelta = null, freeTour = t
     })
     dayPlans.push({
       id: `d${n}`, dayNumber: n, city: 'Roma', title: d.title ?? `Día ${n}`, dayType: 'normal', colorIndex: n - 1, meals: [], excursions: [],
-      stops: (d.stops ?? []).map((s, i) => ({ id: `d${n}s${i}`, time: s.suggested_time ?? '10:00', name: s.name, description: '', durationMinutes: s.duration_minutes ?? 60, coordinates: { lat: s.latitude ?? 0, lng: s.longitude ?? 0 }, photoUrl: '', isFreeTour: s.name === FT || Boolean(s.is_free_tour), passThrough: Boolean(s.pass_through) })),
+      stops: (d.stops ?? []).map((s, i) => ({ id: `d${n}s${i}`, time: s.suggested_time ?? '10:00', name: s.name, description: '', durationMinutes: s.duration_minutes ?? 60, coordinates: { lat: s.latitude ?? 0, lng: s.longitude ?? 0 }, photoUrl: '', isFreeTour: s.name === FT || Boolean(s.is_free_tour), passThrough: Boolean(s.pass_through), ...(s.visit_mode ? { visitMode: s.visit_mode } : {}) })),
     })
   }
   // El día 4 con excursión elegida (el interruptor puesto en «Excursión»), si el viaje lo pide.
@@ -148,28 +148,34 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
           debe(r.bloques.includes('llegada'), '1 pago ausente', `${etiqueta}: en la versión de pago no sale «Llegada y vuelta»`)
           debe(r.bloques.includes('resumen') || /Tu viaje a Roma/.test(r.texto), '1 pago ausente', `${etiqueta}: en la versión de pago no sale el resumen`)
         }
-        // 4. las entradas: el número y el orden
+        // 4. las entradas (Tanda 6v): «En tu ruta» (las de las paradas que se visitan por dentro y el Free Tour si va; son las que cuentan) y «Ver n más» (las demás de la lista, que no cuentan)
         const bloque = buildEntradasBloque(route, orden, info.entradas, reservas)
-        const total = bloque.arriba.length + bloque.mas.length
+        const lista = [...orden.arriba, ...orden.mas]
         const m = r.texto.match(/(\d+) de (\d+) reservadas/)
-        debe(total === 0 || (m && Number(m[2]) === total), '4 entradas', `${etiqueta}: el bloque dice «${m?.[0]}» y la ruta tiene ${total}`)
-        debe(bloque.arriba.every((x) => orden.arriba.includes(x.name)) && bloque.mas.every((x) => orden.mas.includes(x.name)), '4 entradas', `${etiqueta}: sale una entrada que no está en los datos del destino`)
-        const idx = (lista, arr) => arr.map((x) => lista.indexOf(x.name))
-        debe(idx(orden.arriba, bloque.arriba).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de arriba no siguen el orden de los datos`)
-        debe(idx(orden.mas, bloque.mas).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de «Ver n más» no siguen el orden de los datos`)
-        const enRuta = new Set(route.days.flatMap((d) => d.stops.filter((s) => !s.passThrough).map((s) => s.name)))
-        for (const x of [...bloque.arriba, ...bloque.mas]) debe(x.reservation || x.isFreeTour || x.placeNames.some((p) => enRuta.has(p)), '4 entradas', `${etiqueta}: «${x.name}» sale y no está en la ruta`)
-        for (const nombre of [...orden.arriba, ...orden.mas]) {
+        if (bloque.enRuta.length > 0) debe(m && Number(m[2]) === bloque.enRuta.length && Number(m[1]) === bloque.enRuta.filter((x) => x.reservation).length, '4 entradas', `${etiqueta}: el bloque dice «${m?.[0]}» y en la ruta hay ${bloque.enRuta.length} (${bloque.enRuta.filter((x) => x.reservation).length} reservadas)`)
+        else if (bloque.masEntradas.length > 0) debe(/Ninguna en tu ruta/.test(r.texto), '4 entradas', `${etiqueta}: sin entradas en la ruta, el bloque no lo dice`)
+        const nombres = [...bloque.enRuta, ...bloque.masEntradas].map((x) => x.name)
+        debe(nombres.length === lista.length && lista.every((nombre) => nombres.includes(nombre)), '4 entradas', `${etiqueta}: las dos partes no suman la lista del destino (${nombres.length} de ${lista.length})`)
+        const idx = (arr) => arr.map((x) => lista.indexOf(x.name))
+        debe(idx(bloque.enRuta).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de «En tu ruta» no siguen el orden de los datos`)
+        debe(idx(bloque.masEntradas).every((x, i, a) => x >= 0 && (i === 0 || x > a[i - 1])), '4 entradas', `${etiqueta}: las de «Ver n más» no siguen el orden de los datos`)
+        const dentro = new Set(route.days.flatMap((d) => d.stops.filter((s) => !s.passThrough && !s.isFreeTour && s.visitMode !== 'fuera').map((s) => s.name)))
+        const hayFreeTour = route.days.some((d) => d.stops.some((s) => s.isFreeTour))
+        for (const x of bloque.enRuta) debe(x.reservation || (x.isFreeTour ? hayFreeTour : x.placeNames.some((p) => dentro.has(p))), '4 entradas', `${etiqueta}: «${x.name}» sale en «En tu ruta» y no está por dentro en la ruta`)
+        for (const x of bloque.masEntradas) debe(!x.reservation && !x.isFreeTour && !x.placeNames.some((p) => dentro.has(p)), '4 entradas', `${etiqueta}: «${x.name}» sale en «Ver más» y sí está en la ruta (o está reservada)`)
+        for (const nombre of lista) {
           const grupo = info.entradas.find((e) => e.name === nombre)
           const lugares = grupo?.places ?? [nombre]
-          const esta = lugares.some((p) => enRuta.has(p)) || (nombre === orden.arriba.find((n) => n.startsWith('Free Tour')) && route.days.some((d) => d.stops.some((s) => s.isFreeTour)))
-          const sale = [...bloque.arriba, ...bloque.mas].some((x) => x.name === nombre)
-          debe(!esta || sale || reservas.length > 0, '4 entradas', `${etiqueta}: «${nombre}» está en la ruta y no sale`)
+          const esta = lugares.some((p) => dentro.has(p)) || (nombre.startsWith('Free Tour') && hayFreeTour)
+          const enParte = bloque.enRuta.some((x) => x.name === nombre)
+          debe(!esta || enParte, '4 entradas', `${etiqueta}: «${nombre}» está por dentro en la ruta y no sale en «En tu ruta»`)
         }
+        // El resumen de arriba (de pago) cuenta lo mismo: «Entradas x/n» con las de «En tu ruta».
+        if (version === 'completa' && bloque.enRuta.length > 0) debe(new RegExp(`Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}`).test(r.texto), '4 entradas', `${etiqueta}: la ficha del resumen no dice «Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}»`)
         // 5. las excursiones: según los días del viaje
         const deberia = hasEnoughDaysForExcursions(route, desde) && info.excursions.length > 0
         debe(r.bloques.includes('excursiones') === deberia, '5 excursiones', `${etiqueta}: el bloque de excursiones ${r.bloques.includes('excursiones') ? 'sale' : 'no sale'} y con ${dias} días ${deberia ? 'debería' : 'no debería'} (desde ${desde})`)
-        if (version === 'completa' && estado === 'todo hecho' && fechas && dias === 5) nota(`- ${etiqueta}: bloques ${r.bloques.join(' · ')}; entradas ${total}`)
+        if (version === 'completa' && estado === 'todo hecho' && fechas && dias === 5) nota(`- ${etiqueta}: bloques ${r.bloques.join(' · ')}; entradas en la ruta ${bloque.enRuta.length}, de más ${bloque.masEntradas.length}`)
       }
     }
   }
