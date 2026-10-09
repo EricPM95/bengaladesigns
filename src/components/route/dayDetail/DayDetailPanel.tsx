@@ -393,11 +393,15 @@ export function DayDetailPanel({
   const departureTime = route?.departureFlightTime ?? null
   const centerMinutes = isFirstDayOfTrip && modes.arrival !== 'coche' ? centerMinutesOf(arrivalTime, arrivalPoint) : null
   const leaveMinutes = isLastDay ? leaveMinutesOf(departureTime, modes.departure, departureMedio, departurePoint) : null
-  const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalPoint, origin, time: modes.arrival === 'coche' ? null : arrivalTime, keyMinutes: centerMinutes })
-  const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departurePoint, origin, time: modes.departure === 'coche' ? null : departureTime, keyMinutes: leaveMinutes })
+  // La barra (Tanda 6t): el punto es el elegido en RESERVAS (no el primero de la lista) y ninguna hora la calcula la app. Las horas de arriba (centro, salir) solo montan el día por dentro.
+  const pago = pagoActivo()
+  const destinoNombre = arrivalInfo.ciudad || route?.destination || day.city
+  const arrivalChosen = arrivalMedio?.puntos.find((point) => point.id === route?.arrivalPointId) ?? null
+  const departureChosen = departureMedio?.puntos.find((point) => point.id === route?.departurePointId) ?? null
+  const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalChosen, origin, destino: destinoNombre, time: modes.arrival === 'coche' ? null : arrivalTime, pago })
+  const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
   const pedirReservas = useReservasFocusStore((state) => state.pedir)
-  const pago = pagoActivo()
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const setMode = useRouteStore((state) => state.setMode)
   /** «+ AÑADIR VUELO» y «Editar»: a Reservas, al bloque «Llegada y vuelta» (de pago), con la mitad que se pide abierta. */
@@ -939,18 +943,6 @@ export function DayDetailPanel({
     return null
   }
   const arrivalConflict = centerMinutes != null && realStops.length > 0 && schedule.some((entry, index) => tripWarningOf(entry.startMinutes, entry.endMinutes, stops[index]?.passThrough) === 'Llegas después')
-  // La primera parada de verdad del día (ni de paso ni una pausa), con su número del mapa, para la ficha de la llegada.
-  const firstVisitIndex = stops.findIndex((stop, index) => !stop.passThrough && !stop.isBreak && !realStops[index]?.isZoneWalk)
-  const firstVisit = firstVisitIndex >= 0 ? realStops[firstVisitIndex] : null
-  const firstStopForSheet = firstVisit
-    ? {
-        number: stopNumbers.get(firstVisit.id) ?? null,
-        name: displayStopName(firstVisit.name),
-        howTo: firstVisit.transitLabel
-          ? `Desde tu alojamiento: ${firstVisit.transitLabel}.`
-          : `El ${stopNumbers.get(firstVisit.id) ?? 1} en el mapa del día. Desde tu alojamiento, andando o en metro según dónde duermas.`,
-      }
-    : null
   const departureConflict =leaveMinutes != null && realStops.length > 0 && schedule.some((entry, index) => tripWarningOf(entry.startMinutes, entry.endMinutes, stops[index]?.passThrough) === 'Ya te has ido')
   if (muestraParadas) {
     stops.forEach((_stop, index) => {
@@ -1736,8 +1728,6 @@ export function DayDetailPanel({
           dateIso={dateIso}
           time={arrivalSheet === 'vuelta' ? departureTime : arrivalTime}
           pointId={arrivalSheet === 'vuelta' ? (route.departurePointId ?? null) : (route.arrivalPointId ?? null)}
-          keyMinutes={arrivalSheet === 'vuelta' ? leaveMinutes : centerMinutes}
-          firstStop={firstStopForSheet}
           onEditBooking={() => goToBooking(arrivalSheet ?? 'llegada')}
           onClose={() => setArrivalSheet(null)}
         />

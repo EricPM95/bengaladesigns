@@ -1,5 +1,5 @@
 import type { Route } from './types'
-import { centerMinutesOf, minutesToHHMM, medioOf, puntoCorto, tripModes, type ArrivalInfo, type ArrivalMode, type ArrivalPoint } from './arrivalReturn'
+import { medioOf, puntoCorto, tripModes, type ArrivalInfo, type ArrivalMode, type ArrivalPoint } from './arrivalReturn'
 
 /**
  * La ida y la vuelta de RESERVAS (de pago, Tanda 6s): para cada mitad, el medio que eligió el viajero en el formulario, su hora, su punto y si está hecha.
@@ -23,8 +23,6 @@ export interface LegState {
   dayNumber: number
   /** «¿Fiumicino o Ciampino?». */
   question: string | null
-  /** Solo la ida: «13:15» (la hora en la que ya estás libre en el centro, el mismo cálculo de la barra de DÍAS). */
-  freeFrom: string | null
 }
 
 const WEEKDAY = new Intl.DateTimeFormat('es-ES', { weekday: 'short' })
@@ -48,7 +46,6 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
   const range = route.answers.dateRange
   const dateIso = (kind === 'arrival' ? range?.start : range?.end) ?? null
   const last = [...route.days].reverse().find((day) => !day.isReturnLeg) ?? route.days.at(-1)
-  const freeMinutes = kind === 'arrival' && mode !== 'coche' && time && point ? centerMinutesOf(time, point) : null
   return {
     kind,
     mode,
@@ -60,7 +57,6 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
     dateIso,
     dayNumber: kind === 'arrival' ? 1 : (last?.dayNumber ?? route.days.length),
     question: points.length > 1 ? `¿${points.map(puntoCorto).join(' o ')}?` : null,
-    freeFrom: freeMinutes != null ? minutesToHHMM(freeMinutes) : null,
   }
 }
 
@@ -76,14 +72,13 @@ const MODE_WORD: Record<ArrivalMode, { noun: string; search: string; searchLabel
 }
 export const legWord = (mode: ArrivalMode) => MODE_WORD[mode]
 
-/** La línea de cada mitad, cerrada: «Ida · mar 10 · 11:15 · Fiumicino · libre hacia las 13:15». Nunca «null» ni un hueco. */
+/** La línea de cada mitad, cerrada: «Ida · mar 10 · 11:15 · Fiumicino». Nunca «null» ni un hueco, ni una hora que calcule la app (Tanda 6t). */
 export function legLine(leg: LegState): string {
   const head = `${leg.kind === 'arrival' ? 'Ida' : 'Vuelta'} · ${legDayText(leg)}`
   if (leg.mode === 'coche') return `${head} · ${leg.kind === 'arrival' ? 'Llegas en coche' : 'Te vas en coche'}`
   if (!leg.done || !leg.time) return head
   const parts = [head, leg.time]
   if (leg.point) parts.push(puntoCorto(leg.point))
-  if (leg.freeFrom) parts.push(`libre hacia las ${leg.freeFrom}`)
   return parts.join(' · ')
 }
 

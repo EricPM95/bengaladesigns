@@ -7,7 +7,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { barTextOf, centerMinutesOf, leaveMinutesOf, minutesToHHMM } from '../../shared/arrival/arrivalRules.js'
+import { barTextOf } from '../../shared/arrival/arrivalRules.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const destino = (process.argv[2] ?? 'roma').toLowerCase()
@@ -29,7 +29,7 @@ const fuente = (url, fecha) =>
   url ? `<a class="src" href="${esc(url)}" target="_blank" rel="noopener">Fuente${fecha ? ` · ${esc(fecha)}` : ''}</a>` : '<span class="src none">Sin web oficial: sin precio</span>'
 
 function barra(mode, bar) {
-  return `<div class="bar"><span class="blk">${esc(NOMBRE[mode].slice(0, 1))}</span><span class="data">${esc(bar.data)}</span>${bar.key ? `<span class="key">${esc(bar.key)}</span>` : ''}${bar.add ? `<span class="add">${esc(bar.add)}</span>` : ''}<span class="perf">›</span></div>`
+  return `<div class="bar"><span class="blk">${esc(NOMBRE[mode].slice(0, 1))}</span><span class="data">${esc(bar.eyebrow)} · ${esc(bar.main)}</span>${bar.pill ? `<span class="key">${esc(bar.pill)}</span>` : ''}${bar.add ? `<span class="add">${esc(bar.add)}</span>` : ''}<span class="perf">›</span></div>`
 }
 
 function opciones(list) {
@@ -49,19 +49,17 @@ for (const [mode, medio] of Object.entries(info.medios)) {
   const t = EJEMPLO[mode]
   let puntos = ''
   for (const point of medio.puntos) {
-    const center = centerMinutesOf(t.llegada, point)
-    const leave = leaveMinutesOf(t.vuelta, mode, medio, point)
+    // (Tanda 6t: la app no enseña ninguna hora que calcule ella; solo la que pone el viajero. Gratis: sin hora; de pago: con y sin la hora del viajero.)
     const bars = [
-      barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, time: t.llegada, keyMinutes: center }),
-      barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, time: null, keyMinutes: null }),
-      barTextOf({ kind: 'vuelta', mode, point, origin: ORIGEN, time: t.vuelta, keyMinutes: leave }),
-      barTextOf({ kind: 'vuelta', mode, point, origin: ORIGEN, time: null, keyMinutes: null }),
+      barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, destino: info.ciudad, time: t.llegada, pago: true }),
+      barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, destino: info.ciudad, time: null, pago: true }),
+      barTextOf({ kind: 'llegada', mode, point, origin: ORIGEN, destino: info.ciudad, time: null, pago: false }),
+      barTextOf({ kind: 'vuelta', mode, point, origin: ORIGEN, destino: info.ciudad, time: t.vuelta, pago: true }),
+      barTextOf({ kind: 'vuelta', mode, point, origin: ORIGEN, destino: info.ciudad, time: null, pago: true }),
+      barTextOf({ kind: 'vuelta', mode, point, origin: ORIGEN, destino: info.ciudad, time: null, pago: false }),
     ]
-    const ultimaTarde =
-      leave != null
-        ? `<p class="tarde">Libre hasta <b>${minutesToHHMM(leave - 45)}</b> · maleta a las <b>${minutesToHHMM(leave - 30)}</b> · sal a las <b class="k">${minutesToHHMM(leave)}</b></p>`
-        : ''
-    const traslados = mode === 'coche' ? '<p class="muted">En coche no hay pestaña de traslados.</p>' : point.privado ? `<p>Traslado privado puerta a puerta · <b>${point.privado.precio} ${point.privado.moneda === 'EUR' ? '€' : esc(point.privado.moneda)}</b> (${esc(point.privado.proveedor)}; enlace de afiliado pendiente)</p>` : '<p class="muted">Sin traslado privado a la venta: la pestaña no sale.</p>'
+    const ultimaTarde = ''
+    const traslados = mode === 'coche' || mode === 'tren' || mode === 'bus' ? '<p class="muted">Sin pestaña de traslados en este medio.</p>' : point.traslado ? '<p>Traslado privado puerta a puerta (sin precio ni proveedor en la app) · enlace: ' + esc(point.traslado.url) + '</p>' : '<p class="muted">Sin traslado en los datos de este punto: la pestaña no sale.</p>'
     puntos += `
       <article>
         <h3>${esc(point.nombre)}${point.codigo ? ` (${esc(point.codigo)})` : ''} <small>· al centro ${point.al_centro_min} min${point.distancia ? ` · ${esc(point.distancia)}` : ''}</small></h3>

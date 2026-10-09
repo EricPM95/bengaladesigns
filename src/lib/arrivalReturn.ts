@@ -42,7 +42,8 @@ export interface ArrivalPoint {
   distancia?: string
   al_centro: ArrivalOption[]
   a_la_salida?: ArrivalOption[]
-  privado?: { proveedor: string; precio: number; moneda: string; url_afiliado: string }
+  /** El traslado privado de este punto (pestaña «Traslados»): solo el enlace; sin precio ni proveedor. Solo en Fiumicino, Ciampino y Civitavecchia. */
+  traslado?: { url: string }
   /** El resumen de ese punto, si no vale el del medio (Tiburtina no es Termini). */
   por_que_llegada?: string
   por_que_vuelta?: string
@@ -111,17 +112,18 @@ export const centerMinutesOf: (arrivalTime: string | null | undefined, point: Ar
 export const leaveMinutesOf: (departureTime: string | null | undefined, mode: ArrivalMode, medio: ArrivalMedio | null, point?: ArrivalPoint | null) => number | null = rules.leaveMinutesOf
 
 export interface ArrivalBarText {
-  /** "LLEGADA · VUELO 11:30 · FIUMICINO" */
-  data: string
-  /** A la derecha: "EN EL CENTRO 12:30", "SAL A LAS 16:30", "OJO CON LA ZTL"… */
-  key: string | null
-  /** Sin reserva: "+ AÑADIR VUELO" (lleva a Reservas). */
+  /** Arriba, en pequeño: «LLEGADA · FIUMICINO», «VUELTA · A BARCELONA». */
+  eyebrow: string
+  /** Debajo: «Cómo llegar desde Fiumicino», «Añade tu vuelo y ajustamos tu día». */
+  main: string
+  /** De pago y sin hora: «+ Vuelo» (lleva a Reservas). */
   add: string | null
+  /** De pago y con la hora del viajero: «✓ 11:20». */
+  pill: string | null
 }
 
 /** Los textos de la barra, con reserva o sin ella, según el medio. */
-export const barTextOf: (input: { kind: 'llegada' | 'vuelta'; mode: ArrivalMode; point: ArrivalPoint | null; origin: string; time: string | null; keyMinutes: number | null }) => ArrivalBarText =
-  rules.barTextOf
+export const barTextOf: (input: { kind: 'llegada' | 'vuelta'; mode: ArrivalMode; point: ArrivalPoint | null; origin: string; destino: string; time: string | null; pago: boolean }) => ArrivalBarText = rules.barTextOf
 
 // ── Los datos del destino ────────────────────────────────────────────────────────────────────────────────────────
 
@@ -165,7 +167,6 @@ export function fallbackArrivalInfo(city: string, origin: string): ArrivalInfo {
       ...airport.transitOptions.map((option, index) => ({ nombre: option.name, mas_comodo: index === 0, tiempo: option.durationLabel })),
       { nombre: 'Taxi', tiempo: airport.taxiPriceLabel },
     ],
-    ...(airport.privateTransfer ? { privado: airport.privateTransfer } : {}),
   }))
   const medio: ArrivalMedio = {
     textos: {

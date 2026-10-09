@@ -22,40 +22,37 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
 
   const nightsPlanned = selectedHotel ? totalNights : 0
 
+  // (Tanda 6t, diseño «1b»: solo el aspecto. Una fila sin caja: el icono de la cama en un círculo, el texto en cursiva con su línea pequeña y el botón redondo; puesto, el ✓ verde. Lo que hace y sus textos, los de siempre.)
+  const VERDE = 'oklch(0.55 0.11 150)'
+  const fila = (hecho: boolean, titulo: string, sub: string, accion: string, onClick: () => void) => (
+    <button type="button" onClick={onClick} aria-label={accion} className="flex h-12 w-full items-center gap-2.5 rounded-[14px] bg-transparent px-1 text-left text-text">
+      <span
+        className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full"
+        style={{ border: `1.5px solid ${hecho ? VERDE : 'rgba(28,34,48,.4)'}`, color: hecho ? VERDE : 'rgba(28,34,48,.4)' }}
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 21v-3M21 21v-3M7 10V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3" />
+        </svg>
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-px whitespace-nowrap">
+        <span className="truncate font-display text-[17px] italic leading-[1.1]">{titulo}</span>
+        <span className="text-[11px] text-text/50">{sub}</span>
+      </span>
+      <span
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[16px] font-medium leading-none"
+        style={{ background: hecho ? VERDE : '#F1EADC', color: hecho ? '#fff' : 'oklch(0.52 0.15 45)' }}
+      >
+        {hecho ? '✓' : '+'}
+      </span>
+    </button>
+  )
+
   return (
     <>
-      {selectedHotel ? (
-        <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent-soft/40 p-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body">🛏</span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-small font-medium text-text">{selectedHotel.name}</p>
-            <p className="text-caption text-text-soft">
-              {totalNights} noche{totalNights === 1 ? '' : 's'} · €{selectedHotel.pricePerNight}/noche
-            </p>
-          </div>
-          <button type="button" onClick={() => setModalOpen(true)} className="shrink-0 text-caption font-medium text-accent-hover underline">
-            Cambiar
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-3 rounded-xl border border-dashed border-accent/40 bg-accent-soft/20 p-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body">🛏</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-small font-medium text-text">Añade alojamiento en {city}</p>
-            <p className="text-caption text-text-soft">
-              {nightsPlanned}/{totalNights} noche{totalNights === 1 ? '' : 's'} por planificar
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setModalOpen(true)}
-            aria-label={`Añadir alojamiento en ${city}`}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-body font-semibold text-white transition-colors hover:bg-accent-hover"
-          >
-            +
-          </button>
-        </div>
-      )}
+      {selectedHotel
+        ? fila(true, selectedHotel.name, `${totalNights} noche${totalNights === 1 ? '' : 's'} · €${selectedHotel.pricePerNight}/noche`, 'Cambiar alojamiento', () => setModalOpen(true))
+        : fila(false, `Añade alojamiento en ${city}`, `${nightsPlanned}/${totalNights} noche${totalNights === 1 ? '' : 's'} por planificar`, `Añadir alojamiento en ${city}`, () => setModalOpen(true))}
+      <div aria-hidden="true" className="h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(28,34,48,.12),transparent)' }} />
 
       {modalOpen && (
         <AccommodationHotelModal

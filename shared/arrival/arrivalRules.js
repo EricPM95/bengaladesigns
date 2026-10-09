@@ -53,30 +53,34 @@ export function leaveMinutesOf(departureTime, mode, medio, point) {
 }
 
 const MODE_LABEL = {
-  avion: { reservado: 'VUELO', medio: 'AVIÓN', anadir: '+ AÑADIR VUELO' },
-  tren: { reservado: 'TREN', medio: 'TREN', anadir: '+ AÑADIR TREN' },
-  bus: { reservado: 'AUTOBÚS', medio: 'AUTOBÚS', anadir: '+ AÑADIR AUTOBÚS' },
-  ferry: { reservado: 'FERRY', medio: 'FERRY', anadir: '+ AÑADIR FERRY' },
-  coche: { reservado: 'COCHE', medio: 'EN COCHE', anadir: '' },
+  avion: { palabra: 'vuelo', boton: '+ Vuelo', medio: 'AVIÓN', volver: 'Cómo volver al aeropuerto' },
+  tren: { palabra: 'tren', boton: '+ Tren', medio: 'TREN', volver: 'Cómo volver a la estación' },
+  bus: { palabra: 'autobús', boton: '+ Autobús', medio: 'AUTOBÚS', volver: 'Cómo volver a la estación' },
+  ferry: { palabra: 'barco', boton: '+ Barco', medio: 'BARCO', volver: 'Cómo volver al puerto' },
+  coche: { palabra: 'coche', boton: '', medio: 'EN COCHE', volver: 'La ZTL y dónde aparcar' },
 }
 
 /**
- * Los textos de la barra: `data` a la izquierda (se corta con "…"), `key` la hora clave en terracota (nunca se corta),
- * `add` el "+ AÑADIR VUELO" azul sin reserva. En coche, sin hora clave: el aviso de la ZTL.
+ * Los textos de la barra de la llegada y de la vuelta (Tanda 6t, diseño «1b · Línea y pase azul»): `eyebrow` arriba, en pequeño; `main` debajo; `add` el botón azul «+ Vuelo» (de pago, sin hora);
+ * `pill` la pastilla verde «✓ 11:20» (de pago, con la hora que puso el viajero). Ninguna hora que calcule la app: «En el centro», «libre hacia» o «Sal a las» no existen (Tanda 6t, 5).
+ * `pago`: la versión de pago (con el botón y la pastilla); sin él, la gratis (solo la flecha). `point` es el punto elegido en RESERVAS (o null), `destino` sale de los datos.
  */
-export function barTextOf({ kind, mode, point, origin, time, keyMinutes }) {
+export function barTextOf({ kind, mode, point, origin, destino, time, pago }) {
   const label = MODE_LABEL[mode]
-  const head = kind === 'llegada' ? 'LLEGADA' : 'VUELTA'
-  const place = point?.barra ?? ''
+  const llegada = kind === 'llegada'
+  const head = llegada ? 'LLEGADA' : 'VUELTA'
   const originUpper = String(origin ?? '').toUpperCase()
-  if (mode === 'coche') {
-    return { data: `${head} · EN COCHE ${kind === 'llegada' ? 'DESDE' : 'A'} ${originUpper}`, key: 'OJO CON LA ZTL', add: null }
-  }
+  const desdeA = `${head} · ${llegada ? 'DESDE' : 'A'} ${originUpper}`
+  if (mode === 'coche') return { eyebrow: `${head} · EN COCHE`, main: 'La ZTL y dónde aparcar', add: null, pill: null }
+  if (!pago) return { eyebrow: desdeA, main: llegada ? `Cómo llegar a ${destino}` : label.volver, add: null, pill: null }
   if (time) {
-    const data = `${head} · ${label.reservado} ${time}${place ? ` · ${place}` : ''}`
-    if (keyMinutes == null) return { data, key: null, add: null }
-    const key = kind === 'llegada' ? `EN EL CENTRO ${minutesToHHMM(keyMinutes)}` : `SAL A LAS ${minutesToHHMM(keyMinutes)}`
-    return { data, key, add: null }
+    const place = point ? point.corto ?? point.nombre : null
+    return {
+      eyebrow: `${head} · ${place ? place.toUpperCase() : label.medio}`,
+      main: llegada ? (place ? `Cómo llegar desde ${place}` : `Cómo llegar a ${destino}`) : place ? `Cómo llegar a ${place}` : label.volver,
+      add: null,
+      pill: `✓ ${time}`,
+    }
   }
-  return { data: `${head} · ${label.medio} ${kind === 'llegada' ? 'DESDE' : 'A'} ${originUpper}`, key: null, add: label.anadir }
+  return { eyebrow: desdeA, main: llegada ? `Añade tu ${label.palabra} y ajustamos tu día` : `Añade tu ${label.palabra} de vuelta y ajustamos tu día`, add: label.boton, pill: null }
 }

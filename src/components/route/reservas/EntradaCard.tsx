@@ -16,8 +16,8 @@ function TicketIcon() {
 }
 
 /** Abre la compra en otra pestaña con el aviso corto; nunca el nombre del proveedor. Lo usan RESERVAS y la pestaña «Entradas» de la ficha. */
-export function openTicketShop(href: string | null) {
-  useAddFlowStore.setState({ toast: { message: 'Abriendo la tienda de entradas…', previous: null, id: Date.now() } })
+export function openTicketShop(href: string | null, message = 'Abriendo la tienda de entradas…') {
+  useAddFlowStore.setState({ toast: { message, previous: null, id: Date.now() } })
   // (Con el código de afiliado y el de campaña del viaje, como los enlaces que se pulsan: ver CampaignLinks.)
   if (href) window.open(withCampaign(href, useRouteStore.getState().campaignCode), '_blank', 'noopener,noreferrer')
 }
