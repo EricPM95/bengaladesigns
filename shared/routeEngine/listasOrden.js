@@ -85,6 +85,7 @@ export function ordenarDias(env) {
   let fixedWhy = new Map()
   const reservasColocadas = []
   const reservasSinDia = []
+  let ftSeparado = null
   const pinnedOrder = (rest) => {
     if (pins.length === 0) return rest
     const todo = []
@@ -122,7 +123,9 @@ export function ordenarDias(env) {
     }
     // Las reservas grandes (Tanda 6j, punto 9): el día escrito que lleva el sitio reservado va FIJO en la fecha de la reserva; los demás se ordenan con las reglas de siempre en los huecos que quedan.
     const fijos = new Map(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]])
-    for (const reserva of env.reservasGrandes ?? []) {
+    // (El Free Tour reservado se coloca después de las demás reservas grandes: si su día lo ocupa otra —los Museos, en otra fecha—, el Free Tour va en otro día, Tanda 6w.)
+    const esTour = (reserva) => Boolean(tour) && reserva.name === tour.name
+    for (const reserva of (env.reservasGrandes ?? []).filter((r) => !esTour(r))) {
       const slot = cityDays.findIndex((day) => (reserva.dateIso ? hoursOf(day).dateIso === reserva.dateIso : day.dayNumber === Number(reserva.dayNumber)))
       // (Un día que hereda su mañana de otro —el D1-FT, la de la Roma antigua— lleva también las paradas de esa mañana.)
       const conHerencia = (dia) => [...paradasDelDia(dia, { sinCamino: true }), ...(dia.hereda_manana_de && written.days[dia.hereda_manana_de] ? paradasDelDia(written.days[dia.hereda_manana_de], { sinCamino: true }) : [])]
@@ -134,6 +137,28 @@ export function ordenarDias(env) {
       if (fijos.has(slot)) { reservasSinDia.push({ name: reserva.name, motivo: 'dos_reservas_grandes' }); continue }
       fijos.set(slot, id)
       reservasColocadas.push({ name: reserva.name, id, slot })
+    }
+    // El Free Tour reservado (Tanda 6w): su día es el que lleva el tour (el D3). Si otra reserva grande (los Museos, otro día) ya tiene ese D3, el D3 se queda con ella sin el tour (lo del guía, por libre)
+    // y el día de la fecha del Free Tour es el D1-FT (o el D1, si el viaje no lo lleva), donde el Free Tour hace de «otra parte».
+    for (const reserva of (env.reservasGrandes ?? []).filter(esTour)) {
+      const slot = cityDays.findIndex((day) => (reserva.dateIso ? hoursOf(day).dateIso === reserva.dateIso : day.dayNumber === Number(reserva.dayNumber)))
+      const idTour = chosen.find((candidate) => carriesTour(written.days[candidate]))
+      if (slot < 0 || !idTour) { reservasSinDia.push({ name: reserva.name, motivo: slot < 0 ? 'fecha_sin_dia' : 'sin_dia_escrito' }); continue }
+      if (noTourOn(cityDays[slot])) { reservasSinDia.push({ name: reserva.name, motivo: 'sin_tour_ese_dia' }); continue }
+      const dueño = [...fijos.entries()].find(([, id]) => id === idTour)
+      if (!dueño) {
+        if (fijos.has(slot)) { reservasSinDia.push({ name: reserva.name, motivo: 'dos_reservas_grandes' }); continue }
+        fijos.set(slot, idTour)
+        reservasColocadas.push({ name: reserva.name, id: idTour, slot })
+      } else if (dueño[0] !== slot) {
+        const alterno = ['D1-FT', 'D1'].find((id) => chosen.includes(id))
+        const yaEsta = fijos.get(slot)
+        if (alterno && (!yaEsta || yaEsta === alterno) && ![...fijos.entries()].some(([k, id]) => id === alterno && k !== slot)) {
+          fijos.set(slot, alterno)
+          reservasColocadas.push({ name: reserva.name, id: alterno, slot })
+          ftSeparado = { slotFt: slot, slotOtro: dueño[0], idFt: alterno }
+        } else reservasSinDia.push({ name: reserva.name, motivo: 'ya_fijado' })
+      }
     }
     // El Free Tour de tarde o de noche con su fecha (Tanda 6u): el día escrito que lo lleva (el D1, con su variante) va fijo en esa fecha.
     if (env.freeTourFijo) {
@@ -192,5 +217,5 @@ export function ordenarDias(env) {
   // Los días que cambian de sitio respecto a la tabla y por qué: lo que les cuesta en su fecha de la tabla (un sitio cerrado, una mala fecha, un horario especial). Para el informe y la prueba del orden.
   const motivosOrden = {}
   chosen.forEach((id, slot) => { const why = fixedWhy.get(id)?.[slot] ?? []; if (orderSinPin.indexOf(id) !== slot && why.length > 0) motivosOrden[id] = why })
-  return { chosen, order, halfPosition, dateMoves, motivosOrden, reservasColocadas, reservasSinDia }
+  return { chosen, order, halfPosition, dateMoves, motivosOrden, reservasColocadas, reservasSinDia, ftSeparado }
 }

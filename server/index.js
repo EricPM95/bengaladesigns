@@ -2559,7 +2559,7 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   for (const reserva of Array.isArray(body?.reservas) ? body.reservas : []) {
     if (!reserva || (!reserva.dateIso && !Number.isInteger(Number(reserva.dayNumber)))) continue
     const name = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).find((candidate) => RESERVAS_GRANDES.has(candidate))
-    if (name) reservasGrandes.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null })
+    if (name) reservasGrandes.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null, time: /^\d{1,2}:\d{2}$/.test(String(reserva.time ?? '')) ? (String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)) : null })
   }
   const ft = answers?.freeTourDespues
   const ftValido = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora)

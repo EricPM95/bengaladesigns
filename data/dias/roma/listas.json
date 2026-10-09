@@ -1314,7 +1314,7 @@
       "abierto_tras_reserva": {
        "lugar": "Foro Romano y Palatino",
        "reserva": "Coliseo",
-       "despues_min": 165,
+       "despues_min": 195,
        "min": 1
       }
      },
@@ -2266,17 +2266,15 @@
          "lugar": "Iglesia del Gesù",
          "min": 20,
          "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Barrio Judío",
+         "min": 30,
+         "modo": null
         }
        ]
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Barrio Judío",
-        "min": 30,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -2294,7 +2292,7 @@
       "abierto_tras_reserva": {
        "lugar": "Foro Romano y Palatino",
        "reserva": "Coliseo",
-       "despues_min": 165,
+       "despues_min": 195,
        "min": 1
       }
      },
@@ -2404,7 +2402,7 @@
       "abierto_tras_reserva": {
        "lugar": "Foro Romano y Palatino",
        "reserva": "Coliseo",
-       "despues_min": 165,
+       "despues_min": 195,
        "min": 1,
        "negado": true
       }
@@ -2722,7 +2720,7 @@
      }
     },
     "Galería Borghese": {
-     "doc": "Galería Borghese:** 🎟 por la tarde, después del Panteón (taxi). Lo que no quepa, a «Si te sobra tiempo». Cena en el Tridente.",
+     "doc": "Galería Borghese:** 🎟 por la tarde, después del Panteón (taxi). Cena en el Tridente.",
      "ops": {
       "tarde": {
        "insertar": [
@@ -3652,7 +3650,7 @@
     },
     {
      "id": "museos_tarde_cupula",
-     "doc": "La Cúpula (si el viaje no lleva el D6): después de la Basílica, si da tiempo; si no, a «Si te sobra tiempo».",
+     "doc": "La Cúpula (si el viaje no lleva el D6): después de la Basílica.",
      "cuando": {
       "reserva": {
        "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -5150,6 +5148,7 @@
       },
       {
        "sin_reserva": "Free Tour por Roma",
+       "free_tour_otro_dia": false,
        "reservas": [
         {
          "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -5334,6 +5333,18 @@
          "modo": null
         },
         {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
          "tipo": "traslado",
          "como": "taxi",
          "texto": "Taxi a la Plaza de España"
@@ -5358,21 +5369,7 @@
        "restaurante": "Armando al Pantheon",
        "alternativa": "Pizzeria Da Baffetto",
        "zona": null
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -5399,6 +5396,7 @@
       },
       {
        "sin_reserva": "Free Tour por Roma",
+       "free_tour_otro_dia": false,
        "reservas": [
         {
          "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -5446,6 +5444,18 @@
          "modo": null
         },
         {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
          "tipo": "traslado",
          "como": "taxi",
          "texto": "Taxi a la Plaza de España"
@@ -5470,21 +5480,7 @@
        "restaurante": "Armando al Pantheon",
        "alternativa": "Pizzeria Da Baffetto",
        "zona": null
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -5551,6 +5547,18 @@
          "modo": null
         },
         {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
          "tipo": "traslado",
          "como": "taxi",
          "texto": "Taxi a la Plaza de España"
@@ -5575,21 +5583,7 @@
        "restaurante": "Armando al Pantheon",
        "alternativa": "Pizzeria Da Baffetto",
        "zona": null
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -5655,6 +5649,18 @@
          "modo": null
         },
         {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
          "tipo": "traslado",
          "como": "taxi",
          "texto": "Taxi a la Plaza de España"
@@ -5679,21 +5685,7 @@
        "restaurante": "Armando al Pantheon",
        "alternativa": "Pizzeria Da Baffetto",
        "zona": null
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -5995,9 +5987,22 @@
          "modo": null
         },
         {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi al Panteón"
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -6038,21 +6043,7 @@
        "restaurante": "Pizzeria Da Baffetto",
        "alternativa": "Armando al Pantheon",
        "zona": "junto a Navona"
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -6117,9 +6108,22 @@
          "modo": null
         },
         {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi al Panteón"
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -6160,21 +6164,7 @@
        "restaurante": "Pizzeria Da Baffetto",
        "alternativa": "Armando al Pantheon",
        "zona": "junto a Navona"
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -6203,6 +6193,7 @@
       },
       {
        "sin_reserva": "Free Tour por Roma",
+       "free_tour_otro_dia": false,
        "reservas": [
         {
          "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -6251,9 +6242,22 @@
          "modo": null
         },
         {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi al Panteón"
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -6294,21 +6298,7 @@
        "restaurante": "Pizzeria Da Baffetto",
        "alternativa": "Armando al Pantheon",
        "zona": "junto a Navona"
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -6336,6 +6326,7 @@
       },
       {
        "sin_reserva": "Free Tour por Roma",
+       "free_tour_otro_dia": false,
        "reservas": [
         {
          "lugar": "Museos Vaticanos y Capilla Sixtina",
@@ -6384,9 +6375,22 @@
          "modo": null
         },
         {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi al Panteón"
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -6427,21 +6431,7 @@
        "restaurante": "Pizzeria Da Baffetto",
        "alternativa": "Armando al Pantheon",
        "zona": "junto a Navona"
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Castillo de Sant'Angelo",
-        "min": 30,
-        "modo": "fuera"
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Puente Sant'Angelo",
-        "min": 15,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
@@ -6539,9 +6529,10 @@
          "modo": null
         },
         {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi al Panteón"
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -6636,9 +6627,10 @@
       "tarde": {
        "paradas": [
         {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi al Panteón"
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
         },
         {
          "tipo": "parada",
@@ -6725,37 +6717,330 @@
      }
     },
     {
-     "id": "ft_10_museos_D_14",
-     "doc": "| 14:00 – 16:30 | por la tarde | 10:00 | después de los Museos | junto a Navona, después del Free Tour |",
+     "id": "ft_otro_dia_museos_A",
+     "doc": "lleva este día (D3) sin el Free Tour: lo que enseña el guía",
      "horas": [
-      "14:00"
+      "8:00",
+      "8:30",
+      "9:00"
      ],
-     "cuando": [
-      {
-       "reservas": [
+     "cuando": {
+      "free_tour_otro_dia": true,
+      "reservas": [
+       {
+        "lugar": "Museos Vaticanos y Capilla Sixtina",
+        "hasta": "09:15"
+       }
+      ]
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
         {
-         "lugar": "Free Tour por Roma",
-         "desde": "09:00",
-         "hasta": "10:59"
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 150,
+         "modo": null,
+         "hora_tipo": "reserva"
         },
         {
-         "lugar": "Museos Vaticanos y Capilla Sixtina",
-         "desde": "13:46",
-         "hasta": "14:30"
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
         }
        ]
       },
-      {
-       "sin_reserva": "Free Tour por Roma",
-       "reservas": [
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
         {
-         "lugar": "Museos Vaticanos y Capilla Sixtina",
-         "desde": "13:46",
-         "hasta": "14:30"
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 30,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 40,
+         "modo": null,
+         "titulo": "Plaza de España, la Escalinata y Trinità dei Monti"
         }
        ]
+      },
+      "cena": {
+       "restaurante": "Pizzeria Da Baffetto",
+       "alternativa": "Armando al Pantheon",
+       "zona": "junto a Navona"
       }
+     }
+    },
+    {
+     "id": "ft_otro_dia_museos_B",
+     "doc": "lleva este día (D3) sin el Free Tour: lo que enseña el guía",
+     "horas": [
+      "9:30",
+      "10:00",
+      "11:00",
+      "12:00"
      ],
+     "cuando": {
+      "free_tour_otro_dia": true,
+      "reservas": [
+       {
+        "lugar": "Museos Vaticanos y Capilla Sixtina",
+        "desde": "09:16",
+        "hasta": "12:15"
+       }
+      ]
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 150,
+         "modo": null,
+         "hora_tipo": "reserva"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 30,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 40,
+         "modo": null,
+         "titulo": "Plaza de España, la Escalinata y Trinità dei Monti"
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "Pizzeria Da Baffetto",
+       "alternativa": "Armando al Pantheon",
+       "zona": "junto a Navona"
+      }
+     }
+    },
+    {
+     "id": "ft_otro_dia_museos_C",
+     "doc": "lleva este día (D3) sin el Free Tour: lo que enseña el guía",
+     "horas": [
+      "12:30",
+      "13:00",
+      "13:30"
+     ],
+     "cuando": {
+      "free_tour_otro_dia": true,
+      "reservas": [
+       {
+        "lugar": "Museos Vaticanos y Capilla Sixtina",
+        "desde": "12:16",
+        "hasta": "13:45"
+       }
+      ]
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 150,
+         "modo": null,
+         "hora_tipo": "reserva"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 30,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 40,
+         "modo": null,
+         "titulo": "Plaza de España, la Escalinata y Trinità dei Monti"
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "Pizzeria Da Baffetto",
+       "alternativa": "Armando al Pantheon",
+       "zona": "junto a Navona"
+      }
+     }
+    },
+    {
+     "id": "ft_otro_dia_museos_D",
+     "doc": "lleva este día (D3) sin el Free Tour: lo que enseña el guía",
+     "horas": [
+      "14:00",
+      "15:00",
+      "16:00",
+      "16:30"
+     ],
+     "cuando": {
+      "free_tour_otro_dia": true,
+      "reservas": [
+       {
+        "lugar": "Museos Vaticanos y Capilla Sixtina",
+        "desde": "13:46",
+        "hasta": "16:45"
+       }
+      ]
+     },
      "ops": {
       "empieza": "07:30",
       "manana": {
@@ -6776,25 +7061,29 @@
         },
         {
          "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 40,
+         "modo": null,
+         "titulo": "Plaza de España, la Escalinata y Trinità dei Monti"
+        },
+        {
+         "tipo": "parada",
          "lugar": "Panteón",
          "min": 30,
          "modo": "dentro"
         },
         {
-         "tipo": "tour",
-         "lugar": "Free Tour por Roma",
-         "min": 150,
-         "modo": null,
-         "hora": "10:00",
-         "hora_tipo": "turno"
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
         }
        ]
       },
       "comida": {
        "restaurante": "Armando al Pantheon",
        "alternativa": "Supplizio",
-       "zona": null,
-       "min": 30
+       "zona": null
       },
       "tarde": {
        "paradas": [
@@ -6821,6 +7110,120 @@
          "lugar": "Basílica de San Pedro",
          "min": 60,
          "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 15,
+         "modo": null
+        }
+       ]
+      },
+      "cena": {
+       "restaurante": "L'Arcangelo",
+       "alternativa": "Osteria dell'Angelo",
+       "zona": null
+      }
+     }
+    },
+    {
+     "id": "ft_otro_dia_museos_E",
+     "doc": "lleva este día (D3) sin el Free Tour: lo que enseña el guía",
+     "horas": [
+      "17:00",
+      "17:30",
+      "18:00"
+     ],
+     "cuando": {
+      "free_tour_otro_dia": true,
+      "reservas": [
+       {
+        "lugar": "Museos Vaticanos y Capilla Sixtina",
+        "desde": "16:46"
+       }
+      ]
+     },
+     "ops": {
+      "empieza": "07:30",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "desayuno",
+         "lugar": "Desayuno romano",
+         "min": 30,
+         "modo": null,
+         "titulo": "Desayuno en la Piazza della Rotonda"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 40,
+         "modo": null,
+         "titulo": "Plaza de España, la Escalinata y Trinità dei Monti"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Panteón",
+         "min": 30,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Piazza Navona",
+         "min": 45,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Armando al Pantheon",
+       "alternativa": "Supplizio",
+       "zona": null
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "traslado",
+         "como": "bus 40 o taxi",
+         "texto": "Bus 40 o taxi a la entrada de los Museos"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 150,
+         "modo": null,
+         "hora_tipo": "reserva"
         },
         {
          "tipo": "parada",
@@ -7310,7 +7713,7 @@
       "abierto_tras_reserva": {
        "lugar": "Foro Romano y Palatino",
        "reserva": "Coliseo",
-       "despues_min": 165,
+       "despues_min": 195,
        "min": 1
       }
      },
@@ -7451,7 +7854,7 @@
       "abierto_tras_reserva": {
        "lugar": "Foro Romano y Palatino",
        "reserva": "Coliseo",
-       "despues_min": 165,
+       "despues_min": 195,
        "min": 1,
        "negado": true
       }
@@ -7582,6 +7985,244 @@
        "restaurante": "La Taverna dei Fori Imperiali",
        "alternativa": "Trattoria Valentino",
        "zona": "en Monti"
+      }
+     }
+    },
+    {
+     "id": "d1ft_free_tour_10",
+     "doc": "lleva el D1-FT, y el Free Tour hace de «otra parte»",
+     "horas": [
+      "10:00"
+     ],
+     "cuando": {
+      "free_tour_aqui": {
+       "desde": "09:00",
+       "hasta": "10:59"
+      }
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "tour",
+         "lugar": "Free Tour por Roma",
+         "min": 150,
+         "modo": null,
+         "hora": "10:00",
+         "hora_tipo": "turno"
+        }
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "parada",
+           "lugar": "Plaza del Campidoglio",
+           "min": 30,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Altar de la Patria",
+           "min": 45,
+           "modo": "dentro",
+           "acortable": true
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Plaza Venecia",
+           "min": 10,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Via dei Fori Imperiali",
+           "min": 15,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Foro Romano y Palatino",
+           "min": 90,
+           "modo": "dentro",
+           "entrada_en": [
+            41.8938,
+            12.4857
+           ],
+           "salida_en": [
+            41.8895,
+            12.489
+           ]
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Arco de Constantino",
+           "min": 10,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Coliseo",
+           "min": 75,
+           "modo": "dentro"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "d1ft_free_tour_12",
+     "doc": "lleva el D1-FT, y el Free Tour hace de «otra parte»",
+     "horas": [
+      "12:00"
+     ],
+     "cuando": {
+      "free_tour_aqui": {
+       "desde": "11:00",
+       "hasta": "12:59"
+      }
+     },
+     "ops": {
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "tour",
+         "lugar": "Free Tour por Roma",
+         "min": 150,
+         "modo": null,
+         "hora": "12:00",
+         "hora_tipo": "turno"
+        }
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "parada",
+           "lugar": "Plaza del Campidoglio",
+           "min": 30,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Altar de la Patria",
+           "min": 45,
+           "modo": "dentro",
+           "acortable": true
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Plaza Venecia",
+           "min": 10,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Via dei Fori Imperiali",
+           "min": 15,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Foro Romano y Palatino",
+           "min": 90,
+           "modo": "dentro",
+           "entrada_en": [
+            41.8938,
+            12.4857
+           ],
+           "salida_en": [
+            41.8895,
+            12.489
+           ]
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Arco de Constantino",
+           "min": 10,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Coliseo",
+           "min": 75,
+           "modo": "dentro"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "d1ft_free_tour_15",
+     "doc": "lleva el D1-FT, y el Free Tour hace de «otra parte»",
+     "horas": [
+      "15:00"
+     ],
+     "cuando": {
+      "free_tour_aqui": {
+       "desde": "14:00",
+       "hasta": "15:59"
+      }
+     },
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "tour",
+           "lugar": "Free Tour por Roma",
+           "min": 150,
+           "modo": null,
+           "hora": "15:00",
+           "hora_tipo": "turno"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "d1ft_free_tour_17",
+     "doc": "lleva el D1-FT, y el Free Tour hace de «otra parte»",
+     "horas": [
+      "17:00"
+     ],
+     "cuando": {
+      "free_tour_aqui": {
+       "desde": "16:00",
+       "hasta": "17:59"
+      }
+     },
+     "ops": {
+      "tarde": {
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "tour",
+           "lugar": "Free Tour por Roma",
+           "min": 150,
+           "modo": null,
+           "hora": "17:00",
+           "hora_tipo": "turno"
+          }
+         ]
+        }
+       ]
       }
      }
     }
@@ -8766,6 +9407,24 @@
          "lugar": "Galería Borghese",
          "min": 120,
          "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Porta Pinciana",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via Veneto",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fuente del Tritón",
+         "min": 10,
+         "modo": null
         }
        ]
       },
@@ -8808,27 +9467,7 @@
          "modo": "camino"
         }
        ]
-      },
-      "sobra": [
-       {
-        "tipo": "parada",
-        "lugar": "Porta Pinciana",
-        "min": 10,
-        "modo": null
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Via Veneto",
-        "min": 10,
-        "modo": null
-       },
-       {
-        "tipo": "parada",
-        "lugar": "Fuente del Tritón",
-        "min": 10,
-        "modo": null
-       }
-      ]
+      }
      }
     },
     {
