@@ -105,9 +105,29 @@ export function findPipelineV2Data(destination) {
   return key ? PIPELINE_V2_DATA[key] : null
 }
 
+/** El Free Tour de la noche (a las 20:30 o más tarde: el de las 21:00) no es un día con tour: el viaje lleva los días de «Sin Free Tour» y el tour va en la noche del D1 (Tanda 6u). */
+export function freeTourDeNoche(answers) {
+  const ft = answers?.freeTourDespues
+  return Boolean(ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) && Number(ft.hora.split(':')[0]) * 60 + Number(ft.hora.split(':')[1]) >= 20 * 60 + 30)
+}
+
 export function hasFreeTourFromAnswers(answers) {
-  // (Un Free Tour de tarde o de noche —`answers.freeTourDespues`— no es el de mañana: el viaje usa los días sin tour y el Día de la Roma antigua lleva su versión con el tour a esa hora.)
-  return Array.isArray(answers?.experiencesPositive) && answers.experiencesPositive.includes('free_tour') && !answers.freeTourDespues
+  return Array.isArray(answers?.experiencesPositive) && answers.experiencesPositive.includes('free_tour') && !freeTourDeNoche(answers)
+}
+
+const NOMBRE_FREE_TOUR = 'Free Tour por Roma'
+/**
+ * El Free Tour que manda en el viaje (Tanda 6u): el de una reserva del viajero (con su hora y su fecha) o, si no hay reserva, el que eligió en la hoja del Free Tour. Devuelve las respuestas
+ * con él puesto (la experiencia `free_tour` y `freeTourDespues` con la hora). Un solo sitio para todo el servidor: ningún otro lugar mira las reservas para saber si hay Free Tour.
+ */
+export function respuestasConFreeTour(answers, reservas) {
+  if (!answers || typeof answers !== 'object') return answers
+  const reserva = (Array.isArray(reservas) ? reservas : []).find((r) => r && Array.isArray(r.placeNames) && r.placeNames.includes(NOMBRE_FREE_TOUR) && /^\d{1,2}:\d{2}$/.test(String(r.time ?? '')))
+  if (!reserva) return answers
+  const hora = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
+  const experiencias = Array.isArray(answers.experiencesPositive) ? answers.experiencesPositive : ['imprescindibles']
+  const franja = Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3)) < 13 * 60 ? 'manana' : Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3)) < 19 * 60 ? 'tarde' : 'noche'
+  return { ...answers, experiencesPositive: experiencias.includes('free_tour') ? experiencias : [...experiencias, 'free_tour'], freeTourDespues: { franja, hora, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null } }
 }
 
 // ── Ronda 5 — tags por experiencia positiva ──────────────────────────────────────────────────

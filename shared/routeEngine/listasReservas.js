@@ -38,15 +38,7 @@ export function tieneReservasEscritas(dia, lugar) {
   return Boolean(dia?.reservas?.[lugar]) || tramosDeReserva(dia, lugar).length > 0
 }
 
-/** Las mejores horas de ese día para ese sitio (las de los tramos con lista escrita), como texto «9:00», «16:00». */
-export function mejoresHoras(dia, lugar) {
-  return dia?.reservas?.[lugar]?.mejores ?? []
-}
-
-/**
- * La clase de una reserva: 'normal' (el día normal), 'lista' (un tramo con lista escrita: `tramo`), 'no_cabe' (una combinación que no cabe: `motivo`) o 'sin_lista'.
- * `contexto`: { tieneFreeTour, excursionManana } del día de la reserva.
- */
+/** Qué lista tiene ese día para esa hora (Tanda 6u, regla 17: la app solo lo usa para montar el día; nunca propone otra hora). */
 export function claseDeReserva(dia, lugar, hora, contexto = {}) {
   if (!tieneReservasEscritas(dia, lugar)) return RESERVAS_GRANDES.has(lugar) ? { clase: 'sin_lista' } : { clase: 'sin_definir' }
   const m = toMin(hora)
@@ -58,24 +50,6 @@ export function claseDeReserva(dia, lugar, hora, contexto = {}) {
   const normal = tramoNormal(dia, lugar)
   if (normal && m >= normal.desde && m <= normal.hasta) return { clase: 'normal' }
   return { clase: 'sin_lista' }
-}
-
-/**
- * El consejo al meter una reserva (la hoja de «Añade tu reserva»): { estado: 'bien' | 'sin_lista' | 'no_cabe' | 'sin_definir', mejores, mensaje, propone }.
- * El motor no improvisa: si la hora no tiene lista o no cabe, avisa y propone otra hora u otro día.
- */
-export function consejoDeReserva(dia, lugar, hora, contexto = {}) {
-  const mejores = mejoresHoras(dia, lugar)
-  const clase = claseDeReserva(dia, lugar, hora, contexto)
-  const horasTexto = mejores.length > 1 ? `${mejores.slice(0, -1).join(', ')} o ${mejores.at(-1)}` : mejores[0] ?? ''
-  const base = { mejores, textoMejores: mejores.length > 0 ? `Para este día, mejor a las ${horasTexto}` : null }
-  if (clase.clase === 'sin_definir') return { ...base, estado: 'sin_definir', mensaje: null, propone: null }
-  if (clase.clase === 'no_cabe') {
-    if (clase.motivo === 'excursion_coliseo') return { ...base, estado: 'no_cabe', mensaje: 'Ese día tienes la excursión por la mañana. ¿Pasamos el Coliseo al día de la Roma antigua?', propone: 'otro_dia' }
-    return { ...base, estado: 'no_cabe', mensaje: `El Free Tour y los Museos a las ${hora} el mismo día no caben. Antes de las ${clase.desde} no cabe: ¿los pasamos a otra hora (${horasTexto}) o a otro día?`, propone: 'otra_hora' }
-  }
-  if (clase.clase === 'sin_lista') return { ...base, estado: 'sin_lista', mensaje: `A las ${hora} no tenemos escrito cómo hacer este día${horasTexto ? `: mejor a las ${horasTexto}` : ''}.`, propone: 'otra_hora' }
-  return { ...base, estado: 'bien', mensaje: null, propone: null, tramo: clase.tramo ?? null }
 }
 
 export { toMin as reservaToMin, hhmm as reservaHhmm }

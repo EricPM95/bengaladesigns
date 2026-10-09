@@ -31,6 +31,18 @@ function durationOf(route: Route, reservation: Reservation): number {
 /** «tu Free Tour» o «tu entrada a Museos Vaticanos y Capilla Sixtina»: el nombre sale de la propia reserva. */
 const labelOf = (reservation: Reservation): string => (reservation.refId === 'Free Tour' ? 'tu Free Tour' : `tu entrada a ${reservation.name}`)
 
+/** Lo que hace falta entre el final de una reserva y el principio de la siguiente para llegar: 30 min de trayecto y 30 de llegada a la entrada (el documento del Roma, «Si los dos están reservados»). */
+const GAP_MINUTES = 60
+/** Y 30 más si entre una y otra toca comer (la primera acaba antes de las 13:30 y la segunda empieza después de las 14:30). */
+const LUNCH_EXTRA_MINUTES = 30
+
+/** ¿Dos reservas del mismo día se pisan? Si la segunda empieza antes de que dé tiempo a llegar desde el final de la primera (la duración de la visita, el trayecto, la llegada y, si toca, la comida). */
+function seSolapan(a: { start: number; end: number }, b: { start: number; end: number }): boolean {
+  const [first, second] = a.start <= b.start ? [a, b] : [b, a]
+  const lunch = first.end <= 13 * 60 + 30 && second.start >= 14 * 60 + 30 ? LUNCH_EXTRA_MINUTES : 0
+  return second.start < first.end + GAP_MINUTES + lunch
+}
+
 /**
  * Las reservas de entrada que se pisan: del mismo día y con las horas cruzadas (de su hora a su hora más lo que dura la visita). Es lo único que avisa (la app nunca propone otra hora: el viajero compra la entrada cuando
  * le va bien y la app se adapta). El Free Tour va primero en el texto; si no, la de antes. Se calcula del estado del viaje, así que se va sola cuando se arregla.
@@ -49,7 +61,7 @@ export function reservationOverlaps(route: Route, reservations: Reservation[]): 
     for (let j = i + 1; j < entries.length; j++) {
       const a = entries[i]
       const b = entries[j]
-      if (a.dayId !== b.dayId || !(a.start < b.end && b.start < a.end)) continue
+      if (a.dayId !== b.dayId || !seSolapan(a, b)) continue
       const [first, second] = a.reservation.refId === 'Free Tour' || (b.reservation.refId !== 'Free Tour' && a.start <= b.start) ? [a, b] : [b, a]
       found.push({
         id: `solape:${first.reservation.id}:${second.reservation.id}`,

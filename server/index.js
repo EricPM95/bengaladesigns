@@ -4,7 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
-import { RESERVAS_GRANDES, consejoDeReserva } from '../shared/routeEngine/listasReservas.js'
+import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -16,6 +16,8 @@ import {
   findPipelineV2Data,
   findPipelineV2Key,
   hasFreeTourFromAnswers,
+  respuestasConFreeTour,
+  freeTourDeNoche,
   buildSkeletonV2,
   buildDayPlacesV2,
   buildDayBlockV2,
@@ -101,6 +103,15 @@ const anthropic = new Anthropic()
 const app = express()
 // (6 MB: la captura o el PDF de una confirmación de reserva viaja en base64, ver /api/read-booking.)
 app.use(express.json({ limit: '6mb' }))
+// El Free Tour del viaje (Tanda 6u): el de una reserva con hora manda sobre el de la hoja; se pone en las respuestas UNA vez, aquí, y todo el servidor lo lee de ellas.
+// (`answers_sin_reservas`: las de antes de aplicar las reservas; el plan de reservas las necesita para calcular el «antes».)
+app.use((req, _res, next) => {
+  if (req.method === 'POST' && req.body && typeof req.body === 'object' && req.body.answers && typeof req.body.answers === 'object') {
+    req.body.answers_sin_reservas = req.body.answers
+    req.body.answers = respuestasConFreeTour(req.body.answers, req.body.reservas)
+  }
+  next()
+})
 // ── FIX 7: log exhaustivo con timestamp de CADA llamada real a la API de Anthropic ──────────
 //
 // Objetivo: poder responder "¿cuántas llamadas reales dispara generar una ruta de Roma (pipeline
@@ -2551,7 +2562,10 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
     if (name) reservasGrandes.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null })
   }
   const ft = answers?.freeTourDespues
-  const freeTourDespues = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) ? { franja: ft.franja ?? null, hora: ft.hora } : null
+  const ftValido = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora)
+  // El Free Tour de la noche (21:00) va en el D1; los demás (10:00, 12:00, 15:00, 17:00) son el día D3 de su hora: su hora entra como la de una reserva (Tanda 6u).
+  const freeTourDespues = ftValido && freeTourDeNoche(answers) ? { franja: 'noche', hora: ft.hora, dateIso: typeof ft.dateIso === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ft.dateIso) ? ft.dateIso : null, dayNumber: Number.isInteger(Number(ft.dayNumber)) ? Number(ft.dayNumber) : null } : null
+  if (ftValido && !freeTourDespues && !entradas['Free Tour por Roma']) entradas['Free Tour por Roma'] = ft.hora.length === 4 ? `0${ft.hora}` : ft.hora
   const mj = answers?.mediaJornada
   const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
   // El interruptor del día 4 (Tanda 6g): lo que el viajero ha puesto, 'roma' o 'excursion'; sin él, el de por defecto del viaje.
@@ -5439,20 +5453,6 @@ app.post('/api/adjust-day', async (req, res) => {
 })
 
 // HOY (Tanda 6b): «Vas bien de tiempo» / «Vas justo». Cada vez que el viajero marca «Visto», compara la hora real con lo que le queda de la franja. Nunca cambia nada: solo cuenta y propone. Sin Claude.
-// Reservas «solo lo escrito» (regla 17, Tanda 6e): al meter una reserva se enseñan las mejores horas del día y, si la hora no tiene lista escrita o la combinación no cabe,
-// se avisa y se propone otra hora u otro día. Nada de Claude: sale de las listas escritas (listas.json).
-app.post('/api/reservation-advice', (req, res) => {
-  const { destination, curated_day_id, place_names, time, has_free_tour, excursion_morning } = req.body ?? {}
-  const written = typeof destination === 'string' ? writtenDaysFor(destination.toLowerCase()) : null
-  const dia = written?.days?.[curated_day_id]
-  const lugar = (Array.isArray(place_names) ? place_names : []).find((name) => RESERVAS_GRANDES.has(name))
-  if (!dia || !lugar || !/^\d{1,2}:\d{2}$/.test(String(time ?? ''))) {
-    res.json({ estado: 'sin_definir', mejores: [], textoMejores: null, mensaje: null, propone: null })
-    return
-  }
-  res.json({ ...consejoDeReserva(dia, lugar, String(time), { tieneFreeTour: Boolean(has_free_tour), excursionManana: Boolean(excursion_morning) }), lugar })
-})
-
 // Las horas a las que se puede entrar a un sitio grande ese día (Tanda 6k): de la apertura a la última entrada. La rueda de la hora solo enseña esas.
 app.post('/api/reservation-hours', (req, res) => {
   const { destination, place, date_iso, month, season, dates } = req.body ?? {}
@@ -5476,8 +5476,8 @@ app.post('/api/reservation-plan', async (req, res) => {
     return
   }
   try {
-    const plan = await planDeReservas({ destData, destKey: findPipelineV2Key(destData.destination ?? destination), body: req.body, answers, hasFreeTour: hasFreeTourFromAnswers(answers), engineExtras: engineExtrasFromRequest, nueva: reserva })
-    res.json({ cambia: plan.cambia, principal: plan.principal, mensaje: plan.mensaje, motivos: plan.motivos, sinMover: plan.sinMover, cambios: plan.cambios, consejo: plan.consejo })
+    const plan = await planDeReservas({ destData, destKey: findPipelineV2Key(destData.destination ?? destination), body: req.body, answers, engineExtras: engineExtrasFromRequest, nueva: reserva })
+    res.json({ cambia: plan.cambia, principal: plan.principal, mensaje: plan.mensaje, motivos: plan.motivos, sinMover: plan.sinMover, cambios: plan.cambios })
   } catch (error) {
     console.error('[reservation-plan]', error)
     res.json({ cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null })

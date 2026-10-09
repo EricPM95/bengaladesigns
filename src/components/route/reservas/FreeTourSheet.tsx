@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom'
 import type { Route } from '../../../lib/types'
 import { aplicarFreeTour } from '../../../lib/rebuildDay'
 
-/** Las horas del Free Tour (Tanda 6j): el de mañana es el de siempre (10:00); el de tarde sale a las 15:00 o a las 17:00 y el de noche a las 21:00 (solo si el viajero lo reserva). */
+/** Las horas del Free Tour (Tanda 6u): el de siempre es el de las 10:00; hay un día escrito para el de las 12:00, el de las 15:00 y el de las 17:00 (el D3), y el de las 21:00 va en la noche del primer día. */
 const FRANJAS = [
   { id: 'manana', label: 'Por la mañana', hora: '10:00' },
+  { id: 'manana', label: 'A mediodía', hora: '12:00' },
   { id: 'tarde', label: 'Por la tarde', hora: '15:00' },
   { id: 'tarde', label: 'Por la tarde', hora: '17:00' },
   { id: 'noche', label: 'De noche', hora: '21:00' },

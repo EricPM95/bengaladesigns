@@ -789,7 +789,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       const others = (state.route.answers.experiencesPositive ?? ['imprescindibles']).filter((id) => id !== 'free_tour')
-      const answers = { ...state.route.answers, experiencesPositive: choice ? [...others, 'free_tour' as const] : others, freeTourDespues: choice && choice.franja !== 'manana' ? choice : undefined }
+      const answers = { ...state.route.answers, experiencesPositive: choice ? [...others, 'free_tour' as const] : others, freeTourDespues: choice && choice.hora !== '10:00' ? choice : undefined }
       return { route: { ...state.route, answers } }
     }),
   replaceDayRebuilt: (dayId, day) =>
