@@ -162,6 +162,8 @@ Después, leer el informe de la 6x (los 63 casos, los «Si te sobra tiempo» que
 - 5, lo que completó: bien.
 - 6, los viajes de prueba: borrarlos (ya va en la 6z).
 
+**El presupuesto del viaje (Eric, 10-oct; Tanda 6z2):** todo lo que se añade lleva su precio (opcional, total de todas las personas, lo pone el viajero, nunca la app): el alojamiento, las entradas, las excursiones, los vuelos o trenes, el seguro, la eSIM, el coche, los traslados. El Free Tour no lleva precio. La pantalla del presupuesto (diseño `docs\diseno\presupuesto\Presupuesto.dc.html`): total con «por persona» escondido, bloques «Transporte y alojamiento», «Ruta», «Útil para el viaje» y «Extras» (a mano: propinas, comidas, compras). Se abre desde RESERVAS. Gratis. La moneda: la del viajero (de su ciudad de origen, se puede cambiar); cada precio se guarda con la suya y el presupuesto lo suma todo en la del viajero, con el cambio del día («≈»).
+
 **Detrás de la 6y:**
 1. El login: Google, Apple y email con enlace; sin obligar al principio; el viaje de ahora pasa a la cuenta. Hace falta antes de activar el pago.
 2. La Tanda 7.

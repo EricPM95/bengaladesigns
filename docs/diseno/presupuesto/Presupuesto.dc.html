@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input{font-family:inherit;-webkit-tap-highlight-color:transparent}
+input::placeholder{color:rgba(28,34,48,.4)}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 30%,#F1E8D6 0%,#E0D3BA 75%);display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 20px 60px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Ruta</span>
+    <div style="display:flex;gap:2px;padding:3px;border-radius:999px;background:#EDE4D3">
+      <sc-for list="{{ modes }}" as="m" hint-placeholder-count="2">
+        <button onClick="{{ m.pick }}" style="height:32px;padding:0 12px;border:none;border-radius:999px;background:{{ m.bg }};color:{{ m.fg }};font:500 13px 'Geist';cursor:pointer">{{ m.n }}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-screen-label="Presupuesto" style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+    <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#000;z-index:20"></div>
+    <div style="height:50px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 28px 0 32px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+
+    <div style="flex:none;display:flex;align-items:center;gap:12px;padding:4px 16px 8px">
+      <button aria-label="Atrás" style="width:44px;height:44px;flex:none;border-radius:50%;border:none;background:#FFFDF8;box-shadow:0 1px 2px rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1C2230"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+      <span style="flex:1;display:flex;flex-direction:column;gap:3px">
+        <span style="font:400 28px/1 'Instrument Serif',serif">Presupuesto</span>
+        <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(28,34,48,.55)">Roma · 10 – 14 ago · 2 personas</span>
+      </span>
+    </div>
+
+    <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:6px 16px 28px;display:flex;flex-direction:column;gap:14px">
+
+      <div style="position:relative;flex:none;border-radius:26px;background:#1C2230;color:#FFFDF8;padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;overflow:hidden">
+        <span style="position:absolute;right:-40px;top:-50px;width:160px;height:160px;border-radius:50%;background:oklch(0.55 0.17 5 / .35);filter:blur(28px)"></span>
+        <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+          <span style="display:flex;flex-direction:column;gap:6px">
+            <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,253,248,.6)">Total del viaje</span>
+            <span style="font:400 54px/.9 'Instrument Serif',serif">{{ total }}</span>
+          </span>
+          <button onClick="{{ togglePP }}" aria-label="{{ ppLabel }}" style="display:flex;align-items:center;gap:7px;height:30px;padding:0 10px;margin-bottom:4px;border-radius:999px;border:none;background:rgba(255,253,248,.1);color:#FFFDF8;cursor:pointer" style-hover="background:rgba(255,253,248,.18)">
+            <span style="font:500 12px 'Geist';white-space:nowrap"><span style="font:600 12px 'Geist Mono',monospace;letter-spacing:{{ ppLs }}">{{ ppVal }}</span> por persona</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75"><path d="{{ eye }}"></path></svg>
+          </button>
+        </div>
+        <div style="position:relative;display:flex;height:8px;border-radius:8px;overflow:hidden;background:rgba(255,253,248,.12)">
+          <sc-for list="{{ bar }}" as="b" hint-placeholder-count="2"><span style="width:{{ b.w }};background:{{ b.c }};transition:width .5s cubic-bezier(.2,.8,.2,1)"></span></sc-for>
+        </div>
+        <div style="position:relative;display:flex;gap:14px">
+          <sc-for list="{{ bar }}" as="b" hint-placeholder-count="2">
+            <span style="display:flex;align-items:center;gap:6px;font:500 12px 'Geist';color:rgba(255,253,248,.82)"><span style="width:8px;height:8px;border-radius:50%;background:{{ b.c }}"></span>{{ b.n }} · {{ b.v }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="flex:none;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35);padding:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:32px;height:32px;flex:none;border-radius:10px;background:oklch(0.55 0.17 5 / .12);color:oklch(0.5 0.17 5);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 15c0-5 12-1 12-6"></path></svg></span>
+          <span style="flex:1;font:400 21px/1 'Instrument Serif',serif">Ruta</span>
+          <span style="font:600 13px 'Geist Mono',monospace">{{ routeSum }}</span>
+        </div>
+        <sc-if value="{{ routeEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius:14px;border:1px dashed rgba(28,34,48,.18);padding:14px;display:flex;flex-direction:column;gap:3px">
+            <span style="font:500 13px 'Geist'">Todavía no hay gastos de ruta</span>
+            <span style="font:400 12px/1.4 'Geist';color:rgba(28,34,48,.58)">Aparecerán aquí cuando reserves entradas, tours o excursiones.</span>
+          </div>
+        </sc-if>
+        <sc-for list="{{ route }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px 6px 6px;border-radius:14px;background:#F8F3EA">
+            <span style="width:32px;height:32px;flex:none;border-radius:10px;background:#FFFFFF;color:rgba(28,34,48,.7);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.i }}"></path></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:500 13px/1.25 'Geist'">{{ r.n }}</span><span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">{{ r.d }}</span></span>
+            <span style="font:600 13px 'Geist Mono',monospace">{{ r.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="flex:none;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35);padding:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:32px;height:32px;flex:none;border-radius:10px;background:oklch(0.55 0.1 220 / .14);color:oklch(0.45 0.1 220);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+          <span style="flex:1;font:400 21px/1 'Instrument Serif',serif">Extras</span>
+          <span style="font:600 13px 'Geist Mono',monospace">{{ extraSum }}</span>
+        </div>
+        <sc-for list="{{ extras }}" as="x" hint-placeholder-count="2">
+          <div style="display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 4px 4px 12px;border-radius:14px;background:#F8F3EA;animation:pop .3s ease both">
+            <span style="flex:1;min-width:0;font:500 13px 'Geist'">{{ x.n }}</span>
+            <span style="font:600 13px 'Geist Mono',monospace">{{ x.v }}</span>
+            <button onClick="{{ x.del }}" aria-label="Quitar" style="width:36px;height:36px;flex:none;border:none;border-radius:50%;background:transparent;color:rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#EDE4D3"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+          </div>
+        </sc-for>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 78px auto;gap:6px">
+          <input value="{{ name }}" onChange="{{ onName }}" placeholder="Cena primer día" style="height:44px;min-width:0;border-radius:12px;border:1px solid rgba(28,34,48,.12);background:#F5EFE4;padding:0 12px;font:400 14px 'Geist';color:#1C2230;outline:none">
+          <input value="{{ amount }}" onChange="{{ onAmount }}" inputmode="decimal" placeholder="38 €" style="height:44px;min-width:0;border-radius:12px;border:1px solid rgba(28,34,48,.12);background:#F5EFE4;padding:0 12px;font:500 14px 'Geist Mono',monospace;color:#1C2230;outline:none">
+          <button onClick="{{ add }}" style="height:44px;padding:0 14px;border:none;border-radius:12px;background:{{ addBg }};color:#FFFDF8;font:600 13px 'Geist';cursor:{{ addCur }};white-space:nowrap;transition:background .25s">Añadir</button>
+        </div>
+      </div>
+
+      <div style="flex:none;display:flex;align-items:baseline;justify-content:space-between;padding:6px 6px 0;border-top:1px solid rgba(28,34,48,.12)">
+        <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.6);padding-top:12px">Total</span>
+        <span style="font:400 30px/1 'Instrument Serif',serif;padding-top:10px">{{ total }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC={t:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',f:'M5 21V4M5 4h11l-2.5 3.5L16 11H5',c:'M4 20h16M5 9h14M12 4l8 5H4zM7 9v11M12 9v11M17 9v11'};
+const ROUTE=[{n:'Coliseo, Foro y Palatino',d:'Mié 11 · 2 entradas',v:36,i:IC.t},{n:'Museos Vaticanos y Capilla Sixtina',d:'Mié 11 · 2 entradas',v:40,i:IC.t},{n:'Panteón',d:'Mar 10 · 2 entradas',v:10,i:IC.t},{n:'Free Tour por Roma',d:'Mar 10 · propina orientativa',v:20,i:IC.f},{n:'Excursión a Pompeya',d:'Jue 12 · 2 personas',v:178,i:IC.c}];
+const eur=n=>'€'+(Math.round(n*100)/100).toLocaleString('es-ES');
+class Component extends DCLogic {
+  state={pp:false,full:true,extras:[{id:1,n:'Taxi al aeropuerto',v:50}],name:'',amount:'',nid:2};
+  renderVals(){
+    const s=this.state,route=s.full?ROUTE:[];
+    const rs=route.reduce((a,r)=>a+r.v,0),xs=s.extras.reduce((a,x)=>a+x.v,0),tot=rs+xs;
+    const amt=parseFloat(String(s.amount).replace(',','.'));const ok=s.name.trim()&&amt>0;
+    const R='oklch(0.62 0.17 5)',B='oklch(0.65 0.1 220)';
+    return{
+      modes:[[true,'Con reservas'],[false,'Vacía']].map(([v,n])=>({n,bg:s.full===v?'#1C2230':'transparent',fg:s.full===v?'#FFFDF8':'rgba(28,34,48,.7)',pick:()=>this.setState({full:v})})),
+      total:eur(tot),perPerson:eur(tot/2),ppVal:s.pp?eur(tot/2):'€ •••',ppLs:s.pp?'0':'.08em',ppLabel:s.pp?'Ocultar precio por persona':'Ver precio por persona',eye:s.pp?'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z':'M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.8 8.4 2 12 2 12s4 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2',togglePP:()=>this.setState(st=>({pp:!st.pp})),
+      bar:[{n:'Ruta',v:eur(rs),c:R,w:tot?rs/tot*100+'%':'0%'},{n:'Extras',v:eur(xs),c:B,w:tot?xs/tot*100+'%':'0%'}],
+      routeSum:eur(rs),routeEmpty:!route.length,route:route.map(r=>({...r,v:eur(r.v)})),
+      extraSum:eur(xs),extras:s.extras.map(x=>({n:x.n,v:eur(x.v),del:()=>this.setState(st=>({extras:st.extras.filter(e=>e.id!==x.id)}))})),
+      name:s.name,amount:s.amount,onName:e=>this.setState({name:e.target.value}),onAmount:e=>this.setState({amount:e.target.value}),
+      addBg:ok?'oklch(0.55 0.17 5)':'oklch(0.55 0.17 5 / .4)',addCur:ok?'pointer':'default',
+      add:()=>{if(!ok)return;this.setState(st=>({extras:[...st.extras,{id:st.nid,n:st.name.trim(),v:amt}],nid:st.nid+1,name:'',amount:''}));}};
+  }
+}
+</script>
+</body>
+</html>
