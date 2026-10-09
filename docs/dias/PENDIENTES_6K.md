@@ -82,3 +82,27 @@
    - **El día, siempre en la tarjeta:** sin fechas, «Día 1»; con fechas, la fecha en su lugar («Mar 12 ene»).
    - **Con la entrada puesta:** «Mar 12 ene · ✓ Reservada · 14:00» (sin fechas, «Día 1 · ✓ Reservada · 14:00») y «Cambiar». Ya no sale «Reservar».
    - **Sin la mejor hora** (punto 1).
+
+## Para la siguiente (después de la 6m)
+Diseño: `docs\diseno\reservas\Etiqueta Entrada.dc.html` y `Etiqueta_Entrada.png` (subirlos al PC cuando Code acabe la 6m). Solo la tarjeta y su pestaña; la hoja de compra del prototipo (precios, personas, «4 libres») no se hace.
+
+1. **DÍAS · la pestaña de entrada en la tarjeta de cada sitio** (Eric, 8-oct noche):
+   - **Sin reservar:** pestaña naranja con el icono de la entrada, pegada al borde derecho de la tarjeta. **Al tocarla, abre la ficha del sitio directamente en su pestaña «Entradas»** (cambiado por Eric: no va directa a comprar).
+   - **La pestaña «Entradas» de la ficha** enseña **todas las entradas que hay para ese sitio**, cada una con su nombre, una línea de qué incluye, el precio «desde» si lo tenemos y su botón [Reservar], que abre la compra en otra pestaña con el aviso «Abriendo la tienda de entradas…». Nunca el nombre del proveedor.
+     - Debajo, «¿Ya la tienes? **Añádela**», que abre la hoja de la hora de la 6m (el mismo texto que en RESERVAS; fuera «¿Ya la has reservado? Añade tu confirmación»).
+     - **Los datos:** las entradas de cada sitio salen de los datos del destino, con su enlace de afiliado. Si un sitio tiene una sola, sale una. Las que falten, las pone Eric (como los datos de las excursiones); no se inventan.
+     - **La pestaña naranja y «Entradas» solo salen en los sitios con entradas.** (La Basílica tendrá la subida a la Cúpula cuando esté la API.)
+   - **Ya añadida:** la pestaña pasa a verde, con ✓ y la hora («11:30»). **Sin borde verde en la tarjeta.** Al tocarla, la hoja de «Cambiar» de la 6m (hora, día o eliminar).
+   - **En todo lo que se puede reservar,** se visite por dentro o por fuera, siempre que tenga enlace de compra en los datos.
+   - **El Coliseo y el Foro:** al añadir la entrada del Coliseo, el Foro queda añadido también (la misma entrada). Las dos pestañas en verde: el Coliseo con su hora y el Foro con el ✓. Al eliminarla, se quitan las dos.
+   - **Sustituye a la etiqueta «✓ Reservada · 13:30»** de la 6j, que sale de la tarjeta.
+   - **Fuera «Reserva obligatoria en estas fechas» en toda la app** (Eric: es intrusiva): en la tarjeta del día, en RESERVAS y en la ficha.
+   - Mirarlo a 375 px: que la pestaña no tape el «···» ni el nombre.
+2. **Fuera el botón flotante redondo del autobús** (abajo a la derecha, en DÍAS y en RUTA). Eric sabe lo que abre: quítalo sin más.
+
+## Para Claude (documento de días, cuando Code acabe la 6q)
+- **Regla 3 de `DIAS_ROMA_PARADAS.md`:** las horas fijas (reservas, turnos, Free Tour) ya no se enseñan encima de la parada. La única hora a la vista es la de la pestañita verde, cuando la entrada está reservada. Sin reservar, la parada va en su sitio sin hora. **Hecho en el documento el 9-oct-2026, tras la 6q.**
+
+## Después de dejar RESERVAS listo (apuntado el 9-oct-2026)
+- **El Free Tour según la hora:** el D3 solo está escrito con el Free Tour de las 10:00. Hay que escribir en el documento cómo queda el día con el de las 12:00, 15:00, 17:00 y 21:00 (o decidir qué horas se proponen). Mientras tanto, con otra hora sale la hoja de la regla 17.
+- **La regla 9 del documento se contradice con los días:** dice que son paradas la Conciliazione, Via Condotti, Via Veneto, el Puente, Piazza Venezia, los Fori Imperiali y el Arco de Constantino, pero los días (y la regla 10) los ponen «de camino». Pendiente de que Eric diga cómo se queda.

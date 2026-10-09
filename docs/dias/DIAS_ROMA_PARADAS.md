@@ -8,7 +8,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 2. **El trayecto entre paradas se ve siempre**, en RUTA, en DÍAS y en HOY, entre una tarjeta y la siguiente: «8 min andando», «Taxi, 15 min», «Bus 23, 20 min».
    - **Por defecto, andando o transporte público** (decidido el 7-oct-2026, todos los destinos): andando si son 25 min o menos; si no, transporte público, si hay una línea de verdad. El taxi solo sale por defecto si no hay ninguna de las dos. El taxi siempre está en las opciones, al tocar el icono del trayecto.
    - **Transporte público solo si existe:** solo se ofrece si hay una línea real que une los dos sitios (con su número: «Tranvía 8», «Metro A», «Bus 40»). Si no la hay, no sale la opción.
-3. **Minutos aproximados:** cada parada lleva lo que se tarda más o menos (`~`). La app solo los suma, con lo que se anda, para saber si una franja cabe. **No se enseña ninguna hora por parada** (decidido el 6-oct-2026): solo la franja con su hora («Mañana · 9:00–14:00») y las horas fijas (reservas, turnos, Free Tour). **Sin ajustes, sin rellenos, sin alargar.**
+3. **Minutos aproximados:** cada parada lleva lo que se tarda más o menos (`~`). La app solo los suma, con lo que se anda, para saber si una franja cabe. **No se enseña ninguna hora por parada** (decidido el 6-oct-2026): solo la franja con su hora («Mañana · 9:00–14:00»). Las horas fijas (reservas, turnos, Free Tour) colocan la parada en su sitio, pero tampoco se enseñan encima de ella (decidido el 9-oct-2026, tanda 6q): la única hora a la vista es la de la pestañita verde, cuando la entrada está añadida. La comida, la cena y las pausas sí llevan su hora. **Sin ajustes, sin rellenos, sin alargar.**
    - **Mejor pasarse que quedarse corto** (decidido el 6-oct-2026). Un imprescindible, la primera vez que sale en el viaje, lleva tiempo para verlo, hacer fotos y vídeos:
      - **por fuera, los grandes, ~45:** Coliseo, Fontana de Trevi, Piazza Navona, Plaza de San Pedro y Plaza de España;
      - **por fuera, los demás, ~30:** Altar de la Patria, Castillo de Sant'Angelo, Plaza del Campidoglio y el Foro desde la terraza;
@@ -419,7 +419,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Fontana de Trevi sin gente ~45 (el día empieza a las 7:30)
   - Desayuno en la Piazza della Rotonda
   - Panteón, por dentro ~30 (abre a las 9:00)
-  - 🎟 Free Tour Centro Histórico, 10:00 ~2 h 30. Sale de la Plaza de España y acaba en Navona.
+  - 🎟 Free Tour por Roma, 10:00 ~2 h 30. Sale de la Plaza de España y acaba en Navona.
 - **Comida:** Armando al Pantheon (o Supplizio)
 - **Tarde** (cambiado el 8-oct-2026: antes iba la Basílica primero, y de la Basílica a los Museos y vuelta a la Plaza eran 30 min de ir y volver):
   - Bus 40 o taxi a la entrada de los Museos

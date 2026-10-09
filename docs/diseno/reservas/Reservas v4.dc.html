@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 30%,#F1E8D6 0%,#E0D3BA 75%);padding:36px 40px 64px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <span style="font:400 30px/1 'Instrument Serif',serif">Reservas <em style="color:oklch(0.55 0.17 5)">v4</em></span>
+    <div style="display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center">
+      <sc-for list="{{ ctrls }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ c.n }}</span>
+          <div style="display:flex;gap:2px;padding:3px;border-radius:999px;background:#EDE4D3">
+            <sc-for list="{{ c.opts }}" as="p" hint-placeholder-count="3">
+              <button onClick="{{ p.pick }}" style="height:32px;padding:0 12px;border:none;border-radius:999px;background:{{ p.bg }};color:{{ p.fg }};font:500 13px 'Geist';cursor:pointer;white-space:nowrap;transition:background .25s,color .25s">{{ p.n }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Ver en el móvil completa</span>
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{ demos }}" as="p" hint-placeholder-count="3">
+            <button onClick="{{ p.pick }}" style="height:32px;padding:0 12px;border:1px solid rgba(28,34,48,.18);border-radius:999px;background:#FFFDF8;color:#1C2230;font:500 13px 'Geist';cursor:pointer;white-space:nowrap">{{ p.n }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:48px 56px;align-items:flex-start">
+  <sc-for list="{{ frames }}" as="f" hint-placeholder-count="3">
+    <div id="{{ f.id }}" style="display:flex;flex-direction:column;gap:12px">
+      <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ f.badge }}</span>
+      <div data-screen-label="{{ f.badge }}" style="width:{{ f.w }};height:{{ f.h }};border-radius:{{ f.r }};box-shadow:{{ f.sh }};position:relative;overflow:hidden;background:#F5EFE4;display:flex;flex-direction:column">
+
+        <sc-if value="{{ f.phone }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#000;z-index:95"></div>
+          <div style="height:50px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 28px 0 32px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+        </sc-if>
+
+        <header style="flex:none;display:flex;align-items:center;gap:12px;padding:{{ f.hdrPad }}">
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+            <span style="font:400 30px/1 'Instrument Serif',serif">Reservas</span>
+            <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(28,34,48,.55)">Barcelona → Roma · 10 – 14 ago 2027</span>
+          </span>
+          <sc-if value="{{ f.isDesk }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;display:grid;grid-template-columns:1fr 1fr;width:220px;height:40px;padding:4px;border-radius:999px;background:#EDE4D3">
+              <span style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:#1C2230;transform:{{ dKnob }};transition:transform .4s cubic-bezier(.2,.8,.2,1)"></span>
+              <sc-for list="{{ dToggle }}" as="o" hint-placeholder-count="2">
+                <button onClick="{{ o.pick }}" style="position:relative;border:none;background:transparent;font:600 13px 'Geist';color:{{ o.c }};cursor:pointer;transition:color .3s">{{ o.n }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </header>
+
+        <div ref="{{ f.sref }}" style="position:relative;flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:{{ f.pad }};display:flex;flex-direction:column;gap:14px">
+
+          <sc-if value="{{ f.full }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:14px 14px 13px;display:flex;flex-direction:column;gap:10px">
+            <span style="font:400 20px/1.1 'Instrument Serif',serif">Tu viaje a Roma · <em style="color:{{ f.sumC }}">{{ f.sumTxt }}</em></span>
+            <div style="display:flex;gap:4px">
+              <sc-for list="{{ f.segs }}" as="g" hint-placeholder-count="4"><span style="flex:1;height:4px;border-radius:4px;background:{{ g }};transition:background .4s"></span></sc-for>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <sc-for list="{{ f.fichas }}" as="x" hint-placeholder-count="4">
+                <button onClick="{{ x.tap }}" style="height:32px;padding:0 12px 0 8px;border-radius:999px;border:1px solid {{ x.bd }};background:{{ x.bg }};color:{{ x.fg }};display:flex;align-items:center;gap:6px;font:500 12.5px 'Geist';white-space:nowrap;cursor:pointer;transition:background .3s,color .3s">
+                  <span style="width:16px;height:16px;border-radius:50%;background:{{ x.dBg }};border:1.5px solid {{ x.dBd }};color:#fff;font:700 9px/13px 'Geist';text-align:center">{{ x.mk }}</span>{{ x.n }}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <div style="display:grid;grid-template-columns:{{ f.mid }};gap:14px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+
+              <sc-if value="{{ f.full }}" hint-placeholder-val="{{ true }}">
+                <div data-blk="llegada" style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)">
+                  <sc-if value="{{ f.L.closedEmpty }}" hint-placeholder-val="{{ false }}">
+                    <div onClick="{{ f.L.reopen }}" style="display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;animation:pop .35s ease both">
+                      <span style="width:36px;height:36px;flex:none;border-radius:12px;background:oklch(0.55 0.17 5 / .12);color:oklch(0.5 0.17 5);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.L.icon }}"></path></svg></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:400 22px/1 'Instrument Serif',serif">Llegada y vuelta</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.55)">Barcelona → Roma</span></span>
+                      <span style="height:24px;padding:0 9px;border-radius:999px;background:oklch(0.55 0.17 5 / .1);color:oklch(0.5 0.17 5);font:600 11px/24px 'Geist';white-space:nowrap">Falta</span>
+                      <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ f.L.closedSum }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:8px;padding:12px 8px 12px 12px;animation:pop .35s ease both">
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+                        <sc-for list="{{ f.L.sum }}" as="l" hint-placeholder-count="2">
+                          <div onClick="{{ l.tap }}" style="display:flex;align-items:flex-start;gap:9px;cursor:pointer">
+                            <span style="width:24px;height:24px;flex:none;border-radius:50%;background:{{ l.icBg }};color:{{ l.icFg }};display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ l.icon }}"></path></svg></span>
+                            <span style="flex:1;min-width:0;padding-top:3px;font:400 12.5px/1.4 'Geist';color:{{ l.fg }};text-wrap:pretty">{{ l.txt }}<sc-if value="{{ l.miss }}" hint-placeholder-val="{{ false }}"> · <span style="font:600 12.5px 'Geist';color:oklch(0.5 0.17 5);text-decoration:underline;text-underline-offset:2px">Añadir</span></sc-if></span>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <button onClick="{{ f.L.reopen }}" style="flex:none;border:none;background:transparent;padding:8px 6px;font:italic 400 15px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ f.L.openV }}" hint-placeholder-val="{{ true }}">
+                    <div onClick="{{ f.L.toggle }}" style="display:flex;align-items:center;gap:12px;padding:14px 14px 10px;cursor:pointer">
+                      <span style="width:36px;height:36px;flex:none;border-radius:12px;background:{{ f.L.ib }};color:{{ f.L.ic }};display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.L.icon }}"></path></svg></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:400 22px/1 'Instrument Serif',serif">Llegada y vuelta</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.55)">Barcelona → Roma</span></span>
+                      <span style="height:24px;padding:0 9px;border-radius:999px;background:{{ f.L.stBg }};color:{{ f.L.stFg }};font:600 11px/24px 'Geist';white-space:nowrap">{{ f.L.st }}</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"></path></svg>
+                    </div>
+                    <div style="padding:0 12px 14px;display:flex;flex-direction:column;gap:8px">
+                      <sc-for list="{{ f.L.legs }}" as="g" hint-placeholder-count="2">
+                        <div style="display:flex;flex-direction:column">
+                          <sc-if value="{{ g.lineOn }}" hint-placeholder-val="{{ true }}">
+                            <div onClick="{{ g.tap }}" style="min-height:46px;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 10px;border-radius:14px;background:{{ g.lBg }};border:1px solid {{ g.lBd }};cursor:{{ g.cur }};animation:pop .3s ease both">
+                              <span style="width:26px;height:26px;flex:none;border-radius:50%;background:{{ g.lIcBg }};color:{{ g.lIcFg }};display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.icon }}"></path></svg></span>
+                              <span style="flex:1;min-width:0;font:400 13px/1.35 'Geist';color:{{ g.lFg }};text-wrap:pretty">{{ g.lineTxt }}</span>
+                              <sc-if value="{{ g.hasAct }}" hint-placeholder-val="{{ true }}"><span style="flex:none;font:italic 400 15px 'Instrument Serif',serif;text-decoration:underline;text-underline-offset:3px">{{ g.act }}</span></sc-if>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{ g.openOn }}" hint-placeholder-val="{{ false }}">
+                            <div style="border-radius:18px;background:#FFFFFF;border:1px solid rgba(28,34,48,.1);padding:14px 14px 13px;display:flex;flex-direction:column;gap:10px;animation:pop .3s ease both">
+                              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ g.kind }} · {{ g.date }}</span>
+                              <div style="display:grid;grid-template-columns:auto minmax(40px,1fr) auto;align-items:center;gap:10px">
+                                <span style="font:{{ g.fromF }};color:{{ g.fromC }};max-width:130px;text-wrap:balance">{{ g.from }}</span>
+                                <div style="position:relative;height:30px">
+                                  <svg viewBox="0 0 100 30" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><path d="M2 26 Q50 -4 98 26" fill="none" stroke="rgba(28,34,48,.25)" stroke-width="1.3" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"></path></svg>
+                                  <span style="position:absolute;left:50%;top:0;margin-left:-12px;width:24px;height:24px;border-radius:50%;background:#1C2230;color:#fff;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.icon }}"></path></svg></span>
+                                </div>
+                                <span style="font:{{ g.toF }};color:{{ g.toC }};max-width:130px;text-align:right;text-wrap:balance">{{ g.to }}</span>
+                              </div>
+                              <sc-if value="{{ g.hasSt }}" hint-placeholder-val="{{ true }}">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                                  <sc-for list="{{ g.sts }}" as="b" hint-placeholder-count="2">
+                                    <button onClick="{{ b.pick }}" style="height:40px;border-radius:12px;border:1.5px solid {{ b.bd }};background:{{ b.bg }};color:{{ b.fg }};font:600 13.5px 'Geist';cursor:pointer;transition:background .25s,color .25s">{{ b.n }}</button>
+                                  </sc-for>
+                                </div>
+                              </sc-if>
+                              <sc-if value="{{ g.isShip }}" hint-placeholder-val="{{ false }}">
+                                <span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">Puerto de Civitavecchia · el único de Roma</span>
+                              </sc-if>
+                              <div style="display:flex;flex-direction:column;gap:6px">
+                                <button onClick="{{ g.pickTime }}" style="height:48px;border-radius:14px;border:1.5px solid {{ g.tBd }};background:{{ g.tBg }};display:flex;align-items:center;gap:10px;padding:0 14px;cursor:pointer;color:#1C2230;transition:background .3s,border-color .3s">
+                                  <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ g.timeKind }}</span>
+                                  <span style="flex:1;text-align:left;font:{{ g.tF }};color:{{ g.tC }}">{{ g.timeTxt }}</span>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.5)" stroke-width="1.8" stroke-linecap="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>
+                                </button>
+                                <span style="font:400 11px/1.35 'Geist';color:rgba(28,34,48,.58)">¿Llegas o te vas otro día? <a href="#" onClick="{{ f.fechas }}" style="color:#1C2230;text-underline-offset:2px">Cambia las fechas del viaje</a></span>
+                              </div>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </sc-for>
+                      <sc-for list="{{ f.L.search }}" as="q" hint-placeholder-count="1">
+                        <span style="padding:2px 4px 0;font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ q.q }} <a href="#" onClick="{{ q.tap }}" style="font-weight:600;color:#1C2230;text-underline-offset:2px">{{ q.a }}</a></span>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <div data-blk="aloj" style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)">
+                <sc-if value="{{ f.A.isFree }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ f.A.openMap }}" style="display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer">
+                    <span style="width:36px;height:36px;flex:none;border-radius:12px;background:oklch(0.55 0.17 5 / .12);color:oklch(0.5 0.17 5);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.A.icon }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 22px/1 'Instrument Serif',serif">Alojamiento</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">Buscar alojamiento en Roma</span></span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.A.closedEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ f.A.reopen }}" style="display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;animation:pop .35s ease both">
+                    <span style="width:36px;height:36px;flex:none;border-radius:12px;background:oklch(0.55 0.17 5 / .12);color:oklch(0.5 0.17 5);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.A.icon }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;font:400 22px/1 'Instrument Serif',serif">Alojamiento</span>
+                    <span style="height:24px;padding:0 9px;border-radius:999px;background:oklch(0.55 0.17 5 / .1);color:oklch(0.5 0.17 5);font:600 11px/24px 'Geist';white-space:nowrap">Falta</span>
+                    <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.A.closedZone }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 8px 10px 12px;border-radius:22px;background:oklch(0.97 0.025 150);animation:pop .35s ease both">
+                    <span style="width:28px;height:28px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.A.icon }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;font:400 13px/1.4 'Geist';text-wrap:pretty">{{ f.A.line }}</span>
+                    <button onClick="{{ f.A.reopen }}" style="flex:none;border:none;background:transparent;padding:8px 6px;font:italic 400 15px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.A.closedNose }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:10px;padding:12px 8px 12px 12px;animation:pop .35s ease both">
+                    <span style="width:28px;height:28px;flex:none;border-radius:50%;background:#F1EADC;color:rgba(28,34,48,.7);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.A.icon }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+                      <span style="font:400 13px/1.4 'Geist'">Aún no sabes dónde te alojas</span>
+                      <button onClick="{{ f.A.openMap }}" style="height:36px;padding:0 14px 0 12px;border-radius:999px;border:none;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:7px;font:600 12.5px 'Geist';cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>Buscar alojamiento</button>
+                    </span>
+                    <button onClick="{{ f.A.reopen }}" style="flex:none;border:none;background:transparent;padding:8px 6px;font:italic 400 15px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.A.openV }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ f.A.toggle }}" style="display:flex;align-items:center;gap:12px;padding:14px 14px 10px;cursor:pointer">
+                    <span style="width:36px;height:36px;flex:none;border-radius:12px;background:{{ f.A.ib }};color:{{ f.A.ic }};display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.A.icon }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;font:400 22px/1 'Instrument Serif',serif">Alojamiento</span>
+                    <span style="height:24px;padding:0 9px;border-radius:999px;background:{{ f.A.stBg }};color:{{ f.A.stFg }};font:600 11px/24px 'Geist';white-space:nowrap">{{ f.A.st }}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"></path></svg>
+                  </div>
+                  <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:10px">
+                    <span style="font:500 14px 'Geist'">¿En qué zona te alojas?</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px">
+                      <sc-for list="{{ f.A.zones }}" as="z" hint-placeholder-count="7">
+                        <button onClick="{{ z.pick }}" style="min-height:40px;padding:5px 12px;border-radius:14px;border:1.5px solid {{ z.bd }};background:{{ z.bg }};color:{{ z.fg }};display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;text-align:left;cursor:pointer;transition:background .25s,color .25s">
+                          <span style="font:600 13px/1.1 'Geist'">{{ z.n }}</span>
+                          <sc-if value="{{ z.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font:400 10.5px/1.15 'Geist';opacity:.7">{{ z.sub }}</span></sc-if>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ f.A.hasStart }}" hint-placeholder-val="{{ false }}">
+                      <span style="display:flex;align-items:center;gap:7px;font:400 12.5px 'Geist';color:oklch(0.4 0.1 150);animation:pop .35s ease both"><span style="width:6px;height:6px;border-radius:50%;background:oklch(0.55 0.11 150)"></span>{{ f.A.start }}</span>
+                    </sc-if>
+                    <sc-if value="{{ f.A.nose }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ f.A.openMap }}" style="align-self:flex-start;height:40px;padding:0 14px 0 12px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;display:flex;align-items:center;gap:7px;font:600 13px 'Geist';color:#1C2230;cursor:pointer;animation:pop .35s ease both"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>Buscar alojamiento</button>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+              <div data-blk="entradas" style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)">
+                <div onClick="{{ f.E.toggle }}" style="display:flex;flex-direction:column;gap:12px;padding:14px;cursor:pointer">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <span style="width:36px;height:36px;flex:none;border-radius:12px;background:oklch(0.55 0.17 5 / .12);color:oklch(0.5 0.17 5);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ f.E.icon }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 22px/1 'Instrument Serif',serif">Entradas y Free Tour</span><span style="font:600 11px 'Geist Mono',monospace;color:{{ f.E.cntC }}">{{ f.E.count }}</span></span>
+                    <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ f.E.rot }};transition:transform .35s cubic-bezier(.2,.8,.2,1)"><path d="M6 9l6 6 6-6"></path></svg></span>
+                  </div>
+                  <div style="display:flex;gap:3px">
+                    <sc-for list="{{ f.E.bar }}" as="c" hint-placeholder-count="8"><span style="flex:1;height:4px;border-radius:4px;background:{{ c }};transition:background .4s"></span></sc-for>
+                  </div>
+                </div>
+                <sc-if value="{{ f.E.openV }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:12px;animation:pop .35s ease both">
+                    <span style="display:flex;align-items:center;gap:6px;font:400 12px 'Geist';color:rgba(28,34,48,.65)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.17 5)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>Las más buscadas se agotan: resérvalas pronto</span>
+                    <sc-for list="{{ f.E.items }}" as="t" hint-placeholder-count="4">
+                      <div style="display:flex;flex-direction:column">
+                        <sc-if value="{{ t.done }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex;align-items:center;gap:9px;min-height:46px;padding:6px 6px 6px 12px;border-radius:14px;background:oklch(0.96 0.035 150);border:1px solid oklch(0.55 0.11 150 / .3);animation:pop .35s ease both">
+                            <span style="width:20px;height:20px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;font:700 10px/20px 'Geist';text-align:center">✓</span>
+                            <span style="flex:1;min-width:0;font:500 13px/1.35 'Geist';text-wrap:pretty">{{ t.short }} · <span style="font:500 12px 'Geist Mono',monospace;color:oklch(0.38 0.08 150)">{{ t.meta }}</span></span>
+                            <button onClick="{{ t.change }}" style="flex:none;border:none;background:transparent;padding:8px 6px;font:italic 400 15px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ t.pend }}" hint-placeholder-val="{{ true }}">
+                          <div style="display:flex;flex-direction:column;gap:6px">
+                            <span style="padding-left:4px;font:400 11.5px 'Geist';color:rgba(28,34,48,.6)"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ t.eye }}</span> · {{ t.route }}</span>
+                            <div style="position:relative;display:flex;min-height:96px;border-radius:18px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 22px -18px rgba(28,34,48,.4)">
+                              <div style="position:relative;width:64px;flex:none;margin-right:-8px;border-radius:17px 0 0 17px;overflow:hidden">
+                                <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%);background:oklch(0.55 0.17 5)"></span>
+                                <span style="position:absolute;left:0;top:0;bottom:0;width:46px;display:flex;align-items:center;justify-content:center;color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg></span>
+                              </div>
+                              <div style="flex:1;min-width:0;padding:11px 12px 11px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px">
+                                <span style="font:400 17px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ t.name }}</span>
+                                <sc-if value="{{ t.must }}" hint-placeholder-val="{{ false }}"><span style="font:500 11px 'Geist';color:oklch(0.5 0.17 5)">Reserva obligatoria en estas fechas</span></sc-if>
+                                <span style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 9px;margin-top:3px">
+                                  <button onClick="{{ t.buy }}" style="flex:none;height:32px;padding:0 13px;border:none;border-radius:999px;background:oklch(0.55 0.17 5);color:#fff;font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer;box-shadow:0 8px 16px -8px oklch(0.55 0.17 5)" style-active="transform:scale(.97)">{{ t.btn }}</button>
+                                  <button onClick="{{ t.add }}" style="flex:none;border:none;background:transparent;padding:0;font:400 11px 'Geist';color:rgba(28,34,48,.6);white-space:nowrap;cursor:pointer">¿Ya la tienes? <span style="color:#1C2230;text-decoration:underline;text-underline-offset:2px">Añádela</span></button>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ toggleMore }}" style="height:44px;border-radius:14px;border:1px dashed rgba(28,34,48,.22);background:transparent;font:600 13px 'Geist';color:#1C2230;cursor:pointer">{{ f.E.more }}</button>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:{{ f.mid }};gap:14px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+              <sc-if value="{{ f.XR.generic }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;min-height:88px;display:flex;border-radius:20px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 22px -18px rgba(28,34,48,.4);overflow:hidden">
+                <span style="width:66px;flex:none;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:oklch(0.56 0.1 220);display:flex;align-items:center;padding-left:14px;color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3"></path></svg></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:10px 8px 10px 6px"><span style="font:400 19px/1.05 'Instrument Serif',serif">Excursiones desde Roma</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.55)">7 excursiones</span></span>
+                <button onClick="{{ f.exc }}" style="align-self:center;flex:none;margin-right:12px;height:34px;padding:0 13px;border-radius:999px;border:none;background:#1C2230;color:#FFFDF8;font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer">Ver excursiones</button>
+              </div>
+              <button onClick="{{ f.excAdd }}" style="align-self:flex-start;border:none;background:transparent;padding:2px 4px;font:400 12px 'Geist';color:rgba(28,34,48,.6);cursor:pointer">¿Ya tienes una? <span style="color:#1C2230;font-weight:600;text-decoration:underline;text-underline-offset:2px">Añádela</span></button>
+              </sc-if>
+              <sc-for list="{{ f.X }}" as="t" hint-placeholder-count="1">
+                <div style="display:flex;flex-direction:column">
+                  <sc-if value="{{ t.done }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:9px;min-height:46px;padding:6px 6px 6px 12px;border-radius:14px;background:oklch(0.96 0.035 150);border:1px solid oklch(0.55 0.11 150 / .3);animation:pop .35s ease both">
+                      <span style="width:20px;height:20px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;font:700 10px/20px 'Geist';text-align:center">✓</span>
+                      <span style="flex:1;min-width:0;font:500 13px/1.35 'Geist';text-wrap:pretty">{{ t.short }} · <span style="font:500 12px 'Geist Mono',monospace;color:oklch(0.38 0.08 150)">{{ t.meta }}</span></span>
+                      <button onClick="{{ t.change }}" style="flex:none;border:none;background:transparent;padding:8px 6px;font:italic 400 15px 'Instrument Serif',serif;color:#1C2230;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Cambiar</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ t.pend }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <span style="padding-left:4px;font:400 11.5px 'Geist';color:rgba(28,34,48,.6)"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ t.eye }}</span> · {{ t.route }}</span>
+                      <div style="position:relative;display:flex;min-height:96px;border-radius:18px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 22px -18px rgba(28,34,48,.4)">
+                        <div style="position:relative;width:64px;flex:none;margin-right:-8px;border-radius:17px 0 0 17px;overflow:hidden">
+                          <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%);background:oklch(0.55 0.17 5)"></span>
+                          <span style="position:absolute;left:0;top:0;bottom:0;width:46px;display:flex;align-items:center;justify-content:center;color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg></span>
+                        </div>
+                        <div style="flex:1;min-width:0;padding:11px 12px 11px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px">
+                          <span style="font:400 17px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ t.name }}</span>
+                          <span style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 9px;margin-top:3px">
+                            <button onClick="{{ t.buy }}" style="flex:none;height:32px;padding:0 13px;border:none;border-radius:999px;background:oklch(0.55 0.17 5);color:#fff;font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer;box-shadow:0 8px 16px -8px oklch(0.55 0.17 5)" style-active="transform:scale(.97)">{{ t.btn }}</button>
+                            <button onClick="{{ t.add }}" style="flex:none;border:none;background:transparent;padding:0;font:400 11px 'Geist';color:rgba(28,34,48,.6);white-space:nowrap;cursor:pointer">¿Ya la tienes? <span style="color:#1C2230;text-decoration:underline;text-underline-offset:2px">Añádela</span></button>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ f.XR.otras }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ f.exc }}" style="align-self:flex-start;border:none;background:transparent;padding:2px 4px;font:500 12px 'Geist';color:#1C2230;text-decoration:underline;text-underline-offset:2px;cursor:pointer">Ver otras excursiones</button>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding-top:16px">
+              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">Útil para el viaje</span>
+              <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+                <sc-for list="{{ f.util }}" as="u" hint-placeholder-count="3">
+                  <button onClick="{{ u.tap }}" style="flex:none;width:136px;height:88px;border-radius:16px;border:1px solid rgba(28,34,48,.08);background:#FFFFFF;padding:10px 11px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;cursor:pointer;color:#1C2230">
+                    <span style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+                      <span style="width:28px;height:28px;border-radius:9px;background:{{ u.col }};color:#fff;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ u.icon }}"></path></svg></span>
+                      <sc-if value="{{ u.hasTag }}" hint-placeholder-val="{{ false }}"><span style="height:19px;padding:0 7px;border-radius:999px;background:#F5EFE4;font:600 10px/19px 'Geist Mono',monospace;color:rgba(28,34,48,.7)">{{ u.tag }}</span></sc-if>
+                    </span>
+                    <span style="font:500 12.5px/1.2 'Geist'">{{ u.n }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <sc-if value="{{ f.toastOn }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:50%;bottom:28px;height:40px;padding:0 16px;border-radius:999px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;animation:toast 2.2s ease both;z-index:90">{{ toastTxt }}</div>
+        </sc-if>
+
+        <sc-if value="{{ f.shOn }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;z-index:80">
+            <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(28,34,48,.38);animation:pop .3s ease both"></div>
+            <div style="position:absolute;left:{{ f.shL }};right:{{ f.shR }};bottom:{{ f.shB }};max-height:calc(100% - 54px);overflow-y:auto;scrollbar-width:none;border-radius:{{ f.shRad }};background:#FFFDF8;padding:12px 18px 22px;display:flex;flex-direction:column;gap:14px;animation:up .45s cubic-bezier(.2,.8,.2,1) both">
+              <span style="align-self:center;width:42px;height:4px;flex:none;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+
+              <sc-if value="{{ sh.aloj }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="flex:1;font:400 26px/1 'Instrument Serif',serif">Alojamiento en Roma</span>
+                  <button onClick="{{ closeSheet }}" aria-label="Cerrar" style="width:40px;height:40px;flex:none;border-radius:50%;border:none;background:#F1EADC;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+                </div>
+                <div style="height:428px;flex:none;border-radius:22px;background:repeating-linear-gradient(135deg,#EFE7D6 0 12px,#EAE1CE 12px 24px);border:1.5px dashed rgba(28,34,48,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(28,34,48,.55)">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"></path></svg>
+                  <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase">Mapa de alojamientos</span>
+                  <span style="font:400 11.5px 'Geist'">Hueco para el mapa externo · 428 px</span>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sh.pick }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:flex-start;gap:12px">
+                  <span style="flex:1;display:flex;flex-direction:column;gap:4px">
+                    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">Añadir una excursión · 1 de 2</span>
+                    <span style="font:400 24px/1.05 'Instrument Serif',serif">¿Qué excursión tienes?</span>
+                  </span>
+                  <button onClick="{{ closeSheet }}" aria-label="Cerrar" style="width:40px;height:40px;flex:none;border-radius:50%;border:none;background:#F1EADC;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <sc-for list="{{ sh.exList }}" as="e" hint-placeholder-count="5">
+                    <button onClick="{{ e.pick }}" style="min-height:60px;display:flex;align-items:center;gap:12px;padding:8px 12px 8px 8px;border-radius:16px;border:1px solid rgba(28,34,48,.08);background:#FFFFFF;text-align:left;cursor:pointer;color:#1C2230" style-hover="border-color:rgba(28,34,48,.25)">
+                      <span style="position:relative;width:44px;height:44px;flex:none;border-radius:12px;background:{{ e.bg }};color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ e.icon }}"></path></svg></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:400 17px/1.1 'Instrument Serif',serif">{{ e.n }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.55)">{{ e.dur }}</span></span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sh.time }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">{{ sh.eye }}</span>
+                  <span style="font:400 24px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ sh.title }}</span>
+                  <sc-if value="{{ sh.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ sh.sub }}</span></sc-if>
+                </div>
+                <sc-if value="{{ sh.hasChips }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:0 18px 2px">
+                    <sc-for list="{{ sh.chips }}" as="c" hint-placeholder-count="5">
+                      <button onClick="{{ c.pick }}" style="flex:none;height:44px;padding:0 14px;border-radius:999px;border:1.5px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};opacity:{{ c.op }};display:flex;align-items:center;gap:7px;cursor:{{ c.cur }};transition:background .25s,color .25s">
+                        <span style="font:600 13.5px 'Geist';text-decoration:{{ c.td }}">{{ c.n }}</span>
+                        <sc-if value="{{ c.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font:500 10.5px 'Geist';opacity:.72">{{ c.tag }}</span></sc-if>
+                      </button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <sc-if value="{{ sh.hasWl }}" hint-placeholder-val="{{ false }}"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5);text-align:center">{{ sh.wl }}</span></sc-if>
+                  <div style="position:relative;height:200px;flex:none;border-radius:18px;background:#F5EFE4;overflow:hidden">
+                    <span style="position:absolute;left:12px;right:12px;top:80px;height:40px;border-radius:12px;background:#fff;box-shadow:0 2px 8px -3px rgba(28,34,48,.2)"></span>
+                    <div ref="{{ wheelRef }}" onScroll="{{ onWheel }}" style="position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;padding:80px 0;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent)">
+                      <sc-for list="{{ sh.times }}" as="tm" hint-placeholder-count="12">
+                        <div onClick="{{ tm.pick }}" style="position:relative;height:40px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;font:400 {{ tm.fs }}/1 'Instrument Serif',serif;color:{{ tm.c }};cursor:pointer">{{ tm.t }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+                <button onClick="{{ fromEmail }}" style="align-self:center;margin-top:-4px;border:none;background:transparent;padding:4px 8px;display:flex;align-items:center;gap:6px;font:500 12px 'Geist';color:rgba(28,34,48,.65);cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg><span style="text-decoration:underline;text-underline-offset:2px">Rellenar desde el email o el PDF</span></button>
+                <button onClick="{{ saveSheet }}" style="height:54px;flex:none;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 15px 'Geist';cursor:pointer">Guardar · {{ sh.selT }}</button>
+                <sc-if value="{{ sh.hasDel }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ delSheet }}" style="align-self:center;border:none;background:transparent;padding:4px 8px;font:500 13.5px 'Geist';color:oklch(0.52 0.19 25);cursor:pointer">Eliminar reserva</button>
+                </sc-if>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const GR='oklch(0.55 0.11 150)',RS='oklch(0.55 0.17 5)',INK='#1C2230';
+const IC={
+plane:'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
+train:'M7 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 11h14M9 15h.01M15 15h.01M8 18l-2 3M16 18l2 3',
+bus:'M5 4h14a1 1 0 0 1 1 1v12H4V5a1 1 0 0 1 1-1zM4 11h16M7 20v-3M17 20v-3M8 14h.01M16 14h.01',
+ship:'M3 17l2 4h14l2-4-9-3zM6 14V8h12v6M12 3v5',
+car:'M5 16v-5l2-5h10l2 5v5M5 16h14v3H5zM7.5 13h.01M16.5 13h.01',
+hotel:'M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3M2 21h20',
+ticket:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',
+flag:'M5 21V4M5 4h11l-2.5 3.5L16 11H5',
+cols:'M4 20h16M5 9h14M12 4l8 5H4zM7 9v11M12 9v11M17 9v11',
+mount:'M3 20l6-10 4 6 3-4 5 8z',
+shield:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+sim:'M7 3h7l4 4v14H7zM10 12h5v5h-5z',
+card:'M3 6h18v12H3zM3 10h18M7 15h4'};
+const MODES={
+avion:{n:'Avión',i:IC.plane,st:['Fiumicino','Ciampino'],q:'¿Fiumicino o Ciampino?',free:{Fiumicino:120,Ciampino:105},search:['¿Aún no tienes vuelo?','Buscar vuelos']},
+tren:{n:'Tren',i:IC.train,st:['Termini','Tiburtina'],q:'¿Termini o Tiburtina?',free:{Termini:45,Tiburtina:60},search:['¿Aún no tienes tren?','Buscar tren']},
+bus:{n:'Autobús',i:IC.bus,st:['Tiburtina','Termini'],q:'¿Tiburtina o Termini?',free:{Tiburtina:60,Termini:45},search:['¿Aún no tienes autobús?','Buscar autobús']},
+barco:{n:'Barco',i:IC.ship,st:['Civitavecchia'],fixed:1,free:{Civitavecchia:135},search:['¿Aún no tienes ferry?','Buscar ferry']},
+coche:{n:'Coche',i:IC.car,car:1}};
+const MK=['avion','tren','bus','barco','coche'];
+const DAYS=[{d:1,w:'Mar',n:10},{d:2,w:'Mié',n:11},{d:3,w:'Jue',n:12},{d:4,w:'Vie',n:13},{d:5,w:'Sáb',n:14}];
+const TK=[
+{id:'coliseo',d:2,n:'Coliseo, Foro y Palatino',must:1,o:510,c:1095},
+{id:'vaticanos',d:2,n:'Museos Vaticanos y Capilla Sixtina',must:1,o:480,c:1020,cl:[5]},
+{id:'panteon',d:1,n:'Panteón',o:540,c:1125},
+{id:'free',d:1,n:'Free Tour por Roma',ft:1},
+{id:'cupula',d:4,n:'Cúpula de San Pedro',o:450,c:1050},
+{id:'borghese',d:4,n:'Galería Borghese',must:1,o:540,c:1020},
+{id:'caracalla',d:4,n:'Termas de Caracalla',o:540,c:1080},
+{id:'santangelo',d:5,n:"Castillo de Sant'Angelo",o:540,c:1110}];
+const EXC=[
+{id:'pompeya',n:'Pompeya',full:'Excursión a Pompeya',dur:'Día completo',h:40,i:IC.cols},
+{id:'florencia',n:'Florencia',full:'Florencia',dur:'Día completo',h:150,i:IC.cols},
+{id:'tivoli',n:'Tívoli',full:"Tívoli: Villa d'Este y Villa Adriana",dur:'Medio día',h:125,i:IC.mount},
+{id:'orvieto',n:'Orvieto',full:'Orvieto y Civita di Bagnoregio',dur:'Día completo',h:70,i:IC.mount},
+{id:'ostia',n:'Ostia Antigua',full:'Ostia Antigua',dur:'Medio día',h:230,i:IC.cols}];
+const ZONES=[
+{k:'centro',n:'Centro (Panteón, Trevi, Navona)',start:'Navona'},
+{k:'spagna',n:'Plaza de España',sub:'Popolo, Via del Corso',start:'Plaza de España'},
+{k:'prati',n:'Prati',sub:'Vaticano',start:'el Vaticano'},
+{k:'trastevere',n:'Trastevere',start:'Trastevere'},
+{k:'termini',n:'Termini',start:'Santa María la Mayor'},
+{k:'monti',n:'Monti',sub:'Coliseo',start:'el Coliseo'},
+{k:'nose',n:'Aún no lo sé'}];
+const p2=n=>String(n).padStart(2,'0');
+const mk=(a,b,s,nopad)=>{const r=[];for(let m=a;m<=b;m+=s)r.push((nopad?Math.floor(m/60):p2(Math.floor(m/60)))+':'+p2(m%60));return r;};
+const toM=t=>{const[h,m]=t.split(':').map(Number);return h*60+m;};
+const TF=mk(360,1435,5);
+const addM=(t,m)=>{const x=toM(t)+m;return p2(Math.floor(x/60)%24)+':'+p2(x%60);};
+const listFor=(target,d)=>{
+  if(target==='out'||target==='ret')return TF;
+  const [k,id]=target.split(':');
+  if(k==='ex')return mk(390,d===5?480:510,5,true);
+  const it=TK.find(t=>t.id===id);
+  if(it.ft)return d===5?['10:00','11:00','17:00']:['10:00','11:00','16:00','17:00','18:00'];
+  return mk(it.o,d===5?Math.min(it.c,825):it.c,15);};
+const nearest=(list,t)=>{if(!t)return 0;const i=list.indexOf(t);if(i>=0)return i;const m=toM(t);let b=0;list.forEach((x,j)=>{if(Math.abs(toM(x)-m)<Math.abs(toM(list[b])-m))b=j;});return b;};
+const dayOf=d=>DAYS[d-1];
+const st1=m=>m==='coche'?null:MODES[m].st[0],st2=m=>m==='coche'?null:MODES[m].st[MODES[m].st.length-1],fx=m=>MODES[m].fixed?MODES[m].st[0]:null;
+const legs=(p,om,rm)=>p==='vacio'?{out:{st:fx(om),t:null},ret:{st:fx(rm),t:null}}:p==='medias'?{out:{st:st1(om),t:'11:15'},ret:{st:fx(rm),t:null}}:{out:{st:st1(om),t:'11:15'},ret:{st:st2(rm),t:'18:05'}};
+const rest=p=>p==='vacio'?{zone:null,booked:{},exb:{}}:p==='medias'?{zone:null,booked:{coliseo:{d:2,t:'10:00'}},exb:{}}:
+  {zone:'prati',booked:{coliseo:{d:2,t:'10:00'},vaticanos:{d:2,t:'14:00'},panteon:{d:1,t:'16:30'},free:{d:1,t:'18:00'},borghese:{d:4,t:'11:00'},caracalla:{d:4,t:'15:00'},santangelo:{d:5,t:'10:30'}},exb:{pompeya:{d:3,t:'7:15'}}};
+const legDone=(L,m)=>m==='coche'||(!!L.st&&!!L.t);
+
+class Component extends DCLogic {
+  constructor(p){super(p);this.state={preset:'medias',om:'avion',rm:'avion',excRoute:true,...legs('medias','avion','avion'),...rest('medias'),
+    open:{},legOpen:{},showAll:false,sheet:null,toast:null,dplan:'full'};
+    this.wheelRef=React.createRef();this.sc={};this.rf={};}
+  componentWillUnmount(){clearTimeout(this.tt);}
+  toast(fid,txt){this.setState({toast:{fid,txt}});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
+  scrollWheel(i,smooth){setTimeout(()=>{const el=this.wheelRef.current;if(el)el.scrollTo({top:i*40,behavior:smooth?'smooth':'auto'});},smooth?0:60);}
+  goto(fid,k){this.setState(st=>({open:{...st.open,[fid+':'+k]:true}}));setTimeout(()=>{const el=this.sc[fid];const t=el&&el.querySelector('[data-blk="'+k+'"]');if(t)el.scrollTo({top:t.offsetTop-10,behavior:'smooth'});},60);}
+  openTime(fid,target,edit){const s=this.state;let day=null,def;
+    if(target==='out'||target==='ret')def=s[target].t||(target==='out'?'11:15':'18:05');
+    else{const[k,id]=target.split(':');
+      if(k==='tk'){const it=TK.find(t=>t.id===id),b=s.booked[id];day=b?b.d:it.d;if((it.cl||[]).includes(day))day=DAYS.find(x=>!(it.cl||[]).includes(x.d)).d;def=b?b.t:'10:00';}
+      else{const b=s.exb[id];day=b?b.d:3;def=b?b.t:'7:15';}}
+    const i=nearest(listFor(target,day),def);
+    this.setState({sheet:{fid,kind:'time',target,day,sel:i,edit:!!edit}});this.scrollWheel(i);}
+  view(plan,fid){
+    const s=this.state;const full=plan==='full';const stop=e=>{e.preventDefault();e.stopPropagation();};
+    const K=x=>fid+':'+x;const isOpen=(x,d)=>s.open[K(x)]??d;const setOpen=(x,v)=>this.setState(st=>({open:{...st.open,[K(x)]:v}}));
+    const dO=legDone(s.out,s.om),dR=legDone(s.ret,s.rm),dL=dO&&dR,dA=!!s.zone&&s.zone!=='nose';
+    const nb=TK.filter(t=>s.booked[t.id]).length,dE=nb===TK.length;
+    const fl=(full?[{k:'llegada',n:'Llegada y vuelta',d:dL},{k:'aloj',n:'Alojamiento',d:dA}]:[]).concat(full?[{k:'entradas',n:`Entradas ${nb}/${TK.length}`,d:dE}]:[]);
+    const nd=fl.filter(x=>x.d).length;
+    const exp=s.legOpen[fid]!==undefined?s.legOpen[fid]:(!dO?'out':!dR?'ret':null);
+    const leg=w=>{const L=s[w],m=w==='out'?s.om:s.rm,M=MODES[m],isOut=w==='out',d=legDone(L,m);
+      const D=isOut?dayOf(1):dayOf(5),kind=isOut?'Ida':'Vuelta',date=`${D.w.toLowerCase()} ${D.n} ago`;
+      const openOn=exp===w&&!M.car,place=L.st;
+      const big="400 22px/1.05 'Instrument Serif',serif",ph="italic 400 14px/1.2 'Instrument Serif',serif";
+      const lineTxt=M.car?`${kind} · ${date} · ${isOut?'Llegas':'Te vas'} en coche`:d?`${kind} · ${date} · ${L.t} · ${L.st}`:`${kind} · ${date}`;
+      return{lineOn:!openOn,openOn,icon:M.i,lineTxt,hasAct:!M.car,act:d?'Cambiar':'Añadir',cur:M.car?'default':'pointer',
+        lBg:d?'oklch(0.97 0.025 150)':'#F7F1E6',lBd:d?'oklch(0.55 0.11 150 / .25)':'rgba(28,34,48,.08)',lIcBg:d?GR:'#FFFFFF',lIcFg:d?'#fff':'rgba(28,34,48,.6)',lFg:d?INK:'rgba(28,34,48,.7)',
+        tap:e=>{e.stopPropagation();if(!M.car)this.setState(st=>({legOpen:{...st.legOpen,[fid]:w}}));},
+        kind,date:`${D.w} ${D.n} ago`,
+        from:isOut?'Barcelona':(place||M.q),fromF:!isOut&&!place?ph:big,fromC:!isOut&&!place?'rgba(28,34,48,.55)':INK,
+        to:isOut?(place||M.q):'Barcelona',toF:isOut&&!place?ph:big,toC:isOut&&!place?'rgba(28,34,48,.55)':INK,
+        isShip:!!M.fixed,hasSt:!M.car&&!M.fixed,
+        sts:(M.st||[]).map(n=>{const a=L.st===n;return{n,bd:a?INK:'transparent',bg:a?INK:'#F5EFE4',fg:a?'#FFFDF8':INK,pick:()=>this.setState(st=>({[w]:{...st[w],st:n}}))};}),
+        timeKind:isOut?'Llega':'Sale',timeTxt:L.t||'Elige la hora',tF:L.t?"400 22px/1 'Instrument Serif',serif":"500 14px 'Geist'",tC:L.t?INK:'rgba(28,34,48,.55)',
+        tBg:L.t?'oklch(0.96 0.035 150)':'#F5EFE4',tBd:L.t?'oklch(0.55 0.11 150 / .35)':'transparent',pickTime:()=>this.openTime(fid,w)};};
+    const oM=MODES[s.om];
+    const sumLine=w=>{const isOut=w==='out',L=s[w],m=isOut?s.om:s.rm,M=MODES[m],d=legDone(L,m);let txt=isOut?'Ida · mar 10':'Vuelta · sáb 14';
+      if(M.car)txt+=isOut?' · Llegas en coche':' · Te vas en coche';else if(d){txt+=' · '+L.t+' · '+L.st;if(isOut)txt+=' · libre hacia las '+addM(L.t,M.free[L.st]||90);}
+      return{txt,miss:!d,icon:M.i,icBg:d?GR:'#F1EADC',icFg:d?'#fff':'rgba(28,34,48,.6)',fg:d?INK:'rgba(28,34,48,.7)',
+        tap:e=>{e.stopPropagation();this.setState(st=>({open:{...st.open,[K('llegada')]:true},legOpen:{...st.legOpen,[fid]:M.car?undefined:w}}));}};};
+    const oL=isOpen('llegada',false),oA=isOpen('aloj',false),oE=isOpen('entradas',false);
+    const Z=ZONES.find(z=>z.k===s.zone);
+    const shown=TK.filter((t,i)=>i<4||s.showAll);
+    const done=(short,meta,change)=>({done:true,pend:false,short,meta,change});
+    const items=shown.map(t=>{const b=s.booked[t.id];const D=dayOf(t.d);
+      if(b)return done(t.n,`${dayOf(b.d).n} ago · ${b.t}`,()=>this.openTime(fid,'tk:'+t.id,true));
+      return{done:false,pend:true,eye:t.ft?'Free Tour':'Entrada',route:`En tu ruta el ${D.w.toLowerCase()} ${D.n}`,name:t.n,must:!!t.must,icon:t.ft?IC.flag:IC.ticket,btn:t.ft?'Reservar Free Tour':'Reservar entrada',
+        buy:()=>this.toast(fid,'Abriendo la reserva…'),add:()=>this.openTime(fid,'tk:'+t.id)};});
+    const X=[];
+    if(s.excRoute&&!s.exb.pompeya)X.push({done:false,pend:true,eye:'Excursión',route:'En tu ruta el jue 12',name:'Excursión a Pompeya',icon:IC.cols,btn:'Reservar excursión',buy:()=>this.toast(fid,'Abriendo la reserva…'),add:()=>this.openTime(fid,'ex:pompeya')});
+    EXC.forEach(e=>{const b=s.exb[e.id];if(b)X.push(done(e.n,`${dayOf(b.d).n} ago · recogida ${b.t}`,()=>this.openTime(fid,'ex:'+e.id,true)));});
+    const sm=[...new Set([exp==='out'?s.om:null,exp==='ret'?s.rm:null])].filter(m=>m&&m!=='coche');
+    const tag=!dO&&!dR?'Falta':!dO?'Falta la ida':!dR?'Falta la vuelta':'✓ Listo';
+    return{full,
+      sumTxt:`${nd} de ${fl.length} listo`,sumC:nd===fl.length?GR:'oklch(0.5 0.17 5)',
+      segs:fl.map(x=>x.d?GR:'rgba(28,34,48,.1)'),
+      fichas:fl.map(x=>({n:x.n,mk:x.d?'✓':'',dBg:x.d?GR:'transparent',dBd:x.d?GR:RS,bd:x.d?'oklch(0.55 0.11 150 / .35)':'rgba(28,34,48,.12)',bg:x.d?'oklch(0.96 0.035 150)':'#FFFFFF',fg:x.d?'oklch(0.38 0.1 150)':INK,tap:()=>this.goto(fid,x.k)})),
+      L:{closedEmpty:!oL&&!dO&&!dR,closedSum:!oL&&(dO||dR),sum:[sumLine('out'),sumLine('ret')],openV:oL,icon:oM.i,
+        reopen:()=>this.setState(st=>({open:{...st.open,[K('llegada')]:true},legOpen:{...st.legOpen,[fid]:undefined}})),
+        toggle:()=>{setOpen('llegada',!oL);this.setState(st=>{const lo={...st.legOpen};delete lo[fid];return{legOpen:lo};});},
+        ib:dL?'oklch(0.55 0.11 150 / .14)':'oklch(0.55 0.17 5 / .12)',ic:dL?GR:'oklch(0.5 0.17 5)',st:tag,stBg:dL?'oklch(0.96 0.035 150)':'oklch(0.55 0.17 5 / .1)',stFg:dL?'oklch(0.4 0.1 150)':'oklch(0.5 0.17 5)',
+        legs:[leg('out'),leg('ret')],search:sm.map(m=>({q:MODES[m].search[0],a:MODES[m].search[1],tap:e=>{stop(e);this.toast(fid,'Abriendo la búsqueda…');}}))},
+      A:{isFree:!full,closedEmpty:full&&!oA&&!s.zone,closedZone:full&&!oA&&dA,closedNose:full&&!oA&&s.zone==='nose',openV:full&&oA,icon:IC.hotel,line:Z?`Te alojas en ${Z.n}`:'',
+        openMap:e=>{if(e)e.stopPropagation();this.setState({sheet:{fid,kind:'aloj'}});},
+        reopen:()=>setOpen('aloj',true),toggle:()=>setOpen('aloj',!oA),
+        ib:dA?'oklch(0.55 0.11 150 / .14)':'oklch(0.55 0.17 5 / .12)',ic:dA?GR:'oklch(0.5 0.17 5)',st:dA?'✓ Listo':'Falta',stBg:dA?'oklch(0.96 0.035 150)':'oklch(0.55 0.17 5 / .1)',stFg:dA?'oklch(0.4 0.1 150)':'oklch(0.5 0.17 5)',
+        zones:ZONES.map(z=>{const a=s.zone===z.k;return{n:z.n,sub:z.sub||'',hasSub:!!z.sub,bd:a?INK:'rgba(28,34,48,.12)',bg:a?INK:'#FFFFFF',fg:a?'#FFFDF8':INK,
+          pick:()=>this.setState(st=>({zone:z.k,open:{...st.open,[K('aloj')]:false}}))};}),
+        hasStart:!!(Z&&Z.start),start:Z&&Z.start?`Tu día 1 empieza en ${Z.start}`:'',nose:s.zone==='nose'},
+      E:{openV:oE,rot:oE?'rotate(180deg)':'none',icon:IC.ticket,count:`${nb} de ${TK.length} reservadas`,cntC:dE?GR:'oklch(0.5 0.17 5)',toggle:()=>setOpen('entradas',!oE),
+        bar:TK.map(t=>s.booked[t.id]?GR:'rgba(28,34,48,.1)'),items,more:s.showAll?'Ver menos':`Ver ${TK.length-4} más`},
+      X,XR:{generic:!s.excRoute,otras:s.excRoute},
+      exc:()=>this.toast(fid,'Abriendo excursiones…'),excAdd:()=>this.setState({sheet:{fid,kind:'pick'}}),
+      fechas:e=>{stop(e);this.toast(fid,'Abriendo las fechas del viaje…');},
+      util:[{n:'Seguro de viaje',tag:'5 % dto.',icon:IC.shield,col:'oklch(0.58 0.17 25)'}].concat(full?[]:[{n:'Buscar vuelos',icon:IC.plane,col:'oklch(0.62 0.14 60)'}],
+        [{n:'eSIM Italia',tag:'5 % dto.',icon:IC.sim,col:'oklch(0.55 0.1 220)'},{n:'Tarjeta sin comisiones',icon:IC.card,col:'oklch(0.42 0.03 250)'}]).map(u=>({...u,hasTag:!!u.tag,tag:u.tag||'',tap:()=>this.toast(fid,'Abriendo…')})),
+      toastOn:!!(s.toast&&s.toast.fid===fid),shOn:!!(s.sheet&&s.sheet.fid===fid),
+      sref:this.rf[fid]||(this.rf[fid]=el=>{this.sc[fid]=el;})};
+  }
+  sheetVals(){
+    const s=this.state,W=s.sheet;const sh={aloj:false,pick:false,time:false,times:[],chips:[],exList:[]};
+    if(!W)return sh;
+    if(W.kind==='aloj')return{...sh,aloj:true};
+    if(W.kind==='pick')return{...sh,pick:true,exList:EXC.map(e=>({n:e.full,dur:e.dur,icon:e.i,bg:`linear-gradient(150deg,oklch(0.68 0.12 ${e.h}),oklch(0.46 0.1 ${e.h+20}))`,pick:()=>this.openTime(W.fid,'ex:'+e.id)}))};
+    const leg=W.target==='out'||W.target==='ret';const list=listFor(W.target,W.day);const sel=Math.min(W.sel,list.length-1);
+    let eye,title,sub='',wl='',route=null,cl=[];
+    if(leg){eye=W.target==='out'?'Hora de llegada':'Hora de salida';title=W.target==='out'?`Llegas a ${s.out.st||'Roma'}`:`Sales de ${s.ret.st||'Roma'}`;sub=W.target==='out'?'Mar 10 ago':'Sáb 14 ago';}
+    else{const[k,id]=W.target.split(':');
+      if(k==='tk'){const it=TK.find(t=>t.id===id);eye=it.ft?'Free Tour · elige día y hora':'Entrada · elige día y hora';title=it.n;wl=it.ft?'Hora de inicio':'Hora de entrada';route=it.d;cl=it.cl||[];}
+      else{const e=EXC.find(x=>x.id===id);eye='Añadir una excursión · 2 de 2';title=e.full;wl='Hora de recogida';route=s.excRoute&&id==='pompeya'?3:null;}}
+    return{...sh,time:true,eye,title,sub,hasSub:!!sub,wl,hasWl:!!wl,hasChips:!leg,hasDel:!!W.edit,selT:list[sel],
+      chips:leg?[]:DAYS.map(D=>{const a=W.day===D.d,c=cl.includes(D.d),r=route===D.d;
+        return{n:`${D.w} ${D.n}`,tag:c?'Cerrado':r?'En tu ruta':'',hasTag:c||r,bd:a?INK:'rgba(28,34,48,.12)',bg:a?INK:c?'#F1EADC':'#FFFFFF',fg:a?'#FFFDF8':INK,op:c?'.5':'1',td:c?'line-through':'none',cur:c?'not-allowed':'pointer',
+          pick:()=>{if(c||a)return;const nl=listFor(W.target,D.d);const i=nearest(nl,list[sel]);this.setState(st=>({sheet:{...st.sheet,day:D.d,sel:i}}));this.scrollWheel(i);}};}),
+      times:list.map((t,i)=>{const d=Math.abs(i-sel);return{t,fs:d===0?'26px':'20px',c:d===0?INK:d===1?'rgba(28,34,48,.5)':'rgba(28,34,48,.28)',pick:()=>this.scrollWheel(i,true)};}),
+      list};
+  }
+  renderVals(){
+    const s=this.state;const sh=this.sheetVals();
+    const phone=(plan,fid,badge)=>({...this.view(plan,fid),id:fid,badge,phone:true,isDesk:false,w:'375px',h:'812px',r:'48px',
+      sh:'0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)',hdrPad:'2px 18px 12px',pad:'2px 16px 48px',mid:'minmax(0,1fr)',shL:'0',shR:'0',shB:'0',shRad:'28px 28px 0 0'});
+    const desk={...this.view(s.dplan,'d'),id:'d',badge:'Ordenador · interruptor completa / gratis',phone:false,isDesk:true,w:'1120px',h:'860px',r:'22px',
+      sh:'0 0 0 1px rgba(28,34,48,.08),0 30px 80px -30px rgba(60,40,10,.45)',hdrPad:'22px 32px 14px',pad:'4px 32px 48px',mid:'minmax(0,1fr) minmax(0,1.1fr)',shL:'calc(50% - 220px)',shR:'calc(50% - 220px)',shB:'24px',shRad:'26px'};
+    const pill=a=>({bg:a?INK:'transparent',fg:a?'#FFFDF8':'rgba(28,34,48,.7)'});
+    const modeOpts=side=>MK.map(m=>({n:MODES[m].n,...pill(s[side]===m),pick:()=>this.setState(st=>{const om=side==='om'?m:st.om,rm=side==='rm'?m:st.rm;const L=legs(st.preset,om,rm);
+      return{[side]:m,...(side==='om'?{out:L.out}:{ret:L.ret}),legOpen:{},sheet:null};})}));
+    const W=s.sheet;
+    return{
+      ctrls:[
+        {n:'Estado',opts:[['vacio','Todo vacío'],['medias','A medias'],['casi','Casi todo hecho']].map(([k,n])=>({n,...pill(s.preset===k),pick:()=>this.setState(st=>({preset:k,...legs(k,st.om,st.rm),...rest(k),open:{},legOpen:{},showAll:false,sheet:null}))}))},
+        {n:'Ida',opts:modeOpts('om')},{n:'Vuelta',opts:modeOpts('rm')},
+        {n:'Día de excursión en la ruta',opts:[[true,'Sí'],[false,'No']].map(([v,n])=>({n,...pill(s.excRoute===v),pick:()=>this.setState({excRoute:v})}))},
+        {n:'Alojamiento',opts:[[null,'Sin elegir'],['prati','Prati'],['nose','Aún no lo sé']].map(([v,n])=>({n,...pill(s.zone===v),pick:()=>this.setState({zone:v})}))},
+        {n:'Bloques',opts:[[false,'Cerrados'],[true,'Abiertos']].map(([v,n])=>{const cur=!!s.open['m1:aloj'];return{n,...pill(cur===v),pick:()=>this.setState(st=>{const o={...st.open};['m1','m2','d'].forEach(x=>['llegada','aloj','entradas'].forEach(k=>{o[x+':'+k]=v;}));return{open:o,legOpen:{}};})};})}],
+      demos:[
+        {n:'Hoja del alojamiento',pick:()=>this.setState({sheet:{fid:'m1',kind:'aloj'}})},
+        {n:'Hoja de la hora',pick:()=>this.openTime('m1','tk:vaticanos')},
+        {n:'Añadir una excursión',pick:()=>this.setState({sheet:{fid:'m1',kind:'pick'}})}],
+      frames:[phone('full','m1','Móvil · Completa'),phone('free','m2','Móvil · Gratis'),desk],
+      dKnob:s.dplan==='free'?'translateX(100%)':'none',
+      dToggle:[['full','Completa'],['free','Gratis']].map(([k,n])=>({n,c:s.dplan===k?'#FFFDF8':'rgba(28,34,48,.65)',pick:()=>this.setState({dplan:k})})),
+      toggleMore:()=>this.setState(st=>({showAll:!st.showAll})),
+      toastTxt:s.toast?s.toast.txt:'',
+      sh,wheelRef:this.wheelRef,
+      onWheel:e=>{const w=this.state.sheet;if(!w||w.kind!=='time')return;const n=listFor(w.target,w.day).length;const i=Math.max(0,Math.min(n-1,Math.round(e.target.scrollTop/40)));if(i!==w.sel)this.setState(st=>({sheet:{...st.sheet,sel:i}}));},
+      closeSheet:()=>this.setState({sheet:null}),
+      fromEmail:()=>this.toast(s.sheet?s.sheet.fid:'m1','Leyendo tu email o PDF…'),
+      saveSheet:()=>this.setState(st=>{const w=st.sheet;const list=listFor(w.target,w.day);const t=list[Math.min(w.sel,list.length-1)];
+        if(w.target==='out'||w.target==='ret')return{[w.target]:{...st[w.target],t},legOpen:{},sheet:null};
+        const[k,id]=w.target.split(':');
+        if(k==='tk')return{booked:{...st.booked,[id]:{d:w.day,t}},sheet:null};
+        return{exb:{...st.exb,[id]:{d:w.day,t}},sheet:null};}),
+      delSheet:()=>this.setState(st=>{const[k,id]=st.sheet.target.split(':');const key=k==='tk'?'booked':'exb';const o={...st[key]};delete o[id];return{[key]:o,sheet:null};})};
+  }
+}
+</script>
+</body>
+</html>
