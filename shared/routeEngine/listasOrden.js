@@ -135,6 +135,13 @@ export function ordenarDias(env) {
       fijos.set(slot, id)
       reservasColocadas.push({ name: reserva.name, id, slot })
     }
+    // El Free Tour de tarde o de noche con su fecha (Tanda 6u): el día escrito que lo lleva (el D1, con su variante) va fijo en esa fecha.
+    if (env.freeTourFijo) {
+      const { franja, dateIso, dayNumber } = env.freeTourFijo
+      const slot = cityDays.findIndex((day) => (dateIso ? hoursOf(day).dateIso === dateIso : day.dayNumber === Number(dayNumber)))
+      const id = chosen.find((candidate) => (written.days[candidate].variantes ?? []).some((variante) => [].concat(variante.cuando ?? []).some((cuando) => cuando?.free_tour_despues === franja)))
+      if (slot >= 0 && id && !fijos.has(slot) && ![...fijos.values()].includes(id)) fijos.set(slot, id)
+    }
     // El mejor orden con unos días fijos, midiendo lo que se aleja cada día de `referencia` (Tanda 6k): sin reservas, de la tabla; con una reserva, del orden que el viajero ya veía sin ella,
     // para que cambien de sitio los menos días posibles (dos días enteros, uno por otro, y algún día más solo si un cierre lo obliga).
     const mejorOrden = (fijosDe, referencia) => {
