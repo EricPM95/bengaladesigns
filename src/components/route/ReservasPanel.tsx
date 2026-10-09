@@ -174,7 +174,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
             <span className="font-display" style={{ fontSize: 30, lineHeight: 1 }}>
               Reservas
             </span>
-            <span className="truncate text-text/55" style={{ font: "500 11px 'Geist Mono',monospace", letterSpacing: '.06em' }}>
+            <span className="text-text/55" style={{ font: "500 11px/1.35 'Geist Mono',monospace", letterSpacing: '.04em' }}>
               {route.origin} → {route.destination} · {rangoDelViaje(route)}
             </span>
           </span>

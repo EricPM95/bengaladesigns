@@ -191,7 +191,8 @@ export function LlegadaYVuelta({
   const nadaHecho = !ida.done && !vuelta.done
   const abiertaAhora: LegKind | null = mitadAbierta === undefined ? (!ida.done ? 'arrival' : !vuelta.done ? 'departure' : null) : mitadAbierta
   const etiqueta = legsTag(ida, vuelta)
-  const modos = [...new Set([ida.mode, vuelta.mode])].filter((modo) => modo !== 'coche')
+  // «¿Aún no tienes vuelo? Buscar vuelos»: para el medio de la mitad que falta o de la que está abierta.
+  const modos = [...new Set([ida, vuelta].filter((leg) => !leg.done || abiertaAhora === leg.kind).map((leg) => leg.mode))].filter((modo) => modo !== 'coche')
 
   const linea = (leg: LegState, mostrarAccion: boolean) => (
     <div

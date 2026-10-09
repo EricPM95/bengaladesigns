@@ -9055,7 +9055,7 @@
       "_nota": "Tanda 6s. El mapa de alojamientos de la hoja de RESERVAS (stay22). 'embed' lleva sus datos fijos; la app añade checkin, checkout y campaign. 'embed_guardado' es el mapa creado en el panel: se prueba primero si acepta esos mismos datos al final.",
       "embed": "https://www.stay22.com/embed/gm?aid=viajesbengala&address=Roma&ljs=es&currency=EUR&hidemodeswitcher=true",
       "embed_guardado": "https://www.stay22.com/embed/6ac8bf7c73890e8abbbe9a61",
-      "usar": "embed"
+      "usar": "embed_guardado"
     },
     "core_days": 4,
     "sin_media_jornada": true,
