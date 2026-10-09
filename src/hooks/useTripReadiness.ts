@@ -43,7 +43,7 @@ export function useTripReadiness() {
   }
 
   const bloque = buildEntradasBloque(route, destinationInfo.entradasOrden, destinationInfo.entradas, reservations)
-  const entries: EntryRow[] = [...bloque.arriba, ...bloque.mas].map((item) => ({ id: item.name, name: item.name, placeNames: item.placeNames, day: item.day, reservation: item.reservation }))
+  const entries: EntryRow[] = bloque.enRuta.map((item) => ({ id: item.name, name: item.name, placeNames: item.placeNames, day: item.day, reservation: item.reservation }))
   const excursion = destinationInfo.excursions.length > 0 && hasEnoughDaysForExcursions(route, destinationInfo.fromDays) ? buildExcursionRow(route, reservations) : null
   // Sin lo de pago no hay dónde poner el vuelo ni la zona del alojamiento: esas dos casillas no cuentan (el alojamiento y el billete se buscan fuera).
   const items = buildReadinessItems(route, resolved, { entries, excursion }).filter((item) => pago || (item.kind !== 'transport' && item.kind !== 'accommodation'))

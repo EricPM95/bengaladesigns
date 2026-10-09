@@ -121,8 +121,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   }
 
   // El resumen de arriba (de pago): tres fichas.
-  const { arriba, mas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
-  const entradas = [...arriba, ...mas]
+  const { enRuta: entradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
   const legs = legsOf(route, arrivalInfo)
   const fichas = [
     { bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done },
@@ -191,7 +190,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
               <div className="flex min-w-0 flex-col gap-3.5">
                 {llegada}
                 {unDestino ? (
-                  <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onAbrir={() => abrir('aloj')} onCerrar={() => abrir('aloj', false)} />
+                  <AlojamientoReservas route={route} info={info} pago={pago} />
                 ) : (
                   <div className="flex flex-col gap-2.5">
                     <span className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>

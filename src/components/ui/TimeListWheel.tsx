@@ -7,7 +7,7 @@ const VISIBLE = 5
  * La rueda de una sola columna de la hoja de la hora de una entrada (Tanda 6m, diseño «Entrada Tarjeta»): una lista de horas («13:30», «14:00»…) que se desliza con el dedo,
  * con la rueda del ratón y con las flechas; la elegida va resaltada en blanco, en el centro. Las horas las pone quien la usa (las de verdad de cada sitio ese día).
  */
-export function TimeListWheel({ items, value, onChange, label = 'Hora de la entrada' }: { items: string[]; value: string; onChange: (value: string) => void; label?: string }) {
+export function TimeListWheel({ items, value, onChange, label = 'Hora de la entrada', tipo = 'hora' }: { items: string[]; value: string; onChange: (value: string) => void; label?: string; /** `lista`: nombres (las zonas del alojamiento), con letra algo menor y en una línea. */ tipo?: 'hora' | 'lista' }) {
   const ref = useRef<HTMLDivElement>(null)
   const timer = useRef<number | undefined>(undefined)
   const index = Math.max(0, items.indexOf(value))
@@ -60,7 +60,7 @@ export function TimeListWheel({ items, value, onChange, label = 'Hora de la entr
             role="option"
             aria-selected={i === index}
             onClick={() => onChange(item)}
-            className={`flex snap-center cursor-pointer items-center justify-center font-display transition-all ${i === index ? 'text-[26px] text-text' : 'text-[21px] text-text/45'}`}
+            className={`flex snap-center cursor-pointer items-center justify-center truncate px-4 font-display transition-all ${tipo === 'lista' ? (i === index ? 'text-[20px] text-text' : 'text-[16px] text-text/45') : i === index ? 'text-[26px] text-text' : 'text-[21px] text-text/45'}`}
             style={{ height: ITEM_H }}
           >
             {item}

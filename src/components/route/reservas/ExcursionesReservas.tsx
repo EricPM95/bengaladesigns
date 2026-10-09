@@ -56,7 +56,7 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
 }
 
 /**
- * El bloque «Excursiones» de RESERVAS (Tanda 6s). Sin día de excursión en la ruta: solo «Excursiones desde Roma · n excursiones» [Ver excursiones] y, debajo, «¿Ya tienes una? Añádela».
+ * El bloque «Excursiones» de RESERVAS (Tanda 6s). Sin día de excursión en la ruta: solo «Excursiones desde Roma · n excursiones» [Ver excursiones] y, dentro de la misma tarjeta, debajo del botón y en pequeño, «¿Ya tienes una? Añádela» (Tanda 6v).
  * Con el día de excursión: solo la tarjeta de esa excursión (la de entrada, con [Reservar excursión] y «¿Ya la tienes? Añádela») y, debajo, «Ver otras excursiones». Nunca dos «Añádela».
  * Las añadidas, en una línea verde con «Cambiar». Viajes de menos días que `excursiones_desde_dias`: no sale.
  */
@@ -111,13 +111,15 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
                   {info.excursions.length} {info.excursions.length === 1 ? 'excursión' : 'excursiones'}
                 </span>
               </span>
-              <button type="button" onClick={() => openExcursions(false)} className="my-auto mr-3 h-[34px] flex-none whitespace-nowrap rounded-full bg-[#1C2230] px-[13px] text-[12.5px] font-semibold text-[#FFFDF8]">
-                Ver excursiones
-              </button>
+              <span className="my-auto mr-3 flex flex-none flex-col items-end gap-1.5">
+                <button type="button" onClick={() => openExcursions(false)} className="h-[34px] whitespace-nowrap rounded-full bg-[#1C2230] px-[13px] text-[12.5px] font-semibold text-[#FFFDF8]">
+                  Ver excursiones
+                </button>
+                <button type="button" onClick={() => setLista(true)} className="border-none bg-transparent p-0 text-right text-[11px] leading-[1.25] text-text/60">
+                  ¿Ya tienes una? <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
+                </button>
+              </span>
             </div>
-            <button type="button" onClick={() => setLista(true)} className="self-start border-none bg-transparent px-1 py-0.5 text-left text-[12px] text-text/60">
-              ¿Ya tienes una? <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
-            </button>
           </>
         )}
         {hayDiaDeExcursion && (

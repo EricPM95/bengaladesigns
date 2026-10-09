@@ -33,29 +33,33 @@ export function EntradaCard({
   name,
   reservedTime,
   buyLabel = 'Reservar entrada',
-  buyHref,
+  buyHref = null,
+  onBuy,
   onAdd,
   onChange,
   notes = [],
 }: {
   /** La etiqueta de arriba: «Entrada», «Free Tour» o «Excursión». */
   eyebrow?: string
-  /** «Día 1» o «Mar 12 ene» (en RESERVAS, «En tu ruta el mié 11»). */
-  when: string
+  /** «Día 1» o «Mar 12 ene» (en RESERVAS, «En tu ruta el mié 11»). Sin él (las de «Ver más», que no están en la ruta), no sale. */
+  when?: string | null
   name: string
   /** La hora de la reserva, si ya está reservada. */
   reservedTime: string | null
   buyLabel?: string
-  buyHref: string | null
-  /** «Añádela»: abre la hoja de la hora. */
-  onAdd: () => void
+  /** El enlace de compra (excursiones). Las entradas y el Free Tour usan `onBuy`. */
+  buyHref?: string | null
+  /** [Reservar …] abre esto (la ficha del sitio, en su pestaña «Entradas», Tanda 6v) en vez del enlace. */
+  onBuy?: () => void
+  /** «Añádela»: abre la hoja de la hora. Sin él (las de «Ver más»), no sale «¿Ya la tienes? Añádela». */
+  onAdd?: () => void
   /** «Cambiar»: la misma hoja, con la reserva y «Eliminar reserva». */
-  onChange: () => void
+  onChange?: () => void
   notes?: { text: string; warn?: boolean }[]
 }) {
   const reserved = reservedTime != null
   const accent = reserved ? GREEN : ROSE
-  const buy = () => openTicketShop(buyHref)
+  const buy = () => (onBuy ? onBuy() : openTicketShop(buyHref))
   return (
     <div
       className="relative flex min-h-[112px] w-full bg-white"
@@ -75,10 +79,14 @@ export function EntradaCard({
         <span className="flex items-center gap-1.5 text-text/50" style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ background: reserved ? GREEN : 'rgba(28,34,48,.35)' }} />
           {eyebrow}
-          <span className="opacity-50">·</span>
-          <span className="text-text/65" style={{ letterSpacing: '.04em', textTransform: 'none', fontWeight: 500 }}>
-            {when}
-          </span>
+          {when && (
+            <>
+              <span className="opacity-50">·</span>
+              <span className="text-text/65" style={{ letterSpacing: '.04em', textTransform: 'none', fontWeight: 500 }}>
+                {when}
+              </span>
+            </>
+          )}
         </span>
         <span className="font-display text-text [overflow-wrap:anywhere]" style={{ fontSize: 18, lineHeight: 1.08 }}>
           {name}
@@ -98,7 +106,7 @@ export function EntradaCard({
               {reservedTime}
             </span>
             <span>·</span>
-            <button type="button" onClick={onChange} className="text-text underline underline-offset-[3px]" style={{ font: "italic 400 15px 'Instrument Serif',serif" }}>
+            <button type="button" onClick={onChange ?? onAdd} className="text-text underline underline-offset-[3px]" style={{ font: "italic 400 15px 'Instrument Serif',serif" }}>
               Cambiar
             </button>
           </span>
@@ -112,12 +120,14 @@ export function EntradaCard({
             >
               {buyLabel}
             </button>
-            <span className="text-text/55" style={{ font: "400 11px 'Geist'" }}>
-              ¿Ya la tienes?{' '}
-              <button type="button" onClick={onAdd} className="font-semibold text-text underline underline-offset-2">
-                Añádela
-              </button>
-            </span>
+            {onAdd && (
+              <span className="text-text/55" style={{ font: "400 11px 'Geist'" }}>
+                ¿Ya la tienes?{' '}
+                <button type="button" onClick={onAdd} className="font-semibold text-text underline underline-offset-2">
+                  Añádela
+                </button>
+              </span>
+            )}
           </span>
         )}
       </div>

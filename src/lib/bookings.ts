@@ -102,44 +102,46 @@ export interface EntryRow {
   reservation: Reservation | null
 }
 
-/** Una entrada del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s). */
+/** Una entrada del bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s y 6v). */
 export interface BloqueEntrada {
   /** El nombre con el que sale: «Coliseo, Foro y Palatino», «Panteón», «Free Tour por Roma». */
   name: string
   /** Las paradas de la ruta que cubre. */
   placeNames: string[]
   isFreeTour: boolean
-  /** El día en que está en la ruta (el de la reserva, si está reservada). */
+  /** El día en que está en la ruta (el de la reserva, si está reservada); null si no está en la ruta. */
   day: DayPlan | null
   reservation: Reservation | null
-  /** Está en alguna parada de la ruta (una reservada que ya no está, sigue saliendo). */
+  /** El viajero la visita por dentro en su ruta (el Free Tour, si va en la ruta). */
   inRoute: boolean
 }
 
 /**
- * El bloque «Entradas y Free Tour» (Tanda 6s): siempre en el orden de los datos del destino (`entradas_reservas_orden`), solo las que están en la ruta del viajero, las de
- * siempre arriba y las demás en «Ver n más». Cada nombre es una entrada de `entradas_reservas` (Coliseo, Foro y Palatino), un lugar o el Free Tour de la ruta.
+ * El bloque «Entradas y Free Tour» de RESERVAS (Tanda 6v), con las dos partes. `enRuta`: las entradas de las paradas que el viajero visita por dentro en su ruta (no las que van por fuera) y el Free Tour si va
+ * en ella, en el orden de los datos del destino (`entradas_reservas_orden`: `arriba` y después `mas`); una ya reservada sigue aquí aunque la parada ya no esté. Son las que cuentan en el «1 de 4 reservadas».
+ * `masEntradas`: las demás de esa lista, las que no están en la ruta; no cuentan. Cada nombre es una entrada de `entradas_reservas` (Coliseo, Foro y Palatino), un lugar del destino o «Free Tour por Roma».
  */
 export function buildEntradasBloque(
   route: Route,
   orden: { arriba: string[]; mas: string[] },
   essentials: EssentialEntry[],
   reservations: Reservation[],
-): { arriba: BloqueEntrada[]; mas: BloqueEntrada[] } {
+): { enRuta: BloqueEntrada[]; masEntradas: BloqueEntrada[] } {
   const stops = route.days.flatMap((day) => day.stops.filter((stop) => !stop.passThrough).map((stop) => ({ day, stop })))
   const freeTour = stops.find(({ stop }) => stop.isFreeTour) ?? null
-  const build = (name: string): BloqueEntrada | null => {
+  const build = (name: string): BloqueEntrada => {
     const isFreeTour = Boolean(freeTour) && name === freeTour!.stop.name
     const group = essentials.find((entry) => entry.name === name)
     const placeNames = isFreeTour ? [name] : (group?.places ?? [name])
-    const inRoute = isFreeTour ? true : stops.some(({ stop }) => placeNames.includes(stop.name) && !stop.isFreeTour)
+    // Por dentro: una parada que va por fuera («Castillo de Sant'Angelo», solo mirarlo) no lleva entrada.
+    const visitada = stops.find(({ stop }) => placeNames.includes(stop.name) && !stop.isFreeTour && stop.visitMode !== 'fuera') ?? null
     const reservation = reservations.find((item) => item.kind === 'entrada' && (isFreeTour ? item.refId === 'Free Tour' : item.refId === name || item.placeNames.some((place) => placeNames.includes(place)))) ?? null
-    if (!inRoute && !reservation) return null
-    const stopDay = (isFreeTour ? freeTour?.day : stops.find(({ stop }) => placeNames.includes(stop.name))?.day) ?? null
+    const inRoute = isFreeTour ? true : visitada != null
+    const stopDay = (isFreeTour ? freeTour?.day : visitada?.day) ?? null
     return { name, placeNames, isFreeTour, day: (reservation && dayOfReservation(route, reservation)) ?? stopDay, reservation, inRoute }
   }
-  const items = (names: string[]) => names.map(build).filter((item): item is BloqueEntrada => item !== null)
-  return { arriba: items(orden.arriba), mas: items(orden.mas) }
+  const items = [...orden.arriba, ...orden.mas].map(build)
+  return { enRuta: items.filter((item) => item.inRoute || item.reservation), masEntradas: items.filter((item) => !item.inRoute && !item.reservation) }
 }
 
 export interface ExcursionRowData {

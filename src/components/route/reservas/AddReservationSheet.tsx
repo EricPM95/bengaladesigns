@@ -25,12 +25,6 @@ export interface ReservationTarget {
   paso2?: boolean
 }
 
-/** La regla 17 (Tanda 6k): la lista escrita del día que llevará el sitio, a la hora de la reserva. */
-interface ReservationAdvice {
-  estado: 'bien' | 'sin_lista' | 'no_cabe' | 'sin_definir'
-  mejores: string[]
-}
-
 /** Qué se mueve al meter una reserva grande (/api/reservation-plan). */
 interface ReservationPlan {
   cambia: boolean
@@ -38,7 +32,6 @@ interface ReservationPlan {
   motivos: string[]
   sinMover: { motivo: string } | null
   cambios: { dayNumber: number; de: string | null; a: string | null }[]
-  consejo: ReservationAdvice | null
 }
 
 /** Las horas a las que se puede entrar ese día (de la apertura a la última entrada). */
@@ -140,8 +133,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const removeReservation = useRouteStore((state) => state.removeReservation)
   const reservations = useRouteStore((state) => state.reservations)
   const [confirming, setConfirming] = useState(false)
-  const [rule17, setRule17] = useState(false)
-  const [rule17Kept, setRule17Kept] = useState(false)
   const [tab, setTab] = useState<Tab>('email')
   const [text, setText] = useState('')
   const [fileName, setFileName] = useState<string | null>(null)
@@ -325,7 +316,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     }
   }
   useEffect(() => {
-    setRule17Kept(false)
     const draft = planKey ? draftReservation() : null
     if (!draft) {
       setPlan(null)
@@ -421,13 +411,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     return null
   }
 
-  /** Guardar: la regla 17 si la hora no tiene lista escrita; después, la hoja que explica qué día se mueve; si no se puede mover, la reserva se guarda en su día con un aviso (y en la campana). */
-  const save = (stage: 'inicio' | 'regla17' | 'mover' = 'inicio') => {
+  /** Guardar: la hora que elige el viajero se queda, siempre (Tanda 6v: la app nunca propone otra hora; el día usa la lista escrita de esa hora y, si no la hay, manda la reserva, sin preguntar). Antes, la hoja que explica qué día se mueve; si no se puede mover, la reserva se guarda en su día con un aviso (y en la campana). */
+  const save = (stage: 'inicio' | 'mover' = 'inicio') => {
     if (!resolvedDay || !ready) return
-    if (stage === 'inicio' && plan?.consejo && (plan.consejo.estado === 'sin_lista' || plan.consejo.estado === 'no_cabe') && !rule17Kept && plan.consejo.mejores.length > 0) {
-      setRule17(true)
-      return
-    }
     const blocked = plan?.cambia ? blockedDay() : null
     if (plan?.cambia && blocked == null && stage !== 'mover') {
       setConfirming(true)
@@ -464,15 +450,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     onClose()
   }
 
-  // Las dos horas que propone la regla 17: las mejores más cercanas a la elegida.
-  const proposals = useMemo(() => {
-    const options = plan?.consejo?.mejores ?? []
-    if (!validTime || options.length === 0) return []
-    const asMinutes = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
-    const chosen = asMinutes(fields.time)
-    return [...options].sort((a, b) => Math.abs(asMinutes(a) - chosen) - Math.abs(asMinutes(b) - chosen)).slice(0, 2).sort((a, b) => asMinutes(a) - asMinutes(b))
-  }, [plan, fields.time, validTime])
-
   const showForm = tab === 'manual' || read
   /** «Eliminar reserva» (solo dentro de «Cambiar»): la tarjeta vuelve a sin reservar, el día se queda donde está y la parada vuelve a su lista normal. */
   const deleteReservation = () => {
@@ -484,7 +461,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     }
     onClose()
   }
-  const shownTime = validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : ''
   const dateLabel = (iso: string) => {
     const day = dayOnDate(route, iso)
     return day ? dayLabel(day) : shortDateEs(iso)
@@ -769,43 +745,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           </div>
         )}
       </div>
-      {rule17 && plan?.consejo && proposals.length > 0 && (
-        <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="rule17-heading">
-          <div className="absolute inset-0 bg-text/25" onClick={() => setRule17(false)} />
-          <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
-            <h2 id="rule17-heading" className="font-display text-[22px] leading-[1.2] text-text">
-              A las {shownTime} la visita no encaja bien en el día. Te proponemos las {proposals.join(' o las ')}.
-            </h2>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {proposals.map((hour) => (
-                <button
-                  key={hour}
-                  type="button"
-                  onClick={() => {
-                    set({ time: hour.length === 4 ? `0${hour}` : hour })
-                    setRule17(false)
-                  }}
-                  className="h-12 flex-1 rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]"
-                >
-                  {hour}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setRule17Kept(true)
-                setRule17(false)
-                // (Regla 4: la deja a esa hora y el día se adapta en silencio.)
-                window.setTimeout(() => save('regla17'), 0)
-              }}
-              className="mt-2 h-12 w-full rounded-full border border-text/15 text-[15px] font-medium text-text hover:bg-bg-hover"
-            >
-              Dejar las {shownTime}
-            </button>
-          </div>
-        </div>
-      )}
       {confirming && plan?.cambia && (
         <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="move-day-heading">
           <div className="absolute inset-0 bg-text/25" onClick={() => setConfirming(false)} />

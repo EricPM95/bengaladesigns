@@ -2,11 +2,11 @@ import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, dateOfDay, type BloqueEntrada } from '../../../lib/bookings'
-import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { legDayText } from '../../../lib/reservasLegs'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { BloqueShell, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
+import { FichaEntrada } from './FichaEntrada'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
@@ -26,19 +26,20 @@ export function enTuRuta(route: Route, day: { dayNumber: number; id: string } | 
 }
 
 /**
- * El bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s): cerrado de entrada, con «1 de 8 reservadas» y la barra; abierto, las entradas de la ruta del viajero en el orden de los datos del
- * destino, todas juntas y sin títulos de día. Sin reservar, la tarjeta de la 6m; reservada, una línea verde con «Cambiar».
+ * El bloque «Entradas y Free Tour» de RESERVAS (Tanda 6s y 6v): cerrado de entrada, con «1 de 4 reservadas» y la barra; abierto, dos partes. «EN TU RUTA»: las entradas de las paradas que el viajero visita por dentro
+ * (y el Free Tour, si va en la ruta), en el orden de los datos del destino; son las que cuentan. Debajo, «Ver n más»: las demás de la lista del destino, que no cuentan y no llevan «Añádela» (para meter una en el viaje
+ * está «+ Añadir parada» de DÍAS); si no hay más, la línea no sale. [Reservar entrada] y [Reservar Free Tour] abren la ficha del sitio en su pestaña «Entradas», no la tienda; «¿Ya la tienes? Añádela» abre la hoja de la hora.
+ * Una reservada, una línea verde con «Cambiar».
  */
 export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: Route; info: DestinationExcursions; abierto: boolean; onToggle: () => void }) {
   const reservations = useRouteStore((state) => state.reservations)
   const [verMas, setVerMas] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
-  const { arriba, mas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
-  const todas = [...arriba, ...mas]
-  if (todas.length === 0) return null
-  const reservadas = todas.filter((item) => item.reservation).length
-  const hecho = reservadas === todas.length
-  const visibles = verMas ? todas : arriba
+  const [ficha, setFicha] = useState<BloqueEntrada | null>(null)
+  const { enRuta, masEntradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
+  if (enRuta.length === 0 && masEntradas.length === 0) return null
+  const reservadas = enRuta.filter((item) => item.reservation).length
+  const hecho = enRuta.length > 0 && reservadas === enRuta.length
 
   const targetOf = (item: BloqueEntrada): ReservationTarget => ({
     kind: 'entrada',
@@ -47,7 +48,8 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
     placeNames: item.placeNames,
     currentDayId: item.day?.id ?? null,
   })
-  const enlace = (item: BloqueEntrada) => info.entradasPorSitio[item.isFreeTour ? 'Free Tour' : item.placeNames[0]]?.[0]?.url ?? buildActivitySearchUrl(`${item.name} ${route.destination}`)
+  const etiquetaDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Free Tour' : 'Entrada')
+  const botonDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Reservar Free Tour' : 'Reservar entrada')
 
   return (
     <>
@@ -58,51 +60,67 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
             <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span style={tituloBloqueStyle}>Entradas y Free Tour</span>
               <span style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'oklch(0.5 0.17 5)' }}>
-                {reservadas} de {todas.length} reservadas
+                {enRuta.length > 0 ? `${reservadas} de ${enRuta.length} reservadas` : 'Ninguna en tu ruta'}
               </span>
             </span>
             <FlechaBloque abierto={abierto} />
           </div>
-          <div className="flex gap-[3px]" aria-hidden="true">
-            {todas.map((item) => (
-              <span key={item.name} className="h-1 flex-1 rounded transition-colors" style={{ background: item.reservation ? GR : 'rgba(28,34,48,.1)' }} />
-            ))}
-          </div>
+          {enRuta.length > 0 && (
+            <div className="flex gap-[3px]" aria-hidden="true">
+              {enRuta.map((item) => (
+                <span key={item.name} className="h-1 flex-1 rounded transition-colors" style={{ background: item.reservation ? GR : 'rgba(28,34,48,.1)' }} />
+              ))}
+            </div>
+          )}
         </div>
         {abierto && (
           <div className="flex flex-col gap-3 px-3.5 pb-3.5">
-            <span className="flex items-center gap-1.5 text-[12px] text-text/65">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.17 5)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d={ICONOS.reloj} />
-              </svg>
-              Las más buscadas se agotan: resérvalas pronto
-            </span>
-            {visibles.map((item) =>
-              item.reservation ? (
-                <LineaReservada key={item.name} nombre={item.name} meta={metaReserva(route, item.reservation)} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
-              ) : (
-                <EntradaCard
-                  key={item.name}
-                  eyebrow={item.isFreeTour ? 'Free Tour' : 'Entrada'}
-                  when={enTuRuta(route, item.day)}
-                  name={item.name}
-                  buyLabel={item.isFreeTour ? 'Reservar Free Tour' : 'Reservar entrada'}
-                  buyHref={enlace(item)}
-                  reservedTime={null}
-                  onAdd={() => setTarget(targetOf(item))}
-                  onChange={() => setTarget(targetOf(item))}
-                />
-              ),
+            {enRuta.length > 0 && (
+              <>
+                <span className="flex items-center gap-1.5 text-text/50" style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
+                  En tu ruta
+                </span>
+                <span className="-mt-1.5 flex items-center gap-1.5 text-[12px] text-text/65">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.17 5)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d={ICONOS.reloj} />
+                  </svg>
+                  Las más buscadas se agotan: resérvalas pronto
+                </span>
+                {enRuta.map((item) =>
+                  item.reservation ? (
+                    <LineaReservada key={item.name} nombre={item.name} meta={metaReserva(route, item.reservation)} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
+                  ) : (
+                    <EntradaCard
+                      key={item.name}
+                      eyebrow={etiquetaDe(item)}
+                      when={enTuRuta(route, item.day)}
+                      name={item.name}
+                      buyLabel={botonDe(item)}
+                      onBuy={() => setFicha(item)}
+                      reservedTime={null}
+                      onAdd={() => setTarget(targetOf(item))}
+                      onChange={() => setTarget(targetOf(item))}
+                    />
+                  ),
+                )}
+              </>
             )}
-            {mas.length > 0 && (
-              <button type="button" onClick={() => setVerMas((value) => !value)} className="h-11 rounded-[14px] border border-dashed border-text/20 bg-transparent text-[13px] font-semibold text-text">
-                {verMas ? 'Ver menos' : `Ver ${mas.length} más`}
-              </button>
+            {masEntradas.length > 0 && (
+              <>
+                <button type="button" onClick={() => setVerMas((value) => !value)} className="h-11 rounded-[14px] border border-dashed border-text/20 bg-transparent text-[13px] font-semibold text-text">
+                  {verMas ? 'Ver menos' : `Ver ${masEntradas.length} más`}
+                </button>
+                {verMas &&
+                  masEntradas.map((item) => (
+                    <EntradaCard key={item.name} eyebrow={etiquetaDe(item)} name={item.name} buyLabel={botonDe(item)} onBuy={() => setFicha(item)} reservedTime={null} />
+                  ))}
+              </>
             )}
           </div>
         )}
       </BloqueShell>
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
+      {ficha && <FichaEntrada route={route} item={ficha} onClose={() => setFicha(null)} />}
     </>
   )
 }
