@@ -12,8 +12,8 @@ const D = JSON.parse(fs.readFileSync('data/pipeline_v2/roma.json', 'utf8'))
 const P = (nombre, min, modo = null, extra = {}) => {
   const alias = nombres[nombre]
   const lugar = alias?.lugar ?? nombre
-  if (!D.places.some((place) => place.name === lugar) && !['Free Tour Centro Histórico', 'Desayuno romano'].includes(lugar)) throw new Error(`listasVariantes: «${nombre}» no está en roma.json`)
-  return { tipo: lugar === 'Free Tour Centro Histórico' ? 'tour' : 'parada', lugar, ...(alias?.titulo ? { titulo: alias.titulo } : {}), ...(alias?.foto ? { foto: alias.foto } : {}), ...(alias?.ignora_temporada ? { ignora_temporada: true } : {}), min, modo, ...extra }
+  if (!D.places.some((place) => place.name === lugar) && !['Free Tour por Roma', 'Desayuno romano'].includes(lugar)) throw new Error(`listasVariantes: «${nombre}» no está en roma.json`)
+  return { tipo: lugar === 'Free Tour por Roma' ? 'tour' : 'parada', lugar, ...(alias?.titulo ? { titulo: alias.titulo } : {}), ...(alias?.foto ? { foto: alias.foto } : {}), ...(alias?.ignora_temporada ? { ignora_temporada: true } : {}), min, modo, ...extra }
 }
 // Paradas con nombre (Tanda 6f, 4j): en Roma, estos sitios dejan de ser «de camino»: son paradas de ~10 min (salvo lo que diga el documento).
 const PARADAS_CON_NOMBRE = new Set(JSON.parse(fs.readFileSync('data/dias/roma/_destino.json', 'utf8')).paradas_con_nombre ?? [])
@@ -201,8 +201,8 @@ export default {
       variantes: [
         ...D1_TRAMOS,
         { id: 'sabado_panteon', doc: 'el sábado (y la víspera de festivo) el Panteón no deja entrar desde las 17:00 por la misa: aviso «entra antes».', cuando: { dia_semana: ['sábado'] }, ops: { tarde: { ajustar: { Panteón: { cierra: '17:00' } } } } },
-        { id: 'free_tour_tarde', doc: 'Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
-        { id: 'free_tour_noche', doc: 'Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.', cuando: { free_tour_despues: 'noche' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour Centro Histórico', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
+        { id: 'free_tour_tarde', doc: 'Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour por Roma', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
+        { id: 'free_tour_noche', doc: 'Free Tour de tarde (15:00 o 17:00) o de noche (21:00, solo si el viajero lo reserva):** es una reserva en la tarde.', cuando: { free_tour_despues: 'noche' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour por Roma', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
       ],
       pool: {
         'Museos Capitolinos': { doc: 'Museos Capitolinos:** por la mañana, después del Campidoglio ~60.', cuando: { viaje_sin: ['D6'] }, ops: { manana: { insertar: [{ despues_de: 'Plaza del Campidoglio', parada: P('Museos Capitolinos', 60, 'dentro', { protegido: true }) }] } } },

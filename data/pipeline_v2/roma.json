@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "default_transport": "public",
   "default_free_tour": {
-    "name": "Free Tour Centro Histórico",
+    "name": "Free Tour por Roma",
     "meeting_point": "Piazza di Spagna",
     "coordinates": [
       41.9058,
@@ -6084,7 +6084,7 @@
               ],
               "places": [
                 "Fontana de Trevi",
-                "Free Tour Centro Histórico"
+                "Free Tour por Roma"
               ],
               "note": "Trevi a primera hora (08:00, sin gente) → Free Tour 10:00 desde Piazza di Spagna"
             },
@@ -6191,7 +6191,7 @@
               ],
               "places": [
                 "Fontana de Trevi",
-                "Free Tour Centro Histórico"
+                "Free Tour por Roma"
               ],
               "note": "Trevi 08:00 (Completo) o Free Tour 10:00 directamente (Tranquilo)"
             },
@@ -6335,7 +6335,7 @@
               "zone": "centro_historico",
               "places": [
                 "Fontana de Trevi",
-                "Free Tour Centro Histórico"
+                "Free Tour por Roma"
               ],
               "note": "Trevi 08:00 + Free Tour 10:00"
             },
@@ -6529,7 +6529,7 @@
               "zone": "centro_historico",
               "places": [
                 "Fontana de Trevi",
-                "Free Tour Centro Histórico"
+                "Free Tour por Roma"
               ],
               "note": "Trevi 08:00 + Free Tour 10:00"
             },
@@ -6768,7 +6768,7 @@
               "zone": "centro_historico",
               "places": [
                 "Fontana de Trevi",
-                "Free Tour Centro Histórico"
+                "Free Tour por Roma"
               ],
               "note": "Trevi 08:00 + Free Tour 10:00"
             },
@@ -9739,7 +9739,7 @@
       ],
       "paradas": [
         {
-          "lugar": "Free Tour Centro Histórico",
+          "lugar": "Free Tour por Roma",
           "rol": "ancla",
           "nota": "Sale de su dato actual (hora y punto de encuentro)."
         }
@@ -11470,7 +11470,7 @@
           "si_da_tiempo": true
         },
         {
-          "lugar": "Free Tour Centro Histórico",
+          "lugar": "Free Tour por Roma",
           "rol": "parada",
           "nota": "De 10:00 a 12:30. Sale de la Plaza de España.",
           "por_que": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma."
@@ -14493,7 +14493,7 @@
     "Ara Pacis": "El Altar de la Paz del emperador Augusto, con más de 2.000 años, dentro de un edificio moderno de cristal junto al Tíber. Los relieves de la familia imperial parecen una foto de grupo.",
     "Mercados de Trajano": "El centro comercial de la Roma imperial, con sus tiendas en semicírculo. Desde arriba tienes los Foros a tus pies.",
     "Museos Capitolinos": "Los museos públicos más antiguos del mundo, en la plaza de Miguel Ángel. Dentro está la loba que amamanta a Rómulo y Remo, el símbolo de Roma, y la estatua original de Marco Aurelio a caballo.",
-    "Free Tour Centro Histórico": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma.",
+    "Free Tour por Roma": "Dos horas y media por el centro con un guía que te cuenta la historia y las anécdotas de todo lo que ves. Sale de la Plaza de España y es la mejor forma de entender Roma.",
     "Columna de Trajano": "Una columna de 2.000 años que cuenta en espiral, como un cómic de piedra, las guerras de Trajano. Arriba, en vez del emperador, hoy está san Pedro.",
     "Via della Conciliazione": "Es la gran avenida que lleva a San Pedro. Cuando vayas por la mitad, date la vuelta: verás la cúpula al fondo, perfectamente centrada, como si la calle se hubiera hecho solo para esa foto.",
     "Plaza Venecia": "Es la gran plaza a los pies del Altar de la Patria, y desde aquí lo ves entero antes de subir. En un lado de la plaza está el Palacio Venecia, con el balcón desde el que hablaba Mussolini.",

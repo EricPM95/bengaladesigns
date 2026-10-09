@@ -122,7 +122,7 @@ function paradaDe(texto, dia, { camino = false } = {}) {
   const notas = [...parentesis(cola), ...parentesis(cabeza).filter((p) => !nombres[`${sinParentesis(nombre)} (${p})`] && nombres[nombre] === undefined)]
   const frases = cola.replace(/\([^)]*\)/g, '').split('.').map((s) => s.trim()).filter(Boolean)
   const place = places.get(norm(sitio.lugar))
-  const stop = { tipo: sitio.lugar === 'Free Tour Centro Histórico' ? 'tour' : 'parada', lugar: sitio.lugar, ...(sitio.titulo ? { titulo: sitio.titulo } : {}), ...(sitio.foto ? { foto: sitio.foto } : {}), ...(sitio.no_quita_noche ? { no_quita_noche: true } : {}), ...(Array.isArray(sitio.coordenadas) ? { coordenadas: sitio.coordenadas } : {}), modo: modo ?? sitio.modo ?? null, doc: raw }
+  const stop = { tipo: sitio.lugar === 'Free Tour por Roma' ? 'tour' : 'parada', lugar: sitio.lugar, ...(sitio.titulo ? { titulo: sitio.titulo } : {}), ...(sitio.foto ? { foto: sitio.foto } : {}), ...(sitio.no_quita_noche ? { no_quita_noche: true } : {}), ...(Array.isArray(sitio.coordenadas) ? { coordenadas: sitio.coordenadas } : {}), modo: modo ?? sitio.modo ?? null, doc: raw }
   stop.min = min ?? (stop.modo === 'camino' ? 5 : null)
   if (stop.min == null) {
     stop.min = place?.minutos_fuera ?? Math.min(place?.duration_minutes ?? 15, 20)

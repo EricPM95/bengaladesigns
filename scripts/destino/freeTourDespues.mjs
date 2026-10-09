@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 
 const read = (id) => JSON.parse(readFileSync(`data/dias/roma/${id}.json`, 'utf8').replace(/\r\n/g, '\n'))
 const write = (id, data) => writeFileSync(`data/dias/roma/${id}.json`, (JSON.stringify(data, null, 2) + '\n').replace(/\n/g, '\r\n'))
-const TOUR = 'Free Tour Centro Histórico'
+const TOUR = 'Free Tour por Roma'
 const tour = (hora) => ({ lugar: TOUR, tipo: 'fija', hora, min: 150, modo: 'parada' })
 const PREAMBULO = 'Free Tour añadido después (3-oct-2026, PARA_CODE_DECISIONES_D1_D2_D4_FREE_TOUR). Lo que el tour ya enseña no se repite ese día. La hora de la parada del tour es solo un ejemplo: la que vale es la reservada.'
 
