@@ -2,10 +2,11 @@
 //   1. El orden de cada día = el de su lista, sin lo quitado.        5. Por dentro una sola vez en el viaje.
 //   2. Nada cerrado en su franja.                                      6. 0 restaurantes y 0 nocturnas repetidos.
 //   3. Sin zigzag.                                                     7. Las reservas, a su hora, con su «Llegada a…».
-//   4. La pirámide: ningún imprescindible quitado la primera vez.      8. Ninguna comida después de las 14:30 (salvo delante solo imprescindibles).
+//   4. La pirámide: ningún imprescindible quitado la primera vez.      8. Ninguna comida después de las 15:00 (salvo delante solo imprescindibles).
 // No hay prueba de «huecos»: el tiempo libre es del viajero.
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
+import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
 
 const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
 
@@ -206,10 +207,9 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     }
     // (Un «de camino» no va a «Si te sobra tiempo».)
     for (const sp of dia.spareRows ?? []) if (sp.modo === 'camino') falla('camino_en_sobra', dia, `«${sp.titulo ?? sp.lugar}» va de camino y está en «Si te sobra tiempo»`)
-    // 8. La comida, como muy tarde a las 14:30
+    // 8. La comida, como muy tarde a las 15:00 (regla 6, 9-oct-2026): un solo límite, el de shared/routeEngine/comida.js
     const comida = rows.find((x) => x.tipo === 'comida')
-    // (Tanda 6f: en un día con una reserva —una hora fija— la comida puede ser hasta las 15:00.)
-    const comidaLimite = rows.some((x) => x.fija && !x.llegada) ? 15 * 60 : 14 * 60 + 30
+    const comidaLimite = COMIDA_HASTA_MIN
     if (comida && comida.llegaA > comidaLimite) {
       const delante = rows.slice(0, rows.indexOf(comida)).filter((x) => (x.tipo === 'parada' || x.tipo === 'tour') && !x.llegada && x.modo !== 'camino' && !x.relleno && !x.protegido)
       const soloImprescindibles = delante.length > 0 && delante.every((x) => (x.nivel ?? 3) === 1 || x.fija)

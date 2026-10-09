@@ -3466,6 +3466,81 @@
       ]
     },
     {
+      "id": "templo_de_adriano",
+      "name": "Templo de Adriano",
+      "duration_minutes": 10,
+      "min_max": 10,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.8998,
+        12.478
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "monumento",
+        "ruinas"
+      ],
+      "filter_category": "monumentos",
+      "description": "Once columnas corintias de mármol, de casi 15 metros, que quedan del templo que el emperador Antonino Pío dedicó a Adriano en el año 145. Hoy forman la fachada de un edificio de la Piazza di Pietra.",
+      "tip": "Solo se ve por fuera, y es una parada corta: cruza la Piazza di Pietra, mira las columnas y sigue hacia la Piazza Colonna. Llevan casi 2.000 años a la vista y las casas de hoy las tienen metidas dentro.",
+      "photo_tip": "Desde el centro de la Piazza di Pietra, de frente: se ven las columnas con el edificio moderno detrás.",
+      "search_aliases": [
+        "templo de adriano",
+        "tempio di adriano",
+        "temple of hadrian",
+        "piazza di pietra"
+      ],
+      "search_en": "Temple of Hadrian Rome",
+      "search_en_keywords": [
+        "hadrian",
+        "adriano"
+      ],
+      "neighbor_of": [
+        "Panteón",
+        "Piazza Colonna"
+      ],
+      "_nota_ficha": "Añadida el 9-oct-2026 (Tanda 6u): el D3 con el Free Tour a las 12:00 y a las 17:00 la lleva por fuera, entre el Panteón y la Piazza Colonna. Sin foto propia todavía (_fotos.json › sin_foto)."
+    },
+    {
+      "id": "piazza_colonna",
+      "name": "Piazza Colonna",
+      "duration_minutes": 10,
+      "min_max": 10,
+      "zone": "centro_historico",
+      "coordinates": [
+        41.9006,
+        12.4796
+      ],
+      "level": 3,
+      "type": "exterior",
+      "tags": [
+        "plaza",
+        "monumento"
+      ],
+      "filter_category": "monumentos",
+      "description": "La plaza del Palacio Chigi, sede del Gobierno, con la Columna de Marco Aurelio en medio: casi 30 metros de mármol con relieves de las campañas del emperador contra los pueblos del Danubio, en el siglo II.",
+      "tip": "Mira la columna despacio: los relieves suben en espiral y cuentan una guerra. La estatua de arriba no es del emperador, es de San Pablo, y la puso un Papa en 1589.",
+      "photo_tip": "Desde la esquina de Via del Corso, con la columna y el palacio de fondo.",
+      "search_aliases": [
+        "piazza colonna",
+        "plaza colonna",
+        "columna de marco aurelio",
+        "colonna di marco aurelio",
+        "column of marcus aurelius"
+      ],
+      "search_en": "Piazza Colonna Rome",
+      "search_en_keywords": [
+        "colonna",
+        "marcus aurelius"
+      ],
+      "neighbor_of": [
+        "Templo de Adriano",
+        "Via Condotti"
+      ],
+      "_nota_ficha": "Añadida el 9-oct-2026 (Tanda 6u): el D3 con el Free Tour a las 12:00 y a las 17:00 la lleva, con el Templo de Adriano antes y Via Condotti después. Se llama «Piazza Colonna y la Columna de Marco Aurelio» en la ruta (listasNombres.json). Sin foto propia todavía (_fotos.json › sin_foto)."
+    },
+    {
       "id": "plaza_farnese",
       "name": "Plaza Farnese",
       "duration_minutes": 10,

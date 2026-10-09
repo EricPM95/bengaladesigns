@@ -8,7 +8,7 @@
  *      si antes queda un rato entra una parada corta pegada al sitio, y si no hay ninguna el día empieza más tarde.
  *   4. Pool y experiencias: al sitio que escribe el documento.
  *   5. Si cabe: se suma lo que dura cada parada y el trayecto, por franja; lo que no cabe pasa a «Si te sobra tiempo», de abajo arriba por la pirámide (nunca un
- *      imprescindible la primera vez). La comida, como muy tarde a las 14:30: primero se acorta lo de menos de la mañana y después pasa a «Si te sobra tiempo».
+ *      imprescindible la primera vez). La comida, como muy tarde a las 15:00 (regla 6): primero se acorta lo de menos de la mañana y después pasa a «Si te sobra tiempo».
  *   6. Restaurantes y nocturnas: la alternativa escrita; un recambio solo si es un restaurante de verdad a menos de 10 min; sin repetir restaurantes ni nocturnas; las
  *      nocturnas imprescindibles, en los primeros días.
  *   7. Siempre las mismas comprobaciones al recolocar (listasReglas.js, regla 13 del documento): si un cambio rompe alguna, no se hace.
@@ -35,6 +35,7 @@ import { ordenarDias, paradasDelDia } from './listasOrden.js'
 import { claseDeReserva } from './listasReservas.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
+import { COMIDA_HASTA } from './comida.js'
 
 const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(value)))
 const slug = (text) => norm(text).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
@@ -43,8 +44,8 @@ const MESES_INVIERNO = [11, 12, 1, 2]
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
-  inicio: '09:00', comida_desde: '12:30', comida_hasta: '14:30', comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
-  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, tolerancia_tour_min: 5, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_hasta_con_hora_fija: '15:00', comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
+  inicio: '09:00', comida_desde: '12:30', comida_hasta: COMIDA_HASTA, comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, tolerancia_tour_min: 5, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
 /** Cuántos extras del pool se pueden elegir: 2 días, 2; 3, 3; 4, 4; 5 o más, 5. */
@@ -419,7 +420,7 @@ export function planListasTrip(args) {
       })
     }
 
-    /** Cerrado todo el rato de su franja (la mañana hasta las 14:30; la tarde desde las 12:00): no abre cuando le toca. */
+    /** Cerrado todo el rato de su franja (la mañana hasta el límite de la comida; la tarde desde que empieza la comida): no abre cuando le toca. */
     const cerradoEnFranja = (item, source) => {
       if (item.modo === 'camino' || item.modo === 'fuera' || item.tipo !== 'parada' || item.hora_tipo === 'reserva' || source.type !== 'interior') return false
       const sesiones = parseHoursSessions(effectiveSchedule(source, hours))
@@ -631,7 +632,7 @@ export function planListasTrip(args) {
       let objetivoT = limite
       let objetivoC = coordsF
       let duracionComida = cfg.comida_min
-      // (La comida va antes si iría detrás de la hora fija —en la lista va después— y entonces caería después de las 14:30.)
+      // (La comida va antes si iría detrás de la hora fija —en la lista va después— y entonces caería después de su límite, las 15:00.)
       // (La comida escrita justo antes de la hora fija —el documento la pone delante— también se queda delante: si no cabe, una más corta.)
       const comidaJustoAntes = Boolean(comidaU) && comidaU.i < kPos && !unidades.some((u) => u.i > comidaU.i && u.i < kPos)
       if (comidaU && ((comidaU.i >= kPos && H >= toMin(cfg.comida_desde) && H + (F.min ?? 0) + 10 > toMin(cfg.comida_hasta)) || (comidaJustoAntes && H >= toMin(cfg.comida_desde)))) {
@@ -835,7 +836,7 @@ export function planListasTrip(args) {
     // (Una hora fija que aún no se ha colocado, o su «Llegada a…»: nada se adelanta más allá de ella.)
     const esBarrera = (it, lista) => esFijoSinColocar(it) || Boolean(it.llegada && lista.some((x) => x.id === it.de && esFijoSinColocar(x)))
 
-    // 5.8 Que quepa: por franja; la comida, como muy tarde a las 14:30.
+    // 5.8 Que quepa: por franja; la comida, como muy tarde a las 15:00 (regla 6).
     const esFijo = (item) => Boolean(item.hora || item.hora_tipo || item.tipo === 'tour' || item.llegada || item.fijo_colocado)
     const esPrimeraVez = (lista, item) => {
       if ((nivelDe(item.lugar) ?? 3) !== 1) return false
@@ -858,8 +859,8 @@ export function planListasTrip(args) {
       const cena = sim.find((it) => it.kind === 'cena')
       const manana = sim.filter((it) => it.franja === 'manana' && it.kind === 'stop')
       const tarde = sim.filter((it) => it.franja === 'tarde' && it.kind === 'stop')
-      // (Comer un poco más tarde vale en los días con una hora fija: hasta las 15:00; solo se toca si pasa de ahí.)
-      const limiteComida = lista.some((it) => it.kind === 'stop' && it.hora && !it.llegada) ? toMin(cfg.comida_hasta_con_hora_fija) : toMin(cfg.comida_hasta)
+      // (Un solo límite para todos los días, con o sin hora fija: la comida no empieza después de las 15:00; solo se toca si pasa de ahí.)
+      const limiteComida = toMin(cfg.comida_hasta)
       const maniana = comida ? comida.llegaA - limiteComida : manana.length ? manana.at(-1).t1 - limiteComida : 0
       // La tarde acaba como tarde a la hora de la cena más el margen; si no hay cena, a esa hora.
       const finTarde = tarde.length ? tarde.at(-1).t1 : 0

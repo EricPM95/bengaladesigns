@@ -7,14 +7,15 @@ const toMin = (hhmm) => Number(String(hhmm).split(':')[0]) * 60 + Number(String(
 const hhmm = (min) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`
 
 /** Las reservas grandes: las que tienen su día escrito por tramos de hora (regla 17). En un día que no las trae escritas, la hora no tiene lista. */
-export const RESERVAS_GRANDES = new Set(['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese'])
+export const RESERVAS_GRANDES = new Set(['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese', 'Free Tour por Roma'])
 
 /** Los tramos con lista escrita de un sitio en un día: [{ id, desde, hasta, horas }] (minutos desde las 0:00; sin duplicar los pares «el Foro después / antes»). */
 export function tramosDeReserva(dia, lugar) {
   const tramos = []
   for (const variante of dia?.variantes ?? []) {
     for (const cuando of [].concat(variante.cuando ?? [])) {
-      const r = cuando?.reserva
+      // (`reserva`: una; `reservas`: varias a la vez —el Free Tour y los Museos del D3—: cuenta la del sitio que se pregunta.)
+      const r = cuando?.reserva ?? (cuando?.reservas ?? []).find((candidata) => candidata.lugar === lugar)
       if (!r || r.lugar !== lugar) continue
       const desde = r.desde ? toMin(r.desde) : 0
       const hasta = r.hasta ? toMin(r.hasta) : 24 * 60

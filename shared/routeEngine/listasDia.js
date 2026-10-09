@@ -107,7 +107,8 @@ export function aplicarOps(trabajo, ops) {
  *   free_tour true|false  el viaje lleva o no el Free Tour de mañana
  *   free_tour_despues "manana"|"tarde"|"noche"   el Free Tour que el viajero añade para esa franja
  *   reserva { lugar, desde, hasta }   el viajero reservó ese lugar a una hora entre desde y hasta
- *   sin_reserva "Lugar"    el viajero NO ha reservado ese lugar (Tanda 6j)
+ *   reservas [{ lugar, desde, hasta }, …]   varias reservas a la vez, todas (Tanda 6u: el Free Tour y los Museos del D3, cada uno a su hora)
+ *   sin_reserva "Lugar" | [..]   el viajero NO ha reservado ese lugar (ninguno de la lista) (Tanda 6j)
  *   abierto_tras_reserva { lugar, reserva, despues_min, min, negado }   ese lugar está abierto (o, con `negado`, cerrado) a la hora de la reserva más `despues_min`
  *   pool "Lugar" | [..]   marcado en el pool (todos)        sin_pool "Lugar" | [..]   ninguno marcado
  *   fechas "MM-DD..MM-DD"  el día cae en esas fechas
@@ -135,8 +136,16 @@ export function cumple(cuando, ctx) {
       const m = toMin(hora)
       if (valor.desde && m < toMin(valor.desde)) return false
       if (valor.hasta && m > toMin(valor.hasta)) return false
+    } else if (clave === 'reservas') {
+      for (const r of valor) {
+        const hora = ctx.entradas?.[r.lugar]
+        if (hora == null) return false
+        const m = toMin(hora)
+        if (r.desde && m < toMin(r.desde)) return false
+        if (r.hasta && m > toMin(r.hasta)) return false
+      }
     } else if (clave === 'sin_reserva') {
-      if (ctx.entradas?.[valor] != null) return false
+      if ([].concat(valor).some((lugar) => ctx.entradas?.[lugar] != null)) return false
     } else if (clave === 'abierto_tras_reserva') {
       // El sitio está abierto cuando se llegaría a él después de la reserva (p. ej. el Foro tras el Coliseo): `lugar`, `reserva` (el sitio reservado), `despues_min` y `min` (lo que dura la visita).
       const hora = ctx.entradas?.[valor.reserva]

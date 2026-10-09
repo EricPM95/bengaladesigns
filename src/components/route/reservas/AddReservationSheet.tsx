@@ -92,8 +92,8 @@ async function fileToBase64(file: File): Promise<{ media_type: string; data: str
 }
 
 /** El nombre del día de un sitio grande, como se dice en la hoja y en el aviso. */
-const DEL: Record<string, string> = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese' }
-const EL: Record<string, string> = { Coliseo: 'el Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'el Vaticano', 'Galería Borghese': 'la Galería Borghese' }
+const DEL: Record<string, string> = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese', 'Free Tour por Roma': 'del Free Tour' }
+const EL: Record<string, string> = { Coliseo: 'el Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'el Vaticano', 'Galería Borghese': 'la Galería Borghese', 'Free Tour por Roma': 'el Free Tour' }
 
 /**
  * Red de seguridad de esta ventana (Tanda 6k, punto 1): si algo falla al dibujarla, la ventana se cierra, sale un aviso en la campana y la app sigue funcionando;

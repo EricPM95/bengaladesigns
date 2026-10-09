@@ -4,6 +4,7 @@
  * (`Reservation`); las filas, el día de cada una y el % salen de aquí. Funciones puras, para todos los destinos: lo de cada destino (las tres
  * entradas imprescindibles, las excursiones) llega de sus datos.
  */
+import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
 import type { DayPlan, Excursion, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
 import { placeExcursionIn, withExcursionOnSwitchDay } from './freeDays'
@@ -35,7 +36,7 @@ export interface Reservation {
 }
 
 /** Las reservas grandes: tienen su día escrito, y su fecha mueve el día entero (Tanda 6j, punto 9). */
-export const BIG_RESERVATION_PLACES = ['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese']
+export const BIG_RESERVATION_PLACES: string[] = [...RESERVAS_GRANDES]
 
 /** ¿Es una reserva de entrada de un sitio grande? */
 export function isBigReservation(reservation: Pick<Reservation, 'kind' | 'placeNames'>): boolean {

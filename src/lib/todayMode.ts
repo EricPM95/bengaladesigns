@@ -2,13 +2,14 @@ import type { DayPlan, MealSlot, Route, Stop } from './types'
 import { addDaysToIso, todayIso } from './dateRange'
 import { parseTimeToMinutes } from './time'
 import { seedStopsFromTemplate } from './mockDayDetail'
+import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
 
 /**
  * Franjas reservadas del día — el pipeline de generación (Paso 6/8) ya descuenta estos huecos al
  * repartir paradas, así que cualquier hueco libre detectado en Modo Hoy que caiga aquí se trata
  * como comida/cena (recomendación de restaurante), nunca como "añadir algo cerca" genérico.
  */
-export const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
+export const LUNCH_WINDOW: [number, number] = [13 * 60, COMIDA_HASTA_MIN]
 
 /**
  * Ronda 14 — la cena ya no tiene hora fija. Hay DOS posiciones posibles, decididas por el algoritmo

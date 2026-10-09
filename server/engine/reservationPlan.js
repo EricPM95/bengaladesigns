@@ -10,8 +10,8 @@ import { closedOnDay, lastEntryMinutes, parseHoursSessions, scheduleForDay } fro
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 
 /** «del Coliseo», «del Vaticano», «de la Galería Borghese»: cómo se nombra el día por su sitio grande. */
-const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese' }
-const DIAS_DEL_SITIO = { Coliseo: ['D1', 'D1-FT'], 'Museos Vaticanos y Capilla Sixtina': ['D2', 'D3'], 'Galería Borghese': ['D4'] }
+const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese', 'Free Tour por Roma': 'del Free Tour' }
+const DIAS_DEL_SITIO = { Coliseo: ['D1', 'D1-FT'], 'Museos Vaticanos y Capilla Sixtina': ['D2', 'D3'], 'Galería Borghese': ['D4'], 'Free Tour por Roma': ['D3'] }
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()

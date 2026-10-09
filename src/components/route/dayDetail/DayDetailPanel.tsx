@@ -49,6 +49,7 @@ import { DndContext, PointerSensor, TouchSensor, closestCenter, useSensor, useSe
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableStop } from './SortableStop'
 import { AccommodationBlock } from './AccommodationBlock'
+import { COMIDA_HASTA_MIN } from '../../../../shared/routeEngine/comida.js'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
 import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
@@ -201,7 +202,7 @@ function computeStopSchedule(
   })
 }
 
-const LUNCH_WINDOW: [number, number] = [13 * 60, 14 * 60 + 30]
+const LUNCH_WINDOW: [number, number] = [13 * 60, COMIDA_HASTA_MIN]
 
 /** Índice de la parada TRAS la que insertar el acordeón dorado "Hora de comer"/"Hora de cenar" — el primer hueco (entre esa parada y la siguiente, o tras la última si el día termina dentro de la ventana) cuyo rango se solapa con la franja horaria dada. null si el día nunca llega a cruzarla (ej. un día corto que termina a las 12:00). */
 /** Los ids de arrastre de la comida y la cena (no son paradas: no llevan id de parada). */

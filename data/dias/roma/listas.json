@@ -32,7 +32,7 @@
        "tipo": "parada",
        "lugar": "Via della Conciliazione",
        "modo": null,
-       "doc": "Via della Conciliazione",
+       "doc": "Via della Conciliazione ~10",
        "min": 10
       },
       {
@@ -46,7 +46,7 @@
        "tipo": "parada",
        "lugar": "Puente Sant'Angelo",
        "modo": null,
-       "doc": "Puente Sant'Angelo",
+       "doc": "Puente Sant'Angelo ~10",
        "min": 10
       },
       {
@@ -79,7 +79,7 @@
        "tipo": "parada",
        "lugar": "Plaza Venecia",
        "modo": null,
-       "doc": "Piazza Venezia",
+       "doc": "Piazza Venezia ~10",
        "min": 10
       },
       {
@@ -112,8 +112,8 @@
        "tipo": "parada",
        "lugar": "Via dei Fori Imperiali",
        "modo": null,
-       "doc": "Via dei Fori Imperiali",
-       "min": 10
+       "doc": "Via dei Fori Imperiali ~15",
+       "min": 15
       },
       {
        "tipo": "parada",
@@ -126,7 +126,7 @@
        "tipo": "parada",
        "lugar": "Arco de Constantino",
        "modo": null,
-       "doc": "Arco de Constantino",
+       "doc": "Arco de Constantino ~10",
        "min": 10
       },
       {
@@ -154,8 +154,8 @@
        "tipo": "parada",
        "lugar": "Via Condotti",
        "modo": null,
-       "doc": "Via Condotti",
-       "min": 10
+       "doc": "Via Condotti ~15",
+       "min": 15
       }
      ],
      "cena": {
@@ -860,15 +860,15 @@
        "tipo": "parada",
        "lugar": "Arco de Constantino",
        "modo": null,
-       "doc": "Arco de Constantino",
+       "doc": "Arco de Constantino ~10",
        "min": 10
       },
       {
        "tipo": "parada",
        "lugar": "Via dei Fori Imperiali",
        "modo": null,
-       "doc": "Via dei Fori Imperiali",
-       "min": 10
+       "doc": "Via dei Fori Imperiali ~15",
+       "min": 15
       },
       {
        "tipo": "parada",
@@ -893,7 +893,7 @@
        "tipo": "parada",
        "lugar": "Plaza Venecia",
        "modo": null,
-       "doc": "Piazza Venezia",
+       "doc": "Piazza Venezia ~10",
        "min": 10
       },
       {
@@ -907,7 +907,7 @@
        "tipo": "parada",
        "lugar": "Teatro de Marcelo",
        "modo": null,
-       "doc": "Teatro de Marcelo",
+       "doc": "Teatro de Marcelo ~10",
        "min": 10
       },
       {
@@ -1457,7 +1457,7 @@
        "tipo": "parada",
        "lugar": "Via della Conciliazione",
        "modo": null,
-       "doc": "Via della Conciliazione",
+       "doc": "Via della Conciliazione ~10",
        "min": 10
       },
       {
@@ -1471,7 +1471,7 @@
        "tipo": "parada",
        "lugar": "Puente Sant'Angelo",
        "modo": null,
-       "doc": "Puente Sant'Angelo",
+       "doc": "Puente Sant'Angelo ~10",
        "min": 10
       },
       {
@@ -1532,7 +1532,7 @@
        "tipo": "parada",
        "lugar": "Via della Conciliazione",
        "modo": null,
-       "doc": "Via della Conciliazione",
+       "doc": "Via della Conciliazione ~10",
        "min": 10
       },
       {
@@ -1862,7 +1862,7 @@
        "tipo": "parada",
        "lugar": "Plaza Venecia",
        "modo": null,
-       "doc": "Piazza Venezia",
+       "doc": "Piazza Venezia ~10",
        "min": 10
       },
       {
@@ -2957,7 +2957,7 @@
        "tipo": "parada",
        "lugar": "Via della Conciliazione",
        "modo": null,
-       "doc": "Via della Conciliazione",
+       "doc": "Via della Conciliazione ~10",
        "min": 10
       },
       {
@@ -3676,7 +3676,7 @@
        "tipo": "parada",
        "lugar": "Via della Conciliazione",
        "modo": null,
-       "doc": "Via della Conciliazione",
+       "doc": "Via della Conciliazione ~10",
        "min": 10
       },
       {
@@ -3863,7 +3863,7 @@
        "tipo": "parada",
        "lugar": "Teatro de Marcelo",
        "modo": null,
-       "doc": "Teatro de Marcelo",
+       "doc": "Teatro de Marcelo ~10",
        "min": 10
       },
       {
@@ -4593,8 +4593,8 @@
        "tipo": "parada",
        "lugar": "Via Condotti",
        "modo": null,
-       "doc": "Via Condotti",
-       "min": 10
+       "doc": "Via Condotti ~15",
+       "min": 15
       }
      ],
      "comida": {
@@ -4666,8 +4666,8 @@
        "tipo": "parada",
        "lugar": "Via Condotti",
        "modo": null,
-       "doc": "Via Condotti",
-       "min": 10
+       "doc": "Via Condotti ~15",
+       "min": 15
       }
      ],
      "cena": {
@@ -4976,21 +4976,21 @@
        "tipo": "parada",
        "lugar": "Fuente del Tritón",
        "modo": null,
-       "doc": "Fuente del Tritón",
+       "doc": "Fuente del Tritón ~10",
        "min": 10
       },
       {
        "tipo": "parada",
        "lugar": "Via Veneto",
        "modo": null,
-       "doc": "Via Veneto",
+       "doc": "Via Veneto ~10",
        "min": 10
       },
       {
        "tipo": "parada",
        "lugar": "Porta Pinciana",
        "modo": null,
-       "doc": "Porta Pinciana",
+       "doc": "Porta Pinciana ~10",
        "min": 10
       },
       {
@@ -5082,8 +5082,8 @@
        "tipo": "parada",
        "lugar": "Via Condotti",
        "modo": null,
-       "doc": "Via Condotti",
-       "min": 10
+       "doc": "Via Condotti ~15",
+       "min": 15
       },
       {
        "tipo": "parada",
@@ -6004,7 +6004,7 @@
        "tipo": "parada",
        "lugar": "Via della Conciliazione",
        "modo": null,
-       "doc": "Via della Conciliazione",
+       "doc": "Via della Conciliazione ~10",
        "min": 10
       },
       {
@@ -6019,7 +6019,7 @@
        "tipo": "parada",
        "lugar": "Puente Sant'Angelo",
        "modo": null,
-       "doc": "Puente Sant'Angelo",
+       "doc": "Puente Sant'Angelo ~10",
        "min": 10
       },
       {
@@ -6098,7 +6098,7 @@
        "tipo": "parada",
        "lugar": "Plaza Venecia",
        "modo": null,
-       "doc": "Piazza Venezia",
+       "doc": "Piazza Venezia ~10",
        "min": 10
       },
       {
