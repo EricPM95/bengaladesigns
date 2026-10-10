@@ -2,6 +2,7 @@ import type { QuestionnaireAnswers, Route, TransportContext, TripDefaultTranspor
 import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDay } from './mapGeneratedRoute'
 import { encodeExperienceCategories } from './experienceCategoryBank'
 import { reservasActuales } from './engineReservas'
+import { elDia } from './nombreDeDia'
 
 /** Misma clave que espera route_cache/computeRouteCacheMatch en server/index.js — ver encodeExperienceCategories. */
 function routeCacheExperiences(answers: QuestionnaireAnswers): string[] {
@@ -518,8 +519,8 @@ async function settlePendingBlocks(args: SettlePendingBlocksArgs): Promise<{ gen
   // Se lanza DESPUÉS de procesar (y checkpointear) todos los bloques que sí tuvieron éxito — nunca
   // antes, o se perdería el progreso real de los demás bloques por culpa de uno solo.
   if (firstFailure) {
-    const dayNumbers = firstFailure.block.map((day) => day.day_number).join(',')
-    throw firstFailure.error instanceof Error ? firstFailure.error : new Error(`No se pudo generar el día ${dayNumbers} del viaje con IA.`)
+    const dayNames = firstFailure.block.map((day) => elDia({ answers }, day.day_number)).join(' y ')
+    throw firstFailure.error instanceof Error ? firstFailure.error : new Error(`No se pudo generar ${dayNames} del viaje con IA.`)
   }
 
   return { generated, completedBlocks }

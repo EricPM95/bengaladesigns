@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { DayPlan, Stop } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { TimeField } from '../ui/TimeField'
+import { diaCorto } from '../../lib/nombreDeDia'
 
 interface StopMenuProps {
   stop: Stop
@@ -19,6 +20,7 @@ export function StopMenu({ stop, dayId, days }: StopMenuProps) {
   const [time, setTime] = useState(stop.time)
   const [swapName, setSwapName] = useState('')
 
+  const route = useRouteStore((state) => state.route)
   const removeStop = useRouteStore((state) => state.removeStop)
   const moveStopToDay = useRouteStore((state) => state.moveStopToDay)
   const updateStopTime = useRouteStore((state) => state.updateStopTime)
@@ -97,7 +99,7 @@ export function StopMenu({ stop, dayId, days }: StopMenuProps) {
                       }}
                       className={menuItemClass}
                     >
-                      Día {day.dayNumber} — {day.title}
+                      {diaCorto(route, day.dayNumber)} — {day.title}
                     </button>
                   ))}
               </div>

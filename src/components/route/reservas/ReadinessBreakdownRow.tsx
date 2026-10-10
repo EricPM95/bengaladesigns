@@ -9,6 +9,7 @@ import { RentalVehicleRow } from './RentalVehicleRow'
 import { EsimRow } from './EsimRow'
 import { ReservasItemRow } from './ReservasItemRow'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { diaCorto } from '../../../lib/nombreDeDia'
 
 interface ReadinessBreakdownRowProps {
   item: ReadinessItem
@@ -40,7 +41,7 @@ export function ReadinessBreakdownRow({ item, route }: ReadinessBreakdownRowProp
 
   // Entradas y excursión: se añaden desde su pantalla (Reservas), con su ventana.
   if (item.kind === 'entrada' || item.kind === 'excursion') {
-    return <ReservasItemRow kind={item.kind} label={item.label} resolved={item.resolved} subtitle={item.dayNumber ? `Día ${item.dayNumber}` : undefined} priority="gray" onClick={() => useRouteStore.getState().setMode('bookings')} />
+    return <ReservasItemRow kind={item.kind} label={item.label} resolved={item.resolved} subtitle={item.dayNumber ? diaCorto(route, item.dayNumber) : undefined} priority="gray" onClick={() => useRouteStore.getState().setMode('bookings')} />
   }
 
   return null

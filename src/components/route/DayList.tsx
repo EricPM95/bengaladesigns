@@ -26,10 +26,9 @@ import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
-import { dayOfReservation, isDayPinned } from '../../lib/bookings'
-import { displayStopName } from '../../lib/format'
+import { isDayPinned } from '../../lib/bookings'
 import { SaleCards } from './reservas/SaleCards'
-import { DayReservedTag } from './reservas/ReservedMarks'
+import { diaCorto, diaProsa, elDia, fechaDelDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
@@ -45,16 +44,6 @@ interface DayListProps {
   onDayMapChange?: (map: DayMapView | null) => void
   onDayOverlayChange?: (open: boolean) => void
   showAllDaysOnMap?: boolean
-}
-
-const WEEKDAYS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB']
-const MONTHS = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC']
-
-/** "DÍA 3 · JUE 16 JUL" (sin fechas, "DÍA 3"). */
-function dayLabel(dayNumber: number, dateIso: string | null): string {
-  if (!dateIso) return `Día ${dayNumber}`
-  const date = new Date(`${dateIso}T00:00:00`)
-  return `Día ${dayNumber} · ${WEEKDAYS[date.getDay()]} ${date.getDate()} ${MONTHS[date.getMonth()]}`
 }
 
 function ChevronIcon() {
@@ -176,7 +165,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const closureWarningFor = (orderedIds: string[]): string | null => {
     if (!tripStartIso) return null
     const daysById = new Map(route.days.map((day) => [day.id, day]))
-    const choques: { dayNumber: number; weekday: number; stopName: string }[] = []
+    const choques: { antes: number; weekday: number; stopName: string }[] = []
     orderedIds.forEach((id, index) => {
       const day = daysById.get(id)
       if (!day || day.dayNumber === index + 1) return
@@ -184,14 +173,15 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       const stops = day.stops.length > 0 ? day.stops : seedStopsFromTemplate(day)
       for (const stop of stops) {
         if (closedWeekdaysFromSchedule(stop.scheduleText ?? stop.hours).includes(weekday)) {
-          choques.push({ dayNumber: index + 1, weekday, stopName: stop.name })
+          choques.push({ antes: day.dayNumber, weekday, stopName: stop.name })
         }
       }
     })
     if (choques.length === 0) return null
     const [primero, ...resto] = choques
     const extra = resto.length === 0 ? '' : ` Y ${resto.length === 1 ? 'otra parada queda' : `otras ${resto.length} paradas quedan`} igual.`
-    return `El Día ${primero.dayNumber} pasa a caer en ${weekdayNameEs(primero.weekday)} y ${primero.stopName} cierra ese día.${extra}`
+    // Con fechas el día se llama por la que tenía antes de moverlo: «Tu lunes 13 pasa a caer en jueves…».
+    return `Tu ${diaProsa(route, primero.antes)} pasa a caer en ${weekdayNameEs(primero.weekday)} y ${primero.stopName} cierra ese día.${extra}`
   }
 
   return (
@@ -212,7 +202,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       <SortableContext items={route.days.map((day) => day.id)} strategy={verticalListSortingStrategy}>
       {route.days.map((day, index) => {
         const travel = computeDayTravelInfo(route, index)
-        const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
+        const dateIso = fechaDelDia(route, day.dayNumber)
+        const ficha = fichaDelDia(route, day.dayNumber)
         const expanded = activeDayId === day.id
         // Título real del día curado ("Roma Antigua y el centro barroco"); de viaje, el trayecto.
         // (Un día que crea el viajero, una excursión en un día nuevo, se llama como lo llamó, aunque quede el último.)
@@ -252,15 +243,26 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               }}
               className="flex min-h-20 w-full cursor-pointer items-center gap-3.5 py-3 pl-4 pr-3 text-left"
             >
-              {/* El cuadrado y el número, en el color neutro de siempre en todos los días: la franja ya dice qué color es. */}
-              <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
-              >
-                {day.dayNumber}
-              </span>
+              {/* El cuadrado, en el color neutro de siempre en todos los días: la franja ya dice qué color es. Con fechas es la ficha de la fecha («LUN» y «13»);
+                  sin fechas, el número del día (tanda 6z3, punto 5). */}
+              {ficha ? (
+                <span
+                  className={`flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
+                >
+                  <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[.12em] opacity-60">{ficha.semana}</span>
+                  <span className="mt-[3px] font-display text-[22px] leading-none">{ficha.numero}</span>
+                </span>
+              ) : (
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[22px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
+                >
+                  {day.dayNumber}
+                </span>
+              )}
 
               <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{dayLabel(day.dayNumber, dateIso)}</p>
+                {/* Con fechas la ficha ya dice qué día es: la línea pequeña solo queda sin fechas («DÍA 3»). */}
+                {!ficha && <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{diaCorto(route, day.dayNumber)}</p>}
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
                 {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). */}
                 {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent">Día de viaje</p>}
@@ -275,18 +277,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                     ))}
                   </span>
                 )}
-                {/* Lo reservado de ese día (una entrada, una excursión, el Free Tour): el candado y lo fijado, en verde. */}
-                {!expanded && (
-                  <DayReservedTag
-                    items={reservations
-                      // (El día 4 con interruptor ya dice «✓ Reservada · …» debajo del título: la excursión no se repite en la etiqueta verde.)
-                      .filter((reservation) => dayOfReservation(route, reservation)?.id === day.id && !(day.interruptor && reservation.kind === 'excursion'))
-                      .map((reservation) => ({
-                        name: reservation.kind === 'entrada' ? displayStopName(day.stops.find((stop) => stop.reservedId === reservation.id)?.name ?? reservation.placeNames[0] ?? reservation.name) : reservation.name,
-                        time: reservation.time,
-                      }))}
-                  />
-                )}
+                {/* (Ya no hay aquí la línea de lo reservado con su hora, «🔒 Coliseo · 10:00»: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
                 {/* Cerrado: cuántas paradas son (sin puntitos de colores, Tanda 6j). */}
                 {!expanded && numbered.length > 0 && (
                   <span className="mt-1 text-[12px] text-text/55">
@@ -388,7 +379,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       )}
       {askRestore && (
         <ConfirmDialog
-          eyebrow={`Día ${askRestore.dayNumber}`}
+          eyebrow={diaCorto(route, askRestore.dayNumber)}
           text="¿Recuperar este día?"
           detail="Quedará tal como te lo preparamos y se perderán los cambios que has hecho en él. Lo que tienes reservado se queda en su día y a su hora."
           confirmLabel="Recuperar"
@@ -403,8 +394,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       )}
       {removeDay && (
         <ConfirmDialog
-          eyebrow={`Día ${removeDay.dayNumber} · ${dayName(removeDay)}`}
-          text={`¿Eliminar el día ${removeDay.dayNumber}? Puedes recuperarlo con «Volver a mi ruta original».`}
+          eyebrow={`${diaCorto(route, removeDay.dayNumber)} · ${dayName(removeDay)}`}
+          text={`¿Eliminar ${elDia(route, removeDay.dayNumber)}? Puedes recuperarlo con «Volver a mi ruta original».`}
           confirmLabel="Eliminar"
           cancelLabel="Cancelar"
           onCancel={() => setRemoveDayId(null)}

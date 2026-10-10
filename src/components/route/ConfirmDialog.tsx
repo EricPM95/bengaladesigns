@@ -1,4 +1,6 @@
 import { createPortal } from 'react-dom'
+import { elDia } from '../../lib/nombreDeDia'
+import type { Route } from '../../lib/types'
 
 /**
  * Una pregunta antes de algo que no se deshace (retocar la ruta, decisión del usuario 2026-09-28): volver a la ruta
@@ -28,8 +30,8 @@ export function ConfirmDialog({ eyebrow, text, detail, confirmLabel, cancelLabel
   )
 }
 
-/** "el día 2" / "el día 2 y el día 3": los días con cambios del viajero. */
-export function changedDaysText(dayNumbers: number[]): string {
-  const parts = dayNumbers.map((n) => `el día ${n}`)
+/** "el martes 14 y el miércoles 15" (sin fechas, "el día 2 y el día 3"): los días con cambios del viajero. */
+export function changedDaysText(route: Route, dayNumbers: number[]): string {
+  const parts = dayNumbers.map((n) => elDia(route, n))
   return parts.length <= 1 ? (parts[0] ?? '') : `${parts.slice(0, -1).join(', ')} y ${parts.at(-1)}`
 }

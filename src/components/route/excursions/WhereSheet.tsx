@@ -8,6 +8,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { isDayPinned } from '../../../lib/bookings'
 import { dayOptionLabel } from '../freeDay/AddToDaySheet'
 import { ponerExcursionEnElDia } from '../../../lib/dayInterruptor'
+import { elDia } from '../../../lib/nombreDeDia'
 
 /**
  * «¿Dónde la ponemos?» (PARA_CODE_EXCURSIONES, 3): sube desde abajo con su tirador y su cruz. Sin avisos: el viajero decide. Sustituir un
@@ -82,7 +83,7 @@ export function WhereSheet({ route, excursion, onClose }: { route: Route; excurs
         </div>
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
           <button type="button" disabled={choice === ''} onClick={confirm} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
-            {choice === 'new' || !chosenDay ? 'Añadirla en un día nuevo' : `Ponerla en el Día ${chosenDay.dayNumber}`}
+            {choice === 'new' || !chosenDay ? 'Añadirla en un día nuevo' : `Ponerla en ${elDia(route, chosenDay.dayNumber)}`}
           </button>
         </div>
       </div>

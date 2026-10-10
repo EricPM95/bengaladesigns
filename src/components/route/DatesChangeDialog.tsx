@@ -68,7 +68,7 @@ export function useDatesChange(route: Route | null) {
               Vamos a ajustar tu ruta a estas fechas y algunos días pueden cambiar. ¿Seguimos?
             </h2>
             {route && route.days.some((day) => day.originalSnapshot) && (
-              <p className="mt-3 text-[14.5px] leading-relaxed text-text-soft">Perderás los cambios que hiciste en {changedDaysText(route.days.filter((day) => day.originalSnapshot).map((day) => day.dayNumber))}.</p>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-text-soft">Perderás los cambios que hiciste en {changedDaysText(route, route.days.filter((day) => day.originalSnapshot).map((day) => day.dayNumber))}.</p>
             )}
             <div className="mt-5 flex gap-2">
               <button type="button" onClick={keep} disabled={saving} className="h-12 flex-1 rounded-full border border-text/15 text-[15px] font-medium text-text transition-colors hover:bg-bg-hover disabled:opacity-60">

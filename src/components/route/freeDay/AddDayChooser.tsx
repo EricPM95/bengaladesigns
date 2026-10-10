@@ -1,5 +1,7 @@
 import { createPortal } from 'react-dom'
 import { BusLineIcon } from '../../ui/LineIcons'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { diaCorto } from '../../../lib/nombreDeDia'
 
 /**
  * «+ Añadir día», primero qué quieres hacer (PARA_CODE_EXCURSIONES, 5): sube una ventana con su tirador y su cruz con dos opciones grandes,
@@ -8,6 +10,7 @@ import { BusLineIcon } from '../../ui/LineIcons'
  * no sale (se pide el nombre directamente).
  */
 export function AddDayChooser({ dayNumber, examples, onPlaces, onExcursion, onClose }: { dayNumber: number; examples: string | null; onPlaces: () => void; onExcursion: () => void; onClose: () => void }) {
+  const route = useRouteStore((state) => state.route)
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-day-chooser-heading">
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
@@ -20,7 +23,7 @@ export function AddDayChooser({ dayNumber, examples, onPlaces, onExcursion, onCl
             <path d="M6 6l12 12M18 6 6 18" />
           </svg>
         </button>
-        <p className="mt-4 font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">Día {dayNumber} · Nuevo</p>
+        <p className="mt-4 font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">{diaCorto(route, dayNumber)} · Nuevo</p>
         <h2 id="add-day-chooser-heading" className="mt-1.5 max-w-[calc(100%-2.5rem)] font-display text-[26px] leading-[1.15] text-text">
           ¿Qué quieres hacer este día?
         </h2>

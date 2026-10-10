@@ -3,6 +3,7 @@ import type { Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { resolveDisplayStops, seedStopsFromTemplate } from '../../../lib/mockDayDetail'
 import { Modal } from '../../ui/Modal'
+import { delDia, diaCorto } from '../../../lib/nombreDeDia'
 
 interface DayPositionPickerProps {
   route: Route
@@ -55,7 +56,7 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
                   onClick={() => setSelectedDayId(day.id)}
                   className="block w-full rounded-lg border border-border px-3 py-2 text-left text-small text-text hover:bg-bg-hover"
                 >
-                  Día {day.dayNumber} — {day.city}
+                  {diaCorto(route, day.dayNumber)} — {day.city}
                 </button>
               ))}
           </div>
@@ -64,7 +65,7 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
             <button type="button" onClick={() => setSelectedDayId(null)} className="text-caption text-text-muted hover:text-text">
               ← Elegir otro día
             </button>
-            <p className="text-small text-text-soft">Elige en qué punto del Día {selectedDay.dayNumber}</p>
+            <p className="text-small text-text-soft">Elige en qué punto {delDia(route, selectedDay.dayNumber)}</p>
             <button
               type="button"
               onClick={() => handleInsertAt(0)}

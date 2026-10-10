@@ -3,6 +3,7 @@ import type { Route } from '../../../lib/types'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { addDaysToIso } from '../../../lib/dateRange'
+import { alDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
@@ -13,7 +14,7 @@ import { AddToDaySheet, dayName, type AddItem, type AddedResult } from './AddToD
 /**
  * La pantalla de añadir del viaje (decisión del usuario, 2026-09-28): la misma de Explorar y "Añadir parada", en modo
  * añadir. Cada sitio lleva "+ Añadir", que pregunta a qué día; al añadir se vuelve a la pestaña Días con ese día abierto
- * y el aviso "Añadido al Día 3 · Compras", con "Deshacer".
+ * y el aviso "Añadido al día 3 · Compras" (con fechas, "Añadido al martes 14 · Compras"), con "Deshacer".
  */
 export function AddToTripScreen({ route }: { route: Route }) {
   const addFlow = useAddFlowStore((state) => state.addFlow)
@@ -27,7 +28,7 @@ export function AddToTripScreen({ route }: { route: Route }) {
   if (!addFlow) return null
 
   const open = (next: AddItem) => setItem(next)
-  const title = day ? `Añadiendo a Día ${day.dayNumber} · ${dayName(day)}` : `Añadir a tu viaje`
+  const title = day ? `Añadiendo ${alDia(route, day.dayNumber)} · ${dayName(day)}` : `Añadir a tu viaje`
   const range = route.answers.dateRange
 
   const done = (result: AddedResult) => {
@@ -88,8 +89,9 @@ export function AddToTripScreen({ route }: { route: Route }) {
  * «Añadido al Día 3 ✓». No se cierra ni lleva al día.
  */
 export function confirmAddedStaying(result: AddedResult): void {
-  const target = useRouteStore.getState().route?.days.find((candidate) => candidate.id === result.dayId)
-  useAddFlowStore.setState({ toast: target ? { message: `Añadido al Día ${target.dayNumber} ✓`, previous: null, id: Date.now() } : null })
+  const actual = useRouteStore.getState().route
+  const target = actual?.days.find((candidate) => candidate.id === result.dayId)
+  useAddFlowStore.setState({ toast: target ? { message: `Añadido ${alDia(actual, target.dayNumber)} ✓`, previous: null, id: Date.now() } : null })
 }
 
 /** Vuelta al día: pestaña Días con el día abierto, desplazado hasta lo nuevo, y el aviso con "Deshacer". */
@@ -99,7 +101,7 @@ export function finishAdd(result: AddedResult, previous: Route): void {
   useAddFlowStore.setState({
     addFlow: null,
     focusStopId: result.stopId,
-    toast: target ? { message: `Añadido al Día ${target.dayNumber} · ${dayName(target)}`, previous, id: Date.now() } : null,
+    toast: target ? { message: `Añadido ${alDia(store.route, target.dayNumber)} · ${dayName(target)}`, previous, id: Date.now() } : null,
   })
   store.setMode('days')
   store.setActiveDayId(result.dayId)

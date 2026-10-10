@@ -2,6 +2,7 @@ import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
 import { BIG_RESERVATION_PLACES, dateOfDay, dayLineOf, dayOfReservation, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
+import { alDia, ElDia, elDia } from '../../../lib/nombreDeDia'
 import { reservasParaMotor } from '../../../lib/engineReservas'
 import { excursionTargetDays } from '../../../lib/excursionOffer'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -430,9 +431,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     const sitio = bigPlace ? EL[bigPlace] : 'el sitio'
     if (plan?.sinMover?.motivo === 'excursion') {
       const excursion = resolvedDay.excursions?.find((option) => option.id === resolvedDay.selectedExcursionId)?.title ?? 'la excursión'
-      aviso = `El día ${resolvedDay.dayNumber}${fields.dateIso ? ` (${shortDateEs(fields.dateIso)})` : ''} tienes la excursión a ${excursion.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '')}: no da tiempo a visitar también ${sitio}.`
+      aviso = `${ElDia(route, resolvedDay.dayNumber)} tienes la excursión a ${excursion.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '')}: no da tiempo a visitar también ${sitio}.`
     } else if (blocked != null) {
-      aviso = `Tienes cambios tuyos en el día ${blocked}: no se puede mover el día ${bigPlace ? DEL[bigPlace] : ''} al día ${resolvedDay.dayNumber} sin perderlos. La reserva queda guardada en Reservas y tu ruta no cambia.`
+      aviso = `Tienes cambios tuyos en ${elDia(route, blocked)}: no se puede mover el día ${bigPlace ? DEL[bigPlace] : ''} ${alDia(route, resolvedDay.dayNumber)} sin perderlos. La reserva queda guardada en Reservas y tu ruta no cambia.`
     }
     if (aviso) {
       reservation.noMueve = true
@@ -561,12 +562,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               )}
               {plan?.sinMover?.motivo === 'excursion' && !outside && resolvedDay && (
                 <p className="mt-2 text-[13px] leading-snug text-text">
-                  El día {resolvedDay.dayNumber} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
+                  {ElDia(route, resolvedDay.dayNumber)} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
                 </p>
               )}
               {moved && hasDates && resolvedDay && !outside && longWeekday(fields.dateIso) && (
                 <p className="mt-2 text-[13px] leading-snug text-text">
-                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a tu Día {resolvedDay.dayNumber}.
+                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a ese día de tu viaje.
                 </p>
               )}
 
@@ -705,12 +706,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               )}
               {plan?.sinMover?.motivo === 'excursion' && !outside && resolvedDay && (
                 <p className="mt-1.5 text-[13px] leading-snug text-text">
-                  El día {resolvedDay.dayNumber} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
+                  {ElDia(route, resolvedDay.dayNumber)} tienes la excursión: la reserva se guarda en Reservas con el aviso y tu ruta no cambia.
                 </p>
               )}
               {moved && hasDates && resolvedDay && !outside && longWeekday(fields.dateIso) && (
                 <p className="mt-1.5 text-[13px] leading-snug text-text">
-                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a tu Día {resolvedDay.dayNumber}.
+                  Tu reserva es del {longWeekday(fields.dateIso).toLowerCase()} {Number(fields.dateIso.slice(8, 10))}: la pasamos a ese día de tu viaje.
                 </p>
               )}
               <div className="mt-3 flex gap-2">
@@ -751,7 +752,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         {view === 'form' && (
           <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
             <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40">
-              {resolvedDay ? `Guardar y ponerla en el Día ${resolvedDay.dayNumber}` : 'Guardar y ponerla en su día'}
+              {resolvedDay ? `Guardar y ponerla en ${elDia(route, resolvedDay.dayNumber)}` : 'Guardar y ponerla en su día'}
             </button>
           </div>
         )}

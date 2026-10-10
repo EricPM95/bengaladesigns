@@ -69,10 +69,10 @@ export function dateOfDay(route: Route, day: DayPlan): string | null {
   return start ? addDaysToIso(start, day.dayNumber - 1) : null
 }
 
-/** «Día 2 · jue 15 oct» (sin fechas, «Día 2»). */
+/** «jue 15 oct» (sin fechas, «Día 2»): con fechas el día se llama por su fecha, nunca «Día n» (tanda 6z3, punto 5). */
 export function dayLineOf(route: Route, day: DayPlan): string {
   const dateIso = dateOfDay(route, day)
-  return dateIso ? `Día ${day.dayNumber} · ${shortDateEs(dateIso)}` : `Día ${day.dayNumber}`
+  return dateIso ? shortDateEs(dateIso) : `Día ${day.dayNumber}`
 }
 
 /** El día del viaje que cae en esa fecha (null si está fuera del viaje o no hay fechas). */

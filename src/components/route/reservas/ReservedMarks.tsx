@@ -52,20 +52,6 @@ export function ReservedMarks({ className = '', compact = false, time = null }: 
   )
 }
 
-/**
- * La etiqueta pequeña de un día cerrado con algo reservado (PARA_CODE_UI_DIAS, 7): el candado y lo fijado, «Coliseo · 11:00»; con dos o más,
- * «2 reservas». El mismo verde y el mismo candado de Reservas.
- */
-export function DayReservedTag({ items }: { items: { name: string; time: string }[] }) {
-  if (items.length === 0) return null
-  return (
-    <span className="mt-1 inline-flex w-fit max-w-full items-center gap-1 text-[12.5px] font-medium text-accent-green">
-      <LockIcon className="h-3 w-3 shrink-0" />
-      <span className="truncate">{items.length === 1 ? `${items[0].name} · ${items[0].time}` : `${items.length} reservas`}</span>
-    </span>
-  )
-}
-
 /** Los datos de lo reservado: la hora (de recogida o de entrada), el punto de encuentro si lo hay y el número de reserva. */
 export function ReservedDetails({ reservation, timeLabel }: { reservation: Reservation; timeLabel: string }) {
   return (

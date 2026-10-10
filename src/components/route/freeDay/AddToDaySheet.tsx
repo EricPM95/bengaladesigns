@@ -9,6 +9,7 @@ import { closedWeekdaysFromSchedule, formatDaySessions, nextOpenMinutes, parseCl
 import { hasFullDayExcursion, isEmptyDay, isFreeDay, suggestedTimeFor } from '../../../lib/freeDays'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { alDia, elDia, tieneFechas, tuDia } from '../../../lib/nombreDeDia'
 import { TimeField } from '../../ui/TimeField'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 
@@ -41,17 +42,17 @@ function shortDate(dateIso: string): string {
 
 export const dayName = (day: DayPlan): string => day.curatedTitle ?? day.title ?? day.city
 
-/** "Día 3 · sáb 17 oct · Compras" (sin fechas, sin la fecha). */
+/** "sáb 17 oct · Compras"; sin fechas, "Día 3 · Compras" (con fechas el día se llama por su fecha: tanda 6z3, punto 5). */
 export function dayOptionLabel(route: Route, day: DayPlan): string {
   const start = route.answers.dateRange?.start
-  return [`Día ${day.dayNumber}`, start ? shortDate(addDaysToIso(start, day.dayNumber - 1)) : null, dayName(day)].filter(Boolean).join(' · ')
+  return [start ? shortDate(addDaysToIso(start, day.dayNumber - 1)) : `Día ${day.dayNumber}`, dayName(day)].filter(Boolean).join(' · ')
 }
 
 /** Por qué no se puede elegir ese día (null = se puede). */
-function blockedReason(item: AddItem, day: DayPlan): string | null {
+function blockedReason(route: Route, item: AddItem, day: DayPlan): string | null {
   if (hasFullDayExcursion(day)) return 'Tiene una excursión de día entero'
   if (item.kind === 'excursion') return isEmptyDay(day) ? null : 'Este día ya tiene cosas'
-  if (item.place.kind !== 'restaurant' && day.stops.some((stop) => stop.name === item.place.name)) return `En tu día ${day.dayNumber}`
+  if (item.place.kind !== 'restaurant' && day.stops.some((stop) => stop.name === item.place.name)) return tieneFechas(route) ? `Ya lo tienes ${elDia(route, day.dayNumber)}` : `En ${tuDia(route, day.dayNumber)}`
   return null
 }
 
@@ -65,9 +66,9 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
   const addExcursionToDay = useRouteStore((state) => state.addExcursionToDay)
 
   const days = route.days.filter((day) => !day.isReturnLeg)
-  const firstFree = days.find((day) => !blockedReason(item, day))
+  const firstFree = days.find((day) => !blockedReason(route, item, day))
   const [dayId, setDayId] = useState<string | null>(
-    initialDayId && days.some((day) => day.id === initialDayId && !blockedReason(item, day)) ? initialDayId : (firstFree?.id ?? null),
+    initialDayId && days.some((day) => day.id === initialDayId && !blockedReason(route, item, day)) ? initialDayId : (firstFree?.id ?? null),
   )
   const day = days.find((candidate) => candidate.id === dayId) ?? null
   const isRestaurant = item.kind === 'place' && item.place.kind === 'restaurant'
@@ -166,7 +167,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
 
           <div className="mt-4 flex flex-col gap-1.5">
             {days.map((candidate) => {
-              const reason = blockedReason(item, candidate)
+              const reason = blockedReason(route, item, candidate)
               const active = candidate.id === dayId
               return (
                 <button
@@ -233,7 +234,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
             onClick={confirm}
             className="h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98] disabled:opacity-40"
           >
-            {day ? `Añadir al Día ${day.dayNumber}` : 'Ningún día libre para esto'}
+            {day ? `Añadir ${alDia(route, day.dayNumber)}` : 'Ningún día libre para esto'}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import type { Route } from './types'
+import { delDia, elDia } from './nombreDeDia'
 
 export interface FlightOpportunity {
   dayId: string
@@ -49,13 +50,13 @@ export function detectFlightOpportunities(route: Route): FlightOpportunity[] {
         ? {
             dayId: firstDay.id,
             dayNumber: firstDay.dayNumber,
-            reason: `Tu vuelo llega a las ${route.arrivalFlightTime} — hay margen de sobra para aprovechar el resto del día ${firstDay.dayNumber} en vez de dejarlo solo para instalarte.`,
+            reason: `Tu vuelo llega a las ${route.arrivalFlightTime} — hay margen de sobra para aprovechar el resto ${delDia(route, firstDay.dayNumber)} en vez de dejarlo solo para instalarte.`,
             actionable: true,
           }
         : {
             dayId: firstDay.id,
             dayNumber: firstDay.dayNumber,
-            reason: `Llegas de madrugada — el día ${firstDay.dayNumber} empieza directamente al día siguiente.`,
+            reason: `Llegas de madrugada — ${elDia(route, firstDay.dayNumber)} empieza directamente al día siguiente.`,
             actionable: false,
           },
     )
@@ -66,7 +67,7 @@ export function detectFlightOpportunities(route: Route): FlightOpportunity[] {
     opportunities.push({
       dayId: lastDay.id,
       dayNumber: lastDay.dayNumber,
-      reason: `Tu vuelo de vuelta sale a las ${route.departureFlightTime} — la mañana del día ${lastDay.dayNumber} queda libre para una última actividad antes de ir al punto de salida.`,
+      reason: `Tu vuelo de vuelta sale a las ${route.departureFlightTime} — la mañana ${delDia(route, lastDay.dayNumber)} queda libre para una última actividad antes de ir al punto de salida.`,
       actionable: true,
     })
   }
