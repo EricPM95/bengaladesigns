@@ -6,6 +6,7 @@ import { usePerfilUi } from '../../store/usePerfilUi'
 import { empezarViajeNuevo } from '../../lib/nuevoViaje'
 import { chinchetasDeViajes, viajePorId, viajesDelPerfil, type ResumenViaje } from '../../lib/viajesPerfil'
 import { Icono } from '../ui/Icono'
+import { Creditos } from '../perfil/Creditos'
 import { FichaDeViaje } from '../perfil/FichaDeViaje'
 import { MapaMisViajes } from '../perfil/MapaMisViajes'
 import { NewTripSheet } from './NewTripSheet'
@@ -24,6 +25,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
   const abrirAlbum = usePerfilUi((state) => state.abrirAlbum)
   const cerrarAlbum = usePerfilUi((state) => state.cerrarAlbum)
   const [newTripOpen, setNewTripOpen] = useState(false)
+  const [creditosOpen, setCreditosOpen] = useState(false)
 
   const viajes = useMemo(() => viajesDelPerfil(savedTrips ?? [], rutaAbierta), [savedTrips, rutaAbierta])
   const chinchetas = useMemo(() => chinchetasDeViajes(viajes), [viajes])
@@ -85,11 +87,15 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                     </div>
                   ))}
                 </div>
+                <button type="button" onClick={() => setCreditosOpen(true)} className="-ml-2 mt-6 px-2 py-3 text-[11.5px] text-text/45 underline underline-offset-2 hover:text-text/70">
+                  Créditos
+                </button>
               </div>
             </div>,
             document.body,
           )
         ))}
+      {open && creditosOpen && <Creditos onVolver={() => setCreditosOpen(false)} />}
       {newTripOpen && (
         <NewTripSheet
           onConfirm={() => {

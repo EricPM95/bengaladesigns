@@ -10,6 +10,8 @@ export const TIEMPO_TTL_MS = 3 * 60 * 60 * 1000
 export const TIEMPO_MAX_ENTRADAS = 2000
 const TIMEOUT_MS = 8000
 const ISO = /^\d{4}-\d{2}-\d{2}$/
+/** La caché de Vercel (CDN, la misma para todos los viajeros y todas las instancias): 3 horas fresca y, pasadas, se sirve la vieja mientras se renueva. Solo en respuestas buenas. */
+export const TIEMPO_CACHE_CONTROL = `public, max-age=0, s-maxage=${TIEMPO_TTL_MS / 1000}, stale-while-revalidate=${TIEMPO_TTL_MS / 1000}`
 
 const guardado = new Map() // clave → { at, value }
 const enVuelo = new Map() // clave → Promise
@@ -116,10 +118,10 @@ export function registrarRutasTiempo(app, pedir = fetch) {
   app.get('/api/tiempo/horas', async (req, res) => {
     const coords = coordenadasValidas(req.query.lat, req.query.lng)
     const fecha = fechaValida(req.query.fecha)
-    if (!coords || !fecha) return res.status(400).json({ ok: false, error: 'lat, lng (rango válido) y fecha (AAAA-MM-DD) son obligatorios.' })
+    if (!coords || !fecha) return res.status(400).set('Cache-Control', 'no-store').json({ ok: false, error: 'lat, lng (rango válido) y fecha (AAAA-MM-DD) son obligatorios.' })
     const { value, cache } = await tiempoPorHoras(coords, fecha, pedir)
-    if (!value) return res.status(502).json({ ok: false })
-    res.set('X-Tiempo-Cache', cache ? 'HIT' : 'MISS').json({ ok: true, ...value })
+    if (!value) return res.status(502).set('Cache-Control', 'no-store').json({ ok: false })
+    res.set('Cache-Control', TIEMPO_CACHE_CONTROL).set('X-Tiempo-Cache', cache ? 'HIT' : 'MISS').json({ ok: true, ...value })
   })
   app.get('/api/tiempo/dias', async (req, res) => {
     const coords = coordenadasValidas(req.query.lat, req.query.lng)
@@ -127,10 +129,10 @@ export function registrarRutasTiempo(app, pedir = fetch) {
     const hasta = fechaValida(req.query.hasta)
     // Open-Meteo da hasta 16 días: más allá no tiene sentido pedir (y evita claves infinitas en la caché).
     if (!coords || !desde || !hasta || hasta < desde || (Date.parse(hasta) - Date.parse(desde)) / 86400000 > 31) {
-      return res.status(400).json({ ok: false, error: 'lat, lng, desde y hasta (AAAA-MM-DD, hasta >= desde, máximo 31 días) son obligatorios.' })
+      return res.status(400).set('Cache-Control', 'no-store').json({ ok: false, error: 'lat, lng, desde y hasta (AAAA-MM-DD, hasta >= desde, máximo 31 días) son obligatorios.' })
     }
     const { value, cache } = await tiempoPorDias(coords, desde, hasta, pedir)
-    if (!value) return res.status(502).json({ ok: false })
-    res.set('X-Tiempo-Cache', cache ? 'HIT' : 'MISS').json({ ok: true, dias: value })
+    if (!value) return res.status(502).set('Cache-Control', 'no-store').json({ ok: false })
+    res.set('Cache-Control', TIEMPO_CACHE_CONTROL).set('X-Tiempo-Cache', cache ? 'HIT' : 'MISS').json({ ok: true, dias: value })
   })
 }

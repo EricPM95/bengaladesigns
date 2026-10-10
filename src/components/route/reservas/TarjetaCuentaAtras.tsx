@@ -3,6 +3,7 @@ import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { getTodayTripStatus } from '../../../lib/todayMode'
 import { addDaysToIso, formatShortDateEs, todayIso } from '../../../lib/dateRange'
+import { lluviaDePruebaActiva } from '../../../lib/lluviaDePrueba'
 import { fetchDailyWeather, RAIN_PROBABILITY_THRESHOLD, type DiaDeTiempo } from '../../../lib/rainForecast'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { mesDelViaje } from '../../../lib/resumenViaje'
@@ -20,10 +21,11 @@ export function diasHastaElViaje(startIso: string, hoyIso: string): number {
 }
 
 /** La previsión de cada día del viaje, desde 5 días antes de que empiece, si la hay. Antes de eso (o sin datos), nada. */
-function usePrevisionDelViaje(route: Route, dias: number | null, startIso: string | null): DiaDeTiempo[] | null {
+function usePrevisionDelViaje(route: Route, dias: number | null, startIso: string | null, forzar: boolean): DiaDeTiempo[] | null {
   const [prevision, setPrevision] = useState<DiaDeTiempo[] | null>(null)
   const punto = useMemo(() => route.days.flatMap((day) => day.stops).find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates ?? null, [route])
-  const toca = dias !== null && dias <= DIAS_DE_PREVISION && startIso !== null && punto !== null
+  // (Con la «lluvia de prueba» del panel de pruebas sale en cualquier momento del viaje: solo en local y vistas previas.)
+  const toca = startIso !== null && punto !== null && (forzar || (dias !== null && dias <= DIAS_DE_PREVISION))
   const fin = startIso ? addDaysToIso(startIso, Math.max(0, route.days.filter((day) => !day.isReturnLeg).length - 1)) : null
   useEffect(() => {
     if (!toca || !startIso || !fin || !punto) return
@@ -48,7 +50,8 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
   const estado = getTodayTripStatus(route, simulada ?? undefined)
   const hoyIso = simulada ?? todayIso()
   const dias = estado?.phase === 'before' ? diasHastaElViaje(estado.startIso, hoyIso) : null
-  const prevision = usePrevisionDelViaje(route, dias, estado?.phase === 'before' ? estado.startIso : null)
+  const forzar = lluviaDePruebaActiva()
+  const prevision = usePrevisionDelViaje(route, dias, estado?.phase === 'before' ? estado.startIso : forzar ? route.answers.dateRange?.start ?? null : null, forzar)
   if (estado?.phase === 'after') return null
 
   const mes = mesDelViaje(route)

@@ -35,7 +35,7 @@ Lo que se cortó de la 6z6b, las respuestas a tus preguntas, el tiempo desde nue
 - Ningún error. La 0018 funciona. No lo hice con el selector de archivos del móvil (el navegador de pruebas no lo permite): subí con el mismo código de la app (`subirFoto`) desde la consola. Viaje y fotos de prueba borrados.
 
 ## 5. Pruebas
-- Nueva `pruebaTanda6z6c.mjs` (28 comprobaciones, 0 fallos): 0 bombillas en RUTA/mapa/Perfil y una por destino en su tarjeta; pastilla «+100 €» y «+103,13 €»; 0 nombres de empresas en RESERVAS; la app nunca llama al proveedor del tiempo y nuestro servidor responde (400 a lo malo, caché a la segunda); tarjeta de recuerdos; restos borrados y globo.
+- Nueva `pruebaFase6z6c.mjs` (28 comprobaciones, 0 fallos): 0 bombillas en RUTA/mapa/Perfil y una por destino en su tarjeta; pastilla «+100 €» y «+103,13 €»; 0 nombres de empresas en RESERVAS; la app nunca llama al proveedor del tiempo y nuestro servidor responde (400 a lo malo, caché a la segunda); tarjeta de recuerdos; restos borrados y globo.
 - Las de siempre (con 6z6 y 6z6b), a 0 fallos. Capturas: `docs/dias/img/6z6c-*.jpg`.
 - Invariantes 547 a 550 corregidas y 551 y 552 nuevas.
 

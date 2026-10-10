@@ -1,3 +1,5 @@
+import { addDaysToIso } from './dateRange'
+import { lluviaDePruebaActiva } from './lluviaDePrueba'
 import type { Coordinates } from './types'
 
 /**
@@ -18,6 +20,8 @@ export interface HourlyRain {
 const cache = new Map<string, { at: number; value: Promise<HourlyRain | null> }>()
 
 export function fetchHourlyRain(at: Coordinates, dateIso: string): Promise<HourlyRain | null> {
+  // «Lluvia de prueba» del panel de pruebas (solo en local y vistas previas): como si nuestro servidor dijera que llueve todo ese día.
+  if (lluviaDePruebaActiva()) return Promise.resolve({ probability: new Array<number>(24).fill(90), precipitation: new Array<number>(24).fill(2) })
   const key = `${at.lat.toFixed(2)},${at.lng.toFixed(2)},${dateIso}`
   const cached = cache.get(key)
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value
@@ -54,10 +58,23 @@ export interface DiaDeTiempo {
   lluvia: number | null
 }
 
+/** Los días de la lluvia de prueba: del primero al último (hasta 16), llueve en los pares (0, 2, 4…). */
+function diasDeLluviaDePrueba(startIso: string, endIso: string): DiaDeTiempo[] {
+  const dias: DiaDeTiempo[] = []
+  for (let i = 0; i < 16; i++) {
+    const dateIso = addDaysToIso(startIso, i)
+    if (dateIso > endIso) break
+    dias.push({ dateIso, maxima: 17 - (i % 3), minima: 10, lluvia: i % 2 === 0 ? 80 : 10 })
+  }
+  return dias
+}
+
 const cacheDiaria = new Map<string, { at: number; value: Promise<DiaDeTiempo[] | null> }>()
 
 /** La previsión de cada día entre dos fechas (Open-Meteo da hasta 16 días); null si no hay (la fecha queda muy lejos o no responde). */
 export function fetchDailyWeather(at: Coordinates, startIso: string, endIso: string): Promise<DiaDeTiempo[] | null> {
+  // «Lluvia de prueba»: como si el servidor dijera que llueve un día sí y otro no (el primero llueve).
+  if (lluviaDePruebaActiva()) return Promise.resolve(diasDeLluviaDePrueba(startIso, endIso))
   const key = `${at.lat.toFixed(2)},${at.lng.toFixed(2)},${startIso},${endIso}`
   const cached = cacheDiaria.get(key)
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value
