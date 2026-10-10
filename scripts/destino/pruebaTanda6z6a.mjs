@@ -2,7 +2,7 @@
 //   node scripts/destino/pruebaTanda6z6a.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   1. la barra no tiene cuatro pestañas en la gratis (sin Hoy, ni con candado) y cinco en la de pago, igual con y sin fechas y antes, durante y después; si un 'today' guardado no cae a 'route' en la gratis;
-//   2. la tarjeta de arriba de RESERVAS no sale (gratis y de pago) antes con «empieza en» y «Te faltan n cosas» (o «Lo tienes todo listo ✓»), sin fechas con [Pon tus fechas], durante con «Estás en…»; o si sale después del viaje;
+//   2. la tarjeta de arriba de RESERVAS no sale (gratis y de pago) antes con «empieza en» y debajo el resumen («x de 3 listo» con Llegada y vuelta · Alojamiento · Entradas en la de pago; «x de 2 listo» con Alojamiento · Entradas en la gratis), sin fechas con [Pon tus fechas], durante con «Estás en…»; o si sale después del viaje;
 //      o si la cuenta de lo que falta no es la de los bloques; o si la tarjeta no va antes del presupuesto;
 //   3. DÍAS no abre el día de hoy durante el viaje (y solo entonces), no lo marca con «HOY» (una sola vez), o respeta mal un día ya abierto;
 //   4. la línea «Hoy es un día completo…» sale cuando no toca, o falta cuando toca, o el día cambia (ni su ruta ni su cabecera) por salir;
@@ -23,7 +23,7 @@ const debe = (cond, regla, texto) => {
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z6a_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
   createElement, renderToStaticMarkup, BottomBar, PESTANAS, DayList, ReservasPanel, HoyView, PanelDePruebas, usePruebasUi, useRouteStore, modoVisible, diaDeHoy, diaQueSeAbreAlEntrar,
-  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, textoDeLoQueFalta, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba, fijarPrueba, pruebaActiva,
+  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba, fijarPrueba, pruebaActiva,
   mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions,
 } = M
 const D = findPipelineV2Data('Roma')
@@ -139,16 +139,17 @@ for (const [clave, route] of Object.entries(rutas)) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · ${m.clave}`
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy, mode: 'bookings' })
       const texto = aTexto(html)
-      const sinReservar = buildEntradasBloque(route, info.entradasOrden, info.entradas, []).enRuta.length
-      const trayectos = version === 'completa' ? ['arrival', 'departure'].filter((k) => !legsOf(route, infoLlegada)[k].done).length : 0
-      const esperado = sinReservar + 1 + trayectos // + alojamiento
+      const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
+      const total = version === 'completa' ? 3 : 2
       if (m.clave === 'despues') {
-        debe(!/data-faltan=/.test(html) && !/Antes del viaje|Durante el viaje|empieza en|Estás en|Te falta(n)? |Lo tienes todo listo/.test(texto), '2 tarjeta', `${nombre}: después del viaje sale la tarjeta (${plano(texto).slice(0, 200)})`)
+        debe(!/data-blk="resumen"/.test(html) && !/Antes del viaje|Durante el viaje|empieza en|Estás en|\d de \d listo/.test(texto), '2 tarjeta', `${nombre}: después del viaje sale la tarjeta (${plano(texto).slice(0, 200)})`)
         continue
       }
-      const faltan = Number(html.match(/data-faltan="(\d+)"/)?.[1] ?? NaN)
-      debe(faltan === esperado, '2 tarjeta', `${nombre}: la tarjeta dice que faltan ${faltan} y los bloques de abajo tienen ${esperado} (${sinReservar} entradas, 1 alojamiento, ${trayectos} trayectos)`)
-      debe(new RegExp(`Te faltan ${esperado} cosas por reservar`).test(texto), '2 tarjeta', `${nombre}: no dice «Te faltan ${esperado} cosas por reservar» (${plano(texto).slice(0, 300)})`)
+      // El resumen de siempre dentro de la tarjeta, también en la gratis: «0 de 3 listo» (pago) o «0 de 2 listo» (gratis), con sus fichas.
+      debe(new RegExp(`0 de ${total} listo`).test(texto), '2 tarjeta', `${nombre}: no dice «0 de ${total} listo» (${plano(texto).slice(0, 300)})`)
+      const entradasHechas = enRuta.filter((item) => item.reservation).length
+      debe(new RegExp(`Entradas ${entradasHechas}/${enRuta.length}`).test(texto) && /^Alojamiento$/m.test(texto), '2 tarjeta', `${nombre}: faltan las fichas Alojamiento y Entradas ${entradasHechas}/${enRuta.length} en el resumen`)
+      debe(version === 'completa' ? /^Llegada y vuelta$/m.test(texto.slice(0, texto.indexOf('Presupuesto') > 0 ? texto.indexOf('Presupuesto') : 600)) : !/^Llegada y vuelta$/m.test(texto), '2 tarjeta', `${nombre}: la ficha «Llegada y vuelta» ${version === 'completa' ? 'falta en la de pago' : 'sale en la gratis (es de pago)'}`)
       if (m.clave === 'antes') {
         const dias = Math.round((Date.parse(`${INICIO}T00:00:00Z`) - Date.parse(`${m.hoy}T00:00:00Z`)) / unDia)
         debe(/Tu viaje a Roma empieza en/.test(texto) && new RegExp(`^${dias}$`, 'm').test(texto) && /^días$/m.test(texto), '2 tarjeta', `${nombre}: no dice «Tu viaje a Roma empieza en {${dias}} días» (${plano(texto).slice(0, 300)})`)
@@ -163,24 +164,31 @@ for (const [clave, route] of Object.entries(rutas)) {
         debe(/Estás en/.test(texto) && /Roma/.test(texto) && texto.includes(fecha) && new RegExp(`${n} de 3`).test(texto) && !DIA_N.test(texto.slice(0, texto.indexOf('Presupuesto') > 0 ? texto.indexOf('Presupuesto') : 400)), '2 tarjeta', `${nombre}: «durante» no es «Estás en Roma · ${fecha} · ${n} de 3» (${plano(texto).slice(0, 300)})`)
         debe(!/empieza en|Pon tus fechas/.test(texto), '2 tarjeta', `${nombre}: durante el viaje sale la cuenta atrás`)
       }
-      // Arriba del todo: antes que la fila del presupuesto.
-      const iTarjeta = html.indexOf('data-faltan')
+      // Arriba del todo, y UNA sola tarjeta: el resumen está dentro, antes que la fila del presupuesto y no hay otro «x de n listo» en la pantalla.
+      const iResumen = html.indexOf('data-blk="resumen"')
       const iPresupuesto = html.search(/Presupuesto/)
-      debe(iTarjeta > 0 && (iPresupuesto < 0 || iTarjeta < iPresupuesto), '2 tarjeta', `${nombre}: la tarjeta no está antes de la fila del presupuesto`)
+      debe(iResumen > 0 && (iPresupuesto < 0 || iResumen < iPresupuesto), '2 tarjeta', `${nombre}: el resumen no está dentro de la tarjeta de arriba, antes del presupuesto`)
+      debe((html.match(/data-blk="resumen"/g) ?? []).length === 1 && (texto.match(/\d de \d listo/g) ?? []).length === 1, '2 tarjeta', `${nombre}: hay más de un resumen en la pantalla`)
     }
   }
-  // «Lo tienes todo listo ✓»: con todo resuelto.
+  // Todo resuelto: «2 de 2 listo» (gratis) o «3 de 3 listo» (de pago), con todas las fichas en verde.
   for (const version of ['gratis', 'completa']) {
     const { reservas, hoteles, route: listo } = await reservasListas(route, version)
+    const total = version === 'completa' ? 3 : 2
     for (const hoy of clave === 'con' ? ['2027-03-01', INICIO] : [null]) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · todo listo${hoy ? ` · ${hoy}` : ''}`
       const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy, mode: 'bookings', reservas, hoteles })
       const texto = aTexto(html)
-      debe(/data-faltan="0"/.test(html) && /Lo tienes todo listo ✓/.test(texto) && !/Te falta(n)? \d? ?cosas? por reservar|Te falta 1 cosa/.test(texto), '2 tarjeta', `${nombre}: con todo reservado no dice «Lo tienes todo listo ✓» (data-faltan=${html.match(/data-faltan="(\d+)"/)?.[1]}; ${plano(texto).slice(0, 260)})`)
+      debe(new RegExp(`${total} de ${total} listo`).test(texto), '2 tarjeta', `${nombre}: con todo hecho no dice «${total} de ${total} listo» (${plano(texto).slice(0, 300)})`)
     }
   }
 }
-debe(textoDeLoQueFalta(0) === 'Lo tienes todo listo ✓' && textoDeLoQueFalta(1) === 'Te falta 1 cosa por reservar' && textoDeLoQueFalta(3) === 'Te faltan 3 cosas por reservar', '2 tarjeta', 'textoDeLoQueFalta no da los textos pedidos')
+{
+  // Cada ficha baja a su bloque: el panel le pasa a la tarjeta el pedido de bloque; y en la gratis solo hay dos fichas.
+  const panel = fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')
+  debe(/<TarjetaCuentaAtras[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panel) && /\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o la gratis lleva Llegada y vuelta')
+  debe(!/useFaltaPorReservar|Te faltan/.test(fs.readFileSync('src/components/route/reservas/TarjetaCuentaAtras.tsx', 'utf8')), '2 tarjeta', 'queda la línea «Te faltan n cosas» en la tarjeta')
+}
 {
   const tarjeta = fs.readFileSync('src/components/route/reservas/TarjetaCuentaAtras.tsx', 'utf8')
   const hoyAntes = fs.readFileSync('src/components/route/hoy/HoyAntes.tsx', 'utf8')

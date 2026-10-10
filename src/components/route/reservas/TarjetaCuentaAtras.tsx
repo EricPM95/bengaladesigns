@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { useFaltaPorReservar } from '../../../hooks/useFaltaPorReservar'
 import { getTodayTripStatus } from '../../../lib/todayMode'
 import { addDaysToIso, formatShortDateEs, todayIso } from '../../../lib/dateRange'
 import { fetchDailyWeather, RAIN_PROBABILITY_THRESHOLD, type DiaDeTiempo } from '../../../lib/rainForecast'
@@ -10,6 +9,8 @@ import { mesDelViaje } from '../../../lib/resumenViaje'
 import { diaCorto } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
 import { ojoMono, TarjetaOscura } from '../hoy/piezas'
+import { ResumenDelViaje, type FichaResumen } from './ResumenViaje'
+import type { BloqueReservasId } from '../../../store/useReservasFocusStore'
 
 /** Cuándo sale la previsión del tiempo: faltando este número de días (o menos). */
 const DIAS_DE_PREVISION = 5
@@ -37,22 +38,15 @@ function usePrevisionDelViaje(route: Route, dias: number | null, startIso: strin
   return toca && prevision && prevision.length > 0 ? prevision : null
 }
 
-/** «Te faltan 3 cosas por reservar» o, si no falta nada, «Lo tienes todo listo ✓» en verde. */
-export function textoDeLoQueFalta(faltan: number): string {
-  if (faltan <= 0) return 'Lo tienes todo listo ✓'
-  return faltan === 1 ? 'Te falta 1 cosa por reservar' : `Te faltan ${faltan} cosas por reservar`
-}
-
 /**
  * LA TARJETA DE ARRIBA DE RESERVAS (Tanda 6z6, decidido por Eric el 10-oct-2026; gratis y de pago). Sustituye a la cuenta atrás que estaba en HOY. Una tarjeta oscura que cambia con el momento del viaje:
  *  - antes, con fechas: «Tu viaje a Roma empieza en» y «12 días»; sin fechas: «Tu viaje a Roma · octubre» y [Pon tus fechas];
  *  - durante: «Estás en Roma · lun 13 · 2 de 4» (con fechas el día se llama por su fecha, nunca «Día n»);
  *  - después: no sale.
- * Debajo, siempre, una línea: «Te faltan 3 cosas por reservar» (lo que sale como «Falta» en los bloques de abajo) o «Lo tienes todo listo ✓». La previsión del tiempo (desde 5 días antes) va dentro, en pequeño.
+ * Debajo, el resumen del viaje (corrección de Eric del mismo día): «2 de 3 listo» con sus fichas (de pago: Llegada y vuelta · Alojamiento · Entradas; gratis: Alojamiento · Entradas), cada una baja a su bloque. La previsión del tiempo (desde 5 días antes) va dentro, en pequeño.
  */
-export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPonFechas: () => void }) {
+export function TarjetaCuentaAtras({ route, onPonFechas, fichas, onFicha }: { route: Route; onPonFechas: () => void; fichas?: FichaResumen[]; onFicha?: (bloque: BloqueReservasId) => void }) {
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
-  const faltan = useFaltaPorReservar(route)
   const estado = getTodayTripStatus(route, simulada ?? undefined)
   const hoyIso = simulada ?? todayIso()
   const dias = estado?.phase === 'before' ? diasHastaElViaje(estado.startIso, hoyIso) : null
@@ -61,12 +55,6 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
 
   const mes = mesDelViaje(route)
   const total = route.days.filter((day) => !day.isReturnLeg).length
-  const lineaDeFaltas = (
-    <span className="relative mt-3 flex items-center gap-2 text-[13.5px] font-medium" data-faltan={faltan} style={{ color: faltan <= 0 ? 'oklch(0.82 0.1 150)' : 'rgba(255,253,248,.9)' }}>
-      {faltan > 0 && <Icono nombre="reservas" size={15} className="flex-none" />}
-      {textoDeLoQueFalta(faltan)}
-    </span>
-  )
 
   return (
     <TarjetaOscura>
@@ -110,7 +98,7 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
           </button>
         </>
       )}
-      {lineaDeFaltas}
+      {fichas && fichas.length > 0 && onFicha && <ResumenDelViaje fichas={fichas} onFicha={onFicha} />}
       {prevision && (
         <div className="relative mt-3 flex flex-col gap-1 border-t border-[#FFFDF8]/12 pt-2.5" data-prevision="1">
           <span className="text-[#FFFDF8]/55" style={ojoMono}>

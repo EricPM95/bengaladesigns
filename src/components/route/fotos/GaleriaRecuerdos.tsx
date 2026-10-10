@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { borrarFoto, type FotoViaje } from '../../../lib/fotosViaje'
+import { borrarFoto, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { addDaysToIso, isoToLocalDate } from '../../../lib/dateRange'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { BotonFoto } from './BotonFoto'
+import { FotoEnGrande } from './FotoEnGrande'
 
 const DIA_SEMANA = new Intl.DateTimeFormat('es', { weekday: 'short' })
 
@@ -27,6 +28,7 @@ export function GaleriaRecuerdos() {
   const [borrando, setBorrando] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [diaId, setDiaId] = useState<string | null>(null)
+  const [grande, setGrande] = useState<FotoViaje | null>(null)
 
   if (!route) return null
   const inicio = route.answers.dateRange?.start
@@ -86,7 +88,7 @@ export function GaleriaRecuerdos() {
                 <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {grupo.fotos.map((foto) => (
                     <li key={foto.id} className="relative overflow-hidden rounded-2xl bg-bg-hover">
-                      {foto.url ? <img src={foto.url} alt={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} loading="lazy" className="aspect-square w-full object-cover" /> : <div className="aspect-square w-full" />}
+                      {urlParaMostrar(foto) ? <img onClick={() => setGrande(foto)} src={urlParaMostrar(foto)} alt={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover" /> : <div className="aspect-square w-full" />}
                       {confirmando === foto.id ? (
                         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-bg-card/95 px-2.5 py-2 text-[12.5px] text-text">
                           <span>¿Eliminar esta foto?</span>
@@ -112,6 +114,7 @@ export function GaleriaRecuerdos() {
           </div>
         )
       })}
+      <FotoEnGrande foto={grande} onCerrar={() => setGrande(null)} />
     </section>
   )
 }

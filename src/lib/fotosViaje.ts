@@ -20,6 +20,9 @@ export const BUCKET_FOTOS = 'fotos-viaje'
 /** Lado largo máximo de la foto subida, como las capturas del resto de la app. */
 export const LADO_MAXIMO_PX = 1600
 export const CALIDAD_JPEG = 0.82
+/** La copia pequeña de cada foto (Tanda 6z6): unos 400 px de lado y unos 30–50 KB, junto a la grande, con el mismo nombre acabado en «_min». */
+export const LADO_MINIATURA_PX = 400
+export const CALIDAD_MINIATURA = 0.78
 /** Cuánto vive una URL firmada (el bucket es privado). La app las pide de nuevo al refrescar. */
 export const SEGUNDOS_URL_FIRMADA = 3600
 
@@ -36,8 +39,20 @@ export interface FotoViaje {
   height: number
   bytes: number
   createdAt: string
-  /** URL firmada de corta duración; '' si no se pudo firmar. */
+  /** URL firmada de corta duración de la foto grande; '' si no se pudo firmar. */
   url: string
+  /** La de la copia pequeña («_min»); '' si esta foto no la tiene (las anteriores a la 6z6): entonces se enseña la grande. */
+  urlMin: string
+}
+
+/** El nombre de la copia pequeña sale del de la grande («…/abc.jpg» → «…/abc_min.jpg»): sin tocar la tabla ni hacer migración. */
+export function rutaMiniatura(rutaGrande: string): string {
+  return rutaGrande.replace(/\.jpe?g$/i, '_min.jpg')
+}
+
+/** Lo que se enseña en el álbum, la ficha y el resto de listas: la pequeña, o la grande si no tiene. La grande solo se descarga al abrir una foto en grande (`foto.url`). */
+export function urlParaMostrar(foto: Pick<FotoViaje, 'url' | 'urlMin'>): string {
+  return foto.urlMin || foto.url
 }
 
 /* ------------------------------------------------------------------ */
@@ -70,6 +85,8 @@ export interface FotoPreparada {
   width: number
   height: number
   bytes: number
+  /** La copia pequeña (unos 400 px, sin metadatos), que se sube junto a la grande. */
+  miniatura?: { blob: Blob; bytes: number }
 }
 
 /* ------------------------------------------------------------------ */
@@ -146,12 +163,22 @@ export async function prepararFoto(file: File | Blob): Promise<FotoPreparada> {
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('No se pudo preparar la foto.')
   ctx.drawImage(bitmap, 0, 0, ancho, alto)
+  // La copia pequeña, de la misma foto ya orientada (se hace antes de soltar el mapa de bits).
+  const escalaMin = Math.min(1, LADO_MINIATURA_PX / Math.max(ancho, alto))
+  const lienzoMin = document.createElement('canvas')
+  lienzoMin.width = Math.max(1, Math.round(ancho * escalaMin))
+  lienzoMin.height = Math.max(1, Math.round(alto * escalaMin))
+  lienzoMin.getContext('2d')?.drawImage(canvas, 0, 0, lienzoMin.width, lienzoMin.height)
   bitmap.close?.()
-  const jpeg = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', CALIDAD_JPEG))
-  if (!jpeg) throw new Error('No se pudo preparar la foto.')
-  const limpio = quitarMetadatosJpeg(new Uint8Array(await jpeg.arrayBuffer()))
-  const blob = new Blob([limpio as BlobPart], { type: 'image/jpeg' })
-  return { blob, width: ancho, height: alto, bytes: blob.size }
+  const aBlobLimpio = async (lienzo: HTMLCanvasElement, calidad: number): Promise<Blob | null> => {
+    const jpeg = await new Promise<Blob | null>((resolve) => lienzo.toBlob(resolve, 'image/jpeg', calidad))
+    if (!jpeg) return null
+    return new Blob([quitarMetadatosJpeg(new Uint8Array(await jpeg.arrayBuffer())) as BlobPart], { type: 'image/jpeg' })
+  }
+  const blob = await aBlobLimpio(canvas, CALIDAD_JPEG)
+  if (!blob) throw new Error('No se pudo preparar la foto.')
+  const blobMin = await aBlobLimpio(lienzoMin, CALIDAD_MINIATURA)
+  return { blob, width: ancho, height: alto, bytes: blob.size, ...(blobMin ? { miniatura: { blob: blobMin, bytes: blobMin.size } } : {}) }
 }
 
 /* ------------------------------------------------------------------ */
@@ -173,7 +200,7 @@ type Fila = {
 
 const COLUMNAS = 'id, trip_id, day_id, day_number, stop_name, storage_path, width, height, bytes, created_at'
 
-function deFila(fila: Fila, url: string): FotoViaje {
+function deFila(fila: Fila, url: string, urlMin = ''): FotoViaje {
   return {
     id: fila.id,
     tripId: fila.trip_id,
@@ -186,6 +213,7 @@ function deFila(fila: Fila, url: string): FotoViaje {
     bytes: fila.bytes,
     createdAt: fila.created_at,
     url,
+    urlMin,
   }
 }
 
@@ -254,6 +282,13 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
       console.warn('[fotos] no se pudo subir:', errorSubida.message)
       return { foto: null, error: 'No se ha podido subir la foto. Inténtalo de nuevo en un momento.' }
     }
+    // La copia pequeña, junto a la grande: si no sube, la foto vale igual (se enseñará la grande).
+    let hayMiniatura = false
+    if (preparada.miniatura) {
+      const { error: errorMin } = await supabase.storage.from(BUCKET_FOTOS).upload(rutaMiniatura(ruta), preparada.miniatura.blob, { contentType: 'image/jpeg', upsert: false })
+      if (errorMin) console.warn('[fotos] no se pudo subir la copia pequeña:', errorMin.message)
+      else hayMiniatura = true
+    }
     const { data, error: errorFila } = await supabase
       .from('trip_photos')
       .insert({ user_id: userId, trip_id: args.tripId, day_id: args.dayId, day_number: args.dayNumber, stop_name: args.stopName ?? null, storage_path: ruta, width: preparada.width, height: preparada.height, bytes: preparada.bytes })
@@ -261,16 +296,17 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
       .single()
     if (errorFila || !data) {
       console.warn('[fotos] no se pudo guardar la foto:', errorFila?.message)
-      await supabase.storage.from(BUCKET_FOTOS).remove([ruta]).catch(() => undefined)
+      await supabase.storage.from(BUCKET_FOTOS).remove([ruta, rutaMiniatura(ruta)]).catch(() => undefined)
       return { foto: null, error: 'No se ha podido guardar la foto. Inténtalo de nuevo en un momento.' }
     }
     const { data: firmada } = await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(ruta, SEGUNDOS_URL_FIRMADA)
-    const foto = deFila(data as Fila, firmada?.signedUrl ?? '')
+    const { data: firmadaMin } = hayMiniatura ? await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(rutaMiniatura(ruta), SEGUNDOS_URL_FIRMADA) : { data: null }
+    const foto = deFila(data as Fila, firmada?.signedUrl ?? '', firmadaMin?.signedUrl ?? '')
     avisarCambio()
     return { foto, error: null }
   } catch (error) {
     console.warn('[fotos] fallo subiendo la foto:', error)
-    if (ruta) await supabase.storage.from(BUCKET_FOTOS).remove([ruta]).catch(() => undefined)
+    if (ruta) await supabase.storage.from(BUCKET_FOTOS).remove([ruta, rutaMiniatura(ruta)]).catch(() => undefined)
     return { foto: null, error: 'No se ha podido subir la foto. Inténtalo de nuevo en un momento.' }
   }
 }
@@ -288,13 +324,14 @@ export async function listarFotos(tripId: string): Promise<FotoViaje[]> {
     }
     const filas = data as Fila[]
     if (filas.length === 0) return []
+    // Las grandes y las pequeñas, de una vez; una foto anterior a la 6z6 no tiene pequeña y su entrada sale sin URL.
     const { data: firmadas } = await supabase.storage.from(BUCKET_FOTOS).createSignedUrls(
-      filas.map((f) => f.storage_path),
+      filas.flatMap((f) => [f.storage_path, rutaMiniatura(f.storage_path)]),
       SEGUNDOS_URL_FIRMADA,
     )
     const porRuta = new Map<string, string>()
     for (const f of firmadas ?? []) if (f.path && f.signedUrl) porRuta.set(f.path, f.signedUrl)
-    return filas.map((fila) => deFila(fila, porRuta.get(fila.storage_path) ?? ''))
+    return filas.map((fila) => deFila(fila, porRuta.get(fila.storage_path) ?? '', porRuta.get(rutaMiniatura(fila.storage_path)) ?? ''))
   } catch (error) {
     console.warn('[fotos] fallo leyendo las fotos:', error)
     return []
@@ -310,7 +347,8 @@ export async function listarFotos(tripId: string): Promise<FotoViaje[]> {
 export async function borrarFoto(foto: Pick<FotoViaje, 'id' | 'storagePath'>): Promise<string | null> {
   if (!supabase) return SIN_CUENTA
   try {
-    const { error: errorObjeto } = await supabase.storage.from(BUCKET_FOTOS).remove([foto.storagePath])
+    // Se borran las dos: la grande y la pequeña (si la pequeña no existe, no pasa nada).
+    const { error: errorObjeto } = await supabase.storage.from(BUCKET_FOTOS).remove([foto.storagePath, rutaMiniatura(foto.storagePath)])
     if (errorObjeto) {
       console.warn('[fotos] no se pudo borrar el archivo:', errorObjeto.message)
       return 'No se ha podido eliminar la foto. Inténtalo de nuevo.'

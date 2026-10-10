@@ -1,8 +1,8 @@
 # Prueba de la Tanda 6s
 
-Comprobaciones: 2439 · fallos: 0
+Comprobaciones: 2511 · fallos: 0
 
 ## Muestras
-- 5 días · con fechas · todo hecho · completa: bloques presupuesto · resumen · llegada · aloj · entradas · excursiones · util; entradas en la ruta 8, de más 0
+- 5 días · con fechas · todo hecho · completa: bloques resumen · presupuesto · llegada · aloj · entradas · excursiones · util; entradas en la ruta 8, de más 0
 
 Sin fallos.

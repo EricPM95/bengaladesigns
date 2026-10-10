@@ -11,7 +11,6 @@ import { useRouteStore } from '../../src/store/useRouteStore'
 import { modoVisible } from '../../src/lib/barra'
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../src/lib/diaDeHoy'
 import { esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO } from '../../src/lib/diaCompleto'
-import { textoDeLoQueFalta } from '../../src/components/route/reservas/TarjetaCuentaAtras'
 import { buildEntradasBloque } from '../../src/lib/bookings'
 import { legsOf } from '../../src/lib/reservasLegs'
 import { pagoActivo, fijarVersion } from '../../src/lib/pago'
@@ -22,6 +21,6 @@ import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
 
 export {
   createElement, renderToStaticMarkup, BottomBar, PESTANAS, DayList, ReservasPanel, HoyView, PanelDePruebas, usePruebasUi, useRouteStore, modoVisible, diaDeHoy, diaQueSeAbreAlEntrar,
-  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, textoDeLoQueFalta, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba, fijarPrueba, pruebaActiva,
+  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba, fijarPrueba, pruebaActiva,
   mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions,
 }

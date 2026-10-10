@@ -10,6 +10,7 @@ import { hasRealCoordinates, haversineMeters } from '../../../lib/distanceMock'
 import { buildGoogleMapsUrl, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { Icono } from '../../ui/Icono'
 import { BotonFoto } from '../fotos/BotonFoto'
+import { TusFotosDeHoy } from '../fotos/TusFotosDeHoy'
 import { RainAlert } from '../today/RainAlert'
 import { TodayExcursion } from '../today/TodayExcursion'
 import { AZUL, CajaBlanca, FRAMBUESA, ojoMono, TINTA, VERDE } from './piezas'
@@ -372,6 +373,9 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
           })}
         </div>
       </div>
+
+      {/* Al final de HOY: las fotos de hoy y [+ Foto] para las sueltas (sin parada). El bloque grande «Guarda tus recuerdos» sale solo después del viaje. */}
+      <TusFotosDeHoy day={day} />
     </>
   )
 }

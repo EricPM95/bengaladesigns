@@ -118,7 +118,8 @@ function crearFalso({ fallaSubida = false, fallaInsert = false, fallaRemove = fa
           return { error: null }
         },
         createSignedUrl: async (ruta) => ({ data: { signedUrl: `https://firmada/${ruta}` } }),
-        createSignedUrls: async (rutas) => ({ data: rutas.map((r) => ({ path: r, signedUrl: `https://firmada/${r}` })) }),
+        // (Como el de verdad: lo que no existe no se firma —las fotos anteriores a las copias pequeñas no tienen «_min»—.)
+        createSignedUrls: async (rutas) => ({ data: rutas.map((r) => (estado.objetos.has(r) ? { path: r, signedUrl: `https://firmada/${r}` } : { path: r, signedUrl: null, error: 'Object not found' })) }),
       }),
     },
     from: (tabla) => ({
@@ -196,6 +197,46 @@ ok(!!err3 && f.estado.objetos.size === 0 && f.estado.filas.size === 1, 'si falla
 globalThis.__sb = crearFalsoConEstado(f.estado, {})
 const err4 = await F.borrarFoto(buena)
 ok(err4 === null && f.estado.filas.size === 0, 'el reintento termina el borrado')
+
+/* ---------------- (b2) la copia pequeña («_min», Tanda 6z6) ---------------- */
+console.log('Copia pequeña')
+ok(F.rutaMiniatura('u-1/viaje-1/abc.jpg') === 'u-1/viaje-1/abc_min.jpg' && F.rutaMiniatura('x/y.JPEG') === 'x/y_min.jpg', 'el nombre de la pequeña sale del de la grande («_min»), sin tocar la tabla')
+ok(F.LADO_MINIATURA_PX === 400, 'la pequeña es de unos 400 px de lado')
+ok(F.urlParaMostrar({ url: 'grande', urlMin: 'pequeña' }) === 'pequeña' && F.urlParaMostrar({ url: 'grande', urlMin: '' }) === 'grande', 'se enseña la pequeña; si una foto antigua no la tiene, la grande')
+const pequeña = new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xd9])], { type: 'image/jpeg' })
+const conMin = { ...preparada, miniatura: { blob: pequeña, bytes: 4 } }
+f = crearFalso()
+globalThis.__sb = f.cliente
+r = await F.subirFotoPreparada(args, conMin)
+const rutaGrande = r.foto?.storagePath ?? ''
+ok(f.estado.objetos.size === 2 && f.estado.objetos.has(rutaGrande) && f.estado.objetos.has(F.rutaMiniatura(rutaGrande)) && f.estado.filas.size === 1, 'subir: quedan las dos en el almacén (la grande y la «_min») y una sola fila')
+ok(r.foto?.url.startsWith('https://firmada/') && r.foto?.urlMin === 'https://firmada/' + F.rutaMiniatura(rutaGrande), 'la foto trae la URL firmada de la grande y la de la pequeña')
+const lista2 = await F.listarFotos('viaje-1')
+ok(lista2.length === 1 && lista2[0].urlMin.endsWith('_min.jpg') && !lista2[0].url.endsWith('_min.jpg'), 'listar: la pequeña y la grande, cada una con su URL firmada')
+const errMin = await F.borrarFoto(r.foto)
+ok(errMin === null && f.estado.objetos.size === 0 && f.estado.filas.size === 0, 'borrar: se van las dos y la fila')
+// Una foto anterior (sin pequeña): se enseña la grande y se borra sin problema.
+f = crearFalso()
+globalThis.__sb = f.cliente
+const vieja = (await F.subirFotoPreparada(args, preparada)).foto
+ok(f.estado.objetos.size === 1 && vieja?.urlMin === '', 'una foto sin pequeña (como las anteriores) sube sola y no lleva URL de pequeña')
+const listaVieja = await F.listarFotos('viaje-1')
+ok(listaVieja.length === 1 && listaVieja[0].urlMin === '' && F.urlParaMostrar(listaVieja[0]) === listaVieja[0].url, 'listar una foto antigua: sin pequeña, se enseña la grande')
+ok((await F.borrarFoto(vieja)) === null && f.estado.objetos.size === 0, 'borrar una foto antigua (la «_min» no existe) no da error')
+// Si la fila falla, se retiran las dos.
+f = crearFalso({ fallaInsert: true })
+globalThis.__sb = f.cliente
+r = await F.subirFotoPreparada(args, conMin)
+ok(!r.foto && f.estado.objetos.size === 0, 'si falla la fila, se retiran la grande y la pequeña')
+// Lo que enseñan las pantallas: la pequeña (urlParaMostrar) y la grande solo al abrirla en grande.
+{
+  const usan = ['src/components/perfil/AlbumDeViaje.tsx', 'src/components/route/fotos/GaleriaRecuerdos.tsx', 'src/components/route/fotos/TusFotosDeHoy.tsx']
+  for (const archivo of usan) {
+    const codigo = fs.readFileSync(archivo, 'utf8')
+    ok(/urlParaMostrar\(foto\)/.test(codigo) && !/<img[^>]*src=\{foto\.url\}/.test(codigo) && /FotoEnGrande/.test(codigo),archivo + ': enseña la pequeña y abre la grande solo en grande')
+  }
+  ok(/foto.url/.test(fs.readFileSync('src/components/route/fotos/FotoEnGrande.tsx', 'utf8')), 'la foto en grande descarga la grande')
+}
 
 /* ---------------- (c) sin Supabase ---------------- */
 console.log('Sin Supabase')

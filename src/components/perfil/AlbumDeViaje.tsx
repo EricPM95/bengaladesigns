@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { borrarFoto, limiteDeFotos, modoDeFoto, type FotoViaje } from '../../lib/fotosViaje'
+import { borrarFoto, limiteDeFotos, modoDeFoto, urlParaMostrar, type FotoViaje } from '../../lib/fotosViaje'
 import { useFotosViaje } from '../../lib/useFotosViaje'
 import { agruparFotos, paradasDelDia, type ResumenViaje } from '../../lib/viajesPerfil'
 import { BotonFoto } from '../route/fotos/BotonFoto'
+import { FotoEnGrande } from '../route/fotos/FotoEnGrande'
 import { rotuloDia } from '../route/fotos/GaleriaRecuerdos'
 import { Icono } from '../ui/Icono'
 
@@ -25,6 +26,7 @@ export function AlbumDeViaje({ viaje }: { viaje: ResumenViaje }) {
   const [confirmando, setConfirmando] = useState<string | null>(null)
   const [borrando, setBorrando] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [grande, setGrande] = useState<FotoViaje | null>(null)
 
   const dia = dias.find((d) => d.id === diaId) ?? dias[0]
   const paradasDeEseDia = dia ? paradasDelDia(dia) : []
@@ -93,7 +95,7 @@ export function AlbumDeViaje({ viaje }: { viaje: ResumenViaje }) {
               <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {grupo.fotos.map((foto) => (
                   <li key={foto.id} className="relative overflow-hidden rounded-2xl bg-bg-hover">
-                    {foto.url ? <img src={foto.url} alt={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} loading="lazy" className="aspect-square w-full object-cover" /> : <div className="aspect-square w-full" />}
+                    {urlParaMostrar(foto) ? <img onClick={() => setGrande(foto)} src={urlParaMostrar(foto)} alt={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover" /> : <div className="aspect-square w-full" />}
                     {confirmando === foto.id ? (
                       <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-bg-card/95 px-2.5 py-2 text-[12.5px] text-text">
                         <span>¿Eliminar esta foto?</span>
@@ -118,6 +120,7 @@ export function AlbumDeViaje({ viaje }: { viaje: ResumenViaje }) {
           ))}
         </div>
       ))}
+      <FotoEnGrande foto={grande} onCerrar={() => setGrande(null)} />
     </section>
   )
 }

@@ -85,7 +85,7 @@ function pinta(route, { version, reservas = [] }) {
   return { html, texto: aTexto(html), bloques: bloquesDe(html) }
 }
 
-const PAGO = [/Llegada y vuelta/, /\b\d+ de \d+ listo\b/i, /Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
+const PAGO = [/Llegada y vuelta/, /\b\d+ de 3 listo\b/i, /Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
 const PROVEEDORES = /Civitatis|Stay22|Booking\.com|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre/i
 const BANDERAS = /null|undefined|NaN/
 
@@ -143,7 +143,9 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
         // 1. la versión gratis, sin nada de pago
         if (version === 'gratis') {
           for (const re of PAGO) debe(!re.test(r.texto), '1 pago en gratis', `${etiqueta}: sale algo de pago (${re})`)
-          debe(!r.bloques.includes('llegada') && !r.bloques.includes('resumen'), '1 pago en gratis', `${etiqueta}: salen los bloques de pago (${r.bloques.join(' · ')})`)
+          // (Tanda 6z6: el resumen es el mismo en la gratis, «x de 2 listo» con Alojamiento · Entradas; solo «Llegada y vuelta» es de pago.)
+          debe(!r.bloques.includes('llegada'), '1 pago en gratis', `${etiqueta}: salen los bloques de pago (${r.bloques.join(' · ')})`)
+          debe(/\b\d+ de 2 listo\b/.test(r.texto), '1 resumen en gratis', `${etiqueta}: la gratis no tiene el resumen «x de 2 listo»`)
         } else {
           debe(r.bloques.includes('llegada'), '1 pago ausente', `${etiqueta}: en la versión de pago no sale «Llegada y vuelta»`)
           debe(r.bloques.includes('resumen') || /Tu viaje a Roma/.test(r.texto), '1 pago ausente', `${etiqueta}: en la versión de pago no sale el resumen`)
@@ -171,7 +173,7 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
           debe(!esta || enParte, '4 entradas', `${etiqueta}: «${nombre}» está por dentro en la ruta y no sale en «En tu ruta»`)
         }
         // El resumen de arriba (de pago) cuenta lo mismo: «Entradas x/n» con las de «En tu ruta».
-        if (version === 'completa' && bloque.enRuta.length > 0) debe(new RegExp(`Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}`).test(r.texto), '4 entradas', `${etiqueta}: la ficha del resumen no dice «Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}»`)
+        if (bloque.enRuta.length > 0) debe(new RegExp(`Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}`).test(r.texto), '4 entradas', `${etiqueta}: la ficha del resumen no dice «Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}»`)
         // 5. las excursiones: según los días del viaje
         const deberia = hasEnoughDaysForExcursions(route, desde) && info.excursions.length > 0
         debe(r.bloques.includes('excursiones') === deberia, '5 excursiones', `${etiqueta}: el bloque de excursiones ${r.bloques.includes('excursiones') ? 'sale' : 'no sale'} y con ${dias} días ${deberia ? 'debería' : 'no debería'} (desde ${desde})`)

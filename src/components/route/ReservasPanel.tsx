@@ -14,7 +14,6 @@ import { pagoActivo } from '../../lib/pago'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
 import { FlightAdjustSheet } from './reservas/FlightAdjustSheet'
 import { TripReadinessBadge } from './reservas/TripReadinessBadge'
-import { ResumenViaje } from './reservas/ResumenViaje'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
 import { AlojamientoReservas, alojamientoHecho } from './reservas/AlojamientoReservas'
 import { TarjetaCuentaAtras } from './reservas/TarjetaCuentaAtras'
@@ -56,6 +55,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const reservations = useRouteStore((state) => state.reservations)
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
+  const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
   const pedido = useReservasFocusStore((state) => state.pedido)
   const limpiarPedido = useReservasFocusStore((state) => state.limpiar)
   const pedir = useReservasFocusStore((state) => state.pedir)
@@ -75,7 +75,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const opportunities = detectFlightOpportunities(route)
   const segments = buildDestinationSegments(route.days)
   const unDestino = segments.length <= 1
-  const ciudad = route.days[0]?.city ?? route.destination
   const day1Id = route.days[0]?.id
 
   const abrir = (bloque: string, valor = true) => setAbiertos((previous) => ({ ...previous, [bloque]: valor }))
@@ -122,12 +121,15 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
     setFlightAdjust('manual')
   }
 
-  // El resumen de arriba (de pago): tres fichas.
+  // El resumen de arriba, dentro de la tarjeta (gratis y de pago): dos o tres fichas.
   const { enRuta: entradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
   const legs = legsOf(route, arrivalInfo)
+  // (Gratis: «x de 2», Alojamiento · Entradas, y el alojamiento cuenta con el que puso el viajero; de pago: «x de 3», con Llegada y vuelta, y el alojamiento cuenta con la zona elegida.)
+  const primerTramo = segments.find((segment) => segment.nights > 0)
+  const alojamientoListo = pago ? alojamientoHecho(accommodationZone) : Boolean(primerTramo && accommodationSelections[primerTramo.dayIds[0]])
   const fichas = [
-    { bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done },
-    { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoHecho(accommodationZone) },
+    ...(pago ? [{ bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done }] : []),
+    { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoListo },
     ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
   ]
 
@@ -183,9 +185,8 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
         <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
             {/* Lo de antes del viaje, arriba del todo (Tanda 6z6): la cuenta atrás y lo que falta por reservar. Después del viaje no sale. */}
-            <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} />
+            <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} fichas={unDestino ? fichas : undefined} onFicha={(bloque) => pedir(bloque)} />
             <FilaPresupuesto />
-            {pago && unDestino && <ResumenViaje ciudad={ciudad} fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <div className="flex min-w-0 flex-col gap-3.5">
