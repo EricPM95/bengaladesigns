@@ -13,6 +13,14 @@ export function ultimasTresFotos(fotos: FotoViaje[]): FotoViaje[] {
   return [...fotos].sort((a, b) => b.dayNumber - a.dayNumber || b.createdAt.localeCompare(a.createdAt)).slice(0, 3)
 }
 
+/** «Roma» o «Roma y Florencia» (o «Roma, Florencia y Pisa») a partir del destino del viaje («Roma → Florencia», «Roma, Italia»): cada tramo, hasta la primera coma. */
+export function nombresDeDestinos(destino: string): { texto: string; varios: boolean } {
+  const nombres = destino.split('→').map((tramo) => tramo.split(',')[0].trim()).filter(Boolean)
+  if (nombres.length === 0) return { texto: destino, varios: false }
+  if (nombres.length === 1) return { texto: nombres[0], varios: false }
+  return { texto: `${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]}`, varios: true }
+}
+
 const RAYAS = 'repeating-linear-gradient(135deg,#EFE7D6 0 10px,#EAE1CE 10px 20px)'
 
 /**
@@ -26,7 +34,7 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
   const unaPorParada = limiteDeFotos().porParada !== null
   const ultimas = ultimasTresFotos(fotos)
   const subir = onSubir ?? (() => abrirAlbum(route.id))
-  const destino = route.destination.split(',')[0].trim() || route.destination
+  const destinos = nombresDeDestinos(route.destination)
   const cuadros = [0, 1, 2].map((i) => ultimas[i] ?? null)
   return (
     <CajaBlanca>
@@ -60,7 +68,7 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
         <span className="mt-px flex-none" style={{ color: 'oklch(0.5 0.17 5)' }}>
           <Icono nombre="mapa" size={16} />
         </span>
-        Sube tus fotos y {destino} queda en tu mapa de viajes, en tu perfil.
+        Sube tus fotos y {destinos.texto} {destinos.varios ? 'quedan' : 'queda'} en tu mapa de viajes, en tu perfil.
       </span>
       <button
         type="button"
