@@ -35,7 +35,7 @@ const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z6b_entrada.tsx
     { filtro: /perfil\/MapaMisViajes$/, exporta: 'MapaMisViajes' },
   ],
 })
-const { createElement, renderToStaticMarkup, PerfilSheet, RouteOverview, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta, BotonFotoParada, etiquetaAnadirFoto, limiteDeFotos, modoDeFoto, agruparFotos, chinchetasDeViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES, usePerfilUi, useRouteStore, useSyncStore } = M
+const { createElement, renderToStaticMarkup, PerfilSheet, RouteOverview, TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta, BotonFotoParada, etiquetaAnadirFoto, limiteDeFotos, modoDeFoto, agruparFotos, chinchetasDeViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES, usePerfilUi, useRouteStore, useSyncStore } = M
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 const aTexto = (html) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, '\n').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s*\n\s*/g, '\n')
@@ -295,7 +295,9 @@ debe(tarjeta(pintaRuta(R1, 'gratis', '2026-10-17')), 'C9', 'gratis, un día desp
 ponerVersion('gratis')
 debe(verTarjetaRecuerdosEnRuta(R3, HOY) === true && verTarjetaRecuerdosEnRuta(R1, HOY) === false, 'C9', 'verTarjetaRecuerdosEnRuta no decide bien')
 // 6z6c: tres cuadros (vacíos con cámara y rayas), línea del mapa con el destino, sin [Ver mis recuerdos] con 0 fotos
-debe((despues.match(/aria-label="Subir mis fotos"/g) ?? []).length === 3 && /dashed/.test(despues), 'C9', '6z6c: con 0 fotos no salen tres cuadros vacíos de rayas que abren subir')
+useRouteStore.setState({ ...estadoBase, route: R3 })
+const htmlTarjeta = renderToStaticMarkup(createElement(TarjetaRecuerdos, { route: R3 }))
+debe((htmlTarjeta.match(/aria-label="Subir mis fotos"/g) ?? []).length === 3 && /dashed/.test(htmlTarjeta), 'C9', '6z6c: con 0 fotos no salen tres cuadros vacíos de rayas que abren subir')
 debe(/Sube tus fotos y Madrid queda en tu mapa de viajes, en tu perfil\./.test(aTexto(despues).replace(/\n/g, ' ')), 'C9', '6z6c: falta la línea del mapa de viajes con el destino')
 debe(!/Ver mis recuerdos/.test(despues), 'C9', '6z6c: con 0 fotos sale [Ver mis recuerdos]')
 const fx = (id, dayNumber, createdAt) => ({ id, dayNumber, createdAt })
