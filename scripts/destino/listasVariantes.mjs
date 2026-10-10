@@ -46,7 +46,7 @@ const TANDA_6E = 'docs/dias/PARA_CODE_TANDA6E.md'
 /** Los tramos del Coliseo reservado a otra hora en el D1 (cada uno cita su frase del documento). El D1-corto y el D1-FT los reusan: la mañana es la del D1 con la lista de su hora y la tarde es la suya. */
 const D1_TRAMOS = [
         // El Coliseo reservado a otra hora (escrito en el documento; el motor no se lo inventa). Los cortes entre tramos (Tanda 6e): hasta las 10:15 el día normal; de 10:16 a 11:15 la lista de 10:30–11:00;
-        // de 11:16 a 12:15 la de 11:30–12:00; de 12:16 a 15:15 la de mediodía; desde las 15:16 la de tarde.
+        // de 11:16 a 12:15 la de 11:30–12:00; de 12:16 a 13:15 la de las 12:30 y las 13:00; de 13:16 a 15:15 la de mediodía; desde las 15:16 la de tarde.
         {
           id: 'coliseo_10_30_11_00', doc: 'A media mañana, de 10:30 a 11:00:', horas: ['10:30', '11:00'],
           cuando: { reserva: { lugar: 'Coliseo', desde: '10:16', hasta: '11:15' } },
@@ -59,8 +59,18 @@ const D1_TRAMOS = [
           ops: { manana: { paradas: [P('Iglesia de San Pietro in Vincoli', 20, 'dentro'), P('Arco de Constantino', 10), P('Foro Romano y Palatino', 90, 'dentro', { salida_en: FORO_LADO_ARCO, no_pasa_detras: true }), P('Coliseo', 75, 'dentro'), ...camino('Via dei Fori Imperiali'), P('Plaza del Campidoglio', 30), P('Plaza Venecia', 10)] }, tarde: { insertar: [{ al_principio: true, parada: P('Altar de la Patria', 45, 'dentro', { acortable: true }) }] } },
         },
         {
-          id: 'coliseo_mediodia', doc: 'A mediodía (de 12:30 a 15:00):', horas: ['12:30', '14:00'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '12:16', hasta: '15:15' } },
+          id: 'coliseo_12_30_13_00', doc: 'A las 12:30 y a las 13:00', horas: ['12:30', '13:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '12:16', hasta: '13:15' } },
+          // (Tanda 6z6, decidido por Eric el 10-oct-2026: la visita primero y la comida después, como en el D0.)
+          ops: {
+            manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO, no_pasa_detras: true }), P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10)] },
+            comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
+            tarde: { paradas: [...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
+          },
+        },
+        {
+          id: 'coliseo_mediodia', doc: 'A mediodía (de 13:30 a 15:00):', horas: ['13:30', '14:00'],
+          cuando: { reserva: { lugar: 'Coliseo', desde: '13:16', hasta: '15:15' } },
           ops: {
             manana: { paradas: [P('Plaza del Campidoglio', 30), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO, no_pasa_detras: true })] },
             comida: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
