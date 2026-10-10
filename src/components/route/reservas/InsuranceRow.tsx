@@ -7,7 +7,6 @@ import { GeneralBookingModal } from './GeneralBookingModal'
 export function InsuranceRow() {
   const booking = useRouteStore((state) => state.insuranceBooking)
   const setInsuranceBooking = useRouteStore((state) => state.setInsuranceBooking)
-  const dateRange = useRouteStore((state) => state.route?.answers.dateRange)
   const [open, setOpen] = useState(false)
 
   return (

@@ -12,7 +12,7 @@ export function RentalVehicleRow() {
   const [open, setOpen] = useState(false)
 
   const isCamper = route?.transportContext.vehicle_type === 'camper'
-  const { url, label: providerLabel } = isCamper ? buildCamperRentalLink(route?.days[0]?.countryCode ?? null) : buildCarRentalLink()
+  const { url } = isCamper ? buildCamperRentalLink(route?.days[0]?.countryCode ?? null) : buildCarRentalLink()
   const priority = route?.transportContext.vehiculo_altamente_recomendado ? 'yellow' : 'gray'
 
   return (
