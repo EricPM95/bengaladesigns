@@ -188,10 +188,10 @@ const diaDe = (route, nombre) => {
     ['10:00 y 11:45 el mismo día', v('11:45'), 1, 0],
     ['10:00 y 14:30 el mismo día (da tiempo a comer y a llegar)', v('14:30'), 0, 0],
     ['10:00 y 10:00 el mismo día', v('10:00'), 1, 0],
-    // «coinciden» solo si se cruzan de verdad; si no se cruzan pero no da tiempo a llegar (30 min de trayecto, 30 de llegada y 1 h de comida si toca: el Free Tour de las 10:00 y Museos antes de las 14:30), «vas justo».
-    ['10:00 y 12:30 (justo cuando acaba: no da tiempo a llegar)', v('12:30'), 0, 1],
-    ['10:00 y 13:15 (aún no da tiempo a llegar)', v('13:15'), 0, 1],
-    ['10:00 y 14:00 (llega, pero sin tiempo de comer)', v('14:00'), 0, 1],
+    // «coinciden» solo si se cruzan de verdad. Si no se cruzan, no avisa nada (Tanda 6z5: la app no calcula si da tiempo a llegar de una a otra; eso lo decide el viajero).
+    ['10:00 y 12:30 (justo cuando acaba)', v('12:30'), 0, 0],
+    ['10:00 y 13:15', v('13:15'), 0, 0],
+    ['10:00 y 14:00', v('14:00'), 0, 0],
     ['10:00 y 14:30 (justo lo que se tarda en comer y llegar)', v('14:30'), 0, 0],
   ]
   for (const [nombre, reservas, esperadas, justo = 0] of casos) {
@@ -201,16 +201,12 @@ const diaDe = (route, nombre) => {
     debe(sinCortos.length === todos.length && sinCortos.every((aviso) => !/los Museos/.test(aviso.text) && aviso.text.includes(museos)), '5 solape', `${nombre}: sin nombre corto debería salir el nombre completo («${sinCortos[0]?.text}»)`)
     debe(reservationOverlaps(route5, reservas.map((r) => (r.refId === museos ? { ...r, shortName: 'los Museos' } : r))).every((aviso) => /los Museos/.test(aviso.text)), '5 solape', `${nombre}: el shortName de la propia reserva no se usa`)
     const f = todos.filter((aviso) => aviso.kind === 'coinciden')
-    const j = todos.filter((aviso) => aviso.kind === 'justo')
+    const j = todos.filter((aviso) => aviso.kind !== 'coinciden' || /vas justo|no llegues/.test(aviso.text))
     debe(f.length === esperadas, '5 solape', `${nombre}: ${f.length} «coinciden» y deberían ser ${esperadas}`)
     debe(j.length === justo, '5 solape', `${nombre}: ${j.length} «vas justo» y deberían ser ${justo}`)
     if (esperadas === 1) {
       debe(f[0].text === textoCoinciden('Free Tour', 'a los Museos') && sinCortos[0].text === textoCoinciden('Free Tour', `a ${museos}`), '5 solape', `${nombre}: el texto no es el del encargo («${f[0].text}»)`)
       debe(/^solape:/.test(f[0].id), '5 solape', `${nombre}: el aviso no tiene un id estable`)
-    }
-    if (justo === 1) {
-      debe(j[0].text === 'Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.' && sinCortos[0].text === `Es posible que no llegues a tu entrada a ${museos}: el Free Tour dura 2 h 30 y vas justo.`, '5 solape', `${nombre}: el texto de «vas justo» no es el del encargo («${j[0].text}»)`)
-      debe(/^justo:/.test(j[0].id), '5 solape', `${nombre}: el aviso «vas justo» no tiene un id estable`)
     }
   }
   // Otro día: no se pisan. Dos entradas: los dos nombres. Una excursión: no cuenta.
@@ -231,8 +227,9 @@ const diaDe = (route, nombre) => {
     renderToStaticMarkup(createElement(() => { items = useAppNotices().items; return null }))
     return items.filter((item) => /^(solape|justo):/.test(item.id))
   }
-  const justas = avisos(v('12:30'))
-  debe(justas.length === 1 && /^justo:/.test(justas[0].id) && justas[0].kind === 'warning' && justas[0].actionLabel === 'Ver mis reservas' && /vas justo\.$/.test(justas[0].text) && (Object.keys(info.nombresCortos ?? {}).length === 0 || justas[0].text === 'Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.'), '5 solape', `la campana no avisa bien del «vas justo» (${JSON.stringify(justas)})`)
+  // (Tanda 6z5: nunca «vas justo», ni en la hoja ni en la campana.)
+  debe(avisos(v('12:30')).length === 0 && avisos(v('14:00')).length === 0, '5 solape', 'la campana sigue avisando del «vas justo»')
+  debe(!/vanJustas|'justo'|no llegues/.test(fs.readFileSync('src/lib/reservationOverlaps.ts', 'utf8')) && !/Vas justo|'justo'/.test(fs.readFileSync('src/hooks/useAppNotices.ts', 'utf8')) && !/justo/.test(fs.readFileSync('src/components/route/reservas/AvisoSolape.tsx', 'utf8')), '5 solape', 'queda código del aviso «vas justo»')
   const pisadas = avisos(v('11:45'))
   debe(pisadas.length === 1 && pisadas[0].kind === 'warning' && pisadas[0].action === 'open-reservas' && pisadas[0].actionLabel === 'Ver mis reservas' && /coinciden/.test(pisadas[0].text), '5 solape', `la campana no avisa bien (${JSON.stringify(pisadas)})`)
   debe(avisos(v('14:30')).length === 0, '5 solape', 'la campana sigue avisando al arreglarlo')

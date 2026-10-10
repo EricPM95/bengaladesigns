@@ -34,7 +34,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const route = useRouteStore((state) => state.route)
   const reservations = useRouteStore((state) => state.reservations)
   const dismissContextBanner = useRouteStore((state) => state.dismissContextBanner)
-  // Los nombres cortos de las reservas (datos del destino) para los avisos «coinciden» y «vas justo».
+  // Los nombres cortos de las reservas (datos del destino) para el aviso «coinciden».
   const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
   const syncStatus = useSyncStore((state) => state.status)
   const readIds = useNoticesStore((state) => state.readIds)
@@ -62,7 +62,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
         })
       }
       for (const solape of reservationOverlaps(route, reservations, nombresCortos)) {
-        items.push({ id: solape.id, kind: 'warning', title: solape.kind === 'justo' ? 'Vas justo entre dos reservas' : 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
+        items.push({ id: solape.id, kind: 'warning', title: 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
       }
       if (route.contextBanner) {
         items.push({
