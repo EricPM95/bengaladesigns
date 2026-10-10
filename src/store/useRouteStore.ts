@@ -474,6 +474,8 @@ interface RouteStoreState {
   checkInStop: (dayId: string, stopId: string) => void
   /** HOY (Tanda 6z3): «✓ Visto» marca la parada como vista (y «Deshacer» la desmarca). */
   setStopVisto: (dayId: string, stopId: string, visto: boolean) => void
+  /** HOY (Tanda 6z5): «No me da tiempo» marca la parada como saltada (y «Deshacer» la devuelve a su sitio). No cuenta como vista. */
+  setStopSaltada: (dayId: string, stopId: string, saltada: boolean) => void
   /** Modo Hoy — "Sí, dame más tiempo" en el aviso "¿Sigues aquí?": solo anota el retraso, no hace check-in. */
   noteStopDelay: (dayId: string, stopId: string) => void
   /**
@@ -1279,7 +1281,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             // que traía era la de otro día — pero sin tocar las que ya estaban.
             if (day.id === fromDayId) return { ...day, stops: withoutStop(day.stops, stopId) }
             if (day.id === toDayId) {
-              return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, time: suggestedTimeFor(day, stop) }]) }
+              return { ...day, stops: pushOverlapsForward([...day.stops, { ...stop, saltada: false, time: suggestedTimeFor(day, stop) }]) }
             }
             return day
           }),
@@ -1385,6 +1387,17 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
           stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, checkedInAt: visto ? now : null, delayNotedAt: null } : stop)),
+        })),
+      }
+    }),
+
+  setStopSaltada: (dayId, stopId, saltada) =>
+    set((state) => {
+      if (!state.route) return state
+      return {
+        route: updateDay(state.route, dayId, (day) => ({
+          ...day,
+          stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, saltada, ...(saltada ? { checkedInAt: null } : {}) } : stop)),
         })),
       }
     }),

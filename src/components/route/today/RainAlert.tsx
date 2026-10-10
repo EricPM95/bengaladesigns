@@ -54,7 +54,7 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   const [open, setOpen] = useState(false)
   const note = day.rainPlan?.text ?? day.rainPlanB?.note ?? null
 
-  const relevantStops = (when === 'hoy' ? day.stops.filter((stop) => !stop.checkedInAt) : day.stops).filter((stop) => !stop.isArrival && !stop.isBreak)
+  const relevantStops = (when === 'hoy' ? day.stops.filter((stop) => !stop.checkedInAt && !stop.saltada) : day.stops).filter((stop) => !stop.isArrival && !stop.isBreak)
   const hoursKey = hoursOf(relevantStops).join(',')
   const at = day.stops.find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates
 

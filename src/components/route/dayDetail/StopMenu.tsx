@@ -5,7 +5,8 @@ import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { withUndo } from '../../../store/useAddFlowStore'
 import { hasOwnTime } from '../../../lib/freeDays'
-import { alDia, diaCorto } from '../../../lib/nombreDeDia'
+import { alDia } from '../../../lib/nombreDeDia'
+import { ListaDeDias } from './ListaDeDias'
 import { RemoveReservationDialog } from '../reservas/ReservedMarks'
 import { TimeField } from '../../ui/TimeField'
 
@@ -205,11 +206,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
             {view === 'move-day' && (
               <div className="space-y-1 rounded-xl bg-bg-card p-1">
                 <p className="px-1 text-caption font-semibold uppercase tracking-wide text-text-muted">Mover a</p>
-                {otherDays.map((day) => (
-                  <button key={day.id} type="button" onClick={() => handleMoveToDay(day.id)} className={lightItemClass}>
-                    {diaCorto(route, day.dayNumber)} — {day.city}
-                  </button>
-                ))}
+                <ListaDeDias dias={otherDays} onElegir={handleMoveToDay} filaClassName={lightItemClass} />
               </div>
             )}
 

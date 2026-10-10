@@ -108,7 +108,9 @@ for (const fechas of [true, false]) {
         // 3: «Día n» con fechas
         if (fechas) debe(!DIA_N.test(texto), '3 «Día n» con fechas', `${detalle}: HOY dice «${texto.match(DIA_N)?.[0]}» (${plano(texto.slice(Math.max(0, (texto.match(DIA_N)?.index ?? 0) - 40), (texto.match(DIA_N)?.index ?? 0) + 60))})`)
         // 4: ninguna hora calculada (solo la de lo reservado)
-        const horas = (texto.match(HORA) ?? []).filter((h) => !(reservas.length && h === '16:40'))
+        // (El horario de apertura de cada parada —«Abre 9:00 – 19:15 · Última entrada 18:15»— es un dato real, no una hora calculada: Tanda 6z5.)
+        const sinHorarios = texto.split('\n').filter((linea) => !/^Abre \d{1,2}:\d{2}/.test(linea)).join('\n')
+        const horas = (sinHorarios.match(HORA) ?? []).filter((h) => !(reservas.length && h === '16:40'))
         debe(horas.length === 0, '4 horas', `${detalle}: sale una hora calculada: ${horas.join(', ')} (${plano(texto).slice(0, 240)})`)
         // 5: en la gratis, nada de lo de pago
         if (version === 'gratis') {
