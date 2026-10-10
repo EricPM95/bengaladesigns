@@ -116,6 +116,54 @@ export function viajePorId(viajes: ResumenViaje[], id: string | null): ResumenVi
 /** El mapa de mis viajes es una bola del mundo (globo de Mapbox), distinta al mapa plano del resto de la app. */
 export const PROYECCION_MAPA_VIAJES = 'globe'
 
+/** La caja del mapa de mis viajes en un móvil de 375: unos 335 de ancho por 220 de alto (Tanda 6z6b). */
+export const CAJA_MAPA_VIAJES = { ancho: 335, alto: 220 } as const
+/** El aire que se deja entre el borde de la bola y el borde de la caja, en píxeles (por cada lado). */
+const AIRE_GLOBO_PX = 20
+
+/**
+ * El zoom en que la bola ENTERA cabe en la caja, con su borde curvo a la vista. En Mapbox la vuelta al mundo por el ecuador mide 512·2^zoom píxeles, así que el diámetro de la esfera es
+ * 512·2^zoom / π. Se pide que ese diámetro quepa en el lado corto de la caja menos el aire de los dos lados. (Un solo sitio: lo usa el mapa y lo comprueba la prueba.)
+ */
+export function zoomGloboEntero(ancho: number = CAJA_MAPA_VIAJES.ancho, alto: number = CAJA_MAPA_VIAJES.alto): number {
+  const libre = Math.max(40, Math.min(ancho, alto) - AIRE_GLOBO_PX * 2)
+  return Math.log2((libre * Math.PI) / 512)
+}
+
+/** El diámetro en píxeles de la bola a ese zoom (lo inverso de `zoomGloboEntero`). */
+export function diametroGlobo(zoom: number): number {
+  return (512 * 2 ** zoom) / Math.PI
+}
+
+/**
+ * Dónde se centra la bola: la media de las chinchetas (hecha sobre la esfera, para que dos viajes a un lado y otro de la línea de fecha no den el medio del océano contrario);
+ * sin chinchetas, un punto cualquiera con tierra a la vista (Europa y África).
+ */
+export function centroDelGlobo(chinchetas: Chincheta[]): { lat: number; lng: number } {
+  if (chinchetas.length === 0) return { lat: 25, lng: 15 }
+  const rad = Math.PI / 180
+  let x = 0
+  let y = 0
+  let z = 0
+  for (const c of chinchetas) {
+    const lat = c.coordenadas.lat * rad
+    const lng = c.coordenadas.lng * rad
+    x += Math.cos(lat) * Math.cos(lng)
+    y += Math.cos(lat) * Math.sin(lng)
+    z += Math.sin(lat)
+  }
+  const largo = Math.hypot(x, y, z)
+  if (largo < 1e-6) return { lat: chinchetas[0].coordenadas.lat, lng: chinchetas[0].coordenadas.lng }
+  return { lat: Math.atan2(z, Math.hypot(x, y)) / rad, lng: Math.atan2(y, x) / rad }
+}
+
+/** Los textos que Mapbox enseña al querer mover el mapa con un dedo (en español): con un dedo se baja la página; con dos, se mueve el mapa. */
+export const TEXTOS_MAPA_VIAJES = {
+  'ScrollZoomBlocker.CtrlMessage': 'Usa Ctrl + rueda para acercar el mapa',
+  'ScrollZoomBlocker.CmdMessage': 'Usa Cmd + rueda para acercar el mapa',
+  'TouchPanBlocker.Message': 'Usa dos dedos para mover el mapa',
+} as const
+
 export interface Chincheta {
   /** `${viaje}:${n}` — única por destino. */
   id: string

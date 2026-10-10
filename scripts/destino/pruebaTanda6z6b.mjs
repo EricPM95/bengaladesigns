@@ -211,7 +211,7 @@ function pintaPerfil({ version, albumDe = null, rutaAbierta = null }) {
   useSyncStore.setState({ savedTrips: GUARDADOS, activeTripId: null })
   useRouteStore.setState({ ...estadoBase, route: rutaAbierta, dev_simulated_today_iso: HOY })
   usePerfilUi.setState({ abierto: true, albumDe })
-  return aTexto(renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {}, onTips() {} })))
+  return aTexto(renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} })))
 }
 const hoy = HOY
 const lista = viajesDelPerfil(GUARDADOS, null, hoy)
@@ -224,7 +224,7 @@ debe(rot.r3 === 'Madrid · 1 – 3 may 2026 · 3 días', 'B5', `rótulo de Madri
 const textoPerfil = pintaPerfil({ version: 'completa' })
 for (const r of Object.values(rot)) debe(textoPerfil.includes(r), 'B5', `el Perfil no lista «${r}» (${plano(textoPerfil).slice(0, 400)})`)
 debe(textoPerfil.indexOf(rot.r1) < textoPerfil.indexOf(rot.r2) && textoPerfil.indexOf(rot.r2) < textoPerfil.indexOf(rot.r3) && textoPerfil.indexOf(rot.r5) < textoPerfil.indexOf(rot.r1), 'B5', 'el Perfil no pinta los viajes en orden')
-debe(/Nuevo viaje/.test(textoPerfil) && /Tips del viaje/.test(textoPerfil), 'B5', 'falta [Nuevo viaje] o [Tips del viaje] en el Perfil')
+debe(/Nuevo viaje/.test(textoPerfil) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta [Nuevo viaje] en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
 debe(/Próximos/.test(textoPerfil) && /Ya hechos/.test(textoPerfil) && textoPerfil.indexOf('Próximos') < textoPerfil.indexOf('Ya hechos'), 'B5', 'faltan los rótulos «Próximos» / «Ya hechos»')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
@@ -246,13 +246,13 @@ debe(PROYECCION_MAPA_VIAJES === 'globe', 'B6', `la proyección del mapa de mis v
 debe(/new mapboxgl\.Map\(/.test(codigoMapa) && /projection:\s*PROYECCION_MAPA_VIAJES/.test(codigoMapa) && /VITE_MAPBOX_TOKEN/.test(codigoMapa), 'B6', 'MapaMisViajes no crea un mapa de Mapbox con la proyección globo y el token')
 debe(/return \(\) => \{[\s\S]*mapa\.remove\(\)/.test(codigoMapa), 'B6', 'MapaMisViajes no destruye el mapa al desmontarse (mapa.remove())')
 debe(/<MapaMisViajes chinchetas=\{chinchetas\} onElegir=\{abrirAlbum\}/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el Perfil no monta el mapa con las chinchetas y abre la ficha al tocar una')
-debe(/\{ficha \? \(/.test(leer('src/components/layout/PerfilSheet.tsx')) && /MapaMisViajes/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el mapa debe desmontarse mientras se ve una ficha')
+debe(/ficha \? \(/.test(leer('src/components/layout/PerfilSheet.tsx')) && /MapaMisViajes/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el mapa debe desmontarse mientras se ve una ficha')
 
 // La ficha
 const FichaR1 = (version) => pintaPerfil({ version, albumDe: 'r1' })
 for (const version of ['gratis', 'completa']) {
   const t = FichaR1(version)
-  const htmlDelPerfil = renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {}, onTips() {} }))
+  const htmlDelPerfil = renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} }))
   debe(/Roma/.test(t) && t.includes('13 – 16 oct 2026') && t.includes('4 días · 11 paradas'), 'B7', `${version}: la ficha de Roma no enseña las fechas y «4 días · 11 paradas» (${plano(t).slice(0, 300)})`)
   debe(/Álbum/.test(t) && /Aquí irán tus fotos/.test(t), 'B7', `${version}: la ficha no tiene su álbum`)
   debe(/Abrir este viaje/.test(t), 'B7', `${version}: la ficha de un viaje guardado no lleva [Abrir este viaje]`)
