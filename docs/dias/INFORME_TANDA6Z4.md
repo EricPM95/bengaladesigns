@@ -13,8 +13,15 @@
 
 **Resultado de la prueba de listas, con las fechas de los próximos 12 meses (del 11-oct-2026 al 10-oct-2027, las 365 fechas, sin saltarse ninguna)**
 - 1 día: 0 fallos (58 s). 2 días: 0 fallos (251 s). 3 días: 0 fallos (400 s).
-- 4, 5 y 6 días: ver al final de este informe.
-- Tarda en total unos 15 minutos con las seis tandas en paralelo (una por número de días), así que se puede correr entera.
+- 4 días: 0 fallos (951 s). 5 días: 0 fallos (1.340 s). 6 días: 0 fallos (1.820 s).
+- En total, 207.685 viajes (más de 770.000 días) con 0 fallos. Con las seis tandas en paralelo (una por número de días) tarda unos 30 minutos, lo que dura la más larga (6 días); así que se puede correr entera, sin saltarse fechas, y no hizo falta la versión de una de cada 2.
+- No salió ningún fallo nuevo en 4, 5 ni 6 días: los 15 de 4 días eran los mismos dos del Viernes Santo y Nochevieja.
+
+## 3. Pruebas
+Todas a 0 fallos: 6g, 6h, 6i, 6j, 6k, 6l, 6o, 6r, 6s, 6t, 6u, 6v, 6z, 6z2, 6z3 (24.659 comprobaciones, con la nueva regla de emojis), franjas 6x, días por fecha, fotos, salida, sugerencias, varita, la de listas entera y `tsc`. `pruebaNavidad` solo cuenta casos y no tiene código de fallo.
+
+## 4. A mano
+He mirado en el navegador a 375 px que los mapas siguen funcionando con los pines (los numerados y el comportamiento de iconos: los 11 nombres que usan los pines se convierten en un dibujo de la familia). No he abierto cada pantalla de los cuestionarios viejos una por una.
 
 ## 2. Los emojis que quedaban
 Pasados a la familia de iconos de la 6z3 (`src/lib/iconos.ts`, 19 iconos nuevos: taxi, arte, playa, bienestar, nieve, bolsa, fiesta, estrella, destello, gema, copa, abeto, pizza, helado, bocadillo, flor, hoja, llave, familia). Dónde estaban:
