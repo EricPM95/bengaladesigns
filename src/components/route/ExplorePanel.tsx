@@ -17,6 +17,9 @@ import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
 import { Icono } from '../ui/Icono'
+import type { Coordinates } from '../../lib/types'
+import { useExploreAperturaStore } from '../../store/useExploreAperturaStore'
+import { explorarConBanosYFuentes } from '../../lib/explorarDePago'
 
 interface ExplorePanelProps {
   route: Route
@@ -145,13 +148,26 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   /** "+ Añadir" desde Explorar (decisión del usuario, 2026-09-28): la ventana pregunta a qué día. */
   const [addItem, setAddItem] = useState<AddItem | null>(null)
   const [freeTourOpen, setFreeTourOpen] = useState(false)
+  /** Desde dónde se ordena por cercanía cuando EXPLORAR se abre desde HOY («Cerca de ti»). */
+  const [origenApertura, setOrigenApertura] = useState<Coordinates | null>(null)
+  const banosYFuentes = explorarConBanosYFuentes()
+  // «Cerca de ti» de HOY deja aquí lo que pide (filtro + punto de partida): se lee y se vacía al abrir.
+  const pedido = useExploreAperturaStore((state) => state.pedido)
+  useEffect(() => {
+    if (!pedido) return
+    const apertura = useExploreAperturaStore.getState().tomar()
+    if (!apertura) return
+    if ((apertura.categoria === 'banos' || apertura.categoria === 'fuentes') && !banosYFuentes) return
+    setOrigenApertura(apertura.origen)
+    setActiveCard(apertura.categoria)
+  }, [pedido, banosYFuentes])
 
   // El catálogo se pide al entrar en la pestaña, no al pulsar una tarjeta: los contadores salen de
   // él y tienen que estar ya en la rejilla. Es una sola petición por destino y sesión (se cachea).
   const { places: curatedPool, excursions, resolved: curatedPoolResolved } = useDestinationPool(city, true)
   const hasCuratedCatalog = curatedPoolResolved && curatedPool.length > 0
-  const hasToilets = curatedPool.some((place) => place.kind === 'toilet')
-  const hasFountains = curatedPool.some((place) => place.kind === 'fountain')
+  const hasToilets = banosYFuentes && curatedPool.some((place) => place.kind === 'toilet')
+  const hasFountains = banosYFuentes && curatedPool.some((place) => place.kind === 'fountain')
   const cardPhotos = useCardPhotos(city, curatedPool, excursions)
   const legacyCategory = activeCard ? LEGACY_FALLBACK[activeCard] : undefined
 
@@ -188,6 +204,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
 
   const backToCards = () => {
     setActiveCard(null)
+    setOrigenApertura(null)
     setResults(null)
     onSelectResultId(null)
   }
@@ -221,12 +238,13 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         open
         destination={city}
         places={curatedPool}
-        toiletsEnabled
+        toiletsEnabled={banosYFuentes}
         excursions={excursions}
         title={`Explorar ${city}`}
         subtitle={EXPLORE_CARDS.find((card) => card.id === activeCard)?.label ?? null}
         route={route}
         initialFilters={[activeCard]}
+        initialOrigin={origenApertura}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
         onAddFreeTour={freeTourAvailable(route) ? () => setFreeTourOpen(true) : undefined}
         onQuickAdd={(place) => setAddItem({ kind: 'place', place })}
