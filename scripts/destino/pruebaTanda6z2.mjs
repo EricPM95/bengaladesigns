@@ -138,7 +138,7 @@ console.log('Stay22 y código')
       if (/^\s*(\/\/|\*|\/\*)/.test(linea)) return
       const sinSimbolosDeNivel = linea.replace(/['"]€{1,3}['"]/g, '').replace(/'€{1,3}'\s*\|/g, '')
       // los comentarios al final de la línea no cuentan
-      const codigo = sinSimbolosDeNivel.replace(/\s\/\/.*$/, '')
+      const codigo = sinSimbolosDeNivel.replace(/\{\/\*.*?\*\/\}/g, '').replace(/\s\/\/.*$/, '')
       ok(!codigo.includes('€'), `${archivo}:${i + 1}: «€» escrito a mano en el código`)
     })
   }
