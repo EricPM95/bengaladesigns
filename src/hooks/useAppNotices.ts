@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { useNoticesStore, type NoticeKind } from '../store/useNoticesStore'
@@ -6,6 +6,11 @@ import { reservationOverlaps } from '../lib/reservationOverlaps'
 import { reservasEnCierre } from '../lib/reservaEnCierre'
 import { useDatosDeHorario } from '../lib/horarioDeParada'
 import { useDestinationExcursions } from '../lib/destinationExcursions'
+import { avisosDeLluvia, diasAMirar } from '../lib/avisosDeLluvia'
+import { todayIso } from '../lib/dateRange'
+import { lluviaDePruebaActiva } from '../lib/lluviaDePrueba'
+import { fetchHourlyRain, type HourlyRain } from '../lib/rainForecast'
+import { usePruebasUi } from '../store/usePruebasUi'
 
 export interface AppNotice {
   id: string
@@ -29,6 +34,7 @@ export interface AppNotice {
  *  1. «Cambios sin guardar» (error de guardado en la nube): cuenta mientras no se guarde.
  *  2. «Tu viaje es de N días y ahora tienes M» (antes, una línea bajo «+ Añadir día»): cuenta mientras haya más días que fechas.
  *  2b. «Dos reservas coinciden» (Tanda 6v): cuenta mientras se pisen; se va solo cuando se arregla.
+ *  2c. «Mañana llueve en Roma por la tarde» / «Hoy llueve en Roma por la tarde» (Tanda 6z6e; gratis y de pago): uno por día del viaje, con la previsión de nuestro servidor; sin previsión, ninguno.
  *  3. El aviso de contexto de la ruta (por qué es como es: invierno, pocos días…): se marca como leído (antes se cerraba con la ×).
  *  4. Los que empujen otras partes (`useNoticesStore.push`), p. ej. los de amigos.
  */
@@ -42,6 +48,25 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const syncStatus = useSyncStore((state) => state.status)
   const readIds = useNoticesStore((state) => state.readIds)
   const pushed = useNoticesStore((state) => state.pushed)
+  // La lluvia: se mira solo hoy y mañana (el día y su víspera). `repintado` y la lluvia de prueba son del panel de pruebas (solo local y vistas previas).
+  const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
+  const repintado = usePruebasUi((state) => state.version)
+  const hoyIso = simulada ?? todayIso()
+  const lluviaDePrueba = lluviaDePruebaActiva()
+  const aMirar = useMemo(() => (route ? diasAMirar(route, hoyIso) : []), [route, hoyIso])
+  const claveAMirar = aMirar.map((dia) => `${dia.dateIso}@${dia.coordenadas.lat},${dia.coordenadas.lng}`).join('|')
+  const [lluvias, setLluvias] = useState<Record<string, HourlyRain | null>>({})
+  useEffect(() => {
+    let vivo = true
+    setLluvias({})
+    void Promise.all(aMirar.map(async (dia) => [dia.dateIso, await fetchHourlyRain(dia.coordenadas, dia.dateIso)] as const)).then((pares) => {
+      if (vivo) setLluvias(Object.fromEntries(pares))
+    })
+    return () => {
+      vivo = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claveAMirar, lluviaDePrueba, repintado])
 
   return useMemo(() => {
     const items: AppNotice[] = []
@@ -83,6 +108,10 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
       }
     }
 
+    for (const aviso of avisosDeLluvia(aMirar, lluvias)) {
+      items.push({ id: aviso.id, kind: 'info', title: aviso.titulo, text: aviso.texto, read: readIds.includes(aviso.id), canMarkRead: true })
+    }
+
     for (const notice of pushed) {
       const persistent = notice.kind === 'error' || notice.kind === 'warning'
       items.push({ id: notice.id, kind: notice.kind, title: notice.title, text: notice.text, read: !persistent && readIds.includes(notice.id), canMarkRead: !persistent })
@@ -92,5 +121,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner])
+  }, [route, reservations, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias])
 }

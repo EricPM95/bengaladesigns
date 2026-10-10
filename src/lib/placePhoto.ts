@@ -182,15 +182,14 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
         return photo.thumb ? photo : null
       }
       if (data?.photo_source === 'propia' && data.photo_url) {
-        // Foto nuestra: la grande para la ficha y la pequeña para tarjetas y miniaturas. El crédito, solo si lo trae.
-        const credit = data.photo_credit
+        // Foto nuestra (de Eric): la grande para la ficha y la pequeña para tarjetas y miniaturas. NUNCA lleva crédito (Tanda 6z6e), aunque los datos traigan autor: ni bajo la foto ni en «Créditos».
         const photo: PlacePhoto = {
           source: 'propia',
           thumb: data.photo_small ?? data.photo_url,
           small: data.photo_small ?? data.photo_url,
           regular: data.photo_url,
           blurHash: null,
-          attribution: credit?.autor ? { photographer: credit.autor, photographerUrl: credit.enlace ?? '', unsplashUrl: credit.enlace ?? '', site: credit.licencia ?? credit.fuente ?? undefined } : null,
+          attribution: null,
         }
         return photo
       }

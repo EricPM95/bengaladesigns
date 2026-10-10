@@ -470,22 +470,9 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               {dayNumber !== null && !footerAction && <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} />}
 
               {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
-                  que exigen sus condiciones. Las de Wikipedia no la llevan (dominio público o CC). */}
-              {(photo?.source === 'unsplash' || photo?.source === 'propia') && photo.attribution && (
-                photo.source === 'propia' ? (
-                  // Nuestra foto, con su crédito: «Foto: {autor} · {licencia}» (letra pequeña; el enlace, si lo hay).
-                  <p className="text-caption text-text-muted">
-                    Foto:{' '}
-                    {photo.attribution.photographerUrl ? (
-                      <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
-                        {photo.attribution.photographer}
-                      </a>
-                    ) : (
-                      photo.attribution.photographer
-                    )}
-                    {photo.attribution.site ? ` · ${photo.attribution.site}` : ''}
-                  </p>
-                ) : (
+                  que exigen sus condiciones. Las de Wikipedia no la llevan (dominio público o CC) y las nuestras (`propia`)
+                  tampoco, nunca (Tanda 6z6e). */}
+              {photo?.source === 'unsplash' && photo.attribution && (
                 <p className="text-caption text-text-muted">
                   Foto de{' '}
                   <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
@@ -496,7 +483,6 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     {photo.attribution.site ?? 'Unsplash'}
                   </a>
                 </p>
-                )
               )}
 
               {visibleTabs.length > 1 && (
