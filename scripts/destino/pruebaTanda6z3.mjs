@@ -1,11 +1,11 @@
 // La prueba de la Tanda 6z3: la barra nueva, HOY según el momento, los iconos y el color.
 //   node scripts/destino/pruebaTanda6z3.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
-//   1. la barra no tiene SIEMPRE las mismas cinco pestañas (Hoy · Ruta · Días · Explorar · Reservas), con y sin fechas, antes, durante y después, gratis y de pago, o si las pestañas de arriba (ModeSwitcher) siguen;
+//   1. la barra no tiene SIEMPRE las mismas pestañas de su versión (cuatro en la gratis, cinco con Hoy en la de pago), con y sin fechas, antes, durante y después, o si las pestañas de arriba (ModeSwitcher) siguen;
 //   2. HOY no sale en el momento que toca (con la fecha simulada): antes, durante y después; sin fechas, siempre «antes» con [Pon tus fechas];
 //   3. con fechas, en HOY o en la cabecera sale «Día {n}»; sin fechas, el resto sigue como antes;
 //   4. en HOY sale una hora calculada por la app (solo valen las horas de lo reservado);
-//   5. en la gratis sale en HOY algo de lo de pago (la siguiente parada, «Cómo llegar», «Visto», la zona);
+//   5. HOY pinta algo en la gratis, o de pago, «durante» no lleva la siguiente parada, «Cómo llegar» y «Visto»;
 //   6. los iconos: algún trazo suelto fuera de `src/lib/iconos.ts` para lo que ya tiene icono, la excursión sin la mochila, el autobús fuera de la llegada y la vuelta;
 //   7. el color: el frambuesa en más de un sitio o el contraste del texto blanco sobre frambuesa por debajo de 4,5:1;
 //   8. los emojis: queda algún emoji en src fuera de los signos de texto, el © y el 🧪 de las pantallas de desarrollo.
@@ -83,9 +83,11 @@ for (const fechas of [true, false]) {
       const nombre = `${fechas ? 'con fechas' : 'sin fechas'} · ${version === 'gratis' ? 'gratis' : 'de pago'} · ${clave}`
       // La barra
       const barra = aTexto(pinta(BottomBar, {}, route, { version, hoy }))
-      debe(NOMBRES.every((n) => barra.includes(n)) && NOMBRES.map((n) => barra.indexOf(n)).every((p, i, a) => i === 0 || p > a[i - 1]), '1 barra', `${nombre}: la barra no tiene las cinco pestañas en orden (${plano(barra)})`)
+      // (Tanda 6z6: la gratis lleva cuatro pestañas, sin Hoy; la de pago, las cinco. Lo comprueba a fondo pruebaTanda6z6a.mjs.)
+      const esperadas = version === 'gratis' ? NOMBRES.filter((n) => n !== 'Hoy') : NOMBRES
+      debe(esperadas.every((n) => barra.includes(n)) && esperadas.map((n) => barra.indexOf(n)).every((p, i, a) => i === 0 || p > a[i - 1]), '1 barra', `${nombre}: la barra no tiene sus pestañas en orden (${plano(barra)})`)
       const botones = (pinta(BottomBar, {}, route, { version, hoy }).match(/<button/g) ?? []).length
-      debe(botones === 5, '1 barra', `${nombre}: la barra tiene ${botones} botones`)
+      debe(botones === esperadas.length, '1 barra', `${nombre}: la barra tiene ${botones} botones y debería tener ${esperadas.length}`)
       // La cabecera
       const cabecera = aTexto(pinta(Header, { onTips() {}, onOpenDates() {} }, route, { version, hoy }))
       debe(cabecera.includes('Roma'), '3 cabecera', `${nombre}: la cabecera no dice el destino`)
@@ -95,16 +97,22 @@ for (const fechas of [true, false]) {
       for (const reservas of [[], [reserva]]) {
         const html = pinta(HoyView, { route, onPonFechas() {} }, route, { version, hoy, reservas })
         const texto = aTexto(html)
+        // HOY es solo de pago (Tanda 6z6): en la gratis no se pinta nada. Lo de dentro se comprueba en la de pago.
+        if (version === 'gratis') {
+          debe(html === '', '1 barra', `${nombre}: HOY pinta algo en la gratis (${plano(texto).slice(0, 120)})`)
+          continue
+        }
         const fase = html.match(/data-hoy="([^"]+)"/)?.[1]
         const esperada = !fechas ? 'antes-sin-fechas' : clave === 'antes' ? 'before' : clave.startsWith('durante') ? 'during' : 'after'
         debe(fase === esperada, '2 momento', `${nombre}: HOY sale en «${fase}» y debería ser «${esperada}»`)
         const detalle = `${nombre}${reservas.length ? ' · con reserva' : ''}`
         vistas.push({ detalle, texto, fechas, version, esperada })
-        if (esperada === 'before') debe(/Tu viaje a Roma empieza en/.test(texto) && /d[ií]as?/.test(texto) && /Te falta por reservar/.test(texto) && /Útil para el viaje/.test(texto) && /El tiempo en Roma/.test(texto), '2 momento', `${detalle}: faltan trozos de «antes» (${plano(texto).slice(0, 300)})`)
+        // (Tanda 6z6: la cuenta atrás, «Te falta por reservar», «Útil para el viaje» y el tiempo ya no están en HOY: están arriba de RESERVAS.)
+        if (esperada === 'before') debe(/Tu modo Hoy se activa el/.test(texto) && /Ver mi primer día/.test(texto) && !/empieza en|Te falta por reservar|Útil para el viaje|El tiempo en/.test(texto), '2 momento', `${detalle}: «antes» no es «Tu modo Hoy se activa el…» con [Ver mi primer día], o conserva lo que se fue a RESERVAS (${plano(texto).slice(0, 300)})`)
         if (esperada === 'before') debe(!/Pon tus fechas/.test(texto), '2 momento', `${detalle}: con fechas sale [Pon tus fechas]`)
-        if (esperada === 'antes-sin-fechas') debe(/Pon tus fechas/.test(texto) && /Antes del viaje/.test(texto) && /octubre/.test(texto) && !/empieza en/.test(texto), '2 momento', `${detalle}: sin fechas no es «Tu viaje a Roma · octubre» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)
+        if (esperada === 'antes-sin-fechas') debe(/Pon tus fechas para activar tu modo Hoy/.test(texto) && /Antes del viaje/.test(texto) && !/empieza en|Ver mi primer día/.test(texto), '2 momento', `${detalle}: sin fechas no es «Pon tus fechas para activar tu modo Hoy» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)
         if (esperada === 'during') debe(/^HOY ·/im.test(texto) || /Hoy ·/i.test(texto), '2 momento', `${detalle}: «durante» no empieza con «HOY · {fecha}» (${plano(texto).slice(0, 200)})`)
-        if (esperada === 'after') debe(/Después del viaje/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Nuevo viaje/.test(texto) && /Tu viaje a/.test(texto), '2 momento', `${detalle}: faltan trozos de «después» (${plano(texto).slice(0, 300)})`)
+        if (esperada === 'after') debe(/Después del viaje/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Ver mis recuerdos/.test(texto) && /Nuevo viaje/.test(texto) && /Tu viaje a/.test(texto), '2 momento', `${detalle}: faltan trozos de «después» (${plano(texto).slice(0, 300)})`)
         // 3: «Día n» con fechas
         if (fechas) debe(!DIA_N.test(texto), '3 «Día n» con fechas', `${detalle}: HOY dice «${texto.match(DIA_N)?.[0]}» (${plano(texto.slice(Math.max(0, (texto.match(DIA_N)?.index ?? 0) - 40), (texto.match(DIA_N)?.index ?? 0) + 60))})`)
         // 4: ninguna hora calculada (solo la de lo reservado)
@@ -112,12 +120,8 @@ for (const fechas of [true, false]) {
         const sinHorarios = texto.split('\n').filter((linea) => !/^Abre \d{1,2}:\d{2}/.test(linea)).join('\n')
         const horas = (sinHorarios.match(HORA) ?? []).filter((h) => !(reservas.length && h === '16:40'))
         debe(horas.length === 0, '4 horas', `${detalle}: sale una hora calculada: ${horas.join(', ')} (${plano(texto).slice(0, 240)})`)
-        // 5: en la gratis, nada de lo de pago
-        if (version === 'gratis') {
-          debe(!/Siguiente parada|Cómo llegar|Ubicación|Visto/.test(texto), '5 gratis', `${detalle}: en la gratis sale lo de pago (${plano(texto).slice(0, 240)})`)
-          debe(!/Prati|Monti|falta la zona|Llegada|Vuelta/.test(texto.replace(primera.name, '')), '5 gratis', `${detalle}: en la gratis sale la zona o la llegada`)
-        }
-        if (version === 'completa' && esperada === 'during') debe(/Siguiente parada/.test(texto) && /Cómo llegar/.test(texto) && /Visto/.test(texto), '5 pago', `${detalle}: de pago falta la siguiente parada, [Cómo llegar] o [Visto]`)
+        // 5: HOY es solo de pago (en la gratis ya se ha comprobado arriba que no pinta nada); de pago, «durante» lleva lo suyo
+        if (esperada === 'during') debe(/Siguiente parada/.test(texto) && /Cómo llegar/.test(texto) && /Visto/.test(texto), '5 pago', `${detalle}: de pago falta la siguiente parada, [Cómo llegar] o [Visto]`)
       }
     }
   }
@@ -173,7 +177,6 @@ const SIGNOS_TEXTO = new Set(['✓', '✔', '✕', '✗', '✖', '★', '☆', '
 // Excepciones por archivo (solo el emoji que se deja): las pantallas y botones de desarrollo, que no ve el viajero.
 const EXCEPCIONES_EMOJI = [
   { archivo: /dev[\\/]DevQuickRouteScreen\.tsx$/, emoji: '🧪' },
-  { archivo: /today[\\/]DevDateSimulator\.tsx$/, emoji: '🧪' },
   { archivo: /destination[\\/]LandingScreen\.tsx$/, emoji: '🧪' }, // el botón «Dev: ruta rápida (sin IA)»
   { archivo: /trazo[\\/]StepRoute\.tsx$/, emoji: '🧪' }, // ídem, en el formulario nuevo
 ]

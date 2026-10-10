@@ -29,3 +29,25 @@ export function pagoActivo(): boolean {
   const pedida = versionPedida()
   return pedida === null ? PAGO_ACTIVO : pedida === 'completa'
 }
+
+/** Quita un parámetro de la dirección sin recargar (si no, `?version=gratis` mandaría siempre sobre lo que se elige en el panel de pruebas). */
+export function quitarParametroDeLaDireccion(nombre: string): void {
+  try {
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has(nombre)) return
+    url.searchParams.delete(nombre)
+    window.history.replaceState(null, '', url)
+  } catch {
+    /* sin dirección (pruebas en el servidor): nada que quitar */
+  }
+}
+
+/** El panel de pruebas elige la versión (lo mismo que `?version=gratis` / `?version=completa`): se guarda mientras la pestaña esté abierta. */
+export function fijarVersion(version: 'gratis' | 'completa'): void {
+  try {
+    window.sessionStorage.setItem(CLAVE, version)
+  } catch {
+    /* sin almacenamiento: no se recuerda */
+  }
+  quitarParametroDeLaDireccion('version')
+}

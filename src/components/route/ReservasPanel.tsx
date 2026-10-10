@@ -17,6 +17,7 @@ import { TripReadinessBadge } from './reservas/TripReadinessBadge'
 import { ResumenViaje } from './reservas/ResumenViaje'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
 import { AlojamientoReservas, alojamientoHecho } from './reservas/AlojamientoReservas'
+import { TarjetaCuentaAtras } from './reservas/TarjetaCuentaAtras'
 import { FilaPresupuesto } from './presupuesto/FilaPresupuesto'
 import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
@@ -43,7 +44,7 @@ export function rangoDelViaje(route: Route): string {
 }
 
 /**
- * Pestaña RESERVAS (Tanda 6s, diseño «Reservas v4») — pantalla completa (mismo ✕ que RUTA/EXPLORAR), sin mapa. De arriba abajo: el resumen (solo de pago), Llegada y vuelta (solo de pago), Alojamiento,
+ * Pestaña RESERVAS (Tanda 6s, diseño «Reservas v4») — pantalla completa (mismo ✕ que RUTA/EXPLORAR), sin mapa. De arriba abajo: la tarjeta de la cuenta atrás y lo que falta por reservar (Tanda 6z6; gratis y de pago), el presupuesto, el resumen (solo de pago), Llegada y vuelta (solo de pago), Alojamiento,
  * Entradas y Free Tour, Excursiones y Útil para el viaje. Todo lo de pago va detrás del mismo interruptor (`pagoActivo`, src/lib/pago.ts). En el ordenador, en dos columnas. Los viajes de varios
  * destinos conservan además el acordeón de cada destino. El % de «viaje listo» se calcula en useTripReadiness.ts y sale en la cabecera (TripReadinessBadge).
  */
@@ -181,6 +182,8 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
+            {/* Lo de antes del viaje, arriba del todo (Tanda 6z6): la cuenta atrás y lo que falta por reservar. Después del viaje no sale. */}
+            <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} />
             <FilaPresupuesto />
             {pago && unDestino && <ResumenViaje ciudad={ciudad} fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
 

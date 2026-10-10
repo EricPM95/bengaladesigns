@@ -85,7 +85,7 @@ function pinta(route, { version, reservas = [] }) {
   return { html, texto: aTexto(html), bloques: bloquesDe(html) }
 }
 
-const PAGO = [/Llegada y vuelta/, /Tu viaje a /, /listo\b/i, /Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
+const PAGO = [/Llegada y vuelta/, /\b\d+ de \d+ listo\b/i, /Falta la (ida|vuelta)/, /Eliminar vuelo/, /Aún no lo sé/, /Centro \(Panteón/, /Plaza de España \(/, /¿Ajustamos tu ruta/, /AÑADIR VUELO/i]
 const PROVEEDORES = /Civitatis|Stay22|Booking\.com|GetYourGuide|Viator|Skyscanner|Rentalcars|Holafly|Airalo|Heymondo|N26|Iati|Mapfre/i
 const BANDERAS = /null|undefined|NaN/
 

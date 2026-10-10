@@ -35,6 +35,8 @@ import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
 import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
 import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
+import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
+import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../lib/diaCompleto'
 import { Icono } from '../ui/Icono'
 
 interface DayListProps {
@@ -99,6 +101,14 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const excursionInfo = useDestinationExcursions(route.destination)
   const openExcursionsPage = useExcursionsStore((state) => state.openPage)
   const reservations = useRouteStore((state) => state.reservations)
+  const simuladaIso = useRouteStore((state) => state.dev_simulated_today_iso)
+  // Durante el viaje, DÍAS se abre sola en el día de hoy y lo marca con «HOY» (Tanda 6z6). Solo al entrar (o si cambia el día de hoy): si el viajero lo cierra, se queda cerrado.
+  const hoyId = diaDeHoy(route, simuladaIso)?.id ?? null
+  useEffect(() => {
+    const abrir = diaQueSeAbreAlEntrar(route, simuladaIso, activeDayId)
+    if (abrir) onSelectDay(abrir)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoyId])
   const [removeDayId, setRemoveDayId] = useState<string | null>(null)
   const removeDay = route.days.find((day) => day.id === removeDayId) ?? null
 
@@ -203,6 +213,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
         const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
+        const esHoy = day.id === hoyId
+        // «Hoy es un día completo: te recomendamos madrugar.» solo avisa: no mueve ni quita nada del día (Tanda 6z6).
+        const diaCompleto = esDiaCompleto(route, day, reservations)
         // El color va con el día, no con su posición (PROMPT_UI, Parte 1).
         const colorIndex = dayColorIndex(day, nonReturnIndex.get(day.id) ?? index)
 
@@ -253,8 +266,18 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
               <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 {/* Con fechas la ficha ya dice qué día es: la línea pequeña solo queda sin fechas («DÍA 3»). */}
-                {!ficha && <p className="font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{diaCorto(route, day.dayNumber)}</p>}
+                {(!ficha || esHoy) && (
+                  <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">
+                    {!ficha && diaCorto(route, day.dayNumber)}
+                    {esHoy && (
+                      <span data-etiqueta-hoy="1" className="rounded-full bg-text px-2 py-[3px] text-[9.5px] font-semibold leading-none tracking-[.14em] text-bg">
+                        HOY
+                      </span>
+                    )}
+                  </p>
+                )}
                 <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
+                {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
                 {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). */}
                 {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent">Día de viaje</p>}
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
