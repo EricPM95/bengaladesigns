@@ -112,7 +112,7 @@ for (const fechas of [true, false]) {
         if (esperada === 'before') debe(!/Pon tus fechas/.test(texto), '2 momento', `${detalle}: con fechas sale [Pon tus fechas]`)
         if (esperada === 'antes-sin-fechas') debe(/Pon tus fechas para activar tu modo Hoy/.test(texto) && /Antes del viaje/.test(texto) && !/empieza en|Ver mi primer día/.test(texto), '2 momento', `${detalle}: sin fechas no es «Pon tus fechas para activar tu modo Hoy» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)
         if (esperada === 'during') debe(/^HOY ·/im.test(texto) || /Hoy ·/i.test(texto), '2 momento', `${detalle}: «durante» no empieza con «HOY · {fecha}» (${plano(texto).slice(0, 200)})`)
-        if (esperada === 'after') debe(/Después del viaje/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Ver mis recuerdos/.test(texto) && /Nuevo viaje/.test(texto) && /Tu viaje a/.test(texto), '2 momento', `${detalle}: faltan trozos de «después» (${plano(texto).slice(0, 300)})`)
+        if (esperada === 'after') debe(/Después del viaje/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Subir mis fotos/.test(texto) && /Nuevo viaje/.test(texto) && /Tu viaje a/.test(texto), '2 momento', `${detalle}: faltan trozos de «después» (${plano(texto).slice(0, 300)})`)
         // 3: «Día n» con fechas
         if (fechas) debe(!DIA_N.test(texto), '3 «Día n» con fechas', `${detalle}: HOY dice «${texto.match(DIA_N)?.[0]}» (${plano(texto.slice(Math.max(0, (texto.match(DIA_N)?.index ?? 0) - 40), (texto.match(DIA_N)?.index ?? 0) + 60))})`)
         // 4: ninguna hora calculada (solo la de lo reservado)

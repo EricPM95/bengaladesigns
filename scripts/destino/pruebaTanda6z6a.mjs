@@ -281,7 +281,7 @@ for (const [clave, route] of Object.entries(rutas)) {
       debe(!/Pon tus fechas/.test(texto), '5 HOY', `${nombre}: con fechas sale [Pon tus fechas]`)
     }
     if (m.clave === 'sin-fechas') debe(/Pon tus fechas para activar tu modo Hoy/.test(texto) && /^Pon tus fechas$/m.test(texto) && !/Ver mi primer día/.test(texto), '5 HOY', `${nombre}: no es «Pon tus fechas para activar tu modo Hoy» con [Pon tus fechas] (${plano(texto).slice(0, 300)})`)
-    if (m.clave === 'despues') debe(/Tu viaje a/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Ver mis recuerdos/.test(texto) && /Nuevo viaje/.test(texto) && /A dónde vamos/.test(texto.replace('¿', '')), '5 HOY', `${nombre}: faltan trozos de «después» (${plano(texto).slice(0, 400)})`)
+    if (m.clave === 'despues') debe(/Tu viaje a/.test(texto) && /Guarda tus recuerdos/.test(texto) && /Subir mis fotos/.test(texto) && /Nuevo viaje/.test(texto) && /A dónde vamos/.test(texto.replace('¿', '')), '5 HOY', `${nombre}: faltan trozos de «después» (${plano(texto).slice(0, 400)})`)
     if (m.clave === 'antes' || m.clave === 'sin-fechas') debe(!/empieza en|Te falta|Útil para el viaje|El tiempo en|Subir mis fotos/.test(texto), '5 HOY', `${nombre}: conserva lo que se fue a RESERVAS (${plano(texto).slice(0, 200)})`)
     if (clave === 'con') debe(!DIA_N.test(texto), '5 HOY', `${nombre}: dice «${texto.match(DIA_N)?.[0]}» con fechas`)
   }
@@ -289,7 +289,7 @@ for (const [clave, route] of Object.entries(rutas)) {
 {
   const despues = fs.readFileSync('src/components/route/hoy/HoyDespues.tsx', 'utf8')
   const antes = fs.readFileSync('src/components/route/hoy/HoyAntes.tsx', 'utf8')
-  debe(/usePerfilUi\.getState\(\)\.abrirAlbum\(route\.id\)/.test(despues), '5 HOY', '[Ver mis recuerdos] no abre el álbum con abrirAlbum(route.id)')
+  debe(/<TarjetaRecuerdos route=\{route\} \/>/.test(despues), '5 HOY', 'HOY después no usa la tarjeta única TarjetaRecuerdos (la que abre el álbum con abrirAlbum)')
   debe(/setMode\('days'\)/.test(antes) && /Ver mi primer día/.test(antes), '5 HOY', '[Ver mi primer día] no abre DÍAS')
   const vista = fs.readFileSync('src/components/route/hoy/HoyView.tsx', 'utf8')
   debe(!/DevDateSimulator/.test(vista), '6 panel', 'HOY conserva su propio simulador de fecha (duplica el del panel de pruebas)')
