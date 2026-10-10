@@ -22,8 +22,7 @@ export function InsuranceRow() {
         bookAction={{
           label: 'Obtener con 5% dto.',
           href: 'https://www.iatiseguros.com',
-          onGet: () =>
-            setInsuranceBooking({ provider: 'IATI Seguros (5% dto.)', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio: null }),
+          onGet: () => undefined, // (pulsar abre la tienda y nada más: se añade con «Añadir», Tanda 6z3)
         }}
       />
       <GeneralBookingModal

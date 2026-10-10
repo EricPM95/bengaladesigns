@@ -27,7 +27,7 @@ export function RentalVehicleRow() {
         bookAction={{
           label: 'Reservar',
           href: url,
-          onGet: () => setRentalVehicleBooking({ provider: `Reservado vía ${providerLabel}`, startDate: '', endDate: '', precio: null }),
+          onGet: () => undefined, // (pulsar abre la tienda y nada más: se añade con «Añadir», Tanda 6z3)
         }}
       />
       <GeneralBookingModal

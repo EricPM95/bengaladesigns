@@ -36,7 +36,7 @@ export function EsimRow({ countryCode }: EsimRowProps) {
         bookAction={{
           label: 'Obtener con 5% dto.',
           href: 'https://esim.holafly.com',
-          onGet: () => setEsimSelection(countryCode, 'booked'),
+          onGet: () => undefined, // (pulsar abre la tienda y nada más: se añade con «Añadir», Tanda 6z3)
         }}
       />
 

@@ -26,7 +26,7 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         bookAction={{
           label: 'Reservar',
           href: 'https://www.skyscanner.net',
-          onGet: () => setTransportBooking(dayId, { operator: 'Tu reserva', dateTime: '', precio: null, locator: '' }),
+          onGet: () => undefined, // (pulsar abre el buscador y nada más: se añade con «Añadir», Tanda 6z3)
         }}
       />
       <TransportBookingModal
