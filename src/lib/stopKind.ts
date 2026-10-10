@@ -1,5 +1,6 @@
 import type { DayPlan, Stop } from './types'
 import { parseTimeToMinutes } from './time'
+import { ICONOS } from './iconos'
 
 /**
  * Diseño "Trazo Itinerario": UNA sola tarjeta para todas las paradas del día. Lo que cambia según el
@@ -21,25 +22,28 @@ export interface KindStyle {
   icon: string
 }
 
+/** Los iconos de cada tipo de parada: los de la familia única (`src/lib/iconos.ts`, Tanda 6z3). Aquí NO hay trazos propios. */
 export const KIND_ICON = {
-  temple: 'M4 21V9h16v12M8 21v-6a4 4 0 0 1 8 0v6M3 9l9-5 9 5M3 21h18',
-  park: 'M12 22v-7M12 3c3.5 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6 2.5-6 6-6z',
-  church: 'M12 2v4M10 4h4M6 22V11l6-5 6 5v11M10 22v-5a2 2 0 0 1 4 0v5M3 22h18',
-  museum: 'M3 21h18M4 10h16M12 3l9 5H3zM6 10v9M10 10v9M14 10v9M18 10v9',
-  fork: 'M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12',
-  sunset: 'M3 18h18M6 21h12M12 3v4M4.6 8.6l2 2M19.4 8.6l-2 2M7 18a5 5 0 0 1 10 0',
-  moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
-  plane: 'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
-  sun: 'M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-  clock: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
-  hour: 'M6 3h12M6 21h12M7 3v3l5 6-5 6v3M17 3v3l-5 6 5 6v3',
-  pin: 'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
-  walk: 'M13 4.6a1.6 1.6 0 1 0 0-.01M10 21l2-6 3 3v3M9 13l1.5-5 4 1 2 3M10.5 8L7 11',
-  coffee: 'M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2',
+  temple: ICONOS.columnas,
+  park: ICONOS.parque,
+  church: ICONOS.iglesia,
+  museum: ICONOS.columnas,
+  fork: ICONOS.comida,
+  sunset: ICONOS.mirador,
+  moon: ICONOS.noche,
+  plane: ICONOS.avion,
+  sun: ICONOS.hoy,
+  clock: ICONOS.reloj,
+  hour: ICONOS.arena,
+  pin: ICONOS.mapa,
+  walk: ICONOS.andando,
+  /** Free Tour: la banderita de guía. */
+  free: ICONOS.free,
+  coffee: ICONOS.cafe,
   /** Por dentro: la entrada. */
-  ticket: 'M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4zM15 7v10',
+  ticket: ICONOS.reservas,
   /** Por fuera: la cámara (se ve desde la calle). */
-  camera: 'M4 8h3l2-3h6l2 3h3v11H4zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+  camera: ICONOS.camara,
 } as const
 
 const oklch = (l: number, c: number, h: number, a?: number) => (a == null ? `oklch(${l} ${c} ${h})` : `oklch(${l} ${c} ${h} / ${a})`)

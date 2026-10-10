@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Icono } from '../../ui/Icono'
 
 /**
  * Una parada que se puede arrastrar para cambiarla de sitio dentro de su día.
@@ -56,8 +57,6 @@ export function SortableStop({ id, disabled, label = 'Mover esta parada', gap, c
  */
 export function GripIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className={className}>
-      <path d="M5 8h14M5 12h14M5 16h14" />
-    </svg>
+    <Icono nombre="menu" className={className} />
   )
 }

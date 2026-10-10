@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { precioTienda } from '../../../../lib/dinero'
 import type { Excursion } from '../../../../lib/types'
 import { hoursLabel } from './hoursLabel'
+import { Icono } from '../../../ui/Icono'
+import type { NombreIcono } from '../../../../lib/iconos'
 
 /**
  * La página del día de excursión (Tanda 6g, diseño `docs/diseno/excursion/Excursion_Dia_4.dc.html` + prototipo).
@@ -96,31 +98,11 @@ function toView(excursion: Excursion): View {
   }
 }
 
-/** Iconos de trazo fino, sin relleno. */
-function Icon({ d, size = 13, stroke = 1.5 }: { d: string; size?: number; stroke?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true">
-      <path d={d} />
-    </svg>
-  )
-}
-
-const PATH = {
-  clock: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
-  bus: 'M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3',
-  train: 'M7 3h10a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 10h14M8 21l2-4M16 21l-2-4',
-  guide: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
-  ticket: 'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',
-  house: 'M3 11l9-7 9 7M5 10v10h14V10',
-  check: 'M5 12l5 5 9-10',
-  chevron: 'M9 6l6 6-6 6',
-  compass: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z',
-}
-
-function tagIcon(tag: { kind: string; text: string }): string {
-  if (tag.kind === 'guia') return PATH.guide
-  if (tag.kind === 'entrada') return PATH.ticket
-  return /tren/i.test(tag.text) ? PATH.train : PATH.bus
+/** El icono de cada etiqueta de la excursión: de la familia única (`src/lib/iconos.ts`). El tren y el autobús son los del trayecto; la excursión es la mochila. */
+function tagIcon(tag: { kind: string; text: string }): NombreIcono {
+  if (tag.kind === 'guia') return 'perfil'
+  if (tag.kind === 'entrada') return 'reservas'
+  return /tren/i.test(tag.text) ? 'tren' : 'bus'
 }
 
 /** El recuadro de color con la foto encima (si la hay y carga). */
@@ -211,7 +193,7 @@ export function ExcursionDayPage({
   const availabilityClass =
     'flex min-h-[54px] w-full items-center justify-center rounded-full bg-accent px-4 text-[16px] font-semibold text-white shadow-[0_12px_24px_-12px_rgba(182,78,16,.7)] transition-colors hover:bg-accent-hover'
   const tagList = [
-    ...(view.duration ? [{ icon: PATH.clock, text: view.duration }] : []),
+    ...(view.duration ? [{ icon: 'reloj' as NombreIcono, text: view.duration }] : []),
     ...view.tags.map((tag) => ({ icon: tagIcon(tag), text: tag.text })),
   ]
   const lastStop = view.stops.length - 1
@@ -229,7 +211,7 @@ export function ExcursionDayPage({
         <div className="relative h-44" style={{ backgroundColor: view.color }}>
           {view.photoUrl && <img src={view.photoUrl} alt={view.fullName} className="absolute inset-0 h-full w-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
           <span className="absolute left-3 top-3 flex h-[30px] items-center gap-[7px] rounded-full bg-bg-card/90 px-3 font-mono text-[10.5px] font-semibold uppercase tracking-[.12em] text-text">
-            <Icon d={PATH.house} />
+            <Icono nombre="casa" size={13} className="shrink-0" />
             Excursión del día
           </span>
           <span className="absolute right-3 top-3 flex flex-col items-end gap-px rounded-[14px] bg-text px-3 pb-2 pt-[7px] text-bg-card">
@@ -240,7 +222,7 @@ export function ExcursionDayPage({
           {view.photoUrl && view.photoCredit && <span className="absolute bottom-3 left-3.5 max-w-[55%] font-mono text-[9px] text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,.6)]">{view.photoCredit}</span>}
           {confirmed && (
             <span className="absolute bottom-3 right-3 flex h-[30px] items-center gap-1.5 rounded-full bg-accent-green px-3 text-[12px] font-semibold text-white">
-              <Icon d={PATH.check} stroke={2.2} />
+              <Icono nombre="hecho" size={13} grosor={2.4} className="shrink-0" />
               {reservation?.locator ? `Reservada · ${reservation.locator}` : 'Reservada'}
             </span>
           )}
@@ -257,7 +239,7 @@ export function ExcursionDayPage({
             <span className="flex flex-wrap gap-1.5">
               {tagList.map((tag, index) => (
                 <span key={`${tag.text}-${index}`} className="flex h-7 items-center gap-1.5 rounded-full bg-bg-hover px-2.5 text-[12px] text-text/80">
-                  <Icon d={tag.icon} />
+                  <Icono nombre={tag.icon} size={13} className="shrink-0" />
                   {tag.text}
                 </span>
               ))}
@@ -331,7 +313,7 @@ export function ExcursionDayPage({
           )}
 
           <button type="button" onClick={toggleConfirmation} aria-expanded={confOpen} className="flex min-h-[44px] items-center gap-[7px] self-center text-[13px] text-text/70 underline underline-offset-[3px]">
-            <Icon d={PATH.ticket} size={14} />
+            <Icono nombre="reservas" size={14} className="shrink-0" />
             {reservation ? 'Cambiar confirmación' : '¿Ya la has reservado? Añade tu confirmación'}
           </button>
         </div>
@@ -368,7 +350,7 @@ export function ExcursionDayPage({
             </span>
             <span className="flex-1 pl-3 text-left text-[14px] font-medium">Ver más excursiones ({others.length})</span>
             <span className={`text-text/60 transition-transform ${moreOpen ? 'rotate-90' : ''}`}>
-              <Icon d={PATH.chevron} size={18} />
+              <Icono nombre="adelante" size={18} className="shrink-0" />
             </span>
           </button>
           {moreOpen && (
@@ -381,7 +363,7 @@ export function ExcursionDayPage({
                     <span className="font-mono text-[11px] font-medium text-text/60">{[other.duration, `desde ${other.priceLabel}`].filter(Boolean).join(' · ')}</span>
                   </span>
                   <span className="text-text/50">
-                    <Icon d={PATH.chevron} size={16} />
+                    <Icono nombre="adelante" size={16} className="shrink-0" />
                   </span>
                 </button>
               ))}
@@ -399,7 +381,7 @@ export function ExcursionDayPage({
       <div className="grid grid-cols-2 gap-2.5">
         <button type="button" onClick={onStayInRoma} className="flex min-h-[132px] flex-col items-start justify-between gap-3 rounded-[20px] border border-text/10 bg-bg-card p-3.5 text-left text-text">
           <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-bg-hover">
-            <Icon d={PATH.house} size={16} />
+            <Icono nombre="casa" size={16} className="shrink-0" />
           </span>
           <span className="flex flex-col gap-1">
             <span className="font-display text-[18px] leading-[1.12]">Prefiero quedarme en {destination}</span>
@@ -408,7 +390,7 @@ export function ExcursionDayPage({
         </button>
         <button type="button" onClick={onOwnDay} className="flex min-h-[132px] flex-col items-start justify-between gap-3 rounded-[20px] bg-text p-3.5 text-left text-bg-card">
           <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-accent-gold text-text">
-            <Icon d={PATH.compass} size={16} />
+            <Icono nombre="explorar" size={16} className="shrink-0" />
           </span>
           <span className="flex flex-col gap-1">
             <span className="font-display text-[18px] leading-[1.12]">Crear mi propio día</span>

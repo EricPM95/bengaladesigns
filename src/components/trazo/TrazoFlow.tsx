@@ -24,6 +24,7 @@ import { StepExperiences } from './StepExperiences'
 import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
 import './trazo.css'
+import { Icono } from '../ui/Icono'
 
 const STEP_NAMES = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Experiencias', 'Lugares']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -432,9 +433,7 @@ export function TrazoFlow() {
                   cursor: 'pointer',
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
+                <Icono nombre="cerrar" size={16} />
                 Volver a mi viaje
               </button>
             )}

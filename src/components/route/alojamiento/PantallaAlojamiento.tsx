@@ -5,7 +5,7 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { mapaAlojamientoUrl } from './mapaAlojamientoUrl'
 import { monedaDelViajero } from '../../../lib/useMoneda'
-import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
+import { Icono } from '../../ui/Icono'
 
 /**
  * El mapa de alojamientos a pantalla completa (Tanda 6z), sin tirador: arriba una barra con «Alojamiento en {destino}» y la ✕; el mapa de Stay22 (el del destino, con las fechas del viaje y el código de campaña) llena el resto,
@@ -30,11 +30,9 @@ export function PantallaAlojamiento({ route, ciudad, mapa, onTengo, onClose }: {
           aria-label="Cerrar"
           title="Cerrar"
           className="flex h-[42px] w-[42px] flex-none items-center justify-center rounded-full bg-bg-card text-accent"
-          style={{ border: '1.5px solid oklch(0.55 0.15 45)' }}
+          style={{ border: '1.5px solid rgb(var(--accent))' }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <path d={EXPLORE_ICONS.close} />
-          </svg>
+          <Icono nombre="cerrar" size={18} />
         </button>
         <h2 id="pantalla-alojamiento" className="min-w-0 flex-1 truncate font-display text-[26px] leading-none text-text">
           Alojamiento en {ciudad}

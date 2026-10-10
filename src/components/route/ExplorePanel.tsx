@@ -15,7 +15,8 @@ import { useAlojamientoUi } from '../../store/useAlojamientoUi'
 import { FreeTourSheet, freeTourAvailable } from './reservas/FreeTourSheet'
 import { categoriesForFilters } from '../../lib/placeCategories'
 import { fetchPlacePhoto } from '../../lib/placePhoto'
-import { CARD_STYLE, EXPLORE_ICONS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
+import { CARD_STYLE, EXPLORE_ICONOS, solidOf, type ExploreCardId } from '../../lib/exploreStyle'
+import { Icono } from '../ui/Icono'
 
 interface ExplorePanelProps {
   route: Route
@@ -74,9 +75,7 @@ function ExploreCard({ id, label, sub, photo, delay, wide, onClick }: { id: Expl
         className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center text-white"
         style={{ borderRadius: 12, background: style.color, boxShadow: `0 6px 14px -6px ${style.shadow}` }}
       >
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d={EXPLORE_ICONS[style.icon]} />
-        </svg>
+        <Icono nombre={EXPLORE_ICONOS[style.icon]} size={19} />
       </span>
       <span className="absolute bottom-3 left-3 right-3 flex flex-col gap-[3px]">
         <span className="font-display text-text" style={{ fontSize: 21, lineHeight: 1, textShadow: '0 0 12px #fff,0 0 4px #fff' }}>

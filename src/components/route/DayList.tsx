@@ -35,6 +35,7 @@ import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
 import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
 import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
+import { Icono } from '../ui/Icono'
 
 interface DayListProps {
   route: Route
@@ -48,17 +49,7 @@ interface DayListProps {
 
 function ChevronIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-[18px] w-[18px] shrink-0"
-    >
-      <path d="M9 6l6 6-6 6" />
-    </svg>
+    <Icono nombre="adelante" className="h-[18px] w-[18px] shrink-0" />
   )
 }
 

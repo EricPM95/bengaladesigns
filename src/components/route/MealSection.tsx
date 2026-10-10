@@ -1,5 +1,6 @@
 import type { MealSlot } from '../../lib/types'
 import { formatReviewCount } from '../../lib/format'
+import { Icono } from '../ui/Icono'
 
 interface MealSectionProps {
   meal: MealSlot
@@ -9,7 +10,7 @@ export function MealSection({ meal }: MealSectionProps) {
   return (
     <div className="px-4 py-4">
       <p className="text-body font-medium text-text">
-        🍽 {meal.label}
+        <Icono nombre="comida" size={16} className="mr-1.5 inline-block align-[-3px]" />{meal.label}
       </p>
       {meal.nearbyNote && <p className="mt-1 text-small text-text-soft">{meal.nearbyNote}</p>}
 

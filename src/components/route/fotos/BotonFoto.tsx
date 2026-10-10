@@ -1,19 +1,10 @@
 import { useRef, useState } from 'react'
 import { subirFoto, type FotoViaje } from '../../../lib/fotosViaje'
 import { useRouteStore } from '../../../store/useRouteStore'
-
-/**
- * El trazo de la cámara, en una constante para cambiarlo cuando llegue la familia nueva de iconos
- * (clave `camara` de docs/diseno/hoy/Iconos y HOY.dc.html). Trazo fino, gris, sin relleno.
- */
-export const CAMARA_PATH = 'M4 8.5h3l1.6-2.5h6.8L17 8.5h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z M12 16.2a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8z'
+import { Icono } from '../../ui/Icono'
 
 export function IconoCamara({ className = 'h-[22px] w-[22px]' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d={CAMARA_PATH} />
-    </svg>
-  )
+  return <Icono nombre="camara" className={className} />
 }
 
 /**

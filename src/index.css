@@ -17,10 +17,25 @@
   --bg: 245 239 228;
   --bg-card: 255 253 248;
   --bg-hover: 241 234 220;
-  --accent: 182 78 16;
-  --accent-hover: 151 57 0;
-  --accent-soft: 250 228 212;
-  --accent-warm: 214 112 80;
+  /* EL ROSA FRAMBUESA (Tanda 6z3, diseño «Una sola familia»): el color de «falta» y «reservar», y el acento de toda la app. UN solo sitio:
+     estos tripletes (y `COLOR_ICONO` de `src/lib/iconos.ts` para lo que se pinta con CSS suelto). Convertidos de OKLCH a sRGB con la matriz
+     OKLab exacta (no a ojo):
+       --accent        = oklch(0.55 0.17 5)  -> 189 57 100  (relleno de botones, pestañitas, bordes, «+»)
+       --accent-hover  = oklch(0.50 0.17 5)  -> 172 40 86   (hover Y el frambuesa que se usa como TEXTO sobre fondo suave)
+       --accent-warm   = igual que accent-hover (el énfasis: marcador activo, pastillas «warm»)
+       --accent-soft   = frambuesa al 12 % sobre la tarjeta -> 247 229 230
+       --border-accent = frambuesa al 40 % sobre la tarjeta -> 229 175 189
+     Contraste WCAG (luminancia relativa, (L1+0,05)/(L2+0,05)):
+       blanco sobre accent ........ 5,34  (mínimo 4,5: bien; botones con texto blanco)
+       accent sobre --bg crema ..... 4,67  (bien) · sobre --bg-card 5,25 (bien)
+       accent sobre accent-soft .... 4,40  (NO llega: por eso el texto sobre una pastilla suave usa text-accent-hover)
+       accent-hover sobre accent-soft 5,42 · sobre crema 5,75 · sobre tarjeta 6,47 (bien)
+       blanco sobre accent-hover ... 6,58
+     El verde (hecho/reservado) y el azul (llegada, vuelta, el tiempo) NO cambian. --accent-gold es el ámbar de avisos y tips: no es el de «falta». */
+  --accent: 189 57 100;
+  --accent-hover: 172 40 86;
+  --accent-soft: 247 229 230;
+  --accent-warm: 172 40 86;
   --accent-gold: 236 150 40;
   --accent-red: 204 39 46;
   --accent-lilac: 236 226 250;
@@ -31,7 +46,7 @@
   --text-soft: 106 108 114;
   --text-muted: 150 146 139;
   --border: 223 218 210;
-  --border-accent: 232 190 160;
+  --border-accent: 229 175 189;
 }
 
 .dark {
@@ -39,10 +54,13 @@
   --bg: 16 20 30;
   --bg-card: 24 30 44;
   --bg-hover: 34 41 58;
-  --accent: 231 138 69;
-  --accent-hover: 247 172 77;
-  --accent-soft: 66 37 24;
-  --accent-warm: 240 128 100;
+  /* Noche: el frambuesa claro, para que se lea sobre el azul noche. oklch(0.70 0.15 8) -> 234 114 141 (sobre --bg 6,39 · sobre --bg-card 5,78);
+     hover/texto oklch(0.78 0.11 15) -> 245 154 161 (8,78 / 7,95; sobre accent-soft 5,69); warm oklch(0.74 0.13 10) -> 240 134 152 (6,80).
+     Con relleno de botón, el texto blanco no llega a 4,5 sobre un rosa tan claro (2,88): en noche el texto del botón debería ser la tinta. */
+  --accent: 234 114 141;
+  --accent-hover: 245 154 161;
+  --accent-soft: 70 48 65;
+  --accent-warm: 240 134 152;
   --accent-gold: 247 172 77;
   --accent-red: 248 113 113;
   --accent-lilac: 46 38 64;
@@ -52,7 +70,7 @@
   --text-soft: 190 184 172;
   --text-muted: 140 136 128;
   --border: 46 52 68;
-  --border-accent: 110 60 30;
+  --border-accent: 119 68 88;
 }
 
 /* Los títulos van en Instrument Serif, que solo tiene un peso: sin negrita inventada por el navegador. */

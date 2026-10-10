@@ -25,6 +25,7 @@ import { OwnDayScreen } from './freeDay/OwnDayScreen'
 import { UndoToast } from './freeDay/UndoToast'
 import { ExcursionsPage } from './excursions/ExcursionsPage'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
+import { Icono } from '../ui/Icono'
 
 // Límites del tirador gris (móvil) entre mapa y panel inferior — ninguno de los dos lados puede
 // llegar a desaparecer del todo: el mapa siempre deja al menos MOBILE_MAP_MIN_VH visible, y el
@@ -34,18 +35,14 @@ const MOBILE_MAP_MAX_VH = 75
 
 function CollapseMapIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
+    <Icono nombre="atras" className="h-4 w-4" />
   )
 }
 
 /** La flecha hacia abajo de la franja que reabre el mapa. */
 function OpenMapIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
+    <Icono nombre="abajo" className="h-4 w-4" />
   )
 }
 

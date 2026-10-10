@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
+import { Icono, IconoRuta } from '../../ui/Icono'
 
 /**
  * Piezas del día abierto en DIAS con el diseño "Trazo Itinerario": UNA sola tarjeta para todo lo que
@@ -10,11 +11,7 @@ import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } fr
  */
 
 function Icon({ d, size = 13, className = '' }: { d: string; size?: number; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${className}`}>
-      <path d={d} />
-    </svg>
-  )
+  return <IconoRuta d={d} size={size} className={`shrink-0 ${className}`} />
 }
 
 export type CardVariant = 'normal' | 'sunset' | 'night'
@@ -320,9 +317,7 @@ export function OnTheWayGroupCard({ toName, lines }: { toName: string | null; li
           <span className="font-mono text-[9.5px] font-semibold uppercase tracking-[.12em] text-text/50">{toName ? `De camino a ${toName}` : 'De camino'}</span>
           {!open && <span> · pasas por {pasas}</span>}
         </span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`mt-0.5 h-3.5 w-3.5 shrink-0 text-text/50 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true">
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <Icono nombre="abajo" className={`mt-0.5 h-3.5 w-3.5 shrink-0 text-text/50 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
         <ul className="flex flex-col">

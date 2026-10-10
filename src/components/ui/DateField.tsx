@@ -4,6 +4,7 @@ import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
 import { isoToLocalDate, localDateToIso } from '../../lib/dateRange'
 import { FIELD_BUTTON_CLASS, PickerSheet } from './PickerSheet'
+import { Icono } from './Icono'
 
 const LONG = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
 
@@ -54,10 +55,7 @@ export function DateField({
         }}
       >
         <span className={value ? '' : 'text-text-muted'}>{value ? format(value) : placeholder}</span>
-        <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-text-soft" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <rect x="4" y="5" width="16" height="15" rx="2" />
-          <path d="M4 10h16M9 3v4M15 3v4" />
-        </svg>
+        <Icono nombre="dias" className="h-4 w-4 shrink-0 text-text-soft" />
       </button>
       {open && (
         <PickerSheet

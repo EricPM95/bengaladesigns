@@ -27,7 +27,8 @@ import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
+import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
+import { Icono } from '../../ui/Icono'
 
 const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
@@ -205,9 +206,7 @@ function PlacePhotoPanel({ place, city, color, icon }: { place: DestinationPlace
         }}
       >
         {!photo && (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity=".9">
-            <path d={EXPLORE_ICONS[icon]} />
-          </svg>
+          <Icono nombre={EXPLORE_ICONOS[icon]} size={26} style={{ opacity: .9 }} />
         )}
       </span>
     </span>
@@ -216,10 +215,7 @@ function PlacePhotoPanel({ place, city, color, icon }: { place: DestinationPlace
 
 function LocationIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-text-muted">
-      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
+    <Icono nombre="mapa" className="h-8 w-8 text-text-muted" />
   )
 }
 
@@ -241,7 +237,7 @@ function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: 
           style={{ backgroundColor: EXCURSION_CHIP?.activeBg ?? '#E0F2F1' }}
           aria-hidden="true"
         >
-          {excursion.emoji ?? EXCURSION_CHIP?.icon ?? '🚌'}
+          {excursion.emoji ?? <Icono nombre="excursion" size={20} />}
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-small font-semibold text-text">{excursion.title}</span>
@@ -606,7 +602,7 @@ export function PlaceExplorerScreen({
           number: 0,
           bg: solidOf(CARD_STYLE.excursiones.color),
           text: '#FFFFFF',
-          iconPath: EXPLORE_ICONS.bus,
+          iconPath: EXPLORE_ICONS.excursion,
           size: 28,
         })),
     [excursions],
@@ -757,12 +753,10 @@ export function PlaceExplorerScreen({
   const fountainsAvailable = toiletsEnabled && places.some((place) => place.kind === 'fountain')
   const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode)) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
   const iconBox = (name: ExploreIconName, size = 15) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d={EXPLORE_ICONS[name]} />
-    </svg>
+    <Icono nombre={EXPLORE_ICONOS[name]} size={size} />
   )
-  const chipIcon: Record<PlaceFilterId, ExploreIconName> = { atracciones: 'museum', miradores: 'sunset', restaurantes: 'fork', entradas: 'ticket', excursiones: 'bus', banos: 'toilet', fuentes: 'drop' }
-  const warm = 'oklch(0.55 0.15 45)'
+  const chipIcon: Record<PlaceFilterId, ExploreIconName> = { atracciones: 'museum', miradores: 'sunset', restaurantes: 'fork', entradas: 'ticket', excursiones: 'excursion', banos: 'toilet', fuentes: 'drop' }
+  const warm = 'rgb(var(--accent))'
 
   return createPortal(
     <AnimatePresence>
@@ -781,9 +775,7 @@ export function PlaceExplorerScreen({
             className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-bg-card text-accent"
             style={{ border: `1.5px solid ${warm}` }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d={EXPLORE_ICONS.close} />
-            </svg>
+            <Icono nombre="cerrar" size={18} />
           </button>
           <div className="flex min-w-0 flex-col items-center gap-[3px]">
             <span className="max-w-full truncate font-display text-text" style={{ fontSize: 28, lineHeight: 1 }}>
@@ -835,7 +827,7 @@ export function PlaceExplorerScreen({
                 >
                   <span
                     className="flex h-7 w-7 items-center justify-center rounded-full transition-colors"
-                    style={{ background: active ? 'oklch(0.74 0.16 65)' : '#EFE7D8', color: active ? 'rgb(var(--text))' : 'rgba(28,34,48,.7)' }}
+                    style={{ background: active ? 'rgb(var(--accent))' : '#EFE7D8', color: active ? '#FFFDF8' : 'rgba(28,34,48,.7)' }}
                   >
                     {iconBox(chipIcon[chip.id])}
                   </span>
@@ -911,9 +903,7 @@ export function PlaceExplorerScreen({
             title="Mostrar mapa"
             className="flex h-8 w-full shrink-0 items-center justify-center border-y border-text/10 bg-bg-card text-text-soft transition-colors hover:bg-bg-hover"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+            <Icono nombre="abajo" className="h-4 w-4" />
           </button>
         ) : (
         <div className="relative shrink-0" style={{ height: mapH, transition: draggingSheet ? 'none' : 'height .35s cubic-bezier(.2,.8,.2,1)' }}>
@@ -957,9 +947,7 @@ export function PlaceExplorerScreen({
             title="Ocultar mapa"
             className="absolute right-3.5 top-3.5 z-[6] flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-              <polyline points="18 15 12 9 6 15" />
-            </svg>
+            <Icono nombre="arriba" className="h-4 w-4" />
           </button>
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-[4]" style={{ height: 22, background: 'linear-gradient(180deg,rgba(245,239,228,.9),rgba(245,239,228,0))' }} />
           {route && (
@@ -967,7 +955,7 @@ export function PlaceExplorerScreen({
               className="absolute left-3.5 z-[5] flex items-center gap-[7px] rounded-full backdrop-blur"
               style={{ bottom: 36, height: 30, padding: '0 12px', background: 'rgba(255,253,248,.92)', font: "500 12px 'Geist'", boxShadow: '0 6px 16px -8px rgba(28,34,48,.35)' }}
             >
-              <span className="h-2.5 w-2.5 rounded-full bg-white" style={{ boxShadow: '0 0 0 2.5px oklch(0.74 0.16 65)' }} />
+              <span className="h-2.5 w-2.5 rounded-full bg-white" style={{ boxShadow: '0 0 0 2.5px rgb(var(--accent))' }} />
               En tu ruta · {inRouteCount}
             </div>
           )}
@@ -985,10 +973,7 @@ export function PlaceExplorerScreen({
             className="absolute right-3.5 z-[5] flex h-[42px] w-[42px] items-center justify-center rounded-full text-text"
             style={{ bottom: 36, background: '#FFFDF8', boxShadow: '0 8px 20px -8px rgba(28,34,48,.4)' }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d={EXPLORE_ICONS.locate} />
-              <circle cx="12" cy="12" r="2" fill="currentColor" />
-            </svg>
+            <Icono nombre="localizar" size={18} />
           </button>
         </div>
 
@@ -1022,9 +1007,7 @@ export function PlaceExplorerScreen({
           </button>
           <div className="flex shrink-0 flex-col gap-2.5 px-4">
             <label className="flex h-12 cursor-text items-center gap-2.5 px-3.5" style={{ borderRadius: 16, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" strokeWidth="1.8" strokeLinecap="round">
-                <path d={EXPLORE_ICONS.search} />
-              </svg>
+              <Icono nombre="lupa" size={18} style={{ color: 'rgba(28,34,48,.55)' }} />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
@@ -1283,23 +1266,19 @@ export function PlaceExplorerScreen({
                               style={{ border: `1.5px solid ${picked ? warm : 'rgba(28,34,48,.35)'}`, background: picked ? warm : 'transparent', color: '#FFFDF8' }}
                             >
                               {picked && (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                  <path d="M5 12.5l4.5 4.5L19 7.5" />
-                                </svg>
+                                <Icono nombre="hecho" size={16} grosor={2.4} />
                               )}
                             </span>
                           </button>
                         ) : inThisDay ? (
                           <span className="flex h-11 w-11 items-center justify-center" aria-label={`${place.name} ya está en este día`} title="Ya está en este día">
                             <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: '1.5px solid rgba(28,34,48,.18)', color: 'rgba(28,34,48,.3)' }}>
-                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M5 12.5l4.5 4.5L19 7.5" />
-                              </svg>
+                              <Icono nombre="hecho" size={15} grosor={2.4} />
                             </span>
                           </span>
                         ) : plusAction && !pickMode ? (
                           <button type="button" onClick={plusAction} aria-label={`Añadir ${place.name}`} className="flex h-11 w-11 items-center justify-center">
-                            <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'oklch(0.52 0.15 45)' }}>
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full text-[18px] font-medium leading-none" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
                               +
                             </span>
                           </button>
@@ -1314,9 +1293,7 @@ export function PlaceExplorerScreen({
                           className="flex h-11 min-w-11 items-center justify-end gap-[3px] pl-1 pr-2.5 transition-colors"
                           style={{ color: liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.55)', font: "500 12px 'Geist'" }}
                         >
-                          <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
-                            <path d={EXPLORE_ICONS.heart} />
-                          </svg>
+                          <Icono nombre="gusta" size={17} relleno={liked} />
                           {likeShown !== null && <span className="tabular-nums">{conMiles(likeShown)}</span>}
                         </button>
                       </div>
@@ -1331,9 +1308,7 @@ export function PlaceExplorerScreen({
                           className="flex h-[30px] min-w-[30px] items-center gap-[3px] px-1 transition-colors"
                           style={{ color: liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.55)', font: "500 12px 'Geist'" }}
                         >
-                          <svg width="17" height="17" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
-                            <path d={EXPLORE_ICONS.heart} />
-                          </svg>
+                          <Icono nombre="gusta" size={17} relleno={liked} />
                           {likeShown !== null && <span className="tabular-nums">{conMiles(likeShown)}</span>}
                         </button>
                         {pickable(place) ? (
@@ -1350,9 +1325,7 @@ export function PlaceExplorerScreen({
                               style={{ border: `1.5px solid ${picked ? warm : 'rgba(28,34,48,.35)'}`, background: picked ? warm : 'transparent', color: '#FFFDF8' }}
                             >
                               {picked && (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                  <path d="M5 12.5l4.5 4.5L19 7.5" />
-                                </svg>
+                                <Icono nombre="hecho" size={16} grosor={2.4} />
                               )}
                             </span>
                           </button>
@@ -1368,7 +1341,7 @@ export function PlaceExplorerScreen({
                               borderRadius: 999,
                               border: `1.5px solid ${addDone ? 'rgb(var(--text))' : warm}`,
                               background: addDone ? 'rgb(var(--text))' : 'transparent',
-                              color: addDone ? '#FFFDF8' : 'oklch(0.52 0.15 45)',
+                              color: addDone ? '#FFFDF8' : 'rgb(var(--accent-hover))',
                               font: "600 12.5px 'Geist'",
                             }}
                           >

@@ -5,6 +5,7 @@ import { TransportRow } from './TransportRow'
 import { AccommodationRow } from './AccommodationRow'
 import { EsimRow } from './EsimRow'
 import { N26Row } from './N26Row'
+import { Icono } from '../../ui/Icono'
 
 interface DestinationReservasAccordionProps {
   route: Route
@@ -17,17 +18,7 @@ interface DestinationReservasAccordionProps {
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
+    <Icono nombre="abajo" className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`} />
   )
 }
 

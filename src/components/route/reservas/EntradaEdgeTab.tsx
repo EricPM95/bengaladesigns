@@ -3,14 +3,14 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { AddReservationSheet } from './AddReservationSheet'
 import { GREEN } from './EntradaCard'
 import { useStopEntradas } from './useStopEntradas'
+import { Icono } from '../../ui/Icono'
 
-const ORANGE = 'rgb(var(--accent-gold))'
+/** Sin reservar, el frambuesa de la app (`--accent`: «falta»). */
+const FALTA = 'rgb(var(--accent))'
 
 function TicketIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12" />
-    </svg>
+    <Icono nombre="reservas" size={15} />
   )
 }
 
@@ -31,13 +31,11 @@ export function EntradaEdgeTab({ stop, onOpenEntradas }: { stop: { id: string; n
         onClick={reserved ? () => setChanging(true) : onOpenEntradas}
         aria-label={reserved ? `Entrada reservada${data.shownTime ? ` a las ${data.shownTime}` : ''}. Cambiar` : 'Ver las entradas'}
         className="absolute bottom-2 right-[5px] z-20 flex w-[34px] flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-white shadow-sm"
-        style={{ background: reserved ? GREEN : ORANGE }}
+        style={{ background: reserved ? GREEN : FALTA }}
       >
         {reserved ? (
           <>
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <Icono nombre="hecho" className="h-4 w-4" grosor={3} />
             {data.shownTime && <span style={{ font: "600 9.5px 'Geist Mono',monospace" }}>{data.shownTime}</span>}
           </>
         ) : (

@@ -75,6 +75,7 @@ import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
+import { Icono } from '../../ui/Icono'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
 const FREE_TIME_MIN_MINUTES = 45
@@ -1221,9 +1222,7 @@ export function DayDetailPanel({
           {/* Regla de oro del pool: lo marcado que no ha cabido se dice aquí, en su día, con su motivo. */}
           {(day.poolNotices ?? []).filter((notice) => !(day.spareStops ?? []).some((spare) => spare.name === notice.name)).map((notice) => (
             <div key={notice.name} className="mt-2 flex items-start gap-2.5 rounded-2xl border border-accent-gold/40 bg-accent-gold/10 px-3.5 py-3">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-gold" aria-hidden="true">
-                <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-              </svg>
+              <Icono nombre="alerta" size={16} className="mt-0.5 shrink-0 text-accent-gold" />
               <p className="min-w-0 flex-1 text-[13px] leading-[1.45] text-text">
                 No hemos podido incluir <span className="font-semibold">{notice.name}</span>
                 {notice.reason ? <> porque {notice.reason.charAt(0).toLowerCase() + notice.reason.slice(1)}</> : null}.
@@ -1372,10 +1371,10 @@ export function DayDetailPanel({
               LIBRE sí enseña lo que el viajero ya haya montado. */}
           {reorderWarning && (
             <div className="flex items-start gap-2 rounded-xl border border-accent-gold/40 bg-accent-gold/10 px-3 py-2.5">
-              <span aria-hidden="true">⚠️</span>
+              <Icono nombre="alerta" size={16} className="mt-0.5 shrink-0 text-accent-gold" />
               <p className="min-w-0 flex-1 text-caption leading-relaxed text-text-soft">{reorderWarning}</p>
               <button type="button" onClick={() => setReorderWarning(null)} aria-label="Cerrar aviso" className="shrink-0 text-caption text-text-muted hover:text-text">
-                ✕
+                <Icono nombre="cerrar" size={14} />
               </button>
             </div>
           )}
@@ -1489,9 +1488,7 @@ export function DayDetailPanel({
                 onClick={() => openAddFlow(day.id)}
                 className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-text/25 text-[14px] font-medium text-text/70 transition-colors hover:bg-bg-hover"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
+                <Icono nombre="anadir" size={16} />
                 Añadir lugares
               </button>
           )}
@@ -1513,22 +1510,10 @@ export function DayDetailPanel({
                       aria-label="Descartar sugerencia"
                       className="absolute right-2 top-2 rounded-full p-1 text-text-muted hover:bg-bg-hover hover:text-text"
                     >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="h-4 w-4">
-                        <path d="M6 6l12 12M18 6L6 18" />
-                      </svg>
+                      <Icono nombre="cerrar" className="h-4 w-4" />
                     </button>
                     <div className="flex items-start gap-2">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="mt-0.5 h-4 w-4 shrink-0 text-accent"
-                      >
-                        <path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
-                      </svg>
+                      <Icono nombre="tips" className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                       <div className="min-w-0">
                         <p className="text-small font-medium text-text">Segunda visita recomendada: {rec.name}</p>
                         <p className="mt-0.5 text-caption text-text-soft">{rec.reason}</p>

@@ -5,7 +5,8 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, nochesTexto, precioDeAlojamiento } from '../../../lib/tuAlojamiento'
 import { formatoImporte } from '../../../lib/dinero'
-import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, ICONOS, INK, Icono, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
+import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, ICONOS, INK, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
+import { Icono } from '../../ui/Icono'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 
@@ -79,7 +80,7 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
     <>
       <BloqueShell bloque="aloj">
         <div onClick={onToggle} className="flex cursor-pointer items-center gap-3 p-3.5">
-          <IconoBloque d={ICONOS.hotel} hecho={hecho} />
+          <IconoBloque nombre={ICONOS.hotel} hecho={hecho} />
           <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
             <span style={tituloBloqueStyle}>Alojamiento</span>
             <span className="truncate" style={{ font: "600 11px 'Geist Mono',monospace", color: resumenVerde ? GR : 'oklch(0.5 0.17 5)' }}>
@@ -115,7 +116,7 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
                   onClick={() => abrirMapa(segmentDayId)}
                   className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1C2230] text-[14.5px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
                 >
-                  <Icono d={ICONOS.lupa} size={15} stroke={2} />
+                  <Icono nombre={ICONOS.lupa} size={15} />
                   Buscar alojamiento
                 </button>
               </div>

@@ -4,6 +4,7 @@ import { MAX_DATE_NOTICE_CARDS, dateNoticesKey } from '../../lib/dateNotices'
 import { useRouteStore } from '../../store/useRouteStore'
 import { SEASON_FX } from '../trazo/trazoUi'
 import { DateNoticeIllustration, DateNoticeSmallIcon } from './DateNoticeIcons'
+import { Icono } from '../ui/Icono'
 
 /**
  * La ventana de fechas especiales (PROMPT_AVISO_FECHAS, Parte B). Sale sola la PRIMERA vez que el viajero abre su
@@ -102,9 +103,7 @@ function ArrowButton({ direction, disabled, onClick }: { direction: 'prev' | 'ne
       aria-label={direction === 'prev' ? 'Aviso anterior' : 'Aviso siguiente'}
       className={`absolute top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-text/[.12] bg-bg-card text-text/60 shadow-sm transition-opacity hover:text-text disabled:opacity-0 ${direction === 'prev' ? 'left-2' : 'right-2'}`}
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-        <path d={direction === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'} />
-      </svg>
+      <Icono nombre={direction === 'prev' ? 'atras' : 'adelante'} className="h-4 w-4" />
     </button>
   )
 }

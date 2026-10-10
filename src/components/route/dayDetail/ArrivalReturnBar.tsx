@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from 'react'
-import { KIND_ICON } from '../../../lib/stopKind'
 import type { ArrivalBarText, ArrivalMode } from '../../../lib/arrivalReturn'
+import { Icono } from '../../ui/Icono'
+import type { NombreIcono } from '../../../lib/iconos'
 
 /** Azul petróleo de la llegada y la vuelta (PROMPT_UI, Parte 3): el de los iconos y las cabeceras de la ventana. */
 export const ARRIVAL_PETROL = '#1F5F78'
@@ -10,20 +11,18 @@ const AZUL = 'oklch(0.5 0.13 245)'
 const AZUL_TINTA = 'oklch(0.45 0.1 240)'
 const VERDE = 'oklch(0.55 0.11 150)'
 
-/** El icono de cada medio, en línea fina (blanco sobre el azul). */
-export const ARRIVAL_MODE_ICON: Record<ArrivalMode, string> = {
-  avion: KIND_ICON.plane,
-  tren: 'M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8.5 14.5h.01M15.5 14.5h.01M8 21l2-3M16 21l-2-3',
-  bus: 'M6 3h12a2 2 0 0 1 2 2v12H4V5a2 2 0 0 1 2-2zM4 11h16M7 17v3M17 17v3M7.5 14h.01M16.5 14h.01',
-  ferry: 'M3 16l2 5h14l2-5zM5 16v-5l7-3 7 3v5M12 3v5M9 5h6',
-  coche: 'M5 15v-4l2-5h10l2 5v4M3 15h18v3H3zM7 18v2M17 18v2M5 11h14',
+/** El icono de cada medio: el de la familia única (avión, tren, autobús, barco, coche). El autobús es SOLO la llegada y la vuelta en autobús. */
+export const ARRIVAL_MODE_ICON: Record<ArrivalMode, NombreIcono> = {
+  avion: 'avion',
+  tren: 'tren',
+  bus: 'bus',
+  ferry: 'barco',
+  coche: 'coche',
 }
 
 export function ModeIcon({ mode, size = 20 }: { mode: ArrivalMode; size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d={ARRIVAL_MODE_ICON[mode]} />
-    </svg>
+    <Icono nombre={ARRIVAL_MODE_ICON[mode]} size={size} />
   )
 }
 

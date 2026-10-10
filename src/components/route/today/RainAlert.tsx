@@ -7,6 +7,7 @@ import { displayStopName } from '../../../lib/format'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { Modal } from '../../ui/Modal'
 import { Button } from '../../ui/Button'
+import { Icono } from '../../ui/Icono'
 
 interface RainAlertProps {
   day: DayPlan
@@ -88,9 +89,7 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   return (
     <div className="mx-4 rounded-2xl border border-accent/30 bg-accent-soft/40 p-4">
       <div className="flex items-start gap-2.5">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-text/60" aria-hidden="true">
-          <path d="M7 18a4 4 0 0 1-.6-7.96A5.5 5.5 0 0 1 17 8.5a3.5 3.5 0 0 1 .5 6.96M8 20l1-2M12 20l1-2M16 20l1-2" />
-        </svg>
+        <Icono nombre="lluvia" size={18} className="mt-0.5 shrink-0 text-text/60" />
         <div className="min-w-0 flex-1 space-y-2">
           {applied ? (
             <p className="text-small font-medium text-text">Estás usando la alternativa para la lluvia.</p>

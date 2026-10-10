@@ -5,11 +5,12 @@ import { legLine, legOf, legsTag, legWord, type LegKind, type LegState } from '.
 import { shortDateEs } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { TimeListWheel } from '../../ui/TimeListWheel'
-import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, INK, Icono, IconoBloque, PastillaEstado, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
+import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, INK, IconoBloque, PastillaEstado, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { CampoPrecio } from '../../ui/CampoPrecio'
 import { usePrecioEditable } from '../../../lib/useMoneda'
 import { leerImporte, type Importe } from '../../../lib/dinero'
+import { Icono } from '../../ui/Icono'
 
 const HORAS = Array.from({ length: (24 * 60 - 360) / 5 }, (_, i) => {
   const m = 360 + i * 5
@@ -92,7 +93,7 @@ function MitadAbierta({
             <path d="M2 26 Q50 -4 98 26" fill="none" stroke="rgba(28,34,48,.25)" strokeWidth="1.3" strokeDasharray="2 4" vectorEffect="non-scaling-stroke" />
           </svg>
           <span className="absolute left-1/2 top-0 -ml-3 flex h-6 w-6 items-center justify-center rounded-full bg-[#1C2230] text-white">
-            <Icono d={iconoDeMedio(leg.mode)} size={12} stroke={2} />
+            <Icono nombre={iconoDeMedio(leg.mode)} size={12} />
           </span>
         </div>
         {esIda ? lado(lugar, 'right') : lado(origen, 'right')}
@@ -129,7 +130,7 @@ function MitadAbierta({
           <span className="flex-1 text-left" style={{ font: leg.time ? "400 22px/1 'Instrument Serif',serif" : "500 14px 'Geist'", color: leg.time ? INK : 'rgba(28,34,48,.55)' }}>
             {leg.time ?? 'Elige la hora'}
           </span>
-          <Icono d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" size={16} stroke={1.8} />
+          <Icono nombre="reloj" size={16} />
         </button>
         <span className="text-[11px] leading-[1.35] text-text/60">
           ¿Llegas o te vas otro día?{' '}
@@ -219,7 +220,7 @@ export function LlegadaYVuelta({
       }}
     >
       <span className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full" style={{ background: leg.done ? GR : '#FFFFFF', color: leg.done ? '#fff' : 'rgba(28,34,48,.6)' }}>
-        <Icono d={iconoDeMedio(leg.mode)} size={13} stroke={1.9} />
+        <Icono nombre={iconoDeMedio(leg.mode)} size={13} />
       </span>
       <span className="min-w-0 flex-1 text-[13px] leading-[1.35]" style={{ color: leg.done ? INK : 'rgba(28,34,48,.7)', textWrap: 'pretty' as never }}>
         {legLine(leg)}
@@ -233,7 +234,7 @@ export function LlegadaYVuelta({
       <BloqueShell bloque="llegada">
         {!abierto && nadaHecho ? (
           <div onClick={onAbrir} className="flex cursor-pointer items-center gap-3 p-3.5">
-            <IconoBloque d={iconoDeMedio(ida.mode)} />
+            <IconoBloque nombre={iconoDeMedio(ida.mode)} />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span style={tituloBloqueStyle}>Llegada y vuelta</span>
               <span className="text-[11.5px] text-text/55">
@@ -258,7 +259,7 @@ export function LlegadaYVuelta({
                   style={{ cursor: leg.mode === 'coche' ? 'default' : 'pointer' }}
                 >
                   <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full" style={{ background: leg.done ? GR : '#F1EADC', color: leg.done ? '#fff' : 'rgba(28,34,48,.6)' }}>
-                    <Icono d={iconoDeMedio(leg.mode)} size={12} stroke={1.9} />
+                    <Icono nombre={iconoDeMedio(leg.mode)} size={12} />
                   </span>
                   <span className="min-w-0 flex-1 pt-[3px] text-[12.5px] leading-[1.4]" style={{ color: leg.done ? INK : 'rgba(28,34,48,.7)', textWrap: 'pretty' as never }}>
                     {legLine(leg)}
@@ -284,7 +285,7 @@ export function LlegadaYVuelta({
         ) : (
           <>
             <div onClick={onToggle} className="flex cursor-pointer items-center gap-3 px-3.5 pb-2.5 pt-3.5">
-              <IconoBloque d={iconoDeMedio(ida.mode)} hecho={hecho} />
+              <IconoBloque nombre={iconoDeMedio(ida.mode)} hecho={hecho} />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span style={tituloBloqueStyle}>Llegada y vuelta</span>
                 <span className="text-[11.5px] text-text/55">
@@ -292,9 +293,7 @@ export function LlegadaYVuelta({
                 </span>
               </span>
               <PastillaEstado texto={etiqueta} hecho={hecho} />
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M6 15l6-6 6 6" />
-              </svg>
+              <Icono nombre="arriba" size={16} style={{ color: 'rgba(28,34,48,.45)' }} />
             </div>
             <div className="flex flex-col gap-2 px-3 pb-3.5">
               {[ida, vuelta].map((leg) =>

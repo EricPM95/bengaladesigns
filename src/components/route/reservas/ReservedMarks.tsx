@@ -4,6 +4,7 @@ import type { Excursion } from '../../../lib/types'
 import type { Reservation } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
+import { Icono } from '../../ui/Icono'
 
 /** La reserva de una excursión de este viaje (null si no está reservada). */
 export function useExcursionReservation(excursionId: string | null | undefined): Reservation | null {
@@ -12,10 +13,7 @@ export function useExcursionReservation(excursionId: string | null | undefined):
 
 export function LockIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="5" y="11" width="14" height="9" rx="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-    </svg>
+    <Icono nombre="candado" className={className} />
   )
 }
 
@@ -27,9 +25,7 @@ export function ReservedMarks({ className = '', compact = false, time = null }: 
     return (
       <div className={`flex flex-wrap items-center gap-1 ${className}`}>
         <span className={`inline-flex items-center gap-1 rounded-full bg-accent-green font-semibold text-white ${pill}`}>
-          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          <Icono nombre="hecho" className="h-3 w-3" grosor={3} />
           Reservada{time ? ` · ${time}` : ''}
           <LockIcon className="h-3 w-3" />
         </span>
@@ -39,9 +35,7 @@ export function ReservedMarks({ className = '', compact = false, time = null }: 
   return (
     <div className={`flex flex-wrap items-center ${compact ? 'gap-1' : 'gap-1.5'} ${className}`}>
       <span className={`inline-flex items-center gap-1 rounded-full bg-accent-green font-semibold text-white ${pill}`}>
-        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
+        <Icono nombre="hecho" className="h-3 w-3" grosor={3} />
         Reservada
       </span>
       <span className={`inline-flex items-center gap-1 rounded-full border border-text/20 bg-bg-card font-semibold text-text-soft ${pill}`}>

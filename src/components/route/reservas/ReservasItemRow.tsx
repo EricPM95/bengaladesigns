@@ -26,13 +26,14 @@ interface ReservasItemRowProps {
 
 /** El color del bloque en diagonal de cada tipo y la palabra pequeña de encima del nombre (diseño «Trazo Reservas», pantalla 13). */
 const KIND_STYLE: Record<ReadinessItemKind, { color: string; eyebrow: string }> = {
-  transport: { color: 'oklch(0.68 0.14 60)', eyebrow: 'Transporte' },
-  accommodation: { color: 'oklch(0.62 0.14 45)', eyebrow: 'Alojamiento' },
-  insurance: { color: 'oklch(0.6 0.19 25)', eyebrow: 'Imprescindible' },
+  // Lo que falta por reservar va en el frambuesa de la app (token `--accent`, un solo sitio); lo ya reservado lo pinta el verde de abajo.
+  transport: { color: 'rgb(var(--accent))', eyebrow: 'Transporte' },
+  accommodation: { color: 'rgb(var(--accent))', eyebrow: 'Alojamiento' },
+  insurance: { color: 'rgb(var(--accent))', eyebrow: 'Imprescindible' },
   n26: { color: 'oklch(0.45 0.03 250)', eyebrow: 'Pagos sin comisión' },
   'rental-vehicle': { color: 'oklch(0.55 0.12 295)', eyebrow: 'Vehículo' },
   esim: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Datos móviles' },
-  entrada: { color: 'oklch(0.6 0.18 10)', eyebrow: 'Entrada' },
+  entrada: { color: 'rgb(var(--accent))', eyebrow: 'Entrada' },
   excursion: { color: 'oklch(0.56 0.1 220)', eyebrow: 'Excursión' },
 }
 
@@ -128,7 +129,7 @@ export function ReservaCard({
                   type="button"
                   onClick={bookAction.onGet}
                   className="flex items-center whitespace-nowrap"
-                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid rgb(var(--border-accent))', background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent-hover))', font: "600 12px 'Geist'" }}
                 >
                   {bookAction.label}
                 </button>
@@ -139,7 +140,7 @@ export function ReservaCard({
                   rel="noopener noreferrer"
                   onClick={bookAction.onGet}
                   className="flex items-center whitespace-nowrap"
-                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid rgb(var(--border-accent))', background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent-hover))', font: "600 12px 'Geist'" }}
                 >
                   {bookAction.label}
                 </a>
@@ -148,7 +149,7 @@ export function ReservaCard({
                   type="button"
                   onClick={onAdd}
                   className="whitespace-nowrap"
-                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid oklch(0.8 0.1 50)', background: 'oklch(0.93 0.06 55)', color: 'oklch(0.48 0.15 40)', font: "600 12px 'Geist'" }}
+                  style={{ height: 30, padding: '0 12px', borderRadius: 999, border: '1.5px solid rgb(var(--border-accent))', background: 'rgb(var(--accent-soft))', color: 'rgb(var(--accent-hover))', font: "600 12px 'Geist'" }}
                 >
                   Añadir +
                 </button>

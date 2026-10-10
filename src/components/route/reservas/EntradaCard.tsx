@@ -1,17 +1,17 @@
 import { withCampaign } from '../../../lib/affiliateLinks'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { Icono } from '../../ui/Icono'
 
-const ROSE = 'oklch(0.55 0.17 5)'
-const ROSE_DEEP = 'oklch(0.52 0.17 5)'
+// El frambuesa de la app: los tokens de `src/index.css` (un solo sitio).
+const ROSE = 'rgb(var(--accent))'
+const ROSE_DEEP = 'rgb(var(--accent-hover))'
 export const GREEN = 'oklch(0.55 0.11 150)'
 const GREEN_INK = 'oklch(0.45 0.11 150)'
 
 function TicketIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12" />
-    </svg>
+    <Icono nombre="reservas" size={22} />
   )
 }
 

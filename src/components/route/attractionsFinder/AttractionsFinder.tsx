@@ -5,6 +5,7 @@ import { searchAttractions, type AttractionSearchResult } from '../../../lib/map
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
 import { Spinner } from '../../ui/Spinner'
+import { Icono } from '../../ui/Icono'
 
 interface MultiSelectConfig {
   /** Paradas ya marcadas al abrir — "Regenerar este día" (DayMenu.tsx) precarga las paradas actuales del día, así el viajero parte de lo que ya tenía y añade/quita libremente. */
@@ -30,44 +31,25 @@ interface AttractionsFinderProps {
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <circle cx="11" cy="11" r="7" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
+    <Icono nombre="lupa" className="h-4 w-4 shrink-0" />
   )
 }
 
 function PinIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0 text-text-muted">
-      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
+    <Icono nombre="mapa" className="h-5 w-5 shrink-0 text-text-muted" />
   )
 }
 
 function XIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
+    <Icono nombre="cerrar" className="h-4 w-4" />
   )
 }
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${open ? 'rotate-180' : ''}`}
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
+    <Icono nombre="abajo" className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
   )
 }
 
@@ -212,7 +194,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                 title="Cerrar"
                 className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
               >
-                ✕
+                <Icono nombre="cerrar" size={14} />
               </button>
               <h2 className="font-display text-h2 font-semibold text-text">{title ?? `Añadir un lugar en ${city}`}</h2>
             </div>
@@ -244,7 +226,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                             aria-label={`Quitar ${stop.name}`}
                             className="flex h-4 w-4 items-center justify-center rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
                           >
-                            ✕
+                            <Icono nombre="cerrar" size={14} />
                           </button>
                         </span>
                       ))}
@@ -377,7 +359,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
               title="Cerrar"
               className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
             >
-              ✕
+              <Icono nombre="cerrar" size={14} />
             </button>
             <h2 className="font-display text-h2 font-semibold text-text">{title ?? 'Añadir una parada'}</h2>
           </div>

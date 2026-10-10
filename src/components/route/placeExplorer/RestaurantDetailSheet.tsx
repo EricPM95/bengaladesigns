@@ -5,6 +5,7 @@ import { findRestaurantSubCategory } from '../../../lib/placeCategories'
 import { textoRecomendacion } from '../../../lib/recomendaciones'
 import { buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { ClockIcon } from '../../ui/TimeIcons'
+import { Icono } from '../../ui/Icono'
 
 interface RestaurantDetailSheetProps {
   /** null = cerrada. */
@@ -19,43 +20,25 @@ interface RestaurantDetailSheetProps {
 
 function PinIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
+    <Icono nombre="mapa" className="h-4 w-4 shrink-0" />
   )
 }
 
 function PlateIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <circle cx="12" cy="12" r="8" />
-      <circle cx="12" cy="12" r="3.5" />
-    </svg>
+    <Icono nombre="comida" className="h-4 w-4 shrink-0" />
   )
 }
 
 function BulbIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.3.3.5.7.5 1.1h6c0-.4.2-.8.5-1.1A6 6 0 0 0 12 3Z" />
-    </svg>
+    <Icono nombre="tips" className="h-4 w-4 shrink-0" />
   )
 }
 
 function HeartIcon({ filled }: { filled: boolean }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-5 w-5 shrink-0"
-    >
-      <path d="M12 20s-7-4.6-7-9.3A4.2 4.2 0 0 1 12 8a4.2 4.2 0 0 1 7 2.7C19 15.4 12 20 12 20Z" />
-    </svg>
+    <Icono nombre="gusta" className="h-5 w-5 shrink-0" relleno={filled} />
   )
 }
 

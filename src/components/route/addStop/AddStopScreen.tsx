@@ -15,6 +15,7 @@ import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../.
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { alDia, diaCorto } from '../../../lib/nombreDeDia'
+import { Icono } from '../../ui/Icono'
 
 /** Radio de búsqueda de categorías/bbox del buscador alrededor del centro del destino del día. */
 const CITY_SEARCH_RADIUS_METERS = 6000
@@ -126,10 +127,7 @@ function poiContentToStopDescription(poi: PoiContent): StopDescription {
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <circle cx="11" cy="11" r="7" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
+    <Icono nombre="lupa" className="h-4 w-4 shrink-0" />
   )
 }
 
@@ -344,7 +342,7 @@ export function AddStopScreen({
             title="Cerrar"
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
           >
-            ✕
+            <Icono nombre="cerrar" size={14} />
           </button>
           <div className="min-w-0 flex-1 text-center">
             <p className="truncate text-body font-semibold text-text">Añadir parada — {diaCorto(route, dayNumber)}</p>
@@ -444,7 +442,7 @@ export function AddStopScreen({
                 aria-label="Cerrar"
                 className="h-6 w-6 shrink-0 rounded-full text-text-muted hover:bg-bg-hover hover:text-text"
               >
-                ✕
+                <Icono nombre="cerrar" size={14} />
               </button>
             </div>
           )}

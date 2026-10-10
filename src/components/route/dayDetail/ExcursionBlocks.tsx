@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { precioTienda } from '../../../lib/dinero'
 import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from '../reservas/ReservedMarks'
 import type { CuratedAlternative, Excursion } from '../../../lib/types'
+import { Icono } from '../../ui/Icono'
 
 /**
  * Prompt 4 — las piezas de excursión de la ficha de un día, en un solo sitio porque comparten el
@@ -20,40 +21,25 @@ import type { CuratedAlternative, Excursion } from '../../../lib/types'
 /** Trazo fino y gris, sin relleno — regla de iconos funcionales del proyecto. */
 function CompassIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <circle cx="12" cy="12" r="9" />
-      <path d="m15.5 8.5-2 5-5 2 2-5z" />
-    </svg>
+    <Icono nombre="explorar" className="h-4 w-4 shrink-0" />
   )
 }
 
 function MapIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0">
-      <path d="m9 4-6 2.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z" />
-      <path d="M9 4v13M15 6.5v13" />
-    </svg>
+    <Icono nombre="mapa" className="h-5 w-5 shrink-0" />
   )
 }
 
 function BusIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0">
-      <rect x="4" y="4" width="16" height="12" rx="2" />
-      <path d="M4 10h16M7 20v-2M17 20v-2" />
-      <circle cx="8" cy="13.5" r="0.6" fill="currentColor" />
-      <circle cx="16" cy="13.5" r="0.6" fill="currentColor" />
-    </svg>
+    <Icono nombre="excursion" className="h-5 w-5 shrink-0" />
   )
 }
 
 function ClipboardIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <rect x="5" y="4" width="14" height="17" rx="2" />
-      <path d="M9 4h6v3H9z" />
-      <path d="M9 12h6M9 16h4" />
-    </svg>
+    <Icono nombre="portapapeles" className="h-4 w-4 shrink-0" />
   )
 }
 
@@ -113,7 +99,7 @@ export function ExcursionBanner({
     <section className="rounded-xl border border-accent/30 bg-accent-soft/50 p-3">
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
-          <h2 className="text-body font-semibold text-text">🌍 {offer?.title ?? '¿Te apetece una excursión?'}</h2>
+          <h2 className="flex items-center gap-1.5 text-body font-semibold text-text"><Icono nombre="excursion" size={16} className="shrink-0" />{offer?.title ?? '¿Te apetece una excursión?'}</h2>
           <p className="mt-0.5 text-caption text-text-soft">{offer?.text ?? `Tienes tu ruta preparada, pero muchos viajeros aprovechan este día para salir de ${destination}.`}</p>
         </div>
         <button
@@ -123,7 +109,7 @@ export function ExcursionBanner({
           title="No, gracias"
           className="shrink-0 rounded-lg px-1.5 py-0.5 text-caption text-text-muted transition-colors hover:bg-bg-hover hover:text-text"
         >
-          ✕
+          <Icono nombre="cerrar" size={14} />
         </button>
       </div>
 
@@ -132,7 +118,7 @@ export function ExcursionBanner({
           <li key={excursion.id}>
             <button type="button" onClick={onSeeAll} className="flex w-full items-center gap-2 p-2 text-left transition-colors hover:bg-bg-hover">
               <span className="shrink-0 text-base" aria-hidden="true">
-                {excursion.emoji ?? '🚌'}
+                {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
               </span>
               <span className="min-w-0 flex-1 truncate text-small font-medium text-text">{excursion.title}</span>
               {!offer && formatPrice(excursion) && <span className="shrink-0 whitespace-nowrap text-caption text-text-soft">desde {formatPrice(excursion)}</span>}
@@ -195,7 +181,7 @@ export function ExcursionOptions({
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-2">
                 <span className="shrink-0 text-base" aria-hidden="true">
-                  {excursion.emoji ?? '🚌'}
+                  {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
                 </span>
                 <span className="min-w-0 flex-1 text-small font-semibold text-text">{excursion.title}</span>
               </span>
@@ -238,7 +224,7 @@ export function ExcursionOptions({
           disabled
           className="w-full cursor-not-allowed rounded-xl bg-accent px-3 py-3 text-small font-semibold text-white opacity-70"
         >
-          🎟 Reservar {selected.title}
+          <Icono nombre="reservas" size={16} className="mr-1.5 inline-block align-[-3px]" />Reservar {selected.title}
           {formatPrice(selected) ? ` — desde ${formatPrice(selected)}` : ''}
         </button>
       )}
@@ -345,7 +331,7 @@ export function HalfDayExcursionBlock({
         <ExcursionReservedTop excursion={excursion} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
-            {excursion.emoji ?? '🚌'}
+            {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
@@ -422,7 +408,7 @@ export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excu
         <ExcursionReservedTop excursion={excursion} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
-            {excursion.emoji ?? '🚌'}
+            {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-body font-semibold text-text">{excursion.title}</p>
@@ -566,7 +552,7 @@ export function ExcursionDayProposal({
         <ExcursionReservedTop excursion={featured} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
-            {featured.emoji ?? '🚌'}
+            {featured.emoji ?? <Icono nombre="excursion" size={26} />}
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-body font-semibold text-text">{featured.title}</p>

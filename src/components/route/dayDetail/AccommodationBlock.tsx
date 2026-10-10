@@ -1,6 +1,7 @@
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { lineaAlojamiento } from '../../../lib/tuAlojamiento'
+import { Icono } from '../../ui/Icono'
 
 interface AccommodationBlockProps {
   city: string
@@ -31,9 +32,7 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
         className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full"
         style={{ border: `1.5px solid ${hecho ? VERDE : 'rgba(28,34,48,.4)'}`, color: hecho ? VERDE : 'rgba(28,34,48,.4)' }}
       >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 21v-3M21 21v-3M7 10V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3" />
-        </svg>
+        <Icono nombre="cama" size={15} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-px whitespace-nowrap">
         <span className="truncate font-display text-[17px] italic leading-[1.1]">{titulo}</span>
@@ -41,7 +40,7 @@ export function AccommodationBlock({ city, segmentDayId, totalNights }: Accommod
       </span>
       <span
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[16px] font-medium leading-none"
-        style={{ background: hecho ? VERDE : '#F1EADC', color: hecho ? '#fff' : 'oklch(0.52 0.15 45)' }}
+        style={{ background: hecho ? VERDE : '#F1EADC', color: hecho ? '#fff' : 'rgb(var(--accent-hover))' }}
       >
         {hecho ? '✓' : '+'}
       </span>

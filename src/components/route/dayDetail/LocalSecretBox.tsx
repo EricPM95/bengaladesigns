@@ -1,3 +1,4 @@
+import { Icono } from '../../ui/Icono'
 interface LocalSecretBoxProps {
   children: string
 }
@@ -8,9 +9,7 @@ interface LocalSecretBoxProps {
 export function LocalSecretBox({ children }: LocalSecretBoxProps) {
   return (
     <div className="flex items-start gap-2 rounded-xl bg-accent-lilac px-3 py-2.5 text-small text-text">
-      <span aria-hidden="true" className="mt-0.5 shrink-0">
-        👁️
-      </span>
+      <Icono nombre="ojo" size={16} className="mt-0.5 shrink-0" />
       <p>
         <span className="font-bold">SECRETO LOCAL:</span> {children}
       </p>

@@ -1,4 +1,5 @@
 import type { TransportMode, TransportSegment, TransportSegmentAlternative } from './types'
+import type { NombreIcono } from './iconos'
 
 /**
  * Hechos de un tramo entre dos ciudades de una ruta ya generada (multidestino_tren_o_vuelo,
@@ -20,16 +21,16 @@ export interface CityTransitionFact {
   pass_covers_leg: boolean
 }
 
-/** Icono por modo — cubre los siete valores reales de TransportMode, no solo los tres que usa este archivo. Compartido por TransportSection.tsx para cualquier arquetipo. */
-const MODE_ICON: Record<TransportMode, string> = {
-  train: '🚆',
-  flight: '✈️',
-  bus: '🚌',
-  car: '🚗',
-  ferry: '⛴️',
-  multimodal: '🔀',
-  campervan: '🚐',
-  transfer: '🚖',
+/** Icono por modo (de la familia única, `src/lib/iconos.ts`) — cubre los siete valores reales de TransportMode, no solo los tres que usa este archivo. Compartido por TransportSection.tsx para cualquier arquetipo. */
+const MODE_ICON: Record<TransportMode, NombreIcono> = {
+  train: 'tren',
+  flight: 'avion',
+  bus: 'bus',
+  car: 'coche',
+  ferry: 'barco',
+  multimodal: 'ruta',
+  campervan: 'coche',
+  transfer: 'coche',
 }
 
 /**
@@ -158,6 +159,6 @@ export function buildTransportSegment(fact: CityTransitionFact, paseDominante: s
   return { ...base, mode: alternatives[0].mode, durationLabel: '', priceLabel: '', confirmed: false, alternatives }
 }
 
-export function transportModeIcon(mode: TransportMode): string {
+export function transportModeIcon(mode: TransportMode): NombreIcono {
   return MODE_ICON[mode]
 }
