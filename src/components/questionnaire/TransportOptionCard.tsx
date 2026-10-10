@@ -1,5 +1,7 @@
 import type { TransportOption } from '../../lib/types'
 import { Badge } from '../ui/Badge'
+import { Icono } from '../ui/Icono'
+import { esNombreIcono } from '../../lib/iconos'
 
 interface TransportOptionCardProps {
   option: TransportOption
@@ -26,7 +28,7 @@ export function TransportOptionCard({ option, onClick }: TransportOptionCardProp
         </span>
       )}
       <span className="flex items-center gap-2 pr-24 text-body font-medium text-text">
-        <span className="text-lg leading-none">{option.icon}</span>
+        {esNombreIcono(option.icon) && <Icono nombre={option.icon} size={20} className="shrink-0" />}
         {option.title}
       </span>
       {option.description && <p className="mt-1 text-small text-text-soft">{option.description}</p>}

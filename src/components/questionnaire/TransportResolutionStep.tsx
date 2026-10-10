@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { DestinationArchetype, Place, TransportOption, TravelMode, VehicleOwnership, VehicleType } from '../../lib/types'
+import { Icono } from '../ui/Icono'
 import { Spinner } from '../ui/Spinner'
 import { Button } from '../ui/Button'
 import { ChoiceButton } from './ChoiceButton'
@@ -45,7 +46,7 @@ interface TransportResolutionStepProps {
 // directamente, sin preguntar nada, para no bloquear el resto del cuestionario.
 const PLACEHOLDER_FLIGHT_OPTION: TransportOption = {
   id: 'flight',
-  icon: '✈️',
+  icon: 'avion',
   title: 'Avión',
   description: '',
   subtitle: '',
@@ -71,8 +72,9 @@ function PlaceholderTransportFlow({
   }, [transportOption, onTransportOptionChange])
 
   return (
-    <p className="text-small italic text-text-soft">
-      🚧 Este tipo de destino todavía no tiene su propio flujo de transporte — de momento asumimos avión hasta {destination}.
+    <p className="flex items-start gap-1.5 text-small italic text-text-soft">
+      <Icono nombre="alerta" size={15} className="mt-0.5 shrink-0" />
+      Este tipo de destino todavía no tiene su propio flujo de transporte — de momento asumimos avión hasta {destination}.
     </p>
   )
 }
@@ -95,14 +97,14 @@ function ArchetypeChoiceQuestion({
       <p className="text-small text-text-soft">¿Cómo te gustaría vivir {destination}?</p>
       <div className="space-y-2">
         <ChoiceButton
-          icon="🚗"
+          icon="coche"
           label="Ruta panorámica en coche"
           description="Vas cambiando de sitio cada noche, la carretera es la experiencia"
           selected={false}
           onClick={() => onResolveArchetype('roadtrip_exclusivo')}
         />
         <ChoiceButton
-          icon="🏡"
+          icon="casa"
           label="Explorar sus pueblos y puntos de interés desde una base"
           description="Te quedas en una zona y sales a explorar"
           selected={false}

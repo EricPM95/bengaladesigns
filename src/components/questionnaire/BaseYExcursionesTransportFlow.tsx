@@ -4,6 +4,7 @@ import { useTransportFeasibility } from '../../hooks/useTransportFeasibility'
 import { buildFlightOption, getBaseExcursionesCandidates } from '../../lib/baseExcursionesTransport'
 import { buildCarAccommodationMessage } from '../../lib/accommodationCopy'
 import { getTravelModeDescription } from '../../lib/travelModeCopy'
+import type { NombreIcono } from '../../lib/iconos'
 import { Spinner } from '../ui/Spinner'
 import { Button } from '../ui/Button'
 import { ChoiceButton } from './ChoiceButton'
@@ -28,7 +29,7 @@ interface BaseYExcursionesTransportFlowProps {
 }
 
 const VEHICLE_LABEL: Record<VehicleType, string> = { car: 'Coche', camper: 'Camper / autocaravana' }
-const VEHICLE_ICON: Record<VehicleType, string> = { car: '🚗', camper: '🚐' }
+const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'coche' }
 
 /**
  * Flujo de transporte para base_y_excursiones — destinos con puntos de interés cercanos entre
@@ -168,9 +169,9 @@ export function BaseYExcursionesTransportFlow({
         <div className="space-y-2">
           <p className="text-small text-text-soft">¿Te gustaría alquilar un vehículo en {destinationName}?</p>
           <div className="space-y-2">
-            <ChoiceButton icon="📋" label="Sí, quiero alquilar" selected={false} onClick={() => onVehicleOwnershipChange('rental')} />
+            <ChoiceButton icon="portapapeles" label="Sí, quiero alquilar" selected={false} onClick={() => onVehicleOwnershipChange('rental')} />
             <ChoiceButton
-              icon="🚕"
+              icon="taxi"
               label="No, prefiero moverme sin vehículo"
               selected={false}
               onClick={() => {
@@ -182,7 +183,7 @@ export function BaseYExcursionesTransportFlow({
         </div>
       )}
       {!vehicleResolved && isFlightOrTrain && vehicleOwnership === 'rental' && (
-        <SelectedOptionCard icon="📋" label="Sí, quiero alquilar" canChange onChange={() => onVehicleOwnershipChange(null)} />
+        <SelectedOptionCard icon="portapapeles" label="Sí, quiero alquilar" canChange onChange={() => onVehicleOwnershipChange(null)} />
       )}
 
       {/* Ferry: pregunta directamente propio / alquilar / sin vehículo */}
@@ -190,10 +191,10 @@ export function BaseYExcursionesTransportFlow({
         <div className="space-y-2">
           <p className="text-small text-text-soft">¿Vienes con tu propio vehículo, prefieres alquilar uno en destino, o vas sin vehículo?</p>
           <div className="space-y-2">
-            <ChoiceButton icon="🔑" label="Con mi propio vehículo" selected={false} onClick={() => onVehicleOwnershipChange('own')} />
-            <ChoiceButton icon="📋" label="Alquilar uno en destino" selected={false} onClick={() => onVehicleOwnershipChange('rental')} />
+            <ChoiceButton icon="llave" label="Con mi propio vehículo" selected={false} onClick={() => onVehicleOwnershipChange('own')} />
+            <ChoiceButton icon="portapapeles" label="Alquilar uno en destino" selected={false} onClick={() => onVehicleOwnershipChange('rental')} />
             <ChoiceButton
-              icon="🚕"
+              icon="taxi"
               label="Sin vehículo"
               selected={false}
               onClick={() => {
@@ -206,7 +207,7 @@ export function BaseYExcursionesTransportFlow({
       )}
       {!vehicleResolved && isFerry && vehicleOwnership !== null && (
         <SelectedOptionCard
-          icon={vehicleOwnership === 'own' ? '🔑' : '📋'}
+          icon={vehicleOwnership === 'own' ? 'llave' : 'portapapeles'}
           label={vehicleOwnership === 'own' ? 'Con mi propio vehículo' : 'Alquilar uno en destino'}
           canChange
           onChange={() => onVehicleOwnershipChange(null)}
@@ -225,7 +226,7 @@ export function BaseYExcursionesTransportFlow({
           </p>
           <div className="space-y-2">
             <ChoiceButton
-              icon="🚗"
+              icon="coche"
               label="Coche"
               selected={false}
               onClick={() => {
@@ -234,7 +235,7 @@ export function BaseYExcursionesTransportFlow({
               }}
             />
             <ChoiceButton
-              icon="🚐"
+              icon="coche"
               label="Camper / autocaravana"
               selected={false}
               onClick={() => {
@@ -268,7 +269,7 @@ export function BaseYExcursionesTransportFlow({
         </>
       )}
       {vehicleResolved && !vehicleType && (
-        <SelectedOptionCard icon="🚕" label="Sin vehículo" prefix="Para moverte:" canChange onChange={resetVehicle} />
+        <SelectedOptionCard icon="taxi" label="Sin vehículo" prefix="Para moverte:" canChange onChange={resetVehicle} />
       )}
 
       {/* En paralelo a todo lo anterior: cómo prefiere explorar la zona */}
@@ -277,14 +278,14 @@ export function BaseYExcursionesTransportFlow({
           <p className="text-small text-text-soft">¿Cómo prefieres explorar {destinationName}?</p>
           <div className="space-y-2">
             <ChoiceButton
-              icon="🏠"
+              icon="casa"
               label="Base fija"
               description={getTravelModeDescription('base_fija', vehicleType)}
               selected={false}
               onClick={() => onTravelModeChange('base_fija')}
             />
             <ChoiceButton
-              icon="🗺️"
+              icon="mapa"
               label="Ruta itinerante"
               description={getTravelModeDescription('itinerante', vehicleType)}
               selected={false}
@@ -295,7 +296,7 @@ export function BaseYExcursionesTransportFlow({
       )}
       {travelMode && (
         <SelectedOptionCard
-          icon={travelMode === 'base_fija' ? '🏠' : '🗺️'}
+          icon={travelMode === 'base_fija' ? 'casa' : 'mapa'}
           label={travelMode === 'base_fija' ? 'Base fija' : 'Ruta itinerante'}
           canChange
           onChange={() => onTravelModeChange(null)}

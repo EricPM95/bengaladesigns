@@ -33,7 +33,7 @@ interface TrazoCardProps {
   name: string
   /** Línea opcional bajo el nombre (por qué está, el paseo nocturno…). */
   sub?: string | null
-  /** Tanda 6f: la línea de arriba de una reserva puesta («🕘 Entrada a las 9:00 · llega a las 8:30: …»). */
+  /** Tanda 6f: la línea de arriba de una reserva puesta («Entrada a las 9:00 · llega a las 8:30: …»). */
   topNote?: string | null
   /** Línea de horario, duración y notas (reserva, atardecer…). */
   meta?: CardMeta[]

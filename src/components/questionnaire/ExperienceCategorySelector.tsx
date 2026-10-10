@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { DateRange, ExperienceCategoryId, Season } from '../../lib/types'
 import { EXPERIENCE_CATEGORY_BANK, MAX_POSITIVE_CATEGORIES, isCategoryVisible } from '../../lib/experienceCategoryBank'
+import { Icono } from '../ui/Icono'
 import { fetchSeasonalWindows, seasonStatus, type SeasonalWindow } from '../../lib/seasonalAvailability'
 
 interface ExperienceCategorySelectorProps {
@@ -116,8 +117,8 @@ export function ExperienceCategorySelector({
                   {order}
                 </motion.span>
               )}
-              <span className="text-h2 leading-none" aria-hidden="true">
-                {category.icon}
+              <span className="leading-none" aria-hidden="true">
+                <Icono nombre={category.icon} size={26} />
               </span>
               <span className={`font-dmsans text-small font-semibold leading-tight ${isSelected ? 'text-onb-accent-hover' : 'text-onb-text'}`}>
                 {category.title}

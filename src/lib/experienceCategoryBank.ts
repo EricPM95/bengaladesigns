@@ -1,8 +1,9 @@
 import type { ExperienceCategoryId, ExperienceId } from './types'
+import type { NombreIcono } from './iconos'
 
 export interface ExperienceCategoryDefinition {
   id: ExperienceCategoryId
-  icon: string
+  icon: NombreIcono
   title: string
   description: string
   /** Solo se muestra cuando `answers.season === 'winter'` — ver isCategoryVisible. Es la reserva: si el
@@ -20,12 +21,12 @@ export interface ExperienceCategoryDefinition {
  * vive en el backend, igual que el banco de 18 en experienceBank.ts).
  */
 export const EXPERIENCE_CATEGORY_BANK: ExperienceCategoryDefinition[] = [
-  { id: 'imprescindibles', icon: '🏛', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
-  { id: 'barrios_sabores', icon: '🍝', title: 'Barrios y Sabores', description: 'Barrios con vida, mercados y comida local' },
-  { id: 'arte_museos', icon: '🎨', title: 'Arte y Museos', description: 'Galerías, museos, iglesias y arte' },
-  { id: 'naturaleza_vistas', icon: '📸', title: 'Naturaleza y Vistas', description: 'Parques, miradores y puntos fotogénicos' },
-  { id: 'free_tour', icon: '🚶', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
-  { id: 'mercadillos_navidenos', icon: '🎄', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
+  { id: 'imprescindibles', icon: 'columnas', title: 'Imprescindibles', description: 'Lo esencial del destino', lockedPositive: true },
+  { id: 'barrios_sabores', icon: 'comida', title: 'Barrios y Sabores', description: 'Barrios con vida, mercados y comida local' },
+  { id: 'arte_museos', icon: 'arte', title: 'Arte y Museos', description: 'Galerías, museos, iglesias y arte' },
+  { id: 'naturaleza_vistas', icon: 'camara', title: 'Naturaleza y Vistas', description: 'Parques, miradores y puntos fotogénicos' },
+  { id: 'free_tour', icon: 'free', title: 'Free Tour', description: 'Recorrido guiado a pie de 2-3 horas' },
+  { id: 'mercadillos_navidenos', icon: 'abeto', title: 'Mercadillos Navideños', description: 'Mercadillos de Navidad y ambiente invernal', winterOnly: true },
 ]
 
 export const MAX_POSITIVE_CATEGORIES = 3

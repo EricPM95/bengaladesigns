@@ -268,7 +268,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                     ))}
                   </span>
                 )}
-                {/* (Ya no hay aquí la línea de lo reservado con su hora, «🔒 Coliseo · 10:00»: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
+                {/* (Ya no hay aquí la línea de lo reservado con su hora, «Coliseo · 10:00» con candado: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
                 {/* Cerrado: cuántas paradas son (sin puntitos de colores, Tanda 6j). */}
                 {!expanded && numbered.length > 0 && (
                   <span className="mt-1 text-[12px] text-text/55">

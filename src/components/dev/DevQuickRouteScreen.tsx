@@ -324,7 +324,7 @@ export function DevQuickRouteScreen() {
                           <option value="">Sin categoría</option>
                           {EXPERIENCE_BANK.map((entry) => (
                             <option key={entry.id} value={entry.id}>
-                              {entry.icon} {entry.title}
+                              {entry.title}
                             </option>
                           ))}
                         </select>

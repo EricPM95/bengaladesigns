@@ -9,7 +9,7 @@ export function ClockIcon({ className = '' }: TimeIconProps) {
   return <Icono nombre="reloj" className={`h-3.5 w-3.5 shrink-0 ${className}`} />
 }
 
-/** Reloj de arena — sustituye al emoji ⏳ en StopDetailSheet.tsx/StopTicketCard.tsx. */
+/** Reloj de arena — el reloj de arena de StopDetailSheet.tsx/StopTicketCard.tsx. */
 export function HourglassIcon({ className = '' }: TimeIconProps) {
   return <Icono nombre="arena" className={`h-3.5 w-3.5 shrink-0 ${className}`} />
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { APP_LANGUAGE } from '../../lib/appLanguage'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { GROSOR_ICONO } from '../../lib/iconos'
+import { GROSOR_ICONO, esNombreIcono, iconoSvg } from '../../lib/iconos'
 import type { Coordinates } from '../../lib/types'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
@@ -32,7 +32,7 @@ export interface StopsMapMarker {
   number: number
   bg: string
   text: string
-  /** Emoji/icono mostrado en vez del número — para el pin morado de "punto de llegada" (avión/barco/tren), ver arrivalIcon.ts. */
+  /** Icono mostrado en vez del número: el nombre de uno de la familia (`src/lib/iconos.ts`: avión/barco/tren del pin morado de «punto de llegada», ver arrivalIcon.ts; la casa y el pin de la excursión) o un texto corto como «+». */
   icon?: string
   /** Foto ya existente de la parada (mismo dato que su tarjeta) — si falta, el popup muestra solo el nombre, sin pedirla a ninguna API. */
   photoUrl?: string
@@ -248,7 +248,8 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
           inner.innerHTML = `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${GROSOR_ICONO}" stroke-linecap="round" stroke-linejoin="round"><path d="${marker.iconPath}"/></svg>`
         } else {
           inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-[11px] font-semibold shadow-[0_6px_14px_-4px_rgba(28,34,48,.5)] ring-2 ring-white transition-transform`
-          inner.textContent = marker.icon ?? String(marker.number)
+          if (esNombreIcono(marker.icon)) inner.innerHTML = iconoSvg(marker.icon, marker.small ? 11 : 14)
+          else inner.textContent = marker.icon ?? String(marker.number)
         }
         root.appendChild(inner)
         root.addEventListener('click', (event) => {

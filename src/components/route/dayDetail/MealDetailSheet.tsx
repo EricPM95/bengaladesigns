@@ -26,7 +26,7 @@ const STOP_MARKER_TEXT = '#6B7280'
 /** Restaurantes — color e icono deliberadamente distintos de cualquier color de día/parada, para que se distingan de un vistazo (feedback de calidad: "marcadores diferenciados, ej. marcador rojo o icono de cubiertos"). */
 const RESTAURANT_MARKER_BG = '#DC2626'
 const RESTAURANT_MARKER_TEXT = '#ffffff'
-const RESTAURANT_ICON = '🍴'
+const RESTAURANT_ICON = 'comida' as const
 
 interface MealDetailSheetProps {
   /** null = cerrado. */
@@ -132,7 +132,7 @@ function NearbyRow({ place }: { place: NearbyPlaceResult }) {
  * `fitBounds` inicial de StopsMapView ya encuadra todo junto porque simplemente recibe el array
  * combinado.
  *
- * Interacción mapa↔lista: tocar un restaurante de "Nuestra selección" activa `activeRestaurantId`
+ * Interacción mapa-lista: tocar un restaurante de "Nuestra selección" activa `activeRestaurantId`
  * (vuela la cámara a su marcador y lo escala, ver `flyToActiveStop` en StopsMapView.tsx; tocarlo de
  * nuevo lo deselecciona y la cámara vuelve al encuadre general). Tocar su marcador en el mapa hace
  * lo mismo en sentido inverso, con scroll automático de la lista hasta su tarjeta.

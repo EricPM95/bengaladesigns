@@ -25,7 +25,7 @@ export interface TransportFeasibility {
 export function buildFlightOption(flight: TransportFeasibility['flight']): TransportOption {
   return {
     id: 'flight',
-    icon: '✈️',
+    icon: 'avion',
     title: 'Avión',
     description: flight.via_label ? `Vuelas hasta ${flight.via_label} y sigues desde ahí.` : 'La forma más rápida de plantarte allí.',
     subtitle: 'Aterrizas y decides cómo moverte después',
@@ -41,7 +41,7 @@ export function buildFlightOption(flight: TransportFeasibility['flight']): Trans
 export function buildFerryOption(ferry: TransportFeasibility['ferry']): TransportOption {
   return {
     id: 'ferry',
-    icon: '⛴️',
+    icon: 'barco',
     title: 'Ferry',
     description: ferry.route_label ? `Travesía ${ferry.route_label}` : 'El viaje empieza en cuanto zarpas.',
     subtitle: 'El primer tramo de la aventura, ya en el mar',
@@ -57,7 +57,7 @@ export function buildFerryOption(ferry: TransportFeasibility['ferry']): Transpor
 export function buildTrainOption(train: TransportFeasibility['train']): TransportOption {
   return {
     id: 'train',
-    icon: '🚆',
+    icon: 'tren',
     title: 'Tren',
     description: train.station_label ? `Llegas hasta ${train.station_label} y sigues desde ahí.` : 'Directo hasta un punto cómodo de la zona.',
     subtitle: 'Sin volante hasta el último tramo',
@@ -73,7 +73,7 @@ export function buildTrainOption(train: TransportFeasibility['train']): Transpor
 export function buildBusOption(bus: TransportFeasibility['bus']): TransportOption {
   return {
     id: 'bus',
-    icon: '🚌',
+    icon: 'bus',
     title: 'Autobús',
     description: bus.station_label ? `Llegas hasta ${bus.station_label} y sigues desde ahí.` : 'La opción más económica para llegar.',
     subtitle: 'Más lento, pero cuida el bolsillo',
@@ -90,7 +90,7 @@ export function buildOwnVehicleOption(roadtrip: TransportFeasibility['roadtrip']
   const originName = origin?.name ?? 'tu ciudad'
   return {
     id: 'own_vehicle',
-    icon: '🛣️',
+    icon: 'coche',
     title: `Ruta por libre desde ${originName}`,
     description: roadtrip.highlight,
     subtitle: 'Con tu propio vehículo, al ritmo que tú marques',

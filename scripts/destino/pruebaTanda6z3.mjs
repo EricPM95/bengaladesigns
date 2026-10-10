@@ -7,7 +7,8 @@
 //   4. en HOY sale una hora calculada por la app (solo valen las horas de lo reservado);
 //   5. en la gratis sale en HOY algo de lo de pago (la siguiente parada, «Cómo llegar», «Visto», la zona);
 //   6. los iconos: algún trazo suelto fuera de `src/lib/iconos.ts` para lo que ya tiene icono, la excursión sin la mochila, el autobús fuera de la llegada y la vuelta;
-//   7. el color: el frambuesa en más de un sitio o el contraste del texto blanco sobre frambuesa por debajo de 4,5:1.
+//   7. el color: el frambuesa en más de un sitio o el contraste del texto blanco sobre frambuesa por debajo de 4,5:1;
+//   8. los emojis: queda algún emoji en src fuera de los signos de texto, el © y el 🧪 de las pantallas de desarrollo.
 import fs from 'node:fs'
 import path from 'node:path'
 import { buildDayBlockV3 } from '../../server/engine/index.js'
@@ -162,6 +163,34 @@ for (const archivo of archivos('src')) {
   for (const m of texto.matchAll(/oklch\(\s*0?\.[4-7]\d*\s+0?\.1[0-9]*\s+(4\d|5\d|6\d)\s*[\s/)]/g)) terracota.push(`${archivo.replace(/\\/g, '/')}: ${m[0]}`)
 }
 debe(terracota.length === 0, '7 color', `quedan colores terracota/naranja a mano en el código: ${terracota.slice(0, 6).join(' ; ')}`)
+
+// ── 8. Emojis ──
+// En src no queda ningún emoji (\p{Extended_Pictographic}) salvo: los signos de texto (✓ ✔ ✕ ✗ ★ ♥ ❤ y las flechas ↔ ↕ → ← ↑ ↓ …), el © de OpenStreetMap
+// y el 🧪 de las pantallas de desarrollo. Todo icono funcional es de la familia de src/lib/iconos.ts.
+const SIGNOS_TEXTO = new Set(['✓', '✔', '✕', '✗', '✖', '★', '☆', '♥', '❤', '→', '←', '↑', '↓', '↔', '↕', '·', '●', '○', '▲', '▼', '✦', '✳', '※', '☰', '©'])
+// Excepciones por archivo (solo el emoji que se deja): las pantallas y botones de desarrollo, que no ve el viajero.
+const EXCEPCIONES_EMOJI = [
+  { archivo: /dev[\\/]DevQuickRouteScreen\.tsx$/, emoji: '🧪' },
+  { archivo: /today[\\/]DevDateSimulator\.tsx$/, emoji: '🧪' },
+  { archivo: /destination[\\/]LandingScreen\.tsx$/, emoji: '🧪' }, // el botón «Dev: ruta rápida (sin IA)»
+  { archivo: /trazo[\\/]StepRoute\.tsx$/, emoji: '🧪' }, // ídem, en el formulario nuevo
+]
+function todosLosArchivos(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? todosLosArchivos(path.join(dir, e.name)) : /\.(tsx?|jsx?|css|html|json)$/.test(e.name) ? [path.join(dir, e.name)] : []))
+}
+const emojisSueltos = []
+for (const archivo of todosLosArchivos('src')) {
+  comprobaciones++
+  const lineas = fs.readFileSync(archivo, 'utf8').split(/\r?\n/)
+  lineas.forEach((linea, i) => {
+    for (const m of linea.matchAll(/\p{Extended_Pictographic}/gu)) {
+      if (SIGNOS_TEXTO.has(m[0])) continue
+      if (EXCEPCIONES_EMOJI.some((ex) => ex.archivo.test(archivo) && ex.emoji === m[0])) continue
+      emojisSueltos.push(`${archivo.replace(/\\/g, '/')}:${i + 1} ${m[0]}`)
+    }
+  })
+}
+debe(emojisSueltos.length === 0, '8 emojis', `quedan ${emojisSueltos.length} emojis en src (usa un icono de src/lib/iconos.ts): ${emojisSueltos.slice(0, 8).join(' ; ')}`)
 
 console.error = consolaError
 if (fallos.length === 0) console.log(`6z3: ${comprobaciones} comprobaciones, 0 fallos (${vistas.length} pantallas de HOY).`)

@@ -5,16 +5,18 @@
  * círculos numerados (día/orden) y de los pines de parada normales.
  */
 
+import type { NombreIcono } from './iconos'
+
 export type ArrivalIconMode = 'flight' | 'ferry' | 'train' | 'other'
 
 export const ARRIVAL_MARKER_BG = '#7C3AED'
 export const ARRIVAL_MARKER_TEXT = '#ffffff'
 
-const ICON_BY_MODE: Record<ArrivalIconMode, string> = {
-  flight: '✈',
-  ferry: '⛴',
-  train: '🚆',
-  other: '✈',
+const ICON_BY_MODE: Record<ArrivalIconMode, NombreIcono> = {
+  flight: 'avion',
+  ferry: 'barco',
+  train: 'tren',
+  other: 'avion',
 }
 
 /** `route.transportContext.transport_option?.id` (día 1) o `TransportSegment.mode` (transiciones entre destinos) — ambos usan las mismas strings ('flight'|'ferry'|'train'|'bus'|'roadtrip'|'car'|...), aquí solo nos interesan los 3 que tienen icono propio. */
@@ -25,7 +27,7 @@ export function resolveArrivalIconMode(rawMode: string | null | undefined): Arri
   return 'other'
 }
 
-export function arrivalIconFor(rawMode: string | null | undefined): string {
+export function arrivalIconFor(rawMode: string | null | undefined): NombreIcono {
   return ICON_BY_MODE[resolveArrivalIconMode(rawMode)]
 }
 

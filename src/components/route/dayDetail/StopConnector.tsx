@@ -19,7 +19,7 @@ interface StopConnectorProps {
   onSetDefaultForDay: (mode: TransportMode) => void
   /** "+ Añadir parada" — en línea con el resto de la fila, pegado al extremo derecho. */
   onAddStop: () => void
-  /** El tramo lo hace el día en bus o metro ("🚌 Bus 118, unos 25 min"): se enseña eso, no el paseo. */
+  /** El tramo lo hace el día en bus o metro ("Bus 118, unos 25 min"): se enseña eso, no el paseo. */
   transitLabel?: string | null
 }
 
@@ -62,7 +62,7 @@ export function AddStopButton({ onAddStop }: { onAddStop: () => void }) {
  */
 function parseTransitLabel(label: string): { line: string; minutes: number | null; mode: TransportMode; kind: TransitKind } {
   const minutes = /(\d+)\s*min/.exec(label)
-  // (Sin el emoji que traían las rutas guardadas, «🚌 Bus 115»: el icono es el lineal, uno solo.)
+  // (Las rutas guardadas traían un emoji delante de «Bus 115»: se quita, el icono es el lineal, uno solo.)
   const clean = label.replace(/^[^\p{L}\p{N}]+/u, '')
   const head = clean.split(',')[0].split(/\s+o\s+/)[0].trim().replace(/^(un|una|el|la)\s+/i, '')
   const line = head.charAt(0).toUpperCase() + head.slice(1)

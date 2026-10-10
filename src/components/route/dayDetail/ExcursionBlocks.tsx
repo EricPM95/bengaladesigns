@@ -51,7 +51,7 @@ function RatingLabel({ excursion }: { excursion: Excursion }) {
   if (!excursion.rating) return null
   return (
     <span className="flex shrink-0 items-center gap-1 whitespace-nowrap text-caption text-text-soft">
-      <span aria-hidden="true">⭐</span>
+      <Icono nombre="estrella" size={13} className="shrink-0" />
       {excursion.rating.toFixed(1)}
       {excursion.reviewCount ? <span className="text-text-muted">({excursion.reviewCount.toLocaleString('es')})</span> : null}
     </span>
@@ -118,7 +118,7 @@ export function ExcursionBanner({
           <li key={excursion.id}>
             <button type="button" onClick={onSeeAll} className="flex w-full items-center gap-2 p-2 text-left transition-colors hover:bg-bg-hover">
               <span className="shrink-0 text-base" aria-hidden="true">
-                {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
+                <Icono nombre="excursion" size={18} />
               </span>
               <span className="min-w-0 flex-1 truncate text-small font-medium text-text">{excursion.title}</span>
               {!offer && formatPrice(excursion) && <span className="shrink-0 whitespace-nowrap text-caption text-text-soft">desde {formatPrice(excursion)}</span>}
@@ -181,7 +181,7 @@ export function ExcursionOptions({
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-2">
                 <span className="shrink-0 text-base" aria-hidden="true">
-                  {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
+                  <Icono nombre="excursion" size={18} />
                 </span>
                 <span className="min-w-0 flex-1 text-small font-semibold text-text">{excursion.title}</span>
               </span>
@@ -331,7 +331,7 @@ export function HalfDayExcursionBlock({
         <ExcursionReservedTop excursion={excursion} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
-            {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
+            <Icono nombre="excursion" size={18} />
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
@@ -408,7 +408,7 @@ export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excu
         <ExcursionReservedTop excursion={excursion} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
-            {excursion.emoji ?? <Icono nombre="excursion" size={18} />}
+            <Icono nombre="excursion" size={18} />
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-body font-semibold text-text">{excursion.title}</p>
@@ -543,7 +543,7 @@ export function ExcursionDayProposal({
     <div className="space-y-3">
       {socialProof && (
         <p className="rounded-xl bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-accent-hover">
-          <span aria-hidden="true">✨ </span>
+          <Icono nombre="destello" size={14} className="mr-1.5 inline-block align-[-2px]" />
           {socialProof}
         </p>
       )}
@@ -552,7 +552,7 @@ export function ExcursionDayProposal({
         <ExcursionReservedTop excursion={featured} />
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none" aria-hidden="true">
-            {featured.emoji ?? <Icono nombre="excursion" size={26} />}
+            <Icono nombre="excursion" size={26} />
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-body font-semibold text-text">{featured.title}</p>

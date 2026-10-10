@@ -25,7 +25,7 @@ interface AttractionsFinderProps {
   onPick?: (stop: Stop) => void
   /** Modo de selección libre — checkboxes en vez de tocar-para-añadir-y-cerrar, con un botón "Confirmar" al final (ver DayMenu.tsx "Regenerar este día"). Mutuamente excluyente con `onPick`, sigue siendo la pantalla completa con acordeón de siempre — no la ficha de búsqueda rediseñada de abajo, que es solo para el caso de un lugar cada vez. */
   multiSelect?: MultiSelectConfig
-  /** Por defecto "Añadir una parada" — EXPLORAR pasa "🏛️ Atracciones en {city}" para mantener su copy anterior. */
+  /** Por defecto "Añadir una parada" — EXPLORAR pasa "Atracciones en {city}" para mantener su copy anterior. */
   title?: string
 }
 

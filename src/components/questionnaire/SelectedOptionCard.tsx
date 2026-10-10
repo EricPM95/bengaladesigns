@@ -1,5 +1,8 @@
+import { Icono } from '../ui/Icono'
+import { esNombreIcono, type NombreIcono } from '../../lib/iconos'
+
 interface SelectedOptionCardProps {
-  icon: string
+  icon: NombreIcono
   label: string
   /** Prefijo opcional antes del icono, ej. "Para llegar:" / "Para moverte:". */
   prefix?: string
@@ -18,7 +21,7 @@ export function SelectedOptionCard({ icon, label, prefix, canChange, onChange }:
     <div className="flex items-center justify-between gap-2 rounded-xl border border-accent bg-accent-soft px-4 py-3">
       <span className="flex items-center gap-2 text-body font-medium text-accent-hover">
         {prefix && <span className="font-normal text-text-soft">{prefix}</span>}
-        <span className="text-lg leading-none">{icon}</span>
+        {esNombreIcono(icon) && <Icono nombre={icon} size={20} className="shrink-0" />}
         <span>{label}</span>
         <span aria-hidden="true">✓</span>
       </span>

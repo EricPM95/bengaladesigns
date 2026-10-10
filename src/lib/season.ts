@@ -1,4 +1,5 @@
 import type { Season } from './types'
+import type { NombreIcono } from './iconos'
 
 const SEASON_BY_MONTH: Season[] = [
   'winter', // enero
@@ -15,11 +16,11 @@ const SEASON_BY_MONTH: Season[] = [
   'winter', // diciembre
 ]
 
-export const SEASON_META: Record<Season, { icon: string; label: string }> = {
-  spring: { icon: '🌸', label: 'Primavera' },
-  summer: { icon: '☀️', label: 'Verano' },
-  autumn: { icon: '🍂', label: 'Otoño' },
-  winter: { icon: '❄️', label: 'Invierno' },
+export const SEASON_META: Record<Season, { icon: NombreIcono; label: string }> = {
+  spring: { icon: 'flor', label: 'Primavera' },
+  summer: { icon: 'hoy', label: 'Verano' },
+  autumn: { icon: 'hoja', label: 'Otoño' },
+  winter: { icon: 'nieve', label: 'Invierno' },
 }
 
 /** Temporada de un mes 0-11 (hemisferio norte: diciembre-febrero, invierno). */

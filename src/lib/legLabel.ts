@@ -4,7 +4,7 @@ import { hasRealCoordinates } from './distanceMock'
 
 /**
  * El trayecto entre dos paradas como lo lee el viajero (Tanda 6: «8 min andando», «Taxi, 15 min», «Bus 23, 20 min»).
- * Si la parada llega en bus, metro, tranvía o taxi (`transitLabel`: «🚌 Bus 118 o el 870, unos 25 min») se enseña eso, con la
+ * Si la parada llega en bus, metro, tranvía o taxi (`transitLabel`: «Bus 118 o el 870, unos 25 min») se enseña eso, con la
  * primera opción; si no, el tiempo andando de Mapbox. Sin coordenadas reales ni línea, null (nunca un número inventado).
  */
 export function formatTransitLeg(label: string): string {

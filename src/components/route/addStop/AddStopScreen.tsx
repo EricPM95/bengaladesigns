@@ -290,7 +290,7 @@ export function AddStopScreen({
       name: candidate.name,
       coordinates: candidate.coordinates,
       number: 0,
-      icon: '📍',
+      icon: 'ubicacion',
       bg: isNameAlreadyInRoute(candidate.name, stopEntries) ? '#9CA3AF' : '#2A9D8F',
       text: '#FFFFFF',
       photoUrl: candidate.photoUrl,
@@ -388,7 +388,7 @@ export function AddStopScreen({
                   }`}
                   style={active ? { backgroundColor: chip.color } : undefined}
                 >
-                  <span aria-hidden="true">{chip.icon}</span>
+                  <Icono nombre={chip.icon} size={14} className="shrink-0" />
                   {chip.label}
                 </button>
               )
@@ -478,8 +478,8 @@ export function AddStopScreen({
 
             {bottomTab === 'recommended' && (
               <div className="flex flex-col items-center gap-2 py-10 text-center">
-                <span className="text-3xl" aria-hidden="true">
-                  🌟
+                <span className="text-text-muted" aria-hidden="true">
+                  <Icono nombre="estrella" size={32} />
                 </span>
                 <p className="text-body font-semibold text-text">Próximamente</p>
                 <p className="max-w-xs text-small text-text-soft">Descubre lugares recomendados por otros viajeros.</p>

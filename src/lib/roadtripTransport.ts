@@ -11,7 +11,7 @@ export { buildFerryOption, buildOwnVehicleOption }
 export function buildFlightOption(flight: TransportFeasibility['flight']): TransportOption {
   return {
     id: 'flight',
-    icon: '✈️',
+    icon: 'avion',
     title: 'Avión',
     description: flight.via_label ? `Vuelas hasta ${flight.via_label} y recoges tu vehículo allí.` : 'La forma más rápida de plantarte allí y empezar a rodar.',
     subtitle: 'Aterrizas y recoges tu vehículo',

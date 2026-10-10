@@ -82,9 +82,39 @@ export const ICONOS = {
   hechoCirculo: 'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM9 12l2 2 4-4',
   cafe: 'M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2',
   portapapeles: 'M7 4h10a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM9 3h6v3H9zM9 12h6M9 16h4',
+  // ── Los que faltaban para quitar los emojis de la interfaz (Tanda 6z4): mismo trazo ──
+  taxi: 'M5 16v-5l2-5h10l2 5v5M5 16h14v3H5zM7.5 13h.01M16.5 13h.01M10 3h4v2.5h-4z',
+  arte: 'M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-.7-1.6-.7-2.6c0-1 .8-1.9 1.9-1.9H18a3 3 0 0 0 3-3A9 9 0 0 0 12 3zM7.5 11h.01M10 7.5h.01M14.5 7.5h.01',
+  playa: 'M4 11a8 8 0 0 1 16 0zM12 11v9M8 20h8',
+  bienestar: 'M12 20c-4 0-7-3-7-7 3 0 5.5 1.3 7 3.5 1.5-2.2 4-3.5 7-3.5 0 4-3 7-7 7zM12 16.5C10.5 14 10.5 9 12 4c1.5 5 1.5 10 0 12.5z',
+  nieve: 'M12 3v18M4.2 7.5l15.6 9M19.8 7.5L4.2 16.5M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5',
+  bolsa: 'M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8',
+  fiesta: 'M4 20L8 9l7 7zM13 5l1 2M17 9l2-1M16 4h.01M19.5 12h.01',
+  estrella: 'M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9L3.5 9.7l5.9-.8z',
+  destello: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16v4M17 18h4',
+  gema: 'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4L7.5 9 12 20M15 4l1.5 5L12 20',
+  copa: 'M5 4h14l-7 8zM12 12v8M8 20h8',
+  abeto: 'M12 3l5 6h-3l4 5H6l4-5H7zM12 14v6',
+  pizza: 'M3.5 7c5-3 12-3 17 0L12 21zM9 10h.01M14 10h.01M11.5 14h.01',
+  helado: 'M7.5 11a4.5 4.5 0 0 1 9 0zM8 11l4 10 4-10',
+  bocadillo: 'M4 11c0-3 3.5-5 8-5s8 2 8 5zM3 14h18M5 17h14a2 2 0 0 1-2 3H7a2 2 0 0 1-2-3z',
+  flor: 'M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 10c-2-1-2-5 0-7 2 2 2 6 0 7zM14 12c1-2 5-2 7 0-2 2-6 2-7 0zM12 14c2 1 2 5 0 7-2-2-2-6 0-7zM10 12c-1 2-5 2-7 0 2-2 6-2 7 0z',
+  hoja: 'M5 19c0-8 5-14 15-14 0 10-6 15-14 15M5 19l8-8',
+  llave: 'M8 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11.5 12H21M18 12v3M15 12v2',
+  familia: 'M8 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 20c.4-3.2 2.3-5 5-5s4.6 1.8 5 5M17 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM15.5 20c.2-2.2 1.2-3.5 3-3.8',
 } as const
 
 export type NombreIcono = keyof typeof ICONOS
+
+/** ¿Este texto es el nombre de un icono de la familia? (los pines del mapa llevan o un icono o un texto corto como «+»). */
+export function esNombreIcono(valor: string | null | undefined): valor is NombreIcono {
+  return typeof valor === 'string' && Object.prototype.hasOwnProperty.call(ICONOS, valor)
+}
+
+/** El icono como `<svg>` en texto, para lo que no es React: el HTML de un pin de Mapbox. Del color del texto (`currentColor`). */
+export function iconoSvg(nombre: NombreIcono, size = 14, grosor: number = GROSOR_ICONO): string {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${grosor}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICONOS[nombre]}"/></svg>`
+}
 
 /** Los colores de los iconos con significado (diseño): el rosa frambuesa = falta o reservar, el verde = hecho o reservado, el azul = llegada, vuelta y el tiempo. */
 export const COLOR_ICONO = {

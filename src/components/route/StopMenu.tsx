@@ -59,7 +59,7 @@ export function StopMenu({ stop, dayId, days }: StopMenuProps) {
                   ↕ Mover a otro día
                 </button>
                 <button type="button" onClick={() => setView('time')} className={menuItemClass}>
-                  ⏱ Cambiar hora
+                  <Icono nombre="reloj" size={15} className="mr-1.5 inline-block align-[-3px]" />Cambiar hora
                 </button>
               </div>
             )}
