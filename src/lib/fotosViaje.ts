@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient'
 import { bootstrapTraveler } from './tripPersistence'
+import { pagoActivo } from './pago'
 
 /**
  * Las fotos del viaje (Tanda 6z3, punto 6): el viajero hace o sube fotos durante el viaje y se
@@ -37,6 +38,31 @@ export interface FotoViaje {
   createdAt: string
   /** URL firmada de corta duración; '' si no se pudo firmar. */
   url: string
+}
+
+/* ------------------------------------------------------------------ */
+/* Cuántas fotos (Tanda 6z6): la regla, en UN solo sitio               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Gratis: UNA foto por parada (el «sitio» de una foto es su parada; una foto sin parada cuenta como «el día» y también es una sola por día). De pago: sin límite.
+ * Todo lo que sube fotos pasa por `subirFoto`, que aplica esto; las pantallas solo preguntan `modoDeFoto` para poner «Añadir foto» o «Cambiar foto».
+ */
+export function limiteDeFotos(): { porParada: number | null } {
+  return { porParada: pagoActivo() ? null : 1 }
+}
+
+type SitioDeFoto = Pick<FotoViaje, 'dayNumber' | 'stopName'>
+
+/** Las fotos que ya hay en ese sitio (día + parada, o el día entero si no hay parada). */
+export function fotosDelSitio<T extends SitioDeFoto>(fotos: T[], dayNumber: number, stopName?: string | null): T[] {
+  return fotos.filter((foto) => foto.dayNumber === dayNumber && (foto.stopName ?? null) === (stopName ?? null))
+}
+
+/** «anadir» si cabe otra foto en ese sitio; «cambiar» si ya está completo (gratis, con su foto): entonces la nueva sustituye a la vieja. */
+export function modoDeFoto(fotos: SitioDeFoto[], dayNumber: number, stopName?: string | null): 'anadir' | 'cambiar' {
+  const { porParada } = limiteDeFotos()
+  return porParada !== null && fotosDelSitio(fotos, dayNumber, stopName).length >= porParada ? 'cambiar' : 'anadir'
 }
 
 export interface FotoPreparada {
@@ -201,7 +227,19 @@ export async function subirFoto(args: SubirFotoArgs): Promise<ResultadoSubida> {
   } catch {
     return { foto: null, error: 'No hemos podido leer esa foto. Prueba con otra.' }
   }
-  return subirFotoPreparada(args, preparada)
+  return subirRespetandoLimite(args, preparada)
+}
+
+/**
+ * La parte de «cuántas fotos» de subirFoto, aparte para poder probarla sin navegador. Gratis, con su foto ya puesta en ese sitio: primero se sube la nueva y solo si sale bien
+ * se borra la vieja (nunca se queda sin ninguna). De pago: se sube y ya.
+ */
+export async function subirRespetandoLimite(args: Omit<SubirFotoArgs, 'file'>, preparada: FotoPreparada): Promise<ResultadoSubida> {
+  const { porParada } = limiteDeFotos()
+  const previas = porParada === null ? [] : fotosDelSitio(await listarFotos(args.tripId), args.dayNumber, args.stopName)
+  const resultado = await subirFotoPreparada(args, preparada)
+  if (resultado.foto) for (const vieja of previas) await borrarFoto(vieja)
+  return resultado
 }
 
 /** La parte de red de subirFoto, aparte para poder probarla sin navegador. */

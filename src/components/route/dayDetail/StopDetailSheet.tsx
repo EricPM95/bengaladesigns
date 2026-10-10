@@ -22,6 +22,7 @@ import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
 import { Icono } from '../../ui/Icono'
+import { BotonFotoParada } from '../fotos/BotonFotoParada'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -461,6 +462,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                   )}
                 </div>
               </div>
+
+              {dayNumber !== null && !footerAction && <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} />}
 
               {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
                   que exigen sus condiciones. Las de Wikipedia no la llevan (dominio público o CC). */}

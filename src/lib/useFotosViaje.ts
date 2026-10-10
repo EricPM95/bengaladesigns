@@ -10,8 +10,9 @@ const REFRESCO_MS = 45 * 60 * 1000
  * una foto en cualquier parte de la app (alCambiarFotos) y cada 45 minutos para renovar las URLs.
  * Sin Supabase o sin la migración: lista vacía, sin errores.
  */
-export function useFotosViaje(): { fotos: FotoViaje[]; cargando: boolean; refrescar: () => Promise<void> } {
-  const tripId = useRouteStore((state) => state.route?.id ?? null)
+export function useFotosViaje(tripIdPedido?: string | null): { fotos: FotoViaje[]; cargando: boolean; refrescar: () => Promise<void> } {
+  const tripIdActual = useRouteStore((state) => state.route?.id ?? null)
+  const tripId = tripIdPedido === undefined ? tripIdActual : tripIdPedido
   const [fotos, setFotos] = useState<FotoViaje[]>([])
   const [cargando, setCargando] = useState(false)
 

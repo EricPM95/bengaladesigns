@@ -10,6 +10,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 import { destinoCambiado } from '../../lib/recuperarDestino'
 import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
+import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
 
 interface RouteOverviewProps {
   route: Route
@@ -46,6 +47,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
 
   return (
     <div className="flex-1 space-y-3 overflow-y-auto px-3.5 pb-6 pt-4">
+      <TarjetaRecuerdosEnRuta route={route} />
       {segments.map((segment, index) => {
         const segmentDays = route.days.filter((day) => segment.dayIds.includes(day.id) && !day.isReturnLeg)
         const count = segmentDays.length
