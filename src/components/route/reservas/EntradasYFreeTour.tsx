@@ -5,7 +5,7 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
 import { elDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { BloqueShell, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
+import { BloqueShell, EstadoBloque, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { FichaEntrada } from './FichaEntrada'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
@@ -62,9 +62,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
             <IconoBloque nombre={ICONOS.ticket} hecho={hecho} />
             <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span style={tituloBloqueStyle}>Entradas y Free Tour</span>
-              <span style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'oklch(0.5 0.17 5)' }}>
-                {enRuta.length > 0 ? `${reservadas} de ${enRuta.length} reservadas` : 'Ninguna en tu ruta'}
-              </span>
+              <EstadoBloque texto={enRuta.length > 0 ? `${reservadas} de ${enRuta.length} reservadas` : 'Ninguna en tu ruta'} hecho={hecho} />
             </span>
             <FlechaBloque abierto={abierto} />
           </div>

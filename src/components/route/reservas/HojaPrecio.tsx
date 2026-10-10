@@ -39,7 +39,7 @@ export function HojaPrecio({ titulo, eyebrow = 'Precio', cta = 'Guardar', inicia
           }}
           className="mt-2 h-11 w-full text-[13.5px] font-medium text-accent-red underline underline-offset-2"
         >
-          Quitar
+          Eliminar
         </button>
       )}
     </HojaAbajo>

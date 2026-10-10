@@ -55,13 +55,13 @@ export function IconoBloque({ nombre, hecho = false }: { nombre: NombreIcono; he
   )
 }
 
-/** «Falta», «Falta la ida», «✓ Listo». */
-export function PastillaEstado({ texto, hecho }: { texto: string; hecho: boolean }) {
+/**
+ * El estado de un bloque de RESERVAS (Tanda 6z6b): UN solo estilo para «Falta», «Falta la ida», «0 de 6 reservadas» o «✓ Hotel Artemide». Va DEBAJO del nombre del bloque, en monoespaciado pequeño:
+ * frambuesa si falta algo, verde si está hecho. Ningún bloque lo pone en una píldora ni a la derecha.
+ */
+export function EstadoBloque({ texto, hecho }: { texto: string; hecho: boolean }) {
   return (
-    <span
-      className="h-6 whitespace-nowrap rounded-full px-[9px] text-[11px] font-semibold leading-6"
-      style={{ background: hecho ? VERDE_SUAVE : 'rgb(var(--accent) / .1)', color: hecho ? 'oklch(0.4 0.1 150)' : 'rgb(var(--accent-hover))' }}
-    >
+    <span className="truncate" data-estado={hecho ? 'hecho' : 'falta'} style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'oklch(0.5 0.17 5)' }}>
       {texto}
     </span>
   )

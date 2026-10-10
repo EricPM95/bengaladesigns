@@ -9,8 +9,6 @@ import { mesDelViaje } from '../../../lib/resumenViaje'
 import { diaCorto } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
 import { ojoMono, TarjetaOscura } from '../hoy/piezas'
-import { ResumenDelViaje, type FichaResumen } from './ResumenViaje'
-import type { BloqueReservasId } from '../../../store/useReservasFocusStore'
 
 /** Cuándo sale la previsión del tiempo: faltando este número de días (o menos). */
 const DIAS_DE_PREVISION = 5
@@ -43,9 +41,9 @@ function usePrevisionDelViaje(route: Route, dias: number | null, startIso: strin
  *  - antes, con fechas: «Tu viaje a Roma empieza en» y «12 días»; sin fechas: «Tu viaje a Roma · octubre» y [Pon tus fechas];
  *  - durante: «Estás en Roma · lun 13 · 2 de 4» (con fechas el día se llama por su fecha, nunca «Día n»);
  *  - después: no sale.
- * Debajo, el resumen del viaje (corrección de Eric del mismo día): «2 de 3 listo» con sus fichas (de pago: Llegada y vuelta · Alojamiento · Entradas; gratis: Alojamiento · Entradas), cada una baja a su bloque. La previsión del tiempo (desde 5 días antes) va dentro, en pequeño.
+ * SOLO lleva la cuenta atrás (Tanda 6z6b): lo que falta por reservar NO va aquí, vive en la tarjeta clara de debajo (`ResumenViaje.tsx`). La previsión del tiempo (desde 5 días antes) va dentro, en pequeño.
  */
-export function TarjetaCuentaAtras({ route, onPonFechas, fichas, onFicha }: { route: Route; onPonFechas: () => void; fichas?: FichaResumen[]; onFicha?: (bloque: BloqueReservasId) => void }) {
+export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPonFechas: () => void }) {
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
   const estado = getTodayTripStatus(route, simulada ?? undefined)
   const hoyIso = simulada ?? todayIso()
@@ -98,7 +96,6 @@ export function TarjetaCuentaAtras({ route, onPonFechas, fichas, onFicha }: { ro
           </button>
         </>
       )}
-      {fichas && fichas.length > 0 && onFicha && <ResumenDelViaje fichas={fichas} onFicha={onFicha} />}
       {prevision && (
         <div className="relative mt-3 flex flex-col gap-1 border-t border-[#FFFDF8]/12 pt-2.5" data-prevision="1">
           <span className="text-[#FFFDF8]/55" style={ojoMono}>

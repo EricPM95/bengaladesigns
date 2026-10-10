@@ -5,7 +5,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, nochesTexto, precioDeAlojamiento } from '../../../lib/tuAlojamiento'
 import { formatoImporte } from '../../../lib/dinero'
-import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, ICONOS, INK, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
+import { BloqueShell, CambiarBoton, EliminarTexto, EstadoBloque, FlechaBloque, ICONOS, INK, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
 import { Icono } from '../../ui/Icono'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
@@ -83,9 +83,7 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
           <IconoBloque nombre={ICONOS.hotel} hecho={hecho} />
           <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
             <span style={tituloBloqueStyle}>Alojamiento</span>
-            <span className="truncate" style={{ font: "600 11px 'Geist Mono',monospace", color: resumenVerde ? GR : 'oklch(0.5 0.17 5)' }}>
-              {resumen}
-            </span>
+            <EstadoBloque texto={resumen} hecho={resumenVerde} />
           </span>
           <FlechaBloque abierto={abierto} />
         </div>

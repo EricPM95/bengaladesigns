@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
-import { usePresupuestoUi } from '../../store/usePresupuestoUi'
+import { BotonCartera } from '../presupuesto/BotonCartera'
 import { useAppNotices } from '../../hooks/useAppNotices'
 import { subtituloDelViaje } from '../../lib/resumenViaje'
 import { Icono } from '../ui/Icono'
@@ -25,7 +25,6 @@ interface HeaderProps {
 export function Header({ onTips, onOpenDates }: HeaderProps) {
   const route = useRouteStore((state) => state.route)
   const setMode = useRouteStore((state) => state.setMode)
-  const abrirPresupuesto = usePresupuestoUi((state) => state.abrir)
   const { items, unreadCount } = useAppNotices()
   const [noticesOpen, setNoticesOpen] = useState(false)
   const perfilAbierto = usePerfilUi((state) => state.abierto)
@@ -41,9 +40,7 @@ export function Header({ onTips, onOpenDates }: HeaderProps) {
           {subtituloDelViaje(route)}
         </span>
       </span>
-      <button type="button" onClick={abrirPresupuesto} aria-label="Presupuesto" title="Presupuesto" className={BOTON}>
-        <Icono nombre="presupuesto" size={23} />
-      </button>
+      <BotonCartera />
       <button type="button" onClick={() => setNoticesOpen(true)} aria-label={unreadCount > 0 ? `Avisos (${unreadCount} nuevos)` : 'Avisos'} title="Avisos" className={BOTON}>
         <Icono nombre="avisos" size={23} />
         {unreadCount > 0 && <span className="absolute right-[11px] top-2.5 h-[9px] w-[9px] rounded-full bg-accent" style={{ boxShadow: '0 0 0 2px rgb(var(--bg))' }} aria-hidden="true" />}

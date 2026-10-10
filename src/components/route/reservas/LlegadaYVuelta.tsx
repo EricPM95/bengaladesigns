@@ -5,7 +5,7 @@ import { legLine, legOf, legsTag, legWord, type LegKind, type LegState } from '.
 import { shortDateEs } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { TimeListWheel } from '../../ui/TimeListWheel'
-import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, GR, INK, IconoBloque, PastillaEstado, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
+import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, EstadoBloque, GR, INK, IconoBloque, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { CampoPrecio } from '../../ui/CampoPrecio'
 import { usePrecioEditable } from '../../../lib/useMoneda'
@@ -235,13 +235,13 @@ export function LlegadaYVuelta({
         {!abierto && nadaHecho ? (
           <div onClick={onAbrir} className="flex cursor-pointer items-center gap-3 p-3.5">
             <IconoBloque nombre={iconoDeMedio(ida.mode)} />
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span style={tituloBloqueStyle}>Llegada y vuelta</span>
+              <EstadoBloque texto={etiqueta} hecho={false} />
               <span className="text-[11.5px] text-text/55">
                 {origen} → {ciudad}
               </span>
             </span>
-            <PastillaEstado texto="Falta" hecho={false} />
             <FlechaBloque abierto={false} />
           </div>
         ) : !abierto ? (
@@ -286,13 +286,13 @@ export function LlegadaYVuelta({
           <>
             <div onClick={onToggle} className="flex cursor-pointer items-center gap-3 px-3.5 pb-2.5 pt-3.5">
               <IconoBloque nombre={iconoDeMedio(ida.mode)} hecho={hecho} />
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span style={tituloBloqueStyle}>Llegada y vuelta</span>
+                <EstadoBloque texto={etiqueta} hecho={hecho} />
                 <span className="text-[11.5px] text-text/55">
                   {origen} → {ciudad}
                 </span>
               </span>
-              <PastillaEstado texto={etiqueta} hecho={hecho} />
               <Icono nombre="arriba" size={16} style={{ color: 'rgba(28,34,48,.45)' }} />
             </div>
             <div className="flex flex-col gap-2 px-3 pb-3.5">

@@ -11,13 +11,14 @@ import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
 import { pagoActivo } from '../../lib/pago'
+import { getTodayTripStatus } from '../../lib/todayMode'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
 import { FlightAdjustSheet } from './reservas/FlightAdjustSheet'
-import { TripReadinessBadge } from './reservas/TripReadinessBadge'
+import { BotonCartera } from '../presupuesto/BotonCartera'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
 import { AlojamientoReservas, alojamientoHecho } from './reservas/AlojamientoReservas'
 import { TarjetaCuentaAtras } from './reservas/TarjetaCuentaAtras'
-import { FilaPresupuesto } from './presupuesto/FilaPresupuesto'
+import { ResumenViaje } from './reservas/ResumenViaje'
 import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
@@ -43,9 +44,9 @@ export function rangoDelViaje(route: Route): string {
 }
 
 /**
- * Pestaña RESERVAS (Tanda 6s, diseño «Reservas v4») — pantalla completa (mismo ✕ que RUTA/EXPLORAR), sin mapa. De arriba abajo: la tarjeta de la cuenta atrás y lo que falta por reservar (Tanda 6z6; gratis y de pago), el presupuesto, el resumen (solo de pago), Llegada y vuelta (solo de pago), Alojamiento,
- * Entradas y Free Tour, Excursiones y Útil para el viaje. Todo lo de pago va detrás del mismo interruptor (`pagoActivo`, src/lib/pago.ts). En el ordenador, en dos columnas. Los viajes de varios
- * destinos conservan además el acordeón de cada destino. El % de «viaje listo» se calcula en useTripReadiness.ts y sale en la cabecera (TripReadinessBadge).
+ * Pestaña RESERVAS (Tanda 6s, diseño «Reservas v4») — pantalla completa (mismo ✕ que RUTA/EXPLORAR), sin mapa. De arriba abajo: la tarjeta oscura de la cuenta atrás (Tanda 6z6), la tarjeta clara «Tu viaje a Roma · x de 3 listo» con lo que falta (gratis «x de 2»; Tanda 6z6b), Llegada y vuelta (solo de pago), Alojamiento,
+ * Entradas y Free Tour, Excursiones y Útil para el viaje. El presupuesto NO se abre desde aquí abajo: solo desde la cartera de la cabecera (la de esta pantalla, `BotonCartera`). Todo lo de pago va detrás del mismo interruptor (`pagoActivo`, src/lib/pago.ts). En el ordenador, en dos columnas. Los viajes de varios
+ * destinos conservan además el acordeón de cada destino. El % de «viaje listo» (useTripReadiness.ts) ya no sale en esta cabecera; solo queda el «!» de Reservas en la barra de abajo.
  */
 export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const pago = pagoActivo()
@@ -56,6 +57,9 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const reservations = useRouteStore((state) => state.reservations)
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
+  const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
+  /** Después del viaje ya no queda nada por reservar: ni la tarjeta oscura (se esconde sola) ni la clara salen. */
+  const viajeAcabado = getTodayTripStatus(route, simulada ?? undefined)?.phase === 'after'
   const pedido = useReservasFocusStore((state) => state.pedido)
   const limpiarPedido = useReservasFocusStore((state) => state.limpiar)
   const pedir = useReservasFocusStore((state) => state.pedir)
@@ -179,14 +183,14 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
               {route.origin} → {route.destination} · {rangoDelViaje(route)}
             </span>
           </span>
-          <TripReadinessBadge />
+          <BotonCartera />
         </div>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-10 pt-2 md:px-8">
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
-            {/* Lo de antes del viaje, arriba del todo (Tanda 6z6): la cuenta atrás y lo que falta por reservar. Después del viaje no sale. */}
-            <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} fichas={unDestino ? fichas : undefined} onFicha={(bloque) => pedir(bloque)} />
-            <FilaPresupuesto />
+            {/* Arriba del todo (Tanda 6z6b): la tarjeta oscura con SOLO la cuenta atrás (después del viaje no sale) y, aparte y debajo, la clara con lo que falta por reservar (solo con un destino). */}
+            <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} />
+            {unDestino && !viajeAcabado && <ResumenViaje ciudad={route.destination} fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <div className="flex min-w-0 flex-col gap-3.5">

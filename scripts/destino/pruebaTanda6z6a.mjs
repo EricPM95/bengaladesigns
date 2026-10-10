@@ -164,10 +164,10 @@ for (const [clave, route] of Object.entries(rutas)) {
         debe(/Estás en/.test(texto) && /Roma/.test(texto) && texto.includes(fecha) && new RegExp(`${n} de 3`).test(texto) && !DIA_N.test(texto.slice(0, texto.indexOf('Presupuesto') > 0 ? texto.indexOf('Presupuesto') : 400)), '2 tarjeta', `${nombre}: «durante» no es «Estás en Roma · ${fecha} · ${n} de 3» (${plano(texto).slice(0, 300)})`)
         debe(!/empieza en|Pon tus fechas/.test(texto), '2 tarjeta', `${nombre}: durante el viaje sale la cuenta atrás`)
       }
-      // Arriba del todo, y UNA sola tarjeta: el resumen está dentro, antes que la fila del presupuesto y no hay otro «x de n listo» en la pantalla.
+      // (Tanda 6z6b) El resumen ya no va DENTRO de la oscura: es la tarjeta clara de debajo; arriba del todo, antes que los bloques, y no hay otro «x de n listo» en la pantalla.
       const iResumen = html.indexOf('data-blk="resumen"')
-      const iPresupuesto = html.search(/Presupuesto/)
-      debe(iResumen > 0 && (iPresupuesto < 0 || iResumen < iPresupuesto), '2 tarjeta', `${nombre}: el resumen no está dentro de la tarjeta de arriba, antes del presupuesto`)
+      const iPrimerBloque = html.search(/data-blk="(llegada|aloj|entradas)"/)
+      debe(iResumen > 0 && (iPrimerBloque < 0 || iResumen < iPrimerBloque), '2 tarjeta', `${nombre}: el resumen no está arriba, antes de los bloques`)
       debe((html.match(/data-blk="resumen"/g) ?? []).length === 1 && (texto.match(/\d de \d listo/g) ?? []).length === 1, '2 tarjeta', `${nombre}: hay más de un resumen en la pantalla`)
     }
   }
@@ -186,7 +186,7 @@ for (const [clave, route] of Object.entries(rutas)) {
 {
   // Cada ficha baja a su bloque: el panel le pasa a la tarjeta el pedido de bloque; y en la gratis solo hay dos fichas.
   const panel = fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')
-  debe(/<TarjetaCuentaAtras[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panel) && /\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o la gratis lleva Llegada y vuelta')
+  debe(/<ResumenViaje[^>]*onFicha=\{\(bloque\) => pedir\(bloque\)\}/.test(panel) && /\.\.\.\(pago \? \[\{ bloque: 'llegada'/.test(panel), '2 tarjeta', 'las fichas no bajan a su bloque o la gratis lleva Llegada y vuelta')
   debe(!/useFaltaPorReservar|Te faltan/.test(fs.readFileSync('src/components/route/reservas/TarjetaCuentaAtras.tsx', 'utf8')), '2 tarjeta', 'queda la línea «Te faltan n cosas» en la tarjeta')
 }
 {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-/** La pantalla del presupuesto (Tanda 6z2): la abren el botón de la barra de abajo y la fila «Presupuesto · 334 €» de RESERVAS. Estado de pantalla: no se guarda con el viaje. */
+/** La pantalla del presupuesto (Tanda 6z2): la abre SOLO la cartera de la cabecera (`BotonCartera`, la de arriba de la app y la de RESERVAS; Tanda 6z6b). Estado de pantalla: no se guarda con el viaje. */
 interface PresupuestoUiState {
   abierto: boolean
   abrir: () => void
