@@ -96,7 +96,8 @@ debe(/Cerca de ti/.test(hoyPago), '2 pago HOY', 'en HOY de pago, durante el viaj
 for (const boton of ['Baños', 'Fuentes', 'Comer']) debe(hoyPago.split('\n').includes(boton), '2 pago HOY', `en «Cerca de ti» falta el botón «${boton}»`)
 debe(/Cómo llegar/.test(hoyPago) && /\bVisto\b/.test(hoyPago) && /No me da tiempo/.test(hoyPago) && /Ubicación/.test(hoyPago), '2 pago HOY', 'se han perdido [Cómo llegar], [Visto], [No me da tiempo] o [Ubicación]')
 const antes = hoyEn(route, { version: 'completa', hoy: '2027-03-01' })
-debe(!/Cerca de ti/.test(antes) && !/Escuchar/.test(antes), '2 pago HOY', 'antes del viaje salen «Cerca de ti» o «Escuchar»')
+// (Antes del viaje HOY solo cuenta lo que tendrá, en texto: no están los botones de «Cerca de ti» ni la siguiente parada.)
+debe(!/Cerca de ti/.test(antes) && !antes.split('\n').includes('Baños') && !antes.split('\n').includes('Fuentes') && !/Siguiente parada/.test(antes), '2 pago HOY', 'antes del viaje salen los botones de «Cerca de ti» o la siguiente parada')
 
 // Los botones abren EXPLORAR con ese filtro y un punto de partida: lo que se pide se lee una vez y se vacía.
 const fuenteCerca = fuente('src/components/route/hoy/CercaDeTi.tsx')
