@@ -6,6 +6,7 @@ import { subtituloDelViaje } from '../../lib/resumenViaje'
 import { Icono } from '../ui/Icono'
 import { NoticesSheet } from './NoticesSheet'
 import { PerfilSheet } from './PerfilSheet'
+import { usePerfilUi } from '../../store/usePerfilUi'
 
 /** Botón redondo de la cabecera (diseño «La cabecera»): 44 px de toque, sin fondo, la tinta de siempre. */
 const BOTON = 'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text transition-colors hover:bg-text/[.06]'
@@ -27,7 +28,9 @@ export function Header({ onTips, onOpenDates }: HeaderProps) {
   const abrirPresupuesto = usePresupuestoUi((state) => state.abrir)
   const { items, unreadCount } = useAppNotices()
   const [noticesOpen, setNoticesOpen] = useState(false)
-  const [perfilOpen, setPerfilOpen] = useState(false)
+  const perfilAbierto = usePerfilUi((state) => state.abierto)
+  const abrirPerfil = usePerfilUi((state) => state.abrir)
+  const cerrarPerfil = usePerfilUi((state) => state.cerrar)
   if (!route) return null
 
   return (
@@ -45,13 +48,13 @@ export function Header({ onTips, onOpenDates }: HeaderProps) {
         <Icono nombre="avisos" size={23} />
         {unreadCount > 0 && <span className="absolute right-[11px] top-2.5 h-[9px] w-[9px] rounded-full bg-accent" style={{ boxShadow: '0 0 0 2px rgb(var(--bg))' }} aria-hidden="true" />}
       </button>
-      <button type="button" onClick={() => setPerfilOpen(true)} aria-label="Perfil y mis viajes" title="Perfil y mis viajes" className="flex h-11 w-11 shrink-0 items-center justify-center">
+      <button type="button" onClick={abrirPerfil} aria-label="Perfil y mis viajes" title="Perfil y mis viajes" className="flex h-11 w-11 shrink-0 items-center justify-center">
         <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#1C2230] text-[#FFFDF8]" style={{ boxShadow: '0 0 0 2px rgb(var(--bg)),0 0 0 3.5px rgb(var(--accent))' }}>
           <Icono nombre="perfil" size={18} />
         </span>
       </button>
 
-      <PerfilSheet open={perfilOpen} onClose={() => setPerfilOpen(false)} onTips={onTips} />
+      <PerfilSheet open={perfilAbierto} onClose={cerrarPerfil} onTips={onTips} />
       {noticesOpen && (
         <NoticesSheet
           items={items}
