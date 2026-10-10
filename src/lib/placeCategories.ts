@@ -78,7 +78,7 @@ export const PLACE_FILTER_CHIPS: PlaceFilterChip[] = [
   { id: 'entradas', label: 'Entradas', color: '#B8860B', activeBg: '#FDF6E3', icon: '🎟️', categories: [] },
   // Autobús y no brújula: la brújula ya es el icono de "explorar" en la app (ver CompassIcon en
   // ExcursionBlocks.tsx) y aquí significaría otra cosa. El bus dice "esto es salir de la ciudad".
-  { id: 'excursiones', label: 'Excursiones', color: '#00897B', activeBg: '#E0F2F1', icon: '🚌', categories: [] },
+  { id: 'excursiones', label: 'Excursiones', color: '#00897B', activeBg: '#E0F2F1', icon: '', categories: [] },
   // Los baños: solo en Explorar (el «+» de los días no los enseña, no se pueden añadir a un día).
   { id: 'banos', label: 'Baños', color: '#546E7A', activeBg: '#ECEFF1', icon: '🚻', categories: ['banos'] },
   { id: 'fuentes', label: 'Fuentes', color: '#0288D1', activeBg: '#E1F5FE', icon: '🚰', categories: ['fuentes'] },

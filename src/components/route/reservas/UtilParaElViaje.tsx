@@ -4,16 +4,18 @@ import { countryDisplayName } from '../../../lib/readiness'
 import { buildCamperRentalLink, buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { ENLACE_ESIM, ENLACE_SEGURO, ENLACE_TARJETA } from '../../../lib/enlacesUtil'
-import { CambiarBoton, ICONOS, Icono } from './BloqueReservas'
+import { CambiarBoton, ICONOS } from './BloqueReservas'
 import { HojaPrecio } from './HojaPrecio'
 import { formatoImporte, leerImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
+import { Icono } from '../../ui/Icono'
+import type { NombreIcono } from '../../../lib/iconos'
 
 interface Tarjeta {
   id: string
   nombre: string
   etiqueta?: string
-  icono: string
+  icono: NombreIcono
   color: string
   enlace: string
   hecho: boolean
@@ -56,11 +58,11 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   const nombreAlquiler = isCamper ? 'Camper de alquiler' : 'Vehículo de alquiler'
 
   const tarjetas: Tarjeta[] = [
-    { id: 'seguro', nombre: 'Seguro de viaje', etiqueta: '5 % dto.', icono: ICONOS.shield, color: 'oklch(0.58 0.17 25)', enlace: ENLACE_SEGURO, hecho: Boolean(insurance) },
+    { id: 'seguro', nombre: 'Seguro de viaje', etiqueta: '5 % dto.', icono: ICONOS.shield, color: 'rgb(var(--accent))', enlace: ENLACE_SEGURO, hecho: Boolean(insurance) },
     ...(countryCode ? [{ id: 'esim', nombre: `eSIM ${countryDisplayName(countryCode)}`, etiqueta: '5 % dto.', icono: ICONOS.sim, color: 'oklch(0.55 0.1 220)', enlace: ENLACE_ESIM, hecho: Boolean(esim[countryCode]) }] : []),
     { id: 'tarjeta', nombre: 'Tarjeta sin comisiones', icono: ICONOS.card, color: 'oklch(0.42 0.03 250)', enlace: ENLACE_TARJETA, hecho: n26 },
     ...(hasRentalVehicle ? [{ id: 'alquiler', nombre: nombreAlquiler, icono: ICONOS.coche, color: 'oklch(0.5 0.08 160)', enlace: alquiler.url, hecho: Boolean(rental) }] : []),
-    ...(!pago ? [{ id: 'vuelos', nombre: 'Buscar vuelos', icono: ICONOS.avion, color: 'oklch(0.62 0.14 60)', enlace: 'https://www.skyscanner.net', hecho: false }] : []),
+    ...(!pago ? [{ id: 'vuelos', nombre: 'Buscar vuelos', icono: ICONOS.avion, color: 'rgb(var(--accent))', enlace: 'https://www.skyscanner.net', hecho: false }] : []),
   ]
 
   const compras: Compra[] = [
@@ -128,7 +130,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
           >
             <span className="flex items-center justify-between gap-1.5">
               <span className="flex h-7 w-7 items-center justify-center rounded-[9px] text-white" style={{ background: tarjeta.color }}>
-                <Icono d={tarjeta.icono} size={15} />
+                <Icono nombre={tarjeta.icono} size={15} />
               </span>
               {tarjeta.hecho ? (
                 <span className="h-[19px] rounded-full bg-[#E4F1E8] px-[7px] font-mono text-[10px] font-semibold leading-[19px] text-[oklch(0.4_0.1_150)]">✓</span>

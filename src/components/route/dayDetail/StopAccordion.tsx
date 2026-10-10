@@ -132,7 +132,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       photoUrl={stop.photoUrl}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)
       noPhoto={!stop.photoUrl}
-      iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.walk : undefined}
+      iconPath={stop.isFreeTour || stop.isFreeWalk ? KIND_ICON.free : undefined}
       onOpen={onOpen}
       menu={menu}
     />

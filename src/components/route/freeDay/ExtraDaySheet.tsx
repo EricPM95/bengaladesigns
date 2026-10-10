@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import { Icono } from '../../ui/Icono'
 
 /**
  * «Ya has visto lo mejor de Roma» (Tanda 6g): la hoja del día 7 en adelante y de los destinos sin días escritos. Sube desde abajo con su
@@ -13,9 +14,7 @@ export function ExtraDaySheet({ destination, onChoose, onClose }: { destination:
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
         <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
         <div className="overflow-y-auto px-6 pt-5">
           <h2 id="extra-day-heading" className="max-w-[calc(100%-2.5rem)] font-display text-[32px] leading-[1.1] text-text">

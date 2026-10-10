@@ -7,9 +7,9 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { DestinationDistanceConnector } from './DestinationDistanceConnector'
 import { DestinationDetailModal } from './DestinationDetailModal'
 import { ConfirmDialog } from './ConfirmDialog'
-import { MagicWandIcon } from './MagicWandIcon'
 import { destinoCambiado } from '../../lib/recuperarDestino'
 import { withUndo } from '../../store/useAddFlowStore'
+import { Icono } from '../ui/Icono'
 
 interface RouteOverviewProps {
   route: Route
@@ -82,14 +82,12 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                 className="group flex h-11 w-11 shrink-0 items-center justify-center disabled:cursor-not-allowed"
               >
                 <span className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
-                  <MagicWandIcon className="h-[19px] w-[19px]" />
+                  <Icono nombre="recuperar" className="h-[19px] w-[19px]" />
                 </span>
               </button>
             )}
             <button type="button" onClick={() => setDetailCity(segment.city)} aria-label={segment.city} tabIndex={-1} className="flex h-full w-[34px] shrink-0 items-center justify-center pr-2 text-text/45">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 6l6 6-6 6" />
-              </svg>
+              <Icono nombre="adelante" size={18} />
             </button>
             </div>
           </div>

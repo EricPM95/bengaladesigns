@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Stop } from '../../../lib/types'
 import { displayStopName, formatDuration } from '../../../lib/format'
+import { Icono } from '../../ui/Icono'
 
 interface SpareStopsSectionProps {
   stops: Stop[]
@@ -20,9 +21,7 @@ export function SpareStopsSection({ stops, onAdd }: SpareStopsSectionProps) {
         <span className="text-[14px] font-medium text-text">
           Si te sobra tiempo <span className="font-normal text-text/50">· {stops.length}</span>
         </span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 shrink-0 text-text/50 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true">
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <Icono nombre="abajo" className={`h-4 w-4 shrink-0 text-text/50 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
         <ul className="divide-y divide-text/[.08] border-t border-text/[.08]">

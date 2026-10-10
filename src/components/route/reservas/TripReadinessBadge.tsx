@@ -6,7 +6,7 @@ import { TripReadinessQuickPanel } from './TripReadinessQuickPanel'
 const STATE_CLASSES = {
   red: { dot: 'bg-accent-red', text: 'text-accent-red' },
   orange: { dot: 'bg-accent-gold', text: 'text-accent-gold' },
-  green: { dot: 'bg-accent', text: 'text-accent-hover' },
+  green: { dot: 'bg-accent-green', text: 'text-accent-green' },
 }
 
 /** Indicador de "% de viaje listo" — solo punto de color + número, sin texto adicional. Rojo (0%) → naranja (algo, no todo) → verde (100%). Clicable, abre un resumen rápido (no la lista completa, que vive en RESERVAS — ver TripReadinessQuickPanel.tsx). */

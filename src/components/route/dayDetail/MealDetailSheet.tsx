@@ -10,6 +10,7 @@ import { buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import type { DayStopRef } from './StopDetailSheet'
 import { Spinner } from '../../ui/Spinner'
+import { Icono } from '../../ui/Icono'
 
 // Mismos límites/valor por defecto que StopDetailSheet.tsx — el mapa ocupa aprox. el tercio
 // superior de la pantalla, con el mismo tirador arrastrable para agrandarlo/encogerlo.
@@ -46,9 +47,7 @@ interface MealDetailSheetProps {
 
 function BackIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
+    <Icono nombre="atras" className="h-5 w-5" />
   )
 }
 

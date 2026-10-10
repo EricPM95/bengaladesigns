@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { TIP_LABELS, useDestinationTips, type DestinationTip } from '../../lib/destinationTips'
 import { useRouteStore } from '../../store/useRouteStore'
+import { Icono } from '../ui/Icono'
 
 
 interface TripTipsSheetProps {
@@ -57,15 +58,10 @@ export function TripTipsSheet({ open, destination, onClose }: TripTipsSheetProps
               aria-label="Cerrar los tips"
               className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/10"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
+              <Icono nombre="cerrar" size={18} />
             </button>
             <span className="mt-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/[.08] text-[oklch(0.8_0.14_70)]" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18h6M10 21h4" />
-                <path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" />
-              </svg>
+              <Icono nombre="tips" size={24} />
             </span>
             {count > 0 && (
               <p className="mt-4 font-mono text-[11px] font-medium uppercase tracking-[.16em] text-[oklch(0.8_0.14_70)]">

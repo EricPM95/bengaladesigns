@@ -12,6 +12,7 @@ import { TimeField } from '../../ui/TimeField'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import { CampoPrecio } from '../../ui/CampoPrecio'
 import { usePrecioEditable } from '../../../lib/useMoneda'
+import { Icono } from '../../ui/Icono'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -481,9 +482,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
         <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
@@ -580,9 +579,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   }}
                   className="inline-flex items-center gap-1.5 px-2 py-1 text-[12px] font-medium text-text/65"
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M4 6h16v12H4zM4 7l8 6 8-6" />
-                  </svg>
+                  <Icono nombre="correo" size={13} />
                   <span className="underline underline-offset-2">Rellenar desde el email o el PDF</span>
                 </button>
               </p>

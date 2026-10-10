@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import { Icono } from '../../ui/Icono'
 
 /**
  * «¿Ajustamos tu ruta a tu vuelo?»: sube desde abajo al poner la hora de llegada o de salida, con el mismo estilo que «+ Añadir día».
@@ -13,9 +14,7 @@ export function FlightAdjustSheet({ onAuto, onManual, onClose }: { onAuto: () =>
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
         <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
         <p className="mt-4 font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">Tu vuelo</p>
         <h2 id="flight-adjust-heading" className="mt-1.5 max-w-[calc(100%-2.5rem)] font-display text-[26px] leading-[1.15] text-text">
@@ -24,9 +23,7 @@ export function FlightAdjustSheet({ onAuto, onManual, onClose }: { onAuto: () =>
         <div className="mt-5 flex flex-col gap-2.5">
           <button type="button" onClick={onAuto} className="flex items-center gap-3.5 rounded-2xl border border-text/[.12] px-3.5 py-3 text-left transition-colors hover:bg-bg-hover">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 19L17 7M14 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1zM19 12l.7 1.3L21 14l-1.3.7L19 16l-.7-1.3L17 14l1.3-.7z" />
-              </svg>
+              <Icono nombre="reorg" className="h-6 w-6" />
             </span>
             <span className="min-w-0">
               <span className="block font-display text-[19px] leading-tight text-text">Sí, ajústala por mí</span>
@@ -35,9 +32,7 @@ export function FlightAdjustSheet({ onAuto, onManual, onClose }: { onAuto: () =>
           </button>
           <button type="button" onClick={onManual} className="flex items-center gap-3.5 rounded-2xl border border-text/[.12] px-3.5 py-3 text-left transition-colors hover:bg-bg-hover">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E4EEDF] text-[#3F6B45]">
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z" />
-              </svg>
+              <Icono nombre="lapiz" className="h-6 w-6" />
             </span>
             <span className="min-w-0">
               <span className="block font-display text-[19px] leading-tight text-text">No, lo hago yo</span>

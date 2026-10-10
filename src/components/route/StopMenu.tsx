@@ -3,6 +3,7 @@ import type { DayPlan, Stop } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { TimeField } from '../ui/TimeField'
 import { diaCorto } from '../../lib/nombreDeDia'
+import { Icono } from '../ui/Icono'
 
 interface StopMenuProps {
   stop: Stop
@@ -49,10 +50,10 @@ export function StopMenu({ stop, dayId, days }: StopMenuProps) {
             {view === 'menu' && (
               <div className="space-y-0.5">
                 <button type="button" onClick={() => setView('swap')} className={menuItemClass}>
-                  🔄 Cambiar por otro sitio
+                  <Icono nombre="reorg" size={15} className="mr-1.5 inline-block align-[-3px]" />Cambiar por otro sitio
                 </button>
                 <button type="button" onClick={() => setView('remove')} className={menuItemClass}>
-                  ✕ Quitar de la ruta
+                  <Icono nombre="cerrar" size={15} className="mr-1.5 inline-block align-[-3px]" />Quitar de la ruta
                 </button>
                 <button type="button" onClick={() => setView('move')} className={menuItemClass}>
                   ↕ Mover a otro día

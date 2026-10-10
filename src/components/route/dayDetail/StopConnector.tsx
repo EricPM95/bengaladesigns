@@ -3,6 +3,7 @@ import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { TransitKindIcon, TransportModeIcon, type TransitKind } from './TransportModeIcons'
 import { TransportModeSheet } from './TransportModeSheet'
 import { OpenInMapsSheet } from './OpenInMapsSheet'
+import { Icono } from '../../ui/Icono'
 
 interface StopConnectorProps {
   /** Desplazamiento a mostrar en este hueco, o `null` si aquí no hay ninguno que mostrar: el hueco
@@ -121,9 +122,7 @@ export function StopConnector({ connector, fromName, toName, mode, onSelectMode,
               <span className="font-mono text-[12px] font-medium">
                 {selectedOption.mode === 'transit' && selectedOption.line ? selectedOption.durationLabel : `${selectedOption.durationLabel} · ${selectedOption.mode === 'walking' ? selectedOption.distanceLabel : MODE_LABEL[selectedOption.mode]}`}
               </span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              <Icono nombre="abajo" className="h-3 w-3 shrink-0" />
             </span>
             {/* Tramo largo: lo que se enseña es el transporte, pero ir andando sigue siendo una
                 opción real y el viajero tiene que poder verla sin abrir el selector. */}

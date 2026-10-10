@@ -6,6 +6,7 @@ import { AffiliateCardCarousel } from '../ui/AffiliateCardCarousel'
 import { BOOKING_BLUE, CIVITATIS_RED, buildActivitySearchUrl } from '../../lib/affiliateLinks'
 import { useAlojamientoUi } from '../../store/useAlojamientoUi'
 import { destinationExcursions } from '../../lib/destinationExcursions'
+import { Icono } from '../ui/Icono'
 
 interface DestinationDetailModalProps {
   city: string | null
@@ -46,7 +47,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             title="Cerrar"
             className="fixed left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent bg-bg-card text-text shadow-md transition-colors hover:bg-bg-hover"
           >
-            ✕
+            <Icono nombre="cerrar" size={18} />
           </button>
 
           <div className="mx-auto w-full max-w-lg space-y-4 px-6 pb-8 pt-20">
@@ -60,7 +61,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
 
             {!isCamper && (
               <div>
-                <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🏨 Alojamientos en {city}</p>
+                <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text"><Icono nombre="cama" size={16} className="mr-1.5 inline-block align-[-3px]" />Alojamientos en {city}</p>
                 <button
                   type="button"
                   onClick={() => useAlojamientoUi.getState().abrirMapa()}
@@ -73,7 +74,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             )}
 
             <div>
-              <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🎟 Actividades en {city}</p>
+              <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text"><Icono nombre="reservas" size={16} className="mr-1.5 inline-block align-[-3px]" />Actividades en {city}</p>
               <a href={buildActivitySearchUrl(city)} target="_blank" rel="noopener noreferrer">
                 <button
                   type="button"
@@ -88,7 +89,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
             {/* Solo si hay excursiones que enseñar: sin datos, el bloque no sale. */}
             {excursions.length > 0 && (
               <div>
-                <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text">🧭 Excursiones desde {city}</p>
+                <p className="mb-2 pt-[34px] font-sans text-body font-medium uppercase text-text"><Icono nombre="excursion" size={16} className="mr-1.5 inline-block align-[-3px]" />Excursiones desde {city}</p>
                 <AffiliateCardCarousel cards={excursions.map((excursion) => ({ id: excursion.id, name: excursion.name, photoUrl: excursion.photoUrl }))} />
               </div>
             )}

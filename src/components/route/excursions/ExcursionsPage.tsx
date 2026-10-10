@@ -8,6 +8,7 @@ import { formatReviewCount } from '../../../lib/format'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { WhereSheet } from './WhereSheet'
+import { Icono } from '../../ui/Icono'
 
 /** «Día entero · 13 h · recogida en Estación de Termini». */
 function detailLine(excursion: Excursion): string {
@@ -78,9 +79,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
           aria-label="Cerrar"
           className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-11 w-11 items-center justify-center rounded-full border border-text/15 bg-bg-card text-text"
         >
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
         <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">Un día fuera</p>
         <h1 id="excursions-heading" className="mt-1.5 max-w-[calc(100%-3.5rem)] font-display text-[28px] leading-[1.1] text-text">

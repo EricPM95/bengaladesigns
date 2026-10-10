@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { FIELD_BUTTON_CLASS, PickerSheet } from './PickerSheet'
+import { Icono } from './Icono'
 
 const ITEM_H = 44
 const VISIBLE = 5
@@ -99,10 +100,7 @@ export function TimeField({
     <>
       <button type="button" aria-label={ariaLabel ?? title} className={className} onClick={() => setOpen(true)}>
         <span className={shown ? '' : 'text-text-muted'}>{shown || placeholder}</span>
-        <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-text-soft" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="8.5" />
-          <path d="M12 7.5V12l3 2" />
-        </svg>
+        <Icono nombre="reloj" className="h-4 w-4 shrink-0 text-text-soft" />
       </button>
       {open &&
         (options && options.length > 0 ? (

@@ -3,6 +3,7 @@ import type { DidntMakeCutItem } from '../../lib/types'
 import { buildStopFromDidntMakeCut } from '../../lib/mockStopFactory'
 import { useRouteStore } from '../../store/useRouteStore'
 import { ImpactBanner } from './ImpactBanner'
+import { Icono } from '../ui/Icono'
 
 interface ExtrasPanelProps {
   dayId: string
@@ -29,7 +30,7 @@ export function ExtrasPanel({ dayId, items, defaultTime }: ExtrasPanelProps) {
   return (
     <div className="px-4 py-4">
       <button type="button" onClick={() => setCollapsed((v) => !v)} className="flex w-full items-center justify-between text-body font-medium text-text">
-        <span>📌 No entraron en la ruta</span>
+        <span><Icono nombre="mapa" size={16} className="mr-1.5 inline-block align-[-3px]" />No entraron en la ruta</span>
         <span className="text-text-muted">{collapsed ? '▾' : '▴'}</span>
       </button>
 

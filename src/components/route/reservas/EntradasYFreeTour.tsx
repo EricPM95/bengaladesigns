@@ -9,6 +9,7 @@ import { BloqueShell, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tit
 import { EntradaCard } from './EntradaCard'
 import { FichaEntrada } from './FichaEntrada'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
+import { Icono } from '../../ui/Icono'
 
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
 
@@ -58,7 +59,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
       <BloqueShell bloque="entradas">
         <div onClick={onToggle} className="flex cursor-pointer flex-col gap-3 p-3.5">
           <div className="flex items-center gap-3">
-            <IconoBloque d={ICONOS.ticket} hecho={hecho} />
+            <IconoBloque nombre={ICONOS.ticket} hecho={hecho} />
             <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span style={tituloBloqueStyle}>Entradas y Free Tour</span>
               <span style={{ font: "600 11px 'Geist Mono',monospace", color: hecho ? GR : 'oklch(0.5 0.17 5)' }}>
@@ -83,9 +84,7 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                   En tu ruta
                 </span>
                 <span className="-mt-1.5 flex items-center gap-1.5 text-[12px] text-text/65">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.17 5)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d={ICONOS.reloj} />
-                  </svg>
+                  <Icono nombre="reloj" size={13} style={{ color: 'oklch(0.55 0.17 5)' }} />
                   Las más buscadas se agotan: resérvalas pronto
                 </span>
                 {enRuta.map((item) =>

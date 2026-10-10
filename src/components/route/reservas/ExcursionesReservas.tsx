@@ -5,11 +5,12 @@ import { buildExcursionRow, dayOfReservation, hasEnoughDaysForExcursions, type R
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { ICONOS, Icono, LineaReservada } from './BloqueReservas'
+import { ICONOS, LineaReservada } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { enTuRuta, metaReserva } from './EntradasYFreeTour'
+import { Icono } from '../../ui/Icono'
 
 const sinCero = (hora: string) => hora.replace(/^0(\d:)/, '$1')
 
@@ -23,15 +24,13 @@ function FilaExcursion({ excursion, onPick }: { excursion: Excursion; onPick: ()
   return (
     <button type="button" onClick={onPick} className="flex min-h-[60px] items-center gap-3 rounded-2xl border border-text/[.08] bg-white py-2 pl-2 pr-3 text-left transition-colors hover:border-text/25">
       <span className="relative flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-xl text-white" style={{ background: excursion.page?.color ?? 'oklch(0.58 0.12 60)' }}>
-        {foto ? <img src={foto} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" /> : <Icono d={ICONOS.cols} size={20} stroke={1.7} />}
+        {foto ? <img src={foto} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" /> : <Icono nombre={ICONOS.excursion} size={20} />}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="font-display text-[17px] leading-[1.1] text-text">{excursion.title}</span>
         <span className="text-[11.5px] text-text/55">{mediaJornada ? 'Medio día' : 'Día completo'}</span>
       </span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M9 6l6 6-6 6" />
-      </svg>
+      <Icono nombre="adelante" size={16} style={{ color: 'rgba(28,34,48,.45)' }} />
     </button>
   )
 }
@@ -103,7 +102,7 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
           <>
             <div className="relative flex min-h-[88px] overflow-hidden rounded-[20px] border border-text/[.08] bg-white shadow-[0_1px_2px_rgba(28,34,48,.05),0_10px_22px_-18px_rgba(28,34,48,.4)]">
               <span className="flex w-[66px] flex-none items-center pl-3.5 text-white" style={{ clipPath: 'polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)', background: 'oklch(0.56 0.1 220)' }}>
-                <Icono d="M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3" size={20} stroke={1.7} />
+                <Icono nombre="excursion" size={20} />
               </span>
               <span className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 py-2.5 pl-1.5 pr-2">
                 <span style={{ font: "400 19px/1.05 'Instrument Serif',serif" }}>Excursiones desde {route.destination}</span>

@@ -7,54 +7,43 @@ import { usePresupuesto } from '../../../lib/usePresupuesto'
 import { importeDeTexto, formatoImporte, leerImporte, precioGuardado } from '../../../lib/dinero'
 import type { AbrirLinea, BloqueId, BloquePresupuesto, LineaPresupuesto } from '../../../lib/presupuesto'
 import { monedaDelViajero, personasDelViaje, useMonedas } from '../../../lib/useMoneda'
-import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
+import type { NombreIcono } from '../../../lib/iconos'
+import { Icono } from '../../ui/Icono'
 import type { Route } from '../../../lib/types'
 import { rangoDelViaje } from '../ReservasPanel'
 import { AddReservationSheet, type ReservationTarget } from '../reservas/AddReservationSheet'
 import { HojaPrecio } from '../reservas/HojaPrecio'
 import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
-import { ICONOS } from '../reservas/BloqueReservas'
 
 /** El color y el icono de cada bloque (la barra de la tarjeta oscura, el cuadradito de cada bloque y los puntos de debajo). */
-const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; icono: string }> = {
-  transporte: { color: 'oklch(0.72 0.12 75)', fondo: 'oklch(0.72 0.12 75 / .16)', tinta: 'oklch(0.5 0.11 70)', icono: ICONOS.avion },
-  ruta: { color: 'oklch(0.62 0.17 5)', fondo: 'oklch(0.55 0.17 5 / .12)', tinta: 'oklch(0.5 0.17 5)', icono: 'M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 15c0-5 12-1 12-6' },
-  util: { color: 'oklch(0.66 0.1 160)', fondo: 'oklch(0.6 0.1 160 / .14)', tinta: 'oklch(0.42 0.1 160)', icono: ICONOS.shield },
-  extras: { color: 'oklch(0.65 0.1 220)', fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)', icono: 'M12 5v14M5 12h14' },
+const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; icono: NombreIcono }> = {
+  transporte: { color: 'oklch(0.72 0.12 75)', fondo: 'oklch(0.72 0.12 75 / .16)', tinta: 'oklch(0.5 0.11 70)', icono: 'avion' },
+  ruta: { color: 'rgb(var(--accent))', fondo: 'rgb(var(--accent) / .12)', tinta: 'rgb(var(--accent-hover))', icono: 'ruta' },
+  util: { color: 'oklch(0.66 0.1 160)', fondo: 'oklch(0.6 0.1 160 / .14)', tinta: 'oklch(0.42 0.1 160)', icono: 'maleta' },
+  extras: { color: 'oklch(0.65 0.1 220)', fondo: 'oklch(0.55 0.1 220 / .14)', tinta: 'oklch(0.45 0.1 220)', icono: 'extras' },
 }
 /** El icono de cada línea según lo que es (el billete, el hotel, la entrada…). */
-function iconoDeLinea(abrir: AbrirLinea, bloque: BloqueId): string {
+function iconoDeLinea(abrir: AbrirLinea, bloque: BloqueId): NombreIcono {
   switch (abrir.tipo) {
     case 'llegada':
     case 'vuelta':
     case 'transporte':
-      return ICONOS.avion
+      return 'avion'
     case 'alojamiento':
-      return ICONOS.hotel
+      return 'cama'
     case 'coche':
-      return ICONOS.coche
+      return 'coche'
     case 'reserva':
-      return ICONOS.ticket
+      return 'reservas'
     case 'seguro':
-      return ICONOS.shield
+      return 'seguro'
     case 'esim':
-      return ICONOS.sim
+      return 'esim'
     default:
       return ESTILO[bloque].icono
   }
 }
-const OJO_ABIERTO = 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'
-const OJO_CERRADO = 'M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.8 8.4 2 12 2 12s4 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2'
-
 const caja = { border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)' }
-
-function Icono({ d, size = 16, stroke = 1.8 }: { d: string; size?: number; stroke?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d={d} />
-    </svg>
-  )
-}
 
 /** Una línea de un bloque: nombre, lo de debajo y el importe; en otra moneda, «800 MXN» con «≈ 41 €» debajo (o «Sin cambio para MXN»). */
 function Linea({ linea, bloque, moneda, onClick }: { linea: LineaPresupuesto; bloque: BloqueId; moneda: string; onClick?: () => void }) {
@@ -62,7 +51,7 @@ function Linea({ linea, bloque, moneda, onClick }: { linea: LineaPresupuesto; bl
   const contenido = (
     <>
       <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-white text-text/70">
-        <Icono d={iconoDeLinea(linea.abrir, bloque)} size={15} />
+        <Icono nombre={iconoDeLinea(linea.abrir, bloque)} size={15} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-px">
         <span className="text-[13px] font-medium leading-[1.25]">{linea.nombre}</span>
@@ -93,7 +82,7 @@ function CabeceraBloque({ id, titulo, suma }: { id: BloqueId; titulo: string; su
   return (
     <div className="flex items-center gap-2.5">
       <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px]" style={{ background: estilo.fondo, color: estilo.tinta }}>
-        <Icono d={estilo.icono} stroke={id === 'extras' ? 2 : 1.8} />
+        <Icono nombre={estilo.icono} size={16} />
       </span>
       <span className="flex-1" style={{ font: "400 21px/1 'Instrument Serif',serif" }}>
         {titulo}
@@ -132,7 +121,7 @@ function Extras({ bloque, moneda, route }: { bloque: BloquePresupuesto | null; m
               )}
             </span>
             <button type="button" aria-label={`Quitar ${linea.nombre}`} onClick={() => extra && removeGastoExtra(extra.id)} className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-text/50 hover:bg-[#EDE4D3]">
-              <Icono d={EXPLORE_ICONS.close} size={14} stroke={2} />
+              <Icono nombre="cerrar" size={14} />
             </button>
           </div>
         )
@@ -310,7 +299,7 @@ export function PantallaPresupuesto() {
     <div className="map-cover-overlay fixed inset-0 z-[80] flex flex-col bg-bg" role="dialog" aria-modal="true" aria-labelledby="titulo-presupuesto">
       <div className="flex flex-none items-center gap-3 px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))] md:px-8">
         <button type="button" onClick={cerrar} aria-label="Atrás" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#FFFDF8] text-text shadow-[0_1px_2px_rgba(28,34,48,.08)]">
-          <Icono d={EXPLORE_ICONS.back} size={18} stroke={2} />
+          <Icono nombre="atras" size={18} />
         </button>
         <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
           <span id="titulo-presupuesto" style={{ font: "400 28px/1 'Instrument Serif',serif" }}>
@@ -356,7 +345,7 @@ export function PantallaPresupuesto() {
                     <span style={{ font: "600 12px 'Geist Mono',monospace", letterSpacing: verPorPersona && porPersona ? 0 : '.08em' }}>{verPorPersona && porPersona ? formatoImporte(porPersona) : `${simbolo} •••`}</span> por persona
                   </span>
                   <span className="opacity-75">
-                    <Icono d={verPorPersona ? OJO_ABIERTO : OJO_CERRADO} size={14} />
+                    <Icono nombre={verPorPersona ? 'ojo' : 'ojoCerrado'} size={14} />
                   </span>
                 </button>
               ) : null}

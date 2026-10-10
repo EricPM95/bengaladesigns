@@ -11,7 +11,6 @@ import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
 import { pagoActivo } from '../../lib/pago'
-import { EXPLORE_ICONS } from '../../lib/exploreStyle'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
 import { FlightAdjustSheet } from './reservas/FlightAdjustSheet'
 import { TripReadinessBadge } from './reservas/TripReadinessBadge'
@@ -22,6 +21,7 @@ import { FilaPresupuesto } from './presupuesto/FilaPresupuesto'
 import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
+import { Icono } from '../ui/Icono'
 
 interface ReservasPanelProps {
   route: Route
@@ -147,9 +147,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
         .filter((opportunity) => !opportunity.actionable)
         .map((opportunity) => (
           <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-border bg-bg-hover p-3.5">
-            <span aria-hidden="true" className="mt-0.5 shrink-0 text-body">
-              🌙
-            </span>
+            <Icono nombre="noche" size={18} className="mt-0.5 shrink-0" />
             <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
           </div>
         ))}
@@ -166,11 +164,9 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
             aria-label="Cerrar"
             title="Cerrar"
             className="flex h-[42px] w-[42px] flex-none items-center justify-center rounded-full bg-bg-card text-accent"
-            style={{ border: '1.5px solid oklch(0.55 0.15 45)' }}
+            style={{ border: '1.5px solid rgb(var(--accent))' }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d={EXPLORE_ICONS.close} />
-            </svg>
+            <Icono nombre="cerrar" size={18} />
           </button>
           <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
             <span className="font-display" style={{ fontSize: 30, lineHeight: 1 }}>

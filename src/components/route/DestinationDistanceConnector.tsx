@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Coordinates } from '../../lib/types'
 import { getRoutedDistance } from '../../lib/mapboxDirections'
+import { Icono } from '../ui/Icono'
 
 interface DestinationDistanceConnectorProps {
   from: Coordinates | null
@@ -9,10 +10,7 @@ interface DestinationDistanceConnectorProps {
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
-      <circle cx="11" cy="11" r="7" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
+    <Icono nombre="lupa" className="h-3.5 w-3.5" />
   )
 }
 

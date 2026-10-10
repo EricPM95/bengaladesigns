@@ -12,6 +12,7 @@ import type { DayStopRef } from './StopDetailSheet'
 import { TipBox } from './TipBox'
 import { LocalSecretBox } from './LocalSecretBox'
 import { Button } from '../../ui/Button'
+import { Icono } from '../../ui/Icono'
 
 const MAP_MIN_VH = 15
 const MAP_MAX_VH = 75
@@ -34,9 +35,7 @@ interface ArrivalDetailSheetProps {
 
 function PlaneIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.5V22L12 21l4.5 1.5V20.5L14 19v-5.5l7 2.5z" />
-    </svg>
+    <Icono nombre="avion" className="h-4 w-4" />
   )
 }
 
@@ -257,7 +256,7 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, trans
                         </div>
                       ))}
                       <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-                        <p className="text-small text-text-soft">🚕 Taxi</p>
+                        <p className="flex items-center gap-1.5 text-small text-text-soft"><Icono nombre="coche" size={16} className="shrink-0" />Taxi</p>
                         <p className="shrink-0 text-caption font-medium text-text-muted">{airport.taxiPriceLabel}</p>
                       </div>
                     </div>

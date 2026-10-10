@@ -17,13 +17,13 @@ interface TripReadinessQuickPanelProps {
 const STATE_TEXT_CLASSES = {
   red: 'text-accent-red',
   orange: 'text-accent-gold',
-  green: 'text-accent-hover',
+  green: 'text-accent-green',
 }
 
 const STATE_BAR_CLASSES = {
   red: 'bg-accent-red',
   orange: 'bg-accent-gold',
-  green: 'bg-accent',
+  green: 'bg-accent-green',
 }
 
 const URGENT_ITEMS_LIMIT = 3

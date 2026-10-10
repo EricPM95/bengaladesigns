@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { GeneralBookingModal } from '../reservas/GeneralBookingModal'
+import { Icono } from '../../ui/Icono'
 
 interface VehicleBlockProps {
   /** 'camper': sustituye por completo al bloque de alojamiento (es donde duermes). 'rental-car': aparece ADEMÁS del de alojamiento (logística aparte). */
@@ -9,8 +10,8 @@ interface VehicleBlockProps {
 }
 
 const COPY = {
-  camper: { icon: '🚐', title: 'Añade tu camper/autocaravana', modalTitle: 'Camper / Autocaravana', itemLabel: 'la camper/autocaravana', placeholder: 'Northbound, MotorhomeRepublic…' },
-  'rental-car': { icon: '🚗', title: 'Añade tu vehículo de alquiler', modalTitle: 'Vehículo de alquiler', itemLabel: 'el vehículo de alquiler', placeholder: 'Europcar, Goldcar…' },
+  camper: { icon: 'coche' as const, title: 'Añade tu camper/autocaravana', modalTitle: 'Camper / Autocaravana', itemLabel: 'la camper/autocaravana', placeholder: 'Northbound, MotorhomeRepublic…' },
+  'rental-car': { icon: 'coche' as const, title: 'Añade tu vehículo de alquiler', modalTitle: 'Vehículo de alquiler', itemLabel: 'el vehículo de alquiler', placeholder: 'Europcar, Goldcar…' },
 }
 
 /**
@@ -30,7 +31,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
     <>
       {booking ? (
         <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent-soft/40 p-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body">{copy.icon}</span>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body"><Icono nombre={copy.icon} size={20} /></span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-small font-medium text-text">{booking.provider}</p>
             <p className="text-caption text-text-soft">Necesaria para todo tu viaje{precioGuardado(booking) ? ` · ${formatoImporte(precioGuardado(booking) as Importe)}` : ''}</p>
@@ -41,7 +42,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
         </div>
       ) : (
         <div className="flex items-center gap-3 rounded-xl border border-dashed border-accent/40 bg-accent-soft/20 p-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body">{copy.icon}</span>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-body"><Icono nombre={copy.icon} size={20} /></span>
           <div className="min-w-0 flex-1">
             <p className="text-small font-medium text-text">{copy.title}</p>
             <p className="text-caption text-text-soft">Necesaria para todo tu viaje</p>

@@ -12,6 +12,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { alDia, elDia, tieneFechas, tuDia } from '../../../lib/nombreDeDia'
 import { TimeField } from '../../ui/TimeField'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
+import { Icono } from '../../ui/Icono'
 
 /** Lo que se añade: un lugar, un restaurante (va como comida o cena) o una excursión. */
 export type AddItem = { kind: 'place'; place: DestinationPlace } | { kind: 'excursion'; excursion: Excursion }
@@ -155,9 +156,7 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
         <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
         <div className="overflow-y-auto px-6 pt-4">
           <p className="max-w-[calc(100%-2.5rem)] font-mono text-[10.5px] font-medium uppercase tracking-[.12em] text-accent">{name}</p>

@@ -2,6 +2,7 @@ import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { formatDuration } from '../../../lib/format'
 import { KIND_ICON } from '../../../lib/stopKind'
 import { TrazoCard } from './TrazoCards'
+import { Icono } from '../../ui/Icono'
 
 /**
  * Prompt 6 — la tarjeta de un paseo por barrio. Se parece a una parada pero tiene que leerse como
@@ -29,7 +30,7 @@ export function ZoneWalkCard({ stop, onDismiss }: { stop: MockStopDetail; startT
           title="Quitar este paseo"
           className="flex h-7 w-7 items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-[12px] text-text/60 hover:bg-bg-hover"
         >
-          ✕
+          <Icono nombre="cerrar" size={14} />
         </button>
       }
     />

@@ -18,10 +18,10 @@ import { LocalSecretBox } from './LocalSecretBox'
 import { Spinner } from '../../ui/Spinner'
 import { ClockIcon, HourglassIcon, FreeTourIcon, MoonIcon } from '../../ui/TimeIcons'
 import { withoutLeadingEmoji } from '../../../lib/stopKind'
-import { EXPLORE_ICONS } from '../../../lib/exploreStyle'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
+import { Icono } from '../../ui/Icono'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -80,63 +80,35 @@ interface StopDetailSheetProps {
 
 function GlobeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" />
-    </svg>
+    <Icono nombre="web" className="h-4 w-4 shrink-0" />
   )
 }
 
 function PinIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11Z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
+    <Icono nombre="mapa" className="h-4 w-4 shrink-0" />
   )
 }
 
 /** Por fuera: la cámara (el mismo trazo fino que la cabecera de la parada, KIND_ICON.camera). */
 function CameraIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-text-soft">
-      <path d="M4 8h3l2-3h6l2 3h3v11H4zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
-    </svg>
+    <Icono nombre="camara" className="h-4 w-4 shrink-0 text-text-soft" />
   )
 }
 
 function MetroIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <rect x="5" y="3" width="14" height="14" rx="4" />
-      <circle cx="8.5" cy="12.5" r="0.5" fill="currentColor" />
-      <circle cx="15.5" cy="12.5" r="0.5" fill="currentColor" />
-      <path d="M8 21l1.5-3h5L16 21M5 17h14" />
-    </svg>
-  )
+  return <Icono nombre="metro" className="h-4 w-4 shrink-0" />
 }
 
 /** Título de la sección "Transporte": mismo tamaño que el reloj de "Horario". */
 function TransportIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
-      <rect x="5" y="3" width="14" height="14" rx="4" />
-      <path d="M8 21l1.5-3h5L16 21M5 11h14" />
-    </svg>
-  )
+  return <Icono nombre="bus" className="h-3.5 w-3.5 shrink-0" />
 }
 
 function BusIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-      <rect x="4" y="4" width="16" height="13" rx="2" />
-      <path d="M4 11h16M8 4v13M16 4v13" />
-      <circle cx="7.5" cy="19.5" r="1.2" />
-      <circle cx="16.5" cy="19.5" r="1.2" />
-    </svg>
-  )
+  return <Icono nombre="bus" className="h-4 w-4 shrink-0" />
 }
-
 
 /**
  * Ficha de una parada — pantalla completa con el mismo patrón mapa arriba + panel deslizable abajo
@@ -474,9 +446,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       className="flex items-center gap-1.5 text-caption transition-colors"
                       style={{ color: recomendacion.liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.6)' }}
                     >
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill={recomendacion.liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
-                        <path d={EXPLORE_ICONS.heart} />
-                      </svg>
+                      <Icono nombre="gusta" size={17} relleno={recomendacion.liked} />
                       {recomendacion.texto}
                     </button>
                   )}
@@ -763,7 +733,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                         ))}
                         {nearbyTransit.bus.map((entry, index) => (
                           <p key={`bus-${index}`} className="flex items-center gap-1.5 text-small text-text-soft">
-                            {entry.kind === 'tram' ? <span aria-hidden="true">🚋</span> : <BusIcon />}
+                            {entry.kind === 'tram' ? <Icono nombre="tranvia" className="h-4 w-4 shrink-0" /> : <BusIcon />}
                             {entry.linea ? `${entry.linea} · ${entry.parada}` : entry.parada}
                           </p>
                         ))}

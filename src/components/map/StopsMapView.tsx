@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { APP_LANGUAGE } from '../../lib/appLanguage'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { GROSOR_ICONO } from '../../lib/iconos'
 import type { Coordinates } from '../../lib/types'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
@@ -244,7 +245,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
           inner.style.border = '2.5px solid #fff'
           inner.style.boxShadow = '0 6px 14px -4px rgba(28,34,48,.5)'
           const iconSize = Math.round(size * 0.47)
-          inner.innerHTML = `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${marker.iconPath}"/></svg>`
+          inner.innerHTML = `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${GROSOR_ICONO}" stroke-linecap="round" stroke-linejoin="round"><path d="${marker.iconPath}"/></svg>`
         } else {
           inner.className = `flex ${marker.small ? 'h-5 w-5' : 'h-6 w-6'} cursor-pointer items-center justify-center rounded-full text-[11px] font-semibold shadow-[0_6px_14px_-4px_rgba(28,34,48,.5)] ring-2 ring-white transition-transform`
           inner.textContent = marker.icon ?? String(marker.number)
@@ -350,7 +351,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
       el.style.transform = `${shift && !isHidden ? `translate(${shift[0]}px,${shift[1]}px) ` : ''}${scale}`.trim()
       el.style.zIndex = !isHidden && stopId === activeStopId ? '10' : ''
       // El aro dorado de «en tu ruta» (solo los pines con icono de trazo fino).
-      if (marker?.iconPath) el.style.boxShadow = `${ringKey && ringKey.split('|').includes(stopId) ? '0 0 0 3.5px oklch(0.7 0.17 60),' : ''}0 6px 14px -4px rgba(28,34,48,.5)`
+      if (marker?.iconPath) el.style.boxShadow = `${ringKey && ringKey.split('|').includes(stopId) ? '0 0 0 3.5px rgb(var(--accent)),' : ''}0 6px 14px -4px rgba(28,34,48,.5)`
     }
     // El pointer-events sí va en el raíz (Mapbox no lo toca): un pin invisible no debe seguir
     // capturando clicks ni abriendo su popup.

@@ -1,6 +1,7 @@
 import type { TransportSegment, TransportSegmentAlternative } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { transportModeIcon } from '../../lib/cityTransitionTransport'
+import { Icono } from '../ui/Icono'
 
 interface TransportSectionProps {
   transport: TransportSegment
@@ -26,7 +27,7 @@ function AlternativeCard({ alternative, onClick }: { alternative: TransportSegme
       className="w-full rounded-xl border border-border bg-bg-card px-4 py-3 text-left transition-colors hover:border-border-accent hover:bg-bg-hover"
     >
       <span className="flex items-center gap-2 text-body font-medium text-text">
-        <span className="text-lg leading-none">{transportModeIcon(alternative.mode)}</span>
+        <Icono nombre={transportModeIcon(alternative.mode)} size={22} />
         {MODE_LABEL[alternative.mode]}
       </span>
       {(alternative.durationLabel || alternative.priceLabel) && (
@@ -53,7 +54,7 @@ export function TransportSection({ transport, dayId }: TransportSectionProps) {
     return (
       <div className="space-y-2 px-4 py-4">
         <p className="text-body font-medium text-text">
-          🧭 Cómo llegar: {transport.fromCity} → {transport.toCity}
+          <Icono nombre="explorar" size={16} className="mr-1.5 inline-block align-[-3px]" />Cómo llegar: {transport.fromCity} → {transport.toCity}
         </p>
         <div className="space-y-2">
           {transport.alternatives.map((alternative) => (
@@ -70,7 +71,7 @@ export function TransportSection({ transport, dayId }: TransportSectionProps) {
     <div className="space-y-2 px-4 py-4">
       <div className="flex items-center justify-between gap-2 rounded-xl border border-accent bg-accent-soft px-4 py-3">
         <span className="flex items-center gap-2 text-body font-medium text-accent-hover">
-          <span className="text-lg leading-none">{transportModeIcon(transport.mode)}</span>
+          <Icono nombre={transportModeIcon(transport.mode)} size={22} />
           <span>
             {transport.fromCity} → {transport.toCity}: {MODE_LABEL[transport.mode]}
           </span>
@@ -91,7 +92,7 @@ export function TransportSection({ transport, dayId }: TransportSectionProps) {
 
       {transport.rentalPickupCity && transport.rentalReturnCity && transport.rentalPickupCity !== transport.rentalReturnCity && (
         <p className="text-small text-text-muted">
-          🔑 Recogida en {transport.rentalPickupCity} · Devolución en {transport.rentalReturnCity} — puede llevar cargo por devolución en otra ciudad,
+          <Icono nombre="coche" size={16} className="mr-1.5 inline-block align-[-3px]" />Recogida en {transport.rentalPickupCity} · Devolución en {transport.rentalReturnCity} — puede llevar cargo por devolución en otra ciudad,
           revísalo al reservar.
         </p>
       )}
@@ -103,7 +104,7 @@ export function TransportSection({ transport, dayId }: TransportSectionProps) {
             <>
               {' · '}
               <a href={transport.searchUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:text-accent-hover">
-                🔍 Buscar {MODE_LABEL[transport.mode].toLowerCase()} →
+                <Icono nombre="lupa" size={16} className="mr-1.5 inline-block align-[-3px]" />Buscar {MODE_LABEL[transport.mode].toLowerCase()} →
               </a>
             </>
           )}

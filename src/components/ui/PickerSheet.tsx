@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { Icono } from './Icono'
 
 /**
  * La hoja desde abajo de los selectores de fecha y de hora (Tanda 6k, punto 8): la misma para toda la app. Se cierra con el fondo, con Escape
@@ -24,9 +25,7 @@ export function PickerSheet({ title, children, onClose, onDone, doneLabel = 'Lis
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
         <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <Icono nombre="cerrar" className="h-5 w-5" />
         </button>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2 pt-4">
           <h2 className="max-w-[calc(100%-2.5rem)] font-display text-[24px] leading-[1.15] text-text">{title}</h2>

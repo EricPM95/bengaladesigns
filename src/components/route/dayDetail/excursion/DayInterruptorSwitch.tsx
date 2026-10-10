@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Icono } from '../../../ui/Icono'
 
 /**
  * El interruptor [Roma | Excursión] del día 4 (Tanda 6g, diseño «2a · Interruptor»).
@@ -16,9 +17,7 @@ interface DayInterruptorSwitchProps {
 /** Icono de casa, trazo fino y sin relleno. */
 function HouseIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-[15px] w-[15px] shrink-0" aria-hidden="true">
-      <path d="M3 11l9-7 9 7M5 10v10h14V10" />
-    </svg>
+    <Icono nombre="casa" className="h-[15px] w-[15px] shrink-0" />
   )
 }
 
