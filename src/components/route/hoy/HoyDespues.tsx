@@ -2,11 +2,10 @@ import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import { addDaysToIso, formatHeaderDateRangeShortEs, formatWeekdayAbbrEs } from '../../../lib/dateRange'
 import { empezarViajeNuevo } from '../../../lib/nuevoViaje'
-import { usePerfilUi } from '../../../store/usePerfilUi'
 import { Icono } from '../../ui/Icono'
 import { NewTripSheet } from '../../layout/NewTripSheet'
-import { GaleriaRecuerdos } from '../fotos/GaleriaRecuerdos'
-import { CabeceraCaja, CajaBlanca, FRAMBUESA, ojoMono, TarjetaOscura } from './piezas'
+import { TarjetaRecuerdos } from '../fotos/TarjetaRecuerdos'
+import { FRAMBUESA, ojoMono, TarjetaOscura } from './piezas'
 
 /**
  * HOY después del viaje (Tanda 6z3 y 6z6, diseño «Después del viaje»; solo de pago, como todo HOY): la tarjeta «Tu viaje a Roma» con sus días en fichas de fecha, «Guarda tus recuerdos» con las fotos del viaje
@@ -43,15 +42,7 @@ export function HoyDespues({ route, startIso }: { route: Route; startIso: string
         </div>
       </TarjetaOscura>
 
-      <CajaBlanca>
-        <CabeceraCaja icono="camara" titulo="Guarda tus recuerdos" />
-        <GaleriaRecuerdos />
-        {/* El álbum del viaje, en el Perfil (lo pinta la parte del Perfil; aquí solo se abre). */}
-        <button type="button" onClick={() => usePerfilUi.getState().abrirAlbum(route.id)} className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-[#1C2230]/20 bg-white text-[14.5px] font-semibold text-[#1C2230]">
-          <Icono nombre="camara" size={17} />
-          Ver mis recuerdos
-        </button>
-      </CajaBlanca>
+      <TarjetaRecuerdos route={route} />
 
       <div className="flex flex-none items-center gap-3 rounded-[22px] bg-[#FFFDF8] py-3.5 pl-[18px] pr-3.5" style={{ border: '1px dashed rgba(28,34,48,.22)' }}>
         <span className="min-w-0 flex-1" style={{ font: "400 22px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>
