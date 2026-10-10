@@ -1,10 +1,9 @@
 import type { Coordinates } from './types'
 
 /**
- * Previsión de lluvia de un día con Open-Meteo (gratis, sin clave). Se guarda en memoria por (lugar, fecha) para no repetir la
+ * Previsión de lluvia de un día, pedida a NUESTRO servidor (/api/tiempo/*; él habla con Open-Meteo y la guarda ~3 h): la app nunca llama al proveedor. Se guarda en memoria por (lugar, fecha) para no repetir la
  * llamada; a las 3 horas se vuelve a pedir, así que la previsión de la víspera se refresca esa misma mañana.
  */
-const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 const CACHE_TTL_MS = 3 * 60 * 60 * 1000
 /** Umbrales de «hay previsión de lluvia» (PARA_CODE_TANDA6, punto 5). */
 export const RAIN_PROBABILITY_THRESHOLD = 50
@@ -24,27 +23,11 @@ export function fetchHourlyRain(at: Coordinates, dateIso: string): Promise<Hourl
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value
   const value = (async () => {
     try {
-      const url = new URL(FORECAST_URL)
-      url.searchParams.set('latitude', String(at.lat))
-      url.searchParams.set('longitude', String(at.lng))
-      url.searchParams.set('hourly', 'precipitation_probability,precipitation')
-      url.searchParams.set('timezone', 'auto')
-      url.searchParams.set('start_date', dateIso)
-      url.searchParams.set('end_date', dateIso)
-      const response = await fetch(url.toString())
+      const response = await fetch(`/api/tiempo/horas?lat=${at.lat.toFixed(2)}&lng=${at.lng.toFixed(2)}&fecha=${encodeURIComponent(dateIso)}`)
       if (!response.ok) return null
-      const data = (await response.json()) as { hourly?: { time?: string[]; precipitation_probability?: (number | null)[]; precipitation?: (number | null)[] } }
-      const times = data.hourly?.time
-      if (!times) return null
-      const probability = new Array<number>(24).fill(0)
-      const precipitation = new Array<number>(24).fill(0)
-      times.forEach((time, index) => {
-        const hour = Number(time.slice(11, 13))
-        if (Number.isNaN(hour) || hour < 0 || hour > 23) return
-        probability[hour] = data.hourly?.precipitation_probability?.[index] ?? 0
-        precipitation[hour] = data.hourly?.precipitation?.[index] ?? 0
-      })
-      return { probability, precipitation }
+      const data = (await response.json()) as { ok?: boolean; probability?: number[]; precipitation?: number[] }
+      if (!data.ok || !Array.isArray(data.probability) || !Array.isArray(data.precipitation)) return null
+      return { probability: data.probability, precipitation: data.precipitation }
     } catch {
       return null
     }
@@ -80,24 +63,10 @@ export function fetchDailyWeather(at: Coordinates, startIso: string, endIso: str
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value
   const value = (async () => {
     try {
-      const url = new URL(FORECAST_URL)
-      url.searchParams.set('latitude', String(at.lat))
-      url.searchParams.set('longitude', String(at.lng))
-      url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,precipitation_probability_max')
-      url.searchParams.set('timezone', 'auto')
-      url.searchParams.set('start_date', startIso)
-      url.searchParams.set('end_date', endIso)
-      const response = await fetch(url.toString())
+      const response = await fetch(`/api/tiempo/dias?lat=${at.lat.toFixed(2)}&lng=${at.lng.toFixed(2)}&desde=${encodeURIComponent(startIso)}&hasta=${encodeURIComponent(endIso)}`)
       if (!response.ok) return null
-      const data = (await response.json()) as { daily?: { time?: string[]; temperature_2m_max?: (number | null)[]; temperature_2m_min?: (number | null)[]; precipitation_probability_max?: (number | null)[] } }
-      const times = data.daily?.time
-      if (!times || times.length === 0) return null
-      return times.map((time, index) => ({
-        dateIso: time,
-        maxima: data.daily?.temperature_2m_max?.[index] ?? null,
-        minima: data.daily?.temperature_2m_min?.[index] ?? null,
-        lluvia: data.daily?.precipitation_probability_max?.[index] ?? null,
-      }))
+      const data = (await response.json()) as { ok?: boolean; dias?: DiaDeTiempo[] }
+      return data.ok && Array.isArray(data.dias) && data.dias.length > 0 ? data.dias : null
     } catch {
       return null
     }
