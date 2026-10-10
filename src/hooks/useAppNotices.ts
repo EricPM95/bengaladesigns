@@ -65,7 +65,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
         })
       }
       for (const solape of reservationOverlaps(route, reservations, nombresCortos)) {
-        items.push({ id: solape.id, kind: 'warning', title: 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
+        items.push({ id: solape.id, kind: 'warning', title: solape.kind === 'justo' ? 'Vas justo entre dos reservas' : 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
       }
       for (const cierre of reservasEnCierre(route, reservations, datosDeHorario, nombresCortos)) {
         items.push({ id: cierre.id, kind: 'warning', title: 'Tu reserva cae con el sitio cerrado', text: cierre.text, action: 'open-reservas', actionLabel: 'Ver mi reserva', read: false, canMarkRead: false })

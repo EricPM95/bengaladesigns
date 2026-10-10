@@ -36,6 +36,18 @@ type DatosPorNombre = Map<string, Record<string, unknown>>
 /** El nombre con artículo de la reserva («el Coliseo»): el suyo o el de los datos del destino; sin ellos, el nombre completo. */
 const nombreDe = (reservation: Reservation, shortNames?: Record<string, string>): string => reservation.shortName?.trim() || shortNames?.[reservation.refId]?.trim() || reservation.name
 
+/** El género de la primera palabra del nombre de un sitio, para ponerle artículo («el Foro Romano», «la Basílica de San Pedro»). Sin saberlo, sin artículo. */
+const MASCULINOS = new Set(['coliseo', 'foro', 'panteón', 'panteon', 'arco', 'castillo', 'altar', 'puente', 'museo', 'museos', 'palacio', 'parque', 'jardín', 'jardin', 'mercado', 'teatro', 'circo', 'mausoleo', 'templo', 'cementerio', 'santo', 'monumento'])
+const FEMENINOS = new Set(['basílica', 'basilica', 'plaza', 'iglesia', 'fontana', 'galería', 'galeria', 'terraza', 'cúpula', 'cupula', 'capilla', 'via', 'villa', 'catedral', 'escalera', 'piscina', 'biblioteca', 'fuente', 'cripta', 'puerta'])
+const conArticulo = (nombre: string): string => {
+  const primera = nombre.split(/\s+/)[0]?.toLowerCase() ?? ''
+  if (MASCULINOS.has(primera)) return `el ${nombre}`
+  if (FEMENINOS.has(primera)) return `la ${nombre}`
+  return nombre
+}
+/** El nombre del sitio que cierra, tal como se dice («el Foro Romano»): sin lo que va detrás de «y» (Foro Romano y Palatino → el Foro Romano). */
+const nombreDelSitio = (nombre: string): string => conArticulo(nombre.split(' y ')[0])
+
 /** Qué dice el horario de ese día de la hora de la reserva: null si abre a esa hora (o no se sabe); si no, la frase («cierra a las 14:00»). */
 function frase(horario: HorarioDeParada, minutos: number): string | null {
   if (horario.cerrado) return 'está cerrado'
@@ -58,13 +70,16 @@ export function reservasEnCierre(route: Route, reservations: Reservation[], dato
     if (!dayOfReservation(route, reservation)) continue
     const minutos = aMinutos(reservation.time)
     if (minutos == null) continue
-    const nombres = [...reservation.placeNames, reservation.refId]
+    // (Cualquiera de los sitios que cubre la entrada: el Coliseo y el Foro, con la misma. Avisa por el primero que esté cerrado a esa hora, con SU nombre.)
+    const nombres = [...new Set([...reservation.placeNames, ...(reservation.placeNames.length === 0 ? [reservation.refId] : [])])]
     for (const nombre of nombres) {
       const hoursData = datos.get(normalizaNombre(nombre))
       const horario = hoursData ? horarioDeParada({ hoursData }, reservation.dateIso) : null
       if (!horario) continue
       const dice = frase(horario, minutos)
-      if (dice) avisos.push({ id: `cierra:${reservation.id}:${reservation.dateIso}:${reservation.time}`, kind: 'cierra', reservation, text: `Ese día (${fechaCorta(reservation.dateIso)}) ${nombreDe(reservation, shortNames)} ${dice}. Revisa tu reserva.` })
+      if (!dice) continue
+      const quien = nombres.length === 1 ? nombreDe(reservation, shortNames) : nombreDelSitio(nombre)
+      avisos.push({ id: `cierra:${reservation.id}:${reservation.dateIso}:${reservation.time}`, kind: 'cierra', reservation, text: `Ese día (${fechaCorta(reservation.dateIso)}) ${quien} ${dice}. Revisa tu reserva.` })
       break
     }
   }

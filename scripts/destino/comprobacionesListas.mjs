@@ -222,7 +222,14 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
         falla('imprescindible_por_reserva', dia, `«${r.titulo ?? r.lugar}», un imprescindible por dentro, pasa a «${r.modo === 'camino' ? 'de camino' : 'por fuera'}» en un día con hora fija (${l.causa})`)
       }
     }
-    // (Tanda 6z5) El motor nunca avisa «vas justo» ni «llegas tarde»: no calcula si da tiempo.
+    // (Tanda 6z6) Con el Coliseo a las 12:30 o a las 13:00 (su propia fila): la visita primero —el Foro, el Coliseo— y la comida después.
+    if ((dia.curatedDay.variantes ?? []).includes('coliseo_12_30_13_00')) {
+      const iCol = rows.findIndex((r) => r.lugar === 'Coliseo' && !r.llegada)
+      const iCom = rows.findIndex((r) => r.tipo === 'comida')
+      const iForo = rows.findIndex((r) => r.lugar === 'Foro Romano y Palatino' && !r.llegada)
+      if (iCol < 0 || iCom < iCol || (iForo >= 0 && iForo > iCol)) falla('fila_12_30', dia, 'con el Coliseo a las 12:30 o a las 13:00 la visita va primero (el Foro, el Coliseo) y la comida después')
+    }
+    // (Tanda 6z5) El MOTOR nunca dice «vas justo» ni «llegas tarde»: no calcula si da tiempo (el aviso suave de «vas justo» entre dos reservas es de la pantalla, no del motor).
     for (const l of log.filter((x) => /vas justo|llegas tarde|llegar tarde a/i.test(x.causa ?? ''))) falla('vas_justo', dia, `el registro del motor dice «${l.causa}»`)
     // 2g. (Tanda 6e) Una reserva sin lista escrita (o una combinación que no cabe) queda apuntada: se cuenta como información, para la tabla del informe.
     for (const l of log.filter((x) => x.que === 'aviso' && /^reserva (sin lista|que no cabe)/.test(x.causa ?? ''))) avisa('sin_lista', dia, l.causa)

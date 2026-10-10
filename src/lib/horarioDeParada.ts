@@ -11,6 +11,7 @@
 import { useEffect, useState } from 'react'
 import { closedOnDay, lastEntryMinutes, parseHoursSessions, placeWindows, seasonKey } from '../../shared/routeEngine/openingHours.js'
 import { fetchDestinationPlaces } from './destinationPlacesApi'
+import { useRouteStore } from '../store/useRouteStore'
 import { formatDaySessions } from './stopHoursTag'
 
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
@@ -66,6 +67,15 @@ function variantesDeHorario(datos: Record<string, unknown>): Set<string> {
   return variantes
 }
 
+/** «los lunes», «los lunes y martes»: los días de la semana que el lugar cierra siempre (`closed_on`); null si no cierra ninguno. */
+function diasDeCierre(datos: Record<string, unknown>): string | null {
+  const cierra = datos.closed_on
+  const dias = (Array.isArray(cierra) ? cierra : typeof cierra === 'string' ? cierra.split(',') : []).map((dia) => String(dia).trim().toLowerCase()).filter(Boolean)
+  if (dias.length === 0) return null
+  const plural = dias.map((dia) => (dia.endsWith('s') ? dia : `${dia}s`))
+  return `los ${plural.length > 1 ? `${plural.slice(0, -1).join(', ')} y ${plural.at(-1)}` : plural[0]}`
+}
+
 /** Sin fecha: la última entrada solo vale si no depende de la época, del periodo ni del día de la semana. */
 function ultimaEntradaSinFecha(datos: Record<string, unknown>, inicio: number): number | null {
   const entrada = datos.last_entry
@@ -77,18 +87,22 @@ function ultimaEntradaSinFecha(datos: Record<string, unknown>, inicio: number): 
 /**
  * @param lugar  la parada (o el lugar del catálogo) con sus datos de horario
  * @param fechaIso  el día de la visita ("2027-03-10"); null si el viaje no tiene fechas
+ * @param mes  el mes del viaje (0–11) cuando no hay fechas: se enseña el horario de ese mes (su temporada); si cambia según el día de la semana, el general con el día que cierra («Abre 9:00 – 19:00 · Cerrado los lunes»)
  */
-export function horarioDeParada(lugar: LugarConHorario, fechaIso: string | null): HorarioDeParada | null {
+export function horarioDeParada(lugar: LugarConHorario, fechaIso: string | null, mes: number | null = null): HorarioDeParada | null {
   const datos: Record<string, unknown> | null =
     lugar.hoursData && Object.keys(lugar.hoursData).length > 0 ? lugar.hoursData : lugar.scheduleText || lugar.hours ? { schedule: lugar.scheduleText ?? lugar.hours } : null
   if (!datos || !tieneHorario(datos)) return null
 
   const fecha = fechaIso && /^\d{4}-\d{2}-\d{2}$/.test(fechaIso) ? fechaIso : null
   const diaDeLaSemana = fecha ? WEEKDAYS[new Date(`${fecha}T00:00:00`).getDay()] : null
-  const horas = { weekday: diaDeLaSemana, season: fecha ? seasonKey(null, fecha) : null, dateIso: fecha }
+  // Sin fechas pero con mes (los viajes sin fechas lo tienen): el horario de la temporada de ese mes, sin día de la semana (el general).
+  const mesDelViaje = typeof mes === 'number' && mes >= 0 && mes <= 11 ? mes : null
+  const fechaDelMes = !fecha && mesDelViaje !== null ? `2027-${String(mesDelViaje + 1).padStart(2, '0')}-15` : null
+  const horas = { weekday: diaDeLaSemana, season: fecha || fechaDelMes ? seasonKey(null, fecha ?? fechaDelMes) : null, dateIso: fecha ?? fechaDelMes }
 
-  // Sin fecha, si el horario cambia según el día o la época no se enseña ninguno: no se sabe cuál toca.
-  if (!fecha && variantesDeHorario(datos).size > 1) return null
+  // Sin fecha y sin mes, si el horario cambia según el día o la época no se enseña ninguno: no se sabe cuál toca.
+  if (!fecha && !fechaDelMes && variantesDeHorario(datos).size > 1) return null
 
   const cerradoElDia = Boolean(fecha && closedOnDay(datos, diaDeLaSemana, fecha))
   const franjas = placeWindows(datos, horas) as string[] | null
@@ -105,7 +119,13 @@ export function horarioDeParada(lugar: LugarConHorario, fechaIso: string | null)
   const alAnochecer = /sunset/i.test(JSON.stringify(datos)) && tramosEnMinutos.at(-1)?.close === 17 * 60
   const tramos = tramosEnMinutos.map((tramo) => ({ abre: horaTexto(tramo.open), cierra: horaTexto(tramo.close) }))
   const inicioDelUltimo = tramosEnMinutos.at(-1)!.open
-  const minutosUltimaEntrada = fecha ? (lastEntryMinutes(datos, inicioDelUltimo, horas) as number | null) : ultimaEntradaSinFecha(datos, inicioDelUltimo)
+  const minutosUltimaEntrada = fecha
+    ? (lastEntryMinutes(datos, inicioDelUltimo, horas) as number | null)
+    : fechaDelMes
+      ? datos.last_entry_by_day != null
+        ? null
+        : (lastEntryMinutes(datos, inicioDelUltimo, horas) as number | null)
+      : ultimaEntradaSinFecha(datos, inicioDelUltimo)
   const ultimaEntrada = minutosUltimaEntrada != null ? horaTexto(minutosUltimaEntrada) : null
 
   const rangos = tramos.map((tramo, indice) => (alAnochecer && indice === tramos.length - 1 ? `${tramo.abre} – al anochecer` : `${tramo.abre} – ${tramo.cierra}`))
@@ -116,7 +136,7 @@ export function horarioDeParada(lugar: LugarConHorario, fechaIso: string | null)
     ultimaEntrada,
     cerrado: false,
     tramos,
-    texto: `Abre ${lineaDeTramos}${ultimaEntrada ? ` · Última entrada ${ultimaEntrada}` : ''}`,
+    texto: `Abre ${lineaDeTramos}${ultimaEntrada ? ` · Última entrada ${ultimaEntrada}` : ''}${!fecha && diasDeCierre(datos) ? ` · Cerrado ${diasDeCierre(datos)}` : ''}`,
   }
 }
 
@@ -163,9 +183,11 @@ export function useDatosDeHorario(destino: string | undefined): DatosPorNombre {
 
 export function useHorarioDeParadas(destino: string, fechaIso: string | null): (parada: LugarConHorario & { name: string; fullName?: string; passThrough?: boolean }) => HorarioDeParada | null {
   const datos = useDatosDeHorario(destino)
+  // (Sin fechas, el mes del viaje: el horario de su temporada.)
+  const mes = useRouteStore((state) => state.route?.answers.month ?? null)
   return (parada) => {
     if (parada.passThrough) return null
     const hoursData = parada.hoursData ?? datos.get(normaliza(parada.name)) ?? (parada.fullName ? datos.get(normaliza(parada.fullName)) : undefined) ?? null
-    return horarioDeParada({ hoursData, scheduleText: parada.scheduleText, hours: parada.hours }, fechaIso)
+    return horarioDeParada({ hoursData, scheduleText: parada.scheduleText, hours: parada.hours }, fechaIso, mes)
   }
 }
