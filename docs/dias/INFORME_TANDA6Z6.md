@@ -10,11 +10,11 @@
 ## 1. La barra, según la versión
 Gratis: cuatro pestañas siempre (Ruta · Días · Explorar · Reservas). De pago: cinco siempre (Hoy · Ruta · Días · Explorar · Reservas). En la gratis HOY no sale, ni con candado; un «Hoy» guardado cae a «Ruta» en un solo sitio (`src/lib/barra.ts`). La barra no cambia nunca con el momento del viaje.
 
-## 2. Una sola tarjeta arriba de RESERVAS, la misma en la gratis y en la de pago (corrección de Eric)
-La tarjeta oscura de arriba lleva la cuenta atrás y, debajo, el resumen de siempre, ahora también en la gratis:
-- **Arriba:** «Tu viaje a Roma empieza en · 10 días»; sin fechas, «Tu viaje a Roma · octubre» con [Pon tus fechas]; durante el viaje, «Estás en Roma · mié 14 · 2 de 4»; después del viaje, no sale. El tiempo (la previsión de 5 días antes) va dentro, en pequeño, cuando la hay.
-- **Debajo, el resumen:** de pago, «0 de 3 listo» con las fichas Llegada y vuelta · Alojamiento · Entradas 0/5; gratis, «0 de 2 listo» con Alojamiento · Entradas 0/5 (la llegada y la vuelta son de pago). El alojamiento cuenta como hecho con la zona elegida en la de pago y con el alojamiento puesto («Tu alojamiento») en la gratis; las entradas son las de «EN TU RUTA». Cada ficha baja a su bloque.
-- Desaparece la línea «Te faltan n cosas por reservar» y el resumen suelto de más abajo: ahora hay un solo resumen en la pantalla (la prueba lo comprueba). «Te falta por reservar» y «Útil para el viaje» ya no van aparte en HOY: son los bloques de RESERVAS.
+## 2. Arriba de RESERVAS (corregido en la 6z6b: ahora son DOS tarjetas)
+> Esta sección la sustituye la Tanda 6z6b (ver `INFORME_TANDA6Z6B.md`): la tarjeta oscura ya NO lleva el resumen dentro.
+- **La oscura:** solo la cuenta atrás («Tu viaje a Roma empieza en · 10 días»; sin fechas, «Tu viaje a Roma · octubre» con [Pon tus fechas]; durante el viaje, «Estás en Roma · mié 14 · 2 de 4»; después, no sale) y el tiempo pequeño cuando lo hay. Sin «Te faltan…» ni «Lo tienes todo listo».
+- **La clara, aparte y debajo:** «Tu viaje a Roma · 0 de 3 listo» (gratis «0 de 2») con una ficha redonda por bloque; cada ficha baja a su bloque. Es el único sitio que dice lo que falta.
+- «Te falta por reservar» y «Útil para el viaje» ya no van aparte en HOY: son los bloques de RESERVAS.
 
 ## 3. DÍAS durante el viaje
 Se abre sola en el día de hoy, con la etiqueta «HOY» en su cabecera (gratis y de pago); los demás días siguen igual. Si el viajero cierra el día, se queda cerrado.
