@@ -11,5 +11,8 @@ import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
 import { cargaDatosDeHorario, datosDeHorarioEnMemoria, horarioDeParada } from '../../src/lib/horarioDeParada'
 import { numberedStopsOf } from '../../src/lib/stopKind'
+import { reservasEnCierre } from '../../src/lib/reservaEnCierre'
+import { reservationOverlaps } from '../../src/lib/reservationOverlaps'
+import { useAppNotices } from '../../src/hooks/useAppNotices'
 
-export { createElement, renderToStaticMarkup, DayList, StopAccordion, HoyView, AvisoEntradaReservada, AvisoSaltada, HojaPasarAOtroDia, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, cargaDatosDeHorario, datosDeHorarioEnMemoria, horarioDeParada, numberedStopsOf }
+export { createElement, renderToStaticMarkup, DayList, StopAccordion, HoyView, AvisoEntradaReservada, AvisoSaltada, HojaPasarAOtroDia, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, cargaDatosDeHorario, datosDeHorarioEnMemoria, horarioDeParada, numberedStopsOf, reservasEnCierre, reservationOverlaps, useAppNotices }

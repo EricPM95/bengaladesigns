@@ -42,7 +42,9 @@ export interface HorarioDeParada {
 /** 9*60+5 → "9:05" (sin cero delante de la hora: así se lee en pantalla). */
 const horaTexto = (minutos: number) => `${Math.floor(minutos / 60)}:${String(minutos % 60).padStart(2, '0')}`
 
-const normaliza = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+/** El nombre de un lugar tal como se busca en los datos de horario: sin tildes, en minúsculas. */
+export const normalizaNombre = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+const normaliza = normalizaNombre
 
 /** Los campos de horario que se miran: sin ninguno no hay horario que enseñar (nunca se inventa uno). */
 const CAMPOS_DE_HORARIO = ['windows', 'by_day', 'by_season', 'by_period', 'special_hours'] as const
@@ -143,9 +145,11 @@ export async function cargaDatosDeHorario(destino: string): Promise<DatosPorNomb
  * Para pintar tarjetas: `horarioDe(parada)` da el horario de esa parada ese día, o null. Lee primero lo que ya hay en memoria (así
  * el primer pintado ya sale con horario si el catálogo estaba pedido) y, si no, lo pide y repinta.
  */
-export function useHorarioDeParadas(destino: string, fechaIso: string | null): (parada: LugarConHorario & { name: string; fullName?: string; passThrough?: boolean }) => HorarioDeParada | null {
-  const [datos, setDatos] = useState<DatosPorNombre>(() => datosDeHorarioEnMemoria(destino))
+/** Los datos de horario de cada lugar del destino (por nombre normalizado): salen de la memoria si ya se pidieron y, si no, se piden y se repinta. */
+export function useDatosDeHorario(destino: string | undefined): DatosPorNombre {
+  const [datos, setDatos] = useState<DatosPorNombre>(() => (destino ? datosDeHorarioEnMemoria(destino) : new Map()))
   useEffect(() => {
+    if (!destino) return
     let cancelado = false
     cargaDatosDeHorario(destino).then((mapa) => {
       if (!cancelado && mapa.size > 0) setDatos(mapa)
@@ -154,6 +158,11 @@ export function useHorarioDeParadas(destino: string, fechaIso: string | null): (
       cancelado = true
     }
   }, [destino])
+  return datos
+}
+
+export function useHorarioDeParadas(destino: string, fechaIso: string | null): (parada: LugarConHorario & { name: string; fullName?: string; passThrough?: boolean }) => HorarioDeParada | null {
+  const datos = useDatosDeHorario(destino)
   return (parada) => {
     if (parada.passThrough) return null
     const hoursData = parada.hoursData ?? datos.get(normaliza(parada.name)) ?? (parada.fullName ? datos.get(normaliza(parada.fullName)) : undefined) ?? null

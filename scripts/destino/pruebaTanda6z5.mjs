@@ -26,7 +26,7 @@ const debe = (cond, regla, texto) => {
 }
 
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z5_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
-const { createElement, renderToStaticMarkup, DayList, HoyView, AvisoEntradaReservada, AvisoSaltada, HojaPasarAOtroDia, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, cargaDatosDeHorario, datosDeHorarioEnMemoria, horarioDeParada, numberedStopsOf } = M
+const { createElement, renderToStaticMarkup, DayList, HoyView, AvisoEntradaReservada, AvisoSaltada, HojaPasarAOtroDia, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, cargaDatosDeHorario, datosDeHorarioEnMemoria, horarioDeParada, numberedStopsOf, reservasEnCierre, reservationOverlaps, useAppNotices } = M
 const D = findPipelineV2Data('Roma')
 await fetchArrivalInfo('Roma')
 await fetchDestinationExcursions('Roma')
@@ -239,6 +239,56 @@ debe(/Pasarla a otro día/.test(hoja) && /jue 11 — Roma/.test(hoja) && /vie 12
 const menuFuente = fs.readFileSync('src/components/route/dayDetail/StopMenu.tsx', 'utf8')
 const hoyFuente = fs.readFileSync('src/components/route/hoy/saltar.tsx', 'utf8')
 debe(/ListaDeDias/.test(menuFuente) && /ListaDeDias/.test(hoyFuente) && !/diaCorto/.test(menuFuente), 'B9 hoja', 'el menú de DÍAS y la hoja de HOY no comparten ListaDeDias')
+
+// ── C. Una reserva que cae con el sitio cerrado ese día: AVISA, no prohíbe ni toca nada (Tanda 6z5, 4b) ──
+{
+  const cortos = { Coliseo: 'el Coliseo', 'Coliseo, Foro y Palatino': 'el Coliseo' }
+  const reserva = (id, fecha, hora) => ({ id, kind: 'entrada', refId: 'Coliseo, Foro y Palatino', name: 'Coliseo, Foro y Palatino', placeNames: ['Coliseo', 'Foro Romano y Palatino'], dateIso: fecha, dayNumber: null, time: hora })
+  const ruta = (inicio, fin) => ({ ...route, answers: { ...route.answers, dateRange: { start: inicio, end: fin } } })
+  const datos = datosDeHorarioEnMemoria('Roma')
+  const coliseoDatos = datos.get(sinTildes('Coliseo'))
+  debe(Boolean(coliseoDatos), 'C datos', 'no hay horario del Coliseo en memoria')
+  // 1. Un día que el Coliseo cierra del todo (se busca en los datos: 25 de diciembre, 1 de enero…): avisa «está cerrado».
+  const fechaCerrado = ['2026-12-25', '2027-01-01', '2027-12-25'].find((f) => horarioDeParada({ hoursData: coliseoDatos }, f)?.cerrado)
+  debe(Boolean(fechaCerrado), 'C datos', 'el Coliseo no cierra ningún 25 de diciembre ni 1 de enero en los datos')
+  if (fechaCerrado) {
+    const [anio, mes, dia] = fechaCerrado.split('-').map(Number)
+    const inicio = new Date(Date.UTC(anio, mes - 1, dia - 1)).toISOString().slice(0, 10)
+    const fin = new Date(Date.UTC(anio, mes - 1, dia + 1)).toISOString().slice(0, 10)
+    const r = ruta(inicio, fin)
+    const rv = [reserva('c1', fechaCerrado, '10:00')]
+    const antes = JSON.stringify({ r, rv })
+    const av = reservasEnCierre(r, rv, datos, cortos)
+    const mesTxt = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'][mes - 1]
+    debe(av.length === 1 && av[0].text === `Ese día (${dia} ${mesTxt}) el Coliseo está cerrado. Revisa tu reserva.`, 'C cerrado', `el aviso de un día cerrado: ${JSON.stringify(av.map((x) => x.text))}`)
+    debe(JSON.stringify({ r, rv }) === antes, 'C no toca', 'el aviso ha cambiado la reserva o el viaje')
+    // La campana lo trae como «coinciden», con [Ver mi reserva].
+    ponerVersion('completa')
+    useRouteStore.setState({ ...estadoBase, route: r, reservations: rv })
+    let items = []
+    renderToStaticMarkup(createElement(() => { items = useAppNotices().items; return null }))
+    const campana = items.filter((i) => /^cierra:/.test(i.id))
+    debe(campana.length === 1 && campana[0].kind === 'warning' && campana[0].actionLabel === 'Ver mi reserva' && campana[0].action === 'open-reservas' && /^Ese día \(/.test(campana[0].text), 'C campana', `la campana no avisa bien: ${JSON.stringify(campana)}`)
+    // Con una hora que sí abre el día normal, nada.
+    debe(reservasEnCierre(ruta('2027-07-13', '2027-07-15'), [reserva('c2', '2027-07-14', '10:00')], datos, cortos).length === 0, 'C normal', 'avisa en un día normal con el Coliseo abierto')
+  }
+  // 2. El Viernes Santo de 2027 el Coliseo cierra a las 14:00: la reserva de las 16:00 avisa «cierra a las 14:00»; la de las 10:00, no.
+  const vs = horarioDeParada({ hoursData: coliseoDatos }, '2027-03-26')
+  if (vs && !vs.cerrado) {
+    const r = ruta('2027-03-25', '2027-03-27')
+    const tarde = reservasEnCierre(r, [reserva('c3', '2027-03-26', '16:00')], datos, cortos)
+    debe(tarde.length === 1 && tarde[0].text === `Ese día (26 mar) el Coliseo cierra a las ${vs.cierra}. Revisa tu reserva.`, 'C Viernes Santo', `la reserva de las 16:00: ${JSON.stringify(tarde.map((x) => x.text))} (cierra a las ${vs.cierra})`)
+    debe(reservasEnCierre(r, [reserva('c4', '2027-03-26', '10:00')], datos, cortos).length === 0, 'C Viernes Santo', 'avisa con una hora en que el Coliseo abre')
+  }
+  // 3. Sin fecha, el Free Tour y un sitio sin horario no avisan.
+  debe(reservasEnCierre(ruta('2026-12-24', '2026-12-26'), [{ ...reserva('c5', '2026-12-25', '10:00'), dateIso: null, dayNumber: 1 }], datos, cortos).length === 0, 'C sin fecha', 'avisa sin fecha')
+  debe(reservasEnCierre(ruta('2026-12-24', '2026-12-26'), [{ ...reserva('c6', '2026-12-25', '10:00'), refId: 'Free Tour', name: 'Free Tour', placeNames: [] }], datos, cortos).length === 0, 'C Free Tour', 'avisa con el Free Tour')
+  // 4. «coinciden» sigue igual: el aviso de cierre no cambia los solapes.
+  debe(reservationOverlaps(route, [reserva('c7', INICIO, '10:00')]).length === 0, 'C coinciden', 'un solo aviso de cierre cuenta como solape')
+  // 5. No se prohíbe ninguna hora: nada en el código de las horas filtra por el cierre (la rueda ofrece todas).
+  const codigoHora = fs.readdirSync('src/components/route/reservas').filter((f) => /Modal|Hora|Time|Rueda|Wheel|Sheet/i.test(f)).map((f) => fs.readFileSync(`src/components/route/reservas/${f}`, 'utf8')).join('\n')
+  debe(!/horarioDeParada|reservasEnCierre/.test(codigoHora), 'C rueda', 'la rueda de la hora o las hojas de reserva usan el horario para quitar horas')
+}
 
 console.error = consolaError
 if (fallos.length === 0) console.log(`6z5: ${comprobaciones} comprobaciones, 0 fallos.`)

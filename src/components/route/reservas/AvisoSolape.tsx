@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { reservationOverlaps, type ReservationOverlap } from '../../../lib/reservationOverlaps'
+import { reservasEnCierre, type ReservaEnCierre } from '../../../lib/reservaEnCierre'
+import { useDatosDeHorario } from '../../../lib/horarioDeParada'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { HojaAbajo } from './HojaAbajo'
 
 /**
- * El aviso de dos reservas que se pisan (Tanda 6v): lo único que avisa de las horas de las reservas (la app nunca propone otra hora). Sube desde abajo cuando, al guardar una reserva, aparece un solape nuevo
+ * El aviso de dos reservas que se pisan (Tanda 6v) o de una reserva que cae con el sitio cerrado ese día (Tanda 6z5, «Ese día (25 dic) el Coliseo cierra a las 14:00. Revisa tu reserva.» con [Ver mi reserva]): lo único que avisa de las horas de las reservas (la app nunca propone otra hora ni prohíbe ninguna). Sube desde abajo cuando, al guardar una reserva, aparece un solape nuevo
  * («Tu Free Tour y tu entrada a los Museos coinciden. Revisa una de las dos reservas.» con [Ver mis reservas]); y el mismo texto sale en la campana (useAppNotices.ts) mientras siga habiéndolo.
  * Se va solo cuando se arregla. Al abrir un viaje que ya tenía un solape no sube la hoja (solo la campana).
  */
@@ -14,9 +16,11 @@ export function AvisoSolape() {
   const reservations = useRouteStore((state) => state.reservations)
   const setMode = useRouteStore((state) => state.setMode)
   const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
-  const solapes = useMemo(() => (route ? reservationOverlaps(route, reservations, nombresCortos) : []), [route, reservations, nombresCortos])
+  const datosDeHorario = useDatosDeHorario(route?.destination)
+  // (Los que se pisan, y las reservas cuya hora cae con el sitio cerrado ese día: los dos avisan igual, en la hoja y en la campana.)
+  const solapes = useMemo<(ReservationOverlap | ReservaEnCierre)[]>(() => (route ? [...reservationOverlaps(route, reservations, nombresCortos), ...reservasEnCierre(route, reservations, datosDeHorario, nombresCortos)] : []), [route, reservations, nombresCortos, datosDeHorario])
   const vistos = useRef<{ viaje: string | null; ids: Set<string> }>({ viaje: null, ids: new Set() })
-  const [aviso, setAviso] = useState<ReservationOverlap | null>(null)
+  const [aviso, setAviso] = useState<ReservationOverlap | ReservaEnCierre | null>(null)
 
   useEffect(() => {
     const ids = new Set(solapes.map((solape) => solape.id))
@@ -45,7 +49,7 @@ export function AvisoSolape() {
         }}
         className="mt-5 h-12 w-full rounded-full bg-[#1C2230] text-[15px] font-semibold text-[#FFFDF8] transition-transform active:scale-[.98]"
       >
-        Ver mis reservas
+        {aviso.kind === 'cierra' ? 'Ver mi reserva' : 'Ver mis reservas'}
       </button>
     </HojaAbajo>
   )

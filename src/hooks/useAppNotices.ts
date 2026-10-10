@@ -3,6 +3,8 @@ import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { useNoticesStore, type NoticeKind } from '../store/useNoticesStore'
 import { reservationOverlaps } from '../lib/reservationOverlaps'
+import { reservasEnCierre } from '../lib/reservaEnCierre'
+import { useDatosDeHorario } from '../lib/horarioDeParada'
 import { useDestinationExcursions } from '../lib/destinationExcursions'
 
 export interface AppNotice {
@@ -36,6 +38,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const dismissContextBanner = useRouteStore((state) => state.dismissContextBanner)
   // Los nombres cortos de las reservas (datos del destino) para el aviso «coinciden».
   const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
+  const datosDeHorario = useDatosDeHorario(route?.destination)
   const syncStatus = useSyncStore((state) => state.status)
   const readIds = useNoticesStore((state) => state.readIds)
   const pushed = useNoticesStore((state) => state.pushed)
@@ -64,6 +67,9 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
       for (const solape of reservationOverlaps(route, reservations, nombresCortos)) {
         items.push({ id: solape.id, kind: 'warning', title: 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
       }
+      for (const cierre of reservasEnCierre(route, reservations, datosDeHorario, nombresCortos)) {
+        items.push({ id: cierre.id, kind: 'warning', title: 'Tu reserva cae con el sitio cerrado', text: cierre.text, action: 'open-reservas', actionLabel: 'Ver mi reserva', read: false, canMarkRead: false })
+      }
       if (route.contextBanner) {
         items.push({
           id: `context:${route.createdAt}`,
@@ -86,5 +92,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, nombresCortos, syncStatus, readIds, pushed, dismissContextBanner])
+  }, [route, reservations, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner])
 }
