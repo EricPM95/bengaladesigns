@@ -95,10 +95,12 @@ debe(PROYECCION_MAPA_VIAJES === 'globe' && /projection:\s*PROYECCION_MAPA_VIAJES
 debe(/setFog\(/.test(fuenteMapa), 'P3', 'falta la niebla suave (fog) del globo')
 const z = zoomGloboEntero(CAJA_MAPA_VIAJES.ancho, CAJA_MAPA_VIAJES.alto)
 const d = diametroGlobo(z)
-debe(d <= CAJA_MAPA_VIAJES.alto - 2 * 10, 'P3', `a zoom ${z.toFixed(2)} la esfera mide ${d.toFixed(0)} px y no cabe en 220 con margen (la bola saldría cortada)`)
-debe(d >= CAJA_MAPA_VIAJES.alto * 0.7, 'P3', `a zoom ${z.toFixed(2)} la esfera mide ${d.toFixed(0)} px: queda muy pequeña en la caja de 220`)
-debe(z >= -1 && z <= 0.6, 'P3', `zoom ${z.toFixed(2)} fuera del rango razonable para ver la bola entera`)
-debe(zoomGloboEntero(335, 220) <= zoomGloboEntero(335, 400) && zoomGloboEntero(200, 220) < zoomGloboEntero(335, 220), 'P3', 'el zoom no tiene en cuenta el lado corto de la caja')
+// 6z6c: la bola llena el ANCHO del mapa (se corta un poco arriba y abajo) y los lados siguen curvos.
+debe(d <= CAJA_MAPA_VIAJES.ancho - 2 * 5, 'P3', `a zoom ${z.toFixed(2)} la esfera mide ${d.toFixed(0)} px y no deja ver la curva de los lados en ${CAJA_MAPA_VIAJES.ancho}`)
+debe(d >= CAJA_MAPA_VIAJES.ancho * 0.88, 'P3', `a zoom ${z.toFixed(2)} la esfera mide ${d.toFixed(0)} px: no llena el ancho de ${CAJA_MAPA_VIAJES.ancho}`)
+debe(d > CAJA_MAPA_VIAJES.alto, 'P3', `la esfera (${d.toFixed(0)} px) debería ser más alta que la caja de ${CAJA_MAPA_VIAJES.alto} (se corta arriba y abajo)`)
+debe(z >= -1 && z <= 1.3, 'P3', `zoom ${z.toFixed(2)} fuera del rango razonable para el globo`)
+debe(zoomGloboEntero(200, 220) < zoomGloboEntero(335, 220) && zoomGloboEntero(335, 220) === zoomGloboEntero(335, 400), 'P3', 'el zoom debería seguir el ANCHO de la caja')
 debe(/zoom:\s*zoomEntero/.test(fuenteMapa) && !/fitBounds/.test(fuenteMapa), 'P3', 'el mapa no usa el zoom de la esfera entera (o se acerca con fitBounds)')
 debe(/center:\s*\[centro\.lng,\s*centro\.lat\]/.test(fuenteMapa) && /centroDelGlobo\(chinchetas\)/.test(fuenteMapa), 'P3', 'el globo no se centra en la media de las chinchetas')
 {
@@ -165,21 +167,17 @@ for (const f of ['src/components/layout/PerfilSheet.tsx', 'src/components/layout
 debe(!/Tips del viaje/.test(fuentePerfil) && !/Tips del viaje/.test(texto1), 'P6', '«Tips del viaje» sigue en el Perfil')
 
 /* ---------------- P7. La bombilla de RUTA ---------------- */
+// 6z6c: la bombilla ya no flota en el mapa de RUTA: está en la tarjeta de cada destino (RouteOverview), a la izquierda de la varita.
 const rv = leer('src/components/route/RouteView.tsx')
-const botones = rv.match(/aria-label="Tips del viaje"/g) ?? []
-debe(botones.length === 1, 'P7', `debería haber UNA bombilla con aria-label «Tips del viaje» en RouteView y hay ${botones.length}`)
-const trozo = rv.slice(rv.indexOf('aria-label="Tips del viaje"') - 260, rv.indexOf('aria-label="Tips del viaje"') + 520)
-debe(/onClick=\{\(\) => setTipsOpen\(true\)\}/.test(trozo), 'P7', 'la bombilla no abre los tips (setTipsOpen(true))')
-debe(/<Icono nombre="tips"/.test(trozo), 'P7', 'la bombilla no usa el icono «tips» de la familia (iconos.ts)')
-// Dentro de la rama de RUTA (showRouteStyleMap): entre ese `?` y el siguiente `: mode === 'explore'`.
-const iniRuta = rv.indexOf('showRouteStyleMap ? (')
-const finRuta = rv.indexOf(": mode === 'explore' && exploreMarkers === null")
-const iBombilla = rv.indexOf('aria-label="Tips del viaje"')
-debe(iniRuta > 0 && iBombilla > iniRuta && iBombilla < finRuta, 'P7', 'la bombilla no está en la rama del mapa de RUTA')
-debe(!/pagoActivo|modoVisible|hayPestanaHoy/.test(trozo), 'P7', 'la bombilla depende de la versión: debe salir en la gratis y en la de pago')
-debe(/<TripTipsSheet open=\{tipsOpen\}/.test(rv), 'P7', 'RouteView no monta TripTipsSheet con tipsOpen')
-for (const f of ['src/components/route/DayList.tsx', 'src/components/route/dayDetail/DayDetailPanel.tsx', 'src/components/route/RouteOverview.tsx', 'src/components/route/ExplorePanel.tsx']) {
-  debe(!/aria-label="Tips del viaje"/.test(leer(f)), 'P7', `la bombilla está también en ${f}`)
+debe(!/Tips del viaje|TripTipsSheet|setTipsOpen/.test(rv), 'P7', 'RouteView todavía tiene la bombilla flotante / los tips')
+const ro = leer('src/components/route/RouteOverview.tsx')
+debe(/aria-label=\{`Tips de \$\{city\}`\}/.test(ro) && /<Icono nombre="tips"/.test(ro), 'P7', 'la tarjeta de destino no tiene su bombilla «Tips de {destino}» con el icono «tips»')
+debe(/<TipsButton city=\{segment\.city\}/.test(ro) && ro.indexOf('<TipsButton city') < ro.indexOf('aria-label="Recuperar mi ruta"'), 'P7', 'la bombilla no está en la tarjeta, a la izquierda de la varita')
+debe(/useDestinationTips\(city, true\)/.test(ro) && /if \(!data\) return null/.test(ro), 'P7', 'la bombilla debe salir solo si el destino tiene tips')
+debe(/<TripTipsSheet open=\{tipsCity !== null\} destination=\{tipsCity \?\? ''\}/.test(ro), 'P7', 'RouteOverview no abre TripTipsSheet con los tips del destino de la tarjeta')
+debe(!/canRestoreRoute/.test(ro.slice(ro.indexOf('<TipsButton city={segment.city}') - 40, ro.indexOf('<TipsButton city={segment.city}') + 60)), 'P7', 'la bombilla depende de la varita (canRestoreRoute)')
+for (const f of ['src/components/route/DayList.tsx', 'src/components/route/dayDetail/DayDetailPanel.tsx', 'src/components/route/ExplorePanel.tsx']) {
+  debe(!/Tips del viaje|Tips de \$\{/.test(leer(f)), 'P7', `la bombilla está también en ${f}`)
 }
 debe(/\btips:\s*'/.test(leer('src/lib/iconos.ts')), 'P7', 'el icono «tips» (la bombilla) no está en iconos.ts')
 debe(/ESCAPE|Escape/.test(leer('src/components/route/TripTipsSheet.tsx')) || /onClose/.test(leer('src/components/route/TripTipsSheet.tsx')), 'P7', 'los tips no se pueden cerrar')

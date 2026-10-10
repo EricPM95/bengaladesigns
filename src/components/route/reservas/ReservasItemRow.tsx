@@ -164,7 +164,7 @@ export function ReservaCard({
 
 /**
  * Fila compartida para cualquier ítem de RESERVAS (transporte, alojamiento, seguro, N26, vehículo de alquiler, eSIM) — mismo estilo en toda la app:
- * pestaña RESERVAS y panel rápido del % (TripReadinessQuickPanel.tsx vía ReadinessBreakdownRow). Sin resolver y con `bookAction`: «Añadir» (abre la
+ * pestaña RESERVAS. Sin resolver y con `bookAction`: «Añadir» (abre la
  * ficha manual, `onClick`) y la vía de compra real (`bookAction`) conviven en la misma tarjeta. Resuelto: «✓ Añadido», que reabre la ficha para editar.
  */
 export function ReservasItemRow({ kind, label, resolved, subtitle, onClick, bookAction, priority }: ReservasItemRowProps) {

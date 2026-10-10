@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useDestinationTips } from '../../lib/destinationTips'
+import { TripTipsSheet } from './TripTipsSheet'
 import type { Route } from '../../lib/types'
 import { buildDestinationSegments, formatSegmentNightsLabel, segmentCentroid } from '../../lib/destinationSegments'
 import { dayCountryCode, flagStripesGradient } from '../../lib/flagColors'
@@ -23,6 +25,22 @@ const MONTHS_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 's
 const shortDate = (iso: string) => `${iso.slice(8, 10)} ${MONTHS_SHORT[Number(iso.slice(5, 7)) - 1]}`
 
 /**
+ * La bombilla de la tarjeta de un destino: mismo botón redondo que la varita, a su izquierda. Solo sale si ese destino
+ * tiene tips (mientras cargan o si no hay, no se pinta); no depende de que haya ruta original.
+ */
+function TipsButton({ city, onOpen }: { city: string; onOpen: () => void }) {
+  const data = useDestinationTips(city, true)
+  if (!data) return null
+  return (
+    <button type="button" onClick={onOpen} title={`Tips de ${city}`} aria-label={`Tips de ${city}`} className="group flex h-11 w-11 shrink-0 items-center justify-center">
+      <span className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover">
+        <Icono nombre="tips" className="h-[19px] w-[19px]" />
+      </span>
+    </button>
+  )
+}
+
+/**
  * Pestaña RUTA (PROMPT_UI_REPASO_3, 1): una tarjeta por destino, en el orden del viaje, con la bandera de su país, el
  * nombre del destino y sus días y fechas («4 días · 03 sept – 06 sept»; sin fechas, solo «4 días»). Entre dos destinos,
  * la distancia. Tocar una tarjeta abre la ventana del destino, con sus hoteles y sus actividades.
@@ -32,6 +50,9 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
   // «Recuperar mi ruta» (la varita de la tarjeta del destino): la pregunta antes de volver a la ruta que preparamos.
   const [askRestoreCity, setAskRestoreCity] = useState<string | null>(null)
   const restoreOriginalRoute = useRouteStore((state) => state.restoreOriginalRoute)
+  // Los tips del viaje (la bombilla de cada tarjeta): los del destino de ESA tarjeta.
+  const [tipsCity, setTipsCity] = useState<string | null>(null)
+  const closeTips = useCallback(() => setTipsCity(null), [])
   useEffect(() => {
     onDetailOpenChange?.(detailCity !== null)
     return () => onDetailOpenChange?.(false)
@@ -74,6 +95,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
                 </span>
               </span>
             </button>
+            <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />
             {canRestoreRoute && (
               <button
                 type="button"
@@ -110,6 +132,8 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
           }}
         />
       )}
+
+      <TripTipsSheet open={tipsCity !== null} destination={tipsCity ?? ''} onClose={closeTips} />
 
       <DestinationDetailModal
         city={detailCity}

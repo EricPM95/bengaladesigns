@@ -14,7 +14,7 @@ const ESTILO_MAPA_VIAJES = 'mapbox://styles/mapbox/streets-v12'
  * El mapa de mis viajes (Tanda 6z3, 6z6 y 6z6b): una bola del mundo (globo de Mapbox) con una chincheta por destino de cada viaje. Tocar una chincheta abre la ficha de ese viaje.
  * Chincheta oscura = el viaje viene; verde = ya hecho. Se crea al abrir el Perfil y se destruye al cerrarlo (`map.remove()`): no deja un lienzo WebGL vivo.
  *  · Bajo (220 px): con UN dedo se baja la página; para mover el mapa, DOS dedos (`cooperativeGestures`, con el aviso en español).
- *  · La bola se ve ENTERA, con su borde curvo (el zoom lo calcula `zoomGloboEntero`), centrada en la media de las chinchetas; con varias no se acerca: se ve el mundo con todas.
+ *  · La bola llena el ANCHO del mapa (6z6c: se corta un poco el borde de arriba y de abajo, pero los lados siguen curvos; el zoom lo calcula `zoomGloboEntero`), centrada en la media de las chinchetas; con varias no se acerca: se ve el mundo con todas.
  */
 export function MapaMisViajes({ chinchetas, onElegir }: { chinchetas: Chincheta[]; onElegir: (viajeId: string) => void }) {
   const contenedor = useRef<HTMLDivElement>(null)

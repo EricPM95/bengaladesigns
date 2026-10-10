@@ -118,15 +118,16 @@ export const PROYECCION_MAPA_VIAJES = 'globe'
 
 /** La caja del mapa de mis viajes en un móvil de 375: unos 335 de ancho por 220 de alto (Tanda 6z6b). */
 export const CAJA_MAPA_VIAJES = { ancho: 335, alto: 220 } as const
-/** El aire que se deja entre el borde de la bola y el borde de la caja, en píxeles (por cada lado). */
-const AIRE_GLOBO_PX = 20
+/** Qué parte del ANCHO de la caja ocupa el diámetro de la bola (Tanda 6z6c): casi todo el ancho, y se corta un poco el borde de arriba y de abajo; lo que falta hasta 1 deja a la vista la curva de los lados. */
+export const FRACCION_ANCHO_GLOBO = 0.94
 
 /**
- * El zoom en que la bola ENTERA cabe en la caja, con su borde curvo a la vista. En Mapbox la vuelta al mundo por el ecuador mide 512·2^zoom píxeles, así que el diámetro de la esfera es
- * 512·2^zoom / π. Se pide que ese diámetro quepa en el lado corto de la caja menos el aire de los dos lados. (Un solo sitio: lo usa el mapa y lo comprueba la prueba.)
+ * El zoom en que la bola llena el ANCHO de la caja (6z6c: antes cabía entera en el lado corto y quedaba pequeña). En Mapbox la vuelta al mundo por el ecuador mide 512·2^zoom píxeles,
+ * así que el diámetro de la esfera es 512·2^zoom / π. Se pide que ese diámetro sea FRACCION_ANCHO_GLOBO del ancho; en una caja de 335×220 la bola mide ~315 px y pierde ~48 px arriba y abajo,
+ * pero los lados siguen curvos. (Un solo sitio: lo usa el mapa y lo comprueba la prueba.)
  */
-export function zoomGloboEntero(ancho: number = CAJA_MAPA_VIAJES.ancho, alto: number = CAJA_MAPA_VIAJES.alto): number {
-  const libre = Math.max(40, Math.min(ancho, alto) - AIRE_GLOBO_PX * 2)
+export function zoomGloboEntero(ancho: number = CAJA_MAPA_VIAJES.ancho, _alto: number = CAJA_MAPA_VIAJES.alto): number {
+  const libre = Math.max(40, ancho * FRACCION_ANCHO_GLOBO)
   return Math.log2((libre * Math.PI) / 512)
 }
 

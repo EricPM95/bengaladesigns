@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useAddFlowStore } from '../../store/useAddFlowStore'
 import type { Route } from '../../lib/types'
@@ -17,7 +17,6 @@ import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
 import { SeasonCard } from './SeasonCard'
-import { TripTipsSheet } from './TripTipsSheet'
 import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
@@ -91,9 +90,6 @@ export function RouteView() {
   const [destinationOverlayOpen, setDestinationOverlayOpen] = useState(false)
   // "Ver todo": todos los días a la vez en vez de solo el abierto (Ronda 9, Mejora 1C).
   const [showAllDaysOnMap, setShowAllDaysOnMap] = useState(false)
-  // Los tips del viaje (la bombilla flotante del mapa de RUTA, Tanda 6z6b).
-  const [tipsOpen, setTipsOpen] = useState(false)
-  const closeTips = useCallback(() => setTipsOpen(false), [])
   // Altura del mapa en móvil (vh) cuando ni mapa ni panel están a pantalla completa — controlada
   // por el tirador gris (ver handleMobilePanelDragStart). En desktop no se usa (el layout pasa a
   // fila y el ancho se controla con panelSplit/handleDragStart). Por defecto cerca del mínimo — el
@@ -217,16 +213,6 @@ export function RouteView() {
                   <RouteOverviewMap segments={segments} days={route.days} />
                 )}
                 <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
-                {/* Los tips del viaje: la bombilla, arriba a la derecha del mapa de RUTA (mismo botón redondo que «Ocultar mapa» de DÍAS). Solo aquí, gratis y de pago. */}
-                <button
-                  type="button"
-                  onClick={() => setTipsOpen(true)}
-                  aria-label="Tips del viaje"
-                  title="Tips del viaje"
-                  className="absolute right-3.5 top-[22px] z-10 flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-accent bg-bg-card text-accent shadow-[0_8px_20px_-8px_rgba(28,34,48,.3)] transition-colors hover:bg-bg-hover"
-                >
-                  <Icono nombre="tips" size={20} />
-                </button>
               </>
             ) : mode === 'explore' && exploreMarkers === null ? (
               // EXPLORAR sin nada elegido todavía: el mapa es la ciudad limpia (sin la ruta), que se va llenando con los filtros.
@@ -348,7 +334,6 @@ export function RouteView() {
           tocar la etiqueta de un día). */}
       <SeasonCard route={route} />
       <DateNoticesModal route={route} />
-      <TripTipsSheet open={tipsOpen} destination={route.destination} onClose={closeTips} />
       {/* "+ Añadir día" / "+ Añadir lugares": la pantalla de añadir del viaje y el aviso con "Deshacer". */}
       <AddToTripScreen route={route} />
       <OwnDayHost route={route} />
