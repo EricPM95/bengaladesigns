@@ -754,7 +754,8 @@ export function planListasTrip(args) {
      * día (regla 5) ya está resuelto al elegir la lista; el horario y la última entrada de cada parada los enseña la tarjeta, que son datos reales, y decide el viajero.
      */
     const resolverHorarios = (lista) => {
-      if (conReservaDelViajero(lista)) return lista
+      // (La reserva es la que PUSO el viajero: el turno que la app coge de la Galería sin reserva puesta, `turno_real`, no cuenta.)
+      if (lista.some((it) => it.kind === 'stop' && it.hora_tipo === 'reserva' && it.hora && !it.turno_real && !it.llegada)) return lista
       let out = lista
       const hechos = new Set()
       for (let guard = 0; guard < 40; guard++) {

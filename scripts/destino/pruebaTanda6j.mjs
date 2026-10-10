@@ -61,7 +61,8 @@ function comprueba(day, iso, donde, reservados = new Set()) {
     if (!place) continue
     // (Lo que el viajero ha reservado esa fecha es decisión suya: un sitio cerrado con reserva no es un fallo del motor.)
     if (!reservados.has(s.name) && closedOnDay(place, weekdayOf(iso), iso)) falla('cerrado', `${donde}: «${s.name}» va por dentro y ese día cierra (${iso})`)
-    // 4. Última entrada
+    // 4. Última entrada (Tanda 6z5: no en el día de una reserva: ahí el día sigue su lista escrita y a qué hora llega el viajero es cosa suya; la última entrada la enseña la tarjeta)
+    if (reservados.size > 0) continue
     const start = toMin(s.suggested_time)
     const hours = horarioDe(place, iso)
     const last = lastEntryMinutes(place, start, hours)

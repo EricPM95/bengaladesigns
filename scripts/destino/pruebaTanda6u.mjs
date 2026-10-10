@@ -73,26 +73,13 @@ for (const dias of [2, 3, 4]) {
           for (const e of d.escritoLog ?? []) if (e.que === 'sobra' && !/cerr/.test(e.causa ?? '')) falla(`[sobra_con_reserva] ${etiqueta}: ${e.lugar}: ${e.causa}`)
           for (const r of d.escritoRows ?? []) if (r.tipo === 'comida' && r.min !== 60 && r.min !== 90 && !r.llegada && r.min < 45) falla(`[comida_corta] ${etiqueta}: comida de ${r.min} min`)
         }
-        // (Tanda 6x: lo nuestro nunca hace llegar tarde a una reserva. Se mide a la puerta —la «Llegada a…»—: solo se llega tarde si las reservas del viajero se cruzan o van justas, y entonces sale el aviso.)
-        const puerta = (fila) => {
-          const i = rows.indexOf(fila)
-          const previa = rows.slice(0, i).reverse().find((x) => x.tipo !== 'traslado')
-          return previa?.llegada && previa.lugar === fila.lugar ? previa.t0 : fila.t0
-        }
-        const tardeTour = Math.max(0, puerta(tours[0]) - toMin(ftHora))
-        const tardeMuseos = Math.max(0, puerta(museo[0]) - m)
-        if (!sePisan && !vasJusto && (tardeTour > 5 || tardeMuseos > 5)) falla(`[tarde_por_lo_nuestro] ${etiqueta}: el Free Tour llega ${tardeTour} min tarde y los Museos ${tardeMuseos}, sin que las reservas se cruzen ni vayan justas`)
+        // (Tanda 6z5: la prueba ya no mide si se llega tarde a una reserva ni si las dos van «justas»: la app no calcula si da tiempo; la hora solo decide la lista escrita y el día la sigue tal cual.)
         // La llegada: 15 min antes del Free Tour, 30 antes de los Museos (regla 4)
         const llegadaDe = (fila) => rows.slice(0, rows.indexOf(fila)).reverse().find((x) => x.llegada && x.lugar === fila.lugar)
         if (llegadaDe(tours[0]) && llegadaDe(tours[0]).min !== 15) falla(`[llegada_free_tour] ${etiqueta}: la llegada al Free Tour dura ${llegadaDe(tours[0]).min} min`)
         if (llegadaDe(museo[0]) && llegadaDe(museo[0]).min !== 30) falla(`[llegada_museos] ${etiqueta}: la llegada a los Museos dura ${llegadaDe(museo[0]).min} min`)
         if (!tours[0].hora_fija || toMin(tours[0].hora_fija) !== toMin(ftHora)) falla(`[free_tour_hora] ${etiqueta}: la hora fija del tour es ${tours[0].hora_fija}`)
-        // La comida de antes, con los Museos a mediodía: de 12:00 a 13:15 rápida (45 min) y antes; desde 13:30, entera y entre las 12:00 y las 12:30 (regla 4).
-        if (!vasJusto && !sePisan) {
-          const dMuseos = p.days.find((d) => (d.escritoRows ?? []).includes(museo[0]))
-          const comida = (dMuseos?.escritoRows ?? []).find((r) => r.tipo === 'comida')
-          if (comida && m >= 12 * 60 && m <= 13 * 60 + 15 && comida.t0 < (dMuseos.escritoRows.indexOf(museo[0]) >= 0 ? museo[0].t0 : 0) && comida.min !== 45) falla(`[comida_rapida] ${etiqueta}: la comida de antes de los Museos dura ${comida.min} min y debería ser rápida (45)`)
-        }
+        // (Tanda 6z5: la comida va donde dice la lista de esa franja; ya no se acorta ni se mueve según si da tiempo.)
         // La Basílica antes de los Museos desde las 16:00 (su última entrada es a las 19:15); el Puente y el Castillo, después del Free Tour de tarde
         {
           const dMuseos = p.days.find((d) => (d.escritoRows ?? []).includes(museo[0]))

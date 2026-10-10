@@ -37,7 +37,8 @@ export function comprobarDiaServidor({ day, iso, D, conocidos, donde, falla, res
     const p = place(s.name)
     if (!p || reservados.has(s.name)) continue
     if (iso && closedOnDay(p, weekdayOf(iso), iso)) falla('parada_cerrada', `${donde}: «${s.name}» va por dentro y ese día cierra (${iso})`)
-    if (iso) {
+    // (Tanda 6z5: el horario y la última entrada a la hora sugerida no se miden en el día de una reserva: ahí el día sigue su lista escrita y a qué hora llega el viajero es cosa suya.)
+    if (iso && reservas.length === 0) {
       const hours = { weekday: weekdayOf(iso), dateIso: iso }
       const sessions = parseHoursSessions(scheduleForDay(p, hours)).sort((a, b) => a.open - b.open)
       const start = toMin(s.suggested_time)
@@ -50,7 +51,7 @@ export function comprobarDiaServidor({ day, iso, D, conocidos, donde, falla, res
   for (const meal of day.meals ?? []) {
     const t = toMin(meal.suggested_time ?? '00:00')
     if (meal.time === 'lunch' && (t < 10 * 60 + 30 || t > 16 * 60 + 30)) falla('comida_fuera_de_hora', `${donde}: la comida a las ${meal.suggested_time}`)
-    if (meal.time === 'dinner' && (t < 18 * 60 + 30 || t > 22 * 60 + 30)) falla('cena_fuera_de_hora', `${donde}: la cena a las ${meal.suggested_time}`)
+    if (meal.time === 'dinner' && reservas.length === 0 && (t < 18 * 60 + 30 || t > 22 * 60 + 30)) falla('cena_fuera_de_hora', `${donde}: la cena a las ${meal.suggested_time}`)
   }
   // 3. franjas: sin nombres repetidos y cada parada en la suya
   const franjas = day.franjas ?? []
