@@ -103,7 +103,7 @@ const CLAVE = 'trazo:lluvia-de-prueba'
   ok(/if \(!esEntornoDePrueba\(\)\) return false/.test(modulo) && /if \(!esEntornoDePrueba\(\)\) return/.test(modulo.replace('return false', '')), '2c lluviaDePrueba.ts no se corta en producción')
   ok(/if \(!esEntornoDePrueba\(\)\) return null/.test(leer('src/components/dev/PanelDePruebas.tsx')), '2d el panel de pruebas se pinta en producción')
   const usos = fs.readdirSync('src', { recursive: true }).map(String).filter((f) => /\.tsx?$/.test(f) && !/lluviaDePrueba\.ts$/.test(f) && /lluviaDePrueba/.test(leer(path.join('src', f))))
-  ok(usos.every((f) => /rainForecast\.ts$|TarjetaCuentaAtras\.tsx$|PanelDePruebas\.tsx$/.test(f)), `2e la lluvia de prueba se usa fuera de los tres sitios previstos: ${usos.join(', ')}`)
+  ok(usos.every((f) => /rainForecast\.ts$|TarjetaCuentaAtras\.tsx$|PanelDePruebas\.tsx$|useAppNotices\.ts$/.test(f)), `2e la lluvia de prueba se usa fuera de los cuatro sitios previstos (el tiempo, la tarjeta de RESERVAS, el panel y la campana): ${usos.join(', ')}`)
 }
 
 // ── 4. Créditos ──
