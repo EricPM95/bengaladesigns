@@ -1,11 +1,18 @@
 Tanda 6z6: HOY solo en la de pago (y con más valor), lo de antes del viaje a RESERVAS, las fotos y el mapa de mis viajes en el Perfil, «Escuchar», «Cerca de mí» de pago y un panel de pruebas. Va todo en este mensaje. Empieza cuando esté subida la 6z5. La 6y (la ruta a mano) va después de esta.
 
-Antes de empezar: he copiado este prompt (docs\dias\PROMPT_TANDA6Z6_PARA_PEGAR.md) y PENDIENTES_6K.md en docs\dias. Mételos en un commit tal cual.
+Antes de empezar: he copiado en docs\dias un DIAS_ROMA_PARADAS.md nuevo (el Coliseo a las 12:30 y a las 13:00 con su propia fila, punto 0), GUIA_NUEVOS_DESTINOS.md, PENDIENTES_6K.md y este prompt (PROMPT_TANDA6Z6_PARA_PEGAR.md). Pasa el documento por el convertidor y no lo toques; mete los otros en un commit tal cual.
 
 LA IDEA (decidido por Eric el 10-oct-2026)
 En la 6z3 HOY salía en las dos versiones, y la diferencia entre la gratis y la de pago era casi nada: la gratis ya enseñaba las paradas de hoy, y «Cómo llegar» ya está gratis en DÍAS. Además, «Hoy» no pega con una cuenta atrás ni con las fotos de un viaje ya hecho. Así que:
 - HOY pasa a ser solo de pago, y solo para vivir el viaje;
 - lo de antes del viaje va a RESERVAS; las fotos, al Perfil.
+
+0. LAS RESPUESTAS A TUS PREGUNTAS DE LA 6Z5
+- Pregunta 2 (el Coliseo a las 12:30): sí, fila aparte. Ya está en el documento: con el Coliseo a las 12:30 y a las 13:00, la mañana (el Campidoglio, el Altar, el Foro y el Palatino), luego el Coliseo y el Arco, y la comida en Monti después; la tarde, la de mediodía. De 13:30 a 15:00, como estaba (la comida antes). Pon al día la prueba de listas con esta fila.
+- Pregunta 3 (el horario sin fechas): los viajes sin fechas tienen el mes. Enseña el horario de ese mes (su temporada). Si cambia según el día de la semana, el general con el día que cierra («Abre 9:00 – 19:00 · Cerrado los lunes»).
+- Pregunta 4 (la última entrada con dos tramos): basta la del último tramo, como ahora. Los dos tramos del horario, sí, a la vista («9:00 – 13:00 · 15:00 – 19:00»).
+- Pregunta 5 (el aviso «Saltada»): no hace falta guardarlo. Basta con el menú de la parada: «Devolverla a la ruta».
+- Pregunta 6 (el aviso de cierre con una entrada que cubre varios sitios): sí, avisa por cualquiera de los sitios que cubre la entrada, con el nombre del que cierra («Ese día el Foro cierra a las 14:00»). Sigue siendo solo un aviso.
 
 1. LA BARRA, SEGÚN LA VERSIÓN (no según el momento)
 - Gratis: cuatro pestañas, siempre: Ruta · Días · Explorar · Reservas.

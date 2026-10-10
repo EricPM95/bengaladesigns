@@ -316,7 +316,8 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
 | hasta las 10:00 | por la mañana | después del Coliseo | en el Gueto |
 | 10:30 – 11:00 | por la mañana | después del Coliseo | en el Gueto |
 | 11:30 – 12:00 | por la mañana | antes del Coliseo | en el Gueto |
-| 12:30 – 15:00 | a mediodía | antes del Coliseo | en Monti, antes del Coliseo |
+| 12:30 – 13:00 | a mediodía | antes del Coliseo | en Monti, después del Coliseo |
+| 13:30 – 15:00 | a mediodía | antes del Coliseo | en Monti, antes del Coliseo |
 | 15:30 en adelante | por la tarde | antes del Coliseo | en el Gueto |
 
 - **A primera hora (hasta las 10:00):** el día normal.
@@ -330,7 +331,12 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
   - **después:** Via dei Fori Imperiali ~15, la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar por dentro, después de comer;
   - **comida:** en el Gueto;
   - **la tarde, la de siempre.**
-- **A mediodía (de 12:30 a 15:00):**
+- **A las 12:30 y a las 13:00** (decidido el 10-oct-2026: la visita primero y la comida después, como en el D0):
+  - **mañana:** Plaza del Campidoglio, Altar de la Patria por dentro y Foro Romano y Palatino (se entra por Via dei Fori Imperiali y se sale junto al Arco);
+  - **después:** «Llegada a…», el Coliseo y el Arco;
+  - **comida:** en Monti, al lado del Coliseo (La Taverna dei Fori Imperiali o Trattoria Valentino);
+  - **tarde, cena y noche:** las de mediodía (abajo).
+- **A mediodía (de 13:30 a 15:00):**
   - **mañana:** Plaza del Campidoglio, Altar de la Patria por dentro y Foro Romano y Palatino (se entra por Via dei Fori Imperiali y se sale junto al Arco);
   - **comida:** en Monti, al lado del Coliseo (La Taverna dei Fori Imperiali o Trattoria Valentino);
   - **después:** «Llegada a…», el Coliseo y el Arco;

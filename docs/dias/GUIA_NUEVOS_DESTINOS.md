@@ -27,6 +27,7 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
   - Si es de noche, sustituye a la nocturna del día que pasa por los mismos sitios, y no hace falta el día del Free Tour.
 - **Sin cuentas al minuto** (Eric, 10-oct; sustituye a lo del 9-oct): la hora de la reserva solo decide qué fila de su tabla y qué lista escrita se usa. No se calcula si da tiempo, nada pasa «por fuera» ni «detrás», no hay aviso «vas justo». El viajero mueve o quita lo que quiera, y durante el viaje tiene [No me da tiempo]. A la vista, el horario y la última entrada de cada sitio, en pequeño: decide él. Solo un aviso: «coinciden», cuando dos reservas se pisan de verdad.
 - **La noche no se quita por la hora:** la nocturna se queda aunque el día acabe tarde.
+- **La app avisa, nunca prohíbe** (Eric, 10-oct): una reserva a una hora en que el sitio está cerrado ese día (Navidad, Nochevieja, Reyes, Semana Santa…) se guarda igual, con el aviso «Ese día el Coliseo cierra a las 14:00. Revisa tu reserva.». No se toca nada más: su día pasa con su bloque, como siempre.
 - **Todo lo que se reserva se puede eliminar,** y al eliminar no se mueve ningún día.
 
 ## 3. RESERVAS (la pestaña)
