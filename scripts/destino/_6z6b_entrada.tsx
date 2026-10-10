@@ -4,7 +4,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { PerfilSheet } from '../../src/components/layout/PerfilSheet'
 import { RouteOverview } from '../../src/components/route/RouteOverview'
-import { TarjetaRecuerdos, TarjetaRecuerdosEnRuta, verTarjetaRecuerdosEnRuta } from '../../src/components/route/fotos/TarjetaRecuerdos'
+import { TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta } from '../../src/components/route/fotos/TarjetaRecuerdos'
 import { BotonFotoParada } from '../../src/components/route/fotos/BotonFotoParada'
 import { etiquetaAnadirFoto } from '../../src/components/perfil/AlbumDeViaje'
 import { limiteDeFotos, modoDeFoto, fotosDelSitio } from '../../src/lib/fotosViaje'
@@ -20,6 +20,7 @@ export {
   RouteOverview,
   TarjetaRecuerdos,
   TarjetaRecuerdosEnRuta,
+  ultimasTresFotos,
   verTarjetaRecuerdosEnRuta,
   BotonFotoParada,
   etiquetaAnadirFoto,
