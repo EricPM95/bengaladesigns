@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
-import { buildEntradasBloque, dateOfDay, type BloqueEntrada } from '../../../lib/bookings'
-import { legDayText } from '../../../lib/reservasLegs'
+import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
+import { elDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { BloqueShell, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
@@ -20,12 +20,11 @@ export function metaReserva(route: Route, reservation: { dateIso: string | null;
   return `${fecha} · ${prefijoHora}${reservation.time}${precio ? ` · ${formatoImporte(precio)}` : ''}`
 }
 
-/** «En tu ruta el mié 11» (con fechas) o «En tu ruta el día 2». */
+/** «En tu ruta el miércoles 11» (con fechas) o «En tu ruta el día 2». */
 export function enTuRuta(route: Route, day: { dayNumber: number; id: string } | null): string {
   if (!day) return ''
   const full = route.days.find((candidate) => candidate.id === day.id)
-  const iso = full && route.answers.dateRange ? dateOfDay(route, full) : null
-  return iso ? `En tu ruta el ${legDayText({ dateIso: iso, dayNumber: day.dayNumber })}` : `En tu ruta el día ${day.dayNumber}`
+  return `En tu ruta ${elDia(route, full?.dayNumber ?? day.dayNumber)}`
 }
 
 /**

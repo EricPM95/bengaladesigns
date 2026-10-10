@@ -15,6 +15,7 @@ import { enrichRoutePhotos } from './placePhoto'
 import { reservasParaMotor } from './engineReservas'
 import { dateOfDay, dayOfReservation, reapplyReservations, type Reservation } from './bookings'
 import { withDayColors } from './freeDays'
+import { elDia } from './nombreDeDia'
 import { rehacerDiasSinTocar } from './rebuildDay'
 import { useRouteStore } from '../store/useRouteStore'
 
@@ -78,7 +79,7 @@ function avisoDeReserva(route: Route, reservations: Reservation[], days: DayPlan
   for (const reservation of reservations) {
     const day = dayOfReservation(route, reservation)
     if (!day || !ids.has(day.id) || reservation.kind === 'excursion') continue
-    return `Tienes una reserva el día ${day.dayNumber} (${reservation.name}, ${reservation.time}): no puedes mover este día`
+    return `Tienes una reserva ${elDia(route, day.dayNumber)} (${reservation.name}, ${reservation.time}): no puedes mover este día`
   }
   return null
 }

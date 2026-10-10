@@ -9,7 +9,7 @@ const WEEKDAY_LONG = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'n
 
 /**
  * Las ventas del afiliado unidas a este viaje (PARA_CODE_RESERVAS, 5): al abrir el viaje se piden las que llegaron con su código de campaña y,
- * arriba de Días, sale una tarjeta por cada una: «Hemos visto que has reservado {x} el {día} a las {hora}. ¿La ponemos en tu Día {n}?» con
+ * arriba de Días, sale una tarjeta por cada una: «Hemos visto que has reservado {x} el {día} a las {hora}. ¿La ponemos en tu ruta, ese día?» con
  * «Sí, ponla» y «Ahora no». Si se cancela una ya unida: «Tu reserva de {x} se ha cancelado» con «Quitar del viaje».
  */
 export function SaleCards({ route }: { route: Route }) {
@@ -71,7 +71,7 @@ export function SaleCards({ route }: { route: Route }) {
           <div key={sale.id} className="rounded-2xl border border-accent/40 bg-accent-soft/60 p-4">
             <p className="text-[14.5px] leading-snug text-text">
               Hemos visto que has reservado <strong>{sale.name}</strong> el {when}
-              {sale.time ? ` a las ${sale.time}` : ''}.{day ? ` ¿La ponemos en tu Día ${day.dayNumber}?` : ' Es una fecha fuera de las de tu viaje.'}
+              {sale.time ? ` a las ${sale.time}` : ''}.{day ? ' ¿La ponemos en tu ruta, ese día?' : ' Es una fecha fuera de las de tu viaje.'}
             </p>
             <div className="mt-3 flex gap-2">
               {day && (

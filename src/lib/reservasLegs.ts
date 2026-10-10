@@ -1,4 +1,5 @@
 import type { Route } from './types'
+import { fechaCorta } from './nombreDeDia'
 import { medioOf, puntoCorto, tripModes, type ArrivalInfo, type ArrivalMode, type ArrivalPoint } from './arrivalReturn'
 
 /**
@@ -25,13 +26,9 @@ export interface LegState {
   question: string | null
 }
 
-const WEEKDAY = new Intl.DateTimeFormat('es-ES', { weekday: 'short' })
-
 /** «mar 10» (con fechas) o «Día 1» (sin fechas). */
 export function legDayText(leg: Pick<LegState, 'dateIso' | 'dayNumber'>): string {
-  if (!leg.dateIso) return `Día ${leg.dayNumber}`
-  const date = new Date(`${leg.dateIso}T12:00:00`)
-  return `${WEEKDAY.format(date).replace('.', '').toLowerCase()} ${date.getDate()}`
+  return leg.dateIso ? fechaCorta(leg.dateIso) : `Día ${leg.dayNumber}`
 }
 
 export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState {

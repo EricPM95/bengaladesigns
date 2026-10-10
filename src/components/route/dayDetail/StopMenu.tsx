@@ -5,6 +5,7 @@ import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
 import { withUndo } from '../../../store/useAddFlowStore'
 import { hasOwnTime } from '../../../lib/freeDays'
+import { alDia, diaCorto } from '../../../lib/nombreDeDia'
 import { RemoveReservationDialog } from '../reservas/ReservedMarks'
 import { TimeField } from '../../ui/TimeField'
 
@@ -42,6 +43,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
   const [pickerOpen, setPickerOpen] = useState(false)
   const [time, setTime] = useState(stop.time)
 
+  const route = useRouteStore((state) => state.route)
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const removeStop = useRouteStore((state) => state.removeStop)
   const reorderStops = useRouteStore((state) => state.reorderStops)
@@ -75,7 +77,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
   const handleMoveToDay = (targetDayId: string) => {
     ensureSeeded()
     const target = otherDays.find((day) => day.id === targetDayId)
-    undoable(`Movida al Día ${target?.dayNumber ?? ''}`, () => moveStopToDay(stop.id, dayId, targetDayId))
+    undoable(target ? `Movida ${alDia(route, target.dayNumber)}` : 'Movida', () => moveStopToDay(stop.id, dayId, targetDayId))
     close()
   }
 
@@ -205,7 +207,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
                 <p className="px-1 text-caption font-semibold uppercase tracking-wide text-text-muted">Mover a</p>
                 {otherDays.map((day) => (
                   <button key={day.id} type="button" onClick={() => handleMoveToDay(day.id)} className={lightItemClass}>
-                    Día {day.dayNumber} — {day.city}
+                    {diaCorto(route, day.dayNumber)} — {day.city}
                   </button>
                 ))}
               </div>

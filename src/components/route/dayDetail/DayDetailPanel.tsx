@@ -4,6 +4,7 @@ import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { addDaysToIso } from '../../../lib/dateRange'
+import { alDia, delDia, diaCorto, elDia } from '../../../lib/nombreDeDia'
 import { displayStopName } from '../../../lib/format'
 import {
   buildCombinedDaysLines,
@@ -634,7 +635,7 @@ export function DayDetailPanel({
         : newStop
     if (keepOpen) {
       // El «+» de la tarjeta (Tanda 6z): se añade, sale «Añadido al día N» con Deshacer, y la pantalla sigue abierta (el siguiente cae detrás de este).
-      if (insertAt !== null) withUndo(`Añadido al día ${day.dayNumber}`, () => insertStopAt(day.id, insertAt, conHoraDeTarde))
+      if (insertAt !== null) withUndo(`Añadido ${alDia(route, day.dayNumber)}`, () => insertStopAt(day.id, insertAt, conHoraDeTarde))
       if (insertAt !== null) setInsertAt(insertAt + 1)
       return
     }
@@ -1171,7 +1172,7 @@ export function DayDetailPanel({
           >
             <OnTheWayGroupCard
               toName={nombreSiguiente}
-              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: realStops[index]?.visitedDay ? `Ya lo visitaste el día ${realStops[index].visitedDay}` : stops[index].why ?? stops[index].placeText ?? null, onOpen: () => setDetailIndex(index) }))}
+              lines={indices.map((index) => ({ id: realStops[index]?.id ?? stops[index].id, name: displayStopName(stops[index].name), phrase: realStops[index]?.visitedDay ? `Ya lo visitaste ${elDia(route, realStops[index].visitedDay)}` : stops[index].why ?? stops[index].placeText ?? null, onOpen: () => setDetailIndex(index) }))}
             />
           </SortableStop>,
         )
@@ -1277,7 +1278,7 @@ export function DayDetailPanel({
                 // "te montamos otro día de ruta" — este día está en blanco justamente porque el
                 // destino ya no da para más, así que sería prometerle algo que no existe.
                 <div className="space-y-2">
-                  <p className="text-small leading-relaxed text-text-soft">Elige una excursión para el día {day.dayNumber}.</p>
+                  <p className="text-small leading-relaxed text-text-soft">Elige una excursión para {elDia(route, day.dayNumber)}.</p>
                   <ExcursionOptions
                     options={excursionOptions}
                     selectedId={day.selectedExcursionId ?? null}
@@ -1323,7 +1324,7 @@ export function DayDetailPanel({
                   un error ni un bloqueo — a partir de aquí manda él. */}
               {day.beyondAutoDays && isFirstBeyondAutoDay && (
                 <p className="rounded-xl bg-bg-hover px-3 py-2.5 text-small leading-relaxed text-text-soft">
-                  A partir del día {day.dayNumber}, tú decides. Añade las paradas que quieras y nosotros organizamos los tiempos.
+                  A partir {delDia(route, day.dayNumber)}, tú decides. Añade las paradas que quieras y nosotros organizamos los tiempos.
                 </p>
               )}
               {day.beyondAutoDays ? (
@@ -1573,7 +1574,7 @@ export function DayDetailPanel({
               open
               destination={day.city}
               places={curatedPool}
-              title={`${mealPicker.mealTime === 'dinner' ? 'Cena' : 'Comida'} — Día ${day.dayNumber}`}
+              title={`${mealPicker.mealTime === 'dinner' ? 'Cena' : 'Comida'} — ${diaCorto(route, day.dayNumber)}`}
               subtitle={mealPicker.zone}
               route={route}
               dayMarkers={addStopMarkers}
@@ -1604,7 +1605,7 @@ export function DayDetailPanel({
               // día?") pero no se pueden añadir: un día entero fuera de la ciudad no es una parada
               // que quepa en un hueco de la tarde. Para eso está convertir el día a excursión.
               excursions={curatedExcursions}
-              title={`Añadir parada — Día ${day.dayNumber}`}
+              title={`Añadir parada — ${diaCorto(route, day.dayNumber)}`}
               subtitle={addStopSubtitle}
               route={route}
               dayMarkers={dayMarkers}

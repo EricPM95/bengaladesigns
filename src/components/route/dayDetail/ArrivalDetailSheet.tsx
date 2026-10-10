@@ -142,7 +142,7 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, trans
   const hasTips = tips.length > 0
   const visibleTabs: Tab[] = ['resumen', ...(hasTraslados ? (['traslados'] as const) : []), ...(hasTips ? (['tips'] as const) : [])]
   const activeTab: Tab = visibleTabs.includes(tab) ? tab : 'resumen'
-  const dayPillLabel = `Día ${dayNumber}${dateIso ? ` · ${formatShortDateEs(dateIso)}` : ''}`
+  const dayPillLabel = dateIso ? formatShortDateEs(dateIso) : `Día ${dayNumber}`
 
   return (
     <AnimatePresence>

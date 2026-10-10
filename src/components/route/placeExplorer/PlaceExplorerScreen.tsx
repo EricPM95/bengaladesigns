@@ -20,6 +20,7 @@ import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
 import { haversineMeters, hasRealCoordinates } from '../../../lib/distanceMock'
 import { formatDuration } from '../../../lib/format'
+import { alDia } from '../../../lib/nombreDeDia'
 import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../../map/StopsMapView'
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { RestaurantDetailSheet } from './RestaurantDetailSheet'
@@ -1441,7 +1442,7 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir a Día ${dayNumber} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
+            footerAction={selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
         )}

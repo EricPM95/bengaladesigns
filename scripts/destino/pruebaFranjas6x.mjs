@@ -98,12 +98,13 @@ for (const fechas of [true, false]) {
           if (/^Mañana$/m.test(texto) || /^Tarde$/m.test(texto)) conFranjas++
           if (/^Comida$/m.test(texto) || /^Cena$/m.test(texto)) conComida++
         }
-        // La hora de la reserva del viajero sigue a la vista (la etiqueta verde de la tarjeta del día, con el día cerrado).
-        if (conReservas && !activeDayId) {
+        // La hora de la reserva del viajero sigue a la vista: en la pestañita verde de la parada, con el día 1 abierto (tanda 6z3: la cabecera cerrada ya no repite «Coliseo · 16:40»).
+        if (conReservas && activeDayId === 'd1') {
           const ok = new RegExp(`16:40`).test(texto)
           reservadas.push(ok)
           debe(ok, '2 reserva', `${nombre}: ya no sale la hora de la reserva del viajero (16:40) (${plano(texto.slice(0, 300))})`)
         }
+        if (conReservas && !activeDayId) debe(!/16:40/.test(texto), '2 reserva', `${nombre}: la cabecera cerrada vuelve a llevar la hora de lo reservado (16:40)`)
       }
     }
   }

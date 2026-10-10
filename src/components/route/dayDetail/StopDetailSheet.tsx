@@ -381,7 +381,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // null = la ficha no se está viendo desde ningún día concreto (EXPLORAR abre lugares del destino
   // que todavía no están en la ruta) — entonces no hay píldora que poner: "Día 1" ahí sería
   // directamente falso.
-  const dayPillLabel = dayNumber === null ? null : `Día ${dayNumber}${dateIso ? ` · ${formatShortDateEs(dateIso)}` : ''}`
+  const dayPillLabel = dayNumber === null ? null : (dateIso ? formatShortDateEs(dateIso) : `Día ${dayNumber}`)
 
   return (
     <AnimatePresence>

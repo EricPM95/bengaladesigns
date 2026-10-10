@@ -14,6 +14,7 @@ import { POI_CATEGORY_CHIPS, MAX_ACTIVE_POI_FILTERS, findPoiCategoryChip } from 
 import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../../map/StopsMapView'
 import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { Spinner } from '../../ui/Spinner'
+import { alDia, diaCorto } from '../../../lib/nombreDeDia'
 
 /** Radio de búsqueda de categorías/bbox del buscador alrededor del centro del destino del día. */
 const CITY_SEARCH_RADIUS_METERS = 6000
@@ -320,7 +321,7 @@ export function AddStopScreen({
 
   if (!open) return null
 
-  const title = beforeStopName && afterStopName ? `Entre ${beforeStopName} y ${afterStopName}` : beforeStopName ? `Después de ${beforeStopName}` : afterStopName ? `Antes de ${afterStopName}` : `Día ${dayNumber}`
+  const title = beforeStopName && afterStopName ? `Entre ${beforeStopName} y ${afterStopName}` : beforeStopName ? `Después de ${beforeStopName}` : afterStopName ? `Antes de ${afterStopName}` : diaCorto(route, dayNumber)
 
   const listToShow = query.trim() ? (searchResults ?? []) : nearbySorted
   const anyCategoryLoading = activeFilters.some((id) => categoryLoading.has(id))
@@ -346,7 +347,7 @@ export function AddStopScreen({
             ✕
           </button>
           <div className="min-w-0 flex-1 text-center">
-            <p className="truncate text-body font-semibold text-text">Añadir parada — Día {dayNumber}</p>
+            <p className="truncate text-body font-semibold text-text">Añadir parada — {diaCorto(route, dayNumber)}</p>
             <p className="truncate text-caption text-text-muted">{title}</p>
           </div>
           {onFreeTour ? (
@@ -433,7 +434,7 @@ export function AddStopScreen({
                     onClick={() => addCandidate(selected)}
                     className="rounded-lg bg-accent px-2.5 py-1.5 text-caption font-semibold text-white transition-colors hover:bg-accent-hover"
                   >
-                    Añadir a Día {dayNumber} →
+                    Añadir {alDia(route, dayNumber)} →
                   </button>
                 </div>
               </div>
@@ -571,7 +572,7 @@ export function AddStopScreen({
             dayStops={dayMarkers.map((marker): DayStopRef => ({ id: marker.id, name: marker.name, coordinates: marker.coordinates, photoUrl: marker.photoUrl }))}
             isAnchor={false}
             externalContent={{ description: poiContent ? poiContentToStopDescription(poiContent) : null, loading: poiContentLoading }}
-            footerAction={{ label: `Añadir a Día ${dayNumber} →`, onClick: () => addCandidate(selected) }}
+            footerAction={{ label: `Añadir ${alDia(route, dayNumber)} →`, onClick: () => addCandidate(selected) }}
             onClose={() => setDetailOpen(false)}
           />
         )}

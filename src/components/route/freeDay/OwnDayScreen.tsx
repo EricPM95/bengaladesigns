@@ -3,6 +3,7 @@ import type { Route } from '../../../lib/types'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { addDaysToIso } from '../../../lib/dateRange'
 import { crearDiaPropio } from '../../../lib/dayInterruptor'
+import { diaCorto } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
@@ -57,7 +58,7 @@ export function OwnDayScreen({ route, dayId, onClose }: { route: Route; dayId: s
   }
 
   if (!resolved) return null
-  const subtitle = day ? `${city} · Día ${day.dayNumber}` : city
+  const subtitle = day ? `${city} · ${diaCorto(route, day.dayNumber)}` : city
 
   return (
     <>

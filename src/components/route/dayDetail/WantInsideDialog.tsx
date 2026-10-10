@@ -5,6 +5,7 @@ import type { GeneratedDay } from '../../../lib/mapGeneratedRoute'
 import { mapSingleGeneratedDay } from '../../../lib/mapGeneratedRoute'
 import { enrichRoutePhotos } from '../../../lib/placePhoto'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { elDia } from '../../../lib/nombreDeDia'
 
 /**
  * "Quiero entrar" (PROMPT_PENDIENTE F): el interruptor de una parada que va por fuera. El motor rehace ese día curado
@@ -74,7 +75,7 @@ export function WantInsideDialog({ route, day, state, onClose, onAccepted }: { r
   }
 
   // Rehacer un día con cambios del viajero: se avisa (y lo nuevo pasa a ser la ruta original).
-  const lost = day.originalSnapshot ? `Perderás los cambios que hiciste en el día ${day.dayNumber}. ` : ''
+  const lost = day.originalSnapshot ? `Perderás los cambios que hiciste en ${elDia(route, day.dayNumber)}. ` : ''
   const text = state.phase === 'loading' ? 'Estamos rehaciendo tu día…' : state.phase === 'error' ? state.message : `${lost}${state.result.message}`
   // En el body: el panel del día lleva una animación con transform, que encerraría el "fixed" dentro de él.
   return createPortal(
