@@ -801,11 +801,27 @@ export function planListasTrip(args) {
           const abierto = openCheck(place, sim.t0, u.head.min ?? 30, hours)
           return abierto.ok !== true && abierto.opensAt == null
         }
+        // Lo que ya habrá cerrado aunque se le quite todo lo que lleva delante (la Basílica el Viernes Santo, que cierra a las 13:00 y no se llega antes de la comida de las 12:30) no se arregla
+        // empujando la mañana detrás de la reserva: eso dejaría el día empezando a mediodía sin abrir nada. Se prueba a ponerlo el primero (abierto por la mañana); si ni así, se deja donde está.
+        const sinArreglo = new Set()
         for (let guard = 0; guard < 60; guard++) {
           const lista2 = plano([...A, ...quedan])
           const noCabe = !cabe(lista2)
           const tardanza = llegadaA(lista2, objetivoC) - objetivoT
-          const cerrado = quedan.find((u) => cierraAlLlegar(u, lista2))
+          let cerrado = quedan.find((u) => !sinArreglo.has(u.head.id) && cierraAlLlegar(u, lista2))
+          if (cerrado) {
+            const k = quedan.indexOf(cerrado)
+            const sinLoDeDelante = quedan.filter((u, i) => i >= k || !(movible(u) && !cerrariaDespues(u)))
+            if (cierraAlLlegar(cerrado, plano([...A, ...sinLoDeDelante]))) {
+              sinArreglo.add(cerrado.head.id)
+              const alFrente = [cerrado, ...quedan.filter((u) => u !== cerrado)]
+              if (k > 0 && !cierraAlLlegar(cerrado, plano([...A, ...alFrente]))) {
+                quedan.splice(0, quedan.length, ...alFrente)
+                log.push({ id: cerrado.head.id, lugar: cerrado.head.titulo ?? cerrado.head.lugar, sitio: cerrado.head.lugar, que: 'adelanta', causa: 'a su hora ya habría cerrado y no se llega antes con el orden escrito: va lo primero del día, por la mañana (regla 5, un cierre)' })
+              }
+              continue
+            }
+          }
           if (!noCabe && !cerrado) break
           let elegido = -1
           if (cerrado) {

@@ -54,11 +54,13 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const fijasHoy = rows.filter((r) => r.fija && !r.llegada).length
     // 1. El orden
     const base = new Map((dia.ordenBase ?? []).map((id, i) => [id, i]))
+    // (Un cierre manda sobre el orden escrito —regla 5—: lo que a su hora ya habría cerrado y el motor adelanta a primera hora, con su línea «adelanta» en el registro, no cuenta en el orden.)
+    const adelantadas = new Set(log.filter((l) => l.que === 'adelanta').map((l) => l.id))
     const hayFija = rows.some((r) => r.fija && !r.llegada)
-    const secuencia = rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida')).map((r) => base.get(r.id))
+    const secuencia = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida')).map((r) => base.get(r.id))
     {
       // Con una reserva, lo que iba ANTES de la reserva en la lista y sale DESPUÉS de ella (lo que pasa detrás) va aparte; el resto sigue el orden de la lista, y lo de detrás también.
-      const filasConBase = rows.filter((r) => base.has(r.id) && !r.llegada && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida'))
+      const filasConBase = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida'))
       // Lo que pasa detrás: lo que sale después de una hora fija (reserva o Free Tour) y en la lista iba antes de ella.
       const detras = new Set()
       filasConBase.forEach((fija, kFija) => {

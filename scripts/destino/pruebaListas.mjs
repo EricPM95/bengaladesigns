@@ -83,7 +83,8 @@ const EXTRAS = [
   { clave: 'Free Tour de noche', ftDespues: { franja: 'noche', hora: '18:30' } },
 ]
 const fechas = []
-for (let d = 0; d < 365; d += paso) fechas.push(addDays('2027-01-01', d))
+const DESDE = args.desde ?? '2027-01-01' // (los próximos 12 meses: desde=AAAA-MM-DD)
+for (let d = 0; d < 365; d += paso) fechas.push(addDays(DESDE, d))
 
 const todos = []
 const resumen = { viajes: 0, dias: 0, fallos: 0 }
@@ -118,7 +119,7 @@ const segundos = Math.round((Date.now() - t0) / 1000)
 const lineas = [
   '# Prueba del motor de listas (Tanda 6)',
   '',
-  `${resumen.viajes} viajes (${resumen.dias} días) en ${fechas.length} fechas de 2027, con y sin pool, Free Tour, reservas y experiencias. ${segundos} s.`,
+  `${resumen.viajes} viajes (${resumen.dias} días) en ${fechas.length} fechas desde el ${DESDE}, con y sin pool, Free Tour, reservas y experiencias. ${segundos} s.`,
   '',
   `**Fallos: ${resumen.fallos}.**`,
   '',
