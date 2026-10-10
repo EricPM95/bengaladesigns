@@ -2,10 +2,11 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { useTripReadiness } from '../../hooks/useTripReadiness'
 import { hasUnresolvedYellowItems } from '../../lib/readiness'
 import type { RouteMode } from '../../lib/types'
+import { hayPestanaHoy, modoVisible } from '../../lib/barra'
 import type { NombreIcono } from '../../lib/iconos'
 import { Icono } from '../ui/Icono'
 
-/** Las cinco pestañas, siempre las mismas y en este orden: antes, durante y después del viaje, con y sin fechas, en la gratis y en la de pago (Tanda 6z3). */
+/** Todas las pestañas, en este orden. Cuáles salen lo decide la versión (src/lib/barra.ts): la gratis no lleva Hoy; la de pago, las cinco. Nunca cambian con el momento del viaje (Tanda 6z3 y 6z6). */
 export const PESTANAS: { id: RouteMode; nombre: string; icono: NombreIcono }[] = [
   { id: 'today', nombre: 'Hoy', icono: 'hoy' },
   { id: 'route', nombre: 'Ruta', icono: 'ruta' },
@@ -15,19 +16,20 @@ export const PESTANAS: { id: RouteMode; nombre: string; icono: NombreIcono }[] =
 ]
 
 /**
- * La barra de abajo (Tanda 6z3, diseño «La barra de abajo»): fija al borde, a todo el ancho, y respeta la zona de abajo del iPhone. Cinco pestañas con su icono y su nombre debajo; la activa, en una píldora clara.
+ * La barra de abajo (Tanda 6z3, diseño «La barra de abajo»): fija al borde, a todo el ancho, y respeta la zona de abajo del iPhone. Cuatro pestañas en la gratis y cinco en la de pago, con su icono y su nombre debajo; la activa, en una píldora clara.
  * Reservas lleva su «!» mientras falte algo. Nunca cambia ni se esconde según el momento del viaje. Sustituye a la barra de antes (Presupuesto · Perfil · Reservas) y a las pestañas de arriba.
  */
 export function BottomBar() {
-  const mode = useRouteStore((state) => state.mode)
+  const mode = modoVisible(useRouteStore((state) => state.mode))
+  const pestanas = PESTANAS.filter((pestana) => pestana.id !== 'today' || hayPestanaHoy())
   const setMode = useRouteStore((state) => state.setMode)
   const setActiveDayId = useRouteStore((state) => state.setActiveDayId)
   const readiness = useTripReadiness()
   const reservasAlert = readiness ? hasUnresolvedYellowItems(readiness.items) : false
 
   return (
-    <nav aria-label="Barra del viaje" className="relative z-30 grid w-full shrink-0 grid-cols-5 px-1.5 pt-2" style={{ background: '#1C2230', paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
-      {PESTANAS.map((pestana) => {
+    <nav aria-label="Barra del viaje" className="relative z-30 grid w-full shrink-0 px-1.5 pt-2" style={{ gridTemplateColumns: `repeat(${pestanas.length}, minmax(0, 1fr))`, background: '#1C2230', paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
+      {pestanas.map((pestana) => {
         const activa = mode === pestana.id
         const alerta = pestana.id === 'bookings' && reservasAlert
         return (

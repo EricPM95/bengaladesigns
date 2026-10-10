@@ -7,6 +7,8 @@
  *   en producción, `?prueba=1` no hace nada: solo funciona en local y en las versiones de prueba de Vercel.
  */
 
+import { quitarParametroDeLaDireccion } from './pago'
+
 /** Desde cuántos «me gusta» reales se enseña el número. */
 export const MIN_RECOMENDACIONES = 20
 
@@ -35,6 +37,17 @@ export function pruebaActiva(): boolean {
   } catch {
     return false
   }
+}
+
+/** El panel de pruebas enciende o apaga los números de prueba (lo mismo que `?prueba=1` / `?prueba=0`). En producción no hace nada. */
+export function fijarPrueba(encendida: boolean): void {
+  if (!esEntornoDePrueba()) return
+  try {
+    window.sessionStorage.setItem(CLAVE_PRUEBA, encendida ? '1' : '0')
+  } catch {
+    /* sin almacenamiento: no se recuerda */
+  }
+  quitarParametroDeLaDireccion('prueba')
 }
 
 /** Un número entre 0 y 1 que sale del nombre y siempre es el mismo. */

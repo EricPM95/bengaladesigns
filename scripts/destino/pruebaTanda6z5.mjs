@@ -173,8 +173,8 @@ debe(!/Hoy cierra/.test(trozo(diasCerrada, nombreCerrada) ?? ''), 'A5 cerrado', 
 const hoyCerrada = aTexto(pinta(HoyView, { route: rutaCerrada, onPonFechas() {} }, rutaCerrada, { hoy: INICIO }))
 debe(/Cerrado hoy/.test(hoyCerrada), 'A5 cerrado', `en HOY una parada cerrada ese día no dice «Cerrado hoy» (${plano(hoyCerrada).slice(0, 300)})`)
 
-// HOY (gratis y de pago): el horario bajo el nombre.
-for (const version of ['gratis', 'completa']) {
+// HOY (solo de pago desde la 6z6; en la gratis la pestaña no está): el horario bajo el nombre.
+for (const version of ['completa']) {
   const t = aTexto(pinta(HoyView, { route, onPonFechas() {} }, route, { version, hoy: INICIO }))
   debe(/^Abre \d{1,2}:\d{2} – \d{1,2}:\d{2}/m.test(t), 'A5 HOY', `${version}: HOY no enseña ningún «Abre …» (${plano(t).slice(0, 300)})`)
   debe(!/Acceso libre/.test(t), 'A5 HOY', `${version}: HOY dice «Acceso libre»`)
@@ -187,7 +187,8 @@ const cuenta = (t) => t.match(/(\d+) de (\d+) visto/)?.slice(1).map(Number)
 debe(/No me da tiempo/.test(hoyPago), 'B6 botón', 'en HOY de pago, durante el viaje, falta el botón [No me da tiempo]')
 debe(/Cómo llegar/.test(hoyPago) && /\bVisto\b/.test(hoyPago), 'B6 botón', 'al añadir el tercer botón se han perdido [Cómo llegar] o [Visto]')
 debe(!/No me da tiempo/.test(hoyGratis), 'B6 botón', 'en HOY gratis sale [No me da tiempo]')
-debe(!/No me da tiempo/.test(aTexto(pinta(HoyView, { route, onPonFechas() {} }, route, { version: 'completa', hoy: '2027-03-01' }))), 'B6 botón', 'antes del viaje sale [No me da tiempo]')
+// (Antes del viaje, HOY de pago cuenta en una lista que tendrá «No me da tiempo»: lo que no puede haber es el BOTÓN.)
+debe(!/<button[^>]*>(?:(?!<\/button>)[\s\S])*No me da tiempo/.test(pinta(HoyView, { route, onPonFechas() {} }, route, { version: 'completa', hoy: '2027-03-01' })), 'B6 botón', 'antes del viaje sale [No me da tiempo]')
 debe(JSON.stringify(cuenta(hoyPago)) === JSON.stringify([0, paradas.length]), 'B7 cuenta', `sin saltar nada debería decir «0 de ${paradas.length} visto» y dice «${cuenta(hoyPago)}»`)
 
 // Una saltada (la primera): tachada, gris, no cuenta en el total y la siguiente es la segunda.

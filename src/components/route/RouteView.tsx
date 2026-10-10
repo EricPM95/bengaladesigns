@@ -25,6 +25,9 @@ import { OwnDayScreen } from './freeDay/OwnDayScreen'
 import { UndoToast } from './freeDay/UndoToast'
 import { ExcursionsPage } from './excursions/ExcursionsPage'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
+import { modoVisible } from '../../lib/barra'
+import { usePruebasUi } from '../../store/usePruebasUi'
+import { PanelDePruebas } from '../dev/PanelDePruebas'
 import { Icono } from '../ui/Icono'
 
 // Límites del tirador gris (móvil) entre mapa y panel inferior — ninguno de los dos lados puede
@@ -48,7 +51,10 @@ function OpenMapIcon() {
 
 export function RouteView() {
   const route = useRouteStore((state) => state.route)
-  const mode = useRouteStore((state) => state.mode)
+  // El modo que se ve: en la gratis, un 'today' guardado cae a 'route' (HOY es solo de pago; src/lib/barra.ts).
+  const mode = modoVisible(useRouteStore((state) => state.mode))
+  // Sube cuando el panel de pruebas cambia la versión o los números de prueba: la app se vuelve a pintar entera.
+  const repintado = usePruebasUi((state) => state.version)
   const setMode = useRouteStore((state) => state.setMode)
   const activeDayId = useRouteStore((state) => state.activeDayId)
   const setActiveDayId = useRouteStore((state) => state.setActiveDayId)
@@ -108,12 +114,13 @@ export function RouteView() {
   // criterio que DestinationDetailModal/AttractionsFinder.
   if (mode === 'bookings') {
     return (
-      <div className="flex h-dvh flex-col bg-bg text-text">
-        {/* (Tanda 6z3: la barra de abajo está también aquí, con las mismas cinco pestañas: nunca se esconde.) */}
+      <div key={repintado} className="flex h-dvh flex-col bg-bg text-text">
+        {/* (Tanda 6z3 y 6z6: la barra de abajo está también aquí, con las mismas pestañas de su versión: nunca se esconde.) */}
         <div className="relative min-h-0 flex-1">
           <ReservasPanel route={route} onClose={() => setMode('route')} />
         </div>
         <BottomBar />
+        <PanelDePruebas route={route} />
         {/* La página de excursiones se abre también desde la fila «Excursiones desde {destino}» de Reservas. */}
         <ExcursionsPage route={route} />
         {/* (Tanda 6m: el aviso corto también en RESERVAS —«Abriendo la tienda de entradas…»—, que es una pantalla aparte.) */}
@@ -195,7 +202,7 @@ export function RouteView() {
   } as CSSProperties
 
   return (
-    <div className="flex h-dvh flex-col bg-bg text-text">
+    <div key={repintado} className="flex h-dvh flex-col bg-bg text-text">
       <Header
         onTips={() => setTipsOpen(true)}
         onOpenDates={ponFechas}
@@ -328,6 +335,7 @@ export function RouteView() {
 
       {/* La barra de abajo: fija al borde, a todo el ancho, como la de cualquier app de móvil. */}
       <BottomBar />
+      <PanelDePruebas route={route} />
 
       {/* Primero la tarjeta de temporada; al tocar «Entendido», los avisos de fechas (la primera vez que se abre la ruta, y al
           tocar la etiqueta de un día). */}
