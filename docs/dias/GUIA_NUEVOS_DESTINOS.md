@@ -63,7 +63,7 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 ## 6. Gratis y de pago
 - **Un solo interruptor** para todo lo de pago. Con `?version=gratis` se ve la gratis.
 - **Gratis:** los días escritos enteros, las reservas que cambian días, las entradas, las excursiones, el alojamiento (mapa) y lo útil.
-- **De pago:** los vuelos y la llegada y la vuelta, la zona, el resumen, el orden de los días según los vuelos (Tanda 7), HOY y explorar extras.
+- **De pago:** los vuelos y la llegada y la vuelta, la zona, el resumen, el orden de los días según los vuelos (Tanda 7), lo de vivo de HOY (la siguiente parada, [Cómo llegar] y [✓ Visto]) y explorar extras. HOY sale siempre, en la gratis y en la de pago, con y sin fechas.
 - **Lo de pago no se enseña con candados:** simplemente no sale.
 - **El pago no se activa de cara al público sin la Tanda 7 hecha.**
 
@@ -76,3 +76,10 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - `excursiones_desde_dias`;
 - las zonas del alojamiento;
 - los horarios auditados (como `AUDITORIA_HORARIOS_ROMA`).
+
+## 8. El dinero de cada destino (Tanda 6z2 y 6z3)
+- **`moneda`** en los datos del destino (por ejemplo «EUR» en Roma, «GBP» en Londres, «CZK» en Praga, «MXN» en Ciudad de México): se ofrece en los campos de precio y para los consejos. Nada de monedas escritas en el código.
+- **Cada precio de los datos de un destino lleva su moneda** (entradas, excursiones, traslados, tiendas): el precio se enseña tal como lo da la tienda, sin convertir. Un precio sin moneda se da por `MONEDA_POR_DEFECTO` («EUR», en `shared/dinero/formato.js`); en un destino con otra moneda eso hay que escribirlo en cada dato.
+- Los precios se enseñan siempre con `precioTienda` o `formatoImporte` (`shared/dinero/formato.js`): ningún «€» escrito a mano.
+- El cambio de monedas para el presupuesto lo pide el servidor al Banco Central Europeo una vez al día (`/api/cambio`); una moneda que el BCE no publique sale en el presupuesto aparte, sin sumar.
+- Las fotos del viaje se guardan en un sitio privado de Supabase (migración `0018_fotos_viaje.sql`): hay que aplicarla a mano en el panel antes de usarlas.
