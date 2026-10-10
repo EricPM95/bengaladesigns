@@ -1,85 +1,57 @@
 import { useState } from 'react'
-import { TripReadinessBadge } from '../route/reservas/TripReadinessBadge'
 import { useRouteStore } from '../../store/useRouteStore'
-import { useSyncStore } from '../../store/useSyncStore'
+import { usePresupuestoUi } from '../../store/usePresupuestoUi'
 import { useAppNotices } from '../../hooks/useAppNotices'
-import { buildTripPayload } from '../sync/TripSync'
-import { NewTripSheet } from './NewTripSheet'
+import { subtituloDelViaje } from '../../lib/resumenViaje'
+import { Icono } from '../ui/Icono'
 import { NoticesSheet } from './NoticesSheet'
+import { PerfilSheet } from './PerfilSheet'
 
-/** Botón redondo blanco de la cabecera (diseño "Trazo Itinerario"). */
-const ROUND_BUTTON =
-  'relative flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full border border-text/10 bg-bg-card text-text transition-colors hover:bg-bg-hover'
+/** Botón redondo de la cabecera (diseño «La cabecera»): 44 px de toque, sin fondo, la tinta de siempre. */
+const BOTON = 'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text transition-colors hover:bg-text/[.06]'
 
 interface HeaderProps {
-  /** La bombilla: los tips del viaje (PROMPT_UI_REPASO_2, 3). */
+  /** Los tips del viaje: antes la bombilla de la cabecera, ahora dentro del Perfil. */
   onTips: () => void
   /** El aviso «más días que fechas» abre el calendario de fechas. */
   onOpenDates: () => void
 }
 
 /**
- * Cabecera (diseño "Trazo Itinerario"): brújula, nombre y, a la derecha y en este orden, el % de viaje listo, la bombilla de los tips,
- * el «+» de viaje nuevo y la campana de avisos (con su número). La varita de «Volver a mi ruta original» ya no está aquí: va en cada día
- * de la pestaña Días (PARA_CODE_TODO_2026-10-01, paso 8).
+ * La cabecera (Tanda 6z3, diseño «La cabecera»): a la izquierda el destino y debajo «13 – 16 oct · 2 personas» (sin fechas, el mes); a la derecha, el Presupuesto (la cartera, abre la pantalla de la 6z2),
+ * la campana de los avisos (con su punto si hay algo nuevo) y el Perfil (el círculo, que abre «Mis viajes»; ahí están ahora el «+ Nuevo viaje» y los tips).
  */
 export function Header({ onTips, onOpenDates }: HeaderProps) {
-  const setScreen = useRouteStore((state) => state.setScreen)
-  const resetQuestionnaire = useRouteStore((state) => state.resetQuestionnaire)
+  const route = useRouteStore((state) => state.route)
   const setMode = useRouteStore((state) => state.setMode)
+  const abrirPresupuesto = usePresupuestoUi((state) => state.abrir)
   const { items, unreadCount } = useAppNotices()
-  const [newTripOpen, setNewTripOpen] = useState(false)
   const [noticesOpen, setNoticesOpen] = useState(false)
-  const hasError = items.some((item) => item.kind === 'error' && !item.read)
-
-  const startNewTrip = () => {
-    setNewTripOpen(false)
-    // El viaje de ahora no se toca: se guarda su copia exacta para poder volver a él desde la cruz del formulario.
-    const payload = buildTripPayload()
-    const sync = useSyncStore.getState()
-    sync.setResumeTrip(payload ? { payload, tripId: sync.activeTripId } : null)
-    // El próximo guardado crea una fila nueva; la del viaje de ahora se queda como está.
-    sync.setActiveTripId(null)
-    resetQuestionnaire()
-    setScreen('destination')
-  }
+  const [perfilOpen, setPerfilOpen] = useState(false)
+  if (!route) return null
 
   return (
-    <header className="relative z-20 flex h-14 shrink-0 items-center gap-2 bg-bg pl-[14px] pr-3">
-      <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full bg-[#1C2230] text-[oklch(0.8_0.14_70)]" aria-hidden="true">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M15.5 8.5l-2 5-5 2 2-5z" />
-        </svg>
+    <header className="relative z-20 flex shrink-0 items-center gap-1 bg-bg pb-2.5 pl-5 pr-2.5 pt-1">
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="truncate font-display text-[30px] leading-none text-text">{route.destination}</span>
+        <span className="truncate text-text/55" style={{ font: "500 11px 'Geist Mono',monospace", letterSpacing: '.06em' }}>
+          {subtituloDelViaje(route)}
+        </span>
       </span>
-      <span className="min-w-0 flex-1 truncate font-display text-[20px] leading-none text-text">Route Planner</span>
-      <TripReadinessBadge />
-      <button type="button" onClick={onTips} title="Tips del viaje" aria-label="Tips del viaje" className={ROUND_BUTTON}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M9 18h6M10 21h4" />
-          <path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" />
-        </svg>
+      <button type="button" onClick={abrirPresupuesto} aria-label="Presupuesto" title="Presupuesto" className={BOTON}>
+        <Icono nombre="presupuesto" size={23} />
       </button>
-      <button type="button" onClick={() => setNewTripOpen(true)} title="Crear un viaje nuevo" aria-label="Crear un viaje nuevo" className={ROUND_BUTTON}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
+      <button type="button" onClick={() => setNoticesOpen(true)} aria-label={unreadCount > 0 ? `Avisos (${unreadCount} nuevos)` : 'Avisos'} title="Avisos" className={BOTON}>
+        <Icono nombre="avisos" size={23} />
+        {unreadCount > 0 && <span className="absolute right-[11px] top-2.5 h-[9px] w-[9px] rounded-full bg-accent" style={{ boxShadow: '0 0 0 2px rgb(var(--bg))' }} aria-hidden="true" />}
       </button>
-      <button type="button" onClick={() => setNoticesOpen(true)} title="Avisos" aria-label={unreadCount > 0 ? `Avisos (${unreadCount})` : 'Avisos'} className={ROUND_BUTTON}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20a2 2 0 0 0 4 0" />
-        </svg>
-        {unreadCount > 0 && (
-          <span
-            className={`absolute -right-1 -top-1 flex h-[17px] min-w-[17px] items-center justify-center rounded-full px-1 text-[10px] font-bold leading-none text-white ${hasError ? 'bg-accent-red' : 'bg-accent'}`}
-            aria-hidden="true"
-          >
-            {unreadCount}
-          </span>
-        )}
+      <button type="button" onClick={() => setPerfilOpen(true)} aria-label="Perfil y mis viajes" title="Perfil y mis viajes" className="flex h-11 w-11 shrink-0 items-center justify-center">
+        <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#1C2230] text-[#FFFDF8]" style={{ boxShadow: '0 0 0 2px rgb(var(--bg)),0 0 0 3.5px rgb(var(--accent))' }}>
+          <Icono nombre="perfil" size={18} />
+        </span>
       </button>
 
-      {newTripOpen && <NewTripSheet onConfirm={startNewTrip} onCancel={() => setNewTripOpen(false)} />}
+      <PerfilSheet open={perfilOpen} onClose={() => setPerfilOpen(false)} onTips={onTips} />
       {noticesOpen && (
         <NoticesSheet
           items={items}

@@ -7,12 +7,12 @@ import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../lib/rout
 import { getTodayTripContext } from '../../lib/todayMode'
 import { Header } from '../layout/Header'
 import { BottomBar } from '../layout/BottomBar'
+import { HoyView } from './hoy/HoyView'
 import { StopsMapView, type StopsMapMarker } from '../map/StopsMapView'
 import { DayList } from './DayList'
 import type { DayMapView } from './dayDetail/DayDetailPanel'
 import { ExplorePanel } from './ExplorePanel'
 import { MapDestinationHeader } from './MapDestinationHeader'
-import { ModeSwitcher } from './ModeSwitcher'
 import { ReservasPanel } from './ReservasPanel'
 import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
@@ -20,7 +20,6 @@ import { SeasonCard } from './SeasonCard'
 import { TripTipsSheet } from './TripTipsSheet'
 import { useDatesChange } from './DatesChangeDialog'
 import { RouteOverviewMap } from './RouteOverviewMap'
-import { TodayView } from './today/TodayView'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
 import { OwnDayScreen } from './freeDay/OwnDayScreen'
 import { UndoToast } from './freeDay/UndoToast'
@@ -112,17 +111,27 @@ export function RouteView() {
   // criterio que DestinationDetailModal/AttractionsFinder.
   if (mode === 'bookings') {
     return (
-      <>
-        <ReservasPanel route={route} onClose={() => setMode('route')} />
+      <div className="flex h-dvh flex-col bg-bg text-text">
+        {/* (Tanda 6z3: la barra de abajo está también aquí, con las mismas cinco pestañas: nunca se esconde.) */}
+        <div className="relative min-h-0 flex-1">
+          <ReservasPanel route={route} onClose={() => setMode('route')} />
+        </div>
+        <BottomBar />
         {/* La página de excursiones se abre también desde la fila «Excursiones desde {destino}» de Reservas. */}
         <ExcursionsPage route={route} />
         {/* (Tanda 6m: el aviso corto también en RESERVAS —«Abriendo la tienda de entradas…»—, que es una pantalla aparte.) */}
         <UndoToast />
-      </>
+      </div>
     )
   }
 
-  const hasTripDates = Boolean(route.answers.dateRange)
+  // «Pon tus fechas» (HOY sin fechas) y el aviso «más días que fechas»: el calendario de la cabecera del mapa, en Días, con el mapa a la vista.
+  const ponFechas = () => {
+    setActiveDayId(null)
+    setMode('days')
+    setMapCollapsed(false)
+    useDatesCalendarStore.getState().request()
+  }
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
   const activeDay = (mode === 'today' && todayContext ? todayContext.day : route.days.find((day) => day.id === activeDayId)) ?? route.days[0]
   const segments = buildDestinationSegments(route.days)
@@ -192,13 +201,7 @@ export function RouteView() {
     <div className="flex h-dvh flex-col bg-bg text-text">
       <Header
         onTips={() => setTipsOpen(true)}
-        onOpenDates={() => {
-          // El aviso «más días que fechas» abre el calendario de la cabecera del mapa (en Días, con el mapa a la vista).
-          setActiveDayId(null)
-          setMode('days')
-          setMapCollapsed(false)
-          useDatesCalendarStore.getState().request()
-        }}
+        onOpenDates={ponFechas}
       />
 
       <div ref={containerRef} style={splitStyle} className="flex flex-1 flex-col overflow-hidden md:flex-row">
@@ -286,9 +289,7 @@ export function RouteView() {
               <span className="h-1 w-[42px] rounded-full bg-text/20" />
             </div>
           )}
-          <ModeSwitcher showToday={hasTripDates} />
-
-          {mode === 'today' && hasTripDates && <TodayView route={route} />}
+          {mode === 'today' && <HoyView route={route} onPonFechas={ponFechas} />}
 
           {mode === 'route' && <RouteOverview route={route} onDetailOpenChange={setDestinationOverlayOpen} />}
 

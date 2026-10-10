@@ -158,7 +158,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex flex-col overflow-hidden overflow-x-hidden bg-bg">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-10 flex flex-col overflow-hidden overflow-x-hidden bg-bg">
         <div className="flex shrink-0 items-center gap-3 px-4 pb-2 pt-4 md:px-8">
           <button
             type="button"

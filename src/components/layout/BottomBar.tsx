@@ -1,130 +1,63 @@
-import { useState, type ReactNode } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from '../../store/useRouteStore'
-import { useSyncStore } from '../../store/useSyncStore'
 import { useTripReadiness } from '../../hooks/useTripReadiness'
 import { hasUnresolvedYellowItems } from '../../lib/readiness'
-import { formatCompactDateRangeEs } from '../../lib/dateRange'
-import type { SavedTrip } from '../../lib/tripPersistence'
-import { usePresupuestoUi } from '../../store/usePresupuestoUi'
+import type { RouteMode } from '../../lib/types'
+import type { NombreIcono } from '../../lib/iconos'
+import { Icono } from '../ui/Icono'
 
-/** Crema sobre la píldora oscura. */
-const CREAM = '#F5EFE4'
-const LINE = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-
-function Icon({ children }: { children: ReactNode }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" {...LINE} aria-hidden="true">
-      {children}
-    </svg>
-  )
-}
-
-/** Un sitio de la barra: icono de línea en crema, 44 px de toque como mínimo. */
-function Slot({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
-  return (
-    <button type="button" onClick={onClick} aria-label={label} title={label} className="relative flex h-12 w-14 items-center justify-center rounded-full transition-opacity hover:opacity-80" style={{ color: CREAM }}>
-      {children}
-    </button>
-  )
-}
+/** Las cinco pestañas, siempre las mismas y en este orden: antes, durante y después del viaje, con y sin fechas, en la gratis y en la de pago (Tanda 6z3). */
+export const PESTANAS: { id: RouteMode; nombre: string; icono: NombreIcono }[] = [
+  { id: 'today', nombre: 'Hoy', icono: 'hoy' },
+  { id: 'route', nombre: 'Ruta', icono: 'ruta' },
+  { id: 'days', nombre: 'Días', icono: 'dias' },
+  { id: 'explore', nombre: 'Explorar', icono: 'explorar' },
+  { id: 'bookings', nombre: 'Reservas', icono: 'reservas' },
+]
 
 /**
- * La barra de abajo (3-oct-2026): fija al borde, a todo el ancho, como la de cualquier app de móvil, y respeta la zona de abajo del iPhone.
- * Tres sitios, sin texto: Presupuesto (la bolsa de dinero), Perfil (con «Mis viajes») y Reservas (con su «!» naranja mientras falte algo).
- * El resto de lo que tenía la barra de antes se movió: «Nuevo viaje» es el «+» de la cabecera y el mapa se abre con la flecha de su franja.
+ * La barra de abajo (Tanda 6z3, diseño «La barra de abajo»): fija al borde, a todo el ancho, y respeta la zona de abajo del iPhone. Cinco pestañas con su icono y su nombre debajo; la activa, en una píldora clara.
+ * Reservas lleva su «!» mientras falte algo. Nunca cambia ni se esconde según el momento del viaje. Sustituye a la barra de antes (Presupuesto · Perfil · Reservas) y a las pestañas de arriba.
  */
 export function BottomBar() {
+  const mode = useRouteStore((state) => state.mode)
   const setMode = useRouteStore((state) => state.setMode)
-  const hydrateTrip = useRouteStore((state) => state.hydrateTrip)
-  const savedTrips = useSyncStore((state) => state.savedTrips) ?? []
-  const activeTripId = useSyncStore((state) => state.activeTripId)
+  const setActiveDayId = useRouteStore((state) => state.setActiveDayId)
   const readiness = useTripReadiness()
-  const bookingsAlert = readiness ? hasUnresolvedYellowItems(readiness.items) : false
-  const abrirPresupuesto = usePresupuestoUi((state) => state.abrir)
-  const [profileOpen, setProfileOpen] = useState(false)
-
-  const openTrip = (trip: SavedTrip) => {
-    setProfileOpen(false)
-    useSyncStore.getState().setActiveTripId(trip.id)
-    useSyncStore.getState().setResumeTrip(null)
-    hydrateTrip(trip)
-  }
+  const reservasAlert = readiness ? hasUnresolvedYellowItems(readiness.items) : false
 
   return (
-    <>
-      <nav
-        aria-label="Barra del viaje"
-        className="relative z-30 flex w-full shrink-0 items-center justify-around px-6 pt-1.5"
-        style={{ background: '#1F1B16', paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom))' }}
-      >
-        <Slot label="Presupuesto" onClick={abrirPresupuesto}>
-          <Icon>
-            <path d="M7 8V7a5 5 0 0 1 10 0v1" />
-            <path d="M5 8h14l-1 12H6z" />
-          </Icon>
-        </Slot>
-        <button
-          type="button"
-          onClick={() => setProfileOpen(true)}
-          aria-label="Perfil y mis viajes"
-          title="Perfil y mis viajes"
-          className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-accent transition-transform active:scale-95"
-          style={{ color: CREAM }}
-        >
-          <Icon>
-            <circle cx="12" cy="9" r="3.5" />
-            <path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" />
-          </Icon>
-        </button>
-        <Slot label={bookingsAlert ? 'Reservas (falta algo por reservar)' : 'Reservas'} onClick={() => setMode('bookings')}>
-          <Icon>
-            <path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z" />
-            <path d="M14 7v10" strokeDasharray="1.5 2" />
-          </Icon>
-          {bookingsAlert && (
-            <span className="absolute right-2 top-1.5 flex h-[16px] w-[16px] items-center justify-center rounded-full bg-accent-gold text-[10px] font-bold leading-none text-white" aria-hidden="true">
-              !
+    <nav aria-label="Barra del viaje" className="relative z-30 grid w-full shrink-0 grid-cols-5 px-1.5 pt-2" style={{ background: '#1C2230', paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
+      {PESTANAS.map((pestana) => {
+        const activa = mode === pestana.id
+        const alerta = pestana.id === 'bookings' && reservasAlert
+        return (
+          <button
+            key={pestana.id}
+            type="button"
+            aria-current={activa ? 'page' : undefined}
+            aria-label={alerta ? 'Reservas (falta algo por reservar)' : pestana.nombre}
+            onClick={() => {
+              // Al volver a Días desde otra pestaña, los días se ven siempre cerrados (la lista), nunca el que se había abierto.
+              if (pestana.id === 'days' && mode !== 'days') setActiveDayId(null)
+              setMode(pestana.id)
+            }}
+            className="relative flex h-14 flex-col items-center justify-center gap-1"
+            style={{ color: activa ? '#FFFDF8' : 'rgba(255,253,248,.62)' }}
+          >
+            <span className="flex h-[30px] w-[52px] items-center justify-center rounded-full transition-colors duration-300" style={{ background: activa ? '#FFFDF8' : 'transparent', color: activa ? '#1C2230' : 'rgba(255,253,248,.62)' }}>
+              <Icono nombre={pestana.icono} size={22} />
             </span>
-          )}
-        </Slot>
-      </nav>
-
-      {/* El perfil: una hoja desde abajo. La cuenta llegará más adelante; de momento, los viajes de este dispositivo. */}
-      <AnimatePresence>
-        {profileOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-end justify-center bg-black/30" onClick={() => setProfileOpen(false)}>
-            <motion.div
-              initial={{ y: 40 }}
-              animate={{ y: 0 }}
-              exit={{ y: 40 }}
-              onClick={(event) => event.stopPropagation()}
-              className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-t-[26px] bg-bg px-5 pb-8 pt-3"
-            >
-              <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-text/20" />
-              <h2 className="font-display text-[28px] leading-tight text-text">Hola, viajero</h2>
-              <p className="mt-1 text-[13px] text-text/60">Pronto podrás guardar tus viajes en tu cuenta.</p>
-              <p className="mt-6 font-mono text-[11px] font-semibold uppercase tracking-[.1em] text-text/55">Mis viajes</p>
-              <div className="mt-2 divide-y divide-text/[.08] rounded-2xl border border-text/[.10] bg-bg-card">
-                {savedTrips.length === 0 && <p className="px-4 py-3 text-[13px] text-text/60">Aún no hay viajes guardados en este dispositivo.</p>}
-                {savedTrips.map((trip) => {
-                  const active = trip.id === activeTripId
-                  const range = trip.route.answers.dateRange
-                  return (
-                    <button key={trip.id} type="button" onClick={() => openTrip(trip)} className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-bg-hover">
-                      <span className="min-w-0">
-                        <span className="block truncate text-[15px] font-medium text-text">{trip.route.destination}</span>
-                        <span className="block text-[12.5px] text-text/55">{range ? formatCompactDateRangeEs(range.start, range.end) : `${trip.route.answers.days ?? ''} días`}</span>
-                      </span>
-                      {active && <span className="shrink-0 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">Abierto</span>}
-                    </button>
-                  )
-                })}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            <span className="text-[11px]" style={{ fontWeight: activa ? 600 : 500 }}>
+              {pestana.nombre}
+            </span>
+            {alerta && (
+              <span className="absolute right-[calc(50%-26px)] top-0.5 h-4 w-4 rounded-full text-center text-[10px] font-bold leading-4 text-[#1C2230]" style={{ background: 'oklch(0.8 0.14 75)', boxShadow: '0 0 0 2px #1C2230' }} aria-hidden="true">
+                !
+              </span>
+            )}
+          </button>
+        )
+      })}
+    </nav>
   )
 }

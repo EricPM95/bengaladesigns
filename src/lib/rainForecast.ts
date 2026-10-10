@@ -61,3 +61,50 @@ export function fetchHourlyRain(at: Coordinates, dateIso: string): Promise<Hourl
 export function rainsInHours(rain: HourlyRain, hours: number[]): boolean {
   return hours.some((hour) => (rain.probability[hour] ?? 0) >= RAIN_PROBABILITY_THRESHOLD || (rain.precipitation[hour] ?? 0) >= RAIN_MM_THRESHOLD)
 }
+
+/** La previsión de un día entero (Tanda 6z3, «El tiempo en {destino}» de HOY): temperaturas y probabilidad de lluvia. */
+export interface DiaDeTiempo {
+  dateIso: string
+  maxima: number | null
+  minima: number | null
+  /** Probabilidad máxima de lluvia del día (%). */
+  lluvia: number | null
+}
+
+const cacheDiaria = new Map<string, { at: number; value: Promise<DiaDeTiempo[] | null> }>()
+
+/** La previsión de cada día entre dos fechas (Open-Meteo da hasta 16 días); null si no hay (la fecha queda muy lejos o no responde). */
+export function fetchDailyWeather(at: Coordinates, startIso: string, endIso: string): Promise<DiaDeTiempo[] | null> {
+  const key = `${at.lat.toFixed(2)},${at.lng.toFixed(2)},${startIso},${endIso}`
+  const cached = cacheDiaria.get(key)
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value
+  const value = (async () => {
+    try {
+      const url = new URL(FORECAST_URL)
+      url.searchParams.set('latitude', String(at.lat))
+      url.searchParams.set('longitude', String(at.lng))
+      url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,precipitation_probability_max')
+      url.searchParams.set('timezone', 'auto')
+      url.searchParams.set('start_date', startIso)
+      url.searchParams.set('end_date', endIso)
+      const response = await fetch(url.toString())
+      if (!response.ok) return null
+      const data = (await response.json()) as { daily?: { time?: string[]; temperature_2m_max?: (number | null)[]; temperature_2m_min?: (number | null)[]; precipitation_probability_max?: (number | null)[] } }
+      const times = data.daily?.time
+      if (!times || times.length === 0) return null
+      return times.map((time, index) => ({
+        dateIso: time,
+        maxima: data.daily?.temperature_2m_max?.[index] ?? null,
+        minima: data.daily?.temperature_2m_min?.[index] ?? null,
+        lluvia: data.daily?.precipitation_probability_max?.[index] ?? null,
+      }))
+    } catch {
+      return null
+    }
+  })()
+  cacheDiaria.set(key, { at: Date.now(), value })
+  value.then((result) => {
+    if (result === null) cacheDiaria.delete(key)
+  })
+  return value
+}

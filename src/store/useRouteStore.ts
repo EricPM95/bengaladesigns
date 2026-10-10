@@ -472,6 +472,8 @@ interface RouteStoreState {
 
   /** Modo Hoy — marca el check-in real de una parada ("Ya he estado aquí" / "Ya terminé, seguir"). */
   checkInStop: (dayId: string, stopId: string) => void
+  /** HOY (Tanda 6z3): «✓ Visto» marca la parada como vista (y «Deshacer» la desmarca). */
+  setStopVisto: (dayId: string, stopId: string, visto: boolean) => void
   /** Modo Hoy — "Sí, dame más tiempo" en el aviso "¿Sigues aquí?": solo anota el retraso, no hace check-in. */
   noteStopDelay: (dayId: string, stopId: string) => void
   /**
@@ -1371,6 +1373,18 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
           stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, checkedInAt: now, delayNotedAt: null } : stop)),
+        })),
+      }
+    }),
+
+  setStopVisto: (dayId, stopId, visto) =>
+    set((state) => {
+      if (!state.route) return state
+      const now = new Date().toISOString()
+      return {
+        route: updateDay(state.route, dayId, (day) => ({
+          ...day,
+          stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, checkedInAt: visto ? now : null, delayNotedAt: null } : stop)),
         })),
       }
     }),
