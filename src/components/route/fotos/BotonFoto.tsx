@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { subirFoto, type FotoViaje } from '../../../lib/fotosViaje'
+import { limiteDeFotos, subirFoto, type FotoViaje } from '../../../lib/fotosViaje'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { Icono } from '../../ui/Icono'
 
@@ -21,6 +21,7 @@ export function BotonFoto({
   dayId,
   dayNumber,
   stopName,
+  tripId: tripIdPropio,
   etiqueta,
   capture = false,
   multiple = false,
@@ -31,6 +32,8 @@ export function BotonFoto({
   dayId: string
   dayNumber: number
   stopName?: string | null
+  /** El viaje al que van las fotos; por defecto, el abierto (el álbum del Perfil sube a cualquier viaje). */
+  tripId?: string | null
   etiqueta: string
   capture?: boolean
   multiple?: boolean
@@ -38,13 +41,16 @@ export function BotonFoto({
   children?: React.ReactNode
   onSubida?: (fotos: FotoViaje[]) => void
 }) {
-  const tripId = useRouteStore((state) => state.route?.id ?? null)
+  const tripIdActual = useRouteStore((state) => state.route?.id ?? null)
+  const tripId = tripIdPropio ?? tripIdActual
   const entrada = useRef<HTMLInputElement>(null)
   const [subiendo, setSubiendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function alElegir(event: React.ChangeEvent<HTMLInputElement>) {
-    const archivos = Array.from(event.target.files ?? [])
+    // Gratis: una foto por parada, así que de varias se toma la primera (la regla vive en limiteDeFotos).
+    const elegidas = Array.from(event.target.files ?? [])
+    const archivos = limiteDeFotos().porParada !== null ? elegidas.slice(0, 1) : elegidas
     event.target.value = ''
     if (!tripId || archivos.length === 0) return
     setSubiendo(true)
@@ -72,7 +78,7 @@ export function BotonFoto({
       >
         {subiendo ? <span className="px-2 text-[12px]">Subiendo…</span> : (children ?? <IconoCamara />)}
       </button>
-      <input ref={entrada} type="file" accept="image/*" multiple={multiple} {...(capture ? { capture: 'environment' as const } : {})} onChange={alElegir} className="hidden" />
+      <input ref={entrada} type="file" accept="image/*" multiple={multiple && limiteDeFotos().porParada === null} {...(capture ? { capture: 'environment' as const } : {})} onChange={alElegir} className="hidden" />
       {error && (
         <span role="alert" className="mt-1 max-w-[220px] text-[12px] leading-snug text-text-soft">
           {error}
