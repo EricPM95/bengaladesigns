@@ -154,7 +154,10 @@ if (acento) {
   debe(r > 150 && b > g && r > b, '7 color', `--accent (${r} ${g} ${b}) no es un frambuesa`)
 }
 const terracota = []
+// Quedan fuera los colores que no son «falta» ni «reservar»: los degradados de temporada y de atardecer (TrazoCards, trazoUi), el confeti de las fechas especiales y el color de reserva de una excursión sin color propio y los colores por categoría de los pines (monumentos, restaurantes…).
+const COLORES_DE_ADORNO = [/DateNoticesModal\.tsx$/, /TrazoCards\.tsx$/, /trazoUi\.tsx$/, /ExcursionesReservas\.tsx$/, /LoadingScreen\.tsx$/, /exploreStyle\.ts$/]
 for (const archivo of archivos('src')) {
+  if (COLORES_DE_ADORNO.some((re) => re.test(archivo))) continue
   const texto = fs.readFileSync(archivo, 'utf8')
   for (const m of texto.matchAll(/oklch\(\s*0?\.[4-7]\d*\s+0?\.1[0-9]*\s+(4\d|5\d|6\d)\s*[\s/)]/g)) terracota.push(`${archivo.replace(/\\/g, '/')}: ${m[0]}`)
 }
