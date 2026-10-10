@@ -270,7 +270,6 @@ export function planListasTrip(args) {
     weekday: hours.weekday, dateIso: calendar.hasDates ? hours.dateIso : null, month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null,
     hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: entradasDeDia(index), poolNames, experiencias: selected, orden: order, parte, enFechas,
     cerrado: (name) => closedThatDay(name, day),
-    abiertoA: (name, start, dur) => { const place = placeByName.get(name); return !place || openCheck(place, start, dur, hours).ok === true },
   })
 
   const preparar = (id, index) => {
@@ -595,28 +594,6 @@ export function planListasTrip(args) {
       })
     }
 
-    // La comida empieza antes de las 15:00 (regla 6): con una reserva del viajero nuestras paradas nunca la empujan más allá; si lo de antes la retrasa, la comida pasa delante de esas paradas (Tanda 6x).
-    // Solo cuando la hora fija del viajero ocupa la hora de comer (un Free Tour de 12:00 a 14:30) la comida va después.
-    const comidaAntesDeLas15 = (lista) => {
-      if (!lista.some((it) => it.kind === 'stop' && it.hora_tipo === 'reserva')) return lista
-      let out = lista
-      for (let guard = 0; guard < 40; guard++) {
-        const iC = out.findIndex((it) => it.kind === 'comida')
-        if (iC < 0) return out
-        const sim = simular(out)
-        if (sim[iC].t0 <= toMin(cfg.comida_hasta)) return out
-        let k = iC - 1
-        while (k >= 0 && out[k].kind === 'traslado') k--
-        if (k < 0) return out
-        const previa = out[k]
-        if (previa.kind !== 'stop' || previa.hora || previa.hora_tipo || previa.tipo === 'tour' || previa.llegada || previa.fijo_colocado) return out
-        // la unidad de la parada: sus traslados de delante viajan con ella
-        let inicio = k
-        while (inicio > 0 && out[inicio - 1].kind === 'traslado') inicio--
-        out = [...out.slice(0, inicio), out[iC], ...out.slice(inicio, iC), ...out.slice(iC + 1)]
-      }
-      return out
-    }
     const paseoAntesDeCenar = (lista) => {
       let out = lista
       for (const nombre of cfg.paseo_antes_de_cenar ?? []) {
@@ -632,354 +609,13 @@ export function planListasTrip(args) {
       }
       return out
     }
-    // 5.7 Lo que tiene hora fija va a su hora (3.3).
+    // 5.7 Lo que tiene hora fija (una reserva del viajero, el Free Tour). Tanda 6z5: la hora solo decide en qué fila de su tabla cae y, con ella, qué lista escrita se usa (listasDia.js).
+    // Ese día sigue la lista tal cual, en su orden: la hora fija se queda donde la lista la pone y nada se mueve, se quita ni se avisa por ella (ni «vas justo», ni «llegas tarde»,
+    // ni pasar algo detrás de la reserva, ni pasarlo a «por fuera» porque no dé tiempo). La app no sabe si el viajero anda rápido, si se para o si el metro va tarde.
     const baseSinColocar = items
-    const anclar = (lista) => {
-      let out = lista
-      const fijos = out.filter((it) => it.kind === 'stop' && it.hora && !it.llegada && !it.fijo_colocado).sort((a, b) => toMin(a.hora) - toMin(b.hora))
-      let congeladoHasta = 0
-      for (const f of fijos) {
-        const colocada = colocarFija(out, f, congeladoHasta)
-        if (!colocada) {
-          log.push({ id: f.id, lugar: f.titulo ?? f.lugar, sitio: f.lugar, que: 'aviso', causa: `${f.hora}: colocar ${f.titulo ?? f.lugar} a su hora rompería una comprobación de siempre: se queda donde está` })
-          out = out.map((it) => (it.id === f.id ? { ...it, fijo_colocado: true } : it))
-        } else out = colocada.map((it) => (it.id === f.id ? { ...it, fijo_colocado: true } : it))
-        congeladoHasta = Math.max(0, out.findIndex((it) => it.id === f.id))
-      }
-      return out
-    }
-    /**
-     * Pone una parada con hora fija a su hora (3.3 y Tanda 6b). El día NUNCA empieza más tarde por una reserva: empieza a su hora (o antes, si la reserva es antes) y la mañana se llena, siempre con las
-     * comprobaciones de siempre, por este orden:
-     *   1. lo que va antes en la lista (mientras quepa y no aleje del sitio de la hora fija: volver a él después sería un zigzag);
-     *   2. si aún queda más de 1 h, lo cercano que va después (a 15 min andando o menos), en su orden y sin zigzag;
-     *   3. si aún sobra más de 1 h, sitios cercanos del destino que no salgan en el viaje y estén abiertos.
-     * Lo demás va después de la hora fija, en el mismo orden. Si la hora fija cae a mediodía (empieza entre las 12:30 y las 15:00 y dura más de 1 h), la comida va antes,
-     * entre las 12:00 y las 12:30, en su zona y pegada a la «Llegada a…».
-     */
-    const colocarFija = (lista, F, desde) => {
-      const L = lista.find((it) => it.llegada && it.de === F.id) ?? null
-      // (Los traslados escritos justo delante de la hora fija —delante de su «Llegada a…», si la tiene— son suyos: llevan a ella, no a lo que venga detrás.)
-      const trasladosDeF = []
-      for (let k = lista.indexOf(L ?? F) - 1; k >= 0 && lista[k].kind === 'traslado'; k--) trasladosDeF.unshift(lista[k])
-      const resto = lista.filter((it) => it !== F && it !== L && !trasladosDeF.includes(it))
-      const margen = L ? L.min : 0
-      const H = toMin(F.hora)
-      const limite = H - margen
-      const coordsF = coordsOf(F)
-      const posF = lista.indexOf(F)
-      // (Todo lo que va hasta la hora fija ya colocada anterior —con su «Llegada a…»— no se mueve: queda delante.)
-      let ultimaColocada = -1
-      resto.forEach((it, i) => { if (it.kind === 'stop' && it.hora && !it.llegada && it.fijo_colocado) ultimaColocada = i })
-      desde = Math.max(desde, ultimaColocada + 1)
-      const kPos = resto.filter((it) => lista.indexOf(it) < posF).length
-      // Unidades: un traslado viaja con la parada a la que lleva.
-      const unidades = []
-      let pend = []
-      resto.forEach((it, i) => {
-        if (it.kind === 'traslado') { pend.push(it); return }
-        unidades.push({ items: [...pend, it], head: it, i })
-        pend = []
-      })
-      if (pend.length > 0 && unidades.length > 0) unidades.at(-1).items.push(...pend)
-      const plano = (us) => us.flatMap((u) => u.items)
-      const llegadaA = (items, destino, desdeT = startPoint.t) => {
-        const sim = simular(items, desdeT)
-        const ultimo = sim.at(-1)
-        const previo = [...sim].reverse().find((it) => it.kind !== 'traslado')
-        const prevC = previo ? endCoordsOf(previo) : null
-        // (Con un traslado escrito hasta la hora fija, el último tramo es el del traslado.)
-        const ultimoTramo = prevC && destino ? (trasladosDeF.length > 0 ? transitMin(prevC, destino, trasladosDeF.at(-1).como) : walkLeg(prevC, destino)) : 0
-        return (ultimo ? ultimo.t1 : desdeT) + ultimoTramo
-      }
-      // ¿La hora fija cae a mediodía? Entonces la comida va antes (si cabe entre las 11:30 y la hora fija). ¿Cae de noche (20:30 o más tarde, el Free Tour de las 21:00)? Entonces es la cena la que va antes, con la hora fija detrás.
-      const cenaU = H >= toMin(cfg.cena_antes_de_hora_fija) ? (unidades.find((u) => u.head.kind === 'cena' && u.i >= kPos && !u.head.piso_fijo) ?? null) : null
-      const esCena = Boolean(cenaU)
-      const sinQuitar = conReservaDelViajero(lista)
-      const comidaU = cenaU ?? unidades.find((u) => u.head.kind === 'comida' && !u.head.piso_fijo) ?? null
-      // (Regla 4: con la hora fija de 12:00 a 13:00, la comida va antes y rápida —hacia las 11:30—; desde las 13:30, antes y entera, entre las 12:00 y las 12:30.)
-      const comidaRapida = !esCena && sinQuitar && H <= toMin(cfg.comida_rapida_hasta)
-      const comidaPiso = toMin(esCena ? cfg.cena_antes_desde : comidaRapida ? cfg.comida_rapida_desde : cfg.comida_antes_desde)
-      let mediodia = false
-      let objetivoT = limite
-      let objetivoC = coordsF
-      let duracionComida = cfg.comida_min
-      // (La comida va antes si iría detrás de la hora fija —en la lista va después— y entonces caería después de su límite, las 15:00.)
-      // (La comida escrita justo antes de la hora fija —el documento la pone delante— también se queda delante: si no cabe, una más corta.)
-      const comidaJustoAntes = Boolean(comidaU) && comidaU.i < kPos && !unidades.some((u) => u.i > comidaU.i && u.i < kPos)
-      if (comidaU && ((comidaU.i >= kPos && H >= toMin(cfg.comida_antes_mediodia) && H + (F.min ?? 0) + 25 > toMin(cfg.comida_hasta)) || (comidaJustoAntes && H >= toMin(cfg.comida_antes_mediodia)) || (sinQuitar && comidaU.i < kPos && H >= toMin(cfg.comida_antes_mediodia) && H <= toMin(cfg.comida_hasta)))) {
-        const rc = coordsOf(comidaU.head)
-        const andar = rc && coordsF ? walkLeg(rc, coordsF) : 5
-        // (Lo que ya está colocado delante, una hora fija anterior, también cuenta: la comida no puede empezar antes de que acabe.)
-        const congelado = unidades.filter((u) => u.i < desde)
-        const libreDesde = congelado.length > 0 ? llegadaA(plano(congelado), rc) : startPoint.t
-        // La comida de siempre (60 min) o, si no cabe, una rápida (45 o 30).
-        for (const dur of sinQuitar ? [esCena ? cfg.cena_min : comidaRapida ? cfg.comida_rapida_min : cfg.comida_min] : esCena ? [cfg.cena_min, 75, 60, 45] : [cfg.comida_min, 45, 30]) {
-          // (Con una reserva la comida empieza cuando dice la regla 4 y, si se va justo, el margen de la «Llegada a…» se acorta —el viajero irá más deprisa— pero no se quita nada: basta con llegar a la puerta antes de la hora de entrada.)
-          const inicioIdeal = limite - dur - andar
-          const inicioComida = sinQuitar ? Math.max(inicioIdeal, comidaPiso, libreDesde) : inicioIdeal
-          if (sinQuitar ? inicioComida + dur + andar <= H : inicioComida >= Math.max(comidaPiso, libreDesde)) { mediodia = true; objetivoT = inicioComida; objetivoC = rc; duracionComida = dur; break }
-        }
-      }
-      // (La comida va lo más tarde que deja la hora fija, entre las 12:00 y las 12:30.)
-      let comidaAntes = mediodia ? { ...comidaU.head, min: duracionComida, piso: Math.min(Math.max(comidaPiso, objetivoT), comidaPiso + 30), piso_fijo: true } : null
-      // La comida de antes va en la zona de la hora fija (pegada a su «Llegada a…»): si el restaurante escrito queda lejos, otro restaurante de verdad a menos de 10 min andando de ella.
-      if (comidaAntes && coordsF) {
-        const rc = coordsOf(comidaAntes)
-        if (!rc || walkLeg(rc, coordsF) > (esCena ? cfg.cena_junto_min : cfg.comida_junto_min)) {
-          const nombresUsados = new Set([...estado.mesas, ...items.filter((it) => it.kind === 'comida' || it.kind === 'cena').map((it) => it.restaurante)])
-          const cerca = (destData.restaurants ?? [])
-            .filter((r) => recambio.tipos.includes(r.tipo_local) && !nombresUsados.has(r.name) && abiertoA(r.name, esCena ? 'cena' : 'comida', Math.max(comidaAntes.piso, objetivoT)))
-            .map((r) => ({ name: r.name, andar: restaurantCoords(r.name) ? walkLeg(restaurantCoords(r.name), coordsF) : Infinity }))
-            .filter((x) => x.andar <= recambio.max_andar_min)
-            .sort((a, b) => a.andar - b.andar || a.name.localeCompare(b.name, 'es'))[0]
-          if (cerca) {
-            log.push({ id: comidaAntes.id, lugar: comidaAntes.restaurante_escrito ?? comidaAntes.restaurante, sitio: null, que: 'restaurante', causa: `${esCena ? 'la cena' : 'la comida'} va antes de ${F.titulo ?? F.lugar} (a las ${F.hora}), en su zona: va ${cerca.name}, un restaurante de verdad a ${cerca.andar} min andando` })
-            comidaAntes = { ...comidaAntes, restaurante: cerca.name, restaurante_escrito: cerca.name, alternativa: null, otras: null, tercera: null }
-            objetivoC = coordsOf(comidaAntes)
-          }
-        }
-      }
-      const base = reglas.todas(lista, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })
-      // (Lo que, puesta la hora fija, no cabe sin volver sobre sus pasos pasa a «Si te sobra tiempo»: `fueraSet`.)
-      let fueraSet = new Set()
-      // (Un taxi escrito hasta la comida —el de Navona al Borgo— viaja con ella.)
-      const trasladosDeLaComida = comidaU ? comidaU.items.filter((it) => it !== comidaU.head) : []
-      const montar = (A) => {
-        const dentro = new Set(A.flatMap((u) => u.items.map((it) => it.id)))
-        let despues = unidades.filter((u) => !dentro.has(u.head.id) && !(mediodia && u === comidaU) && !fueraSet.has(u.head.id))
-        // Si la hora fija acaba ya pasado el mediodía y la comida no ha cabido antes, la comida va justo después de ella (en la zona), no detrás de lo que quedaba de la mañana.
-        const finFija = H + (F.min ?? 0)
-        const comidaCercaDeLaFija = Boolean(comidaU) && coordsOf(comidaU.head) && coordsF && walkLeg(coordsOf(comidaU.head), coordsF) <= cfg.comida_junto_min
-        if (comidaU && comidaCercaDeLaFija && !mediodia && !dentro.has(comidaU.head.id) && finFija >= toMin(cfg.comida_despues_de_fija_desde)) despues = [...despues.filter((u) => u === comidaU), ...despues.filter((u) => u !== comidaU)]
-        const iniciales = plano(A)
-        return { lista: [...iniciales, ...(comidaAntes ? [...trasladosDeLaComida, comidaAntes] : []), ...trasladosDeF, ...(L ? [L] : []), F, ...plano(despues)], antesComida: iniciales }
-      }
-      const nuevasRompe = (lista2) => reglas.nuevas(base, reglas.todas(lista2, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })).length > 0
-      const cabe = (items) => llegadaA(items, objetivoC) <= objetivoT
-      const A = []
-      // lo congelado (lo que ya estaba colocado delante de una hora fija anterior)
-      for (const u of unidades) if (u.i < desde) A.push(u)
-      const mediaDiaYa = (u) => mediodia && u === comidaU
-      // 1. lo que va antes en la lista: el trozo más largo que cabe y que no rompe una comprobación (un zigzag que solo se arregla llevando también lo siguiente se prueba con lo siguiente)
-      const candidatas = []
-      for (const u of unidades) {
-        if (u.i < desde) continue
-        if (u.i >= kPos) break
-        if (mediaDiaYa(u)) continue
-        if (esBarrera(u.head, lista)) break
-        candidatas.push(u)
-      }
-      let cabenN = 0
-      for (let n = 1; n <= candidatas.length; n++) {
-        if (!cabe(plano([...A, ...candidatas.slice(0, n)]))) break
-        cabenN = n
-      }
-      const sobra = (items) => objetivoT - llegadaA(items, objetivoC)
-      const puedeSobrar = (it) => it.kind === 'stop' && it.modo !== 'camino' && !esFijo(it) && !esPrimeraVez(lista, it) && it.tipo !== 'desayuno' && !it.relleno_no_quitar
-      // Cada trozo posible (de más largo a más corto): si colocar la hora fija rompe una comprobación por culpa de algo de DESPUÉS de ella, eso pasa a «Si te sobra tiempo»;
-      // si la rompe algo de ANTES, ese trozo no vale. Gana el que menos deja fuera (cada parada fuera cuenta como 2; cada hora libre antes, como 1).
-      let mejor = null
-      // Variante «recortar»: si no cabe todo lo que iba antes, se quita (a «Si te sobra tiempo») lo menos importante que se puede quitar hasta que quepa el resto,
-      // en vez de dejar la hora fija tarde o lo que no cabe detrás de ella (donde haría volver sobre los pasos).
-      // Con una reserva del viajero (regla 17, Tanda 6w) no se quita ni se acorta nada: lo que no cabe antes de la hora fija se va detrás de ella, en su orden. Se mueve primero lo que está más cerca de la hora fija,
-      // y nunca lo que ya habrá cerrado cuando se llegue (el Foro y el Palatino nunca por fuera por la hora): antes se mueve lo que va delante de ello.
-      if (sinQuitar) {
-        const horaDespues = H + (F.min ?? 0) + 15
-        // (Se mira si se puede ENTRAR a esa hora —la última entrada—, no si cabe la visita entera: la Basílica deja entrar hasta las 19:15 y cierra a las 20:00.)
-        const cerrariaDespues = (u) => { const place = placeByName.get(u.head.lugar); return Boolean(place) && u.head.modo === 'dentro' && openCheck(place, horaDespues, 1, hours).ok !== true }
-        // (La comida también puede irse detrás de la hora fija si antes no cabe —una entrada a las 12:30 no deja comer antes—: se ordena, no se acorta.)
-        // (La comida nunca pasa detrás de la reserva por nuestras paradas, Tanda 6x: son ellas las que pasan detrás. Solo va detrás cuando las reservas del viajero no dejan comer antes de las 15:00.)
-        const movible = (u) => u.head.kind === 'stop' && u.head.modo !== 'camino' && !esFijo(u.head) && u.head.tipo !== 'desayuno' && !u.head.relleno_no_quitar
-        const quedan = [...candidatas]
-        const cierraAlLlegar = (u, lista) => {
-          if (!protegidaPorReserva(lista, u.head)) return false
-          const place = placeByName.get(u.head.lugar)
-          const sim = simular(lista).find((it) => it.id === u.head.id)
-          if (!place || !sim) return false
-          // (Solo cuenta si llega cuando ya ha cerrado, sin otra apertura después: si aún no ha abierto, adelantar el resto no lo arregla.)
-          const abierto = openCheck(place, sim.t0, u.head.min ?? 30, hours)
-          return abierto.ok !== true && abierto.opensAt == null
-        }
-        // Lo que ya habrá cerrado aunque se le quite todo lo que lleva delante (la Basílica el Viernes Santo, que cierra a las 13:00 y no se llega antes de la comida de las 12:30) no se arregla
-        // empujando la mañana detrás de la reserva: eso dejaría el día empezando a mediodía sin abrir nada. Se prueba a ponerlo el primero (abierto por la mañana); si ni así, se deja donde está.
-        const sinArreglo = new Set()
-        for (let guard = 0; guard < 60; guard++) {
-          const lista2 = plano([...A, ...quedan])
-          const noCabe = !cabe(lista2)
-          const tardanza = llegadaA(lista2, objetivoC) - objetivoT
-          let cerrado = quedan.find((u) => !sinArreglo.has(u.head.id) && cierraAlLlegar(u, lista2))
-          if (cerrado) {
-            const k = quedan.indexOf(cerrado)
-            const sinLoDeDelante = quedan.filter((u, i) => i >= k || !(movible(u) && !cerrariaDespues(u)))
-            if (cierraAlLlegar(cerrado, plano([...A, ...sinLoDeDelante]))) {
-              sinArreglo.add(cerrado.head.id)
-              const alFrente = [cerrado, ...quedan.filter((u) => u !== cerrado)]
-              if (k > 0 && !cierraAlLlegar(cerrado, plano([...A, ...alFrente]))) {
-                quedan.splice(0, quedan.length, ...alFrente)
-                log.push({ id: cerrado.head.id, lugar: cerrado.head.titulo ?? cerrado.head.lugar, sitio: cerrado.head.lugar, que: 'adelanta', causa: 'a su hora ya habría cerrado y no se llega antes con el orden escrito: va lo primero del día, por la mañana (regla 5, un cierre)' })
-              }
-              continue
-            }
-          }
-          if (!noCabe && !cerrado) break
-          let elegido = -1
-          if (cerrado) {
-            // lo que va justo delante de lo que llegaría tarde a su apertura
-            for (let i = quedan.indexOf(cerrado) - 1; i >= 0; i--) if (movible(quedan[i], tardanza) && !cerrariaDespues(quedan[i])) { elegido = i; break }
-          }
-          if (elegido < 0 && noCabe) {
-            // (Solo se mueve lo que de verdad adelanta la llegada: si la comida no puede empezar antes de las 12:30, quitar lo de antes no cambia nada y se llega justo.)
-            const adelanta = (i) => llegadaA(plano([...A, ...quedan.filter((_, k) => k !== i)]), objetivoC) < llegadaA(lista2, objetivoC)
-            for (let i = quedan.length - 1; i >= 0; i--) if (movible(quedan[i], tardanza) && !cerrariaDespues(quedan[i]) && !protegidaPorReserva(lista2, quedan[i].head) && adelanta(i)) { elegido = i; break }
-            // Lo nuestro nunca hace llegar tarde a una reserva (Tanda 6x): si aún se llega con más de 5 min de retraso, también pasan detrás los imprescindibles por dentro (la Basílica, el Panteón…),
-            // primero los que seguirán abiertos; si detrás ya está cerrado, es un cierre (regla 5). Lo que el documento pone ANTES de la reserva por su horario (el Foro antes del Coliseo) no pasa detrás.
-            if (elegido < 0 && tardanza > 5) {
-              for (const exigeAbierto of [true, false]) {
-                for (let i = quedan.length - 1; i >= 0 && elegido < 0; i--) if (movible(quedan[i]) && !quedan[i].head.no_pasa_detras && (!exigeAbierto || !cerrariaDespues(quedan[i])) && adelanta(i)) elegido = i
-                if (elegido >= 0) break
-              }
-            }
-          }
-          if (elegido < 0) break
-          quedan.splice(elegido, 1)
-        }
-        mejor = { n: quedan.length, A1: [...A, ...quedan], excl: new Set(), coste: 0, porTiempo: new Set(), acortadas: [] }
-      } else {
-        const variantes = []
-        if (cabenN < candidatas.length) {
-          const quedan = [...candidatas]
-          const recortadas = new Set()
-          // Antes de quitar nada, se acorta lo de menos (regla 6): por dentro → por fuera y, si no basta, por fuera → de camino. Se sigue viendo todo; solo se tarda menos.
-          const acortadas = []
-          const acortarUnidad = (u, paso) => {
-            const h = u.head
-            if (h.kind !== 'stop' || esFijo(h) || h.protegido || h.tipo === 'desayuno' || h.relleno_no_quitar || protegidaPorReserva(lista, h)) return null
-            let nuevo = null
-            if (paso === 'fuera' && h.modo === 'dentro' && fueraMin(h) < h.min) nuevo = { ...h, modo: 'fuera', min: fueraMin(h) }
-            else if (paso === 'camino' && h.modo === 'fuera' && h.min > 5) nuevo = { ...h, modo: 'camino', min: 5 }
-            if (!nuevo) return null
-            const cambiar = (it) => (it === h ? nuevo : it)
-            return { ...u, head: nuevo, items: u.items.map(cambiar) }
-          }
-          for (const paso of ['fuera', 'camino']) {
-            while (!cabe(plano([...A, ...quedan]))) {
-              // (Solo cuenta si de verdad llega antes a la hora fija: acortar algo de la mañana cuando hay que esperar a la comida no sirve de nada.)
-              const llegaAhora = llegadaA(plano([...A, ...quedan]), objetivoC)
-              const cand = quedan.map((u, i) => ({ u, i, nueva: acortarUnidad(u, paso) })).filter((x) => x.nueva && llegadaA(plano([...A, ...quedan.map((v, k) => (k === x.i ? x.nueva : v))]), objetivoC) < llegaAhora)
-                .sort((a, b) => valorDe(a.u.head, nivelDe) - valorDe(b.u.head, nivelDe) || b.i - a.i)[0]
-              if (!cand) break
-              quedan[cand.i] = cand.nueva
-              acortadas.push({ id: cand.u.head.id, lugar: cand.u.head.lugar, titulo: cand.u.head.titulo ?? null, paso })
-            }
-          }
-          // Una comida de 45 min es normal: se prueba antes de quitar nada (una de 30 min, solo si quitar no basta).
-          const comidaMasCorta = (dur) => {
-            const k = quedan.findIndex((u) => u.head.kind === 'comida' && u.head.min > dur)
-            if (k < 0) return
-            const u = quedan[k]
-            const acortar = (it) => (it === u.head ? { ...it, min: dur } : it)
-            quedan[k] = { ...u, head: acortar(u.head), items: u.items.map(acortar) }
-          }
-          if (!cabe(plano([...A, ...quedan]))) comidaMasCorta(45)
-          while (!cabe(plano([...A, ...quedan]))) {
-            const quitable = quedan.map((u, i) => ({ u, i })).filter(({ u }) => puedeSobrar(u.head))
-              .sort((a, b) => (nivelDe(b.u.head.lugar) ?? 3) - (nivelDe(a.u.head.lugar) ?? 3) || b.i - a.i)[0]
-            if (!quitable) break
-            quedan.splice(quitable.i, 1)
-            recortadas.add(quitable.u.head.id)
-          }
-          // Si quitar no basta, la comida de antes se hace más corta (45 o 30 min), como cuando va justo antes de la hora fija.
-          if (!cabe(plano([...A, ...quedan]))) comidaMasCorta(30)
-          if (cabe(plano([...A, ...quedan])) && (recortadas.size > 0 || acortadas.length > 0 || quedan.some((u) => u.head.min !== candidatas.find((c) => c.head.id === u.head.id)?.head.min))) variantes.push({ n: candidatas.length, A1: [...A, ...quedan], excl0: recortadas, acortadas })
-        }
-        for (let n = cabenN; n >= 0; n--) variantes.push({ n, A1: [...A, ...candidatas.slice(0, n)], excl0: new Set() })
-        for (const v of variantes) {
-          const { n, A1 } = v
-          const excl = new Set(v.excl0)
-          let valido = true
-          for (let guard = 0; guard < 12; guard++) {
-            fueraSet = excl
-            const nuevas = reglas.nuevas(base, reglas.todas(montar(A1).lista, { vistosAntes: estado.vistos, dentroAntes: estado.dentro }))
-            if (nuevas.length === 0) break
-            const culpables = nuevas.map((v) => unidades.find((u) => u.head.id === v.clave.split('>').at(-1))).filter(Boolean)
-            let culpable = culpables.find((u) => !A1.includes(u) && puedeSobrar(u.head))
-            // Si lo que vuelve a la zona es algo que no se puede quitar (un «de camino» que seguía a la hora fija), se quita lo que, ya puesta la hora fija, aleja del sitio antes de volver: lo que va entre ellos.
-            if (!culpable) {
-              const lst = montar(A1).lista
-              const iF = lst.findIndex((it) => it.id === F.id)
-              for (const c of culpables.filter((u) => !A1.includes(u))) {
-                const iC = lst.findIndex((it) => it.id === c.head.id)
-                culpable = unidades.find((u) => { const k = lst.findIndex((it) => it.id === u.head.id); return k > iF && k < iC && !A1.includes(u) && puedeSobrar(u.head) })
-                if (culpable) break
-              }
-            }
-            if (!culpable) { valido = false; break }
-            excl.add(culpable.head.id)
-          }
-          if (!valido) continue
-          // El orden de lo que se hace con lo que no cabe antes de una hora fija: primero MOVERLO (antes o después de la hora fija), luego ACORTAR otras cosas y solo al final QUITAR lo de menos importancia.
-          // (Cada parada de la lista que no cabe antes y se va detrás de la hora fija cuenta 40: mover una o dos sigue siendo mejor que quitar; mover media mañana entera —la Plaza, la Basílica y la comida detrás del Free Tour—, no: se quita lo de menos y el resto va en su orden, Tanda 6u.)
-          const movidas = Math.max(0, candidatas.length - n)
-          const coste = (excl.size > 0 ? 100 : 0) + ((v.acortadas ?? []).length > 0 ? 50 : 0) + excl.size * 2 + movidas * 40 + Math.max(0, sobra(plano(A1))) / 60
-          if (!mejor || coste < mejor.coste) mejor = { n, A1, excl, coste, porTiempo: v.excl0, acortadas: v.acortadas ?? [] }
-        }
-      }
-      fueraSet = new Set()
-      let tomadas = 0
-      if (mejor) {
-        A.splice(0, A.length, ...mejor.A1)
-        fueraSet = mejor.excl
-        tomadas = mejor.n
-        for (const a of mejor.acortadas) log.push({ id: a.id, lugar: a.titulo ?? a.lugar, sitio: a.lugar, que: 'modo+min', causa: `${F.titulo ?? F.lugar} es a las ${F.hora}: lo de menos de lo que iba antes pasa de ${a.paso === 'fuera' ? 'por dentro a por fuera' : 'por fuera a de camino'} para llegar a tiempo (se sigue viendo, se tarda menos)` })
-        for (const id of mejor.excl) {
-          const u = unidades.find((x) => x.head.id === id)
-          spare.push({ ...u.head, razon: 'ancla', spareReason: 'Para otro momento' })
-          log.push({ id, lugar: u.head.titulo ?? u.head.lugar, sitio: u.head.lugar, que: 'sobra', causa: mejor.porTiempo.has(id) ? `no cabía antes de ${F.titulo ?? F.lugar} (a las ${F.hora}) sin llegar tarde: pasa a «Si te sobra tiempo»` : `poner ${F.titulo ?? F.lugar} a su hora (${F.hora}) lo dejaba volviendo sobre sus pasos: pasa a «Si te sobra tiempo»` })
-        }
-      }
-      // (Si no entró todo lo que iba antes en la lista, lo que queda va detrás de la hora fija y no se adelanta nada de lo que iba después.)
-      let prefijoCompleto = tomadas === candidatas.length
-      // 2. si aún queda más de 1 h, lo cercano que va después (seguido, en su orden: cada parada a 15 min andando o menos de la anterior y todo a 30 min o menos de la hora fija);
-      //    se prueba con todas las que caben y, si eso rompe una comprobación (un zigzag), con una menos, hasta que no rompa ninguna.
-      if (prefijoCompleto && sobra(plano(A)) > cfg.hueco_llenar_min) {
-        const cola = []
-        let previoC = A.length > 0 ? endCoordsOf(A.at(-1).head) : objetivoC
-        for (const u of unidades) {
-          if (u.i < kPos || A.includes(u) || (mediaDiaYa(u))) continue
-          if (esBarrera(u.head, lista)) break
-          const c = coordsOf(u.head)
-          if (!c || !coordsF || walkLeg(c, coordsF) > cfg.cerca_max_min || (previoC && walkLeg(previoC, c) > cfg.cerca_andar_min)) break
-          if (!cabe(plano([...A, ...cola, u]))) break
-          cola.push(u)
-          previoC = endCoordsOf(u.head)
-        }
-        for (let n = cola.length; n > 0; n--) {
-          const probando = [...A, ...cola.slice(0, n)]
-          if (nuevasRompe(montar(probando).lista)) continue
-          A.push(...cola.slice(0, n))
-          break
-        }
-      }
-      // (Tanda 6r: la app nunca mete paradas por su cuenta para llenar un hueco: si aún sobra tiempo antes de la hora fija, se espera —regla 7— o sale «Si te sobra tiempo» —regla 5—.)
-      const { lista: nuevo } = montar(A)
-      if (!sinQuitar && nuevasRompe(nuevo)) return null
-      // El día empieza a su hora; solo empieza antes si la hora fija es antes de que pueda llegarse a ella.
-      const llegaF = llegadaA(plano(A), objetivoC)
-      // (Con una reserva el día nunca quita nada: si lo de antes aún no cabe, el día empieza antes —hasta las 6:00—, como quien sale temprano. Solo con la primera hora fija del día.)
-      const primeraFija = !lista.some((it) => it.fijo_colocado)
-      if ((A.length === 0 || (sinQuitar && primeraFija && startPoint.t - (llegaF - objetivoT) >= 6 * 60)) && llegaF > objetivoT) {
-        const antes = objetivoT - llegaF
-        startPoint.t += antes
-        log.push({ id: F.id, lugar: F.titulo ?? F.lugar, sitio: F.lugar, que: 'hora', causa: `${F.titulo ?? F.lugar} es a las ${F.hora}: el día empieza ${-antes} min antes` })
-      }
-      return nuevo
-    }
+    const anclar = (lista) => lista.map((it) => (it.kind === 'stop' && it.hora && !it.llegada && !it.fijo_colocado ? { ...it, fijo_colocado: true } : it))
     // (Regla 17, Tanda 6w: con una reserva del viajero el día lleva todo lo que tiene escrito. La app solo lo ordena: nada se quita, nada pasa a «Si te sobra tiempo» por el tiempo y la comida no se acorta.)
     const conReservaDelViajero = (lista) => lista.some((it) => it.kind === 'stop' && it.hora_tipo === 'reserva')
-    const esFijoSinColocar = (it) => it.kind === 'stop' && it.hora && !it.llegada && !it.fijo_colocado
-    // (Una hora fija que aún no se ha colocado, o su «Llegada a…»: nada se adelanta más allá de ella.)
-    const esBarrera = (it, lista) => esFijoSinColocar(it) || Boolean(it.llegada && lista.some((x) => x.id === it.de && esFijoSinColocar(x)))
 
     // 5.8 Que quepa: por franja; la comida, como muy tarde a las 15:00 (regla 6).
     const esFijo = (item) => Boolean(item.hora || item.hora_tipo || item.tipo === 'tour' || item.llegada || item.fijo_colocado)
@@ -1114,8 +750,11 @@ export function planListasTrip(args) {
      *   - se espera si son 15 min o menos;
      *   - si no, pasa a por fuera o de camino (la fachada), con su aviso «Abre a las…» (nunca se cambia el orden);
      *   - y si no se ve desde fuera, pasa a «Si te sobra tiempo».
+     * Con una reserva del viajero (Tanda 6z5) no se hace nada de esto: el día sigue su lista escrita tal cual, y a qué hora llega el viajero a cada sitio es cosa suya. Lo que cierra ese
+     * día (regla 5) ya está resuelto al elegir la lista; el horario y la última entrada de cada parada los enseña la tarjeta, que son datos reales, y decide el viajero.
      */
     const resolverHorarios = (lista) => {
+      if (conReservaDelViajero(lista)) return lista
       let out = lista
       const hechos = new Set()
       for (let guard = 0; guard < 40; guard++) {
@@ -1144,13 +783,8 @@ export function planListasTrip(args) {
         const conEspera = abre != null && abre - malo.t0 <= esperaMax && proxima && abre + (malo.min ?? 20) <= proxima.close
           ? out.map((it) => (it.id === malo.id ? { ...it, no_antes: toHHMM(abre), ...(abre - malo.t0 > cfg.espera_max_min && previa ? { espera_en: { lugar: previa.lugar, titulo: previa.titulo ?? null } } : {}), espera_abre: toHHMM(abre), espera_tras: previa ? { lugar: previa.lugar, titulo: previa.titulo ?? null } : null } : it))
           : null
-        // (Esperar nunca hace llegar tarde a una hora fija —una reserva—: si la espera empeora una llegada tarde, no se espera y se ve por fuera.
-        //  Tanda 6l: con el Free Tour, unos minutos de margen no son llegar tarde: el guía espera en el punto y el viajero llega con el margen de 15 min ya gastado; hasta 5 min no cuentan.
-        //  Sin esto, el Panteón del D3, que llega 6 min antes de abrir, se veía por fuera para no gastar 3 min del margen del tour, contra la regla 7.)
-        const toleranciaDe = (it) => (it.tipo === 'tour' ? cfg.tolerancia_tour_min : 0)
-        const tardesAntes = new Map(sim.filter((it) => it.hora).map((it) => [it.id, it.tarde ?? 0]))
-        const empeora = conEspera != null && simular(conEspera).some((it) => it.hora && (it.tarde ?? 0) > Math.max(tardesAntes.get(it.id) ?? 0, toleranciaDe(it)))
-        if (conEspera && !empeora) {
+        // (Tanda 6z5: esperar a que abra no se mide contra la hora de una reserva: la app no calcula si se llega tarde.)
+        if (conEspera) {
           out = conEspera
           log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'hora', causa: `${malo.titulo ?? malo.lugar} abre a las ${horaAbre}: se espera ${abre - malo.t0} min` })
           continue
@@ -1230,7 +864,6 @@ export function planListasTrip(args) {
     items = anclar(items)
     // El paseo que el destino pone siempre antes de cenar (en Roma, el Paseo por Trastevere, regla 10) va justo antes de la cena, vaya donde vaya lo demás (Tanda 6x).
     items = paseoAntesDeCenar(items)
-    items = comidaAntesDeLas15(items)
     items = resolverHorarios(items)
     items = ajustar(items)
     items = elegirMesas(items)

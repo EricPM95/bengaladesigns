@@ -111,7 +111,6 @@ export function aplicarOps(trabajo, ops) {
  *   reserva { lugar, desde, hasta }   el viajero reservó ese lugar a una hora entre desde y hasta
  *   reservas [{ lugar, desde, hasta }, …]   varias reservas a la vez, todas (Tanda 6u: el Free Tour y los Museos del D3, cada uno a su hora)
  *   sin_reserva "Lugar" | [..]   el viajero NO ha reservado ese lugar (ninguno de la lista) (Tanda 6j)
- *   abierto_tras_reserva { lugar, reserva, despues_min, min, negado }   ese lugar está abierto (o, con `negado`, cerrado) a la hora de la reserva más `despues_min`
  *   pool "Lugar" | [..]   marcado en el pool (todos)        sin_pool "Lugar" | [..]   ninguno marcado
  *   fechas "MM-DD..MM-DD"  el día cae en esas fechas
  *   viaje_lleva [ids]      el viaje lleva alguno de esos días     viaje_sin [ids]   no lleva ninguno
@@ -156,11 +155,6 @@ export function cumple(cuando, ctx) {
       }
     } else if (clave === 'sin_reserva') {
       if ([].concat(valor).some((lugar) => ctx.entradas?.[lugar] != null)) return false
-    } else if (clave === 'abierto_tras_reserva') {
-      // El sitio está abierto cuando se llegaría a él después de la reserva (p. ej. el Foro tras el Coliseo): `lugar`, `reserva` (el sitio reservado), `despues_min` y `min` (lo que dura la visita).
-      const hora = ctx.entradas?.[valor.reserva]
-      if (hora == null || !ctx.abiertoA) return false
-      if (valor.negado ? ctx.abiertoA(valor.lugar, toMin(hora) + valor.despues_min, valor.min ?? 60) : !ctx.abiertoA(valor.lugar, toMin(hora) + valor.despues_min, valor.min ?? 60)) return false
     } else if (clave === 'pool') {
       if (![].concat(valor).every((name) => ctx.poolNames.includes(name))) return false
     } else if (clave === 'sin_pool') {

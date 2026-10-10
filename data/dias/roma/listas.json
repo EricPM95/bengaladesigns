@@ -1205,12 +1205,6 @@
       "reserva": {
        "lugar": "Coliseo",
        "desde": "15:16"
-      },
-      "abierto_tras_reserva": {
-       "lugar": "Foro Romano y Palatino",
-       "reserva": "Coliseo",
-       "despues_min": 195,
-       "min": 1
       }
      },
      "ops": {
@@ -1284,6 +1278,21 @@
         },
         {
          "tipo": "parada",
+         "lugar": "Foro Romano y Palatino",
+         "min": 90,
+         "modo": "dentro",
+         "entrada_en": [
+          41.8938,
+          12.4857
+         ],
+         "salida_en": [
+          41.8895,
+          12.489
+         ],
+         "no_pasa_detras": true
+        },
+        {
+         "tipo": "parada",
          "lugar": "Arco de Constantino",
          "min": 10,
          "modo": null
@@ -1293,16 +1302,6 @@
          "lugar": "Coliseo",
          "min": 75,
          "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Foro Romano y Palatino",
-         "min": 90,
-         "modo": "dentro",
-         "entrada_en": [
-          41.8895,
-          12.489
-         ]
         }
        ]
       },
@@ -2217,129 +2216,6 @@
       "reserva": {
        "lugar": "Coliseo",
        "desde": "15:16"
-      },
-      "abierto_tras_reserva": {
-       "lugar": "Foro Romano y Palatino",
-       "reserva": "Coliseo",
-       "despues_min": 195,
-       "min": 1
-      }
-     },
-     "ops": {
-      "manana": {
-       "paradas": [
-        {
-         "tipo": "parada",
-         "lugar": "Panteón",
-         "min": 45,
-         "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Piazza Navona",
-         "min": 45,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Iglesia de San Luigi dei Francesi",
-         "min": 20,
-         "modo": null,
-         "titulo": "San Luigi dei Francesi (los Caravaggio)"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Largo di Torre Argentina",
-         "min": 15,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Iglesia del Gesù",
-         "min": 20,
-         "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Barrio Judío",
-         "min": 30,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Plaza Venecia",
-         "min": 10,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Altar de la Patria",
-         "min": 45,
-         "modo": "dentro",
-         "acortable": true
-        }
-       ]
-      },
-      "tarde": {
-       "paradas": [
-        {
-         "tipo": "parada",
-         "lugar": "Plaza del Campidoglio",
-         "min": 30,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Via dei Fori Imperiali",
-         "min": 15,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Arco de Constantino",
-         "min": 10,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Coliseo",
-         "min": 75,
-         "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Foro Romano y Palatino",
-         "min": 90,
-         "modo": "dentro",
-         "entrada_en": [
-          41.8895,
-          12.489
-         ]
-        }
-       ]
-      },
-      "cena": {
-       "restaurante": "La Taverna dei Fori Imperiali",
-       "alternativa": "Trattoria Valentino",
-       "zona": "en Monti"
-      }
-     }
-    },
-    {
-     "id": "coliseo_tarde_foro_antes",
-     "doc": "Si no, el Foro y el Palatino por dentro antes del Coliseo (se entra por Via dei Fori Imperiali y se sale junto al Arco)",
-     "horas": [],
-     "cuando": {
-      "reserva": {
-       "lugar": "Coliseo",
-       "desde": "15:16"
-      },
-      "abierto_tras_reserva": {
-       "lugar": "Foro Romano y Palatino",
-       "reserva": "Coliseo",
-       "despues_min": 195,
-       "min": 1,
-       "negado": true
       }
      },
      "ops": {
@@ -8580,167 +8456,6 @@
       "reserva": {
        "lugar": "Coliseo",
        "desde": "15:16"
-      },
-      "abierto_tras_reserva": {
-       "lugar": "Foro Romano y Palatino",
-       "reserva": "Coliseo",
-       "despues_min": 195,
-       "min": 1
-      }
-     },
-     "ops": {
-      "manana": {
-       "paradas": [
-        {
-         "tipo": "parada",
-         "lugar": "Iglesia de Santa Maria in Trastevere",
-         "min": 20,
-         "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "San Pietro in Montorio y Tempietto de Bramante",
-         "titulo": "San Pietro in Montorio y el Tempietto",
-         "min": 10,
-         "modo": null,
-         "si_cerrado": {
-          "cambiar_titulo": "El mirador de San Pietro in Montorio"
-         }
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Fontana dell'Acqua Paola",
-         "min": 10,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Mirador del Janículo",
-         "min": 30,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Iglesia de Santa Maria in Trastevere",
-         "titulo": "Bajada a Trastevere",
-         "min": 5,
-         "modo": "camino"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Isla Tiberina",
-         "min": 20,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Teatro de Marcelo",
-         "min": 10,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Barrio Judío",
-         "min": 25,
-         "modo": null
-        }
-       ]
-      },
-      "comida": {
-       "restaurante": "Giggetto al Portico d'Ottavia",
-       "alternativa": "Nonna Betta",
-       "zona": "en el Gueto"
-      },
-      "tarde": {
-       "paradas": [
-        {
-         "tipo": "parada",
-         "lugar": "Plaza Venecia",
-         "min": 10,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Altar de la Patria",
-         "min": 45,
-         "modo": "dentro",
-         "acortable": true
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Plaza del Campidoglio",
-         "min": 30,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Via dei Fori Imperiali",
-         "min": 15,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Arco de Constantino",
-         "min": 10,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Coliseo",
-         "min": 75,
-         "modo": "dentro"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Foro Romano y Palatino",
-         "min": 90,
-         "modo": "dentro",
-         "entrada_en": [
-          41.8895,
-          12.489
-         ]
-        },
-        {
-         "tipo": "traslado",
-         "como": "taxi",
-         "texto": "Taxi a Trastevere"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Trastevere",
-         "titulo": "Paseo por Trastevere",
-         "min": 30,
-         "modo": null
-        }
-       ]
-      },
-      "cena": {
-       "restaurante": "Tonnarello",
-       "alternativa": "Trattoria Da Enzo al 29",
-       "zona": "en Trastevere"
-      },
-      "noche": {
-       "lista": [],
-       "libre": true,
-       "texto": "la nocturna que toque (regla 13): Trastevere ya se ve en el paseo"
-      }
-     }
-    },
-    {
-     "id": "coliseo_tarde_ft_foro_antes",
-     "doc": "el Foro y el Palatino antes o después, según la regla del D1",
-     "horas": [],
-     "cuando": {
-      "reserva": {
-       "lugar": "Coliseo",
-       "desde": "15:16"
-      },
-      "abierto_tras_reserva": {
-       "lugar": "Foro Romano y Palatino",
-       "reserva": "Coliseo",
-       "despues_min": 195,
-       "min": 1,
-       "negado": true
       }
      },
      "ops": {

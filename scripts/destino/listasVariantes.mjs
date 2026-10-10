@@ -67,19 +67,10 @@ const D1_TRAMOS = [
             tarde: { paradas: [P('Coliseo', 75, 'dentro'), P('Arco de Constantino', 10), ...camino('Via dei Fori Imperiali', 'Largo di Torre Argentina'), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30)] },
           },
         },
-        // De 15:16 en adelante: el Foro va DESPUÉS del Coliseo (la misma entrada) si aún se puede entrar; si no, el Foro desde la terraza del Campidoglio, antes.
+        // De 15:16 en adelante (Coliseo por la tarde, desde las 15:30): el Foro y el Palatino van ANTES del Coliseo, siempre (Tanda 6z5: la tabla decide, no se cuenta hasta la última entrada del Foro).
         {
           id: 'coliseo_tarde', doc: 'Por la tarde (a las 15:30 o más tarde):', horas: ['16:00', '17:00'],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 195, min: 1 } },
-          ops: {
-            manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30), P('Plaza Venecia', 10), P('Altar de la Patria', 45, 'dentro', { acortable: true })] },
-            tarde: { paradas: [P('Plaza del Campidoglio', 30), ...camino('Via dei Fori Imperiali'), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro'), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_ARCO })] },
-            cena: mesa('La Taverna dei Fori Imperiali', 'Trattoria Valentino', 'en Monti'),
-          },
-        },
-        {
-          id: 'coliseo_tarde_foro_antes', doc: 'Si no, el Foro y el Palatino por dentro antes del Coliseo (se entra por Via dei Fori Imperiali y se sale junto al Arco)', horas: [],
-          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 195, min: 1, negado: true } },
+          cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' } },
           ops: {
             manana: { paradas: [P('Panteón', 45, 'dentro'), P('Piazza Navona', 45), P('Iglesia de San Luigi dei Francesi', 20, null, { titulo: 'San Luigi dei Francesi (los Caravaggio)' }), P('Largo di Torre Argentina', 15), P('Iglesia del Gesù', 20, 'dentro'), P('Barrio Judío', 30), P('Plaza Venecia', 10), P('Altar de la Patria', 45, 'dentro', { acortable: true })] },
             tarde: { paradas: [P('Plaza del Campidoglio', 30), ...camino('Via dei Fori Imperiali'), P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO, no_pasa_detras: true }), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro')] },
@@ -101,24 +92,12 @@ const tramosDelD1Reducido = D1_TRAMOS.filter((t) => t.id !== 'coliseo_tarde_foro
 
 /** El D1-FT con el Coliseo reservado (Tanda 6u): la mañana y el mediodía, como el D1 reducido; por la tarde (15:30 en adelante) va al revés: Trastevere por la mañana y la Roma antigua por la tarde. */
 const FORO_ANTES = P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_FORI, salida_en: FORO_LADO_ARCO, no_pasa_detras: true })
-const FORO_DESPUES = P('Foro Romano y Palatino', 90, 'dentro', { entrada_en: FORO_LADO_ARCO })
 const D1FT_MANANA_TRASTEVERE = [P('Santa Maria in Trastevere', 20, 'dentro'), P('San Pietro in Montorio y el Tempietto', 10, null, { titulo: 'San Pietro in Montorio y el Tempietto', si_cerrado: { cambiar_titulo: 'El mirador de San Pietro in Montorio' } }), P("Fontana dell'Acqua Paola", 10), P('Mirador del Janículo', 30), P('bajada a Trastevere', 5, 'camino'), P('Isla Tiberina', 20), ...camino('Teatro de Marcelo'), P('Barrio Judío', 25)]
 const tramosD1FT = [
   ...tramosDelD1Reducido.filter((t) => t.id !== 'coliseo_tarde'),
   {
     id: 'coliseo_tarde_ft', doc: 'Con el Coliseo reservado por la tarde (15:30 en adelante)', horas: ['16:00', '17:00'],
-    cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 195, min: 1 } },
-    ops: {
-      manana: { paradas: D1FT_MANANA_TRASTEVERE },
-      comida: mesa("Giggetto al Portico d'Ottavia", 'Nonna Betta', 'en el Gueto'),
-      tarde: { paradas: [P('Plaza Venecia', 10), P('Altar de la Patria', 45, 'dentro', { acortable: true }), P('Plaza del Campidoglio', 30), P('Via dei Fori Imperiali', 15), P('Arco de Constantino', 10), P('Coliseo', 75, 'dentro'), FORO_DESPUES, taxi('Taxi a Trastevere'), P('Paseo por Trastevere', 30)] },
-      cena: mesa('Tonnarello', 'Trattoria Da Enzo al 29', 'en Trastevere'),
-      noche: { lista: [], libre: true, texto: 'la nocturna que toque (regla 13): Trastevere ya se ve en el paseo' },
-    },
-  },
-  {
-    id: 'coliseo_tarde_ft_foro_antes', doc: 'el Foro y el Palatino antes o después, según la regla del D1', horas: [],
-    cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' }, abierto_tras_reserva: { lugar: 'Foro Romano y Palatino', reserva: 'Coliseo', despues_min: 195, min: 1, negado: true } },
+    cuando: { reserva: { lugar: 'Coliseo', desde: '15:16' } },
     ops: {
       manana: { paradas: D1FT_MANANA_TRASTEVERE },
       comida: mesa("Giggetto al Portico d'Ottavia", 'Nonna Betta', 'en el Gueto'),
