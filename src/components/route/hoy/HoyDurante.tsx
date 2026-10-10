@@ -22,10 +22,15 @@ const lonLat = (punto: Coordinates) => `${punto.lng.toFixed(5)},${punto.lat.toFi
 
 /** El mapa pequeño hasta la parada (diseño «Mapa · hasta la parada»): una imagen estática de Mapbox, sin un segundo mapa vivo (cada mapa vivo es otro lienzo de GPU). */
 function MapaHastaLaParada({ desde, hasta }: { desde: Coordinates | null; hasta: Coordinates }) {
-  if (!TOKEN) return <div className="h-[118px] rounded-[21px] bg-[#2A3141]" aria-hidden="true" />
-  const pines = desde ? `pin-s+8E96A8(${lonLat(desde)}),pin-l+B8325F(${lonLat(hasta)})/auto` : `pin-l+B8325F(${lonLat(hasta)})/${lonLat(hasta)},15`
-  const url = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/600x236@2x?padding=36&access_token=${TOKEN}`
-  return <img src={url} alt="Mapa hasta la siguiente parada" className="h-[118px] w-full rounded-[21px] object-cover" loading="lazy" />
+  const [fallo, setFallo] = useState(false)
+  const relleno = <div className="h-[118px] rounded-[21px] bg-[#2A3141]" aria-hidden="true" />
+  if (!TOKEN || fallo) return relleno
+  // `padding` solo vale con `auto` (con centro y zoom, Mapbox contesta 422).
+  const [pines, padding] = desde
+    ? [`pin-s+8E96A8(${lonLat(desde)}),pin-l+B8325F(${lonLat(hasta)})/auto`, 'padding=36&']
+    : [`pin-l+B8325F(${lonLat(hasta)})/${lonLat(hasta)},15`, '']
+  const url = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/600x236@2x?${padding}access_token=${TOKEN}`
+  return <img src={url} alt="Mapa hasta la siguiente parada" className="h-[118px] w-full rounded-[21px] object-cover" loading="lazy" onError={() => setFallo(true)} />
 }
 
 /** El título del día con la última palabra en frambuesa y cursiva (diseño: «Vaticano y *Trastevere*»). */
