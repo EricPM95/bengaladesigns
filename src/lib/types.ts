@@ -277,6 +277,8 @@ export interface Stop {
   detail?: PlaceDetail
   /** Modo Hoy: instante real (ISO) en que el viajero pulsó "Ya he estado aquí" / "Ya terminé, seguir" — null/undefined mientras no se ha hecho check-in. Vive en el Stop porque es un hecho de esa visita concreta, no del día. */
   checkedInAt?: string | null
+  /** HOY (Tanda 6z5, «No me da tiempo»): el viajero la ha saltado durante el viaje. Sale gris y tachada en la lista de HOY, deja de ser «la siguiente» y no cuenta en «2 de 5 visto». Se guarda con el viaje, como `checkedInAt`. */
+  saltada?: boolean
   /** Modo Hoy: instante real (ISO) en que el viajero pulsó "Sí, dame más tiempo" en el aviso "¿Sigues aquí?" — solo anota el retraso, no cambia nada más; se usa para no volver a preguntar de inmediato. */
   delayNotedAt?: string | null
   /** true solo para la parada de Free Tour generada por el pipeline (ver FREE TOUR en DAY_BLOCK_SYSTEM_PROMPT, server/index.js) — StopAccordion/StopDetailSheet le dan un tratamiento especial: icono propio y ficha con contenido nativo del pipeline (freeTour*) en vez de pedir descripción bajo demanda. */

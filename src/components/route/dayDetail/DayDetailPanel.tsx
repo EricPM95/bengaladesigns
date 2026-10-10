@@ -75,6 +75,7 @@ import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
+import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
 import { Icono } from '../../ui/Icono'
 
 /** Por debajo de esto, lo que queda antes de cenar es caminar tranquilo; por encima, tiempo libre que se dice. */
@@ -546,6 +547,8 @@ export function DayDetailPanel({
 
   const tripStartIso = route?.answers.dateRange?.start
   const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
+  // El horario de cada parada ese día (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy».
+  const horarioDe = useHorarioDeParadas(day.city, dateIso)
   // Paradas REALES del día (con coordenadas) para el mapa de StopDetailSheet — mismo orden que
   // `stops` (contenido rico mock/real), así que `realStops[index]` siempre es la pareja correcta.
   const dayStopRefs: DayStopRef[] = realStops.map((realStop) => ({
@@ -1118,6 +1121,7 @@ export function DayDetailPanel({
               stop={freeDay && dateIso && realStop?.hoursData ? { ...stop, scheduleText: placeHoursOnDate(realStop.hoursData, dateIso)?.schedule ?? stop.scheduleText } : stop}
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
+              horario={horarioDe({ ...stop, hoursData: realStop?.hoursData })}
               tripWarning={tripWarningOf(startMinutes, startMinutes + stop.durationMinutes, stop.passThrough) ?? (movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => {

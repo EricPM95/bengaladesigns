@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
-import { displayStopName, formatDuration, simplifySchedule } from '../../../lib/format'
+import { displayStopName, formatDuration } from '../../../lib/format'
+import type { HorarioDeParada } from '../../../lib/horarioDeParada'
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
@@ -26,6 +27,8 @@ interface StopAccordionProps {
   numberColors?: { bg: string; text: string }
   /** El primer o el último día: «Llegas después» o «Ya te has ido», en rojo (la llegada y la vuelta). */
   tripWarning?: string | null
+  /** Su horario ese día («Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy»), de src/lib/horarioDeParada.ts; null/undefined = sin horario (plazas, fuentes, calles). */
+  horario?: HorarioDeParada | null
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
@@ -43,7 +46,7 @@ const OUTSIDE_SHORT: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning, horario }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
@@ -78,20 +81,20 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // queda lo rojo, cuando hay un problema («Hoy cierra», «Cerrado a esa hora», «Llegas después»…).
   const meta: CardMeta[] = []
   if (tripWarning) meta.push({ text: tripWarning, warn: true })
-  // Ronda 7, Issue B: nunca "Acceso libre" Y el horario a la vez. Por fuera no hay horario de visita.
-  const scheduleShort = stop.scheduleText ? simplifySchedule(stop.scheduleText) : null
-  // (Un paseo libre no tiene horario: es la calle.)
-  if (!stop.isNightExperience && stop.visitMode !== 'fuera' && !stop.isFreeWalk) meta.push({ icon: 'clock', text: scheduleShort ?? stop.hours ?? 'Acceso libre' })
+  // El horario de ese día, en pequeño (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15»; cerrado, «Cerrado hoy» en rojo. Plazas, fuentes y
+  // calles (sin horario en los datos) no llevan nada. Por fuera solo se dice si está cerrado. (Un paseo libre no tiene horario: es la calle.)
+  if (horario && !stop.isNightExperience && !stop.isFreeWalk && (stop.visitMode !== 'fuera' || horario.cerrado)) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
   meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
-  // Por fuera porque cierra: el motivo, en rojo. (Por falta de tiempo no es un problema: va en la ficha.)
+  // Por fuera porque cierra: el motivo, en rojo (si cierra ese día ya lo dice «Cerrado hoy», una sola vez). (Por falta de tiempo no es un problema: va en la ficha.)
   if (stop.visitMode === 'fuera') {
     const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
     const short = stop.outsideKind === 'no_abre' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
-    if (closed && short) meta.push({ text: short, warn: true })
+    if (closed && short && !(horario?.cerrado && stop.outsideKind === 'cerrado')) meta.push({ text: short, warn: true })
   }
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
-    if (freeDayWarning) meta.push({ text: freeDayWarning, warn: true })
+    // («Hoy cierra» ya lo dice «Cerrado hoy»: una sola vez.)
+    if (freeDayWarning && !(horario?.cerrado && freeDayWarning === 'Hoy cierra')) meta.push({ text: freeDayWarning, warn: true })
   } else {
     if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
     if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
