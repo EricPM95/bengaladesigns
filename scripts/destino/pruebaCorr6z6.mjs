@@ -2,7 +2,7 @@
 //   node scripts/destino/pruebaCorr6z6.mjs        (con el servidor de la app encendido en http://localhost:8787)
 //   reservas: la tarjeta oscura solo con la cuenta atrás, la clara «x de 3 listo» aparte, sin «0 %», la cartera en las dos cabeceras y sin fila «Presupuesto», «Falta» igual en todos los bloques, «Útil para el viaje» solo con tarjetas;
 //   efecto:   «el precio vuela a la cartera» (la pastilla con el importe, la diferencia, la baja, «reducir movimiento», nada dentro del presupuesto, la cartera que se ve);
-//   perfil:   el Perfil a pantalla completa, el mapa de 220 px con dos dedos, el globo entero, 0, 1 y 6 viajes, la ficha con [‹ Volver], sin «Tips del viaje» en el Perfil y la bombilla en RUTA.
+//   perfil:   el Perfil a pantalla completa, el mapa de 220 px con dos dedos, el globo a todo el ancho, 0, 1 y 6 viajes, la ficha con [‹ Volver], sin «Tips del viaje» en el Perfil y la bombilla en la tarjeta de cada destino de RUTA.
 import { spawnSync } from 'node:child_process'
 
 const PARTES = ['reservas', 'efecto', 'perfil']
