@@ -1,4 +1,4 @@
-Tanda 6y: la ruta a mano («Quiero hacerla yo») y el botón «Reorganizar». Va todo en este mensaje. Empieza cuando esté subida la 6z3. Gratis y de pago igual: no va detrás del interruptor de pago.
+Tanda 6y: la ruta a mano («Quiero hacerla yo») y el botón «Reorganizar». Va todo en este mensaje. Empieza cuando esté subida la 6z6. Gratis y de pago igual: no va detrás del interruptor de pago.
 
 El diseño ya está en docs\diseno\ruta_manual\ (Itinerario Eleccion.dc.html y su support.js; lo subiste en la 6z).
 

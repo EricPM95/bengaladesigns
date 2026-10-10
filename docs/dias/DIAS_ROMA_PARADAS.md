@@ -56,31 +56,19 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
     - **nada cerrado** a la hora a la que se llega.
 
     Si una recolocación rompe alguna, no se hace: lo que no cabe pasa a «Si te sobra tiempo». **Con una reserva, no:** no se quita nada, solo se ordena (regla 17).
-15. **Pestaña HOY:**
-    - la siguiente parada y cuánto se tarda andando;
-    - marcar como hecha;
-    - los avisos de cierre;
-    - la cuenta atrás de las reservas: «Tu entrada al Coliseo es a las 12:00: sal de aquí a las 11:15».
-    - **«Vas bien de tiempo» o «Vas justo»:** cada vez que el viajero marca «Visto», la app compara la hora con lo que le queda de la franja.
-      - **Si le sobra:** «Vas bien de tiempo». Si era la última parada antes de comer, «¿Vas ya al restaurante o quieres ver algo más?».
-      - **De dónde salen las sugerencias:** de todo el destino, no solo de los días de su viaje. Los sitios de los días de 5, 6 y 7 días (Monti, el Quirinal, los Foros de Trajano, Campo de' Fiori, el Aventino, la Vía Appia…) son sugerencias muy buenas para los viajes de 3 y 4 días, que serán la mayoría. Solo se excluye lo que ya sale en otro día de **su** viaje (o se avisa: «Lo tienes el día {n}»).
-      - **Lo lejos que puede estar depende del tiempo que le sobra:**
-        - en mitad de una franja, solo lo cercano (5–10 min andando), para no hacer zigzag;
-        - justo antes de comer o de cenar, si le sobra 1 h 30 o más, vale ir más lejos: 15–20 min andando o 15 min en bus o metro;
-        - y si esa zona tiene restaurante, la comida o la cena se cambia allí («y cenas en Monti»), con las reglas de restaurantes.
-      - Siempre abiertas a la hora a la que llegaría, con tiempo de verlas, y no vistas.
-      - **Si le falta:** «Vas justo. ¿Dejamos {lo de menos importancia} para si te sobra tiempo?». El viajero decide.
-      - Nunca cambia nada sola.
+15. **Pestaña HOY** (de pago, durante el viaje; cambiado el 10-oct-2026):
+    - la siguiente parada y cuánto se tarda andando (desde donde está el viajero si comparte su ubicación; si no, desde la parada anterior);
+    - [Cómo llegar] (abre Google Maps), [✓ Visto] y **[No me da tiempo]**: la parada queda como «Saltada», en gris, y se pasa a la siguiente, con [Deshacer] y [Pasarla a otro día]. La app no calcula si el viajero va bien o justo de tiempo, ni le sugiere nada: decide él;
+    - los avisos de cierre y la entrada reservada a su hora («Tu entrada al Coliseo · 12:00»), sin horas calculadas («sal de aquí a las…» no se hace).
 
 16. **Plan de lluvia.** Cada día lleva su línea «🌧 Si llueve»: qué parada al aire libre se acorta o sale y qué parada por dentro entra, siempre cerca de la ruta y con las comprobaciones del punto 14. La app mira la previsión (la víspera y esa mañana). Si hay previsión de lluvia en una franja, HOY avisa: «Hay previsión de lluvia esta tarde. Si llueve, aquí tienes una alternativa» **[Ver alternativa]**. Nunca cambia sola: decide el viajero.
 17. **Reservas: solo lo escrito** (decidido el 6-oct-2026, vale para todos los destinos). Cada reserva grande tiene su día escrito para cada tramo de hora, y el motor no se inventa otro.
     - **Las reservas mandan y el día lo lleva todo** (decidido el 9-oct-2026, vale para todos los destinos): con una reserva, el día lleva todo lo que tiene escrito. La app **solo lo ordena para que tenga sentido** (qué va antes y qué después, por dónde se empieza). No quita nada, no lo pasa a «Si te sobra tiempo» y no acorta la comida porque no dé tiempo: hay quien sale a las 6:00 y vuelve a las 22:00. El viajero quita o añade lo que quiera.
     - **La app nunca propone otra hora** (decidido el 9-oct-2026, vale para todos los destinos): el viajero compra la entrada cuando le va bien y la app se adapta. Por eso cada reserva grande tiene su día escrito para todas sus horas, de la primera a la última entrada.
     - **Si las horas de dos reservas se cruzan** (por ejemplo, el Free Tour de 10:00 a 12:30 y los Museos a las 11:45), es un hecho, no una propuesta: aviso «Tu Free Tour y tu entrada a los Museos coinciden. Revisa una de las dos reservas.» [Ver mis reservas], y se queda en la campana hasta que se arregla.
-    - **Si no se cruzan pero se va justo** (no da tiempo a llegar de una a otra, o no queda el margen de 30 min o tiempo de comer; por ejemplo, el Free Tour a las 12:00 y los Museos a las 15:30 o a las 16:00), aviso: «Es posible que no llegues a los Museos: el Free Tour dura 2 h 30 y vas justo.» (con los nombres y la duración de la primera reserva). Solo avisa: las dos reservas mandan y el día se queda como está, con todo (decidido el 9-oct-2026).
     - **Un imprescindible que se visita por dentro nunca pasa a «de camino» ni a «por fuera» por una reserva:** se mueve antes o después de ella.
-    - **Lo nuestro nunca te hace llegar tarde a tu reserva** (decidido el 9-oct-2026, vale para todos los destinos). Antes de una reserva, primero va la reserva con su margen (regla 4), luego la comida (regla 4) y luego nuestras paradas. Lo que no cabe antes pasa detrás de la reserva, en su orden escrito. Si detrás ya está cerrado, es un cierre (regla 5). El aviso «vas justo» es solo para las reservas del viajero: sale cuando no da tiempo de una a otra con el trayecto, el margen y la comida, nunca por nuestras paradas.
-    - **La comida nunca pasa detrás por nuestras paradas:** va donde dice la regla 4. Solo va detrás de una reserva cuando las reservas del viajero no dejan comer antes de las 15:00 (por ejemplo, un Free Tour de 12:00 a 14:30: se come al acabar).
+    - **Sin cuentas al minuto** (decidido el 10-oct-2026, vale para todos los destinos; sustituye a «vas justo» y a «lo nuestro nunca te hace llegar tarde» del 9-oct). La hora de la reserva solo decide en qué fila de su tabla cae y qué lista escrita se usa. El día sigue esa lista tal cual: no se calcula si da tiempo, no se pasa nada «por fuera» ni «detrás» de la reserva, no se mueve la comida y no sale ningún aviso de «vas justo». La comida va donde dice la lista. Si el viajero ve que no le da, mueve lo que quiera (arrastrando) o lo quita, y durante el viaje tiene [No me da tiempo] (regla 15).
+    - **El horario y la última entrada, a la vista** (decidido el 10-oct-2026): en la tarjeta de cada parada con horario, en pequeño, «Abre 9:00 – 19:15 · Última entrada 18:15» (los datos reales de ese día). Así decide el viajero.
     - **La noche tampoco se quita por la hora:** con una reserva, la nocturna se queda aunque el día acabe tarde. El viajero la quita si quiere.
 
 **Líneas de transporte público de Roma que usa la app** (de momento solo estas; el resto, andando o taxi, y el botón «Rutas» abre el mapa). Cuentan si se llega a la parada de la línea en **12 min andando o menos** en cada punta:
@@ -318,8 +306,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - **la otra parte:** en el D1, el centro (el Gueto, Torre Argentina, San Luigi, el Panteón, Navona, el Gesù); en el D1-FT, el Gueto y Trastevere.
 - **Coliseo por la mañana:** la Roma antigua por la mañana y la otra parte por la tarde. **Coliseo por la tarde:** al revés.
 - **El Foro y el Palatino, antes o después del Coliseo según la hora,** como la Basílica con los Museos:
-  - después, si al salir del Coliseo queda al menos 1 h 30 hasta la última entrada del Foro (una hora antes de que cierre, y cierra antes en invierno);
-  - si no, antes.
+  - va donde dice la tabla de abajo, por la hora del Coliseo (cambiado el 10-oct-2026: ya no se cuenta el tiempo hasta su última entrada).
 - **La comida, antes de las 15:00:** en el Gueto si la Roma antigua acaba a mediodía; en Monti, entre el Foro y el Coliseo, si el Coliseo es a mediodía.
 
 Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de la hora de antes (decidido el 9-oct-2026, vale para todas las tablas de horas).
@@ -330,17 +317,17 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
 | 10:30 – 11:00 | por la mañana | después del Coliseo | en el Gueto |
 | 11:30 – 12:00 | por la mañana | antes del Coliseo | en el Gueto |
 | 12:30 – 15:00 | a mediodía | antes del Coliseo | en Monti, antes del Coliseo |
-| 15:30 en adelante | por la tarde | después si da tiempo (regla de arriba); si no, antes | en el Gueto |
+| 15:30 en adelante | por la tarde | antes del Coliseo | en el Gueto |
 
 - **A primera hora (hasta las 10:00):** el día normal.
 - **A media mañana, de 10:30 a 11:00:** el Foro (~1 h 30) no cabe antes, así que va después.
   - **mañana:** San Pietro in Vincoli, por dentro (el Moisés de Miguel Ángel; abre a las 8:00) ~20, el Arco de Constantino, «Llegada a…» y el Coliseo a su hora;
-  - **después:** Foro Romano y Palatino, por dentro (se entra junto al Arco y se sale por el Campidoglio), la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar de la Patria por dentro (si la comida pasaría de las 15:00, el Altar va después de comer: está a 5 min del Gueto);
+  - **después:** Foro Romano y Palatino, por dentro (se entra junto al Arco y se sale por el Campidoglio), la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar de la Patria por dentro, después de comer (está a 5 min del Gueto);
   - **comida:** en el Gueto;
   - **la tarde, la de siempre.**
 - **De 11:30 a 12:00:**
   - **mañana:** San Pietro in Vincoli, por dentro ~20, el Arco, el Foro Romano y Palatino por dentro (se entra junto al Arco), «Llegada a…» y el Coliseo;
-  - **después:** Via dei Fori Imperiali ~15, la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar por dentro (si la comida pasaría de las 15:00, el Altar va después de comer);
+  - **después:** Via dei Fori Imperiali ~15, la Plaza del Campidoglio, Piazza Venezia ~10 y el Altar por dentro, después de comer;
   - **comida:** en el Gueto;
   - **la tarde, la de siempre.**
 - **A mediodía (de 12:30 a 15:00):**
@@ -353,7 +340,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
 - **Por la tarde (a las 15:30 o más tarde):** el día va al revés.
   - **mañana:** el Panteón por dentro (abre a las 9:00), Piazza Navona, San Luigi dei Francesi, Largo di Torre Argentina, el Gesù (por la mañana está abierto), el Barrio Judío, Piazza Venezia ~10 y el Altar de la Patria por dentro;
   - **comida:** en el Gueto;
-  - **tarde:** Plaza del Campidoglio, Via dei Fori Imperiali ~15, el Arco ~10, «Llegada a…» y el Coliseo; **después del Coliseo, el Foro Romano y Palatino por dentro** (se entra junto al Arco, con la misma entrada), si queda al menos 1 h 30 hasta su última entrada (en verano, hacia las 18:15; en invierno, mucho antes). Si no, el Foro y el Palatino por dentro antes del Coliseo (se entra por Via dei Fori Imperiali y se sale junto al Arco);
+  - **tarde:** Plaza del Campidoglio, Via dei Fori Imperiali ~15, el Arco ~10, «Llegada a…» y el Coliseo; el Foro Romano y Palatino por dentro va **antes del Coliseo** (se entra por Via dei Fori Imperiali y se sale junto al Arco; cambiado el 10-oct-2026: después del Coliseo, por la tarde, a menudo ya no deja entrar);
   - **cena:** en Monti (La Taverna dei Fori Imperiali o Trattoria Valentino);
   - **noche:** Trevi y la Plaza de España (15 min andando o taxi).
 - **Nunca** se pasa el Foro y el Palatino a «de camino» o «por fuera» para que quepa: va antes o después del Coliseo, que para eso es la misma entrada.
@@ -492,7 +479,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
 - **el día del Free Tour** lleva el D1-FT, y el Free Tour hace de «otra parte»: con el Free Tour por la mañana, la Roma antigua por la tarde; por la tarde, al revés. El Gueto y Trastevere se quedan, al final de la tarde;
 - si el viaje no tiene D1-FT, el Free Tour va en el día del centro que haya (el D1), en la mitad del día que deje libre la Roma antigua.
 
-**Si los dos están reservados,** cada uno a su hora, con la misma tabla. Si las horas se cruzan, el aviso «coinciden» de la regla 17; si no se cruzan pero no da tiempo a llegar de uno a otro, el aviso «vas justo». Para saberlo cuenta: ~2 h 30 de Museos, ~2 h 30 de Free Tour, el trayecto (~20 min en taxi), 15 min antes del Free Tour y 30 antes de los Museos (regla 4), y la comida si va en medio.
+**Si los dos están reservados,** cada uno a su hora, con la misma tabla. Si las horas se cruzan de verdad, el aviso «coinciden» de la regla 17. Si no se cruzan, el día se queda como está escrito, sin más avisos (regla 17, «Sin cuentas al minuto»).
 
 **El Free Tour a otra hora** (decidido el 9-oct-2026). Sin reservar, el de las 10:00 (el día de arriba).
 - **A las 12:00:** el mismo día, corrido.
@@ -509,7 +496,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
   - **comida:** Armando al Pantheon (o Supplizio), antes de las 15:00;
   - **tarde:**
     - Taxi a la entrada de los Museos
-    - 🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de 16:00 a 16:30; a las 15:30, aviso «vas justo»)
+    - 🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de 16:00 a 16:30)
     - Plaza de San Pedro ~30
     - Basílica de San Pedro, por dentro ~1 h (última entrada a las 19:15)
     - Via della Conciliazione ~10

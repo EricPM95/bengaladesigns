@@ -25,8 +25,8 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
   - Si es a media mañana, el mismo día, corrido, con algo de camino al punto de salida. La visita grande de la tarde se reserva más tarde (en Roma, los Museos a las 16:00).
   - Si es por la tarde, la visita grande pasa a la mañana.
   - Si es de noche, sustituye a la nocturna del día que pasa por los mismos sitios, y no hace falta el día del Free Tour.
-- **Lo nuestro nunca te hace llegar tarde a tu reserva** (9-oct): antes de una reserva va primero la reserva con su margen, luego la comida y luego nuestras paradas. Lo que no cabe pasa detrás, en su orden. «Vas justo» solo por las reservas del viajero.
-- **La comida y la noche no se quitan ni se mueven por nuestras paradas** (9-oct): la comida, antes de las 15:00, salvo que las reservas del viajero no dejen; la nocturna se queda aunque el día acabe tarde.
+- **Sin cuentas al minuto** (Eric, 10-oct; sustituye a lo del 9-oct): la hora de la reserva solo decide qué fila de su tabla y qué lista escrita se usa. No se calcula si da tiempo, nada pasa «por fuera» ni «detrás», no hay aviso «vas justo». El viajero mueve o quita lo que quiera, y durante el viaje tiene [No me da tiempo]. A la vista, el horario y la última entrada de cada sitio, en pequeño: decide él. Solo un aviso: «coinciden», cuando dos reservas se pisan de verdad.
+- **La noche no se quita por la hora:** la nocturna se queda aunque el día acabe tarde.
 - **Todo lo que se reserva se puede eliminar,** y al eliminar no se mueve ningún día.
 
 ## 3. RESERVAS (la pestaña)
@@ -63,7 +63,7 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 ## 6. Gratis y de pago
 - **Un solo interruptor** para todo lo de pago. Con `?version=gratis` se ve la gratis.
 - **Gratis:** los días escritos enteros, las reservas que cambian días, las entradas, las excursiones, el alojamiento (mapa) y lo útil.
-- **De pago:** los vuelos y la llegada y la vuelta, la zona, el resumen, el orden de los días según los vuelos (Tanda 7), lo de vivo de HOY (la siguiente parada, [Cómo llegar] y [✓ Visto]) y explorar extras. HOY sale siempre, en la gratis y en la de pago, con y sin fechas.
+- **De pago:** los vuelos y la llegada y la vuelta, la zona, el resumen, el orden de los días según los vuelos (Tanda 7), HOY y explorar extras.
 - **Lo de pago no se enseña con candados:** simplemente no sale.
 - **El pago no se activa de cara al público sin la Tanda 7 hecha.**
 
@@ -76,10 +76,3 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - `excursiones_desde_dias`;
 - las zonas del alojamiento;
 - los horarios auditados (como `AUDITORIA_HORARIOS_ROMA`).
-
-## 8. El dinero de cada destino (Tanda 6z2 y 6z3)
-- **`moneda`** en los datos del destino (por ejemplo «EUR» en Roma, «GBP» en Londres, «CZK» en Praga, «MXN» en Ciudad de México): se ofrece en los campos de precio y para los consejos. Nada de monedas escritas en el código.
-- **Cada precio de los datos de un destino lleva su moneda** (entradas, excursiones, traslados, tiendas): el precio se enseña tal como lo da la tienda, sin convertir. Un precio sin moneda se da por `MONEDA_POR_DEFECTO` («EUR», en `shared/dinero/formato.js`); en un destino con otra moneda eso hay que escribirlo en cada dato.
-- Los precios se enseñan siempre con `precioTienda` o `formatoImporte` (`shared/dinero/formato.js`): ningún «€» escrito a mano.
-- El cambio de monedas para el presupuesto lo pide el servidor al Banco Central Europeo una vez al día (`/api/cambio`); una moneda que el BCE no publique sale en el presupuesto aparte, sin sumar.
-- Las fotos del viaje se guardan en un sitio privado de Supabase (migración `0018_fotos_viaje.sql`): hay que aplicarla a mano en el panel antes de usarlas.

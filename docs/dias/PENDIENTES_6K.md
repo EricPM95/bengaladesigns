@@ -155,17 +155,18 @@ Después, leer el informe de la 6x (los 63 casos, los «Si te sobra tiempo» que
   - **La prueba:** al desordenar un día escrito, tiene que salir nuestro orden; además, 200 días mezclados, con 5 ejemplos para Eric.
 - **Por contestar Eric:** ¿lo que marcó en el pool del formulario sale arriba en EXPLORAR con «Lo marcaste», o solo su orden?
 
-**Las preguntas de la 6x, sin contestar todavía** (Eric quiso pasar en la 6z solo sus cambios). Están en PREGUNTAS_TANDA6X.md. Lo que propone Claude:
-- 1 y 2, la comida: si al salir de la reserva aún se empieza a comer antes de las 15:00, se come después; si no, antes. Con los Museos a las 12:00, después (no a las 10:45). El texto ya escrito está en el scratchpad (DIAS_con_comida_pendiente.md).
-- 3, lo que pasa detrás y ya está cerrado: por fuera, con su aviso.
-- 4, el Altar después de comer: bien siempre.
-- 5, lo que completó: bien.
-- 6, los viajes de prueba: borrarlos (ya va en la 6z).
+**Las preguntas de la 6x:** quedan resueltas con «sin cuentas al minuto» (Eric, 10-oct): la comida va donde dice la lista escrita de cada franja; lo cerrado sale por fuera con su aviso; el Altar, después de comer.
+
+**Sin cuentas al minuto (Eric, 10-oct; Tanda 6z5):** fuera «vas justo», «lo nuestro nunca te hace llegar tarde» y la cuenta de 1 h 30 hasta la última entrada del Foro. La reserva solo elige la fila de su tabla. En la tarjeta, el horario y la última entrada en pequeño. En HOY (de pago), [No me da tiempo]: la parada queda «Saltada» y se pasa a la siguiente, con [Deshacer] y [Pasarla a otro día]. El viajero mueve la comida y lo demás arrastrando.
 
 **El presupuesto del viaje (Eric, 10-oct; Tanda 6z2):** todo lo que se añade lleva su precio (opcional, total de todas las personas, lo pone el viajero, nunca la app): el alojamiento, las entradas, las excursiones, los vuelos o trenes, el seguro, la eSIM, el coche, los traslados. El Free Tour no lleva precio. La pantalla del presupuesto (diseño `docs\diseno\presupuesto\Presupuesto.dc.html`): total con «por persona» escondido, bloques «Transporte y alojamiento», «Ruta», «Útil para el viaje» y «Extras» (a mano: propinas, comidas, compras). Se abre desde RESERVAS. Gratis. La moneda: la del viajero (de su ciudad de origen, se puede cambiar); cada precio se guarda con la suya y el presupuesto lo suma todo en la del viajero, con el cambio del día («≈»).
 
 **La barra, HOY y los iconos (Tanda 6z3, 10-oct; diseño `docs\diseno\hoy\Iconos y HOY.dc.html`):** la barra fija Hoy · Ruta · Días · Explorar · Reservas; la cabecera con Presupuesto, campana y Perfil; HOY en cuatro momentos (antes, durante gratis, durante de pago, después; sin fechas, «Pon tus fechas»); una sola familia de iconos (la excursión, mochila); «falta» en rosa frambuesa en toda la app; con fechas, los días por su fecha (fuera «Día 1»); las fotos del viaje durante y después (sin EXIF, privadas, sin límite por ahora: decidir gratis/pago antes de lanzar); «Ubicación» y [Cómo llegar] a Google Maps en la siguiente parada.
 - Por decidir: el botón «Cómo llegar a tu alojamiento» (Google Maps con el nombre del hotel y la ciudad), en la llegada del día 1, al final de cada día y en HOY. Propuesto, sin respuesta de Eric.
+
+**HOY, solo de pago (Eric, 10-oct; Tanda 6z6):** la barra: gratis 4 pestañas (Ruta · Días · Explorar · Reservas), de pago 5 (Hoy delante). La cuenta atrás y «te faltan n cosas», arriba de RESERVAS. Durante el viaje, DÍAS se abre en hoy. Las fotos, en Perfil › Mis viajes (álbum por días; se añaden desde la ficha de la parada). HOY de pago: antes, «Tu modo Hoy se activa el…»; durante, siguiente parada, Cómo llegar, Visto, No me da tiempo, «Escuchar» (la ficha en voz alta, con la voz del móvil), «Cerca de ti» (baños, fuentes, comer) y los avisos del día; después, «Ver mis recuerdos». Panel de pruebas (versión, momento, números de prueba), solo fuera de producción. «Cerca de mí» de EXPLORAR y los filtros de baños y fuentes, de pago. En el Perfil, el mapa de mis viajes (globo con chinchetas y la lista de viajes; al tocar, el álbum). Fotos: gratis una por parada, de pago sin límite; en la gratis, «Guarda tus recuerdos» sale en RUTA después del viaje.
+- Siguiente tanda de HOY (6z7, después): «sin conexión» (descargar el viaje) y avisos en el móvil («Tu entrada es hoy a las 9:00», «Hoy cierra», lluvia). En iPhone, solo con la app añadida a la pantalla de inicio: explicarlo al pagar. Más adelante: las huelgas de transporte (buscar fuente).
+- Antes de lanzar: el plan comercial de Open-Meteo (el gratis no vale para uso comercial).
 
 **Detrás de la 6y:**
 1. El login: Google, Apple y email con enlace; sin obligar al principio; el viaje de ahora pasa a la cuenta. Hace falta antes de activar el pago.
