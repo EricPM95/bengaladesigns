@@ -290,6 +290,20 @@ for (const [clave, route] of Object.entries(rutas)) {
       debe(!EMPRESAS.test(texto), '3e sin empresas', `${nombre}: sale una empresa en los textos (${texto.match(EMPRESAS)?.[0]})`)
     }
   }
+  // 3f. Viaje de varios destinos (Tanda 6z6c): lo global sale UNA vez y la eSIM, una por país; el acordeón de cada destino no lleva ni tarjeta ni eSIM ni empresas.
+  {
+    const dias = base.days.map((dia, i) => (i === 0 ? { ...dia, city: 'Roma', countryCode: 'IT' } : { ...dia, city: 'París', countryCode: 'FR' }))
+    const multi = { ...base, days: dias }
+    const html = pintaHtml(UtilParaElViaje, { route: multi, pago: true }, multi, { version: 'completa' })
+    const ids = [...html.matchAll(/data-util-tarjeta="([\w-]+)"/g)].map((x) => x[1])
+    debe(ids.join() === 'seguro,esim,esim-FR,tarjeta', '3f varios destinos', `varios destinos: las tarjetas son ${ids.join()} (seguro y tarjeta una vez, una eSIM por país)`)
+    debe(!EMPRESAS.test(aTexto(html)), '3f varios destinos', 'varios destinos: sale una empresa en los textos')
+    const panel = pintaHtml(ReservasPanel, { route: multi, onClose: () => {} }, multi, { version: 'completa' })
+    debe((panel.match(/data-util-tarjeta="seguro"/g) ?? []).length === 1 && (panel.match(/data-util-tarjeta="tarjeta"/g) ?? []).length === 1, '3f varios destinos', 'varios destinos: el seguro o la tarjeta salen más de una vez en RESERVAS')
+    const acordeon = leer('src/components/route/reservas/DestinationReservasAccordion.tsx')
+    debe(!/N26Row|EsimRow/.test(acordeon), '3f varios destinos', 'el acordeón de cada destino todavía pinta N26Row o EsimRow')
+    debe(!EMPRESAS.test(aTexto(panel)), '3f varios destinos', `RESERVAS de varios destinos: sale una empresa en los textos (${aTexto(panel).match(EMPRESAS)?.[0]})`)
+  }
   // 3c (fuente): Comprar es solo un enlace que no marca nada; Añadir y tocar «Lo tienes» abren la hoja de precio; la hoja elimina.
   const util = leer('src/components/route/reservas/UtilParaElViaje.tsx')
   const ancla = util.match(/<a href=\{tarjeta\.enlace\}[^>]*>\s*Comprar/)?.[0] ?? ''

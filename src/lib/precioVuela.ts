@@ -1,5 +1,5 @@
 import { construirPresupuesto, type EntradaPresupuesto } from './presupuesto'
-import { conMiles, simboloDe, type Importe } from './dinero'
+import { formatoImporte, type Importe } from './dinero'
 
 /**
  * El efecto «el precio vuela a la cartera» (Tanda 6z6b): cuando el viajero GUARDA un precio fuera de la pantalla del presupuesto, una pastilla con el importe («+103,13 €») sale de donde lo guardó,
@@ -48,21 +48,20 @@ export function diferenciasDePrecios(antes: Map<string, Importe>, despues: Map<s
   return difs
 }
 
-/** El importe de la pastilla: el formato de siempre (punto de millar, coma decimal, símbolo de su moneda) pero siempre con los dos decimales, para que «+20,00» y «+103,13» se lean igual. */
-export function importeConDecimales(importe: Importe): string {
-  const [entera, decimales] = Math.abs(importe.amount).toFixed(2).split('.')
-  return `${conMiles(Number(entera))},${decimales} ${simboloDe(importe.currency)}`
+/** El importe de la pastilla: EXACTAMENTE el formato del presupuesto (`formatoImporte`, un solo sitio): sin decimales si es redondo («100 €») y con dos si no («103,13 €»). El signo lo pone `textoDeDiferencia`. */
+export function importeDePastilla(importe: Importe): string {
+  return formatoImporte({ amount: Math.abs(importe.amount), currency: importe.currency })
 }
 
-/** «+103,13 €» / «−20,00 €»: en la moneda del precio y con el signo menos tipográfico. */
+/** «+103,13 €» / «−20 €»: en la moneda del precio y con el signo menos tipográfico. */
 export function textoDeDiferencia(dif: DiferenciaPrecio): string {
-  return `${dif.importe.amount < 0 ? MENOS : '+'}${importeConDecimales(dif.importe)}`
+  return `${dif.importe.amount < 0 ? MENOS : '+'}${importeDePastilla(dif.importe)}`
 }
 
 /** Para los lectores de pantalla: «Añadidos 103,13 € al presupuesto» / «Quitados 20 € del presupuesto». */
 export function textoParaLector(difs: DiferenciaPrecio[]): string {
-  const suman = difs.filter((d) => d.importe.amount > 0).map((d) => importeConDecimales(d.importe))
-  const restan = difs.filter((d) => d.importe.amount < 0).map((d) => importeConDecimales(d.importe))
+  const suman = difs.filter((d) => d.importe.amount > 0).map((d) => importeDePastilla(d.importe))
+  const restan = difs.filter((d) => d.importe.amount < 0).map((d) => importeDePastilla(d.importe))
   return [suman.length ? `Añadidos ${suman.join(' y ')} al presupuesto` : '', restan.length ? `Quitados ${restan.join(' y ')} del presupuesto` : ''].filter(Boolean).join('. ')
 }
 
