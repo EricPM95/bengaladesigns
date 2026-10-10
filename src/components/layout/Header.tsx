@@ -12,17 +12,15 @@ import { usePerfilUi } from '../../store/usePerfilUi'
 const BOTON = 'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text transition-colors hover:bg-text/[.06]'
 
 interface HeaderProps {
-  /** Los tips del viaje: antes la bombilla de la cabecera, ahora dentro del Perfil. */
-  onTips: () => void
   /** El aviso «más días que fechas» abre el calendario de fechas. */
   onOpenDates: () => void
 }
 
 /**
  * La cabecera (Tanda 6z3, diseño «La cabecera»): a la izquierda el destino y debajo «13 – 16 oct · 2 personas» (sin fechas, el mes); a la derecha, el Presupuesto (la cartera, abre la pantalla de la 6z2),
- * la campana de los avisos (con su punto si hay algo nuevo) y el Perfil (el círculo, que abre «Mis viajes»; ahí están ahora el «+ Nuevo viaje» y los tips).
+ * la campana de los avisos (con su punto si hay algo nuevo) y el Perfil (el círculo, que abre «Mis viajes»; ahí está el «+ Nuevo viaje»; los tips del viaje son la bombilla de RUTA).
  */
-export function Header({ onTips, onOpenDates }: HeaderProps) {
+export function Header({ onOpenDates }: HeaderProps) {
   const route = useRouteStore((state) => state.route)
   const setMode = useRouteStore((state) => state.setMode)
   const { items, unreadCount } = useAppNotices()
@@ -51,7 +49,7 @@ export function Header({ onTips, onOpenDates }: HeaderProps) {
         </span>
       </button>
 
-      <PerfilSheet open={perfilAbierto} onClose={cerrarPerfil} onTips={onTips} />
+      <PerfilSheet open={perfilAbierto} onClose={cerrarPerfil} />
       {noticesOpen && (
         <NoticesSheet
           items={items}
