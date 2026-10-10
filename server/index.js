@@ -33,6 +33,7 @@ import { halfDayExcursions } from './engine/excursions.js'
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { horasDeEntrada, planDeReservas } from './engine/reservationPlan.js'
 import { cambioDelDia } from './cambio.js'
+import { registrarRutasTiempo } from './tiempo.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
@@ -4434,6 +4435,9 @@ app.post('/api/place-detail', (req, res) => {
 app.get('/api/cambio', async (_req, res) => {
   res.json(await cambioDelDia())
 })
+
+// El tiempo (Tanda 6z6c): previsión de Open-Meteo con caché del servidor de ~3 h por coordenadas redondeadas; la app nunca llama al proveedor.
+registrarRutasTiempo(app)
 
 app.post('/api/destination-excursions', (req, res) => {
   const destination = req.body?.destination
