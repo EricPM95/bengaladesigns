@@ -9,7 +9,7 @@
  */
 export function buildCarAccommodationMessage(destinationName: string, autoSelectedDueToCamperAccess: boolean): string {
   if (autoSelectedDueToCamperAccess) {
-    return `${destinationName} no es apto para camper o autocaravana, así que hemos elegido coche por ti 🚗 — elige tú mismo dónde dormir cada noche, según tu ruta y tu presupuesto.`
+    return `${destinationName} no es apto para camper o autocaravana, así que hemos elegido coche por ti — elige tú mismo dónde dormir cada noche, según tu ruta y tu presupuesto.`
   }
   return 'Elige tú mismo dónde dormir cada noche, según tu ruta y tu presupuesto.'
 }

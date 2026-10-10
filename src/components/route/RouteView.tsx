@@ -306,7 +306,8 @@ export function RouteView() {
             <>
               {route.isPreview && (
                 <div className="mx-4 mt-4 shrink-0 rounded-xl bg-accent-soft px-4 py-3 text-small text-accent-hover">
-                  🚧 Las rutas generadas por IA llegan muy pronto — esto es una vista previa con datos de ejemplo.
+                  <Icono nombre="alerta" size={15} className="mr-1.5 inline-block align-[-3px]" />
+                  Las rutas generadas por IA llegan muy pronto — esto es una vista previa con datos de ejemplo.
                 </div>
               )}
               <DayList

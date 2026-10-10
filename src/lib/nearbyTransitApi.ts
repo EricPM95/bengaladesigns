@@ -9,7 +9,7 @@
 export interface TransitStop {
   linea: string
   parada: string
-  /** Tranvía (ficha curada): va con los buses pero se pinta con 🚋. */
+  /** Tranvía (ficha curada): va con los buses pero se pinta con el icono del tranvía. */
   kind?: 'tram'
 }
 

@@ -117,15 +117,15 @@ export function MultidestinoTrenOVueloTransportFlow({
         <div className="space-y-2">
           <p className="text-small text-text-soft">¿Vas a viajar con {paseDominante}?</p>
           <div className="space-y-2">
-            <ChoiceButton icon="🎫" label={`Sí, viajaré con el ${paseDominante}`} selected={false} onClick={() => onTravelPassConfirmedChange(true)} />
-            <ChoiceButton icon="🎟️" label="No, prefiero billete a billete" selected={false} onClick={() => onTravelPassConfirmedChange(false)} />
+            <ChoiceButton icon="reservas" label={`Sí, viajaré con el ${paseDominante}`} selected={false} onClick={() => onTravelPassConfirmedChange(true)} />
+            <ChoiceButton icon="reservas" label="No, prefiero billete a billete" selected={false} onClick={() => onTravelPassConfirmedChange(false)} />
           </div>
         </div>
       )}
 
       {paseDominante && travelPassConfirmed !== null && (
         <SelectedOptionCard
-          icon={travelPassConfirmed ? '🎫' : '🎟️'}
+          icon={travelPassConfirmed ? 'reservas' : 'reservas'}
           label={travelPassConfirmed ? paseDominante : 'Billete a billete'}
           prefix="Entre ciudades:"
           canChange

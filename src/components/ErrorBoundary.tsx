@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react'
+import { Icono } from './ui/Icono'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -31,7 +32,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     return (
       <div className="flex min-h-[100svh] flex-col items-center justify-center gap-4 bg-bg px-6 text-center">
-        <p className="text-h2">⚠️</p>
+        <Icono nombre="alerta" size={36} className="text-text-muted" />
         <h1 className="font-display text-h2 font-semibold text-text">Algo ha ido mal</h1>
         <p className="max-w-sm text-small text-text-soft">
           Esta pantalla no se pudo mostrar correctamente. Puede que falten datos de esta parte del viaje — prueba a volver al inicio.

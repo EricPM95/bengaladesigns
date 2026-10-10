@@ -1,4 +1,5 @@
 import type { Importe } from './dinero'
+import type { NombreIcono } from './iconos'
 // ── App flow ──────────────────────────────────────────────
 
 export type AppScreen = 'destination' | 'myTrips' | 'questionnaire' | 'loading' | 'route' | 'devQuickRoute'
@@ -39,7 +40,8 @@ export type VehicleType = 'car' | 'camper'
 
 export interface TransportOption {
   id: string
-  icon: string
+  /** El icono de la familia (`src/lib/iconos.ts`): avion, barco, tren, bus, coche... */
+  icon: NombreIcono
   title: string
   description: string
   subtitle: string
@@ -305,7 +307,7 @@ export interface Stop {
   outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | 'a_proposito'
   /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
   freeTourEnd?: string
-  /** El tramo hasta aquí lo hace el día en bus o metro: "🚌 Bus 118, unos 25 min". */
+  /** El tramo hasta aquí lo hace el día en bus o metro: "Bus 118, unos 25 min". */
   transitLabel?: string
   /** Monumento que ese día no se visita (va de paso por delante): sale "Por fuera" con este motivo ("hoy no toca
       entrar", "a esta hora ya ha cerrado", "cerrado hoy"). Sin él, lo de paso es "Por el camino". */
@@ -358,7 +360,7 @@ export interface Stop {
   addNote?: string | null
   /** Tanda 6d: la hora a la que abre si se llega antes («16:00») y qué hacer mientras. */
   waitOpensAt?: string | null
-  /** Tanda 6f: la línea de la tarjeta de una reserva puesta (o del Free Tour añadido): «🕘 Entrada a las 9:00 · llega a las 8:30: …»; la hora de llegada para la cuenta atrás de HOY. */
+  /** Tanda 6f: la línea de la tarjeta de una reserva puesta (o del Free Tour añadido): «Entrada a las 9:00 · llega a las 8:30: …»; la hora de llegada para la cuenta atrás de HOY. */
   arrivalNote?: string | null
   arrivalTime?: string | null
   arrivalMinutes?: number | null
@@ -379,7 +381,7 @@ export interface Stop {
   /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
       sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
   isBreak?: boolean
-  /** Solo isBreak: el icono de la pausa ("☕"). */
+  /** Solo isBreak: el icono de la pausa (el nombre de un icono de la familia, por defecto «cafe»). */
   breakIcon?: string | null
   /** Solo isBreak: cafés cercanos de los restaurantes del destino. */
   breakSuggestions?: { name: string; walkMinutes: number; address?: string | null }[]
@@ -566,7 +568,7 @@ export interface Excursion {
   rating?: number
   reviewCount?: number
   bookUrl?: string
-  /** Emoji curado de la excursión, del JSON del destino — la tarjeta lo usa en vez de un icono genérico. */
+  /** Emoji del JSON del destino. Ya no se pinta: la excursión lleva siempre la mochila de la familia de iconos. */
   emoji?: string | null
   /** Con qué se busca su foto (del JSON del destino, en inglés: "Pompeii ruins"). */
   photoName?: string | null

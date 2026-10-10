@@ -3,6 +3,7 @@ import type { Place, TransportOption, VehicleOwnership, VehicleType } from '../.
 import { useTransportFeasibility } from '../../hooks/useTransportFeasibility'
 import { buildFlightOption, getUrbanoCandidates } from '../../lib/urbanoTransport'
 import { buildCarAccommodationMessage } from '../../lib/accommodationCopy'
+import type { NombreIcono } from '../../lib/iconos'
 import { Spinner } from '../ui/Spinner'
 import { Button } from '../ui/Button'
 import { ChoiceButton } from './ChoiceButton'
@@ -26,7 +27,7 @@ interface UrbanoTransportFlowProps {
 }
 
 const VEHICLE_LABEL: Record<VehicleType, string> = { car: 'Coche', camper: 'Camper / autocaravana' }
-const VEHICLE_ICON: Record<VehicleType, string> = { car: '🚗', camper: '🚐' }
+const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'coche' }
 
 /**
  * Flujo de transporte para urbano_clasico — ciudades donde te mueves a pie y en transporte
@@ -167,7 +168,7 @@ export function UrbanoTransportFlow({
           <p className="text-small text-text-soft">¿Qué tipo de vehículo tienes?</p>
           <div className="space-y-2">
             <ChoiceButton
-              icon="🚗"
+              icon="coche"
               label="Coche"
               selected={false}
               onClick={() => {
@@ -176,7 +177,7 @@ export function UrbanoTransportFlow({
               }}
             />
             <ChoiceButton
-              icon="🚐"
+              icon="coche"
               label="Camper / autocaravana"
               selected={false}
               onClick={() => {
@@ -217,7 +218,7 @@ export function UrbanoTransportFlow({
           </p>
           <div className="space-y-2">
             <ChoiceButton
-              icon="🚗"
+              icon="coche"
               label="Sí, quiero alquilar"
               selected={false}
               onClick={() => {
@@ -227,7 +228,7 @@ export function UrbanoTransportFlow({
               }}
             />
             <ChoiceButton
-              icon="🚕"
+              icon="taxi"
               label="No, prefiero moverme sin vehículo"
               selected={false}
               onClick={() => {
@@ -241,10 +242,10 @@ export function UrbanoTransportFlow({
       )}
 
       {!isOwnVehicle && requiereCoche && vehicleResolved && vehicleType && (
-        <SelectedOptionCard icon="🚗" label="Coche" prefix="Para moverte:" canChange onChange={resetRental} />
+        <SelectedOptionCard icon="coche" label="Coche" prefix="Para moverte:" canChange onChange={resetRental} />
       )}
       {!isOwnVehicle && requiereCoche && vehicleResolved && !vehicleType && (
-        <SelectedOptionCard icon="🚕" label="Sin vehículo" prefix="Para moverte:" canChange onChange={resetRental} />
+        <SelectedOptionCard icon="taxi" label="Sin vehículo" prefix="Para moverte:" canChange onChange={resetRental} />
       )}
 
       {vehicleType === 'camper' && (

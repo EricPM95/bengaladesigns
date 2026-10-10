@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Icono } from '../ui/Icono'
+import type { NombreIcono } from '../../lib/iconos'
 import type { Companion, DestinationArchetype, QuestionnaireAnswers, VehicleType } from '../../lib/types'
 import { getCapacityWarning, totalCompanionPeople } from '../../lib/companionFlow'
 import { ChoiceButton } from './ChoiceButton'
@@ -21,11 +23,11 @@ interface CompanionSelectorProps {
   onResetVehicle: () => void
 }
 
-const COMPANION_META: { value: Companion; icon: string; title: string; description: string }[] = [
-  { value: 'solo', icon: '🎒', title: 'A mi aire', description: 'Viajo solo y a mi ritmo.' },
-  { value: 'couple', icon: '💞', title: 'En pareja', description: 'Una escapada para dos.' },
-  { value: 'family', icon: '👨‍👩‍👧', title: 'En familia', description: 'Viaje en familia' },
-  { value: 'group', icon: '🎉', title: 'Con amigos', description: 'La ruta perfecta con amigos o cuadrilla.' },
+const COMPANION_META: { value: Companion; icon: NombreIcono; title: string; description: string }[] = [
+  { value: 'solo', icon: 'perfil', title: 'A mi aire', description: 'Viajo solo y a mi ritmo.' },
+  { value: 'couple', icon: 'gusta', title: 'En pareja', description: 'Una escapada para dos.' },
+  { value: 'family', icon: 'familia', title: 'En familia', description: 'Viaje en familia' },
+  { value: 'group', icon: 'compartido', title: 'Con amigos', description: 'La ruta perfecta con amigos o cuadrilla.' },
 ]
 
 /** Tras elegir A mi aire/En pareja, se resuelve solo con el tap — la pausa deja ver la tarjeta
@@ -98,7 +100,7 @@ export function CompanionSelector({
                 active ? 'border-onb-accent bg-onb-accent-light shadow-sm' : 'border-onb-border bg-onb-card hover:border-onb-accent/50'
               }`}
             >
-              <span className="text-2xl leading-none">{option.icon}</span>
+              <Icono nombre={option.icon} size={26} className="shrink-0" />
               <span className={`font-dmsans text-body font-semibold ${active ? 'text-onb-accent-hover' : 'text-onb-text'}`}>{option.title}</span>
               <span className="font-dmsans text-small text-onb-text-soft">{option.description}</span>
             </button>
@@ -277,7 +279,7 @@ export function CompanionSelector({
 }
 
 interface CapacityGateProps {
-  icon: string
+  icon: NombreIcono
   title: string
   summary: string
   total: number

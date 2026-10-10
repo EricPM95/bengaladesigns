@@ -98,7 +98,7 @@ export function buildExcursionDayMarkers(dayId: string, dayIndex: number, base: 
       name: 'Punto de partida',
       coordinates: base,
       number: 0,
-      icon: destination ? '🏠' : '🚌',
+      icon: destination ? 'casa' : 'excursion',
       bg: dayColorPastel(dayIndex),
       text: dayColorStrong(dayIndex),
       small: true,
@@ -110,7 +110,7 @@ export function buildExcursionDayMarkers(dayId: string, dayIndex: number, base: 
       name: destination.name,
       coordinates: destination.coordinates,
       number: 0,
-      icon: '📍',
+      icon: 'ubicacion',
       bg: dayColor(dayIndex),
       text: '#FFFFFF',
     })

@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Coordinates, DayPlan } from '../../lib/types'
 import { segmentCentroid, type DestinationSegment } from '../../lib/destinationSegments'
 import type { StopsMapMarker } from '../map/StopsMapView'
+import { esNombreIcono, iconoSvg } from '../../lib/iconos'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
@@ -59,7 +60,8 @@ export function RouteOverviewMap({ segments, days, arrivalMarkers = [] }: RouteO
         el.className = 'flex h-7 w-7 items-center justify-center rounded-full text-caption font-semibold shadow-md ring-2 ring-white'
         el.style.backgroundColor = marker.bg
         el.style.color = marker.text
-        el.textContent = marker.icon ?? ''
+        if (esNombreIcono(marker.icon)) el.innerHTML = iconoSvg(marker.icon, 14)
+        else el.textContent = marker.icon ?? ''
         new mapboxgl.Marker({ element: el }).setLngLat([marker.coordinates.lng, marker.coordinates.lat]).addTo(map)
       })
 

@@ -206,7 +206,7 @@ export interface MockStopDetail {
   name: string
   category: string
   hours: string | null
-  /** Duración estimada de la visita, en minutos — pill "⏳" de StopDetailSheet (ver format.ts formatDuration). */
+  /** Duración estimada de la visita, en minutos — pill del reloj de arena de StopDetailSheet (ver format.ts formatDuration). */
   durationMinutes: number
   photoUrl: string
   description: string
@@ -289,7 +289,7 @@ export interface MockStopDetail {
   /** Una pausa con nombre del día curado (el desayuno romano): no es un lugar. Se pinta como la comida (BreakCard),
       sin foto, horario, etiquetas ni ficha, y nunca pide nada a Claude. */
   isBreak?: boolean
-  /** Solo isBreak: el icono de la pausa ("☕"). */
+  /** Solo isBreak: el icono de la pausa (nombre de la familia, «cafe»). */
   breakIcon?: string | null
   /** Solo isBreak: cafés cercanos de los restaurantes del destino. */
   breakSuggestions?: { name: string; walkMinutes: number; address?: string | null }[]

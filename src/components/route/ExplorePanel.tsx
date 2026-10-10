@@ -315,7 +315,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
           route={route}
           city={city}
           open
-          title={`🏛️ Atracciones en ${city}`}
+          title={`Atracciones en ${city}`}
           onPick={setPendingStop}
           onClose={backToCards}
         />

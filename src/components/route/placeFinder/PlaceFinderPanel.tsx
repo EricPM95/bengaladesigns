@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { Place, Stop, WishlistItem } from '../../../lib/types'
 import { categoryIcon, categoryLabel } from '../../../lib/explorePool'
+import { Icono } from '../../ui/Icono'
 import { buildCombinedPool, type PoolEntry } from '../../../lib/poolEntries'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { getDistanceToStop } from '../../../lib/distanceMock'
@@ -66,7 +67,7 @@ function PoolEntryCard({ entry, walkMinutes, action }: { entry: PoolEntry; walkM
         </div>
         {entry.category && (
           <p className="flex items-center gap-1 text-caption text-text-muted">
-            <span aria-hidden="true">{categoryIcon(entry.category)}</span>
+            <Icono nombre={categoryIcon(entry.category)} size={13} className="shrink-0" />
             {categoryLabel(entry.category)}
           </p>
         )}

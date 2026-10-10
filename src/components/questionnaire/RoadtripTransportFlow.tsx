@@ -3,6 +3,7 @@ import type { Place, TransportOption, VehicleOwnership, VehicleType } from '../.
 import { useTransportFeasibility } from '../../hooks/useTransportFeasibility'
 import { buildFlightOption, getRoadtripCandidates } from '../../lib/roadtripTransport'
 import { buildCarAccommodationMessage } from '../../lib/accommodationCopy'
+import type { NombreIcono } from '../../lib/iconos'
 import { Spinner } from '../ui/Spinner'
 import { Button } from '../ui/Button'
 import { ChoiceButton } from './ChoiceButton'
@@ -25,7 +26,7 @@ interface RoadtripTransportFlowProps {
 }
 
 const VEHICLE_LABEL: Record<VehicleType, string> = { car: 'Coche', camper: 'Camper / autocaravana' }
-const VEHICLE_ICON: Record<VehicleType, string> = { car: '🚗', camper: '🚐' }
+const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'coche' }
 
 /**
  * Flujo de transporte para roadtrip_exclusivo ("Ruta por libre" en la app), aislado del resto
@@ -152,8 +153,8 @@ export function RoadtripTransportFlow({
         <div className="space-y-2">
           <p className="text-small text-text-soft">¿Qué tipo de vehículo tienes?</p>
           <div className="space-y-2">
-            <ChoiceButton icon="🚗" label="Coche" selected={false} onClick={() => onVehicleTypeChange('car')} />
-            <ChoiceButton icon="🚐" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
+            <ChoiceButton icon="coche" label="Coche" selected={false} onClick={() => onVehicleTypeChange('car')} />
+            <ChoiceButton icon="coche" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
           </div>
         </div>
       )}
@@ -163,7 +164,7 @@ export function RoadtripTransportFlow({
           <p className="text-small text-text-soft">¿Cómo te gustaría recorrer {destinationName}?</p>
           <div className="space-y-2">
             <ChoiceButton
-              icon="🚗"
+              icon="coche"
               label="En coche"
               description="Un hotel distinto cada noche, a tu ritmo"
               selected={false}
@@ -173,7 +174,7 @@ export function RoadtripTransportFlow({
               }}
             />
             <ChoiceButton
-              icon="🚐"
+              icon="coche"
               label="En camper o autocaravana"
               description="Duermes donde te lleve el camino"
               selected={false}
@@ -190,15 +191,15 @@ export function RoadtripTransportFlow({
         <div className="space-y-2">
           <p className="text-small text-text-soft">¿Te llevas tu vehículo en el ferry o prefieres alquilar uno allí?</p>
           <div className="space-y-2">
-            <ChoiceButton icon="🔑" label="Me llevo el mío" selected={false} onClick={() => onVehicleOwnershipChange('own')} />
-            <ChoiceButton icon="📋" label="Alquilo uno en destino" selected={false} onClick={() => onVehicleOwnershipChange('rental')} />
+            <ChoiceButton icon="llave" label="Me llevo el mío" selected={false} onClick={() => onVehicleOwnershipChange('own')} />
+            <ChoiceButton icon="portapapeles" label="Alquilo uno en destino" selected={false} onClick={() => onVehicleOwnershipChange('rental')} />
           </div>
         </div>
       )}
 
       {!vehicleType && transportOption.id === 'ferry' && vehicleOwnership && (
         <SelectedOptionCard
-          icon={vehicleOwnership === 'own' ? '🔑' : '📋'}
+          icon={vehicleOwnership === 'own' ? 'llave' : 'portapapeles'}
           label={vehicleOwnership === 'own' ? 'Me llevo el mío' : 'Alquilo uno en destino'}
           canChange
           onChange={() => onVehicleOwnershipChange(null)}
@@ -211,8 +212,8 @@ export function RoadtripTransportFlow({
             {vehicleOwnership === 'own' ? '¿Con qué vehículo vas a vivir esta experiencia?' : `¿Cómo te gustaría recorrer ${destinationName}?`}
           </p>
           <div className="space-y-2">
-            <ChoiceButton icon="🚗" label="Coche" selected={false} onClick={() => onVehicleTypeChange('car')} />
-            <ChoiceButton icon="🚐" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
+            <ChoiceButton icon="coche" label="Coche" selected={false} onClick={() => onVehicleTypeChange('car')} />
+            <ChoiceButton icon="coche" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
           </div>
         </div>
       )}

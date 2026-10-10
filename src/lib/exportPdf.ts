@@ -48,10 +48,10 @@ export function exportRouteToPdf(route: Route) {
     writeLine(`${diaTitulo(route, day.dayNumber)} — ${day.title}`, { size: 15, bold: true, color: [13, 148, 136], gap: 4 })
 
     if (day.transport) {
-      writeLine(`✈ ${day.transport.fromCity} → ${day.transport.toCity} (${day.transport.durationLabel})`, { gap: 3 })
+      writeLine(`Transporte: ${day.transport.fromCity} → ${day.transport.toCity} (${day.transport.durationLabel})`, { gap: 3 })
     }
     if (day.hotel) {
-      writeLine(`🏨 ${day.hotel.recommendedArea}, ${day.hotel.city} · ${day.hotel.nights} noches`, { gap: 3 })
+      writeLine(`Alojamiento: ${day.hotel.recommendedArea}, ${day.hotel.city} · ${day.hotel.nights} noches`, { gap: 3 })
     }
 
     day.stops.forEach((stop) => {

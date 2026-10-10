@@ -5,6 +5,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { classifyInBackground } from '../../lib/classifyInBackground'
 import { suggestExperiencesInBackground } from '../../lib/suggestExperiencesInBackground'
 import { PlaceAutocomplete } from '../ui/PlaceAutocomplete'
+import { Icono } from '../ui/Icono'
 import { RouteSearch, type ConfirmedRoute } from './RouteSearch'
 
 /**
@@ -102,7 +103,7 @@ export function LandingScreen() {
         >
           <div className="rounded-onb-md border border-onb-border bg-onb-card p-1.5 shadow-sm">
             <div className="flex items-center gap-2 px-3 py-2.5">
-              <span className="shrink-0 text-onb-text-muted">🔍</span>
+              <Icono nombre="lupa" size={18} className="shrink-0 text-onb-text-muted" />
               <PlaceAutocomplete
                 value={destinationText}
                 onChange={(text) => {
@@ -125,7 +126,7 @@ export function LandingScreen() {
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2.5">
-              <span className="shrink-0 text-onb-text-muted">📍</span>
+              <Icono nombre="ubicacion" size={18} className="shrink-0 text-onb-text-muted" />
               <PlaceAutocomplete
                 value={originText}
                 onChange={(text) => {

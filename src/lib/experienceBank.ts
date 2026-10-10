@@ -1,8 +1,9 @@
 import type { ExperienceId } from './types'
+import type { NombreIcono } from './iconos'
 
 export interface ExperienceDefinition {
   id: ExperienceId
-  icon: string
+  icon: NombreIcono
   title: string
 }
 
@@ -14,24 +15,24 @@ export interface ExperienceDefinition {
  * valida por id), solo se usa si hiciera falta iterar el banco completo en el frontend.
  */
 export const EXPERIENCE_BANK: ExperienceDefinition[] = [
-  { id: 'atracciones', icon: '🏛️', title: 'Atracciones' },
-  { id: 'arte_cultura', icon: '🖼️', title: 'Arte y Cultura' },
-  { id: 'paseos_encanto', icon: '🚶‍♂️', title: 'Paseos con Encanto' },
-  { id: 'trekking_outdoor', icon: '🥾', title: 'Trekking & Outdoor' },
-  { id: 'playas_calas', icon: '🏖️', title: 'Arena y Sal' },
-  { id: 'paseos_barco', icon: '⛵', title: 'Paseos en Barco' },
-  { id: 'gastronomia', icon: '🍽️', title: 'Gastronomía' },
-  { id: 'bienestar', icon: '🧖‍♀️', title: 'Bienestar' },
-  { id: 'nieve', icon: '🎿', title: 'Nieve' },
-  { id: 'paisajes_miradores', icon: '📸', title: 'Paisajes y Miradores' },
-  { id: 'compras', icon: '🛍️', title: 'Compras' },
-  { id: 'ocio', icon: '🎉', title: 'Ocio' },
-  { id: 'fenomenos_naturales', icon: '✨', title: 'Fenómenos Naturales' },
-  { id: 'parques', icon: '🎢', title: 'Parques' },
-  { id: 'resorts', icon: '🍹', title: 'Resorts' },
-  { id: 'turismo_rural', icon: '🏡', title: 'Turismo Rural' },
-  { id: 'naturaleza', icon: '🌲', title: 'Naturaleza' },
-  { id: 'joyas_ocultas', icon: '💎', title: 'Joyas Ocultas' },
+  { id: 'atracciones', icon: 'columnas', title: 'Atracciones' },
+  { id: 'arte_cultura', icon: 'arte', title: 'Arte y Cultura' },
+  { id: 'paseos_encanto', icon: 'andando', title: 'Paseos con Encanto' },
+  { id: 'trekking_outdoor', icon: 'montana', title: 'Trekking & Outdoor' },
+  { id: 'playas_calas', icon: 'playa', title: 'Arena y Sal' },
+  { id: 'paseos_barco', icon: 'barco', title: 'Paseos en Barco' },
+  { id: 'gastronomia', icon: 'comida', title: 'Gastronomía' },
+  { id: 'bienestar', icon: 'bienestar', title: 'Bienestar' },
+  { id: 'nieve', icon: 'nieve', title: 'Nieve' },
+  { id: 'paisajes_miradores', icon: 'camara', title: 'Paisajes y Miradores' },
+  { id: 'compras', icon: 'bolsa', title: 'Compras' },
+  { id: 'ocio', icon: 'fiesta', title: 'Ocio' },
+  { id: 'fenomenos_naturales', icon: 'destello', title: 'Fenómenos Naturales' },
+  { id: 'parques', icon: 'explorar', title: 'Parques' },
+  { id: 'resorts', icon: 'copa', title: 'Resorts' },
+  { id: 'turismo_rural', icon: 'casa', title: 'Turismo Rural' },
+  { id: 'naturaleza', icon: 'parque', title: 'Naturaleza' },
+  { id: 'joyas_ocultas', icon: 'gema', title: 'Joyas Ocultas' },
 ]
 
 const EXPERIENCE_IDS = new Set(EXPERIENCE_BANK.map((entry) => entry.id))
@@ -47,4 +48,4 @@ export function isKnownExperienceId(id: string): id is ExperienceId {
  * muestra siempre fijada en el selector (ver ExperienceSelector.tsx), no como parte de la rejilla de
  * sugeridas por Claude.
  */
-export const FREE_TOUR_EXPERIENCE: ExperienceDefinition = { id: 'free_tour', icon: '🚶‍♀️', title: 'Free Tour' }
+export const FREE_TOUR_EXPERIENCE: ExperienceDefinition = { id: 'free_tour', icon: 'free', title: 'Free Tour' }

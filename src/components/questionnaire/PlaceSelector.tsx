@@ -1,5 +1,6 @@
 import type { ExperienceId, PlaceCandidate } from '../../lib/types'
 import { orderPlacesByExperience } from '../../lib/placeOrdering'
+import { Icono } from '../ui/Icono'
 import { Spinner } from '../ui/Spinner'
 import { Button } from '../ui/Button'
 
@@ -69,7 +70,10 @@ export function PlaceSelector({ destinationName, places, loading, failed, select
       >
         {highlighted && (
           <span className="absolute left-2 top-2 z-10 rounded-full bg-accent-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-            ⭐ Imprescindible
+            <span className="inline-flex items-center gap-1">
+              <Icono nombre="estrella" size={11} />
+              Imprescindible
+            </span>
           </span>
         )}
         <span

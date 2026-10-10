@@ -1,5 +1,6 @@
 import type { ExperienceId, Route } from './types'
 import { EXPERIENCE_BANK } from './experienceBank'
+import type { NombreIcono } from './iconos'
 import { buildDestinationSegments } from './destinationSegments'
 import type { MockStopDetail } from './mockDayDetail'
 
@@ -76,8 +77,8 @@ export function categoryLabel(category: ExperienceId): string {
   return EXPERIENCE_BANK.find((entry) => entry.id === category)?.title ?? category
 }
 
-export function categoryIcon(category: ExperienceId): string {
-  return EXPERIENCE_BANK.find((entry) => entry.id === category)?.icon ?? '📍'
+export function categoryIcon(category: ExperienceId): NombreIcono {
+  return EXPERIENCE_BANK.find((entry) => entry.id === category)?.icon ?? 'ubicacion'
 }
 
 // ── Estado en la ruta (pestaña EXPLORAR / "Pool") ──────────────────────────

@@ -93,7 +93,7 @@ export function RestaurantDetailSheet({ restaurant, likeCount, likeShown, liked,
               <div className="flex flex-wrap items-center gap-2">
                 {sub && (
                   <span className="flex items-center gap-1 rounded-full bg-bg-hover px-2.5 py-1 text-caption font-semibold text-text-soft">
-                    <span aria-hidden="true">{sub.icon}</span>
+                    <Icono nombre={sub.icon} size={13} className="shrink-0" />
                     {sub.label}
                   </span>
                 )}

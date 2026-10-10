@@ -300,7 +300,10 @@ export function LoadingScreen({
     <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-onb-dark px-6 py-12 text-center">
       {status === 'error' ? (
         <div className="flex flex-col items-center gap-4">
-          <p className="font-dmsans text-body text-white">⚠️ {errorMessage ?? 'No se pudo generar la ruta.'}</p>
+          <p className="flex items-center gap-2 font-dmsans text-body text-white">
+            <Icono nombre="alerta" size={20} className="shrink-0" />
+            {errorMessage ?? 'No se pudo generar la ruta.'}
+          </p>
           <button
             type="button"
             onClick={onRetry}

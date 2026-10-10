@@ -355,7 +355,7 @@ export function StepTransport({ active, origin, destination, destinationName, on
 function flightFallback() {
   return {
     id: 'flight',
-    icon: '✈️',
+    icon: 'avion' as const,
     title: 'Avión',
     description: '',
     subtitle: '',

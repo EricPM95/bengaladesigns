@@ -237,7 +237,7 @@ function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: 
           style={{ backgroundColor: EXCURSION_CHIP?.activeBg ?? '#E0F2F1' }}
           aria-hidden="true"
         >
-          {excursion.emoji ?? <Icono nombre="excursion" size={20} />}
+          <Icono nombre="excursion" size={20} />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-small font-semibold text-text">{excursion.title}</span>
@@ -887,7 +887,7 @@ export function PlaceExplorerScreen({
                     active ? 'border-text bg-text text-bg' : 'border-border bg-bg-card text-text-soft hover:text-text'
                   }`}
                 >
-                  {chip.icon && <span aria-hidden="true">{chip.icon}</span>}
+                  {chip.icon && <Icono nombre={chip.icon} size={13} className="shrink-0" />}
                   {chip.label}
                 </button>
               )
@@ -1132,7 +1132,7 @@ export function PlaceExplorerScreen({
                         onClick={() => setSelected(place)}
                         className="rounded-full border border-border px-2.5 py-1 text-caption font-medium text-text transition-colors hover:bg-bg-hover"
                       >
-                        {chip?.icon ? `${chip.icon} ` : ''}
+                        {chip?.icon && <Icono nombre={chip.icon} size={13} className="mr-1 inline-block shrink-0 align-[-2px]" />}
                         {place.name}
                       </button>
                     )

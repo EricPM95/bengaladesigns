@@ -1,4 +1,5 @@
 import { precioTienda } from './dinero'
+import { esNombreIcono } from './iconos'
 import type {
   DateNoticeIcon,
   DayType,
@@ -104,7 +105,7 @@ export interface GeneratedStop {
   outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | 'a_proposito' | null
   /** Free Tour: dónde acaba y, si se come justo después, que la comida es por esa zona — Stop.freeTourEnd. */
   free_tour_end?: string | null
-  /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("🚌 Bus 118, unos 25 min"). */
+  /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("Bus 118, unos 25 min"). */
   transit?: { icon: string; label: string; minutes: number; detail?: string | null } | null
   /** Monumento que ese día no se visita: "Por fuera" con su motivo — Stop.outsideReason. */
   outside?: boolean
@@ -410,14 +411,15 @@ const CATEGORY_MAP: Record<string, StopCategory> = {
   beach: 'nature',
 }
 
-const TRAVEL_METHOD_META: Record<string, { icon: string; label: string }> = {
-  walk: { icon: '🚶', label: 'A pie' },
-  metro: { icon: '🚇', label: 'Metro' },
-  train: { icon: '🚆', label: 'Tren' },
-  bus: { icon: '🚌', label: 'Autobús' },
-  taxi: { icon: '🚕', label: 'Taxi' },
-  car: { icon: '🚗', label: 'Coche' },
-  ferry: { icon: '⛴', label: 'Ferry' },
+// Solo la palabra: esta nota es texto plano (no se pinta con icono), así que sin emoji.
+const TRAVEL_METHOD_META: Record<string, { label: string }> = {
+  walk: { label: 'A pie' },
+  metro: { label: 'Metro' },
+  train: { label: 'Tren' },
+  bus: { label: 'Autobús' },
+  taxi: { label: 'Taxi' },
+  car: { label: 'Coche' },
+  ferry: { label: 'Ferry' },
 }
 
 const MEAL_TIME_META: Record<GeneratedMeal['time'], { time: string; label: string }> = {
@@ -428,11 +430,11 @@ const MEAL_TIME_META: Record<GeneratedMeal['time'], { time: string; label: strin
 
 function mapTravelToNext(travel?: GeneratedTravelToNext): Pick<Stop, 'walkingTimeToNextMinutes' | 'nextStopNote'> {
   if (!travel) return {}
-  const meta = TRAVEL_METHOD_META[travel.method] ?? { icon: '➡️', label: travel.method }
+  const meta = TRAVEL_METHOD_META[travel.method] ?? { label: travel.method }
   const parts = [meta.label, travel.distance, travel.description].filter(Boolean)
   return {
     walkingTimeToNextMinutes: travel.duration_minutes,
-    nextStopNote: `${meta.icon} ${parts.join(' · ')}`,
+    nextStopNote: parts.join(' · '),
   }
 }
 
@@ -536,7 +538,7 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.is_break
       ? {
           isBreak: true,
-          breakIcon: generated.break_icon ?? '☕',
+          breakIcon: esNombreIcono(generated.break_icon) ? generated.break_icon : 'cafe',
           breakSuggestions: (generated.break_suggestions ?? []).map((item) => ({ name: item.name, walkMinutes: item.walk_minutes, address: item.address ?? null })),
         }
       : {}),
@@ -683,7 +685,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       photoName: excursion.photo_name ?? null,
       durationHours: excursion.duration_hours ?? null,
       // Nota y nº de reseñas SOLO si son reales. Mientras no esté integrada la API del operador,
-      // buena parte del catálogo curado los lleva puestos a mano: un "⭐4,8 (2.340 reseñas)"
+      // buena parte del catálogo curado los lleva puestos a mano: un "4,8 (2.340 reseñas)" con su estrella delante
       // inventado es mentirle al viajero sobre algo que va a pagar. El precio sí se queda — es
       // aproximado y se presenta siempre como "desde".
       //

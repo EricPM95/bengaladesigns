@@ -4,6 +4,7 @@ import 'react-day-picker/style.css'
 import { es } from 'date-fns/locale'
 import type { DateRange, QuestionnaireAnswers } from '../../lib/types'
 import { daysBetweenInclusive, isoToLocalDate, localDateToIso, todayIso } from '../../lib/dateRange'
+import { Icono } from '../ui/Icono'
 import { MONTH_ROWS, MONTH_SHORT, SEASON_META, seasonOfMonth } from '../../lib/season'
 
 interface DurationSelectorProps {
@@ -106,7 +107,10 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-3 rounded-onb-md border border-onb-accent/40 bg-onb-accent-light px-4 py-3">
           <div>
-            <p className="font-dmsans text-body font-medium text-onb-text">📅 {formatRangeEs(dateRange)}</p>
+            <p className="flex items-center gap-1.5 font-dmsans text-body font-medium text-onb-text">
+              <Icono nombre="dias" size={18} className="shrink-0" />
+              {formatRangeEs(dateRange)}
+            </p>
             <p className="font-dmsans text-small text-onb-text-soft">{days} días exactos</p>
           </div>
           <button type="button" onClick={clearDateRange} className="shrink-0 font-dmsans text-caption font-medium text-onb-accent hover:text-onb-accent-hover">
@@ -164,7 +168,7 @@ export function DurationSelector({ days, dateRange, month, onChange }: DurationS
         }
         className="flex items-center gap-2 font-dmsans text-caption font-medium text-onb-accent hover:text-onb-accent-hover"
       >
-        <span className="text-2xl leading-none">📅</span>
+        <Icono nombre="dias" size={24} className="shrink-0" />
         {showCalendar ? 'Ocultar fechas exactas' : '¿Ya tienes fecha para tu viaje?'}
       </button>
 
