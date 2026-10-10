@@ -173,7 +173,17 @@ function pastilla(documento: Document, texto: string, suma: boolean): HTMLElemen
  */
 export function lanzarEfecto(dif: DiferenciaPrecio, entorno: Entorno): void {
   const { document: documento, ancho, alto } = entorno
-  const cartera = elegirCartera(Array.from(documento.querySelectorAll<HTMLElement>('[data-cartera]')), ancho, alto)
+  const todas = Array.from(documento.querySelectorAll<HTMLElement>('[data-cartera]'))
+  // (RESERVAS tapa la cabecera de arriba pero la cartera de esa cabecera sigue en el DOM: se prefiere la que de verdad se ve, la que no tiene otra cosa encima en su centro.)
+  const libres =
+    typeof documento.elementFromPoint === 'function'
+      ? todas.filter((elemento) => {
+          const caja = elemento.getBoundingClientRect()
+          const encima = documento.elementFromPoint(caja.left + caja.width / 2, caja.top + caja.height / 2)
+          return !encima || encima === elemento || elemento.contains(encima)
+        })
+      : todas
+  const cartera = elegirCartera(libres.length > 0 ? libres : todas, ancho, alto)
   if (!cartera) return
   if (entorno.reducirMovimiento) {
     saltito(cartera.elemento)
