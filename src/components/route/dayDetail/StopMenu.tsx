@@ -51,6 +51,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
   const moveStopToDay = useRouteStore((state) => state.moveStopToDay)
   const updateStopTime = useRouteStore((state) => state.updateStopTime)
   const replaceStop = useRouteStore((state) => state.replaceStop)
+  const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
   // Una parada reservada está fijada: solo se quita con «Quitar del viaje» (PARA_CODE_RESERVAS, 6).
   const removeReservation = useRouteStore((state) => state.removeReservation)
   const [removingReservation, setRemovingReservation] = useState(false)
@@ -110,6 +111,20 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
             onClick={(event) => event.stopPropagation()}
             className="absolute right-0 top-[34px] z-30 flex min-w-[190px] flex-col rounded-2xl bg-[#1C2230] p-1.5 text-[#F3EEE4] shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
           >
+            {/* Una parada que se saltó en HOY («No me da tiempo»): vuelve a la ruta como no saltada (Tanda 6z6). */}
+            {view === 'menu' && stop.saltada && (
+              <button
+                type="button"
+                onClick={() => {
+                  setStopSaltada(dayId, stop.id, false)
+                  close()
+                }}
+                className={menuItemClass}
+              >
+                Devolverla a la ruta
+              </button>
+            )}
+
             {view === 'menu' && stop.reservedId && (
               <div className="space-y-0.5">
                 <p className="px-3 pb-1 pt-1.5 text-[12px] text-[#F3EEE4]/60">Reservada · fijada</p>

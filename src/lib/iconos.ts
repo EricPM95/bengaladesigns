@@ -102,6 +102,10 @@ export const ICONOS = {
   hoja: 'M5 19c0-8 5-14 15-14 0 10-6 15-14 15M5 19l8-8',
   llave: 'M8 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11.5 12H21M18 12v3M15 12v2',
   familia: 'M8 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 20c.4-3.2 2.3-5 5-5s4.6 1.8 5 5M17 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM15.5 20c.2-2.2 1.2-3.5 3-3.8',
+  // ── Tanda 6z6 C: «Escuchar» (bloque propio, al final) ──
+  altavoz: 'M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11',
+  pausa: 'M9 5v14M15 5v14',
+  seguir: 'M8 5.5l11 6.5-11 6.5z',
 } as const
 
 export type NombreIcono = keyof typeof ICONOS

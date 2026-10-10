@@ -22,6 +22,8 @@ import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
 import { Icono } from '../../ui/Icono'
+import { Escuchar } from '../hoy/Escuchar'
+import { textoResumenDeParada } from '../../../lib/useEscuchar'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -339,6 +341,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // El consejo del aperitivo (un spritz en una terraza) va primero, dentro de la ficha del paseo libre o de la parada que se alarga en su lugar.
   const tips: StopTip[] = stop?.aperitivoTip ? [{ tipo: 'practico', texto: stop.aperitivoTip }, ...baseTips] : baseTips
   const hasTips = tips.length > 0
+  // «Escuchar» (de pago): el texto del Resumen, tal como se lee en pantalla.
+  const textoParaEscucharResumen = stop && !stop.isFreeTour ? textoResumenDeParada(stop, { descripcion: description?.description ?? (descFailed ? stop.description : null), queVerás: whatToSee.length > 0 ? whatToSee : description?.whatYoullSee ? [description.whatYoullSee] : [], porQue: description?.whyRecommended }) : ''
 
   // Todas las paradas llevan las mismas pestañas, por dentro o por fuera (PROMPT_PENDIENTE E): lo que aún no hay
   // sale con su texto de "todavía no". El Free Tour sigue con las suyas.
@@ -569,6 +573,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
 
               {activeTab === 'resumen' && !stop.isFreeTour && (
                 <div className="space-y-4">
+                  <Escuchar texto={textoParaEscucharResumen} clave={stop.id} />
                   {/* La línea de la ficha (Navidad, o el Ángelus de los domingos): arriba, destacada y con su icono. */}
                   {stop.seasonLine && (
                     <p className="flex items-start gap-2.5 rounded-xl border border-accent/25 bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-text">

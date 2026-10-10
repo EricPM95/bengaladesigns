@@ -29,6 +29,7 @@ import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
+import { explorarConCercania } from '../../../lib/explorarDePago'
 
 const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
@@ -63,6 +64,8 @@ interface PlaceExplorerScreenProps {
   route?: Route | null
   /** Filtros ya activos al abrir — EXPLORAR entra con el suyo puesto; el "+" de DIAS entra sin ninguno. */
   initialFilters?: PlaceFilterId[]
+  /** Desde dónde se ordena «Cerca de ti» al abrir (HOY, «Cerca de ti»: donde está el viajero o la siguiente parada). Con él se entra directo en «Cerca de ti» y no se pide la ubicación. Solo de pago. */
+  initialOrigin?: Coordinates | null
   /** Las excursiones del destino, para el filtro "Excursiones" (ver useDestinationPool). Vacío en un
       destino sin catálogo curado — el chip entonces ni se pinta. */
   excursions?: Excursion[]
@@ -316,6 +319,7 @@ export function PlaceExplorerScreen({
   dateIso = null,
   route = null,
   initialFilters = [],
+  initialOrigin = null,
   excursions = [],
   initialQuery,
   focusCoordinates = null,
@@ -375,6 +379,9 @@ export function PlaceExplorerScreen({
   const [recenterKey, setRecenterKey] = useState(0)
 
   const initialFiltersKey = initialFilters.join(',')
+  const initialOriginKey = initialOrigin ? `${initialOrigin.lat},${initialOrigin.lng}` : ''
+  /** «Cerca de ti» (ordenar por cercanía) es de pago: en la gratis EXPLORAR ordena solo por «Recomendados» (la regla, en `explorarDePago.ts`). */
+  const cercaDeMi = explorarConCercania()
 
   // EXPLORAR entra con un filtro ya puesto, y en móvil los chips no caben: "Restaurantes" es el
   // cuarto y se queda fuera de la pantalla, así que se veían tres chips apagados y una lista
@@ -391,11 +398,17 @@ export function PlaceExplorerScreen({
     setActiveSubCategory(null)
     setQuery(initialQuery ?? '')
     // Baños y Fuentes se abren en «Cerca de ti» (los más cercanos primero); el resto, en «Recomendados».
-    setTab(initialFiltersKey === 'banos' || initialFiltersKey === 'fuentes' ? 'nearby' : 'recommended')
+    setTab(cercaDeMi && (initialFiltersKey === 'banos' || initialFiltersKey === 'fuentes' || initialOriginKey) ? 'nearby' : 'recommended')
+    // Con un punto de partida dado (HOY), la cercanía se cuenta desde ahí y no se pide la ubicación.
+    if (cercaDeMi && initialOrigin) {
+      setPosition(initialOrigin)
+      setGeoStatus('ready')
+    }
     setSelected(null)
     setSelectedExcursion(null)
     setSelectedPhoto(null)
-  }, [open, initialFiltersKey, initialQuery])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialFiltersKey, initialQuery, initialOriginKey, cercaDeMi])
 
   useEffect(() => {
     if (!open) return
@@ -1022,7 +1035,7 @@ export function PlaceExplorerScreen({
                 </button>
               )}
             </label>
-            {!trimmedQuery && (
+            {!trimmedQuery && cercaDeMi && (
               <div className="relative grid grid-cols-2" style={{ height: 42, borderRadius: 14, background: '#EDE4D3', padding: 4 }}>
                 <span
                   aria-hidden="true"

@@ -12,9 +12,14 @@ import { Icono } from '../../ui/Icono'
 import { BotonFoto } from '../fotos/BotonFoto'
 import { RainAlert } from '../today/RainAlert'
 import { TodayExcursion } from '../today/TodayExcursion'
-import { CajaBlanca, FRAMBUESA, ojoMono, TINTA, VERDE } from './piezas'
+import { AZUL, CajaBlanca, FRAMBUESA, ojoMono, TINTA, VERDE } from './piezas'
 import { useHorarioDeParadas, type HorarioDeParada } from '../../../lib/horarioDeParada'
 import { AvisoEntradaReservada, AvisoSaltada, BotonNoMeDaTiempo, HojaPasarAOtroDia } from './saltar'
+import { Escuchar } from './Escuchar'
+import { CercaDeTi } from './CercaDeTi'
+import { textoResumenDeParada } from '../../../lib/useEscuchar'
+import { avisosDeCierre } from '../../../lib/avisosDeHoy'
+import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../lib/diaCompleto'
 
 /** El horario de la parada ese día, en pequeño bajo su nombre: «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy». Nada si no tiene horario (plazas, fuentes). */
 function LineaDeHorario({ horario, oscuro = false }: { horario: HorarioDeParada | null; oscuro?: boolean }) {
@@ -123,6 +128,12 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       : buildGoogleMapsUrl(`${desdeAnterior.lat},${desdeAnterior.lng}`, `${siguiente.coordinates.lat},${siguiente.coordinates.lng}`, 'walking')
     : null
 
+  // «Cerca de ti» (Baños / Fuentes / Comer): desde donde está el viajero si compartió su ubicación; si no, desde la siguiente parada.
+  const origenCerca = ubicacion ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null)
+  // Los avisos del día: lo que cierra hoy de lo que queda por ver (horario real, los que cierran antes primero, 3 como mucho).
+  const cierres = avisosDeCierre(vigentes, horarioDe, (stop) => displayStopName(stop.name))
+  const diaCompleto = esDiaCompleto(route, day, reservations)
+
   // ── «No me da tiempo» (solo de pago): la parada queda saltada y se pasa a la siguiente; si tiene la entrada reservada, antes se pregunta ──
   const reservaSiguiente = siguiente ? reservaDe(siguiente) : null
   const reservada = Boolean(siguiente?.reservedId || reservaSiguiente)
@@ -143,6 +154,11 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
     if (!saltadaAviso) return
     setStopSaltada(day.id, saltadaAviso.id, false)
     setSaltadaAviso(null)
+  }
+  // «Devolverla a la ruta» (desde la lista de hoy o desde el menú «···» de la parada): vuelve a ser una parada normal. El aviso «Saltada» solo vive en esta pantalla; no se guarda.
+  const devolverALaRuta = (stop: Stop) => {
+    setStopSaltada(day.id, stop.id, false)
+    if (saltadaAviso?.id === stop.id) setSaltadaAviso(null)
   }
   const pasarAOtroDia = (otroDiaId: string) => {
     if (!saltadaAviso) return
@@ -210,6 +226,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   // ── De pago: lo de vivo ──
   return (
     <>
+      {/* Solo avisa: no mueve ni quita nada del día. */}
+      {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
       <div className="flex flex-none flex-col gap-3 rounded-[28px] bg-[#1C2230] px-2 pb-3.5 pt-2 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
         {siguiente && hasRealCoordinates(siguiente.coordinates) ? <MapaHastaLaParada desde={origen} hasta={siguiente.coordinates} /> : <div className="h-[118px] rounded-[21px] bg-[#2A3141]" aria-hidden="true" />}
         {siguiente ? (
@@ -233,6 +251,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   {ubicacionEstado === 'pidiendo' ? 'Buscando…' : ubicacion ? 'Actualizar' : 'Ubicación'}
                 </button>
               </div>
+              <Escuchar oscuro texto={textoResumenDeParada(siguiente)} clave={siguiente.id} />
             </div>
             {confirmarReservada && horaReservada ? (
               <AvisoEntradaReservada hora={horaReservada} onSaltarIgual={() => saltar(siguiente)} onCancelar={() => setConfirmarReservada(false)} />
@@ -287,6 +306,18 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
         </div>
       )}
 
+      {/* Los avisos del día, una línea cada uno: lo que cierra hoy (la lluvia sale justo debajo). */}
+      {cierres.length > 0 && (
+        <div className="flex flex-none flex-col gap-1.5 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }} data-avisos-de-cierre>
+          {cierres.map((aviso) => (
+            <p key={aviso.id} className="flex items-center gap-2 text-[13px] leading-[1.35] text-text/80">
+              <Icono nombre="reloj" size={15} className="flex-none" style={{ color: AZUL }} />
+              <span className="min-w-0">{aviso.texto}</span>
+            </p>
+          ))}
+        </div>
+      )}
+
       {entradasDeHoy.map((entrada) => (
         <div key={entrada.id} className="flex min-h-[60px] flex-none overflow-hidden rounded-[18px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)' }}>
           <span className="flex w-[50px] flex-none items-center pl-[11px] text-white" style={{ background: VERDE, clipPath: 'polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)' }}>
@@ -299,6 +330,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       ))}
 
       <RainAlert day={day} dateIso={dateIso} when="hoy" />
+
+      <CercaDeTi origen={origenCerca} />
 
       <div className="flex flex-none flex-col gap-2 pt-1.5">
         <span className="pl-1 text-text/55" style={{ ...ojoMono, letterSpacing: '.14em' }}>
@@ -323,6 +356,12 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   </span>
                   {saltada ? <span className="text-[11px] leading-[1.3] text-text/40">Saltada</span> : <LineaDeHorario horario={horarioDe(stop)} />}
                 </span>
+                {saltada && (
+                  <button type="button" onClick={() => devolverALaRuta(stop)} className="flex h-8 flex-none items-center gap-1 rounded-full border border-text/15 px-2.5 text-[11.5px] font-semibold text-text/70">
+                    <Icono nombre="recuperar" size={13} grosor={1.8} />
+                    Devolverla a la ruta
+                  </button>
+                )}
                 {ahora && (
                   <span className="h-[22px] flex-none rounded-full px-2 text-[10.5px] font-semibold leading-[22px]" style={{ background: 'oklch(0.55 0.17 5 / .1)', color: 'oklch(0.5 0.17 5)' }}>
                     Ahora
