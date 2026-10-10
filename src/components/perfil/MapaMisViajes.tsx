@@ -47,12 +47,13 @@ export function MapaMisViajes({ chinchetas, onElegir }: { chinchetas: Chincheta[
     })
 
     mapa.on('style.load', () => {
-      mapa.setFog({})
+      // (Una bola de verdad: el espacio de un color suave, sin estrellas, y la atmósfera en el borde.)
+      mapa.setFog({ color: 'rgb(255,253,248)', 'high-color': 'rgb(170,215,235)', 'horizon-blend': 0.06, 'space-color': 'rgb(244,239,230)', 'star-intensity': 0 })
       if (chinchetas.length > 1) {
         const limites = chinchetas.reduce((l, c) => l.extend([c.coordenadas.lng, c.coordenadas.lat] as [number, number]), new mapboxgl.LngLatBounds([chinchetas[0].coordenadas.lng, chinchetas[0].coordenadas.lat], [chinchetas[0].coordenadas.lng, chinchetas[0].coordenadas.lat]))
-        mapa.fitBounds(limites, { padding: 40, maxZoom: 4, duration: 0 })
+        mapa.fitBounds(limites, { padding: 40, maxZoom: 1.6, duration: 0 })
       } else if (chinchetas.length === 1) {
-        mapa.jumpTo({ center: [chinchetas[0].coordenadas.lng, chinchetas[0].coordenadas.lat], zoom: 2.6 })
+        mapa.jumpTo({ center: [chinchetas[0].coordenadas.lng, chinchetas[0].coordenadas.lat], zoom: 0.9 })
       }
     })
 

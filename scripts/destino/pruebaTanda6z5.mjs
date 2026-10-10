@@ -92,7 +92,7 @@ debe(hSinFecha === null, 'A4 sin fechas', `el Coliseo cambia por época y sin fe
 const unico = lugares.find((p) => { const d = datosDe(p); return d.windows && !d.by_day && !d.by_season && !d.by_period && !d.special_hours })
 const hUnico = unico ? horarioDeParada({ hoursData: datosDe(unico) }, null) : null
 debe(unico && hUnico && /^Abre /.test(hUnico.texto) && hUnico.cerrado === false, 'A4 sin fechas', `${unico?.name}: un horario único sin fechas debería dar «Abre …» (${hUnico?.texto})`)
-debe(horarioDeParada({ hoursData: { windows: ['09:00-19:15'], closed_on: ['lunes'] } }, null)?.texto === 'Abre 9:00 – 19:15', 'A4 sin fechas', 'un horario único con un día de cierre semanal debería dar el horario general sin fecha')
+debe(horarioDeParada({ hoursData: { windows: ['09:00-19:15'], closed_on: ['lunes'] } }, null)?.texto === 'Abre 9:00 – 19:15 · Cerrado los lunes', 'A4 sin fechas', 'un horario único con un día de cierre semanal debería dar el horario general con el día que cierra (Tanda 6z6)')
 
 // ── Un viaje de verdad ──
 async function viaje(dias) {
