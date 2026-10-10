@@ -18,7 +18,7 @@ const CLAVE_PRUEBA = 'trazo:prueba'
 export function esEntornoDePrueba(): boolean {
   if (import.meta.env.VITE_VERCEL_ENV === 'production') return false
   if (import.meta.env.VITE_VERCEL_ENV === 'preview' || import.meta.env.DEV) return true
-  const host = typeof window === 'undefined' ? '' : window.location.hostname
+  const host = (typeof window === 'undefined' ? '' : window.location?.hostname) ?? ''
   if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.localhost')) return true
   // Las versiones de prueba de Vercel: `proyecto-git-rama-equipo.vercel.app` y `proyecto-<9 letras>-equipo.vercel.app`.
   return host.endsWith('.vercel.app') && (host.includes('-git-') || /-[a-z0-9]{9}-[a-z0-9-]+\.vercel\.app$/.test(host))
