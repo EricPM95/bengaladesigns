@@ -50,7 +50,8 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   const esimPrecios = useRouteStore((state) => state.esimPrecios)
   const setEsimPrecio = useRouteStore((state) => state.setEsimPrecio)
   const [hojaPrecio, setHojaPrecio] = useState<string | null>(null)
-  const countryCode = buildDestinationSegments(route.days)[0]?.countryCode ?? null
+  /** Los países del viaje, sin repetir y en orden: una eSIM por país (el estado se guarda por país, así que va igual que antes en el acordeón de cada destino). */
+  const paises = [...new Set(buildDestinationSegments(route.days).flatMap((segment) => (segment.countryCode ? [segment.countryCode] : [])))]
   const isCamper = route.transportContext.vehicle_type === 'camper'
   const hasRentalVehicle = route.transportContext.vehicle_ownership === 'rental'
   const alquiler = isCamper ? buildCamperRentalLink(route.days[0]?.countryCode ?? null) : buildCarRentalLink()
@@ -72,31 +73,27 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       guardar: (precio) => setInsuranceBooking({ provider: 'Seguro de viaje', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio }),
       quitar: () => setInsuranceBooking(null),
     },
-    ...(countryCode
-      ? [
-          {
-            id: 'esim',
-            nombre: `eSIM ${countryDisplayName(countryCode)}`,
-            sirve: 'Internet en el móvil nada más llegar.',
-            etiqueta: '5 % dto.',
-            icono: ICONOS.sim,
-            color: 'oklch(0.55 0.1 220)',
-            enlace: ENLACE_ESIM,
-            articulo: 'la' as const,
-            anadida: Boolean(esim[countryCode]),
-            precio: leerImporte(esimPrecios[countryCode]),
-            conPrecio: true,
-            guardar: (precio: Importe | null) => {
-              setEsimSelection(countryCode, 'booked')
-              setEsimPrecio(countryCode, precio)
-            },
-            quitar: () => {
-              setEsimSelection(countryCode, null)
-              setEsimPrecio(countryCode, null)
-            },
-          },
-        ]
-      : []),
+    ...paises.map((countryCode, indice) => ({
+      id: indice === 0 ? 'esim' : `esim-${countryCode}`,
+      nombre: 'eSIM de datos',
+      sirve: paises.length > 1 ? `Internet en el móvil en ${countryDisplayName(countryCode)}.` : 'Internet en el móvil nada más llegar.',
+      etiqueta: '5 % dto.',
+      icono: ICONOS.sim,
+      color: 'oklch(0.55 0.1 220)',
+      enlace: ENLACE_ESIM,
+      articulo: 'la' as const,
+      anadida: Boolean(esim[countryCode]),
+      precio: leerImporte(esimPrecios[countryCode]),
+      conPrecio: true,
+      guardar: (precio: Importe | null) => {
+        setEsimSelection(countryCode, 'booked')
+        setEsimPrecio(countryCode, precio)
+      },
+      quitar: () => {
+        setEsimSelection(countryCode, null)
+        setEsimPrecio(countryCode, null)
+      },
+    })),
     {
       id: 'tarjeta',
       nombre: 'Tarjeta sin comisiones',

@@ -15,7 +15,7 @@ export function N26Row() {
     <>
       <ReservasItemRow
         kind="n26"
-        label="Tarjeta N26"
+        label="Tarjeta sin comisiones"
         resolved={n26Added}
         priority="gray"
         onClick={() => setOpen(true)}
@@ -24,18 +24,18 @@ export function N26Row() {
 
       <Modal open={open} onClose={() => setOpen(false)}>
         <div className="space-y-4">
-          <h2 className="font-display text-h2 font-semibold text-text">Tarjeta N26</h2>
+          <h2 className="font-display text-h2 font-semibold text-text">Tarjeta sin comisiones</h2>
           <p className="text-small text-text-soft">
             Sin comisiones por pagos ni retiradas en el extranjero — la tarjeta que más usan los viajeros para no depender de cambiar
             efectivo en cada destino.
           </p>
           <a href="https://n26.com" target="_blank" rel="noopener noreferrer">
-            <Button className="w-full font-bold shadow-sm">Pedir tarjeta N26 →</Button>
+            <Button className="w-full font-bold shadow-sm">Pedir la tarjeta →</Button>
           </a>
           {n26Added && <p className="text-center text-caption font-medium text-accent-hover">✓ Añadida</p>}
           {n26Added && (
             <ConfirmDeleteButton
-              itemLabel="la tarjeta N26"
+              itemLabel="la tarjeta sin comisiones"
               onConfirm={() => {
                 setN26Added(false)
                 setOpen(false)
