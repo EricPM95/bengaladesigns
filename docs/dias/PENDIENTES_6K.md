@@ -164,6 +164,9 @@ Después, leer el informe de la 6x (los 63 casos, los «Si te sobra tiempo» que
 
 **El presupuesto del viaje (Eric, 10-oct; Tanda 6z2):** todo lo que se añade lleva su precio (opcional, total de todas las personas, lo pone el viajero, nunca la app): el alojamiento, las entradas, las excursiones, los vuelos o trenes, el seguro, la eSIM, el coche, los traslados. El Free Tour no lleva precio. La pantalla del presupuesto (diseño `docs\diseno\presupuesto\Presupuesto.dc.html`): total con «por persona» escondido, bloques «Transporte y alojamiento», «Ruta», «Útil para el viaje» y «Extras» (a mano: propinas, comidas, compras). Se abre desde RESERVAS. Gratis. La moneda: la del viajero (de su ciudad de origen, se puede cambiar); cada precio se guarda con la suya y el presupuesto lo suma todo en la del viajero, con el cambio del día («≈»).
 
+**La barra, HOY y los iconos (Tanda 6z3, 10-oct; diseño `docs\diseno\hoy\Iconos y HOY.dc.html`):** la barra fija Hoy · Ruta · Días · Explorar · Reservas; la cabecera con Presupuesto, campana y Perfil; HOY en cuatro momentos (antes, durante gratis, durante de pago, después; sin fechas, «Pon tus fechas»); una sola familia de iconos (la excursión, mochila); «falta» en rosa frambuesa en toda la app; con fechas, los días por su fecha (fuera «Día 1»); las fotos del viaje durante y después (sin EXIF, privadas, sin límite por ahora: decidir gratis/pago antes de lanzar); «Ubicación» y [Cómo llegar] a Google Maps en la siguiente parada.
+- Por decidir: el botón «Cómo llegar a tu alojamiento» (Google Maps con el nombre del hotel y la ciudad), en la llegada del día 1, al final de cada día y en HOY. Propuesto, sin respuesta de Eric.
+
 **Detrás de la 6y:**
 1. El login: Google, Apple y email con enlace; sin obligar al principio; el viaje de ahora pasa a la cuenta. Hace falta antes de activar el pago.
 2. La Tanda 7.
