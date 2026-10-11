@@ -257,3 +257,5 @@ console.error = consolaError
 console.log(`${comprobaciones} comprobaciones, ${fallos.length} fallos`)
 for (const f of fallos) console.log(`  FALLO [${f.regla}] ${f.texto}`)
 process.exitCode = fallos.length === 0 ? 0 : 1
+// (Algo importado deja un manejador abierto —como en la prueba de la ficha— y el proceso no terminaba: se cierra a mano, sin cortar lo pendiente de golpe.)
+setTimeout(() => process.exit(process.exitCode), 300).unref()
