@@ -78,3 +78,4 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - `excursiones_desde_dias`;
 - las zonas del alojamiento;
 - los horarios auditados (como `AUDITORIA_HORARIOS_ROMA`).
+- Cada sitio importante lleva su historia para "Escuchar historia" (ver HISTORIAS_ROMA.md). La historia nunca repite lo que dice la ficha.

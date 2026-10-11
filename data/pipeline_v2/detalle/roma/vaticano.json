@@ -69,7 +69,8 @@
         "Hay una puerta directa de la Capilla Sixtina a la Basílica de San Pedro (la usan los grupos organizados). Si la ves abierta, sal por ahí — te ahorras volver por todo el museo y entras a la basílica sin la cola exterior. No siempre funciona, pero merece intentarlo.",
         "En la Galería de los Mapas, mira los techos: están más decorados que muchos palacios enteros. Todo el mundo mira los mapas de las paredes y se pierde los frescos dorados de arriba.",
         "La Escalera de Bramante (la doble hélice) NO es la escalera original de Bramante — es de 1932, diseñada por Giuseppe Momo. La original de Bramante (1505) está cerrada al público. Pero la de Momo es igual de fotogénica."
-      ]
+      ],
+      "historia": "Todo empezó con una estatua que salió de debajo de una viña.\n\nEn 1506, un hombre encontró en su terreno de Roma una escultura antigua enterrada: un sacerdote y sus hijos luchando contra dos serpientes. El papa Julio II mandó a Miguel Ángel a verla y, en cuanto pudo, la compró y la puso en su jardín para enseñarla. Así nacieron estos museos, que hoy tienen unos siete kilómetros de salas.\n\nEse mismo papa le encargó luego a Miguel Ángel el techo de la Capilla Sixtina. Y Miguel Ángel no quería: decía que él era escultor, no pintor. Aun así lo hizo. No lo pintó tumbado, como se suele decir, sino de pie, con la cabeza echada hacia atrás, sobre un andamio que diseñó él mismo. Acabó con dolores de cuello durante meses.\n\nAños después volvió para pintar el Juicio Final. Un maestro de ceremonias del papa, Biagio da Cesena, se quejó de tanto desnudo. Miguel Ángel se vengó: lo pintó en el infierno, abajo a la derecha, con orejas de burro y una serpiente enroscada. Cuando Biagio protestó, el papa le contestó que en el infierno él no tenía poder.\n\nEn la Capilla se elige a cada nuevo papa. Y se pide silencio: no se pueden hacer fotos."
     },
     {
       "name": "Basílica de San Pedro",
@@ -121,9 +122,10 @@
       ],
       "secrets": [
         "El pie derecho de la estatua de bronce de San Pedro (nave central, pilar derecho) está desgastado por los millones de fieles que lo tocan desde hace siglos. Fíjate: el pie original tenía dedos individuales, hoy es una superficie lisa.",
-        "El Baldaquino de Bernini está hecho con bronce arrancado del pórtico del Panteón por orden del Papa Barberini. Los romanos dijeron: 'Lo que no hicieron los bárbaros, lo hicieron los Barberini' — el dicho sigue vivo 400 años después.",
+        "Se cuenta que el bronce del Baldaquino salió del pórtico del Panteón, aunque la mayor parte de aquel bronce parece que acabó en cañones. Los romanos dijeron: 'Lo que no hicieron los bárbaros, lo hicieron los Barberini' — el dicho sigue vivo 400 años después.",
         "Las Grutas Vaticanas (accesibles desde dentro de la basílica, gratis) son el cementerio papal más impresionante del mundo. La tumba de Juan Pablo II suele tener flores frescas dejadas por peregrinos polacos."
-      ]
+      ],
+      "historia": "Esta basílica cambió la historia de Europa. No por lo que es, sino por cómo se pagó.\n\nPara levantarla, la Iglesia vendió indulgencias: documentos que, a cambio de dinero, prometían perdonar los pecados. En Alemania, un monje llamado Martín Lutero se indignó y, en 1517, escribió sus famosas 95 tesis contra esa venta. Fue el principio de la Reforma protestante, que partió en dos el cristianismo de Europa.\n\nLas obras duraron 120 años y pasaron por ellas los mejores arquitectos de su tiempo: Bramante, Rafael, Miguel Ángel, Bernini… Miguel Ángel diseñó la cúpula ya muy mayor, y murió sin verla terminada.\n\nAhora un truco. Mira los grandes cuadros de los altares. No son cuadros: son mosaicos, hechos con millones de piedrecitas de colores, tan finos que parecen pintados. Se hicieron así porque la humedad de la basílica estropeaba la pintura.\n\nY debajo de tus pies, bajo el altar mayor, en las excavaciones del siglo pasado se encontró una pared antigua llena de inscripciones de peregrinos. En una de ellas, en griego, se lee algo así como: «Pedro está aquí»."
     },
     {
       "name": "Plaza de San Pedro",
@@ -164,7 +166,8 @@
       "secrets": [
         "El obelisco central no tiene ninguna inscripción jeroglífica — es un obelisco romano mandado tallar en Egipto, no uno egipcio original. Calígula lo trajo en un barco especialmente construido para ello.",
         "En la cima del obelisco, dentro de la esfera de bronce, se supone que estaban las cenizas de Julio César. Cuando la abrieron en 1586 para mover el obelisco... estaba vacía."
-      ]
+      ],
+      "historia": "La piedra del centro, ese obelisco de 25 metros, estaba ya aquí al lado cuando crucificaron a Pedro.\n\nLo trajo de Egipto el emperador Calígula para adornar su circo, que estaba justo junto a esta plaza. En ese circo, según la tradición, murió Pedro, crucificado cabeza abajo. El obelisco lo vio todo.\n\nEn 1586, el papa Sixto V decidió moverlo hasta aquí. Hicieron falta más de novecientos hombres y unos ciento cuarenta caballos. El papa ordenó silencio total, bajo pena de muerte, para que se oyeran las órdenes. Cuenta la leyenda que, cuando las cuerdas empezaron a arder por el roce, un marinero gritó: «¡Agua a las cuerdas!». Salvó el obelisco. Y en vez de castigarlo, el papa lo premió: su pueblo tuvo durante siglos el honor de dar las palmas del Domingo de Ramos al Vaticano.\n\nAntes, a esta plaza se llegaba por callejuelas estrechas, y al salir de ellas se abría de golpe, como una sorpresa. La gran avenida de hoy, la Via della Conciliazione, se abrió en el siglo XX.\n\nY un detalle: el borde de la plaza es una frontera. A un lado, Italia; al otro, el Vaticano."
     },
     {
       "name": "Cúpula de San Pedro",
@@ -304,7 +307,8 @@
         "El Passetto di Borgo es el pasadizo secreto de 800 metros que conecta el castillo con el Vaticano, construido sobre la antigua muralla. Lo usó el Papa Clemente VII para huir durante el Saqueo de Roma en 1527 — corrió por encima mientras los soldados masacraban abajo. Se puede ver desde fuera (el muro elevado con ventanitas que va desde Castillo de Sant'Angelo hacia el Vaticano).",
         "El ángel de bronce en la cima (el actual es de 1753, de Peter Anton von Verschaffelt) reemplazó cinco ángeles anteriores que se destruyeron por rayos, viento o deterioro. Uno de los anteriores, de mármol, está en el patio interior.",
         "En verano, las noches 'El Ángel y la Luna' abren la terraza hasta las 23:30 — Roma iluminada desde aquí arriba es una experiencia que pocos turistas conocen."
-      ]
+      ],
+      "historia": "En el año 590, Roma se moría de peste. El papa Gregorio salió en procesión por la ciudad, rezando, con todo el pueblo detrás. Al llegar aquí, al puente, levantó la vista y vio en lo alto de este edificio al arcángel San Miguel, guardando su espada en la vaina. Era la señal: la peste había terminado. Desde entonces, a este lugar se le llama el castillo del Ángel.\n\nAntes de todo eso, fue una tumba. La mandó construir el emperador Adriano para él y su familia. Y Adriano, ya enfermo y a punto de morir, escribió un pequeño poema a su propia alma, que empieza así: «Almita, vagabunda, cariñosa, huésped y compañera del cuerpo, ¿adónde vas a ir ahora?». Es uno de los poemas más famosos que nos dejó Roma, y lo escribió el hombre que está enterrado aquí.\n\nY si te gusta la ópera: en «Tosca», de Puccini, la protagonista se lanza al vacío desde la terraza de este castillo, en la última escena. Muchos visitantes suben arriba buscando el sitio exacto."
     },
     {
       "name": "Puente Sant'Angelo",
