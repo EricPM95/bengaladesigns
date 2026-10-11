@@ -840,6 +840,8 @@ export interface Route {
   isPreview?: boolean
   /** true para rutas creadas desde la pantalla de acceso rápido de desarrollo (sin Claude) — DIAS/RESERVAS muestran un estado vacío. */
   isDevQuickRoute?: boolean
+  /** Cómo se hizo la ruta (Tanda 6y): `'manual'` = «Quiero hacerla yo» (días vacíos que monta el viajero; la app no sugiere ni mete paradas solas); sin él o `'auto'`, la ruta que montamos nosotros. */
+  planMode?: 'auto' | 'manual'
   /** Hora del vuelo de llegada en formato "HH:MM", introducida en Reservas — null/undefined si no se ha registrado. Dispara la comprobación de oportunidad de recálculo del primer día (ver flightOpportunity.ts). */
   /** Lo que costó el billete de ida y el de vuelta, total de todas las personas (Tanda 6z2); null si no lo dijo. Si es un mismo billete, se pone en la ida y la vuelta se queda vacía. */
   arrivalPrecio?: Importe | null
