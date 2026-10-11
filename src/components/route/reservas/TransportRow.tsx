@@ -1,7 +1,7 @@
 import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { quitarConAviso } from '../../../store/useAddFlowStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { ReservasItemRow } from './ReservasItemRow'
 import { TransportBookingModal } from './TransportBookingModal'
 
@@ -36,7 +36,7 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         itemLabel={`el transporte ${label}`}
         initial={booking ?? null}
         onSave={(value) => setTransportBooking(dayId, value)}
-        onRemove={() => quitarConAviso('Transporte quitado del viaje', () => setTransportBooking(dayId, null))}
+        onRemove={() => quitarConDeshacer('Transporte quitado del viaje', () => setTransportBooking(dayId, null))}
         onClose={() => setOpen(false)}
       />
     </>

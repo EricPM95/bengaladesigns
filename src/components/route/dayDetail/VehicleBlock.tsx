@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { quitarConAviso } from '../../../store/useAddFlowStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { GeneralBookingModal } from '../reservas/GeneralBookingModal'
 import { Icono } from '../../ui/Icono'
 
@@ -67,7 +67,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
         providerPlaceholder={copy.placeholder}
         initial={booking}
         onSave={setRentalVehicleBooking}
-        onRemove={() => quitarConAviso('Alquiler quitado del viaje', () => setRentalVehicleBooking(null))}
+        onRemove={() => quitarConDeshacer('Alquiler quitado del viaje', () => setRentalVehicleBooking(null))}
         onClose={() => setModalOpen(false)}
       />
     </>

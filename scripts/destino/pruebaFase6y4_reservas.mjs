@@ -5,7 +5,7 @@
 //      Pompeya y Sorrento»); no se quitan con su día (y del presupuesto, precio incluido); con «Cancelar» cambia algo; quedan días de más (en ninguna combinación de días y excursiones reservadas);
 //      queda una reserva suelta en RESERVAS; hay «Deshacer» tras acortar; o el alojamiento/billete de un día quitado se queda mal (el hotel de la estancia pasa a su nuevo primer día).
 //   2. quitar cualquier reserva (entrada, Free Tour, excursión, alojamiento, billete de transporte, vuelo de ida o de vuelta, seguro, eSIM, tarjeta, coche de alquiler) no deja el aviso con «Deshacer»
-//      o «Deshacer» no devuelve la ruta y TODO lo reservado idéntico; o algún sitio de la pantalla quita una reserva sin pasar por `quitarConAviso`.
+//      o «Deshacer» no devuelve la ruta y TODO lo reservado idéntico; o algún sitio de la pantalla quita una reserva sin pasar por `quitarConDeshacer`.
 //   3. la foto del Free Tour (a mano, en la lista de EXPLORAR y en la ruta nuestra) no es la de la Plaza de España, o el servidor no la sirve.
 //   4. la Fontana de Trevi sale en «Entradas y Free Tour», en «x de n listo», en las entradas por sitio (pestaña «Entradas», «Reservar entrada») o en el filtro «Entradas» de EXPLORAR; o su ficha y sus
 //      datos (`entrada_de_pago`, `_entradas.json`) desaparecen.
@@ -24,7 +24,7 @@ const debe = (cond, regla, texto) => {
 const API = process.env.API_URL ?? 'http://localhost:8787'
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6y4_reservas_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
-  createElement, renderToStaticMarkup, ReservasPanel, ManualShrinkDialog, useRouteStore, useAddFlowStore, quitarConAviso, removeReservationWithUndo, buildManualRoute, manualShrinkNotice, planManualResize,
+  createElement, renderToStaticMarkup, ReservasPanel, ManualShrinkDialog, useRouteStore, useAddFlowStore, quitarConDeshacer, removeReservationWithUndo, buildManualRoute, manualShrinkNotice, planManualResize,
   buildEntradasBloque, buildReadinessItems, construirPresupuesto, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, stopFromPlace, pedirFotoDelFreeTour,
 } = M
 await fetchArrivalInfo('Roma')
@@ -112,7 +112,7 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   const gancho = ventana.slice(ventana.indexOf('export function useDatesChange'))
   debe(/onCancel=\{\(\) => setManualShrink\(null\)\}/.test(gancho), '1 cancelar', '«Cancelar» no solo cierra la ventana')
   debe(/onConfirm=\{\(\) => \{\s*const next = manualShrink\.dateRange\s*\n\s*setManualShrink\(null\)\s*\n\s*setRouteDateRange\(next\)/.test(gancho), '1 sí', '«Eliminar» no guarda las fechas nuevas')
-  debe(!/withUndo|quitarConAviso|useAddFlowStore|Deshacer/.test(ventana), '1 sin deshacer', 'el diálogo de acortar usa un aviso con «Deshacer»')
+  debe(!/withUndo|quitarConDeshacer|useAddFlowStore|Deshacer/.test(ventana), '1 sin deshacer', 'el diálogo de acortar usa un aviso con «Deshacer»')
 
   // «Eliminar».
   useRouteStore.getState().setRouteDateRange(aviso.dateRange)
@@ -215,14 +215,14 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
     ['entrada', 'Entrada quitada del viaje', () => removeReservationWithUndo('res-col')],
     ['excursión', 'Excursión quitada del viaje', () => removeReservationWithUndo('res-exc')],
     ['Free Tour', 'Free Tour quitado del viaje', () => removeReservationWithUndo('res-ft')],
-    ['alojamiento', 'Alojamiento quitado del viaje', () => quitarConAviso('Alojamiento quitado del viaje', () => tienda().setAccommodationHotel('day-manual-1', null))],
-    ['transporte', 'Transporte quitado del viaje', () => quitarConAviso('Transporte quitado del viaje', () => tienda().setTransportBooking('day-manual-1', null))],
-    ['vuelo de ida', 'Ida quitada del viaje', () => quitarConAviso('Ida quitada del viaje', () => tienda().removeFlightLeg('arrival'))],
-    ['vuelo de vuelta', 'Vuelta quitada del viaje', () => quitarConAviso('Vuelta quitada del viaje', () => tienda().removeFlightLeg('departure'))],
-    ['seguro', 'Seguro quitado del viaje', () => quitarConAviso('Seguro quitado del viaje', () => tienda().setInsuranceBooking(null))],
-    ['eSIM', 'eSIM de datos quitada del viaje', () => quitarConAviso('eSIM de datos quitada del viaje', () => { tienda().setEsimSelection('it', null); tienda().setEsimPrecio('it', null) })],
-    ['tarjeta', 'Tarjeta sin comisiones quitada del viaje', () => quitarConAviso('Tarjeta sin comisiones quitada del viaje', () => tienda().setN26Added(false))],
-    ['coche de alquiler', 'Alquiler quitado del viaje', () => quitarConAviso('Alquiler quitado del viaje', () => tienda().setRentalVehicleBooking(null))],
+    ['alojamiento', 'Alojamiento quitado del viaje', () => quitarConDeshacer('Alojamiento quitado del viaje', () => tienda().setAccommodationHotel('day-manual-1', null))],
+    ['transporte', 'Transporte quitado del viaje', () => quitarConDeshacer('Transporte quitado del viaje', () => tienda().setTransportBooking('day-manual-1', null))],
+    ['vuelo de ida', 'Ida quitada del viaje', () => quitarConDeshacer('Ida quitada del viaje', () => tienda().removeFlightLeg('arrival'))],
+    ['vuelo de vuelta', 'Vuelta quitada del viaje', () => quitarConDeshacer('Vuelta quitada del viaje', () => tienda().removeFlightLeg('departure'))],
+    ['seguro', 'Seguro quitado del viaje', () => quitarConDeshacer('Seguro quitado del viaje', () => tienda().setInsuranceBooking(null))],
+    ['eSIM', 'eSIM de datos quitada del viaje', () => quitarConDeshacer('eSIM de datos quitada del viaje', () => { tienda().setEsimSelection('it', null); tienda().setEsimPrecio('it', null) })],
+    ['tarjeta', 'Tarjeta sin comisiones quitada del viaje', () => quitarConDeshacer('Tarjeta sin comisiones quitada del viaje', () => tienda().setN26Added(false))],
+    ['coche de alquiler', 'Alquiler quitado del viaje', () => quitarConDeshacer('Alquiler quitado del viaje', () => tienda().setRentalVehicleBooking(null))],
   ]
   const antes = foto()
   const presupuestoAntes = total(presupuestoDe())
@@ -245,7 +245,7 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   useAddFlowStore.setState({ toast: null })
   removeReservationWithUndo('res-col')
   const trasPrimera = foto()
-  quitarConAviso('Seguro quitado del viaje', () => tienda().setInsuranceBooking(null))
+  quitarConDeshacer('Seguro quitado del viaje', () => tienda().setInsuranceBooking(null))
   useAddFlowStore.getState().undo()
   debe(foto() === trasPrimera, '2 seguidas', '«Deshacer» de la segunda también devuelve la primera')
   useAddFlowStore.setState({ toast: null })
@@ -270,12 +270,12 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
     const lineas = sinComentarios(leer(archivo)).split('\n')
     lineas.forEach((linea, i) => {
       if (/const (removeLeg|removeReservation|setHotel) = useRouteStore/.test(linea)) return
-      if (quitan.some((re) => re.test(linea)) && !/quitarConAviso\(|removeReservationWithUndo\(/.test(linea)) sueltos.push(`${archivo}:${i + 1}: ${linea.trim().slice(0, 110)}`)
+      if (quitan.some((re) => re.test(linea)) && !/quitarConDeshacer\(|removeReservationWithUndo\(/.test(linea)) sueltos.push(`${archivo}:${i + 1}: ${linea.trim().slice(0, 110)}`)
     })
   }
   debe(sueltos.length === 0, '2 un solo camino', `hay sitios que quitan una reserva sin el aviso con «Deshacer»:\n    ${sueltos.join('\n    ')}`)
   const util = sinComentarios(leer('src/components/route/reservas/UtilParaElViaje.tsx'))
-  debe((util.match(/\.quitar\b/g) ?? []).length === 1 && /quitarConAviso\([^)]*tarjeta\.quitar\)/.test(util) && /onQuitar=\{abierta\.anadida \? \(\) => quitarTarjeta\(abierta\)/.test(util) && !/tarjeta\.quitar\(\)/.test(util), '2 un solo camino', 'las tarjetas de «Útil para el viaje» quitan sin pasar por quitarConAviso')
+  debe((util.match(/\.quitar\b/g) ?? []).length === 1 && /quitarConDeshacer\([^)]*tarjeta\.quitar\)/.test(util) && /onQuitar=\{abierta\.anadida \? \(\) => quitarTarjeta\(abierta\)/.test(util) && !/tarjeta\.quitar\(\)/.test(util), '2 un solo camino', 'las tarjetas de «Útil para el viaje» quitan sin pasar por quitarConDeshacer')
   const lib = []
   for (const archivo of archivos('src/lib')) if (/\bremoveReservation\(/.test(sinComentarios(leer(archivo)))) lib.push(archivo)
   debe(lib.join() === 'src/lib/dayInterruptor.ts', '2 un solo camino', `otro código quita reservas sin aviso: ${lib}`)

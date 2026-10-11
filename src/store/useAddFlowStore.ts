@@ -41,7 +41,7 @@ export const useAddFlowStore = create<AddFlowState>((set, get) => ({
     const previous = get().toast?.previous
     const previousReservations = get().toast?.previousReservations
     const previousBookings = get().toast?.previousBookings
-    // (Con las reservas de antes: si el cambio las borró —la varita—, volver atrás las devuelve. Y, si el aviso es de quitar una reserva de cualquier tipo (`quitarConAviso`), TODO lo reservado de antes:
+    // (Con las reservas de antes: si el cambio las borró —la varita—, volver atrás las devuelve. Y, si el aviso es de quitar una reserva de cualquier tipo (`quitarConDeshacer`), TODO lo reservado de antes:
     // entradas, excursiones, alojamiento, billetes, seguro, eSIM, tarjeta y coche, tal cual estaban.)
     if (previous) useRouteStore.setState({ route: previous, ...(previousReservations ? { reservations: previousReservations } : {}), ...(previousBookings ?? {}) })
     set({ toast: null })
@@ -87,7 +87,7 @@ function bookingsNow(): BookingsSnapshot {
  * la eSIM, la tarjeta o el coche de alquiler. Hace el cambio y deja el aviso corto de abajo con «Deshacer», que devuelve la ruta y TODO lo reservado tal cual estaba (precios incluidos).
  * Ningún sitio de la pantalla llama a las funciones de quitar del almacén sin pasar por aquí (lo comprueba `scripts/destino/pruebaFase6y4_reservas.mjs`).
  */
-export function quitarConAviso(message: string, change: () => void): void {
+export function quitarConDeshacer(message: string, change: () => void): void {
   const previous = useRouteStore.getState().route
   const previousBookings = bookingsNow()
   change()
@@ -95,7 +95,7 @@ export function quitarConAviso(message: string, change: () => void): void {
 }
 
 /** El aviso de cada tipo de reserva al quitarla. */
-export function avisoDeQuitar(reservation: Pick<Reservation, 'kind' | 'refId'> | undefined): string {
+export function mensajeDeQuitar(reservation: Pick<Reservation, 'kind' | 'refId'> | undefined): string {
   if (!reservation) return 'Reserva quitada del viaje'
   if (reservation.kind === 'excursion') return 'Excursión quitada del viaje'
   if (reservation.refId === FREE_TOUR_REF) return 'Free Tour quitado del viaje'
@@ -108,5 +108,5 @@ export function avisoDeQuitar(reservation: Pick<Reservation, 'kind' | 'refId'> |
 export function removeReservationWithUndo(id: string): void {
   const { reservations, removeReservation } = useRouteStore.getState()
   const reservation = reservations.find((item) => item.id === id)
-  quitarConAviso(avisoDeQuitar(reservation), () => removeReservation(id))
+  quitarConDeshacer(mensajeDeQuitar(reservation), () => removeReservation(id))
 }

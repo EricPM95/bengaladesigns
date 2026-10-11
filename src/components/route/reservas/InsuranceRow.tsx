@@ -1,7 +1,7 @@
 import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { quitarConAviso } from '../../../store/useAddFlowStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { ReservasItemRow } from './ReservasItemRow'
 import { GeneralBookingModal } from './GeneralBookingModal'
 
@@ -33,7 +33,7 @@ export function InsuranceRow() {
         providerPlaceholder="Mondo, Allianz…"
         initial={booking}
         onSave={setInsuranceBooking}
-        onRemove={() => quitarConAviso('Seguro quitado del viaje', () => setInsuranceBooking(null))}
+        onRemove={() => quitarConDeshacer('Seguro quitado del viaje', () => setInsuranceBooking(null))}
         onClose={() => setOpen(false)}
       />
     </>

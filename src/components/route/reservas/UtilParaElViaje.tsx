@@ -3,7 +3,7 @@ import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { countryDisplayName } from '../../../lib/readiness'
 import { buildCamperRentalLink, buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { quitarConAviso } from '../../../store/useAddFlowStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { ENLACE_ESIM, ENLACE_SEGURO, ENLACE_TARJETA } from '../../../lib/enlacesUtil'
 import { GR, ICONOS } from './BloqueReservas'
 import { HojaPrecio } from './HojaPrecio'
@@ -149,8 +149,8 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   ]
   const abierta = tarjetas.find((tarjeta) => tarjeta.id === hojaPrecio && !tarjeta.soloBuscar) ?? null
   /** [Añadir] o tocar la tarjeta ya añadida: con precio, la hoja; sin precio (la tarjeta sin comisiones), se marca o se quita directamente. */
-  /** Quitar una tarjeta (seguro, eSIM, tarjeta, coche): con el aviso corto y «Deshacer» de siempre (Tanda 6y4, una sola función: `quitarConAviso`). */
-  const quitarTarjeta = (tarjeta: Tarjeta) => quitarConAviso(`${tarjeta.nombre} quitad${tarjeta.articulo === 'la' ? 'a' : 'o'} del viaje`, tarjeta.quitar)
+  /** Quitar una tarjeta (seguro, eSIM, tarjeta, coche): con el mensaje corto de abajo con «Deshacer» (Tanda 6y4, una sola función: `quitarConDeshacer`). */
+  const quitarTarjeta = (tarjeta: Tarjeta) => quitarConDeshacer(`${tarjeta.nombre} quitad${tarjeta.articulo === 'la' ? 'a' : 'o'} del viaje`, tarjeta.quitar)
   const gestionar = (tarjeta: Tarjeta) => (tarjeta.conPrecio ? setHojaPrecio(tarjeta.id) : tarjeta.anadida ? quitarTarjeta(tarjeta) : tarjeta.guardar(null))
 
   return (

@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { ReservasPanel } from '../../src/components/route/ReservasPanel'
 import { ManualShrinkDialog } from '../../src/components/route/DatesChangeDialog'
 import { useRouteStore } from '../../src/store/useRouteStore'
-import { useAddFlowStore, quitarConAviso, removeReservationWithUndo } from '../../src/store/useAddFlowStore'
+import { useAddFlowStore, quitarConDeshacer, removeReservationWithUndo } from '../../src/store/useAddFlowStore'
 import { buildManualRoute } from '../../src/lib/manualRoute'
 import { manualShrinkNotice, planManualResize } from '../../src/lib/manualDuration'
 import { buildEntradasBloque } from '../../src/lib/bookings'
@@ -18,6 +18,6 @@ import { stopFromPlace } from '../../src/components/route/placeExplorer/PlaceExp
 import { pedirFotoDelFreeTour } from '../../src/lib/freeTourManual'
 
 export {
-  createElement, renderToStaticMarkup, ReservasPanel, ManualShrinkDialog, useRouteStore, useAddFlowStore, quitarConAviso, removeReservationWithUndo, buildManualRoute, manualShrinkNotice, planManualResize,
+  createElement, renderToStaticMarkup, ReservasPanel, ManualShrinkDialog, useRouteStore, useAddFlowStore, quitarConDeshacer, removeReservationWithUndo, buildManualRoute, manualShrinkNotice, planManualResize,
   buildEntradasBloque, buildReadinessItems, construirPresupuesto, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, stopFromPlace, pedirFotoDelFreeTour,
 }
