@@ -40,7 +40,7 @@ export const shortOf = (reservation: Reservation, shortNames: ShortNames): strin
 export const withA = (short: string): string => `a ${short}`.replace(/^a el /, 'al ')
 
 /** «tu Free Tour» o «tu entrada a los Museos» (sin nombre corto, «tu entrada a Museos Vaticanos y Capilla Sixtina»). */
-const labelOf = (reservation: Reservation, shortNames: ShortNames): string => {
+export const labelOf = (reservation: Reservation, shortNames: ShortNames): string => {
   if (reservation.refId === 'Free Tour') return 'tu Free Tour'
   const short = shortOf(reservation, shortNames)
   return short ? `tu entrada ${withA(short)}` : `tu entrada a ${reservation.name}`
