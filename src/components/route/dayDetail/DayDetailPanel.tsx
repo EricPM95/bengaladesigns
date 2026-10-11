@@ -390,8 +390,8 @@ export function DayDetailPanel({
   const destinoNombre = arrivalInfo.ciudad || route?.destination || day.city
   const arrivalChosen = arrivalMedio?.puntos.find((point) => point.id === route?.arrivalPointId) ?? null
   const departureChosen = departureMedio?.puntos.find((point) => point.id === route?.departurePointId) ?? null
-  const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalChosen, origin, destino: destinoNombre, time: modes.arrival === 'coche' ? null : arrivalTime, pago })
-  const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago })
+  const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalChosen, origin, destino: destinoNombre, time: modes.arrival === 'coche' ? null : arrivalTime, pago, codigo: route?.arrivalCodigo ?? null })
+  const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago, codigo: route?.departureCodigo ?? null })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
   const pedirReservas = useReservasFocusStore((state) => state.pedir)
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)

@@ -21,6 +21,7 @@ export function buildTripPayload(): TripPayload | null {
       rentalVehicleBooking: state.rentalVehicleBooking,
       esimSelections: state.esimSelections,
       esimPrecios: state.esimPrecios,
+      dondeComprado: state.dondeComprado,
       reservations: state.reservations,
       campaignCode: state.campaignCode,
       sales: state.sales,
@@ -71,6 +72,8 @@ export function TripSync() {
   const n26Added = useRouteStore((state) => state.n26Added)
   const rentalVehicleBooking = useRouteStore((state) => state.rentalVehicleBooking)
   const esimSelections = useRouteStore((state) => state.esimSelections)
+  const esimPrecios = useRouteStore((state) => state.esimPrecios)
+  const dondeComprado = useRouteStore((state) => state.dondeComprado)
   const reservations = useRouteStore((state) => state.reservations)
   const campaignCode = useRouteStore((state) => state.campaignCode)
   const sales = useRouteStore((state) => state.sales)
@@ -142,7 +145,7 @@ export function TripSync() {
     const timeout = setTimeout(() => attemptSave(travelerId), SAVE_DEBOUNCE_MS)
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, reservations, campaignCode, sales, wishlist, mode, activeDayId])
+  }, [travelerId, route, accommodationSelections, transportBookings, insuranceBooking, n26Added, rentalVehicleBooking, esimSelections, esimPrecios, dondeComprado, reservations, campaignCode, sales, wishlist, mode, activeDayId])
 
   // Si el viajero acaba creando OTRO viaje, ya no hay a dónde volver desde el formulario.
   useEffect(

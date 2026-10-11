@@ -4,7 +4,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { usePresupuestoUi } from '../../../store/usePresupuestoUi'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { usePresupuesto } from '../../../lib/usePresupuesto'
-import { importeDeTexto, formatoImporte, leerImporte, precioGuardado } from '../../../lib/dinero'
+import { importeDeTexto, formatoImporte, leerImporte, monedaConNombre, nombreDeMoneda, precioGuardado } from '../../../lib/dinero'
 import type { AbrirLinea, BloqueId, BloquePresupuesto, LineaPresupuesto } from '../../../lib/presupuesto'
 import { monedaDelViajero, personasDelViaje, useMonedas } from '../../../lib/useMoneda'
 import type { NombreIcono } from '../../../lib/iconos'
@@ -186,7 +186,7 @@ function HojaPersonas({ inicial, onGuardar, onClose }: { inicial: number | null;
   )
 }
 
-/** La hoja de cada moneda del viajero: «Tu moneda: EUR · Cambiar». */
+/** La hoja de la moneda del viajero (se abre desde la fila «Moneda» de abajo del todo). */
 function HojaMoneda({ actual, onGuardar, onClose }: { actual: string; onGuardar: (moneda: string) => void; onClose: () => void }) {
   const { opciones } = useMonedas()
   const [moneda, setMoneda] = useState(actual)
@@ -201,7 +201,7 @@ function HojaMoneda({ actual, onGuardar, onClose }: { actual: string; onGuardar:
       <select value={moneda} onChange={(event) => setMoneda(event.target.value)} aria-label="Tu moneda" className="mt-4 h-12 w-full rounded-[14px] border border-text/15 bg-white px-3 text-[15px]">
         {[...new Set([actual, ...opciones.map((opcion) => opcion.codigo)])].map((codigo) => (
           <option key={codigo} value={codigo}>
-            {codigo}
+            {monedaConNombre(codigo)}
           </option>
         ))}
       </select>
@@ -402,13 +402,23 @@ export function PantallaPresupuesto() {
                 Sin sumar: {presupuesto.sinCambio.map((linea) => `${linea.nombre} (${formatoImporte(linea.precio)}, sin cambio para ${linea.precio.currency})`).join('; ')}.
               </span>
             )}
-            <span>
-              Tu moneda: {moneda} ·{' '}
-              <button type="button" onClick={() => setHojaMoneda(true)} className="font-semibold text-text underline underline-offset-2">
-                Cambiar
-              </button>
-            </span>
           </div>
+          <button
+            type="button"
+            onClick={() => setHojaMoneda(true)}
+            data-fila-moneda
+            aria-label={`Moneda: ${nombreDeMoneda(moneda)}. Cambiar`}
+            className="flex min-h-[52px] w-full flex-none items-center gap-2.5 rounded-[22px] bg-[#FFFDF8] px-4 text-left text-text"
+            style={caja}
+          >
+            <span className="flex-1 text-[14px] font-medium">Moneda</span>
+            <span className="text-[14px] font-semibold" style={{ fontFamily: "'Geist Mono',monospace" }}>
+              {monedaConNombre(moneda)}
+            </span>
+            <span className="flex-none text-text/45">
+              <Icono nombre="adelante" size={14} />
+            </span>
+          </button>
         </div>
       </div>
 

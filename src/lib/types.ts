@@ -850,6 +850,9 @@ export interface Route {
   /** Lo que costó el billete de ida y el de vuelta, total de todas las personas (Tanda 6z2); null si no lo dijo. Si es un mismo billete, se pone en la ida y la vuelta se queda vacía. */
   arrivalPrecio?: Importe | null
   departurePrecio?: Importe | null
+  /** El código del vuelo, del tren o del autobús de la ida y de la vuelta («IB 3214»), si el viajero lo puso (Tanda 6y4). Opcional: los viajes guardados antes no lo traen (se lee como «sin código»). */
+  arrivalCodigo?: string | null
+  departureCodigo?: string | null
   /** La moneda del viajero (Tanda 6z2): sale del país de su ciudad de origen y la puede cambiar. Sin ella, se propone por el origen. */
   monedaViajero?: string | null
   /** Cuántas personas viajan, si el viajero lo corrige en el presupuesto; manda sobre lo que dice «¿Con quién viajas?». */

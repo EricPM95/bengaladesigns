@@ -6,6 +6,7 @@ import { useArrivalInfo } from '../lib/arrivalReturn'
 import { legsOf } from '../lib/reservasLegs'
 import { pagoActivo } from '../lib/pago'
 import { buildDestinationSegments } from '../lib/destinationSegments'
+import { alojamientoCubierto } from '../lib/tuAlojamiento'
 
 /** null cuando no hay ruta cargada todavía. */
 export function useTripReadiness() {
@@ -32,9 +33,14 @@ export function useTripReadiness() {
   if (pago && legs.arrival.done && firstDayId) transportDone.add(firstDayId)
   if (pago && legs.departure.done && lastDayId) transportDone.add(lastDayId)
   // Alojamiento (Tanda 6z): de pago y con un solo destino cuenta la zona elegida (el hotel que cuenta el viajero solo informa); con varios destinos, el alojamiento que ha puesto en cada uno.
-  const unDestino = buildDestinationSegments(route.days).length <= 1
-  const accommodationDone = new Set(pago && unDestino ? [] : Object.keys(accommodationSelections))
-  if (pago && route.accommodationZone && route.accommodationZone !== 'nose' && firstDayId) accommodationDone.add(firstDayId)
+  // (Tanda 6y4: la misma regla que la tarjeta de RESERVAS y el aviso de DÍAS, `alojamientoCubierto`.)
+  const segmentos = buildDestinationSegments(route.days)
+  const unDestino = segmentos.length <= 1
+  const accommodationDone = new Set<string>()
+  for (const segmento of segmentos) {
+    const id = segmento.dayIds[0]
+    if (alojamientoCubierto({ pago, unDestino, selections: accommodationSelections, zona: route.accommodationZone, segmentDayId: id })) accommodationDone.add(id)
+  }
 
   const resolved: ReadinessResolvedState = {
     transportBookedDayIds: transportDone,

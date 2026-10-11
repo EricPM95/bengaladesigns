@@ -20,7 +20,7 @@ export function TransportRow({ dayId, label }: TransportRowProps) {
         kind="transport"
         label={label}
         resolved={Boolean(booking)}
-        subtitle={booking ? [booking.operator, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
+        subtitle={booking ? [booking.operator, booking.codigo?.trim() ? booking.codigo.trim().toUpperCase() : null, precioGuardado(booking) ? formatoImporte(precioGuardado(booking) as Importe) : null].filter(Boolean).join(' · ') : undefined}
         priority="yellow"
         onClick={() => setOpen(true)}
         bookAction={{

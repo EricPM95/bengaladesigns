@@ -40,6 +40,8 @@ export interface TripBookings {
   esimSelections: Record<string, EsimStatus>
   /** Lo que costó la eSIM de cada país (Tanda 6z2). Viajes guardados antes: sin él. */
   esimPrecios?: Record<string, Importe>
+  /** «¿Dónde lo has comprado?» del seguro, la tarjeta y la eSIM (Tanda 6y4). Viajes guardados antes: sin él. */
+  dondeComprado?: Record<string, string>
   /** Entradas y excursiones reservadas (fijadas), el código de campaña del viaje y las ventas unidas (PARA_CODE_RESERVAS). Viajes guardados antes: sin ellas. */
   reservations?: Reservation[]
   campaignCode?: string

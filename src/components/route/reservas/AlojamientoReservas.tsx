@@ -3,7 +3,7 @@ import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
-import { estanciasDelViaje, nochesTexto, precioDeAlojamiento } from '../../../lib/tuAlojamiento'
+import { estanciasDelViaje, nochesTexto, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
 import { formatoImporte } from '../../../lib/dinero'
 import { BloqueShell, CambiarBoton, EliminarTexto, EstadoBloque, FlechaBloque, ICONOS, INK, IconoBloque, tituloBloqueStyle } from './BloqueReservas'
 import { Icono } from '../../ui/Icono'
@@ -153,4 +153,4 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
 }
 
 /** ¿Está hecha la zona del alojamiento? Con una zona elegida («Aún no lo sé» no cuenta). */
-export const alojamientoHecho = (zona: string | null | undefined): boolean => Boolean(zona) && zona !== 'nose'
+export const alojamientoHecho = zonaDeAlojamientoElegida
