@@ -21,7 +21,7 @@ export interface AppNotice {
   /** Un botón dentro del aviso (el nombre de la acción que lo resuelve); la pantalla decide qué hace. */
   action?: 'open-dates' | 'open-reservas'
   actionLabel?: string
-  /** Un botón que hace algo en el momento (Tanda 6y2: «Pasarlo al mié 15»): la campana lo ejecuta y se cierra. Sale con `actionLabel`. */
+  /** Un botón que hace algo en el momento (Tanda 6y2: «Pasar al mié 15»): la campana lo ejecuta y se cierra. Sale con `actionLabel`. */
   run?: () => void
   /** Leído = ya no cuenta. Los errores y los avisos de estado nunca están leídos: cuentan hasta que se arreglan. */
   read: boolean

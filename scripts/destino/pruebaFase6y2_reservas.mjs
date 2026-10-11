@@ -195,13 +195,13 @@ for (const fechas of [true, false]) {
   const avisos = reservasFueraDeSuDia(despuesDeReservar, [reservaColiseo], info.nombresCortos)
   const esperado1 = `Tu entrada al Coliseo es ${dia(2)}, pero en tu ruta el Coliseo está ${dia(1)}.`
   debe(avisos.length === 1 && avisos[0].kind === 'otro-dia' && avisos[0].text === esperado1, '3 aviso', `${nombre}: el aviso «otro día» no dice «${esperado1}» sino «${avisos[0]?.text}»`)
-  debe(avisos[0]?.actionLabel === `Pasarlo ${alDia(2)}`, '3 aviso', `${nombre}: el botón no dice «Pasarlo ${alDia(2)}» sino «${avisos[0]?.actionLabel}»`)
+  debe(avisos[0]?.actionLabel === `Pasar ${alDia(2)}`, '3 aviso', `${nombre}: el botón no dice «Pasar ${alDia(2)}» sino «${avisos[0]?.actionLabel}»`)
   // La campana.
   const campana = itemsDeLaCampana().filter((item) => item.id.startsWith('fuera-de-dia:'))
-  debe(campana.length === 1 && campana[0].text === esperado1 && campana[0].actionLabel === `Pasarlo ${alDia(2)}` && campana[0].tieneRun && campana[0].kind === 'warning' && campana[0].id.includes('r-col'), '3 campana', `${nombre}: la campana no trae el aviso con su botón (${JSON.stringify(campana)})`)
+  debe(campana.length === 1 && campana[0].text === esperado1 && campana[0].actionLabel === `Pasar ${alDia(2)}` && campana[0].tieneRun && campana[0].kind === 'warning' && campana[0].id.includes('r-col'), '3 campana', `${nombre}: la campana no trae el aviso con su botón (${JSON.stringify(campana)})`)
   // La tarjeta de RESERVAS.
   const panel = plano(aTexto(renderToStaticMarkup(createElement(EntradasYFreeTour, { route: despuesDeReservar, info, abierto: true, onToggle() {} }))))
-  debe(panel.includes(esperado1) && panel.includes(`Pasarlo ${alDia(2)}`), '3 tarjeta', `${nombre}: la tarjeta de la reserva en RESERVAS no trae el aviso y su botón (${panel.slice(0, 400)})`)
+  debe(panel.includes(esperado1) && panel.includes(`Pasar ${alDia(2)}`), '3 tarjeta', `${nombre}: la tarjeta de la reserva en RESERVAS no trae el aviso y su botón (${panel.slice(0, 400)})`)
   // Mientras no se pulsa, no se mueve nada (se vuelve a calcular varias veces).
   for (let i = 0; i < 3; i++) itemsDeLaCampana()
   debe(JSON.stringify(ahora()) === JSON.stringify(despuesDeReservar), '3 aviso', `${nombre}: la app mueve algo sola al calcular el aviso`)
@@ -235,35 +235,35 @@ for (const fechas of [true, false]) {
   const avisos2 = reservasFueraDeSuDia(tras, [reservaColiseo], info.nombresCortos)
   const esperado2 = `Tu entrada al Coliseo es ${dia(2)} y el Coliseo no está en tu ruta.`
   debe(avisos2.length === 1 && avisos2[0].kind === 'no-esta' && avisos2[0].text === esperado2, '3 aviso', `${nombre}: el aviso «no está» no dice «${esperado2}» sino «${avisos2[0]?.text}»`)
-  debe(avisos2[0]?.actionLabel === `Añadirlo ${alDia(2)}`, '3 aviso', `${nombre}: el botón no dice «Añadirlo ${alDia(2)}» sino «${avisos2[0]?.actionLabel}»`)
+  debe(avisos2[0]?.actionLabel === `Añadir ${alDia(2)}`, '3 aviso', `${nombre}: el botón no dice «Añadir ${alDia(2)}» sino «${avisos2[0]?.actionLabel}»`)
   const campana2 = itemsDeLaCampana().filter((item) => item.id.startsWith('fuera-de-dia:'))
   debe(campana2.length === 1 && campana2[0].text === esperado2 && campana2[0].tieneRun, '3 campana', `${nombre}: la campana no trae el aviso «no está» con su botón`)
   const panel2 = plano(aTexto(renderToStaticMarkup(createElement(EntradasYFreeTour, { route: tras, info, abierto: true, onToggle() {} }))))
-  debe(panel2.includes(esperado2) && panel2.includes(`Añadirlo ${alDia(2)}`), '3 tarjeta', `${nombre}: la tarjeta de RESERVAS no trae el aviso «no está» y su botón`)
-  debe(await aplicarAvisoFueraDeDia(avisos2[0]), '3 botón', `${nombre}: el botón «Añadirlo» no pudo añadir el Coliseo`)
+  debe(panel2.includes(esperado2) && panel2.includes(`Añadir ${alDia(2)}`), '3 tarjeta', `${nombre}: la tarjeta de RESERVAS no trae el aviso «no está» y su botón`)
+  debe(await aplicarAvisoFueraDeDia(avisos2[0]), '3 botón', `${nombre}: el botón «Añadir» no pudo añadir el Coliseo`)
   const anadida = ahora()
   const col2 = anadida.days[1].stops.find((s) => s.name === 'Coliseo')
-  debe(anadida.days[1].stops.map((s) => s.name).join() === 'Piazza Navona,Trastevere,Coliseo' && col2?.time === '10:00' && col2?.reservedId === 'r-col', '3 botón', `${nombre}: «Añadirlo» no pone el Coliseo al final del día 2 con su hora y su marca (${anadida.days[1].stops.map((s) => `${s.name}@${s.time}`)})`)
-  debe(JSON.stringify(anadida.days[0]) === JSON.stringify(antes2.days[0]) && JSON.stringify(anadida.days[2]) === JSON.stringify(antes2.days[2]), '3 botón', `${nombre}: «Añadirlo» toca otros días`)
+  debe(anadida.days[1].stops.map((s) => s.name).join() === 'Piazza Navona,Trastevere,Coliseo' && col2?.time === '10:00' && col2?.reservedId === 'r-col', '3 botón', `${nombre}: «Añadir» no pone el Coliseo al final del día 2 con su hora y su marca (${anadida.days[1].stops.map((s) => `${s.name}@${s.time}`)})`)
+  debe(JSON.stringify(anadida.days[0]) === JSON.stringify(antes2.days[0]) && JSON.stringify(anadida.days[2]) === JSON.stringify(antes2.days[2]), '3 botón', `${nombre}: «Añadir» toca otros días`)
   debe(reservasFueraDeSuDia(anadida, [reservaColiseo], info.nombresCortos).length === 0, '3 aviso', `${nombre}: el aviso «no está» no se va al añadirlo`)
   useAddFlowStore.getState().undo()
-  debe(JSON.stringify(ahora()) === JSON.stringify(tras), '3 deshacer', `${nombre}: «Deshacer» de «Añadirlo» no devuelve la ruta`)
+  debe(JSON.stringify(ahora()) === JSON.stringify(tras), '3 deshacer', `${nombre}: «Deshacer» de «Añadir» no devuelve la ruta`)
 
   // 3c. El Free Tour (su parada no está o está en otro día).
   const rFT = reserva('r-ft', 'Free Tour', [FT], f(1), n(2), '10:00')
   montar(rutaMano(3, { fechas }), [['Fontana de Trevi'], ['Piazza Navona'], []])
   useRouteStore.setState({ reservations: [rFT] })
   const avFT = reservasFueraDeSuDia(ahora(), [rFT], info.nombresCortos)
-  debe(avFT.length === 1 && avFT[0].kind === 'no-esta' && avFT[0].text === `Tu Free Tour es ${dia(2)} y el Free Tour no está en tu ruta.` && avFT[0].actionLabel === `Añadirlo ${alDia(2)}`, '3 aviso', `${nombre}: el aviso del Free Tour (no está) no cuadra: ${avFT[0]?.text} / ${avFT[0]?.actionLabel}`)
-  debe(await aplicarAvisoFueraDeDia(avFT[0]), '3 botón', `${nombre}: «Añadirlo» no pudo añadir el Free Tour`)
+  debe(avFT.length === 1 && avFT[0].kind === 'no-esta' && avFT[0].text === `Tu Free Tour es ${dia(2)} y el Free Tour no está en tu ruta.` && avFT[0].actionLabel === `Añadir ${alDia(2)}`, '3 aviso', `${nombre}: el aviso del Free Tour (no está) no cuadra: ${avFT[0]?.text} / ${avFT[0]?.actionLabel}`)
+  debe(await aplicarAvisoFueraDeDia(avFT[0]), '3 botón', `${nombre}: «Añadir» no pudo añadir el Free Tour`)
   const conFT = ahora()
-  debe(conFT.days[1].stops.at(-1).isFreeTour && conFT.days[1].stops.at(-1).time === '10:00' && conFT.days.filter((d) => d.stops.some((s) => s.isFreeTour)).length === 1, '3 botón', `${nombre}: «Añadirlo» no pone el Free Tour en el día 2 con su hora`)
+  debe(conFT.days[1].stops.at(-1).isFreeTour && conFT.days[1].stops.at(-1).time === '10:00' && conFT.days.filter((d) => d.stops.some((s) => s.isFreeTour)).length === 1, '3 botón', `${nombre}: «Añadir» no pone el Free Tour en el día 2 con su hora`)
   // El Free Tour en otro día (la parada se quedó en el día 3).
   montar(rutaMano(3, { fechas }), [[], [], []])
   useRouteStore.getState().addReservation(reserva('r-ft-a', 'Free Tour', [FT], f(2), n(3), '10:00'), null, freeTourEntry)
   useRouteStore.setState({ reservations: [rFT] })
   const avFT2 = reservasFueraDeSuDia(ahora(), [rFT], info.nombresCortos)
-  debe(avFT2.length === 1 && avFT2[0].kind === 'otro-dia' && avFT2[0].text === `Tu Free Tour es ${dia(2)}, pero en tu ruta el Free Tour está ${dia(3)}.` && avFT2[0].actionLabel === `Pasarlo ${alDia(2)}`, '3 aviso', `${nombre}: el aviso del Free Tour (otro día) no cuadra: ${avFT2[0]?.text} / ${avFT2[0]?.actionLabel}`)
+  debe(avFT2.length === 1 && avFT2[0].kind === 'otro-dia' && avFT2[0].text === `Tu Free Tour es ${dia(2)}, pero en tu ruta el Free Tour está ${dia(3)}.` && avFT2[0].actionLabel === `Pasar ${alDia(2)}`, '3 aviso', `${nombre}: el aviso del Free Tour (otro día) no cuadra: ${avFT2[0]?.text} / ${avFT2[0]?.actionLabel}`)
 }
 // La ruta nuestra: sin cambios (este aviso es solo de la ruta a mano).
 {
