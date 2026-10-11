@@ -4,7 +4,7 @@ import type { TuAlojamiento } from '../lib/tuAlojamiento'
 import type { Importe } from '../lib/dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import { isManualRoute } from '../lib/manualPlan'
-import { withManualFreeTour } from '../lib/freeTourManual'
+import { FREE_TOUR_REF, isManualFreeTourReservation, pedirFotoDelFreeTour, withManualFreeTour, withoutManualFreeTour } from '../lib/freeTourManual'
 import type { DestinationPlace } from '../lib/destinationPlacesApi'
 import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
@@ -916,6 +916,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       if (isManualRoute(route)) {
         // (El Free Tour a mano, Tanda 6y2: la reserva crea su parada en el día de su fecha —o trae la que ya hay si el viajero cambió la fecha— y luego coge la hora y la marca.)
         set({ route: placeReservedEntrance(withManualFreeTour(unpinned, reservation, freeTour ?? null), reservation) })
+        // (La foto real del punto de encuentro del Free Tour, Tanda 6y3: solo si la parada acaba de crearse y no tiene foto.)
+        if (reservation.refId === FREE_TOUR_REF) void pedirFotoDelFreeTour()
         return
       }
       // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días
@@ -951,9 +953,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   removeReservation: (id) => {
     const removed = get().reservations.find((reservation) => reservation.id === id)
     const removedDay = removed && removed.kind === 'entrada' && get().route ? dayOfReservation(get().route!, removed) : null
+    // (Tanda 6y3: en una ruta a mano, quitar la reserva del Free Tour quita también su parada del día; la pantalla lo avisa con «Deshacer».)
+    const quitaParada = isManualFreeTourReservation(get().route, removed)
     set((state) => ({
       reservations: state.reservations.filter((reservation) => reservation.id !== id),
-      route: state.route ? unpinReservedStops(state.route, id) : state.route,
+      route: state.route ? (quitaParada ? withoutManualFreeTour(state.route) : unpinReservedStops(state.route, id)) : state.route,
     }))
     // Sus avisos de la campana se van con ella.
     void import('./useNoticesStore').then(({ useNoticesStore }) => {

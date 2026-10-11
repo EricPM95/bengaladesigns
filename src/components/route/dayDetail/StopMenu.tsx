@@ -3,7 +3,7 @@ import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
 import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
-import { withUndo } from '../../../store/useAddFlowStore'
+import { removeReservationWithUndo, withUndo } from '../../../store/useAddFlowStore'
 import { hasOwnTime } from '../../../lib/freeDays'
 import { alDia } from '../../../lib/nombreDeDia'
 import { ListaDeDias } from './ListaDeDias'
@@ -53,7 +53,6 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
   const replaceStop = useRouteStore((state) => state.replaceStop)
   const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
   // Una parada reservada está fijada: solo se quita con «Quitar del viaje» (PARA_CODE_RESERVAS, 6).
-  const removeReservation = useRouteStore((state) => state.removeReservation)
   const [removingReservation, setRemovingReservation] = useState(false)
 
   /** No-op si el día ya tiene paradas reales — `realStops` ya es esa misma lista en ese caso. */
@@ -259,7 +258,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
           name={stop.name}
           onCancel={() => setRemovingReservation(false)}
           onConfirm={() => {
-            removeReservation(stop.reservedId as string)
+            removeReservationWithUndo(stop.reservedId as string)
             setRemovingReservation(false)
           }}
         />

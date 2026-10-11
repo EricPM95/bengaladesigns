@@ -4156,8 +4156,8 @@ app.post('/api/destination-places', (req, res) => {
       type: place.type ?? null,
       tags: Array.isArray(place.tags) ? place.tags : [],
       level: place.level ?? null,
-      // Ruta a mano (Tanda 6y): su puesto en la lista a mano de imprescindibles del destino (`pool_lista`), o null. El orden de EXPLORAR en una ruta a mano pone primero los más
-      // «me gusta», luego estos, luego el nivel 1 y el resto.
+      // Ruta a mano (Tanda 6y3): su puesto en la lista a mano del destino (`pool_lista`), o null; el nivel va aparte (`level`). El orden de «Añadir parada» en una ruta a mano pone primero los más
+      // «me gusta», luego el nivel 1, luego estos (sin repetir) y el resto.
       essential_rank: (() => {
         const rank = (data.pool_lista?.lugares ?? []).indexOf(place.name)
         return rank >= 0 ? rank : null
@@ -4286,6 +4286,8 @@ app.post('/api/destination-places', (req, res) => {
           name: ft.name,
           // La foto del Free Tour es la de su punto de encuentro o de donde acaba, como en la ruta (`photo_from`).
           photo_name: ft.photo_from ?? null,
+          // (Tanda 6y3) Su artículo de Wikipedia, para pedir la foto real igual que la de cualquier parada.
+          wikipedia_title: (ft.photo_from ? (data.places ?? []).find((candidate) => candidate.name === ft.photo_from)?.wikipedia_title : null) ?? null,
           coordinates: { lat: ft.coordinates[0], lng: ft.coordinates[1] },
           filter_category: null,
           zone: ft.zone ?? null,

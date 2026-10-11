@@ -6,6 +6,7 @@ import { alDia, ElDia, elDia } from '../../../lib/nombreDeDia'
 import { reservasParaMotor } from '../../../lib/engineReservas'
 import { excursionTargetDays } from '../../../lib/excursionOffer'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
@@ -136,7 +137,6 @@ export function AddReservationSheet({ route, target, onClose }: { route: Route; 
 
 function AddReservationSheetInner({ route, target, onClose }: { route: Route; target: ReservationTarget; onClose: () => void }) {
   const addReservation = useRouteStore((state) => state.addReservation)
-  const removeReservation = useRouteStore((state) => state.removeReservation)
   const reservations = useRouteStore((state) => state.reservations)
   const [confirming, setConfirming] = useState(false)
   const [tab, setTab] = useState<Tab>('email')
@@ -467,7 +467,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const deleteReservation = () => {
     if (!existing) return
     try {
-      removeReservation(existing.id)
+      removeReservationWithUndo(existing.id)
     } catch (error) {
       console.error('[AddReservationSheet] no se pudo eliminar', error)
     }

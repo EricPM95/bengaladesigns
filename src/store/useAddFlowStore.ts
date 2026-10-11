@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { Route } from '../lib/types'
 import type { Reservation } from '../lib/bookings'
+import { isManualFreeTourReservation } from '../lib/freeTourManual'
 import { useRouteStore } from './useRouteStore'
 
 /**
@@ -51,4 +52,15 @@ export function withUndo(message: string, change: () => void): void {
   const previousReservations = useRouteStore.getState().reservations
   change()
   useAddFlowStore.setState({ toast: { message, previous, previousReservations, id: Date.now() } })
+}
+
+/**
+ * Quita una reserva. Si es el Free Tour de una ruta a mano, también se va su parada del día, y queda el aviso corto con «Deshacer» (devuelve la reserva y la parada, tal cual estaban).
+ * El resto de reservas, como siempre (sin aviso).
+ */
+export function removeReservationWithUndo(id: string): void {
+  const { route, reservations, removeReservation } = useRouteStore.getState()
+  const reservation = reservations.find((item) => item.id === id)
+  if (isManualFreeTourReservation(route, reservation)) withUndo('Free Tour quitado del viaje', () => removeReservation(id))
+  else removeReservation(id)
 }
