@@ -73,7 +73,7 @@ export function RouteView() {
   /** El centro de la ciudad para el mapa limpio de EXPLORAR: la media de las paradas con coordenadas reales de la ruta. */
   const cityCenter = useMemo(() => {
     const points = (route?.days ?? []).flatMap((day) => day.stops.map((stop) => stop.coordinates)).filter((c) => c && (c.lat !== 0 || c.lng !== 0))
-    if (points.length === 0) return null
+    if (points.length === 0) return route?.destinationCoordinates ?? null
     return { lat: points.reduce((sum, c) => sum + c.lat, 0) / points.length, lng: points.reduce((sum, c) => sum + c.lng, 0) / points.length }
   }, [route])
   const [exploreActiveId, setExploreActiveId] = useState<string | null>(null)
@@ -209,7 +209,7 @@ export function RouteView() {
               <>
                 {/* (Tanda 6k, punto 7: el mapa de RUTA, sin el punto del aeropuerto —el encuadre cuenta solo las paradas de los días—; en la ventana de llegada, sí.) */}
                 {segments.length <= 1 ? (
-                  <StopsMapView markers={buildCombinedDaysMarkers(route.days)} />
+                  <StopsMapView markers={buildCombinedDaysMarkers(route.days)} center={cityCenter} />
                 ) : (
                   <RouteOverviewMap segments={segments} days={route.days} />
                 )}
@@ -238,6 +238,7 @@ export function RouteView() {
                 <StopsMapView
                   markers={buildCombinedDaysMarkers(route.days, activeDayId)}
                   lines={buildCombinedDaysLines(route.days, activeDayId)}
+                  center={cityCenter}
                   activeStopId={activeStopId}
                   onSelectStop={setActiveStopId}
                 />

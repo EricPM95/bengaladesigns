@@ -110,6 +110,7 @@ export function buildManualRoute({ destination, destinationPlace, answers, trans
     intensity: 5,
     createdAt: now.toISOString(),
     planMode: 'manual',
+    destinationCoordinates: destinationPlace?.coordinates ?? null,
     mustIncludePlaces: [],
     anchorNames: [],
   }
