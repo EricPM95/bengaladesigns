@@ -65,7 +65,7 @@ const MODE_LABEL = {
  * `pill` la pastilla verde «✓ 11:20» (de pago, con la hora que puso el viajero). Ninguna hora que calcule la app: «En el centro», «libre hacia» o «Sal a las» no existen (Tanda 6t, 5).
  * `pago`: la versión de pago (con el botón y la pastilla); sin él, la gratis (solo la flecha). `point` es el punto elegido en RESERVAS (o null), `destino` sale de los datos.
  */
-export function barTextOf({ kind, mode, point, origin, destino, time, pago }) {
+export function barTextOf({ kind, mode, point, origin, destino, time, pago, codigo }) {
   const label = MODE_LABEL[mode]
   const llegada = kind === 'llegada'
   const head = llegada ? 'LLEGADA' : 'VUELTA'
@@ -76,7 +76,8 @@ export function barTextOf({ kind, mode, point, origin, destino, time, pago }) {
   if (time) {
     const place = point ? point.corto ?? point.nombre : null
     return {
-      eyebrow: `${head} · ${place ? place.toUpperCase() : label.medio}`,
+      // (Tanda 6y4: el código del vuelo, tren o autobús que puso el viajero, si lo puso: «LLEGADA · FIUMICINO · IB 3214».)
+      eyebrow: `${head} · ${place ? place.toUpperCase() : label.medio}${codigo && String(codigo).trim() ? ` · ${String(codigo).trim().toUpperCase()}` : ''}`,
       main: llegada ? (place ? `Cómo llegar desde ${place}` : `Cómo llegar a ${destino}`) : place ? `Cómo llegar a ${place}` : label.volver,
       add: null,
       pill: `✓ ${time}`,

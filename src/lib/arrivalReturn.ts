@@ -123,7 +123,7 @@ export interface ArrivalBarText {
 }
 
 /** Los textos de la barra, con reserva o sin ella, según el medio. */
-export const barTextOf: (input: { kind: 'llegada' | 'vuelta'; mode: ArrivalMode; point: ArrivalPoint | null; origin: string; destino: string; time: string | null; pago: boolean }) => ArrivalBarText = rules.barTextOf
+export const barTextOf: (input: { kind: 'llegada' | 'vuelta'; mode: ArrivalMode; point: ArrivalPoint | null; origin: string; destino: string; time: string | null; pago: boolean; codigo?: string | null }) => ArrivalBarText = rules.barTextOf
 
 // ── Los datos del destino ────────────────────────────────────────────────────────────────────────────────────────
 

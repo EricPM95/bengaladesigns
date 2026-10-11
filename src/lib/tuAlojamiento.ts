@@ -26,6 +26,18 @@ export function lineaAlojamiento(hotel: Partial<TuAlojamiento>, noches: number):
   return precio !== null ? `${nochesTexto(noches)} · ${formatoImporte(precio)}` : nochesTexto(noches)
 }
 
+/** ¿Está hecha la zona del alojamiento? Con una zona elegida («Aún no lo sé» no cuenta). */
+export const zonaDeAlojamientoElegida = (zona: string | null | undefined): boolean => Boolean(zona) && zona !== 'nose'
+
+/**
+ * LA regla de «el alojamiento de esta estancia ya está resuelto» (Tanda 6y4): la usan la tarjeta «Alojamiento» de RESERVAS, el «!» de preparación y el aviso del principio del día 1 en DÍAS (que solo sale mientras FALTA).
+ * Cuenta el alojamiento que el viajero ha puesto en esa estancia; de pago y con un solo destino cuenta también la zona elegida.
+ */
+export function alojamientoCubierto(datos: { pago: boolean; unDestino: boolean; selections: Record<string, unknown>; zona: string | null | undefined; segmentDayId: string | null | undefined }): boolean {
+  if (datos.segmentDayId && datos.selections[datos.segmentDayId]) return true
+  return datos.pago && datos.unDestino && zonaDeAlojamientoElegida(datos.zona)
+}
+
 /** Los destinos del viaje con noches, en orden: cada uno tiene su alojamiento, guardado en el id de su primer día. */
 export function estanciasDelViaje(route: Route) {
   return buildDestinationSegments(route.days)

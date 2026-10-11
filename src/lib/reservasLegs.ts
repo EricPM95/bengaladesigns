@@ -13,6 +13,8 @@ export interface LegState {
   kind: LegKind
   mode: ArrivalMode
   time: string | null
+  /** El código del vuelo, tren o autobús que puso el viajero («IB 3214»); null si no lo puso (Tanda 6y4). */
+  codigo: string | null
   /** Los puntos para elegir (Fiumicino · Ciampino); con uno solo o en coche, sin botones. */
   points: ArrivalPoint[]
   hasButtons: boolean
@@ -47,6 +49,7 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
     kind,
     mode,
     time,
+    codigo: ((kind === 'arrival' ? route.arrivalCodigo : route.departureCodigo) ?? '').trim() || null,
     points,
     hasButtons: points.length > 1,
     point,
@@ -75,6 +78,7 @@ export function legLine(leg: LegState): string {
   if (leg.mode === 'coche') return `${head} · ${leg.kind === 'arrival' ? 'Llegas en coche' : 'Te vas en coche'}`
   if (!leg.done || !leg.time) return head
   const parts = [head, leg.time]
+  if (leg.codigo) parts.push(leg.codigo.toUpperCase())
   if (leg.point) parts.push(puntoCorto(leg.point))
   return parts.join(' · ')
 }

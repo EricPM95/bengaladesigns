@@ -1,4 +1,5 @@
 import monedasPorPais from '../../shared/dinero/monedasPorPais.json'
+import { simboloDe } from '../../shared/dinero/formato.js'
 
 /**
  * El dinero de la app (Tanda 6z2): UNA sola forma de guardar un precio para todo lo que el viajero añade al viaje (importe y moneda), y UN solo sitio donde se formatea y se convierte.
@@ -19,6 +20,20 @@ export interface Cambio {
 
 // El formato (símbolos, miles, decimales) vive en `shared/dinero/formato.js`: lo usan también el servidor y los datos.
 export { conMiles, numeroEs, simboloDe, formatoImporte, rangoImporte, precioTienda, MONEDA_POR_DEFECTO } from '../../shared/dinero/formato.js'
+
+/** El nombre de una moneda en español, con la primera en mayúscula: «Euro», «Dólar estadounidense», «Corona checa». Si el navegador no la conoce, el código. */
+export function nombreDeMoneda(codigo: string): string {
+  try {
+    const nombre = new Intl.DisplayNames(['es'], { type: 'currency' }).of(codigo)
+    if (nombre && nombre !== codigo) return nombre.charAt(0).toUpperCase() + nombre.slice(1)
+  } catch {
+    /* sin nombre: se queda el código */
+  }
+  return codigo
+}
+
+/** «€ Euro», «Kč Corona checa», «MXN Peso mexicano»: el símbolo (o el código si no tiene) y el nombre en español. */
+export const monedaConNombre = (codigo: string): string => `${simboloDe(codigo)} ${nombreDeMoneda(codigo)}`
 
 /** ¿Es un importe de verdad (mayor que 0 y con moneda)? */
 export function esImporte(valor: unknown): valor is Importe {

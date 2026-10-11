@@ -511,6 +511,8 @@ interface RouteStoreState {
   setMonedaViajero: (moneda: string | null) => void
   setPersonas: (personas: number | null) => void
   setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
+  /** El código del vuelo, tren o autobús de la ida o la vuelta (Tanda 6y4); vacío o null lo quita. */
+  setLegCodigo: (kind: 'arrival' | 'departure', codigo: string | null) => void
   /** El precio de la eSIM de un país (clave: código de país en minúsculas); null lo quita. */
   setEsimPrecio: (countryCode: string, precio: Importe | null) => void
 
@@ -1558,6 +1560,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setMonedaViajero: (moneda) => set((state) => (state.route ? { route: { ...state.route, monedaViajero: moneda } } : state)),
 
   setLegPrecio: (kind, precio) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPrecio' : 'departurePrecio']: precio } } : state)),
+  setLegCodigo: (kind, codigo) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalCodigo' : 'departureCodigo']: codigo?.trim() ? codigo.trim().slice(0, 20) : null } } : state)),
 
   setEsimPrecio: (countryCode, precio) =>
     set((state) => {
@@ -1668,7 +1671,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   removeFlightLeg: (kind) =>
     set((state) =>
       state.route
-        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null } : { departureFlightTime: null, departurePointId: null, departurePrecio: null }) } }
+        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null } : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null }) } }
         : state,
     ),
   setAccommodationZone: (zone) => set((state) => (state.route ? { route: { ...state.route, accommodationZone: zone } } : state)),

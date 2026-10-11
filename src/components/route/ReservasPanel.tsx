@@ -16,7 +16,8 @@ import { DestinationReservasAccordion } from './reservas/DestinationReservasAcco
 import { FlightAdjustSheet } from './reservas/FlightAdjustSheet'
 import { BotonCartera } from '../presupuesto/BotonCartera'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
-import { AlojamientoReservas, alojamientoHecho } from './reservas/AlojamientoReservas'
+import { AlojamientoReservas } from './reservas/AlojamientoReservas'
+import { alojamientoCubierto } from '../../lib/tuAlojamiento'
 import { TarjetaCuentaAtras } from './reservas/TarjetaCuentaAtras'
 import { ResumenViaje } from './reservas/ResumenViaje'
 import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
@@ -130,7 +131,8 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const legs = legsOf(route, arrivalInfo)
   // (Gratis: «x de 2», Alojamiento · Entradas, y el alojamiento cuenta con el que puso el viajero; de pago: «x de 3», con Llegada y vuelta, y el alojamiento cuenta con la zona elegida.)
   const primerTramo = segments.find((segment) => segment.nights > 0)
-  const alojamientoListo = pago ? alojamientoHecho(accommodationZone) : Boolean(primerTramo && accommodationSelections[primerTramo.dayIds[0]])
+  // (Tanda 6y4: la misma regla que el aviso de DÍAS y el «!» de preparación, `alojamientoCubierto`.)
+  const alojamientoListo = alojamientoCubierto({ pago, unDestino, selections: accommodationSelections, zona: accommodationZone, segmentDayId: primerTramo?.dayIds[0] })
   const fichas = [
     ...(pago ? [{ bloque: 'llegada' as const, nombre: 'Llegada y vuelta', hecho: legs.arrival.done && legs.departure.done }] : []),
     { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoListo },

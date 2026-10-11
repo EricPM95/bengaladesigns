@@ -9,7 +9,6 @@ import type { DateNotice } from '../../lib/types'
 /** Una fecha especial va con su FECHA, no con el número del día: si se borra el día 1, la audiencia del miércoles sigue en el miércoles. */
 const noticeIsForDay = (notice: DateNotice, dayNumber: number, dateIso: string | null) =>
   notice.dateIso && dateIso ? notice.dateIso === dateIso : notice.dayNumber === dayNumber
-import { numberedStopsOf } from '../../lib/stopKind'
 import { dayColor, dayColorIndex } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
@@ -214,7 +213,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : isManualRoute(route) ? manualDayTitle(route, day) : (day.curatedTitle ?? day.city)
         // Un día a mano sin nombre ya enseña su fecha en el cuadrito: el título dice «Ponle nombre» (gris, cursiva) y al tocarlo se abre DayNameSheet (Tanda 6y2).
         const sinNombre = isManualRoute(route) && !day.userAdded && !enExcursion && !travel && !day.nameByUser && day.dayType !== 'excursion'
-        const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
         const esHoy = day.id === hoyId
         // «Hoy es un día completo: te recomendamos madrugar.» solo avisa: no mueve ni quita nada del día (Tanda 6z6).
@@ -309,12 +307,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   </span>
                 )}
                 {/* (Ya no hay aquí la línea de lo reservado con su hora, «Coliseo · 10:00» con candado: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
-                {/* Cerrado: cuántas paradas son (sin puntitos de colores, Tanda 6j). */}
-                {!expanded && numbered.length > 0 && (
-                  <span className="mt-1 text-[12px] text-text/55">
-                    {numbered.length} parada{numbered.length === 1 ? '' : 's'}
-                  </span>
-                )}
+                {/* (Ya no hay aquí el contador «17 paradas»: Tanda 6y4.) */}
               </div>
 
               <span onClick={(event) => event.stopPropagation()}>

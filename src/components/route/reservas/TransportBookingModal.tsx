@@ -26,10 +26,11 @@ export function TransportBookingModal({ open, label, itemLabel, initial, onSave,
   const [dateTime, setDateTime] = useState(initial?.dateTime ?? '')
   const precio = usePrecioEditable(precioGuardado(initial))
   const [locator, setLocator] = useState(initial?.locator ?? '')
+  const [codigo, setCodigo] = useState(initial?.codigo ?? '')
 
   const handleSave = () => {
     if (!operator.trim()) return
-    onSave({ operator: operator.trim(), dateTime, precio: precio.importe, locator: locator.trim() })
+    onSave({ operator: operator.trim(), dateTime, precio: precio.importe, locator: locator.trim(), codigo: codigo.trim() })
     onClose()
   }
 
@@ -48,6 +49,10 @@ export function TransportBookingModal({ open, label, itemLabel, initial, onSave,
             <input type="datetime-local" value={dateTime} onChange={(event) => setDateTime(event.target.value)} className={inputClasses} />
           </label>
           <CampoPrecio estado={precio} />
+          <label className="block space-y-1.5">
+            <span className="text-small font-medium text-text">Código del vuelo, tren o autobús (opcional)</span>
+            <input value={codigo} onChange={(event) => setCodigo(event.target.value)} maxLength={20} placeholder="AB 1234" aria-label="Código del servicio" className={inputClasses} />
+          </label>
           <label className="block space-y-1.5">
             <span className="text-small font-medium text-text">Localizador</span>
             <input value={locator} onChange={(event) => setLocator(event.target.value)} placeholder="ABC123" className={inputClasses} />

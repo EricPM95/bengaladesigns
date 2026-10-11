@@ -12,6 +12,8 @@ export interface TransportBooking {
   dateTime: string
   precio: Importe | null
   locator: string
+  /** El código del vuelo, tren o autobús («AB 1234»), opcional (Tanda 6y4); las fichas guardadas antes no lo traen. */
+  codigo?: string
 }
 
 /** Ficha de reserva genérica para Seguro de viaje / Vehículo de alquiler — mismos campos, distinto label según el uso. */

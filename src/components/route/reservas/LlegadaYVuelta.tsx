@@ -24,9 +24,11 @@ const BUSCAR_BILLETE = 'https://www.skyscanner.net'
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
 
 /** La hoja de la hora de una mitad: la rueda de la 6k, de 5 en 5 minutos. */
-function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg: LegState; ciudad: string; precioInicial: Importe | null; onSave: (time: string, precio: Importe | null) => void; onClose: () => void }) {
+function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg: LegState; ciudad: string; precioInicial: Importe | null; onSave: (time: string, precio: Importe | null, codigo: string | null) => void; onClose: () => void }) {
   // (Tanda 6z2) El precio del billete, total de todas las personas. Si la ida y la vuelta son un mismo billete, se pone en la ida y la vuelta se queda vacía.
   const precio = usePrecioEditable(precioInicial)
+  // (Tanda 6y4) El código del vuelo, tren o autobús, opcional: se ve luego en la tarjeta de la llegada y la vuelta.
+  const [codigo, setCodigo] = useState(leg.codigo ?? '')
   const [hora, setHora] = useState(leg.time && HORAS.includes(leg.time) ? leg.time : HORA_POR_DEFECTO[leg.kind])
   const lugar = leg.point ? puntoCorto(leg.point) : ciudad
   const fecha = leg.dateIso ? capitalizar(shortDateEs(leg.dateIso)) : `Día ${leg.dayNumber}`
@@ -45,7 +47,20 @@ function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg:
       <div className="mt-4">
         <CampoPrecio estado={precio} ayuda={leg.kind === 'arrival' ? 'Si la ida y la vuelta son un mismo billete, ponlo aquí y deja la vuelta vacía.' : 'Déjalo vacío si ya lo pusiste en la ida.'} />
       </div>
-      <button type="button" onClick={() => onSave(hora, precio.importe)} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]">
+      <label className="mt-3 block">
+        <span className="text-[13px] font-medium text-text">{`Código del ${legWord(leg.mode).noun} (opcional)`}</span>
+        <input
+          value={codigo}
+          onChange={(event) => setCodigo(event.target.value)}
+          maxLength={20}
+          autoCapitalize="characters"
+          placeholder="AB 1234"
+          aria-label={`Código del ${legWord(leg.mode).noun}`}
+          className="mt-1.5 h-12 w-full rounded-[14px] border border-text/15 bg-white px-3.5 text-[15px] uppercase outline-none focus:border-text/50 placeholder:normal-case"
+          style={{ fontFamily: "'Geist Mono',monospace" }}
+        />
+      </label>
+      <button type="button" onClick={() => onSave(hora, precio.importe, codigo.trim() || null)} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]">
         Guardar · {hora}
       </button>
     </HojaAbajo>
@@ -190,6 +205,7 @@ export function LlegadaYVuelta({
   const setArrivalFlightTime = useRouteStore((state) => state.setArrivalFlightTime)
   const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
   const setLegPrecio = useRouteStore((state) => state.setLegPrecio)
+  const setLegCodigo = useRouteStore((state) => state.setLegCodigo)
   const setPoint = useRouteStore((state) => state.setArrivalPointId)
   const removeLeg = useRouteStore((state) => state.removeFlightLeg)
   const [hoja, setHoja] = useState<LegKind | null>(null)
@@ -333,9 +349,10 @@ export function LlegadaYVuelta({
           ciudad={ciudad}
           precioInicial={leerImporte(hoja === 'arrival' ? route.arrivalPrecio : route.departurePrecio)}
           onClose={() => setHoja(null)}
-          onSave={(time, precio) => {
+          onSave={(time, precio, codigo) => {
             ;(hoja === 'arrival' ? setArrivalFlightTime : setDepartureFlightTime)(time)
             setLegPrecio(hoja, precio)
+            setLegCodigo(hoja, codigo)
             setHoja(null)
             onMitad(undefined)
             onGuardada()
