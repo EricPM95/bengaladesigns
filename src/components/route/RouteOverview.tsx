@@ -3,7 +3,7 @@ import { useDestinationTips } from '../../lib/destinationTips'
 import { TripTipsSheet } from './TripTipsSheet'
 import type { Route } from '../../lib/types'
 import { buildDestinationSegments, formatSegmentNightsLabel, segmentCentroid } from '../../lib/destinationSegments'
-import { dayCountryCode, flagStripesGradient } from '../../lib/flagColors'
+import { dayCountryCode } from '../../lib/flagColors'
 import { addDaysToIso } from '../../lib/dateRange'
 import { useRouteStore } from '../../store/useRouteStore'
 import { DestinationDistanceConnector } from './DestinationDistanceConnector'
@@ -12,6 +12,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 import { destinoCambiado } from '../../lib/recuperarDestino'
 import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
+import { BanderaDestino } from '../ui/BanderaDestino'
 import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
 
 interface RouteOverviewProps {
@@ -82,11 +83,7 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
             <div className="relative flex h-20 w-full items-center overflow-hidden rounded-3xl border border-text/10 bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)]">
             <button type="button" onClick={() => setDetailCity(segment.city)} className="flex h-full min-w-0 flex-1 items-center gap-3.5 pl-4 pr-1 text-left">
               {/* La bandera: sus colores en franjas inclinadas, en un cuadrado de esquinas redondeadas. */}
-              <span
-                aria-hidden="true"
-                className="h-10 w-10 shrink-0 rounded-xl shadow-[inset_0_0_0_1px_rgba(28,34,48,.08)]"
-                style={{ background: flagStripesGradient(segment.countryCode) }}
-              />
+              <BanderaDestino countryCode={segment.countryCode} />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span className="truncate font-display text-[24px] leading-[1.05] text-text">{segment.city}</span>
                 <span className="whitespace-nowrap text-[12px] text-text/55">
