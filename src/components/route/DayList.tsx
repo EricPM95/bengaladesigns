@@ -212,6 +212,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         // (El día 4 con el interruptor en Excursión se llama «Excursión desde Roma», Tanda 6g.)
         const enExcursion = day.interruptor?.mode === 'excursion'
         const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : isManualRoute(route) ? manualDayTitle(route, day) : (day.curatedTitle ?? day.city)
+        // Un día a mano sin nombre ya enseña su fecha en el cuadrito: el título dice «Ponle nombre» (gris, cursiva) y al tocarlo se abre DayNameSheet (Tanda 6y2).
+        const sinNombre = isManualRoute(route) && !day.userAdded && !enExcursion && !travel && !day.nameByUser && day.dayType !== 'excursion'
         const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
         const esHoy = day.id === hoyId
@@ -277,7 +279,21 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                     )}
                   </p>
                 )}
-                <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
+                {sinNombre ? (
+                  <button
+                    type="button"
+                    data-ponle-nombre="1"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setNameSheet({ dayId: day.id })
+                    }}
+                    className="self-start text-left font-display text-[22px] italic leading-[1.08] text-text/45"
+                  >
+                    Ponle nombre
+                  </button>
+                ) : (
+                  <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
+                )}
                 {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
                 {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). */}
                 {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent">Día de viaje</p>}
