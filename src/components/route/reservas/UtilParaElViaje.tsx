@@ -27,7 +27,9 @@ interface Tarjeta {
   anadida: boolean
   precio: Importe | null
   conPrecio: boolean
-  guardar: (precio: Importe | null) => void
+  /** Tanda 6y4: la clave de «¿Dónde lo has comprado?» (seguro, tarjeta, eSIM de cada país); sin ella (coche, buscar vuelos), la hoja no lo pregunta. */
+  claveDonde?: string
+  guardar: (precio: Importe | null, donde: string) => void
   quitar: () => void
 }
 
@@ -49,6 +51,8 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   const setRentalVehicleBooking = useRouteStore((state) => state.setRentalVehicleBooking)
   const esimPrecios = useRouteStore((state) => state.esimPrecios)
   const setEsimPrecio = useRouteStore((state) => state.setEsimPrecio)
+  const dondeComprado = useRouteStore((state) => state.dondeComprado)
+  const setDondeComprado = useRouteStore((state) => state.setDondeComprado)
   const [hojaPrecio, setHojaPrecio] = useState<string | null>(null)
   /** Los países del viaje, sin repetir y en orden: una eSIM por país (el estado se guarda por país, así que va igual que antes en el acordeón de cada destino). */
   const paises = [...new Set(buildDestinationSegments(route.days).flatMap((segment) => (segment.countryCode ? [segment.countryCode] : [])))]
@@ -70,8 +74,15 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       anadida: Boolean(insurance),
       precio: precioGuardado(insurance),
       conPrecio: true,
-      guardar: (precio) => setInsuranceBooking({ provider: 'Seguro de viaje', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio }),
-      quitar: () => setInsuranceBooking(null),
+      claveDonde: 'seguro',
+      guardar: (precio, donde) => {
+        setInsuranceBooking({ provider: 'Seguro de viaje', startDate: dateRange?.start ?? '', endDate: dateRange?.end ?? '', precio })
+        setDondeComprado('seguro', donde)
+      },
+      quitar: () => {
+        setInsuranceBooking(null)
+        setDondeComprado('seguro', null)
+      },
     },
     ...paises.map((countryCode, indice) => ({
       id: indice === 0 ? 'esim' : `esim-${countryCode}`,
@@ -85,13 +96,16 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       anadida: Boolean(esim[countryCode]),
       precio: leerImporte(esimPrecios[countryCode]),
       conPrecio: true,
-      guardar: (precio: Importe | null) => {
+      claveDonde: `esim-${countryCode}`,
+      guardar: (precio: Importe | null, donde: string) => {
         setEsimSelection(countryCode, 'booked')
         setEsimPrecio(countryCode, precio)
+        setDondeComprado(`esim-${countryCode}`, donde)
       },
       quitar: () => {
         setEsimSelection(countryCode, null)
         setEsimPrecio(countryCode, null)
+        setDondeComprado(`esim-${countryCode}`, null)
       },
     })),
     {
@@ -105,8 +119,15 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
       anadida: n26,
       precio: null,
       conPrecio: false,
-      guardar: () => setN26Added(true),
-      quitar: () => setN26Added(false),
+      claveDonde: 'tarjeta',
+      guardar: (_precio: Importe | null, donde: string) => {
+        setN26Added(true)
+        setDondeComprado('tarjeta', donde)
+      },
+      quitar: () => {
+        setN26Added(false)
+        setDondeComprado('tarjeta', null)
+      },
     },
     ...(hasRentalVehicle
       ? [
@@ -121,7 +142,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
             anadida: Boolean(rental),
             precio: precioGuardado(rental),
             conPrecio: true,
-            guardar: (precio: Importe | null) => setRentalVehicleBooking({ provider: nombreAlquiler, startDate: rental?.startDate ?? '', endDate: rental?.endDate ?? '', precio }),
+            guardar: (precio: Importe | null, _donde: string) => setRentalVehicleBooking({ provider: nombreAlquiler, startDate: rental?.startDate ?? '', endDate: rental?.endDate ?? '', precio }),
             quitar: () => setRentalVehicleBooking(null),
           },
         ]
@@ -148,7 +169,9 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   ]
   const abierta = tarjetas.find((tarjeta) => tarjeta.id === hojaPrecio && !tarjeta.soloBuscar) ?? null
   /** [Añadir] o tocar la tarjeta ya añadida: con precio, la hoja; sin precio (la tarjeta sin comisiones), se marca o se quita directamente. */
-  const gestionar = (tarjeta: Tarjeta) => (tarjeta.conPrecio ? setHojaPrecio(tarjeta.id) : tarjeta.anadida ? tarjeta.quitar() : tarjeta.guardar(null))
+  // (Tanda 6y4: también la tarjeta sin comisiones abre su hoja, que es solo el campo «¿Dónde lo has comprado?».)
+  const gestionar = (tarjeta: Tarjeta) => setHojaPrecio(tarjeta.id)
+  const dondeDe = (tarjeta: Tarjeta) => (tarjeta.claveDonde ? dondeComprado[tarjeta.claveDonde] ?? '' : '')
 
   return (
     <div className="flex min-w-0 flex-col gap-2.5 pt-4" data-blk="util">
@@ -185,9 +208,9 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                   ✓
                 </span>
                 <span className="min-w-0 flex-1 truncate">
-                  Lo tienes{tarjeta.precio ? <span className="font-medium"> · {formatoImporte(tarjeta.precio)}</span> : null}
+                  Lo tienes{dondeDe(tarjeta) ? <span className="font-medium"> · {dondeDe(tarjeta)}</span> : tarjeta.precio ? <span className="font-medium"> · {formatoImporte(tarjeta.precio)}</span> : null}
                 </span>
-                <span className="flex-none text-[12px] font-medium underline underline-offset-2">{tarjeta.conPrecio ? 'Cambiar' : 'Quitar'}</span>
+                <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>
               </button>
             ) : tarjeta.soloBuscar ? (
               <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="mt-auto flex h-10 w-full items-center justify-center rounded-full bg-[#1C2230] text-[13.5px] font-semibold text-[#FFFDF8] no-underline">
@@ -212,6 +235,9 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
           eyebrow={abierta.anadida ? 'Precio' : 'Añádelo a tu viaje'}
           cta={abierta.anadida ? 'Guardar' : 'Añadir'}
           inicial={abierta.precio}
+          conDonde={Boolean(abierta.claveDonde)}
+          sinPrecio={!abierta.conPrecio}
+          dondeInicial={dondeDe(abierta)}
           onGuardar={abierta.guardar}
           onQuitar={abierta.anadida ? abierta.quitar : undefined}
           onClose={() => setHojaPrecio(null)}

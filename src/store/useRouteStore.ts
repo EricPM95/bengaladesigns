@@ -295,6 +295,8 @@ interface RouteStoreState {
   esimSelections: Record<string, EsimStatus>
   /** Lo que costó la eSIM de cada país (Tanda 6z2), con la misma clave que `esimSelections`. */
   esimPrecios: Record<string, Importe>
+  /** «¿Dónde lo has comprado?» (Tanda 6y4): lo que escribió el viajero (texto libre) del seguro (`seguro`), la tarjeta (`tarjeta`) y la eSIM de cada país (`esim-{país}`). Nunca lo pone la app. */
+  dondeComprado: Record<string, string>
   /** Entradas y excursiones reservadas: fijadas, con fecha y hora (PARA_CODE_RESERVAS). Lo reservado no se mueve: se quita y se vuelve a crear. */
   reservations: Reservation[]
   /** El código de campaña de este viaje, al azar (`app-8F3K2`): va en todos los enlaces de «Reservar» y así se sabe que alguien ha reservado, sin datos del viajero. */
@@ -513,6 +515,8 @@ interface RouteStoreState {
   setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
   /** El código del vuelo, tren o autobús de la ida o la vuelta (Tanda 6y4); vacío o null lo quita. */
   setLegCodigo: (kind: 'arrival' | 'departure', codigo: string | null) => void
+  /** «¿Dónde lo has comprado?» del seguro (`seguro`), la tarjeta (`tarjeta`) o la eSIM (`esim-{país}`); vacío lo quita (Tanda 6y4). */
+  setDondeComprado: (clave: string, texto: string | null) => void
   /** El precio de la eSIM de un país (clave: código de país en minúsculas); null lo quita. */
   setEsimPrecio: (countryCode: string, precio: Importe | null) => void
 
@@ -624,6 +628,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   rentalVehicleBooking: null,
   esimSelections: {},
   esimPrecios: {},
+  dondeComprado: {},
   reservations: [],
   campaignCode: newCampaignCode(),
   sales: [],
@@ -1031,7 +1036,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       intensity: route.intensity,
       ...(state.keepBookingsOnNextRoute
         ? {}
-        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, esimPrecios: {}, reservations: [], campaignCode: newCampaignCode(), sales: [], wishlist: [] }),
+        : { accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, n26Added: false, rentalVehicleBooking: null, esimSelections: {}, esimPrecios: {}, dondeComprado: {}, reservations: [], campaignCode: newCampaignCode(), sales: [], wishlist: [] }),
       keepBookingsOnNextRoute: false,
       dev_simulated_today_iso: null,
       }
@@ -1052,6 +1057,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       rentalVehicleBooking: payload.bookings.rentalVehicleBooking,
       esimSelections: payload.bookings.esimSelections,
       esimPrecios: payload.bookings.esimPrecios ?? {},
+      dondeComprado: payload.bookings.dondeComprado ?? {},
       reservations: payload.bookings.reservations ?? [],
       campaignCode: payload.bookings.campaignCode ?? newCampaignCode(),
       sales: payload.bookings.sales ?? [],
@@ -1561,6 +1567,15 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   setLegPrecio: (kind, precio) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPrecio' : 'departurePrecio']: precio } } : state)),
   setLegCodigo: (kind, codigo) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalCodigo' : 'departureCodigo']: codigo?.trim() ? codigo.trim().slice(0, 20) : null } } : state)),
+
+  setDondeComprado: (clave, texto) =>
+    set((state) => {
+      const next = { ...state.dondeComprado }
+      const limpio = (texto ?? '').trim().slice(0, 60)
+      if (limpio) next[clave] = limpio
+      else delete next[clave]
+      return { dondeComprado: next }
+    }),
 
   setEsimPrecio: (countryCode, precio) =>
     set((state) => {
