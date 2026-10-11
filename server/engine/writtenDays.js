@@ -102,6 +102,19 @@ export function photosFor(destinationKey) {
 const photosCache = new Map()
 
 /**
+ * ¿Este lugar va SIN foto buscada? (Tanda 6y2.) Una sola regla para todo el servidor: `sin_foto` (sitios sin foto hasta elegir una buena) y
+ * `fotos_rechazadas` (sitios cuya foto de Wikipedia era de otro lugar; cada uno con su motivo), ambas en data/dias/<destino>/_fotos.json.
+ * Las rechazadas valen también para su versión nocturna («X (noche)», «X de noche»). Una foto PROPIA no pasa por aquí: va antes.
+ */
+export function fotoOculta(destinationKey, name) {
+  const table = photosFor(destinationKey)
+  if (!table || !name) return false
+  if ((table.sin_foto ?? []).includes(name)) return true
+  const base = String(name).replace(/\s*\(noche\)$|\s+de noche$/i, '')
+  return (table.fotos_rechazadas ?? []).some((entrada) => entrada.lugar === name || entrada.lugar === base)
+}
+
+/**
  * El autor y la licencia de una foto de Wikipedia / Commons (Tanda 6z6f): `data/dias/<destino>/_fotos_wikimedia.json`, que rellena una vez
  * `scripts/destino/creditosWikimedia.mjs`. Se busca por el NOMBRE DEL FICHERO de la miniatura (no por el lugar: la foto puede venir de la caché
  * o de la versión de día de una nocturna). Null si es de dominio público, si el fichero no está en la tabla o si le falta el autor o la licencia:

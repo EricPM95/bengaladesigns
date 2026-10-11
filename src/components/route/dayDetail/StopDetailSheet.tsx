@@ -22,6 +22,7 @@ import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
 import { Icono } from '../../ui/Icono'
+import { FotoCredito } from '../../ui/FotoCredito'
 import { BotonFotoParada } from '../fotos/BotonFotoParada'
 import { Escuchar } from '../hoy/Escuchar'
 import { textoResumenDeParada } from '../../../lib/useEscuchar'
@@ -391,7 +392,12 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
           <div className="flex-1 overflow-y-auto bg-bg-card">
             <div className="mx-auto w-full max-w-lg space-y-4 px-4 pb-8 pt-2">
               <div className="flex items-start gap-3">
-                <img src={photo?.small ?? stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+                {(photo?.small ?? stop.photoUrl) ? (
+                  <img src={photo?.small ?? stop.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+                ) : (
+                  // Sin foto (la del servidor es «none» o está rechazada): el recuadro neutro, nunca una imagen rota ni vacía.
+                  <span aria-hidden className="h-16 w-16 shrink-0 rounded-xl bg-bg-hover" />
+                )}
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <h1 className="flex items-center gap-1.5 font-display text-h2 font-semibold text-text">
                     {stop.isFreeTour && <FreeTourIcon className="text-accent" />}
@@ -471,32 +477,9 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
 
               {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
                   que exigen sus condiciones. Las de Wikipedia llevan autor y licencia (Tanda 6z6f) solo si hay crédito completo (las de
-                  dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). */}
-              {photo?.source === 'unsplash' && photo.attribution && (
-                <p className="text-caption text-text-muted">
-                  Foto de{' '}
-                  <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
-                    {photo.attribution.photographer}
-                  </a>{' '}
-                  en{' '}
-                  <a href={photo.attribution.unsplashUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
-                    {photo.attribution.site ?? 'Unsplash'}
-                  </a>
-                </p>
-              )}
-              {photo?.source === 'wikipedia' && photo.attribution?.photographer && photo.attribution.license && (
-                <p className="text-caption text-text-muted">
-                  Foto:{' '}
-                  {photo.attribution.photographerUrl ? (
-                    <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
-                      {photo.attribution.photographer}
-                    </a>
-                  ) : (
-                    photo.attribution.photographer
-                  )}{' '}
-                  · {photo.attribution.license}
-                </p>
-              )}
+                  dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). Una sola pieza, `FotoCredito` (Tanda 6y2),
+                  la misma que usa la esquina de las fotos grandes. */}
+              <FotoCredito photo={photo} />
 
               {visibleTabs.length > 1 && (
                 <div className="flex gap-1 rounded-xl bg-bg-hover p-1">

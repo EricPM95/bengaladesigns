@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fotos de Roma: candidatas para elegir</title>
+<style>
+  :root { --fondo: #f6f1e7; --tarjeta: #fffdf8; --texto: #1f1b16; --suave: #6b6458; --acento: #b4325a; --linea: rgba(31,27,22,.12); }
+  @media (prefers-color-scheme: dark) { :root { --fondo: #161310; --tarjeta: #211c17; --texto: #f3eee4; --suave: #a79f91; --acento: #e8708f; --linea: rgba(243,238,228,.16); } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font: 600 30px/1.15 Georgia, "Times New Roman", serif; margin: 0 0 8px; }
+  h2 { font: 600 24px/1.2 Georgia, "Times New Roman", serif; margin: 2px 0 6px; }
+  a { color: var(--acento); }
+  code { background: var(--linea); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+  .intro { color: var(--suave); max-width: 70ch; }
+  .intro strong { color: var(--texto); }
+  section { background: var(--tarjeta); border: 1px solid var(--linea); border-radius: 18px; padding: 20px; margin-top: 24px; }
+  .tipo { font: 600 11px/1 ui-monospace, Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--acento); margin: 0; }
+  .hoy { color: var(--suave); margin: 4px 0 10px; font-size: 14.5px; }
+  .hoy strong { color: var(--texto); }
+  .aviso { background: rgba(180,50,90,.09); border-left: 3px solid var(--acento); padding: 8px 12px; border-radius: 0 8px 8px 0; margin: 10px 0 14px; font-size: 14.5px; }
+  .cands { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+  .cand { margin: 0; border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; background: var(--fondo); }
+  .cand img { display: block; width: 100%; height: 190px; object-fit: cover; background: var(--linea); }
+  figcaption { padding: 10px 12px 12px; }
+  figcaption p { margin: 0; }
+  .op { font-weight: 700; font-size: 14px; }
+  .nota { font-size: 14px; margin-top: 2px; }
+  .autor { font-size: 12.5px; color: var(--suave); margin-top: 6px; }
+  .tuya { color: var(--suave); font-size: 13.5px; margin: 14px 0 0; }
+  footer { margin-top: 28px; color: var(--suave); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fotos de Roma: candidatas para elegir</h1>
+  <p class="intro">Estos 8 sitios llevaban en la app una foto de Wikipedia que <strong>no era el sitio</strong>. Mientras no se cambie, <strong>van sin foto</strong> (el recuadro de color de la app): es mejor que una foto equivocada. Aquí tienes hasta 3 fotos de Unsplash de cada uno para elegir. <strong>Dime «Trastevere: opción 2»</strong> (o pon una foto tuya) y la preparo. Si una foto no es de verdad el sitio, no la elijas: la API de Unsplash no dice dónde se hizo la foto, solo su descripción, y por eso cada candidata lleva una nota de cuánto te puedes fiar.</p>
+
+  <section id="cripta-de-los-capuchinos">
+    <p class="tipo">Lugar</p>
+    <h2>Cripta de los Capuchinos</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Wikipedia servía la «Kapuzinergruft» de Viena (Wien_-_Kapuzinergruft…): una cripta de otra ciudad.</p>
+    <p class="aviso">Sin candidatas buenas: Unsplash no tiene fotos de la cripta de Roma (dentro no se puede fotografiar y las que salen con «cripta», «huesos» o «calaveras» son genéricas o de otro sitio). Pon una tuya.</p>
+    
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="trastevere-al-atardecer">
+    <p class="tipo">Lugar</p>
+    <h2>Trastevere al atardecer</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Wikipedia servía el reloj del Quirinal (6h-orologioQuirinale.jpg), que no es Trastevere.</p>
+    <p class="aviso">Ninguna dice «Trastevere» en su descripción: salen al buscar «Trastevere» y parecen calles del barrio, pero míralas tú. Si ninguna te gusta, pon una tuya.</p>
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/cobblestone-street-in-rome-enx0PrNtmm8?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1685562249871-8948aeda70a9?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VHJhc3RldmVyZXxlbnwxfDB8fHwxNzkxNzMxNTQ0fDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Por la búsqueda «Trastevere»: calle de adoquines con casas de colores y macetas." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">Por la búsqueda «Trastevere»: calle de adoquines con casas de colores y macetas.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@maksym_harbar?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Maksym Harbar</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/cobblestone-street-in-rome-enx0PrNtmm8?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/a-cobblestone-street-with-tables-and-chairs-at-night-eS5Rn4hE-h0?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1708628934823-a37e3fe0bb4e?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VHJhc3RldmVyZSUyMFJvbWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTUxOXww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Por la búsqueda «Trastevere»: calle de adoquines con mesas, de noche." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">Por la búsqueda «Trastevere»: calle de adoquines con mesas, de noche.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@theurbaneyecatcher?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Mariano Alvarez</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/a-cobblestone-street-with-tables-and-chairs-at-night-eS5Rn4hE-h0?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/cityscape-of-rome-with-beautiful-architecture-zvN8ZiBa6Iw?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1752886355870-17e8ebe79a05?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFJvbWUlMjBUcmFzdGV2ZXJlJTIwZHVza3xlbnwxfDB8fHwxNzkxNzMxNTQ1fDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Golden hour bathes Rome’s sea of domes and bell towers, stretching toward the horizon in warm haze." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">Roma a la hora dorada (tejados y cúpulas); no es solo Trastevere.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@wyattsimpson98?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Wyatt Simpson</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/cityscape-of-rome-with-beautiful-architecture-zvN8ZiBa6Iw?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="via-dei-coronari">
+    <p class="tipo">Lugar</p>
+    <h2>Via dei Coronari</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Compartía con Borgo Pio la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle.</p>
+    <p class="aviso">Sin candidatas buenas: la calle no sale en Unsplash. Estas son calles parecidas del centro histórico (no son la Via dei Coronari). Mejor pon una tuya.</p>
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/low-angle-photography-of-beige-concrete-building-BEt1D1Q1XH4?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1612563639900-9a68bdf8cffa?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="A church in via Giulia in Rome, Italy. " loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">Una iglesia en la Via Giulia (la calle paralela, a dos pasos). No es la Via dei Coronari.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Gabriella Clare Marino</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/low-angle-photography-of-beige-concrete-building-BEt1D1Q1XH4?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/brown-concrete-building-under-blue-sky-during-daytime-EXLv6cJjhwE?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1612563528735-afd929f65395?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="A wide angle view of Medieval and Renaissance buildings in the city of Rome, Italy" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">Edificios medievales y renacentistas de una calle del centro de Roma.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Gabriella Clare Marino</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/brown-concrete-building-under-blue-sky-during-daytime-EXLv6cJjhwE?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/people-walking-on-sidewalk-near-brown-concrete-building-during-daytime-KkY5KUfznIs?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1612563528703-91ff47ebe9af?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="A street scene in the center of Rome, Italy" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">Escena de calle en el centro de Roma.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Gabriella Clare Marino</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/people-walking-on-sidewalk-near-brown-concrete-building-during-daytime-KkY5KUfznIs?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="borgo-pio">
+    <p class="tipo">Lugar</p>
+    <h2>Borgo Pio</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Compartía con Via dei Coronari la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle.</p>
+    <p class="aviso">Sin candidatas buenas: la calle no sale en Unsplash. Estas son de la zona (Via della Conciliazione y San Pedro, a un paso). Mejor pon una tuya.</p>
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/a-street-with-cars-and-people-on-it-and-buildings-around-it-rdzRJqGsUiI?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1666611099928-20a309b72a54?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Via della Conciliazione, la avenida de al lado: calle con coches, gente y edificios." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">Via della Conciliazione, la avenida de al lado: calle con coches, gente y edificios.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@pan_snig?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Oleksandr</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/a-street-with-cars-and-people-on-it-and-buildings-around-it-rdzRJqGsUiI?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/people-walking-on-street-near-brown-concrete-building-during-daytime-0Enp8tn6sIE?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1598875791849-0e6cde33be38?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Gente paseando por una calle junto a San Pedro." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">Gente paseando por una calle junto a San Pedro.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@chan_lee94?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">chan lee</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/people-walking-on-street-near-brown-concrete-building-during-daytime-0Enp8tn6sIE?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/brown-concrete-building-under-cloudy-sky-during-daytime-HwTQrmJn_2s?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1588503079714-ae9df09a7e79?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="St. Peter's Basilica view in Rome" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">San Pedro visto desde la zona de Borgo.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@shobhitsharma?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Shobhit Sharma</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/brown-concrete-building-under-cloudy-sky-during-daytime-HwTQrmJn_2s?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="excursion-a-florencia-y-pisa">
+    <p class="tipo">Excursión</p>
+    <h2>Excursión a Florencia y Pisa</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Wikipedia servía un manuscrito (MauriceManuscript.jpg), ni Florencia ni Pisa.</p>
+    
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/leaning-tower-of-pisa-italy-during-day-G4ArZNhhpsw?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1567163864479-bbe438ea1024?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFBpc2ElMjBsZWFuaW5nJTIwdG93ZXJ8ZW58MXwwfHx8MTc5MTczMTUyMnww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Leaning Tower of Pisa" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">Torre inclinada de Pisa de día.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@flame?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Daria Andraczko</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/leaning-tower-of-pisa-italy-during-day-G4ArZNhhpsw?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/white-concrete-building-under-blue-sky-during-daytime-QL59SX34Mb8?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1615371082603-dc38013ef2a2?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Mnx8UGlzYSUyMGxlYW5pbmclMjB0b3dlcnxlbnwxfDB8fHwxNzkxNzMxNTIyfDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Leaning Tower Of Pisa" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">Torre inclinada de Pisa.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@raymondo600?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Ray Harrington</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/white-concrete-building-under-blue-sky-during-daytime-QL59SX34Mb8?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/a-view-of-a-city-with-a-cathedral-and-mountains-in-the-background-NN_vPCzkU3M?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1687817997684-c9335cce7c5c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8RmxvcmVuY2UlMjBEdW9tb3xlbnwxfDB8fHwxNzkxNzMxNTIyfDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Florence's Cattedrale di Santa Maria del Fiore in full view, taken from the top of adjacent Torre di Arnolfo by the Piazza della Signoria." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">La catedral de Florencia desde la Torre de Arnolfo.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@jquam?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Joseph Quam</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/a-view-of-a-city-with-a-cathedral-and-mountains-in-the-background-NN_vPCzkU3M?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="excursion-a-napoles-y-pompeya-en-tren">
+    <p class="tipo">Excursión</p>
+    <h2>Excursión a Nápoles y Pompeya en tren</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Wikipedia servía una vista aérea de Marsella (Notre-Dame_de_la_Garde_aerial_view_2020…), ni Nápoles ni Pompeya.</p>
+    
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/brown-concrete-building-near-mountain-under-blue-sky-during-daytime-y2plB8AMtEM?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1579285014910-be9df495fb26?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8UG9tcGVpaSUyMHJ1aW5zJTIwVmVzdXZpdXN8ZW58MXwwfHx8MTc5MTczMTUyM3ww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="The Lost City of Pompeii, with Mount Vesuvius in the background" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">Pompeya con el Vesubio al fondo.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@cooljonez?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">D Jonez</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/brown-concrete-building-near-mountain-under-blue-sky-during-daytime-y2plB8AMtEM?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/a-stone-building-with-a-round-table--xOfL8dW0ns?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1657354371984-ef2f1a59cf80?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8UG9tcGVpaSUyMHJ1aW5zJTIwVmVzdXZpdXN8ZW58MXwwfHx8MTc5MTczMTUyM3ww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Pompeii ruins with the Vesuvius volcano seen through a doorway" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">Ruinas de Pompeya con el Vesubio por una puerta.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@jonnemakikyro?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Jonne Mäkikyrö</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/a-stone-building-with-a-round-table--xOfL8dW0ns?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/naples-cityscape-with-mount-vesuvius-overlooking-the-bay-and-boats-HnBXBLTPfk0?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1783074303547-287c042126e7?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fE5hcGxlcyUyMFZlc3V2aXVzJTIwYmF5fGVufDF8MHx8fDE3OTE3MzE1MjN8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="La bella Napo" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">Nápoles y el Vesubio sobre la bahía.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@elefante61?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Salvatore Elefante</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/naples-cityscape-with-mount-vesuvius-overlooking-the-bay-and-boats-HnBXBLTPfk0?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="excursion-a-la-costa-amalfitana">
+    <p class="tipo">Excursión</p>
+    <h2>Excursión a la Costa Amalfitana</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Wikipedia servía un avión de Vueling (Vueling_A320neo…), no la costa.</p>
+    
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/colorful-buildings-on-amalfi-cliffside-1zkHXas1GIo?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1612698093158-e07ac200d44e?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8QW1hbGZpJTIwY29hc3R8ZW58MXwwfHx8MTc5MTczMTUyNHww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Costiera Amalfitana..." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">Casas de colores sobre el acantilado en Amalfi.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@tompodmore86?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Tom Podmore</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/colorful-buildings-on-amalfi-cliffside-1zkHXas1GIo?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/houses-on-mountain-near-body-of-water-dqQPL0hMGOE?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1530476219733-88085e45aa2c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8QW1hbGZpJTIwY29hc3R8ZW58MXwwfHx8MTc5MTczMTUyNHww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Enjoying the view of Positano, Italy" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">Positano.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@sandercrombach?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Sander Crombach</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/houses-on-mountain-near-body-of-water-dqQPL0hMGOE?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/body-of-water-near-mountain-under-white-clouds-during-daytime-3Q6voKJb8vA?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1598972981358-8facd0e9e256?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8QW1hbGZpJTIwY29hc3QlMjByb2FkfGVufDF8MHx8fDE3OTE3MzE1MjV8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Panoramic view of waterfront along the Amalfi Coast, Italy." loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">Panorámica de la costa amalfitana.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@ryanancill?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Ryan Ancill</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/body-of-water-near-mountain-under-white-clouds-during-daytime-3Q6voKJb8vA?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+
+  <section id="excursion-a-florencia-en-tren-de-alta-velocidad">
+    <p class="tipo">Excursión</p>
+    <h2>Excursión a Florencia en tren de alta velocidad</h2>
+    <p class="hoy"><strong>Qué pasaba:</strong> Wikipedia servía un avión de Vueling (Vueling_A320neo…), no Florencia.</p>
+    
+    <div class="cands">
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/cathedral-of-santa-maria-del-fiore-florence-X35Ivset6-Y?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1541370976299-4d24ebbc9077?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Cathedral of Florence from Piazza Michelangelo" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 1</p>
+          <p class="nota">La catedral y el campanario desde la Piazzale Michelangelo.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@alinuredini?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Ali Nuredini</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/cathedral-of-santa-maria-del-fiore-florence-X35Ivset6-Y?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/brown-concrete-building-near-river-during-daytime-hjmV0xG-KPk?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1601195576601-346d58e024c0?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8UG9udGUlMjBWZWNjaGlvJTIwRmxvcmVuY2V8ZW58MXwwfHx8MTc5MTczMTUyNnww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="The Ponte Vecchio as seen from the hills in the western parts of Florence" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 2</p>
+          <p class="nota">El Ponte Vecchio.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@lgtts?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Ilse Orsel</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/brown-concrete-building-near-river-during-daytime-hjmV0xG-KPk?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+      <figure class="cand">
+        <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-TWqEt_jwW2s?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer"><img src="https://images.unsplash.com/photo-1585595751864-6e56dbd53658?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=400" alt="Skyline, Cathedral of Santa Maria del Fiore, Florence Tuscany Italy" loading="lazy" width="400" height="260"></a>
+        <figcaption>
+          <p class="op">Opción 3</p>
+          <p class="nota">Panorámica de Florencia con la catedral.</p>
+          <p class="autor">Foto de <a href="https://unsplash.com/@pavan_nicola?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Nicola Pavan</a> en <a href="https://unsplash.com/?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> · <a href="https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-TWqEt_jwW2s?utm_source=viajes_bengala&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">ver la foto</a></p>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="tuya">¿Ninguna te convence? Pon una tuya con el nombre fijo en <code>public/fotos/roma/</code> (o dímelo y la preparo) y este sitio sale con ella.</p>
+  </section>
+  <footer>Fotos de Unsplash, enlazadas desde images.unsplash.com (hace falta conexión). Cada una con el nombre de su autor y su enlace, como piden sus condiciones. Generada con <code>scripts/destino/fotosCandidatas6y2.mjs</code> (Tanda 6y2).</footer>
+</main>
+</body>
+</html>

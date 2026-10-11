@@ -119,8 +119,13 @@ function formatDistance(meters: number): string {
   return `a ${(meters / 1000).toFixed(1)} km`
 }
 
-export function placeholderPhoto(name: string): string {
-  return `https://picsum.photos/seed/${encodeURIComponent(name)}/600/400`
+/**
+ * La foto de una parada añadida sin foto real: ninguna (el color neutro de la app). Antes era una imagen de stock al azar (picsum), que no es
+ * del sitio —la misma decisión que ya tomó la ruta generada, PARA_CODE_TODO_2026-10-01 5.6—. Tanda 6y2: con los sitios de `fotos_rechazadas`
+ * (y `sin_foto`) añadidos desde el explorador salía una foto cualquiera; mejor sin foto que con una equivocada.
+ */
+export function placeholderPhoto(_name: string): string {
+  return ''
 }
 
 export function stopFromPlace(place: DestinationPlace, photoUrl: string): Stop {

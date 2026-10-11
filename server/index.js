@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
-import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
+import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
@@ -5133,7 +5133,8 @@ function isRestaurantName(city, name) {
  * para poder repetir una búsqueda tras corregir un `search_en`.
  */
 async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOverride = null } = {}) {
-  if (isRestaurantName(city, name)) return { photo_source: 'none' }
+  // Sin foto buscada (restaurantes, `sin_foto`, `fotos_rechazadas`): antes que la caché y antes que Unsplash y Wikipedia. Una sola regla: fotoOculta.
+  if (isRestaurantName(city, name) || fotoOculta(findPipelineV2Key(city) ?? '', name)) return { photo_source: 'none' }
   const cityKey = stripAccentsLowerServer(city)
   if (supabaseAdmin && !force) {
     const { data, error } = await supabaseAdmin.from('place_photo_cache').select('*').eq('city', cityKey).eq('place_name', name).maybeSingle()
@@ -5184,6 +5185,7 @@ function nightBaseOf(name, city) {
  * para no heredar las fotos equivocadas que ya estaban guardadas con el nombre de la nocturna.
  */
 async function resolveNightPhoto(name, city, base, { force = false } = {}) {
+  if (fotoOculta(findPipelineV2Key(city) ?? '', base) || fotoOculta(findPipelineV2Key(city) ?? '', name)) return { photo_source: 'none' }
   const cityKey = stripAccentsLowerServer(city)
   const key = `noche:${base}`
   if (supabaseAdmin && !force) {
@@ -5321,8 +5323,7 @@ app.post('/api/pool-photos', async (req, res) => {
   const destKey = findPipelineV2Key(destination)
   const photos = {}
   const missing = []
-  const hidden = new Set(photosFor(destKey ?? '')?.sin_foto ?? [])
-  const isHidden = (name) => hidden.has(name) || isRestaurantName(destination, name)
+  const isHidden = (name) => fotoOculta(destKey ?? '', name) || isRestaurantName(destination, name)
   for (const name of list) {
     // (Una foto propia —también la de un hueco que acaba de llegar— va antes que el «sin foto».)
     const own = ownPhotoFor(name, destination, date)
@@ -5380,7 +5381,7 @@ app.post('/api/place-photo', async (req, res) => {
       res.json(own)
       return
     }
-    if ((photosFor(findPipelineV2Key(city) ?? '')?.sin_foto ?? []).includes(name) || isRestaurantName(city, name)) {
+    if (fotoOculta(findPipelineV2Key(city) ?? '', name) || isRestaurantName(city, name)) {
       res.json({ photo_source: 'none' })
       return
     }

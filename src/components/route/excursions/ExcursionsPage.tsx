@@ -3,7 +3,8 @@ import { precioTienda } from '../../../lib/dinero'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
-import { fetchPlacePhoto } from '../../../lib/placePhoto'
+import { fetchPlacePhotoDetail, type PlacePhoto } from '../../../lib/placePhoto'
+import { FotoCredito, hayCreditoDeFoto } from '../../ui/FotoCredito'
 import { formatReviewCount } from '../../../lib/format'
 import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -23,18 +24,35 @@ function priceText(excursion: Excursion): string | null {
   return excursion.price > 0 ? `desde ${precioTienda(excursion.price)}` : null
 }
 
+/**
+ * La cabecera de una excursión: su foto y, si la foto tiene crédito (Wikipedia con datos, Unsplash), una línea pequeña sobre la esquina de abajo
+ * (Tanda 6y2; las fotos propias, nunca). Se pide la ficha de la foto —no solo la URL— con la misma petición y la misma memoria de siempre: nada extra.
+ * Sin foto (o rechazada por el servidor), el recuadro neutro, sin crédito.
+ */
 function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; destination: string }) {
-  const [url, setUrl] = useState<string | null>(null)
+  const [photo, setPhoto] = useState<PlacePhoto | null>(null)
   useEffect(() => {
     let alive = true
-    void fetchPlacePhoto(excursion.photoName ?? excursion.title, destination).then((found) => {
-      if (alive && found) setUrl(found)
+    void fetchPlacePhotoDetail(excursion.photoName ?? excursion.title, destination).then((found) => {
+      if (alive && found) setPhoto(found)
     })
     return () => {
       alive = false
     }
   }, [excursion.photoName, excursion.title, destination])
-  return <div className="h-40 w-full bg-bg-hover" style={url ? { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined} role="img" aria-label={excursion.title} />
+  const url = photo?.small ?? null
+  return (
+    <div className="relative">
+      <div className="h-40 w-full bg-bg-hover" style={url ? { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined} role="img" aria-label={excursion.title} />
+      {hayCreditoDeFoto(photo) && (
+        <FotoCredito
+          photo={photo}
+          className="absolute bottom-1.5 right-1.5 max-w-[80%] rounded-md bg-black/50 px-1.5 py-0.5 text-[10px] leading-tight text-white/90"
+          enlaceClassName="underline hover:text-white"
+        />
+      )}
+    </div>
+  )
 }
 
 /**

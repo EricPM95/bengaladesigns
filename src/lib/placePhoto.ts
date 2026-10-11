@@ -43,10 +43,10 @@ const cache = new Map<string, PlacePhoto | null>()
 // ── Lo guardado en el navegador (PARA_CODE_TODO_2026-10-01, paso 7) ─────────────────────────────────────────────────────────────
 // Una foto ya resuelta no se vuelve a pedir en el siguiente viaje, ni en Explorar ni en Añadir parada: se guarda 24 h. Las fotos propias
 // llevan su versión en la URL (`?v=`), así que una foto que cambia cambia de dirección y el navegador la renueva sola.
-// (v2, Tanda 6z6f: las fotos de Wikipedia guardadas en v1 no traen el crédito; con otra clave se vuelven a pedir una vez.)
-const STORE_PREFIX = 'photo:v2:'
+// (v2, Tanda 6z6f: sin crédito en v1. v3, Tanda 6y2: ya no salen las fotos equivocadas de Wikipedia; lo guardado antes (también el del pool, poolphoto:v1) se descarta y se vuelve a pedir una vez.)
+const STORE_PREFIX = 'photo:v3:'
 try {
-  for (const name of Object.keys(localStorage)) if (name.startsWith('photo:v1:')) localStorage.removeItem(name)
+  for (const name of Object.keys(localStorage)) if (name.startsWith('photo:v1:') || name.startsWith('photo:v2:') || name.startsWith('poolphoto:v1:')) localStorage.removeItem(name)
 } catch {
   // sin localStorage: nada que limpiar
 }
@@ -92,7 +92,7 @@ export function getPoolPhoto(destination: string, name: string): string | null {
   const cached = poolPhotos.get(key)
   if (cached) return cached
   try {
-    const raw = localStorage.getItem(`poolphoto:v1:${key}`)
+    const raw = localStorage.getItem(`poolphoto:v2:${key}`)
     if (!raw) return null
     const parsed = JSON.parse(raw) as { at: number; url: string }
     if (Date.now() - parsed.at > STORE_TTL_MS) return null
@@ -125,7 +125,7 @@ export function prefetchPoolPhotos(destination: string, names: string[], dateIso
         const key = `${destination.trim().toLowerCase()}|${name.toLowerCase()}`
         poolPhotos.set(key, entry.url)
         try {
-          localStorage.setItem(`poolphoto:v1:${key}`, JSON.stringify({ at: Date.now(), url: entry.url }))
+          localStorage.setItem(`poolphoto:v2:${key}`, JSON.stringify({ at: Date.now(), url: entry.url }))
         } catch {
           // sin espacio: se sigue en memoria
         }
