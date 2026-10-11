@@ -6,6 +6,7 @@ import { mapSingleGeneratedDay } from '../../../lib/mapGeneratedRoute'
 import { enrichRoutePhotos } from '../../../lib/placePhoto'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { elDia } from '../../../lib/nombreDeDia'
+import { isManualRoute } from '../../../lib/manualPlan'
 
 /**
  * "Quiero entrar" (PROMPT_PENDIENTE F): el interruptor de una parada que va por fuera. El motor rehace ese día curado
@@ -29,7 +30,8 @@ export function useWantInside(route: Route | null, day: DayPlan) {
   const selectedPool = useRouteStore((store) => store.selected_curated_place_names)
 
   const ask = async (stopName: string) => {
-    if (!route) return
+    // Una ruta a mano (Tanda 6y) no la rehace el motor: «Quiero entrar» no existe (y su botón no sale).
+    if (!route || isManualRoute(route)) return
     setState({ stopName, phase: 'loading' })
     try {
       const response = await fetch('/api/curated-day-inside', {

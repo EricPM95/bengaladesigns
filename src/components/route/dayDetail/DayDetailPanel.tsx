@@ -1664,7 +1664,7 @@ export function DayDetailPanel({
             : undefined
         }
         onClose={() => setDetailIndex(null)}
-        onWantInside={detailIndex !== null && stops[detailIndex]?.visitMode === 'fuera' && stops[detailIndex]?.outsideKind === 'no_cabe' ? () => wantInside.ask(stops[detailIndex].name) : undefined}
+        onWantInside={!isManualRoute(route) && detailIndex !== null && stops[detailIndex]?.visitMode === 'fuera' && stops[detailIndex]?.outsideKind === 'no_cabe' ? () => wantInside.ask(stops[detailIndex].name) : undefined}
       />
 
       <ArrivalDetailSheet
