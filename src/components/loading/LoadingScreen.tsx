@@ -230,9 +230,7 @@ function threeLetterCode(name: string): string {
 
 function PlaneIcon({ className }: StepIconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.5V22l3.5-1 3.5 1v-1.5L12 19v-5.5z" />
-    </svg>
+    <Icono nombre="avion" size={16} className={className} />
   )
 }
 
@@ -256,7 +254,7 @@ function PlaneProgress({ origin, destination, steps }: { origin: string; destina
           animate={{ left: `${progressPct}%` }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <PlaneIcon className="h-4 w-4 rotate-90" />
+          <PlaneIcon className="h-4 w-4 rotate-45" />
         </motion.div>
       </div>
     </div>

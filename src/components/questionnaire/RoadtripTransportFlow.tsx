@@ -26,7 +26,7 @@ interface RoadtripTransportFlowProps {
 }
 
 const VEHICLE_LABEL: Record<VehicleType, string> = { car: 'Coche', camper: 'Camper / autocaravana' }
-const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'coche' }
+const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'autocaravana' }
 
 /**
  * Flujo de transporte para roadtrip_exclusivo ("Ruta por libre" en la app), aislado del resto
@@ -154,7 +154,7 @@ export function RoadtripTransportFlow({
           <p className="text-small text-text-soft">¿Qué tipo de vehículo tienes?</p>
           <div className="space-y-2">
             <ChoiceButton icon="coche" label="Coche" selected={false} onClick={() => onVehicleTypeChange('car')} />
-            <ChoiceButton icon="coche" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
+            <ChoiceButton icon="autocaravana" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
           </div>
         </div>
       )}
@@ -174,7 +174,7 @@ export function RoadtripTransportFlow({
               }}
             />
             <ChoiceButton
-              icon="coche"
+              icon="autocaravana"
               label="En camper o autocaravana"
               description="Duermes donde te lleve el camino"
               selected={false}
@@ -213,7 +213,7 @@ export function RoadtripTransportFlow({
           </p>
           <div className="space-y-2">
             <ChoiceButton icon="coche" label="Coche" selected={false} onClick={() => onVehicleTypeChange('car')} />
-            <ChoiceButton icon="coche" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
+            <ChoiceButton icon="autocaravana" label="Camper / autocaravana" selected={false} onClick={() => onVehicleTypeChange('camper')} />
           </div>
         </div>
       )}

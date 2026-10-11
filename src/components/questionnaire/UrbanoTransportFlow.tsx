@@ -27,7 +27,7 @@ interface UrbanoTransportFlowProps {
 }
 
 const VEHICLE_LABEL: Record<VehicleType, string> = { car: 'Coche', camper: 'Camper / autocaravana' }
-const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'coche' }
+const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'autocaravana' }
 
 /**
  * Flujo de transporte para urbano_clasico — ciudades donde te mueves a pie y en transporte

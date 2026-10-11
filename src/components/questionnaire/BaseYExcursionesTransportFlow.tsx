@@ -29,7 +29,7 @@ interface BaseYExcursionesTransportFlowProps {
 }
 
 const VEHICLE_LABEL: Record<VehicleType, string> = { car: 'Coche', camper: 'Camper / autocaravana' }
-const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'coche' }
+const VEHICLE_ICON: Record<VehicleType, NombreIcono> = { car: 'coche', camper: 'autocaravana' }
 
 /**
  * Flujo de transporte para base_y_excursiones — destinos con puntos de interés cercanos entre
@@ -235,7 +235,7 @@ export function BaseYExcursionesTransportFlow({
               }}
             />
             <ChoiceButton
-              icon="coche"
+              icon="autocaravana"
               label="Camper / autocaravana"
               selected={false}
               onClick={() => {

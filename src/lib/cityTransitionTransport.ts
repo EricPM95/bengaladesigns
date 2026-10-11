@@ -29,7 +29,7 @@ const MODE_ICON: Record<TransportMode, NombreIcono> = {
   car: 'coche',
   ferry: 'barco',
   multimodal: 'ruta',
-  campervan: 'coche',
+  campervan: 'autocaravana',
   transfer: 'coche',
 }
 
