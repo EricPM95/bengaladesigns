@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes pulse{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 24px 80px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;justify-content:center">
+  <div data-screen-label="Perfil" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+
+    <header style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:4px 12px 2px 20px">
+      <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Perfil</span>
+      <button onClick="{{ close }}" aria-label="Cerrar" style="width:44px;height:44px;border-radius:50%;border:none;background:#EDE4D3;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </header>
+
+    <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:2px 16px 20px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:14px;padding:0 4px">
+        <h1 style="flex:1;margin:0;font:400 40px/1 'Instrument Serif',serif;letter-spacing:-.01em">Hola, <em>viajero</em></h1>
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 26px/1 'Instrument Serif',serif;box-shadow:0 0 0 3px #F5EFE4,0 0 0 4.5px oklch(0.8 0.14 70)">V</span>
+      </div>
+
+      <div style="position:relative;height:230px;flex:none;border-radius:26px;overflow:hidden;background:#DDE7DF;border:1px solid rgba(28,34,48,.08)">
+        <svg width="358" height="230" viewBox="0 0 358 230" style="position:absolute;inset:0">
+          <defs><radialGradient id="gl" cx="45%" cy="38%" r="70%"><stop offset="0" stop-color="#E9F0EA"></stop><stop offset="1" stop-color="#C9D9CE"></stop></radialGradient><clipPath id="gc"><circle cx="179" cy="190" r="200"></circle></clipPath></defs>
+          <circle cx="179" cy="190" r="200" fill="url(#gl)"></circle>
+          <g clip-path="url(#gc)" fill="#FFFDF8" stroke="rgba(28,34,48,.18)" stroke-width=".8">
+            <path d="M96 30 C130 10 190 6 240 18 C290 30 330 40 360 30 V120 C330 116 300 124 276 116 C256 110 240 124 224 132 C212 112 196 108 184 118 C168 104 150 110 140 124 C126 120 112 128 98 124 C86 104 80 70 96 30Z"></path>
+            <path d="M98 124 C114 128 130 124 140 128 C138 146 124 156 108 158 C96 156 88 140 98 124Z"></path>
+            <path d="M184 118 C192 122 198 132 206 144 C214 154 222 160 218 166 C210 164 204 156 198 148 C192 140 186 130 184 118Z"></path>
+            <path d="M80 170 C130 162 190 168 250 160 C300 154 340 164 380 160 V260 H60 Z"></path>
+            <path d="M60 60 C70 50 78 54 76 66 C72 76 62 74 60 60Z"></path>
+          </g>
+          <g fill="none" stroke="rgba(28,34,48,.08)" stroke-width="1"><ellipse cx="179" cy="190" rx="200" ry="60"></ellipse><ellipse cx="179" cy="190" rx="200" ry="130"></ellipse><ellipse cx="179" cy="190" rx="90" ry="200"></ellipse></g>
+          <g font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="rgba(28,34,48,.38)"><text x="150" y="88">EUROPA</text><text x="20" y="120">ATLÁNTICO</text><text x="232" y="196">ÁFRICA</text></g>
+        </svg>
+        <span style="position:absolute;left:196px;top:136px;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:oklch(0.8 0.14 70);animation:pulse 2.4s ease-out infinite"></span>
+        <span style="position:absolute;left:196px;top:136px;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 3px #FFFDF8"></span>
+        <span style="position:absolute;left:206px;top:110px;height:26px;padding:0 10px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:6px;font:500 12px 'Geist';white-space:nowrap">Roma<span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.8 0.14 70)">×5</span></span>
+        <div style="position:absolute;left:12px;bottom:12px;display:flex;gap:5px">
+          <span style="height:30px;padding:0 11px 0 10px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:6px;font:500 11.5px 'Geist'"><span style="font:400 19px/1 'Instrument Serif',serif;color:oklch(0.8 0.14 70)">{{ nCountries }}</span>{{ countriesLbl }}</span>
+          <span style="height:30px;padding:0 11px 0 10px;border-radius:999px;background:rgba(255,253,248,.92);display:flex;align-items:center;gap:6px;font:500 11.5px 'Geist'"><span style="font:400 19px/1 'Instrument Serif',serif">{{ nPlaces }}</span>lugares</span>
+          <span style="height:30px;padding:0 11px 0 10px;border-radius:999px;background:rgba(255,253,248,.92);display:flex;align-items:center;gap:6px;font:500 11.5px 'Geist'"><span style="font:400 19px/1 'Instrument Serif',serif">{{ nDays }}</span>días</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px">
+          <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Mis viajes</span>
+          <span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.45)">{{ nTrips }}</span>
+        </div>
+        <sc-for list="{{ trips }}" as="t" hint-placeholder-count="5">
+          <button onClick="{{ t.open }}" style="display:flex;align-items:center;min-height:64px;padding:0;border-radius:18px;border:1px solid {{ t.bd }};background:#FFFFFF;overflow:hidden;text-align:left;color:#1C2230;cursor:pointer;box-shadow:0 1px 2px rgba(28,34,48,.04)" style-hover="border-color:rgba(28,34,48,.22)">
+            <span style="align-self:stretch;width:46px;flex:none;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%);background:linear-gradient(112deg,#2E8B57 0 36%,#F4F1EA 36% 64%,#CE3B3B 64%)"></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 8px 10px 6px">
+              <span style="font:400 20px/1.05 'Instrument Serif',serif">{{ t.city }}</span>
+              <span style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px"><span style="font:500 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.58)">{{ t.when }}</span><span style="display:flex;align-items:center;gap:4px;font:500 11.5px 'Geist';color:rgba(28,34,48,.62)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg>{{ t.photos }}</span></span>
+            </span>
+            <sc-if value="{{ t.isOpen }}" hint-placeholder-val="{{ false }}"><span style="flex:none;height:24px;padding:0 9px;border-radius:999px;background:oklch(0.55 0.17 5 / .1);color:oklch(0.5 0.17 5);font:600 11px/24px 'Geist'">Abierto</span></sc-if>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin:0 12px 0 8px"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+        </sc-for>
+      </div>
+      <a href="#" onClick="{{ credits }}" style="align-self:flex-start;padding:4px;font:400 12px 'Geist';color:rgba(28,34,48,.5);text-decoration:underline;text-underline-offset:3px">Créditos</a>
+    </div>
+
+    <div style="flex:none;padding:12px 16px 30px;background:linear-gradient(180deg,rgba(245,239,228,0),#F5EFE4 30%)">
+      <button onClick="{{ newTrip }}" style="width:100%;height:58px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:10px;font:600 16px 'Geist';cursor:pointer;box-shadow:0 14px 26px -14px rgba(28,34,48,.8)" style-active="transform:scale(.98)">
+        <span style="width:26px;height:26px;border-radius:50%;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>Nuevo viaje
+      </button>
+    </div>
+    <span style="position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:5px;background:rgba(28,34,48,.3)"></span>
+
+    <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:50%;bottom:104px;height:40px;padding:0 16px;border-radius:999px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;animation:toast 2.2s ease both;z-index:40">{{ toastTxt }}</div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TRIPS=[['Roma','octubre · 3 días',3,false,155],['Roma','octubre · 3 días',3,false,82],['Roma','octubre · 3 días',3,false,1],['Roma','21 – 23 oct 2026 · 3 días',3,false,0],['Roma','29 oct – 1 nov 2026 · 5 días',5,true,0]];
+class Component extends DCLogic {
+  state={toast:null};
+  componentWillUnmount(){clearTimeout(this.tt);}
+  toast(t){this.setState({toast:t});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
+  renderVals(){const s=this.state;
+    return{
+      trips:TRIPS.map(([city,when,d,open,ph])=>({city,when,photos:ph===0?'Sin fotos':ph===1?'1 foto':`${ph} fotos`,isOpen:!!open,bd:open?'oklch(0.55 0.17 5 / .3)':'rgba(28,34,48,.08)',open:()=>this.toast(`Abriendo ${city} · ${when}`)})),
+      nTrips:String(TRIPS.length),nCountries:'1',countriesLbl:'país',nPlaces:'4',nDays:String(TRIPS.reduce((a,t)=>a+t[2],0)),
+      close:()=>this.toast('Cerrar perfil'),newTrip:()=>this.toast('Empezando un viaje nuevo…'),
+      credits:e=>{e.preventDefault();this.toast('Créditos');},
+      toastOn:!!s.toast,toastTxt:s.toast||''};}
+}
+</script>
+</body>
+</html>
