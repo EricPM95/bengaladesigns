@@ -4,7 +4,6 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { dayOfReservation, shortDateEs } from '../../../lib/bookings'
 import { numberedStopsOf, stopNumbersOf } from '../../../lib/stopKind'
-import { pagoActivo } from '../../../lib/pago'
 import { displayStopName } from '../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../lib/distanceMock'
 import { buildGoogleMapsUrl, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
@@ -14,12 +13,13 @@ import { BotonFoto } from '../fotos/BotonFoto'
 import { TusFotosDeHoy } from '../fotos/TusFotosDeHoy'
 import { RainAlert } from '../today/RainAlert'
 import { TodayExcursion } from '../today/TodayExcursion'
-import { AZUL, CajaBlanca, FRAMBUESA, ojoMono, TINTA, VERDE } from './piezas'
+import { AZUL, FRAMBUESA, ojoMono, TINTA, VERDE } from './piezas'
 import { useHorarioDeParadas, type HorarioDeParada } from '../../../lib/horarioDeParada'
 import { AvisoEntradaReservada, AvisoSaltada, BotonNoMeDaTiempo, HojaPasarAOtroDia } from './saltar'
 import { Escuchar } from './Escuchar'
 import { CercaDeTi } from './CercaDeTi'
 import { textoResumenDeParada } from '../../../lib/useEscuchar'
+import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../lib/historia'
 import { avisosDeCierre } from '../../../lib/avisosDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../lib/diaCompleto'
 
@@ -52,33 +52,18 @@ function MapaHastaLaParada({ desde, hasta }: { desde: Coordinates | null; hasta:
   return <img src={url} alt="Mapa hasta la siguiente parada" className="h-[118px] w-full rounded-[21px] object-cover" loading="lazy" onError={() => setFallo(true)} />
 }
 
-/** El título del día con la última palabra en frambuesa y cursiva (diseño: «Vaticano y *Trastevere*»). */
-function TituloDelDia({ texto }: { texto: string }) {
-  const palabras = texto.trim().split(/\s+/)
-  const ultima = palabras.pop() ?? ''
-  return (
-    <span style={{ font: "400 34px/1.02 'Instrument Serif',serif" }}>
-      {palabras.length > 0 ? `${palabras.join(' ')} ` : ''}
-      <em style={{ color: FRAMBUESA }}>{ultima}</em>
-    </span>
-  )
-}
-
-function CabeceraDelDia({ day, dateIso }: { day: DayPlan; dateIso: string }) {
-  return (
-    <div className="flex flex-none flex-col gap-1 px-1 pb-0.5 pt-1">
-      <span style={{ ...ojoMono, color: 'oklch(0.5 0.17 5)' }}>Hoy · {shortDateEs(dateIso)}</span>
-      <TituloDelDia texto={day.curatedTitle ?? day.title ?? day.city} />
-    </div>
-  )
+/** «Historia» (Tanda 6y5), al lado de «Escuchar» en la siguiente parada: lee la historia del sitio. Solo sale si la ficha del sitio tiene historia; sin ella, nada. */
+export function HistoriaDeParada({ destino, nombre, clave }: { destino: string; nombre: string; clave: string }) {
+  const ficha = useFichaDeSitio(destino, nombre)
+  if (accesoHistoria(ficha) === 'ninguno') return null
+  return <Escuchar oscuro etiqueta="Historia" texto={textoHistoria(ficha)} clave={`${clave}:historia`} />
 }
 
 /**
- * HOY durante el viaje (Tanda 6z3, diseño «Durante»). Gratis: el plan de hoy, el mismo que en DÍAS, con la hora solo en lo reservado (la pastilla verde «✓ 9:00»), más la cámara. De pago, además, lo de vivo: la tarjeta oscura con la siguiente
+ * HOY durante el viaje (Tanda 6z3, diseño «Durante»; solo de pago desde la 6z6, así que ya no hay rama gratis): lo de vivo, la tarjeta oscura con la siguiente
  * parada (mapa pequeño, nombre y cuánto se anda hasta ella, [Cómo llegar] y [✓ Visto] con su «Añadir foto»), el aviso de la entrada, el de lluvia y la lista con lo visto en verde. Ninguna hora calculada por la app a la vista.
  */
 export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
-  const pago = pagoActivo()
   const reservations = useRouteStore((state) => state.reservations)
   const setStopVisto = useRouteStore((state) => state.setStopVisto)
   const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
@@ -186,47 +171,6 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
     setOfrecerFoto(null)
   }
 
-  // ── Gratis: el plan de hoy ──
-  if (!pago) {
-    return (
-      <>
-        <CabeceraDelDia day={day} dateIso={dateIso} />
-        <CajaBlanca className="!gap-0 !px-3.5 !py-2">
-          {paradas.map((stop, indice) => {
-            const reserva = reservaDe(stop)
-            return (
-              <div key={stop.id} className="relative flex min-h-[60px] items-center gap-3">
-                {indice < paradas.length - 1 && <span aria-hidden="true" className="absolute bottom-[-16px] left-3.5 top-11 border-l-[1.5px] border-dashed border-text/20" />}
-                <span
-                  className="relative flex h-[29px] w-[29px] flex-none items-center justify-center rounded-full"
-                  style={{ background: reserva ? VERDE : '#FFFFFF', border: `1.5px solid ${reserva ? VERDE : 'rgba(28,34,48,.25)'}`, color: reserva ? '#fff' : TINTA, font: "400 16px/1 'Instrument Serif',serif" }}
-                >
-                  {numeros.get(stop.id)}
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span style={{ font: "400 17px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(stop.name)}</span>
-                  <LineaDeHorario horario={horarioDe(stop)} />
-                  <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />
-                </span>
-                {/* (Tanda 6y4: la hora de la entrada sale UNA vez por pantalla. En la gratis, aquí; en la de pago, en «Tu entrada a… · 10:30 ✓» de abajo.) */}
-                {reserva && (
-                  <span data-entrada-hora className="flex h-[26px] flex-none items-center gap-1 rounded-full px-[9px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.38 0.1 150)', font: "600 12px 'Geist Mono',monospace" }}>
-                    <Icono nombre="hecho" size={11} grosor={2.8} />
-                    {reserva.time}
-                  </span>
-                )}
-              </div>
-            )
-          })}
-        </CajaBlanca>
-        <BotonFoto dayId={day.id} dayNumber={day.dayNumber} etiqueta="Añadir una foto de hoy" className="flex h-12 flex-none items-center justify-center gap-2 rounded-full border border-text/15 bg-white text-[14px] font-semibold text-text">
-          <Icono nombre="camara" size={18} />
-          Añadir una foto de hoy
-        </BotonFoto>
-      </>
-    )
-  }
-
   // ── De pago: lo de vivo ──
   return (
     <>
@@ -256,7 +200,10 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   {ubicacionEstado === 'pidiendo' ? 'Buscando…' : ubicacion ? 'Actualizar' : 'Ubicación'}
                 </button>
               </div>
-              <Escuchar oscuro texto={textoResumenDeParada(siguiente)} clave={siguiente.id} />
+              <div className="flex flex-wrap items-center gap-2">
+                <Escuchar oscuro texto={textoResumenDeParada(siguiente)} clave={siguiente.id} />
+                <HistoriaDeParada destino={route.destination} nombre={siguiente.name} clave={siguiente.id} />
+              </div>
             </div>
             {confirmarReservada && horaReservada ? (
               <AvisoEntradaReservada hora={horaReservada} onSaltarIgual={() => saltar(siguiente)} onCancelar={() => setConfirmarReservada(false)} />

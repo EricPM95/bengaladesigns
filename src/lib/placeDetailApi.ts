@@ -44,11 +44,15 @@ export interface PlaceDetail {
   extras?: { official_url?: string; booking_url?: string; address?: string }
   tips?: string[]
   secrets?: string[]
+  /** La historia para «Escuchar historia» (Tanda 6y5): solo se escucha, no se escribe en ninguna pestaña. */
+  historia?: string
+  /** La historia suena gratis para todos (la muestra de la versión gratis). */
+  historia_gratis?: boolean
 }
 
 // Mismo criterio que placePoolCache.ts: es contenido estático del repo, no cambia con el tiempo ni
 // con el viajero, así que se cachea sin caducidad y se invalida subiendo la versión de la clave.
-const CACHE_VERSION = 1
+const CACHE_VERSION = 2
 
 function cacheKey(destination: string, name: string): string {
   return `place-detail:v${CACHE_VERSION}:${destination.trim().toLowerCase()}:${name.trim().toLowerCase()}`
@@ -57,6 +61,11 @@ function cacheKey(destination: string, name: string): string {
 /** `null` cacheado = "ya preguntamos y este lugar no tiene ficha" — para no repetir la llamada. */
 const memory = new Map<string, PlaceDetail | null>()
 const inFlight = new Map<string, Promise<PlaceDetail | null>>()
+
+/** La ficha de un sitio si ya está en la memoria de esta sesión (sin pedirla); `null` si no está o si el sitio no tiene ficha. */
+export function fichaEnMemoria(destination: string, name: string): PlaceDetail | null {
+  return memory.get(cacheKey(destination, name)) ?? null
+}
 
 export async function fetchPlaceDetail(destination: string, name: string): Promise<PlaceDetail | null> {
   const key = cacheKey(destination, name)

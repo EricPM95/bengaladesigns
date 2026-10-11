@@ -176,9 +176,9 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
   debe(/Pausa/.test(comp) && /Seguir/.test(comp) && /onClick=\{pausar\}/.test(comp) && /onClick=\{seguir\}/.test(comp) && /nombre="altavoz"/.test(comp) && !/fetch\(/.test(hook + comp), '3 componente', 'el componente no tiene [Pausa], [Seguir] o el altavoz, o manda algo fuera')
   debe(Boolean(ICONOS.altavoz && ICONOS.pausa && ICONOS.seguir), '3 componente', 'faltan los iconos altavoz, pausa y seguir en la familia')
   const ficha = fuente('src/components/route/dayDetail/StopDetailSheet.tsx')
-  debe((ficha.match(/<Escuchar /g) ?? []).length === 1 && /textoResumenDeParada\(stop, \{ descripcion/.test(ficha), '3 ficha', 'la ficha de la parada no lleva «Escuchar» una sola vez con el texto del Resumen')
+  debe((ficha.match(/<Escuchar /g) ?? []).length === 1 && /textoHistoria\(curated\)/.test(ficha), '3 ficha', 'la ficha de la parada no lleva «Escuchar» una sola vez con el texto de la historia (Tanda 6y5)')
   // (Tanda 6y4, diseño «Ficha Lugar»: «Escuchar la historia» es la barra oscura fija de abajo de la ficha, en todas las pestañas, y lee el texto del Resumen; antes era un botón dentro de la pestaña «Resumen».)
-  debe(/<Escuchar barra /.test(ficha) && /texto=\{textoParaEscucharResumen\}/.test(ficha), '3 ficha', '«Escuchar» no es la barra de la ficha con el texto del Resumen')
+  debe(/<Escuchar barra /.test(ficha) && /texto=\{textoDeLaHistoria\}/.test(ficha), '3 ficha', '«Escuchar historia» no es la barra de la ficha con el texto de la historia (Tanda 6y5)')
   // 3e. El texto del Resumen: el «por qué», la descripción, «Qué vas a ver», «Por qué te lo recomendamos»; sin emojis ni flechas.
   const t = textoResumenDeParada({ why: '🏛 Un templo romano → increíble', description: 'x' }, { descripcion: 'Tiene una cúpula.', queVerás: ['El óculo', 'Las tumbas'], porQue: 'Es único' })
   debe(!/\p{Extended_Pictographic}/u.test(t) && !/→/.test(t) && /^Un templo romano, increíble\. Tiene una cúpula\. Qué vas a ver\. El óculo\. Las tumbas\. Por qué te lo recomendamos\. Es único\.$/.test(t), '3 texto', `el texto del Resumen no sale como en la ficha: «${t}»`)

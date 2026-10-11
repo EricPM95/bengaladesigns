@@ -84,7 +84,9 @@
         "Desde el nivel superior (ático, solo con Full Experience) tienes la única vista donde se ve el Foro Romano, el Palatino y el Coliseo desde arriba a la vez.",
         "El mejor punto para la foto exterior NO es desde la entrada principal — es desde Via Celio Vibenna (lado sur), donde entra el Arco de Constantino en el encuadre.",
         "Si entras a primera hora (08:30), los primeros 20 minutos tienes la arena casi vacía — los grupos organizados llegan a partir de las 09:00."
-      ]
+      ],
+      "historia": "Hace casi mil trescientos años, un monje inglés, Beda el Venerable, escribió: «Mientras el Coliseo esté en pie, Roma estará en pie. Cuando caiga el Coliseo, caerá Roma. Y cuando caiga Roma, caerá el mundo». Por suerte, aquí sigue.\n\nLo empezó el emperador Vespasiano y lo inauguró su hijo Tito en el año 80, con cien días seguidos de juegos. Entonces se llamaba Anfiteatro Flavio. El nombre de Coliseo le vino de una estatua gigante de Nerón, el Coloso, que estaba aquí al lado.\n\nLa entrada era gratis, pero cada uno se sentaba según quién era: los senadores, abajo del todo, cerca de la arena; el pueblo, más arriba; y las mujeres, en lo más alto. Cuando el sol apretaba, marineros de la flota romana tendían un enorme toldo de lona sobre las gradas.\n\nAhora fíjate en dos cosas. Encima de los arcos de fuera todavía se ven números romanos tallados: eran las puertas, y tu entrada llevaba el número de la tuya. Y esos agujeros que salpican las piedras: ahí iban grapas de metal, que se arrancaron en la Edad Media para fundirlas. Tras un terremoto en 1349, el Coliseo se usó durante siglos como cantera: muchas de sus piedras están hoy en palacios e iglesias de Roma.",
+      "historia_gratis": true
     },
     {
       "name": "Foro Romano y Palatino",
@@ -143,7 +145,8 @@
         "En el Palatino hay un museo (Museo Palatino) que la mayoría se salta — tiene frescos originales y una maqueta de cómo era Roma en su apogeo.",
         "El Stadio Palatino (un jardín alargado en la parte alta) es uno de los rincones más tranquilos de toda Roma — casi nadie sube hasta allí.",
         "Si miras desde la terraza del Palatino hacia el Circo Máximo, estás exactamente donde los emperadores veían las carreras de cuadrigas desde su palco privado."
-      ]
+      ],
+      "historia": "Estás caminando por la calle más famosa de la Antigüedad: la Vía Sacra. Por aquí desfilaban los generales victoriosos hacia el Capitolio, con sus prisioneros encadenados detrás.\n\nArriba, en la colina del Palatino, según la leyenda, Rómulo fundó Roma en el año 753 antes de Cristo. Siglos después, los emperadores construyeron allí sus casas, tan enormes que la palabra «palacio» viene de este sitio: del Palatino.\n\nAbajo, en el Foro, busca un pequeño templo medio derruido con un tejadillo moderno: es el templo de Julio César. Ahí mismo quemaron su cuerpo después de que lo asesinaran, en el año 44 antes de Cristo. Y más de dos mil años después, todavía hay gente que le deja flores.\n\nMuy cerca está la tribuna de los oradores, desde donde se hablaba al pueblo. En ella, poco después de la muerte de César, clavaron la cabeza y las manos de Cicerón, el gran orador, por haber hablado contra Marco Antonio.\n\nY ese edificio alto de ladrillo, casi intacto, es la Curia: allí se reunía el Senado de Roma. Se ha salvado porque durante siglos fue una iglesia. Si las paredes hablaran, te contarían cómo se gobernó medio mundo."
     },
     {
       "name": "Arco de Constantino",
@@ -152,7 +155,8 @@
         "No tiene entrada — es una parada rápida para la foto. Dedícale 10-15 minutos.",
         "La mejor foto es con el Coliseo detrás del arco — desde Via Celio Vibenna (lado sur) se consigue la composición perfecta.",
         "Fíjate en los relieves: los de arriba son del siglo II (robados de monumentos de Trajano y Marco Aurelio), los de abajo son del siglo IV — nota la diferencia de calidad entre ambas épocas."
-      ]
+      ],
+      "historia": "Este arco recuerda una batalla que cambió la historia, y una visión en el cielo.\n\nEn el año 312, antes de enfrentarse a su rival Majencio junto al puente Milvio, el emperador Constantino contó que había visto en el cielo una señal con un mensaje: «Con este signo vencerás». Mandó pintarla en los escudos de sus soldados. Ganó la batalla, y Majencio murió ahogado en el Tíber. Pocos años después, Constantino dejó a los cristianos practicar su fe libremente, y Roma empezó a cambiar para siempre.\n\nTres años más tarde, el Senado le levantó este arco. Pero mira la inscripción grande de arriba, en el centro: dice que venció «por inspiración de la divinidad». No dice qué divinidad. Con esa frase tan medida, la entendían igual los romanos que seguían adorando a sus dioses y los cristianos. Una frase pensada para no enfadar a nadie.\n\nY un detalle más: en los relieves que se trajeron de monumentos más antiguos, los escultores volvieron a tallar las cabezas de los emperadores para que todos se parecieran a Constantino."
     },
     {
       "name": "Boca de la Verdad",
@@ -161,7 +165,8 @@
         "Cola de 10-15 minutos habitual para meter la mano. Ponle cara de susto — la foto clásica.",
         "No te vayas sin entrar a Santa Maria in Cosmedin — es gratis y tiene un interior medieval precioso con suelo cosmati original del siglo XII.",
         "La Bocca probablemente era una tapa de alcantarilla romana del siglo I — nada romántico, pero funciona como detector de mentiras desde hace 2.000 años."
-      ]
+      ],
+      "historia": "Cuando rodaron aquí «Vacaciones en Roma», en 1953, Gregory Peck le gastó una broma a Audrey Hepburn. Metió la mano en la boca, gritó y la sacó escondida dentro de la manga, como si se la hubiera arrancado. Ella no lo sabía. Su grito y su susto son de verdad, y el director dejó esa toma en la película.\n\nLa leyenda de la boca es mucho más antigua. En la Edad Media se contaba la historia de un marido celoso que obligó a su mujer a jurar aquí que le era fiel. Ella, que tenía un amante, preparó un truco: le pidió al amante que se hiciera pasar por loco y la abrazara delante de todos justo antes de la prueba. Luego metió la mano y juró: «Ningún hombre me ha tocado, salvo mi marido… y ese loco». No mintió, y la boca no mordió.\n\nAntes de irte, entra en la iglesia. En una de sus capillas se guarda, según la tradición, el cráneo de San Valentín, el de los enamorados, coronado de flores."
     },
     {
       "name": "Circo Máximo",
@@ -170,7 +175,8 @@
         "Gratis, siempre abierto. Es un parque público — la gente viene a correr, pasear perros y hacer pícnic.",
         "Hay una visita subterránea (Circo Maximo Experience) con realidad virtual que muestra cómo era en época romana — merece la pena si te gustan las ruinas.",
         "Desde el lado del Palatino se ve mejor la forma ovalada del circo — y se entiende la escala brutal del lugar."
-      ]
+      ],
+      "historia": "Aquí, hace dos mil años, los romanos eran tan hinchas como hoy en el fútbol.\n\nLas carreras de cuadrigas tenían cuatro equipos, por colores: los azules, los verdes, los rojos y los blancos. Cada romano era de uno, y las peleas entre aficiones podían acabar en batallas en la calle. Hasta el emperador Nerón era del equipo verde, y lo decía en público.\n\nLos aurigas, los que conducían los carros, eran las estrellas de su tiempo. El más famoso, Diocles, ganó tantas carreras que se hizo más rico que muchos senadores. Pero era un deporte muy peligroso: muchos morían jóvenes, en el choque de una curva.\n\nY una curiosidad: en el año 64, en las tiendas que había bajo estas gradas, empezó el gran incendio de Roma, el que se le echó en cara a Nerón. Ardió media ciudad durante días.\n\nEn el centro de la pista había dos obeliscos egipcios. Hoy siguen en Roma, pero en otro sitio: uno está en la Piazza del Popolo y el otro, en San Juan de Letrán."
     },
     {
       "name": "Altar de la Patria",
@@ -190,7 +196,8 @@
         "Dentro del monumento hay un museo gratuito (Museo del Risorgimento) sobre la unificación de Italia — casi nadie entra y es fascinante.",
         "La terraza es mejor al atardecer que al mediodía — la luz dorada sobre los tejados de Roma es espectacular y hay menos gente que en el Pincio.",
         "El mármol blanco del Vittoriano viene de Brescia (norte de Italia) y no de Roma — por eso desentona con el travertino dorado del resto de la ciudad. Los romanos lo aman y lo odian a partes iguales."
-      ]
+      ],
+      "historia": "En 1921, una madre que había perdido a su hijo en la guerra tuvo que elegir un ataúd entre once.\n\nSe llamaba Maria Bergamas. Su hijo había muerto en la Primera Guerra Mundial y nunca encontraron su cuerpo. Delante de once soldados sin nombre, ella eligió uno. Ese soldado es el que descansa aquí, bajo la estatua de la diosa Roma: el Soldado Desconocido, que representa a todos los que no volvieron.\n\nEl monumento está dedicado a Víctor Manuel II, el primer rey de la Italia unida. Se empezó en 1885 y no se terminó del todo hasta 1935: cincuenta años de obras. Y para hacerle sitio derribaron todo un barrio medieval que había aquí, a los pies del Capitolio.\n\nMira la estatua del rey a caballo, en el centro. Es tan enorme que, antes de colocarla, los obreros celebraron una cena dentro de la barriga del caballo. Cuentan que cabían unas veinte personas sentadas a la mesa."
     },
     {
       "name": "Plaza Venecia",
@@ -207,7 +214,8 @@
         "Cruza por el Ponte Fabricio — es el puente más antiguo de Roma que aún se usa (62 a.C., más de 2.000 años).",
         "En verano (junio-septiembre) montan un cine al aire libre y puestos de comida en la orilla — 'L'Isola del Cinema' es un plan nocturno perfecto.",
         "Está a 5 minutos de Trastevere cruzando el Ponte Cestio — combínalos naturalmente."
-      ]
+      ],
+      "historia": "En 1943, en el hospital de esta isla, unos médicos se inventaron una enfermedad que no existía. Y con ella salvaron vidas.\n\nRoma estaba ocupada por los nazis, que buscaban a los judíos del barrio de enfrente. Los médicos del hospital escondieron a muchos de ellos como si fueran enfermos de una enfermedad nueva y muy contagiosa, a la que llamaron «Síndrome K». Cuando los soldados venían a registrar, los médicos les avisaban del contagio y les hacían oír toser a los «enfermos». Los soldados se iban sin entrar.\n\nPero la isla ya curaba hace más de dos mil años. En el año 291 antes de Cristo, una peste azotaba Roma, y los romanos mandaron un barco a Grecia a buscar al dios de la medicina, Esculapio. Volvieron con una serpiente sagrada. Al pasar por aquí, la serpiente saltó del barco y se fue a la isla. Lo tomaron como una señal y le construyeron un templo.\n\nPara recordarlo, le dieron a la isla forma de barco. Ve hasta la punta: todavía se conservan restos de la proa de piedra, con el bastón y la serpiente de Esculapio tallados."
     },
     {
       "name": "Via dei Fori Imperiali",
@@ -270,7 +278,8 @@
         "Sube por la escalinata de la Cordonata — es la entrada más dramática. Al llegar arriba, la plaza se abre como un escenario.",
         "Ve a la terraza trasera (detrás del Palazzo Senatorio) — la vista del Foro Romano desde ahí es GRATIS y espectacular.",
         "La estatua de Marco Aurelio del centro es una copia — la original (del año 176 d.C.) está protegida dentro de los Museos Capitolinos."
-      ]
+      ],
+      "historia": "Hace casi 2.400 años, unas ocas salvaron Roma. Y fue aquí, en esta colina.\n\nLos galos habían tomado la ciudad, y los últimos romanos resistían en lo alto del Capitolio. Una noche, los galos subieron en silencio por las rocas. Los perros no ladraron. Pero las ocas sagradas del templo de Juno empezaron a graznar y despertaron a los soldados, que echaron a los galos por el precipicio. Desde entonces, los romanos honraron a las ocas.\n\nLa estatua del centro, el emperador Marco Aurelio a caballo, es casi la única estatua ecuestre de bronce de la antigua Roma que ha llegado hasta hoy. Las demás se fundieron. Esta se salvó por una confusión: durante la Edad Media se creyó que era Constantino, el emperador que protegió a los cristianos, y nadie se atrevió a tocarla.\n\nHay una leyenda romana: cuando la estatua vuelva a estar cubierta de oro entero, como al principio, llegará el fin del mundo.\n\nY mira el suelo de la plaza: esa estrella de doce puntas la dibujó Miguel Ángel. Pero no se hizo hasta 1940, cuatrocientos años después."
     },
     {
       "name": "Museos Capitolinos",
@@ -378,7 +387,8 @@
       "secrets": [
         "En los frescos del nivel medio hay una de las primeras inscripciones en italiano vulgar (no latín) de la historia — una frase que básicamente es un insulto: 'Fili de le pute, traite' (hijos de p***, tirad). Los guías la adoran.",
         "El templo de Mitra del nivel inferior era un culto secreto rival del cristianismo primitivo — se celebraban rituales con sangre de toro exactamente debajo de donde hoy se dice misa."
-      ]
+      ],
+      "historia": "Todo empezó en 1857, con un fraile irlandés y una corazonada.\n\nLa iglesia es de unos frailes dominicos irlandeses, y uno de ellos, el padre Mullooly, sospechaba que debajo había algo. Empezó a excavar en el sótano y encontró una iglesia entera, enterrada, con sus pinturas. Siguió bajando y apareció todavía otro nivel, romano. Por eso hoy puedes bajar escaleras y viajar dos mil años hacia atrás.\n\nEn la iglesia de en medio está enterrado San Cirilo. Junto a su hermano Metodio, llevó el cristianismo a los pueblos eslavos, y para poder escribirles la Biblia en su idioma inventó un alfabeto. De él viene el alfabeto que hoy usan millones de personas en Rusia, Bulgaria o Serbia. Por eso verás aquí placas y flores de visitantes de esos países: vienen a ver la tumba del hombre que les dio su escritura.\n\nY el santo que da nombre a la iglesia, Clemente, fue uno de los primeros papas. Cuenta la leyenda que lo echaron al mar con un ancla atada al cuello. Por eso, busca el ancla: aparece por toda la iglesia."
     },
     {
       "name": "Iglesia de San Pietro in Vincoli",
@@ -391,7 +401,8 @@
       "secrets": [
         "Las cadenas de San Pedro están en una urna de cristal bajo el altar mayor — según la tradición, las cadenas de Roma y las de Jerusalén se fusionaron milagrosamente al juntarlas.",
         "El Moisés iba a ser parte de un monumento funerario gigante para el Papa Julio II con 40 esculturas — Miguel Ángel nunca lo terminó. Lo llamaba 'la tragedia de la tumba'."
-      ]
+      ],
+      "historia": "Lo que tienes delante es una tumba… vacía.\n\nEl papa Julio II encargó a Miguel Ángel el sepulcro más grandioso de la cristiandad, para él mismo. Pero el papa cambió de planes, se gastó el dinero en la nueva basílica de San Pedro, y la obra se fue quedando a medias durante cuarenta años. Al final, Julio II no está enterrado aquí, sino en el Vaticano. Este es lo que quedó del sueño: un monumento mucho más pequeño, presidido por el Moisés.\n\nA los lados del Moisés hay dos mujeres de mármol, más tranquilas, que también talló Miguel Ángel: Lía y Raquel, dos figuras de la Biblia. Representan las dos formas de vivir la fe: la vida activa, la que hace cosas, y la vida contemplativa, la que reza y piensa.\n\nY fíjate en el gesto del Moisés: tiene la cabeza girada hacia un lado. Los restauradores descubrieron que Miguel Ángel cambió la postura cuando el monumento ya estaba montado: al principio miraba de frente, hacia el altar."
     },
     {
       "name": "Domus Aurea",
@@ -484,7 +495,8 @@
       "secrets": [
         "Bajo las termas hay un Mitreo (templo de Mitra) que normalmente no se visita pero a veces abren en jornadas especiales — pregunta en taquilla.",
         "Los mosaicos originales del suelo (atletas en blanco y negro) se ven aún en algunas salas — busca los que están protegidos con cristal."
-      ]
+      ],
+      "historia": "El emperador que construyó estas termas mató a su propio hermano. Y lo hizo en brazos de su madre.\n\nCaracalla y su hermano Geta heredaron el imperio juntos, y se odiaban. En el año 211, Caracalla mandó a unos soldados a matar a Geta mientras este se abrazaba a su madre. Después ordenó borrarlo de la historia: quitaron su nombre de las inscripciones y rasparon su cara de los retratos. A eso los romanos lo llamaban «condenar la memoria».\n\nMientras los romanos se bañaban arriba, en piscinas de agua caliente, debajo había otro mundo: kilómetros de túneles donde los esclavos alimentaban sin parar, día y noche, los hornos que calentaban el agua.\n\nDe aquí salieron algunas de las esculturas más famosas de la Antigüedad, como el enorme Hércules Farnesio, que hoy está en Nápoles.\n\nY estas ruinas siguieron dando espectáculo: en los Juegos Olímpicos de Roma de 1960, las pruebas de gimnasia se hicieron aquí mismo, entre los muros de las termas."
     },
     {
       "name": "Jardín de los Naranjos",
@@ -541,7 +553,8 @@
       "secrets": [
         "El techo dorado lo mandó hacer el Papa Alejandro VI (Borgia) con oro regalado por los Reyes Católicos — literalmente el primer oro del Nuevo Mundo.",
         "Cada 5 de agosto se celebra el 'milagro de la nieve' — caen pétalos blancos desde el techo para recordar la nevada milagrosa que marcó dónde construir la basílica en el siglo IV."
-      ]
+      ],
+      "historia": "¿Sabías que el rey de España es canónigo de esta iglesia? Es una tradición de hace siglos: los reyes de España tienen aquí un título de honor, y cuando vienen a Roma, la basílica los recibe como a uno de los suyos. España ayudó mucho a esta iglesia, y la iglesia no lo ha olvidado.\n\nAquí también está enterrado un papa muy reciente: Francisco. Murió en abril de 2025 y pidió que no lo enterraran en el Vaticano, como a casi todos los papas, sino aquí, en una tumba sencilla, porque era la iglesia a la que venía a rezar a la Virgen antes y después de cada viaje.\n\nY busca en el suelo, cerca del altar, una losa muy sencilla. Ahí está enterrado Bernini, el gran escultor de Roma, el hombre que llenó la ciudad de fuentes, estatuas y columnatas. Para él, nada de monumentos: solo su nombre en el suelo.\n\nAl salir, mira el campanario: es el más alto de Roma."
     },
     {
       "name": "Columna de Trajano",
@@ -553,7 +566,8 @@
       "secrets": [
         "Dentro de la columna hay una escalera de caracol de 185 peldaños que sube hasta la cima — hoy no se puede subir, pero en época romana la gente subía para ver Roma desde lo alto.",
         "Las cenizas de Trajano estaban enterradas en la base — fue el único emperador enterrado dentro de las murallas de Roma. La estatua de San Pedro que hay arriba la puso el Papa Sixto V en el siglo XVI."
-      ]
+      ],
+      "historia": "Esta columna mide lo mismo que la colina que había aquí antes. Y no es casualidad.\n\nPara hacer su foro, el emperador Trajano mandó quitar un trozo de colina entero, toneladas de tierra y roca. La inscripción de la base explica que la columna se levantó para mostrar la altura que tenía el monte que se excavó. Es como un metro gigante de la obra.\n\nTrajano fue el emperador con el que Roma llegó a ser más grande: nunca antes ni después tuvo tanto territorio. Y gran parte de su foro lo pagó con el oro que se trajo de la guerra que cuenta esta columna.\n\nHay una leyenda preciosa sobre él. Siglos después, el papa Gregorio pasó por aquí y se emocionó al recordar lo justo que había sido Trajano con una pobre viuda. Le dio pena que un hombre tan bueno no fuera cristiano, y rezó por su alma. Dice la leyenda que Dios lo escuchó y lo salvó. Dante, en su Divina Comedia, pone a Trajano en el Paraíso, el único emperador pagano que está allí."
     },
     {
       "name": "Teatro de Marcelo",
@@ -575,7 +589,8 @@
       "secrets": [
         "La perspectiva fue diseñada por Giovanni Battista Piranesi en 1765 — el mismo grabador famoso por sus 'Cárceles imaginarias'. Alineó la cerradura, los setos y la cúpula a propósito.",
         "La Orden de Malta es el estado soberano más pequeño del mundo con territorio: solo esta plaza y un palacio en Via Condotti. Emite sus propios sellos y pasaportes."
-      ]
+      ],
+      "historia": "En esta colina empezó la primera pelea de Roma.\n\nRómulo y Remo no se ponían de acuerdo en dónde fundar su ciudad. Así que decidieron preguntar a los dioses: cada uno subiría a una colina y contaría los pájaros que pasaran. Rómulo se fue al Palatino. Remo, aquí, al Aventino. Remo vio primero seis buitres. Pero Rómulo vio doce. Discutieron, y la discusión acabó con Remo muerto. La ciudad se llamó Roma.\n\nLos dueños de esta puerta, los Caballeros de Malta, nacieron hace casi mil años como monjes que cuidaban a los peregrinos enfermos en un hospital de Jerusalén. Con el tiempo se convirtieron en caballeros, y en 1565, desde la isla de Malta, resistieron un asedio de meses contra un ejército enorme. De ahí les viene el nombre.\n\nHoy siguen dedicándose a lo mismo que al principio: hospitales y ayuda a enfermos por todo el mundo."
     },
     {
       "name": "Pirámide Cestia",
@@ -600,7 +615,8 @@
       "secrets": [
         "La escultura ha generado debate durante siglos — la expresión de Santa Teresa es tan ambigua que muchos la interpretan como éxtasis religioso y otros como algo mucho más terrenal. Bernini lo hizo a propósito.",
         "La luz dorada que ilumina la escultura viene de una ventana oculta diseñada por Bernini — los rayos de bronce dorado amplifican el efecto. Es puro teatro barroco."
-      ]
+      ],
+      "historia": "La santa de esta escultura es española: Teresa de Ávila. Y Bernini no se inventó la escena: la sacó de lo que ella misma escribió.\n\nEn su libro, Santa Teresa cuenta que se le apareció un ángel pequeño y muy hermoso, con una lanza de oro, y que con ella le atravesó el corazón varias veces. Escribió que el dolor era tan grande que la hacía quejarse, y a la vez tan dulce que no quería que se acabara. Mira la cara de la santa y la sonrisa del ángel: es exactamente eso.\n\nEl nombre de la iglesia, de la Victoria, viene de una batalla: en 1620, en la batalla de la Montaña Blanca, en Bohemia, los ejércitos católicos atribuyeron su victoria a una imagen de la Virgen que encontraron, y la trajeron aquí.\n\nY si has leído «Ángeles y demonios», de Dan Brown, esta iglesia te sonará: es uno de los escenarios de la novela."
     },
     {
       "name": "Basílica de San Juan de Letrán",

@@ -21,6 +21,7 @@ import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { buildEntradasBloque } from '../../src/lib/bookings'
 import { dayColor } from '../../src/lib/dayColors'
 import { cargaDatosDeHorario } from '../../src/lib/horarioDeParada'
+import { fetchPlaceDetail } from '../../src/lib/placeDetailApi'
 
 export {
   createElement,
@@ -56,4 +57,5 @@ export {
   buildEntradasBloque,
   dayColor,
   cargaDatosDeHorario,
+  fetchPlaceDetail,
 }
