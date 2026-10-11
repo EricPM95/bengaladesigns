@@ -1,9 +1,42 @@
 BORRADOR (no pasar a Code todavía). Va cuando Roma esté entera curada y lista para lanzar (la ruta, RESERVAS, las llegadas, todo). Antes de pasarlo, revisarlo con lo que haya cambiado y ponerle su número de tanda.
 
 Ideas para cuando toque (Claude, 10-oct):
-- Italia (ciudades en tren): este mismo modelo. Curar cada ciudad como Roma (sus días escritos con llegada y vuelta, sus reservas, horarios, tips, fotos y excursiones), más una tabla de los tramos reales entre ciudades (estación, duración). En el formulario, solo los destinos curados; los demás, «Próximamente» con «Avísame» (así sabemos qué piden).
+- Italia (ciudades en tren): este mismo modelo. Curar cada ciudad como Roma (sus días escritos con llegada y vuelta, sus reservas, horarios, tips, fotos y excursiones), más una tabla de los tramos reales entre ciudades (estación, duración). En el buscador, solo los destinos curados; los demás no salen («Aún no tenemos este destino»).
 - Islandia (ruta en coche o autocaravana): otro tipo de viaje (el arquetipo roadtrip_exclusivo). La pieza no es la ciudad sino la etapa: de A a B en coche, con las paradas del camino y dónde se duerme. Habría que escribir «etapas escritas» (por número de días y sentido de la vuelta), con el alojamiento de cada noche (o el camping), el coche una vez, las excursiones por etapa, y la temporada y el estado de las carreteras como avisos.
 - Orden: Roma lista → ciudades de Italia → rutas en coche (Islandia la primera).
+
+REGLA (Eric, 11-oct): en la app solo se pueden buscar los países y destinos que tengamos curados; los demás no salen.
+Texto pasado a Claude Design (11-oct) para diseñar las pantallas siguientes: «Tu recorrido» (noches y medio de cada tramo), «¿Qué día sales?» (calendario que se pinta solo) y RUTA con varias ciudades. Guardar lo que haga en docs\diseno\multidestino\.
+
+LA PRIMERA PANTALLA, COMO EL DISEÑO QUE LE ENCANTA A ERIC (11-oct, 16:27): docs\diseno\multidestino\formulario_varias_ciudades.png. «¿De dónde sales y a dónde vas?» con un interruptor «Un destino · Varias ciudades». En «Varias ciudades»: Origen, Destino, Destino 2 (con su X), «+ Añadir otra ciudad» y el botón «Trazar ruta · 2 destinos». Esto sustituye al «+ Añadir otro destino» suelto de la versión 4. Al trazar, la pantalla siguiente es la de las noches y el transporte (versión 4). Detalles: la barra de pasos (1/7) cuenta menos pasos en «Varias ciudades» (sin experiencias ni pool); el buscador solo encuentra destinos curados (Eric, 11-oct): si escribe otro, no sale en la lista y debajo pone «Aún no tenemos este destino»; «Vuelves a» (por defecto, el origen) va en la pantalla de las noches.
+
+Cómo se añaden los destinos, versión 4 (11-oct, 16:30; idea de Eric, ordenada por Claude; por confirmar):
+- Dos caminos en el formulario. Un destino: como ahora (transporte, fechas, quién viaja, experiencias, pool, resumen). Varios destinos: sin experiencias ni pool.
+- Se entra en el camino de varios con «+ Añadir otro destino» en la primera pantalla: no se pregunta «¿ruta o multidestino?».
+- Pantalla de varios destinos, tipo Stippl: «Sales de Barcelona», cada destino con sus noches (− 3 +) y, en cada tramo, un desplegable con el medio (avión, tren, autobús, coche): Barcelona → Roma ✈, Roma → Florencia 🚆, Florencia → Barcelona ✈. Solo se elige el medio: no se calcula nada. Si el tramo está en nuestra tablita de tramos, sale su dato (~1 h 30 en tren).
+- Después, el calendario de siempre, pero solo para elegir el día de salida: el viaje entero se pinta solo con las noches puestas, y se ve la temporada. Sin fechas: el mes.
+- Luego «quién viaja» (hace falta para el presupuesto) y la pantalla de elegir («hazla por mí» = nuestros días escritos de cada destino; «quiero hacerla yo» = días vacíos).
+- Dentro de la app, en RUTA, las noches de cada destino se pueden cambiar con − y + (se rehace solo ese destino), y «+ Añadir destino».
+
+Versión 3 (cambiada por la 4) (11-oct, 16:20; la buena por ahora, por confirmar con Eric):
+- Por noches, sí (a Eric le gusta). Pero el calendario se queda donde está, con su temporada: no se piden las noches en la primera pantalla.
+- Primera pantalla: «Sales de» y «¿A dónde vas?» como ahora, y debajo «+ Añadir otro destino» (solo nombres, sin noches). «Vuelves a», el origen, que se puede cambiar.
+- Paso de las fechas: el calendario de siempre (o el mes, sin fechas). Con varios destinos, debajo: «¿Cuántas noches en cada sitio?», Roma − 0 + / Florencia − 0 +, y «Te quedan 7 noches por repartir». Empiezan a 0: la app no propone nada. Con un solo destino, este bloque no sale.
+- Transporte, sin multiplicar cálculos: solo se calculan la ida (origen → primer destino) y la vuelta (último destino → a casa), como ahora. Entre destinos no se calcula nada: como solo se ofrecen destinos curados, escribimos nosotros una tablita de tramos (Roma ↔ Florencia: tren, ~1 h 30, de estación a estación), como la de las llegadas. En RUTA, entre las tarjetas, sale ese tramo con su distancia; el viajero lo puede cambiar (coche, autobús…) y pone la hora en RESERVAS (de pago).
+
+Versión 2 (cambiada por la 3) (11-oct, tarde; propuesta de Claude, por confirmar con Eric). A Eric no le convenció que la app propusiera los días. Propuesta nueva:
+- La primera pantalla del formulario sigue siendo «origen → destino», pero como una lista (al estilo de Stippl): «Sales de Barcelona», «Roma · − 3 noches +», «+ Añadir otro destino» y «Vuelves a Barcelona» (que se puede cambiar). Con un solo destino se ve casi igual que ahora.
+- Por noches, no por días: el viajero pone las noches de cada sitio (como en los hoteles) y las fechas salen solas a partir del día en que sale. Así no hay lío con el día de cambio: Roma 3 noches y Florencia 4 son 8 días, y el día que dejas Roma es el día que llegas a Florencia.
+- La app no propone nada: las noches las pone él.
+- En el paso del transporte, una fila por tramo: Barcelona → Roma, Roma → Florencia, Florencia → Barcelona, cada una con su medio (avión, tren, coche, autobús). Por defecto, el lógico (tren entre ciudades de Italia); el viajero lo cambia. Las horas, después, en RESERVAS (de pago).
+- «+ Añadir destino» en RUTA, para quien lo decide luego, abre la misma lista.
+
+Versión 1 (descartada en parte):
+- En el formulario, primero «¿A dónde vas?»: un destino y debajo, pequeño, «+ Añadir otro destino» (la mayoría pondrá uno solo). Luego «¿Desde dónde sales?», un solo campo que la app recuerda para el próximo viaje. El origen se sigue pidiendo en el formulario porque de él salen la llegada y la vuelta, el día de llegada del motor, la moneda y RESERVAS.
+- Con varios destinos, la app propone cuántos días en cada uno (lo que recomendamos) y el viajero lo ajusta con − y + (como Stippl, por noches o días).
+- En RUTA, debajo de las tarjetas, «+ Añadir destino», para quien lo decide después. Los dos caminos acaban igual: cada destino suelto, con el tramo y la distancia entre uno y otro.
+- El orden, el que ponga el viajero (se arrastra para cambiarlo). Nada de «optimizar» por ahora.
+- Solo se ofrecen los destinos curados; los demás, «Próximamente».
 
 Tanda de los viajes de varios destinos, cada destino como un viaje suelto (decidido por Eric el 10-oct-2026). Va todo en este mensaje. Los destinos no curados siguen con el generador.
 
