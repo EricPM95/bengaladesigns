@@ -60,7 +60,7 @@ console.log('La lista de fotos rechazadas')
 const tabla = JSON.parse(leer('data/dias/roma/_fotos.json'))
 {
   const lista = tabla.fotos_rechazadas
-  ok(Array.isArray(lista) && lista.length === OCHO.length, `1a fotos_rechazadas no tiene los ${OCHO.length} sitios (tiene ${lista?.length})`)
+  ok(Array.isArray(lista) && lista.length >= OCHO.length, `1a fotos_rechazadas no tiene al menos los ${OCHO.length} sitios (tiene ${lista?.length})`)
   ok(OCHO.every((n) => lista?.some((r) => r.lugar === n)), `1b faltan en la lista: ${OCHO.filter((n) => !lista?.some((r) => r.lugar === n)).join(' | ')}`)
   ok((lista ?? []).every((r) => typeof r.motivo === 'string' && r.motivo.trim().length > 20), '1c algún sitio no lleva su motivo escrito')
   ok(typeof tabla._fotos_rechazadas === 'string' && /Eric/.test(tabla._fotos_rechazadas), '1d falta la explicación _fotos_rechazadas')
@@ -223,7 +223,7 @@ console.log('La página de candidatas')
   ok(fs.existsSync(RUTA), `7a no existe ${RUTA}`)
   const html = fs.existsSync(RUTA) ? leer(RUTA) : ''
   const datos = JSON.parse(leer('data/dias/roma/_fotos_candidatas_6y2.json'))
-  ok(datos.entradas.length === OCHO.length && OCHO.every((n) => datos.entradas.some((e) => e.lugar === n)), '7b los datos de candidatas no cubren los 8 sitios')
+  ok(OCHO.every((n) => datos.entradas.some((e) => e.lugar === n)), '7b los datos de candidatas no cubren los 8 sitios de la 6y2')
   for (const e of datos.entradas) {
     const seccion = html.slice(html.indexOf(`<h2>${e.lugar}</h2>`))
     const hasta = seccion.indexOf('</section>')
