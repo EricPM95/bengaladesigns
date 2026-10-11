@@ -7,7 +7,7 @@
 //      / quitarla en la ruta nuestra cambia algo);
 //   3. los botones del aviso de la reserva fuera de su día no son «Pasar al jue 11» / «Añadir al jue 11» (con y sin fechas, sitios masculinos y femeninos, Free Tour), o queda un
 //      «Pasarlo» / «Añadirlo» en cualquier texto de src/, server/, shared/ o scripts/; o los textos de los avisos («Tu entrada al Coliseo es el…») cambian;
-//   4. la parada del Free Tour añadida a mano no lleva la foto real de su lugar (Piazza Navona, pedida con la misma lógica que el resto, una sola vez), o sin foto (o con el servidor caído)
+//   4. la parada del Free Tour añadida a mano no lleva la foto real de su lugar (Plaza de España, su punto de encuentro, pedida con la misma lógica que el resto, una sola vez), o sin foto (o con el servidor caído)
 //      no se queda en el recuadro neutro sin romper nada.
 import fs from 'node:fs'
 import path from 'node:path'
@@ -165,7 +165,7 @@ for (const fechas of [true, false]) {
   montar(rutaMano(3, { fechas }), [['Coliseo'], [], []])
   useRouteStore.getState().addReservation(reserva('r-col', 'Coliseo', ['Coliseo'], fechas ? INICIO : null, fechas ? null : 1, '10:00'), null)
   removeReservationWithUndo('r-col')
-  debe(useRouteStore.getState().reservations.length === 0 && ahora().days[0].stops.some((s) => s.name === 'Coliseo') && useAddFlowStore.getState().toast === null, '2 otras', `${nombre}: quitar otra reserva cambia (se va la parada o sale el aviso del Free Tour)`)
+  debe(useRouteStore.getState().reservations.length === 0 && ahora().days[0].stops.some((s) => s.name === 'Coliseo') && useAddFlowStore.getState().toast?.message === 'Entrada quitada del viaje', '2 otras', `${nombre}: quitar otra reserva quita su parada o no deja el aviso «Entrada quitada del viaje» (Tanda 6y4: ahora con Deshacer, ver 6y4)`)
 }
 // En la ruta nuestra no cambia nada: la parada que el motor puso no se quita con la reserva.
 {
@@ -256,10 +256,10 @@ for (const fechas of [true, false]) {
 
 // ═══════════ 4. La foto real de la parada del Free Tour ═══════════
 {
-  debe(freeTourEntry.photo_name === 'Piazza Navona', '4 foto', `el servidor no manda el lugar de la foto del Free Tour (Piazza Navona): ${freeTourEntry.photo_name}`)
-  const directa = await (await fetchReal(`${process.env.API_URL ?? 'http://localhost:8787'}/api/place-photo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Piazza Navona', city: 'Roma', wikipedia_title: freeTourEntry.wikipedia_title ?? null }) })).json()
-  console.log(`  (foto de Piazza Navona según el servidor: ${directa.photo_source ?? 'ninguna'})`)
-  debe(['unsplash', 'wikipedia', 'propia'].includes(directa.photo_source), '4 foto', 'el servidor no devuelve ninguna foto para Piazza Navona')
+  debe(freeTourEntry.photo_name === 'Plaza de España', '4 foto', `el servidor no manda el lugar de la foto del Free Tour (Plaza de España): ${freeTourEntry.photo_name}`)
+  const directa = await (await fetchReal(`${process.env.API_URL ?? 'http://localhost:8787'}/api/place-photo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Plaza de España', city: 'Roma', wikipedia_title: freeTourEntry.wikipedia_title ?? null }) })).json()
+  console.log(`  (foto de Plaza de España según el servidor: ${directa.photo_source ?? 'ninguna'})`)
+  debe(['unsplash', 'wikipedia', 'propia'].includes(directa.photo_source), '4 foto', 'el servidor no devuelve ninguna foto para Plaza de España')
 
   modoFoto = 'real'
   pedidosDeFoto = []
@@ -267,14 +267,14 @@ for (const fechas of [true, false]) {
   const r1 = reserva('r-ft', 'Free Tour', [FT], sumaDias(INICIO, 1), null, '12:00', { precio: null })
   useRouteStore.getState().addReservation(r1, null, freeTourEntry)
   const sinFotoAun = ahora().days[1].stops.at(-1)
-  debe(sinFotoAun.isFreeTour && sinFotoAun.photoName === 'Piazza Navona' && !/picsum/.test(sinFotoAun.photoUrl ?? ''), '4 foto', `la parada nace con la foto de relleno de picsum o sin el lugar de su foto (${sinFotoAun.photoUrl}, ${sinFotoAun.photoName})`)
+  debe(sinFotoAun.isFreeTour && sinFotoAun.photoName === 'Plaza de España' && !/picsum/.test(sinFotoAun.photoUrl ?? ''), '4 foto', `la parada nace con la foto de relleno de picsum o sin el lugar de su foto (${sinFotoAun.photoUrl}, ${sinFotoAun.photoName})`)
   let conFoto = null
   for (let i = 0; i < 100 && !conFoto; i++) {
     await dormir(100)
     conFoto = ahora().days[1].stops.at(-1).photoUrl || null
   }
-  debe(Boolean(conFoto) && /^https?:\/\//.test(conFoto) && !/picsum/.test(conFoto), '4 foto', `la parada del Free Tour no acaba con la foto real (${conFoto})`)
-  debe(pedidosDeFoto.length === 1 && pedidosDeFoto[0].name === 'Piazza Navona' && pedidosDeFoto[0].city === 'Roma', '4 foto', `se pidió la foto del punto de encuentro con la misma petición que el resto de paradas, y una sola vez (${JSON.stringify(pedidosDeFoto)})`)
+  debe(Boolean(conFoto) && /^(https?:\/\/|\/fotos\/)/.test(conFoto) && !/picsum/.test(conFoto), '4 foto', `la parada del Free Tour no acaba con la foto real (${conFoto})`)
+  debe(pedidosDeFoto.length === 1 && pedidosDeFoto[0].name === 'Plaza de España' && pedidosDeFoto[0].city === 'Roma', '4 foto', `se pidió la foto del punto de encuentro con la misma petición que el resto de paradas, y una sola vez (${JSON.stringify(pedidosDeFoto)})`)
   debe((pedidosDeFoto[0]?.wikipedia_title ?? null) === (freeTourEntry.wikipedia_title ?? null), '4 foto', 'la petición no lleva el wikipedia_title del lugar')
   // Cambiar la fecha (la misma parada) o guardar otra vez no pide nada más.
   useRouteStore.getState().addReservation(reserva('r-ft2', 'Free Tour', [FT], sumaDias(INICIO, 2), null, '15:00', { precio: null }), null, freeTourEntry)

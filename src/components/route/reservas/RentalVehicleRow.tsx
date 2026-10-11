@@ -1,6 +1,7 @@
 import { formatoImporte, precioGuardado, type Importe } from '../../../lib/dinero'
 import { useState } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { quitarConAviso } from '../../../store/useAddFlowStore'
 import { buildCamperRentalLink, buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
 import { ReservasItemRow } from './ReservasItemRow'
 import { GeneralBookingModal } from './GeneralBookingModal'
@@ -38,7 +39,7 @@ export function RentalVehicleRow() {
         providerPlaceholder="Europcar, Goldcar…"
         initial={booking}
         onSave={setRentalVehicleBooking}
-        onRemove={() => setRentalVehicleBooking(null)}
+        onRemove={() => quitarConAviso('Alquiler quitado del viaje', () => setRentalVehicleBooking(null))}
         onClose={() => setOpen(false)}
       />
     </>

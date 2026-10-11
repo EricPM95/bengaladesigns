@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Route } from '../lib/types'
 import type { Reservation } from '../lib/bookings'
-import { isManualFreeTourReservation } from '../lib/freeTourManual'
+import { FREE_TOUR_REF } from '../lib/freeTourManual'
 import { useRouteStore } from './useRouteStore'
 
 /**
@@ -21,7 +21,7 @@ interface AddFlowState {
   focusStopId: string | null
   setFocusStopId: (id: string | null) => void
   /** Aviso con "Deshacer": la ruta de antes del cambio. */
-  toast: { message: string; previous: Route | null; previousReservations?: Reservation[]; id: number } | null
+  toast: { message: string; previous: Route | null; previousReservations?: Reservation[]; previousBookings?: BookingsSnapshot; id: number } | null
   dismissToast: () => void
   undo: () => void
 }
@@ -40,8 +40,10 @@ export const useAddFlowStore = create<AddFlowState>((set, get) => ({
   undo: () => {
     const previous = get().toast?.previous
     const previousReservations = get().toast?.previousReservations
-    // (Con las reservas de antes: si el cambio las borró —la varita—, volver atrás las devuelve.)
-    if (previous) useRouteStore.setState({ route: previous, ...(previousReservations ? { reservations: previousReservations } : {}) })
+    const previousBookings = get().toast?.previousBookings
+    // (Con las reservas de antes: si el cambio las borró —la varita—, volver atrás las devuelve. Y, si el aviso es de quitar una reserva de cualquier tipo (`quitarConAviso`), TODO lo reservado de antes:
+    // entradas, excursiones, alojamiento, billetes, seguro, eSIM, tarjeta y coche, tal cual estaban.)
+    if (previous) useRouteStore.setState({ route: previous, ...(previousReservations ? { reservations: previousReservations } : {}), ...(previousBookings ?? {}) })
     set({ toast: null })
   },
 }))
@@ -54,13 +56,57 @@ export function withUndo(message: string, change: () => void): void {
   useAddFlowStore.setState({ toast: { message, previous, previousReservations, id: Date.now() } })
 }
 
+/** Todo lo reservado que guarda el viaje, para devolverlo tal cual con «Deshacer». */
+export interface BookingsSnapshot {
+  reservations: Reservation[]
+  transportBookings: ReturnType<typeof useRouteStore.getState>['transportBookings']
+  accommodationSelections: ReturnType<typeof useRouteStore.getState>['accommodationSelections']
+  insuranceBooking: ReturnType<typeof useRouteStore.getState>['insuranceBooking']
+  n26Added: boolean
+  rentalVehicleBooking: ReturnType<typeof useRouteStore.getState>['rentalVehicleBooking']
+  esimSelections: ReturnType<typeof useRouteStore.getState>['esimSelections']
+  esimPrecios: ReturnType<typeof useRouteStore.getState>['esimPrecios']
+}
+
+function bookingsNow(): BookingsSnapshot {
+  const state = useRouteStore.getState()
+  return {
+    reservations: state.reservations,
+    transportBookings: state.transportBookings,
+    accommodationSelections: state.accommodationSelections,
+    insuranceBooking: state.insuranceBooking,
+    n26Added: state.n26Added,
+    rentalVehicleBooking: state.rentalVehicleBooking,
+    esimSelections: state.esimSelections,
+    esimPrecios: state.esimPrecios,
+  }
+}
+
 /**
- * Quita una reserva. Si es el Free Tour de una ruta a mano, también se va su parada del día, y queda el aviso corto con «Deshacer» (devuelve la reserva y la parada, tal cual estaban).
- * El resto de reservas, como siempre (sin aviso).
+ * LA ÚNICA manera de quitar algo reservado desde la pantalla (Tanda 6y4): una entrada, el Free Tour, una excursión, el alojamiento, un billete de transporte, el vuelo de llegada o de vuelta, el seguro,
+ * la eSIM, la tarjeta o el coche de alquiler. Hace el cambio y deja el aviso corto de abajo con «Deshacer», que devuelve la ruta y TODO lo reservado tal cual estaba (precios incluidos).
+ * Ningún sitio de la pantalla llama a las funciones de quitar del almacén sin pasar por aquí (lo comprueba `scripts/destino/pruebaFase6y4_reservas.mjs`).
+ */
+export function quitarConAviso(message: string, change: () => void): void {
+  const previous = useRouteStore.getState().route
+  const previousBookings = bookingsNow()
+  change()
+  useAddFlowStore.setState({ toast: { message, previous, previousReservations: previousBookings.reservations, previousBookings, id: Date.now() } })
+}
+
+/** El aviso de cada tipo de reserva al quitarla. */
+export function avisoDeQuitar(reservation: Pick<Reservation, 'kind' | 'refId'> | undefined): string {
+  if (!reservation) return 'Reserva quitada del viaje'
+  if (reservation.kind === 'excursion') return 'Excursión quitada del viaje'
+  if (reservation.refId === FREE_TOUR_REF) return 'Free Tour quitado del viaje'
+  return 'Entrada quitada del viaje'
+}
+
+/**
+ * Quita una reserva de entrada o de excursión (con «Deshacer»). Si es el Free Tour de una ruta a mano, también se va su parada del día (Tanda 6y3), y «Deshacer» devuelve la reserva y la parada, tal cual estaban.
  */
 export function removeReservationWithUndo(id: string): void {
-  const { route, reservations, removeReservation } = useRouteStore.getState()
+  const { reservations, removeReservation } = useRouteStore.getState()
   const reservation = reservations.find((item) => item.id === id)
-  if (isManualFreeTourReservation(route, reservation)) withUndo('Free Tour quitado del viaje', () => removeReservation(id))
-  else removeReservation(id)
+  quitarConAviso(avisoDeQuitar(reservation), () => removeReservation(id))
 }
