@@ -1,7 +1,7 @@
 /**
  * Una reserva cuyo sitio no está en el día de su fecha (Tanda 6y2, pregunta 8, decidido por Eric el 11-oct-2026). En una ruta a mano la app no mueve nada sola, así que AVISA, con un botón que hace lo que dice:
- *  - el sitio está en otro día: «Tu entrada al Coliseo es el mié 15, pero en tu ruta el Coliseo está el mar 14.» con [Pasarlo al mié 15];
- *  - el sitio no está en ningún día: «Tu entrada al Coliseo es el mié 15 y el Coliseo no está en tu ruta.» con [Añadirlo al mié 15].
+ *  - el sitio está en otro día: «Tu entrada al Coliseo es el mié 15, pero en tu ruta el Coliseo está el mar 14.» con [Pasar al mié 15];
+ *  - el sitio no está en ningún día: «Tu entrada al Coliseo es el mié 15 y el Coliseo no está en tu ruta.» con [Añadir al mié 15].
  * Sale en la campana (useAppNotices.ts) y en la tarjeta de la reserva en RESERVAS. Mientras no se pulsa el botón no se mueve nada; al pulsarlo hay «Deshacer». Se va solo cuando se arregla (se calcula del estado del
  * viaje). Sin fechas en el viaje, el día se dice «el día 2». Solo en una ruta a mano: en la nuestra el motor ya pone cada entrada en su día (y sus excepciones tienen su propio aviso).
  *
@@ -26,7 +26,7 @@ export interface ReservaFueraDeDia {
   fromDayId: string | null
   stopId: string | null
   text: string
-  /** «Pasarlo al mié 15» / «Añadirlo al mié 15». */
+  /** «Pasar al mié 15» / «Añadir al mié 15». */
   actionLabel: string
 }
 
@@ -77,7 +77,7 @@ export function reservasFueraDeSuDia(route: Route, reservations: Reservation[], 
         fromDayId: from.dayId,
         stopId: from.stop.id,
         text: `${label} es ${cuando}, pero en tu ruta ${nombre} está ${elDiaCorto(route, from.dayNumber)}.`,
-        actionLabel: `Pasarlo ${alDia}`,
+        actionLabel: `Pasar ${alDia}`,
       })
     } else {
       avisos.push({
@@ -88,7 +88,7 @@ export function reservasFueraDeSuDia(route: Route, reservations: Reservation[], 
         fromDayId: null,
         stopId: null,
         text: `${label} es ${cuando} y ${nombre} no está en tu ruta.`,
-        actionLabel: `Añadirlo ${alDia}`,
+        actionLabel: `Añadir ${alDia}`,
       })
     }
   }
@@ -129,10 +129,11 @@ export async function aplicarAvisoFueraDeDia(aviso: ReservaFueraDeDia): Promise<
   const { fetchDestinationPlaces } = await import('./destinationPlacesApi')
   const catalogo = await fetchDestinationPlaces(route.destination)
   if (reservation.refId === FREE_TOUR_REF) {
-    const { withManualFreeTour } = await import('./freeTourManual')
+    const { withManualFreeTour, pedirFotoDelFreeTour } = await import('./freeTourManual')
     withUndo(`Añadido al ${cuando}`, () => {
       useRouteStore.setState((actual) => (actual.route ? { route: reservedEntranceInPlace(withManualFreeTour(actual.route, reservation, catalogo.freeTourEntry), reservation) } : actual))
     })
+    void pedirFotoDelFreeTour()
     return true
   }
   const lugar = catalogo.places.find((place) => place.kind === 'place' && reservation.placeNames.includes(place.name))

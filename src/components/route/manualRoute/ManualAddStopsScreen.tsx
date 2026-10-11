@@ -12,7 +12,7 @@ import { PlaceExplorerScreen, placeholderPhoto, stopFromPlace } from '../placeEx
 /**
  * [Añadir parada] de un día de una ruta a mano (Tanda 6y, parte C): EXPLORAR con la lista completa del destino y el modo de elegir varios sitios (el de la 6g). Los marcados van a
  * ESTE día, uno detrás de otro y en el orden en que se marcaron, sin hora (la hora es del viajero) y sin que la app ordene, complete ni quite nada. La lista va ordenada para
- * una ruta a mano (más «me gusta» de verdad, imprescindibles, nivel 1 y el resto: ver `compareManualExplorer`) y lo que ya está en otro día lleva «En tu día 2»
+ * una ruta a mano (más «me gusta» de verdad, nivel 1, pool_lista sin repetir y el resto: ver `compareManualExplorer`) y lo que ya está en otro día lleva «En tu día 2»
  * (con fechas, «En tu lun 13»): lo pone el propio EXPLORAR al ver `route.planMode === 'manual'`.
  */
 export function ManualAddStopsScreen({ route, dayId, onClose }: { route: Route; dayId: string; onClose: () => void }) {
