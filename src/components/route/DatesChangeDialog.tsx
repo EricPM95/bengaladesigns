@@ -5,6 +5,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { ConfirmDialog, changedDaysText } from './ConfirmDialog'
 import { isManualRoute } from '../../lib/manualPlan'
 import { manualShrinkNotice, type ManualShrinkNotice } from '../../lib/manualDuration'
+import { useDestinationExcursions } from '../../lib/destinationExcursions'
 
 /**
  * Fechas puestas desde el botón del mapa (PROMPT_PENDIENTE G). En los destinos curados (horas del motor), la ruta se
@@ -35,7 +36,7 @@ async function keptClosures(route: Route, dateRange: DateRange | undefined): Pro
 
 /** El «¿Estás seguro?» de acortar el viaje en una ruta a mano (Tanda 6y3): el mismo diálogo de siempre al eliminar, que dice qué días se quitan. */
 export function ManualShrinkDialog({ notice, onConfirm, onCancel }: { notice: ManualShrinkNotice; onConfirm: () => void; onCancel: () => void }) {
-  return <ConfirmDialog eyebrow="Tus fechas" text="¿Estás seguro?" detail={[notice.text, notice.detail].filter(Boolean).join(' ')} confirmLabel="Eliminar" cancelLabel="Cancelar" onCancel={onCancel} onConfirm={onConfirm} />
+  return <ConfirmDialog eyebrow="Tus fechas" text="¿Estás seguro?" detail={notice.text} confirmLabel="Eliminar" cancelLabel="Cancelar" onCancel={onCancel} onConfirm={onConfirm} />
 }
 
 export function useDatesChange(route: Route | null) {
@@ -46,13 +47,15 @@ export function useDatesChange(route: Route | null) {
   const [saving, setSaving] = useState(false)
 
   const reservations = useRouteStore((store) => store.reservations)
+  // (Los nombres cortos de las reservas —«el Coliseo»— para nombrarlas en el «¿Estás seguro?».)
+  const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
   // Ruta a mano que se acorta (Tanda 6y3): UN solo «¿Estás seguro?» que dice qué días se quitan. Con «Eliminar» se quitan con todo lo que tengan; con «Cancelar» las fechas NO cambian.
   const [manualShrink, setManualShrink] = useState<ManualShrinkNotice | null>(null)
 
   const onChangeDateRange = (dateRange: DateRange | undefined) => {
     if (!route) return
     if (isManualRoute(route)) {
-      const notice = manualShrinkNotice(route, dateRange, reservations)
+      const notice = manualShrinkNotice(route, dateRange, reservations, nombresCortos)
       if (notice) setManualShrink(notice)
       else setRouteDateRange(dateRange)
       return

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import type { Excursion } from '../../../lib/types'
 import type { Reservation } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { Icono } from '../../ui/Icono'
 
@@ -118,7 +119,6 @@ export function ExcursionReservedTop({ excursion }: { excursion: Excursion }) {
 export function ExcursionBookArea({ excursion, children }: { excursion: Excursion; children?: ReactNode }) {
   const route = useRouteStore((state) => state.route)
   const reservation = useExcursionReservation(excursion.id)
-  const removeReservation = useRouteStore((state) => state.removeReservation)
   const [adding, setAdding] = useState(false)
   const [removing, setRemoving] = useState(false)
   if (!route) return <>{children}</>
@@ -136,7 +136,7 @@ export function ExcursionBookArea({ excursion, children }: { excursion: Excursio
             name={excursion.title}
             onCancel={() => setRemoving(false)}
             onConfirm={() => {
-              removeReservation(reservation.id)
+              removeReservationWithUndo(reservation.id)
               setRemoving(false)
             }}
           />

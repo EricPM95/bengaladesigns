@@ -1,4 +1,5 @@
 import { useRouteStore } from '../../../store/useRouteStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { estanciasDelViaje } from '../../../lib/tuAlojamiento'
@@ -40,7 +41,7 @@ export function AlojamientoHost() {
             cerrarMapa()
           }}
           onEliminar={() => {
-            setHotel(estanciaHoja.segmentDayId, null)
+            quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(estanciaHoja.segmentDayId, null))
             cerrarHoja()
           }}
           onClose={cerrarHoja}

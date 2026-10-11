@@ -61,7 +61,7 @@ import {
   withUserDaysBack,
 } from '../lib/freeDays'
 import { withManualDayNames } from '../lib/manualRoute'
-import { resizeManualRoute } from '../lib/manualDuration'
+import { bookingsAfterRemovingDays, planManualResize, resizeManualRoute, reservationsOfDays } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
@@ -1070,11 +1070,25 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => {
       if (!state.route) return state
       // Ruta a mano (Tanda 6y3): otra duración añade días vacíos antes de la vuelta o quita los días que dice manualDuration.ts, con todo lo que tengan (quien llama ya preguntó con el
-      // «¿Estás seguro?»). Un día fijado por una excursión reservada no se quita (como en «Eliminar día»). Las reservas de entrada no se tocan: se quedan en RESERVAS, como al eliminar un día.
+      // «¿Estás seguro?»). Tanda 6y4: un día con una excursión reservada se quita igual que los demás (nunca quedan días de más), y las reservas de los días quitados (entradas, Free Tour,
+      // excursiones) se van con su día —también del presupuesto, que se calcula de ellas—, igual que el billete de transporte de ese día. Tras acortar no hay «Deshacer».
       if (isManualRoute(state.route)) {
         const route = state.route
-        const pinned = new Set(route.days.filter((day) => isDayPinned(route, state.reservations, day)).map((day) => day.id))
-        return { route: resizeManualRoute(route, dateRange, pinned) }
+        const plan = planManualResize(route, dateRange)
+        const quitados = new Set(plan.remove)
+        const reservasQuitadas = reservationsOfDays(route, state.reservations, quitados)
+        if (reservasQuitadas.length > 0) {
+          const ids = reservasQuitadas.map((reservation) => reservation.id)
+          void import('./useNoticesStore').then(({ useNoticesStore }) => {
+            for (const notice of useNoticesStore.getState().pushed) if (ids.some((id) => notice.id.includes(id))) useNoticesStore.getState().remove(notice.id)
+          })
+        }
+        const sueltas = bookingsAfterRemovingDays(route, quitados, state.transportBookings, state.accommodationSelections)
+        return {
+          route: resizeManualRoute(route, dateRange),
+          reservations: reservasQuitadas.length > 0 ? state.reservations.filter((reservation) => !reservasQuitadas.includes(reservation)) : state.reservations,
+          ...(quitados.size > 0 ? sueltas : {}),
+        }
       }
       const changed = { ...state.route, answers: { ...state.route.answers, dateRange } }
       // Ruta a mano (Tanda 6y): los días que aún se llaman como los puso la app pasan a llamarse por las fechas nuevas.

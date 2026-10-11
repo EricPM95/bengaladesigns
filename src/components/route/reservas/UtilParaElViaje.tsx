@@ -3,6 +3,7 @@ import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { countryDisplayName } from '../../../lib/readiness'
 import { buildCamperRentalLink, buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { ENLACE_ESIM, ENLACE_SEGURO, ENLACE_TARJETA } from '../../../lib/enlacesUtil'
 import { GR, ICONOS } from './BloqueReservas'
 import { HojaPrecio } from './HojaPrecio'
@@ -172,6 +173,8 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
   // (Tanda 6y4: también la tarjeta sin comisiones abre su hoja, que es solo el campo «¿Dónde lo has comprado?».)
   const gestionar = (tarjeta: Tarjeta) => setHojaPrecio(tarjeta.id)
   const dondeDe = (tarjeta: Tarjeta) => (tarjeta.claveDonde ? dondeComprado[tarjeta.claveDonde] ?? '' : '')
+  /** Quitar una tarjeta (seguro, eSIM, tarjeta, coche): con el mensaje corto de abajo con «Deshacer» (Tanda 6y4, una sola función: `quitarConDeshacer`). */
+  const quitarTarjeta = (tarjeta: Tarjeta) => quitarConDeshacer(`${tarjeta.nombre} quitad${tarjeta.articulo === 'la' ? 'a' : 'o'} del viaje`, tarjeta.quitar)
 
   return (
     <div className="flex min-w-0 flex-col gap-2.5 pt-4" data-blk="util">
@@ -239,7 +242,7 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
           sinPrecio={!abierta.conPrecio}
           dondeInicial={dondeDe(abierta)}
           onGuardar={abierta.guardar}
-          onQuitar={abierta.anadida ? abierta.quitar : undefined}
+          onQuitar={abierta.anadida ? () => quitarTarjeta(abierta) : undefined}
           onClose={() => setHojaPrecio(null)}
         />
       )}

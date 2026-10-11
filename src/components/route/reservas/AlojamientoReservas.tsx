@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, nochesTexto, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
 import { formatoImporte } from '../../../lib/dinero'
@@ -119,7 +120,7 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
                 </button>
               </div>
             )}
-            {hotel && <EliminarTexto texto="Eliminar" onClick={() => setHotel(segmentDayId, null)} />}
+            {hotel && <EliminarTexto texto="Eliminar" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
             {pago && (
               <div className="flex flex-col gap-2.5">
                 <span className="text-[14px] font-medium">¿En qué zona te alojas?</span>

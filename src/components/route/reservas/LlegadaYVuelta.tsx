@@ -4,6 +4,7 @@ import { puntoCorto, type ArrivalInfo } from '../../../lib/arrivalReturn'
 import { legLine, legOf, legsTag, legWord, type LegKind, type LegState } from '../../../lib/reservasLegs'
 import { shortDateEs } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, EstadoBloque, GR, INK, IconoBloque, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
@@ -323,7 +324,7 @@ export function LlegadaYVuelta({
                     onTime={() => setHoja(leg.kind)}
                     onFechas={onFechas}
                     onEliminar={() => {
-                      removeLeg(leg.kind)
+                      quitarConDeshacer(`${leg.kind === 'arrival' ? 'Ida' : 'Vuelta'} quitada del viaje`, () => removeLeg(leg.kind))
                       onMitad(undefined)
                     }}
                   />

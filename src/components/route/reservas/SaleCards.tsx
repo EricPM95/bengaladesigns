@@ -4,6 +4,7 @@ import { dayOnDate, type SaleMatch } from '../../../lib/bookings'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { fetchTripSales, matchSale } from '../../../lib/tripSales'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 
 const WEEKDAY_LONG = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
 
@@ -57,7 +58,7 @@ export function SaleCards({ route }: { route: Route }) {
             <div key={sale.id} className="rounded-2xl border border-accent-red/30 bg-accent-red/[.07] p-4">
               <p className="text-[14.5px] leading-snug text-text">Tu reserva de {sale.name} se ha cancelado.</p>
               <div className="mt-3 flex gap-2">
-                <button type="button" onClick={() => resolveSale(sale.id, 'remove')} className="h-10 flex-1 rounded-full bg-text text-[14px] font-medium text-bg">
+                <button type="button" onClick={() => quitarConDeshacer(sale.kind === 'excursion' ? 'Excursión quitada del viaje' : 'Entrada quitada del viaje', () => resolveSale(sale.id, 'remove'))} className="h-10 flex-1 rounded-full bg-text text-[14px] font-medium text-bg">
                   Quitar del viaje
                 </button>
                 <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">

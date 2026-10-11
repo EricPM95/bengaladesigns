@@ -137,7 +137,7 @@ ponerVersion('completa')
     const ventana = sinComentarios(fuente('src/components/route/DatesChangeDialog.tsx'))
     const gancho = ventana.slice(ventana.indexOf('export function useDatesChange'))
     debe(/onCancel=\{\(\) => setManualShrink\(null\)\}/.test(gancho), '2 no', '«Cancelar» no solo cierra la ventana')
-    debe(/const notice = manualShrinkNotice\(route, dateRange, reservations\)\s*\n\s*if \(notice\) setManualShrink\(notice\)\s*\n\s*else setRouteDateRange\(dateRange\)/.test(gancho), '2 no', 'con días por quitar las fechas se guardan antes de contestar (o sin aviso)')
+    debe(/const notice = manualShrinkNotice\(route, dateRange, reservations, nombresCortos\)\s*\n\s*if \(notice\) setManualShrink\(notice\)\s*\n\s*else setRouteDateRange\(dateRange\)/.test(gancho), '2 no', 'con días por quitar las fechas se guardan antes de contestar (o sin aviso)')
     debe(/onConfirm=\{\(\) => \{\s*const next = manualShrink\.dateRange\s*\n\s*setManualShrink\(null\)\s*\n\s*setRouteDateRange\(next\)/.test(gancho), '2 sí', '«Eliminar» no guarda las fechas nuevas')
     debe(JSON.stringify(useRouteStore.getState().route) === antes && useRouteStore.getState().route.answers.dateRange.end === rango(5).end, '2 no', 'con «no» cambian las fechas o los días')
     // «Sí»: las fechas nuevas y los días fuera con todo lo suyo.
@@ -185,26 +185,25 @@ ponerVersion('completa')
     debe(mas.days.length === 5 && mas.days[4].id === 'day-manual-3' && mas.days[4].stops.length === 4 && mas.days.slice(2, 4).every((d) => d.stops.length === 0 && d.dayType === 'manual'), '2 alargar', 'alargar no pone días vacíos antes de la vuelta')
     debe(totalParadas(mas) === 6 && mas.answers.dateRange.end === rango(5).end, '2 alargar', 'alargar pierde paradas o no guarda las fechas')
   }
-  // 2g. Reservas: la entrada de un día quitado se queda en RESERVAS (como al eliminar un día) y se avisa; una excursión reservada fija su día y no se quita.
+  // 2g. Reservas (cambiado en la Tanda 6y4, ver pruebaFase6y4_reservas.mjs): las reservas de un día quitado se van con su día y el aviso las nombra; una excursión reservada ya no fija su día.
   {
     const r = conParadas(rutaMano(5), { 4: 1 })
     const entrada = { id: 'res-1', kind: 'entrada', refId: 'colosseo', name: 'Coliseo', placeNames: ['Sitio 4.1'], dateIso: sumaDias(INICIO, 2), dayNumber: null, time: '10:00' }
     estado(r, { reservations: [entrada] })
     const aviso = texto(r, 4, INICIO, [entrada])
-    debe(/Tus reservas de esos días se quedan en RESERVAS\./.test(aviso?.detail ?? ''), '2 reservas', `no avisa de que la reserva de un día quitado se queda en RESERVAS: ${aviso?.detail}`)
+    debe(/tu entrada a Coliseo del vie 12\.$/.test(aviso?.text ?? '') && !/se quedan en RESERVAS/.test(aviso?.text ?? ''), '2 reservas', `el aviso no nombra la reserva del día quitado: ${aviso?.text}`)
     useRouteStore.getState().setRouteDateRange(aviso.dateRange)
-    debe(useRouteStore.getState().reservations.length === 1 && useRouteStore.getState().route.days.length === 4 && !useRouteStore.getState().route.days.some((d) => d.dayNumber === 3 && d.id === 'day-manual-3'), '2 reservas', 'quitar el día borra la reserva o no quita el día')
+    debe(useRouteStore.getState().reservations.length === 0 && useRouteStore.getState().route.days.length === 4, '2 reservas', 'quitar el día no quita su reserva')
     const sinReserva = texto(rutaMano(5), 3, INICIO, [{ ...entrada, dateIso: INICIO }])
-    debe(sinReserva?.detail === null, '2 reservas', 'avisa de reservas en días que no se quitan')
-    // Excursión reservada en el sábado 13 (día 4): ese día no se quita; sale otro y el aviso lo dice.
-    const exc = { id: 'res-2', kind: 'excursion', refId: 'pompeya', name: 'Pompeya', placeNames: [], dateIso: sumaDias(INICIO, 3), dayNumber: null, time: '08:00' }
+    debe(sinReserva?.removedReservations.length === 0 && !/tu entrada/.test(sinReserva.text), '2 reservas', 'nombra reservas de días que no se quitan')
+    const exc = { id: 'res-2', kind: 'excursion', refId: 'pompeya', name: 'Excursión a Pompeya', placeNames: [], dateIso: sumaDias(INICIO, 3), dayNumber: null, time: '08:00' }
     const base = conParadas(rutaMano(5), { 2: 1, 3: 1 })
     const conExc = { ...base, days: base.days.map((d) => (d.dayNumber === 4 ? { ...d, selectedExcursionId: 'pompeya', dayType: 'excursion' } : d)) }
     estado(conExc, { reservations: [exc] })
     const av2 = texto(conExc, 3, INICIO, [exc])
-    debe(av2 && !av2.removed.some((d) => d.label === 'sáb 13') && /El sáb 13 se queda, porque tiene una excursión reservada\./.test(av2.detail ?? ''), '2 reservas', `una excursión reservada se quita o no se avisa: ${av2?.text} / ${av2?.detail}`)
+    debe(av2 && av2.removed.some((d) => d.label === 'sáb 13') && /tu excursión a Pompeya\.$/.test(av2.text), '2 reservas', `una excursión reservada fija su día o no se nombra: ${av2?.text}`)
     useRouteStore.getState().setRouteDateRange(av2.dateRange)
-    debe(useRouteStore.getState().route.days.some((d) => d.selectedExcursionId === 'pompeya'), '2 reservas', 'se quitó el día de la excursión reservada')
+    debe(!useRouteStore.getState().route.days.some((d) => d.selectedExcursionId) && useRouteStore.getState().route.days.length === 3, '2 reservas', 'se queda el día de la excursión reservada (días de más)')
   }
   // 2h. La ruta nuestra no pasa por aquí.
   {
