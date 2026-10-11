@@ -8,8 +8,8 @@ import { TrazoCalendar } from '../trazo/TrazoCalendar'
 import { ACCENT, Cta, Em, GhostButton, INK, MONO, SEASON_FX, SeasonFx, THEME, Title } from '../trazo/trazoUi'
 import '../trazo/trazo.css'
 
-/** Z-index del calendario: por encima de la cabecera, la barra de abajo, las hojas (70-90) y los avisos. */
-export const DATES_CALENDAR_Z = 100
+/** Z-index del calendario: por encima de la cabecera, la barra de abajo, las hojas, los selectores (120) y los avisos. */
+export const DATES_CALENDAR_Z = 130
 
 const PARTS = Array.from({ length: 26 }, () => [Math.random(), Math.random(), Math.random(), Math.random()])
 
@@ -31,7 +31,7 @@ export function DatesCalendarModal(props: DatesCalendarModalProps) {
   return createPortal(<DatesCalendarBody {...props} />, document.body)
 }
 
-function DatesCalendarBody({ destination, dateRange, onChangeDateRange }: DatesCalendarModalProps) {
+export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }: DatesCalendarModalProps) {
   const close = useDatesCalendarStore((state) => state.close)
   const [start, setStart] = useState<number | null>(dateRange ? isoToLocalDate(dateRange.start).getTime() : null)
   const [end, setEnd] = useState<number | null>(dateRange ? isoToLocalDate(dateRange.end).getTime() : null)
