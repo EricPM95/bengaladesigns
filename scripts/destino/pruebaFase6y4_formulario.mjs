@@ -148,7 +148,7 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
   debe(/onPreviewMonth/.test(form) && /onPreviewMonth/.test(modal), '4 mismo calendario', 'la temporada no se avisa al elegir la llegada')
   // Se conserva lo de siempre.
   const cambio = fuente('src/components/route/DatesChangeDialog.tsx')
-  debe(/export function ManualShrinkDialog/.test(cambio) && /manualShrinkNotice\(route, dateRange, reservations\)/.test(cambio), '4 mismo calendario', 'se perdió el «¿Estás seguro?» de acortar a mano')
+  debe(/export function ManualShrinkDialog/.test(cambio) && /manualShrinkNotice\(route, dateRange, reservations/.test(cambio), '4 mismo calendario', 'se perdió el «¿Estás seguro?» de acortar a mano')
   debe(/onChangeDateRange\(undefined\)/.test(modal) && /onChangeDateRange\(\{ start: startIso, end: endIso \}\)/.test(modal), '4 mismo calendario', 'el calendario no guarda el rango ni quita las fechas con la misma función')
   debe(/daysBetweenInclusive/.test(modal), '4 mismo calendario', 'se perdió la comprobación de fin posterior a inicio')
 }
