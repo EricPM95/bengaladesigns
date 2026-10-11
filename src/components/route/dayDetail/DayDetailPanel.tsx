@@ -25,6 +25,8 @@ import {
   seedStopsFromTemplate,
 } from '../../../lib/mockDayDetail'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { isManualRoute } from '../../../lib/manualPlan'
+import { ManualDayFooter } from '../manualRoute/ManualDayFooter'
 import type { StopsMapMarker, StopsMapMarkerLine } from '../../map/StopsMapView'
 import { FreeTourSheet, freeTourAvailable } from '../reservas/FreeTourSheet'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
@@ -1321,7 +1323,7 @@ export function DayDetailPanel({
           {/* Con la mañana ya resuelta por una excursión de medio día, la tarde tiene su propio
               bloque (arriba) y estas dos salidas sobran: "buscar excursiones" le ofrecería una
               segunda excursión al mismo día. */}
-          {dayType === 'manual' && stops.length === 0 && !halfDayExcursion && !day.userAdded && (
+          {dayType === 'manual' && stops.length === 0 && !halfDayExcursion && !day.userAdded && !isManualRoute(route) && (
             <div className="space-y-2 pt-1">
               {/* Solo en el día en blanco por límite del destino, y solo en el PRIMERO: repetirlo en
                   cada día a partir del octavo sería regañar al viajero por alargar su viaje. No es
@@ -1487,7 +1489,9 @@ export function DayDetailPanel({
 
           {/* "+ Añadir lugares" (decisión del usuario, 2026-09-28): abajo del todo en el día libre, vacío o con cosas. */}
           {/* Con una excursión de día entero no sale: su tarjeta ya dice que ocupa el día entero. */}
-          {dayType === 'manual' && (
+          {/* Ruta a mano (Tanda 6y): [Añadir parada] (y [Añadir excursión] en un día en blanco) en lugar de «Añadir lugares». */}
+          {dayType === 'manual' && route && isManualRoute(route) && <ManualDayFooter route={route} day={day} />}
+          {dayType === 'manual' && !isManualRoute(route) && (
               <button
                 type="button"
                 onClick={() => openAddFlow(day.id)}
@@ -1663,7 +1667,7 @@ export function DayDetailPanel({
             : undefined
         }
         onClose={() => setDetailIndex(null)}
-        onWantInside={detailIndex !== null && stops[detailIndex]?.visitMode === 'fuera' && stops[detailIndex]?.outsideKind === 'no_cabe' ? () => wantInside.ask(stops[detailIndex].name) : undefined}
+        onWantInside={!isManualRoute(route) && detailIndex !== null && stops[detailIndex]?.visitMode === 'fuera' && stops[detailIndex]?.outsideKind === 'no_cabe' ? () => wantInside.ask(stops[detailIndex].name) : undefined}
       />
 
       <ArrivalDetailSheet

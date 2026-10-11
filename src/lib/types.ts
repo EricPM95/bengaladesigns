@@ -766,6 +766,8 @@ export interface DayPlan {
   untimed?: boolean
   /** Día que el viajero ha añadido al final del viaje ("+ Añadir día"): el motor no lo toca nunca y se puede quitar. */
   userAdded?: boolean
+  /** El viajero le ha puesto nombre al día (DayNameSheet). En una ruta a mano, sin él el día se llama por su fecha («lun 13 oct») o «Día 1» (manualDayTitle). */
+  nameByUser?: boolean
   /** El color del día (índice de la paleta de dayColors.ts), fijado al crear el viaje: va con el día, no con su
       posición — si el viajero lo mueve, su franja y sus pines se mueven con él (PROMPT_UI, Parte 1). */
   colorIndex?: number

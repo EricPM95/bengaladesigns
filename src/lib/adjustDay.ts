@@ -1,5 +1,6 @@
 import { mapSingleGeneratedDay, type GeneratedDay } from './mapGeneratedRoute'
 import { enrichRoutePhotos } from './placePhoto'
+import { isManualRoute } from './manualPlan'
 
 export type AdjustMode = 'justo' | 'cansado'
 
@@ -18,7 +19,8 @@ export async function adjustDay(dayId: string, mode: AdjustMode, nowMinutes: num
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
-  if (!route || !day) return { ok: false, newSpare: 0 }
+  // Una ruta a mano (Tanda 6y) no la rehace el motor: ni se ajusta sola ni manda nada a «Si te sobra tiempo».
+  if (!route || !day || isManualRoute(route)) return { ok: false, newSpare: 0 }
   const done = day.stops.filter((stop) => stop.checkedInAt)
   try {
     const response = await fetch('/api/adjust-day', {

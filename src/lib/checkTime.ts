@@ -1,5 +1,6 @@
 import { mapStop, type GeneratedStop } from './mapGeneratedRoute'
 import type { Stop } from './types'
+import { isManualRoute } from './manualPlan'
 
 export interface CheckTimeResult {
   status: 'bien' | 'justo' | 'normal' | 'hueco'
@@ -18,7 +19,8 @@ export async function checkTime(dayId: string, nowMinutes: number): Promise<Chec
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
-  if (!route || !day) return null
+  // Una ruta a mano (Tanda 6y) no tiene lista nuestra con la que comparar el tiempo, ni sugerencias de paradas: HOY no pregunta nada al motor.
+  if (!route || !day || isManualRoute(route)) return null
   const done = day.stops.filter((stop) => stop.checkedInAt)
   try {
     const response = await fetch('/api/check-time', {

@@ -30,6 +30,8 @@ import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
 import { explorarConCercania } from '../../../lib/explorarDePago'
+import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
+import { diaCorto } from '../../../lib/nombreDeDia'
 
 const EXCURSION_CHIP = PLACE_FILTER_CHIPS.find((chip) => chip.id === 'excursiones') ?? null
 
@@ -334,6 +336,8 @@ export function PlaceExplorerScreen({
   pickMode,
   onClose,
 }: PlaceExplorerScreenProps) {
+  /** Ruta a mano (Tanda 6y): la lista va en el orden de la ruta a mano y lo que ya está en otro día lleva «En tu día 2». */
+  const manualOrder = isManualRoute(route)
   /** Solo las atracciones se pueden marcar en el modo elegir varios. */
   const pickable = (place: DestinationPlace) => Boolean(pickMode) && place.kind === 'place'
   const pickedNames = useMemo(() => new Set(pickMode?.selected ?? []), [pickMode?.selected])
@@ -466,6 +470,13 @@ export function PlaceExplorerScreen({
   }, [selected, destination])
 
   const stopEntries = useMemo(() => (route ? buildRouteStopEntries(route) : []), [route])
+  /** «En tu día 2» / «En tu lun 13»: el día de la ruta a mano en que ya está el sitio (el primero, si estuviera en dos). */
+  const inRouteDayTag = (name: string): string | null => {
+    if (!route) return null
+    const entry = stopEntries.find((candidate) => isNameAlreadyInRoute(name, [candidate]))
+    const day = entry ? route.days.find((candidate) => candidate.id === entry.dayId) : undefined
+    return day ? `En tu ${diaCorto(route, day.dayNumber).toLowerCase()}` : null
+  }
 
   /** Al apagar Excursiones el mapa vuelve de lejos: se encuadra lo que queda a la vista (o, si no hay nada, Roma). Se guarda al apagar para no mover la cámara después. */
   const [recenterIds, setRecenterIds] = useState<string[] | null>(null)
@@ -561,6 +572,8 @@ export function PlaceExplorerScreen({
 
     // Recomendados: los más votados primero. Sin likes todavía (o con empate) manda el nivel curado
     // del destino, que es exactamente "lo imprescindible primero" — nunca un orden arbitrario.
+    // Ruta a mano (Tanda 6y): más «me gusta» de verdad, luego los imprescindibles de la lista del destino, luego el nivel 1 y el resto (manualPlan.ts).
+    if (manualOrder) return [...filtered].sort((a, b) => compareManualExplorer(a, b, likes.counts))
     return [...filtered].sort((a, b) => {
       // «Entradas»: el Free Tour del destino, siempre el primero.
       if (a.solo_entradas !== b.solo_entradas) return a.solo_entradas ? -1 : 1
@@ -576,7 +589,7 @@ export function PlaceExplorerScreen({
       return a.name.localeCompare(b.name, 'es')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likes, recommendedZone])
+  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likes, recommendedZone, manualOrder])
 
   // Prompt 3 (bug 1): el mapa recibe SIEMPRE el catálogo entero, pase lo que pase con los filtros,
   // y lo que cambia al marcar un chip es únicamente qué pines están ocultos. Antes se le pasaba solo
@@ -1206,7 +1219,8 @@ export function PlaceExplorerScreen({
                           <span className="flex items-center gap-1.5">
                             {visitable && alreadyInRoute && (
                               <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
-                                ✓ En ruta
+                                {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). */}
+                                {manualOrder && !place.solo_entradas ? (inRouteDayTag(place.name) ?? '✓ En ruta') : '✓ En ruta'}
                               </span>
                             )}
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}

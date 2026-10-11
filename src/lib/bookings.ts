@@ -8,7 +8,8 @@ import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
 import type { Importe } from './dinero'
 import type { DayPlan, Excursion, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
-import { placeExcursionIn, withExcursionOnSwitchDay } from './freeDays'
+import { isEmptyDay, placeExcursionIn, withExcursionOnSwitchDay } from './freeDays'
+import { isManualRoute } from './manualPlan'
 
 /** Lo que el viajero ha reservado. Fijado: tiene fecha y hora, y nada del motor ni del viajero lo mueve (se quita y se vuelve a crear). */
 export interface Reservation {
@@ -211,6 +212,8 @@ export function newCampaignCode(): string {
  * saliendo en Reservas.
  */
 export function placeReservedEntrance(route: Route, reservation: Reservation): Route {
+  // Ruta a mano (Tanda 6y): la reserva no trae la parada de otro día ni ordena el día por hora; la parada se queda donde la puso el viajero (manualPlan.ts).
+  if (isManualRoute(route)) return reservedEntranceInPlace(route, reservation)
   const target = dayOfReservation(route, reservation)
   if (!target || reservation.kind !== 'entrada') return route
   let found: { day: DayPlan; stop: Stop } | null = null
@@ -251,6 +254,34 @@ export function placeReservedEntrance(route: Route, reservation: Reservation): R
   }
 }
 
+/**
+ * Una entrada reservada en una ruta a mano (Tanda 6y): la parada se queda DONDE LA PUSO EL VIAJERO (mismo día, mismo puesto) y solo coge la hora y la marca de la reserva. Nunca se
+ * trae la parada de otro día, nunca ordena el día por hora y nunca toca otra parada. Si el día de la reserva no lleva el sitio, la ruta no cambia: la reserva se queda en RESERVAS tal
+ * como la puso el viajero.
+ */
+export function reservedEntranceInPlace(route: Route, reservation: Reservation): Route {
+  if (reservation.kind !== 'entrada') return route
+  const target = dayOfReservation(route, reservation)
+  if (!target) return route
+  const index = target.stops.findIndex((stop) => reservation.placeNames.includes(stop.name))
+  if (index < 0) return route
+  return {
+    ...route,
+    days: route.days.map((day) =>
+      day.id !== target.id ? day : { ...day, stops: day.stops.map((stop, at) => (at === index ? { ...stop, time: reservation.time, reservedId: reservation.id } : stop)) },
+    ),
+  }
+}
+
+/**
+ * El nombre que se ve de un día de una ruta a mano (Tanda 6y): el que le puso el viajero (DayNameSheet) o, si no, el de su fecha («lun 13 oct») y, sin fechas, «Día 1». Una excursión
+ * puesta en el día lo llama como ella.
+ */
+export function manualDayTitle(route: Route, day: DayPlan): string {
+  if (day.nameByUser || day.dayType === 'excursion') return day.curatedTitle ?? day.title ?? day.city
+  return dayLineOf(route, day)
+}
+
 /** Quita la marca de «fijada» de lo que esa reserva fijaba (las paradas vuelven a ser una más). */
 export function unpinReservedStops(route: Route, reservationId: string): Route {
   if (!route.days.some((day) => day.stops.some((stop) => stop.reservedId === reservationId))) return route
@@ -282,7 +313,8 @@ export function reapplyReservations(route: Route, reservations: Reservation[]): 
       if (reservation.excursionData && (day.interruptor.excursionId !== reservation.refId || (day.interruptor.mode === 'excursion' && day.selectedExcursionId !== reservation.refId))) next = withExcursionOnSwitchDay(next, day.id, reservation.excursionData)
       continue
     }
-    if (day && reservation.excursionData && day.selectedExcursionId !== reservation.refId) next = placeExcursionIn(next, reservation.excursionData, { dayId: day.id })?.route ?? next
+    // (En una ruta a mano, una excursión reservada solo entra en un día en blanco: nunca borra las paradas que el viajero ya puso. Tanda 6y.)
+    if (day && reservation.excursionData && day.selectedExcursionId !== reservation.refId && !(isManualRoute(next) && !isEmptyDay(day))) next = placeExcursionIn(next, reservation.excursionData, { dayId: day.id })?.route ?? next
   }
   return next
 }

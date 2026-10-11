@@ -4156,6 +4156,12 @@ app.post('/api/destination-places', (req, res) => {
       type: place.type ?? null,
       tags: Array.isArray(place.tags) ? place.tags : [],
       level: place.level ?? null,
+      // Ruta a mano (Tanda 6y): su puesto en la lista a mano de imprescindibles del destino (`pool_lista`), o null. El orden de EXPLORAR en una ruta a mano pone primero los más
+      // «me gusta», luego estos, luego el nivel 1 y el resto.
+      essential_rank: (() => {
+        const rank = (data.pool_lista?.lugares ?? []).indexOf(place.name)
+        return rank >= 0 ? rank : null
+      })(),
       schedule: place.schedule ?? null,
       // Prompt 3: el buscador de la pantalla de lugares busca en español sobre el pool local, y los
       // alias son lo que hace que "coli" encuentre el Coliseo o que el nombre en italiano siga

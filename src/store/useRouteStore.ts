@@ -3,6 +3,7 @@ import { dayCountryCode } from '../lib/flagColors'
 import type { TuAlojamiento } from '../lib/tuAlojamiento'
 import type { Importe } from '../lib/dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
+import { isManualRoute } from '../lib/manualPlan'
 import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
   ChosenRestaurant,
@@ -42,6 +43,7 @@ import {
   addFreeDay as addFreeDayTo,
   placeExcursionIn,
   withExcursionOnSwitchDay,
+  isEmptyDay,
   isFreeDay,
   moveDay,
   removeFreeDay as removeFreeDayFrom,
@@ -907,6 +909,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     if (reservation.kind === 'entrada') {
       const previous = get().reservations.find((other) => other.kind === 'entrada' && other.refId === reservation.refId && other.id !== reservation.id)
       const unpinned = previous ? unpinReservedStops(route, previous.id) : route
+      // Ruta a mano (Tanda 6y): ni el motor rehace el día ni la reserva grande mueve días; la parada se queda donde la puso el viajero, con la hora de la reserva.
+      if (isManualRoute(route)) {
+        set({ route: placeReservedEntrance(unpinned, reservation) })
+        return
+      }
       // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días
       // y solo si llegan todos se cambian (todo o nada). Nada se arranca antes: una parada sola que se va de su día dejaba el día a medias (Tanda 6k, punto 2).
       if (isBigReservation(reservation) && !reservation.noMueve) {
@@ -934,7 +941,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     const day = dayOfReservation(route, reservation)
     // (El día 4 lleva su interruptor: la excursión reservada se queda elegida en su página, sin cambiar el día por otro.)
     if (day?.interruptor && excursion) set({ route: withExcursionOnSwitchDay(route, day.id, excursion) })
-    else if (day && excursion) get().placeExcursion(excursion, { dayId: day.id })
+    // (En una ruta a mano, la excursión reservada solo entra en un día en blanco: nunca borra las paradas del viajero.)
+    else if (day && excursion && !(isManualRoute(route) && !isEmptyDay(day))) get().placeExcursion(excursion, { dayId: day.id })
   },
   removeReservation: (id) => {
     const removed = get().reservations.find((reservation) => reservation.id === id)
@@ -948,7 +956,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       for (const notice of useNoticesStore.getState().pushed) if (notice.id.includes(id)) useNoticesStore.getState().remove(notice.id)
     })
     // (Tanda 6m: quitar una reserva no mueve ningún día: ese día se rehace en su sitio, con el orden que el viajero ya ve, y la parada vuelve a su lista normal, sin hora fija.)
-    if (removedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: Boolean(removed && isBigReservation(removed)) }))
+    if (removedDay && !isManualRoute(get().route)) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: Boolean(removed && isBigReservation(removed)) }))
   },
   receiveSale: (sale) =>
     set((state) => {
@@ -1053,7 +1061,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   regenerateRouteForDates: (dateRange) =>
     set((state) => {
       // La ruta a mano (Tanda 6y) nunca se rehace con el motor: nada de pantalla de carga ni de generación.
-      if (!state.route || state.route.planMode === 'manual') return state
+      if (!state.route || isManualRoute(state.route)) return state
       const route = state.route
       // Los días añadidos por el viajero no los planifica el motor: se quitan del final y vuelven en setRoute.
       const userDays = userAddedDays(route).length
@@ -1652,7 +1660,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   optimizeDayWithRealTransport: async (dayId, kind, flightTime) => {
     const state = get()
-    if (!state.route) return
+    if (!state.route || isManualRoute(state.route)) return
     const day = state.route.days.find((candidate) => candidate.id === dayId)
     if (!day || day.stops.length === 0) return
     const flightTimeMinutes = parseTimeToMinutes(flightTime)
@@ -1663,7 +1671,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   fitDayToTrip: async (dayId, kind, keyMinutes) => {
     const state = get()
-    if (!state.route) return
+    // Una ruta a mano no se ajusta sola a la llegada ni a la vuelta (Tanda 6y): ni mueve ni quita paradas; el viajero decide.
+    if (!state.route || isManualRoute(state.route)) return
     const day = state.route.days.find((candidate) => candidate.id === dayId)
     if (!day || day.stops.length === 0) return
     let optimized: { stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] }

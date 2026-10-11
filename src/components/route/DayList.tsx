@@ -26,7 +26,8 @@ import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
-import { isDayPinned } from '../../lib/bookings'
+import { isDayPinned, manualDayTitle } from '../../lib/bookings'
+import { isManualRoute } from '../../lib/manualPlan'
 import { SaleCards } from './reservas/SaleCards'
 import { diaCorto, diaProsa, elDia, fechaDelDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { dayName } from './freeDay/AddToDaySheet'
@@ -210,7 +211,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         // (Un día que crea el viajero, una excursión en un día nuevo, se llama como lo llamó, aunque quede el último.)
         // (El día 4 con el interruptor en Excursión se llama «Excursión desde Roma», Tanda 6g.)
         const enExcursion = day.interruptor?.mode === 'excursion'
-        const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : (day.curatedTitle ?? day.city)
+        const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : isManualRoute(route) ? manualDayTitle(route, day) : (day.curatedTitle ?? day.city)
         const numbered = numberedStopsOf(day)
         const toggle = () => onSelectDay(expanded ? null : day.id)
         const esHoy = day.id === hoyId
@@ -378,7 +379,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         <DayNameSheet
           title={nameSheet.dayId ? 'Cambiar el nombre' : 'Añadir un día'}
           example={excursionInfo.dayNameExample}
-          initialName={nameSheet.dayId ? dayName(route.days.find((day) => day.id === nameSheet.dayId) ?? route.days[0]) : ''}
+          initialName={nameSheet.dayId ? (isManualRoute(route) && !(route.days.find((day) => day.id === nameSheet.dayId)?.nameByUser) ? '' : dayName(route.days.find((day) => day.id === nameSheet.dayId) ?? route.days[0])) : ''}
           confirmLabel={nameSheet.dayId ? 'Guardar' : 'Crear día'}
           onClose={() => setNameSheet(null)}
           onConfirm={(name) => {
