@@ -1,17 +1,18 @@
 import { create } from 'zustand'
 
 /**
- * «Añade un día más a tu viaje» (la línea de más días que el viaje) abre el mismo calendario de fechas de la cabecera del mapa.
- * Estado de pantalla: la cabecera lo recoge al montarse o al cambiar y lo apaga.
+ * El calendario de fechas de dentro de la app (Tanda 6y4): UNA sola puerta para abrirlo, desde donde sea (la cabecera del mapa, «Pon tus fechas» de HOY,
+ * «Cambia las fechas del viaje» de RESERVAS, el aviso «Pon tus fechas» de la campana, «Añade un día más a tu viaje»). `DatesCalendarModal` (montado en RouteView) lo
+ * pinta solo, a pantalla completa y por encima de todo, sin cambiar de pestaña: al guardar o cerrar, el viajero sigue donde estaba.
  */
 interface DatesCalendarState {
-  pending: boolean
+  open: boolean
   request: () => void
-  clear: () => void
+  close: () => void
 }
 
 export const useDatesCalendarStore = create<DatesCalendarState>((set) => ({
-  pending: false,
-  request: () => set({ pending: true }),
-  clear: () => set({ pending: false }),
+  open: false,
+  request: () => set({ open: true }),
+  close: () => set({ open: false }),
 }))

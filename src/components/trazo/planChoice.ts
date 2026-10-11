@@ -19,12 +19,6 @@ export const STEP = {
   resumenCorto: 8,
 } as const
 
-/** El aviso corto al tocar una de las dos tarjetas. */
-export const AVISO_DE_ELEGIR: Record<PlanChoice, string> = {
-  auto: 'Creando tu itinerario…',
-  manual: 'Preparando tu viaje…',
-}
-
 /** A dónde se va después de elegir. */
 export const stepAfterChoice = (plan: PlanChoice): number => (plan === 'manual' ? STEP.resumenCorto : STEP.experiencias)
 

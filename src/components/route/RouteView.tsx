@@ -18,6 +18,7 @@ import { RouteOverview } from './RouteOverview'
 import { DateNoticesModal } from './DateNoticesModal'
 import { SeasonCard } from './SeasonCard'
 import { useDatesChange } from './DatesChangeDialog'
+import { DatesCalendarModal } from './DatesCalendarModal'
 import { RouteOverviewMap } from './RouteOverviewMap'
 import { AddToTripScreen } from './freeDay/AddToTripScreen'
 import { OwnDayScreen } from './freeDay/OwnDayScreen'
@@ -62,6 +63,8 @@ export function RouteView() {
   const devSimulatedTodayIso = useRouteStore((state) => state.dev_simulated_today_iso)
   // Fechas desde el mapa: en los curados, la ruta se rehace (y se pregunta si ya estaba editada a mano).
   const { onChangeDateRange: setRouteDateRange, dialog: datesDialog } = useDatesChange(route)
+  // El calendario de las fechas (Tanda 6y4): uno solo para toda la app, a pantalla completa, y montado en RESERVAS y en el resto de pestañas.
+  const datesCalendar = route ? <DatesCalendarModal destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} /> : null
   // El botón flotante de las excursiones: solo si el destino las tiene y el viaje llega a los días que marca (PARA_CODE_EXCURSIONES, 1).
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -121,15 +124,15 @@ export function RouteView() {
         <ExcursionsPage route={route} />
         {/* (Tanda 6m: el aviso corto también en RESERVAS —«Abriendo la tienda de entradas…»—, que es una pantalla aparte.) */}
         <UndoToast />
+        {datesDialog}
+        {datesCalendar}
       </div>
     )
   }
 
   // «Pon tus fechas» (HOY sin fechas) y el aviso «más días que fechas»: el calendario de la cabecera del mapa, en Días, con el mapa a la vista.
+  // (Tanda 6y4: ya no cambia de pestaña; abre SOLO el calendario, a pantalla completa y por encima de todo, y al guardar o cerrar el viajero sigue donde estaba.)
   const ponFechas = () => {
-    setActiveDayId(null)
-    setMode('days')
-    setMapCollapsed(false)
     useDatesCalendarStore.getState().request()
   }
   const todayContext = getTodayTripContext(route, devSimulatedTodayIso ?? undefined)
@@ -213,7 +216,7 @@ export function RouteView() {
                 ) : (
                   <RouteOverviewMap segments={segments} days={route.days} />
                 )}
-                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} />
               </>
             ) : mode === 'explore' && exploreMarkers === null ? (
               // EXPLORAR sin nada elegido todavía: el mapa es la ciudad limpia (sin la ruta), que se va llenando con los filtros.
@@ -223,7 +226,7 @@ export function RouteView() {
             ) : dayDetailOpen && dayMap ? (
               <>
                 <StopsMapView markers={dayMap.markers} lines={dayMap.lines} center={dayMap.center} activeStopId={activeStopId} onSelectStop={setActiveStopId} />
-                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} />
                 {/* Alterna "solo este día" (por defecto) y todos los días a la vez. */}
                 <button
                   type="button"
@@ -245,7 +248,7 @@ export function RouteView() {
                 {/* Ronda 10: la cabecera destino + fechas no es solo de RUTA — se ve también aquí
                     (pestaña DIAS) y en el mapa de cada día (DayDetailPanel.tsx), para que el destino
                     y las fechas estén a la vista desde cualquier mapa de la app. */}
-                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} onChangeDateRange={setRouteDateRange} />
+                <MapDestinationHeader destination={route.destination} dateRange={route.answers.dateRange} />
               </>
             )}
             {canCollapseMap && (
@@ -342,6 +345,7 @@ export function RouteView() {
       <ExcursionsPage route={route} />
       <UndoToast />
       {datesDialog}
+      {datesCalendar}
     </div>
   )
 }
