@@ -133,15 +133,17 @@ export interface UltimoClic {
 /** La cartera que se ve DE VERDAD: la de más área dentro de la pantalla entre las que no tienen otra cosa encima en su centro (una hoja, una pantalla completa). Ninguna libre = null. */
 export function carteraLibre(documento: Document, ancho: number, alto: number, selector = '[data-cartera]'): { elemento: HTMLElement; caja: Caja } | null {
   const todas = Array.from(documento.querySelectorAll<HTMLElement>(selector))
-  const libres =
-    typeof documento.elementFromPoint === 'function'
-      ? todas.filter((elemento) => {
-          const caja = elemento.getBoundingClientRect()
-          const encima = documento.elementFromPoint(caja.left + caja.width / 2, caja.top + caja.height / 2)
-          return !encima || encima === elemento || elemento.contains(encima)
-        })
-      : todas
-  return elegirCartera(libres, ancho, alto)
+  return elegirCartera(todas.filter((elemento) => !estaTapado(documento, elemento)), ancho, alto)
+}
+
+/**
+ * ¿Hay algo encima del centro de este elemento (una hoja, una pantalla completa)? Es la regla común de los efectos que vuelan a un botón de la cabecera (la pastilla del precio a la cartera y la foto al Perfil): si algo lo
+ * tapa, el efecto espera. Sin `elementFromPoint` (pruebas sin navegador) se considera libre.
+ */
+export function estaTapado(documento: Document, elemento: HTMLElement, caja: Caja = elemento.getBoundingClientRect()): boolean {
+  if (typeof documento.elementFromPoint !== 'function') return false
+  const encima = documento.elementFromPoint(caja.left + caja.width / 2, caja.top + caja.height / 2)
+  return Boolean(encima) && encima !== elemento && !elemento.contains(encima)
 }
 
 /** Lo que usa `cuandoSeVe` para esperar. */

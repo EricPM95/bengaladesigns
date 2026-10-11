@@ -478,8 +478,8 @@ debe(/createPortal\(/.test(fuentePerfil) && /MapaMisViajes chinchetas=\{chinchet
   debe(/data-boton-perfil="1"/.test(header) && /aria-label="Perfil y mis viajes"/.test(header), 'E', 'el botón del Perfil de la cabecera no está marcado con data-boton-perfil')
   debe(/alAnadirFoto\(/.test(comp) && /URL\.createObjectURL\(miniatura\)/.test(comp) && /URL\.revokeObjectURL/.test(comp), 'E', 'el componente no escucha alAnadirFoto, o no suelta la URL local de la miniatura')
   debe(/prefers-reduced-motion: reduce/.test(comp), 'E', 'el componente no mira «reducir movimiento»')
-  debe(!/precioVuela/.test(comp) && !/from '\.\/precioVuela'/.test(lib), 'E', 'el efecto de la foto depende de precioVuela.ts (otro agente lo está cambiando)')
-  debe(/se unificará con la de `precioVuela\.ts`/.test(lib), 'E', 'falta el comentario «se unificará con la de precioVuela.ts» junto a la espera por hoja tapada')
+  debe(/estaTapado as estaTapadoElemento\s*\}\s*from '\.\/precioVuela'/.test(lib), 'E', 'la foto que vuela no usa la regla común estaTapado de precioVuela.ts')
+  debe(!/elementFromPoint/.test(lib), 'E', 'fotoVuela.ts repite la regla de «tapado» en vez de usar la de precioVuela.ts')
   debe((fotos.match(/avisarAnadida\(/g) ?? []).length === 2 && /avisarAnadida\(\{ foto, miniatura/.test(fotos), 'E', 'el aviso de foto añadida no sale solo desde subirFotoPreparada (UNA vez)')
   debe(!/alAnadirFoto/.test(leer('src/lib/useFotosViaje.ts')), 'E', 'cargar las fotos escucha el aviso de «foto añadida»')
   // Todas las vías de subida pasan por subirFoto (la ficha, ✓ Visto, Tus fotos de hoy, Guarda tus recuerdos, el álbum).

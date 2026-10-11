@@ -6,6 +6,8 @@
  * Lo mínimo del navegador que usa el dibujo viaja en `Entorno`, así se prueba con piezas falsas.
  */
 
+import { estaTapado as estaTapadoElemento } from './precioVuela'
+
 export const DURACION_VUELO_MS = 800
 export const DESFASE_MS = 120
 export const DURACION_SALTO_MS = 380
@@ -75,15 +77,9 @@ export function botonDelPerfil(documento: Document, ancho: number, alto: number)
   return mejor
 }
 
-/**
- * ¿Está el botón tapado por una hoja? Se mira qué hay encima de su centro: si no es el propio botón (ni algo suyo), lo tapa algo. (se unificará con la de `precioVuela.ts`, que hace lo mismo con la cartera.)
- * Sin `elementFromPoint` (pruebas sin navegador) se considera libre.
- */
+/** ¿Está el botón tapado por una hoja? La regla es la de `precioVuela.ts` (`estaTapado`), la misma que usa la pastilla del precio con la cartera. */
 export function estaTapado(documento: Document, boton: { elemento: HTMLElement; caja: Caja }): boolean {
-  if (typeof documento.elementFromPoint !== 'function') return false
-  const { caja, elemento } = boton
-  const encima = documento.elementFromPoint(caja.left + caja.width / 2, caja.top + caja.height / 2)
-  return Boolean(encima) && encima !== elemento && !elemento.contains(encima)
+  return estaTapadoElemento(documento, boton.elemento, boton.caja)
 }
 
 /** El saltito del botón del Perfil. */
