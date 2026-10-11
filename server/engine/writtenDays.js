@@ -100,6 +100,42 @@ export function photosFor(destinationKey) {
 }
 
 const photosCache = new Map()
+
+/**
+ * El autor y la licencia de una foto de Wikipedia / Commons (Tanda 6z6f): `data/dias/<destino>/_fotos_wikimedia.json`, que rellena una vez
+ * `scripts/destino/creditosWikimedia.mjs`. Se busca por el NOMBRE DEL FICHERO de la miniatura (no por el lugar: la foto puede venir de la caché
+ * o de la versión de día de una nocturna). Null si es de dominio público, si el fichero no está en la tabla o si le falta el autor o la licencia:
+ * sin crédito completo no se enseña nada.
+ */
+export function wikimediaCreditFor(destinationKey, photoUrl) {
+  const key = String(destinationKey ?? '').trim().toLowerCase()
+  if (!key || !photoUrl) return null
+  let table = wikimediaCache.get(key)
+  if (table === undefined) {
+    const file = join(DIAS_DIR, key, '_fotos_wikimedia.json')
+    let raw = null
+    try {
+      raw = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+    } catch {
+      raw = null
+    }
+    table = new Map((raw?.fotos ?? []).map((foto) => [foto.archivo, foto]))
+    wikimediaCache.set(key, table)
+  }
+  let archivo = null
+  try {
+    const parts = new URL(photoUrl).pathname.split('/').filter(Boolean)
+    const i = parts.indexOf('thumb')
+    archivo = decodeURIComponent(i >= 0 ? parts[i + 3] : parts[parts.length - 1])
+  } catch {
+    return null
+  }
+  const foto = table.get(archivo)
+  if (!foto || foto.dominio_publico || !foto.autor || !foto.licencia) return null
+  return { autor: foto.autor, licencia: foto.licencia, enlace: foto.pagina || null, licencia_url: foto.licencia_url || null }
+}
+
+const wikimediaCache = new Map()
 const slotsCache = new Map()
 
 /**

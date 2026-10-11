@@ -1,0 +1,305 @@
+{
+  "_que_es": "Autor y licencia de las fotos de Wikipedia / Wikimedia Commons que la app enseña cuando no hay foto propia ni de Unsplash. Se piden UNA vez a la API de Commons con scripts/destino/creditosWikimedia.mjs (la app no consulta a Wikimedia al abrir una ficha). Las de dominio público (dominio_publico: true) no llevan línea de crédito. Las de \"sin_autor\" no se han podido atribuir: hay que cambiar la foto.",
+  "fotos": [
+    {
+      "lugares": [
+        "Trastevere al atardecer"
+      ],
+      "archivo": "6h-orologioQuirinale.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:6h-orologioQuirinale.jpg",
+      "autor": "Maristela Possamai",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Campo de' Fiori"
+      ],
+      "archivo": "Campo_dei_Fiori.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Campo_dei_Fiori.jpg",
+      "autor": "Myrabella",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Iglesia del Gesù"
+      ],
+      "archivo": "Chiesa_gesu_facade.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Chiesa_gesu_facade.jpg",
+      "autor": "Alessio Damato",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Iglesia de San Ignacio de Loyola"
+      ],
+      "archivo": "Church_of_Sant'Ignazio_di_Loyola.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Church_of_Sant%27Ignazio_di_Loyola.jpg",
+      "autor": "Fiat 500e",
+      "licencia": "CC BY 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Plaza Colonna"
+      ],
+      "archivo": "Columna_de_Marco_Aurelio,_plaza_Colonna,_Roma,_Italia,_2022-09-14,_DD_24-26_HDR.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Columna_de_Marco_Aurelio,_plaza_Colonna,_Roma,_Italia,_2022-09-14,_DD_24-26_HDR.jpg",
+      "autor": "Diego Delso",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Quartiere Coppedè"
+      ],
+      "archivo": "COPPEDE2170893.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:COPPEDE2170893.jpg",
+      "autor": "indeciso42 at Italian Wikipedia",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Iglesia de San Luigi dei Francesi"
+      ],
+      "archivo": "Église_San_Luigi_Francesi_-_Rome_(IT62)_-_2021-08-28_-_2.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:%C3%89glise_San_Luigi_Francesi_-_Rome_(IT62)_-_2021-08-28_-_2.jpg",
+      "autor": "Chabe01",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Elefantino de Bernini"
+      ],
+      "archivo": "Elephant_and_Obelisk_-_Bernini.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Elephant_and_Obelisk_-_Bernini.jpg",
+      "autor": "Petar Milošević",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Plaza Trilussa"
+      ],
+      "archivo": "Fontana_di_Ponte_Sisto.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Fontana_di_Ponte_Sisto.jpg",
+      "autor": "Peter1936F",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Bioparque de Roma"
+      ],
+      "archivo": "Giraffe_bioparco1.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Giraffe_bioparco1.jpg",
+      "autor": "Carlomorino",
+      "licencia": "Public domain",
+      "licencia_url": "",
+      "dominio_publico": true
+    },
+    {
+      "lugares": [
+        "Isla Tiberina"
+      ],
+      "archivo": "Isola_Tiberina_2014.JPG",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Isola_Tiberina_2014.JPG",
+      "autor": "Livioandronico2013",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Excursión a Florencia y Pisa"
+      ],
+      "archivo": "MauriceManuscript.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:MauriceManuscript.jpg",
+      "autor": "Mary Shelley (1797-1851)",
+      "licencia": "Public domain",
+      "licencia_url": "",
+      "dominio_publico": true
+    },
+    {
+      "lugares": [
+        "Monti"
+      ],
+      "archivo": "Monti_-_via_Panisperna_1040339.JPG",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Monti_-_via_Panisperna_1040339.JPG",
+      "autor": "Lalupa",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Excursión a Nápoles y Pompeya en tren"
+      ],
+      "archivo": "Notre-Dame_de_la_Garde_aerial_view_2020.jpeg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Notre-Dame_de_la_Garde_aerial_view_2020.jpeg",
+      "autor": "Earth777",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Borgo Pio",
+        "Via dei Coronari"
+      ],
+      "archivo": "Passetto_di_Borgo_from_Castel_Sant'Angelo_01.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Passetto_di_Borgo_from_Castel_Sant%27Angelo_01.jpg",
+      "autor": "Chris 73",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Plaza Farnese"
+      ],
+      "archivo": "Piazza_Farnese_Rome.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Piazza_Farnese_Rome.jpg",
+      "autor": "Jensens",
+      "licencia": "Public domain",
+      "licencia_url": "",
+      "dominio_publico": true
+    },
+    {
+      "lugares": [
+        "Largo di Torre Argentina"
+      ],
+      "archivo": "PICT0510_-_Largo_di_Torre_Argentina.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:PICT0510_-_Largo_di_Torre_Argentina.jpg",
+      "autor": "Adam Carr at English Wikipedia",
+      "licencia": "Public domain",
+      "licencia_url": "",
+      "dominio_publico": true
+    },
+    {
+      "lugares": [
+        "Plaza del Quirinal"
+      ],
+      "archivo": "Quirinal_Hill_Luigi_Rossini.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Quirinal_Hill_Luigi_Rossini.jpg",
+      "autor": "",
+      "licencia": "Public domain",
+      "licencia_url": "",
+      "dominio_publico": true
+    },
+    {
+      "lugares": [
+        "Castillo de Sant'Angelo (por fuera)"
+      ],
+      "archivo": "Roma_Castel_s_Angelo_dic_2017.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Roma_Castel_s_Angelo_dic_2017.jpg",
+      "autor": "Blackcat",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Iglesia de Santa Maria della Vittoria"
+      ],
+      "archivo": "Santa_Maria_della_Vittoria_in_Rome_-_Front.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Santa_Maria_della_Vittoria_in_Rome_-_Front.jpg",
+      "autor": "Architas",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Iglesia de Santa Maria sopra Minerva"
+      ],
+      "archivo": "Santa_Maria_sopra_Minerva.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Santa_Maria_sopra_Minerva.jpg",
+      "autor": "Merulana",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Museos Vaticanos y Capilla Sixtina"
+      ],
+      "archivo": "Sistina-interno.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Sistina-interno.jpg",
+      "autor": "Snowdog",
+      "licencia": "CC BY-SA 3.0",
+      "licencia_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "San Pietro in Montorio y Tempietto de Bramante"
+      ],
+      "archivo": "Tempietto_di_San_Pietro_in_Montorio.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Tempietto_di_San_Pietro_in_Montorio.jpg",
+      "autor": "Labicanense",
+      "licencia": "CC BY 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Fuente de las Tortugas"
+      ],
+      "archivo": "The_Turtle_Fountain.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:The_Turtle_Fountain.jpg",
+      "autor": "Livioandronico2013",
+      "licencia": "CC BY-SA 4.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Via del Corso"
+      ],
+      "archivo": "Via_del_Corso_(cropped).jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Via_del_Corso_(cropped).jpg",
+      "autor": "Gil",
+      "licencia": "CC BY 2.0",
+      "licencia_url": "https://creativecommons.org/licenses/by/2.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Excursión a Florencia en tren de alta velocidad",
+        "Excursión a la Costa Amalfitana"
+      ],
+      "archivo": "Vueling_A320neo_(EC-NFH)_@_MAN,_September_2020.jpg",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Vueling_A320neo_(EC-NFH)_@_MAN,_September_2020.jpg",
+      "autor": "Riik@mctr",
+      "licencia": "CC BY-SA 2.0",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/2.0",
+      "dominio_publico": false
+    },
+    {
+      "lugares": [
+        "Cripta de los Capuchinos"
+      ],
+      "archivo": "Wien_-_Kapuzinergruft,_Maria-Theresia-Gruft_(1).JPG",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Wien_-_Kapuzinergruft,_Maria-Theresia-Gruft_(1).JPG",
+      "autor": "C.Stadler/Bwag",
+      "licencia": "CC BY-SA 3.0 at",
+      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0/at/deed.en",
+      "dominio_publico": false
+    }
+  ],
+  "sin_autor": []
+}
