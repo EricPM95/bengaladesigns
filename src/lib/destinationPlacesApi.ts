@@ -27,7 +27,7 @@ export interface DestinationPlace {
   type: string | null
   tags: string[]
   level: number | null
-  /** Si el destino lo tiene en su lista a mano de imprescindibles (`pool_lista`), su puesto en ella (0 = el primero); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */
+  /** Su puesto en la lista a mano del destino (`pool_lista`; 0 = el primero), SIN tener en cuenta su nivel (el nivel va aparte en `level`); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */
   essential_rank?: number | null
   schedule: string | null
   /**
