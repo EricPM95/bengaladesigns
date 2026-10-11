@@ -47,6 +47,8 @@ export const ICONOS = {
   cerrar: 'M6 6l12 12M18 6L6 18',
   atras: 'M15 6l-6 6 6 6',
   adelante: 'M9 6l6 6-6 6',
+  /** La flecha larga hacia la derecha (la pantalla de elegir cómo se monta el itinerario, Tanda 6y). */
+  flecha: 'M5 12h14M13 6l6 6-6 6',
   abajo: 'M6 9l6 6 6-6',
   arriba: 'M6 15l6-6 6 6',
   ojo: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
