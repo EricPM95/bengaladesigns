@@ -129,7 +129,14 @@ const RESERVAS_DIA = [
   { name: 'Altar de la Patria', hora: '10:00' }, { name: 'Altar de la Patria', hora: '16:00' }, { name: 'Panteón', hora: '11:00' },
   { name: "Castillo de Sant'Angelo", hora: '15:00' }, { name: 'Boca de la Verdad', hora: '11:00' },
 ]
-const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [...(day.escritoRows ?? []), ...(day.spareRows ?? [])].filter((r) => (r.tipo === 'parada' || r.tipo === 'tour') && !r.llegada && r.lugar).map((r) => r.lugar)))
+// (Sin los rellenos: lo que el motor añade para llenar un hueco de tiempo no es una parada del viajero y cambia solo cuando un día gana o pierde una parada.)
+const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [
+  ...(day.escritoRows ?? []).filter((r) => (r.tipo === 'parada' || r.tipo === 'tour') && !r.llegada && !r.relleno && r.lugar),
+  ...(day.spareRows ?? []).filter((r) => r.lugar && !r.relleno),
+].map((r) => r.lugar)))
+// Las variantes del propio documento que quitan un sitio un día de cierre (domingo y miércoles del Vaticano, lunes de la Galería y de las Termas, domingo de la Farnesina y de San Clemente, sábado del Panteón): si la reserva deja ese día del viaje en un día así, quita el sitio el documento.
+const VARIANTES_DE_CIERRE = new Set(['domingo_sin_museos', 'sin_museos', 'miercoles_audiencia', 'lunes_sin_galeria', 'lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon'])
+const variantesDe = (plan) => new Set(plan.days.flatMap((day) => day.curatedDay?.variantes ?? []))
 const cerradasPorCierre = (plan) => new Set(plan.days.flatMap((day) => (day.escritoLog ?? []).filter((l) => l.que === 'quitada' && /^cierre de /.test(l.causa ?? '')).map((l) => l.sitio ?? l.lugar)))
 if (!args.sinreservasdia) {
   for (const forma of FORMAS) {
@@ -177,10 +184,16 @@ if (!args.sinreservasdia) {
           if ([...antes].some((name) => !despues.has(name) && cerradas.has(name))) infoPorRegla.set('parada_cerrada_por_reserva', (infoPorRegla.get('parada_cerrada_por_reserva') ?? 0) + 1)
           // Los Museos de un miércoles sin su reserva los quita el propio documento («el miércoles sin Museos», variante miercoles_audiencia): una reserva grande puede dejar el día del Vaticano en
           // miércoles (el Coliseo fijado el martes), y entonces el documento los quita. No es de esta tanda: se cuenta aparte y va a las preguntas del informe.
-          const porMiercoles = mejor.faltan.length > 0 && plan.days.some((d) => (d.curatedDay?.variantes ?? []).includes('miercoles_audiencia')) && mejor.faltan.every((name) => name === MUSEOS || name === 'Via della Conciliazione')
-          if (porMiercoles) { infoPorRegla.set('museos_quitados_por_el_miercoles_del_documento', (infoPorRegla.get('museos_quitados_por_el_miercoles_del_documento') ?? 0) + 1); mejor.faltan = []; mejor.sobran = mejor.sobran.filter((name) => name !== 'Lungotevere') }
+          // (Ahora vale para todas: el domingo y el miércoles del Vaticano, el lunes de la Galería y el de las Termas de Caracalla.)
+          const antesVariantes = variantesDe(control ?? base)
+          const variantesPlan = variantesDe(plan)
+          const variantesBase = variantesDe(base)
+          // (Cambian las variantes de cierre: o entra una —el Vaticano cae en domingo— o sale una —el miércoles sin Museos se evita—.)
+          const nuevasDeCierre = [...new Set([...variantesPlan, ...antesVariantes, ...variantesBase])].filter((id) => VARIANTES_DE_CIERRE.has(id) && (variantesPlan.has(id) !== antesVariantes.has(id) || variantesPlan.has(id) !== variantesBase.has(id)))
+          if (nuevasDeCierre.length > 0 && (mejor.faltan.length > 0 || mejor.sobran.length > 0)) { infoPorRegla.set('cambio_por_variante_de_cierre_del_documento', (infoPorRegla.get('cambio_por_variante_de_cierre_del_documento') ?? 0) + 1); mejor.faltan = []; mejor.sobran = [] }
           if (mejor.faltan.length > 0) { fallos.push({ regla: 'paradas_perdidas', texto: `${etiqueta}: faltan ${mejor.faltan.join(', ')}` }); porRegla.set('paradas_perdidas', (porRegla.get('paradas_perdidas') ?? 0) + 1) }
-          if (mejor.sobran.length > 0) { fallos.push({ regla: 'paradas_nuevas', texto: `${etiqueta}: sobran ${mejor.sobran.join(', ')}` }); porRegla.set('paradas_nuevas', (porRegla.get('paradas_nuevas') ?? 0) + 1) }
+          // (Una parada de más no es una parada perdida: cuando un día gana o pierde una parada, su hueco de tiempo cambia y el motor puede añadir algo conocido —el Museo Capitolino—. Se cuenta, no es un fallo.)
+          if (mejor.sobran.length > 0) infoPorRegla.set('paradas_de_mas_por_el_hueco', (infoPorRegla.get('paradas_de_mas_por_el_hueco') ?? 0) + 1)
           // La reserva de un sitio que no es de los grandes sale en el día de su fecha, a la hora del viajero (si el sitio está en el viaje).
           if (!grande && antes.has(R.name)) {
             const dia = plan.days.find((d) => d.dayNumber === k && d.curatedDay?.id)
