@@ -10,7 +10,7 @@ interface VehicleBlockProps {
 }
 
 const COPY = {
-  camper: { icon: 'coche' as const, title: 'Añade tu camper/autocaravana', modalTitle: 'Camper / Autocaravana', itemLabel: 'la camper/autocaravana', placeholder: 'Northbound, MotorhomeRepublic…' },
+  camper: { icon: 'autocaravana' as const, title: 'Añade tu camper/autocaravana', modalTitle: 'Camper / Autocaravana', itemLabel: 'la camper/autocaravana', placeholder: 'Northbound, MotorhomeRepublic…' },
   'rental-car': { icon: 'coche' as const, title: 'Añade tu vehículo de alquiler', modalTitle: 'Vehículo de alquiler', itemLabel: 'el vehículo de alquiler', placeholder: 'Europcar, Goldcar…' },
 }
 

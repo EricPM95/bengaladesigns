@@ -19,12 +19,7 @@ export const ICONOS = {
   /** La excursión: una mochila. */
   excursion: 'M8 7.5V6a4 4 0 0 1 8 0v1.5M6.5 7.5h11a2 2 0 0 1 2 2V19a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2zM9 14h6M9.5 11h5',
   cama: 'M3 19.5V5M3 15h18v4.5M21 15v-3a3 3 0 0 0-3-3h-7v6M7 12a1.75 1.75 0 1 0 0-3.5A1.75 1.75 0 0 0 7 12z',
-  avion: 'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
-  tren: 'M7 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 11h14M9 15h.01M15 15h.01M8 18l-2 3M16 18l2 3',
-  /** El autobús: solo la llegada y la vuelta en autobús. */
-  bus: 'M6 3.5h12a2 2 0 0 1 2 2V17H4V5.5a2 2 0 0 1 2-2zM4 11h16M7.5 20.5V17M16.5 20.5V17M8 14h.01M16 14h.01M9 7h6',
-  barco: 'M3 17l2 4h14l2-4-9-3zM6 14V8h12v6M12 3v5',
-  coche: 'M5 16v-5l2-5h10l2 5v5M5 16h14v3H5zM7.5 13h.01M16.5 13h.01',
+  // avion, tren, bus, barco y coche: ver el bloque «Transporte» (Tanda 6y4, punto 17), al final de ICONOS.
   tips: 'M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2v2h5v-2c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z',
   maleta: 'M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5M8 7.5V20M16 7.5V20',
   seguro: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
@@ -85,7 +80,7 @@ export const ICONOS = {
   cafe: 'M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2',
   portapapeles: 'M7 4h10a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM9 3h6v3H9zM9 12h6M9 16h4',
   // ── Los que faltaban para quitar los emojis de la interfaz (Tanda 6z4): mismo trazo ──
-  taxi: 'M5 16v-5l2-5h10l2 5v5M5 16h14v3H5zM7.5 13h.01M16.5 13h.01M10 3h4v2.5h-4z',
+  // taxi: ver el bloque «Transporte» (Tanda 6y4), al final de ICONOS.
   arte: 'M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-.7-1.6-.7-2.6c0-1 .8-1.9 1.9-1.9H18a3 3 0 0 0 3-3A9 9 0 0 0 12 3zM7.5 11h.01M10 7.5h.01M14.5 7.5h.01',
   playa: 'M4 11a8 8 0 0 1 16 0zM12 11v9M8 20h8',
   bienestar: 'M12 20c-4 0-7-3-7-7 3 0 5.5 1.3 7 3.5 1.5-2.2 4-3.5 7-3.5 0 4-3 7-7 7zM12 16.5C10.5 14 10.5 9 12 4c1.5 5 1.5 10 0 12.5z',
@@ -108,6 +103,18 @@ export const ICONOS = {
   altavoz: 'M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11',
   pausa: 'M9 5v14M15 5v14',
   seguir: 'M8 5.5l11 6.5-11 6.5z',
+  // ── INICIO Transporte (Tanda 6y4, punto 17) ──
+  // avion, tren, bus y coche: los trazos tal cual del diseño `docs/diseno/multidestino/Varias Ciudades.dc.html` (caja 24, grosor 1,7, puntas y esquinas redondeadas).
+  avion: 'M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',
+  tren: 'M8 3.1V7a4 4 0 0 0 8 0V3.1M9 15l-1-1M15 15l1-1M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5zM8 19l-2 3M16 19l2 3',
+  /** El autobús: la llegada y la vuelta en autobús, y la línea de bus entre paradas. */
+  bus: 'M8 6v6M15 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2s-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3M9 18h5M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM16 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  coche: 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2M9 17h6M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  // Los que el diseño no dibuja, hechos con el mismo estilo de línea (dibujados a mano en la 6y4): barco, autocaravana y taxi.
+  barco: 'M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M19.4 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.9 5.3 2.8 7.8M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10v4M12 2v3',
+  autocaravana: 'M2 16V8a2 2 0 0 1 2-2h11a5 5 0 0 1 5 5v1h1.5a.5.5 0 0 1 .5.5V16a1 1 0 0 1-1 1h-2M2 16a1 1 0 0 0 1 1h2M9 17h6M2 11h6M12 9h3.5a1.5 1.5 0 0 1 1.5 1.5V12h-5zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  taxi: 'M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2M9 17h6M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM10.5 4h3M12 4v3',
+  // ── FIN Transporte ──
 } as const
 
 export type NombreIcono = keyof typeof ICONOS
