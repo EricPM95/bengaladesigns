@@ -939,9 +939,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         return
       }
       set({ route: placeReservedEntrance(unpinned, reservation) })
-      // El motor rehace ese día corriendo las horas alrededor de la hora de la reserva.
+      // El motor rehace ese día corriendo las horas alrededor de la hora de la reserva. Y el día que llevaba el sitio (el Altar de la Patria en el día del Coliseo): el sitio sale de él y va al de
+      // la reserva, así que se rehacen los dos (Tanda 6y4, punto 7); si no, el sitio se quedaba sin día. Los días no cambian de orden con una reserva así.
       const reservedDay = dayOfReservation(route, reservation)
-      if (reservedDay) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(reservedDay.id))
+      if (reservedDay) {
+        const holders = route.days.filter((day) => day.id !== reservedDay.id && !day.isReturnLeg && day.stops.some((stop) => reservation.placeNames.includes(stop.name))).map((day) => day.id)
+        void import('../lib/rebuildDay').then((module) => module.rehacerDiasConReservas([reservedDay.id, ...holders], { mantenerOrden: true }))
+      }
       return
     }
     const day = dayOfReservation(route, reservation)
@@ -964,7 +968,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       for (const notice of useNoticesStore.getState().pushed) if (notice.id.includes(id)) useNoticesStore.getState().remove(notice.id)
     })
     // (Tanda 6m: quitar una reserva no mueve ningún día: ese día se rehace en su sitio, con el orden que el viajero ya ve, y la parada vuelve a su lista normal, sin hora fija.)
-    if (removedDay && !isManualRoute(get().route)) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: Boolean(removed && isBigReservation(removed)) }))
+    if (removedDay && !isManualRoute(get().route)) {
+      if (removed && isBigReservation(removed)) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: true }))
+      // Sin la reserva de un sitio que no es de los grandes, el sitio vuelve al día que lo llevaba (Tanda 6y4, punto 7): hay que rehacer todos los días, sin cambiar su orden.
+      else void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null, { mantenerOrden: true }))
+    }
   },
   receiveSale: (sale) =>
     set((state) => {

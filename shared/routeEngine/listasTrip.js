@@ -89,7 +89,7 @@ function avisoDe(stop, mes = null, invierno = MESES_INVIERNO) {
  * @returns el plan (misma forma que el motor anterior) o null si falta algún día escrito
  */
 export function planListasTrip(args) {
-  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [] } = args
+  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [], reservasViaje = [] } = args
   if (!writtenIn?.days) return null
   // («Crear mi propio día»: el día que el viajero monta con sus sitios es un día escrito más, hecho al vuelo (diaPropio.js), y va fijo en su día.)
   const written = diaPropio ? { ...writtenIn, days: { ...writtenIn.days, [diaPropio.id]: diaPropio.dia } } : writtenIn
@@ -365,10 +365,77 @@ export function planListasTrip(args) {
   }
 
   // ── 5. Reservas del viajero: la hora que él eligió manda ─────────────────────────────────────────────────────
-  const reservasAMarcar = []
-  if (grandesConHora.length === 0) for (const [lugar, hora] of Object.entries(entradas ?? {})) reservasAMarcar.push({ lugar, hora, host: null })
+  // 5.0 Una reserva de cualquier sitio va al DÍA DE SU FECHA (Tanda 6y4, punto 7). Una grande (el Coliseo, los Museos, la Galería) mueve su día entero (ordenarDias, arriba); las demás
+  // (el Altar de la Patria, el Panteón, un sitio sin tabla…) mueven solo el sitio: sale de la lista del día que lo llevaba y entra en la del día de la reserva, en el puesto que le toca por su hora.
+  // Nada se quita nunca: lo que sale de un día entra en otro, y cada día que se pida por separado ve el mismo viaje (la petición trae todas las reservas, no solo las de su día).
+  // (Lo que cubre la misma entrada que una grande —el Foro con el Coliseo— no mueve nada por su cuenta: va con el día de la grande.)
+  const marcasViaje = []
+  for (const r of reservasViaje ?? []) {
+    if (!r?.name || RESERVAS_GRANDES.has(r.name) || !/^\d{1,2}:\d{2}$/.test(String(r.time ?? ''))) continue
+    const slot = cityDays.findIndex((day) => (calendar.hasDates && r.dateIso ? hoursOf(day).dateIso === r.dateIso : day.dayNumber === Number(r.dayNumber)))
+    if (slot < 0 || !drafts[slot]) continue
+    const destino = drafts[slot]
+    const hora = String(r.time).length === 4 ? `0${r.time}` : String(r.time)
+    const esLaVisita = (s) => s.lugar === r.name && s.tipo !== 'traslado' && s.modo !== 'camino'
+    if (stopsOfTrabajo(destino.trabajo).some(esLaVisita)) { marcasViaje.push({ lugar: r.name, hora, host: destino }); continue }
+    const origen = drafts.find((d) => d !== destino && stopsOfTrabajo(d.trabajo).some(esLaVisita))
+    if (!origen) continue
+    // Sale del día que lo llevaba (con el traslado que iba delante, que era para llegar a él).
+    let visita = null
+    for (const key of ['manana', 'tarde']) {
+      const at = visita ? -1 : origen.trabajo[key].findIndex(esLaVisita)
+      if (at < 0) continue
+      visita = origen.trabajo[key][at]
+      const quitar = new Set([at])
+      if (origen.trabajo[key][at - 1]?.tipo === 'traslado') quitar.add(at - 1)
+      origen.trabajo[key] = origen.trabajo[key].filter((_, i) => !quitar.has(i))
+    }
+    origen.aplicadas.push(`reserva_sale:${r.name}`)
+    // Entra en el día de la reserva: en la mañana si es antes de la comida (o la tarde si el día solo tiene tarde), en el puesto más cercano a lo que ya lleva sin pasar una hora fija.
+    const secuencia = [...destino.trabajo.manana, ...destino.trabajo.tarde]
+    const nManana = destino.trabajo.manana.length
+    const minutos = toMin(hora)
+    let lo = 0
+    let hi = secuencia.length
+    secuencia.forEach((s, i) => {
+      if (s.tipo === 'traslado' || !s.hora || s.hora === '$free_tour') return
+      if (toMin(s.hora) <= minutos) lo = Math.max(lo, i + 1)
+      else hi = Math.min(hi, i)
+    })
+    const deLaManana = !destino.soloTarde && minutos < toMin(cfg.comida_antes_desde) + 90
+    let desde = deLaManana ? 0 : nManana
+    let hasta = deLaManana ? nManana : secuencia.length
+    if (destino.soloTarde) { desde = nManana; hasta = secuencia.length }
+    // (Si la hora y las horas fijas del día no dejan hueco en la franja, manda la hora fija; y si tampoco, la franja.)
+    let a = Math.max(desde, lo)
+    let b = Math.min(hasta, hi)
+    if (a > b) { a = Math.max(0, Math.min(lo, hi)); b = Math.max(a, Math.min(hi, secuencia.length)) }
+    // El puesto: detrás de todo lo que, a ritmo normal, ya habrá hecho a esa hora (lo que dura cada parada y un rato de andar entre una y otra; una hora fija espera a su hora).
+    let reloj = toMin(destino.trabajo.empieza ?? cfg.inicio)
+    let punto = a
+    for (let at = 0; at < b; at++) {
+      const s = secuencia[at]
+      if (s.tipo !== 'traslado') {
+        if (s.hora && s.hora !== '$free_tour') reloj = Math.max(reloj, toMin(s.hora))
+        reloj += (s.min ?? 10) + 8
+      } else reloj += 10
+      if (at + 1 >= a && reloj <= minutos) punto = at + 1
+    }
+    if (secuencia[punto - 1]?.tipo === 'traslado') punto++ // (entre un traslado y la parada a la que lleva, no)
+    const mejor = { at: Math.min(Math.max(punto, a), Math.max(a, b)) }
+    const colocada = { ...visita, modo: 'dentro', min: Math.max(visita.min ?? 0, minutosDentro[r.name] ?? Math.min(placeByName.get(r.name)?.duration_minutes ?? 60, 90)), protegido: true }
+    if (mejor.at <= nManana && !(destino.soloTarde)) destino.trabajo.manana.splice(Math.min(mejor.at, nManana), 0, colocada)
+    else destino.trabajo.tarde.splice(Math.max(0, mejor.at - nManana), 0, colocada)
+    destino.aplicadas.push(`reserva_entra:${r.name}`)
+    marcasViaje.push({ lugar: r.name, hora, host: destino })
+  }
+
+  // (Las reservas con día —las de arriba— ya saben en qué día van; las `entradas` de la petición son las del día pedido y solo valen para lo que no viene con día.)
+  const reservasAMarcar = [...marcasViaje]
+  const yaMarcada = new Set(marcasViaje.map((marca) => marca.lugar))
+  if (grandesConHora.length === 0) { for (const [lugar, hora] of Object.entries(entradas ?? {})) if (!yaMarcada.has(lugar)) reservasAMarcar.push({ lugar, hora, host: null }) }
   else {
-    for (const [lugar, hora] of Object.entries(entradas ?? {})) if (!nombresGrandes.has(lugar)) reservasAMarcar.push({ lugar, hora, host: null })
+    for (const [lugar, hora] of Object.entries(entradas ?? {})) if (!nombresGrandes.has(lugar) && !yaMarcada.has(lugar)) reservasAMarcar.push({ lugar, hora, host: null })
     drafts.forEach((d, i) => { for (const [lugar, hora] of Object.entries(entradasDeDia(i))) if (nombresGrandes.has(lugar)) reservasAMarcar.push({ lugar, hora, host: d }) })
   }
   for (const { lugar, hora, host: anfitrionFijo } of reservasAMarcar) {
