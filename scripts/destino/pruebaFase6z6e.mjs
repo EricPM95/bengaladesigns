@@ -59,7 +59,8 @@ console.log('Fotos propias')
   // La ficha: solo pinta crédito de Unsplash; ni «Foto:» ni nada de las propias.
   const ficha = leer('src/components/route/dayDetail/StopDetailSheet.tsx')
   ok(/photo\?\.source === 'unsplash' && photo\.attribution/.test(ficha), '1d la ficha no limita el crédito a Unsplash')
-  ok(!/Foto:\{' '\}|photo\.source === 'propia'/.test(ficha), '1e la ficha todavía tiene el crédito «Foto:» de las propias')
+  // (6z6f: la ficha pinta «Foto:» para Wikipedia, así que aquí solo se vigila que las propias no tengan línea.)
+  ok(!/photo\??\.source === 'propia'/.test(ficha), '1e la ficha todavía tiene el crédito «Foto:» de las propias')
   // «Créditos»: nada de fotos propias.
   const { CREDITOS } = await empaquetar('src/lib/creditos.ts', 'creditos')
   const fotos = CREDITOS.find((c) => c.clave === 'fotos')

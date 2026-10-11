@@ -470,8 +470,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               {dayNumber !== null && !footerAction && <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} />}
 
               {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
-                  que exigen sus condiciones. Las de Wikipedia no la llevan (dominio público o CC) y las nuestras (`propia`)
-                  tampoco, nunca (Tanda 6z6e). */}
+                  que exigen sus condiciones. Las de Wikipedia llevan autor y licencia (Tanda 6z6f) solo si hay crédito completo (las de
+                  dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). */}
               {photo?.source === 'unsplash' && photo.attribution && (
                 <p className="text-caption text-text-muted">
                   Foto de{' '}
@@ -482,6 +482,19 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                   <a href={photo.attribution.unsplashUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
                     {photo.attribution.site ?? 'Unsplash'}
                   </a>
+                </p>
+              )}
+              {photo?.source === 'wikipedia' && photo.attribution?.photographer && photo.attribution.license && (
+                <p className="text-caption text-text-muted">
+                  Foto:{' '}
+                  {photo.attribution.photographerUrl ? (
+                    <a href={photo.attribution.photographerUrl} target="_blank" rel="noreferrer" className="underline hover:text-text-soft">
+                      {photo.attribution.photographer}
+                    </a>
+                  ) : (
+                    photo.attribution.photographer
+                  )}{' '}
+                  · {photo.attribution.license}
                 </p>
               )}
 

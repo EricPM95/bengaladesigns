@@ -3,7 +3,7 @@
  * citarla, se añade aquí.
  *  · Open-Meteo: sus datos van con licencia CC BY 4.0, que pide citar la fuente, enlazar la licencia e indicar si se cambió algo. Lo pide también con el plan de pago.
  *  · Mapbox y OpenStreetMap: los mapas y las búsquedas de lugares. Cada mapa ya lleva su aviso pequeño; aquí queda también por escrito.
- *  · Fotos de lugares: las de Unsplash llevan el nombre de su autor y su enlace bajo la foto (ficha de la parada); las de Wikipedia/Wikimedia Commons aún no traen autor en nuestros datos (ver PREGUNTAS de la 6z6e). Las fotos propias (de Eric) NUNCA llevan crédito, ni aquí ni en pantalla (Tanda 6z6e).
+ *  · Fotos de lugares: las de Unsplash llevan el nombre de su autor y su enlace bajo la foto (ficha de la parada); las de Wikipedia/Wikimedia Commons llevan autor y licencia bajo la foto (Tanda 6z6f, data/dias/<destino>/_fotos_wikimedia.json; las de dominio público, nada). Las fotos propias (de Eric) NUNCA llevan crédito, ni aquí ni en pantalla (Tanda 6z6e).
  * Las empresas con las que tenemos enlaces de compra no piden que se las cite, así que no salen. Las fotos propias y las del viajero no llevan crédito.
  */
 export interface Credito {
@@ -35,7 +35,7 @@ export const CREDITOS: Credito[] = [
   {
     clave: 'fotos',
     titulo: 'Fotos de los lugares',
-    texto: 'Las fotos de los lugares que vienen de fuera son de Wikipedia (Wikimedia Commons) y de Unsplash. Las de Unsplash llevan el nombre de su autor y su enlace bajo la foto, en la ficha de la parada.',
+    texto: 'Las fotos de los lugares que vienen de fuera son de Wikipedia (Wikimedia Commons) y de Unsplash. Las de Wikipedia llevan su autor y su licencia bajo la foto, en la ficha de la parada (las de dominio público no). Las de Unsplash llevan el nombre de su autor y su enlace.',
     enlaces: [
       { texto: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/' },
       { texto: 'Unsplash', url: 'https://unsplash.com/' },

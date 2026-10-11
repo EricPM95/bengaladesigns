@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
-import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, writtenDaysFor } from './engine/writtenDays.js'
+import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
@@ -5349,6 +5349,16 @@ app.post('/api/pool-photos', async (req, res) => {
   res.json({ data_version: destKey ? dataVersionFor(destKey) : null, photos })
 })
 
+/**
+ * El crédito de una foto de Wikipedia (Tanda 6z6f): se pone AL RESPONDER, desde data/dias/<destino>/_fotos_wikimedia.json (nunca desde la caché de
+ * Supabase, que solo guarda la URL). Las de dominio público o sin datos completos salen sin `photo_credit`. Las demás fuentes no se tocan.
+ */
+function withWikimediaCredit(foto, city) {
+  if (!foto || foto.photo_source !== 'wikipedia' || foto.photo_credit) return foto
+  const credit = wikimediaCreditFor(findPipelineV2Key(city) ?? '', foto.photo_url)
+  return credit ? { ...foto, photo_credit: credit } : foto
+}
+
 app.post('/api/place-photo', async (req, res) => {
   const { name, city, force, wikipedia_title: wikipediaTitleOverride, date, exclude_own: excludeOwn } = req.body ?? {}
   if (!name || !city) {
@@ -5369,7 +5379,7 @@ app.post('/api/place-photo', async (req, res) => {
     }
     const nightBase = nightBaseOf(name, city)
     if (nightBase) {
-      res.json(await resolveNightPhoto(name, city, nightBase, { force: Boolean(force) }))
+      res.json(withWikimediaCredit(await resolveNightPhoto(name, city, nightBase, { force: Boolean(force) }), city))
       return
     }
     const foto = await resolvePlacePhoto(name, city, { force: Boolean(force), wikipediaTitleOverride })
@@ -5381,7 +5391,7 @@ app.post('/api/place-photo', async (req, res) => {
         return
       }
     }
-    res.json(foto)
+    res.json(withWikimediaCredit(foto, city))
   } catch (error) {
     // Nunca debe romper una pantalla: sin foto, el componente enseña su icono de categoría.
     console.error('[foto] fallo resolviendo la foto de', name, error)

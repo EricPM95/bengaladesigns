@@ -29,9 +29,13 @@ export interface PlacePhoto {
   regular: string
   /** Placeholder mientras carga — solo lo traen las de Unsplash. */
   blurHash: string | null
-  /** Unsplash exige atribución visible allí donde la foto se ve a tamaño real; las de Wikipedia no. */
-  /** (`site`: «Unsplash» o «Pexels» en las fotos propias; sin él, Unsplash.) */
-  attribution: { photographer: string; photographerUrl: string; unsplashUrl: string; site?: string } | null
+  /**
+   * Unsplash exige atribución visible allí donde la foto se ve a tamaño real. Las de Wikipedia / Commons llevan autor y licencia (Tanda 6z6f)
+   * si la tabla del destino los tiene y no son de dominio público; sin eso, null. Las propias, siempre null.
+   * (`site`: «Unsplash» o «Pexels» en las fotos propias; sin él, Unsplash. En las de Wikipedia, «Wikimedia Commons», con `license` y `licenseUrl`;
+   * `photographerUrl` es entonces la página del fichero en Commons y `unsplashUrl` no se usa.)
+   */
+  attribution: { photographer: string; photographerUrl: string; unsplashUrl: string; site?: string; license?: string; licenseUrl?: string } | null
 }
 
 const cache = new Map<string, PlacePhoto | null>()
@@ -39,7 +43,13 @@ const cache = new Map<string, PlacePhoto | null>()
 // ── Lo guardado en el navegador (PARA_CODE_TODO_2026-10-01, paso 7) ─────────────────────────────────────────────────────────────
 // Una foto ya resuelta no se vuelve a pedir en el siguiente viaje, ni en Explorar ni en Añadir parada: se guarda 24 h. Las fotos propias
 // llevan su versión en la URL (`?v=`), así que una foto que cambia cambia de dirección y el navegador la renueva sola.
-const STORE_PREFIX = 'photo:v1:'
+// (v2, Tanda 6z6f: las fotos de Wikipedia guardadas en v1 no traen el crédito; con otra clave se vuelven a pedir una vez.)
+const STORE_PREFIX = 'photo:v2:'
+try {
+  for (const name of Object.keys(localStorage)) if (name.startsWith('photo:v1:')) localStorage.removeItem(name)
+} catch {
+  // sin localStorage: nada que limpiar
+}
 const STORE_TTL_MS = 24 * 60 * 60 * 1000
 const STORE_MAX_ENTRIES = 400
 
@@ -195,7 +205,26 @@ export async function fetchPlacePhotoDetail(name: string, city: string, wikipedi
       }
       if (data?.photo_source === 'wikipedia' && data.photo_url) {
         // Wikipedia devuelve una sola imagen: la misma sirve para los tres tamaños.
-        const photo: PlacePhoto = { source: 'wikipedia', thumb: data.photo_url, small: data.photo_url, regular: data.photo_url, blurHash: null, attribution: null }
+        // El crédito (autor y licencia) lo pone el servidor desde su tabla; sin él (dominio público, sin datos), no hay línea.
+        const credit = data.photo_credit
+        const photo: PlacePhoto = {
+          source: 'wikipedia',
+          thumb: data.photo_url,
+          small: data.photo_url,
+          regular: data.photo_url,
+          blurHash: null,
+          attribution:
+            typeof credit?.autor === 'string' && credit.autor.trim() && typeof credit?.licencia === 'string' && credit.licencia.trim()
+              ? {
+                  photographer: credit.autor.trim(),
+                  photographerUrl: typeof credit.enlace === 'string' ? credit.enlace : '',
+                  unsplashUrl: '',
+                  site: 'Wikimedia Commons',
+                  license: credit.licencia.trim(),
+                  ...(typeof credit.licencia_url === 'string' && credit.licencia_url ? { licenseUrl: credit.licencia_url } : {}),
+                }
+              : null,
+        }
         return photo
       }
       return null
