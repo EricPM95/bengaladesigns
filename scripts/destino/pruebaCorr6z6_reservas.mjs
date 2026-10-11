@@ -308,7 +308,7 @@ for (const [clave, route] of Object.entries(rutas)) {
   const util = leer('src/components/route/reservas/UtilParaElViaje.tsx')
   const ancla = util.match(/<a href=\{tarjeta\.enlace\}[^>]*>\s*Comprar/)?.[0] ?? ''
   debe(ancla.length > 0 && !/onClick/.test(ancla), '3c tarjeta', 'el enlace de [Comprar] no existe o tiene onClick (comprar no marca nada)')
-  debe(/gestionar = \(tarjeta: Tarjeta\) => \(tarjeta\.conPrecio \? setHojaPrecio\(tarjeta\.id\)/.test(util) && (util.match(/onClick=\{\(\) => gestionar\(tarjeta\)\}/g) ?? []).length === 2, '3d lo tienes', '[Añadir] y la tarjeta añadida no abren la hoja de precio (gestionar)')
+  debe(/gestionar = \(tarjeta: Tarjeta\) => setHojaPrecio\(tarjeta\.id\)/.test(util) && (util.match(/onClick=\{\(\) => gestionar\(tarjeta\)\}/g) ?? []).length === 2, '3d lo tienes', '[Añadir] y la tarjeta añadida no abren la hoja de precio (gestionar)')
   debe(/<HojaPrecio/.test(util) && /onQuitar=\{abierta\.anadida/.test(util) && /Eliminar/.test(leer('src/components/route/reservas/HojaPrecio.tsx')), '3d lo tienes', 'la hoja de precio no tiene [Eliminar] para lo ya añadido')
   // 3e (fuente): ni en las tarjetas ni en la hoja hay nombres de empresa (las direcciones de los enlaces no cuentan).
   for (const f of ['UtilParaElViaje', 'HojaPrecio']) {

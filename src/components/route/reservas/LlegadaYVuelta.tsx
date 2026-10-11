@@ -24,7 +24,7 @@ const BUSCAR_BILLETE = 'https://www.skyscanner.net'
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
 
 /** La hoja de la hora de una mitad: la rueda de la 6k, de 5 en 5 minutos. */
-function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg: LegState; ciudad: string; precioInicial: Importe | null; onSave: (time: string, precio: Importe | null, codigo: string | null) => void; onClose: () => void }) {
+export function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg: LegState; ciudad: string; precioInicial: Importe | null; onSave: (time: string, precio: Importe | null, codigo: string | null) => void; onClose: () => void }) {
   // (Tanda 6z2) El precio del billete, total de todas las personas. Si la ida y la vuelta son un mismo billete, se pone en la ida y la vuelta se queda vacía.
   const precio = usePrecioEditable(precioInicial)
   // (Tanda 6y4) El código del vuelo, tren o autobús, opcional: se ve luego en la tarjeta de la llegada y la vuelta.

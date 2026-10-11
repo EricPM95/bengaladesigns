@@ -65,6 +65,33 @@ export function textoParaLector(difs: DiferenciaPrecio[]): string {
   return [suman.length ? `Añadidos ${suman.join(' y ')} al presupuesto` : '', restan.length ? `Quitados ${restan.join(' y ')} del presupuesto` : ''].filter(Boolean).join('. ')
 }
 
+/** Lo mínimo del almacén del viaje de donde salen los precios (lo mismo que mira el presupuesto). Está aquí, y no en el componente, para poder probar con el almacén de verdad qué guarda cada sitio. */
+export type EstadoDePrecios = Pick<EntradaPresupuesto, 'route' | 'reservations' | 'accommodationSelections' | 'transportBookings' | 'insuranceBooking' | 'rentalVehicleBooking' | 'esimPrecios'> & { route: EntradaPresupuesto['route'] | null }
+
+const CLAVES_DE_PRECIOS = ['route', 'reservations', 'accommodationSelections', 'transportBookings', 'insuranceBooking', 'rentalVehicleBooking', 'esimPrecios'] as const
+
+/** ¿Ha cambiado algo de donde salen los precios? (Si no, ni se recalcula.) Cada sitio que guarda un precio escribe en una de estas siete claves del almacén. */
+export function preciosCambiaron(ahora: EstadoDePrecios, antes: EstadoDePrecios): boolean {
+  return CLAVES_DE_PRECIOS.some((clave) => ahora[clave] !== antes[clave])
+}
+
+/** Del almacén al cálculo del presupuesto. Sin viaje, null. */
+export function entradaDeEstado(state: EstadoDePrecios, pago: boolean, moneda: string): EntradaPresupuesto | null {
+  if (!state.route) return null
+  return {
+    route: state.route,
+    reservations: state.reservations,
+    accommodationSelections: state.accommodationSelections,
+    transportBookings: state.transportBookings,
+    insuranceBooking: state.insuranceBooking,
+    rentalVehicleBooking: state.rentalVehicleBooking,
+    esimPrecios: state.esimPrecios,
+    moneda,
+    cambio: null,
+    pago,
+  }
+}
+
 /** Lo que cambia en el presupuesto desde la última vez. La primera lectura de un viaje (abrirlo, restaurarlo, generar otro) y los cambios con el presupuesto abierto no dan efecto. */
 export function crearSeguidor() {
   let base: Map<string, Importe> | null = null
@@ -101,6 +128,54 @@ export interface Caja {
 export interface UltimoClic {
   caja: Caja
   momento: number
+}
+
+/** La cartera que se ve DE VERDAD: la de más área dentro de la pantalla entre las que no tienen otra cosa encima en su centro (una hoja, una pantalla completa). Ninguna libre = null. */
+export function carteraLibre(documento: Document, ancho: number, alto: number, selector = '[data-cartera]'): { elemento: HTMLElement; caja: Caja } | null {
+  const todas = Array.from(documento.querySelectorAll<HTMLElement>(selector))
+  const libres =
+    typeof documento.elementFromPoint === 'function'
+      ? todas.filter((elemento) => {
+          const caja = elemento.getBoundingClientRect()
+          const encima = documento.elementFromPoint(caja.left + caja.width / 2, caja.top + caja.height / 2)
+          return !encima || encima === elemento || elemento.contains(encima)
+        })
+      : todas
+  return elegirCartera(libres, ancho, alto)
+}
+
+/** Lo que usa `cuandoSeVe` para esperar. */
+export interface OpcionesDeEspera {
+  /** Cada cuántos ms mira otra vez (100). */
+  cada?: number
+  /** A los cuántos ms se rinde (20 s): ya no es «ahora». */
+  maximo?: number
+  esperar?: (fn: () => void, ms: number) => unknown
+}
+
+/**
+ * Espera a que algo se vea (`buscar` da true) y entonces llama a `callback` UNA vez; si ya se ve, la llamada es inmediata. Si en `maximo` ms no se ve, se rinde sin llamar a nada.
+ * Es la pieza común de los efectos que vuelan a un botón de la cabecera (el precio a la cartera y, luego, la foto al Perfil): si una hoja o una pantalla completa lo tapa, el efecto espera a que se cierre y vuela entonces.
+ */
+export function cuandoSeVe(buscar: () => boolean, callback: () => void, opciones: OpcionesDeEspera = {}): void {
+  const cada = opciones.cada ?? 100
+  const maximo = opciones.maximo ?? 20000
+  const esperar = opciones.esperar ?? ((fn: () => void, ms: number) => setTimeout(fn, ms))
+  let esperado = 0
+  const mirar = () => {
+    if (buscar()) {
+      callback()
+      return
+    }
+    esperado += cada
+    if (esperado < maximo) esperar(mirar, cada)
+  }
+  mirar()
+}
+
+/** `cuandoSeVe` para la cartera de la cabecera (`[data-cartera]`): el efecto del precio espera a que no la tape ninguna hoja. Otros efectos pueden usarlo con su propio `selector` (el botón del Perfil, p. ej.). */
+export function cuandoLaCarteraSeVe(callback: () => void, entorno: { document: Document; ancho: number; alto: number; selector?: string } & OpcionesDeEspera): void {
+  cuandoSeVe(() => carteraLibre(entorno.document, entorno.ancho, entorno.alto, entorno.selector) !== null, callback, entorno)
 }
 
 /** La cartera que se ve: la de más área dentro de la pantalla (hay una en la cabecera y otra en la de RESERVAS; la que no se ve tiene tamaño 0 o está fuera). */
@@ -172,17 +247,8 @@ function pastilla(documento: Document, texto: string, suma: boolean): HTMLElemen
  */
 export function lanzarEfecto(dif: DiferenciaPrecio, entorno: Entorno): void {
   const { document: documento, ancho, alto } = entorno
-  const todas = Array.from(documento.querySelectorAll<HTMLElement>('[data-cartera]'))
-  // (RESERVAS tapa la cabecera de arriba pero la cartera de esa cabecera sigue en el DOM: se prefiere la que de verdad se ve, la que no tiene otra cosa encima en su centro.)
-  const libres =
-    typeof documento.elementFromPoint === 'function'
-      ? todas.filter((elemento) => {
-          const caja = elemento.getBoundingClientRect()
-          const encima = documento.elementFromPoint(caja.left + caja.width / 2, caja.top + caja.height / 2)
-          return !encima || encima === elemento || elemento.contains(encima)
-        })
-      : todas
-  const cartera = elegirCartera(libres.length > 0 ? libres : todas, ancho, alto)
+  // (RESERVAS tapa la cabecera de arriba pero la cartera de esa cabecera sigue en el DOM: se prefiere la que de verdad se ve, la que no tiene otra cosa encima en su centro. Si todas están tapadas, la de más área: quien llama con `cuandoLaCarteraSeVe` ya esperó.)
+  const cartera = carteraLibre(documento, ancho, alto) ?? elegirCartera(Array.from(documento.querySelectorAll<HTMLElement>('[data-cartera]')), ancho, alto)
   if (!cartera) return
   if (entorno.reducirMovimiento) {
     saltito(cartera.elemento)
