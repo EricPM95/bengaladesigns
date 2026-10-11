@@ -76,7 +76,7 @@ const html = `<!doctype html>
 <body>
 <main>
   <h1>Fotos de Roma: candidatas para elegir</h1>
-  <p class="intro">Estos ${candidatas.entradas.length} sitios llevaban en la app una foto de Wikipedia que <strong>no era el sitio</strong>. Mientras no se cambie, <strong>van sin foto</strong> (el recuadro de color de la app): es mejor que una foto equivocada. Aquí tienes hasta 3 fotos de Unsplash de cada uno para elegir. <strong>Dime «Trastevere: opción 2»</strong> (o pon una foto tuya) y la preparo. Si una foto no es de verdad el sitio, no la elijas: la API de Unsplash no dice dónde se hizo la foto, solo su descripción, y por eso cada candidata lleva una nota de cuánto te puedes fiar.</p>
+  <p class="intro">Estos ${candidatas.entradas.length} sitios llevaban en la app una foto que <strong>no era el sitio</strong> (casi todas de Wikipedia; la de Pompeya y Sorrento, de Unsplash, sin poder confirmar). Mientras no se cambie, <strong>van sin foto</strong> (el recuadro de color de la app): es mejor que una foto equivocada. Aquí tienes hasta 3 fotos de Unsplash de cada uno para elegir. <strong>Dime «Trastevere: opción 2»</strong> (o pon una foto tuya) y la preparo. Si una foto no es de verdad el sitio, no la elijas: la API de Unsplash no dice dónde se hizo la foto, solo su descripción, y por eso cada candidata lleva una nota de cuánto te puedes fiar.</p>
 ${secciones}
   <footer>Fotos de Unsplash, enlazadas desde images.unsplash.com (hace falta conexión). Cada una con el nombre de su autor y su enlace, como piden sus condiciones. Generada con <code>scripts/destino/fotosCandidatas6y2.mjs</code> (Tanda 6y2).</footer>
 </main>

@@ -3,17 +3,6 @@
   "fotos": [
     {
       "lugares": [
-        "Trastevere al atardecer"
-      ],
-      "archivo": "6h-orologioQuirinale.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:6h-orologioQuirinale.jpg",
-      "autor": "Maristela Possamai",
-      "licencia": "CC BY-SA 3.0",
-      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
         "Campo de' Fiori"
       ],
       "archivo": "Campo_dei_Fiori.jpg",
@@ -124,45 +113,11 @@
     },
     {
       "lugares": [
-        "Excursión a Florencia y Pisa"
-      ],
-      "archivo": "MauriceManuscript.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:MauriceManuscript.jpg",
-      "autor": "Mary Shelley (1797-1851)",
-      "licencia": "Public domain",
-      "licencia_url": "",
-      "dominio_publico": true
-    },
-    {
-      "lugares": [
         "Monti"
       ],
       "archivo": "Monti_-_via_Panisperna_1040339.JPG",
       "pagina": "https://commons.wikimedia.org/wiki/File:Monti_-_via_Panisperna_1040339.JPG",
       "autor": "Lalupa",
-      "licencia": "CC BY-SA 3.0",
-      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
-        "Excursión a Nápoles y Pompeya en tren"
-      ],
-      "archivo": "Notre-Dame_de_la_Garde_aerial_view_2020.jpeg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Notre-Dame_de_la_Garde_aerial_view_2020.jpeg",
-      "autor": "Earth777",
-      "licencia": "CC BY-SA 4.0",
-      "licencia_url": "https://creativecommons.org/licenses/by-sa/4.0",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
-        "Borgo Pio",
-        "Via dei Coronari"
-      ],
-      "archivo": "Passetto_di_Borgo_from_Castel_Sant'Angelo_01.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Passetto_di_Borgo_from_Castel_Sant%27Angelo_01.jpg",
-      "autor": "Chris 73",
       "licencia": "CC BY-SA 3.0",
       "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0",
       "dominio_publico": false
@@ -275,29 +230,6 @@
       "autor": "Gil",
       "licencia": "CC BY 2.0",
       "licencia_url": "https://creativecommons.org/licenses/by/2.0",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
-        "Excursión a Florencia en tren de alta velocidad",
-        "Excursión a la Costa Amalfitana"
-      ],
-      "archivo": "Vueling_A320neo_(EC-NFH)_@_MAN,_September_2020.jpg",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Vueling_A320neo_(EC-NFH)_@_MAN,_September_2020.jpg",
-      "autor": "Riik@mctr",
-      "licencia": "CC BY-SA 2.0",
-      "licencia_url": "https://creativecommons.org/licenses/by-sa/2.0",
-      "dominio_publico": false
-    },
-    {
-      "lugares": [
-        "Cripta de los Capuchinos"
-      ],
-      "archivo": "Wien_-_Kapuzinergruft,_Maria-Theresia-Gruft_(1).JPG",
-      "pagina": "https://commons.wikimedia.org/wiki/File:Wien_-_Kapuzinergruft,_Maria-Theresia-Gruft_(1).JPG",
-      "autor": "C.Stadler/Bwag",
-      "licencia": "CC BY-SA 3.0 at",
-      "licencia_url": "https://creativecommons.org/licenses/by-sa/3.0/at/deed.en",
       "dominio_publico": false
     }
   ],
