@@ -4,6 +4,8 @@ import type { TuAlojamiento } from '../lib/tuAlojamiento'
 import type { Importe } from '../lib/dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import { isManualRoute } from '../lib/manualPlan'
+import { withManualFreeTour } from '../lib/freeTourManual'
+import type { DestinationPlace } from '../lib/destinationPlacesApi'
 import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
   ChosenRestaurant,
@@ -381,7 +383,7 @@ interface RouteStoreState {
    * Guarda una reserva (entrada o excursión) y la FIJA en la ruta: el día lo pone su fecha (la pasa a ese día si estaba en otro) y la entrada
    * se coloca a su hora. Con una del mismo sitio, la sustituye. `excursion`: los datos de la excursión, para ponerla en su día.
    */
-  addReservation: (reservation: Reservation, excursion?: Excursion | null) => void
+  addReservation: (reservation: Reservation, excursion?: Excursion | null, freeTour?: DestinationPlace | null) => void
   /** Quita la reserva del viaje (no cancela nada fuera: la ventana lo avisa): la entrada o excursión vuelve a ser una más. */
   removeReservation: (id: string) => void
   /** Una venta del afiliado con el código de este viaje (o su cancelación). */
@@ -902,7 +904,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     )
     get().addBlankDayExcursion(dayId, excursion)
   },
-  addReservation: (reservation, excursion) => {
+  addReservation: (reservation, excursion, freeTour) => {
     set((state) => ({ reservations: [...state.reservations.filter((other) => !(other.kind === reservation.kind && other.refId === reservation.refId)), reservation] }))
     const route = get().route
     if (!route) return
@@ -911,7 +913,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       const unpinned = previous ? unpinReservedStops(route, previous.id) : route
       // Ruta a mano (Tanda 6y): ni el motor rehace el día ni la reserva grande mueve días; la parada se queda donde la puso el viajero, con la hora de la reserva.
       if (isManualRoute(route)) {
-        set({ route: placeReservedEntrance(unpinned, reservation) })
+        // (El Free Tour a mano, Tanda 6y2: la reserva crea su parada en el día de su fecha —o trae la que ya hay si el viajero cambió la fecha— y luego coge la hora y la marca.)
+        set({ route: placeReservedEntrance(withManualFreeTour(unpinned, reservation, freeTour ?? null), reservation) })
         return
       }
       // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días

@@ -82,6 +82,9 @@ export interface DestinationPlace {
   solo_entradas?: boolean
   /** Nombre con el que se pide la foto cuando no es el del lugar (el Free Tour usa la de su punto de encuentro). */
   photo_name?: string | null
+  /** Solo la entrada del Free Tour (Tanda 6y2): dónde se queda y qué recorre; con ellos entra en un día de una ruta a mano. */
+  meeting_point?: string | null
+  covers?: string[]
 }
 
 /**

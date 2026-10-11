@@ -58,8 +58,17 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
                     <p className="font-display text-[19px] leading-tight text-text">{item.title}</p>
                     <p className="mt-1 text-[13.5px] leading-snug text-text-soft">{item.text}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-3">
-                      {item.action && (
-                        <button type="button" onClick={() => onAction(item.action!)} className="rounded-full border border-accent px-3 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft">
+                      {(item.action || item.run) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (item.run) {
+                              item.run()
+                              onClose()
+                            } else onAction(item.action!)
+                          }}
+                          className="rounded-full border border-accent px-3 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft"
+                        >
                           {item.actionLabel}
                         </button>
                       )}

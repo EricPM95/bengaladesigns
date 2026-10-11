@@ -104,7 +104,8 @@ const codigoEntradas = fs.readFileSync('src/components/route/reservas/EntradasYF
 debe(/onBuy=\{\(\) => setFicha\(item\)\}/.test(codigoEntradas) && !/openTicketShop|buyHref/.test(codigoEntradas), '1 entradas', 'EntradasYFreeTour.tsx no abre la ficha con [Reservar] (o todavía abre la tienda)')
 {
   const dentroMas = codigoEntradas.slice(codigoEntradas.indexOf('masEntradas.map('))
-  debe(!/onAdd=/.test(dentroMas.slice(0, dentroMas.indexOf('))}'))), '1 entradas', 'las de «Ver n más» llevan «Añádela» (onAdd)')
+  // (Tanda 6y2: la única excepción es el Free Tour de una ruta a mano, que se añade como una reserva más: `onAdd={isManualRoute(route) && item.isFreeTour ? …}`.)
+  debe(!/onAdd=\{(?!isManualRoute\(route\) && item\.isFreeTour)/.test(dentroMas.slice(0, dentroMas.indexOf('))}'))), '1 entradas', 'las de «Ver n más» llevan «Añádela» (onAdd)')
 }
 const codigoFicha = fs.readFileSync('src/components/route/reservas/FichaEntrada.tsx', 'utf8')
 debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFicha), '1 entradas', 'FichaEntrada.tsx no abre la ficha en su pestaña «Entradas»')

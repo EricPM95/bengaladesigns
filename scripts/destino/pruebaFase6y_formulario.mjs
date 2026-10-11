@@ -317,13 +317,16 @@ for (const version of ['gratis', 'completa']) {
     } catch (error) {
       debe(false, '5 Free Tour', `${que}: la hoja del Free Tour falla con la ruta a mano: ${error.message}`)
     }
-    debe(freeTour.includes('¿A qué hora lo quieres?') && !/undefined|NaN/.test(freeTour), '5 Free Tour', `${que}: la hoja del Free Tour sale mal: ${plano(freeTour).slice(0, 150)}`)
+    // (Tanda 6y2: en una ruta a mano el Free Tour ya no abre la hoja del motor —«¿A qué hora lo quieres?», que rehace los días— sino la hoja de reserva, que espera al catálogo del destino y en el servidor no se pinta; lo
+    // que se comprueba es que no falla, que no enseña la hoja del motor y que no sale nada roto. La prueba de la reserva está en pruebaFase6y2_reservas.mjs.)
+    debe(!freeTour.includes('¿A qué hora lo quieres?') && !/undefined|NaN/.test(freeTour), '5 Free Tour', `${que}: la hoja del Free Tour sale mal: ${plano(freeTour).slice(0, 150)}`)
     debe(routeHasFreeTour(ruta) === false, '5 Free Tour', `${que}: la ruta a mano ya lleva Free Tour`)
     debe(JSON.stringify(useRouteStore.getState().route.days.map((d) => d.stops.length)) === JSON.stringify(ruta.days.map(() => 0)), '5 DÍAS', `${que}: pintar mete paradas en los días`)
     debe(llamadas.slice(antes).every((u) => !PELIGROSAS.test(u)), '4 sin motor', `${que}: pintar la ruta a mano llama a la generación (${llamadas.slice(antes).filter((u) => PELIGROSAS.test(u))})`)
   }
 }
-debe(freeTourAvailable(viajes[0].ruta) === false, '5 Free Tour', 'el Free Tour se ofrece en una ruta a mano sin días escritos')
+// (Tanda 6y2, pregunta 6: el Free Tour SÍ se ofrece en una ruta a mano —como una reserva más—, aunque no haya días escritos.)
+debe(freeTourAvailable(viajes[0].ruta) === true, '5 Free Tour', 'el Free Tour no se ofrece en una ruta a mano')
 // ¿Quién lee las experiencias? Todo lo que las lee tiene un valor por defecto cuando no hay (la lista de lo que usaba las experiencias, para el informe).
 {
   const lectores = []

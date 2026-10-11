@@ -8,6 +8,7 @@ import type { DayPlan, Route, Stop } from './types'
 import { dayOfReservation, type Reservation } from './bookings'
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
 import { isNumberedStop } from './stopKind'
+import { isManualRoute } from './manualPlan'
 
 /** De las 9:00 a las 22:00. */
 export const MINUTOS_DEL_DIA = (22 - 9) * 60
@@ -22,8 +23,11 @@ const TRAYECTO_MAXIMO_MIN = 30
 /** Lo que dura una parada: su duración, o 30 min si no la trae. */
 const minutosDe = (stop: Stop): number => (stop.durationMinutes && stop.durationMinutes > 0 ? stop.durationMinutes : 30)
 
-/** Lo que ocupa el día: las paradas, lo que se anda entre ellas y las dos comidas. */
-export function minutosDelDia(day: DayPlan): number {
+/**
+ * Lo que ocupa el día: las paradas, lo que se anda entre ellas y las dos comidas. `soloLoQueHay` (ruta a mano, Tanda 6y2): cuenta la comida y la cena SOLO si el día las tiene de verdad;
+ * un día a mano sin comida ni cena no suma la hora y cuarto que nunca ha puesto el viajero. Sin él, el día nuestro sin comidas anotadas cuenta las dos (como siempre).
+ */
+export function minutosDelDia(day: DayPlan, soloLoQueHay = false): number {
   const paradas = day.stops.filter((stop) => isNumberedStop(stop) && !stop.saltada)
   let total = paradas.reduce((suma, stop) => suma + minutosDe(stop), 0)
   for (let i = 1; i < paradas.length; i++) {
@@ -32,14 +36,15 @@ export function minutosDelDia(day: DayPlan): number {
     if (hasRealCoordinates(a) && hasRealCoordinates(b)) total += Math.min(TRAYECTO_MAXIMO_MIN, Math.round(haversineMeters(a, b) / METROS_POR_MINUTO))
   }
   const comidas = new Set((day.meals ?? []).map((meal) => meal.mealTime))
-  total += (comidas.has('lunch') || comidas.size === 0 ? COMIDA_MIN : 0) + (comidas.has('dinner') || comidas.size === 0 ? CENA_MIN : 0)
+  const porDefecto = !soloLoQueHay && comidas.size === 0
+  total += (comidas.has('lunch') || porDefecto ? COMIDA_MIN : 0) + (comidas.has('dinner') || porDefecto ? CENA_MIN : 0)
   return total
 }
 
 /** ¿Es un día completo? Solo cuenta un día con reserva (el viajero ya ha puesto una hora), y solo si lo que ocupa pasa de lo que cabe. */
 export function esDiaCompleto(route: Route, day: DayPlan, reservations: Reservation[]): boolean {
   const conReserva = reservations.some((reserva) => reserva.kind === 'entrada' && dayOfReservation(route, reserva)?.id === day.id)
-  return conReserva && minutosDelDia(day) > MINUTOS_DEL_DIA
+  return conReserva && minutosDelDia(day, isManualRoute(route)) > MINUTOS_DEL_DIA
 }
 
 export const TEXTO_DIA_COMPLETO = 'Hoy es un día completo: te recomendamos madrugar.'

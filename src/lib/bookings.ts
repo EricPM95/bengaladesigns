@@ -137,13 +137,14 @@ export function buildEntradasBloque(
   const stops = route.days.flatMap((day) => day.stops.filter((stop) => !stop.passThrough).map((stop) => ({ day, stop })))
   const freeTour = stops.find(({ stop }) => stop.isFreeTour) ?? null
   const build = (name: string): BloqueEntrada => {
-    const isFreeTour = Boolean(freeTour) && name === freeTour!.stop.name
+    // (Ruta a mano, Tanda 6y2: el Free Tour se reconoce por su nombre aunque todavía no esté en un día, para poder añadirlo como una reserva. En una ruta nuestra, solo si va en ella.)
+    const isFreeTour = (Boolean(freeTour) && name === freeTour!.stop.name) || (isManualRoute(route) && /^free tour\b/i.test(name))
     const group = essentials.find((entry) => entry.name === name)
     const placeNames = isFreeTour ? [name] : (group?.places ?? [name])
     // Por dentro: una parada que va por fuera («Castillo de Sant'Angelo», solo mirarlo) no lleva entrada.
     const visitada = stops.find(({ stop }) => placeNames.includes(stop.name) && !stop.isFreeTour && stop.visitMode !== 'fuera') ?? null
     const reservation = reservations.find((item) => item.kind === 'entrada' && (isFreeTour ? item.refId === 'Free Tour' : item.refId === name || item.placeNames.some((place) => placeNames.includes(place)))) ?? null
-    const inRoute = isFreeTour ? true : visitada != null
+    const inRoute = isFreeTour ? Boolean(freeTour) : visitada != null
     const stopDay = (isFreeTour ? freeTour?.day : visitada?.day) ?? null
     return { name, placeNames, isFreeTour, day: (reservation && dayOfReservation(route, reservation)) ?? stopDay, reservation, inRoute }
   }
