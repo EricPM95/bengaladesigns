@@ -41,7 +41,8 @@ export function useDatesChange(route: Route | null) {
   const onChangeDateRange = (dateRange: DateRange | undefined) => {
     if (!route) return
     // Solo los destinos curados se rehacen sin Claude; los demás guardan las fechas como siempre.
-    const curated = route.days.some((day) => day.timesAreFinal)
+    // (La ruta a mano, Tanda 6y, tampoco se rehace: sus días son del viajero, así que solo se guardan las fechas.)
+    const curated = route.planMode !== 'manual' && route.days.some((day) => day.timesAreFinal)
     if (!curated) {
       setRouteDateRange(dateRange)
       return

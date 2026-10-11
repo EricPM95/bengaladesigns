@@ -3,6 +3,7 @@ import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { runGeneration, type GenerationParams, type GenerationResumeState } from './routeGenerationOrchestrator'
 import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
+import { transportContextOf } from './manualRoute'
 import { applyRealStopSchedule } from './stopScheduling'
 import { enrichRoutePhotos } from './placePhoto'
 import { saveGenerationCheckpoint } from './tripPersistence'
@@ -63,18 +64,7 @@ export function useRouteGeneration(enabled: boolean) {
       : {
           destination,
           answers: store.answers as QuestionnaireAnswers,
-          transportContext: {
-            archetype: store.archetype,
-            is_region: store.is_region,
-            transport_option: store.transport_option,
-            vehicle_type: store.vehicle_type,
-            vehicle_ownership: store.vehicle_ownership,
-            accommodation_mode: store.accommodation_mode,
-            travel_mode: store.travel_mode,
-            pase_dominante: store.pase_dominante,
-            vehiculo_altamente_recomendado: store.vehiculo_altamente_recomendado,
-            travel_pass_confirmed: store.travel_pass_confirmed,
-          },
+          transportContext: transportContextOf(store),
           // Destino no curado: lo marcado de la sugerencia; curado: lo marcado del pool. Solo una tiene contenido.
           mustIncludePlaces: [
             ...store.suggested_places.filter((place) => store.selected_place_ids.includes(place.id)).map((place) => place.name),

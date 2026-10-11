@@ -56,6 +56,7 @@ import {
   withStopAt,
   withUserDaysBack,
 } from '../lib/freeDays'
+import { withManualDayNames } from '../lib/manualRoute'
 import { recuperarDestino } from '../lib/recuperarDestino'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
@@ -1038,12 +1039,15 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setRouteDateRange: (dateRange) =>
     set((state) => {
       if (!state.route) return state
-      return { route: { ...state.route, answers: { ...state.route.answers, dateRange } } }
+      const changed = { ...state.route, answers: { ...state.route.answers, dateRange } }
+      // Ruta a mano (Tanda 6y): los días que aún se llaman como los puso la app pasan a llamarse por las fechas nuevas.
+      return { route: withManualDayNames(changed, state.route.answers) }
     }),
   keepBookingsOnNextRoute: false,
   regenerateRouteForDates: (dateRange) =>
     set((state) => {
-      if (!state.route) return state
+      // La ruta a mano (Tanda 6y) nunca se rehace con el motor: nada de pantalla de carga ni de generación.
+      if (!state.route || state.route.planMode === 'manual') return state
       const route = state.route
       // Los días añadidos por el viajero no los planifica el motor: se quitan del final y vuelven en setRoute.
       const userDays = userAddedDays(route).length
