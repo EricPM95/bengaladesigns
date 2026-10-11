@@ -31,10 +31,7 @@ export function HoyAntes({ route, startIso, onPonFechas }: { route: Route; start
   if (!startIso) {
     return (
       <TarjetaOscura>
-        <span className="relative text-[#FFFDF8]/60" style={ojoMono}>
-          Antes del viaje
-        </span>
-        <span className="relative mt-1.5" style={{ font: "400 30px/1.1 'Instrument Serif',serif" }}>
+        <span className="relative" style={{ font: "400 30px/1.1 'Instrument Serif',serif" }}>
           Pon tus fechas para activar tu modo Hoy
         </span>
         <button type="button" onClick={onPonFechas} className="relative mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#FFFDF8] text-[14.5px] font-semibold text-[#1C2230]">
@@ -48,10 +45,7 @@ export function HoyAntes({ route, startIso, onPonFechas }: { route: Route; start
   return (
     <>
       <TarjetaOscura>
-        <span className="relative text-[#FFFDF8]/60" style={ojoMono}>
-          Antes del viaje
-        </span>
-        <span className="relative mt-1.5" style={{ font: "400 30px/1.1 'Instrument Serif',serif" }}>
+        <span className="relative" style={{ font: "400 30px/1.1 'Instrument Serif',serif" }}>
           Tu modo Hoy se activa el {FECHA_LARGA.format(isoToLocalDate(startIso)).replace(',', '')}
         </span>
       </TarjetaOscura>

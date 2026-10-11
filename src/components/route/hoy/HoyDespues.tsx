@@ -5,7 +5,7 @@ import { empezarViajeNuevo } from '../../../lib/nuevoViaje'
 import { Icono } from '../../ui/Icono'
 import { NewTripSheet } from '../../layout/NewTripSheet'
 import { TarjetaRecuerdos } from '../fotos/TarjetaRecuerdos'
-import { FRAMBUESA, ojoMono, TarjetaOscura } from './piezas'
+import { FRAMBUESA, TarjetaOscura } from './piezas'
 
 /**
  * HOY después del viaje (Tanda 6z3 y 6z6, diseño «Después del viaje»; solo de pago, como todo HOY): la tarjeta «Tu viaje a Roma» con sus días en fichas de fecha, «Guarda tus recuerdos» con las fotos del viaje
@@ -18,9 +18,6 @@ export function HoyDespues({ route, startIso }: { route: Route; startIso: string
   return (
     <>
       <TarjetaOscura brillo="oklch(0.55 0.11 150 / .35)" abajo>
-        <span className="relative text-[#FFFDF8]/60" style={ojoMono}>
-          Después del viaje
-        </span>
         <span className="relative" style={{ font: "400 38px/1 'Instrument Serif',serif" }}>
           Tu viaje a <em style={{ color: 'oklch(0.78 0.11 15)' }}>{route.destination}</em>
         </span>

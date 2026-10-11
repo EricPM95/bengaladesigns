@@ -8,17 +8,16 @@ export interface FichaResumen {
 }
 
 /**
- * LO QUE FALTA, EN UN SOLO SITIO (Tanda 6z6b, decidido por Eric el 10-oct-2026): la tarjeta CLARA de RESERVAS, aparte y debajo de la oscura de la cuenta atrás. «Tu viaje a Roma · 1 de 3 listo», la barra y una ficha
+ * LO QUE FALTA, EN UN SOLO SITIO (Tanda 6z6b, decidido por Eric el 10-oct-2026): la tarjeta CLARA de RESERVAS, aparte y debajo de la oscura de la cuenta atrás. «1 de 3 listo» (sin título delante: la tarjeta oscura de encima ya dice «Tu viaje a Roma…»; Tanda 6z6f), la barra y una ficha
  * redonda por bloque. De pago: Llegada y vuelta · Alojamiento · Entradas 1/8 («x de 3»); gratis: Alojamiento · Entradas («x de 2»; la llegada y la vuelta son de pago). Una ficha hecha va en verde con ✓. Al tocar
  * una, la pantalla baja a su bloque y lo abre (`pedir(bloque)`). Es la ÚNICA tarjeta que dice lo que falta: ni la oscura ni ninguna otra línea repite «Te faltan…» o «Lo tienes todo listo».
  */
-export function ResumenViaje({ ciudad, fichas, onFicha }: { ciudad: string; fichas: FichaResumen[]; onFicha: (bloque: BloqueReservasId) => void }) {
+export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFicha: (bloque: BloqueReservasId) => void }) {
   const listas = fichas.filter((ficha) => ficha.hecho).length
   const todas = listas === fichas.length
   return (
     <div className="flex flex-col gap-2.5 rounded-[20px] bg-[#FFFDF8] px-3.5 pb-[13px] pt-3.5" style={{ border: '1px solid rgba(28,34,48,.07)' }} data-blk="resumen">
       <span style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>
-        Tu viaje a {ciudad} ·{' '}
         <em style={{ color: todas ? GR : 'oklch(0.5 0.17 5)' }}>
           {listas} de {fichas.length} listo
         </em>

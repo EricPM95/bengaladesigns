@@ -61,10 +61,7 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
     <TarjetaOscura>
       {estado?.phase === 'during' ? (
         <>
-          <span className="relative text-[#FFFDF8]/60" style={ojoMono}>
-            Durante el viaje
-          </span>
-          <span className="relative mt-1.5" style={{ font: "400 32px/1.05 'Instrument Serif',serif" }}>
+          <span className="relative" style={{ font: "400 32px/1.05 'Instrument Serif',serif" }}>
             Estás en <em style={{ color: 'oklch(0.78 0.11 15)' }}>{estado.context.day.city || route.destination}</em>
           </span>
           <span className="relative text-[#FFFDF8]/80" style={{ font: "500 13px 'Geist Mono',monospace" }}>
@@ -73,10 +70,7 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
         </>
       ) : estado?.phase === 'before' && dias !== null ? (
         <>
-          <span className="relative text-[#FFFDF8]/60" style={ojoMono}>
-            Antes del viaje
-          </span>
-          <span className="relative mt-1.5 text-[#FFFDF8]/90" style={{ font: "400 22px/1.1 'Instrument Serif',serif" }}>
+          <span className="relative text-[#FFFDF8]/90" style={{ font: "400 22px/1.1 'Instrument Serif',serif" }}>
             Tu viaje a {route.destination} empieza en
           </span>
           <span className="relative flex items-baseline gap-2.5">
@@ -86,10 +80,7 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
         </>
       ) : (
         <>
-          <span className="relative text-[#FFFDF8]/60" style={ojoMono}>
-            Antes del viaje
-          </span>
-          <span className="relative mt-1.5" style={{ font: "400 30px/1.05 'Instrument Serif',serif" }}>
+          <span className="relative" style={{ font: "400 30px/1.05 'Instrument Serif',serif" }}>
             Tu viaje a <em style={{ color: 'oklch(0.78 0.11 15)' }}>{route.destination}</em>
             {mes ? ` · ${mes}` : ''}
           </span>

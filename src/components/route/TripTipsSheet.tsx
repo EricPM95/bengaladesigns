@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { TIP_LABELS, useDestinationTips, type DestinationTip } from '../../lib/destinationTips'
 import { useRouteStore } from '../../store/useRouteStore'
@@ -16,6 +17,7 @@ interface TripTipsSheetProps {
  * destino (data/dias/<destino>/_tips.json). Cabecera oscura con la bombilla, «8 COSAS QUE UN ROMANO TE DIRÍA» y «Lo que
  * ojalá te hubieran contado»; cada tip en su tarjeta con el número grande, la etiqueta de color, el título y el texto.
  * Los que tienen que ver con algo que se reserva llevan «Ver entradas de tu viaje ›».
+ * Se pinta en el `body` con un portal (Tanda 6z6f): dentro del panel de RUTA la cabecera y la barra de abajo quedaban por encima y no se veía a pantalla completa.
  */
 export function TripTipsSheet({ open, destination, onClose }: TripTipsSheetProps) {
   const data = useDestinationTips(destination, open)
@@ -38,7 +40,8 @@ export function TripTipsSheet({ open, destination, onClose }: TripTipsSheetProps
     setMode('bookings')
   }
 
-  return (
+  if (typeof document === 'undefined') return null
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -86,7 +89,8 @@ export function TripTipsSheet({ open, destination, onClose }: TripTipsSheetProps
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }
 

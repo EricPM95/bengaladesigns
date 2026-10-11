@@ -190,7 +190,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3.5 md:max-w-[1120px]">
             {/* Arriba del todo (Tanda 6z6b): la tarjeta oscura con SOLO la cuenta atrás (después del viaje no sale) y, aparte y debajo, la clara con lo que falta por reservar (solo con un destino). */}
             <TarjetaCuentaAtras route={route} onPonFechas={abrirFechas} />
-            {unDestino && !viajeAcabado && <ResumenViaje ciudad={route.destination} fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
+            {unDestino && !viajeAcabado && <ResumenViaje fichas={fichas} onFicha={(bloque) => pedir(bloque)} />}
 
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <div className="flex min-w-0 flex-col gap-3.5">

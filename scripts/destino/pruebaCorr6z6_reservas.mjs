@@ -128,7 +128,7 @@ for (const [clave, route] of Object.entries(rutas)) {
         const clara = html.slice(iResumen, html.indexOf('data-blk="', iResumen + 12))
         const claraTexto = aTexto(clara)
         const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [])
-        debe(new RegExp(`Tu viaje a Roma ·\\s*0 de ${total} listo`).test(claraTexto.replace(/\n/g, ' ')), '1b clara', `${nombre}: no dice «Tu viaje a Roma · 0 de ${total} listo» (${plano(claraTexto)})`)
+        debe(new RegExp(`0 de ${total} listo`).test(claraTexto.replace(/\n/g, ' ')) && !/Tu viaje a/.test(claraTexto), '1b clara', `${nombre}: no dice solo «0 de ${total} listo», sin «Tu viaje a…» delante (${plano(claraTexto)})`)
         const fichas = [...clara.matchAll(/data-ficha="(\w+)"/g)].map((x) => x[1])
         const esperadas = version === 'completa' ? ['llegada', 'aloj', 'entradas'] : ['aloj', 'entradas']
         debe(fichas.join() === esperadas.join(), '1b clara', `${nombre}: las fichas son ${fichas.join()} y deberían ser ${esperadas.join()}`)

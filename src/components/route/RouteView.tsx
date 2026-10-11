@@ -151,7 +151,8 @@ export function RouteView() {
   const dayDetailOpen = mode === 'days' && activeDayId !== null
   // Con el mapa recogido a mano queda una franja arriba para volver a abrirlo (PARA_CODE_UI_DIAS, 3); si lo tapa otra pantalla, no hace falta.
   const mapCollapsedByUser = canCollapseMap && mapCollapsed && !(dayDetailOpen && dayOverlayOpen) && !(mode === 'explore' && exploreFullScreen)
-  const mapHidden = (canCollapseMap && mapCollapsed) || (dayDetailOpen && dayOverlayOpen) || (mode === 'explore' && exploreFullScreen) || (mode === 'route' && destinationOverlayOpen)
+  // HOY (de pago) no lleva el mapa grande de arriba (Tanda 6z6f): ocupa toda la pantalla entre la cabecera y la barra, y ya tiene su mapa pequeño en «Siguiente parada». Igual en los tres momentos.
+  const mapHidden = mode === 'today' || (canCollapseMap && mapCollapsed) || (dayDetailOpen && dayOverlayOpen) || (mode === 'explore' && exploreFullScreen) || (mode === 'route' && destinationOverlayOpen)
 
   const handleDragStart = () => {
     const onMouseMove = (event: MouseEvent) => {
