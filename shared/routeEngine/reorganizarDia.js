@@ -41,6 +41,7 @@ const catalogos = new WeakMap()
 function construirCatalogo(written, destData) {
   const days = []
   const sinGente = new Set()
+  const paseoLugares = new Set()
   const indice = new Map()
   const addIndice = (text, lugar) => { if (text) indice.set(norm(text), lugar) }
   const noches = []
@@ -57,6 +58,7 @@ function construirCatalogo(written, destData) {
         addIndice(stop.lugar, stop.lugar)
         if (stop.titulo) addIndice(stop.titulo, stop.lugar)
         if (stop.empieza_dia || /sin gente/i.test(`${stop.doc ?? ''} ${stop.titulo ?? ''}`)) sinGente.add(stop.lugar)
+        if (stop.no_quita_noche) paseoLugares.add(stop.lugar)
       }
       if (base.noche?.lista?.length) noches.push(base.noche.lista)
     }
@@ -65,7 +67,7 @@ function construirCatalogo(written, destData) {
   }
   const places = new Map((destData.places ?? []).map((place) => [place.name, place]))
   const nightNames = new Set([...(destData.night_experiences ?? []).map((n) => norm(n.name)), ...noches.flat().map(norm)])
-  return { days, sinGente, indice, places, noches, nightNames, ids: days.map((d) => d.id), tourName: destData.default_free_tour?.name ?? null }
+  return { days, sinGente, paseoLugares, indice, places, noches, nightNames, ids: days.map((d) => d.id), tourName: destData.default_free_tour?.name ?? null }
 }
 
 function catalogo(written, destData) {
@@ -316,7 +318,9 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
     g.miembros = g.miembros.filter((id) => {
       const lugar = info.get(id).lugar
       const entrada = entradasLista.find((e) => e.lugar === lugar)
-      if (entrada?.no_quita_noche && info.get(id).hora == null) { paseoCena.push(id); return false }
+      // El paseo de antes de cenar, donde el documento lo escribe así; o ese mismo sitio en un grupo de menos de 3 paradas del viajero (donde el documento lo pone de mañana, como en el
+      // D7, hay un grupo de verdad con él: con 3 o más se queda como está escrito).
+      if ((entrada?.no_quita_noche || (cat.paseoLugares.has(lugar) && g.miembros.length < 3)) && info.get(id).hora == null) { paseoCena.push(id); return false }
       return true
     })
   }
@@ -396,10 +400,35 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
     for (const g of reservadosDelTramo) poner(g, franja)
     for (const g of mejorOrden(delTramo.filter((g) => g.hora == null), desde)) poner(g, franja)
   }
-  tramo('manana')
-  const finMananaPos = salida.length
-  tramo('tarde')
-  const finTardePos = salida.length
+  // La mañana y la tarde se ordenan juntas (el camino entero de la mañana a la tarde y hasta el paseo de antes de cenar), con lo reservado primero en su parte.
+  const perms = (items) => (items.length <= 1 ? [items] : items.flatMap((x, i) => perms([...items.slice(0, i), ...items.slice(i + 1)]).map((r) => [x, ...r])))
+  const fijos = (f) => lista.filter((g) => g.franja === f && g.hora != null).sort((a, b) => a.hora - b.hora || a.key.localeCompare(b.key))
+  const libres = (f) => lista.filter((g) => g.franja === f && g.hora == null).sort((a, b) => a.key.localeCompare(b.key))
+  const libresM = libres('manana')
+  const libresT = libres('tarde')
+  let finMananaPos = 0
+  if (perms(libresM).length * perms(libresT).length <= 40000 && libresM.length <= 8 && libresT.length <= 8) {
+    const meta = paseoCena.length ? info.get(paseoCena.slice().sort((a, b) => a.localeCompare(b))[0]).coords : null
+    let mejorCombo = null
+    let mejorCoste = Infinity
+    for (const pm of perms(libresM)) for (const pt of perms(libresT)) {
+      const secuencia = [...fijos('manana'), ...pm, ...fijos('tarde'), ...pt]
+      let punto = desde
+      let coste = 0
+      for (const g of secuencia) { coste += dist(punto, g.inicio); punto = g.fin ?? punto }
+      coste += dist(punto, meta)
+      if (coste < mejorCoste - 1) { mejorCoste = coste; mejorCombo = { pm, pt } }
+    }
+    for (const g of fijos('manana')) poner(g, 'manana')
+    for (const g of mejorCombo.pm) poner(g, 'manana')
+    finMananaPos = salida.length
+    for (const g of fijos('tarde')) poner(g, 'tarde')
+    for (const g of mejorCombo.pt) poner(g, 'tarde')
+  } else {
+    tramo('manana')
+    finMananaPos = salida.length
+    tramo('tarde')
+  }
   if (paseoCena.length) {
     const ordenPaseo = paseoCena.slice().sort((a, b) => a.localeCompare(b))
     for (const id of ordenPaseo) { salida.push(id); desde = info.get(id).coords ?? desde }

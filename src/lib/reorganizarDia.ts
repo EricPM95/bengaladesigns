@@ -5,6 +5,8 @@
 import type { DayPlan, Route } from './types'
 import type { Reservation } from './bookings'
 import { isFreeDay } from './freeDays'
+import { useRouteStore } from '../store/useRouteStore'
+import { useAddFlowStore, withUndo } from '../store/useAddFlowStore'
 
 export interface OrdenDelDia {
   /** Los mismos ids de las paradas del día, en el orden nuevo. */
@@ -35,6 +37,27 @@ function paradaParaElServidor(stop: DayPlan['stops'][number], reservations: Rese
     reservedTime: reservation?.time ?? stop.reservationTime ?? undefined,
     coordinates: stop.coordinates && Number.isFinite(stop.coordinates.lat) ? [stop.coordinates.lat, stop.coordinates.lng] : undefined,
   }
+}
+
+/**
+ * Lo que hace el botón «Reorganizar este día»: pide el orden, lo pone en el día (con «Día reorganizado» y «Deshacer») o dice «Tu día ya está en buen orden» y no toca nada.
+ * Devuelve qué pasó: 'cambiado', 'buen_orden' o 'error' (no se pudo pedir: no cambia nada).
+ */
+export async function reorganizarElDia(dayId: string): Promise<'cambiado' | 'buen_orden' | 'error'> {
+  const { route, reservations, reorganizeDay } = useRouteStore.getState()
+  const day = route?.days.find((other) => other.id === dayId)
+  if (!route || !day) return 'error'
+  const orden = await pedirOrdenDelDia(route, day, reservations)
+  if (!orden) {
+    useAddFlowStore.setState({ toast: { message: 'Ahora no se ha podido reorganizar. Prueba de nuevo.', previous: null, id: Date.now() } })
+    return 'error'
+  }
+  if (!orden.changed) {
+    useAddFlowStore.setState({ toast: { message: 'Tu día ya está en buen orden', previous: null, id: Date.now() } })
+    return 'buen_orden'
+  }
+  withUndo('Día reorganizado', () => reorganizeDay(dayId, orden.order, orden.mealAfter))
+  return 'cambiado'
 }
 
 /** El orden nuevo del día, o null si no se pudo pedir (sin conexión, destino sin días escritos): entonces no cambia nada. */
