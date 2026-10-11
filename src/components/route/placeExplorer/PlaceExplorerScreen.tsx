@@ -29,6 +29,8 @@ import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
+import { EtiquetaBarrio } from '../../ui/EtiquetaBarrio'
+import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { explorarConCercania } from '../../../lib/explorarDePago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
@@ -350,6 +352,8 @@ export function PlaceExplorerScreen({
   // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
   // El Free Tour del destino, que solo sale bajo «Entradas» (Tanda 6z): se pide aquí (el cliente lo cachea por destino).
   const { freeTourEntry } = useDestinationPool(destination, open)
+  /** La etiqueta de barrio de cada lugar («Trastevere», Tanda 6y4): la de su zona en los datos del destino. */
+  const etiquetasDeBarrio = useDestinationExcursions(destination).etiquetasPorSitio
   const places = useMemo(() => {
     // Elegir varios (Tanda 6y2, pregunta 9): solo salen los sitios que se pueden marcar (las atracciones). Fuera restaurantes, baños, fuentes y el Free Tour (que no se marca: es una reserva); en EXPLORAR normal siguen.
     if (picking) return allPlaces.filter((place) => place.kind === 'place')
@@ -1223,8 +1227,10 @@ export function PlaceExplorerScreen({
                         <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
                           {place.name}
                         </span>
-                        {(isRecommended(place) || closedToday(place) || (visitable && alreadyInRoute)) && (
+                        {(isRecommended(place) || closedToday(place) || (visitable && alreadyInRoute) || (visitable && etiquetasDeBarrio[place.name])) && (
                           <span className="flex items-center gap-1.5">
+                            {/* La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos. Sin etiqueta, el renglón no sale. */}
+                            {visitable && <EtiquetaBarrio etiqueta={etiquetasDeBarrio[place.name]} />}
                             {visitable && alreadyInRoute && (
                               <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
                                 {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). */}

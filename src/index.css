@@ -39,6 +39,20 @@
   --accent-gold: 236 150 40;
   --accent-red: 204 39 46;
   --accent-lilac: 236 226 250;
+  /* EL LILA DE LA ETIQUETA DE BARRIO (Tanda 6y4, «Trastevere»): UN solo sitio (estos tripletes; el componente EtiquetaBarrio los lee). Tono oklch 285, a 36° del morado
+     y del azul de los días (src/lib/dayColors.ts: oklch 321 y 249) y a 100° del frambuesa (oklch 5); además va en píldora suave (luz alta, croma bajo) mientras que los
+     colores de los días son círculos y pines sólidos y saturados. Convertidos de OKLCH a sRGB con la matriz OKLab exacta:
+       --barrio-lila-soft  = oklch(0.93 0.045 285) -> 228 228 255  (fondo de la píldora)
+       --barrio-lila       = oklch(0.40 0.13 285)  -> 67 56 137    (texto y borde fuerte)
+       --barrio-lila-borde = oklch(0.78 0.09 285)  -> 177 176 239  (borde fino)
+     Contraste del texto: sobre su fondo 7,78 · sobre la tarjeta 9,54 (mínimo 4,5: bien). Noche más abajo. */
+  --barrio-lila: 67 56 137;
+  --barrio-lila-soft: 228 228 255;
+  --barrio-lila-borde: 177 176 239;
+  /* La variante de noche, definida una vez aquí: la usa el modo noche (`.dark`) y las tarjetas oscuras de la app (HOY), que son oscuras también de día. */
+  --barrio-lila-noche: 199 198 255;
+  --barrio-lila-noche-soft: 43 41 75;
+  --barrio-lila-noche-borde: 81 77 133;
   /* Lo reservado (Reservas): verde. */
   --accent-green: 47 125 79;
   --accent-green-soft: 226 240 230;
@@ -64,6 +78,10 @@
   --accent-gold: 247 172 77;
   --accent-red: 248 113 113;
   --accent-lilac: 46 38 64;
+  /* Noche: texto oklch(0.85 0.09 285) -> 199 198 255 sobre fondo oklch(0.30 0.06 285) -> 43 41 75 (8,51; sobre la tarjeta de noche 10,27); borde oklch(0.45 0.09 285) -> 81 77 133. */
+  --barrio-lila: var(--barrio-lila-noche);
+  --barrio-lila-soft: var(--barrio-lila-noche-soft);
+  --barrio-lila-borde: var(--barrio-lila-noche-borde);
   --accent-green: 96 190 135;
   --accent-green-soft: 28 58 42;
   --text: 243 238 228;

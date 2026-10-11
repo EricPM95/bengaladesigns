@@ -9,6 +9,8 @@
 export interface TransitStop {
   linea: string
   parada: string
+  /** Cómo se llega desde allí al lugar («A 5 min caminando por Via del Tritone»), si el dato lo dice (ficha curada). */
+  nota?: string
   /** Tranvía (ficha curada): va con los buses pero se pinta con el icono del tranvía. */
   kind?: 'tram'
 }

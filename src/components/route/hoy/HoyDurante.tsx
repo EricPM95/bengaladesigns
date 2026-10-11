@@ -9,6 +9,7 @@ import { displayStopName } from '../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../lib/distanceMock'
 import { buildGoogleMapsUrl, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { Icono } from '../../ui/Icono'
+import { EtiquetaBarrioDeSitio } from '../../ui/EtiquetaBarrio'
 import { BotonFoto } from '../fotos/BotonFoto'
 import { TusFotosDeHoy } from '../fotos/TusFotosDeHoy'
 import { RainAlert } from '../today/RainAlert'
@@ -205,9 +206,11 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span style={{ font: "400 17px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(stop.name)}</span>
                   <LineaDeHorario horario={horarioDe(stop)} />
+                  <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />
                 </span>
+                {/* (Tanda 6y4: la hora de la entrada sale UNA vez por pantalla. En la gratis, aquí; en la de pago, en «Tu entrada a… · 10:30 ✓» de abajo.) */}
                 {reserva && (
-                  <span className="flex h-[26px] flex-none items-center gap-1 rounded-full px-[9px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.38 0.1 150)', font: "600 12px 'Geist Mono',monospace" }}>
+                  <span data-entrada-hora className="flex h-[26px] flex-none items-center gap-1 rounded-full px-[9px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.38 0.1 150)', font: "600 12px 'Geist Mono',monospace" }}>
                     <Icono nombre="hecho" size={11} grosor={2.8} />
                     {reserva.time}
                   </span>
@@ -237,6 +240,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
               <span style={{ ...ojoMono, color: 'oklch(0.78 0.11 15)' }}>Siguiente parada · {numeros.get(siguiente.id)}</span>
               <span style={{ font: "400 34px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
               <LineaDeHorario horario={horarioDe(siguiente)} oscuro />
+              <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro className="self-start" />
               <div className="flex items-center gap-2">
                 <span className="min-w-0 flex-1 text-[13px] leading-[1.4] text-[#FFFDF8]/75">
                   {minutos !== null ? `${minutos} min andando${!ubicacion && anterior ? ` · desde ${displayStopName(anterior.name)}` : ''}` : ubicacionEstado === 'no' ? 'No hemos podido ver tu ubicación.' : 'Toca «Ubicación» para ver cuánto falta.'}
@@ -319,7 +323,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
         </div>
       )}
 
-      {entradasDeHoy.map((entrada) => (
+      {/* (Tanda 6y4: la hora de una entrada, UNA vez por pantalla: mientras el aviso «Tienes la entrada reservada a las…» está abierto, esa entrada no repite su hora aquí abajo.) */}
+      {entradasDeHoy.filter((entrada) => !(confirmarReservada && entrada.id === reservaSiguiente?.id)).map((entrada) => (
         <div key={entrada.id} className="flex min-h-[60px] flex-none overflow-hidden rounded-[18px]" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)' }}>
           <span className="flex w-[50px] flex-none items-center pl-[11px] text-white" style={{ background: VERDE, clipPath: 'polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)' }}>
             <Icono nombre="reservas" size={18} />
@@ -356,6 +361,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                     {displayStopName(stop.name)}
                   </span>
                   {saltada ? <span className="text-[11px] leading-[1.3] text-text/40">Saltada</span> : <LineaDeHorario horario={horarioDe(stop)} />}
+                  {!saltada && <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />}
                 </span>
                 {saltada && (
                   <button type="button" onClick={() => devolverALaRuta(stop)} className="flex h-8 flex-none items-center gap-1 rounded-full border border-text/15 px-2.5 text-[11.5px] font-semibold text-text/70">

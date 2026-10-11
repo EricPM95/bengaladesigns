@@ -25,9 +25,9 @@
       "frase": "Busca el paraguas o el cartel del tour"
     },
     "linea_reserva": {
-      "generico": "recoger las entradas y pasar el control"
+      "generico": "hay cola de control"
     },
-    "_linea": "Tanda 6f, punto 1: la tarjeta «Llegada a…» ya no existe; solo si el viajero tiene la reserva puesta (o el Free Tour añadido), la tarjeta de la visita lleva una línea arriba: «🕘 Entrada a las 9:00 · llega a las 8:30: el control de seguridad y la cola de entrada». Sin reserva puesta (también el «Turno recomendado»), no sale."
+    "_linea": "Tanda 6f, punto 1: la tarjeta «Llegada a…» ya no existe; solo si el viajero tiene la reserva puesta (o el Free Tour añadido), la ficha de la visita lleva una línea bajo «✓ Tu entrada: 9:00» (Tanda 6y4, punto 6: la hora de la entrada sale una sola vez y sin hora calculada): «Llega unos 30 minutos antes: el control de seguridad y la cola de entrada» (15 minutos en el Free Tour). Sin reserva puesta (también el «Turno recomendado»), no sale."
   },
   "solo_explorar": {
     "_nota": "Lugares de nivel 2 sin sitio en los días, a propósito, con el motivo: salen en Explorar y en Añadir parada.",

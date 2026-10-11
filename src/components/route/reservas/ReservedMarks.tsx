@@ -48,13 +48,16 @@ export function ReservedMarks({ className = '', compact = false, time = null }: 
 }
 
 /** Los datos de lo reservado: la hora (de recogida o de entrada), el punto de encuentro si lo hay y el número de reserva. */
-export function ReservedDetails({ reservation, timeLabel }: { reservation: Reservation; timeLabel: string }) {
+export function ReservedDetails({ reservation, timeLabel }: { reservation: Reservation; timeLabel: string | null }) {
   return (
     <dl className="mt-2 space-y-0.5 text-caption text-text-soft">
-      <div className="flex gap-1.5">
-        <dt className="font-semibold text-text">{timeLabel}</dt>
-        <dd>{reservation.time}</dd>
-      </div>
+      {/* (Tanda 6y4: sin `timeLabel` la hora no se repite —la entrada la dice una sola vez, «✓ Tu entrada: 10:30»—.) */}
+      {timeLabel && (
+        <div className="flex gap-1.5">
+          <dt className="font-semibold text-text">{timeLabel}</dt>
+          <dd>{reservation.time}</dd>
+        </div>
+      )}
       {reservation.returnTime && (
         <div className="flex gap-1.5">
           <dt className="font-semibold text-text">Vuelta</dt>

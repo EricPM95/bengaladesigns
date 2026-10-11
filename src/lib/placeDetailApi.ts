@@ -157,8 +157,8 @@ export function toNearbyTransit(detail: PlaceDetail): NearbyTransit {
   for (const entry of detail.transport ?? []) {
     if (!entry?.stop) continue
     const linea = entry.line ?? (entry.lines?.length ? entry.lines.join(', ') : '')
-    const parada = entry.note ? `${entry.stop} · ${entry.note}` : entry.stop
-    ;(entry.type === 'metro' ? metro : bus).push({ linea, parada, ...(entry.type === 'tram' ? { kind: 'tram' as const } : {}) })
+    // (Tanda 6y4: la nota —«A 5 min caminando por Via del Tritone»— va aparte, `nota`, para la ficha nueva; antes iba pegada a la parada.)
+    ;(entry.type === 'metro' ? metro : bus).push({ linea, parada: entry.stop, ...(entry.note ? { nota: entry.note } : {}), ...(entry.type === 'tram' ? { kind: 'tram' as const } : {}) })
   }
   return { metro, bus }
 }

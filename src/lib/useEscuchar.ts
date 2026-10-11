@@ -100,7 +100,7 @@ export interface Escucha {
 }
 
 /** El control de una lectura. `crearEnunciado` fabrica el `SpeechSynthesisUtterance` (en el navegador, el de verdad). */
-export function crearEscucha(sintesis: SintesisLike, crearEnunciado: (texto: string) => any, alCambiar: (estado: EstadoEscucha) => void): Escucha {
+export function crearEscucha(sintesis: SintesisLike, crearEnunciado: (texto: string) => any, alCambiar: (estado: EstadoEscucha) => void, alAvanzar?: (hechos: number, total: number) => void): Escucha {
   let estado: EstadoEscucha = 'parado'
   // Cada lectura tiene su número: lo que avisen las lecturas anteriores (que se cancelan) ya no cuenta.
   let numero = 0
@@ -116,6 +116,7 @@ export function crearEscucha(sintesis: SintesisLike, crearEnunciado: (texto: str
       sintesis.cancel()
       const mio = ++numero
       poner('hablando')
+      alAvanzar?.(0, trozos.length)
       trozos.forEach((trozo, indice) => {
         const enunciado = crearEnunciado(trozo)
         if (voz) {
@@ -123,6 +124,7 @@ export function crearEscucha(sintesis: SintesisLike, crearEnunciado: (texto: str
           enunciado.lang = voz.lang
         } else enunciado.lang = 'es-ES'
         const fin = () => {
+          if (mio === numero) alAvanzar?.(indice + 1, trozos.length)
           if (mio === numero && indice === trozos.length - 1) poner('parado')
         }
         enunciado.onend = fin
@@ -178,13 +180,15 @@ export function useVozEnEspañol(): VozLike | null {
 export function useEscuchar(texto: string, clave: string) {
   const voz = useVozEnEspañol()
   const [estado, setEstado] = useState<EstadoEscucha>('parado')
+  /** Cuánto se ha leído (0 a 1), por trozos de frases: para la barra de progreso de la ficha. */
+  const [progreso, setProgreso] = useState(0)
   const escuchaRef = useRef<Escucha | null>(null)
 
   const escucha = useCallback((): Escucha | null => {
     if (escuchaRef.current) return escuchaRef.current
     const sintesis = sintesisDelNavegador()
     if (!sintesis) return null
-    escuchaRef.current = crearEscucha(sintesis, (trozo) => new SpeechSynthesisUtterance(trozo), setEstado)
+    escuchaRef.current = crearEscucha(sintesis, (trozo) => new SpeechSynthesisUtterance(trozo), setEstado, (hechos, total) => setProgreso(total > 0 ? hechos / total : 0))
     return escuchaRef.current
   }, [])
 
@@ -199,6 +203,7 @@ export function useEscuchar(texto: string, clave: string) {
   return {
     hayVoz: voz !== null,
     estado,
+    progreso: estado === 'parado' ? 0 : progreso,
     escuchar: () => escucha()?.hablar(texto, voz),
     pausar: () => escucha()?.pausar(),
     seguir: () => escucha()?.seguir(),

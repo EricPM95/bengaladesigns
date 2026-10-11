@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
 import { Icono, IconoRuta } from '../../ui/Icono'
+import { EtiquetaBarrio } from '../../ui/EtiquetaBarrio'
 
 /**
  * Piezas del día abierto en DIAS con el diseño "Trazo Itinerario": UNA sola tarjeta para todo lo que
@@ -40,6 +41,8 @@ interface TrazoCardProps {
   /** Píldoras de tipo de lugar (del JSON curado). */
   /** `green`: lo reservado (Reservada ✓ / Fijada), en verde. */
   tags?: { label: string; kind: StopKind; green?: boolean }[]
+  /** La etiqueta de barrio del lugar («Trastevere», en lila; Tanda 6y4), la de su zona en los datos; null = sin etiqueta. */
+  barrio?: string | null
   photoUrl?: string | null
   /** Sin foto de verdad (comida, llegada): la franja de color se alarga y el hueco va en degradado. */
   noPhoto?: boolean
@@ -64,7 +67,7 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
-export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab }: TrazoCardProps) {
+export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], tags = [], barrio = null, photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const hasPhoto = Boolean(photoUrl) && !noPhoto
   const night = variant === 'night'
@@ -124,7 +127,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
             ))}
           </span>
         )}
-        {tags.length > 0 && (
+        {(tags.length > 0 || barrio) && (
           <span className="mt-0.5 flex flex-wrap gap-1">
             {tags.map((tag) => (
               <span
@@ -135,6 +138,8 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
                 {tag.label}
               </span>
             ))}
+            {/* La etiqueta de barrio («Trastevere», Tanda 6y4): en lila, la última. */}
+            <EtiquetaBarrio etiqueta={barrio} />
           </span>
         )}
         {children}

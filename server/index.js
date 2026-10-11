@@ -3,6 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
+import { etiquetasDeBarrio, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
@@ -4474,6 +4475,9 @@ app.post('/api/destination-excursions', (req, res) => {
     mapa_alojamiento: data?.destination_config?.mapa_alojamiento ?? null,
     // Tanda 6z2: la moneda del destino (dato de cada destino, «EUR» en Roma): se ofrece en los campos de precio.
     moneda: data?.moneda ?? null,
+    // Tanda 6y4: la etiqueta de barrio de cada lugar (la de su zona, «Trastevere») y el bloque «No necesitas entrada» de los sitios que cobran por acercarse (la tasa de la Fontana de Trevi). Datos del destino.
+    etiquetas_por_sitio: etiquetasDeBarrio(data),
+    sin_entrada_por_sitio: sinEntradaPorSitio(data),
   }
   if (!data || (options.length === 0 && entradas.length === 0)) {
     res.json({ found: false, from_days: null, excursions: [], entradas: [], entradas_por_sitio: entradasPorSitio, ...reservasExtra, day_name_example: dayNameExample })

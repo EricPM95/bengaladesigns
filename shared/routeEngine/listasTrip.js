@@ -1270,10 +1270,13 @@ export function planListasTrip(args) {
       const info = written.destino?.llegadas ?? {}
       const entrada = toMin(item.hora)
       const llega = entrada - L.min
-      if (item.tipo === 'tour') return { texto: `🕘 Free Tour a las ${horaCorta(entrada)} · llega a las ${horaCorta(llega)} a ${info.free_tour?.punto ?? 'el punto de encuentro'}.${info.free_tour?.frase ? ` ${info.free_tour.frase}` : ''}`, hora: horaCorta(llega), minutos: L.min }
-      const motivo = (info.por_lugar?.[item.lugar] ?? '').split('.')[0].trim()
-      const frase = motivo ? motivo.charAt(0).toLowerCase() + motivo.slice(1) : info.linea_reserva?.generico ?? 'recoger las entradas y pasar el control'
-      return { texto: `🕘 Entrada a las ${horaCorta(entrada)} · llega a las ${horaCorta(llega)}: ${frase}`, hora: horaCorta(llega), minutos: L.min }
+      // Tanda 6y4, punto 6: la hora de la entrada sale UNA sola vez en la ficha («✓ Tu entrada: 10:30»); esta línea va debajo y SIN hora calculada: «Llega unos 30 minutos antes: …» (15 en el Free Tour).
+      // (`hora` y `minutos` siguen yendo en la nota: son los de la cuenta atrás de HOY, nunca se enseñan.)
+      if (item.tipo === 'tour') return { texto: `Llega unos ${L.min} minutos antes a ${info.free_tour?.punto ?? 'el punto de encuentro'}.${info.free_tour?.frase ? ` ${info.free_tour.frase}.` : ''}`, hora: horaCorta(llega), minutos: L.min }
+      // (Solo el principio del motivo, hasta el primer punto o dos puntos: «la cola del control de seguridad», no la frase entera con su segunda parte.)
+      const motivo = (info.por_lugar?.[item.lugar] ?? '').split(/[.:]/)[0].trim()
+      const frase = motivo ? motivo.charAt(0).toLowerCase() + motivo.slice(1) : info.linea_reserva?.generico ?? 'hay cola de control'
+      return { texto: `Llega unos ${L.min} minutos antes: ${frase}`, hora: horaCorta(llega), minutos: L.min }
     }
     final.forEach((item, index) => {
       if (item.kind === 'stop') {
