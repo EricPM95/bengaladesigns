@@ -34,10 +34,10 @@ function durationOf(route: Route, reservation: Reservation): number {
 type ShortNames = Record<string, string> | undefined
 
 /** El nombre corto con artículo de una reserva («los Museos»): el suyo o el de los datos del destino; null si no hay (se usa el nombre completo). */
-const shortOf = (reservation: Reservation, shortNames: ShortNames): string | null => reservation.shortName?.trim() || shortNames?.[reservation.refId]?.trim() || null
+export const shortOf = (reservation: Reservation, shortNames: ShortNames): string | null => reservation.shortName?.trim() || shortNames?.[reservation.refId]?.trim() || null
 
 /** «a los Museos», «al Coliseo» (a + el = al). */
-const withA = (short: string): string => `a ${short}`.replace(/^a el /, 'al ')
+export const withA = (short: string): string => `a ${short}`.replace(/^a el /, 'al ')
 
 /** «tu Free Tour» o «tu entrada a los Museos» (sin nombre corto, «tu entrada a Museos Vaticanos y Capilla Sixtina»). */
 const labelOf = (reservation: Reservation, shortNames: ShortNames): string => {

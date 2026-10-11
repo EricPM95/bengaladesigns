@@ -3,6 +3,11 @@ import { createPortal } from 'react-dom'
 import type { Route } from '../../../lib/types'
 import { aplicarFreeTour } from '../../../lib/rebuildDay'
 import { Icono } from '../../ui/Icono'
+import { isManualRoute } from '../../../lib/manualPlan'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { useDestinationPool } from '../../../lib/useDestinationPool'
+import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
+import { AddReservationSheet } from './AddReservationSheet'
 
 /** Las horas del Free Tour (Tanda 6u): el de siempre es el de las 10:00; hay un día escrito para el de las 12:00, el de las 15:00 y el de las 17:00 (el D3), y el de las 21:00 va en la noche del primer día. */
 const FRANJAS = [
@@ -20,6 +25,8 @@ export function routeHasFreeTour(route: Route): boolean {
 
 /** El Free Tour solo se ofrece en destinos con días escritos y con al menos 2 días de ciudad (el de 1 día no lo lleva). */
 export function freeTourAvailable(route: Route): boolean {
+  // Ruta a mano (Tanda 6y2): el Free Tour se añade como una reserva más, en cualquier día de ciudad; no hace falta que haya días escritos.
+  if (isManualRoute(route)) return route.days.some((day) => !day.isReturnLeg)
   return route.days.filter((day) => !day.isReturnLeg && day.curatedId).length >= 2
 }
 
@@ -28,6 +35,24 @@ export function freeTourAvailable(route: Route): boolean {
  * Misma hoja de abajo que la de reservas (AddReservationSheet).
  */
 export function FreeTourSheet({ route, onClose }: { route: Route; onClose: () => void }) {
+  return isManualRoute(route) ? <FreeTourComoReserva route={route} onClose={onClose} /> : <FreeTourConMotor route={route} onClose={onClose} />
+}
+
+/**
+ * El Free Tour en una ruta a mano (Tanda 6y2, pregunta 6): sin motor que rehaga días, se añade como cualquier reserva —la misma hoja de «Entrada · elige día y hora»— y va al día de su fecha como una parada más, con su hora y sin precio.
+ * Si el viaje ya lleva su reserva del Free Tour, la hoja sale con ella para cambiarla o quitarla.
+ */
+function FreeTourComoReserva({ route, onClose }: { route: Route; onClose: () => void }) {
+  const reservations = useRouteStore((state) => state.reservations)
+  const { freeTourEntry, resolved } = useDestinationPool(route.destination, true)
+  if (!resolved) return null
+  const nombre = freeTourEntry?.name ?? 'Free Tour'
+  const existing = reservations.find((item) => item.kind === 'entrada' && item.refId === FREE_TOUR_REF) ?? null
+  const currentDay = route.days.find((day) => day.stops.some((stop) => stop.isFreeTour)) ?? null
+  return <AddReservationSheet route={route} target={{ kind: 'entrada', refId: FREE_TOUR_REF, name: nombre, placeNames: [nombre], currentDayId: currentDay?.id ?? null, existing }} onClose={onClose} />
+}
+
+function FreeTourConMotor({ route, onClose }: { route: Route; onClose: () => void }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(false)
   const added = routeHasFreeTour(route)

@@ -4,6 +4,7 @@ import { useSyncStore } from '../store/useSyncStore'
 import { useNoticesStore, type NoticeKind } from '../store/useNoticesStore'
 import { reservationOverlaps } from '../lib/reservationOverlaps'
 import { reservasEnCierre } from '../lib/reservaEnCierre'
+import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia } from '../lib/reservaFueraDeDia'
 import { useDatosDeHorario } from '../lib/horarioDeParada'
 import { useDestinationExcursions } from '../lib/destinationExcursions'
 import { avisosDeLluvia, diasAMirar } from '../lib/avisosDeLluvia'
@@ -20,6 +21,8 @@ export interface AppNotice {
   /** Un botón dentro del aviso (el nombre de la acción que lo resuelve); la pantalla decide qué hace. */
   action?: 'open-dates' | 'open-reservas'
   actionLabel?: string
+  /** Un botón que hace algo en el momento (Tanda 6y2: «Pasarlo al mié 15»): la campana lo ejecuta y se cierra. Sale con `actionLabel`. */
+  run?: () => void
   /** Leído = ya no cuenta. Los errores y los avisos de estado nunca están leídos: cuentan hasta que se arreglan. */
   read: boolean
   /** Se puede marcar como leído (info y amigos). */
@@ -34,6 +37,7 @@ export interface AppNotice {
  *  1. «Cambios sin guardar» (error de guardado en la nube): cuenta mientras no se guarde.
  *  2. «Tu viaje es de N días y ahora tienes M» (antes, una línea bajo «+ Añadir día»): cuenta mientras haya más días que fechas.
  *  2b. «Dos reservas coinciden» (Tanda 6v): cuenta mientras se pisen; se va solo cuando se arregla.
+ *  2b2. «Tu entrada al Coliseo es el mié 15, pero en tu ruta el Coliseo está el mar 14.» (Tanda 6y2; solo ruta a mano): una por reserva fuera de su día, con su botón; no mueve nada hasta que se pulsa.
  *  2c. «Mañana llueve en Roma por la tarde» / «Hoy llueve en Roma por la tarde» (Tanda 6z6e; gratis y de pago): uno por día del viaje, con la previsión de nuestro servidor; sin previsión, ninguno.
  *  3. El aviso de contexto de la ruta (por qué es como es: invierno, pocos días…): se marca como leído (antes se cerraba con la ×).
  *  4. Los que empujen otras partes (`useNoticesStore.push`), p. ej. los de amigos.
@@ -94,6 +98,10 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
       }
       for (const cierre of reservasEnCierre(route, reservations, datosDeHorario, nombresCortos)) {
         items.push({ id: cierre.id, kind: 'warning', title: 'Tu reserva cae con el sitio cerrado', text: cierre.text, action: 'open-reservas', actionLabel: 'Ver mi reserva', read: false, canMarkRead: false })
+      }
+      // Ruta a mano (Tanda 6y2): una reserva cuyo sitio no está en el día de su fecha. Avisa y ofrece el botón; no mueve nada sola.
+      for (const fuera of reservasFueraDeSuDia(route, reservations, nombresCortos)) {
+        items.push({ id: fuera.id, kind: 'warning', title: 'Tu reserva no está en su día', text: fuera.text, run: () => void aplicarAvisoFueraDeDia(fuera), actionLabel: fuera.actionLabel, read: false, canMarkRead: false })
       }
       if (route.contextBanner) {
         items.push({

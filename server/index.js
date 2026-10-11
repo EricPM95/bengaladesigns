@@ -4300,6 +4300,10 @@ app.post('/api/destination-places', (req, res) => {
           hours_card: [ft.meeting_point ? `Punto de encuentro: ${ft.meeting_point}.` : null, Array.isArray(ft.disponibilidad?.horas) && ft.disponibilidad.horas.length ? `Sale a las ${ft.disponibilidad.horas.join(' y a las ')}.` : null, Array.isArray(ft.covers) && ft.covers.length ? `Recorre: ${ft.covers.join(', ')}.` : null].filter(Boolean).join(' ') || null,
           reservation: 'recomendada',
           ticket_info: ft.tip ? [ft.tip] : null,
+          // Ruta a mano (Tanda 6y2): el Free Tour entra en el día como una parada más con estos datos (punto de encuentro, lo que recorre, su consejo).
+          meeting_point: ft.meeting_point ?? null,
+          covers: Array.isArray(ft.covers) ? ft.covers : [],
+          tip: ft.tip ?? null,
         }
       : null
   res.json({ found: true, places: [...places, ...restaurants, ...toilets, ...fountains], free_tour_entry: freeTourEntry, excursions: excursionsAvailablePayload(data, null, data.excursions?.options ?? []) })

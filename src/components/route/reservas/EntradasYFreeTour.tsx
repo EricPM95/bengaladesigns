@@ -5,6 +5,8 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
 import { elDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { isManualRoute } from '../../../lib/manualPlan'
+import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
 import { BloqueShell, EstadoBloque, FlechaBloque, GR, ICONOS, IconoBloque, LineaReservada, tituloBloqueStyle } from './BloqueReservas'
 import { EntradaCard } from './EntradaCard'
 import { FichaEntrada } from './FichaEntrada'
@@ -19,6 +21,27 @@ export function metaReserva(route: Route, reservation: { dateIso: string | null;
   // (Tanda 6z2) El precio, al final, si el viajero lo puso: «11 ago · 10:00 · 54 €». Sin precio, como siempre.
   const precio = leerImporte(reservation.precio)
   return `${fecha} · ${prefijoHora}${reservation.time}${precio ? ` · ${formatoImporte(precio)}` : ''}`
+}
+
+/** El aviso de una reserva fuera de su día, bajo su línea verde: el texto y el botón que lo arregla (Tanda 6y2). */
+function AvisoFueraDeDiaTarjeta({ aviso }: { aviso: ReservaFueraDeDia }) {
+  const [hecho, setHecho] = useState(false)
+  return (
+    <div className="flex flex-col items-start gap-2 rounded-[14px] px-3.5 py-3" style={{ background: 'color-mix(in srgb, rgb(var(--accent-gold)) 14%, transparent)' }} role="status">
+      <span className="text-[12.5px] leading-snug text-text">{aviso.text}</span>
+      <button
+        type="button"
+        disabled={hecho}
+        onClick={() => {
+          setHecho(true)
+          void aplicarAvisoFueraDeDia(aviso).finally(() => setHecho(false))
+        }}
+        className="h-8 whitespace-nowrap rounded-full border border-accent px-3.5 text-[12.5px] font-semibold text-accent transition-colors hover:bg-accent-soft disabled:opacity-50"
+      >
+        {aviso.actionLabel}
+      </button>
+    </div>
+  )
 }
 
 /** «En tu ruta el miércoles 11» (con fechas) o «En tu ruta el día 2». */
@@ -51,6 +74,9 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
     placeNames: item.placeNames,
     currentDayId: item.day?.id ?? null,
   })
+  // Ruta a mano (Tanda 6y2): una reserva cuyo sitio no está en el día de su fecha lleva su aviso con su botón en su propia tarjeta (y el mismo en la campana).
+  const fuera = reservasFueraDeSuDia(route, reservations, info.nombresCortos)
+  const avisoDe = (reservationId: string) => fuera.find((aviso) => aviso.reservation.id === reservationId) ?? null
   const etiquetaDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Free Tour' : 'Entrada')
   const botonDe = (item: BloqueEntrada) => (item.isFreeTour ? 'Reservar Free Tour' : 'Reservar entrada')
 
@@ -87,7 +113,10 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                 </span>
                 {enRuta.map((item) =>
                   item.reservation ? (
-                    <LineaReservada key={item.name} nombre={item.name} meta={metaReserva(route, item.reservation)} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
+                    <div key={item.name} className="flex flex-col gap-2">
+                      <LineaReservada nombre={item.name} meta={metaReserva(route, item.reservation)} onChange={() => setTarget({ ...targetOf(item), existing: item.reservation })} />
+                      {avisoDe(item.reservation.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(item.reservation.id)!} />}
+                    </div>
                   ) : (
                     <EntradaCard
                       key={item.name}
@@ -111,7 +140,16 @@ export function EntradasYFreeTour({ route, info, abierto, onToggle }: { route: R
                 </button>
                 {verMas &&
                   masEntradas.map((item) => (
-                    <EntradaCard key={item.name} eyebrow={etiquetaDe(item)} name={item.name} buyLabel={botonDe(item)} onBuy={() => setFicha(item)} reservedTime={null} />
+                    <EntradaCard
+                      key={item.name}
+                      eyebrow={etiquetaDe(item)}
+                      name={item.name}
+                      buyLabel={botonDe(item)}
+                      onBuy={() => setFicha(item)}
+                      reservedTime={null}
+                      // (Ruta a mano, Tanda 6y2: el Free Tour se añade como cualquier reserva —«¿Ya la tienes? Añádela», con su hora—; va al día de su fecha. Las demás entradas, desde «+ Añadir parada».)
+                      onAdd={isManualRoute(route) && item.isFreeTour ? () => setTarget(targetOf(item)) : undefined}
+                    />
                   ))}
               </>
             )}

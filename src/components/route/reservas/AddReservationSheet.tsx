@@ -14,6 +14,7 @@ import { CampoPrecio } from '../../ui/CampoPrecio'
 import { usePrecioEditable } from '../../../lib/useMoneda'
 import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
+import { useDestinationPool } from '../../../lib/useDestinationPool'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -144,6 +145,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const [reading, setReading] = useState(false)
   const [readError, setReadError] = useState<string | null>(null)
   const [read, setRead] = useState(false)
+  // Los datos del Free Tour del destino (Tanda 6y2): en una ruta a mano, la reserva del Free Tour crea su parada con ellos.
+  const { freeTourEntry } = useDestinationPool(route.destination, target.refId === 'Free Tour' && isManualRoute(route))
   const hasDates = Boolean(route.answers.dateRange)
   const days = useMemo(() => route.days.filter((day) => !day.isReturnLeg), [route.days])
   const isExcursion = target.kind === 'excursion'
@@ -445,7 +448,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       useNoticesStore.getState().push({ id: `reserva-aviso-${reservation.id}`, kind: 'info', title: 'Tu reserva está guardada', text: aviso })
     }
     try {
-      addReservation(reservation, target.excursion ?? null)
+      addReservation(reservation, target.excursion ?? null, freeTourEntry)
     } catch (error) {
       // Si algo falla al moverla, la reserva se guarda en su día, sale un aviso y la app sigue.
       console.error('[AddReservationSheet] no se pudo mover', error)

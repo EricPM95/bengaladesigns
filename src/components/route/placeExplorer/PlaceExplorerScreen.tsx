@@ -339,15 +339,18 @@ export function PlaceExplorerScreen({
   /** Ruta a mano (Tanda 6y): la lista va en el orden de la ruta a mano y lo que ya está en otro día lleva «En tu día 2». */
   const manualOrder = isManualRoute(route)
   /** Solo las atracciones se pueden marcar en el modo elegir varios. */
+  const picking = Boolean(pickMode)
   const pickable = (place: DestinationPlace) => Boolean(pickMode) && place.kind === 'place'
   const pickedNames = useMemo(() => new Set(pickMode?.selected ?? []), [pickMode?.selected])
   // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
   // El Free Tour del destino, que solo sale bajo «Entradas» (Tanda 6z): se pide aquí (el cliente lo cachea por destino).
   const { freeTourEntry } = useDestinationPool(destination, open)
   const places = useMemo(() => {
+    // Elegir varios (Tanda 6y2, pregunta 9): solo salen los sitios que se pueden marcar (las atracciones). Fuera restaurantes, baños, fuentes y el Free Tour (que no se marca: es una reserva); en EXPLORAR normal siguen.
+    if (picking) return allPlaces.filter((place) => place.kind === 'place')
     const base = toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')
     return freeTourEntry ? [...base, freeTourEntry] : base
-  }, [allPlaces, toiletsEnabled, freeTourEntry])
+  }, [allPlaces, toiletsEnabled, freeTourEntry, picking])
   const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
   /** De la zona de la comida o la cena que se está cambiando. */
   const isRecommended = (place: DestinationPlace) => Boolean(recommendedZone) && place.kind === 'restaurant' && mainZone(place.zone_label) === mainZone(recommendedZone)
@@ -777,7 +780,7 @@ export function PlaceExplorerScreen({
   const inRouteCount = route ? places.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).length : 0
   const toiletsAvailable = toiletsEnabled && places.some((place) => isOsmPoint(place))
   const fountainsAvailable = toiletsEnabled && places.some((place) => place.kind === 'fountain')
-  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode)) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
+  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode)) && (chip.id !== 'restaurantes' || !pickMode) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
   const iconBox = (name: ExploreIconName, size = 15) => (
     <Icono nombre={EXPLORE_ICONOS[name]} size={size} />
   )
