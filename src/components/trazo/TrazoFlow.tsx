@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { ExperienceCategoryId, Place } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { classifyInBackground } from '../../lib/classifyInBackground'
@@ -24,13 +24,12 @@ import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
 import { StepElegir } from './StepElegir'
 import { StepManualSummary } from './StepManualSummary'
-import { AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, shouldSuggestExperiences, stepAfterChoice, stepCounterLabel, visibleStepNamesFor, usesExperiences, type PlanChoice } from './planChoice'
+import { STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, shouldSuggestExperiences, stepAfterChoice, stepCounterLabel, visibleStepNamesFor, usesExperiences, type PlanChoice } from './planChoice'
 import { buildManualRoute, transportContextOf } from '../../lib/manualRoute'
 import './trazo.css'
 import { Icono } from '../ui/Icono'
 
 /** Lo que tarda el aviso corto de la pantalla de elegir antes de pasar a la pantalla siguiente. */
-const CHOICE_TOAST_MS = 700
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 /** Posiciones y ritmos al azar de las partículas de estación (una vez por carga). */
@@ -84,22 +83,12 @@ export function TrazoFlow() {
   const [curatedPool, setCuratedPool] = useState<PoolPlace[] | null | false>(null)
   /** Tanda 6y: quién monta el itinerario. Hasta que el viajero elige en la pantalla de elegir, ninguno. */
   const [plan, setPlan] = useState<PlanChoice | null>(null)
-  /** La tarjeta que se acaba de tocar: se queda pulsada y sale el aviso corto mientras se pasa a la pantalla siguiente. */
-  const [picked, setPicked] = useState<PlanChoice | null>(null)
-  const pickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { w: vw, h: vh } = useViewport()
 
   const go = (next: number) => {
     setStep(next)
     setMaxStep((current) => Math.max(current, next))
   }
-
-  useEffect(
-    () => () => {
-      if (pickTimer.current) clearTimeout(pickTimer.current)
-    },
-    [],
-  )
 
   useEffect(() => {
     loadLand().then(setLand)
@@ -166,20 +155,15 @@ export function TrazoFlow() {
     go(STEP.compania)
   }
 
-  /** La pantalla de elegir: el aviso corto y, enseguida, a las experiencias (hazla por mí) o al resumen corto (la hago yo). */
+  /** La pantalla de elegir (Tanda 6y4): al tocar una tarjeta se pasa AL MOMENTO a la pantalla siguiente (experiencias o resumen corto), sin aviso ni espera. */
   const choosePlan = (choice: PlanChoice) => {
-    if (picked) return
     // Las sugerencias de experiencias (y, tras ellas, la precarga de lugares) se piden SOLO con «hazla por mí»: la ruta a mano no las usa (Tanda 6y2).
     if (shouldSuggestExperiences(choice) && destinationName) {
       const state = store.getState()
       if (!state.suggested_experiences_loading && state.suggested_experiences.length === 0) suggestExperiencesInBackground(destinationName)
     }
-    setPicked(choice)
-    pickTimer.current = setTimeout(() => {
-      setPlan(choice)
-      setPicked(null)
-      go(stepAfterChoice(choice))
-    }, CHOICE_TOAST_MS)
+    setPlan(choice)
+    go(stepAfterChoice(choice))
   }
 
   /** «Empezar mi ruta»: la ruta con los días vacíos, sin Claude, sin motor y sin la caché de rutas. */
@@ -213,8 +197,6 @@ export function TrazoFlow() {
   const back = () => {
     const previous = backStepFrom(step)
     if (previous === null) return
-    if (pickTimer.current) clearTimeout(pickTimer.current)
-    setPicked(null)
     go(previous)
   }
   const noBack = backStepFrom(step) === null
@@ -289,7 +271,7 @@ export function TrazoFlow() {
       : ''
   // Con la ruta a mano no hay experiencias ni lugares: ni en la barra, ni en el panel, ni en las fichas.
   const withExperiences = usesExperiences(plan)
-  const stepNames = visibleStepNamesFor(plan, step, picked)
+  const stepNames = visibleStepNamesFor(plan, step)
   const nExp = withExperiences ? (answers.experiencesPositive?.length ?? 0) : 0
   const expLabel = step > STEP.experiencias && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
   const nPlaces = useRouteStore((state) => (withExperiences ? state.selected_curated_place_names.length + state.selected_place_ids.length : 0))
@@ -599,7 +581,7 @@ export function TrazoFlow() {
               onNext={() => go(STEP.elegir)}
             />,
           )}
-          {screen(STEP.elegir, <StepElegir destinationName={destinationName ?? dest?.name ?? ''} days={answers.days} picked={picked} onPick={choosePlan} />)}
+          {screen(STEP.elegir, <StepElegir destinationName={destinationName ?? dest?.name ?? ''} days={answers.days} picked={null} onPick={choosePlan} />)}
           {/* «Quiero hacerla yo» no pasa por las experiencias ni por los lugares, ni monta ninguna ruta por detrás (Tanda 6y). */}
           {withExperiences &&
             screen(
@@ -631,30 +613,6 @@ export function TrazoFlow() {
               />,
             )}
           {plan === 'manual' && screen(STEP.resumenCorto, <StepManualSummary origin={origin} destination={dest} onStart={startManualRoute} />)}
-
-          {picked && (
-            <div
-              role="status"
-              style={{
-                position: 'absolute',
-                left: '50%',
-                bottom: 40,
-                zIndex: 12,
-                height: 40,
-                padding: '0 16px',
-                borderRadius: 999,
-                background: INK,
-                color: '#F3EEE4',
-                display: 'flex',
-                alignItems: 'center',
-                font: "500 13px 'Geist'",
-                whiteSpace: 'nowrap',
-                animation: 'trazo-toast .3s ease both',
-              }}
-            >
-              {AVISO_DE_ELEGIR[picked]}
-            </div>
-          )}
         </div>
       </div>
     </div>

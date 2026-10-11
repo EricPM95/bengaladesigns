@@ -2,12 +2,13 @@ import { useState } from 'react'
 import type { DateRange, QuestionnaireAnswers } from '../../lib/types'
 import { seasonOfMonth } from '../../lib/season'
 import { daysBetweenInclusive, isoToLocalDate, localDateToIso } from '../../lib/dateRange'
-import { ACCENT, AMBER, Cta, Em, GhostButton, INK, MONO, SERIF, SEASON_FX, Sheet, Title, panelStyle } from './trazoUi'
+import { TrazoCalendar, CALENDAR_MAX_DAYS } from './TrazoCalendar'
+import { ACCENT, AMBER, Cta, Em, GhostButton, INK, MONO, SERIF, SEASON_FX, Sheet, Title } from './trazoUi'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-/** Como hasta ahora: como mucho 21 días. */
-const MAX_DAYS = 21
+/** Como mucho 21 días (el del calendario compartido). */
+const MAX_DAYS = CALENDAR_MAX_DAYS
 
 interface StepDatesProps {
   destinationName: string
@@ -25,42 +26,13 @@ interface StepDatesProps {
  * Guarda lo mismo que antes: dateRange + days + month + season, o days + month + season sin fechas.
  */
 export function StepDates({ destinationName, days, dateRange, month, onChange, onPreviewMonth, onNext }: StepDatesProps) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const initial = dateRange ? isoToLocalDate(dateRange.start) : today
-  const [cy, setCy] = useState(initial.getFullYear())
-  const [cm, setCm] = useState(initial.getMonth())
   const [start, setStart] = useState<number | null>(dateRange ? isoToLocalDate(dateRange.start).getTime() : null)
   const [end, setEnd] = useState<number | null>(dateRange ? isoToLocalDate(dateRange.end).getTime() : null)
   const [sheet, setSheet] = useState(false)
   const [flexDays, setFlexDays] = useState(!dateRange && days ? days : 5)
   const [flexMonth, setFlexMonth] = useState<number | null>(!dateRange && month !== undefined ? month : null)
 
-  const first = new Date(cy, cm, 1)
-  const offset = (first.getDay() + 6) % 7
-  const daysInMonth = new Date(cy, cm + 1, 0).getDate()
-  const atMin = cy === today.getFullYear() && cm === today.getMonth()
-  const maxEnd = start ? start + (MAX_DAYS - 1) * 864e5 : null
-
-  const clickDay = (ts: number) => {
-    if (!start || end || ts < start) {
-      setStart(ts)
-      setEnd(null)
-      // En cuanto se elige el día de llegada, sale al momento el efecto de esa temporada.
-      onPreviewMonth(new Date(ts).getMonth())
-      return
-    }
-    if (ts === start) return
-    if (maxEnd && ts > maxEnd) return
-    setEnd(ts)
-  }
-
-  const fd = (t: number) => {
-    const x = new Date(t)
-    return `${x.getDate()} ${MS[x.getMonth()]}`
-  }
   const nights = start && end ? Math.round((end - start) / 864e5) : 0
-  const summary = start && end ? `${fd(start)} → ${fd(end)}` : start ? `${fd(start)} → elige la vuelta` : 'Toca el día de salida'
 
   const confirmRange = () => {
     if (!start || !end) return
@@ -80,12 +52,6 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
     setTimeout(onNext, 250)
   }
 
-  const cells: { key: string; label: string; ts: number | null }[] = []
-  for (let i = 0; i < offset; i++) cells.push({ key: `e${i}`, label: '', ts: null })
-  for (let i = 1; i <= daysInMonth; i++) cells.push({ key: `d${i}`, label: String(i), ts: new Date(cy, cm, i).getTime() })
-
-  const navBtn = { width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(28,34,48,.12)', background: 'transparent', color: INK, cursor: 'pointer' }
-
   return (
     <>
       <div className="trazo-eyebrow" style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>03 — Fechas</div>
@@ -93,92 +59,7 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
         ¿Cuándo llegas a <Em>{destinationName}</Em>?
       </Title>
       <div style={{ flex: 1, minHeight: 12 }} />
-      <div style={{ ...panelStyle, background: 'rgba(255,255,255,0.90)', padding: '16px 14px 14px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 12px' }}>
-          <button
-            type="button"
-            aria-label="Mes anterior"
-            onClick={() => {
-              if (atMin) return
-              if (cm === 0) {
-                setCm(11)
-                setCy(cy - 1)
-              } else setCm(cm - 1)
-            }}
-            style={{ ...navBtn, opacity: atMin ? 0.3 : 1 }}
-          >
-            ‹
-          </button>
-          <span style={{ font: `400 26px ${SERIF}`, color: INK }}>
-            {MONTHS[cm]} {cy}
-          </span>
-          <button
-            type="button"
-            aria-label="Mes siguiente"
-            onClick={() => {
-              if (cm === 11) {
-                setCm(0)
-                setCy(cy + 1)
-              } else setCm(cm + 1)
-            }}
-            style={navBtn}
-          >
-            ›
-          </button>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: 3, font: `500 10px ${MONO}`, letterSpacing: '.1em', color: 'rgba(28,34,48,.5)', textAlign: 'center', paddingBottom: 6 }}>
-          {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((d) => (
-            <span key={d}>{d}</span>
-          ))}
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: 3 }}>
-          {cells.map((cell) => {
-            if (cell.ts == null) return <span key={cell.key} />
-            const ts = cell.ts
-            const past = ts < today.getTime()
-            const tooFar = Boolean(start && !end && maxEnd && ts > maxEnd)
-            const disabled = past || tooFar
-            const isEdge = ts === start || ts === end
-            const inRange = Boolean(start && end && ts > start && ts < end)
-            return (
-              <button
-                key={cell.key}
-                type="button"
-                disabled={disabled}
-                onClick={() => clickDay(ts)}
-                style={{
-                  height: 42,
-                  border: 'none',
-                  borderRadius: inRange ? 6 : 12,
-                  background: isEdge ? AMBER : inRange ? 'rgba(255,190,30,.16)' : 'transparent',
-                  color: isEdge ? '#FFFFFF' : INK,
-                  font: `${isEdge ? 600 : 400} 14px 'Geist'`,
-                  cursor: disabled ? 'default' : 'pointer',
-                  opacity: disabled ? 0.28 : 1,
-                  transition: 'background .25s,color .25s',
-                }}
-              >
-                {cell.label}
-              </button>
-            )
-          })}
-        </div>
-        <div
-          style={{
-            marginTop: 12,
-            padding: '12px 4px 0',
-            borderTop: '1px solid rgba(28,34,48,.08)',
-            font: "400 14px 'Geist'",
-            color: start ? INK : 'rgba(28,34,48,.6)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: 8,
-          }}
-        >
-          <span>{summary}</span>
-          <span style={{ font: `500 12px ${MONO}`, color: ACCENT }}>{nights ? `${nights + 1} días` : ''}</span>
-        </div>
-      </div>
+      <TrazoCalendar dateRange={dateRange} onSelect={(from, to) => { setStart(from); setEnd(to) }} onPreviewMonth={onPreviewMonth} />
       <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
         <GhostButton onClick={() => setSheet(true)} style={{ flex: 1 }}>
           Aún no sé mis fechas

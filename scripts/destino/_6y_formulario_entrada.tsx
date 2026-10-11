@@ -3,7 +3,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { StepElegir } from '../../src/components/trazo/StepElegir'
 import { StepManualSummary } from '../../src/components/trazo/StepManualSummary'
-import { AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences } from '../../src/components/trazo/planChoice'
+import { STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences } from '../../src/components/trazo/planChoice'
 import { DayList } from '../../src/components/route/DayList'
 import { ReservasPanel } from '../../src/components/route/ReservasPanel'
 import { PlaceExplorerScreen } from '../../src/components/route/placeExplorer/PlaceExplorerScreen'
@@ -17,7 +17,7 @@ import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { ICONOS } from '../../src/lib/iconos'
 
 export {
-  createElement, renderToStaticMarkup, StepElegir, StepManualSummary, AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences, DayList, ReservasPanel,
+  createElement, renderToStaticMarkup, StepElegir, StepManualSummary, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences, DayList, ReservasPanel,
   PlaceExplorerScreen, FreeTourSheet, routeHasFreeTour, freeTourAvailable, useRouteStore, buildManualRoute, manualDayName, manualTripDays, transportContextOf, withManualDayNames, rehacerDiasSinTocar,
   rehacerDiaConReservas, aplicarFreeTour, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, ICONOS,
 }

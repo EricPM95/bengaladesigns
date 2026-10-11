@@ -51,8 +51,6 @@ export function rangoDelViaje(route: Route): string {
  */
 export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const pago = pagoActivo()
-  const setMode = useRouteStore((state) => state.setMode)
-  const setActiveDayId = useRouteStore((state) => state.setActiveDayId)
   const setFlightAdjust = useRouteStore((state) => state.setFlightAdjust)
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const reservations = useRouteStore((state) => state.reservations)
@@ -100,8 +98,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
 
   /** «¿Llegas o te vas otro día? Cambia las fechas del viaje»: el cambio de fechas que ya existe (el calendario de la cabecera del mapa, en Días). */
   const abrirFechas = () => {
-    setActiveDayId(null)
-    setMode('days')
     useDatesCalendarStore.getState().request()
   }
 

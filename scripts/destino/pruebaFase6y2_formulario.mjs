@@ -143,7 +143,7 @@ const pintaDias = (route) => {
   debe(llamadasSug.length === 1, '3 sugerencias', `TrazoFlow lanza la sugerencia de experiencias en ${llamadasSug.length} sitios (debe ser 1)`)
   const ini = sinComentarios.indexOf('const choosePlan')
   const cuerpo = sinComentarios.slice(ini, sinComentarios.indexOf('\n  }\n', ini))
-  debe(ini > 0 && /if \(shouldSuggestExperiences\(choice\) && destinationName\)[\s\S]*suggestExperiencesInBackground\(destinationName\)/.test(cuerpo) && cuerpo.indexOf('suggestExperiencesInBackground') < cuerpo.indexOf('setPicked(choice)'), '3 sugerencias', 'la sugerencia no se lanza en choosePlan, con shouldSuggestExperiences(choice)')
+  debe(ini > 0 && /if \(shouldSuggestExperiences\(choice\) && destinationName\)[\s\S]*suggestExperiencesInBackground\(destinationName\)/.test(cuerpo) && cuerpo.indexOf('suggestExperiencesInBackground') < cuerpo.indexOf('setPlan(choice)'), '3 sugerencias', 'la sugerencia no se lanza en choosePlan, con shouldSuggestExperiences(choice)')
   debe(!/suggestPlacesInBackground/.test(sinComentarios), '3 sugerencias', 'TrazoFlow lanza la precarga de lugares por su cuenta (solo debe venir tras las experiencias, ya con «hazla por mí»)')
   const clasifica = sinComentarios.match(/classifyInBackground\(/g) ?? []
   const iniStart = sinComentarios.indexOf('const startTrip')

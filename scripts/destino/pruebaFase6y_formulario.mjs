@@ -20,7 +20,7 @@ const debe = (cond, regla, texto) => {
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_6y_formulario_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
-  createElement, renderToStaticMarkup, StepElegir, StepManualSummary, AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences, DayList, ReservasPanel,
+  createElement, renderToStaticMarkup, StepElegir, StepManualSummary, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences, DayList, ReservasPanel,
   PlaceExplorerScreen, FreeTourSheet, routeHasFreeTour, freeTourAvailable, useRouteStore, buildManualRoute, manualDayName, manualTripDays, transportContextOf, withManualDayNames, rehacerDiasSinTocar,
   rehacerDiaConReservas, aplicarFreeTour, fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, ICONOS,
 } = M
@@ -75,8 +75,8 @@ const cuenta0 = () => llamadas.length
   debe(backStepFrom(STEP.ruta) === null && backStepFrom(STEP.resumen) === null, '1 atrás', 'la primera pantalla o el resumen que monta la ruta tienen flecha de atrás')
   debe(isSummaryStep(STEP.resumen) && isSummaryStep(STEP.resumenCorto) && !isSummaryStep(STEP.elegir), '1 pasos', 'isSummaryStep no distingue los resúmenes')
   // Los avisos.
-  debe(AVISO_DE_ELEGIR.auto === 'Creando tu itinerario…' && AVISO_DE_ELEGIR.manual === 'Preparando tu viaje…', '1 avisos', `los avisos no son «Creando tu itinerario…» y «Preparando tu viaje…»: ${JSON.stringify(AVISO_DE_ELEGIR)}`)
-  debe(/AVISO_DE_ELEGIR\[picked\]/.test(flujo) && /setTimeout\(\(\) => \{[\s\S]*?go\(stepAfterChoice\(choice\)\)/.test(flujo), '1 avisos', 'el aviso corto no sale al tocar y deja pasar a la pantalla siguiente')
+  // (6y4: ya no hay aviso ni espera; el paso a la pantalla siguiente es inmediato. Lo prueba pruebaFase6y4_formulario.mjs.)
+  debe(/setPlan\(choice\)\s*go\(stepAfterChoice\(choice\)\)/.test(flujo) && !/AVISO_DE_ELEGIR/.test(flujo), '1 avisos', 'al tocar una tarjeta no se pasa al momento a la pantalla siguiente')
   // El camino a mano no monta nada: las pantallas de experiencias, lugares y resumen no se pintan, y «Empezar mi ruta» solo construye la ruta.
   debe(/\{withExperiences &&\s*screen\(\s*STEP\.experiencias/.test(flujo) && /\{withExperiences && screen\(STEP\.lugares/.test(flujo) && /\{withExperiences &&\s*screen\(\s*STEP\.resumen,/.test(flujo), '1 a mano', 'las experiencias, los lugares o el resumen se pintan también en la ruta a mano')
   debe(/plan === 'manual' && screen\(STEP\.resumenCorto/.test(flujo), '1 a mano', 'el resumen corto no sale solo en la ruta a mano')

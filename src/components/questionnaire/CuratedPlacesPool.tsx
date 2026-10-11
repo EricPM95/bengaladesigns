@@ -11,11 +11,11 @@ import { fetchPlacePhoto } from '../../lib/placePhoto'
  * desactivan: sin alertas, sin popups, simplemente no se pueden marcar más.
  */
 export function poolSelectionLimit(days: number | undefined): number {
-  // 2026-09-27: 3 / 5 / 7 (antes 5 / 7 / 10).
+  // Tanda 6y4 (11-oct-2026), con los dias escritos hay sitio para mas: 1 y 2 dias 5, 3 dias 7, 4 dias o mas 8 (antes 3 / 5 / 7).
   if (days === undefined) return 5
-  if (days <= 2) return 3
-  if (days <= 5) return 5
-  return 7
+  if (days <= 2) return 5
+  if (days === 3) return 7
+  return 8
 }
 
 interface CuratedPlacesPoolProps {
