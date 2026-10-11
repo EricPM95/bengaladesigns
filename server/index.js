@@ -4461,12 +4461,15 @@ app.post('/api/destination-excursions', (req, res) => {
   const dayNameExample = data?.destination_config?.ejemplo_nombre_dia ?? null
   const entradas = Array.isArray(data?.entradas_reservas) ? data.entradas_reservas.map((entry) => ({ name: entry.nombre, places: entry.lugares ?? [] })) : []
   // Las entradas de cada sitio (Tanda 6n, `_entradas.json`): las lee la pestaña «Entradas» de cualquier ficha y la pestañita de la tarjeta.
-  const entradasPorSitio = entradasDe(findPipelineV2Key(destination ?? '') ?? '')
+  // (Tanda 6y4) UNA sola regla para «este sitio tiene entrada que se compra»: un sitio con `entrada_de_pago` en los datos (la Fontana de Trevi: una tasa que se paga allí para bajar junto al agua) NO la tiene,
+  // así que no sale en `entradas_por_sitio` (ni pestaña «Entradas», ni pestañita, ni «Reservar entrada») ni en la lista de «Entradas y Free Tour» de RESERVAS. Su ficha y sus datos no se tocan.
+  const sinEntradaQueComprar = (name) => (data?.places ?? []).some((place) => place.name === name && place.entrada_de_pago)
+  const entradasPorSitio = Object.fromEntries(Object.entries(entradasDe(findPipelineV2Key(destination ?? '') ?? '')).filter(([name]) => !sinEntradaQueComprar(name)))
   // Tanda 6s: el orden del bloque de entradas, las zonas del alojamiento y el mapa de alojamientos (datos del destino).
   const reservasExtra = {
     // Los nombres cortos de las reservas para los avisos «coinciden» y «vas justo» (dato del destino; sin ellos, el aviso usa el nombre completo).
     nombres_cortos: Object.fromEntries(Object.entries(data?.entradas_nombres_cortos ?? {}).filter(([key, value]) => !key.startsWith('_') && typeof value === 'string')),
-    entradas_orden: data?.entradas_reservas_orden ? { arriba: data.entradas_reservas_orden.arriba ?? [], mas: data.entradas_reservas_orden.mas ?? [] } : { arriba: [], mas: [] },
+    entradas_orden: data?.entradas_reservas_orden ? { arriba: (data.entradas_reservas_orden.arriba ?? []).filter((name) => !sinEntradaQueComprar(name)), mas: (data.entradas_reservas_orden.mas ?? []).filter((name) => !sinEntradaQueComprar(name)) } : { arriba: [], mas: [] },
     zonas_alojamiento: data?.destination_config?.zonas_alojamiento ?? [],
     mapa_alojamiento: data?.destination_config?.mapa_alojamiento ?? null,
     // Tanda 6z2: la moneda del destino (dato de cada destino, «EUR» en Roma): se ofrece en los campos de precio.
