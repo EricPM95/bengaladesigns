@@ -4,7 +4,7 @@ import type { DateRange, Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { changedDaysText } from './ConfirmDialog'
 import { isManualRoute } from '../../lib/manualPlan'
-import { planManualResize, type ManualResizeQuestion, type RemovedDayChoice } from '../../lib/manualDuration'
+import { answerManualAsk, startManualAsk, type ManualAsk, type ManualResizeQuestion, type RemovedDayChoice } from '../../lib/manualDuration'
 
 /**
  * Fechas puestas desde el botón del mapa (PROMPT_PENDIENTE G). En los destinos curados (horas del motor), la ruta se
@@ -47,7 +47,7 @@ export function manualDaysQuestionText(question: ManualResizeQuestion): { headin
   }
 }
 
-function ManualDaysDialog({ question, onAnswer, onCancel }: { question: ManualResizeQuestion; onAnswer: (choice: RemovedDayChoice) => void; onCancel: () => void }) {
+export function ManualDaysDialog({ question, onAnswer, onCancel }: { question: ManualResizeQuestion; onAnswer: (choice: RemovedDayChoice) => void; onCancel: () => void }) {
   const text = manualDaysQuestionText(question)
   return createPortal(
     <div className="fixed inset-0 z-[80] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="manual-days-heading" data-manual-days-dialog="1">
@@ -85,25 +85,21 @@ export function useDatesChange(route: Route | null) {
   const [saving, setSaving] = useState(false)
 
   // Ruta a mano que se acorta y pierde un día con cosas dentro: se pregunta día a día (Tanda 6y2) y nada cambia hasta contestar la última.
-  const [manualAsk, setManualAsk] = useState<{ dateRange: DateRange | undefined; questions: ManualResizeQuestion[]; at: number; decisions: Record<string, RemovedDayChoice> } | null>(null)
+  const [manualAsk, setManualAsk] = useState<ManualAsk | null>(null)
 
   const answerManual = (choice: RemovedDayChoice) => {
     if (!manualAsk) return
-    const decisions = { ...manualAsk.decisions, [manualAsk.questions[manualAsk.at].dayId]: choice }
-    if (manualAsk.at + 1 < manualAsk.questions.length) {
-      setManualAsk({ ...manualAsk, at: manualAsk.at + 1, decisions })
-      return
-    }
-    setManualAsk(null)
-    setRouteDateRange(manualAsk.dateRange, decisions)
+    const { next, apply } = answerManualAsk(manualAsk, choice)
+    setManualAsk(next)
+    if (apply) setRouteDateRange(apply.dateRange, apply.decisions)
   }
 
   const onChangeDateRange = (dateRange: DateRange | undefined) => {
     if (!route) return
     if (isManualRoute(route)) {
-      const { ask } = planManualResize(route, dateRange)
-      if (ask.length === 0) setRouteDateRange(dateRange)
-      else setManualAsk({ dateRange, questions: ask, at: 0, decisions: {} })
+      const ask = startManualAsk(route, dateRange)
+      if (ask) setManualAsk(ask)
+      else setRouteDateRange(dateRange)
       return
     }
     // Solo los destinos curados se rehacen sin Claude; los demás guardan las fechas como siempre.

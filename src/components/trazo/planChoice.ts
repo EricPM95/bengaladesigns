@@ -42,6 +42,21 @@ export function stepNamesFor(plan: PlanChoice | null): string[] {
   return plan === 'manual' ? base : [...base, 'Experiencias', 'Lugares']
 }
 
+/**
+ * Los pasos que se ven en la barra, el contador («5/5») y el panel (Tanda 6y2). Hasta la pantalla de elegir (incluida) todavía no se sabe qué camino va a tomar el viajero: se
+ * cuentan solo los 5 pasos que tienen los dos caminos (así la pantalla de elegir no dice «5/7» cuando quizá no habrá 7). «Experiencias» y «Lugares» se suman cuando elige
+ * «¡Sí, hazla por mí!»; con «Quiero hacerla yo» no aparecen nunca.
+ */
+export function visibleStepNamesFor(plan: PlanChoice | null, step: number): string[] {
+  return step <= STEP.elegir ? stepNamesFor('manual') : stepNamesFor(plan)
+}
+
+/** El contador de arriba: «5/5», «6/7»…; en el último paso (el resumen) pone «LISTO». */
+export const stepCounterLabel = (step: number, names: string[]): string => (step < names.length ? `${step + 1}/${names.length}` : 'LISTO')
+
+/** ¿Se piden ya las sugerencias de experiencias (y, tras ellas, la precarga de lugares)? Solo con «¡Sí, hazla por mí!»: la ruta a mano no las usa. */
+export const shouldSuggestExperiences = (choice: PlanChoice | null): boolean => choice === 'auto'
+
 /** ¿Está el formulario en una pantalla de resumen (última)? */
 export const isSummaryStep = (step: number): boolean => step === STEP.resumen || step === STEP.resumenCorto
 

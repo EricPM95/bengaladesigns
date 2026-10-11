@@ -64,10 +64,16 @@ export function planManualResize(route: Route, dateRange: DateRange | undefined)
   const target = Math.min(MAX_TRIP_DAYS, Math.max(1, span))
   if (target >= current) return { current, target, add: target - current, remove: [], ask: [] }
   const quitar = current - target
-  // Orden de salida: primero los vacíos, luego los que llevan algo; dentro de cada grupo, los del medio empezando por el último antes de la vuelta, después el primero y por último la vuelta.
-  const rank = (index: number) => (index >= 1 && index <= current - 2 ? current - 2 - index : index === 0 ? current : current * 2)
+  // Orden de salida: 1) los vacíos del medio, del último antes de la vuelta hacia atrás; 2) los del medio que llevan algo (se pregunta), igual; 3) el primero y 4) el de la vuelta, que son los de
+  // llegada y salida y solo se tocan si no queda otro (antes los vacíos que los que llevan algo). Quitar por el final deja las fechas de lo de antes como estaban.
+  const key = (day: DayPlan, index: number): number => {
+    const lleno = dayHasContent(day)
+    if (index >= 1 && index <= current - 2) return (lleno ? 100 : 0) + (current - 2 - index)
+    if (index === 0) return lleno ? 400 : 200
+    return lleno ? 500 : 300
+  }
   const ordered = route.days
-    .map((day, index) => ({ day, index, key: (dayHasContent(day) ? 1000 : 0) + rank(index) }))
+    .map((day, index) => ({ day, index, key: key(day, index) }))
     .sort((a, b) => a.key - b.key)
     .slice(0, quitar)
   const remove = ordered.map((entry) => entry.day.id)
@@ -89,6 +95,27 @@ export function planManualResize(route: Route, dateRange: DateRange | undefined)
       }
     })
   return { current, target, add: 0, remove, ask }
+}
+
+/** La conversación de las preguntas: las fechas nuevas, los días por preguntar, por cuál va y lo ya contestado. Nada cambia en la ruta hasta contestar la última. */
+export interface ManualAsk {
+  dateRange: DateRange | undefined
+  questions: ManualResizeQuestion[]
+  at: number
+  decisions: Record<string, RemovedDayChoice>
+}
+
+/** Empieza la conversación (null si no hay nada que preguntar: las fechas se ponen sin más). */
+export function startManualAsk(route: Route, dateRange: DateRange | undefined): ManualAsk | null {
+  const { ask } = planManualResize(route, dateRange)
+  return ask.length === 0 ? null : { dateRange, questions: ask, at: 0, decisions: {} }
+}
+
+/** Contesta la pregunta de ahora: devuelve la siguiente, o (con la última) las decisiones para poner las fechas. «Cancelar» no pasa por aquí: se tira la conversación y la ruta queda como estaba. */
+export function answerManualAsk(ask: ManualAsk, choice: RemovedDayChoice): { next: ManualAsk | null; apply: { dateRange: DateRange | undefined; decisions: Record<string, RemovedDayChoice> } | null } {
+  const decisions = { ...ask.decisions, [ask.questions[ask.at].dayId]: choice }
+  if (ask.at + 1 < ask.questions.length) return { next: { ...ask, at: ask.at + 1, decisions }, apply: null }
+  return { next: null, apply: { dateRange: ask.dateRange, decisions } }
 }
 
 /** El día más cercano ANTERIOR que se queda; si no hay (es el primero), el más cercano posterior. */
