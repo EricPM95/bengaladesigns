@@ -155,20 +155,25 @@ a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
                               <sc-if value="{{ g.isShip }}" hint-placeholder-val="{{ false }}">
                                 <span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">Puerto de Civitavecchia · el único de Roma</span>
                               </sc-if>
-                              <div style="display:flex;flex-direction:column;gap:6px">
-                                <button onClick="{{ g.pickTime }}" style="height:48px;border-radius:14px;border:1.5px solid {{ g.tBd }};background:{{ g.tBg }};display:flex;align-items:center;gap:10px;padding:0 14px;cursor:pointer;color:#1C2230;transition:background .3s,border-color .3s">
-                                  <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ g.timeKind }}</span>
-                                  <span style="flex:1;text-align:left;font:{{ g.tF }};color:{{ g.tC }}">{{ g.timeTxt }}</span>
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.5)" stroke-width="1.8" stroke-linecap="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>
+                              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                                <button onClick="{{ g.pickTime }}" style="height:58px;border-radius:14px;border:1.5px solid {{ g.tBd }};background:{{ g.tBg }};display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;padding:0 12px;cursor:pointer;color:#1C2230;text-align:left;transition:background .3s,border-color .3s">
+                                  <span style="width:100%;display:flex;align-items:center;justify-content:space-between;font:600 9.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ g.timeKind }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg></span>
+                                  <span style="font:{{ g.tF }};color:{{ g.tC }}">{{ g.timeTxt }}</span>
                                 </button>
-                                <span style="font:400 11px/1.35 'Geist';color:rgba(28,34,48,.58)">¿Llegas o te vas otro día? <a href="#" onClick="{{ f.fechas }}" style="color:#1C2230;text-underline-offset:2px">Cambia las fechas del viaje</a></span>
+                                <sc-for list="{{ g.fields }}" as="x" hint-placeholder-count="3">
+                                  <label style="height:58px;border-radius:14px;border:1.5px solid {{ x.bd }};background:{{ x.bg }};display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 12px;cursor:text;transition:background .3s,border-color .3s">
+                                    <span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ x.l }}</span>
+                                    <input value="{{ x.v }}" placeholder="{{ x.ph }}" inputmode="{{ x.im }}" onChange="{{ x.set }}" style="width:100%;min-width:0;border:none;outline:none;background:transparent;padding:0;font:400 18px/1.1 'Instrument Serif',serif;color:#1C2230">
+                                  </label>
+                                </sc-for>
                               </div>
+                              <button onClick="{{ f.fechas }}" style="align-self:flex-start;min-height:32px;border:none;background:transparent;padding:2px 2px;display:flex;align-items:center;gap:6px;font:400 11.5px 'Geist';color:rgba(28,34,48,.55);cursor:pointer" style-hover="color:#1C2230"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5zM3.5 10h17M8 3v4M16 3v4"></path></svg>¿Otro día? Cambia las fechas del viaje</button>
                             </div>
                           </sc-if>
                         </div>
                       </sc-for>
                       <sc-for list="{{ f.L.search }}" as="q" hint-placeholder-count="1">
-                        <span style="padding:2px 4px 0;font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ q.q }} <a href="#" onClick="{{ q.tap }}" style="font-weight:600;color:#1C2230;text-underline-offset:2px">{{ q.a }}</a></span>
+                        <div style="display:flex;align-items:center;gap:10px;padding:2px 2px 0"><span style="flex:1;font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ q.q }}</span><button onClick="{{ q.tap }}" style="flex:none;height:36px;padding:0 13px 0 10px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;display:flex;align-items:center;gap:6px;font:500 12.5px 'Geist';color:#1C2230;cursor:pointer" style-hover="border-color:rgba(28,34,48,.35)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>{{ q.a }}</button></div>
                       </sc-for>
                     </div>
                   </sc-if>
@@ -328,7 +333,7 @@ a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
                 </div>
               </sc-for>
               <sc-if value="{{ f.XR.otras }}" hint-placeholder-val="{{ true }}">
-                <button onClick="{{ f.exc }}" style="align-self:flex-start;border:none;background:transparent;padding:2px 4px;font:500 12px 'Geist';color:#1C2230;text-decoration:underline;text-underline-offset:2px;cursor:pointer">Ver otras excursiones</button>
+                <button onClick="{{ f.exc }}" style="align-self:flex-start;min-height:36px;border:none;background:transparent;padding:4px 6px;display:flex;align-items:center;gap:5px;font:400 12.5px 'Geist';color:rgba(28,34,48,.58);cursor:pointer" style-hover="color:#1C2230">Ver otras excursiones<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
               </sc-if>
             </div>
             <div style="display:flex;flex-direction:column;gap:10px;min-width:0;padding-top:16px">
@@ -535,7 +540,10 @@ class Component extends DCLogic {
         isShip:!!M.fixed,hasSt:!M.car&&!M.fixed,
         sts:(M.st||[]).map(n=>{const a=L.st===n;return{n,bd:a?INK:'transparent',bg:a?INK:'#F5EFE4',fg:a?'#FFFDF8':INK,pick:()=>this.setState(st=>({[w]:{...st[w],st:n}}))};}),
         timeKind:isOut?'Llega':'Sale',timeTxt:L.t||'Elige la hora',tF:L.t?"400 22px/1 'Instrument Serif',serif":"500 14px 'Geist'",tC:L.t?INK:'rgba(28,34,48,.55)',
-        tBg:L.t?'oklch(0.96 0.035 150)':'#F5EFE4',tBd:L.t?'oklch(0.55 0.11 150 / .35)':'transparent',pickTime:()=>this.openTime(fid,w)};};
+        tBg:L.t?'oklch(0.96 0.035 150)':'#F5EFE4',tBd:L.t?'oklch(0.55 0.11 150 / .35)':'transparent',pickTime:()=>this.openTime(fid,w),
+        fields:(()=>{const lbl={avion:['Ref. vuelo','Aerolínea','Ej. AB 1234'],tren:['Ref. tren','Compañía','Ej. 9714'],bus:['Ref. billete','Compañía','Ej. 3021'],barco:['Ref. billete','Naviera','Ej. 5520']}[m]||['Referencia','Compañía','Ej. 1234'];
+          const fl=(k,l,ph,im)=>{const v=L[k]||'';return{l,ph,im,v,bd:v?'oklch(0.55 0.11 150 / .35)':'transparent',bg:v?'oklch(0.96 0.035 150)':'#F5EFE4',set:ev=>{const val=ev.target.value;this.setState(st=>({[w]:{...st[w],[k]:val}}));}};};
+          return[fl('price','Precio','0 €','decimal'),fl('ref',lbl[0],lbl[2],'text'),fl('air',lbl[1],'Escribe el nombre','text')];})()};};
     const oM=MODES[s.om];
     const sumLine=w=>{const isOut=w==='out',L=s[w],m=isOut?s.om:s.rm,M=MODES[m],d=legDone(L,m);let txt=isOut?'Ida · mar 10':'Vuelta · sáb 14';
       if(M.car)txt+=isOut?' · Llegas en coche':' · Te vas en coche';else if(d){txt+=' · '+L.t+' · '+L.st;if(isOut)txt+=' · libre hacia las '+addM(L.t,M.free[L.st]||90);}

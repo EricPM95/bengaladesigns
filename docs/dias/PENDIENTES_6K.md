@@ -1,5 +1,12 @@
 # Pendientes de la 6k
 
+**ÍNDICE POR TEMAS (11-oct):** lo de cada tema grande tiene su propio archivo en docs\dias:
+- `PENDIENTES_LLEGADAS.md`: la llegada, el primer día, el último y la vuelta (Tanda 7).
+- `PENDIENTES_ESCUCHAR.md`: Escuchar, las historias y la voz.
+- `PENDIENTES_MULTIDESTINOS.md`: los viajes de varios destinos (lo decidido; la historia, en BORRADOR_MULTIDESTINOS.md).
+- `PENDIENTES_RECOMPENSAS.md`: Tu mundo, el pasaporte de sellos, los logros y sus regalos.
+- Este archivo: el orden de las tandas (más abajo, «EL ORDEN DE AQUÍ EN ADELANTE») y lo suelto de Roma.
+
 **Ya pasado a `PARA_CODE_TANDA6K.md` (8-oct-2026, noche).** Lo nuevo que salga, aquí debajo, para la siguiente.
 
 ## Pantallas
@@ -167,6 +174,7 @@ Después, leer el informe de la 6x (los 63 casos, los «Si te sobra tiempo» que
 **HOY, solo de pago (Eric, 10-oct; Tanda 6z6):** la barra: gratis 4 pestañas (Ruta · Días · Explorar · Reservas), de pago 5 (Hoy delante). La cuenta atrás y «te faltan n cosas», arriba de RESERVAS. Durante el viaje, DÍAS se abre en hoy. Las fotos, en Perfil › Mis viajes (álbum por días; se añaden desde la ficha de la parada). HOY de pago: antes, «Tu modo Hoy se activa el…»; durante, siguiente parada, Cómo llegar, Visto, No me da tiempo, «Escuchar» (la ficha en voz alta, con la voz del móvil), «Cerca de ti» (baños, fuentes, comer) y los avisos del día; después, «Ver mis recuerdos». Panel de pruebas (versión, momento, números de prueba), solo fuera de producción. «Cerca de mí» de EXPLORAR y los filtros de baños y fuentes, de pago. En el Perfil, el mapa de mis viajes (globo con chinchetas y la lista de viajes; al tocar, el álbum). Fotos: gratis una por parada, de pago sin límite; en la gratis, «Guarda tus recuerdos» sale en RUTA después del viaje.
 - Siguiente tanda de HOY (6z7, después): «sin conexión» (descargar el viaje) y avisos en el móvil («Tu entrada es hoy a las 9:00», «Hoy cierra», lluvia). En iPhone, solo con la app añadida a la pantalla de inicio: explicarlo al pagar. Más adelante: las huelgas de transporte (buscar fuente).
 - Antes de lanzar: el plan comercial de Open-Meteo (el gratis no vale para uso comercial). Planes: Standard, 1 millón de peticiones al mes; nosotros, unas 48.000 al mes con 100 destinos. El precio no sale en su página: mirarlo al contratar. Su licencia (CC BY 4.0) pide citar la fuente también con el plan de pago. Ya está en la página «Créditos» del Perfil (6z6d), no en las pantallas. Ellos piden su enlace junto a cada dato: al contratar, preguntarles si les vale la página «Créditos».
+- ANTES DE DAR ROMA POR ACABADA (Eric, 11-oct): elegir las fotos de docs\dias\FOTOS_ROMA_CANDIDATAS.html (las 4 excursiones, más Tívoli y Pompeya y Sorrento), poner una foto propia de la Cripta de los Capuchinos y, si las hay, de Via dei Coronari y Borgo Pio. Mientras, esas salen sin foto.
 - Antes de lanzar: Supabase Pro (25 $/mes). El plan gratis solo tiene 1 GB de fotos (unos 140 viajes con una foto por parada). Pro: 100 GB y 250 GB de descarga al mes.
 - Fotos (10-oct, falta que Eric lo confirme): se propone dejar una por parada en la gratis. Cuesta casi nada: unos 7 MB por viaje; 100.000 viajes, unos 13 $/mes de más. Que el álbum enseñe miniaturas (añadido para la 6z6).
 - RESERVAS (Eric, 10-oct; Tanda 6z6b): lo que falta, solo en «x de 3 listo» (fuera «Te faltan n cosas» y el «0%»). El presupuesto, solo en la cartera de arriba (fuera la fila de RESERVAS), con el «+103,13 €» que vuela a la cartera al poner un precio. «Útil para el viaje»: solo tarjetas más anchas que se deslizan, con [Comprar] y [Añadir]. Los descuentos del 5 % son reales (Eric). El Perfil, a pantalla completa y que se pueda bajar (el mapa ya no se come el dedo). «Tus fotos de hoy» y las miniaturas ya estaban en la 6z6. A Code se le cortó el prompt de la 6z6b en el punto 5, así que van a la 6z6c: «Guarda tus recuerdos» como el prototipo (tres cuadros de fotos y la línea del mapa de viajes) y los tips (Eric): fuera del Perfil; en RUTA, una bombilla en la tarjeta de cada destino, al lado de la varita, con los tips de ese destino (sin tips, sin bombilla). Code la puso arriba del mapa de RUTA. También a la 6z6c: el tiempo pedido desde nuestro servidor (la 6z5 4b no se hizo) y probar de verdad una foto subida y borrada (la 0018 SÍ está aplicada: 6 policies vistas el 10-oct).
@@ -185,6 +193,16 @@ Después, leer el informe de la 6x (los 63 casos, los «Si te sobra tiempo» que
   - Las horas de llegada y salida solo eligen la fila (mañana, tarde, noche), como las reservas: sin cuentas al minuto.
   - Lo de verdad grande no es el motor: es escribir los días de Florencia (y de cada destino nuevo) como los de Roma, con GUIA_NUEVOS_DESTINOS.
 - Ya pedido en la 6y (punto 0): en el álbum del Perfil, un título por destino; la chincheta abre ese destino.
+
+**EL ORDEN DE AQUÍ EN ADELANTE (Eric y Claude, 11-oct, noche; por confirmar con Eric):**
+1. La 6y4 (en marcha).
+2. Roma pulida: Eric prueba un viaje entero en su móvil (antes, durante y después, gratis y de pago) y apunta lo que falle; una tanda de arreglos. Elegir las fotos que faltan.
+3. «Escuchar» con las historias (docs\dias\HISTORIAS_ROMA.md, revisadas por Eric; las 31 entran en la 6y5): el botón solo sale donde hay historia; la del Coliseo, gratis como muestra. Más adelante, con la voz de Eric (grabada o clonada con su permiso; el plan comercial de la empresa de voz).
+4. LAS LLEGADAS (Tanda 7, PROPUESTA_LLEGADAS.md): antes que los multidestinos, porque cada destino de un viaje de varios usa su día de llegada y su día de salida, y los tramos de en medio son llegadas y salidas.
+5. Curar el segundo destino (Florencia), con GUIA_NUEVOS_DESTINOS: sin un segundo destino curado no se puede ofrecer ni probar un viaje de varios (solo se buscan destinos curados).
+6. Los multidestinos (BORRADOR_MULTIDESTINOS.md y docs\diseno\multidestino\).
+7. El login y las cuentas; luego el viaje compartido, «Tu mundo» (el globo coloreado), el pasaporte de sellos (diseño de Eric), los logros y sus regalos (sellos especiales, colores, marcos de la tarjeta para compartir, más fotos en la gratis, portadas, insignias; sin puntos ni guías), la tarjeta para compartir y «Hace un año estabas en…».
+8. Antes de lanzar: activar el pago, Supabase Pro, el plan comercial del tiempo, sin conexión y avisos en el móvil (6z7).
 
 **Detrás de la 6y:**
 1. El login: Google, Apple y email con enlace; sin obligar al principio; el viaje de ahora pasa a la cuenta. Hace falta antes de activar el pago.
