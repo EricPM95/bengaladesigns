@@ -4,9 +4,13 @@ Este prompt está al día con las reglas nuevas (sin cuentas al minuto, la app a
 
 IMPORTANTE (Eric, 10-oct): nada de viajes de varios destinos hasta que Roma esté entera curada y lista para lanzar (la ruta, RESERVAS, las llegadas, todo). Hasta entonces, trata Roma como si no hubiera nada más.
 
-1. LA PANTALLA DE ELEGIR, AL FINAL DEL FORMULARIO
-- Va después del resumen (StepSummary). El botón del resumen, «VER MI RUTA», pasa a «CONTINUAR» y abre esta pantalla. La flecha de atrás vuelve al resumen.
-- La ruta se sigue montando por detrás en el resumen, como ahora.
+1. LA PANTALLA DE ELEGIR, ANTES DE LAS EXPERIENCIAS (Eric, 11-oct)
+- El formulario va hoy así: la ruta (origen y destino), el transporte, las fechas, quién viaja, las experiencias, el pool de sitios y el resumen. La pantalla de elegir va justo después de «quién viaja» (StepCompanion) y antes de las experiencias (StepExperiences).
+- Por qué: las experiencias y el pool sirven para que nosotros montemos la ruta a su gusto. Si la hace él a mano, no hacen falta.
+  - [¡Sí, hazla por mí!] sigue como ahora: las experiencias, el pool, el resumen y su ruta (que se sigue montando por detrás en el resumen, como ahora).
+  - [Quiero hacerla yo] se salta las experiencias y el pool, y va a un resumen corto (destino, fechas, quién viaja y transporte, sin experiencias ni sitios) con [Empezar mi ruta], que abre la ruta a mano. No se monta ninguna ruta por detrás.
+- La flecha de atrás de la pantalla de elegir vuelve a «quién viaja»; la de las experiencias y la del resumen corto, a la pantalla de elegir.
+- Sin experiencias, todo lo que hoy las usa tiene que seguir funcionando (EXPLORAR, la hoja del Free Tour, el plan de las reservas, lo de temporada…), con lo de siempre por defecto. Dime en el informe qué usaba las experiencias y qué hace ahora sin ellas.
 - El diseño está en docs\diseno\ruta_manual\ (Itinerario Eleccion.dc.html y su support.js). Se copia lo visual: el mapa dibujado con los tres días, la tarjeta oscura con «RECOMENDADO» y la flecha, y la tarjeta blanca con el lápiz. Con los iconos de la familia de la 6z3 y el frambuesa de la app. Los textos son estos:
   - arriba, pequeño: «{destino} · {n} días» (del formulario);
   - el título: «¿Te montamos el itinerario día a día?», con «día a día» resaltado como en el diseño;
@@ -15,7 +19,7 @@ IMPORTANTE (Eric, 10-oct): nada de viajes de varios destinos hasta que Roma est�
   - el aviso corto al tocar: «Creando tu itinerario…» o «Preparando tu viaje…».
 
 2. LA RUTA A MANO
-Es el mismo viaje del formulario (destino, fechas, días, origen, medio de ida y de vuelta), pero con los días vacíos, para que los monte el viajero. El viajero decide todo: la app no le sugiere paradas ni le dice qué paradas le faltan.
+Es el mismo viaje del formulario (destino, fechas, días, quién viaja, origen, medio de ida y de vuelta), sin experiencias ni sitios elegidos, y con los días vacíos, para que los monte el viajero. El viajero decide todo: la app no le sugiere paradas ni le dice qué paradas le faltan.
 - Los días salen como ahora, en acordeón, y con su nombre como en nuestra ruta: con fechas, por su fecha («lun 13 oct»); sin fechas, «Día 1», «Día 2»… Se pueden renombrar como ahora (DayNameSheet). Vacíos por dentro. Cada día es un día propio (`dayType: 'manual'`).
 - Dentro de cada día vacío, dos botones:
   - [Añadir parada]: abre EXPLORAR con nuestra lista completa del destino, ordenada así: primero las que tienen más «me gusta» de verdad (`place_likes`; los números de prueba, solo con `?prueba=1`, nunca en producción), luego los imprescindibles, luego las de nivel 1 y luego el resto. Se pueden marcar varias a la vez (el modo de elegir varios sitios de la 6g, y el «+» de las tarjetas de la 6z) y van a ese día. Las que ya están en otro día del viaje llevan la etiqueta verde de la 6z con su día: «En tu día 2» (con fechas, «En tu lun 13»).
@@ -72,6 +76,8 @@ La idea (de Eric): no ordenamos «a ciegas» por el mapa. Cada parada ya está e
 4. PRUEBAS
 - Las de siempre a 0 fallos (con la 6r, 6s, 6t, 6u, 6v, 6w, 6x, 6z, 6z2, 6z3, 6z4, 6z5, 6z6, 6z6b, 6z6c y 6z6d).
 - Una prueba 6y, con viajes a mano de 2, 3, 4 y 5 días, con y sin fechas y con y sin reservas, en la gratis y en la de pago:
+  - con «Quiero hacerla yo», el formulario no pasa por las experiencias ni por el pool, y no se monta ninguna ruta por detrás;
+  - sin experiencias, EXPLORAR, el Free Tour y las reservas funcionan sin errores;
   - 0 paradas puestas por la app que no haya elegido el viajero;
   - el orden del viajero se queda igual hasta que toca «Reorganizar», también al añadir una reserva;
   - «Reorganizar» no quita nada, no mueve de día y no manda nada a «Si te sobra tiempo»;
@@ -89,7 +95,7 @@ La idea (de Eric): no ordenamos «a ciegas» por el mapa. Cada parada ya está e
   - con días mezclados, como los haría un viajero: 200 días al azar con 4 a 8 paradas de grupos distintos. Dime en el informe si sale algún zigzag, alguna nocturna de día, alguna comida al final o al principio del día, Trastevere antes de mediodía o algún grupo partido en dos. Pon 5 ejemplos en el informe, en palabras sencillas (lo que puso el viajero y cómo quedó).
   - Si algo sale mal, explícame por qué y no lo arregles a mano día a día.
 - A mano, a 375 px, con el panel de pruebas, gratis y de pago:
-  - la pantalla de elegir;
+  - la pantalla de elegir, después de «quién viaja», con los dos caminos (el de «hazla por mí» con experiencias, pool y resumen; el de «quiero hacerla yo» sin ellos, con el resumen corto) y las flechas de atrás;
   - los días vacíos en acordeón (con fechas, por su fecha), con [Añadir parada] y [Añadir excursión];
   - EXPLORAR en el orden nuevo, eligiendo varias, con «En tu día…»;
   - una excursión añadida a un día, con precio (y la pastilla a la cartera);
