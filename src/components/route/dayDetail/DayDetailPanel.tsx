@@ -837,7 +837,7 @@ export function DayDetailPanel({
     (route?.days ?? [day])
       .filter((candidate) => candidate.city === day.city)
       .flatMap((candidate) => candidate.stops)
-      .find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates ?? null
+      .find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates ?? route?.destinationCoordinates ?? null
 
   const selectedExcursion = dayType === 'excursion' ? (excursionOptions.find((option) => option.id === day.selectedExcursionId) ?? null) : null
   // La de medio día no vive en `selectedExcursionId` (ese es el día de excursión entero): el día
