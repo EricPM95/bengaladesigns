@@ -36,6 +36,7 @@ import { claseDeReserva, RESERVAS_GRANDES } from './listasReservas.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 import { COMIDA_HASTA } from './comida.js'
+import { closedStaysNotice, sitiosQueNoSeQuitan } from './closedNotices.js'
 
 const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(value)))
 const slug = (text) => norm(text).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
@@ -77,6 +78,7 @@ function avisoDe(stop, mes = null, invierno = MESES_INVIERNO) {
   if (stop.aviso_invierno && mes != null && invierno.includes(mes)) partes.push(stop.aviso_invierno)
   const porMes = mes != null ? (stop.cierra_meses ?? []).find((c) => (c.desde <= c.hasta ? mes >= c.desde && mes <= c.hasta : mes >= c.desde || mes <= c.hasta)) : null
   if (porMes) partes.push(`Cierra a las ${porMes.hora}: entra antes`)
+  if (stop.aviso_cierre) partes.push(stop.aviso_cierre)
   if (stop.cierra) partes.push(`Cierra a las ${stop.cierra}: entra antes`)
   if (stop.abre) partes.push(`Abre a las ${stop.abre}`)
   if (partes.length === 0 && !stop.aviso_horario && stop.avisos?.length) partes.push(...stop.avisos.map((a) => a.charAt(0).toUpperCase() + a.slice(1)))
@@ -142,6 +144,7 @@ export function planListasTrip(args) {
     const hours = hoursOf(day)
     return closedOnDay(place, hours.weekday, calendar.hasDates ? hours.dateIso : null) || (!ignoraTemporada && !availableForTrip(place.available, calendar, hours.dateIso, poolNames.includes(name)))
   }
+  const noSeQuitan = sitiosQueNoSeQuitan(destData)
   const noTourOn = (day) => {
     const iso = realDateIso(day)
     if (!hasFreeTour || !iso) return false
@@ -269,7 +272,8 @@ export function planListasTrip(args) {
   const contextoDe = (dia, day, hours, parte, index) => ({
     weekday: hours.weekday, dateIso: calendar.hasDates ? hours.dateIso : null, month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null,
     hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: entradasDeDia(index), poolNames, experiencias: selected, orden: order, parte, enFechas,
-    cerrado: (name) => closedThatDay(name, day),
+    // (Un sitio que NUNCA se quita —el Vaticano, la Galería Borghese— no activa las variantes «si cierra, sin él»: si ningún día del viaje abre, se queda en el suyo con su aviso, Tanda 6y5.)
+    cerrado: (name) => !noSeQuitan.has(name) && closedThatDay(name, day),
   })
 
   const preparar = (id, index) => {
@@ -280,14 +284,32 @@ export function planListasTrip(args) {
     // (Un día con una versión «De tarde» —el DA-medio, la tarde de llegada— la usa cuando el medio día es de tarde.)
     const parteKey = dia.partes[franjaMedio] && Object.keys(dia.partes).length > 1 ? franjaMedio : dia.partes.unica ? 'unica' : dia.partes[franjaMedio] ? franjaMedio : Object.keys(dia.partes)[0]
     const parte = dia.partes[parteKey]
-    let base = copiarParte(parte)
-    if (dia.hereda_manana_de) base.manana = clone(written.days[dia.hereda_manana_de].partes.unica.manana)
-    if (!base.empieza && dia.empieza) base.empieza = dia.empieza
-    // La tarde de un medio día (la de llegada) empieza a las 16:00 (provisional: las llegadas y salidas se piensan aparte).
-    if (parteKey === 'tarde' && (dia.partes.manana || dia.partes.unica) && !base.empieza) base.empieza = cfg.tarde_medio_desde
+    const construirBase = () => {
+      const b = copiarParte(parte)
+      if (dia.hereda_manana_de) b.manana = clone(written.days[dia.hereda_manana_de].partes.unica.manana)
+      if (!b.empieza && dia.empieza) b.empieza = dia.empieza
+      // La tarde de un medio día (la de llegada) empieza a las 16:00 (provisional: las llegadas y salidas se piensan aparte).
+      if (parteKey === 'tarde' && (dia.partes.manana || dia.partes.unica) && !b.empieza) b.empieza = cfg.tarde_medio_desde
+      return b
+    }
+    const base = construirBase()
     const aplicadas = []
     const ctx = contextoDe(dia, day, hours, parteKey === 'unica' ? null : parteKey, index)
     let trabajo = aplicarVariantes(base, dia, ctx, aplicadas)
+    // El mismo día SIN las reservas grandes (Tanda 6y5, P4): la fila de la tabla de la hora reservada puede llevar menos paradas que el día de siempre. Lo que ya no cabe no desaparece:
+    // pasa a «Si te sobra tiempo» de ese día (paso 5.0b).
+    const sinGrandes = Object.fromEntries(Object.entries(ctx.entradas ?? {}).filter(([name]) => !RESERVAS_GRANDES.has(name)))
+    const control = Object.keys(sinGrandes).length !== Object.keys(ctx.entradas ?? {}).length ? aplicarVariantes(construirBase(), dia, { ...ctx, entradas: sinGrandes }, []) : null
+    const conReserva = new Set([...trabajo.manana, ...trabajo.tarde, ...(trabajo.sobra ?? [])].filter((s) => s.tipo !== 'traslado').map((s) => s.lugar))
+    const sinReservaVistos = new Set()
+    const perdidasPorReserva = control ? [...control.manana, ...control.tarde].filter((s) => {
+      // (Una calle «de camino» no es una parada: si la ruta ya no pasa por allí, desaparece como siempre. Un «de camino» que es un sitio —la Fuente de las Tortugas, el Elefantino— sí es una parada.)
+      if (s.tipo !== 'parada' || !s.lugar || s.hora || conReserva.has(s.lugar) || sinReservaVistos.has(s.lugar)) return false
+      if (s.modo === 'camino' && (!placeByName.get(s.lugar) || isStreet(placeByName.get(s.lugar)))) return false
+      sinReservaVistos.add(s.lugar)
+      return true
+      // (En «Si te sobra tiempo» ya no es «de camino»: es una parada corta que el viajero puede hacer si le sobra el rato.)
+    }).map((s) => (s.modo === 'camino' ? { ...clone(s), modo: null, min: Math.max(s.min ?? 10, 10) } : clone(s))) : []
     // El Free Tour que el viajero añade: la hora que él eligió.
     const marca = (lista) => lista.map((stop) => (stop.hora === '$free_tour' ? { ...stop, hora: freeTourDespues?.hora ?? '17:00' } : stop))
     trabajo = { ...trabajo, manana: marca(trabajo.manana), tarde: marca(trabajo.tarde) }
@@ -297,7 +319,7 @@ export function planListasTrip(args) {
       trabajo = { ...trabajo, manana: trabajo.manana.filter((s) => s.lugar !== tour.name), tarde: trabajo.tarde.filter((s) => s.lugar !== tour.name) }
       aplicadas.push('sin_free_tour')
     }
-    return { id, index, dia, day, hours, parteKey, trabajo, aplicadas, log, ctx, pooled: [], soloTarde: Boolean(day.halfDayExcursion?.soloTarde) }
+    return { id, index, dia, day, hours, parteKey, trabajo, perdidasPorReserva, aplicadas, log, ctx, pooled: [], soloTarde: Boolean(day.halfDayExcursion?.soloTarde) }
   }
   const drafts = order.map((id, index) => preparar(id, index))
 
@@ -341,7 +363,7 @@ export function planListasTrip(args) {
     elegido.d.trabajo = aplicarOps(elegido.d.trabajo, elegido.def.ops)
     elegido.d.aplicadas.push(`pool:${name}`)
     elegido.d.pooled.push(name)
-    if (closedThatDay(name, elegido.d.day)) {
+    if (closedThatDay(name, elegido.d.day) && !noSeQuitan.has(name)) {
       unplacedPool.push({ unitId: name, name, reason: 'closed_on_day', dayNumber: elegido.d.day.dayNumber, closed: { dateIso: realDateIso(elegido.d.day), weekday: hoursOf(elegido.d.day).weekday }, closedWeekly: (place?.closed_on ?? []).length > 0 })
     }
   }
@@ -464,6 +486,19 @@ export function planListasTrip(args) {
     marcasViaje.push({ lugar: r.name, hora, host: destino })
   }
 
+  // 5.0b Lo que una reserva grande deja sin sitio no desaparece (Tanda 6y5, P4): con el Coliseo desde las 14:16 la fila de su tabla trae una tarde con menos paradas (se pierden la Fuente de las
+  // Tortugas, el Elefantino…). Esas paradas, si no salen en ningún otro día ni de camino, pasan a «Si te sobra tiempo» de ese día. (Lo que el Free Tour ya enseña, o lo que ese día está cerrado, no.)
+  for (const d of drafts) {
+    for (const parada of d.perdidasPorReserva ?? []) {
+      const place = placeByName.get(parada.lugar)
+      if (!place || (hasFreeTour && tourCovers.has(parada.lugar) && place.type !== 'interior') || closedThatDay(parada.lugar, d.day)) continue
+      const sigue = drafts.some((o) => [...stopsOfTrabajo(o.trabajo), ...(o.trabajo.sobra ?? [])].some((s) => s.lugar === parada.lugar && s.tipo !== 'traslado'))
+      if (sigue) continue
+      d.trabajo.sobra = [...(d.trabajo.sobra ?? []), { ...parada, por_reserva: true }]
+      d.aplicadas.push(`sobra_por_reserva:${parada.lugar}`)
+    }
+  }
+
   // (Las reservas con día —las de arriba— ya saben en qué día van; las `entradas` de la petición son las del día pedido y solo valen para lo que no viene con día.)
   const reservasAMarcar = [...marcasViaje]
   const yaMarcada = new Set(marcasViaje.map((marca) => marca.lugar))
@@ -530,8 +565,8 @@ export function planListasTrip(args) {
     // Lo que el documento deja para «Si te sobra tiempo» en esta versión del día (p. ej. el Barrio Judío y las iglesias con el Coliseo a mediodía).
     for (const stop of t.sobra ?? []) {
       const item = aItem(stop, 'tarde')
-      spare.push({ ...item, razon: 'documento', spareReason: 'Para otro momento' })
-      log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'sobra', causa: 'el documento lo deja para «Si te sobra tiempo» en este día' })
+      spare.push({ ...item, razon: stop.por_reserva ? 'reserva' : 'documento', spareReason: 'Para otro momento' })
+      log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'sobra', causa: stop.por_reserva ? 'con tu reserva a esa hora ya no cabe en el día: pasa a «Si te sobra tiempo»' : 'el documento lo deja para «Si te sobra tiempo» en este día' })
     }
     // 5.2 Lo que el Free Tour recorre sale de la lista cuando la variante lo pide (el Free Tour que el viajero añade para esa franja).
     if (t.quitar_cubierto_por_tour && tour) {
@@ -573,6 +608,14 @@ export function planListasTrip(args) {
       if (item.hora_tipo === 'reserva' && item.hora) {
         problems.push({ tipo: 'reserva_cerrada', lugar: item.lugar, hora: item.hora, cierre: null, dayNumber })
         return [{ ...item, cerrado_todo_el_dia: false }]
+      }
+      // Un sitio que nunca se quita (Tanda 6y5, P2 y P3): si llega aquí cerrado es que ningún otro día del viaje lo permite (el orden de los días ya probó todos los cambios). Se queda en su
+      // día, por dentro, con el aviso de que ese día cierra; decide el viajero. Nunca desaparece ni pasa a «Si te sobra tiempo» por cerrar.
+      if (noSeQuitan.has(item.lugar) && item.modo !== 'fuera' && closedThatDay(item.lugar, skeletonDay, item.ignora_temporada === true)) {
+        const aviso = closedStaysNotice(destData, placeByName.get(item.lugar), hours) ?? `Ese día ${item.lugar} está cerrado`
+        problems.push({ tipo: 'cierra_sin_otro_dia', lugar: item.lugar, aviso, dayNumber })
+        log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'aviso', causa: `cierre de ${item.lugar}: ningún otro día del viaje lo permite; se queda en su día con el aviso` })
+        return [{ ...item, cierra_hoy: true, aviso_cierre: aviso }]
       }
       if (item.si_cerrado?.cambiar_titulo) {
         log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'titulo', causa: `${item.lugar} está cerrado hoy: la parada es «${item.si_cerrado.cambiar_titulo}»` })
@@ -862,7 +905,7 @@ export function planListasTrip(args) {
       for (let guard = 0; guard < 40; guard++) {
         const sim = simular(out)
         const malo = sim.find((it) => {
-          if (it.kind !== 'stop' || it.llegada || it.tipo !== 'parada' || it.modo === 'fuera' || it.modo === 'camino' || it.hora || hechos.has(it.id)) return false
+          if (it.kind !== 'stop' || it.llegada || it.tipo !== 'parada' || it.modo === 'fuera' || it.modo === 'camino' || it.hora || it.cierra_hoy || hechos.has(it.id)) return false
           const source = sourceOf(it)
           if (!source || source.type !== 'interior') return false
           return openCheck(source, it.t0, it.min ?? 20, hours).ok !== true
@@ -1559,6 +1602,9 @@ export function planListasTrip(args) {
     .map((place) => ({ unitId: place.name, name: place.name, reason: closedAll(place.name) ? 'closed_every_day' : 'no_room', closedOn: place.closed_on ?? [] }))
   problems.push(...cityPlanned.flatMap((day) => []))
   for (const problem of problems) {
+    if (problem.tipo === 'cierra_sin_otro_dia' && !dayNotices.some((item) => item.dayNumber === problem.dayNumber && item.name === problem.lugar)) {
+      dayNotices.push({ dayNumber: problem.dayNumber, name: problem.lugar, reason: problem.aviso, suggestion: 'Si quieres entrar, cambia las fechas del viaje' })
+    }
     if (problem.tipo === 'reserva_cerrada' && !dayNotices.some((item) => item.dayNumber === problem.dayNumber && item.name === problem.lugar)) {
       dayNotices.push({ dayNumber: problem.dayNumber, name: problem.lugar, reason: `Ese día ${problem.lugar} está cerrado`, suggestion: 'Elige otra hora o otro día para tu entrada' })
     }

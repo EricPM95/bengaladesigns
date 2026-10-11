@@ -75,7 +75,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // Con una reserva no se quita nada ni se manda a «Si te sobra tiempo» por el tiempo: solo cierres (regla 5, Tanda 6x).
     if (conReserva) {
       for (const l of log) {
-        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
+        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera|con tu reserva a esa hora ya no cabe/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
         if (l.que === 'quitada' && /hora límite|no cabe|no cabía/i.test(l.causa ?? '')) falla('quitada_con_reserva', dia, `«${l.lugar}» se quita con una reserva: ${l.causa}`)
       }
     }
@@ -90,6 +90,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // (Tanda 6z5: solo en los días SIN reserva. Con una reserva el día sigue su lista escrita tal cual y a qué hora llega el viajero a cada sitio es cosa suya: lo que ese día cierra sigue en la regla 2.)
     for (const r of stops) {
       if (conReserva || r.modo === 'fuera' || r.modo === 'camino' || r.tipo !== 'parada' || r.hora_tipo === 'reserva' || r.llegada) continue
+      if (log.some((l) => l.que === 'aviso' && l.sitio === r.lugar && /^cierre de .*ningún otro día/.test(l.causa ?? ''))) continue
       const p = place(r.lugar)
       if (!p || p.type !== 'interior') continue
       const sesiones = parseHoursSessions(effectiveSchedule(p, dia.hours))
@@ -103,6 +104,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const p = place(r.lugar)
       if (!p) continue
       if (r.hora_tipo === 'reserva') continue // (la reserva del viajero manda: el motor avisa)
+      // (Tanda 6y5: el Vaticano y la Galería nunca se quitan; si ningún día del viaje abre, se quedan en su día con su aviso. La prueba propia comprueba que de verdad no había otro día.)
+      if (r.lugar && closedOnDay(p, dia.hours.weekday, dia.hours.dateIso) && log.some((l) => l.que === 'aviso' && l.sitio === r.lugar && /^cierre de .*ningún otro día/.test(l.causa ?? ''))) { avisa('cierra_sin_otro_dia', dia, `«${r.lugar}» se queda en su día, cerrado, con su aviso`); continue }
       if (r.lugar && closedOnDay(p, dia.hours.weekday, dia.hours.dateIso)) { falla('cerrado', dia, `«${r.titulo ?? r.lugar}» sale por dentro y está cerrado ese día`); continue }
       const sesiones = parseHoursSessions(effectiveSchedule(p, dia.hours))
       if (sesiones.length === 0) continue
@@ -317,7 +320,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     for (const sp of dia.spareRows ?? []) {
       const conReservaDia = (dia.escritoRows ?? []).some((r) => r.hora_tipo === 'reserva' && !r.llegada)
       const causa = (dia.escritoLog ?? []).find((l) => l.id === sp.id && l.que === 'sobra')?.causa ?? ''
-      const tipo = /cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(causa) ? 'cierre' : /el documento lo deja/i.test(causa) ? 'documento' : conReservaDia ? 'tiempo_con_reserva' : 'tiempo_sin_reserva'
+      const tipo = /con tu reserva a esa hora ya no cabe/i.test(causa) ? 'por_fila_de_reserva' : /cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera/i.test(causa) ? 'cierre' : /el documento lo deja/i.test(causa) ? 'documento' : conReservaDia ? 'tiempo_con_reserva' : 'tiempo_sin_reserva'
       avisa(`sobra_${tipo}`, dia, `«${sp.titulo ?? sp.lugar}» pasa a «Si te sobra tiempo»`)
       if (tipo === 'tiempo_con_reserva') falla('sobra_con_reserva', dia, `«${sp.titulo ?? sp.lugar}» pasa a «Si te sobra tiempo» con una reserva`)
     }

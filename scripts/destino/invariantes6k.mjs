@@ -36,6 +36,8 @@ export function comprobarDiaServidor({ day, iso, D, conocidos, donde, falla, res
     if (s.is_arrival || s.visit_mode !== 'dentro') continue
     const p = place(s.name)
     if (!p || reservados.has(s.name)) continue
+    // (Tanda 6y5: el Vaticano y la Galería nunca se quitan; si ningún día del viaje abre se quedan en su día con el aviso «se queda en su día y decides tú».)
+    if (/se queda en su día y decides tú/.test(s.notice ?? '')) continue
     if (iso && closedOnDay(p, weekdayOf(iso), iso)) falla('parada_cerrada', `${donde}: «${s.name}» va por dentro y ese día cierra (${iso})`)
     // (Tanda 6z5: el horario y la última entrada a la hora sugerida no se miden en el día de una reserva: ahí el día sigue su lista escrita y a qué hora llega el viajero es cosa suya.)
     if (iso && reservas.length === 0) {

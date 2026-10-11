@@ -9244,6 +9244,9 @@
       "_nota": "Avisos de cerrado (decisión del 2026-09-26). {Lugar}: el lugar con su artículo y mayúscula; {esta}: está/están; {cerrado}: cerrado/cerrada/cerrados/cerradas; {dia}: \"25 de diciembre\" o \"lunes\"; {motivo}: el festivo o \"cierre semanal\"; {fechas}: \"el 1 de mayo (Día del Trabajo) y el 2 de mayo (domingo)\"; {resto}: lo que sí se ve de su grupo.",
       "por_fuera": "{Lugar} {esta} {cerrado} el {dia} por {motivo}: te lo enseñamos por fuera, merece la pena igual.",
       "sin_visita_por_fuera": "{Lugar} {esta} {cerrado} {fechas}. Hoy ves {resto}, que sí abren.",
+      "_nota_se_queda": "Tanda 6y5 (P2 y P3): los sitios de `sitios_que_no_se_quitan` NUNCA se quitan de un día porque cierren. Primero se busca otro día del viaje donde abran y se cambian los dos días enteros; solo si no hay ninguno, el sitio se queda en su día con este aviso y decide el viajero.",
+      "sitios_que_no_se_quitan": ["Museos Vaticanos y Capilla Sixtina", "Galería Borghese"],
+      "se_queda": "{Lugar} {esta} {cerrado} el {dia} por {motivo}. No hay otro día de tu viaje en que se pueda ir, así que se queda en su día y decides tú.",
       "cierre_semanal": "cierre semanal",
       "festivos": {
         "01-01": "Año Nuevo",

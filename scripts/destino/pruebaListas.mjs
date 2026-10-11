@@ -135,7 +135,7 @@ const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [
   ...(day.spareRows ?? []).filter((r) => r.lugar && !r.relleno),
 ].map((r) => r.lugar)))
 // Las variantes del propio documento que quitan un sitio un día de cierre (domingo y miércoles del Vaticano, lunes de la Galería y de las Termas, domingo de la Farnesina y de San Clemente, sábado del Panteón): si la reserva deja ese día del viaje en un día así, quita el sitio el documento.
-const VARIANTES_DE_CIERRE = new Set(['domingo_sin_museos', 'sin_museos', 'miercoles_audiencia', 'lunes_sin_galeria', 'lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon'])
+const VARIANTES_DE_CIERRE = new Set(['miercoles_audiencia', 'lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon'])
 const variantesDe = (plan) => new Set(plan.days.flatMap((day) => day.curatedDay?.variantes ?? []))
 const cerradasPorCierre = (plan) => new Set(plan.days.flatMap((day) => (day.escritoLog ?? []).filter((l) => l.que === 'quitada' && /^cierre de /.test(l.causa ?? '')).map((l) => l.sitio ?? l.lugar)))
 if (!args.sinreservasdia) {
@@ -148,7 +148,6 @@ if (!args.sinreservasdia) {
       const base = planListasTrip({ ...comun, entradas: {} })
       if (!base) continue
       const antesBase = paradasDe(base)
-      const controlDe = new Map()
       for (const R of RESERVAS_DIA) {
         const grande = RESERVAS_GRANDES.has(R.name)
         for (let k = 1; k <= forma.dias; k++) {
@@ -165,9 +164,8 @@ if (!args.sinreservasdia) {
           const r = comprobarViaje({ D, plan, etiqueta, entradas, poolNames: [], hasFreeTour: Boolean(forma.ft), listas: written, franjas: written.destino?.franjas, reservaConDia: true })
           resumen.dias += plan.days.filter((d) => d.curatedDay?.id).length
           // Lo que debe llevar el viaje: lo de antes. Con una reserva grande, lo que escribe la fila de SU tabla para esa hora (el mismo viaje con la reserva puesta en su sitio, sin mover el día): el documento manda en lo que lleva cada fila.
-          if (!controlDe.has(R)) controlDe.set(R, grande ? planListasTrip({ ...comun, entradas }) : base)
-          const control = controlDe.get(R)
-          const antes = control ? paradasDe(control) : antesBase
+          // (Tanda 6y5, P4: se compara siempre con el viaje de antes, también con una reserva grande a la hora de otra fila de su tabla: lo que esa fila ya no lleva pasa a «Si te sobra tiempo», no desaparece.)
+          const antes = antesBase
           for (const f of r.fallos) { fallos.push(f); porRegla.set(f.regla, (porRegla.get(f.regla) ?? 0) + 1) }
           for (const f of r.info) infoPorRegla.set(f.regla, (infoPorRegla.get(f.regla) ?? 0) + 1)
           // Ni una parada menos (ni una más). Se compara con lo que debe llevar el viaje (lo de antes; con una reserva grande, lo que escribe la fila de su tabla); si la reserva no se pudo poner
@@ -178,14 +176,18 @@ if (!args.sinreservasdia) {
             faltan: [...referencia].filter((name) => !despues.has(name) && !cerradas.has(name)),
             sobran: [...despues].filter((name) => !referencia.has(name)),
           })
-          const contraControl = diferencias(antes)
-          const contraBase = diferencias(antesBase)
-          const mejor = contraControl.faltan.length + contraControl.sobran.length <= contraBase.faltan.length + contraBase.sobran.length ? contraControl : contraBase
+          const mejor = diferencias(antesBase)
+          // (Lo que el Free Tour ya enseña por fuera —la Fontana de Trevi— no falta; y el 25 de diciembre y el 1 de enero el documento usa el D1-corto en lugar del D1: otro día escrito, con otras paradas.)
+          const cubiertoTour = new Set(forma.ft ? D.default_free_tour?.covers ?? [] : [])
+          mejor.faltan = mejor.faltan.filter((name) => !(cubiertoTour.has(name) && D.places.find((p) => p.name === name)?.type !== 'interior'))
+          const idsDe = (p) => new Set(p.days.map((d) => d.curatedDay?.id).filter(Boolean))
+          const difIds = [...idsDe(plan)].filter((id) => !idsDe(base).has(id)).concat([...idsDe(base)].filter((id) => !idsDe(plan).has(id)))
+          if (mejor.faltan.length > 0 && difIds.length > 0 && difIds.every((id) => id === 'D1' || id === 'D1-corto')) { infoPorRegla.set('cambio_de_d1_por_festivo', (infoPorRegla.get('cambio_de_d1_por_festivo') ?? 0) + 1); mejor.faltan = [] }
           if ([...antes].some((name) => !despues.has(name) && cerradas.has(name))) infoPorRegla.set('parada_cerrada_por_reserva', (infoPorRegla.get('parada_cerrada_por_reserva') ?? 0) + 1)
           // Los Museos de un miércoles sin su reserva los quita el propio documento («el miércoles sin Museos», variante miercoles_audiencia): una reserva grande puede dejar el día del Vaticano en
           // miércoles (el Coliseo fijado el martes), y entonces el documento los quita. No es de esta tanda: se cuenta aparte y va a las preguntas del informe.
           // (Ahora vale para todas: el domingo y el miércoles del Vaticano, el lunes de la Galería y el de las Termas de Caracalla.)
-          const antesVariantes = variantesDe(control ?? base)
+          const antesVariantes = variantesDe(base)
           const variantesPlan = variantesDe(plan)
           const variantesBase = variantesDe(base)
           // (Cambian las variantes de cierre: o entra una —el Vaticano cae en domingo— o sale una —el miércoles sin Museos se evita—.)
@@ -200,6 +202,52 @@ if (!args.sinreservasdia) {
             const fila = dia ? (dia.escritoRows ?? []).find((x) => x.lugar === R.name && !x.llegada && x.tipo === 'parada' && x.hora_tipo === 'reserva') : null
             if (dia && !fila && !(dia.escritoLog ?? []).some((l) => l.sitio === R.name && l.que === 'quitada')) { fallos.push({ regla: 'reserva_sin_su_dia', texto: `${etiqueta}: la reserva no sale en el día ${k}` }); porRegla.set('reserva_sin_su_dia', (porRegla.get('reserva_sin_su_dia') ?? 0) + 1) }
             else if (fila && fila.hora_fija !== R.hora) { fallos.push({ regla: 'reserva_sin_su_dia', texto: `${etiqueta}: sale a las ${fila.hora_fija}` }); porRegla.set('reserva_sin_su_dia', (porRegla.get('reserva_sin_su_dia') ?? 0) + 1) }
+          }
+        }
+      }
+    }
+  }
+}
+// ── Dos reservas a la vez (Tanda 6y5, P1): el Altar de la Patria y el Ara Pacis, reservados los DOS en el mismo viaje ──────────────────────────────────────────────────────────────────
+// Con cualquier combinación de las dos reservas (el mismo día o días distintos, varias horas, con fechas y sin fechas, en los dos órdenes de la petición) el viaje lleva las mismas paradas que sin
+// reservas, y cada reserva sale en el día de su fecha, a su hora (si el sitio está en el viaje). Para no triplicar la prueba, cada fecha prueba una de las parejas de horas, rotando; y una de cada 7
+// fechas se prueba sin fechas (solo con el número de día).
+const HORAS_PAR = [['10:00', '10:00'], ['10:00', '16:00'], ['16:00', '11:00'], ['11:00', '11:00']]
+if (!args.sinpares) {
+  for (const forma of FORMAS) {
+    if (SOLO && !SOLO.has(forma.g)) continue
+    if (forma.ft && args.sinft) continue
+    for (const [indice, inicio] of fechas.entries()) {
+      const sinFechas = indice % 7 === 3
+      const exp = forma.ft ? ['imprescindibles', 'free_tour'] : []
+      // (Una de cada 5 fechas, con el Altar elegido en el pool del formulario: el sitio que el viajero marcó y además reservó.)
+      const comun = { destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames: indice % 5 === 1 ? ['Altar de la Patria'] : [], experiencesPositive: exp, dateRangeStartIso: sinFechas ? null : inicio, travel, mediaJornada: forma.medio ?? null, diaCuatro: forma.diaCuatro ?? null }
+      const base = planListasTrip({ ...comun, entradas: {} })
+      if (!base) continue
+      const antes = paradasDe(base)
+      if (!antes.has('Altar de la Patria') || !antes.has('Ara Pacis')) { infoPorRegla.set('par_sin_los_dos_en_el_viaje', (infoPorRegla.get('par_sin_los_dos_en_el_viaje') ?? 0) + 1); continue }
+      for (let a = 1; a <= forma.dias; a++) for (let b = 1; b <= forma.dias; b++) {
+        const diaA = base.days.find((d) => d.dayNumber === a)
+        const diaB = base.days.find((d) => d.dayNumber === b)
+        if ([diaA, diaB].some((d) => !d || d.isExcursion || d.isBlank || !d.curatedDay?.id)) { infoPorRegla.set('reserva_en_dia_sin_ciudad', (infoPorRegla.get('reserva_en_dia_sin_ciudad') ?? 0) + 1); continue }
+        const [ha, hb] = HORAS_PAR[(indice + a + b) % HORAS_PAR.length]
+        const altar = { name: 'Altar de la Patria', dateIso: sinFechas ? null : addDays(inicio, a - 1), dayNumber: a, time: ha }
+        const ara = { name: 'Ara Pacis', dateIso: sinFechas ? null : addDays(inicio, b - 1), dayNumber: b, time: hb }
+        for (const [orden, reservasViaje] of [['altar_primero', [altar, ara]], ['ara_primero', [ara, altar]]]) {
+          const etiqueta = `${forma.clave} + Altar día ${a} ${ha} + Ara Pacis día ${b} ${hb} (${orden}${sinFechas ? ', sin fechas' : ''}) · inicio ${inicio}`
+          const plan = planListasTrip({ ...comun, entradas: {}, reservasViaje })
+          resumen.viajes++
+          if (!plan) { fallos.push({ regla: 'sin_plan', texto: `${etiqueta}: el motor no devuelve plan` }); porRegla.set('sin_plan', (porRegla.get('sin_plan') ?? 0) + 1); continue }
+          const despues = paradasDe(plan)
+          const cerradas = cerradasPorCierre(plan)
+          const faltan = [...antes].filter((name) => !despues.has(name) && !cerradas.has(name))
+          if (faltan.length > 0) { fallos.push({ regla: 'paradas_perdidas', texto: `${etiqueta}: faltan ${faltan.join(', ')}` }); porRegla.set('paradas_perdidas', (porRegla.get('paradas_perdidas') ?? 0) + 1) }
+          if ([...despues].some((name) => !antes.has(name))) infoPorRegla.set('paradas_de_mas_por_el_hueco', (infoPorRegla.get('paradas_de_mas_por_el_hueco') ?? 0) + 1)
+          for (const [r, k, h] of [[altar, a, ha], [ara, b, hb]]) {
+            const dia = plan.days.find((d) => d.dayNumber === k && d.curatedDay?.id)
+            const fila = dia ? (dia.escritoRows ?? []).find((x) => x.lugar === r.name && !x.llegada && x.tipo === 'parada' && x.hora_tipo === 'reserva') : null
+            if (dia && !fila && !(dia.escritoLog ?? []).some((l) => l.sitio === r.name && l.que === 'quitada')) { fallos.push({ regla: 'reserva_sin_su_dia', texto: `${etiqueta}: la reserva de ${r.name} no sale en el día ${k}` }); porRegla.set('reserva_sin_su_dia', (porRegla.get('reserva_sin_su_dia') ?? 0) + 1) }
+            else if (fila && fila.hora_fija !== h) { fallos.push({ regla: 'reserva_sin_su_dia', texto: `${etiqueta}: ${r.name} sale a las ${fila.hora_fija}` }); porRegla.set('reserva_sin_su_dia', (porRegla.get('reserva_sin_su_dia') ?? 0) + 1) }
           }
         }
       }
