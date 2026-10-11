@@ -21,6 +21,10 @@ export default {
         'accent-gold': withOpacity('--accent-gold'),
         'accent-red': withOpacity('--accent-red'),
         'accent-lilac': withOpacity('--accent-lilac'),
+        // El lila de la etiqueta de barrio («Trastevere», Tanda 6y4): un solo sitio, los tripletes de index.css.
+        'barrio-lila': withOpacity('--barrio-lila'),
+        'barrio-lila-soft': withOpacity('--barrio-lila-soft'),
+        'barrio-lila-borde': withOpacity('--barrio-lila-borde'),
         'accent-green': withOpacity('--accent-green'),
         'accent-green-soft': withOpacity('--accent-green-soft'),
         text: withOpacity('--text'),

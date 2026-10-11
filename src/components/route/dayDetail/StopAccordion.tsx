@@ -7,6 +7,8 @@ import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
 import { EntradaEdgeTab } from '../reservas/EntradaEdgeTab'
 import { OnTheWayCard, TrazoCard, type CardMeta } from './TrazoCards'
+import { useEtiquetaBarrio } from '../../ui/EtiquetaBarrio'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 interface StopAccordionProps {
   /** El número de su pin en el mapa (ver stopNumbersOf) — null en lo que no lleva número. */
@@ -48,6 +50,8 @@ const OUTSIDE_SHORT: Record<string, string> = {
  */
 export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning, horario }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
+  // La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos del destino.
+  const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
   // Una pausa con nombre (el desayuno romano): se pinta como la comida, sin ficha.
   if (stop.isBreak) return <BreakCard stop={stop} startTime={startTime} menu={menu} onOpen={onOpen} />
   // Lo de paso no es una parada: "Por el camino: …" entre dos paradas, con su foto pequeña y su ficha al tocar
@@ -131,6 +135,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}
+      barrio={stop.isFreeTour || stop.isFreeWalk ? null : barrio}
       edgeTab={<EntradaEdgeTab stop={stop} onOpenEntradas={onOpenEntradas ?? onOpen} />}
       photoUrl={stop.photoUrl}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)

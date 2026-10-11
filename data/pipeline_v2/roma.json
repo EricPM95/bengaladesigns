@@ -804,7 +804,8 @@
         "Basílica de Santa Cecilia in Trastevere",
         "Trastevere"
       ],
-      "zone_priority": 3
+      "zone_priority": 3,
+      "etiqueta_barrio": "Trastevere"
     },
     "villa_borghese": {
       "name": "Villa Borghese",
@@ -1304,6 +1305,10 @@
         "ultima_entrada": "21:00",
         "gratis": "fuera de ese horario; también para los menores de 6 años, las personas con discapacidad y su acompañante, y los residentes de Roma",
         "como_se_paga": "online o allí mismo, solo con tarjeta",
+        "titulo": "Bajar junto al agua",
+        "libre": "La fuente se ve gratis desde la plaza a cualquier hora.",
+        "desde_tarde_dias": ["lunes", "viernes"],
+        "_ficha": "Tanda 6y4: lo que enseña el bloque «No necesitas entrada» de la ficha (titulo, libre y los días que abren a las 11:30: lunes y viernes, ver `nota_tasa` y `variables` de por_que_lugares['Fontana de Trevi'], Comune di Roma, comprobado el 30-09-2026). Los importes y horarios salen de los campos de arriba; sin ellos el bloque va sin números.",
         "_fuente": "Tanda 6e, punto 2c (docs/dias/PARA_CODE_TANDA6E.md)"
       },
       "por_el_camino": [

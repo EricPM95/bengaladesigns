@@ -33,9 +33,22 @@ export interface DestinationExcursions {
   dayNameExample: string | null
   /** La valoración media real (null mientras no haya notas reales). */
   rating: { percent: number; excursions: number; reviews: number } | null
+  /** La etiqueta de barrio de cada lugar cuya zona la lleva («Trastevere»), por nombre de lugar (Tanda 6y4; dato del destino: `etiqueta_barrio` de la zona). Un lugar que no sale no lleva etiqueta. */
+  etiquetasPorSitio: Record<string, string>
+  /** El bloque «No necesitas entrada» de los sitios que no venden entrada pero cobran por acercarse (la tasa de la Fontana de Trevi), por nombre de lugar (Tanda 6y4; dato `entrada_de_pago`). */
+  sinEntradaPorSitio: Record<string, SinEntrada>
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, nombresCortos: {}, zonasAlojamiento: [], mapaAlojamiento: null, moneda: null, examples: null, dayNameExample: null, rating: null }
+/** «No necesitas entrada» (Tanda 6y4): lo que dice el dato de un sitio con tasa en vez de entrada. Cada parte puede faltar; lo que falta no se pinta (y sin precio, el bloque va sin números). */
+export interface SinEntrada {
+  titulo: string | null
+  libre: string | null
+  concepto: string | null
+  precio: string | null
+  detalle: string | null
+}
+
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, nombresCortos: {}, zonasAlojamiento: [], mapaAlojamiento: null, moneda: null, examples: null, dayNameExample: null, rating: null, etiquetasPorSitio: {}, sinEntradaPorSitio: {} }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
@@ -47,10 +60,10 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; moneda?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating'] } | null) => {
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; moneda?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating']; etiquetas_por_sitio?: Record<string, string>; sin_entrada_por_sitio?: Record<string, SinEntrada> } | null) => {
       const result: DestinationExcursions = data?.found
-        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data.nombres_cortos ?? {}, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, moneda: data.moneda ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null }
-        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data?.nombres_cortos ?? {}, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, moneda: data?.moneda ?? null, dayNameExample: data?.day_name_example ?? null }
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data.nombres_cortos ?? {}, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, moneda: data.moneda ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null, etiquetasPorSitio: data.etiquetas_por_sitio ?? {}, sinEntradaPorSitio: data.sin_entrada_por_sitio ?? {} }
+        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data?.nombres_cortos ?? {}, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, moneda: data?.moneda ?? null, dayNameExample: data?.day_name_example ?? null, etiquetasPorSitio: data?.etiquetas_por_sitio ?? {}, sinEntradaPorSitio: data?.sin_entrada_por_sitio ?? {} }
       cache.set(key, result)
       return result
     })
