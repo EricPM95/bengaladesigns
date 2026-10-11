@@ -11,7 +11,7 @@ import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
 
 const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
 
-export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [], hasFreeTour = false, listas = null, franjas = {} }) {
+export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [], hasFreeTour = false, listas = null, franjas = {}, reservaConDia = false }) {
   const fallos = []
   const info = []
   const place = (name) => D.places.find((p) => p.name === name)
@@ -300,7 +300,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const buscados = hasFreeTour ? ['D3', 'D1-FT'] : ['D1', 'D2']
     const primeros = completos.slice(0, 2)
     const faltan = buscados.filter((id) => completos.length >= 2 && !primeros.some((d) => d.curatedDay.id === id) && completos.some((d) => d.curatedDay.id === id))
-    for (const id of faltan) {
+    // (Una reserva grande con su fecha pone el día de su sitio en esa fecha a propósito, Tanda 6j: el orden de los días ya no es el de la tabla.)
+    for (const id of reservaConDia ? [] : faltan) {
       // (Lo que el documento marca como mala fecha de ese día: días de la semana, fechas y sitios que cierran; con eso el motor lo cambia por el día siguiente.)
       // (El motor dice por qué retrasó el día: lo que le cuesta en su sitio de la tabla —un sitio cerrado, una mala fecha del documento, un horario especial—; sin motivo es un fallo.)
       const motivo = Object.entries(plan.motivosOrden ?? {}).map(([otro, razones]) => `${otro}: ${razones.join(', ')}`).join('; ')

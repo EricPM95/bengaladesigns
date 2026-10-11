@@ -370,31 +370,35 @@ export function planListasTrip(args) {
   // Nada se quita nunca: lo que sale de un día entra en otro, y cada día que se pida por separado ve el mismo viaje (la petición trae todas las reservas, no solo las de su día).
   // (Lo que cubre la misma entrada que una grande —el Foro con el Coliseo— no mueve nada por su cuenta: va con el día de la grande.)
   const marcasViaje = []
-  for (const r of reservasViaje ?? []) {
-    if (!r?.name || RESERVAS_GRANDES.has(r.name) || !/^\d{1,2}:\d{2}$/.test(String(r.time ?? ''))) continue
-    const slot = cityDays.findIndex((day) => (calendar.hasDates && r.dateIso ? hoursOf(day).dateIso === r.dateIso : day.dayNumber === Number(r.dayNumber)))
-    if (slot < 0 || !drafts[slot]) continue
-    const destino = drafts[slot]
-    const hora = String(r.time).length === 4 ? `0${r.time}` : String(r.time)
-    const esLaVisita = (s) => s.lugar === r.name && s.tipo !== 'traslado' && s.modo !== 'camino'
-    if (stopsOfTrabajo(destino.trabajo).some(esLaVisita)) { marcasViaje.push({ lugar: r.name, hora, host: destino }); continue }
-    const origen = drafts.find((d) => d !== destino && stopsOfTrabajo(d.trabajo).some(esLaVisita))
-    if (!origen) continue
-    // Sale del día que lo llevaba (con el traslado que iba delante, que era para llegar a él).
-    let visita = null
-    for (const key of ['manana', 'tarde']) {
-      const at = visita ? -1 : origen.trabajo[key].findIndex(esLaVisita)
-      if (at < 0) continue
-      visita = origen.trabajo[key][at]
-      const quitar = new Set([at])
-      if (origen.trabajo[key][at - 1]?.tipo === 'traslado') quitar.add(at - 1)
-      origen.trabajo[key] = origen.trabajo[key].filter((_, i) => !quitar.has(i))
+  // El reloj de un día a ritmo normal: lo que dura cada parada y un rato de andar entre una y otra; una hora fija espera a su hora.
+  const relojTras = (draft, secuencia, n) => {
+    let reloj = toMin(draft.trabajo.empieza ?? cfg.inicio)
+    for (let at = 0; at < n; at++) {
+      const s = secuencia[at]
+      if (s.tipo !== 'traslado') {
+        if (s.hora && s.hora !== '$free_tour') reloj = Math.max(reloj, toMin(s.hora))
+        reloj += (s.min ?? 10) + 8
+      } else reloj += 10
     }
-    origen.aplicadas.push(`reserva_sale:${r.name}`)
-    // Entra en el día de la reserva: en la mañana si es antes de la comida (o la tarde si el día solo tiene tarde), en el puesto más cercano a lo que ya lleva sin pasar una hora fija.
-    const secuencia = [...destino.trabajo.manana, ...destino.trabajo.tarde]
-    const nManana = destino.trabajo.manana.length
-    const minutos = toMin(hora)
+    return reloj
+  }
+  /** Quita la visita de una lista de un día (con el traslado que iba delante, que era para llegar a ella) y la devuelve. */
+  const sacarVisita = (draft, esLaVisita) => {
+    for (const key of ['manana', 'tarde']) {
+      const at = draft.trabajo[key].findIndex(esLaVisita)
+      if (at < 0) continue
+      const visita = draft.trabajo[key][at]
+      const quitar = new Set([at])
+      if (draft.trabajo[key][at - 1]?.tipo === 'traslado') quitar.add(at - 1)
+      draft.trabajo[key] = draft.trabajo[key].filter((_, i) => !quitar.has(i))
+      return visita
+    }
+    return null
+  }
+  /** Mete la visita en el día en el puesto que le toca por su hora: en la mañana si es antes de la comida (en la tarde si el día solo tiene tarde), detrás de lo que a esa hora ya habrá hecho y sin pasar una hora fija. */
+  const meterPorHora = (draft, visita, minutos) => {
+    const secuencia = [...draft.trabajo.manana, ...draft.trabajo.tarde]
+    const nManana = draft.trabajo.manana.length
     let lo = 0
     let hi = secuencia.length
     secuencia.forEach((s, i) => {
@@ -402,30 +406,60 @@ export function planListasTrip(args) {
       if (toMin(s.hora) <= minutos) lo = Math.max(lo, i + 1)
       else hi = Math.min(hi, i)
     })
-    const deLaManana = !destino.soloTarde && minutos < toMin(cfg.comida_antes_desde) + 90
+    const deLaManana = !draft.soloTarde && minutos < toMin(cfg.comida_antes_desde) + 90
     let desde = deLaManana ? 0 : nManana
     let hasta = deLaManana ? nManana : secuencia.length
-    if (destino.soloTarde) { desde = nManana; hasta = secuencia.length }
+    if (draft.soloTarde) { desde = nManana; hasta = secuencia.length }
     // (Si la hora y las horas fijas del día no dejan hueco en la franja, manda la hora fija; y si tampoco, la franja.)
     let a = Math.max(desde, lo)
     let b = Math.min(hasta, hi)
     if (a > b) { a = Math.max(0, Math.min(lo, hi)); b = Math.max(a, Math.min(hi, secuencia.length)) }
-    // El puesto: detrás de todo lo que, a ritmo normal, ya habrá hecho a esa hora (lo que dura cada parada y un rato de andar entre una y otra; una hora fija espera a su hora).
-    let reloj = toMin(destino.trabajo.empieza ?? cfg.inicio)
     let punto = a
-    for (let at = 0; at < b; at++) {
-      const s = secuencia[at]
-      if (s.tipo !== 'traslado') {
-        if (s.hora && s.hora !== '$free_tour') reloj = Math.max(reloj, toMin(s.hora))
-        reloj += (s.min ?? 10) + 8
-      } else reloj += 10
-      if (at + 1 >= a && reloj <= minutos) punto = at + 1
-    }
+    for (let at = a; at <= b; at++) if (relojTras(draft, secuencia, at) <= minutos) punto = at
     if (secuencia[punto - 1]?.tipo === 'traslado') punto++ // (entre un traslado y la parada a la que lleva, no)
-    const mejor = { at: Math.min(Math.max(punto, a), Math.max(a, b)) }
-    const colocada = { ...visita, modo: 'dentro', min: Math.max(visita.min ?? 0, minutosDentro[r.name] ?? Math.min(placeByName.get(r.name)?.duration_minutes ?? 60, 90)), protegido: true }
-    if (mejor.at <= nManana && !(destino.soloTarde)) destino.trabajo.manana.splice(Math.min(mejor.at, nManana), 0, colocada)
-    else destino.trabajo.tarde.splice(Math.max(0, mejor.at - nManana), 0, colocada)
+    const at = Math.min(Math.max(punto, a), Math.max(a, b))
+    if (at <= nManana && !draft.soloTarde) draft.trabajo.manana.splice(Math.min(at, nManana), 0, visita)
+    else draft.trabajo.tarde.splice(Math.max(0, at - nManana), 0, visita)
+  }
+  for (const r of reservasViaje ?? []) {
+    if (!r?.name || RESERVAS_GRANDES.has(r.name) || !/^\d{1,2}:\d{2}$/.test(String(r.time ?? ''))) continue
+    const slot = cityDays.findIndex((day) => (calendar.hasDates && r.dateIso ? hoursOf(day).dateIso === r.dateIso : day.dayNumber === Number(r.dayNumber)))
+    if (slot < 0 || !drafts[slot]) continue
+    const destino = drafts[slot]
+    const hora = String(r.time).length === 4 ? `0${r.time}` : String(r.time)
+    const minutos = toMin(hora)
+    const esLaVisita = (s) => s.lugar === r.name && s.tipo !== 'traslado' && s.modo !== 'camino'
+    // Por dentro una sola vez en el viaje: el sitio reservado entra por dentro en el día de su reserva; si otro día lo llevaba también por dentro, ahí pasa a verse por fuera.
+    const soloAquiPorDentro = (aqui) => {
+      for (const d of drafts) {
+        if (d === aqui) continue
+        for (const key of ['manana', 'tarde']) {
+          d.trabajo[key] = d.trabajo[key].map((s) => (esLaVisita(s) && s.modo === 'dentro' ? { ...s, modo: 'fuera', min: Math.min(s.min ?? 15, placeByName.get(r.name)?.minutos_fuera ?? 15) } : s))
+        }
+      }
+    }
+    const dentroMin = (visita) => Math.max(visita.min ?? 0, minutosDentro[r.name] ?? Math.min(placeByName.get(r.name)?.duration_minutes ?? 60, 90))
+    if (stopsOfTrabajo(destino.trabajo).some(esLaVisita)) {
+      // Ya está en el día de la reserva. Si en la lista cae a una hora muy distinta de la de la reserva (el Panteón de la tarde, reservado a las 11:00), se pasa al puesto que le toca por su hora:
+      // si no, el día enseñaría «Tarde» con una hora de la mañana. Si cae cerca de su hora, se queda donde la pone la lista.
+      const secuencia = [...destino.trabajo.manana, ...destino.trabajo.tarde]
+      const en = secuencia.findIndex(esLaVisita)
+      if (Math.abs(relojTras(destino, secuencia, en) - minutos) > 60) {
+        const visita = sacarVisita(destino, esLaVisita)
+        meterPorHora(destino, { ...visita, modo: 'dentro', min: dentroMin(visita), protegido: true }, minutos)
+        destino.aplicadas.push(`reserva_a_su_hora:${r.name}`)
+      }
+      soloAquiPorDentro(destino)
+      marcasViaje.push({ lugar: r.name, hora, host: destino })
+      continue
+    }
+    const origen = drafts.find((d) => d !== destino && stopsOfTrabajo(d.trabajo).some(esLaVisita))
+    if (!origen) continue
+    soloAquiPorDentro(destino)
+    // Sale del día que lo llevaba y entra en el de la reserva.
+    const visita = sacarVisita(origen, esLaVisita)
+    origen.aplicadas.push(`reserva_sale:${r.name}`)
+    meterPorHora(destino, { ...visita, modo: 'dentro', min: dentroMin(visita), protegido: true }, minutos)
     destino.aplicadas.push(`reserva_entra:${r.name}`)
     marcasViaje.push({ lugar: r.name, hora, host: destino })
   }
