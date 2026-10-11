@@ -8,9 +8,8 @@ import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { TimeListWheel } from '../../ui/TimeListWheel'
 import { BloqueShell, CambiarBoton, EliminarTexto, FlechaBloque, EstadoBloque, GR, INK, IconoBloque, VERDE_LINEA, VERDE_SUAVE, iconoDeMedio, tituloBloqueStyle } from './BloqueReservas'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
-import { CampoPrecio } from '../../ui/CampoPrecio'
-import { usePrecioEditable } from '../../../lib/useMoneda'
-import { leerImporte, type Importe } from '../../../lib/dinero'
+import { HojaPrecio } from './HojaPrecio'
+import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
 import { Icono } from '../../ui/Icono'
 
 const HORAS = Array.from({ length: (24 * 60 - 360) / 5 }, (_, i) => {
@@ -24,12 +23,8 @@ const BUSCAR_BILLETE = 'https://www.skyscanner.net'
 
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
 
-/** La hoja de la hora de una mitad: la rueda de la 6k, de 5 en 5 minutos. */
-export function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }: { leg: LegState; ciudad: string; precioInicial: Importe | null; onSave: (time: string, precio: Importe | null, codigo: string | null) => void; onClose: () => void }) {
-  // (Tanda 6z2) El precio del billete, total de todas las personas. Si la ida y la vuelta son un mismo billete, se pone en la ida y la vuelta se queda vacía.
-  const precio = usePrecioEditable(precioInicial)
-  // (Tanda 6y4) El código del vuelo, tren o autobús, opcional: se ve luego en la tarjeta de la llegada y la vuelta.
-  const [codigo, setCodigo] = useState(leg.codigo ?? '')
+/** La hoja de la hora de una mitad: solo la rueda de la 6k, de 5 en 5 minutos. El precio, la referencia y la compañía se rellenan en las casillas del tramo abierto (Tanda 6y5). */
+export function HojaHoraLlegada({ leg, ciudad, onSave, onClose }: { leg: LegState; ciudad: string; onSave: (time: string) => void; onClose: () => void }) {
   const [hora, setHora] = useState(leg.time && HORAS.includes(leg.time) ? leg.time : HORA_POR_DEFECTO[leg.kind])
   const lugar = leg.point ? puntoCorto(leg.point) : ciudad
   const fecha = leg.dateIso ? capitalizar(shortDateEs(leg.dateIso)) : `Día ${leg.dayNumber}`
@@ -45,49 +40,95 @@ export function HojaHoraLlegada({ leg, ciudad, precioInicial, onSave, onClose }:
       <div className="mt-3.5">
         <TimeListWheel items={HORAS} value={hora} onChange={setHora} label={leg.kind === 'arrival' ? 'Hora de llegada' : 'Hora de salida'} />
       </div>
-      <div className="mt-4">
-        <CampoPrecio estado={precio} ayuda={leg.kind === 'arrival' ? 'Si la ida y la vuelta son un mismo billete, ponlo aquí y deja la vuelta vacía.' : 'Déjalo vacío si ya lo pusiste en la ida.'} />
-      </div>
-      <label className="mt-3 block">
-        <span className="text-[13px] font-medium text-text">{`Código del ${legWord(leg.mode).noun} (opcional)`}</span>
-        <input
-          value={codigo}
-          onChange={(event) => setCodigo(event.target.value)}
-          maxLength={20}
-          autoCapitalize="characters"
-          placeholder="AB 1234"
-          aria-label={`Código del ${legWord(leg.mode).noun}`}
-          className="mt-1.5 h-12 w-full rounded-[14px] border border-text/15 bg-white px-3.5 text-[15px] uppercase outline-none focus:border-text/50 placeholder:normal-case"
-          style={{ fontFamily: "'Geist Mono',monospace" }}
-        />
-      </label>
-      <button type="button" onClick={() => onSave(hora, precio.importe, codigo.trim() || null)} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]">
+      <button type="button" onClick={() => onSave(hora)} className="mt-4 h-[54px] w-full rounded-full bg-text text-[15px] font-semibold text-bg transition-transform active:scale-[.98]">
         Guardar · {hora}
       </button>
     </HojaAbajo>
   )
 }
 
-/** Una mitad abierta, como media tarjeta de embarque: de dónde a dónde, los botones del punto, la hora y «¿Llegas o te vas otro día?». */
+const etiquetaCasilla = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' as const }
+
+/** Una casilla del tramo abierto que se toca y abre una hoja («Llega», «Precio»): la etiqueta pequeña arriba y debajo lo que hay o lo que falta. */
+function CasillaToque({ etiqueta, valor, vacio, icono, onClick }: { etiqueta: string; valor: string | null; vacio: string; icono: 'reloj' | 'anadir'; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-casilla={etiqueta}
+      className="flex h-[58px] min-w-0 items-center gap-1.5 rounded-[14px] px-3 text-left transition-colors"
+      style={{ border: `1.5px solid ${valor ? 'oklch(0.55 0.11 150 / .35)' : 'transparent'}`, background: valor ? VERDE_SUAVE : '#F5EFE4', color: INK }}
+    >
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-text/55" style={etiquetaCasilla}>
+          {etiqueta}
+        </span>
+        <span className="truncate" style={{ font: valor ? "400 20px/1.1 'Instrument Serif',serif" : "500 13.5px 'Geist'", color: valor ? INK : 'rgba(28,34,48,.55)' }}>
+          {valor ?? vacio}
+        </span>
+      </span>
+      <Icono nombre={icono} size={15} style={{ color: 'rgba(28,34,48,.5)' }} />
+    </button>
+  )
+}
+
+/** Una casilla del tramo abierto que se escribe (la referencia, la compañía): opcional, libre, y se guarda al salir del campo. */
+function CasillaTexto({ etiqueta, valor, ejemplo, mayusculas, onGuardar }: { etiqueta: string; valor: string; ejemplo: string; mayusculas?: boolean; onGuardar: (texto: string) => void }) {
+  const [texto, setTexto] = useState(valor)
+  return (
+    <label className="flex h-[58px] min-w-0 flex-col justify-center gap-0.5 rounded-[14px] px-3" style={{ border: `1.5px solid ${valor ? 'oklch(0.55 0.11 150 / .35)' : 'transparent'}`, background: valor ? VERDE_SUAVE : '#F5EFE4', color: INK }}>
+      <span className="text-text/55" style={etiquetaCasilla}>
+        {etiqueta}
+      </span>
+      <input
+        value={texto}
+        onChange={(event) => setTexto(event.target.value)}
+        onBlur={() => onGuardar(texto)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') event.currentTarget.blur()
+        }}
+        maxLength={mayusculas ? 20 : 40}
+        autoComplete="off"
+        autoCapitalize={mayusculas ? 'characters' : 'words'}
+        placeholder={ejemplo}
+        aria-label={etiqueta}
+        data-casilla={etiqueta}
+        className={`w-full min-w-0 bg-transparent text-[14px] font-medium outline-none placeholder:font-normal placeholder:text-text/35 ${mayusculas ? 'uppercase placeholder:normal-case' : ''}`}
+        style={mayusculas ? { fontFamily: "'Geist Mono',monospace" } : undefined}
+      />
+    </label>
+  )
+}
+
+/** Una mitad abierta, como media tarjeta de embarque: de dónde a dónde, los botones del punto, y cuatro casillas (hora, precio, referencia y compañía). */
 function MitadAbierta({
   leg,
   origen,
   ciudad,
+  precio,
   onPoint,
   onTime,
+  onPrecio,
+  onCodigo,
+  onCompania,
   onFechas,
   onEliminar,
 }: {
   leg: LegState
   origen: string
   ciudad: string
+  precio: Importe | null
   onPoint: (pointId: string) => void
   onTime: () => void
+  onPrecio: () => void
+  onCodigo: (texto: string) => void
+  onCompania: (texto: string) => void
   onFechas: () => void
   onEliminar: () => void
 }) {
   const [seguro, setSeguro] = useState(false)
   const esIda = leg.kind === 'arrival'
+  const palabras = legWord(leg.mode)
   const lugar = leg.point ? puntoCorto(leg.point) : null
   const pregunta = leg.question
   const grande = "400 22px/1.05 'Instrument Serif',serif"
@@ -134,20 +175,12 @@ function MitadAbierta({
       )}
       {unico && leg.point && <span className="text-[12px] text-text/60">{leg.point.nombre} · el único de {ciudad}</span>}
       <div className="flex flex-col gap-1.5">
-        <button
-          type="button"
-          onClick={onTime}
-          className="flex h-12 items-center gap-2.5 rounded-[14px] px-3.5 text-left transition-colors"
-          style={{ border: `1.5px solid ${leg.time ? 'oklch(0.55 0.11 150 / .35)' : 'transparent'}`, background: leg.time ? VERDE_SUAVE : '#F5EFE4', color: INK }}
-        >
-          <span className="text-text/55" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>
-            {esIda ? 'Llega' : 'Sale'}
-          </span>
-          <span className="flex-1 text-left" style={{ font: leg.time ? "400 22px/1 'Instrument Serif',serif" : "500 14px 'Geist'", color: leg.time ? INK : 'rgba(28,34,48,.55)' }}>
-            {leg.time ?? 'Elige la hora'}
-          </span>
-          <Icono nombre="reloj" size={16} />
-        </button>
+        <div className="grid grid-cols-2 gap-1.5">
+          <CasillaToque etiqueta={esIda ? 'Llega' : 'Sale'} valor={leg.time} vacio="Elige la hora" icono="reloj" onClick={onTime} />
+          <CasillaToque etiqueta="Precio" valor={precio ? formatoImporte(precio) : null} vacio="Añadir" icono="anadir" onClick={onPrecio} />
+          <CasillaTexto key={`ref-${leg.mode}`} etiqueta={palabras.refLabel} valor={leg.codigo ?? ''} ejemplo="AB 1234" mayusculas onGuardar={onCodigo} />
+          <CasillaTexto key={`cia-${leg.mode}`} etiqueta={palabras.companiaLabel} valor={leg.compania ?? ''} ejemplo="Opcional" onGuardar={onCompania} />
+        </div>
         <span className="text-[11px] leading-[1.35] text-text/60">
           ¿Llegas o te vas otro día?{' '}
           <button type="button" onClick={onFechas} className="underline underline-offset-2" style={{ color: INK }}>
@@ -158,7 +191,7 @@ function MitadAbierta({
       {leg.done && leg.mode !== 'coche' && (
         seguro ? (
           <div className="flex flex-col gap-2.5 border-t border-text/10 pt-3 text-center">
-            <p className="text-[14px] leading-snug text-text">¿Seguro que quieres eliminar este {legWord(leg.mode).noun}?</p>
+            <p className="text-[14px] leading-snug text-text">¿Seguro que quieres eliminar este {palabras.noun}?</p>
             <div className="flex gap-2">
               <button type="button" onClick={() => setSeguro(false)} className="h-11 flex-1 rounded-full border border-text/15 text-[14.5px] font-medium text-text hover:bg-bg-hover">
                 Cancelar
@@ -169,7 +202,7 @@ function MitadAbierta({
             </div>
           </div>
         ) : (
-          <EliminarTexto onClick={() => setSeguro(true)} texto={`Eliminar ${legWord(leg.mode).noun}`} />
+          <EliminarTexto onClick={() => setSeguro(true)} texto={`Eliminar ${palabras.noun}`} />
         )
       )}
     </div>
@@ -207,9 +240,11 @@ export function LlegadaYVuelta({
   const setDepartureFlightTime = useRouteStore((state) => state.setDepartureFlightTime)
   const setLegPrecio = useRouteStore((state) => state.setLegPrecio)
   const setLegCodigo = useRouteStore((state) => state.setLegCodigo)
+  const setLegCompania = useRouteStore((state) => state.setLegCompania)
   const setPoint = useRouteStore((state) => state.setArrivalPointId)
   const removeLeg = useRouteStore((state) => state.removeFlightLeg)
-  const [hoja, setHoja] = useState<LegKind | null>(null)
+  // Las dos hojas del tramo abierto: la rueda de la hora y el precio.
+  const [hoja, setHoja] = useState<{ leg: LegKind; que: 'hora' | 'precio' } | null>(null)
   const ida = legOf(route, info, 'arrival')
   const vuelta = legOf(route, info, 'departure')
   const origen = route.origin
@@ -320,8 +355,12 @@ export function LlegadaYVuelta({
                     leg={leg}
                     origen={origen}
                     ciudad={ciudad}
+                    precio={leerImporte(leg.kind === 'arrival' ? route.arrivalPrecio : route.departurePrecio)}
                     onPoint={(pointId) => setPoint(leg.kind, pointId)}
-                    onTime={() => setHoja(leg.kind)}
+                    onTime={() => setHoja({ leg: leg.kind, que: 'hora' })}
+                    onPrecio={() => setHoja({ leg: leg.kind, que: 'precio' })}
+                    onCodigo={(texto) => setLegCodigo(leg.kind, texto)}
+                    onCompania={(texto) => setLegCompania(leg.kind, texto)}
                     onFechas={onFechas}
                     onEliminar={() => {
                       quitarConDeshacer(`${leg.kind === 'arrival' ? 'Ida' : 'Vuelta'} quitada del viaje`, () => removeLeg(leg.kind))
@@ -344,20 +383,27 @@ export function LlegadaYVuelta({
           </>
         )}
       </BloqueShell>
-      {hoja && (
+      {hoja?.que === 'hora' && (
         <HojaHoraLlegada
-          leg={hoja === 'arrival' ? ida : vuelta}
+          leg={hoja.leg === 'arrival' ? ida : vuelta}
           ciudad={ciudad}
-          precioInicial={leerImporte(hoja === 'arrival' ? route.arrivalPrecio : route.departurePrecio)}
           onClose={() => setHoja(null)}
-          onSave={(time, precio, codigo) => {
-            ;(hoja === 'arrival' ? setArrivalFlightTime : setDepartureFlightTime)(time)
-            setLegPrecio(hoja, precio)
-            setLegCodigo(hoja, codigo)
+          onSave={(time) => {
+            ;(hoja.leg === 'arrival' ? setArrivalFlightTime : setDepartureFlightTime)(time)
             setHoja(null)
             onMitad(undefined)
             onGuardada()
           }}
+        />
+      )}
+      {hoja?.que === 'precio' && (
+        <HojaPrecio
+          titulo={hoja.leg === 'arrival' ? 'Precio de la ida' : 'Precio de la vuelta'}
+          eyebrow={hoja.leg === 'arrival' ? 'Ida' : 'Vuelta'}
+          ayuda={hoja.leg === 'arrival' ? 'Si la ida y la vuelta son un mismo billete, ponlo aquí y deja la vuelta vacía.' : 'Déjalo vacío si ya lo pusiste en la ida.'}
+          inicial={leerImporte(hoja.leg === 'arrival' ? route.arrivalPrecio : route.departurePrecio)}
+          onGuardar={(precio) => setLegPrecio(hoja.leg, precio)}
+          onClose={() => setHoja(null)}
         />
       )}
     </>

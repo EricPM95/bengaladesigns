@@ -15,6 +15,8 @@ export interface LegState {
   time: string | null
   /** El código del vuelo, tren o autobús que puso el viajero («IB 3214»); null si no lo puso (Tanda 6y4). */
   codigo: string | null
+  /** La aerolínea, compañía o naviera que puso el viajero; null si no la puso (Tanda 6y5). */
+  compania: string | null
   /** Los puntos para elegir (Fiumicino · Ciampino); con uno solo o en coche, sin botones. */
   points: ArrivalPoint[]
   hasButtons: boolean
@@ -50,6 +52,7 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
     mode,
     time,
     codigo: ((kind === 'arrival' ? route.arrivalCodigo : route.departureCodigo) ?? '').trim() || null,
+    compania: ((kind === 'arrival' ? route.arrivalCompania : route.departureCompania) ?? '').trim() || null,
     points,
     hasButtons: points.length > 1,
     point,
@@ -63,12 +66,13 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
 /** Las dos mitades. */
 export const legsOf = (route: Route, info: ArrivalInfo): { arrival: LegState; departure: LegState } => ({ arrival: legOf(route, info, 'arrival'), departure: legOf(route, info, 'departure') })
 
-const MODE_WORD: Record<ArrivalMode, { noun: string; search: string; searchLabel: string }> = {
-  avion: { noun: 'vuelo', search: '¿Aún no tienes vuelo?', searchLabel: 'Buscar vuelos' },
-  tren: { noun: 'tren', search: '¿Aún no tienes tren?', searchLabel: 'Buscar tren' },
-  bus: { noun: 'autobús', search: '¿Aún no tienes autobús?', searchLabel: 'Buscar autobús' },
-  ferry: { noun: 'ferry', search: '¿Aún no tienes ferry?', searchLabel: 'Buscar ferry' },
-  coche: { noun: 'viaje en coche', search: '', searchLabel: '' },
+/** Las palabras de cada medio: el sustantivo, la búsqueda y los nombres de las casillas «Ref.» y «Aerolínea / Compañía / Naviera» del tramo abierto (Tanda 6y5). */
+const MODE_WORD: Record<ArrivalMode, { noun: string; search: string; searchLabel: string; refLabel: string; companiaLabel: string }> = {
+  avion: { noun: 'vuelo', search: '¿Aún no tienes vuelo?', searchLabel: 'Buscar vuelos', refLabel: 'Ref. vuelo', companiaLabel: 'Aerolínea' },
+  tren: { noun: 'tren', search: '¿Aún no tienes tren?', searchLabel: 'Buscar tren', refLabel: 'Ref. tren', companiaLabel: 'Compañía' },
+  bus: { noun: 'autobús', search: '¿Aún no tienes autobús?', searchLabel: 'Buscar autobús', refLabel: 'Ref. billete', companiaLabel: 'Compañía' },
+  ferry: { noun: 'ferry', search: '¿Aún no tienes ferry?', searchLabel: 'Buscar ferry', refLabel: 'Ref. billete', companiaLabel: 'Naviera' },
+  coche: { noun: 'viaje en coche', search: '', searchLabel: '', refLabel: '', companiaLabel: '' },
 }
 export const legWord = (mode: ArrivalMode) => MODE_WORD[mode]
 

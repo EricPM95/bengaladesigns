@@ -3,6 +3,8 @@ import { formatDuration } from '../../../lib/format'
 import { KIND_ICON } from '../../../lib/stopKind'
 import { TrazoCard } from './TrazoCards'
 import { Icono } from '../../ui/Icono'
+import { useEtiquetaBarrio } from '../../ui/EtiquetaBarrio'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 /**
  * Prompt 6 — la tarjeta de un paseo por barrio. Se parece a una parada pero tiene que leerse como
@@ -13,12 +15,15 @@ import { Icono } from '../../ui/Icono'
  * sí tiene botón de quitar, porque el algoritmo propone y el viajero dispone.
  */
 export function ZoneWalkCard({ stop, onDismiss }: { stop: MockStopDetail; startTime?: string; onDismiss: () => void }) {
+  // (Tanda 6y5) El paseo de un barrio con etiqueta («Pasear por Trastevere») lleva la misma etiqueta lila que los lugares de su zona.
+  const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
   return (
     <TrazoCard
       kind="monumento"
       iconPath={KIND_ICON.walk}
       dashed
       name={stop.name}
+      barrio={barrio}
       sub={stop.tips?.[0] ?? null}
       meta={[{ icon: 'hour', text: `~${formatDuration(stop.durationMinutes)} · sugerencia para este hueco` }]}
       noPhoto

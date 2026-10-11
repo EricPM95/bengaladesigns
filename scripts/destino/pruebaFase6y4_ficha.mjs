@@ -11,7 +11,7 @@
 //   C. LA HORA DE LA ENTRADA, UNA SOLA VEZ (punto 6)
 //     6. con una entrada reservada el motor no escribe «Llega unos 30 minutos antes: …» (15 en el Free Tour) sin hora calculada; la ficha repite la hora o no dice «✓ Tu entrada: 10:30»; DÍAS, HOY (gratis y de pago) o RESERVAS enseñan la hora más de una vez;
 //   D. LA ETIQUETA «TRASTEVERE» (punto 18)
-//     7. los sitios con etiqueta no son EXACTAMENTE los de la zona «trastevere» de los datos, o falta en DÍAS, HOY, EXPLORAR o la ficha, o sale en otro sitio;
+//     7. los sitios con etiqueta no son EXACTAMENTE los 10 de la zona «trastevere» de los datos más su paseo (6y5; los restaurantes no), o falta en DÍAS, HOY, EXPLORAR o la ficha, o sale en otro sitio;
 //     8. su lila no está definido una sola vez (token), no tiene contraste suficiente, o se confunde con los colores de los días o con el frambuesa.
 import fs from 'node:fs'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
@@ -90,7 +90,15 @@ const zonaDe = new Map(D.places.map((p) => [p.name, p.zone]))
 const deTrastevere = D.places.filter((p) => p.zone === 'trastevere').map((p) => p.name).sort()
 const etiquetados = Object.keys(info.etiquetasPorSitio).sort()
 debe(deTrastevere.length >= 9, '7 datos', `en los datos hay solo ${deTrastevere.length} lugares con la zona «trastevere»`)
-debe(JSON.stringify(etiquetados) === JSON.stringify(deTrastevere), '7 datos', `los lugares con etiqueta no son exactamente los de la zona «trastevere» (con etiqueta: ${etiquetados.length}; de la zona: ${deTrastevere.length}; sobran ${etiquetados.filter((n) => !deTrastevere.includes(n)).join(', ')}; faltan ${deTrastevere.filter((n) => !etiquetados.includes(n)).join(', ')})`)
+// (Tanda 6y5) Las etiquetas son los 10 lugares de la zona «trastevere» MÁS su paseo: el paseo por barrio y el paseo libre (con su versión iluminada). Los restaurantes no.
+const paseosDeTrastevere = [
+  ...(D.zone_walks ?? []).filter((w) => w.zone === 'trastevere').map((w) => w.name),
+  ...['nombre', 'iluminado'].map((k) => D.destination_config.paseo_libre.zonas.trastevere[k]).filter(Boolean).map((n) => `Pasea y piérdete por ${n}`),
+].sort()
+const esperados = [...deTrastevere, ...paseosDeTrastevere].sort()
+debe(deTrastevere.length === 10 && paseosDeTrastevere.length >= 2, '7 datos', `la zona «trastevere» debería tener 10 lugares y al menos 2 títulos de paseo (hay ${deTrastevere.length} y ${paseosDeTrastevere.length})`)
+debe(!Object.keys(info.etiquetasPorSitio).some((n) => (D.restaurants ?? []).some((r) => r.name === n)), '7 datos', 'un restaurante lleva etiqueta de barrio')
+debe(JSON.stringify(etiquetados) === JSON.stringify(esperados), '7 datos', `las etiquetas no son exactamente los 10 lugares de la zona «trastevere» más su paseo (con etiqueta: ${etiquetados.length}; esperados: ${esperados.length}; sobran ${etiquetados.filter((n) => !esperados.includes(n)).join(', ')}; faltan ${esperados.filter((n) => !etiquetados.includes(n)).join(', ')})`)
 debe(Object.values(info.etiquetasPorSitio).every((e) => e === 'Trastevere'), '7 datos', 'alguna etiqueta no dice «Trastevere»')
 debe(D.places.filter((p) => p.zone !== 'trastevere').every((p) => !(p.name in info.etiquetasPorSitio)), '7 datos', 'un lugar de otra zona lleva etiqueta')
 // La etiqueta sale del dato de la zona: sin `etiqueta_barrio` en la zona, nadie la lleva.

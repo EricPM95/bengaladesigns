@@ -35,7 +35,32 @@ export function daysBetweenInclusive(startIso: string, endIso: string): number |
   return diffDays > 0 ? diffDays : null
 }
 
-const WEEKDAY_ABBR_FORMAT = new Intl.DateTimeFormat('es', { weekday: 'short' })
+/** Lo elegido en el calendario del viaje: el día de llegada y el de vuelta, en milisegundos (null = sin elegir). */
+export interface SeleccionDeRango {
+  start: number | null
+  end: number | null
+}
+
+/**
+ * Qué pasa al tocar un día del calendario (Tanda 6y5; es LA regla del calendario del formulario y del de cambiar las fechas): el primer toque (o un toque cuando ya hay dos días, o antes de la llegada) elige la
+ * llegada; el segundo, la vuelta. Devuelve lo nuevo, o null si el toque no cuenta (el mismo día, o más lejos de `maxDias` días).
+ */
+export function tocarDiaDelRango(actual: SeleccionDeRango, ts: number, maxDias: number): SeleccionDeRango | null {
+  if (!actual.start || actual.end || ts < actual.start) return { start: ts, end: null }
+  if (ts === actual.start) return null
+  if (ts > actual.start + (maxDias - 1) * 864e5) return null
+  return { start: actual.start, end: ts }
+}
+
+/** Las fechas ISO de un rango completo, o null mientras falte la llegada o la vuelta. Es lo que se guarda al tocar el SEGUNDO día (sin botón de guardar). */
+export function rangoCompleto(seleccion: SeleccionDeRango): { start: string; end: string } | null {
+  if (seleccion.start === null || seleccion.end === null) return null
+  const start = localDateToIso(new Date(seleccion.start))
+  const end = localDateToIso(new Date(seleccion.end))
+  return daysBetweenInclusive(start, end) === null ? null : { start, end }
+}
+
+const WEEKDAY_ABBR_FORMAT =new Intl.DateTimeFormat('es', { weekday: 'short' })
 const MONTH_ABBR_FORMAT = new Intl.DateTimeFormat('es', { month: 'short' })
 
 function capitalize(value: string): string {

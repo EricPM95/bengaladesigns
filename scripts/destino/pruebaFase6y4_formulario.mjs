@@ -103,7 +103,7 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
   const html = renderToStaticMarkup(createElement(DatesCalendarBody, { destination: 'Roma, Italia', dateRange: undefined, onChangeDateRange: () => {} }))
   const texto = aTexto(html)
   debe(/data-dates-calendar/.test(html) && /data-trazo-calendar/.test(html), '3 solo calendario', 'el calendario no pinta el calendario del formulario')
-  debe(/Cerrar el calendario/.test(html) && /Guardar/.test(texto) && /Toca el día de salida/.test(texto), '3 solo calendario', 'faltan el ✕, «Guardar» o el resumen del calendario')
+  debe(/Cerrar el calendario/.test(html) && !/Guardar/.test(texto) && /Toca el día de salida/.test(texto), '3 solo calendario', 'faltan el ✕ o el resumen, o sigue «Guardar» (6y5: se guarda al tocar el segundo día) del calendario')
   debe(/¿Cuándo estás en\s+Roma\s*\?/.test(texto.replace(/\n/g, ' ')), '3 solo calendario', 'el título del calendario no nombra el destino')
   debe(!/Reservas|Explorar|Presupuesto/.test(texto), '3 solo calendario', 'el calendario trae pestañas o cabecera de la app')
   debe(/Cerrar/.test(texto) && !/Quitar fechas/.test(texto), '3 solo calendario', 'sin fechas debe salir «Cerrar» y no «Quitar fechas»')
@@ -149,8 +149,8 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
   // Se conserva lo de siempre.
   const cambio = fuente('src/components/route/DatesChangeDialog.tsx')
   debe(/export function ManualShrinkDialog/.test(cambio) && /manualShrinkNotice\(route, dateRange, reservations/.test(cambio), '4 mismo calendario', 'se perdió el «¿Estás seguro?» de acortar a mano')
-  debe(/onChangeDateRange\(undefined\)/.test(modal) && /onChangeDateRange\(\{ start: startIso, end: endIso \}\)/.test(modal), '4 mismo calendario', 'el calendario no guarda el rango ni quita las fechas con la misma función')
-  debe(/daysBetweenInclusive/.test(modal), '4 mismo calendario', 'se perdió la comprobación de fin posterior a inicio')
+  debe(/onChangeDateRange\(undefined\)/.test(modal) && /onChangeDateRange\(rango\)/.test(modal), '4 mismo calendario', 'el calendario no guarda el rango ni quita las fechas con la misma función')
+  debe(/rangoCompleto/.test(modal) && /daysBetweenInclusive/.test(fuente('src/lib/dateRange.ts')), '4 mismo calendario', 'se perdió la comprobación de fin posterior a inicio')
 }
 
 limpiar()

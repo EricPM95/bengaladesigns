@@ -56,7 +56,7 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
 
 /**
  * El bloque «Excursiones» de RESERVAS (Tanda 6s). Sin día de excursión en la ruta: solo «Excursiones desde Roma · n excursiones» [Ver excursiones] y, dentro de la misma tarjeta, debajo del botón y en pequeño, «¿Ya tienes una? Añádela» (Tanda 6v).
- * Con el día de excursión: solo la tarjeta de esa excursión (la de entrada, con [Reservar excursión] y «¿Ya la tienes? Añádela») y, debajo, «Ver otras excursiones». Nunca dos «Añádela».
+ * Con el día de excursión: solo la tarjeta de esa excursión (la de entrada, con [Reservar excursión] y «¿Ya la tienes? Añádela») y, debajo, «Ver más excursiones». Nunca dos «Añádela».
  * Las añadidas, en una línea verde con «Cambiar». Viajes de menos días que `excursiones_desde_dias`: no sale.
  */
 export function ExcursionesReservas({ route, info }: { route: Route; info: DestinationExcursions }) {
@@ -123,7 +123,7 @@ export function ExcursionesReservas({ route, info }: { route: Route; info: Desti
         )}
         {hayDiaDeExcursion && (
           <button type="button" onClick={() => openExcursions(false)} className="self-start border-none bg-transparent px-1 py-0.5 text-[12px] font-medium text-text underline underline-offset-2">
-            Ver otras excursiones
+            Ver más excursiones
           </button>
         )}
       </div>

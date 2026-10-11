@@ -5,6 +5,7 @@ import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { etiquetasDeBarrio, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
+import { esNombreNuestro } from './engine/nombresDeFoto.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
@@ -5159,13 +5160,15 @@ async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOver
   // Sin foto buscada (restaurantes, `sin_foto`, `fotos_rechazadas`): antes que la caché y antes que Unsplash y Wikipedia. Una sola regla: fotoOculta.
   if (isRestaurantName(city, name) || fotoOculta(findPipelineV2Key(city) ?? '', name)) return { photo_source: 'none' }
   const cityKey = stripAccentsLowerServer(city)
-  if (supabaseAdmin && !force) {
+  // (Tanda 6y5) La caché solo guarda y sirve fotos de nombres de nuestros datos: un nombre ajeno (mal escrito, un texto de búsqueda, un punto de Mapbox) se busca, pero no se apunta.
+  const destData = findPipelineV2Data(city)
+  const paraCache = esNombreNuestro(destData, name)
+  if (supabaseAdmin && !force && paraCache) {
     const { data, error } = await supabaseAdmin.from('place_photo_cache').select('*').eq('city', cityKey).eq('place_name', name).maybeSingle()
     if (error) console.warn('[foto] no se pudo leer la caché:', error.message)
     if (data) return { ...data, cached: true }
   }
 
-  const destData = findPipelineV2Data(city)
   // «Castillo de Sant'Angelo (por fuera)»: la foto de su forma de visita (Tanda 6i): el lugar es el de antes del paréntesis y la búsqueda, su `search_en_fuera` (o `search_en_dentro`).
   const porModo = /^(.*?)\s*\(por (fuera|dentro)\)$/.exec(name)
   const place = (destData?.places ?? []).find((candidate) => candidate.name === (porModo ? porModo[1] : name)) ?? null
@@ -5178,7 +5181,7 @@ async function resolvePlacePhoto(name, city, { force = false, wikipediaTitleOver
   if (!resultado) resultado = { photo_source: 'none' }
 
   const fila = { place_name: name, city: cityKey, ...resultado }
-  if (supabaseAdmin) {
+  if (supabaseAdmin && paraCache) {
     // upsert, no insert: el script de pre-población puede reescribir una fila ya existente.
     const { error } = await supabaseAdmin.from('place_photo_cache').upsert(fila, { onConflict: 'place_name,city' })
     if (error) console.warn('[foto] no se pudo guardar en caché:', error.message)
@@ -5211,7 +5214,8 @@ async function resolveNightPhoto(name, city, base, { force = false } = {}) {
   if (fotoOculta(findPipelineV2Key(city) ?? '', base) || fotoOculta(findPipelineV2Key(city) ?? '', name)) return { photo_source: 'none' }
   const cityKey = stripAccentsLowerServer(city)
   const key = `noche:${base}`
-  if (supabaseAdmin && !force) {
+  const paraCache = esNombreNuestro(findPipelineV2Data(city), base)
+  if (supabaseAdmin && !force && paraCache) {
     const { data, error } = await supabaseAdmin.from('place_photo_cache').select('*').eq('city', cityKey).eq('place_name', key).maybeSingle()
     if (error) console.warn('[foto] no se pudo leer la caché:', error.message)
     if (data) return { ...data, cached: true }
@@ -5228,7 +5232,7 @@ async function resolveNightPhoto(name, city, base, { force = false } = {}) {
     resultado = { ...photo, photo_night: false }
   }
   const fila = { place_name: key, city: cityKey, ...resultado }
-  if (supabaseAdmin) {
+  if (supabaseAdmin && paraCache) {
     const { photo_night: _night, ...row } = fila
     void _night
     const { error } = await supabaseAdmin.from('place_photo_cache').upsert(row, { onConflict: 'place_name,city' })
@@ -5353,8 +5357,10 @@ app.post('/api/pool-photos', async (req, res) => {
     if (own) photos[name] = { url: own.photo_small, source: 'propia' }
     else if (!isHidden(name)) missing.push(name)
   }
-  if (supabaseAdmin && missing.length > 0) {
-    const { data, error } = await supabaseAdmin.from('place_photo_cache').select('place_name,photo_source,photo_url,unsplash_small').eq('city', cityKey).in('place_name', missing)
+  // (Tanda 6y5) De la caché solo se lee lo que lleva un nombre de nuestros datos.
+  const paraLeer = missing.filter((name) => esNombreNuestro(findPipelineV2Data(destination), name))
+  if (supabaseAdmin && paraLeer.length > 0) {
+    const { data, error } = await supabaseAdmin.from('place_photo_cache').select('place_name,photo_source,photo_url,unsplash_small').eq('city', cityKey).in('place_name', paraLeer)
     if (error) console.warn('[foto] no se pudo leer la caché en lote:', error.message)
     for (const row of data ?? []) {
       const url = row.photo_source === 'unsplash' ? row.unsplash_small ?? row.photo_url : row.photo_source === 'wikipedia' ? row.photo_url : null

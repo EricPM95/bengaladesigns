@@ -20,6 +20,7 @@ export function HojaPrecio({
   conDonde = false,
   sinPrecio = false,
   dondeInicial = '',
+  ayuda = 'Lo que pagaste en total, todas las personas.',
 }: {
   titulo: string
   eyebrow?: string
@@ -31,6 +32,8 @@ export function HojaPrecio({
   conDonde?: boolean
   sinPrecio?: boolean
   dondeInicial?: string
+  /** La frase de ayuda bajo «Precio» (por defecto, que es el total de todas las personas). */
+  ayuda?: string
 }) {
   const precio = usePrecioEditable(inicial)
   const [donde, setDonde] = useState(dondeInicial)
@@ -44,7 +47,7 @@ export function HojaPrecio({
       </h2>
       {!sinPrecio && (
         <div className="mt-4">
-          <CampoPrecio estado={precio} ayuda="Lo que pagaste en total, todas las personas." />
+          <CampoPrecio estado={precio} ayuda={ayuda} />
         </div>
       )}
       {conDonde && (
