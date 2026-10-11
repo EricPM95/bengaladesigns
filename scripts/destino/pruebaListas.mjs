@@ -1,5 +1,5 @@
 // La prueba del motor de listas: todos los viajes de 1 a 6 días, las 365 fechas de 2027, con y sin pool, Free Tour y reservas.
-//   node scripts/destino/pruebaListas.mjs [paso=N] [dias=1,2,3…] [fallos=ruta.txt] [out=docs/dias/PRUEBA_LISTAS.md]
+//   node scripts/destino/pruebaListas.mjs [desde=AAAA-MM-DD] [n=fechas seguidas] [paso=N] [dias=1,2,3…] [sinreservasdia=1] [antiguo=1: sin la regla de las reservas con día, para ver que la prueba la echa en falta] [fallos=ruta.txt] [out=docs/dias/PRUEBA_LISTAS.md]
 // (`paso`: una de cada N fechas, para mirar rápido; sin él, las 365.)
 import fs from 'node:fs'
 import { planListasTrip } from '../../shared/routeEngine/listasTrip.js'
@@ -7,6 +7,8 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { writtenDaysFor } from '../../server/engine/writtenDays.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { comprobarViaje } from './comprobacionesListas.mjs'
+import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
+import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
 const D = findPipelineV2Data('Roma')
@@ -86,7 +88,8 @@ const EXTRAS = [
 ]
 const fechas = []
 const DESDE = args.desde ?? '2027-01-01' // (los próximos 12 meses: desde=AAAA-MM-DD)
-for (let d = 0; d < 365; d += paso) fechas.push(addDays(DESDE, d))
+const NFECHAS = Number(args.n ?? 365) // (n: cuántas fechas seguidas desde `desde`; así se reparten las 365 en varios procesos)
+for (let d = 0; d < NFECHAS; d += paso) fechas.push(addDays(DESDE, d))
 
 const todos = []
 const resumen = { viajes: 0, dias: 0, fallos: 0 }
@@ -116,6 +119,80 @@ for (const forma of FORMAS) {
     }
   }
 }
+// ── Reservas con día (Tanda 6y4, punto 7): ni una parada menos ────────────────────────────────────────────────────────────────────────
+// Lo que hace el viajero en la app: pone una reserva de un sitio, en la fecha de uno de los días del viaje. Si es de las grandes (el Coliseo, los Museos, la Galería) el día entero pasa a esa fecha;
+// si no (el Altar de la Patria, el Panteón, un sitio sin tabla…) el sitio sale del día que lo llevaba y va al de su reserva. En los dos casos el viaje lleva EXACTAMENTE las mismas paradas que antes:
+// ni una menos, ni una más. (Los sitios, no su modo: un sitio que pasa de «por fuera» a «por dentro» por la reserva sigue siendo el mismo.) Y la reserva sale en el día de su fecha, a la hora del viajero.
+// Lo único que se admite que falte es lo que un cierre del propio sitio ese día quita y la ruta avisa («Cerrado hoy»): se cuenta aparte (`parada_cerrada_por_reserva`), no como fallo.
+const RESERVAS_DIA = [
+  { name: 'Coliseo', hora: '10:00' }, { name: 'Coliseo', hora: '15:00' }, { name: MUSEOS, hora: '10:00' }, { name: 'Galería Borghese', hora: '11:00' },
+  { name: 'Altar de la Patria', hora: '10:00' }, { name: 'Altar de la Patria', hora: '16:00' }, { name: 'Panteón', hora: '11:00' },
+  { name: "Castillo de Sant'Angelo", hora: '15:00' }, { name: 'Boca de la Verdad', hora: '11:00' },
+]
+const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [...(day.escritoRows ?? []), ...(day.spareRows ?? [])].filter((r) => (r.tipo === 'parada' || r.tipo === 'tour') && !r.llegada && r.lugar).map((r) => r.lugar)))
+const cerradasPorCierre = (plan) => new Set(plan.days.flatMap((day) => (day.escritoLog ?? []).filter((l) => l.que === 'quitada' && /^cierre de /.test(l.causa ?? '')).map((l) => l.sitio ?? l.lugar)))
+if (!args.sinreservasdia) {
+  for (const forma of FORMAS) {
+    if (SOLO && !SOLO.has(forma.g)) continue
+    if (forma.ft && args.sinft) continue
+    for (const inicio of fechas) {
+      const exp = forma.ft ? ['imprescindibles', 'free_tour'] : []
+      const comun = { destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames: [], experiencesPositive: exp, dateRangeStartIso: inicio, travel, mediaJornada: forma.medio ?? null, diaCuatro: forma.diaCuatro ?? null }
+      const base = planListasTrip({ ...comun, entradas: {} })
+      if (!base) continue
+      const antesBase = paradasDe(base)
+      const controlDe = new Map()
+      for (const R of RESERVAS_DIA) {
+        const grande = RESERVAS_GRANDES.has(R.name)
+        for (let k = 1; k <= forma.dias; k++) {
+          const dateIso = addDays(inicio, k - 1)
+          // Una reserva grande en un día de excursión o en una fecha en que el sitio cierra no puede ir allí (Tanda 6j): la app la guarda con su aviso y el viaje se queda como estaba. No se prueba.
+          const diaK = base.days.find((d) => d.dayNumber === k)
+          if (!diaK || diaK.isExcursion || diaK.isBlank || !diaK.curatedDay?.id || (grande && /medio|^D0$/.test(diaK.curatedDay.id))) { infoPorRegla.set('reserva_en_dia_sin_ciudad', (infoPorRegla.get('reserva_en_dia_sin_ciudad') ?? 0) + 1); continue }
+          if (grande && closedOnDay(D.places.find((p) => p.name === R.name), diaK.hours?.weekday, diaK.hours?.dateIso)) { infoPorRegla.set('reserva_grande_en_dia_cerrado', (infoPorRegla.get('reserva_grande_en_dia_cerrado') ?? 0) + 1); continue }
+          const etiqueta = `${forma.clave} + reserva ${R.name} ${R.hora} el día ${k} · inicio ${inicio}`
+          const entradas = { [R.name]: R.hora, ...(R.name === 'Coliseo' ? { 'Foro Romano y Palatino': R.hora } : {}) }
+          const plan = planListasTrip({ ...comun, entradas, reservasGrandes: grande ? [{ name: R.name, dateIso, dayNumber: k, time: R.hora }] : [], reservasViaje: grande || args.antiguo ? [] : [{ name: R.name, dateIso, dayNumber: k, time: R.hora }] })
+          resumen.viajes++
+          if (!plan) { fallos.push({ regla: 'sin_plan', texto: `${etiqueta}: el motor no devuelve plan` }); porRegla.set('sin_plan', (porRegla.get('sin_plan') ?? 0) + 1); continue }
+          const r = comprobarViaje({ D, plan, etiqueta, entradas, poolNames: [], hasFreeTour: Boolean(forma.ft), listas: written, franjas: written.destino?.franjas, reservaConDia: true })
+          resumen.dias += plan.days.filter((d) => d.curatedDay?.id).length
+          // Lo que debe llevar el viaje: lo de antes. Con una reserva grande, lo que escribe la fila de SU tabla para esa hora (el mismo viaje con la reserva puesta en su sitio, sin mover el día): el documento manda en lo que lleva cada fila.
+          if (!controlDe.has(R)) controlDe.set(R, grande ? planListasTrip({ ...comun, entradas }) : base)
+          const control = controlDe.get(R)
+          const antes = control ? paradasDe(control) : antesBase
+          for (const f of r.fallos) { fallos.push(f); porRegla.set(f.regla, (porRegla.get(f.regla) ?? 0) + 1) }
+          for (const f of r.info) infoPorRegla.set(f.regla, (infoPorRegla.get(f.regla) ?? 0) + 1)
+          // Ni una parada menos (ni una más). Se compara con lo que debe llevar el viaje (lo de antes; con una reserva grande, lo que escribe la fila de su tabla); si la reserva no se pudo poner
+          // en su fecha (domingo del Vaticano con Free Tour…), el viaje se queda como estaba, y también vale. Lo que un cierre del propio sitio ese día quita y la ruta avisa no cuenta.
+          const despues = paradasDe(plan)
+          const cerradas = cerradasPorCierre(plan)
+          const diferencias = (referencia) => ({
+            faltan: [...referencia].filter((name) => !despues.has(name) && !cerradas.has(name)),
+            sobran: [...despues].filter((name) => !referencia.has(name)),
+          })
+          const contraControl = diferencias(antes)
+          const contraBase = diferencias(antesBase)
+          const mejor = contraControl.faltan.length + contraControl.sobran.length <= contraBase.faltan.length + contraBase.sobran.length ? contraControl : contraBase
+          if ([...antes].some((name) => !despues.has(name) && cerradas.has(name))) infoPorRegla.set('parada_cerrada_por_reserva', (infoPorRegla.get('parada_cerrada_por_reserva') ?? 0) + 1)
+          // Los Museos de un miércoles sin su reserva los quita el propio documento («el miércoles sin Museos», variante miercoles_audiencia): una reserva grande puede dejar el día del Vaticano en
+          // miércoles (el Coliseo fijado el martes), y entonces el documento los quita. No es de esta tanda: se cuenta aparte y va a las preguntas del informe.
+          const porMiercoles = mejor.faltan.length > 0 && plan.days.some((d) => (d.curatedDay?.variantes ?? []).includes('miercoles_audiencia')) && mejor.faltan.every((name) => name === MUSEOS || name === 'Via della Conciliazione')
+          if (porMiercoles) { infoPorRegla.set('museos_quitados_por_el_miercoles_del_documento', (infoPorRegla.get('museos_quitados_por_el_miercoles_del_documento') ?? 0) + 1); mejor.faltan = []; mejor.sobran = mejor.sobran.filter((name) => name !== 'Lungotevere') }
+          if (mejor.faltan.length > 0) { fallos.push({ regla: 'paradas_perdidas', texto: `${etiqueta}: faltan ${mejor.faltan.join(', ')}` }); porRegla.set('paradas_perdidas', (porRegla.get('paradas_perdidas') ?? 0) + 1) }
+          if (mejor.sobran.length > 0) { fallos.push({ regla: 'paradas_nuevas', texto: `${etiqueta}: sobran ${mejor.sobran.join(', ')}` }); porRegla.set('paradas_nuevas', (porRegla.get('paradas_nuevas') ?? 0) + 1) }
+          // La reserva de un sitio que no es de los grandes sale en el día de su fecha, a la hora del viajero (si el sitio está en el viaje).
+          if (!grande && antes.has(R.name)) {
+            const dia = plan.days.find((d) => d.dayNumber === k && d.curatedDay?.id)
+            const fila = dia ? (dia.escritoRows ?? []).find((x) => x.lugar === R.name && !x.llegada && x.tipo === 'parada' && x.hora_tipo === 'reserva') : null
+            if (dia && !fila && !(dia.escritoLog ?? []).some((l) => l.sitio === R.name && l.que === 'quitada')) { fallos.push({ regla: 'reserva_sin_su_dia', texto: `${etiqueta}: la reserva no sale en el día ${k}` }); porRegla.set('reserva_sin_su_dia', (porRegla.get('reserva_sin_su_dia') ?? 0) + 1) }
+            else if (fila && fila.hora_fija !== R.hora) { fallos.push({ regla: 'reserva_sin_su_dia', texto: `${etiqueta}: sale a las ${fila.hora_fija}` }); porRegla.set('reserva_sin_su_dia', (porRegla.get('reserva_sin_su_dia') ?? 0) + 1) }
+          }
+        }
+      }
+    }
+  }
+}
 resumen.fallos = fallos.length
 const segundos = Math.round((Date.now() - t0) / 1000)
 const lineas = [
@@ -127,7 +204,7 @@ const lineas = [
   '',
   '## Por regla',
   '',
-  ...['orden', 'cerrado', 'zigzag', 'piramide', 'dentro_dos_veces', 'restaurante_repetido', 'noche_repetida', 'reserva', 'comida_tarde', 'comida_tras_hora_fija', 'dia_empieza_tarde', 'cerrado_a_la_llegada', 'camino_en_sobra', 'lluvia', 'sin_explicar', 'pool', 'sin_plan'].map((regla) => `- ${regla}: ${porRegla.get(regla) ?? 0}`),
+  ...['orden', 'cerrado', 'zigzag', 'piramide', 'dentro_dos_veces', 'restaurante_repetido', 'noche_repetida', 'reserva', 'comida_tarde', 'comida_tras_hora_fija', 'dia_empieza_tarde', 'cerrado_a_la_llegada', 'camino_en_sobra', 'lluvia', 'sin_explicar', 'pool', 'paradas_perdidas', 'paradas_nuevas', 'reserva_sin_su_dia', 'sin_plan'].map((regla) => `- ${regla}: ${porRegla.get(regla) ?? 0}`),
   '',
   '## Lo que se apunta (no es un fallo)',
   '',

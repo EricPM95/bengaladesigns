@@ -20,7 +20,7 @@ export async function aplicarFreeTour(choice: { franja: 'manana' | 'tarde' | 'no
  * que ha añadido no se tocan. `except`: los días que ya vienen rehechos. Devuelve false si algún día no se pudo rehacer (sin conexión o sin respuesta).
  * Todo o nada (Tanda 6k): primero se piden todos los días y solo si llegan todos se cambian; si uno falla no se cambia ninguno (nunca un día a medias ni dos días iguales).
  */
-export async function rehacerDiasSinTocar(except: string | string[] | null): Promise<boolean> {
+export async function rehacerDiasSinTocar(except: string | string[] | null, opciones: { mantenerOrden?: boolean } = {}): Promise<boolean> {
   const exceptIds = new Set([except].flat().filter((id): id is string => Boolean(id)))
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route, reservations } = useRouteStore.getState()
@@ -44,6 +44,7 @@ export async function rehacerDiasSinTocar(except: string | string[] | null): Pro
           must_include_places: route.mustIncludePlaces ?? [],
           inside_names: route.insideNames ?? [],
           reservas: reservasParaMotor(reservations),
+          ...(opciones.mantenerOrden ? { force_order: ordenDeLosDias(route) } : {}),
         }),
       })
       if (!response.ok) {
@@ -111,6 +112,15 @@ export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerO
   } catch {
     // Sin respuesta del servidor: el día se queda como está.
   }
+}
+
+/**
+ * Rehace varios días con las reservas del viajero, uno tras otro (Tanda 6y4, punto 7). Una reserva de un sitio que no es de los grandes (el Altar de la Patria, el Panteón…) lo saca del día que lo
+ * llevaba y lo pone en el día de su fecha: hay que rehacer los dos días (y, al quitar la reserva, el sitio vuelve a su día de siempre), o el sitio se quedaría sin día. El motor lo hace en un solo
+ * sitio (listasTrip.js); aquí solo se piden los días afectados. Los días no se reordenan (`mantenerOrden`): una reserva así nunca cambia el orden de los días.
+ */
+export async function rehacerDiasConReservas(dayIds: string[], opciones: { mantenerOrden?: boolean } = {}): Promise<void> {
+  for (const dayId of [...new Set(dayIds)]) await rehacerDiaConReservas(dayId, opciones)
 }
 
 /** El orden de los días escritos que el viajero ya ve (sin la vuelta ni las excursiones); vacío si algún día no es de los escritos. */

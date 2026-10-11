@@ -2566,6 +2566,16 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
     const name = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).find((candidate) => RESERVAS_GRANDES.has(candidate))
     if (name) reservasGrandes.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null, time: /^\d{1,2}:\d{2}$/.test(String(reserva.time ?? '')) ? (String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)) : null })
   }
+  // Las reservas de TODO el viaje con su día (Tanda 6y4, punto 7): cada día que se pide por separado ve el mismo viaje, y un sitio reservado sale del día que lo llevaba y va al de su reserva
+  // (el motor lo hace en un solo sitio, listasTrip.js). Lo que cubre la misma entrada que una grande (el Foro con el Coliseo) va con el día de la grande: no mueve nada por su cuenta.
+  const reservasViaje = []
+  for (const reserva of Array.isArray(body?.reservas) ? body.reservas : []) {
+    if (!reserva || (!reserva.dateIso && !Number.isInteger(Number(reserva.dayNumber))) || !/^\d{1,2}:\d{2}$/.test(String(reserva.time ?? ''))) continue
+    const nombres = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).filter((candidate) => typeof candidate === 'string')
+    if (nombres.some((candidate) => RESERVAS_GRANDES.has(candidate))) continue
+    const time = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
+    for (const name of nombres) reservasViaje.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null, time })
+  }
   const ft = answers?.freeTourDespues
   const ftValido = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora)
   // El Free Tour de la noche (21:00) va en el D1; los demás (10:00, 12:00, 15:00, 17:00) son el día D3 de su hora: su hora entra como la de una reserva (Tanda 6u).
@@ -2577,7 +2587,7 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   const diaCuatro = answers?.diaCuatro === 'roma' || answers?.diaCuatro === 'excursion' ? answers.diaCuatro : null
   // «Eliminar reserva» (Tanda 6m): el día se rehace en su sitio, con el orden de días que el viajero ya ve (`force_order`); sin esto, al faltar la reserva el motor reordenaría los días.
   const forceOrder = Array.isArray(body?.force_order) && body.force_order.length > 0 && body.force_order.every((id) => typeof id === 'string') ? body.force_order : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, forceOrder }
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder }
 }
 
 function hasRequiredAnswers(answers) {
