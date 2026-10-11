@@ -32,7 +32,7 @@ const { M, ponerVersion } = await prepararSSR('scripts/destino/_6y4_ficha_entrad
 const {
   createElement, renderToStaticMarkup, DayList, HoyView, StopDetailSheet, FichaComoLlegar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaSinEntrada, FichaTip, FichaTuEntrada, lineasDe, siglaDeLinea,
   EtiquetaBarrio, PlaceExplorerScreen, stopFromPlace, EntradasYFreeTour, Escuchar, BotonFotoParada, limiteDeFotos, modoDeFoto, notaDeLlegadaSinHora, shellFromStop, mapSingleGeneratedDay, useRouteStore,
-  fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, dayColor, cargaDatosDeHorario,
+  fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, dayColor, cargaDatosDeHorario, fetchPlaceDetail,
 } = M
 await fetchArrivalInfo('Roma')
 const info = await fetchDestinationExcursions('Roma')
@@ -259,13 +259,15 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   debe(veces(hojaSimple(coliseoCat, { extra: { dayNumber: null } }), /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 cámara', 'la ficha sin día (EXPLORAR) lleva cámara')
   debe(veces(hojaSimple(coliseoCat, { extra: { footerAction: { label: 'Añadir', onClick() {} } } }), /aria-label="(Añadir|Cambiar) foto"/g) === 0, 'A2 cámara', 'la ficha de «Añadir parada» lleva cámara')
   // «Escuchar la historia»: solo de pago y con voz en español.
-  // (Con texto que leer: el «por qué» de la ruta; sin él no hay nada que escuchar y la barra no sale.)
+  // (Tanda 6y5: la barra es «Escuchar historia» y solo sale en los sitios con historia en su ficha; el detalle de las 31 historias lo prueba pruebaFase6y5_historias.mjs.
+  //  Aquí, con la ficha real del Coliseo en la memoria de la app, y con un sitio sin historia.)
+  await fetchPlaceDetail('Roma', 'Coliseo')
   const conTexto = { ...coliseoCat, why: 'Un texto de la ruta para escuchar.' }
   const conVoz = hojaSimple(conTexto, { version: 'completa', voces: [{ lang: 'es-ES', name: 'Monica' }] })
-  debe(/data-escuchar-barra/.test(conVoz) && /Escuchar la historia/.test(conVoz), 'A3 escuchar', 'de pago y con voz en español no sale «Escuchar la historia»')
-  debe(!/data-escuchar-barra/.test(hojaSimple(conTexto, { version: 'gratis', voces: [{ lang: 'es-ES', name: 'Monica' }] })), 'A3 escuchar', 'en la gratis sale «Escuchar la historia»')
-  debe(!/data-escuchar-barra/.test(hojaSimple(conTexto, { version: 'completa', voces: [{ lang: 'en-US', name: 'Sam' }] })) && !/data-escuchar-barra/.test(hojaSimple(conTexto, { version: 'completa', voces: null })), 'A3 escuchar', 'sin voz en español sale «Escuchar la historia»')
-  debe(!/data-escuchar-barra/.test(hojaSimple(coliseoCat, { version: 'completa', voces: [{ lang: 'es-ES', name: 'Monica' }] })), 'A3 escuchar', 'sale «Escuchar la historia» sin nada que leer')
+  debe(/data-escuchar-barra/.test(conVoz) && /Escuchar historia/.test(conVoz), 'A3 escuchar', 'de pago y con voz en español no sale «Escuchar historia»')
+  debe(/data-escuchar="parado"/.test(hojaSimple(conTexto, { version: 'gratis', voces: [{ lang: 'es-ES', name: 'Monica' }] })), 'A3 escuchar', 'en la gratis no suena la historia del Coliseo (la muestra)')
+  debe(!/data-escuchar-barra/.test(hojaSimple(conTexto, { version: 'completa', voces: [{ lang: 'en-US', name: 'Sam' }] })) && !/data-escuchar-barra/.test(hojaSimple(conTexto, { version: 'completa', voces: null })), 'A3 escuchar', 'sin voz en español sale «Escuchar historia»')
+  debe(!/data-escuchar-barra/.test(hojaSimple({ ...coliseoCat, name: 'Via del Corso' }, { version: 'completa', voces: [{ lang: 'es-ES', name: 'Monica' }] })), 'A3 escuchar', 'sale «Escuchar historia» en un sitio sin historia')
   ponerSintesis(null)
   // El «Escuchar» pequeño de HOY sigue siendo el botón de siempre.
   ponerSintesis(sintesis([{ lang: 'es-ES' }]))

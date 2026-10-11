@@ -51,3 +51,16 @@ export function fijarVersion(version: 'gratis' | 'completa'): void {
   }
   quitarParametroDeLaDireccion('version')
 }
+
+/**
+ * Lo que pasa al tocar algo con candado en la gratis («Escuchar historia»): avisa de que el viajero quiere la versión completa. Es el UNICO sitio de ese aviso;
+ * cuando exista la pantalla de pago, solo tiene que escuchar este evento (`trazo:pagar`). Hasta entonces la barra con candado dice que es de la versión completa.
+ */
+export const EVENTO_PAGAR = 'trazo:pagar'
+export function pedirPago(): void {
+  try {
+    window.dispatchEvent(new CustomEvent(EVENTO_PAGAR))
+  } catch {
+    /* sin ventana (pruebas en el servidor): nada que avisar */
+  }
+}

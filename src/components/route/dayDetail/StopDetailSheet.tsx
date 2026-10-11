@@ -9,7 +9,7 @@ import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
 import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
-import { fetchPlaceDetail, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
+import { fetchPlaceDetail, fichaEnMemoria, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
 import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
@@ -25,8 +25,7 @@ import { EtiquetaBarrio } from '../../ui/EtiquetaBarrio'
 import { FotoCredito } from '../../ui/FotoCredito'
 import { BotonFotoParada } from '../fotos/BotonFotoParada'
 import { Escuchar } from '../hoy/Escuchar'
-import { pagoActivo } from '../../../lib/pago'
-import { textoResumenDeParada } from '../../../lib/useEscuchar'
+import { accesoHistoria, textoHistoria } from '../../../lib/historia'
 import { FichaComoLlegar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaTip, type FilaHorario } from './FichaPiezas'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
@@ -113,7 +112,7 @@ function lineasDe(texto: string | null | undefined): string[] {
  * "Resumen" es contenido real de Claude bajo demanda (describeStopApi.ts, con cache);
  * "Entradas" son las de los datos del destino (_entradas.json), ver StopEntradasTab.
  * Tanda 6y4: el DISEÑO NUEVO («Ficha Lugar.dc.html»): foto con la cámara en su esquina, nombre en serif, etiquetas pequeñas, pestañas con bolita, y en Resumen el texto, «Qué vas a ver», «Por el camino»,
- * «Horario» y «Cómo llegar»; abajo, la barra «Escuchar la historia» (de pago). Cada sección sale solo si nuestros datos la traen (las piezas viven en `FichaPiezas.tsx`).
+ * «Horario» y «Cómo llegar»; abajo, la barra «Escuchar historia» (solo en los sitios con historia; de pago). Cada sección sale solo si nuestros datos la traen (las piezas viven en `FichaPiezas.tsx`).
  */
 export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside, recomendacion }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>(initialTab ?? 'resumen')
@@ -147,8 +146,9 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   const [anchorTips, setAnchorTips] = useState<StopTip[]>([])
   const [nearbyTransit, setNearbyTransit] = useState<NearbyTransit>({ metro: [], bus: [] })
   const [directionsOpen, setDirectionsOpen] = useState(false)
-  const [curated, setCurated] = useState<PlaceDetail | null>(null)
-  const [curatedResolved, setCuratedResolved] = useState(false)
+  // (Si la ficha de este sitio ya está en la memoria de la sesión, se parte de ella: sale al instante.)
+  const [curated, setCurated] = useState<PlaceDetail | null>(() => (stop && !stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk ? fichaEnMemoria(city, stop.name) : null))
+  const [curatedResolved, setCuratedResolved] = useState(() => curated !== null)
 
   // Orden de preferencia del contenido de la ficha: la ficha ampliada escrita a mano → lo que trae
   // quien nos abre (el `description`/`tip` corto del JSON del destino, o el contenido de POI de
@@ -340,8 +340,9 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // El consejo del aperitivo (un spritz en una terraza) va primero, dentro de la ficha del paseo libre o de la parada que se alarga en su lugar.
   const tips: StopTip[] = stop?.aperitivoTip ? [{ tipo: 'practico', texto: stop.aperitivoTip }, ...baseTips] : baseTips
   const hasTips = tips.length > 0
-  // «Escuchar» (de pago): el texto del Resumen, tal como se lee en pantalla.
-  const textoParaEscucharResumen = stop && !stop.isFreeTour ? textoResumenDeParada(stop, { descripcion: description?.description ?? (descFailed ? stop.description : null), queVerás: whatToSee.length > 0 ? whatToSee : description?.whatYoullSee ? [description.whatYoullSee] : [], porQue: description?.whyRecommended }) : ''
+  // «Escuchar historia» (Tanda 6y5): la historia del sitio, de NUESTRA ficha (campo `historia`). No se escribe en ninguna pestaña: solo se escucha. Sin historia, ni barra ni botón.
+  const textoDeLaHistoria = stop && !stop.isFreeTour ? textoHistoria(curated) : ''
+  const accesoDeLaHistoria = stop && !stop.isFreeTour ? accesoHistoria(curated) : 'ninguno'
 
   // Todas las paradas llevan las mismas pestañas, por dentro o por fuera (PROMPT_PENDIENTE E): lo que aún no hay
   // sale con su texto de "todavía no". El Free Tour sigue con las suyas.
@@ -381,7 +382,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // El texto de debajo del nombre y el de «Qué vas a ver» (la ficha curada trae una lista; la de Claude, un párrafo).
   const queVerasLista = whatToSee.length > 0 ? whatToSee : description?.whatYoullSee ? [description.whatYoullSee] : []
   // La barra de «Escuchar» (de pago) ocupa el pie de la ficha: se deja sitio para que no tape el final del contenido.
-  const conBarraEscuchar = pagoActivo() && textoParaEscucharResumen.trim().length > 0
+  const conBarraEscuchar = accesoDeLaHistoria !== 'ninguno'
 
   return (
     <AnimatePresence>
@@ -688,8 +689,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
             </div>
           </div>
 
-          {/* «Escuchar la historia» (de pago, la voz del móvil de la 6z6): la barra oscura fija de abajo, como en el diseño. */}
-          {!stop.isFreeTour && <Escuchar barra abajo={Boolean(footerAction)} texto={textoParaEscucharResumen} clave={stop.id} />}
+          {/* «Escuchar historia» (la voz del móvil de la 6z6): la barra oscura fija de abajo, como en el diseño. De pago (en la gratis, con candado), salvo la historia que la ficha marca gratis. */}
+          {conBarraEscuchar && <Escuchar barra libre={curated?.historia_gratis === true} abajo={Boolean(footerAction)} texto={textoDeLaHistoria} clave={stop.id} />}
 
           {footerAction && (
             <div className="shrink-0 border-t border-border bg-bg-card px-4 py-3">
