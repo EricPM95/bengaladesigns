@@ -246,8 +246,11 @@ export function originalRouteOf(route: Route): NonNullable<Route['originalRoute'
 }
 
 export function renameDay(route: Route, dayId: string, name: string): Route {
-  const title = name.trim().slice(0, FREE_DAY_NAME_MAX) || FREE_DAY_DEFAULT_NAME
-  return { ...route, days: route.days.map((day) => (day.id === dayId ? { ...day, title, curatedTitle: title } : day)) }
+  const typed = name.trim().slice(0, FREE_DAY_NAME_MAX)
+  const title = typed || FREE_DAY_DEFAULT_NAME
+  // Ruta a mano: dejar el nombre vacío devuelve el día a su nombre por fecha («lun 13 oct») o «Día 1» (manualDayTitle).
+  if (!typed && route.planMode === 'manual') return { ...route, days: route.days.map((day) => (day.id === dayId ? { ...day, nameByUser: false } : day)) }
+  return { ...route, days: route.days.map((day) => (day.id === dayId ? { ...day, title, curatedTitle: title, nameByUser: true } : day)) }
 }
 
 /** ¿Se puede mover el día libre un puesto antes / después? Nunca al sitio del Día 1 ni al del día de vuelta. */

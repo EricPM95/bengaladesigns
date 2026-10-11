@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import type { DateRange, Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { changedDaysText } from './ConfirmDialog'
+import { isManualRoute } from '../../lib/manualPlan'
 
 /**
  * Fechas puestas desde el botón del mapa (PROMPT_PENDIENTE G). En los destinos curados (horas del motor), la ruta se
@@ -41,7 +42,8 @@ export function useDatesChange(route: Route | null) {
   const onChangeDateRange = (dateRange: DateRange | undefined) => {
     if (!route) return
     // Solo los destinos curados se rehacen sin Claude; los demás guardan las fechas como siempre.
-    const curated = route.days.some((day) => day.timesAreFinal)
+    // Una ruta a mano (Tanda 6y) nunca se rehace: las fechas se guardan y cada día pasa a llamarse por la suya.
+    const curated = route.days.some((day) => day.timesAreFinal) && !isManualRoute(route)
     if (!curated) {
       setRouteDateRange(dateRange)
       return

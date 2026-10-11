@@ -67,6 +67,10 @@ export function ExcursionsPage({ route }: { route: Route }) {
     if (page.toNewDay) {
       placeExcursion(excursion, { newDay: true })
       closePage()
+    } else if (page.toDayId) {
+      // Ruta a mano (Tanda 6y): [Añadir excursión] de un día en blanco: va a ESE día, como día de excursión, sin preguntar dónde.
+      placeExcursion(excursion, { dayId: page.toDayId })
+      closePage()
     } else pick(excursion)
   }
 

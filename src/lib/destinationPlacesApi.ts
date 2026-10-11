@@ -27,6 +27,8 @@ export interface DestinationPlace {
   type: string | null
   tags: string[]
   level: number | null
+  /** Si el destino lo tiene en su lista a mano de imprescindibles (`pool_lista`), su puesto en ella (0 = el primero); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */
+  essential_rank?: number | null
   schedule: string | null
   /**
    * Si hay que pagar entrada para visitarlo — el filtro "Entradas". Lo decide el servidor con la

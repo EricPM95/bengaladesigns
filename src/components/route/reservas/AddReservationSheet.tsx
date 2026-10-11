@@ -13,6 +13,7 @@ import { TimeListWheel } from '../../ui/TimeListWheel'
 import { CampoPrecio } from '../../ui/CampoPrecio'
 import { usePrecioEditable } from '../../../lib/useMoneda'
 import { Icono } from '../../ui/Icono'
+import { isManualRoute } from '../../../lib/manualPlan'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -302,7 +303,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const [plan, setPlan] = useState<ReservationPlan | null>(null)
   // La respuesta del servidor para esta hora y este día aún no ha llegado: no se guarda hasta entonces (la hoja de «mover el día» y la regla 17 salen con ella).
   const [planDoneKey, setPlanDoneKey] = useState<string | null>(null)
-  const planKey = resolvedDay && bigPlace && !isExcursion && validTime ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  // (En una ruta a mano no se pregunta qué día se mueve: ninguno se mueve, la reserva se queda en el día y a la hora del viajero. Tanda 6y.)
+  const planKey = resolvedDay && bigPlace && !isExcursion && validTime && !isManualRoute(route) ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
     return {
