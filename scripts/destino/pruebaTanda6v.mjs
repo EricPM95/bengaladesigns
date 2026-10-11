@@ -148,7 +148,7 @@ for (const dias of [4, 5]) {
   debe(iHtmlAn > iHtmlVer && !/min-h-\[88px\]/.test(bloque.slice(iHtmlVer, iHtmlAn)) && /<\/button><button[^>]*>¿Ya tienes una\?/.test(bloque), '3 excursiones', `${dias} días: «Añádela» no está dentro de la tarjeta, junto al botón`)
   const con = pinta(await viaje(dias, { interruptor: true }), 'completa')
   const tc = aTexto(bloqueDe(con.html, 'excursiones'))
-  debe((tc.match(/Añádela/g) ?? []).length === 1 && /¿Ya la tienes\?/.test(tc) && /Ver otras excursiones/.test(tc), '3 excursiones', `${dias} días con día de excursión: ${plano(tc)}`)
+  debe((tc.match(/Añádela/g) ?? []).length === 1 && /¿Ya la tienes\?/.test(tc) && /Ver más excursiones/.test(tc), '3 excursiones', `${dias} días con día de excursión: ${plano(tc)}`)
 }
 
 // ── 4. Fuera la hoja de «no encaja bien» ─────────────────────────────────────────────────────────────────────────────────────────────────────

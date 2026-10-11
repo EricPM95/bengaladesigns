@@ -135,7 +135,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
       name={stop.nightViewTitle ?? displayStopName(stop.name)}
       meta={meta}
       tags={tags}
-      barrio={stop.isFreeTour || stop.isFreeWalk ? null : barrio}
+      barrio={stop.isFreeTour ? null : barrio}
       edgeTab={<EntradaEdgeTab stop={stop} onOpenEntradas={onOpenEntradas ?? onOpen} />}
       photoUrl={stop.photoUrl}
       // (Tanda 6f: sin foto —ni propia ni de su barrio— la tarjeta va sin recuadro de foto, nunca con el recuadro vacío.)

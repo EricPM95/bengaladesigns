@@ -211,9 +211,12 @@ export function UtilParaElViaje({ route, pago }: { route: Route; pago: boolean }
                   ✓
                 </span>
                 <span className="min-w-0 flex-1 truncate">
-                  Lo tienes{dondeDe(tarjeta) ? <span className="font-medium"> · {dondeDe(tarjeta)}</span> : tarjeta.precio ? <span className="font-medium"> · {formatoImporte(tarjeta.precio)}</span> : null}
+                  Lo tienes
+                  {dondeDe(tarjeta) && <span className="font-medium"> · {dondeDe(tarjeta)}</span>}
+                  {tarjeta.precio && <span className="font-medium"> · {formatoImporte(tarjeta.precio)}</span>}
                 </span>
-                <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>
+                {/* Con el lugar y el precio juntos («Lo tienes · Mi banco · 30 €») no cabe la palabra «Cambiar» en 220 px: la tarjeta entera sigue siendo el botón. */}
+                {!(dondeDe(tarjeta) && tarjeta.precio) && <span className="flex-none text-[12px] font-medium underline underline-offset-2">Cambiar</span>}
               </button>
             ) : tarjeta.soloBuscar ? (
               <a href={tarjeta.enlace} target="_blank" rel="noopener noreferrer" className="mt-auto flex h-10 w-full items-center justify-center rounded-full bg-[#1C2230] text-[13.5px] font-semibold text-[#FFFDF8] no-underline">

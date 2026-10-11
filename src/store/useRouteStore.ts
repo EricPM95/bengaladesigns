@@ -515,6 +515,8 @@ interface RouteStoreState {
   setLegPrecio: (kind: 'arrival' | 'departure', precio: Importe | null) => void
   /** El código del vuelo, tren o autobús de la ida o la vuelta (Tanda 6y4); vacío o null lo quita. */
   setLegCodigo: (kind: 'arrival' | 'departure', codigo: string | null) => void
+  /** La aerolínea, compañía o naviera de la ida o la vuelta (Tanda 6y5); vacío o null la quita. */
+  setLegCompania: (kind: 'arrival' | 'departure', compania: string | null) => void
   /** «¿Dónde lo has comprado?» del seguro (`seguro`), la tarjeta (`tarjeta`) o la eSIM (`esim-{país}`); vacío lo quita (Tanda 6y4). */
   setDondeComprado: (clave: string, texto: string | null) => void
   /** El precio de la eSIM de un país (clave: código de país en minúsculas); null lo quita. */
@@ -1590,6 +1592,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setLegPrecio: (kind, precio) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPrecio' : 'departurePrecio']: precio } } : state)),
   setLegCodigo: (kind, codigo) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalCodigo' : 'departureCodigo']: codigo?.trim() ? codigo.trim().slice(0, 20) : null } } : state)),
 
+  setLegCompania: (kind, compania) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalCompania' : 'departureCompania']: compania?.trim() ? compania.trim().slice(0, 40) : null } } : state)),
   setDondeComprado: (clave, texto) =>
     set((state) => {
       const next = { ...state.dondeComprado }
@@ -1708,7 +1711,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   removeFlightLeg: (kind) =>
     set((state) =>
       state.route
-        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null } : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null }) } }
+        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null, arrivalCompania: null } : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null, departureCompania: null }) } }
         : state,
     ),
   setAccommodationZone: (zone) => set((state) => (state.route ? { route: { ...state.route, accommodationZone: zone } } : state)),

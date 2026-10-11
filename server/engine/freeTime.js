@@ -11,7 +11,7 @@
  * Nunca un texto con «Una idea…». Lo que pone el viajero (días libres, Añadir parada) no pasa por aquí.
  */
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
-import { muestraOf } from '../../shared/routeEngine/sitios.js'
+import { muestraOf, PREFIJO_PASEO_LIBRE } from '../../shared/routeEngine/sitios.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { buildStop } from './buildDay.js'
 import { paseoMaxOf } from '../../shared/routeEngine/curatedTrip.js'
@@ -19,7 +19,7 @@ import { effectiveSchedule, lastEntryMinutes, parseClosingMinutes, parseHoursSes
 
 export const PASEO_MIN_MINUTES = 20
 export const PASEO_MAX_MINUTES = 90
-const PASEO_PREFIX = 'Pasea y piérdete por '
+const PASEO_PREFIX = PREFIJO_PASEO_LIBRE
 const SAME_PLACE_METERS = 250
 const MAX_DINNER_WAIT = 20
 const MAX_PASEO_WALK = 15

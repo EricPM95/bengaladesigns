@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { DateRange } from '../../lib/types'
-import { isoToLocalDate } from '../../lib/dateRange'
+import { isoToLocalDate, tocarDiaDelRango } from '../../lib/dateRange'
 import { AMBER, ACCENT, INK, MONO, SERIF, panelStyle } from './trazoUi'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -38,18 +38,13 @@ export function TrazoCalendar({ dateRange, onSelect, onPreviewMonth }: TrazoCale
   const maxEnd = start ? start + (CALENDAR_MAX_DAYS - 1) * 864e5 : null
 
   const clickDay = (ts: number) => {
-    if (!start || end || ts < start) {
-      setStart(ts)
-      setEnd(null)
-      onSelect(ts, null)
-      // En cuanto se elige el día de llegada, sale al momento el efecto de esa temporada.
-      onPreviewMonth?.(new Date(ts).getMonth())
-      return
-    }
-    if (ts === start) return
-    if (maxEnd && ts > maxEnd) return
-    setEnd(ts)
-    onSelect(start, ts)
+    const next = tocarDiaDelRango({ start, end }, ts, CALENDAR_MAX_DAYS)
+    if (!next) return
+    setStart(next.start)
+    setEnd(next.end)
+    onSelect(next.start, next.end)
+    // En cuanto se elige el día de llegada, sale al momento el efecto de esa temporada.
+    if (next.end === null) onPreviewMonth?.(new Date(ts).getMonth())
   }
 
   const fd = (t: number) => {

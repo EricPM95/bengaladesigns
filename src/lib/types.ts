@@ -853,6 +853,9 @@ export interface Route {
   /** El código del vuelo, del tren o del autobús de la ida y de la vuelta («IB 3214»), si el viajero lo puso (Tanda 6y4). Opcional: los viajes guardados antes no lo traen (se lee como «sin código»). */
   arrivalCodigo?: string | null
   departureCodigo?: string | null
+  /** La aerolínea, compañía o naviera de la ida y de la vuelta, si el viajero la puso (Tanda 6y5). Texto libre y opcional; los viajes guardados antes no la traen. */
+  arrivalCompania?: string | null
+  departureCompania?: string | null
   /** La moneda del viajero (Tanda 6z2): sale del país de su ciudad de origen y la puede cambiar. Sin ella, se propone por el origen. */
   monedaViajero?: string | null
   /** Cuántas personas viajan, si el viajero lo corrige en el presupuesto; manda sobre lo que dice «¿Con quién viajas?». */

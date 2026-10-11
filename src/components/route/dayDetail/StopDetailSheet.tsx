@@ -466,7 +466,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       <Pildora key={tag}>{tagLabel(tag)}</Pildora>
                     ))}
                     {/* La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos. */}
-                    {!stop.isFreeTour && !stop.isFreeWalk && <EtiquetaBarrio etiqueta={barrio} className="!min-h-[26px] !px-[9px] !text-[11.5px]" />}
+                    {!stop.isFreeTour && <EtiquetaBarrio etiqueta={barrio} className="!min-h-[26px] !px-[9px] !text-[11.5px]" />}
                   </div>
                   {recomendacion && (
                     <button

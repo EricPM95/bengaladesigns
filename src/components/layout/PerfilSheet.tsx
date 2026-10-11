@@ -5,7 +5,7 @@ import { useSyncStore } from '../../store/useSyncStore'
 import { usePerfilUi } from '../../store/usePerfilUi'
 import { empezarViajeNuevo } from '../../lib/nuevoViaje'
 import { useNumeroFotos } from '../../lib/useNumeroFotos'
-import { chinchetasDeViajes, cifrasDelPerfil, viajePorId, viajesDelPerfil } from '../../lib/viajesPerfil'
+import { chinchetasDeViajes, cifrasDelPerfil, viajePorId, viajesDelPerfil, type ResumenViaje } from '../../lib/viajesPerfil'
 import { Icono } from '../ui/Icono'
 import { Creditos } from '../perfil/Creditos'
 import { FichaDeViaje } from '../perfil/FichaDeViaje'
@@ -35,6 +35,16 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
   const cifras = useMemo(() => cifrasDelPerfil(viajes), [viajes])
   const fotos = useNumeroFotos(useMemo(() => viajes.map((v) => v.id), [viajes]))
   const ficha = viajePorId(viajes, albumDe)
+  const hydrateTrip = useRouteStore((state) => state.hydrateTrip)
+
+  // (Tanda 6y5) [Abrir este viaje]: carga el viaje guardado en la app y cierra el Perfil.
+  const abrirViaje = (viaje: ResumenViaje) => {
+    if (!viaje.guardado) return
+    onClose()
+    useSyncStore.getState().setActiveTripId(viaje.guardado.id)
+    useSyncStore.getState().setResumeTrip(null)
+    hydrateTrip(viaje.guardado)
+  }
 
   return (
     <>
@@ -73,7 +83,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                   </div>
                   {viajes.length === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
                   {viajes.map((viaje) => (
-                    <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} />
+                    <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} onAbrirViaje={() => abrirViaje(viaje)} />
                   ))}
                 </div>
                 <button type="button" onClick={() => setCreditosOpen(true)} className="self-start p-1 text-[12px] text-text/50 underline underline-offset-[3px]">

@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DateRange } from '../../lib/types'
 import { seasonOfMonth } from '../../lib/season'
-import { daysBetweenInclusive, isoToLocalDate, localDateToIso } from '../../lib/dateRange'
+import { isoToLocalDate, rangoCompleto } from '../../lib/dateRange'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import { TrazoCalendar } from '../trazo/TrazoCalendar'
-import { ACCENT, Cta, Em, GhostButton, INK, MONO, SEASON_FX, SeasonFx, THEME, Title } from '../trazo/trazoUi'
+import { ACCENT, Em, GhostButton, INK, MONO, SEASON_FX, SeasonFx, THEME, Title } from '../trazo/trazoUi'
 import '../trazo/trazo.css'
 
 /** Z-index del calendario: por encima de la cabecera, la barra de abajo, las hojas, los selectores (120) y los avisos. */
@@ -34,7 +34,6 @@ export function DatesCalendarModal(props: DatesCalendarModalProps) {
 export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }: DatesCalendarModalProps) {
   const close = useDatesCalendarStore((state) => state.close)
   const [start, setStart] = useState<number | null>(dateRange ? isoToLocalDate(dateRange.start).getTime() : null)
-  const [end, setEnd] = useState<number | null>(dateRange ? isoToLocalDate(dateRange.end).getTime() : null)
   const [previewMonth, setPreviewMonth] = useState<number | null>(null)
   const [dateError, setDateError] = useState<string | null>(null)
   const city = destination.split(',')[0].trim()
@@ -50,16 +49,16 @@ export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }:
   const month = previewMonth ?? (start !== null ? new Date(start).getMonth() : dateRange ? isoToLocalDate(dateRange.start).getMonth() : null)
   const season = month !== null ? seasonOfMonth(month) : null
 
-  const save = () => {
-    if (start === null || end === null) return
-    const startIso = localDateToIso(new Date(start))
-    const endIso = localDateToIso(new Date(end))
-    if (daysBetweenInclusive(startIso, endIso) === null) {
+  // (Tanda 6y5) Sin botón [Guardar]: se guarda al tocar el segundo día. Si se equivoca, vuelve a tocar las fechas y las cambia.
+  const save = (from: number | null, to: number | null) => {
+    if (from === null || to === null) return
+    const rango = rangoCompleto({ start: from, end: to })
+    if (!rango) {
       setDateError('La fecha de fin debe ser posterior a la de inicio.')
       return
     }
     close()
-    onChangeDateRange({ start: startIso, end: endIso })
+    onChangeDateRange(rango)
   }
   const clear = () => {
     close()
@@ -108,8 +107,8 @@ export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }:
           dateRange={dateRange}
           onSelect={(from, to) => {
             setStart(from)
-            setEnd(to)
             setDateError(null)
+            save(from, to)
           }}
           onPreviewMonth={setPreviewMonth}
         />
@@ -124,9 +123,6 @@ export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }:
               Cerrar
             </GhostButton>
           )}
-          <Cta onClick={save} enabled={start !== null && end !== null} style={{ flex: 1 }}>
-            Guardar
-          </Cta>
         </div>
       </div>
     </div>

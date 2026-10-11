@@ -8,6 +8,14 @@
  */
 const stripNight = (name) => String(name ?? '').replace(/\s*\(noche\)$/, '')
 
+/** Cómo empieza el título de un paseo libre («Pasea y piérdete por Trastevere»): una sola vez, para el motor, la ficha y las etiquetas (Tanda 6y5). */
+export const PREFIJO_PASEO_LIBRE = 'Pasea y piérdete por '
+
+/** Todos los títulos con los que sale el paseo libre de una zona del destino (el de siempre, el iluminado, el de Navidad y el de «si has visto…»). */
+export function titulosDePaseoLibre(config) {
+  return [`${PREFIJO_PASEO_LIBRE}${config.nombre}`, config.iluminado ? `${PREFIJO_PASEO_LIBRE}${config.iluminado}` : null, config.titulo_navidad ?? null, config.si_visto_nombre ? `${PREFIJO_PASEO_LIBRE}${config.si_visto_nombre}` : null].filter(Boolean)
+}
+
 /** nombre → id y lista de ids válidos (fichas + sitios extra + nocturnas + paseos). */
 export function siteRegistry(destData) {
   const byName = new Map()
@@ -30,7 +38,7 @@ const idsOf = (registry, list) => (list ?? []).map((name) => registry.byName.get
 /** El título con el que sale un paseo libre → su zona y cuál de sus nombres es (nombre, iluminado, navidad, si_visto). */
 function paseoKey(destData, title) {
   const zonas = destData.destination_config?.paseo_libre?.zonas ?? {}
-  const prefix = 'Pasea y piérdete por '
+  const prefix = PREFIJO_PASEO_LIBRE
   for (const [zone, config] of Object.entries(zonas)) {
     if (title === `${prefix}${config.nombre}`) return [zone, 'nombre']
     if (config.iluminado && title === `${prefix}${config.iluminado}`) return [zone, 'iluminado']
@@ -64,7 +72,7 @@ export function muestraOf(destData, stop, registry = siteRegistry(destData)) {
     let muestra = key ? config.paseo_muestras?.[key[0]]?.[key[1]] : null
     // (Un paseo a mitad de día, «Pasea y piérdete por Trastevere»: lo que enseña es el barrio con ese nombre, si es un sitio.)
     if (!muestra) {
-      const area = String(stop.name).replace(/^Pasea y piérdete por /, '').replace(/^(el|la|los|las) /i, '')
+      const area = String(stop.name).replace(PREFIJO_PASEO_LIBRE, '').replace(/^(el|la|los|las) /i, '')
       const named = (destData.places ?? []).find((candidate) => candidate.name === area)
       const walk = (destData.zone_walks ?? []).find((candidate) => candidate.name.replace(/^Pasear por /i, '').replace(/^(el|la|los|las) /i, '') === area)
       if (named) muestra = [named.id]
