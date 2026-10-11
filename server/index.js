@@ -5,7 +5,7 @@ import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
-import { reorganizarDia } from '../shared/routeEngine/reorganizarDia.js'
+import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -5498,14 +5498,15 @@ app.post('/api/reorganizar-dia', (req, res) => {
   try {
     // La zona del alojamiento (versión de pago): el punto de la zona, si los datos lo traen (`coordinates` de la zona de alojamiento o el centro de la zona del destino con ese mismo id).
     const zoneId = typeof accommodation_zone === 'string' ? accommodation_zone : null
-    const lodging = zoneId ? (destData.destination_config?.zonas_alojamiento ?? []).find((zone) => zone.id === zoneId)?.coordinates ?? destData.zones?.[zoneId]?.center ?? null : null
+    const lodging = puntoZonaAlojamiento(destData, zoneId)
     const result = reorganizarDia({
       stops: stops.map((s) => ({ id: s.id, name: s.name, fullName: typeof s.fullName === 'string' ? s.fullName : undefined, night: Boolean(s.night), arrival: Boolean(s.arrival), freeTour: Boolean(s.freeTour), reservedTime: typeof s.reservedTime === 'string' ? s.reservedTime : undefined, coordinates: s.coordinates })),
       written,
       destData,
       hasLunch: Boolean(has_lunch),
       hasDinner: Boolean(has_dinner),
-      lodging: Array.isArray(lodging) && lodging.length === 2 && lodging.every(Number.isFinite) ? lodging : null,    })
+      lodging,
+    })
     res.json({ order: result.order, changed: result.changed, mealAfter: result.mealAfter })
   } catch (error) {
     console.error('[reorganizar-dia]', error)

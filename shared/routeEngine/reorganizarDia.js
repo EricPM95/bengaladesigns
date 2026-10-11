@@ -32,7 +32,18 @@ const dist = (a, b) => (a && b ? straightLineMeters(a, b) : 0)
 /** Una reserva sin fila escrita (o sin franja en el documento) cuenta como de tarde desde esta hora. */
 const MEDIODIA = 14 * 60
 
-const namesOf = (list) => [...new Set((list ?? []).filter((s) => s.lugar && (s.tipo === 'parada' || s.tipo === 'tour')).map((s) => s.lugar))]
+/**
+ * El punto [lat, lng] de una zona del alojamiento: su `coordinates` ({lat,lng} o [lat,lng]) en `zonas_alojamiento`, o el centro de la zona del destino con el mismo id.
+ * `null` si no hay zona, es «Aún no lo sé» (`nose`) o no se sabe dónde está.
+ */
+export function puntoZonaAlojamiento(destData, zoneId) {
+  if (!zoneId || zoneId === 'nose') return null
+  const zona = (destData?.destination_config?.zonas_alojamiento ?? []).find((z) => z.id === zoneId)
+  const punto = asPair(zona?.coordinates) ?? asPair(destData?.zones?.[zoneId]?.center)
+  return punto && Number.isFinite(punto[0]) && Number.isFinite(punto[1]) ? punto : null
+}
+
+const namesOf =(list) => [...new Set((list ?? []).filter((s) => s.lugar && (s.tipo === 'parada' || s.tipo === 'tour')).map((s) => s.lugar))]
 
 // ── El catálogo: los grupos que salen del documento ──────────────────────────────────────────────────────────────────────────────────
 

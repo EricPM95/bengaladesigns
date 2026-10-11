@@ -9131,13 +9131,14 @@
   ],
   "destination_config": {
     "ejemplo_nombre_dia": "Recorrido por el Centro Histórico",
+    "_zonas_alojamiento": "Tanda 6y2: cada zona lleva el punto de su centro (coordinates {lat,lng}); 'Reorganizar' empieza el día por el grupo más cerca de él. 'nose' no tiene punto a propósito.",
     "zonas_alojamiento": [
-      { "id": "centro", "nombre": "Centro (Panteón, Trevi, Navona)" },
-      { "id": "plaza_de_espana", "nombre": "Plaza de España", "sub": "Popolo, Via del Corso" },
-      { "id": "prati", "nombre": "Prati", "sub": "Vaticano" },
-      { "id": "trastevere", "nombre": "Trastevere" },
-      { "id": "termini", "nombre": "Termini" },
-      { "id": "monti", "nombre": "Monti", "sub": "Coliseo" },
+      { "id": "centro", "nombre": "Centro (Panteón, Trevi, Navona)", "coordinates": { "lat": 41.899, "lng": 12.4755 } },
+      { "id": "plaza_de_espana", "nombre": "Plaza de España", "sub": "Popolo, Via del Corso", "coordinates": { "lat": 41.906, "lng": 12.4823 } },
+      { "id": "prati", "nombre": "Prati", "sub": "Vaticano", "coordinates": { "lat": 41.9072, "lng": 12.4637 } },
+      { "id": "trastevere", "nombre": "Trastevere", "coordinates": { "lat": 41.8896, "lng": 12.4698 } },
+      { "id": "termini", "nombre": "Termini", "coordinates": { "lat": 41.9009, "lng": 12.5017 } },
+      { "id": "monti", "nombre": "Monti", "sub": "Coliseo", "coordinates": { "lat": 41.8954, "lng": 12.4931 } },
       { "id": "nose", "nombre": "Aún no lo sé" }
     ],
     "mapa_alojamiento": {
