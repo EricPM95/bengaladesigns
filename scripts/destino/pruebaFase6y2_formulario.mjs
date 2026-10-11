@@ -2,10 +2,10 @@
 //   node scripts/destino/pruebaFase6y2_formulario.mjs        (con el servidor de la app encendido: API_URL=http://localhost:8787 por defecto)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   1. PONLE NOMBRE: un día a mano sin nombre repite su fecha en el título (en vez de decir «Ponle nombre», gris y cursiva), un día con nombre no lo conserva, o el título no abre DayNameSheet;
-//   2. FECHAS DE LA RUTA A MANO: alargar no añade días vacíos ANTES del de la vuelta; acortar no quita primero los vacíos (los últimos antes de la vuelta); se borra un día con paradas sin preguntar;
-//      la pregunta no dice «El sáb 13 tiene 3 paradas. ¿Qué hago con ellas?» con sus tres botones; algún botón no hace lo suyo (pasarlas al día anterior más cercano, quitarlas, cancelar sin cambiar nada);
+//   2. FECHAS DE LA RUTA A MANO: alargar no añade días vacíos ANTES del de la vuelta; acortar no quita primero los vacíos (los últimos antes de la vuelta);
+//      (Tanda 6y3: la pregunta «¿Qué hago con ellas?» ya no existe; el «¿Estás seguro?» de acortar se prueba en pruebaFase6y3_formulario.mjs);
 //   3. SUGERENCIAS: «Quiero hacerla yo» lanza la sugerencia de experiencias o de lugares, o «hazla por mí» no la lanza, o la clasificación (que necesita el Transporte) deja de lanzarse;
-//   4. LA BARRA DE PASOS: cuenta pasos que el camino no tiene (la pantalla de elegir no dice «5/7»; la ruta a mano no cuenta Experiencias ni Lugares);
+//   4. LA BARRA DE PASOS: (Tanda 6y3: ahora se prueba en pruebaFase6y3_formulario.mjs; la pantalla de elegir dice «5/7», y «5/5» con «Quiero hacerla yo»);
 //   5. EL DIBUJO DE ELEGIR: algún pin o línea queda fuera del encuadre, las animaciones dejan el dibujo a medias al acabar, o se atenúa en el móvil.
 import fs from 'node:fs'
 import { prepararSSR } from './_ssr.mjs'
@@ -19,8 +19,8 @@ const debe = (cond, regla, texto) => {
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_6y2_formulario_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
-  createElement, renderToStaticMarkup, StepElegir, STEP, shouldSuggestExperiences, stepCounterLabel, stepNamesFor, visibleStepNamesFor, DayList, ManualDaysDialog, manualDaysQuestionText, useRouteStore,
-  buildManualRoute, answerManualAsk, planManualResize, resizeManualRoute, startManualAsk,
+  createElement, renderToStaticMarkup, StepElegir, STEP, shouldSuggestExperiences, stepCounterLabel, stepNamesFor, visibleStepNamesFor, DayList, useRouteStore,
+  buildManualRoute, planManualResize, resizeManualRoute,
 } = M
 globalThis.window.location.hostname = 'localhost'
 const consolaError = console.error
@@ -113,7 +113,7 @@ const pintaDias = (route) => {
     // Con un día con paradas en medio: los vacíos se van antes.
     const unoConParadas = conParadas(rutaMano(5), { 4: 3 })
     const plan = planManualResize(unoConParadas, rango(3))
-    debe(plan.ask.length === 0 && JSON.stringify(plan.remove) === JSON.stringify(['day-manual-3', 'day-manual-2']), '2 menos días', `quita un día con paradas habiendo vacíos: ${plan.remove}`)
+    debe(JSON.stringify(plan.remove) === JSON.stringify(['day-manual-3', 'day-manual-2']), '2 menos días', `quita un día con paradas habiendo vacíos: ${plan.remove}`)
     const sin = resizeManualRoute(unoConParadas, rango(3))
     debe(JSON.stringify(ids(sin)) === JSON.stringify(['day-manual-1', 'day-manual-4', 'day-manual-5']) && sin.days[1].stops.length === 3, '2 menos días', 'el día con paradas no se queda con sus 3 paradas')
     debe(JSON.stringify(ids(resizeManualRoute(rutaMano(3), rango(1)))) === JSON.stringify(['day-manual-3']), '2 menos días', 'de 3 a 1 día no quedan solo el día de la vuelta')
@@ -124,70 +124,6 @@ const pintaDias = (route) => {
     const ren = { ...rutaMano(4), days: rutaMano(4).days.map((d) => (d.dayNumber === 2 ? { ...d, title: 'Compras', curatedTitle: 'Compras', nameByUser: true } : d)) }
     const r2 = resizeManualRoute(ren, rango(4, '2027-04-05'))
     debe(r2.days[1].title === 'Compras' && r2.days[2].title === 'mié 7 abr', '2 menos días', `un nombre del viajero cambia o el automático no sigue a las fechas: ${r2.days.map((d) => d.title)}`)
-  }
-  // 2c. Un día con cosas dentro: nunca se quita sin preguntar.
-  {
-    const r = conParadas(rutaMano(5), { 2: 2, 3: 1, 4: 3 })
-    const plan = planManualResize(r, rango(3))
-    debe(plan.ask.length === 2 && plan.ask[0].dayId === 'day-manual-3' && plan.ask[1].dayId === 'day-manual-4', '2 pregunta', `no pregunta por los dos días con paradas que sobran (${plan.ask.map((q) => q.dayId)})`)
-    const sinDecidir = resizeManualRoute(r, rango(3))
-    debe(sinDecidir.days.length === 5 && totalParadas(sinDecidir) === 6, '2 pregunta', 'sin decisión del viajero, una ruta a mano pierde un día o unas paradas')
-    estado(r)
-    useRouteStore.getState().setRouteDateRange(rango(3))
-    debe(useRouteStore.getState().route.days.length === 5 && totalParadas(useRouteStore.getState().route) === 6, '2 pregunta', 'setRouteDateRange sin decisiones borra paradas')
-    // Los textos: «El sáb 13 tiene 3 paradas. ¿Qué hago con ellas?» y sus tres botones.
-    const q4 = plan.ask[1]
-    const t4 = manualDaysQuestionText(q4)
-    debe(t4.heading === 'El sáb 13 tiene 3 paradas. ¿Qué hago con ellas?', '2 pregunta', `el texto es «${t4.heading}»`)
-    debe(t4.move === 'Pasarlas a otro día' && t4.drop === 'Quitarlas' && t4.cancel === 'Cancelar', '2 pregunta', `los botones son ${t4.move} / ${t4.drop} / ${t4.cancel}`)
-    debe(q4.moveToDayId === 'day-manual-2' && q4.moveToLabel === 'jue 11' && /al final del jue 11/.test(t4.detail ?? ''), '2 pregunta', `no dice a qué día irían (${t4.detail})`)
-    const html = renderToStaticMarkup(createElement(ManualDaysDialog, { question: q4, onAnswer() {}, onCancel() {} }))
-    debe(['move', 'drop', 'cancel'].every((b) => html.includes(`data-manual-days="${b}"`)) && aTexto(html).includes('El sáb 13 tiene 3 paradas. ¿Qué hago con ellas?'), '2 pregunta', 'la ventana no lleva la pregunta con sus tres botones')
-    const una = manualDaysQuestionText({ ...q4, count: 1 })
-    debe(una.heading === 'El sáb 13 tiene una parada. ¿Qué hago con ella?' && una.move === 'Pasarla a otro día' && una.drop === 'Quitarla', '2 pregunta', `el singular es «${una.heading}»`)
-    const exc = planManualResize({ ...r, days: r.days.map((d) => (d.dayNumber === 4 ? { ...d, selectedExcursionId: 'x', dayType: 'excursion', stops: [] } : d)) }, rango(3))
-    const qe = exc.ask.find((q) => q.dayId === 'day-manual-4')
-    debe(qe?.excursion === true && qe.moveToDayId === null && manualDaysQuestionText(qe).move === null, '2 pregunta', 'una excursión se puede «pasar» a otro día')
-    // Cada botón hace lo suyo.
-    const flujo = (respuestas) => {
-      let ask = startManualAsk(r, rango(3))
-      let apply = null
-      let preguntas = 0
-      for (const r1 of respuestas) {
-        preguntas++
-        const res = answerManualAsk(ask, r1)
-        ask = res.next
-        apply = res.apply
-      }
-      return { ask, apply, preguntas }
-    }
-    const medio = flujo(['move'])
-    debe(medio.ask?.at === 1 && medio.apply === null, '2 botones', 'tras la primera respuesta no pasa a la segunda pregunta o aplica antes de tiempo')
-    const todoMover = flujo(['move', 'move'])
-    debe(todoMover.ask === null && todoMover.apply, '2 botones', 'tras la última respuesta no aplica')
-    const movidas = resizeManualRoute(r, todoMover.apply.dateRange, todoMover.apply.decisions)
-    debe(JSON.stringify(ids(movidas)) === JSON.stringify(['day-manual-1', 'day-manual-2', 'day-manual-5']) && totalParadas(movidas) === 6, '2 botones', '«Pasarlas a otro día» pierde paradas o deja días de más')
-    debe(JSON.stringify(nombresParadas(movidas.days[1])) === JSON.stringify(['Sitio 2.1', 'Sitio 2.2', 'Sitio 3.1', 'Sitio 4.1', 'Sitio 4.2', 'Sitio 4.3']), '2 botones', `«Pasarlas» no las pone al final del día anterior más cercano, en orden: ${nombresParadas(movidas.days[1])}`)
-    const todoQuitar = flujo(['drop', 'drop'])
-    const quitadas = resizeManualRoute(r, todoQuitar.apply.dateRange, todoQuitar.apply.decisions)
-    debe(ids(quitadas).join() === 'day-manual-1,day-manual-2,day-manual-5' && totalParadas(quitadas) === 2, '2 botones', '«Quitarlas» no quita el día con sus paradas, o toca otras')
-    const mixto = flujo(['move', 'drop'])
-    const mix = resizeManualRoute(r, mixto.apply.dateRange, mixto.apply.decisions)
-    debe(nombresParadas(mix.days[1]).join() === 'Sitio 2.1,Sitio 2.2,Sitio 3.1', '2 botones', `pasar uno y quitar el otro no deja ${nombresParadas(mix.days[1])}`)
-    // Cancelar: la conversación se tira y no se llama a nada; la ruta del almacén queda igual.
-    estado(r)
-    startManualAsk(useRouteStore.getState().route, rango(3))
-    debe(JSON.stringify(useRouteStore.getState().route) === JSON.stringify(r), '2 botones', 'preguntar cambia la ruta antes de contestar')
-    // Con el almacén: las decisiones se aplican igual que en la función.
-    useRouteStore.getState().setRouteDateRange(todoMover.apply.dateRange, todoMover.apply.decisions)
-    debe(JSON.stringify(ids(useRouteStore.getState().route)) === JSON.stringify(ids(movidas)) && totalParadas(useRouteStore.getState().route) === 6, '2 botones', 'el almacén no aplica las decisiones como la función')
-    const ventana = fuente('src/components/route/DatesChangeDialog.tsx')
-    debe(/onCancel=\{\(\) => setManualAsk\(null\)\}/.test(ventana) && /setManualAsk\(next\)\s*\n\s*if \(apply\) setRouteDateRange\(apply\.dateRange, apply\.decisions\)/.test(ventana), '2 botones', '«Cancelar» no tira la conversación sin tocar la ruta, o se aplica antes de contestar la última')
-    // Una comida elegida cuenta como algo dentro del día.
-    const base3 = conParadas(rutaMano(3), { 1: 1, 3: 1 })
-    const conComida = { ...base3, days: base3.days.map((d) => (d.dayNumber === 2 ? { ...d, meals: [{ id: 'm', time: '13:30', mealTime: 'lunch', label: 'Comida', chosenRestaurant: { name: 'Trattoria' } }] } : d)) }
-    const pComida = planManualResize(conComida, rango(2))
-    debe(pComida.ask.length === 1 && pComida.ask[0].dayId === 'day-manual-2' && pComida.ask[0].count === 1, '2 pregunta', 'una comida elegida no cuenta como algo dentro del día')
   }
   // 2d. La ruta nuestra no pasa por aquí.
   {
@@ -228,44 +164,17 @@ const pintaDias = (route) => {
     }
   }
   recorrer('src')
-  // (LandingScreen.tsx es la pantalla de antes del formulario Trazo: ya no se monta en ningún sitio —App.tsx usa TrazoFlow—; se deja en la lista para que, si alguien la vuelve a usar, la prueba avise.)
-  debe(JSON.stringify(llamadores.sort()) === JSON.stringify(['src/components/destination/LandingScreen.tsx', 'src/components/trazo/TrazoFlow.tsx', 'src/lib/suggestExperiencesInBackground.ts', 'src/lib/suggestPlacesInBackground.ts'].sort()), '3 sugerencias', `otros sitios lanzan las sugerencias: ${llamadores}`)
+  // (Tanda 6y3: LandingScreen.tsx, la pantalla de antes del formulario Trazo, se borró; ya no está en la lista.)
+  debe(JSON.stringify(llamadores.sort()) === JSON.stringify(['src/components/trazo/TrazoFlow.tsx', 'src/lib/suggestExperiencesInBackground.ts', 'src/lib/suggestPlacesInBackground.ts'].sort()), '3 sugerencias', `otros sitios lanzan las sugerencias: ${llamadores}`)
   debe(!/<LandingScreen/.test(fuente('src/App.tsx')), '3 sugerencias', 'App.tsx vuelve a montar la pantalla antigua LandingScreen (lanza las sugerencias antes de elegir camino)')
   // Y la precarga de lugares sigue encadenada a las experiencias cuando las fechas ya están confirmadas (se piden juntas con «hazla por mí»).
   debe(/dates_confirmed[\s\S]{0,80}suggestPlacesInBackground\(name, ids\)/.test(fuente('src/lib/suggestExperiencesInBackground.ts')), '3 sugerencias', 'las experiencias ya no encadenan la precarga de lugares')
 }
 
 // ── 4. La barra de pasos ──
+// (Tanda 6y3, decidido por Eric: hasta elegir cuenta los 7 del camino largo —«5/7»— y con «Quiero hacerla yo» pasa a «5/5». Estas comprobaciones están ahora en pruebaFase6y3_formulario.mjs, parte 1.)
 {
-  const comunes = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Itinerario']
-  for (let step = 0; step <= STEP.elegir; step++) {
-    for (const plan of [null, 'auto', 'manual']) {
-      const nombres = visibleStepNamesFor(plan, step)
-      debe(JSON.stringify(nombres) === JSON.stringify(comunes), '4 barra', `hasta la pantalla de elegir (paso ${step}, plan ${plan}) se cuentan ${nombres.length} pasos`)
-    }
-  }
-  debe(stepCounterLabel(STEP.elegir, visibleStepNamesFor(null, STEP.elegir)) === '5/5', '4 barra', `la pantalla de elegir dice ${stepCounterLabel(STEP.elegir, visibleStepNamesFor(null, STEP.elegir))} y no «5/5»`)
-  debe(stepCounterLabel(0, visibleStepNamesFor(null, 0)) === '1/5' && stepCounterLabel(3, visibleStepNamesFor(null, 3)) === '4/5', '4 barra', 'los pasos de antes de elegir no cuentan sobre 5')
-  // A mano: nunca Experiencias ni Lugares, y LISTO en el resumen corto.
-  for (let step = 0; step <= STEP.resumenCorto; step++) {
-    const nombres = visibleStepNamesFor('manual', step)
-    debe(nombres.length === 5 && !nombres.includes('Experiencias') && !nombres.includes('Lugares'), '4 barra', `la ruta a mano cuenta Experiencias o Lugares en el paso ${step}`)
-  }
-  debe(stepCounterLabel(STEP.resumenCorto, visibleStepNamesFor('manual', STEP.resumenCorto)) === 'LISTO', '4 barra', 'el resumen corto de la ruta a mano no dice LISTO')
-  // «Hazla por mí»: 6/7, 7/7 y LISTO en el resumen.
-  const etiquetas = [STEP.experiencias, STEP.lugares, STEP.resumen].map((s) => stepCounterLabel(s, visibleStepNamesFor('auto', s)))
-  debe(etiquetas.join() === '6/7,7/7,LISTO', '4 barra', `con «hazla por mí» el contador va ${etiquetas}`)
-  for (const plan of [null, 'auto', 'manual']) {
-    for (let step = 0; step <= STEP.resumenCorto; step++) {
-      const etiqueta = stepCounterLabel(step, visibleStepNamesFor(plan, step))
-      const m = etiqueta.match(/^(\d+)\/(\d+)$/)
-      debe(etiqueta === 'LISTO' || (m && Number(m[1]) <= Number(m[2])), '4 barra', `contador incoherente «${etiqueta}» (plan ${plan}, paso ${step})`)
-    }
-  }
   debe(stepNamesFor('manual').length === 5 && stepNamesFor('auto').length === 7, '4 barra', 'stepNamesFor ha cambiado')
-  const flujo = fuente('src/components/trazo/TrazoFlow.tsx')
-  debe(/const stepNames = visibleStepNamesFor\(plan, step\)/.test(flujo) && /stepCounterLabel\(step, stepNames\)/.test(flujo) && !/stepNamesFor\(plan\)/.test(flujo), '4 barra', 'TrazoFlow no saca los pasos y el contador de visibleStepNamesFor / stepCounterLabel')
-  debe((flujo.match(/stepNames\.map\(/g) ?? []).length === 2, '4 barra', 'la barra y el panel no salen de la misma lista de pasos')
 }
 
 // ── 5. El dibujo de la pantalla de elegir ──

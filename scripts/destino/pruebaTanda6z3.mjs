@@ -177,7 +177,6 @@ const SIGNOS_TEXTO = new Set(['✓', '✔', '✕', '✗', '✖', '★', '☆', '
 // Excepciones por archivo (solo el emoji que se deja): las pantallas y botones de desarrollo, que no ve el viajero.
 const EXCEPCIONES_EMOJI = [
   { archivo: /dev[\\/]DevQuickRouteScreen\.tsx$/, emoji: '🧪' },
-  { archivo: /destination[\\/]LandingScreen\.tsx$/, emoji: '🧪' }, // el botón «Dev: ruta rápida (sin IA)»
   { archivo: /trazo[\\/]StepRoute\.tsx$/, emoji: '🧪' }, // ídem, en el formulario nuevo
 ]
 function todosLosArchivos(dir) {
