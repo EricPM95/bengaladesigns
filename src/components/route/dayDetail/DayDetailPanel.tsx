@@ -73,6 +73,7 @@ import { StopMenu } from './StopMenu'
 import { VehicleBlock } from './VehicleBlock'
 import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
+import { ReorganizarDia } from '../freeDay/ReorganizarDia'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
@@ -1496,6 +1497,8 @@ export function DayDetailPanel({
                 Añadir lugares
               </button>
           )}
+
+          <ReorganizarDia day={day} />
 
           {/* (Sin «¿Prefieres una excursión este día?»: las excursiones se abren desde el botón flotante del autobús, PARA_CODE_EXCURSIONES 1.) */}
           {/* Rechazada: no se vuelve a proponer sola, pero el camino de vuelta queda abierto. */}

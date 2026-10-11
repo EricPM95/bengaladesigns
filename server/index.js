@@ -5,6 +5,7 @@ import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { arrivalInfoFor, entradasDe, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
+import { reorganizarDia } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -5472,6 +5473,37 @@ app.post('/api/rebuild-day', async (req, res) => {
   } catch (error) {
     console.error('[rebuild-day]', error)
     res.status(500).json({ error: 'No se pudo rehacer el día.' })
+  }
+})
+
+// «Reorganizar este día» (Tanda 6y): el orden de las paradas que ya tiene el día del viajero, con nuestros días escritos. Solo ordena: devuelve los mismos ids. Sin Claude.
+app.post('/api/reorganizar-dia', (req, res) => {
+  const { destination, stops, has_lunch, has_dinner, accommodation_zone } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  const written = destData ? writtenDaysFor(destination) : null
+  if (!destData || !Array.isArray(stops) || stops.length === 0 || stops.length > 80 || stops.some((s) => !s || typeof s.id !== 'string' || typeof s.name !== 'string')) {
+    res.status(400).json({ error: 'Faltan datos para reorganizar el día.' })
+    return
+  }
+  if (!written) {
+    res.status(422).json({ error: 'Este destino no tiene días escritos para reorganizar.' })
+    return
+  }
+  try {
+    // La zona del alojamiento (versión de pago): el punto de la zona, si los datos lo traen (`coordinates` de la zona de alojamiento o el centro de la zona del destino con ese mismo id).
+    const zoneId = typeof accommodation_zone === 'string' ? accommodation_zone : null
+    const lodging = zoneId ? (destData.destination_config?.zonas_alojamiento ?? []).find((zone) => zone.id === zoneId)?.coordinates ?? destData.zones?.[zoneId]?.center ?? null : null
+    const result = reorganizarDia({
+      stops: stops.map((s) => ({ id: s.id, name: s.name, fullName: typeof s.fullName === 'string' ? s.fullName : undefined, night: Boolean(s.night), arrival: Boolean(s.arrival), freeTour: Boolean(s.freeTour), reservedTime: typeof s.reservedTime === 'string' ? s.reservedTime : undefined, coordinates: s.coordinates })),
+      written,
+      destData,
+      hasLunch: Boolean(has_lunch),
+      hasDinner: Boolean(has_dinner),
+      lodging: Array.isArray(lodging) && lodging.length === 2 && lodging.every(Number.isFinite) ? lodging : null,    })
+    res.json({ order: result.order, changed: result.changed, mealAfter: result.mealAfter })
+  } catch (error) {
+    console.error('[reorganizar-dia]', error)
+    res.status(500).json({ error: 'No se pudo reorganizar el día.' })
   }
 })
 

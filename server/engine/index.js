@@ -312,7 +312,7 @@ async function buildDayBlockV3Inner(
   const forceOrder = options.forceOrder ?? null
   // «Crear mi propio día» (Tanda 6g): `options.sitiosPropios` = los sitios que el viajero ha elegido para ESTE día; el día se monta con ellos y va fijo en su sitio del viaje.
   const insideMinutes = written?.destino?.minutos_por_dentro ?? destData.destination_config?.minutos_por_dentro ?? {}
-  const montarPropio = (overrides = {}) => ({ dayNumber, ...diaPropio({ destData, placeNames: options.sitiosPropios, insideMinutes, id: 'DX', name: options.nombreDiaPropio ?? 'Mi día', overrides }) })
+  const montarPropio = (overrides = {}) => ({ dayNumber, ...diaPropio({ destData, written, placeNames: options.sitiosPropios, insideMinutes, id: 'DX', name: options.nombreDiaPropio ?? 'Mi día', overrides }) })
   let propio = written && Array.isArray(options.sitiosPropios) && options.sitiosPropios.length > 0 ? montarPropio() : null
   const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null, reservasGrandes: options.reservasGrandes ?? [] })
   let writtenPlan = written ? writtenPlanFor(written, destKey, planArgs()) : null
