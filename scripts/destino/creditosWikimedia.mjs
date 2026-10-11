@@ -32,6 +32,13 @@ const QUE_ES =
 
 const pausa = (ms) => new Promise((r) => setTimeout(r, ms))
 
+// ---------- Sitios con la foto rechazada (Tanda 6y3) ----------
+// `fotos_rechazadas` de _fotos.json es la lista de sitios que van sin foto: su foto de Wikipedia no se acredita ni se vuelve a añadir aquí
+// (aunque un servidor viejo aún la sirva). Mismo criterio que `fotoOculta` de server/engine/writtenDays.js (vale también para «X (noche)»).
+const FOTOS_JSON = join(ROOT, 'data', 'dias', DESTINO, '_fotos.json')
+const RECHAZADAS = new Set(existsSync(FOTOS_JSON) ? (JSON.parse(readFileSync(FOTOS_JSON, 'utf8')).fotos_rechazadas ?? []).map((r) => r.lugar) : [])
+const estaRechazada = (lugar) => RECHAZADAS.has(lugar) || RECHAZADAS.has(String(lugar).replace(/\s*\(noche\)$|\s+de noche$/i, ''))
+
 // ---------- Qué lugares hay y qué foto sirve el servidor ----------
 function nombresDelDestino() {
   const d = JSON.parse(readFileSync(join(ROOT, 'data', 'pipeline_v2', `${DESTINO}.json`), 'utf8'))
@@ -44,7 +51,7 @@ function nombresDelDestino() {
   for (const k of ['night_experiences', 'zone_walks', 'evening_blocks']) for (const x of d[k] ?? []) names.add(x.name)
   for (const o of d.excursions?.options ?? []) names.add(o.name)
   for (const j of d.joyas ?? []) names.add(typeof j === 'string' ? j : j.name)
-  return [...names]
+  return [...names].filter((n) => !estaRechazada(n))
 }
 
 /** En qué días (de listas.json) sale un lugar, para decirle al usuario dónde cambiar la foto. */
@@ -138,6 +145,10 @@ function entradaDe(archivo, lugares, datos) {
 
 // ---------- Principal ----------
 const previo = existsSync(SALIDA) && !REHACER ? JSON.parse(readFileSync(SALIDA, 'utf8')) : { fotos: [], sin_autor: [] }
+// Lo que ya estuviera en el JSON de un sitio rechazado se quita (y si la foto la comparte con un sitio bueno, se queda solo el bueno).
+for (const f of previo.fotos ?? []) f.lugares = (f.lugares ?? []).filter((l) => !estaRechazada(l))
+previo.fotos = (previo.fotos ?? []).filter((f) => f.lugares.length > 0)
+previo.sin_autor = (previo.sin_autor ?? []).filter((s) => !estaRechazada(s.lugar))
 const fotos = new Map((previo.fotos ?? []).map((f) => [f.archivo, f]))
 const sinAutor = new Map((previo.sin_autor ?? []).map((s) => [`${s.lugar}|${s.archivo}`, s]))
 
