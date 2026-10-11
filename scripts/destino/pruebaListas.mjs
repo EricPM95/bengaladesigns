@@ -177,6 +177,12 @@ if (!args.sinreservasdia) {
             sobran: [...despues].filter((name) => !referencia.has(name)),
           })
           const mejor = diferencias(antesBase)
+          // (Lo que el Free Tour ya enseña por fuera —la Fontana de Trevi— no falta; y el 25 de diciembre y el 1 de enero el documento usa el D1-corto en lugar del D1: otro día escrito, con otras paradas.)
+          const cubiertoTour = new Set(forma.ft ? D.default_free_tour?.covers ?? [] : [])
+          mejor.faltan = mejor.faltan.filter((name) => !(cubiertoTour.has(name) && D.places.find((p) => p.name === name)?.type !== 'interior'))
+          const idsDe = (p) => new Set(p.days.map((d) => d.curatedDay?.id).filter(Boolean))
+          const difIds = [...idsDe(plan)].filter((id) => !idsDe(base).has(id)).concat([...idsDe(base)].filter((id) => !idsDe(plan).has(id)))
+          if (mejor.faltan.length > 0 && difIds.length > 0 && difIds.every((id) => id === 'D1' || id === 'D1-corto')) { infoPorRegla.set('cambio_de_d1_por_festivo', (infoPorRegla.get('cambio_de_d1_por_festivo') ?? 0) + 1); mejor.faltan = [] }
           if ([...antes].some((name) => !despues.has(name) && cerradas.has(name))) infoPorRegla.set('parada_cerrada_por_reserva', (infoPorRegla.get('parada_cerrada_por_reserva') ?? 0) + 1)
           // Los Museos de un miércoles sin su reserva los quita el propio documento («el miércoles sin Museos», variante miercoles_audiencia): una reserva grande puede dejar el día del Vaticano en
           // miércoles (el Coliseo fijado el martes), y entonces el documento los quita. No es de esta tanda: se cuenta aparte y va a las preguntas del informe.

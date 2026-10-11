@@ -59,6 +59,8 @@ function comprueba(day, iso, donde, reservados = new Set()) {
     if (s.is_arrival || s.visit_mode !== 'dentro') continue
     const place = placeByName.get(s.name)
     if (!place) continue
+    // (Tanda 6y5: el Vaticano y la Galería nunca se quitan; si ningún día del viaje abre se quedan en su día con su aviso.)
+    if (/se queda en su día y decides tú/.test(s.notice ?? '')) continue
     // (Lo que el viajero ha reservado esa fecha es decisión suya: un sitio cerrado con reserva no es un fallo del motor.)
     if (!reservados.has(s.name) && closedOnDay(place, weekdayOf(iso), iso)) falla('cerrado', `${donde}: «${s.name}» va por dentro y ese día cierra (${iso})`)
     // 4. Última entrada (Tanda 6z5: no en el día de una reserva: ahí el día sigue su lista escrita y a qué hora llega el viajero es cosa suya; la última entrada la enseña la tarjeta)

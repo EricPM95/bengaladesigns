@@ -103,6 +103,18 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
     }
     result.motivos.push(`${razones.length ? `${[...new Set(razones)].join(' y ')}: te hemos puesto ` : 'Hemos puesto '}${nombre(entry)} el ${fechaAhora ? dateText(fechaAhora) : `día ${entry.dayNumber}`}.`)
   }
+  // Tanda 6y5 (P2 y P3): el Vaticano o la Galería nunca se quitan de su día. Si tras el cambio uno de los dos cae en un día que cierra y ningún otro día del viaje lo permite, se queda donde está y la hoja lo dice.
+  if (start) {
+    const QUE = { 'Museos Vaticanos y Capilla Sixtina': 'el Vaticano', 'Galería Borghese': 'la Galería Borghese' }
+    for (const [sitio, nombreSitio] of Object.entries(QUE)) {
+      const entry = despues.find((candidate) => DIAS_DEL_SITIO[sitio]?.includes(candidate.curatedId))
+      const fecha = entry ? dateOf(entry.dayNumber) : null
+      const place = (destData.places ?? []).find((candidate) => candidate.name === sitio)
+      if (fecha && place && closedOnDay(place, weekdayOf(fecha), fecha) && !(nueva.placeNames ?? []).includes(sitio)) {
+        result.motivos.push(`${nombreSitio.charAt(0).toUpperCase()}${nombreSitio.slice(1)} cierra el ${dateText(fecha)} y no hay otro día de tu viaje al que cambiarlo: lo dejamos en su día y decides tú.`)
+      }
+    }
+  }
   return result
 }
 
