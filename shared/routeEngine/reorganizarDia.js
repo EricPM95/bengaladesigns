@@ -131,49 +131,76 @@ function sumarRestos(base, derivada) {
 
 // ── Orden por cercanía ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-/** El mejor orden de unos grupos saliendo de `desde` (camino más corto, sin volver atrás). Hasta 8 se prueban todos; más, el vecino más cercano mejorado con 2-opt. */
-function mejorOrden(grupos, desde) {
+/**
+ * El orden de los grupos de un día. Se prueba el camino más corto (sin volver atrás) que cumple lo que NO se negocia:
+ *   · lo reservado va por su hora, y lo reservado de mañana va delante de todo lo demás; lo reservado de tarde va después de lo libre de la mañana y delante de lo libre de la tarde;
+ *   · los grupos que van juntos en un día escrito (su mañana y su tarde, sus partes) van en el orden del documento.
+ * Entre lo demás manda la cercanía (desde `desde`, y hasta `meta` si hay paseo de antes de cenar). «Mañana o tarde» solo desempata: a igual camino (1 m), gana el que tiene menos
+ * tardes delante de mañanas. Hasta 10 grupos se prueban todos (con poda); más, el más cercano disponible cada vez.
+ */
+function ordenarGrupos(grupos, { desde, meta, escrito }) {
   const lista = [...grupos].sort((a, b) => a.key.localeCompare(b.key))
-  if (lista.length <= 1) return lista
-  const coste = (orden) => {
-    let total = 0
+  const n = lista.length
+  if (n <= 1) return lista
+  const reservadas = lista.filter((g) => g.hora != null).sort((a, b) => a.hora - b.hora || a.key.localeCompare(b.key))
+  const antes = lista.map(() => new Set())
+  const idx = new Map(lista.map((g, i) => [g, i]))
+  const exige = (a, b) => { if (a !== b) antes[idx.get(b)].add(idx.get(a)) }
+  reservadas.forEach((g, i) => { if (i > 0) exige(reservadas[i - 1], g) })
+  for (const r of reservadas) {
+    if (r.franja === 'manana') for (const g of lista) { if (g !== r && g.hora == null) exige(r, g) }
+    else for (const g of lista) { if (g.hora == null) exige(g.franja === 'manana' ? g : r, g.franja === 'manana' ? r : g) }
+  }
+  for (const a of lista) for (const b of lista) {
+    const ea = escrito(a)
+    const eb = escrito(b)
+    if (ea && eb && ea.dayId === eb.dayId && ea.n < eb.n) exige(a, b)
+  }
+  const dosMitades = (orden) => {
+    let inversiones = 0
+    orden.forEach((g, i) => { if (g.franja === 'tarde') for (const h of orden.slice(i + 1)) if (h.franja === 'manana') inversiones++ })
+    return inversiones
+  }
+  let mejor = null
+  let mejorCoste = Infinity
+  let mejorInv = Infinity
+  const hechos = new Set()
+  const probar = (orden, coste, punto) => {
+    if (coste > mejorCoste + 1) return
+    if (orden.length === n) {
+      const total = coste + dist(punto, meta)
+      const inv = dosMitades(orden)
+      if (total < mejorCoste - 1 || (total <= mejorCoste + 1 && inv < mejorInv)) { mejor = orden; mejorCoste = Math.min(total, mejorCoste); mejorInv = inv }
+      return
+    }
+    for (let i = 0; i < n; i++) {
+      if (hechos.has(i) || [...antes[i]].some((p) => !hechos.has(p))) continue
+      const g = lista[i]
+      hechos.add(i)
+      probar([...orden, g], coste + dist(punto, g.inicio), g.fin ?? punto)
+      hechos.delete(i)
+    }
+  }
+  if (n <= 10) {
+    probar([], 0, desde)
+    if (mejor) return mejor
+  } else {
+    // Muchos grupos: el más cercano de los que ya se pueden poner, cada vez.
+    const orden = []
+    const puestos = new Set()
     let punto = desde
-    for (const g of orden) { total += dist(punto, g.inicio); punto = g.fin ?? punto }
-    return total
-  }
-  if (lista.length <= 8) {
-    let mejor = null
-    let mejorCoste = Infinity
-    const probar = (resto, hecho) => {
-      if (resto.length === 0) {
-        const c = coste(hecho)
-        if (c < mejorCoste - 1) { mejorCoste = c; mejor = hecho }
-        return
-      }
-      resto.forEach((g, i) => probar([...resto.slice(0, i), ...resto.slice(i + 1)], [...hecho, g]))
+    while (orden.length < n) {
+      const libres = lista.map((g, i) => i).filter((i) => !puestos.has(i) && [...antes[i]].every((p) => puestos.has(p)))
+      if (libres.length === 0) break
+      const k = libres.reduce((a, b) => (dist(punto, lista[b].inicio) < dist(punto, lista[a].inicio) - 1 ? b : a))
+      puestos.add(k)
+      orden.push(lista[k])
+      punto = lista[k].fin ?? punto
     }
-    probar(lista, [])
-    return mejor
+    if (orden.length === n) return orden
   }
-  let orden = []
-  const resto = [...lista]
-  let punto = desde
-  while (resto.length) {
-    let k = 0
-    resto.forEach((g, i) => { if (dist(punto, g.inicio) < dist(punto, resto[k].inicio)) k = i })
-    const [g] = resto.splice(k, 1)
-    orden.push(g)
-    punto = g.fin ?? punto
-  }
-  let mejora = true
-  while (mejora) {
-    mejora = false
-    for (let i = 0; i < orden.length - 1; i++) for (let j = i + 1; j < orden.length; j++) {
-      const cand = [...orden.slice(0, i), ...orden.slice(i, j + 1).reverse(), ...orden.slice(j + 1)]
-      if (coste(cand) + 1 < coste(orden)) { orden = cand; mejora = true }
-    }
-  }
-  return orden
+  // (Si lo que se exige se contradice, la hora de la reserva y la mañana antes que la tarde, como antes.)
+  return lista.sort((a, b) => (a.franja === b.franja ? 0 : a.franja === 'manana' ? -1 : 1) || (a.hora ?? 1e9) - (b.hora ?? 1e9) || a.key.localeCompare(b.key))
 }
 
 // ── Reorganizar ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -381,11 +408,8 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
     if (g.hora != null && !g.fila && !g.ordenado.some((id) => RESERVAS_GRANDES.has(info.get(id).lugar))) g.franja = g.hora >= MEDIODIA ? 'tarde' : 'manana'
   }
 
-  // 6. Los grupos entre sí: primera hora, la mañana, la tarde, el paseo de antes de cenar, las nocturnas.
-  const centro = (ids) => {
-    const cs = ids.map((id) => info.get(id).coords).filter(Boolean)
-    return cs.length ? [cs.reduce((a, c) => a + c[0], 0) / cs.length, cs.reduce((a, c) => a + c[1], 0) / cs.length] : null
-  }
+  // 6. Los grupos entre sí. Prioridad: lo reservado; los momentos (primera hora sin gente al principio, paseo de antes de cenar al final de la tarde, nocturnas de noche); dentro de cada grupo
+  //    el orden de nuestro día escrito; los grupos que van juntos en un día escrito, en ese orden; entre grupos, la cercanía sin volver atrás; «mañana o tarde» solo para desempatar.
   const reservados = lista.some((g) => g.hora != null) || primera.length > 0
   let desde = reservados ? null : lodging
   const salida = []
@@ -394,41 +418,14 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
   const primeraIds = primera.slice()
   salida.push(...primeraIds)
   if (primeraIds.length) desde = info.get(primeraIds.at(-1)).coords ?? desde
-  const tramo = (franja) => {
-    const delTramo = lista.filter((g) => g.franja === franja)
-    const reservadosDelTramo = delTramo.filter((g) => g.hora != null).sort((a, b) => a.hora - b.hora || a.key.localeCompare(b.key))
-    for (const g of reservadosDelTramo) poner(g, franja)
-    for (const g of mejorOrden(delTramo.filter((g) => g.hora == null), desde)) poner(g, franja)
+  const meta = paseoCena.length ? info.get(paseoCena.slice().sort((a, b) => a.localeCompare(b))[0]).coords : null
+  const ordenEscrito = (g) => {
+    const dia = cat.days.find((d) => d.id === g.dayId)
+    const parte = dia ? dia.parts.findIndex((p) => p.key === g.partKey) : -1
+    return dia && parte >= 0 ? { dayId: g.dayId, n: parte * 2 + (g.franja === 'tarde' ? 1 : 0) } : null
   }
-  // La mañana y la tarde se ordenan juntas (el camino entero de la mañana a la tarde y hasta el paseo de antes de cenar), con lo reservado primero en su parte.
-  const perms = (items) => (items.length <= 1 ? [items] : items.flatMap((x, i) => perms([...items.slice(0, i), ...items.slice(i + 1)]).map((r) => [x, ...r])))
-  const fijos = (f) => lista.filter((g) => g.franja === f && g.hora != null).sort((a, b) => a.hora - b.hora || a.key.localeCompare(b.key))
-  const libres = (f) => lista.filter((g) => g.franja === f && g.hora == null).sort((a, b) => a.key.localeCompare(b.key))
-  const libresM = libres('manana')
-  const libresT = libres('tarde')
-  let finMananaPos = 0
-  if (perms(libresM).length * perms(libresT).length <= 40000 && libresM.length <= 8 && libresT.length <= 8) {
-    const meta = paseoCena.length ? info.get(paseoCena.slice().sort((a, b) => a.localeCompare(b))[0]).coords : null
-    let mejorCombo = null
-    let mejorCoste = Infinity
-    for (const pm of perms(libresM)) for (const pt of perms(libresT)) {
-      const secuencia = [...fijos('manana'), ...pm, ...fijos('tarde'), ...pt]
-      let punto = desde
-      let coste = 0
-      for (const g of secuencia) { coste += dist(punto, g.inicio); punto = g.fin ?? punto }
-      coste += dist(punto, meta)
-      if (coste < mejorCoste - 1) { mejorCoste = coste; mejorCombo = { pm, pt } }
-    }
-    for (const g of fijos('manana')) poner(g, 'manana')
-    for (const g of mejorCombo.pm) poner(g, 'manana')
-    finMananaPos = salida.length
-    for (const g of fijos('tarde')) poner(g, 'tarde')
-    for (const g of mejorCombo.pt) poner(g, 'tarde')
-  } else {
-    tramo('manana')
-    finMananaPos = salida.length
-    tramo('tarde')
-  }
+  const ordenados = ordenarGrupos(lista, { desde, meta, escrito: ordenEscrito })
+  for (const g of ordenados) poner(g, g.franja)
   if (paseoCena.length) {
     const ordenPaseo = paseoCena.slice().sort((a, b) => a.localeCompare(b))
     for (const id of ordenPaseo) { salida.push(id); desde = info.get(id).coords ?? desde }
@@ -474,24 +471,31 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
   const mealAfter = {}
   if (hasDinner) mealAfter.dinner = diaIds.length ? posDe(diaIds.at(-1)) : -1
   if (hasLunch) {
-    const hayManana = finMananaPos > 0
-    const hayTarde = finDiaPos > finMananaPos
-    if (hayManana && hayTarde) mealAfter.lunch = posDe(salida[finMananaPos - 1])
-    else {
-      // Todo el día es de una parte: la comida a la mitad, en el límite de grupo más cercano.
-      const n = diaIds.length
-      const mitad = Math.max(0, Math.ceil(n / 2) - 1)
-      let acumulado = primeraIds.length
-      const limites = primeraIds.length > 0 ? [primeraIds.length - 1] : []
-      for (const h of hechos) { acumulado += h.g.ordenado.length; limites.push(acumulado - 1) }
-      const candidatos = limites.filter((x) => x >= 0 && x < n - 1)
-      const corte = candidatos.length ? candidatos.reduce((a, b) => (Math.abs(b - mitad) < Math.abs(a - mitad) ? b : a)) : mitad
-      mealAfter.lunch = posDe(diaIds[Math.min(corte, n - 1)])
+    // La comida va en un límite entre grupos: donde menos grupos de la mañana quedan detrás y de la tarde delante (si el día tiene de las dos); a igual, el más cercano a la mitad.
+    const unidades = []
+    if (primeraIds.length) unidades.push({ n: primeraIds.length, franja: 'manana' })
+    for (const h of hechos) unidades.push({ n: h.g.ordenado.length, franja: h.g.franja })
+    if (paseoCena.length) unidades.push({ n: paseoCena.length, franja: 'tarde' })
+    const n = diaIds.length
+    const mitad = Math.max(0, Math.ceil(n / 2) - 1)
+    const hayDeLasDos = unidades.some((u) => u.franja === 'manana') && unidades.some((u) => u.franja === 'tarde')
+    const candidatos = []
+    let acumulado = 0
+    for (let k = 0; k < unidades.length - 1; k++) {
+      acumulado += unidades[k].n
+      const mal = hayDeLasDos ? unidades.filter((u, i) => (i <= k && u.franja === 'tarde') || (i > k && u.franja === 'manana')).length : 0
+      candidatos.push({ corte: acumulado - 1, mal })
+    }
+    if (candidatos.length) {
+      const mejor = candidatos.reduce((a, b) => (b.mal < a.mal || (b.mal === a.mal && Math.abs(b.corte - mitad) < Math.abs(a.corte - mitad)) ? b : a))
+      mealAfter.lunch = posDe(diaIds[Math.min(mejor.corte, n - 1)])
+    } else {
+      // Todo el día es un solo grupo: la comida a la mitad.
+      mealAfter.lunch = posDe(diaIds[Math.min(mitad, n - 1)])
     }
   }
 
   const changed = order.length === original.length && order.some((id, i) => id !== original[i])
   const descripcion = hechos.map((h) => ({ grupo: h.g.etiqueta, tramo: h.tipo, paradas: h.g.ordenado.map((id) => info.get(id).name) }))
-  void centro
   return { order: order.length === original.length ? order : original, changed: order.length === original.length ? changed : false, mealAfter, groups: descripcion, moments: { primera: primeraIds.map((id) => info.get(id).name), paseoCena: paseoCena.map((id) => info.get(id).name), noche: mejorNoche.map((id) => info.get(id).name) } }
 }
