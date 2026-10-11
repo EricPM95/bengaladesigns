@@ -64,7 +64,8 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         </div>
       ))}
       {reservation ? (
-        <FichaTuEntrada hora={reservation.time} nota={notaDeLlegadaSinHora(found?.stop.arrivalNote, found?.stop.arrivalMinutes)}>
+        // (La línea de «llega antes» es de la entrada, que se pasa en el primer sitio de la reserva: el Foro, que va en la misma entrada que el Coliseo, lleva el ✓ y la hora, no esa línea.)
+        <FichaTuEntrada hora={reservation.time} nota={stop.isFreeTour || reservation.placeNames[0] === stop.name ? notaDeLlegadaSinHora(found?.stop.arrivalNote, found?.stop.arrivalMinutes) : null}>
           {/* Lo que el viajero apuntó (punto de encuentro, n.º de reserva): sin repetir la hora. */}
           <ReservedDetails reservation={reservation} timeLabel={null} />
           <div className="flex items-center justify-between gap-2">
