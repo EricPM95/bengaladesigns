@@ -1,0 +1,205 @@
+{
+  "resumen": {
+    "comprobaciones": 1166,
+    "fallos": 0,
+    "A": {
+      "sinReservas": 160,
+      "conReservas": 200
+    },
+    "B": {
+      "dias": 200,
+      "zigzag": 75,
+      "zigzagDentroDeLaFranja": 29,
+      "nocturnaDeDia": 0,
+      "comidaAlFinal": 0,
+      "comidaAlPrincipio": 0,
+      "cenaMalPuesta": 0,
+      "trastevereAntesDeMediodia": 0,
+      "zonaTrastevereAntesDeMediodia": 28,
+      "grupoPartido": 0,
+      "cambios": 197,
+      "yaEnBuenOrden": 3
+    }
+  },
+  "ejemplos": [
+    {
+      "puso": [
+        "Trinità dei Monti",
+        "Altar de la Patria",
+        "Jardín de los Naranjos",
+        "Pirámide Cestia",
+        "Fontana de Trevi",
+        "Panteón",
+        "Via Condotti",
+        "Plaza de San Pedro"
+      ],
+      "quedo": [
+        "Fontana de Trevi",
+        "Plaza de San Pedro",
+        "Panteón",
+        "Altar de la Patria",
+        "Trinità dei Monti",
+        "Via Condotti",
+        "Jardín de los Naranjos",
+        "Pirámide Cestia"
+      ],
+      "grupos": [
+        "Roma en un día, mañana → Plaza de San Pedro, Panteón",
+        "Roma en un día, tarde → Altar de la Patria, Trinità dei Monti, Via Condotti",
+        "Medio día del Aventino y Testaccio (tarde), tarde → Jardín de los Naranjos, Pirámide Cestia"
+      ],
+      "momentos": {
+        "primera": [
+          "Fontana de Trevi"
+        ],
+        "paseoCena": [],
+        "noche": []
+      },
+      "comidaDespuesDe": "Panteón",
+      "cenaDespuesDe": "Pirámide Cestia"
+    },
+    {
+      "puso": [
+        "Terraza del Pincio",
+        "Boca de la Verdad",
+        "Plaza Venecia",
+        "Mirador del Janículo",
+        "Plaza de San Pedro"
+      ],
+      "quedo": [
+        "Plaza Venecia",
+        "Boca de la Verdad",
+        "Mirador del Janículo",
+        "Plaza de San Pedro",
+        "Terraza del Pincio"
+      ],
+      "grupos": [
+        "Día entero, mañana → Plaza Venecia, Boca de la Verdad",
+        "Día entero, tarde → Mirador del Janículo",
+        "Medio día del Vaticano (tarde), tarde → Plaza de San Pedro",
+        "Medio día del Tridente y el Pincio (tarde), tarde → Terraza del Pincio"
+      ],
+      "momentos": {
+        "primera": [],
+        "paseoCena": [],
+        "noche": []
+      },
+      "comidaDespuesDe": "Boca de la Verdad",
+      "cenaDespuesDe": "Terraza del Pincio"
+    },
+    {
+      "puso": [
+        "Cementerio Protestante",
+        "Via della Conciliazione",
+        "Monti",
+        "Iglesia de San Luigi dei Francesi",
+        "Iglesia de Santa Maria in Trastevere",
+        "Basílica de Santa María la Mayor",
+        "Panteón"
+      ],
+      "quedo": [
+        "Monti",
+        "Basílica de Santa María la Mayor",
+        "Iglesia de San Luigi dei Francesi",
+        "Panteón",
+        "Via della Conciliazione",
+        "Iglesia de Santa Maria in Trastevere",
+        "Cementerio Protestante"
+      ],
+      "grupos": [
+        "Medio día de Monti, mañana → Monti, Basílica de Santa María la Mayor",
+        "Día de la Roma antigua, tarde → Iglesia de San Luigi dei Francesi, Panteón",
+        "Día del Vaticano y Trastevere, tarde → Via della Conciliazione, Iglesia de Santa Maria in Trastevere",
+        "Medio día del Aventino y Testaccio (unica), tarde → Cementerio Protestante"
+      ],
+      "momentos": {
+        "primera": [],
+        "paseoCena": [],
+        "noche": []
+      },
+      "comidaDespuesDe": "Basílica de Santa María la Mayor",
+      "cenaDespuesDe": "Cementerio Protestante"
+    },
+    {
+      "puso": [
+        "Plaza de San Pedro",
+        "Terraza del Pincio",
+        "Via dei Fori Imperiali",
+        "Jardín de los Naranjos"
+      ],
+      "quedo": [
+        "Plaza de San Pedro",
+        "Jardín de los Naranjos",
+        "Via dei Fori Imperiali",
+        "Terraza del Pincio"
+      ],
+      "grupos": [
+        "Roma en un día, mañana → Plaza de San Pedro",
+        "Medio día del Aventino y Testaccio (unica), mañana → Jardín de los Naranjos",
+        "Roma en un día, tarde → Via dei Fori Imperiali",
+        "Medio día del Tridente y el Pincio (tarde), tarde → Terraza del Pincio"
+      ],
+      "momentos": {
+        "primera": [],
+        "paseoCena": [],
+        "noche": []
+      },
+      "comidaDespuesDe": "Jardín de los Naranjos",
+      "cenaDespuesDe": "Terraza del Pincio"
+    },
+    {
+      "puso": [
+        "Via Veneto",
+        "Terraza del Pincio",
+        "Fontana de Trevi",
+        "Museos Vaticanos y Capilla Sixtina",
+        "Puente Sant'Angelo",
+        "Foro Romano y Palatino"
+      ],
+      "quedo": [
+        "Fontana de Trevi",
+        "Foro Romano y Palatino",
+        "Via Veneto",
+        "Terraza del Pincio",
+        "Museos Vaticanos y Capilla Sixtina",
+        "Puente Sant'Angelo"
+      ],
+      "grupos": [
+        "Día de la Roma antigua, mañana → Foro Romano y Palatino",
+        "Día de Villa Borghese, el Popolo y la Plaza de España, mañana → Via Veneto, Terraza del Pincio",
+        "Día del Vaticano y Trastevere, mañana → Museos Vaticanos y Capilla Sixtina",
+        "Día del Vaticano y Trastevere, tarde → Puente Sant'Angelo"
+      ],
+      "momentos": {
+        "primera": [
+          "Fontana de Trevi"
+        ],
+        "paseoCena": [],
+        "noche": []
+      },
+      "comidaDespuesDe": "Museos Vaticanos y Capilla Sixtina",
+      "cenaDespuesDe": "Puente Sant'Angelo"
+    }
+  ],
+  "casos": {
+    "zigzag": [
+      "día 10 [Fontana de Trevi > Basílica de San Pedro > Ojo de la Cerradura del Aventino > Arco de Constantino > Piazza del Popolo > Santa Maria del Popolo > Coliseo (noche)] (puso: Piazza del Popolo, Arco de Constantino, Santa Maria del Popolo, Ojo de la Cerradura del Aventino, Basílica de San Pedro, Coliseo (noche), Fontana de Trevi)",
+      "día 11 [Ojo de la Cerradura del Aventino > Cementerio Protestante > Plaza de España > Via Condotti] (puso: Cementerio Protestante, Via Condotti, Ojo de la Cerradura del Aventino, Plaza de España)",
+      "día 12 [Via dei Coronari > Plaza de España > Piazza del Popolo > Iglesia del Gesù] (puso: Iglesia del Gesù, Via dei Coronari, Plaza de España, Piazza del Popolo)",
+      "día 14 [Jardín de los Naranjos > Fuente del Tritón > Plaza de España > Panteón > San Pietro in Montorio y Tempietto de Bramante > Piazza Navona (noche)] (puso: San Pietro in Montorio y Tempietto de Bramante, Piazza Navona (noche), Panteón, Plaza de España, Fuente del Tritón, Jardín de los Naranjos)",
+      "día 15 [Fontana de Trevi > Campo de' Fiori > Museos Vaticanos y Capilla Sixtina > Basílica de San Pedro > Piazza del Popolo > Mercados de Trajano] (puso: Mercados de Trajano, Campo de' Fiori, Piazza del Popolo, Fontana de Trevi, Basílica de San Pedro, Museos Vaticanos y Capilla Sixtina)",
+      "día 25 [Via della Conciliazione > Panteón > Plaza del Quirinal > Basílica de San Juan de Letrán > Catacumbas de San Calixto > Plaza del Campidoglio > Plaza Venecia > Trastevere] (puso: Panteón, Plaza Venecia, Catacumbas de San Calixto, Plaza del Campidoglio, Via della Conciliazione, Plaza del Quirinal, Trastevere, Basílica de San Juan de Letrán)",
+      "día 27 [Basílica de Santa Cecilia in Trastevere > Pirámide Cestia > Puente Sant'Angelo > Trastevere] (puso: Puente Sant'Angelo, Basílica de Santa Cecilia in Trastevere, Trastevere, Pirámide Cestia)",
+      "día 29 [Fontana de Trevi > Plaza del Quirinal > Plaza del Campidoglio > Teatro de Marcelo > Pirámide Cestia > Ponte Sisto > Plaza de España > Via Margutta > Coliseo (noche)] (puso: Plaza del Quirinal, Plaza de España, Plaza del Campidoglio, Coliseo (noche), Pirámide Cestia, Via Margutta, Fontana de Trevi, Teatro de Marcelo, Ponte Sisto)",
+      "día 38 [Fontana de Trevi > Boca de la Verdad > Basílica de San Pedro > Puente Sant'Angelo > Plaza de España > Piazza del Popolo > Museos Capitolinos > Cementerio Protestante] (puso: Cementerio Protestante, Basílica de San Pedro, Plaza de España, Puente Sant'Angelo, Museos Capitolinos, Fontana de Trevi, Piazza del Popolo, Boca de la Verdad)",
+      "día 40 [Via della Conciliazione > Boca de la Verdad > Plaza del Quirinal > Plaza Venecia > Teatro de Marcelo] (puso: Plaza del Quirinal, Via della Conciliazione, Plaza Venecia, Boca de la Verdad, Teatro de Marcelo)",
+      "día 45 [Galería Borghese > Monti > Via della Conciliazione > Panteón > Iglesia del Gesù > Plaza Venecia > Plaza de España] (puso: Via della Conciliazione, Plaza de España, Plaza Venecia, Monti, Galería Borghese, Panteón, Iglesia del Gesù)",
+      "día 46 [Via della Conciliazione > Puente Sant'Angelo > Panteón > Monti > Circo Máximo > Elefantino de Bernini] (puso: Via della Conciliazione, Monti, Panteón, Circo Máximo, Elefantino de Bernini, Puente Sant'Angelo)"
+    ],
+    "nocturnaDeDia": [],
+    "comida": [],
+    "trastevere": [],
+    "partido": []
+  },
+  "fallos": []
+}

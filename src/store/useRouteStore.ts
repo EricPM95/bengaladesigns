@@ -447,6 +447,12 @@ interface RouteStoreState {
   setLegToNext: (dayId: string, stopId: string, minutes: number) => void
   reorderStops: (dayId: string, orderedStopIds: string[]) => void
   /**
+   * «Reorganizar este día» (Tanda 6y): pone las MISMAS paradas del día en el orden nuevo (y la comida y la cena donde toca, si el día las tiene). A diferencia de reorderStops,
+   * no cuenta como un cambio del viajero: no marca el día ni la ruta como «cambiados a mano» (un día cambiado a mano sigue siéndolo; uno que no lo era, no pasa a serlo).
+   * Las paradas con reserva se quedan en su hora. Si no son exactamente las mismas paradas, no hace nada.
+   */
+  reorganizeDay: (dayId: string, orderedStopIds: string[], mealAfter?: { lunch?: number; dinner?: number }) => void
+  /**
    * Mueve la comida o la cena a otro sitio del día (PROMPT_UI_REPASO_3, 3): detrás de la parada `toAfter` (-1 = antes de la
    * primera). Las horas se reparten por posición, igual que al mover una parada: la que pasa a ocupar un hueco se lleva su
    * hora, y lo que se pisa se empuja. La comida o la cena no es una parada: solo cambia su hora y el orden en que se ve.
@@ -1218,6 +1224,33 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           if (isFreeDay(day)) return { ...day, stops: reordered }
           return { ...day, stops: pushOverlapsForward(reassignTimesByPosition(day.stops, reordered)) }
         }),
+      }
+    }),
+
+  reorganizeDay: (dayId, orderedStopIds, mealAfter) =>
+    set((state) => {
+      if (!state.route) return state
+      const day = state.route.days.find((candidate) => candidate.id === dayId)
+      if (!day) return state
+      const byId = new Map(day.stops.map((stop) => [stop.id, stop]))
+      // Solo ordena: tiene que ser exactamente el mismo conjunto de paradas.
+      if (orderedStopIds.length !== day.stops.length || new Set(orderedStopIds).size !== orderedStopIds.length || orderedStopIds.some((id) => !byId.has(id))) return state
+      const reordered = orderedStopIds.map((id) => byId.get(id)!)
+      let stops = reordered
+      if (!isFreeDay(day)) {
+        // Las horas son los huecos del día: cada parada sin reserva coge la hora del hueco que le toca; la reservada se queda en la suya.
+        const slots = day.stops.filter((stop) => !stop.reservedId).map((stop) => stop.time)
+        let next = 0
+        const retimed = reordered.map((stop) => (stop.reservedId ? stop : { ...stop, time: slots[next++] ?? stop.time }))
+        // (Empujar lo que se pisa movería la hora de una reserva: con reservas se deja como está, y el aviso de «coinciden» ya existe.)
+        stops = reordered.some((stop) => stop.reservedId) ? retimed : pushOverlapsForward(retimed)
+      }
+      return {
+        route: updateDay(state.route, dayId, (current) => ({
+          ...current,
+          stops,
+          ...(mealAfter && Object.keys(mealAfter).length > 0 ? { mealAfter: { ...(current.mealAfter ?? {}), ...mealAfter } } : {}),
+        })),
       }
     }),
 
