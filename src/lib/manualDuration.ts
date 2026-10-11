@@ -3,18 +3,17 @@ import { daysBetweenInclusive } from './dateRange'
 import { diaCorto } from './nombreDeDia'
 import { manualDayName } from './manualRoute'
 import { MAX_TRIP_DAYS } from './freeDays'
+import { dayOfReservation, isDayPinned, type Reservation } from './bookings'
 
 /**
- * CAMBIAR LAS FECHAS DE UNA RUTA A MANO A OTRA DURACIÓN (Tanda 6y2). Funciones puras, sin React:
- *  - MÁS días: se añaden días vacíos justo antes del último (el día de la vuelta); con un solo día, detrás;
- *  - MENOS días: se quitan primero los días vacíos (los últimos antes de la vuelta, luego el primero y, si no queda otro, el de la vuelta);
- *  - un día con paradas, con una comida elegida o con una excursión NUNCA se quita sin preguntar: `planManualResize` los lista en `ask` y `resizeManualRoute` solo los quita si
- *    quien llama trae la decisión del viajero ('move' = pasar lo suyo a otro día; 'drop' = quitarlo). Sin decisión, el día se queda (y el viaje queda con un día de más).
- *  - «Pasarlas a otro día» = al FINAL del día más cercano ANTERIOR que se queda (si es el primero, al más cercano posterior): así el orden del viajero no se rompe y la app no
- *    inventa un sitio nuevo; la pregunta lo dice antes de hacerlo.
+ * CAMBIAR LAS FECHAS DE UNA RUTA A MANO A OTRA DURACIÓN (Tanda 6y2, simplificado en la 6y3). Funciones puras, sin React:
+ *  - MÁS días: se añaden días vacíos justo antes del último (el día de la vuelta); con un solo día, detrás. Sin preguntar;
+ *  - MENOS días: se quitan días, y la app NO pregunta qué hacer con sus cosas: avisa con el «¿Estás seguro?» de siempre diciendo QUÉ días se quitan (`manualRemovalText`) y, si el
+ *    viajero dice que sí, esos días se quitan con todo lo que tengan (paradas, comida, excursión). Si dice que no, las fechas no cambian. Las paradas NUNCA pasan a otro día.
+ *  - Qué días se quitan: primero los vacíos del medio, del último antes de la vuelta hacia atrás; solo si hay que tocar más, los del medio que llevan algo; el primero y el de la
+ *    vuelta, que son los de llegada y salida, solo si no queda otro (antes los vacíos).
+ *  - Un día fijado por una reserva (una excursión reservada) no se quita nunca, como en «Eliminar día»: el viaje queda entonces con un día de más (`pinned`).
  */
-
-export type RemovedDayChoice = 'move' | 'drop'
 
 /** Lo que lleva un día de verdad: paradas y restaurantes elegidos (una comida sin restaurante elegido no cuenta). */
 export function dayContentCount(day: DayPlan): number {
@@ -26,18 +25,14 @@ export function dayHasContent(day: DayPlan): boolean {
   return dayContentCount(day) > 0 || Boolean(day.selectedExcursionId) || Boolean(day.halfDayExcursion && !day.halfDayExcursionDeclined) || day.dayType === 'excursion'
 }
 
-export interface ManualResizeQuestion {
+/** Un día que se quita al acortar el viaje. */
+export interface ManualRemovedDay {
   dayId: string
   dayNumber: number
   /** «jue 16» (sin fechas, «día 3»), tal como se ve el día antes del cambio. */
   label: string
-  /** Paradas y restaurantes elegidos del día. */
-  count: number
-  /** El día es (o lleva) una excursión: no se puede «pasar» a otro día, solo quitar. */
-  excursion: boolean
-  /** El día al que irían sus paradas (null si es una excursión). */
-  moveToDayId: string | null
-  moveToLabel: string | null
+  /** Lleva algo (paradas, comida elegida o excursión). */
+  hasContent: boolean
 }
 
 export interface ManualResizePlan {
@@ -45,10 +40,10 @@ export interface ManualResizePlan {
   /** null: no cambia la duración (se quitaron las fechas o no son válidas). */
   target: number | null
   add: number
-  /** Ids de los días a quitar (vacíos primero). */
+  /** Ids de los días a quitar. */
   remove: string[]
-  /** De los que se quitan, los que llevan algo: hay que preguntar uno a uno. */
-  ask: ManualResizeQuestion[]
+  /** Los mismos días, por orden de viaje, con su nombre para el aviso. */
+  removed: ManualRemovedDay[]
 }
 
 const labelOf = (route: Route, dayNumber: number): string => {
@@ -56,15 +51,15 @@ const labelOf = (route: Route, dayNumber: number): string => {
   return corto.startsWith('Día ') ? `día ${dayNumber}` : corto
 }
 
-/** Los días que dejan de estar, dado el rango nuevo, y los que hay que preguntar. */
-export function planManualResize(route: Route, dateRange: DateRange | undefined): ManualResizePlan {
+/** Los días que dejan de estar, dado el rango nuevo. `pinned`: ids de días que no se pueden quitar (fijados por una excursión reservada). */
+export function planManualResize(route: Route, dateRange: DateRange | undefined, pinned: ReadonlySet<string> = new Set()): ManualResizePlan {
   const current = route.days.length
   const span = dateRange ? daysBetweenInclusive(dateRange.start, dateRange.end) : null
-  if (span == null) return { current, target: null, add: 0, remove: [], ask: [] }
+  if (span == null) return { current, target: null, add: 0, remove: [], removed: [] }
   const target = Math.min(MAX_TRIP_DAYS, Math.max(1, span))
-  if (target >= current) return { current, target, add: target - current, remove: [], ask: [] }
+  if (target >= current) return { current, target, add: target - current, remove: [], removed: [] }
   const quitar = current - target
-  // Orden de salida: 1) los vacíos del medio, del último antes de la vuelta hacia atrás; 2) los del medio que llevan algo (se pregunta), igual; 3) el primero y 4) el de la vuelta, que son los de
+  // Orden de salida: 1) los vacíos del medio, del último antes de la vuelta hacia atrás; 2) los del medio que llevan algo, igual; 3) el primero y 4) el de la vuelta, que son los de
   // llegada y salida y solo se tocan si no queda otro (antes los vacíos que los que llevan algo). Quitar por el final deja las fechas de lo de antes como estaban.
   const key = (day: DayPlan, index: number): number => {
     const lleno = dayHasContent(day)
@@ -74,55 +69,56 @@ export function planManualResize(route: Route, dateRange: DateRange | undefined)
   }
   const ordered = route.days
     .map((day, index) => ({ day, index, key: key(day, index) }))
+    .filter((entry) => !pinned.has(entry.day.id))
     .sort((a, b) => a.key - b.key)
     .slice(0, quitar)
   const remove = ordered.map((entry) => entry.day.id)
-  const removed = new Set(remove)
-  const ask = ordered
-    .filter((entry) => dayHasContent(entry.day))
+  const removed = [...ordered]
     .sort((a, b) => a.index - b.index)
-    .map(({ day, index }): ManualResizeQuestion => {
-      const excursion = Boolean(day.selectedExcursionId) || day.dayType === 'excursion' || Boolean(day.halfDayExcursion && !day.halfDayExcursionDeclined)
-      const to = excursion ? null : moveTargetOf(route.days, removed, index)
-      return {
-        dayId: day.id,
-        dayNumber: day.dayNumber,
-        label: labelOf(route, day.dayNumber),
-        count: dayContentCount(day),
-        excursion,
-        moveToDayId: to?.id ?? null,
-        moveToLabel: to ? labelOf(route, to.dayNumber) : null,
-      }
-    })
-  return { current, target, add: 0, remove, ask }
+    .map(({ day }): ManualRemovedDay => ({ dayId: day.id, dayNumber: day.dayNumber, label: labelOf(route, day.dayNumber), hasContent: dayHasContent(day) }))
+  return { current, target, add: 0, remove, removed }
 }
 
-/** La conversación de las preguntas: las fechas nuevas, los días por preguntar, por cuál va y lo ya contestado. Nada cambia en la ruta hasta contestar la última. */
-export interface ManualAsk {
+/**
+ * El texto del «¿Estás seguro?» al acortar el viaje: «Se quitarán el jue 16 y el vie 17, con sus paradas.» (un día: «Se quitará el jue 16, con sus paradas.»; sin fechas, «el día 3»).
+ * «con sus paradas» solo si algún día de esos lleva algo; un día vacío se quita sin más.
+ */
+export function manualRemovalText(removed: ManualRemovedDay[]): string {
+  if (removed.length === 0) return ''
+  const names = removed.map((day) => `el ${day.label}`)
+  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} y ${names.at(-1)}`
+  return `Se quitar${removed.length === 1 ? 'á' : 'án'} ${list}${removed.some((day) => day.hasContent) ? ', con sus paradas' : ''}.`
+}
+
+/** Lo que dice el «¿Estás seguro?» de acortar el viaje. `null` si las fechas nuevas no quitan ningún día (se ponen sin preguntar). */
+export interface ManualShrinkNotice {
   dateRange: DateRange | undefined
-  questions: ManualResizeQuestion[]
-  at: number
-  decisions: Record<string, RemovedDayChoice>
+  /** Los días que se quitan (por orden de viaje). */
+  removed: ManualRemovedDay[]
+  /** «Se quitarán el jue 16 y el vie 17, con sus paradas.» */
+  text: string
+  /** Lo que no se puede quitar o no se borra: «Tus reservas de esos días se quedan en RESERVAS.» (la reserva no se borra, como al eliminar un día) y los días que se quedan por una excursión reservada; si no hay nada, null. */
+  detail: string | null
+  /** Días que se habrían quitado pero no se pueden (fijados por una excursión reservada): el viaje queda con esos días de más. */
+  keptPinned: string[]
 }
 
-/** Empieza la conversación (null si no hay nada que preguntar: las fechas se ponen sin más). */
-export function startManualAsk(route: Route, dateRange: DateRange | undefined): ManualAsk | null {
-  const { ask } = planManualResize(route, dateRange)
-  return ask.length === 0 ? null : { dateRange, questions: ask, at: 0, decisions: {} }
-}
-
-/** Contesta la pregunta de ahora: devuelve la siguiente, o (con la última) las decisiones para poner las fechas. «Cancelar» no pasa por aquí: se tira la conversación y la ruta queda como estaba. */
-export function answerManualAsk(ask: ManualAsk, choice: RemovedDayChoice): { next: ManualAsk | null; apply: { dateRange: DateRange | undefined; decisions: Record<string, RemovedDayChoice> } | null } {
-  const decisions = { ...ask.decisions, [ask.questions[ask.at].dayId]: choice }
-  if (ask.at + 1 < ask.questions.length) return { next: { ...ask, at: ask.at + 1, decisions }, apply: null }
-  return { next: null, apply: { dateRange: ask.dateRange, decisions } }
-}
-
-/** El día más cercano ANTERIOR que se queda; si no hay (es el primero), el más cercano posterior. */
-function moveTargetOf(days: DayPlan[], removed: Set<string>, index: number): DayPlan | null {
-  for (let i = index - 1; i >= 0; i--) if (!removed.has(days[i].id)) return days[i]
-  for (let i = index + 1; i < days.length; i++) if (!removed.has(days[i].id)) return days[i]
-  return null
+export function manualShrinkNotice(route: Route, dateRange: DateRange | undefined, reservations: Reservation[]): ManualShrinkNotice | null {
+  const pinned = new Set(route.days.filter((day) => isDayPinned(route, reservations, day)).map((day) => day.id))
+  const plan = planManualResize(route, dateRange, pinned)
+  if (plan.removed.length === 0) return null
+  const ids = new Set(plan.remove)
+  const conReserva = reservations.some((reservation) => {
+    const day = dayOfReservation(route, reservation)
+    return day != null && ids.has(day.id)
+  })
+  const sinFijar = planManualResize(route, dateRange)
+  const keptPinned = sinFijar.removed.filter((day) => pinned.has(day.dayId)).map((day) => day.label)
+  const partes = [
+    conReserva ? 'Tus reservas de esos días se quedan en RESERVAS.' : '',
+    keptPinned.length > 0 ? `${keptPinned.length === 1 ? `El ${keptPinned[0]} se queda` : `${keptPinned.map((label) => `el ${label}`).join(' y ')} se quedan`}, porque tiene${keptPinned.length === 1 ? '' : 'n'} una excursión reservada.` : '',
+  ].filter(Boolean)
+  return { dateRange, removed: plan.removed, text: manualRemovalText(plan.removed), detail: partes.length > 0 ? partes.join(' ') : null, keptPinned }
 }
 
 function freshDayId(days: DayPlan[], taken: Set<string>): string {
@@ -133,34 +129,16 @@ function freshDayId(days: DayPlan[], taken: Set<string>): string {
 }
 
 /**
- * Pone las fechas nuevas en la ruta a mano y ajusta sus días: añade vacíos, quita vacíos, y los días con algo solo se quitan con la decisión del viajero (ver arriba).
+ * Pone las fechas nuevas en la ruta a mano y ajusta sus días: añade vacíos o quita los que `planManualResize` dice (con todo lo que tengan: quien llama ya preguntó).
  * Los días que aún se llaman como los puso la app («lun 13 oct», «Día 2») pasan a llamarse por las fechas nuevas; los que el viajero renombró se quedan.
  */
-export function resizeManualRoute(route: Route, dateRange: DateRange | undefined, decisions: Record<string, RemovedDayChoice> = {}): Route {
+export function resizeManualRoute(route: Route, dateRange: DateRange | undefined, pinned: ReadonlySet<string> = new Set()): Route {
   const antes = route.answers
-  const plan = planManualResize(route, dateRange)
+  const plan = planManualResize(route, dateRange, pinned)
   // Qué días llevan todavía el nombre de la app (con el número que tenían, antes de renumerar).
   const nombreDeLaApp = new Set(route.days.filter((day) => !day.userAdded && !day.nameByUser && day.title === manualDayName({ answers: antes }, day.dayNumber)).map((day) => day.id))
-  const quitar = new Set(plan.remove.filter((id) => {
-    const day = route.days.find((candidate) => candidate.id === id)
-    return day && (!dayHasContent(day) || decisions[id] !== undefined)
-  }))
-  let days = route.days.map((day) => ({ ...day, stops: [...day.stops], meals: [...day.meals] }))
-  // Lo que se pasa a otro día va al final del día que se queda (el orden del viajero no cambia).
-  for (const question of plan.ask) {
-    if (decisions[question.dayId] !== 'move' || !quitar.has(question.dayId) || question.excursion) continue
-    const from = route.days.find((day) => day.id === question.dayId)
-    const index = route.days.findIndex((day) => day.id === question.dayId)
-    const to = from ? moveTargetOf(route.days, quitar, index) : null
-    if (!from || !to) continue
-    days = days.map((day) => {
-      if (day.id !== to.id) return day
-      const meals = [...day.meals]
-      for (const meal of from.meals) if (meal.chosenRestaurant && !meals.some((own) => own.mealTime === meal.mealTime && own.chosenRestaurant)) meals.push(meal)
-      return { ...day, stops: [...day.stops, ...from.stops], meals }
-    })
-  }
-  days = days.filter((day) => !quitar.has(day.id))
+  const quitar = new Set(plan.remove)
+  let days = route.days.filter((day) => !quitar.has(day.id)).map((day) => ({ ...day, stops: [...day.stops], meals: [...day.meals] }))
   const nuevos: string[] = []
   if (plan.add > 0) {
     const template = days[0]
