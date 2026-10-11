@@ -273,6 +273,82 @@
           "regular": "https://images.unsplash.com/photo-1585595751864-6e56dbd53658?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&ixlib=rb-4.1.0&q=80&w=1080"
         }
       ]
+    },
+    {
+      "lugar": "Excursión a Tívoli — Villa d'Este y Villa Adriana",
+      "tipo": "excursion",
+      "dice_hoy": "Salía «Entrance to the Grotto at Posillipo, Naples» (una gruta de Nápoles, no Tívoli).",
+      "aviso": "Las tres son de Villa d'Este (los jardines y las fuentes de Tívoli); su descripción lo dice. De Villa Adriana no hay nada en Unsplash (la búsqueda sale vacía), así que ninguna enseña la otra mitad de la excursión. Si prefieres una de Villa Adriana, pon una tuya.",
+      "candidatas": [
+        {
+          "id": "PkzSpUB6n3E",
+          "descripcion": "The Gardens of the Villa d'Este, TivoliThe villa was commissioned by Cardinal Ippolito d'Este, son of Alfonso I and Lucrezia Borgia (Ferrara 1509 - Rome 1572…",
+          "nota": "Villa d'Este: edificio con una fuente delante (jardines de Tívoli).",
+          "autor": "at",
+          "autor_url": "https://unsplash.com/@talpeanu?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-large-building-with-a-fountain-in-front-of-it-PkzSpUB6n3E?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1654612533611-d4f18261d444?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk3fA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1654612533611-d4f18261d444?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk3fA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "07SDJpnf2oU",
+          "descripcion": "The Gardens of the Villa d'Este, Tivoli",
+          "nota": "Villa d'Este: fuente en un jardín entre setos.",
+          "autor": "at",
+          "autor_url": "https://unsplash.com/@talpeanu?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-water-fountain-in-a-garden-surrounded-by-hedges-07SDJpnf2oU?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1654612677586-9746c873fda0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1654612677586-9746c873fda0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "qP9Gbs43Vms",
+          "descripcion": "The Gardens Of The Villa D'esteThe villa was commissioned by Cardinal Ippolito d'Este, son of Alfonso I and Lucrezia Borgia (Ferrara 1509 - Rome 1572), on a …",
+          "nota": "Villa d'Este: fuente con una estatua en el centro.",
+          "autor": "at",
+          "autor_url": "https://unsplash.com/@talpeanu?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-fountain-with-a-statue-in-the-middle-of-it-qP9Gbs43Vms?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1654533596848-5c1bd2393cae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1654533596848-5c1bd2393cae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Excursión a Pompeya y Sorrento",
+      "tipo": "excursion",
+      "dice_hoy": "Salía una foto de Unsplash (photo-1758811389043…) de la que no se ha podido confirmar que sea Pompeya: su descripción no lo dice.",
+      "aviso": null,
+      "candidatas": [
+        {
+          "id": "y2plB8AMtEM",
+          "descripcion": "The Lost City of Pompeii, with Mount Vesuvius in the background",
+          "nota": "Pompeya con el Vesubio al fondo (la descripción lo dice).",
+          "autor": "D Jonez",
+          "autor_url": "https://unsplash.com/@cooljonez?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/brown-concrete-building-near-mountain-under-blue-sky-during-daytime-y2plB8AMtEM?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1579285014910-be9df495fb26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1579285014910-be9df495fb26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "-xOfL8dW0ns",
+          "descripcion": "Pompeii ruins with the Vesuvius volcano seen through a doorway",
+          "nota": "Ruinas de Pompeya con el Vesubio visto a través de una puerta (la descripción lo dice).",
+          "autor": "Jonne Mäkikyrö",
+          "autor_url": "https://unsplash.com/@jonnemakikyro?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-stone-building-with-a-round-table--xOfL8dW0ns?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1657354371984-ef2f1a59cf80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1657354371984-ef2f1a59cf80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "a61Cp6eFkPg",
+          "descripcion": "Looking down at the fishing boats and houses that make up the harbour at Sorrento, Italy",
+          "nota": "El puerto de Sorrento visto desde arriba (la descripción lo dice).",
+          "autor": "Nick Fewings",
+          "autor_url": "https://unsplash.com/@jannerboy62?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/aerial-view-of-city-buildings-near-body-of-water-during-daytime-a61Cp6eFkPg?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1592484149049-d3b6c5c64ca6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1592484149049-d3b6c5c64ca6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxhbGx8fHx8fHx8fHwxNzkxNzM1NTk4fA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
     }
   ]
 }

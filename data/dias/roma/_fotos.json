@@ -15,7 +15,9 @@
     {"lugar":"Excursión a Florencia y Pisa","motivo":"Wikipedia servía un manuscrito (MauriceManuscript.jpg), ni Florencia ni Pisa."},
     {"lugar":"Excursión a Nápoles y Pompeya en tren","motivo":"Wikipedia servía una vista aérea de Marsella (Notre-Dame_de_la_Garde_aerial_view_2020…), ni Nápoles ni Pompeya."},
     {"lugar":"Excursión a la Costa Amalfitana","motivo":"Wikipedia servía un avión de Vueling (Vueling_A320neo…), no la costa."},
-    {"lugar":"Excursión a Florencia en tren de alta velocidad","motivo":"Wikipedia servía un avión de Vueling (Vueling_A320neo…), no Florencia."}
+    {"lugar":"Excursión a Florencia en tren de alta velocidad","motivo":"Wikipedia servía un avión de Vueling (Vueling_A320neo…), no Florencia."},
+    {"lugar":"Excursión a Tívoli — Villa d'Este y Villa Adriana","motivo":"Wikipedia servía «Entrance to the Grotto at Posillipo, Naples» (una gruta de Nápoles), no Tívoli."},
+    {"lugar":"Excursión a Pompeya y Sorrento","motivo":"Salía una foto de Unsplash de la que no se ha podido confirmar que sea Pompeya (su descripción no lo dice); hasta que Eric elija una buena, va sin foto."}
   ],
   "fotos": [
     {
