@@ -26,6 +26,8 @@ export function BotonFoto({
   capture = false,
   multiple = false,
   className,
+  claseContenedor,
+  style,
   children,
   onSubida,
 }: {
@@ -38,6 +40,10 @@ export function BotonFoto({
   capture?: boolean
   multiple?: boolean
   className?: string
+  /** La clase de la caja que envuelve al botón (y a su mensaje de error); por defecto, en línea. «Guarda tus recuerdos» la usa para que el botón llene su casilla. */
+  claseContenedor?: string
+  /** Estilo suelto del botón (el fondo de rayas y el rosa de «Guarda tus recuerdos»). */
+  style?: React.CSSProperties
   children?: React.ReactNode
   onSubida?: (fotos: FotoViaje[]) => void
 }) {
@@ -68,12 +74,13 @@ export function BotonFoto({
   }
 
   return (
-    <span className="inline-flex flex-col items-start">
+    <span className={claseContenedor ?? 'inline-flex flex-col items-start'}>
       <button
         type="button"
         onClick={() => entrada.current?.click()}
         disabled={subiendo}
         aria-label={etiqueta}
+        style={style}
         className={className ?? 'inline-flex h-11 w-11 items-center justify-center rounded-full border border-text/15 text-text-soft transition-colors hover:bg-bg-hover disabled:opacity-60'}
       >
         {subiendo ? <span className="px-2 text-[12px]">Subiendo…</span> : (children ?? <IconoCamara />)}

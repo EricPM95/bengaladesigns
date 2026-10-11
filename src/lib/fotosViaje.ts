@@ -229,6 +229,49 @@ function avisarCambio() {
   oyentes.forEach((oyente) => oyente())
 }
 
+/**
+ * Quien quiere enterarse de CADA foto que se añade (Tanda 6y4: «la foto vuela al Perfil»). A diferencia de `alCambiarFotos` (que avisa también al borrar y que cada pantalla usa para recargar su lista),
+ * esto salta UNA vez por foto subida de verdad, justo después de guardarla, desde cualquier sitio (la ficha de la parada, «✓ Visto», «Tus fotos de hoy», «Guarda tus recuerdos», el álbum): todos pasan por
+ * `subirFotoPreparada`. No salta al cargar las fotos ni al borrar. Lleva la copia pequeña local (la miniatura, o la grande si no hay) para dibujarla sin esperar a la red.
+ */
+export interface FotoAnadida {
+  foto: FotoViaje
+  /** La miniatura de esa foto, en local (la `_min`, o la grande si no se pudo hacer). */
+  miniatura: Blob
+}
+const oyentesAnadida = new Set<(evento: FotoAnadida) => void>()
+export function alAnadirFoto(oyente: (evento: FotoAnadida) => void): () => void {
+  oyentesAnadida.add(oyente)
+  return () => {
+    oyentesAnadida.delete(oyente)
+  }
+}
+function avisarAnadida(evento: FotoAnadida) {
+  oyentesAnadida.forEach((oyente) => {
+    try {
+      oyente(evento)
+    } catch (error) {
+      console.warn('[fotos] fallo en un oyente de «foto añadida»:', error)
+    }
+  })
+}
+
+/** Cuántas fotos tiene cada viaje (para «155 fotos» de «Mis viajes»): una sola consulta ligera, sin firmar URLs. Sin Supabase o sin la migración: todo a 0. */
+export async function contarFotos(tripIds: string[]): Promise<Map<string, number>> {
+  const cuentas = new Map<string, number>(tripIds.map((id) => [id, 0]))
+  if (!supabase || tripIds.length === 0) return cuentas
+  try {
+    const userId = await bootstrapTraveler().catch(() => null)
+    if (!userId) return cuentas
+    const { data, error } = await supabase.from('trip_photos').select('trip_id').eq('user_id', userId).in('trip_id', tripIds)
+    if (error || !data) return cuentas
+    for (const fila of data as { trip_id: string }[]) cuentas.set(fila.trip_id, (cuentas.get(fila.trip_id) ?? 0) + 1)
+    return cuentas
+  } catch {
+    return cuentas
+  }
+}
+
 function idUnico(): string {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
@@ -303,6 +346,7 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
     const { data: firmadaMin } = hayMiniatura ? await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(rutaMiniatura(ruta), SEGUNDOS_URL_FIRMADA) : { data: null }
     const foto = deFila(data as Fila, firmada?.signedUrl ?? '', firmadaMin?.signedUrl ?? '')
     avisarCambio()
+    avisarAnadida({ foto, miniatura: preparada.miniatura?.blob ?? preparada.blob })
     return { foto, error: null }
   } catch (error) {
     console.warn('[fotos] fallo subiendo la foto:', error)

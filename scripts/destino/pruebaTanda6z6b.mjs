@@ -35,7 +35,7 @@ const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z6b_entrada.tsx
     { filtro: /perfil\/MapaMisViajes$/, exporta: 'MapaMisViajes' },
   ],
 })
-const { createElement, renderToStaticMarkup, PerfilSheet, RouteOverview, TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta, BotonFotoParada, etiquetaAnadirFoto, limiteDeFotos, modoDeFoto, agruparFotos, chinchetasDeViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES, usePerfilUi, useRouteStore, useSyncStore } = M
+const { createElement, renderToStaticMarkup, PerfilSheet, RouteOverview, TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaRecuerdosEnRuta, BotonFotoParada, etiquetaAnadirFoto, limiteDeFotos, modoDeFoto, agruparFotos, plural, cifrasDelPerfil, textoDeFotos, chinchetasDeViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES, usePerfilUi, useRouteStore, useSyncStore } = M
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 const aTexto = (html) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, '\n').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s*\n\s*/g, '\n')
@@ -222,21 +222,26 @@ debe(rot.r1 === 'Roma · 13 – 16 oct 2026 · 4 días', 'B5', `rótulo de Roma:
 debe(rot.r5 === 'Lisboa · octubre · 3 días', 'B5', `rótulo de un viaje sin fechas: «${rot.r5}» (esperado «Lisboa · octubre · 3 días»)`)
 debe(rot.r3 === 'Madrid · 1 – 3 may 2026 · 3 días', 'B5', `rótulo de Madrid: «${rot.r3}»`)
 const textoPerfil = pintaPerfil({ version: 'completa' })
-for (const r of Object.values(rot)) debe(textoPerfil.includes(r), 'B5', `el Perfil no lista «${r}» (${plano(textoPerfil).slice(0, 400)})`)
-debe(textoPerfil.indexOf(rot.r1) < textoPerfil.indexOf(rot.r2) && textoPerfil.indexOf(rot.r2) < textoPerfil.indexOf(rot.r3) && textoPerfil.indexOf(rot.r5) < textoPerfil.indexOf(rot.r1), 'B5', 'el Perfil no pinta los viajes en orden')
+// 6y4: cada viaje se pinta en dos líneas (el destino y «fecha · N días»), no en un rótulo suelto.
+for (const v of lista) debe(textoPerfil.includes(v.destino) && textoPerfil.includes([v.cuando, plural(v.dias, 'día', 'días')].filter(Boolean).join(' · ')), 'B5', `el Perfil no lista el viaje «${v.rotulo}» (${plano(textoPerfil).slice(0, 400)})`)
+{
+  const pos = (id) => textoPerfil.indexOf(lista.find((v) => v.id === id).cuando)
+  debe(pos('r1') < pos('r2') && pos('r2') < pos('r3') && pos('r5') < pos('r1'), 'B5', 'el Perfil no pinta los viajes en orden')
+}
 debe(/Nuevo viaje/.test(textoPerfil) && !/Tips del viaje/.test(textoPerfil), 'B5', 'falta [Nuevo viaje] en el Perfil, o sigue ahí [Tips del viaje] (ahora es la bombilla de RUTA)')
-debe(/Próximos/.test(textoPerfil) && /Ya hechos/.test(textoPerfil) && textoPerfil.indexOf('Próximos') < textoPerfil.indexOf('Ya hechos'), 'B5', 'faltan los rótulos «Próximos» / «Ya hechos»')
+debe(!/Próximos/.test(textoPerfil) && !/Ya hechos/.test(textoPerfil), 'B5', '6y4: el diseño del Perfil no lleva los rótulos «Próximos» / «Ya hechos»')
 debe(/Mis viajes/.test(textoPerfil), 'B5', 'falta el rótulo «Mis viajes»')
 
 // Las chinchetas
 const chinchetas = chinchetasDeViajes(lista)
-debe(chinchetas.length === 1 + 1 + 2 + 1 + 1, 'B6', `chinchetas: ${chinchetas.length}, una por destino debería dar 6 (Lisboa, Roma, Roma+Florencia×2, Sevilla, Madrid)`)
-const deR2 = chinchetas.filter((c) => c.viajeId === 'r2')
-debe(deR2.length === 2 && deR2.map((c) => c.ciudad).join() === 'Roma,Florencia', 'B6', `un viaje a Roma y Florencia debería dar dos chinchetas (${deR2.map((c) => c.ciudad)})`)
+debe(chinchetas.length === 5, 'B6', `chinchetas: ${chinchetas.length}, una por destino debería dar 5 (Lisboa, Roma ×2 viajes, Florencia, Sevilla, Madrid)`)
+const deR2 = chinchetas.filter((c) => ['Roma', 'Florencia'].includes(c.ciudad))
+debe(deR2.length === 2, 'B6', `un viaje a Roma y Florencia debería dar dos chinchetas (${deR2.map((c) => c.ciudad)})`)
+debe(chinchetas.find((c) => c.ciudad === 'Roma').viajes === 2 && chinchetas.find((c) => c.ciudad === 'Florencia').viajes === 1, 'B6', '6y4: «Roma ×2» (dos viajes a Roma) y Florencia ×1')
 debe(new Set(chinchetas.map((c) => c.id)).size === chinchetas.length, 'B6', 'hay chinchetas con el mismo id')
 const florencia = deR2.find((c) => c.ciudad === 'Florencia')
 debe(florencia && Math.abs(florencia.coordenadas.lat - 43.77) < 0.1 && Math.abs(florencia.coordenadas.lng - 11.25) < 0.1, 'B6', 'la chincheta de Florencia no está en Florencia')
-debe(chinchetas.find((c) => c.viajeId === 'r3').fase === 'hecho', 'B6', 'la chincheta de un viaje hecho no lo dice')
+debe(chinchetas.find((c) => c.ciudad === 'Madrid').fase === 'hecho', 'B6', 'la chincheta de un viaje hecho no lo dice')
 // Un destino sin paradas con sitio real (0,0) no pone chincheta en el golfo de Guinea.
 const sinSitio = ruta({ id: 'r6', destino: 'Oporto', dias: [dia('r6d1', 1, 'Oporto', [parada('z', 'Ribeira', 0, 0)])] })
 debe(resumenDeViaje(sinSitio, null, hoy).destinos.length === 0, 'B6', 'una parada sin sitio real (0,0) pone una chincheta')
@@ -245,7 +250,7 @@ const codigoMapa = leer('src/components/perfil/MapaMisViajes.tsx')
 debe(PROYECCION_MAPA_VIAJES === 'globe', 'B6', `la proyección del mapa de mis viajes es «${PROYECCION_MAPA_VIAJES}», no «globe»`)
 debe(/new mapboxgl\.Map\(/.test(codigoMapa) && /projection:\s*PROYECCION_MAPA_VIAJES/.test(codigoMapa) && /VITE_MAPBOX_TOKEN/.test(codigoMapa), 'B6', 'MapaMisViajes no crea un mapa de Mapbox con la proyección globo y el token')
 debe(/return \(\) => \{[\s\S]*mapa\.remove\(\)/.test(codigoMapa), 'B6', 'MapaMisViajes no destruye el mapa al desmontarse (mapa.remove())')
-debe(/<MapaMisViajes chinchetas=\{chinchetas\} onElegir=\{abrirAlbum\}/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el Perfil no monta el mapa con las chinchetas y abre la ficha al tocar una')
+debe(/<MapaMisViajes chinchetas=\{chinchetas\} cifras=\{cifras\} onElegir=\{abrirAlbum\}/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el Perfil no monta el mapa con las chinchetas y abre la ficha al tocar una')
 debe(/ficha \? \(/.test(leer('src/components/layout/PerfilSheet.tsx')) && /MapaMisViajes/.test(leer('src/components/layout/PerfilSheet.tsx')), 'B6', 'el mapa debe desmontarse mientras se ve una ficha')
 
 // La ficha
@@ -253,20 +258,20 @@ const FichaR1 = (version) => pintaPerfil({ version, albumDe: 'r1' })
 for (const version of ['gratis', 'completa']) {
   const t = FichaR1(version)
   const htmlDelPerfil = renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} }))
-  debe(/Roma/.test(t) && t.includes('13 – 16 oct 2026') && t.includes('4 días · 11 paradas'), 'B7', `${version}: la ficha de Roma no enseña las fechas y «4 días · 11 paradas» (${plano(t).slice(0, 300)})`)
-  debe(/Álbum/.test(t) && /Aquí irán tus fotos/.test(t), 'B7', `${version}: la ficha no tiene su álbum`)
-  debe(/Abrir este viaje/.test(t), 'B7', `${version}: la ficha de un viaje guardado no lleva [Abrir este viaje]`)
-  debe(/Añadir foto/.test(t) && /Parada a la que añadir/.test(htmlDelPerfil), 'B7', `${version}: el álbum no tiene [Añadir foto(s)] con sus selectores`)
+  debe(/Roma/.test(t) && t.includes('13 – 16 oct 2026') && !t.includes('4 días · 11 paradas'), 'B7', `${version}: 6y4: la ficha solo lleva el título y la fecha (sin el resumen «4 días · 11 paradas») (${plano(t).slice(0, 300)})`)
+  debe(/Aquí irán las fotos de tu viaje/.test(t) && /Álbum del viaje/.test(renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} }))), 'B7', `${version}: la ficha no tiene su álbum`)
+  debe(!/Abrir este viaje/.test(t), 'B7', `${version}: 6y4: la ficha ya no lleva [Abrir este viaje] (solo título, fecha y álbum)`)
+  debe(!/Parada a la que añadir/.test(htmlDelPerfil) && !/Día al que añadir/.test(htmlDelPerfil), 'B7', `${version}: 6y4: el álbum no lleva selectores de día ni de parada`)
 }
-debe(/Una foto por parada/.test(FichaR1('gratis')) && !/Añadir fotos/.test(FichaR1('gratis')), 'B7', 'gratis: el álbum no dice «Una foto por parada» (o ofrece «Añadir fotos»)')
-debe(!/Una foto por parada/.test(FichaR1('completa')) && /Añadir fotos/.test(FichaR1('completa')), 'B7', 'de pago: el álbum dice «Una foto por parada» o no ofrece «Añadir fotos»')
+debe(!/Añadir foto/.test(FichaR1('gratis')) && /desde la ficha de cada parada/.test(FichaR1('gratis')), 'B7', 'gratis: 6y4: el álbum no debe ofrecer [Añadir fotos] (se añaden desde la ficha de la parada)')
+debe(/Añadir fotos/.test(FichaR1('completa')), 'B7', 'de pago: el álbum no ofrece «Añadir fotos»')
 const fichaMulti = pintaPerfil({ version: 'completa', albumDe: 'r2' })
-debe(/Roma · Florencia/.test(fichaMulti) && fichaMulti.includes('4 días · 4 paradas'), 'B7', 'la ficha de Roma y Florencia no nombra sus dos destinos o su resumen')
+debe(/Roma y Florencia/.test(fichaMulti) && !/Roma · Florencia/.test(fichaMulti), 'B7', '6y4: la ficha de Roma y Florencia lleva el título del viaje, sin lista de destinos ni resumen')
 debe(viajePorId(lista, 'fila-1')?.id === 'r1' && viajePorId(lista, 'r1')?.id === 'r1' && viajePorId(lista, 'nada') === null, 'B7', 'viajePorId no encuentra por id de ruta o de fila guardada')
 // El viaje abierto y sin guardar también sale.
 const conAbierta = viajesDelPerfil([], R1, hoy)
 debe(conAbierta.length === 1 && conAbierta[0].id === 'r1' && conAbierta[0].guardado === null, 'B5', 'el viaje abierto y aún sin guardar no sale en el Perfil')
-debe(!/Abrir este viaje/.test(pintaPerfil({ version: 'completa', albumDe: 'r1', rutaAbierta: R1 })) && /Abierto/.test(pintaPerfil({ version: 'completa', albumDe: 'r1', rutaAbierta: R1 })), 'B7', 'el viaje que ya está abierto debería decir «Abierto» y no ofrecer abrirlo')
+debe(!/Abrir este viaje/.test(pintaPerfil({ version: 'completa', albumDe: 'r1', rutaAbierta: R1 })), 'B7', '6y4: ni abierto ni cerrado se ofrece «Abrir este viaje» en la ficha')
 
 // El álbum ordenado por días
 const F_ = (id, dayNumber, stopName, t) => ({ id, tripId: 'r1', dayId: `r1d${dayNumber}`, dayNumber, stopName, storagePath: `p/${id}`, width: 1, height: 1, bytes: 1, createdAt: `2026-10-13T10:00:0${t}Z`, url: '' })

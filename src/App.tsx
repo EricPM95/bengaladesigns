@@ -15,6 +15,7 @@ import { AvisoSolape } from './components/route/reservas/AvisoSolape'
 import { AlojamientoHost } from './components/route/alojamiento/AlojamientoHost'
 import { PantallaPresupuesto } from './components/route/presupuesto/PantallaPresupuesto'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
+import { FotoVuela } from './components/perfil/FotoVuela'
 
 function LoadingScreenContainer() {
   const destination = useRouteStore((state) => state.destination)
@@ -106,6 +107,7 @@ function App() {
     <Layout>
       <TripSync />
       <PrecioVuela />
+      <FotoVuela />
       <CampaignLinks />
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}

@@ -5,7 +5,9 @@ import type { Route } from '../../../lib/types'
 import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { usePerfilUi } from '../../../store/usePerfilUi'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { diaParaFotoSuelta } from '../../../lib/viajesPerfil'
 import { Icono } from '../../ui/Icono'
+import { BotonFoto } from './BotonFoto'
 import { CabeceraCaja, CajaBlanca } from '../hoy/piezas'
 
 /** Las tres últimas fotos del viaje: por día (el más reciente primero) y, dentro del día, por fecha de subida. */
@@ -34,6 +36,18 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
   const unaPorParada = limiteDeFotos().porParada !== null
   const ultimas = ultimasTresFotos(fotos)
   const subir = onSubir ?? (() => abrirAlbum(route.id))
+  // Las fotos de aquí se SUBEN desde aquí mismo (6y4: el álbum de la gratis ya no lleva [Añadir fotos]), al mismo viaje y sin parada: al día que toque (ver diaParaFotoSuelta).
+  const dia = onSubir ? null : diaParaFotoSuelta(route, fotos, !unaPorParada)
+  const subirFotos = (etiqueta: string, className: string, hijos: React.ReactNode, opciones: { claseContenedor?: string; style?: React.CSSProperties } = {}) =>
+    dia ? (
+      <BotonFoto tripId={route.id} dayId={dia.id} dayNumber={dia.dayNumber} stopName={null} etiqueta={etiqueta} multiple className={className} claseContenedor={opciones.claseContenedor} style={opciones.style}>
+        {hijos}
+      </BotonFoto>
+    ) : (
+      <button type="button" onClick={subir} aria-label={etiqueta} className={className} style={opciones.style}>
+        {hijos}
+      </button>
+    )
   const destinos = nombresDeDestinos(route.destination)
   const cuadros = [0, 1, 2].map((i) => ultimas[i] ?? null)
   return (
@@ -51,16 +65,12 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
             )
           }
           return (
-            <button
-              key={`vacio-${i}`}
-              type="button"
-              onClick={subir}
-              aria-label="Subir mis fotos"
-              className={`${forma} flex items-center justify-center text-text/40`}
-              style={{ background: RAYAS, border: '1.5px dashed rgba(28,34,48,.18)' }}
-            >
-              <Icono nombre="camara" size={grande ? 24 : 20} />
-            </button>
+            <span key={`vacio-${i}`} className={`${grande ? 'row-span-2' : ''} flex min-h-0`}>
+              {subirFotos('Subir mis fotos', `${forma} flex h-full w-full items-center justify-center text-text/40`, <Icono nombre="camara" size={grande ? 24 : 20} />, {
+                claseContenedor: 'flex h-full w-full flex-col',
+                style: { background: RAYAS, border: '1.5px dashed rgba(28,34,48,.18)' },
+              })}
+            </span>
           )
         })}
       </div>
@@ -70,15 +80,15 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
         </span>
         Sube tus fotos y {destinos.texto} {destinos.varios ? 'quedan' : 'queda'} en tu mapa de viajes, en tu perfil.
       </span>
-      <button
-        type="button"
-        onClick={subir}
-        className="flex h-[50px] items-center justify-center gap-2 rounded-full text-[14.5px] font-semibold text-white transition-transform active:scale-[.98]"
-        style={{ background: 'oklch(0.55 0.17 5)', boxShadow: '0 12px 22px -12px oklch(0.55 0.17 5)' }}
-      >
-        <Icono nombre="camara" size={18} />
-        Subir mis fotos
-      </button>
+      {subirFotos(
+        'Subir mis fotos del viaje',
+        'flex h-[50px] w-full items-center justify-center gap-2 rounded-full text-[14.5px] font-semibold text-white transition-transform active:scale-[.98]',
+        <>
+          <Icono nombre="camara" size={18} />
+          Subir mis fotos
+        </>,
+        { claseContenedor: 'flex w-full flex-col', style: { background: 'oklch(0.55 0.17 5)', boxShadow: '0 12px 22px -12px oklch(0.55 0.17 5)' } },
+      )}
       {fotos.length > 0 && (
         <button
           type="button"

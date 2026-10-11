@@ -43,7 +43,7 @@ export function Header({ onOpenDates }: HeaderProps) {
         <Icono nombre="avisos" size={23} />
         {unreadCount > 0 && <span className="absolute right-[11px] top-2.5 h-[9px] w-[9px] rounded-full bg-accent" style={{ boxShadow: '0 0 0 2px rgb(var(--bg))' }} aria-hidden="true" />}
       </button>
-      <button type="button" onClick={abrirPerfil} aria-label="Perfil y mis viajes" title="Perfil y mis viajes" className="flex h-11 w-11 shrink-0 items-center justify-center">
+      <button type="button" onClick={abrirPerfil} aria-label="Perfil y mis viajes" title="Perfil y mis viajes" data-boton-perfil="1" className="flex h-11 w-11 shrink-0 items-center justify-center">
         <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#1C2230] text-[#FFFDF8]" style={{ boxShadow: '0 0 0 2px rgb(var(--bg)),0 0 0 3.5px rgb(var(--accent))' }}>
           <Icono nombre="perfil" size={18} />
         </span>
