@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { APP_LANGUAGE } from '../../lib/appLanguage'
 import { COLOR_ICONO } from '../../lib/iconos'
 import { CAJA_MAPA_VIAJES, PROYECCION_MAPA_VIAJES, TEXTOS_MAPA_VIAJES, centroDelGlobo, zoomGloboEntero, type CifrasDelPerfil, type Chincheta } from '../../lib/viajesPerfil'
+import { CifrasDelMapa } from './CifrasDelMapa'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
@@ -13,28 +14,6 @@ const ESTILO_MAPA_VIAJES = 'mapbox://styles/mapbox/streets-v12'
 /** El alto del mapa (Tanda 6y4): 286 px, un 30 % más que los 220 de antes. Lo repite `CAJA_MAPA_VIAJES.alto`. */
 const CLASE_MARCO = 'isolate relative h-[286px] flex-none overflow-hidden rounded-[26px] border border-text/[.08]'
 const DORADO = 'oklch(0.8 0.14 70)'
-
-function Cifra({ valor, etiqueta, oscura = false }: { valor: number; etiqueta: string; oscura?: boolean }) {
-  return (
-    <span className={`flex h-[30px] items-center gap-1.5 rounded-full pl-2.5 pr-[11px] text-[11.5px] font-medium ${oscura ? 'bg-[#1C2230] text-[#FFFDF8]' : 'bg-[#FFFDF8]/90 text-[#1C2230]'}`}>
-      <span className="font-display text-[19px] leading-none" style={oscura ? { color: DORADO } : undefined}>
-        {valor}
-      </span>
-      {etiqueta}
-    </span>
-  )
-}
-
-/** Las tres cifras de abajo a la izquierda del mapa («1 país · 4 lugares · 14 días»); qué cuenta cada una lo dice `cifrasDelPerfil`. */
-function CifrasDelMapa({ cifras }: { cifras: CifrasDelPerfil }) {
-  return (
-    <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex gap-[5px]" data-cifras-del-mapa>
-      <Cifra oscura valor={cifras.paises} etiqueta={cifras.paises === 1 ? 'país' : 'países'} />
-      <Cifra valor={cifras.lugares} etiqueta={cifras.lugares === 1 ? 'lugar' : 'lugares'} />
-      <Cifra valor={cifras.dias} etiqueta={cifras.dias === 1 ? 'día' : 'días'} />
-    </div>
-  )
-}
 
 /** La chincheta del diseño: el punto oscuro con su anillo claro y su latido, y al lado la pastilla «Roma ×5» (el «×N» solo si hay más de un viaje a ese destino). */
 function crearChincheta(chincheta: Chincheta): HTMLButtonElement {

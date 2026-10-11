@@ -3,7 +3,7 @@ import type { SavedTrip } from './tripPersistence'
 import type { FotoViaje } from './fotosViaje'
 import { buildDestinationSegments, segmentCentroid } from './destinationSegments'
 import { formatHeaderDateRangeShortEs, todayIso } from './dateRange'
-import { getTodayTripStatus } from './todayMode'
+import { getTodayTripContext, getTodayTripStatus } from './todayMode'
 import { mesDelViaje } from './resumenViaje'
 import { numberedStopsOf } from './stopKind'
 import { dayCountryCode } from './flagColors'
@@ -241,6 +241,25 @@ export function chinchetasDeViajes(viajes: ResumenViaje[]): Chincheta[] {
     })
   }
   return [...porDestino.values()]
+}
+
+/* ------------------------------------------------------------------ */
+/* A qué día se apunta una foto suelta (sin parada)                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A qué día se apunta una foto que no viene de una parada (el [Añadir fotos] del álbum de pago, y [Subir mis fotos] de «Guarda tus recuerdos»): por dentro cada foto se guarda con un día,
+ * aunque el álbum no lo enseñe. Al de HOY si el viaje está en marcha; si no, al primero. En la GRATIS (una foto por sitio y una foto sin parada cuenta como «el día»), se salta los días que ya tienen
+ * su foto suelta: la primera con hueco; si todos están completos, cambia la del día de hoy (o la del último). De pago no hay límite y no se salta nada.
+ */
+export function diaParaFotoSuelta(route: Route, fotos: Pick<FotoViaje, 'dayNumber' | 'stopName'>[] = [], dePago = true): DayPlan | null {
+  const dias = route.days.filter((d) => !d.isReturnLeg)
+  if (dias.length === 0) return null
+  const hoy = getTodayTripContext(route)?.day ?? null
+  if (dePago) return hoy ?? dias[0]
+  const ocupado = (dia: DayPlan) => fotos.some((f) => f.dayNumber === dia.dayNumber && !f.stopName)
+  const candidatos = hoy ? [hoy, ...dias.filter((d) => d.id !== hoy.id)] : dias
+  return candidatos.find((d) => !ocupado(d)) ?? hoy ?? dias[dias.length - 1]
 }
 
 /* ------------------------------------------------------------------ */

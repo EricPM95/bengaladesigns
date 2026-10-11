@@ -2,7 +2,7 @@
 //   node scripts/destino/pruebaCorr6z6_perfil.mjs        (con el servidor de la app encendido en http://localhost:8787)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   P1. el Perfil no es una pantalla completa (fixed inset-0, con cabecera «Perfil» y la ✕), o sube desde abajo como hoja (HojaAbajo / items-end / rounded-t), o no deja relleno de abajo para la barra;
-//   P2. el mapa de mis viajes no mide ~220 px, no usa `cooperativeGestures: true` con el aviso en español («Usa dos dedos para mover el mapa»), o depende de algo solo-local (import.meta.env.DEV);
+//   P2. el mapa de mis viajes no mide 286 px (6y4: era 220; hoy 220 × 1,3), no usa `cooperativeGestures: true` con el aviso en español («Usa dos dedos para mover el mapa»), o depende de algo solo-local (import.meta.env.DEV);
 //   P3. el globo no es `globe` (también en style.load) o su zoom no deja la esfera ENTERA en la caja de 335×220 (ni centrado en la media de las chinchetas);
 //   P4. con 0, 1 o 6 viajes el Perfil falla, no lista todos los viajes, o el globo con 0 chinchetas no dice «Aún no tienes viajes»;
 //   P5. tocar una chincheta no abre la ficha; la ficha y el álbum no son pantalla completa con [‹ Volver] en la cabecera; falta lo de antes ([Nuevo viaje], Próximos/Ya hechos, [Añadir foto], «Una foto por parada»);
@@ -73,14 +73,14 @@ debe(/aria-label="Cerrar el Perfil"/.test(html1), 'P1', 'falta la ✕ para cerra
 debe(!/HojaAbajo|items-end|rounded-t-|max-h-\[88vh\]/.test(html1) && !/HojaAbajo|AnimatePresence|rounded-t-\[/.test(fuentePerfil), 'P1', 'el Perfil sigue siendo una hoja que sube desde abajo')
 const relleno = html1.match(/pb-\[calc\((\d+(?:\.\d+)?)rem\+env\(safe-area-inset-bottom\)\)\]/)
 // La barra de abajo mide h-14 (3,5 rem) + su relleno de arriba y de abajo: 5 rem es el mínimo para que lo último de la lista quede por encima.
-debe(relleno && Number(relleno[1]) >= 5, 'P1', `el Perfil no deja relleno de abajo suficiente para la barra (${relleno ? relleno[0] : 'sin relleno'})`)
+debe(relleno && Number(relleno[1]) >= 1.5, 'P1', `6y4: el pie del Perfil ([+ Nuevo viaje]) no deja relleno de abajo con la zona segura (${relleno ? relleno[0] : 'sin relleno'})`)
 debe(/overflow-y-auto/.test(html1), 'P1', 'el Perfil no se puede bajar (falta overflow-y-auto en su contenido)')
 debe(/createPortal\(/.test(fuentePerfil), 'P1', 'el Perfil no se pinta en el body (la barra de abajo, de z-30, lo taparía desde dentro de la cabecera)')
 
 /* ---------------- P2. El mapa bajo, de dos dedos ---------------- */
 const fuenteMapa = leer('src/components/perfil/MapaMisViajes.tsx')
-debe(/h-\[220px\]/.test(fuenteMapa) && !/h-\[240px\]/.test(fuenteMapa.replace(/Mapa no disponible[\s\S]*/, '')), 'P2', 'el mapa de mis viajes no mide 220 px de alto')
-debe(CAJA_MAPA_VIAJES.alto === 220 && CAJA_MAPA_VIAJES.ancho === 335, 'P2', `la caja de cálculo del globo no es 335×220 (${CAJA_MAPA_VIAJES.ancho}×${CAJA_MAPA_VIAJES.alto})`)
+debe(/h-\[286px\]/.test(fuenteMapa) && !/h-\[220px\]/.test(fuenteMapa), 'P2', '6y4: el mapa de mis viajes no mide 286 px de alto (un 30 % más que los 220 de antes)')
+debe(CAJA_MAPA_VIAJES.alto === 286 && Math.round(220 * 1.3) === 286 && CAJA_MAPA_VIAJES.ancho === 343, 'P2', `la caja de cálculo del globo no es 343×286 (${CAJA_MAPA_VIAJES.ancho}×${CAJA_MAPA_VIAJES.alto})`)
 debe(/cooperativeGestures:\s*true/.test(fuenteMapa), 'P2', 'el mapa no usa cooperativeGestures: true (con un dedo se mueve el mapa en vez de bajar la página)')
 debe(/locale:\s*\{\s*\.\.\.TEXTOS_MAPA_VIAJES/.test(fuenteMapa), 'P2', 'el mapa no pasa los textos en español a Mapbox (locale)')
 debe(TEXTOS_MAPA_VIAJES['TouchPanBlocker.Message'] === 'Usa dos dedos para mover el mapa', 'P2', `aviso de dos dedos: «${TEXTOS_MAPA_VIAJES['TouchPanBlocker.Message']}»`)
@@ -126,9 +126,9 @@ for (const n of [0, 1, 6]) {
   const pines = chinchetasDeViajes(lista)
   const c = centroDelGlobo(pines)
   debe(Number.isFinite(c.lat) && Number.isFinite(c.lng), 'P4', `con ${n} viajes el centro del globo no es un punto`)
-  debe(pines.length === [0, 1, 7][[0, 1, 6].indexOf(n)], 'P4', `con ${n} viajes debería haber ${[0, 1, 7][[0, 1, 6].indexOf(n)]} chinchetas y hay ${pines.length}`)
+  debe(pines.length === [0, 1, 6][[0, 1, 6].indexOf(n)], 'P4', `con ${n} viajes debería haber ${[0, 1, 6][[0, 1, 6].indexOf(n)]} chinchetas (una por destino; Roma de dos viajes = una con ×2) y hay ${pines.length}`)
   const t = aTexto(html)
-  for (const v of lista) debe(t.includes(v.rotulo), 'P4', `con ${n} viajes, la lista no tiene «${v.rotulo}»`)
+  for (const v of lista) debe(t.includes(v.destino) && t.includes(v.cuando), 'P4', `con ${n} viajes, la lista no tiene «${v.rotulo}»`)
   debe(lista.length === n, 'P4', `el Perfil con ${n} viajes cuenta ${lista.length}`)
   if (n === 0) debe(/Aún no tienes viajes/.test(t), 'P4', 'con 0 viajes falta el texto «Aún no tienes viajes»')
   else debe(!/Aún no tienes viajes/.test(t), 'P4', `con ${n} viajes sale «Aún no tienes viajes»`)
@@ -137,7 +137,7 @@ for (const n of [0, 1, 6]) {
 debe(/chinchetas\.length === 0 &&[\s\S]{0,300}Aún no tienes viajes/.test(fuenteMapa), 'P4', 'el mapa con 0 chinchetas no dice «Aún no tienes viajes»')
 {
   const t6 = aTexto(pinta({ n: 6 }))
-  debe(/Próximos/.test(t6) && /Ya hechos/.test(t6), 'P5', 'faltan «Próximos» / «Ya hechos» en la lista')
+  debe(!/Próximos/.test(t6) && !/Ya hechos/.test(t6), 'P5', '6y4: el diseño no lleva «Próximos» / «Ya hechos» en la lista')
 }
 
 /* ---------------- P5. Ficha y álbum a pantalla completa ---------------- */
@@ -146,16 +146,16 @@ for (const version of ['gratis', 'completa']) {
   const t = aTexto(html)
   debe(/role="dialog"[^>]*aria-label="Viaje a Roma"/.test(html) && /class="fixed inset-0 /.test(html), 'P5', `${version}: la ficha no es pantalla completa`)
   debe(/<header[\s\S]*?aria-label="Volver a mis viajes"[\s\S]*?‹[\s\S]*?Volver[\s\S]*?<\/header>/.test(html), 'P5', `${version}: la cabecera de la ficha no tiene [‹ Volver]`)
-  debe(/Álbum/.test(t) && /Añadir foto/.test(t), 'P5', `${version}: la ficha no lleva su álbum con [Añadir foto]`)
+  debe(/Álbum del viaje/.test(html) && (version === 'completa' ? /Añadir fotos/.test(t) : !/Añadir foto/.test(t)), 'P5', `${version}: 6y4: el álbum debe llevar [Añadir fotos] solo en la de pago`)
   debe(!/aria-label="Perfil"/.test(html) && !/Mis viajes/.test(t.replace(/Volver a mis viajes/, '')), 'P5', `${version}: con la ficha abierta sigue pintada la lista (y su mapa)`)
   debe(/pb-\[calc\(6rem\+env\(safe-area-inset-bottom\)\)\]/.test(html), 'P5', `${version}: la ficha no deja relleno de abajo para la barra`)
-  if (version === 'gratis') debe(/Una foto por parada/.test(t), 'P5', 'gratis: el álbum no dice «Una foto por parada»')
+  if (version === 'gratis') debe(!/Una foto por parada/.test(t), 'P5', '6y4: gratis: el álbum ya no dice «Una foto por parada» (no hay títulos ni notas por parada)')
 }
 const fuenteFicha = leer('src/components/perfil/FichaDeViaje.tsx')
 debe(/onClick=\{onVolver\}/.test(fuenteFicha) && /cerrarAlbum/.test(fuentePerfil), 'P5', '[‹ Volver] no vuelve a la lista (cerrarAlbum)')
 debe(/onElegir=\{abrirAlbum\}/.test(fuentePerfil), 'P5', 'tocar una chincheta no abre la ficha (abrirAlbum)')
 const fuenteAlbum = leer('src/components/perfil/AlbumDeViaje.tsx')
-debe(/Eliminar/.test(fuenteAlbum) && /etiquetaAnadirFoto/.test(fuenteAlbum), 'P5', 'el álbum perdió [Añadir foto] o «Eliminar»')
+debe(/Eliminar/.test(fuenteAlbum) && /etiquetaAnadirFoto/.test(fuenteAlbum), 'P5', 'el álbum perdió [Añadir fotos] o «Eliminar»')
 // Con el Perfil cerrado no pinta nada
 debe(pinta({ n: 6, open: false }) === '', 'P5', 'el Perfil cerrado pinta algo')
 

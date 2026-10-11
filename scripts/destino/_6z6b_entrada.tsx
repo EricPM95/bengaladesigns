@@ -8,7 +8,7 @@ import { TarjetaRecuerdos, TarjetaRecuerdosEnRuta, ultimasTresFotos, verTarjetaR
 import { BotonFotoParada } from '../../src/components/route/fotos/BotonFotoParada'
 import { etiquetaAnadirFoto } from '../../src/components/perfil/AlbumDeViaje'
 import { limiteDeFotos, modoDeFoto, fotosDelSitio } from '../../src/lib/fotosViaje'
-import { agruparFotos, chinchetasDeViajes, ordenarViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES } from '../../src/lib/viajesPerfil'
+import { agruparFotos, plural, cifrasDelPerfil, textoDeFotos, chinchetasDeViajes, ordenarViajes, resumenDeViaje, viajePorId, viajesDelPerfil, PROYECCION_MAPA_VIAJES } from '../../src/lib/viajesPerfil'
 import { usePerfilUi } from '../../src/store/usePerfilUi'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { useSyncStore } from '../../src/store/useSyncStore'
@@ -28,6 +28,9 @@ export {
   modoDeFoto,
   fotosDelSitio,
   agruparFotos,
+  plural,
+  cifrasDelPerfil,
+  textoDeFotos,
   chinchetasDeViajes,
   ordenarViajes,
   resumenDeViaje,

@@ -76,7 +76,7 @@ export function botonDelPerfil(documento: Document, ancho: number, alto: number)
 }
 
 /**
- * ¿Está el botón tapado por una hoja? Se mira qué hay encima de su centro: si no es el propio botón (ni algo suyo), lo tapa algo. (Se unificará con la de `precioVuela.ts`, que hace lo mismo con la cartera.)
+ * ¿Está el botón tapado por una hoja? Se mira qué hay encima de su centro: si no es el propio botón (ni algo suyo), lo tapa algo. (se unificará con la de `precioVuela.ts`, que hace lo mismo con la cartera.)
  * Sin `elementFromPoint` (pruebas sin navegador) se considera libre.
  */
 export function estaTapado(documento: Document, boton: { elemento: HTMLElement; caja: Caja }): boolean {
