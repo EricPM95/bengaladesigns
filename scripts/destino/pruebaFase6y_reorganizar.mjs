@@ -117,8 +117,8 @@ function hayZigzag(puntos) {
   }
   return false
 }
-const cuentas = { dias: 0, zigzag: 0, zigzagDentroDeLaFranja: 0, nocturnaDeDia: 0, comidaAlFinal: 0, comidaAlPrincipio: 0, cenaMalPuesta: 0, trastevereAntesDeMediodia: 0, zonaTrastevereAntesDeMediodia: 0, grupoPartido: 0, cambios: 0, yaEnBuenOrden: 0 }
-const casos = { zigzag: [], nocturnaDeDia: [], comida: [], trastevere: [], partido: [] }
+const cuentas = { dias: 0, zigzag: 0, zigzagDentroDeLaFranja: 0, nocturnaDeDia: 0, comidaAlFinal: 0, comidaAlPrincipio: 0, cenaMalPuesta: 0, trastevereAntesDeMediodia: 0, zonaTrastevereAntesDeMediodia: 0, grupoPartido: 0, zigzagPorMomento: 0, zigzagPorOrdenEscrito: 0, cambios: 0, yaEnBuenOrden: 0 }
+const casos = { zigzagMomento: [], zigzagEscrito: [], zigzag: [], nocturnaDeDia: [], comida: [], trastevere: [], partido: [] }
 const ejemplos = []
 for (let n = 0; n < 200; n++) {
   const k = 4 + Math.floor(azar() * 5)
@@ -161,7 +161,15 @@ for (let n = 0; n < 200; n++) {
   if (partido) { cuentas.grupoPartido++; casos.partido.push(etiqueta) }
   // zigzag: todo el día de día (sin nocturnas) y dentro de cada mitad (mañana / tarde) por separado
   const puntos = dia.map(coordsDe).filter(Boolean)
-  if (hayZigzag(puntos)) { cuentas.zigzag++; casos.zigzag.push(etiqueta) }
+  if (hayZigzag(puntos)) {
+    cuentas.zigzag++; casos.zigzag.push(etiqueta)
+    // Por qué queda: ¿se arregla quitando lo de primera hora (o el paseo de Trastevere del final)? Entonces es el momento fuerte. Si no, es el orden de nuestro día escrito dentro de un grupo.
+    const sinPrimera = dia.filter((x) => !(r.moments?.primera ?? []).includes(x))
+    const sinPaseo = dia.filter((x) => !(r.moments?.paseoCena ?? []).includes(x))
+    const sinAmbos = sinPrimera.filter((x) => !(r.moments?.paseoCena ?? []).includes(x))
+    if (!hayZigzag(sinAmbos.map(coordsDe).filter(Boolean))) { cuentas.zigzagPorMomento++; casos.zigzagMomento.push(etiqueta) } else { cuentas.zigzagPorOrdenEscrito++; casos.zigzagEscrito.push(etiqueta) }
+    void sinPaseo
+  }
   const mitad = Math.max(0, Math.min(diaN, lunch + 1))
   if (hayZigzag(dia.slice(0, mitad).map(coordsDe).filter(Boolean)) || hayZigzag(dia.slice(mitad).map(coordsDe).filter(Boolean))) cuentas.zigzagDentroDeLaFranja++
   if (ejemplos.length < 5 && r.changed && k >= 5) {
@@ -170,7 +178,7 @@ for (let n = 0; n < 200; n++) {
 }
 
 // ── C. El botón y el almacén con el código de la app ───────────────────────────────────────────────────────────────────────────────────
-const PUERTO = 8799
+const PUERTO = Number(args.port ?? 8799)
 process.env.API_URL = `http://localhost:${PUERTO}`
 const servidor = spawn(process.execPath, ['server/index.js'], { env: { ...process.env, SERVER_PORT: String(PUERTO) }, stdio: 'ignore' })
 const apagar = () => { try { servidor.kill() } catch { /* ya apagado */ } }
@@ -274,7 +282,7 @@ for (const caso of casosAlmacen) {
 apagar()
 
 const resumen = { comprobaciones, fallos: fallos.length, A: { sinReservas, conReservas }, B: cuentas }
-if (args.out) fs.writeFileSync(args.out, JSON.stringify({ resumen, ejemplos, casos: { zigzag: casos.zigzag.slice(0, 12), nocturnaDeDia: casos.nocturnaDeDia.slice(0, 12), comida: casos.comida.slice(0, 12), trastevere: casos.trastevere.slice(0, 12), partido: casos.partido.slice(0, 12) }, fallos: fallos.slice(0, 60) }, null, 2))
+if (args.out) fs.writeFileSync(args.out, JSON.stringify({ resumen, ejemplos, casos: { zigzag: casos.zigzag.slice(0, 30), zigzagMomento: casos.zigzagMomento, zigzagEscrito: casos.zigzagEscrito, nocturnaDeDia: casos.nocturnaDeDia.slice(0, 12), comida: casos.comida.slice(0, 12), trastevere: casos.trastevere.slice(0, 12), partido: casos.partido.slice(0, 12) }, fallos: fallos.slice(0, 60) }, null, 2))
 console.log(JSON.stringify(resumen))
 for (const f of fallos.slice(0, 40)) console.log(`[${f.regla}] ${f.texto}`)
 process.exit(fallos.length ? 1 : 0)
