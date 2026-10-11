@@ -1,0 +1,278 @@
+{
+  "_que_es": "Candidatas de Unsplash (Tanda 6y2) para los sitios de _fotos.json › fotos_rechazadas: 3 por sitio, con autor y enlaces con utm_source. Las enseña docs/dias/FOTOS_ROMA_CANDIDATAS.html (se genera con scripts/destino/fotosCandidatas6y2.mjs). Eric elige una o pone una suya. `nota` dice cuánto se fía uno de que sea el sitio (la API no da el lugar de la foto, solo su descripción y su búsqueda).",
+  "entradas": [
+    {
+      "lugar": "Cripta de los Capuchinos",
+      "tipo": "sitio",
+      "dice_hoy": "Salía la «Kapuzinergruft» de Viena (otra cripta, de otra ciudad).",
+      "aviso": "Sin candidatas buenas: Unsplash no tiene fotos de la cripta de Roma (dentro no se puede fotografiar y las que salen con «cripta», «huesos» o «calaveras» son genéricas o de otro sitio). Pon una tuya.",
+      "candidatas": []
+    },
+    {
+      "lugar": "Trastevere al atardecer",
+      "tipo": "sitio",
+      "dice_hoy": "Salía el reloj del Quirinal (no es Trastevere).",
+      "aviso": "Ninguna dice «Trastevere» en su descripción: salen al buscar «Trastevere» y parecen calles del barrio, pero míralas tú. Si ninguna te gusta, pon una tuya.",
+      "candidatas": [
+        {
+          "id": "enx0PrNtmm8",
+          "descripcion": "",
+          "nota": "Por la búsqueda «Trastevere»: calle de adoquines con casas de colores y macetas.",
+          "autor": "Maksym Harbar",
+          "autor_url": "https://unsplash.com/@maksym_harbar?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/cobblestone-street-in-rome-enx0PrNtmm8?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1685562249871-8948aeda70a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VHJhc3RldmVyZXxlbnwxfDB8fHwxNzkxNzMxNTQ0fDA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1685562249871-8948aeda70a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8VHJhc3RldmVyZXxlbnwxfDB8fHwxNzkxNzMxNTQ0fDA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "eS5Rn4hE-h0",
+          "descripcion": "",
+          "nota": "Por la búsqueda «Trastevere»: calle de adoquines con mesas, de noche.",
+          "autor": "Mariano Alvarez",
+          "autor_url": "https://unsplash.com/@theurbaneyecatcher?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-cobblestone-street-with-tables-and-chairs-at-night-eS5Rn4hE-h0?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1708628934823-a37e3fe0bb4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VHJhc3RldmVyZSUyMFJvbWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTUxOXww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1708628934823-a37e3fe0bb4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VHJhc3RldmVyZSUyMFJvbWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTUxOXww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "zvN8ZiBa6Iw",
+          "descripcion": "Golden hour bathes Rome’s sea of domes and bell towers, stretching toward the horizon in warm haze.",
+          "nota": "Roma a la hora dorada (tejados y cúpulas); no es solo Trastevere.",
+          "autor": "Wyatt Simpson",
+          "autor_url": "https://unsplash.com/@wyattsimpson98?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/cityscape-of-rome-with-beautiful-architecture-zvN8ZiBa6Iw?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1752886355870-17e8ebe79a05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFJvbWUlMjBUcmFzdGV2ZXJlJTIwZHVza3xlbnwxfDB8fHwxNzkxNzMxNTQ1fDA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1752886355870-17e8ebe79a05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFJvbWUlMjBUcmFzdGV2ZXJlJTIwZHVza3xlbnwxfDB8fHwxNzkxNzMxNTQ1fDA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Via dei Coronari",
+      "tipo": "sitio",
+      "dice_hoy": "Compartía con Borgo Pio la foto del Passetto di Borgo.",
+      "aviso": "Sin candidatas buenas: la calle no sale en Unsplash. Estas son calles parecidas del centro histórico (no son la Via dei Coronari). Mejor pon una tuya.",
+      "candidatas": [
+        {
+          "id": "BEt1D1Q1XH4",
+          "descripcion": "A church in via Giulia in Rome, Italy. ",
+          "nota": "Una iglesia en la Via Giulia (la calle paralela, a dos pasos). No es la Via dei Coronari.",
+          "autor": "Gabriella Clare Marino",
+          "autor_url": "https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/low-angle-photography-of-beige-concrete-building-BEt1D1Q1XH4?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1612563639900-9a68bdf8cffa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1612563639900-9a68bdf8cffa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "EXLv6cJjhwE",
+          "descripcion": "A wide angle view of Medieval and Renaissance buildings in the city of Rome, Italy",
+          "nota": "Edificios medievales y renacentistas de una calle del centro de Roma.",
+          "autor": "Gabriella Clare Marino",
+          "autor_url": "https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/brown-concrete-building-under-blue-sky-during-daytime-EXLv6cJjhwE?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1612563528735-afd929f65395?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1612563528735-afd929f65395?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "KkY5KUfznIs",
+          "descripcion": "A street scene in the center of Rome, Italy",
+          "nota": "Escena de calle en el centro de Roma.",
+          "autor": "Gabriella Clare Marino",
+          "autor_url": "https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/people-walking-on-sidewalk-near-brown-concrete-building-during-daytime-KkY5KUfznIs?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1612563528703-91ff47ebe9af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1612563528703-91ff47ebe9af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8Um9tZSUyMGFudGlxdWUlMjBzdHJlZXR8ZW58MXwwfHx8MTc5MTczMTU0Nnww&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Borgo Pio",
+      "tipo": "sitio",
+      "dice_hoy": "Compartía con Via dei Coronari la foto del Passetto di Borgo.",
+      "aviso": "Sin candidatas buenas: la calle no sale en Unsplash. Estas son de la zona (Via della Conciliazione y San Pedro, a un paso). Mejor pon una tuya.",
+      "candidatas": [
+        {
+          "id": "rdzRJqGsUiI",
+          "descripcion": "",
+          "nota": "Via della Conciliazione, la avenida de al lado: calle con coches, gente y edificios.",
+          "autor": "Oleksandr",
+          "autor_url": "https://unsplash.com/@pan_snig?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-street-with-cars-and-people-on-it-and-buildings-around-it-rdzRJqGsUiI?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1666611099928-20a309b72a54?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1666611099928-20a309b72a54?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "0Enp8tn6sIE",
+          "descripcion": "",
+          "nota": "Gente paseando por una calle junto a San Pedro.",
+          "autor": "chan lee",
+          "autor_url": "https://unsplash.com/@chan_lee94?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/people-walking-on-street-near-brown-concrete-building-during-daytime-0Enp8tn6sIE?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1598875791849-0e6cde33be38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1598875791849-0e6cde33be38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "HwTQrmJn_2s",
+          "descripcion": "St. Peter's Basilica view in Rome",
+          "nota": "San Pedro visto desde la zona de Borgo.",
+          "autor": "Shobhit Sharma",
+          "autor_url": "https://unsplash.com/@shobhitsharma?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/brown-concrete-building-under-cloudy-sky-during-daytime-HwTQrmJn_2s?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1588503079714-ae9df09a7e79?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1588503079714-ae9df09a7e79?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VmlhJTIwZGVsbGElMjBDb25jaWxpYXppb25lfGVufDF8MHx8fDE3OTE3MzE1NDh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Excursión a Florencia y Pisa",
+      "tipo": "excursion",
+      "dice_hoy": "Salía un manuscrito.",
+      "aviso": null,
+      "candidatas": [
+        {
+          "id": "G4ArZNhhpsw",
+          "descripcion": "Leaning Tower of Pisa",
+          "nota": "Torre inclinada de Pisa de día.",
+          "autor": "Daria Andraczko",
+          "autor_url": "https://unsplash.com/@flame?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/leaning-tower-of-pisa-italy-during-day-G4ArZNhhpsw?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1567163864479-bbe438ea1024?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFBpc2ElMjBsZWFuaW5nJTIwdG93ZXJ8ZW58MXwwfHx8MTc5MTczMTUyMnww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1567163864479-bbe438ea1024?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFBpc2ElMjBsZWFuaW5nJTIwdG93ZXJ8ZW58MXwwfHx8MTc5MTczMTUyMnww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "QL59SX34Mb8",
+          "descripcion": "Leaning Tower Of Pisa",
+          "nota": "Torre inclinada de Pisa.",
+          "autor": "Ray Harrington",
+          "autor_url": "https://unsplash.com/@raymondo600?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/white-concrete-building-under-blue-sky-during-daytime-QL59SX34Mb8?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1615371082603-dc38013ef2a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Mnx8UGlzYSUyMGxlYW5pbmclMjB0b3dlcnxlbnwxfDB8fHwxNzkxNzMxNTIyfDA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1615371082603-dc38013ef2a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Mnx8UGlzYSUyMGxlYW5pbmclMjB0b3dlcnxlbnwxfDB8fHwxNzkxNzMxNTIyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "NN_vPCzkU3M",
+          "descripcion": "Florence's Cattedrale di Santa Maria del Fiore in full view, taken from the top of adjacent Torre di Arnolfo by the Piazza della Signoria.",
+          "nota": "La catedral de Florencia desde la Torre de Arnolfo.",
+          "autor": "Joseph Quam",
+          "autor_url": "https://unsplash.com/@jquam?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-view-of-a-city-with-a-cathedral-and-mountains-in-the-background-NN_vPCzkU3M?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1687817997684-c9335cce7c5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8RmxvcmVuY2UlMjBEdW9tb3xlbnwxfDB8fHwxNzkxNzMxNTIyfDA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1687817997684-c9335cce7c5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8RmxvcmVuY2UlMjBEdW9tb3xlbnwxfDB8fHwxNzkxNzMxNTIyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Excursión a Nápoles y Pompeya en tren",
+      "tipo": "excursion",
+      "dice_hoy": "Salía una vista aérea de Marsella.",
+      "aviso": null,
+      "candidatas": [
+        {
+          "id": "y2plB8AMtEM",
+          "descripcion": "The Lost City of Pompeii, with Mount Vesuvius in the background",
+          "nota": "Pompeya con el Vesubio al fondo.",
+          "autor": "D Jonez",
+          "autor_url": "https://unsplash.com/@cooljonez?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/brown-concrete-building-near-mountain-under-blue-sky-during-daytime-y2plB8AMtEM?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1579285014910-be9df495fb26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8UG9tcGVpaSUyMHJ1aW5zJTIwVmVzdXZpdXN8ZW58MXwwfHx8MTc5MTczMTUyM3ww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1579285014910-be9df495fb26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8UG9tcGVpaSUyMHJ1aW5zJTIwVmVzdXZpdXN8ZW58MXwwfHx8MTc5MTczMTUyM3ww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "-xOfL8dW0ns",
+          "descripcion": "Pompeii ruins with the Vesuvius volcano seen through a doorway",
+          "nota": "Ruinas de Pompeya con el Vesubio por una puerta.",
+          "autor": "Jonne Mäkikyrö",
+          "autor_url": "https://unsplash.com/@jonnemakikyro?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/a-stone-building-with-a-round-table--xOfL8dW0ns?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1657354371984-ef2f1a59cf80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8UG9tcGVpaSUyMHJ1aW5zJTIwVmVzdXZpdXN8ZW58MXwwfHx8MTc5MTczMTUyM3ww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1657354371984-ef2f1a59cf80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8UG9tcGVpaSUyMHJ1aW5zJTIwVmVzdXZpdXN8ZW58MXwwfHx8MTc5MTczMTUyM3ww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "HnBXBLTPfk0",
+          "descripcion": "La bella Napo",
+          "nota": "Nápoles y el Vesubio sobre la bahía.",
+          "autor": "Salvatore Elefante",
+          "autor_url": "https://unsplash.com/@elefante61?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/naples-cityscape-with-mount-vesuvius-overlooking-the-bay-and-boats-HnBXBLTPfk0?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1783074303547-287c042126e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fE5hcGxlcyUyMFZlc3V2aXVzJTIwYmF5fGVufDF8MHx8fDE3OTE3MzE1MjN8MA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1783074303547-287c042126e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fE5hcGxlcyUyMFZlc3V2aXVzJTIwYmF5fGVufDF8MHx8fDE3OTE3MzE1MjN8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Excursión a la Costa Amalfitana",
+      "tipo": "excursion",
+      "dice_hoy": "Salía un avión de Vueling.",
+      "aviso": null,
+      "candidatas": [
+        {
+          "id": "1zkHXas1GIo",
+          "descripcion": "Costiera Amalfitana...",
+          "nota": "Casas de colores sobre el acantilado en Amalfi.",
+          "autor": "Tom Podmore",
+          "autor_url": "https://unsplash.com/@tompodmore86?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/colorful-buildings-on-amalfi-cliffside-1zkHXas1GIo?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1612698093158-e07ac200d44e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8QW1hbGZpJTIwY29hc3R8ZW58MXwwfHx8MTc5MTczMTUyNHww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1612698093158-e07ac200d44e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8QW1hbGZpJTIwY29hc3R8ZW58MXwwfHx8MTc5MTczMTUyNHww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "dqQPL0hMGOE",
+          "descripcion": "Enjoying the view of Positano, Italy",
+          "nota": "Positano.",
+          "autor": "Sander Crombach",
+          "autor_url": "https://unsplash.com/@sandercrombach?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/houses-on-mountain-near-body-of-water-dqQPL0hMGOE?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1530476219733-88085e45aa2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8QW1hbGZpJTIwY29hc3R8ZW58MXwwfHx8MTc5MTczMTUyNHww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1530476219733-88085e45aa2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8QW1hbGZpJTIwY29hc3R8ZW58MXwwfHx8MTc5MTczMTUyNHww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "3Q6voKJb8vA",
+          "descripcion": "Panoramic view of waterfront along the Amalfi Coast, Italy.",
+          "nota": "Panorámica de la costa amalfitana.",
+          "autor": "Ryan Ancill",
+          "autor_url": "https://unsplash.com/@ryanancill?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/body-of-water-near-mountain-under-white-clouds-during-daytime-3Q6voKJb8vA?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1598972981358-8facd0e9e256?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8QW1hbGZpJTIwY29hc3QlMjByb2FkfGVufDF8MHx8fDE3OTE3MzE1MjV8MA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1598972981358-8facd0e9e256?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8QW1hbGZpJTIwY29hc3QlMjByb2FkfGVufDF8MHx8fDE3OTE3MzE1MjV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    },
+    {
+      "lugar": "Excursión a Florencia en tren de alta velocidad",
+      "tipo": "excursion",
+      "dice_hoy": "Salía un avión de Vueling.",
+      "aviso": null,
+      "candidatas": [
+        {
+          "id": "X35Ivset6-Y",
+          "descripcion": "Cathedral of Florence from Piazza Michelangelo",
+          "nota": "La catedral y el campanario desde la Piazzale Michelangelo.",
+          "autor": "Ali Nuredini",
+          "autor_url": "https://unsplash.com/@alinuredini?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/cathedral-of-santa-maria-del-fiore-florence-X35Ivset6-Y?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1541370976299-4d24ebbc9077?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1541370976299-4d24ebbc9077?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "hjmV0xG-KPk",
+          "descripcion": "The Ponte Vecchio as seen from the hills in the western parts of Florence",
+          "nota": "El Ponte Vecchio.",
+          "autor": "Ilse Orsel",
+          "autor_url": "https://unsplash.com/@lgtts?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/brown-concrete-building-near-river-during-daytime-hjmV0xG-KPk?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1601195576601-346d58e024c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8UG9udGUlMjBWZWNjaGlvJTIwRmxvcmVuY2V8ZW58MXwwfHx8MTc5MTczMTUyNnww&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1601195576601-346d58e024c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8UG9udGUlMjBWZWNjaGlvJTIwRmxvcmVuY2V8ZW58MXwwfHx8MTc5MTczMTUyNnww&ixlib=rb-4.1.0&q=80&w=1080"
+        },
+        {
+          "id": "TWqEt_jwW2s",
+          "descripcion": "Skyline, Cathedral of Santa Maria del Fiore, Florence Tuscany Italy",
+          "nota": "Panorámica de Florencia con la catedral.",
+          "autor": "Nicola Pavan",
+          "autor_url": "https://unsplash.com/@pavan_nicola?utm_source=viajes_bengala&utm_medium=referral",
+          "pagina": "https://unsplash.com/photos/aerial-view-of-city-buildings-during-daytime-TWqEt_jwW2s?utm_source=viajes_bengala&utm_medium=referral",
+          "small": "https://images.unsplash.com/photo-1585595751864-6e56dbd53658?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&ixlib=rb-4.1.0&q=80&w=400",
+          "regular": "https://images.unsplash.com/photo-1585595751864-6e56dbd53658?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OHx8RmxvcmVuY2UlMjBJdGFseXxlbnwxfDB8fHwxNzkxNzMxNTI2fDA&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      ]
+    }
+  ]
+}

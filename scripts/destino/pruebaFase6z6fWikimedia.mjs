@@ -72,8 +72,10 @@ if (!SERVIDOR) {
   }
   let noWiki = []
   let sinCredito = []
+  // (Tanda 6y2: los lugares de `fotos_rechazadas` ya no se sirven de Wikipedia a propósito —su foto era de otro sitio—; los comprueba pruebaFase6y2_fotos.mjs.)
+  const rechazados = new Set((JSON.parse(leer('data/dias/roma/_fotos.json')).fotos_rechazadas ?? []).map((r) => r.lugar))
   for (const f of tabla.fotos) {
-    for (const lugar of f.lugares) {
+    for (const lugar of f.lugares.filter((l) => !rechazados.has(l))) {
       const j = await (await fetch(`${SERVIDOR}/api/place-photo`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: lugar, city: 'Roma' }) })).json()
       if (j.photo_source !== 'wikipedia' || archivoDe(j.photo_url) !== f.archivo) noWiki.push(lugar)
       else if (!f.dominio_publico && !(j.photo_credit && j.photo_credit.autor === f.autor && j.photo_credit.licencia === f.licencia && j.photo_credit.enlace === f.pagina)) sinCredito.push(lugar)
@@ -137,8 +139,8 @@ console.log('El cliente')
   ok(unsplash && unsplash.attribution && unsplash.attribution.photographer === 'Ana' && unsplash.attribution.license === undefined, '4g Unsplash pierde su autor o recibe una licencia')
   // El guardado del navegador: la clave antigua (sin crédito) ya no vale y se limpia; la nueva guarda el crédito.
   ok(!almacen.has('photo:v1:viejo|roma|'), '4h la foto de Wikipedia guardada con la clave antigua sigue ahí (se quedaría sin crédito)')
-  const nuevas = [...almacen.keys()].filter((k) => k.startsWith('photo:v2:'))
-  ok(nuevas.length >= 4 && [...almacen.keys()].every((k) => !k.startsWith('photo:v1:')), `4i el guardado no usa la clave nueva (v2): ${[...almacen.keys()].join(', ')}`)
+  const nuevas = [...almacen.keys()].filter((k) => k.startsWith('photo:v3:'))
+  ok(nuevas.length >= 4 && [...almacen.keys()].every((k) => !k.startsWith('photo:v1:')), `4i el guardado no usa la clave nueva (v3): ${[...almacen.keys()].join(', ')}`)
   const guardada = JSON.parse(almacen.get([...almacen.keys()].find((k) => k.includes('isla tiberina'))))
   ok(guardada.photo.attribution && guardada.photo.attribution.license === 'CC BY-SA 3.0', '4j lo guardado en el navegador pierde el crédito')
 }
@@ -147,12 +149,14 @@ console.log('El cliente')
 console.log('La ficha y Créditos')
 {
   const ficha = leer('src/components/route/dayDetail/StopDetailSheet.tsx')
-  const bloque = ficha.slice(ficha.indexOf("photo?.source === 'wikipedia' &&"), ficha.indexOf("photo?.source === 'wikipedia' &&") + 900)
-  ok(/photo\?\.source === 'wikipedia' && photo\.attribution\?\.photographer && photo\.attribution\.license/.test(ficha), '5a la ficha pinta la línea de Wikipedia sin exigir autor y licencia')
+  // (Tanda 6y2: la línea de crédito vive en un solo sitio, src/components/ui/FotoCredito.tsx, y la ficha la usa; se comprueba ahí.)
+  const bloque = leer('src/components/ui/FotoCredito.tsx')
+  ok(/<FotoCredito photo=\{photo\} \/>/.test(ficha), '5z la ficha no usa FotoCredito')
+  ok(/photo\.source === 'wikipedia' && Boolean\(photo\.attribution\.photographer && photo\.attribution\.license\)/.test(bloque), '5a la línea de Wikipedia se pinta sin exigir autor y licencia')
   ok(/Foto:\{' '\}/.test(bloque) && /target="_blank" rel="noreferrer"/.test(bloque) && /photographerUrl/.test(bloque) && /attribution\.license/.test(bloque), '5b la línea no es «Foto: {autor enlazado} · {licencia}» con enlace seguro')
   ok(/text-caption text-text-muted/.test(bloque), '5c la línea de Wikipedia no es igual de discreta que la de Unsplash')
-  ok((ficha.match(/Foto:\{' '\}/g) ?? []).length === 1 && !/photo\??\.source === 'propia'/.test(ficha), '5d la ficha tiene más de una línea «Foto:» o una para las propias')
-  ok(/photo\?\.source === 'unsplash' && photo\.attribution/.test(ficha), '5e la línea de Unsplash ha cambiado')
+  ok((bloque.match(/Foto:\{' '\}/g) ?? []).length === 1 && !/photo\??\.source === 'propia'/.test(bloque) && !/Foto:\{' '\}/.test(ficha), '5d hay más de una línea «Foto:» o una para las propias')
+  ok(/photo\.source === 'unsplash'/.test(bloque) && /Foto de\{' '\}/.test(bloque), '5e la línea de Unsplash ha cambiado')
   const { CREDITOS } = await empaquetar('src/lib/creditos.ts', 'creditos')
   const fotos = CREDITOS.find((c) => c.clave === 'fotos')
   ok(fotos && /Wikipedia/.test(fotos.texto) && /autor/.test(fotos.texto) && /licencia/.test(fotos.texto) && /dominio público/.test(fotos.texto), '5f «Créditos» no dice que las de Wikipedia llevan autor y licencia (las de dominio público no)')
