@@ -433,7 +433,7 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Lo que recorre el Free Tour, para que la ficha lo diga: esos sitios no vuelven a salir sueltos.
     if (visit.place.isFreeTour && Array.isArray(visit.place.covers)) stop.free_tour_covers = visit.place.covers
     // La foto del Free Tour: la propia del destino (`photo_url`) cuando la haya; mientras, la de un lugar que ya
-    // tiene la app (`photo_from`: Piazza Navona), nunca la que devuelva buscar "Free Tour" por su nombre.
+    // tiene la app (`photo_from`: Plaza de España, su punto de encuentro), nunca la que devuelva buscar "Free Tour" por su nombre.
     if (visit.place.isFreeTour) {
       if (tour?.photo_url) stop.photo_url = tour.photo_url
       const photoPlace = tour?.photo_from ? destData.places?.find((candidate) => candidate.name === tour.photo_from) : null

@@ -34,7 +34,7 @@ export function freeTourStopFrom(entry: DestinationPlace | null, reservation: Pi
     durationMinutes: entry?.duration_min ?? 150,
     coordinates: entry?.coordinates ?? SIN_COORDENADAS,
     photoUrl: SIN_FOTO,
-    // (La foto real es la del lugar de `photo_from` del destino —Piazza Navona—, como en la ruta nuestra; se pide con `pedirFotoDelFreeTour` al guardar la reserva.)
+    // (La foto real es la del lugar de `photo_from` del destino —Plaza de España, su punto de encuentro—, como en la ruta nuestra; se pide con `pedirFotoDelFreeTour` al guardar la reserva.)
     ...(entry?.photo_name ? { photoName: entry.photo_name } : {}),
     ...(entry?.wikipedia_title ? { wikipediaTitle: entry.wikipedia_title } : {}),
     insiderTip: consejo ?? undefined,
@@ -106,7 +106,7 @@ export function withoutManualFreeTour(route: Route): Route {
 const fotoPedida = new Set<string>()
 
 /**
- * La foto real de la parada del Free Tour a mano (Tanda 6y3): la del lugar que dice el destino (`photo_from`: Piazza Navona), pedida con la MISMA lógica que el resto de paradas
+ * La foto real de la parada del Free Tour a mano (Tanda 6y3): la del lugar que dice el destino (`photo_from`: Plaza de España, su punto de encuentro), pedida con la MISMA lógica que el resto de paradas
  * (`fetchPlacePhoto` → `/api/place-photo`: propia, Unsplash o Wikipedia, con el nombre y su `wikipedia_title` si lo hay). Solo se pide si la parada no tiene foto y una vez por parada;
  * sin foto (o con el servidor caído) la parada se queda sin ella —el recuadro neutro— y nada se rompe. Si el viajero la quitó mientras tanto, no se escribe nada.
  */
