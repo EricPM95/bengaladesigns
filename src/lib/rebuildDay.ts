@@ -24,6 +24,8 @@ export async function rehacerDiasSinTocar(except: string | string[] | null): Pro
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route, reservations } = useRouteStore.getState()
   if (!route) return false
+  // La ruta a mano (Tanda 6y) no pasa por el motor: sus días son del viajero y nada los rehace (ni el Free Tour, ni una reserva grande). No hay nada que rehacer.
+  if (route.planMode === 'manual') return true
   const cityDays = route.days.filter((day) => !day.isReturnLeg)
   let ok = true
   const rehechos: { id: string; next: ReturnType<typeof mapSingleGeneratedDay> }[] = []
@@ -79,7 +81,8 @@ export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerO
   const { useRouteStore } = await import('../store/useRouteStore')
   const { route, reservations } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
-  if (!route || !day || day.originalSnapshot || day.isReturnLeg) return
+  // (La ruta a mano no pasa por el motor, Tanda 6y: la reserva se queda donde la puso el viajero.)
+  if (!route || !day || day.originalSnapshot || day.isReturnLeg || route.planMode === 'manual') return
   try {
     const response = await fetch('/api/rebuild-day', {
       method: 'POST',

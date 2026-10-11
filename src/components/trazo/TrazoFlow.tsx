@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { ExperienceCategoryId, Place } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { classifyInBackground } from '../../lib/classifyInBackground'
@@ -23,10 +23,15 @@ import { StepCompanion } from './StepCompanion'
 import { StepExperiences } from './StepExperiences'
 import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
+import { StepElegir } from './StepElegir'
+import { StepManualSummary } from './StepManualSummary'
+import { AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences, type PlanChoice } from './planChoice'
+import { buildManualRoute, transportContextOf } from '../../lib/manualRoute'
 import './trazo.css'
 import { Icono } from '../ui/Icono'
 
-const STEP_NAMES = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Experiencias', 'Lugares']
+/** Lo que tarda el aviso corto de la pantalla de elegir antes de pasar a la pantalla siguiente. */
+const CHOICE_TOAST_MS = 700
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 /** Posiciones y ritmos al azar de las partículas de estación (una vez por carga). */
@@ -78,12 +83,24 @@ export function TrazoFlow() {
   const [previewMonth, setPreviewMonth] = useState<number | null>(null)
   const [land, setLand] = useState('')
   const [curatedPool, setCuratedPool] = useState<PoolPlace[] | null | false>(null)
+  /** Tanda 6y: quién monta el itinerario. Hasta que el viajero elige en la pantalla de elegir, ninguno. */
+  const [plan, setPlan] = useState<PlanChoice | null>(null)
+  /** La tarjeta que se acaba de tocar: se queda pulsada y sale el aviso corto mientras se pasa a la pantalla siguiente. */
+  const [picked, setPicked] = useState<PlanChoice | null>(null)
+  const pickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { w: vw, h: vh } = useViewport()
 
   const go = (next: number) => {
     setStep(next)
     setMaxStep((current) => Math.max(current, next))
   }
+
+  useEffect(
+    () => () => {
+      if (pickTimer.current) clearTimeout(pickTimer.current)
+    },
+    [],
+  )
 
   useEffect(() => {
     loadLand().then(setLand)
@@ -110,7 +127,8 @@ export function TrazoFlow() {
     trimCuratedPlaceSelection(poolSelectionLimit(answers.days))
   }, [answers.days, trimCuratedPlaceSelection])
 
-  const generation = useRouteGeneration(step === 6)
+  // La ruta se monta por detrás solo en el resumen de «hazla por mí»: en la ruta a mano nunca arranca (planChoice.ts).
+  const generation = useRouteGeneration(shouldGenerateRoute(step, plan))
 
   // ---- acciones de cada paso ----
   const startTrip = () => {
@@ -147,7 +165,26 @@ export function TrazoFlow() {
     const state = store.getState()
     state.setDatesConfirmed(true)
     if (destinationName && state.suggested_experiences.length > 0) suggestPlacesInBackground(destinationName, state.suggested_experiences)
-    go(3)
+    go(STEP.compania)
+  }
+
+  /** La pantalla de elegir: el aviso corto y, enseguida, a las experiencias (hazla por mí) o al resumen corto (la hago yo). */
+  const choosePlan = (choice: PlanChoice) => {
+    if (picked) return
+    setPicked(choice)
+    pickTimer.current = setTimeout(() => {
+      setPlan(choice)
+      setPicked(null)
+      go(stepAfterChoice(choice))
+    }, CHOICE_TOAST_MS)
+  }
+
+  /** «Empezar mi ruta»: la ruta con los días vacíos, sin Claude, sin motor y sin la caché de rutas. */
+  const startManualRoute = () => {
+    if (!destinationName) return
+    const state = store.getState()
+    state.setRoute(buildManualRoute({ destination: destinationName, destinationPlace: state.destinationPlace, answers: state.answers, transportContext: transportContextOf(state) }))
+    state.setScreen('route')
   }
 
   const confirmExperiences = () => {
@@ -159,7 +196,7 @@ export function TrazoFlow() {
     // Destino no curado: se pide la sugerencia de lugares ya; curado: el pool del JSON, sin Claude.
     if (curatedPool === false) suggestPlacesOnDemand(destinationName, experiences)
     else store.getState().setPlacesStepStarted(true)
-    go(5)
+    go(STEP.lugares)
   }
 
   const openRoute = () => {
@@ -169,10 +206,15 @@ export function TrazoFlow() {
     state.setScreen('route')
   }
 
+  // Atrás: la pantalla de elegir vuelve a «quién viaja»; las experiencias y el resumen corto, a la pantalla de elegir (planChoice.ts).
   const back = () => {
-    if (step === 0 || step === 6) return
-    go(step - 1)
+    const previous = backStepFrom(step)
+    if (previous === null) return
+    if (pickTimer.current) clearTimeout(pickTimer.current)
+    setPicked(null)
+    go(previous)
   }
+  const noBack = backStepFrom(step) === null
 
   const onProgress = useCallback((value: number) => setProg(value), [])
 
@@ -216,7 +258,7 @@ export function TrazoFlow() {
       const isD = place === mapPlaceD
       return { x, y, isD, code: cityCode(place) }
     })
-  const mapO = step <= 1 ? 1 : step === 2 ? 0.5 : step === 6 ? 0.55 : 0.18
+  const mapO = step <= 1 ? 1 : step === 2 ? 0.5 : isSummaryStep(step) ? 0.55 : 0.18
 
   // ---- estación ----
   const previewSeason = previewMonth !== null ? seasonOfMonth(previewMonth) : null
@@ -242,20 +284,24 @@ export function TrazoFlow() {
     : answers.days && answers.month !== undefined
       ? `${answers.days} ${answers.days === 1 ? 'día' : 'días'} · ${MONTHS[answers.month]}`
       : ''
-  const nExp = answers.experiencesPositive?.length ?? 0
-  const expLabel = step > 4 && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
-  const nPlaces = useRouteStore((state) => state.selected_curated_place_names.length + state.selected_place_ids.length)
+  // Con la ruta a mano no hay experiencias ni lugares: ni en la barra, ni en el panel, ni en las fichas.
+  const withExperiences = usesExperiences(plan)
+  const stepNames = stepNamesFor(plan)
+  const nExp = withExperiences ? (answers.experiencesPositive?.length ?? 0) : 0
+  const expLabel = step > STEP.experiencias && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
+  const nPlaces = useRouteStore((state) => (withExperiences ? state.selected_curated_place_names.length + state.selected_place_ids.length : 0))
   const placesLabel = nPlaces ? `${nPlaces} ${nPlaces === 1 ? 'lugar' : 'lugares'}` : ''
   const reached = (i: number) => maxStep > i
   const vals = [
-    origin && dest && reached(0) ? `${oCode} → ${dCode}` : '',
-    reached(1) ? modeName : '',
-    reached(2) ? datesV : '',
-    reached(3) && answers.companion ? COMPANION[answers.companion] : '',
+    origin && dest && reached(STEP.ruta) ? `${oCode} → ${dCode}` : '',
+    reached(STEP.transporte) ? modeName : '',
+    reached(STEP.fechas) ? datesV : '',
+    reached(STEP.compania) && answers.companion ? COMPANION[answers.companion] : '',
+    plan === 'manual' ? 'La hago yo' : plan === 'auto' ? 'Me la montáis' : '',
     expLabel,
-    reached(5) ? placesLabel : '',
+    reached(STEP.lugares) ? placesLabel : '',
   ]
-  const chips = [vals[0], vals[1], vals[2], reached(2) && answers.season ? SEASON_FX[answers.season].name : '', vals[3], vals[4], vals[5]].filter(Boolean)
+  const chips = [vals[0], vals[1], vals[2], reached(STEP.fechas) && answers.season ? SEASON_FX[answers.season].name : '', vals[3], plan === 'manual' ? 'Ruta a mano' : '', vals[5], vals[6]].filter(Boolean)
 
   const pt = desk ? 126 : 112
   const screen = (i: number, content: ReactNode) => {
@@ -314,7 +360,7 @@ export function TrazoFlow() {
             Tu viaje se construye <em style={{ color: ACCENT }}>mientras eliges.</em>
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {STEP_NAMES.map((name, i) => (
+            {stepNames.map((name, i) => (
               <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '9px 0', borderTop: `1px solid ${THEME.track}` }}>
                 <span style={{ font: `500 11px ${MONO}`, color: i === step ? ACCENT : 'rgba(28,34,48,.45)', width: 22 }}>{String(i + 1).padStart(2, '0')}</span>
                 <span style={{ font: "400 15px 'Geist'", color: i === step ? INK : i < step ? 'rgba(28,34,48,.8)' : 'rgba(28,34,48,.45)', flex: 1, transition: 'color .4s' }}>{name}</span>
@@ -406,7 +452,7 @@ export function TrazoFlow() {
 
           {/* Cabecera: atrás, siete segmentos, n/7 y las fichas del viaje. */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: 0, zIndex: 6, padding: `${desk ? 26 : 14}px 20px 0`, display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none' }}>
-            {resumeTrip && step < 6 && (
+            {resumeTrip && !isSummaryStep(step) && (
               <button
                 type="button"
                 onClick={backToMyTrip}
@@ -454,15 +500,15 @@ export function TrazoFlow() {
                   color: INK,
                   fontSize: 16,
                   cursor: 'pointer',
-                  opacity: step === 0 || step === 6 ? 0 : 1,
-                  pointerEvents: step === 0 || step === 6 ? 'none' : 'auto',
+                  opacity: noBack ? 0 : 1,
+                  pointerEvents: noBack ? 'none' : 'auto',
                   transition: 'opacity .4s',
                 }}
               >
                 ←
               </button>
               <div style={{ flex: 1, display: 'flex', gap: 4 }}>
-                {STEP_NAMES.map((name, i) => (
+                {stepNames.map((name, i) => (
                   <div key={name} style={{ flex: 1, height: 3, borderRadius: 3, background: THEME.track, overflow: 'hidden' }}>
                     <div
                       style={{
@@ -476,7 +522,7 @@ export function TrazoFlow() {
                   </div>
                 ))}
               </div>
-              <span className="trazo-headtext" style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(28,34,48,.7)', minWidth: 30, textAlign: 'right' }}>{step < 6 ? `${step + 1}/6` : 'LISTO'}</span>
+              <span className="trazo-headtext" style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(28,34,48,.7)', minWidth: 30, textAlign: 'right' }}>{step < stepNames.length ? `${step + 1}/${stepNames.length}` : 'LISTO'}</span>
             </div>
             <div
               className="trazo-noscroll"
@@ -547,35 +593,64 @@ export function TrazoFlow() {
                 state.setVehicleResolved(false)
                 go(1)
               }}
-              onNext={() => go(4)}
+              onNext={() => go(STEP.elegir)}
             />,
           )}
-          {screen(
-            4,
-            <StepExperiences
-              destinationName={destinationName ?? ''}
-              season={answers.season}
-              month={answers.month}
-              dateRange={answers.dateRange}
-              selected={answers.experiencesPositive ?? ['imprescindibles']}
-              days={answers.days}
-              onChange={(experiencesPositive) => updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })}
-              onNext={confirmExperiences}
-            />,
-          )}
-          {screen(5, <StepPool destinationName={destinationName ?? ''} days={answers.days} curatedPool={curatedPool} experiences={answers.experiences ?? []} onNext={() => go(6)} />)}
-          {screen(
-            6,
-            <StepSummary
-              origin={origin}
-              destination={dest}
-              status={generation.status}
-              checkpoint={generation.checkpoint}
-              route={generation.route}
-              errorMessage={generation.errorMessage}
-              onRetry={generation.retry}
-              onOpen={openRoute}
-            />,
+          {screen(STEP.elegir, <StepElegir destinationName={destinationName ?? dest?.name ?? ''} days={answers.days} picked={picked} onPick={choosePlan} />)}
+          {/* «Quiero hacerla yo» no pasa por las experiencias ni por los lugares, ni monta ninguna ruta por detrás (Tanda 6y). */}
+          {withExperiences &&
+            screen(
+              STEP.experiencias,
+              <StepExperiences
+                destinationName={destinationName ?? ''}
+                season={answers.season}
+                month={answers.month}
+                dateRange={answers.dateRange}
+                selected={answers.experiencesPositive ?? ['imprescindibles']}
+                days={answers.days}
+                onChange={(experiencesPositive) => updateAnswers({ experiencesPositive, experiences: deriveLegacyExperienceIds(experiencesPositive) })}
+                onNext={confirmExperiences}
+              />,
+            )}
+          {withExperiences && screen(STEP.lugares, <StepPool destinationName={destinationName ?? ''} days={answers.days} curatedPool={curatedPool} experiences={answers.experiences ?? []} onNext={() => go(STEP.resumen)} />)}
+          {withExperiences &&
+            screen(
+              STEP.resumen,
+              <StepSummary
+                origin={origin}
+                destination={dest}
+                status={generation.status}
+                checkpoint={generation.checkpoint}
+                route={generation.route}
+                errorMessage={generation.errorMessage}
+                onRetry={generation.retry}
+                onOpen={openRoute}
+              />,
+            )}
+          {plan === 'manual' && screen(STEP.resumenCorto, <StepManualSummary origin={origin} destination={dest} onStart={startManualRoute} />)}
+
+          {picked && (
+            <div
+              role="status"
+              style={{
+                position: 'absolute',
+                left: '50%',
+                bottom: 40,
+                zIndex: 12,
+                height: 40,
+                padding: '0 16px',
+                borderRadius: 999,
+                background: INK,
+                color: '#F3EEE4',
+                display: 'flex',
+                alignItems: 'center',
+                font: "500 13px 'Geist'",
+                whiteSpace: 'nowrap',
+                animation: 'trazo-toast .3s ease both',
+              }}
+            >
+              {AVISO_DE_ELEGIR[picked]}
+            </div>
           )}
         </div>
       </div>

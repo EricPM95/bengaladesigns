@@ -302,7 +302,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const [plan, setPlan] = useState<ReservationPlan | null>(null)
   // La respuesta del servidor para esta hora y este día aún no ha llegado: no se guarda hasta entonces (la hoja de «mover el día» y la regla 17 salen con ella).
   const [planDoneKey, setPlanDoneKey] = useState<string | null>(null)
-  const planKey = resolvedDay && bigPlace && !isExcursion && validTime ? `${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
+  // (En la ruta a mano, Tanda 6y, una reserva grande no mueve ningún día: no se pide el plan al motor.)
+  const planKey = route.planMode !== 'manual' && resolvedDay && bigPlace && !isExcursion && validTime ?`${resolvedDay.id}|${fields.dateIso}|${bigPlace}|${fields.time}` : null
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
     return {

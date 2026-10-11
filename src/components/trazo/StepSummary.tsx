@@ -1,4 +1,4 @@
-import type { Place, Route } from '../../lib/types'
+import type { Place, Route, TransportOption, VehicleOwnership, VehicleType } from '../../lib/types'
 import { EXPERIENCE_CATEGORY_BANK } from '../../lib/experienceCategoryBank'
 import { useRouteStore } from '../../store/useRouteStore'
 import type { GenerationResumeState } from '../../lib/routeGenerationOrchestrator'
@@ -8,7 +8,7 @@ import { ACCENT, AMBER, Cta, GhostButton, INK, MONO, SEASON_FX, SERIF, Title } f
 
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-const COMPANION: Record<string, string> = { solo: 'Solo', couple: 'En pareja', group: 'Con amigos', family: 'En familia' }
+export const COMPANION: Record<string, string> = { solo: 'Solo', couple: 'En pareja', group: 'Con amigos', family: 'En familia' }
 
 /** Las paradas "de verdad" de la ruta: sin las de paso, sin las nocturnas y sin las pausas. */
 export function countRealStops(route: Route): number {
@@ -31,7 +31,22 @@ function progressOf(status: GenerationStatus, checkpoint: GenerationResumeState 
   }
 }
 
-function datesLabel(dateRange: { start: string; end: string } | undefined, month: number | undefined): string {
+/** El medio de transporte como se lee en el resumen («Avión + coche», «Tu coche», «Camper»); «—» si aún no se ha elegido. Lo usan los dos resúmenes (el de siempre y el de la ruta a mano). */
+export function transportModeLabel(
+  transportOption: TransportOption | null,
+  vehicleType: VehicleType | null,
+  vehicleOwnership: VehicleOwnership | null,
+): string {
+  return transportOption
+    ? transportOption.id === 'own_vehicle' || transportOption.includes_vehicle
+      ? vehicleType === 'camper'
+        ? 'Camper'
+        : 'Tu coche'
+      : `${transportOption.title}${vehicleType === 'car' && vehicleOwnership === 'rental' ? ' + coche' : vehicleType === 'camper' ? ' + camper' : ''}`
+    : '—'
+}
+
+export function datesLabel(dateRange: { start: string; end: string } | undefined, month: number | undefined): string {
   if (dateRange) {
     const [, sm, sd] = dateRange.start.split('-').map(Number)
     const [, em, ed] = dateRange.end.split('-').map(Number)
@@ -65,13 +80,7 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
 
   const progress = progressOf(status, checkpoint)
   const chosen = curatedNames.length + selectedIds.length
-  const modeName = transportOption
-    ? transportOption.id === 'own_vehicle' || transportOption.includes_vehicle
-      ? vehicleType === 'camper'
-        ? 'Camper'
-        : 'Tu coche'
-      : `${transportOption.title}${vehicleType === 'car' && vehicleOwnership === 'rental' ? ' + coche' : vehicleType === 'camper' ? ' + camper' : ''}`
-    : '—'
+  const modeName = transportModeLabel(transportOption, vehicleType, vehicleOwnership)
   const experiences = EXPERIENCE_CATEGORY_BANK.filter((category) => (answers.experiencesPositive ?? []).includes(category.id)).map((category) => category.title)
   const days = answers.days ?? 0
   const stops = route ? countRealStops(route) : null
