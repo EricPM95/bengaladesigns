@@ -249,11 +249,11 @@ for (const n of [2, 3, 4, 5]) {
 }
 {
   // Los sitios que rehacen días con el motor miran `planMode` (un solo sitio cada uno).
-  debe(/route\.planMode === 'manual'/.test(fuente('src/lib/rebuildDay.ts')), '4 sin motor', 'rebuildDay.ts no deja a la ruta a mano fuera')
-  debe((fuente('src/lib/rebuildDay.ts').match(/planMode === 'manual'/g) ?? []).length === 2, '4 sin motor', 'rehacerDiasSinTocar o rehacerDiaConReservas no miran planMode')
-  debe(/route\.planMode !== 'manual' && resolvedDay/.test(fuente('src/components/route/reservas/AddReservationSheet.tsx')), '4 sin motor', 'AddReservationSheet pide el plan al motor en la ruta a mano')
-  debe(/route\.planMode !== 'manual' && route\.days\.some/.test(fuente('src/components/route/DatesChangeDialog.tsx')), '4 sin motor', 'DatesChangeDialog rehace la ruta a mano')
-  debe(/state\.route\.planMode === 'manual'\) return state/.test(fuente('src/store/useRouteStore.ts')), '4 sin motor', 'regenerateRouteForDates rehace la ruta a mano')
+  debe(/isManualRoute\(route\)/.test(fuente('src/lib/rebuildDay.ts')), '4 sin motor', 'rebuildDay.ts no deja a la ruta a mano fuera')
+  debe((fuente('src/lib/rebuildDay.ts').match(/isManualRoute\(route\)/g) ?? []).length === 2, '4 sin motor', 'rehacerDiasSinTocar o rehacerDiaConReservas no miran isManualRoute (la regla única)')
+  debe(/!isManualRoute\(route\)/.test(fuente('src/components/route/reservas/AddReservationSheet.tsx')), '4 sin motor', 'AddReservationSheet pide el plan al motor en la ruta a mano')
+  debe(/&& !isManualRoute\(route\)/.test(fuente('src/components/route/DatesChangeDialog.tsx')), '4 sin motor', 'DatesChangeDialog rehace la ruta a mano')
+  debe(/isManualRoute\(state\.route\)\) return state/.test(fuente('src/store/useRouteStore.ts')), '4 sin motor', 'regenerateRouteForDates rehace la ruta a mano')
 }
 
 // ── 5. Sin experiencias: DÍAS, RESERVAS, EXPLORAR y el Free Tour ──
