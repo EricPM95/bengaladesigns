@@ -302,7 +302,8 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
     conFoto = ahora().days[1].stops.at(-1).photoUrl || null
   }
   debe(Boolean(conFoto) && /plaza_de_espana/.test(conFoto), '3 foto', `la parada del Free Tour a mano no acaba con la foto de la Plaza de España (${conFoto})`)
-  const delFreeTour = pedidosDeFoto.filter((p) => /Plaza de España|Piazza Navona|Free Tour/.test(p.name))
+  // (Solo las peticiones del día del Free Tour: las paradas normales de otros días, como Piazza Navona, piden su foto por su cuenta.)
+  const delFreeTour = pedidosDeFoto.filter((p) => p.date === sumaDias(INICIO, 1) && /Plaza de España|Piazza Navona|Free Tour/.test(p.name))
   debe(delFreeTour.length >= 1 && delFreeTour.every((p) => p.name === 'Plaza de España') && delFreeTour.length <= 2, '3 foto', `la foto del Free Tour no se pide con el nombre de la Plaza de España (o se pide muchas veces): ${JSON.stringify(delFreeTour)}`)
   // La ruta nuestra: el motor pone la parada del Free Tour con la foto de la Plaza de España.
   const dia = await buildDayBlockV3(D, 3, true, 1, null, INICIO, [], ['imprescindibles', 'free_tour'], { city: 'Roma', scheduler: 'v3', engine: 'v4', mediaJornada: null, month: null, season: null, diaCuatro: null, entradas: {}, reservasGrandes: [], forceOrder: null })

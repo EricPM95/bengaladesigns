@@ -60,7 +60,7 @@ console.log('Fotos propias')
   const ficha = leer('src/components/route/dayDetail/StopDetailSheet.tsx')
   // (6y2: la línea de crédito vive en src/components/ui/FotoCredito.tsx, que usa la ficha.)
   const credito = leer('src/components/ui/FotoCredito.tsx')
-  ok(/<FotoCredito photo=\{photo\} \/>/.test(ficha) && /photo\.source === 'unsplash'/.test(credito) && !/'propia'/.test(credito.replace(/\/\*[\s\S]*?\*\//g, '')), '1d la ficha no limita el crédito a Unsplash y Wikipedia')
+  ok(/<FotoCredito photo=\{photo\}[^>]*\/>/.test(ficha) && /photo\.source === 'unsplash'/.test(credito) && !/'propia'/.test(credito.replace(/\/\*[\s\S]*?\*\//g, '')), '1d la ficha no limita el crédito a Unsplash y Wikipedia')
   // (6z6f: la ficha pinta «Foto:» para Wikipedia, así que aquí solo se vigila que las propias no tengan línea.)
   ok(!/photo\??\.source === 'propia'/.test(ficha), '1e la ficha todavía tiene el crédito «Foto:» de las propias')
   // «Créditos»: nada de fotos propias.

@@ -1,0 +1,24 @@
+# Progreso de la Tanda 6y4
+
+- [x] Tus documentos (PROMPT 6Y4 y los diseños de Perfil, Ficha de lugar y Varias Ciudades) en un commit tal cual
+- [x] 0. Respuestas a la 6y3: foto del Free Tour = Plaza de España (nuestra, sin crédito); acortar quita también los días con excursión reservada y las reservas de esos días; sin [Deshacer] al acortar; [Deshacer] al quitar cualquier otra reserva; el calendario de la cabecera ya no lo tapa nada
+- [x] 1. «Elegir» sin espera (paso inmediato con las dos opciones)
+- [x] 2. Tope del pool: 5 con 1-2 días, 7 con 3, 8 con 4 o más (resultado de los 8 sitios en 4 días en el informe)
+- [x] 3. «Pon tus fechas» desde HOY, RESERVAS y la cabecera: solo el calendario, a pantalla completa, por encima de todo
+- [x] 4. Un solo calendario en toda la app, el del formulario
+- [x] 5. Fontana de Trevi fuera de «Entradas» y de «x de n listo»; su ficha dice «No necesitas entrada · Bajar junto al agua» con datos nuestros
+- [x] 6. Con entrada reservada, la hora una sola vez («✓ Tu entrada: 10:30») y «Llega unos 30 minutos antes» (15 en Free Tour)
+- [x] 7. El fallo de las paradas con reserva: reproducido, arreglado en la regla y con comprobación nueva en la prueba de listas; las 365 fechas a 0 fallos
+- [x] 8. Moneda sin «tuya»
+- [x] 9. Fila «Moneda» al final del presupuesto
+- [x] 10. Fuera el contador «n paradas» de las cabeceras de DÍAS
+- [x] 11. El aviso del alojamiento solo en el día 1 y solo mientras falte
+- [x] 12. Precio y código opcionales de vuelo, tren y bus, en la tarjeta de llegada y vuelta
+- [x] 13. «¿Dónde lo has comprado?» en seguro, eSIM y tarjeta
+- [x] 14. La pastilla del precio funciona en todas partes (espera si la cartera está tapada)
+- [x] 15. Perfil con el diseño nuevo, álbum sin filtros, fotos desde la cámara de la ficha / ✓ Visto / HOY / Guarda tus recuerdos, y el efecto «la foto vuela al Perfil»
+- [x] 16. Ficha de lugar con el diseño nuevo y nuestros datos
+- [x] 17. Iconos de transporte del diseño «Varias Ciudades»
+- [x] 18. Etiqueta lila «Trastevere» (10 sitios)
+- [x] 19. Pruebas: `pruebaFase6y4_*` (listas, formulario, reservas, presupuesto, perfil, ficha, iconos) y todas las de siempre a 0 fallos; las 365 fechas a 0 fallos; comprobación a 375 px de los pasos principales
+- [x] Informes de las siete partes, informe y preguntas de la 6y4, invariantes

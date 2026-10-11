@@ -1,6 +1,6 @@
 /**
  * La línea de «llega antes» de una entrada reservada (Tanda 6y4, punto 6). El motor ya la escribe sin hora («Llega unos 30 minutos antes: hay cola de control»; 15 en el Free Tour), pero un viaje guardado
- * antes de esta tanda lleva la vieja, con dos horas («🕘 Entrada a las 10:30 · llega a las 10:00: el control de seguridad…»). Aquí se pasa la vieja a la nueva —la hora de la entrada sale UNA sola vez en la
+ * antes de esta tanda lleva la vieja, con dos horas («con un reloj delante: Entrada a las 10:30 · llega a las 10:00: el control de seguridad…»). Aquí se pasa la vieja a la nueva —la hora de la entrada sale UNA sola vez en la
  * ficha, en «✓ Tu entrada: 10:30»— y la nueva se deja tal cual.
  */
 export function notaDeLlegadaSinHora(nota: string | null | undefined, minutos?: number | null): string | null {

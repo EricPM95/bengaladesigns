@@ -195,7 +195,7 @@ export function FichaComoLlegar({ direccion, transporte, web, onComoLlegar }: { 
           <span className="flex flex-1 flex-col gap-1">
             <span className="flex items-center gap-2">
               {entrada.linea && (
-                <span className="flex h-[22px] min-w-[22px] items-center justify-center rounded-md px-1 text-[12px] font-bold text-white" style={{ background: 'oklch(0.55 0.14 40)' }}>
+                <span className="flex h-[22px] min-w-[22px] items-center justify-center rounded-md bg-accent px-1 text-[12px] font-bold text-white">
                   {siglaDeLinea(entrada.linea)}
                 </span>
               )}
