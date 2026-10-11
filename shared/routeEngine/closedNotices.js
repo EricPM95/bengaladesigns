@@ -60,6 +60,18 @@ export function closedOutsideNotice(destData, place, hours = {}) {
   return fill(config.por_fuera, { ...agreement(place), dia, motivo: reasonText(config, reason) })
 }
 
+/** Los sitios que NUNCA se quitan de un día porque cierren (Tanda 6y5, P2 y P3: el Vaticano en domingo, la Galería Borghese en lunes): dato del destino. */
+export const sitiosQueNoSeQuitan = (destData) => new Set(destData?.destination_config?.closed_notices?.sitios_que_no_se_quitan ?? [])
+
+/** El aviso de un sitio que se queda en su día aunque cierre ese día, porque en el viaje no hay otro día al que cambiarlo (Tanda 6y5). Null si no toca. */
+export function closedStaysNotice(destData, place, hours = {}) {
+  const config = destData?.destination_config?.closed_notices
+  const reason = place ? closedReason(place, hours) : null
+  if (!config?.se_queda || !reason) return null
+  const dia = reason.kind === 'festivo' && hours.dateIso ? dayOfMonth(hours.dateIso) : reason.weekday ?? ''
+  return fill(config.se_queda, { ...agreement(place), dia, motivo: reasonText(config, reason) })
+}
+
 /**
  * El aviso de lo que cierra todo el viaje y no se ve por fuera (los Museos Vaticanos del 1 y el 2 de mayo),
  * con lo que sí se ve de su grupo ({resto}: "la Plaza de San Pedro y la Basílica de San Pedro").

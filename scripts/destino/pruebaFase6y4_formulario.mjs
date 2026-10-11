@@ -45,21 +45,21 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
 
 // ── 2. El tope del pool ──
 {
-  const tabla = [[1, 5], [2, 5], [3, 7], [4, 8], [5, 8], [6, 8], [7, 8], [10, 8], [14, 8], [21, 8]]
+  const tabla = [[1, 3], [2, 3], [3, 6], [4, 6], [5, 6], [6, 6], [7, 6], [10, 6], [14, 6], [21, 6]]
   for (const [dias, tope] of tabla) debe(poolSelectionLimit(dias) === tope, '2 tope', `con ${dias} días el tope es ${poolSelectionLimit(dias)} y no ${tope}`)
-  debe(poolSelectionLimit(undefined) === 5, '2 tope', 'sin días el tope no es 5')
+  debe(poolSelectionLimit(undefined) === 3, '2 tope', 'sin días el tope no es 3')
   // El recorte al acortar los días: la selección se queda en el tope nuevo (los primeros que se eligieron).
   const nombres = Array.from({ length: 9 }, (_, i) => `Sitio ${i + 1}`)
-  for (const [dias, tope] of [[4, 8], [3, 7], [2, 5], [1, 5]]) {
+  for (const [dias, tope] of [[4, 6], [3, 6], [2, 3], [1, 3]]) {
     useRouteStore.setState({ selected_curated_place_names: [...nombres] })
     useRouteStore.getState().trimCuratedPlaceSelection(poolSelectionLimit(dias))
     const quedan = useRouteStore.getState().selected_curated_place_names
     debe(quedan.length === tope && quedan.every((n, i) => n === nombres[i]), '2 tope', `al recortar a ${dias} días quedan ${quedan.length} y no los ${tope} primeros`)
   }
   // Al subir los días no se pierde nada.
-  useRouteStore.setState({ selected_curated_place_names: nombres.slice(0, 5) })
+  useRouteStore.setState({ selected_curated_place_names: nombres.slice(0, 3) })
   useRouteStore.getState().trimCuratedPlaceSelection(poolSelectionLimit(4))
-  debe(useRouteStore.getState().selected_curated_place_names.length === 5, '2 tope', 'al alargar el viaje se quitan sitios elegidos')
+  debe(useRouteStore.getState().selected_curated_place_names.length === 3, '2 tope', 'al alargar el viaje se quitan sitios elegidos')
   // El formulario recorta con el tope de los días y la pantalla del pool usa la misma función.
   const flujo = sinComentarios(fuente('src/components/trazo/TrazoFlow.tsx'))
   debe(/trimCuratedPlaceSelection\(poolSelectionLimit\(answers\.days\)\)/.test(flujo), '2 tope', 'TrazoFlow no recorta con poolSelectionLimit(answers.days)')

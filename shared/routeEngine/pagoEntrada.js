@@ -12,8 +12,11 @@ const quitaCero = (hhmm) => String(hhmm).replace(/^0/, '')
 export function avisoPagoEntrada(pago, minutos, weekday = null) {
   if (!pago?.horario_de_pago || !Number.isFinite(minutos)) return null
   const [abre, cierra] = String(pago.horario_de_pago).split('-')
-  const esViernes = String(weekday ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() === 'viernes'
-  const desde = esViernes && pago.viernes_desde ? pago.viernes_desde : abre
+  const sinTilde = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  // Tanda 6y5 (P18): los días que abren más tarde son los de `desde_tarde_dias` (lunes y viernes), como dice la ficha; sin esa lista, solo el viernes.
+  const diasTarde = (pago.desde_tarde_dias?.length ? pago.desde_tarde_dias : ['viernes']).map(sinTilde)
+  const esDiaTarde = diasTarde.includes(sinTilde(weekday))
+  const desde = esDiaTarde && pago.viernes_desde ? pago.viernes_desde : abre
   if (minutos < toMin(desde)) return `Gratis y sin gente: antes de las ${quitaCero(desde)} no se paga`
   if (minutos < toMin(cierra)) return `Hasta las ${quitaCero(cierra)}, acercarte a la fuente cuesta ${pago.precio} (solo con tarjeta). Desde la plaza se ve gratis`
   return null
