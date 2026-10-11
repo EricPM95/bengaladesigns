@@ -289,7 +289,7 @@ export function TrazoFlow() {
       : ''
   // Con la ruta a mano no hay experiencias ni lugares: ni en la barra, ni en el panel, ni en las fichas.
   const withExperiences = usesExperiences(plan)
-  const stepNames = visibleStepNamesFor(plan, step)
+  const stepNames = visibleStepNamesFor(plan, step, picked)
   const nExp = withExperiences ? (answers.experiencesPositive?.length ?? 0) : 0
   const expLabel = step > STEP.experiencias && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
   const nPlaces = useRouteStore((state) => (withExperiences ? state.selected_curated_place_names.length + state.selected_place_ids.length : 0))
