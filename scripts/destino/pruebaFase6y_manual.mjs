@@ -103,7 +103,11 @@ for (const dias of [2, 3, 4, 5]) {
           const esperado = fechas ? nombreDeFecha(sumaDias(INICIO, day.dayNumber - 1)) : `Día ${day.dayNumber}`
           debe(manualDayTitle(vacia, day) === esperado, '4 nombres', `${nombre} día ${day.dayNumber}: el nombre es «${manualDayTitle(vacia, day)}» y debería ser «${esperado}»`)
           // (El primero y el último llevan además su trayecto de viaje, que manda en el título; los de en medio salen con el nombre del día.)
-          if (day.dayNumber > 1 && day.dayNumber < dias) debe(t.includes(esperado), '4 nombres', `${nombre} día ${day.dayNumber}: la tarjeta no dice «${esperado}»`)
+          // (6y2: el día sin nombre dice «Ponle nombre»; su fecha ya está en el cuadrito y no se repite en el título.)
+          if (day.dayNumber > 1 && day.dayNumber < dias) {
+            debe(t.includes('Ponle nombre'), '4 nombres', `${nombre} día ${day.dayNumber}: la tarjeta no dice «Ponle nombre»`)
+            if (fechas) debe(!t.includes(esperado), '4 nombres', `${nombre} día ${day.dayNumber}: la tarjeta repite la fecha «${esperado}» en el título`)
+          }
         }
         const renombrada = renameDay(vacia, 'd2', 'Día de compras')
         debe(manualDayTitle(renombrada, renombrada.days[1]) === 'Día de compras', '4 nombres', `${nombre}: renombrar no cambia el nombre`)

@@ -3,7 +3,6 @@ import type { ExperienceCategoryId, Place } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { classifyInBackground } from '../../lib/classifyInBackground'
 import { suggestExperiencesInBackground } from '../../lib/suggestExperiencesInBackground'
-import { suggestPlacesInBackground } from '../../lib/suggestPlacesInBackground'
 import { suggestPlacesOnDemand } from '../../lib/suggestPlacesOnDemand'
 import { deriveLegacyExperienceIds } from '../../lib/experienceCategoryBank'
 import { fetchPoolLevel, type PoolPlace } from '../../lib/placePoolCache'
@@ -25,7 +24,7 @@ import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
 import { StepElegir } from './StepElegir'
 import { StepManualSummary } from './StepManualSummary'
-import { AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, stepAfterChoice, stepNamesFor, usesExperiences, type PlanChoice } from './planChoice'
+import { AVISO_DE_ELEGIR, STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, shouldSuggestExperiences, stepAfterChoice, stepCounterLabel, visibleStepNamesFor, usesExperiences, type PlanChoice } from './planChoice'
 import { buildManualRoute, transportContextOf } from '../../lib/manualRoute'
 import './trazo.css'
 import { Icono } from '../ui/Icono'
@@ -137,8 +136,9 @@ export function TrazoFlow() {
     const destChanged = !samePlace(state.destinationPlace, dest) || state.destination !== dest.name
     if (destChanged) {
       state.setDestination(dest.name, dest)
+      // La clasificación se queda aquí: el paso de Transporte la necesita (arquetipo) en los dos caminos. Las sugerencias de experiencias y de lugares ya no
+      // se lanzan aquí: solo con «¡Sí, hazla por mí!» (Tanda 6y2, choosePlan).
       classifyInBackground(dest.name)
-      suggestExperiencesInBackground(dest.name)
     } else if (!samePlace(state.answers.originPlace, origin)) {
       // Mismo destino, otro origen: el transporte hay que volver a decidirlo.
       state.setTransportOption(null)
@@ -154,7 +154,6 @@ export function TrazoFlow() {
     state.setDestination(route.name, route.startPlace)
     state.setArchetype('roadtrip_exclusivo', true)
     state.setKnownCamperAccess(route.camperAccess)
-    suggestExperiencesInBackground(route.name)
     updateAnswers({ origin: origin.name, originPlace: origin })
     setDest(route.startPlace)
     setProg(0)
@@ -164,13 +163,17 @@ export function TrazoFlow() {
   const confirmDates = () => {
     const state = store.getState()
     state.setDatesConfirmed(true)
-    if (destinationName && state.suggested_experiences.length > 0) suggestPlacesInBackground(destinationName, state.suggested_experiences)
     go(STEP.compania)
   }
 
   /** La pantalla de elegir: el aviso corto y, enseguida, a las experiencias (hazla por mí) o al resumen corto (la hago yo). */
   const choosePlan = (choice: PlanChoice) => {
     if (picked) return
+    // Las sugerencias de experiencias (y, tras ellas, la precarga de lugares) se piden SOLO con «hazla por mí»: la ruta a mano no las usa (Tanda 6y2).
+    if (shouldSuggestExperiences(choice) && destinationName) {
+      const state = store.getState()
+      if (!state.suggested_experiences_loading && state.suggested_experiences.length === 0) suggestExperiencesInBackground(destinationName)
+    }
     setPicked(choice)
     pickTimer.current = setTimeout(() => {
       setPlan(choice)
@@ -286,7 +289,7 @@ export function TrazoFlow() {
       : ''
   // Con la ruta a mano no hay experiencias ni lugares: ni en la barra, ni en el panel, ni en las fichas.
   const withExperiences = usesExperiences(plan)
-  const stepNames = stepNamesFor(plan)
+  const stepNames = visibleStepNamesFor(plan, step)
   const nExp = withExperiences ? (answers.experiencesPositive?.length ?? 0) : 0
   const expLabel = step > STEP.experiencias && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
   const nPlaces = useRouteStore((state) => (withExperiences ? state.selected_curated_place_names.length + state.selected_place_ids.length : 0))
@@ -522,7 +525,7 @@ export function TrazoFlow() {
                   </div>
                 ))}
               </div>
-              <span className="trazo-headtext" style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(28,34,48,.7)', minWidth: 30, textAlign: 'right' }}>{step < stepNames.length ? `${step + 1}/${stepNames.length}` : 'LISTO'}</span>
+              <span className="trazo-headtext" style={{ font: `500 11px ${MONO}`, letterSpacing: '.08em', color: 'rgba(28,34,48,.7)', minWidth: 30, textAlign: 'right' }}>{stepCounterLabel(step, stepNames)}</span>
             </div>
             <div
               className="trazo-noscroll"

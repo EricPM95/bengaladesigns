@@ -278,7 +278,8 @@ for (const version of ['gratis', 'completa']) {
     // (El primer y el último día salen como en la ruta nuestra: «Madrid → Roma» y «Roma → Madrid», con su ficha de la fecha; los de en medio, con su nombre.)
     ruta.days.forEach((dia, i) => {
       const viaje = i === 0 ? 'Madrid → Roma' : i === ruta.days.length - 1 ? 'Roma → Madrid' : null
-      debe(texto.split('\n').includes(viaje ?? dia.title), '5 DÍAS', `${que}: DÍAS no enseña el día «${viaje ?? dia.title}»: ${plano(texto).slice(0, 220)}`)
+      // (6y2: un día de en medio sin nombre dice «Ponle nombre»; su fecha ya está en la ficha y no se repite.)
+      debe(texto.split('\n').includes(viaje ?? 'Ponle nombre'), '5 DÍAS', `${que}: DÍAS no enseña el día «${viaje ?? 'Ponle nombre'}»: ${plano(texto).slice(0, 220)}`)
       if (inicio) debe(texto.split('\n').includes(String(Number(addDays(inicio, i).slice(8, 10)))), '5 DÍAS', `${que}: DÍAS no enseña la ficha del día ${addDays(inicio, i)}`)
       else debe(texto.toUpperCase().includes(`DÍA ${i + 1}`), '5 DÍAS', `${que}: DÍAS no enseña «Día ${i + 1}»`)
     })

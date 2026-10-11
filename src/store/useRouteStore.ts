@@ -61,6 +61,7 @@ import {
   withUserDaysBack,
 } from '../lib/freeDays'
 import { withManualDayNames } from '../lib/manualRoute'
+import { resizeManualRoute, type RemovedDayChoice } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
@@ -408,7 +409,7 @@ interface RouteStoreState {
       para la fecha real de cada día, destinationSegments.ts para el rango de cada tramo). `undefined`
       quita las fechas (vuelve a "Añadir fechas"). No recalcula `days` — el número de días del viaje
       ya generado no cambia por poner/quitar fechas después. */
-  setRouteDateRange: (dateRange: DateRange | undefined) => void
+  setRouteDateRange: (dateRange: DateRange | undefined, decisions?: Record<string, RemovedDayChoice>) => void
   /** Fechas puestas desde el mapa (PROMPT_PENDIENTE G): rehace la ruta como el formulario (pantalla de carga) con esas
       fechas, sin tocar reservas ni wishlist. `undefined` = quitar fechas (días normales del mismo mes). */
   regenerateRouteForDates: (dateRange: DateRange | undefined) => void
@@ -1053,9 +1054,11 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       activeDayId: payload.uiState.activeDayId,
     }),
 
-  setRouteDateRange: (dateRange) =>
+  setRouteDateRange: (dateRange, decisions) =>
     set((state) => {
       if (!state.route) return state
+      // Ruta a mano (Tanda 6y2): otra duración añade días vacíos antes de la vuelta o quita primero los vacíos; un día con paradas solo se quita con la decisión del viajero.
+      if (isManualRoute(state.route)) return { route: resizeManualRoute(state.route, dateRange, decisions) }
       const changed = { ...state.route, answers: { ...state.route.answers, dateRange } }
       // Ruta a mano (Tanda 6y): los días que aún se llaman como los puso la app pasan a llamarse por las fechas nuevas.
       return { route: withManualDayNames(changed, state.route.answers) }

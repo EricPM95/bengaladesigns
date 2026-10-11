@@ -30,7 +30,8 @@ interface StepElegirProps {
  */
 export function StepElegir({ destinationName, days, picked, onPick }: StepElegirProps) {
   const [hoverSelf, setHoverSelf] = useState(false)
-  const selfActive = hoverSelf || picked === 'manual'
+  // El dibujo se apaga del todo solo al tocar «Quiero hacerla yo»; con el ratón encima solo se atenúa (y en el móvil, donde no hay «encima», nunca se queda atenuado).
+  const dibujoOpacity = picked === 'manual' ? 0.25 : hoverSelf ? 0.6 : 1
   const eyebrow = days ? `${destinationName} · ${days} ${days === 1 ? 'día' : 'días'}` : destinationName
 
   return (
@@ -52,14 +53,15 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
           boxShadow: '0 1px 2px rgba(28,34,48,.06),0 16px 34px -24px rgba(28,34,48,.45)',
         }}
       >
-        <svg viewBox="0 0 343 236" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style={{ position: 'absolute', inset: 0 }} aria-hidden="true">
-          <rect width="343" height="236" fill="#F1EADB" />
-          <path d="M-10 60 C40 50 70 80 90 120 S110 200 70 250" fill="none" stroke="#D6E3E6" strokeWidth="16" strokeLinecap="round" />
-          <path d="M215 -10 L250 40 L330 30 L360 70 L360 -10Z" fill="#DCE5CC" />
-          <path d="M250 170 Q290 150 330 175 L360 250 L240 250Z" fill="#DCE5CC" />
-          <path d="M120 10 L130 236 M180 0 L170 236 M0 100 L343 120 M0 170 L343 160 M220 0 L300 236 M40 0 L150 236 M0 30 L343 70" stroke="#FFFFFF" strokeWidth="5" fill="none" opacity=".85" />
-          <path d="M0 140 L343 90 M260 0 L200 236 M80 0 L20 236" stroke="#FFFFFF" strokeWidth="2.5" fill="none" opacity=".7" />
-          <g style={{ opacity: selfActive ? 0.25 : 1, transition: 'opacity .5s' }}>
+        {/* El encuadre es el del dibujo (los tres días con sus pines y un margen) y se ve ENTERO en cualquier altura ("meet", no "slice"): el mapa de fondo se extiende más allá para llenar la caja. */}
+        <svg viewBox="28 24 290 204" preserveAspectRatio="xMidYMid meet" width="100%" height="100%" style={{ position: 'absolute', inset: 0 }} aria-hidden="true">
+          <rect x="-600" y="-400" width="1600" height="1000" fill="#F1EADB" />
+          <path d="M-140 40 L-10 60 C40 50 70 80 90 120 S110 200 70 250 L60 330" fill="none" stroke="#D6E3E6" strokeWidth="16" strokeLinecap="round" />
+          <path d="M215 -10 L250 40 L330 30 L360 70 L700 70 L700 -200 L215 -200Z" fill="#DCE5CC" />
+          <path d="M250 170 Q290 150 330 175 L700 175 L700 420 L240 420Z" fill="#DCE5CC" />
+          <path d="M117 -60 L133 300 M184 -60 L168 300 M-250 94 L600 134 M-250 172 L600 158 M200 -60 L320 300 M2 -60 L170 300 M-250 14 L600 76" stroke="#FFFFFF" strokeWidth="5" fill="none" opacity=".85" />
+          <path d="M-250 164 L600 80 M270 -60 L195 300 M95 -60 L15 300" stroke="#FFFFFF" strokeWidth="2.5" fill="none" opacity=".7" />
+          <g style={{ opacity: dibujoOpacity, transition: 'opacity .5s' }}>
             {DIAS.map((dia) => (
               <path
                 key={dia.c}
@@ -70,12 +72,12 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeDasharray="600"
-                style={{ animation: `trazo-draw 1.6s ${dia.delay}s cubic-bezier(.4,0,.2,1) both` }}
+                style={{ animation: `trazo-draw 1.6s ${dia.delay}s cubic-bezier(.4,0,.2,1) backwards` }}
               />
             ))}
             {DIAS.map((dia, d) =>
               dia.numbered.map(([x, y], i) => (
-                <g key={`${dia.c}-${i}`} style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: `trazo-pin .4s ${0.5 + d * 0.6 + i * 0.25}s cubic-bezier(.3,1.6,.5,1) both` }}>
+                <g key={`${dia.c}-${i}`} style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: `trazo-pin .4s ${0.5 + d * 0.6 + i * 0.25}s cubic-bezier(.3,1.6,.5,1) backwards` }}>
                   <circle cx={x} cy={y} r="11" fill={dia.c} stroke={CREMA} strokeWidth="2" />
                   <text x={x} y={y + 3.5} textAnchor="middle" fontSize="10" fontWeight="700" fill="#fff" fontFamily="Geist, sans-serif">
                     {i + 1}
@@ -136,8 +138,8 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
           type="button"
           className="trazo-press"
           onClick={() => onPick('manual')}
-          onMouseEnter={() => setHoverSelf(true)}
-          onMouseLeave={() => setHoverSelf(false)}
+          onPointerEnter={(event) => setHoverSelf(event.pointerType === 'mouse')}
+          onPointerLeave={() => setHoverSelf(false)}
           style={{
             display: 'flex',
             alignItems: 'center',
