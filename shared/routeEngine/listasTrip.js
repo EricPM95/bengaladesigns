@@ -45,8 +45,12 @@ const MESES_INVIERNO = [11, 12, 1, 2]
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
-  inicio: '09:00', comida_desde: '12:30', comida_antes_mediodia: '12:00', comida_rapida_hasta: '13:15', comida_rapida_min: 45, comida_rapida_desde: '10:30', comida_hasta: COMIDA_HASTA, cena_antes_de_hora_fija: '20:30', cena_antes_desde: '19:00', cena_junto_min: 20, comida_min: 60, cena_min: 90, cena_desde: '19:30', cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
-  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, tolerancia_tour_min: 5, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, comida_despues_de_fija_desde: '13:00', sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
+  inicio: '09:00', comida_desde: '12:30', comida_hasta: COMIDA_HASTA, cena_junto_min: 20, comida_min: 60, cena_min: 90, cena_desde: '19:30',
+  // La comida y la cena según la reserva (Tanda 6y8, todos los destinos): si al salir de la reserva ya es más tarde de esta hora, la mesa va ANTES de la reserva; si no, DESPUÉS. La cena nunca empieza después de `cena_hasta`.
+  // `entre_reservas_min`: lo que se deja para ir de una reserva a la siguiente cuando la app elige el turno de una entrada junto a otra reserva del viajero.
+  // Antes de una reserva la mesa se cuenta corta (`*_rapida_min`, desde `*_rapida_desde`) solo si la normal haría llegar tarde: solo ponemos la parada, cuánto tarda en comer lo decide el viajero.
+  comida_antes_si_sale_despues_de: '14:30', cena_antes_si_sale_despues_de: '21:00', cena_hasta: '22:30', comida_rapida_min: 45, comida_rapida_desde: '10:30', cena_rapida_min: 60, cena_rapida_desde: '18:00', tolerancia_hora_min: 5, entre_reservas_min: 30, cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
 /** Cuántos extras del pool se pueden elegir: 2 días, 2; 3, 3; 4, 4; 5 o más, 5. */
@@ -665,12 +669,14 @@ export function planListasTrip(args) {
       let t = desde
       let prev = prev0
       let pendiente = null
+      let anterior = null
       return lista.map((item) => {
         if (item.kind === 'traslado') { pendiente = item; return { ...item, t0: t, t1: t, leg: 0 } }
         const c = coordsOf(item)
         let leg = 0
         let transit = null
-        if (prev && c) {
+        // (Entre la «Llegada a…» y la propia parada no hay trayecto: es el mismo sitio.)
+        if (prev && c && !(anterior?.llegada && anterior.de === item.id)) {
           if (pendiente) { leg = transitMin(prev, c, pendiente.como); transit = { como: pendiente.como, min: leg } } else {
             leg = walkLeg(prev, c)
             // Un tramo de más de 25 min andando no va a pie: en taxi.
@@ -686,12 +692,14 @@ export function planListasTrip(args) {
         if (item.no_antes) start = Math.max(start, toMin(item.no_antes))
         if (item.hora) {
           const fija = toMin(item.hora)
-          if (llega <= fija) start = fija
+          // (Hasta `tolerancia_hora_min` de retraso cuenta como llegar a su hora: la hora de la parada es orientativa y andar un poco más deprisa lo cubre.)
+          if (llega <= fija || llega - fija <= cfg.tolerancia_hora_min) start = fija
           else { start = llega; tarde = llega - fija }
         }
         const end = start + (item.min ?? 0)
         t = end
         prev = endCoordsOf(item) ?? c ?? prev
+        anterior = item
         return { ...item, t0: start, t1: end, leg, llegaA: llega, tarde, ...(transit ? { transit } : {}) }
       })
     }
@@ -705,9 +713,8 @@ export function planListasTrip(args) {
       return lista.map((item, i) => {
         if (item.kind !== 'comida' && item.kind !== 'cena') return item
         const meal = item.kind === 'cena' ? 'cena' : 'comida'
-        // (Una hora fija de noche, delante de la cena en la lista: la cena irá antes de ella, hacia las 19:30; se mira abierto a esa hora.)
-        const antesDeLaNoche = item.kind === 'cena' && lista.some((it, k) => k < i && it.kind === 'stop' && it.hora && !it.llegada && toMin(it.hora) >= toMin(cfg.cena_antes_de_hora_fija))
-        const start = antesDeLaNoche ? Math.min(sim[i].t0, toMin(cfg.cena_antes_desde) + 30) : sim[i].t0
+        // (Una comida rápida antes de una reserva empieza pronto, pero el restaurante se mira abierto desde la hora de comer de siempre: son recomendaciones, no una mesa reservada.)
+        const start = item.kind === 'comida' && item.corta ? Math.max(sim[i].t0, toMin(cfg.comida_antes_desde)) : sim[i].t0
         const original = item.restaurante_escrito ?? item.restaurante
         const candidatas = [original, item.alternativa, item.tercera, ...(item.otras ?? [])].filter(Boolean)
         const libre = (name) => !estado.mesas.has(name) && !usadasHoy.has(name)
@@ -973,7 +980,13 @@ export function planListasTrip(args) {
         if (natural == null) continue
         const horas = []
         for (let t = toMin(turnos.desde); t <= toMin(turnos.hasta); t += turnos.cada_minutos) horas.push(t)
-        const elegido = horas.reduce((mejor, t) => (Math.abs(t - natural) < Math.abs(mejor - natural) ? t : mejor), horas[0])
+        // (El turno que coge la app no pisa ni se salta una reserva del viajero —la suya manda—: de los turnos que dejan las reservas del día en el orden de la lista, sin cruzarse, el más cercano; si ninguno encaja, el más cercano.)
+        const dur = duracionDe(it)
+        const iEste = out.findIndex((x) => x.id === it.id)
+        const ajenas = out.map((o, i) => ({ o, i })).filter(({ o }) => esReservaFija(o))
+        const margenDe = (o) => (RESERVAS_GRANDES.has(o.lugar) && o.hora_tipo === 'reserva' ? cfg.llegada.reserva : cfg.llegada.turno)
+        const libres = horas.filter((t) => ajenas.every(({ o, i }) => (i < iEste ? t - cfg.llegada.turno >= toMin(o.hora) + duracionDe(o) + cfg.entre_reservas_min : t + dur + cfg.entre_reservas_min <= toMin(o.hora) - margenDe(o))))
+        const elegido = (libres.length ? libres : horas).reduce((mejor, t) => (Math.abs(t - natural) < Math.abs(mejor - natural) ? t : mejor))
         out = out.map((x) => (x.id === it.id ? { ...x, hora: toHHMM(elegido), turno_real: true } : x.llegada && x.de === it.id ? { ...x, hora: toHHMM(elegido - x.min) } : x))
         log.push({ id: it.id, lugar: it.titulo ?? it.lugar, sitio: it.lugar, que: 'hora', causa: `sin reserva puesta, el turno real más cercano a donde cae (hacia las ${toHHMM(natural)}) es el de las ${toHHMM(elegido)}` })
       }
@@ -1003,10 +1016,259 @@ export function planListasTrip(args) {
       return out
     }
 
+    /**
+     * 5.7b La comida, la cena y la reserva (Tanda 6y8, decidido por Eric el 12-oct-2026; vale para todos los destinos y sale de los datos, no de nombres):
+     *   · LA COMIDA va antes de la reserva si al salir de ella ya son más de las 14:30 (hora de la reserva + lo que dura la visita en los datos del sitio); si sale a las 14:30 o antes, va después.
+     *   · LA CENA, igual con las 21:00; y nunca empieza después de las 22:30.
+     *   · La entrada NUNCA sale tarde: si la mesa va antes y la normal haría llegar tarde, se cuenta corta (solo ponemos la parada: cuánto tarda en comer lo decide el viajero); si aun así llega
+     *     tarde, lo que va justo antes de la reserva pasa detrás de ella (en su orden; nada se quita) o, si detrás ya es de noche, a «Si te sobra tiempo»; y si la reserva es antes de que empiece el día,
+     *     el día empieza antes. Una sola regla: el documento solo escribe qué paradas lleva cada hora; dónde cae la mesa lo decide esto.
+     * La reserva es la que PUSO el viajero (o el Free Tour que reservó): el turno real que la app coge de la Galería sin reserva (`turno_real`) no cuenta.
+     */
+    let turnosCuentan = false
+    const esReservaFija = (it) => it.kind === 'stop' && !it.llegada && Boolean(it.hora) && (!it.turno_real || turnosCuentan) && (Boolean(it.hora_tipo) || it.tipo === 'tour')
+    const duracionDe = (it) => {
+      const d = sourceOf(it)?.duration_minutes
+      return Number.isFinite(d) && d > 0 ? d : it.min ?? 0
+    }
+    const salidaDe = (it) => toMin(it.hora) + duracionDe(it)
+    /** Dónde empieza la reserva en la lista: su «Llegada a…» y, delante, el traslado que lleva hasta ella. */
+    const inicioGrupo = (lista, i) => {
+      let g = i
+      if (lista[g - 1]?.llegada && lista[g - 1].de === lista[i].id) g--
+      if (lista[g - 1]?.kind === 'traslado') g--
+      return g
+    }
+    const MESAS = [
+      { kind: 'comida', opcion: 'comida', sale: 'comida_antes_si_sale_despues_de', rapidaMin: 'comida_rapida_min', rapidaDesde: 'comida_rapida_desde' },
+      { kind: 'cena', opcion: 'cena', sale: 'cena_antes_si_sale_despues_de', rapidaMin: 'cena_rapida_min', rapidaDesde: 'cena_rapida_desde' },
+    ]
+    /** ¿Cabe la mesa (rápida) antes de la «Llegada a…» de esta reserva? Lo que dura la mesa rápida, desde su hora más temprana, más lo que se tarda en llegar. */
+    const cabeLaMesaAntes = (lista, i, mesa) => {
+      const g = inicioGrupo(lista, i)
+      const hora = lista[g].hora ?? lista[g + 1]?.hora ?? lista[i].hora
+      return toMin(hora) >= toMin(cfg[mesa.rapidaDesde]) + cfg[mesa.rapidaMin] + cfg.comida_junto_min
+    }
+    /**
+     * La comida y la cena en el lado de la reserva que toca. Solo mueve la mesa, y solo si está del lado contrario. `opciones.comida` / `opciones.cena`: false = esa mesa no se pone antes de ninguna
+     * reserva (la salida de emergencia cuando ponerla antes haría llegar tarde: la entrada nunca sale tarde).
+     */
+    const colocarMesas = (lista, opciones = {}) => {
+      let out = lista
+      for (const mesa of MESAS) {
+        const iMesa = out.findIndex((it) => it.kind === mesa.kind)
+        if (iMesa < 0) continue
+        const limite = toMin(cfg[mesa.sale])
+        const fijas = out.map((it, i) => ({ it, i })).filter(({ it }) => esReservaFija(it))
+        const debeAntes = ({ it, i }) => opciones[mesa.opcion] !== false && salidaDe(it) > limite && cabeLaMesaAntes(out, i, mesa)
+        // La mesa está detrás de una reserva que sale tarde: va antes de ella (con su llegada).
+        const detras = fijas.find((f) => f.i < iMesa && debeAntes(f))
+        if (detras) {
+          const g = inicioGrupo(out, detras.i)
+          const sin = out.filter((_, k) => k !== iMesa)
+          out = [...sin.slice(0, g), out[iMesa], ...sin.slice(g)]
+          continue
+        }
+        // La mesa está delante de una reserva que sale pronto (o de una a la que no se puede ir con la mesa hecha): va después de ella.
+        const delante = fijas.filter((f) => f.i > iMesa && !debeAntes(f)).at(-1)
+        if (delante) {
+          const sin = out.filter((_, k) => k !== iMesa)
+          out = [...sin.slice(0, delante.i), out[iMesa], ...sin.slice(delante.i)]
+        }
+      }
+      return out
+    }
+    /** Cuánto llega tarde cada reserva (suma de minutos) con la hora de la mesa tal cual está. */
+    const retrasoDe = (lista) => simular(lista).reduce((total, it) => total + (it.tarde > 0 && esReservaFija(it) ? it.tarde : 0), 0)
+    /**
+     * Que ninguna reserva salga tarde (ver arriba). Cada reserva se prueba por separado: si con todo lo que se puede pasar detrás de ella sigue tarde, se deja como estaba (no se desmonta el día
+     * por unos minutos que no se arreglan así) y queda apuntado.
+     */
+    const acomodarReservas = (lista) => {
+      let out = lista
+      const imposibles = new Set()
+      /** Lo que va justo antes de la reserva (entre la reserva anterior y esta), la última parada, pasa detrás de ella. Devuelve la lista nueva y qué se hizo, o null si no queda nada que pasar. */
+      const pasarDetras = (base, idR) => {
+        const iR = base.findIndex((it) => it.id === idR)
+        const R = base[iR]
+        const g = inicioGrupo(base, iR)
+        let c = -1
+        for (let k = g - 1; k >= 0; k--) {
+          const it = base[k]
+          if (it.hora || it.llegada || it.tipo === 'tour') break
+          if (it.kind === 'stop' && it.tipo !== 'desayuno') { c = k; break }
+        }
+        if (c < 0) return null
+        const mover = base[c - 1]?.kind === 'traslado' ? [base[c - 1], base[c]] : [base[c]]
+        const resto = base.filter((it) => !mover.includes(it))
+        const iRn = resto.findIndex((it) => it.id === R.id)
+        // (Si detrás de la reserva ya no queda tiempo hasta la hora de cenar, lo que pasa no tiene sitio: a «Si te sobra tiempo».)
+        let finDespues = salidaDe(R)
+        for (let k = iR + 1; k < base.length; k++) if (base[k].kind === 'stop' || base[k].kind === 'comida') finDespues += (base[k].min ?? 0) + 8
+        const item = base[c]
+        if (finDespues + (item.min ?? 0) + 8 > toMin(cfg.cena_hasta)) {
+          const { lista: nueva, caminos } = mandarASobra(base, item)
+          return { lista: nueva, sobra: { item, caminos }, nota: { id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'sobra', causa: `no cabe antes de ${R.lugar} (a las ${R.hora}) ni después: pasa a «Si te sobra tiempo»` } }
+        }
+        return { lista: [...resto.slice(0, iRn + 1), ...mover.map((it) => (it.kind === 'stop' ? { ...it, franja: R.franja } : it)), ...resto.slice(iRn + 1)], sobra: null, nota: { id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'orden', causa: `no cabe antes de ${R.lugar} (a las ${R.hora}): pasa detrás de la reserva, en su orden` } }
+      }
+      for (let guard = 0; guard < 40; guard++) {
+        const sim = simular(out)
+        const tardeEn = sim.findIndex((it) => it.tarde > 0 && (esReservaFija(it) || (it.llegada && esReservaFija(out.find((o) => o.id === it.de) ?? {}))) && !imposibles.has(it.llegada ? it.de : it.id))
+        if (tardeEn < 0) break
+        const late = sim[tardeEn]
+        const idR = late.llegada ? late.de : late.id
+        const inicio0 = startPoint.t
+        let intento = out
+        const tardeDe = (l) => simular(l).find((it) => it.id === idR)?.tarde ?? 0
+        const tarde0 = tardeDe(intento)
+        // Cada paso tiene que acercar la reserva a su hora; si no adelanta nada, se deja (y se queda lo que ya adelantó).
+        for (let paso = 0; paso < 60; paso++) {
+          const iR = intento.findIndex((it) => it.id === idR)
+          const R = intento[iR]
+          const g = inicioGrupo(intento, iR)
+          const ahora = tardeDe(intento)
+          if (ahora <= 0) break
+          // 1. La mesa de antes de la reserva se cuenta corta.
+          const iMesa = intento.slice(0, g).findLastIndex((it) => (it.kind === 'comida' || it.kind === 'cena') && !it.corta)
+          if (iMesa >= 0) {
+            const mesa = intento[iMesa]
+            const conf = MESAS.find((m) => m.kind === mesa.kind)
+            const corta = intento.map((it, k) => (k === iMesa ? { ...it, corta: true, min: Math.min(it.min ?? 999, cfg[conf.rapidaMin]), piso: toMin(cfg[conf.rapidaDesde]) } : it))
+            if (tardeDe(corta) < ahora) {
+              log.push({ id: mesa.id, lugar: mesa.restaurante, sitio: null, que: 'mesa_corta', causa: `${mesa.kind === 'cena' ? 'la cena' : 'la comida'} va antes de ${R.lugar} (a las ${R.hora}) y la normal haría llegar tarde: se cuenta corta` })
+              intento = corta
+              continue
+            }
+          }
+          // 2. Lo que va justo antes de la reserva pasa detrás de ella, en su orden: se prueba pasar una, dos, tres… y se queda lo que más adelanta (a veces una sola parada de camino no adelanta, pero con la siguiente sí).
+          const pasos = []
+          let cur = intento
+          let mejorN = 0
+          let mejorT = ahora
+          for (let n = 0; n < 14; n++) {
+            const r = pasarDetras(cur, idR)
+            if (!r) break
+            pasos.push(r)
+            cur = r.lista
+            const t = tardeDe(cur)
+            if (t < mejorT) { mejorT = t; mejorN = pasos.length }
+            if (t <= 0) break
+          }
+          if (mejorN > 0) {
+            for (const r of pasos.slice(0, mejorN)) {
+              if (r.sobra) {
+                apuntarCaminos(r.sobra.caminos, r.sobra.item)
+                spare.push({ ...r.sobra.item, razon: 'reserva', spareReason: 'Para otro momento' })
+              }
+              log.push(r.nota)
+            }
+            intento = pasos[mejorN - 1].lista
+            continue
+          }
+          // 3. Nada que pasar detrás que adelante y es la primera hora fija del día: el día empieza antes (a su «Llegada a…»).
+          if (!intento.slice(0, g).some((it) => it.hora)) {
+            startPoint.t = Math.max(0, startPoint.t - Math.ceil(ahora / 5) * 5)
+            log.push({ id: R.id, lugar: R.titulo ?? R.lugar, sitio: R.lugar, que: 'hora', causa: `${R.lugar} es a las ${R.hora}: el día empieza antes (a las ${toHHMM(startPoint.t)}) para llegar a tiempo` })
+            continue
+          }
+          break
+        }
+        const tarde1 = tardeDe(intento)
+        if (tarde1 < tarde0) out = intento
+        else startPoint.t = inicio0
+        if (tarde1 > 0) {
+          imposibles.add(idR)
+          const R = out.find((it) => it.id === idR)
+          log.push({ id: R.id, lugar: R.titulo ?? R.lugar, sitio: R.lugar, que: 'aviso', causa: `${R.lugar} a las ${R.hora} llega ${tarde1} min tarde y no hay forma de evitarlo sin desmontar el día` })
+        }
+      }
+      return out
+    }
+    /** La cena nunca empieza después de `cena_hasta`: lo de menos de la tarde pasa a «Si te sobra tiempo» y, si no se puede quitar nada sin romper una comprobación, lo último de antes de la cena. */
+    const cenaATiempo = (lista) => {
+      let out = lista
+      for (let guard = 0; guard < 40; guard++) {
+        const sim = simular(out)
+        const cena = sim.find((it) => it.kind === 'cena')
+        if (!cena || cena.t0 <= toMin(cfg.cena_hasta)) break
+        const siguiente = reducir(out, 'tarde')
+        if (siguiente) { out = siguiente; continue }
+        // (Lo último que va antes de la cena y no es una reserva ni su llegada.)
+        const iCena = out.findIndex((it) => it.kind === 'cena')
+        let c = -1
+        for (let k = iCena - 1; k >= 0; k--) if (out[k].kind === 'stop' && !out[k].hora && !out[k].llegada && out[k].tipo !== 'tour' && out[k].tipo !== 'desayuno') { c = k; break }
+        if (c < 0) {
+          log.push({ id: cena.id, lugar: cena.restaurante, sitio: null, que: 'aviso', causa: `la cena cae a las ${toHHMM(cena.t0)}, después de las ${cfg.cena_hasta}, y no queda nada que quitar` })
+          break
+        }
+        const { lista: nueva, caminos } = mandarASobra(out, out[c])
+        apuntarCaminos(caminos, out[c])
+        spare.push({ ...out[c], razon: 'reserva', spareReason: 'Para otro momento' })
+        log.push({ id: out[c].id, lugar: out[c].titulo ?? out[c].lugar, sitio: out[c].lugar, que: 'sobra', causa: `la cena iba a caer después de las ${cfg.cena_hasta}: pasa a «Si te sobra tiempo»` })
+        out = nueva
+      }
+      return out
+    }
+    /** Lo que pasó detrás de una reserva puede dejar la comida pasadas las 15:00: va justo detrás de esa reserva (que sale pronto), siempre que no haga llegar tarde a otra. */
+    const comidaPronto = (lista) => {
+      const iC = lista.findIndex((it) => it.kind === 'comida')
+      const comida = iC >= 0 ? simular(lista).find((it) => it.kind === 'comida') : null
+      if (!comida || comida.t0 <= toMin(cfg.comida_hasta)) return lista
+      const ultima = lista.map((it, i) => ({ it, i })).filter(({ it, i }) => i < iC && esReservaFija(it) && salidaDe(it) <= toMin(cfg.comida_antes_si_sale_despues_de)).at(-1)
+      if (!ultima || ultima.i === iC - 1) return lista
+      const sin = lista.filter((_, k) => k !== iC)
+      const nueva = [...sin.slice(0, ultima.i + 1), lista[iC], ...sin.slice(ultima.i + 1)]
+      return retrasoDe(nueva) <= retrasoDe(lista) ? nueva : lista
+    }
+    /** Cuánto se pasa la cena de su hora tope (para elegir entre las opciones de abajo). */
+    const cenaTardia = (lista) => Math.max(0, (simular(lista).find((it) => it.kind === 'cena')?.t0 ?? 0) - toMin(cfg.cena_hasta))
+    const mesasYReservas = (lista) => {
+      // (El turno real que coge la app solo cuenta como hora fija si el viajero tiene en ese día alguna reserva suya: entonces no puede hacer llegar tarde a la otra.)
+      turnosCuentan = false
+      turnosCuentan = lista.some(esReservaFija)
+      // Una reserva antes de la hora de empezar: el día empieza antes (a su «Llegada a…»).
+      const fijosHora = lista.filter((it) => it.hora && ((it.llegada && esReservaFija(lista.find((o) => o.id === it.de) ?? {})) || esReservaFija(it))).map((it) => toMin(it.hora))
+      const inicioBase = Math.min(empiezaMin, ...fijosHora)
+      // Primero la regla tal cual (la comida y la cena antes si la reserva sale tarde). Si con eso alguna reserva llega tarde, se prueba sin la mesa de antes —la entrada nunca sale tarde— y se queda lo mejor.
+      let mejor = null
+      let probada = 0
+      for (const opciones of [{}, { comida: false }, { cena: false }, { comida: false, cena: false }]) {
+        startPoint.t = inicioBase
+        const l0 = log.length
+        const s0 = spare.length
+        const out = comidaPronto(cenaATiempo(acomodarReservas(colocarMesas(lista, opciones))))
+        const puntos = retrasoDe(out) + cenaTardia(out)
+        const nuevoLog = log.slice(l0)
+        const nuevaSpare = spare.slice(s0)
+        log.length = l0
+        spare.length = s0
+        if (!mejor || puntos < mejor.puntos) mejor = { out, puntos, nuevoLog, nuevaSpare, opcion: probada, inicio: startPoint.t }
+        probada++
+        if (puntos === 0) break
+      }
+      // (Solo se apunta lo que de verdad cambió: la mesa que la regla pondría antes de una reserva y aquí va después.)
+      if (mejor.opcion > 0) {
+        const regla = colocarMesas(lista, {})
+        const sinAntes = [mejor.opcion === 1 || mejor.opcion === 3 ? 'comida' : null, mejor.opcion === 2 || mejor.opcion === 3 ? 'cena' : null].filter(Boolean)
+        const cambiadas = sinAntes.filter((kind) => {
+          const m = MESAS.find((x) => x.kind === kind)
+          const iM = regla.findIndex((it) => it.kind === kind)
+          return iM >= 0 && regla.some((it, i) => i > iM && esReservaFija(it) && salidaDe(it) > toMin(cfg[m.sale]))
+        })
+        if (cambiadas.length) log.push({ id: null, lugar: null, sitio: null, que: 'aviso', causa: `${cambiadas.map((k) => (k === 'cena' ? 'la cena' : 'la comida')).join(' y ')} no puede ir antes de la reserva sin hacerla llegar tarde: va después` })
+      }
+      startPoint.t = mejor.inicio
+      log.push(...mejor.nuevoLog)
+      spare.push(...mejor.nuevaSpare)
+      return mejor.out
+    }
+
     // El orden: el día tal cual → fijas a su hora → horarios de llegada → restaurantes → que quepa (con las mesas elegidas) → mesas otra vez con las horas hechas.
     items = elegirMesas(items)
     items = turnosReales(items)
     items = anclar(items)
+    items = mesasYReservas(items)
     // El paseo que el destino pone siempre antes de cenar (en Roma, el Paseo por Trastevere, regla 10) va justo antes de la cena, vaya donde vaya lo demás (Tanda 6x).
     items = paseoAntesDeCenar(items)
     items = resolverHorarios(items)
@@ -1040,6 +1302,8 @@ export function planListasTrip(args) {
     }
     // Lo de camino que ya fue parada otro día del viaje lleva «Ya lo visitaste el día n».
     items = items.map((it) => (it.kind === 'stop' && it.modo === 'camino' && !it.llegada && estado.visitadoEn.has(it.lugar) ? { ...it, visitado_dia: estado.visitadoEn.get(it.lugar) } : it))
+    // (Lo último que cambia horas —los horarios de apertura, los restaurantes— ya está hecho: la reserva no puede haber quedado tarde.)
+    items = mesasYReservas(items)
     let final = simular(items)
     // HOY: «Voy con retraso» y «Estoy cansado». Lo hecho se queda; lo que falta se recalcula desde ahora.
     if (ajuste && ajuste.dayNumber === dayNumber) {
