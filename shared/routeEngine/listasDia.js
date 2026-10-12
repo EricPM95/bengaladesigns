@@ -88,7 +88,8 @@ export function aplicarOps(trabajo, ops) {
   const out = { ...trabajo }
   const tiene = (franja) => trabajo.franjas?.[franja] !== false
   if (ops.manana && tiene('manana')) out.manana = aplicarOp(out.manana, ops.manana)
-  if (ops.tarde && tiene('tarde')) out.tarde = aplicarOp(out.tarde, ops.tarde)
+  // (`abre`: la variante pide una tarde que la parte no tiene —la última mañana, un miércoles: la Plaza y la Basílica van DESPUÉS de comer—; Tanda 6y9.)
+  if (ops.tarde && (tiene('tarde') || ops.tarde.abre === true)) { out.tarde = aplicarOp(out.tarde, ops.tarde); if (ops.tarde.abre === true) out.franjas = { ...(out.franjas ?? {}), tarde: true } }
   if (ops.comida === null) out.comida = null
   else if (ops.comida && tiene('manana')) out.comida = { ...(out.comida ?? {}), ...clone(ops.comida) }
   if (ops.cena === null) out.cena = null

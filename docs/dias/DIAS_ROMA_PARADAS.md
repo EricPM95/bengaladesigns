@@ -181,6 +181,11 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - **tarde:** Piazza Venezia ~10, Via dei Fori Imperiali ~15, «Llegada a…», 🎟 el Coliseo por dentro y el Arco ~10; después, la Plaza del Campidoglio y el Foro desde la terraza ~30 y el Altar por fuera ~30 (al aire libre, se ven a cualquier hora); taxi a la Plaza de España ~45, la Escalinata y Trinità dei Monti ~20 y Via Condotti ~15;
 - **cena y noche:** las de siempre.
 
+**Miércoles (audiencia del Papa)** (decidido el 12-oct-2026, el mismo criterio que el D2): la Plaza y la Basílica de San Pedro nunca van antes de comer, porque por la mañana está la audiencia del Papa. La mañana va al revés:
+Por la mañana, el Panteón por dentro ~45, Piazza Navona ~45, de camino el Puente Sant'Angelo, el Castillo por fuera ~30 y de camino la Conciliazione; la comida en el Borgo (Borghiciana o Dal Toscano); y, después de comer, la Plaza de San Pedro ~30 y la Basílica por dentro ~1 h, el taxi a Piazza Venezia y la misma tarde de siempre.
+
+**Con los Museos marcados o reservados hasta las 11:30 un miércoles:** los Museos por la mañana, la comida en el Borgo y, después de comer, la Plaza y la Basílica por dentro.
+
 **Pool y experiencias:**
 - Sin pool ni reserva: todo por fuera, salvo la Basílica de San Pedro y el Panteón, que van por dentro (decidido el 6-oct-2026: sobraba la tarde).
 - Con los Museos marcados: la mañana con Museos del D0-medio y la tarde desde Piazza Navona.
@@ -256,9 +261,10 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 - *de camino:* Via dei Coronari
 - Puente Sant'Angelo ~10
 - Castillo, por fuera
-- Plaza de San Pedro (después de las 12:00, cuando acaba la audiencia)
-- *de camino:* Basílica (la fachada)
 - comida en el Borgo
+- después de comer (decidido el 12-oct-2026: la Plaza y la Basílica nunca van antes de comer un miércoles), la Plaza de San Pedro ~30
+- *de camino:* Basílica (la fachada)
+- **Con los Museos marcados o reservados hasta las 11:30 un miércoles:** los Museos por la mañana, la comida en el Borgo y, después de comer, la Plaza de San Pedro, la Basílica por dentro, la Conciliazione, el Castillo por fuera y el Puente.
 
 **Experiencias:** Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño». Free Tour: no se ofrece.
 
@@ -392,6 +398,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
   - si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas (el domingo y los días que cierran los Museos);
   - **el miércoles, si no se puede cambiar el día** (no hay otro día que encaje, el cambio haría cerrar otras cosas o liaría el viaje, o los Museos están reservados ese miércoles), los Museos abren: van como siempre, a su hora, y no se quitan nunca por ser miércoles. Cambia la Plaza y la Basílica de San Pedro: **nunca van antes de comer** (por la mañana está la audiencia del Papa), tampoco con los Museos reservados por la mañana:
     - **Sin reserva, o con los Museos reservados hasta las 11:30:** los Museos, la comida en el Borgo, la Plaza y la Basílica y, después, lo demás de la tarde (la Conciliazione, el Castillo, el Puente y Trastevere). Con los Museos a media mañana (de 9:30 a 11:30) no cabe todo: San Pietro in Montorio y la Fontana dell'Acqua Paola pasan a «Si te sobra tiempo».
+    - **Con los Museos a las 15:00 (hasta las 15:59)** (decidido el 12-oct-2026): el hueco entre la comida y los Museos lo llena el Castillo de Sant'Angelo por dentro ~1 h 30, y por la mañana el Castillo ya no va por fuera.
     - **Con los Museos reservados a mediodía (de 12:00 a 14:30) o por la tarde (desde las 15:00):** la mañana sin Museos, la del miércoles (Fontana de Trevi sin gente, Plaza de España, de camino Via dei Coronari, el Puente y el Castillo por fuera), la comida en el Borgo, los Museos a su hora y, al salir, la Plaza y la Basílica. Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde (su última entrada es a las 19:15). Lo de Trastevere que no cabe (la Isla Tiberina, Santa Maria in Trastevere, San Pietro in Montorio, la Fontana dell'Acqua Paola y el Janículo) pasa a «Si te sobra tiempo»: con los Museos a las 12:00 cabe todo; a las 12:30 o las 13:00 salen San Pietro in Montorio y la Fontana dell'Acqua Paola; desde las 13:30, toda esa parte, y el día acaba con el paseo por Trastevere.
 
 **Pool:**
