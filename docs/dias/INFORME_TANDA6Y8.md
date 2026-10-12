@@ -27,3 +27,6 @@ La primera versión, para que dos entradas del mismo día salieran a su hora (Fr
 - **Batería de siempre:** 54 pruebas en 0 fallos, más `pruebaFase6y2_reorganizar` (782, 0 fallos, con la salida rara conocida); tipos limpios. La prueba larga del motor de la 6y5 por partes: tope 14.589 y cierres 3.265 (con paso 37), 0 fallos.
 - Ajustes a pruebas antiguas: la del motor de la 6y7 (exigía el Castillo y el Puente por la mañana con los Museos a las 12:00, que ahora van después) y la de la 6u (su comprobación de las 14:30 ignora la configuración nueva).
 - **Las 365 fechas completas:** se lanzan después del push; el resultado va abajo, al final de este informe, en un commit aparte.
+
+## Las 365 fechas completas (después del push)
+Lanzadas con todo ya subido (`_correr365.mjs`, desde el 13-oct-2026, 16 tramos a la vez, 44 minutos): **815.318 viajes y 2.220.414 días, 0 fallos en los 16 tramos.** No hay nada que apuntar arriba de `PREGUNTAS_TANDA6Y8.md`.
