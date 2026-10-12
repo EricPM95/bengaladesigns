@@ -25,11 +25,10 @@ import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
 import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
-import { isDayPinned, manualDayTitle } from '../../lib/bookings'
-import { isManualRoute } from '../../lib/manualPlan'
+import { isDayPinned } from '../../lib/bookings'
+import { nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
 import { SaleCards } from './reservas/SaleCards'
 import { diaCorto, diaProsa, elDia, fechaDelDia, fichaDelDia } from '../../lib/nombreDeDia'
-import { dayName } from './freeDay/AddToDaySheet'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
@@ -99,6 +98,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   // «+ Añadir día»: primero qué quieres hacer, si el destino tiene excursiones (PARA_CODE_EXCURSIONES, 5).
   const [chooserOpen, setChooserOpen] = useState(false)
   const excursionInfo = useDestinationExcursions(route.destination)
+  // El título de cada día (tanda 6y7): UNA regla compartida con HOY y con todo lo que nombra un día (src/lib/tituloDelDia.ts).
+  const nombreDe = useNombreDeDias(route)
   const openExcursionsPage = useExcursionsStore((state) => state.openPage)
   const reservations = useRouteStore((state) => state.reservations)
   const simuladaIso = useRouteStore((state) => state.dev_simulated_today_iso)
@@ -206,13 +207,13 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const dateIso = fechaDelDia(route, day.dayNumber)
         const ficha = fichaDelDia(route, day.dayNumber)
         const expanded = activeDayId === day.id
-        // Título real del día curado ("Roma Antigua y el centro barroco"); de viaje, el trayecto.
-        // (Un día que crea el viajero, una excursión en un día nuevo, se llama como lo llamó, aunque quede el último.)
-        // (El día 4 con el interruptor en Excursión se llama «Excursión desde Roma», Tanda 6g.)
+        // El título del día sale de lo que se ve ese día (tanda 6y7, src/lib/tituloDelDia.ts): «Centro histórico», «Free Tour y Trastevere»… El día de viaje lleva además su trayecto, pequeño, junto a «Día de viaje».
+        // (Un día que crea el viajero, o al que le pone nombre, se llama como lo llamó. El día de excursión se llama «Excursión desde Roma», Tanda 6g.)
         const enExcursion = day.interruptor?.mode === 'excursion'
-        const title = day.userAdded ? (day.curatedTitle ?? day.title ?? day.city) : enExcursion ? `Excursión desde ${day.city}` : travel ? `${travel.fromCity} → ${travel.toCity}` : isManualRoute(route) ? manualDayTitle(route, day) : (day.curatedTitle ?? day.city)
-        // Un día a mano sin nombre ya enseña su fecha en el cuadrito: el título dice «Ponle nombre» (gris, cursiva) y al tocarlo se abre DayNameSheet (Tanda 6y2).
-        const sinNombre = isManualRoute(route) && !day.userAdded && !enExcursion && !travel && !day.nameByUser && day.dayType !== 'excursion'
+        const nombre = nombreDe(day)
+        const title = nombre.titulo
+        // Solo en los destinos sin grupos: un día a mano sin nombre ya enseña su fecha en el cuadrito y el título dice «Ponle nombre» (gris, cursiva); al tocarlo se abre DayNameSheet (Tanda 6y2).
+        const sinNombre = nombre.ponleNombre
         const toggle = () => onSelectDay(expanded ? null : day.id)
         const esHoy = day.id === hoyId
         // «Hoy es un día completo: te recomendamos madrugar.» solo avisa: no mueve ni quita nada del día (Tanda 6z6).
@@ -290,11 +291,16 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                     Ponle nombre
                   </button>
                 ) : (
-                  <p className="font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
+                  <p data-titulo-del-dia="1" className="min-h-[24px] font-display text-[22px] leading-[1.08] text-text [overflow-wrap:anywhere]">{title}</p>
                 )}
                 {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
-                {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). */}
-                {travel && !day.userAdded && <p className="text-[12.5px] font-medium text-accent">Día de viaje</p>}
+                {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). El trayecto («Madrid → Roma») va pequeño, junto a la marca, y no es el título (tanda 6y7). */}
+                {travel && !day.userAdded && (
+                  <p className="text-[12.5px] font-medium text-accent">
+                    Día de viaje
+                    {nombre.viaje && <span data-viaje-del-dia="1" className="ml-1.5 text-[11.5px] font-normal text-text/55">· {nombre.viaje}</span>}
+                  </p>
+                )}
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
                 {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '') ?? null} />}
                 {day.dayType === 'excursion' && !enExcursion && !travel && <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>}
@@ -388,7 +394,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         <DayNameSheet
           title={nameSheet.dayId ? 'Cambiar el nombre' : 'Añadir un día'}
           example={excursionInfo.dayNameExample}
-          initialName={nameSheet.dayId ? (isManualRoute(route) && !(route.days.find((day) => day.id === nameSheet.dayId)?.nameByUser) ? '' : dayName(route.days.find((day) => day.id === nameSheet.dayId) ?? route.days[0])) : ''}
+          initialName={nameSheet.dayId ? nombrePropioDelDia(route.days.find((day) => day.id === nameSheet.dayId)) : ''}
           confirmLabel={nameSheet.dayId ? 'Guardar' : 'Crear día'}
           onClose={() => setNameSheet(null)}
           onConfirm={(name) => {
@@ -418,7 +424,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
       )}
       {removeDay && (
         <ConfirmDialog
-          eyebrow={`${diaCorto(route, removeDay.dayNumber)} · ${dayName(removeDay)}`}
+          eyebrow={`${diaCorto(route, removeDay.dayNumber)} · ${nombreDe(removeDay).titulo}`}
           text={`¿Eliminar ${elDia(route, removeDay.dayNumber)}? Puedes recuperarlo con «Volver a mi ruta original».`}
           confirmLabel="Eliminar"
           cancelLabel="Cancelar"

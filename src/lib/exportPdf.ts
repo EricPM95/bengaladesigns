@@ -4,6 +4,7 @@ import { cambioActual } from './useMoneda'
 import { formatoImporte, precioTienda } from './dinero'
 import type { Route } from './types'
 import { diaTitulo } from './nombreDeDia'
+import { tituloSimpleDelDia } from './tituloDelDia'
 
 const MARGIN = 15
 const PAGE_WIDTH = 210
@@ -45,7 +46,7 @@ export function exportRouteToPdf(route: Route) {
 
   route.days.forEach((day) => {
     ensureSpace(16)
-    writeLine(`${diaTitulo(route, day.dayNumber)} — ${day.title}`, { size: 15, bold: true, color: [13, 148, 136], gap: 4 })
+    writeLine(`${diaTitulo(route, day.dayNumber)} — ${tituloSimpleDelDia(route, day)}`, { size: 15, bold: true, color: [13, 148, 136], gap: 4 })
 
     if (day.transport) {
       writeLine(`Transporte: ${day.transport.fromCity} → ${day.transport.toCity} (${day.transport.durationLabel})`, { gap: 3 })

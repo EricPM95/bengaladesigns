@@ -43,6 +43,28 @@ export function etiquetasDeBarrio(data) {
 }
 
 /**
+ * Los grupos con los que se NOMBRA un día (Tanda 6y7, títulos de los días): `{ lista, freeTour, excursion, porSitio }`, todo del dato del destino (`grupos_dia` y el `grupo_dia` de cada sitio).
+ * `porSitio` es nombre de sitio → grupo, para los lugares, los paseos por barrio y los paseos libres («Pasea y piérdete por…», con sus versiones iluminada y de Navidad: el grupo de su zona).
+ * null si el destino no lo trae: entonces la app deja los nombres de siempre.
+ */
+export function gruposDeDia(data) {
+  const config = data?.grupos_dia
+  if (!config || !Array.isArray(config.lista) || config.lista.length === 0) return null
+  const porSitio = {}
+  // (Un sitio también sale con el título de su parada —«Piazza Navona y su mercadillo navideño»— y las nocturnas con el suyo.)
+  for (const sitio of [...(data.places ?? []), ...(data.night_experiences ?? [])]) {
+    if (!sitio.grupo_dia) continue
+    if (sitio.name) porSitio[sitio.name] = sitio.grupo_dia
+    if (sitio.titulo_parada) porSitio[sitio.titulo_parada] = sitio.grupo_dia
+  }
+  for (const walk of data.zone_walks ?? []) if (walk.name && walk.grupo_dia) porSitio[walk.name] = walk.grupo_dia
+  for (const zona of Object.values(data.destination_config?.paseo_libre?.zonas ?? {})) {
+    if (zona?.grupo_dia && zona.nombre) for (const titulo of titulosDePaseoLibre(zona)) porSitio[titulo] = zona.grupo_dia
+  }
+  return { lista: config.lista, freeTour: config.free_tour ?? null, excursion: config.excursion ?? null, porSitio }
+}
+
+/**
  * El bloque «No necesitas entrada» de un lugar: `{ titulo, libre, concepto, precio, detalle }`. `precio` es null si el dato no lo trae; `detalle` junta solo lo que el dato dice
  * (horario de pago, días que abren más tarde, última entrada, quién no paga, cómo se paga). null si el lugar no cobra por acercarse.
  */

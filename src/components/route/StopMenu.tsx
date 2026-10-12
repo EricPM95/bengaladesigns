@@ -3,6 +3,7 @@ import type { DayPlan, Stop } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { TimeField } from '../ui/TimeField'
 import { diaCorto } from '../../lib/nombreDeDia'
+import { tituloSimpleDelDia } from '../../lib/tituloDelDia'
 import { Icono } from '../ui/Icono'
 
 interface StopMenuProps {
@@ -100,7 +101,7 @@ export function StopMenu({ stop, dayId, days }: StopMenuProps) {
                       }}
                       className={menuItemClass}
                     >
-                      {diaCorto(route, day.dayNumber)} — {day.title}
+                      {diaCorto(route, day.dayNumber)} — {tituloSimpleDelDia(route, day)}
                     </button>
                   ))}
               </div>
