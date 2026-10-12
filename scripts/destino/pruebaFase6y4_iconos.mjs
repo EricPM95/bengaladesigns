@@ -93,8 +93,7 @@ for (const archivo of archivos) {
 const icono = leer('src/components/ui/Icono.tsx')
 debe(/fill=\{relleno \? 'currentColor' : 'none'\} stroke="currentColor" strokeWidth=\{grosor\} strokeLinecap="round" strokeLinejoin="round"/.test(icono), '5 pintado', 'Icono.tsx ya no pinta de línea, con currentColor y puntas redondeadas')
 debe(/stroke="currentColor" stroke-width="\$\{grosor\}" stroke-linecap="round" stroke-linejoin="round"/.test(iconos), '5 pintado', 'iconoSvg ya no pinta de línea, con currentColor y puntas redondeadas')
-const carga = leer('src/components/loading/LoadingScreen.tsx')
-debe(/<Icono nombre="avion"/.test(carga), '5 pintado', 'la pantalla de carga no pinta el avión con la familia de iconos')
+// (Tanda 6y7: la pantalla de carga con el avión ya no existe; se espera con «Preparando tu viaje…» y una barrita.)
 
 // ── 6. Dónde se usan los nuevos ──
 const usos = (p, re, texto) => debe(re.test(leer(p)), '6 uso', texto)

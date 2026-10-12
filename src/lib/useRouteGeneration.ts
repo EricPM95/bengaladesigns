@@ -14,7 +14,7 @@ export type GenerationStatus = 'loading' | 'done' | 'error'
 /**
  * La generación de la ruta con lo que hay en el store: la usan la pantalla de carga (enlaces compartidos,
  * reanudar un viaje a medias) y el resumen final del formulario Trazo. Sacado tal cual de
- * LoadingScreenContainer (App.tsx): checkpoints guardados en Supabase, reintento desde el último
+ * PreparandoViajeContainer (App.tsx): checkpoints guardados en Supabase, reintento desde el último
  * checkpoint y el remate que se reintenta al volver a primer plano si la pestaña se congeló.
  */
 export function useRouteGeneration(enabled: boolean) {

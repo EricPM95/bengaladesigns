@@ -151,7 +151,7 @@ export function overflowToDidntMakeCut(overflow: Stop[]): DidntMakeCutItem[] {
 
 /**
  * Aplica el horario real a TODOS los días de una ruta recién generada — un solo paso tras
- * `mapGeneratedRouteToRoute` (ver App.tsx `LoadingScreenContainer`), antes de mostrarle la ruta al
+ * `mapGeneratedRouteToRoute` (ver App.tsx `PreparandoViajeContainer`), antes de mostrarle la ruta al
  * viajero. Día 1 y el último día usan la MISMA hora de inicio según ritmo que el resto por ahora (todavía no
  * existe un horario de transporte real en este punto — el viajero lo introduce más tarde en
  * RESERVAS); en cuanto lo hace, `optimizeDayWithRealTransport` vuelve a calcular solo ese día con la

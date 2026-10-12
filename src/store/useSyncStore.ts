@@ -8,14 +8,14 @@ interface SyncStoreState {
   status: SyncStatus
   travelerId: string | null
   lastError: string | null
-  /** Generación a medias encontrada al cargar los viajes guardados (TripSync.tsx) — LoadingScreenContainer (App.tsx) la consume una vez para retomarla y la limpia; null en cualquier otro caso. */
+  /** Generación a medias encontrada al cargar los viajes guardados (TripSync.tsx) — PreparandoViajeContainer (App.tsx) la consume una vez para retomarla y la limpia; null en cualquier otro caso. */
   pendingResume: GenerationResumeState | null
   /** Fila de `trips` que corresponde al viaje actualmente abierto — null mientras aún no se ha guardado por primera vez (recién creado) o mientras no hay ningún viaje abierto (pantalla "Mis viajes"). El autoguardado (TripSync.tsx) y el guardado de checkpoints (App.tsx) lo usan para saber si deben ACTUALIZAR esta fila o INSERTAR una nueva. */
   activeTripId: string | null
   /** Lista completa de viajes guardados de este traveler, cargada una vez al arrancar (TripSync.tsx) y usada por la pantalla "Mis viajes" — null mientras no se ha cargado todavía (o Supabase no está configurado). */
   savedTrips: SavedTrip[] | null
   /**
-   * true en cuanto el checkpoint de generación llega con `phase: 'done'` (LoadingScreenContainer,
+   * true en cuanto el checkpoint de generación llega con `phase: 'done'` (PreparandoViajeContainer,
    * App.tsx) — se pone a true en el store (no solo en estado local del componente) porque el
    * remate real (mapear + calcular horario real + `setStatus('done')`) es trabajo async que puede
    * quedarse colgado si el navegador congela la ejecución de JS de la pestaña en segundo plano

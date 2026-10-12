@@ -109,7 +109,7 @@ export function TripSync() {
 
           if (resumable && resumable.generationState) {
             // Generación a medias — retomarla en vez de abrir la ruta directamente (que aún no
-            // existe completa). LoadingScreenContainer (App.tsx) consume pendingResume y continúa
+            // existe completa). PreparandoViajeContainer (App.tsx) consume pendingResume y continúa
             // exactamente donde se dejó, sin repetir llamadas ya hechas.
             useSyncStore.getState().setActiveTripId(resumable.id)
             setDestination(resumable.generationState.params.destination)

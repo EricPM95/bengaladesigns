@@ -281,7 +281,7 @@ async function tryRouteCacheReuse(params: GenerationParams, onCheckpoint: OnChec
 
   const cached = lookup.entry
 
-  // Checkpoint "instantáneo": no hubo llamadas de esqueleto/lugares reales, pero LoadingScreen.tsx
+  // Checkpoint "instantáneo": no hubo llamadas de esqueleto/lugares reales, pero PreparandoViaje.tsx
   // solo necesita ver las fases avanzar para pintar sus checks — un único "bloque" representa todo
   // el ajuste de la ruta cacheada, sea cual sea el nivel de coincidencia.
   const skeletonDays: SkeletonDay[] = cached.route_data.days.map((day) => ({
@@ -530,7 +530,7 @@ async function settlePendingBlocks(args: SettlePendingBlocksArgs): Promise<{ gen
  * Genera (o retoma) una ruta encadenando llamadas pequeñas: esqueleto (forma) → lugares (Fase 1,
  * UNA vez para todo el viaje) → bloques de BLOCK_SIZE días (Fase 2, enriquecimiento). `onCheckpoint`
  * se llama tras CADA fase/bloque completado — el llamador lo usa para actualizar el paso visible en
- * LoadingScreen.tsx y persistir el progreso en Supabase, así que si se cierra la pestaña a mitad, la
+ * PreparandoViaje.tsx y persistir el progreso en Supabase, así que si se cierra la pestaña a mitad, la
  * próxima apertura retoma justo donde se dejó (ver TripSync.tsx) sin repetir llamadas ya hechas ni
  * preguntarle nada al usuario. Solo construye el `Route` final (mapGeneratedRouteToRoute) una vez
  * completado el último bloque.

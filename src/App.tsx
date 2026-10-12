@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { TrazoFlow } from './components/trazo/TrazoFlow'
-import { LoadingScreen } from './components/loading/LoadingScreen'
+import { PreparandoViaje } from './components/loading/PreparandoViaje'
 import { useRouteGeneration } from './lib/useRouteGeneration'
 import { RouteView } from './components/route/RouteView'
 import { Layout } from './components/layout/Layout'
@@ -18,14 +18,13 @@ import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
 import { FotoVuela } from './components/perfil/FotoVuela'
 import { RehacerRuta } from './components/route/RehacerRuta'
 
-function LoadingScreenContainer() {
+function PreparandoViajeContainer() {
   const destination = useRouteStore((state) => state.destination)
-  const answers = useRouteStore((state) => state.answers)
   const setRoute = useRouteStore((state) => state.setRoute)
   const setScreen = useRouteStore((state) => state.setScreen)
   // Enlaces compartidos y generaciones a medias que se retoman: la misma generación que el resumen del
-  // formulario Trazo (ver useRouteGeneration.ts), con la pantalla de carga de siempre.
-  const { status, checkpoint, route, errorMessage, retry } = useRouteGeneration(true)
+  // formulario Trazo (ver useRouteGeneration.ts), con «Preparando tu viaje…» (Tanda 6y7: ya no la pantalla vieja de carga).
+  const { status, route, errorMessage, retry } = useRouteGeneration(true)
 
   if (!destination) return null
 
@@ -35,22 +34,8 @@ function LoadingScreenContainer() {
     setScreen('route')
   }
 
-  const completedDayNumbers = (checkpoint?.generated.days ?? []).filter((day) => day.stops.length > 0).map((day) => day.day_number)
-
   return (
-    <LoadingScreen
-      origin={answers.origin ?? ''}
-      destination={destination}
-      status={status}
-      phase={checkpoint?.phase ?? 'skeleton'}
-      totalBlocks={checkpoint?.totalBlocks ?? 0}
-      skeletonDays={checkpoint?.skeleton?.days ?? []}
-      completedDayNumbers={completedDayNumbers}
-      tripStartIso={answers.dateRange?.start}
-      errorMessage={errorMessage}
-      onFinish={handleFinish}
-      onRetry={retry}
-    />
+    <PreparandoViaje status={status} errorMessage={errorMessage} onFinish={handleFinish} onRetry={retry} />
   )
 }
 
@@ -115,7 +100,7 @@ function App() {
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
         {(screen === 'destination' || screen === 'questionnaire') && <TrazoFlow key="trazo" />}
         {screen === 'myTrips' && <MyTripsScreen key="myTrips" />}
-        {screen === 'loading' && <LoadingScreenContainer key="loading" />}
+        {screen === 'loading' && <PreparandoViajeContainer key="loading" />}
         {screen === 'route' && <RouteScreen />}
         {screen === 'devQuickRoute' && import.meta.env.DEV && <DevQuickRouteScreen />}
       </AnimatePresence>
