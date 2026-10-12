@@ -28,6 +28,7 @@ import { sunsetFor } from './sunset.js'
 import { tripDays } from './tripSkeleton.js'
 import { straightLineMeters } from './travelTimes.js'
 import { nocheValida } from './nightLimit.js'
+import { franjaDelFreeTour } from './freeTourHoras.js'
 import { availabilityLabel, availableForTrip, seasonFit } from './availability.js'
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
@@ -49,7 +50,7 @@ const FRANJAS = {
   // La comida y la cena según la reserva (Tanda 6y8, todos los destinos): si al salir de la reserva ya es más tarde de esta hora, la mesa va ANTES de la reserva; si no, DESPUÉS. La cena no se retrasa quitando paradas: con una reserva nada pasa a «Si te sobra tiempo» (regla 17), solo se ordena.
   // `entre_reservas_min`: lo que se deja para ir de una reserva a la siguiente cuando la app elige el turno de una entrada junto a otra reserva del viajero.
   // Antes de una reserva la mesa se cuenta corta (`*_rapida_min`, desde `*_rapida_desde`) solo si la normal haría llegar tarde: solo ponemos la parada, cuánto tarda en comer lo decide el viajero.
-  comida_antes_si_sale_despues_de: '14:30', cena_antes_si_sale_despues_de: '21:00', cena_hasta: '22:30', comida_rapida_min: 45, comida_rapida_desde: '10:30', cena_rapida_min: 60, cena_rapida_desde: '18:00', tolerancia_hora_min: 5, entre_reservas_min: 30, cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  comida_antes_si_sale_despues_de: '14:30', cena_antes_si_sale_despues_de: '22:00', cena_hasta: '22:30', comida_rapida_min: 45, comida_rapida_desde: '10:30', cena_rapida_min: 60, cena_rapida_desde: '18:00', tolerancia_hora_min: 5, entre_reservas_min: 30, cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
   llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
@@ -117,7 +118,7 @@ export function planListasTrip(args) {
   const freeTourDespues = shortNoTour ? null : freeTourDespuesIn
   // (La franja del Free Tour de después: antes de las 13:00 mañana, antes de las 19:00 tarde, y después noche. Se necesita ya para ordenar los días.)
   const ftHour = freeTourDespues?.hora ? toMin(freeTourDespues.hora) : null
-  const ftFranja = ftHour != null ? (ftHour < 13 * 60 ? 'manana' : ftHour < 19 * 60 ? 'tarde' : 'noche') : freeTourDespues?.franja ?? null
+  const ftFranja = ftHour != null ? franjaDelFreeTour(freeTourDespues.hora) : freeTourDespues?.franja ?? null
   const tourCovers = new Set(hasFreeTour || freeTourDespues ? tour?.covers ?? [] : [])
   const nivelDe = (name) => placeByName.get(name)?.level ?? null
   // Para llenar huecos y para las sugerencias solo valen sitios conocidos: los que salen en algún día escrito del documento o de nivel 1 o 2 (nunca un sitio poco conocido).
@@ -1019,14 +1020,13 @@ export function planListasTrip(args) {
     /**
      * 5.7b La comida, la cena y la reserva (Tanda 6y8, decidido por Eric el 12-oct-2026; vale para todos los destinos y sale de los datos, no de nombres):
      *   · LA COMIDA va antes de la reserva si al salir de ella ya son más de las 14:30 (hora de la reserva + lo que dura la visita en los datos del sitio); si sale a las 14:30 o antes, va después.
-     *   · LA CENA, igual con las 21:00; y nunca empieza después de las 22:30.
+     *   · LA CENA, igual con las 22:00 (6y9: antes 21:00; en Roma se cena bien hasta tarde); y nunca empieza después de las 22:30.
      *   · La entrada NUNCA sale tarde: si la mesa va antes y la normal haría llegar tarde, se cuenta corta (solo ponemos la parada: cuánto tarda en comer lo decide el viajero); si aun así llega
      *     tarde, lo que va justo antes de la reserva pasa detrás de ella (en su orden; nada se quita) o, si detrás ya es de noche, a «Si te sobra tiempo»; y si la reserva es antes de que empiece el día,
      *     el día empieza antes. Una sola regla: el documento solo escribe qué paradas lleva cada hora; dónde cae la mesa lo decide esto.
-     * La reserva es la que PUSO el viajero (o el Free Tour que reservó): el turno real que la app coge de la Galería sin reserva (`turno_real`) no cuenta.
+     * Cuenta como reserva la que PUSO el viajero (o el Free Tour que reservó) y, desde la 6y9 (P5, Eric), también el turno real que la app coge de la Galería sin reserva (`turno_real`): su comida va siempre según a qué hora sale.
      */
-    let turnosCuentan = false
-    const esReservaFija = (it) => it.kind === 'stop' && !it.llegada && Boolean(it.hora) && (!it.turno_real || turnosCuentan) && (Boolean(it.hora_tipo) || it.tipo === 'tour')
+    const esReservaFija = (it) => it.kind === 'stop' && !it.llegada && Boolean(it.hora) && (Boolean(it.hora_tipo) || it.tipo === 'tour')
     const duracionDe = (it) => {
       const d = sourceOf(it)?.duration_minutes
       return Number.isFinite(d) && d > 0 ? d : it.min ?? 0
@@ -1194,9 +1194,7 @@ export function planListasTrip(args) {
     const mesasYReservas = (lista) => {
       // (Regla 17: con DOS horas fijas del viajero el mismo día no se mueve ni se quita nada por la comida o la cena: manda la lista escrita, como antes de la 6y8.)
       if (lista.filter((it) => it.kind === 'stop' && !it.llegada && it.hora && !it.turno_real && (it.hora_tipo || it.tipo === 'tour')).length >= 2) return lista
-      // (El turno real que coge la app solo cuenta como hora fija si el viajero tiene en ese día alguna reserva suya: entonces no puede hacer llegar tarde a la otra.)
-      turnosCuentan = false
-      turnosCuentan = lista.some(esReservaFija)
+      // (El turno real que coge la app cuenta siempre como hora fija —6y9, P5—, haya o no otra reserva ese día; la regla 17 de arriba solo cuenta las del viajero.)
       // Una reserva antes de la hora de empezar: el día empieza antes (a su «Llegada a…»).
       const fijosHora = lista.filter((it) => it.hora && ((it.llegada && esReservaFija(lista.find((o) => o.id === it.de) ?? {})) || esReservaFija(it))).map((it) => toMin(it.hora))
       const inicioBase = Math.min(empiezaMin, ...fijosHora)

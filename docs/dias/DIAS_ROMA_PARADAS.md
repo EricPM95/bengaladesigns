@@ -25,7 +25,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
    - si aún queda más de 1 h, se adelantan las paradas de después que están cerca (a 15 min andando o menos del sitio), en su orden y sin zigzag. Ejemplo: Museos a las 14:00 → por la mañana San Pedro, la Basílica, el Castillo y el Puente; comida en el Borgo a las 12:30; Museos; y por la tarde, Trastevere;
    - **la comida y la cena, antes o después de la reserva** (decidido el 12-oct-2026, vale para todos los destinos; sale de lo que dura la visita en los datos de cada sitio, no de su nombre): se mira a qué hora SALES de la reserva (su hora más lo que dura la visita).
      - **La comida:** si al salir ya son **más de las 14:30**, la comida va **antes** de la reserva, cerca de ella; si sales a las 14:30 o antes, va **después**. (Coliseo de 1 h 30 a las 13:00: sales a las 14:30, la comida después. Museos de 3 h a las 12:00: sales a las 15:00, la comida antes. Galería de 2 h a las 13:00: sales a las 15:00, la comida antes; a las 11:00, después.)
-     - **La cena,** igual con las **21:00**: si al salir ya son más de las 21:00 (un Free Tour de noche, una visita nocturna), la cena va antes; si sales a las 21:00 o antes, va después. Y la cena se procura antes de las 22:30, pero **nunca se quita una parada por esto** (regla 17).
+     - **La cena,** igual con las **22:00** (cambiado el 12-oct-2026: en Roma se cena bien hasta tarde, y con el corte en las 21:00 el Free Tour de las 19:00 obligaría a cenar a las 18:00): si al salir ya son más de las 22:00 (el Free Tour de las 21:00, una visita nocturna), la cena va antes; si sales a las 22:00 o antes, va después (el Free Tour de las 19:00 sale hacia las 21:30: la cena, después). Y la cena se procura antes de las 22:30, pero **nunca se quita una parada por esto** (regla 17).
      - **La entrada nunca sale tarde:** la comida (o la cena) de antes se cuenta **corta** por dentro (45 min la comida, 60 la cena, desde las 10:30 y las 18:00) si la normal haría llegar tarde; solo ponemos la parada, cuánto tarda en comer lo decide el viajero. Si aun así no llega, lo que va justo antes de la reserva pasa detrás de ella, en su orden (nada pasa a «Si te sobra tiempo»), y si es la primera hora fija del día, el día empieza antes. Si ni así se llega a tiempo, la comida (o la cena) va después de la reserva. Con **dos reservas del viajero el mismo día** no se mueve nada por esto: manda la lista escrita.
      - Los sitios con reserva llevan **cuánto dura la visita** en sus datos; esa duración es la que decide, y la hora de cada fila de abajo lo respeta (Coliseo: la comida después hasta las 13:00 incluida; Galería: después hasta las 12:30; Museos: después hasta las 11:30).
    - **el día nunca empieza más tarde por una reserva** (decidido el 6-oct-2026): empieza a su hora, y la mañana se llena con lo de antes y lo cercano de después. La app nunca mete una parada que no esté escrita ese día para llenar un hueco (decidido el 9-oct-2026, tanda 6r). Si la reserva es antes de que empiece el día, el día empieza antes.
@@ -107,7 +107,7 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
 | 6 días | D1 + D2 + D4 + **día 4 con interruptor** + D5 + D6 (Excursión por defecto). Con Roma: D1 + D2 + D4 + D5 + D6 + D7 | D3 + D1-FT + D4 + … (igual) |
 | 7 días o más | lo de 6 días; del día 7 en adelante, la hoja «Ya has visto lo mejor de Roma» y EXPLORAR | igual |
 
-**Con el Free Tour de las 21:00** (decidido el 9-oct-2026): el viaje lleva los días de «Sin Free Tour», y el Free Tour va en la noche del D1 (ver el D1). Con el de las 10:00, las 12:00, las 15:00 o las 17:00, los de «Con Free Tour de mañana», con el D3 según su hora (ver el D3).
+**Con el Free Tour de las 19:00 o el de las 21:00** (decidido el 9-oct-2026; el de las 19:00, el 12-oct-2026): el viaje lleva los días de «Sin Free Tour», y el Free Tour va en la noche del D1 (ver el D1). Con el de las 10:00, las 12:00, las 15:00 o las 17:00, los de «Con Free Tour de mañana», con el D3 según su hora (ver el D3).
 
 **El día de excursión** (decidido el 7-oct-2026):
 - Es siempre el **día 4** en los viajes de 4, 5 y 6 días. Con vuelos, ver «Llegadas y vueltas». Nunca el día de llegada ni el de vuelta.
@@ -287,7 +287,8 @@ Este documento sustituye a las tablas con horas de `DIAS_ESCRITOS_ROMA.md` (deci
   - Iglesia del Gesù, por dentro ~20, de camino a la cena (⚠️ por la tarde abre a las 16:30; de julio a septiembre, a las 17:00). Va al final por su hora de abrir: así no hay esperas. Desde Navona son ~12 min, y la cena está a ~5 min.
 - **Cena:** Armando al Pantheon (o Da Baffetto)
 - **Noche:** Fontana de Trevi y la Plaza de España
-  - **Con el Free Tour de las 21:00** (decidido el 9-oct-2026): la noche es el 🎟 Free Tour por Roma, 21:00 ~2 h 30, en lugar de Trevi y la Plaza de España (el tour pasa por allí). Sale de la Plaza de España: de Armando, a pie (~15 min). Lo que el tour recorre y ya se ha visto por la tarde (el Panteón, Navona) se queda: de noche se ve distinto.
+  - **Con el Free Tour de las 21:00** (decidido el 9-oct-2026): la noche es el 🎟 Free Tour por Roma, 21:00 ~2 h 30, en lugar de Trevi y la Plaza de España (el tour pasa por allí). Sale de la Plaza de España: de Armando, a pie (~15 min). Lo que el tour recorre y ya se ha visto por la tarde (el Panteón, Navona) se queda: de noche se ve distinto. La cena va antes del tour (sales a las 23:30).
+  - **Con el Free Tour de las 19:00** (decidido el 12-oct-2026): igual que el de las 21:00, la noche es el 🎟 Free Tour por Roma, 19:00 ~2 h 30, en lugar de Trevi y la Plaza de España (el tour pasa por allí), pero la cena va **después** del tour, cerca de Navona, donde acaba (sale hacia las 21:30).
 - **Cierres:** el sábado (y la víspera de festivo) el Panteón no deja entrar desde las 17:00 por la misa: aviso «entra antes». El domingo y los festivos, tampoco durante la misa de las 10:30. Si una iglesia cierra (domingo o festivo), por fuera.
 
 **Si te sobra tiempo** (sugerencia de «Vas bien de tiempo» antes de comer): la Columna y los Mercados de Trajano (~1 h), al lado del Altar, si el viaje no los lleva en el D6.
@@ -548,7 +549,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
     - Castillo de Sant'Angelo, por fuera ~30
   - **cena:** L'Arcangelo (o Osteria dell'Angelo), en Prati;
   - **noche:** la nocturna que toque (reglas 13 y 11c);
-- **A las 21:00:** no hay D3: el Free Tour va en la noche del D1 (ver el D1 y la tabla «Qué días lleva cada viaje»).
+- **A las 19:00 y a las 21:00:** no hay D3: el Free Tour va en la noche del D1 (ver el D1 y la tabla «Qué días lleva cada viaje»).
 - **Pool:** la Cúpula y el Castillo por dentro no caben: van a otro día del viaje o a «No incluido».
 - **Experiencias:**
   - **Mercadillos:** «Plaza de San Pedro y los 100 Presepi».
@@ -858,7 +859,7 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
 | 6 días | Centro + D1 + D2 + **día 4 con interruptor** (Excursión por defecto) + D4 + D5. Con Roma: Centro + D1 + D2 + D4 + D5 + D6 | igual, con el Centro con Free Tour |
 | 7 días o más | lo de 6 días; del día 7 en adelante, la hoja «Ya has visto lo mejor de Roma» y EXPLORAR | igual |
 
-**Con el Free Tour de las 21:00** (decidido el 9-oct-2026): el viaje lleva los días de «Sin Free Tour», y el Free Tour va en la noche del D1 (ver el D1). Con el de las 10:00, las 12:00, las 15:00 o las 17:00, los de «Con Free Tour de mañana», con el D3 según su hora (ver el D3).
+**Con el Free Tour de las 19:00 o el de las 21:00** (decidido el 9-oct-2026; el de las 19:00, el 12-oct-2026): el viaje lleva los días de «Sin Free Tour», y el Free Tour va en la noche del D1 (ver el D1). Con el de las 10:00, las 12:00, las 15:00 o las 17:00, los de «Con Free Tour de mañana», con el D3 según su hora (ver el D3).
 
 - **El Centro** es la «Llegada a Roma»: la ruta del centro histórico entera, con la comida, la cena y la nocturna, empezando a las 9:00, para todos (ver «Llegadas y vueltas»). **Con Free Tour,** el Free Tour a las 10:00 y, de la lista, lo que el guía no enseña.
 - **Con vuelos,** la misma tabla: el día 1 se recorta por la hora de llegada y el último pasa a ser la última mañana o el traslado (ver «Llegadas y vueltas»). Los medios días (D0-medio, DT-medio, DA-medio, DM-medio) solo salen ahí.
@@ -1001,7 +1002,7 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
 - **salvo si ese día se entra por dentro** (el Panteón del D1, la Basílica del D2): entonces se queda como parada, igual.
 
 ### El Free Tour y otras reservas el día de llegada
-- **Las horas del Free Tour en Roma:** 10:00, 12:00, 15:00, 17:00 y, a veces, 21:00. Sale de la Plaza de España y dura 2 h 30.
+- **Las horas del Free Tour en Roma:** 10:00, 12:00, 15:00 («Después de comer»), 17:00 («Por la tarde»), 19:00 y 21:00. Sale de la Plaza de España y dura 2 h 30.
 - **Se ofrece como ahora:** en viajes de 2 días o más (por sus fechas).
 - **Si está reservado,** manda su hora.
 - **Si solo está en el viaje** (marcado en Experiencias o añadido con «+ Añadir parada»), la app elige la primera hora que le pille libre, con 30 min para llegar a la Plaza de España:
@@ -1014,7 +1015,7 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
   | de 14:30 a 16:30 | 17:00 |
   | después de las 16:30 | al día siguiente a las 10:00: el día 2 es el D3 y el día 3 el D1-FT (el único caso en que el Coliseo y el Vaticano se cambian de día al poner los vuelos) |
 
-  - El de las 21:00, solo si lo reserva el viajero.
+  - El de las 19:00 y el de las 21:00, solo si los reserva el viajero.
   - Texto: «Te proponemos el Free Tour de las {hora}, nada más llegar», con el botón para reservarlo.
 - **La llegada con Free Tour:**
   - el Free Tour a su hora;
