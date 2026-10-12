@@ -10,7 +10,7 @@
 import type { Route, Stop } from './types'
 import { dayOfReservation, reservedEntranceInPlace, type Reservation } from './bookings'
 import { isManualRoute } from './manualPlan'
-import { fechaCorta, fechaDelDia } from './nombreDeDia'
+import { elDia, fechaCorta, fechaDelDia } from './nombreDeDia'
 import { shortOf, withA } from './reservationOverlaps'
 import { FREE_TOUR_REF } from './freeTourManual'
 
@@ -40,7 +40,7 @@ function esDeLaReserva(stop: Stop, reservation: Reservation): boolean {
 /** «el mié 15» (con fechas) o «el día 2» (sin ellas). */
 function elDiaCorto(route: Route, dayNumber: number): string {
   const iso = fechaDelDia(route, dayNumber)
-  return iso ? `el ${fechaCorta(iso)}` : `el día ${dayNumber}`
+  return iso ? `el ${fechaCorta(iso)}` : elDia(route, dayNumber)
 }
 
 /** Las reservas de entrada cuyo sitio no está en el día de su fecha (solo en una ruta a mano). */

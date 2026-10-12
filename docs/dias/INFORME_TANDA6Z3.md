@@ -16,7 +16,7 @@
 - **Respuestas a la 6z2**: pulsar una tarjeta de «Útil para el viaje» abre la tienda y **no** la marca como añadida; cada una tiene «¿Ya lo tienes? Añádelo», que abre la hoja del precio, y solo entonces cuenta. Los traslados no van; el taxi va en Extras. La guía de destinos nuevos dice ahora que cada precio de los datos lleva su moneda.
 
 ## Pruebas
-Todas las de siempre a 0 fallos, más las nuevas: `pruebaTanda6z3.mjs` (19.028 comprobaciones: la barra con cinco pestañas siempre, HOY en cada momento con fecha simulada, 0 «Día n» con fechas, 0 horas calculadas en HOY, nada de pago en HOY de la gratis, colores e iconos), `pruebaDiasFecha6z3.mjs` y `pruebaFotos6z3.mjs` (sin EXIF y borrado real). `tsc` limpio.
+Todas las de siempre a 0 fallos, más las nuevas: `pruebaTanda6z3.mjs` (19.028 comprobaciones: la barra con cinco pestañas siempre, HOY en cada momento con fecha simulada, 0 «Día n» con fechas, 0 horas calculadas en HOY, nada de pago en HOY de la gratis, colores e iconos), `pruebaTanda6z3_dias.mjs` y `pruebaFotos6z3.mjs` (sin EXIF y borrado real). `tsc` limpio.
 
 ## Pendiente de ti
 Ver `PREGUNTAS_TANDA6Z3.md`. La 6y (la ruta a mano) no se ha tocado.

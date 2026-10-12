@@ -1,5 +1,5 @@
 // La prueba de «CON FECHAS, LOS DÍAS SE LLAMAN POR SU FECHA» (tanda 6z3, punto 5):
-//   node scripts/destino/pruebaDiasFecha6z3.mjs
+//   node scripts/destino/pruebaTanda6z3_dias.mjs
 // Hace falta el servidor de la app encendido (http://localhost:8787). Pinta DÍAS (cerrado y con cada día abierto), RESERVAS y las hojas que nombran un día con el código de verdad de la app
 // (react-dom/server, empaquetado con esbuild; ver _ssr.mjs), con y sin fechas. Da fallo si:
 //   1. con fechas, en lo pintado sale «Día 1», «el día 2», «al día 3»… (un «Día» o «día» seguido de un número);
@@ -23,7 +23,7 @@ const debe = (cond, regla, texto) => {
 }
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_6z3_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
-const { createElement, renderToStaticMarkup, DayList, ReservasPanel, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, detectFlightOpportunities, nombreDeDia, dayLineOf, legDayText } = M
+const { createElement, renderToStaticMarkup, DayList, ReservasPanel, EntradasYFreeTour, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, detectFlightOpportunities, nombreDeDia, dayLineOf, legDayText } = M
 const D = findPipelineV2Data('Roma')
 await fetchArrivalInfo('Roma')
 const info = await fetchDestinationExcursions('Roma')
@@ -124,9 +124,14 @@ let paginas = 0
 for (const fechas of [true, false]) {
   const route = await viaje(3, { fechas })
   const etiquetaViaje = fechas ? 'con fechas' : 'sin fechas'
-  // Una entrada reservada a su hora en el día 1.
   const primera = route.days[0].stops.find((s) => s.name && !s.passThrough) ?? route.days[0].stops[0]
-  const reserva = { id: 'r1', kind: 'entrada', refId: primera.name, name: primera.name, placeNames: [primera.name], dateIso: fechas ? INICIO : null, dayNumber: fechas ? null : 1, time: '16:40' }
+  // Una entrada reservada a su hora en un sitio que SÍ tiene entradas en los datos (la pestañita verde sale solo en esos).
+  const hallada = route.days.flatMap((d) => d.stops.filter((s) => s.name && !s.passThrough && !s.isFreeTour && info.entradasPorSitio[s.name]?.length).map((s) => ({ d, s })))[0]
+  debe(Boolean(hallada), '5 reservado', 'ningún sitio del viaje de prueba tiene entradas en los datos: no se puede probar la hora de la reserva')
+  const sitio = hallada.s
+  const diaReserva = hallada.d
+  const fechaReserva = new Date(Date.parse(`${INICIO}T12:00:00Z`) + (diaReserva.dayNumber - 1) * 86400000).toISOString().slice(0, 10)
+  const reserva = { id: 'r1', kind: 'entrada', refId: sitio.name, name: sitio.name, placeNames: [sitio.name], dateIso: fechas ? fechaReserva : null, dayNumber: fechas ? null : diaReserva.dayNumber, time: '16:40' }
 
   // DÍAS: la lista cerrada y cada día abierto, con y sin reserva.
   for (const reservas of [[], [reserva]]) {
@@ -150,16 +155,19 @@ for (const fechas of [true, false]) {
       if (reservas.length && !activeDayId) debe(!/16:40/.test(texto), '5 reservado', `${nombre}: la cabecera cerrada vuelve a llevar la hora de lo reservado (${plano(texto.slice(0, 300))})`)
     }
   }
-  // Con el día abierto, la hora de lo reservado sigue en la pestañita verde de la parada.
+  // Con el día abierto, la hora de lo reservado sale UNA sola vez, en la pestañita verde de la parada.
   {
-    const texto = pinta(DayList, { route, activeDayId: 'd1', onSelectDay() {}, showAllDaysOnMap: false }, route, [reserva])
-    debe(/16:40/.test(texto), '5 reservado', `DÍAS · ${etiquetaViaje} · día 1 abierto: ya no sale la hora de lo reservado (16:40) en la parada`)
+    const texto = pinta(DayList, { route, activeDayId: diaReserva.id, onSelectDay() {}, showAllDaysOnMap: false }, route, [reserva])
+    debe((texto.match(/16:40/g) ?? []).length === 1, '5 reservado', `DÍAS · ${etiquetaViaje} · día ${diaReserva.dayNumber} abierto: la hora de lo reservado (16:40) no sale una sola vez en la parada`)
   }
 
   // RESERVAS, con una reservada.
   {
     const texto = pinta(ReservasPanel, { route, onClose() {} }, route, [reserva])
     paginas++
+    // (El panel entero trae el bloque «Entradas y Free Tour» cerrado: se pinta abierto, que es donde la reserva enseña su hora.)
+    const bloque = pinta(EntradasYFreeTour, { route, info, abierto: true, onToggle() {} }, route, [reserva])
+    debe((bloque.match(/16:40/g) ?? []).length === 1, '5 reservado', `RESERVAS · ${etiquetaViaje}: la hora de la reserva (16:40) no sale una sola vez (${(bloque.match(/16:40/g) ?? []).length} veces)`)
     if (fechas) debe(!DIA_N.test(texto), '1 «Día n» con fechas', `RESERVAS · ${etiquetaViaje}: sale «${texto.match(DIA_N)?.[0]}» (${plano(texto.slice(Math.max(0, (texto.match(DIA_N)?.index ?? 0) - 50), (texto.match(DIA_N)?.index ?? 0) + 70))})`)
   }
 

@@ -1,8 +1,9 @@
-// Entrada que empaqueta la prueba de «con fechas, los días se llaman por su fecha» (scripts/destino/pruebaDiasFecha6z3.mjs): DÍAS, RESERVAS y las hojas que nombran un día, para pintarlas en el servidor.
+// Entrada que empaqueta la prueba de «con fechas, los días se llaman por su fecha» (scripts/destino/pruebaTanda6z3_dias.mjs): DÍAS, RESERVAS y las hojas que nombran un día, para pintarlas en el servidor.
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { DayList } from '../../src/components/route/DayList'
 import { ReservasPanel } from '../../src/components/route/ReservasPanel'
+import { EntradasYFreeTour } from '../../src/components/route/reservas/EntradasYFreeTour'
 import { AddToDaySheet } from '../../src/components/route/freeDay/AddToDaySheet'
 import { AddDayChooser } from '../../src/components/route/freeDay/AddDayChooser'
 import { WhereSheet } from '../../src/components/route/excursions/WhereSheet'
@@ -16,4 +17,4 @@ import * as nombreDeDia from '../../src/lib/nombreDeDia'
 import { dayLineOf } from '../../src/lib/bookings'
 import { legDayText } from '../../src/lib/reservasLegs'
 
-export { createElement, renderToStaticMarkup, DayList, ReservasPanel, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, detectFlightOpportunities, nombreDeDia, dayLineOf, legDayText }
+export { createElement, renderToStaticMarkup, DayList, ReservasPanel, EntradasYFreeTour, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, detectFlightOpportunities, nombreDeDia, dayLineOf, legDayText }

@@ -14,14 +14,14 @@ import type { DayPlan, Route, Stop } from './types'
  *  1. Si el viajero le puso nombre al día (`nameByUser`), manda el suyo. Un día que añadió él con «+ Añadir día» se llama como lo escribió.
  *  2. Un día de excursión (de día entero) se llama «Excursión desde Roma»; sus paradas no se cuentan.
  *  3. Se cuenta cuántas paradas del día hay de cada grupo. Cuentan los sitios, los paseos por barrio y los paseos libres; no cuentan la comida y la cena, las pausas, los «pasas por…»,
- *     el tiempo libre ni la «llegada a…».
+ *     el tiempo libre, la «llegada a…» ni las nocturnas (las experiencias nocturnas y los miradores que llegan de noche: tanda 6y9, P11).
  *  4. El título junta COMO MUCHO DOS nombres con «y»:
  *     · si el día tiene Free Tour, va primero y solo se le suma el grupo con más paradas («Free Tour y Centro histórico»);
  *     · si el día lleva una excursión de medio día, es como el Free Tour: «Excursión desde Roma y Centro histórico»;
- *     · si no, el grupo con MÁS paradas va primero. Un segundo grupo solo se suma si tiene al menos 2 paradas, o si el día entero tiene solo 2 paradas
- *       (una parada suelta de otro grupo no cambia el título).
+ *     · si no, el grupo con MÁS paradas va primero. Un segundo grupo solo se suma si tiene al menos 3 paradas (tanda 6y9, P14:
+ *       una o dos paradas sueltas de otro grupo no cambian el título).
  *  5. Empates: gana el grupo que aparece antes en el día (por hora; sin horas, por orden).
- *  6. Un día sin paradas se llama «Día libre». Si tiene paradas pero ninguna es de nuestros datos (un sitio que el viajero buscó en el mapa), queda el nombre de siempre.
+ *  6. Un día sin paradas se llama «Día libre»; el día de vuelta sintético de un viaje de varias ciudades (`isReturnLeg`) sin paradas, «Día de viaje» (tanda 6y9, P13). Si tiene paradas pero ninguna es de nuestros datos (un sitio que el viajero buscó en el mapa), queda el nombre de siempre.
  *  7. El trayecto («Barcelona → Roma») NO es el título: va pequeño junto a «Día de viaje» (`viaje`).
  */
 
@@ -40,6 +40,14 @@ export interface NombreDelDia {
   viaje: string | null
   /** Solo el nombre de siempre de una ruta a mano sin nombre (destinos sin grupos): el título pide «Ponle nombre». */
   ponleNombre: boolean
+}
+
+/** El título del día de vuelta sintético sin paradas. Con ese título, la etiqueta pequeña del trayecto no repite las palabras (ver `etiquetaDeViaje`). */
+export const DIA_DE_VIAJE = 'Día de viaje'
+
+/** La marca pequeña junto al trayecto de un día de viaje: «Día de viaje · Madrid → Roma»; si el título ya dice «Día de viaje», vacía y solo queda «Madrid → Roma». */
+export function etiquetaDeViaje(titulo: string): string {
+  return titulo === DIA_DE_VIAJE ? '' : DIA_DE_VIAJE
 }
 
 const quitarAcentos = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
@@ -66,7 +74,7 @@ export function grupoDeParada(stop: Pick<Stop, 'name' | 'fullName' | 'isFreeTour
 
 /** Las paradas del día que cuentan para el título, en orden de hora (sin horas, el orden del día). */
 export function paradasParaElTitulo(day: DayPlan): Stop[] {
-  const lista = day.stops.filter((stop) => !stop.isBreak && !stop.passThrough && !stop.isFreeTime && !stop.isArrival)
+  const lista = day.stops.filter((stop) => !stop.isBreak && !stop.passThrough && !stop.isFreeTime && !stop.isArrival && !stop.isNightExperience && !stop.isNightView)
   const minutos = lista.map((stop) => (stop.time ? parseTimeToMinutes(stop.time) : NaN))
   if (minutos.some((valor) => Number.isNaN(valor))) return lista
   return lista.map((stop, indice) => ({ stop, indice, a: minutos[indice] })).sort((x, y) => x.a - y.a || x.indice - y.indice).map((entrada) => entrada.stop)
@@ -90,8 +98,7 @@ export function gruposQueNombranElDia(soloGrupos: (string | null)[], marcadores:
   if (marcadores.length > 0) return [...marcadores, ...ordenados.slice(0, 1).map(([grupo]) => grupo)].slice(0, 2)
   if (ordenados.length === 0) return []
   const [primero, segundo] = ordenados
-  const elDiaEsMuyCorto = conocidos.length <= 2
-  return segundo && (segundo[1] >= 2 || elDiaEsMuyCorto) ? [primero[0], segundo[0]] : [primero[0]]
+  return segundo && segundo[1] >= 3 ? [primero[0], segundo[0]] : [primero[0]]
 }
 
 /** El trayecto pequeño de un día de viaje: «Barcelona → Roma». */
@@ -130,7 +137,7 @@ export function nombreDelDia(route: Route, day: DayPlan, grupos: GruposDelDestin
   const soloGrupos = paradas.filter((stop) => !stop.isFreeTour).map((stop) => grupoDeParada(stop, grupos))
   const nombres = gruposQueNombranElDia(soloGrupos, marcadores)
   if (nombres.length > 0) return sinTrayecto(nombres.join(' y '))
-  if (paradas.length === 0) return sinTrayecto(FREE_DAY_DEFAULT_NAME)
+  if (paradas.length === 0) return sinTrayecto(day.isReturnLeg ? DIA_DE_VIAJE : FREE_DAY_DEFAULT_NAME)
   return sinTrayecto(nombreDeSiempre(route, day, false).titulo)
 }
 

@@ -7,4 +7,4 @@
 5. Con fechas, sin «Día n»: hecho. Un solo sitio (`src/lib/nombreDeDia.ts`).
 6. Fotos del viaje: hecho en el código. La migración `0018_fotos_viaje.sql` hay que aplicarla a mano en Supabase.
 7. Respuestas a la 6z2: hecho (pulsar «Útil para el viaje» no cuenta como añadido; «¿Ya lo tienes? Añádelo» abre el precio; nota de monedas en la guía de destinos nuevos).
-8. Pruebas: la nueva `pruebaTanda6z3.mjs`, `pruebaDiasFecha6z3.mjs` y `pruebaFotos6z3.mjs`, más todas las de siempre.
+8. Pruebas: la nueva `pruebaTanda6z3.mjs`, `pruebaTanda6z3_dias.mjs` y `pruebaFotos6z3.mjs`, más todas las de siempre.

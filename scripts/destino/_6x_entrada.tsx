@@ -1,4 +1,4 @@
-// Entrada que empaqueta la prueba de «las franjas, sin hora» (scripts/destino/pruebaFranjas6x.mjs): la lista de DÍAS (con la tarjeta del día abierta) y lo que necesita, para pintarla en el servidor.
+// Entrada que empaqueta la prueba de «las franjas, sin hora» (scripts/destino/pruebaTanda6x_franjas.mjs): la lista de DÍAS (con la tarjeta del día abierta) y lo que necesita, para pintarla en el servidor.
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { DayList } from '../../src/components/route/DayList'
