@@ -40,7 +40,12 @@ Ahora dice: «el del Vaticano, con su versión sin Museos de los cierres (la del
   - Parte 2 (con `paso=9`): 4.079 viajes (7 formas de 1 a 7 días, todo el año, sin reserva y con el Coliseo reservado en cada día del viaje); el D2 cae en miércoles 36 veces, **las 36 sin ninguna otra posición posible**; 0 casos en los que se podía cambiar.
   - Parte 3 (con `paso=9`): 864 miércoles con los Museos reservados (18 miércoles × 3 formas × 18 horas, de 9:00 a 18:00) y 17.683 comprobaciones, 0 fallos: los Museos a su hora y sin quitarse; la Plaza y la Basílica siempre después de comer; el orden de cada tramo; Montorio y la Fontana dell'Acqua Paola en «Si te sobra tiempo» solo de 9:30 a 11:30; nada repetido; también con la Cúpula en el pool (nunca antes de comer).
 - **Ajustada:** `pruebaFase6y6_cierre.mjs` (parte 1: el documento y los datos del miércoles nuevos): 828 comprobaciones, 0 fallos.
-- Las pruebas pesadas, ver el final de este informe (cifras al cierre).
+- **Ajustada:** `scripts/destino/comprobacionesListas.mjs` (la de `pruebaListas`): con una reserva ya no es fallo que una parada pase a «Si te sobra tiempo» cuando es el propio documento quien la deja ahí (`el documento lo deja para…`): es lo que pide Eric para Montorio y la Fontana dell'Acqua Paola con los Museos a media mañana. Sin esto daba 48 fallos en 4 fechas, todos de ese tipo.
+- `pruebaListas.mjs` desde el 2-feb-2027, 10 fechas seguidas (con el miércoles 3 y el 10): 22.310 viajes, 60.690 días, **0 fallos** (antes del ajuste de arriba: 48, todos `sobra_con_reserva` del documento).
+- `pruebaFase6y5_motor.mjs` partes p2 y p4 (`paso=37`, ~10 fechas por forma; con `paso=9` tardaba horas con la máquina cargada): 1.590 viajes en p2/p3, 585 en p4, 3.265 comprobaciones, 0 fallos.
+- `pruebaFase6y4_listas.mjs` (con mi servidor): 643 comprobaciones, 0 fallos.
+- `pruebaFase6y6_cierre.mjs`: 828 comprobaciones, 0 fallos.
+- No se ha tocado `src/`, así que el typecheck no cambia; no lo he lanzado.
 
 ## Preguntas abiertas
 1. **Museos desde las 16:00 un miércoles.** Eric escribió «los Museos a su hora y, al salir, la Plaza y la Basílica». Con los Museos a las 16:00 o más tarde, al salir (19:00 o más) ya no hay entrada a la Basílica (última, 19:00-19:15), así que ahí he dejado la Plaza y la Basílica **antes** de los Museos, ya por la tarde y después de comer: se cumple lo importante («nunca antes de comer») y es lo que el documento ya hacía con esos Museos. Con los Museos a las 15:00 y 15:30 sí va «al salir». ¿Está bien?

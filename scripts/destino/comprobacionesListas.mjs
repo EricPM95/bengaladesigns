@@ -72,10 +72,10 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       const malo = (secuenciaX) => secuenciaX.findIndex((v, k) => k > 0 && v < secuenciaX[k - 1]) >= 0
       if (malo(sinDetras) || malo(soloDetras)) falla('orden', dia, `el orden del día no es el de su lista (${rows.filter((r) => base.has(r.id) && !r.llegada && !r.fija).map((r) => r.titulo ?? r.lugar).slice(0, 6).join(' → ')}…)`)
     }
-    // Con una reserva no se quita nada ni se manda a «Si te sobra tiempo» por el tiempo: solo cierres (regla 5, Tanda 6x).
+    // Con una reserva no se quita nada ni se manda a «Si te sobra tiempo» por el tiempo: solo cierres (regla 5, Tanda 6x) y lo que el propio documento deja para «Si te sobra tiempo» en esa versión del día (Tanda 6y7: el miércoles con los Museos reservados).
     if (conReserva) {
       for (const l of log) {
-        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera|con tu reserva a esa hora ya no cabe/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
+        if (l.que === 'sobra' && !/cerr|no abre|abre a las|ya ha cerrado|no se ve desde fuera|con tu reserva a esa hora ya no cabe|el documento lo deja para/i.test(l.causa ?? '')) falla('sobra_con_reserva', dia, `«${l.lugar}» pasa a «Si te sobra tiempo» con una reserva: ${l.causa}`)
         if (l.que === 'quitada' && /hora límite|no cabe|no cabía/i.test(l.causa ?? '')) falla('quitada_con_reserva', dia, `«${l.lugar}» se quita con una reserva: ${l.causa}`)
       }
     }
