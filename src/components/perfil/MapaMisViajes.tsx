@@ -90,11 +90,17 @@ export function MapaMisViajes({ chinchetas, cifras, onElegir }: { chinchetas: Ch
       mapa.jumpTo({ center: [centro.lng, centro.lat], zoom: zoomEntero })
     })
 
-    // Mapbox no se entera solo de que su caja cambia de tamaño (el móvil que gira).
-    const observador = new ResizeObserver(() => mapa.resize())
+    // Mapbox no se entera solo de que su caja cambia de tamaño (el móvil que gira, o el Perfil que acaba de abrirse y aún no tenía su alto): se ajusta al montar, al cargar el estilo, al cambiar
+    // la caja (ResizeObserver) y al girar el móvil.
+    const ajustar = () => mapa.resize()
+    ajustar()
+    mapa.once('load', ajustar)
+    const observador = new ResizeObserver(ajustar)
     observador.observe(elemento)
+    window.addEventListener('orientationchange', ajustar)
 
     return () => {
+      window.removeEventListener('orientationchange', ajustar)
       observador.disconnect()
       marcadores.forEach((m) => m.remove())
       mapa.remove()
@@ -114,7 +120,11 @@ export function MapaMisViajes({ chinchetas, cifras, onElegir }: { chinchetas: Ch
 
   return (
     <div className={`${CLASE_MARCO} bg-[#DDE7DF]`}>
-      <div ref={contenedor} role="region" aria-label="Mapa de mis viajes" className="isolate absolute inset-0" />
+      {/* (Tanda 6y7) El recuadro que se estira (absolute inset-0) y DENTRO el contenedor de Mapbox a 100 %: Mapbox le pone `position: relative` a su contenedor (mapbox-gl.css) y, si era el mismo
+          elemento, anulaba el `absolute`, el contenedor quedaba sin alto (12 px: la chincheta) y el mapa salía como una franja. */}
+      <div role="region" aria-label="Mapa de mis viajes" className="isolate absolute inset-0">
+        <div ref={contenedor} className="h-full w-full" />
+      </div>
       {chinchetas.length === 0 && (
         <p className="pointer-events-none absolute inset-x-0 top-3 z-10 text-center text-[12.5px] font-medium text-text/60">Aún no tienes viajes</p>
       )}

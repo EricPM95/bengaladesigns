@@ -255,6 +255,16 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   .trazo-notice-panel { animation: none; }
 }
 
+/* La barrita de «Actualizando tu ruta…» (ActualizandoRuta.tsx): un tramo que va y viene. Con «reducir movimiento», quieto a lo ancho. */
+@keyframes actualizando-barra {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(300%); }
+}
+.actualizando-barra { animation: actualizando-barra 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .actualizando-barra { animation: none; width: 100%; }
+}
+
 /* La tarjeta de temporada (SeasonCard.tsx): las ventanas y la guirnalda de Navidad laten; con «reducir movimiento», quietas. */
 @keyframes season-card-glow {
   0%, 100% { opacity: 0.55; }

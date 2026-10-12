@@ -16,6 +16,7 @@ import { AlojamientoHost } from './components/route/alojamiento/AlojamientoHost'
 import { PantallaPresupuesto } from './components/route/presupuesto/PantallaPresupuesto'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
 import { FotoVuela } from './components/perfil/FotoVuela'
+import { RehacerRuta } from './components/route/RehacerRuta'
 
 function LoadingScreenContainer() {
   const destination = useRouteStore((state) => state.destination)
@@ -109,6 +110,7 @@ function App() {
       <PrecioVuela />
       <FotoVuela />
       <CampaignLinks />
+      <RehacerRuta />
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
         {(screen === 'destination' || screen === 'questionnaire') && <TrazoFlow key="trazo" />}

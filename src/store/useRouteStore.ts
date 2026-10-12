@@ -420,6 +420,10 @@ interface RouteStoreState {
   setRouteDatesKeepingRoute: (dateRange: DateRange | undefined, closures: { dayNumber: number; name: string }[]) => void
   /** La siguiente `setRoute` es la misma ruta rehecha: no resetea reservas ni wishlist. */
   keepBookingsOnNextRoute: boolean
+  /** (Tanda 6y7) La ruta se está rehaciendo EN SEGUNDO PLANO (cambiar las fechas): el viajero sigue en su pantalla y arriba sale una barrita fina (`ActualizandoRuta`, montada por `RehacerRuta`). Ya no hay pantalla de carga. */
+  rehaciendoRuta: boolean
+  /** Dejar la ruta como estaba: el viajero cancela, o el rehacer falló y no quiere reintentarlo. */
+  dejarRutaComoEstaba: () => void
   setActiveDayId: (dayId: string | null) => void
   setMode: (mode: RouteMode) => void
   toggleDarkMode: () => void
@@ -761,6 +765,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   updateAnswers: (partial) => set((state) => ({ answers: { ...state.answers, ...partial } })),
   resetQuestionnaire: () =>
     set({
+      rehaciendoRuta: false,
       answers: { chronotype: 'normal', budgetLevel: 'comfortable' },
       destination: null,
       destinationPlace: null,
@@ -1042,7 +1047,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       activeDayId: null,
       // Si la fecha real de hoy cae dentro del viaje, la app abre directamente en Modo Hoy en vez
       // de en la pestaña RUTA — ver getTodayTripContext.
-      mode: getTodayTripContext(route) ? 'today' : 'route',
+      // (Tanda 6y7) Si es la misma ruta rehecha (cambiar las fechas), el viajero sigue en la pestaña en la que estaba.
+      mode: state.keepBookingsOnNextRoute ? state.mode : getTodayTripContext(route) ? 'today' : 'route',
+      rehaciendoRuta: false,
       intensity: route.intensity,
       ...(state.keepBookingsOnNextRoute
         ? {}
@@ -1055,6 +1062,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   hydrateTrip: (payload) =>
     set({
       screen: 'route',
+      // Abrir otro viaje corta un rehacer a medias.
+      rehaciendoRuta: false,
+      keepBookingsOnNextRoute: false,
       // (Viajes guardados antes de los colores fijos y de la copia original: se completan al abrirlos.)
       route: (() => {
         const colored = withDayColors(payload.route)
@@ -1105,10 +1115,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return { route: withManualDayNames(changed, state.route.answers) }
     }),
   keepBookingsOnNextRoute: false,
+  rehaciendoRuta: false,
+  dejarRutaComoEstaba: () => set({ rehaciendoRuta: false, keepBookingsOnNextRoute: false }),
   regenerateRouteForDates: (dateRange) =>
     set((state) => {
       // La ruta a mano (Tanda 6y) nunca se rehace con el motor: nada de pantalla de carga ni de generación.
-      if (!state.route || isManualRoute(state.route)) return state
+      // Tampoco se empieza otro rehacer mientras hay uno en marcha.
+      if (!state.route || isManualRoute(state.route) || state.rehaciendoRuta) return state
       const route = state.route
       // Los días añadidos por el viajero no los planifica el motor: se quitan del final y vuelven en setRoute.
       const userDays = userAddedDays(route).length
@@ -1130,7 +1143,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         ...route.transportContext,
         selected_curated_place_names: route.mustIncludePlaces ?? state.selected_curated_place_names,
         keepBookingsOnNextRoute: true,
-        screen: 'loading',
+        // (Tanda 6y7) Sin cambiar de pantalla: el viajero se queda donde estaba y `RehacerRuta` rehace la ruta en segundo plano.
+        rehaciendoRuta: true,
       }
     }),
   setRouteDatesKeepingRoute: (dateRange, closures) =>

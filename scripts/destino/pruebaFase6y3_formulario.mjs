@@ -84,7 +84,7 @@ ponerVersion('completa')
   // Barra, contador y panel salen de la misma lista.
   const flujo = fuente('src/components/trazo/TrazoFlow.tsx')
   // (6y4: ya no hay espera al elegir, así que TrazoFlow no lleva la tarjeta «tocada»; la función sigue aceptándola.)
-  debe(/const stepNames = visibleStepNamesFor\(plan, step\)/.test(flujo) && /stepCounterLabel\(step, stepNames\)/.test(flujo) && !/stepNamesFor\(plan\)/.test(flujo), '1 barra', 'TrazoFlow no saca los pasos y el contador de visibleStepNamesFor(plan, step) / stepCounterLabel')
+  debe(/const stepNames = visibleStepNamesFor\(plan, step, null, answers\.days\)/.test(flujo) && /stepCounterLabel\(step, stepNames\)/.test(flujo) && !/stepNamesFor\(plan\)/.test(flujo), '1 barra', 'TrazoFlow no saca los pasos y el contador de visibleStepNamesFor(plan, step) / stepCounterLabel')
   debe((flujo.match(/stepNames\.map\(/g) ?? []).length === 2, '1 barra', 'la barra y el panel no salen de la misma lista de pasos')
 }
 

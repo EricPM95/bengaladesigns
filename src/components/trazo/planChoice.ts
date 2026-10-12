@@ -1,6 +1,8 @@
+import { poolSelectionLimit } from '../questionnaire/CuratedPlacesPool'
+
 /**
  * El camino del formulario Trazo (Tanda 6y): quién monta el itinerario. Todo lo que decide a qué pantalla se va, sin React (se prueba solo).
- *  - `auto` («¡Sí, hazla por mí!»): experiencias, lugares y resumen, y la ruta se monta por detrás como siempre.
+ *  - `auto` («¡Sí, hazla por mí!»): experiencias, lugares (menos con 1 día: ese paso no sale) y resumen, y la ruta se monta por detrás como siempre.
  *  - `manual` («Quiero hacerla yo»): se salta experiencias y lugares y va a un resumen corto; NO se monta ninguna ruta por detrás.
  */
 export type PlanChoice = 'auto' | 'manual'
@@ -30,10 +32,14 @@ export function backStepFrom(step: number): number | null {
   return step - 1
 }
 
-/** Los nombres de los pasos de la barra y del panel: con la ruta a mano no hay experiencias ni lugares. */
-export function stepNamesFor(plan: PlanChoice | null): string[] {
+/** ¿Sale el paso de los lugares (el pool)? No con la ruta a mano, y (Tanda 6y7) tampoco con 1 día: es la misma regla del tope (`poolSelectionLimit`, 0 con 1 día), sin repetirla. */
+export const usesPool = (plan: PlanChoice | null, days?: number): boolean => usesExperiences(plan) && poolSelectionLimit(days) > 0
+
+/** Los nombres de los pasos de la barra y del panel: con la ruta a mano no hay experiencias ni lugares, y con 1 día no hay lugares (la barra cuenta uno menos). */
+export function stepNamesFor(plan: PlanChoice | null, days?: number): string[] {
   const base = ['Origen y destino', 'Transporte', 'Fechas', 'Compañía', 'Itinerario']
-  return plan === 'manual' ? base : [...base, 'Experiencias', 'Lugares']
+  if (plan === 'manual') return base
+  return usesPool(plan, days) ? [...base, 'Experiencias', 'Lugares'] : [...base, 'Experiencias']
 }
 
 /**
@@ -41,8 +47,8 @@ export function stepNamesFor(plan: PlanChoice | null): string[] {
  * pantalla de elegir). Con «Quiero hacerla yo» la pantalla de elegir pasa a ser el último paso: en cuanto se toca esa tarjeta (`picked`, mientras sale el aviso corto) y en todo el
  * camino a mano son 5 («5/5», y LISTO en el resumen corto). Con «¡Sí, hazla por mí!» siguen 6/7, 7/7 y LISTO.
  */
-export function visibleStepNamesFor(plan: PlanChoice | null, step: number, picked: PlanChoice | null = null): string[] {
-  return stepNamesFor(step <= STEP.elegir ? picked : plan)
+export function visibleStepNamesFor(plan: PlanChoice | null, step: number, picked: PlanChoice | null = null, days?: number): string[] {
+  return stepNamesFor(step <= STEP.elegir ? picked : plan, days)
 }
 
 /** El contador de arriba: «5/5», «6/7»…; en el último paso (el resumen) pone «LISTO». */

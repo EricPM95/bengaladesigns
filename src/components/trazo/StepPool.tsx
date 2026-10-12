@@ -24,7 +24,7 @@ interface StepPoolProps {
 
 /**
  * 06 — Pool: los lugares del destino con NUESTRAS fotos, en las baldosas del prototipo. Lo marcado entra
- * seguro en la ruta (must_include_places). Tope por duración (poolSelectionLimit: 2 con 1 día, 3 con 2 días,
+ * seguro en la ruta (must_include_places). Tope por duración (poolSelectionLimit: no sale con 1 día, 3 con 2 días,
  * 6 desde 3) con contador visible; sin "Añadir todos". Destino curado: pool del JSON; no curado:
  * lo que sugiere /api/suggest-places, como siempre.
  */
