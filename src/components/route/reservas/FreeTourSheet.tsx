@@ -9,14 +9,9 @@ import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import { AddReservationSheet } from './AddReservationSheet'
 
-/** Las horas del Free Tour (Tanda 6u): el de siempre es el de las 10:00; hay un día escrito para el de las 12:00, el de las 15:00 y el de las 17:00 (el D3), y el de las 21:00 va en la noche del primer día. */
-const FRANJAS = [
-  { id: 'manana', label: 'Por la mañana', hora: '10:00' },
-  { id: 'manana', label: 'A mediodía', hora: '12:00' },
-  { id: 'tarde', label: 'Por la tarde', hora: '15:00' },
-  { id: 'tarde', label: 'Por la tarde', hora: '17:00' },
-  { id: 'noche', label: 'De noche', hora: '21:00' },
-] as const
+import { FREE_TOUR_FRANJAS as FRANJAS } from '../../../lib/freeTourHoras'
+import { AVISO_DISPONIBILIDAD } from '../../../lib/horarioDeEntrada'
+import { VerDisponibilidadFreeTour } from './VerDisponibilidad'
 
 /** ¿La ruta ya lleva un Free Tour? Sirve para enseñar «Añadido» y ofrecer quitarlo. */
 export function routeHasFreeTour(route: Route): boolean {
@@ -80,7 +75,7 @@ function FreeTourConMotor({ route, onClose }: { route: Route; onClose: () => voi
             ¿A qué hora lo quieres?
           </h2>
           <p className="mt-2 text-caption text-text-soft">
-            Tu ruta se rehace con el Free Tour: el día que lo lleva cambia a su versión con Free Tour y el resto se reordena con las reglas de siempre.
+            Lo ponemos al principio de tu viaje: es cuando más vale la pena, porque te ayuda a situarte. {AVISO_DISPONIBILIDAD}
           </p>
           <div className="mt-4 flex flex-col gap-2">
             {FRANJAS.map((franja) => (
@@ -101,6 +96,7 @@ function FreeTourConMotor({ route, onClose }: { route: Route; onClose: () => voi
               </button>
             )}
           </div>
+          <VerDisponibilidadFreeTour destination={route.destination} />
           {busy && <p className="mt-3 text-caption text-text-muted">Rehaciendo tus días…</p>}
           {error && <p className="mt-3 text-caption text-accent-red">No se han podido rehacer todos los días. Prueba otra vez.</p>}
         </div>

@@ -16,6 +16,8 @@ import { usePrecioEditable } from '../../../lib/useMoneda'
 import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
+import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
+import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -41,14 +43,6 @@ interface ReservationPlan {
   cambios: { dayNumber: number; de: string | null; a: string | null }[]
 }
 
-/** Las horas a las que se puede entrar ese día (de la apertura a la última entrada). */
-interface EntryHours {
-  cerrado: boolean
-  ventanas: { desde: string; hasta: string }[]
-  /** Los sitios con turnos propios (la Galería): solo esas horas. */
-  turnos?: string[] | null
-}
-
 type Tab = 'email' | 'file' | 'manual'
 
 interface Fields {
@@ -62,8 +56,6 @@ interface Fields {
 
 const EMPTY: Fields = { dateIso: '', dayNumber: '', time: '', returnTime: '', meetingPoint: '', locator: '' }
 const MAX_FILE_BYTES = 3_500_000
-/** Las horas del Free Tour: pocas, así que van como botones y no como rueda. */
-const FREE_TOUR_HOURS = ['10:00', '12:00', '15:00', '17:00', '21:00']
 
 const inputClass = 'mt-1 h-11 w-full rounded-xl border border-text/15 bg-bg px-3 text-[15px] text-text placeholder:text-text-muted'
 
@@ -240,44 +232,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   }, [closedIsos])
 
   // Las horas a las que se puede entrar ese día (Coliseo, Museos, Galería y el resto de entradas): la rueda solo enseña esas.
-  const [entryHours, setEntryHours] = useState<EntryHours | null>(null)
   const hoursKey = hoursPlace && resolvedDay ? `${hoursPlace}|${fields.dateIso}|${resolvedDay.id}` : null
-  useEffect(() => {
-    if (!hoursKey || !hoursPlace) {
-      setEntryHours(null)
-      return
-    }
-    let cancelled = false
-    fetch('/api/reservation-hours', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ destination: route.destination, place: hoursPlace, date_iso: hasDates ? fields.dateIso : null, month: route.answers.month ?? null, season: route.answers.season ?? null }),
-    })
-      .then((response) => (response.ok ? (response.json() as Promise<EntryHours>) : null))
-      .then((body) => {
-        if (!cancelled) setEntryHours(body)
-      })
-      .catch(() => {
-        if (!cancelled) setEntryHours(null)
-      })
-    return () => {
-      cancelled = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hoursKey])
+  const entryHours = useHorarioDeEntrada({ destination: route.destination, place: hoursPlace, dateIso: hasDates ? fields.dateIso : null, month: route.answers.month ?? null, season: route.answers.season ?? null }, hoursKey)
   const window0 = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? { min: entryHours.ventanas[0].desde, max: entryHours.ventanas[entryHours.ventanas.length - 1].hasta } : null
-  /** Las horas de la rueda: los turnos del sitio (la Galería) o, de la apertura a la última entrada, de 15 en 15 (sin datos, de 8:00 a 19:45). */
+  /** Las horas de la rueda (Tanda 6y9: de la apertura a la ÚLTIMA ENTRADA oficial de esa fecha, o los turnos reales del sitio). La hora de la reserva que ya hay siempre está. */
   const wheelItems = useMemo(() => {
-    const two = (n: number) => String(n).padStart(2, '0')
-    const asMin = (hhmm: string) => Number(hhmm.split(':')[0]) * 60 + Number(hhmm.split(':')[1])
-    // (La hora de la reserva que ya hay siempre está en la rueda, aunque no caiga en una de las horas de siempre.)
     const propia = existing && /^\d{1,2}:\d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
-    const conPropia = (list: string[]) => (propia && !list.includes(propia) ? [...list, propia].sort((x, y) => asMin(x) - asMin(y)) : list)
-    if (entryHours?.turnos && entryHours.turnos.length > 0) return conPropia(entryHours.turnos)
-    const windows = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? entryHours.ventanas : [{ desde: '08:00', hasta: '19:45' }]
-    const out: string[] = []
-    for (const window of windows) for (let m = Math.ceil(asMin(window.desde) / 15) * 15; m <= asMin(window.hasta); m += 15) out.push(`${two(Math.floor(m / 60))}:${two(m % 60)}`)
-    return conPropia(out.length > 0 ? out : ['09:00'])
+    return horasDeLaRueda(entryHours, propia)
   }, [entryHours])
   const pickupItems = useMemo(() => {
     const out: string[] = []
@@ -552,6 +513,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => set({ time: hhmm })} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
                 )}
               </div>
+
+              {!isExcursion && (
+                <p className="mt-3 text-center text-[12.5px] leading-snug text-text-soft" data-aviso="disponibilidad">
+                  {AVISO_DISPONIBILIDAD}
+                </p>
+              )}
 
               {!isFreeTour && (
                 <div className="mt-4">
