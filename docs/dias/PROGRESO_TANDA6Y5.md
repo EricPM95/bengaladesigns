@@ -1,0 +1,21 @@
+# Progreso de la Tanda 6y5
+
+- [x] Tus documentos (prompt 6y5, historias de Roma, pendientes y el diseño «Reservas v4») en un commit tal cual
+- [x] 0. Respuestas a la 6y4:
+  - [x] P1 Altar + Ara Pacis a la vez: probado con 19.000 viajes y con el almacén y el servidor de verdad; no se pierde ninguna parada (ver informe: no se reproduce el fallo)
+  - [x] P2 y P3: el Vaticano y la Galería nunca se quitan por cierre; se busca otro día y, si no hay ninguno, se quedan con aviso
+  - [x] P4: lo que no cabe con una reserva grande a otra hora pasa a «Si te sobra tiempo»
+  - [x] Tope del pool 3 (1-2 días) y 6 (3 o más), con lo que queda en «No incluido»
+  - [x] P8 calendario sin botón; P9; P10 «Lo tienes · Mi banco · 30 €»; P15 [Abrir este viaje]; P16; P17 «×2» desde el segundo viaje
+  - [x] P18 aviso de la Fontana: lunes y viernes
+  - [x] P19 el paseo por Trastevere lleva la etiqueta lila; P23 rama de HOY gratis borrada
+  - [x] P28 caché de fotos limpia y sin guardar nombres ajenos (**falta ejecutar a mano la migración 0019 en Supabase**)
+- [x] 1. «Escuchar historia» con las 31 historias (campo `historia` en las fichas)
+- [x] 2. Ida y vuelta abiertas con el diseño nuevo (avión, tren, autobús y barco)
+- [x] 3. «Ver más excursiones»
+- [x] 4. Datos dudosos de las fichas (6 frases)
+- [x] 5. Capturas a 375 px guardadas en `docs/dias/img/6y5-*.jpg` (27 imágenes)
+- [x] 6. Línea en la guía de nuevos destinos
+- [ ] 7. Pruebas: las nuevas y todas las de siempre a 0; **la tirada de las 365 fechas sobre `main` con todo junto, pendiente para mañana a petición de Eric** (el agente del motor la pasó en su copia: 815.301 viajes, 0 fallos)
+- [x] Informes de las tres partes, informe y preguntas de la 6y5, invariantes
+- [ ] Push a origin (se hará después de la tirada de las 365 fechas)
