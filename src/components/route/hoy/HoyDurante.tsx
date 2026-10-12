@@ -57,7 +57,7 @@ function MapaHastaLaParada({ desde, hasta }: { desde: Coordinates | null; hasta:
 export function HistoriaDeParada({ destino, nombre, clave }: { destino: string; nombre: string; clave: string }) {
   const ficha = useFichaDeSitio(destino, nombre)
   if (accesoHistoria(ficha) === 'ninguno') return null
-  return <Escuchar oscuro etiqueta="Historia" texto={textoHistoria(ficha)} clave={`${clave}:historia`} />
+  return <Escuchar oscuro etiqueta="Historia" texto={textoHistoria(ficha)} clave={`${clave}:historia`} sitio={{ destino, nombre }} />
 }
 
 /**

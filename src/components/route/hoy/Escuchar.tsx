@@ -2,17 +2,21 @@ import { useState } from 'react'
 import { Icono } from '../../ui/Icono'
 import { pagoActivo, pedirPago } from '../../../lib/pago'
 import { useEscuchar } from '../../../lib/useEscuchar'
+import { useAudioDeHistoria } from '../../../lib/escucharAudio'
 
 /**
  * «Escuchar» (Tanda 6z6, solo de pago): lee en voz alta el texto del «Resumen» de una parada con la voz del navegador. Con [Pausa] y [Seguir]; se para al cambiar de parada o de pantalla.
  * Si el aparato no tiene voz en español, o no hay texto que leer, el botón no sale. `clave`: el id de lo que se lee (la parada). `oscuro`: para la tarjeta oscura de HOY.
  * `etiqueta`: lo que dice el botón pequeño («Escuchar» lee el Resumen; «Historia», en HOY, lee la historia del sitio).
+ * `sitio` (Tanda 6y9, solo la historia): destino y nombre del sitio; si tiene audio guardado suena ese, si no la voz del aparato.
  * `libre` (Tanda 6y5): suena también en la gratis (la historia del Coliseo, la muestra); sin él, en la gratis la barra sale con el candado y el botón pequeño no sale.
  * `barra` (Tanda 6y4, diseño «Ficha Lugar»): la barra oscura fija de abajo de la ficha, «Escuchar historia» (Tanda 6y5: lee la historia, no el Resumen), con el botón redondo ámbar de play/pausa, lo que se lleva leído y [Parar]; `abajo`
  * sube la barra cuando la ficha lleva un botón fijo debajo («Añadir a Día 2»).
  */
-export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = false, etiqueta: nombreBoton = 'Escuchar', libre = false }: { texto: string; clave: string; oscuro?: boolean; barra?: boolean; abajo?: boolean; etiqueta?: string; libre?: boolean }) {
-  const { hayVoz, estado, progreso, escuchar, pausar, seguir, parar } = useEscuchar(texto, clave)
+export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = false, etiqueta: nombreBoton = 'Escuchar', libre = false, sitio }: { texto: string; clave: string; oscuro?: boolean; barra?: boolean; abajo?: boolean; etiqueta?: string; libre?: boolean; sitio?: { destino: string; nombre: string } }) {
+  // `sitio` (solo la historia): si ese sitio tiene su audio guardado, suena ese; si no, la voz del aparato. Lo decide useEscuchar.
+  const audio = useAudioDeHistoria(sitio)
+  const { hayVoz, estado, progreso, escuchar, pausar, seguir, parar } = useEscuchar(texto, clave, audio)
   const [pidioPago, setPidioPago] = useState(false)
   if (!hayVoz || texto.trim().length === 0) return null
   // `libre`: la historia que suena gratis para todos (la muestra). El resto es de pago: el botón pequeño no sale en la gratis; la barra de la ficha sale con el candado.

@@ -35,6 +35,7 @@ import { halfDayExcursions } from './engine/excursions.js'
 // Motor nuevo, detrás de bandera — ver server/engine/index.js y docs/PREPLAN_MOTOR.md.
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { horasDeEntrada, planDeReservas } from './engine/reservationPlan.js'
+import { audioVigente } from '../shared/audio/historiasAudio.js'
 import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
 import { precioTienda } from '../shared/dinero/formato.js'
@@ -4451,6 +4452,40 @@ app.post('/api/place-detail', (req, res) => {
   const byName = loadPlaceDetail(destinationKey)
   const detail = byName.get(stripAccentsLowerServer(name)) ?? byName.get(stripAccentsLowerServer(detailNameFor(destinationKey, name)))
   res.json(detail ? { found: true, detail } : { found: false })
+})
+
+// El audio de la historia de un sitio (Tanda 6y9): la ruta del .mp3 guardado si existe, está en el índice (data/audios/<destino>.json) y se creó con el texto
+// que la historia tiene AHORA (misma huella). Si no, `audio: null` y la barra lee con la voz del móvil. El cliente lo pide aparte de la ficha para no guardar
+// en su memoria una ficha vieja sin audio. Solo se mira; este servidor nunca crea audios (los crea scripts/destino/crearAudiosHistorias.mjs).
+const indicesDeAudio = new Map()
+function indiceDeAudios(destinationKey) {
+  if (indicesDeAudio.has(destinationKey)) return indicesDeAudio.get(destinationKey)
+  let indice = null
+  try {
+    indice = JSON.parse(readFileSync(join(__dirname, '../data/audios', `${destinationKey}.json`), 'utf8'))
+  } catch {
+    // Sin índice todavía (los audios aún no se han creado): ninguna historia lleva audio.
+  }
+  indicesDeAudio.set(destinationKey, indice)
+  return indice
+}
+
+app.post('/api/historia-audio', (req, res) => {
+  const { destination, name } = req.body ?? {}
+  if (!destination || typeof name !== 'string' || !name.trim()) {
+    res.status(400).json({ error: 'Faltan datos necesarios (destination, name).' })
+    return
+  }
+  const destinationKey = findPipelineV2Key(destination)
+  const indice = destinationKey ? indiceDeAudios(destinationKey) : null
+  if (!destinationKey || !indice) {
+    res.json({ audio: null })
+    return
+  }
+  const byName = loadPlaceDetail(destinationKey)
+  const detail = byName.get(stripAccentsLowerServer(name)) ?? byName.get(stripAccentsLowerServer(detailNameFor(destinationKey, name)))
+  const audio = detail?.historia ? audioVigente(indice, destinationKey, detail.name, detail.historia) : null
+  res.json({ audio })
 })
 
 // Las excursiones de un destino para la página «Excursiones desde {destino}» (PARA_CODE_EXCURSIONES): todas, con la valoración media
