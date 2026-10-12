@@ -38,6 +38,11 @@ const museosMananaBorgo = [P(MUSEOS, 180, null, { hora_tipo: 'turno' }), P('Plaz
 const museosTardeBorgo = camino('Via della Conciliazione', "Castillo de Sant'Angelo", "Puente Sant'Angelo")
 const luces = P('Luces de Navidad del Tridente', 30, 'fuera', { protegido: false })
 const aracoeliCamino = P('Santo Bambino de Aracoeli', 5, 'camino')
+// El miércoles del Vaticano (Tanda 6y7): la mañana sin Museos, al revés, mientras la audiencia del Papa tiene la Plaza de San Pedro (la misma mañana del D0-medio de los miércoles).
+const miercolesManana = [P('Fontana de Trevi', 45, null, { titulo: 'Fontana de Trevi, sin gente' }), P('Plaza de España', 45), ...camino('Via dei Coronari', "Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 30, 'fuera'), ...camino('Via della Conciliazione')]
+const MONTORIO = P('San Pietro in Montorio y el Tempietto', 10, null, { si_cerrado: { cambiar_titulo: 'El mirador de San Pietro in Montorio' } })
+const ACQUA_PAOLA = P("Fontana dell'Acqua Paola", 10)
+const trastevereMiercoles = [P('Isla Tiberina', 20), P('Iglesia de Santa Maria in Trastevere', 25, 'dentro'), MONTORIO, ACQUA_PAOLA, P('Mirador del Janículo', 30)]
 
 // Lo que el usuario pidió en una tanda aparte (docs/dias/PARA_CODE_TANDA6C.md) y que el documento no trae: cada cambio CITA la frase de la tanda de la que sale.
 const TANDA_6C = 'docs/dias/PARA_CODE_TANDA6C.md'
@@ -468,14 +473,89 @@ export default {
             noche: { lista: ['Trastevere de noche'] },
           },
         },
-        // El miércoles (Tanda 6y6): los Museos abren y van como siempre; solo la Plaza y la Basílica pasan a la tarde (por la mañana está la audiencia del Papa).
+        // El miércoles (Tanda 6y7; antes de eso el motor cambia el día entero con otro, listasOrden.js): los Museos abren y van como siempre, a su hora. La Plaza y la Basílica de San Pedro NUNCA van antes
+        // de comer (por la mañana está la audiencia del Papa), tampoco con los Museos reservados por la mañana. Cada tramo de hora trae su lista; los `cuando.reserva` repiten los tramos de arriba (listasReservas.js
+        // no crea tramos nuevos) y los de «sin reserva o hasta las 9:15» usan `sin_reserva_o_hasta`, que no es un tramo.
+        // · Sin reserva o con los Museos hasta las 11:45: los Museos, la comida, la Plaza y la Basílica, y lo demás de la tarde.
         {
-          id: 'miercoles_audiencia', doc: 'el miércoles** los Museos abren',
-          // (Si el viajero ya tiene los Museos reservados ese miércoles, la reserva manda: Tanda 6j, punto 9.)
-          cuando: { dia_semana: ['miércoles'], sin_reserva: MUSEOS },
+          id: 'miercoles_audiencia', doc: 'Sin reserva, o con los Museos reservados hasta las 11:30:',
+          cuando: { dia_semana: ['miércoles'], sin_reserva_o_hasta: { lugar: MUSEOS, hasta: '11:45' } },
           ops: {
             manana: { quitar: ['Plaza de San Pedro', 'Basílica de San Pedro'] },
             tarde: { insertar: [{ al_principio: true, parada: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro')] }] },
+          },
+        },
+        // · Con los Museos a media mañana (de 9:30 a 11:30) no cabe todo: Montorio y la Fontana dell'Acqua Paola pasan a «Si te sobra tiempo».
+        {
+          id: 'miercoles_museos_media_manana', doc: "Con los Museos a media mañana (de 9:30 a 11:30) no cabe todo: San Pietro in Montorio y la Fontana dell'Acqua Paola pasan a «Si te sobra tiempo»",
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '09:16', hasta: '11:45' } },
+          ops: { tarde: { quitar: [MONTORIO.lugar, ACQUA_PAOLA.lugar] }, sobra: [MONTORIO, ACQUA_PAOLA] },
+        },
+        // · Con los Museos reservados a mediodía (de 12:00 a 14:30) o por la tarde (desde las 15:00): la mañana sin Museos, la del miércoles; la comida en el Borgo; los Museos a su hora; y la Plaza y la Basílica
+        //   al salir (con los Museos desde las 16:00, antes de los Museos, ya por la tarde: su última entrada es a las 19:15). Lo de Trastevere que no cabe pasa a «Si te sobra tiempo».
+        {
+          id: 'miercoles_museos_12', doc: 'con los Museos a las 12:00 cabe todo',
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '11:46', hasta: '12:15' } },
+          ops: {
+            empieza: '08:00',
+            manana: { paradas: miercolesManana },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P(MUSEOS, 180), P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro'), { tipo: 'traslado', como: 'bus 23', texto: 'Bus 23 por el Lungotevere hasta la Isla Tiberina' }, ...trastevereMiercoles, P('bajada a Trastevere', 5, 'camino'), P('Paseo por Trastevere', 30)] },
+          },
+        },
+        {
+          id: 'miercoles_museos_12_30', doc: "a las 12:30 o las 13:00 salen San Pietro in Montorio y la Fontana dell'Acqua Paola",
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '12:16', hasta: '13:15' } },
+          ops: {
+            empieza: '08:00',
+            manana: { paradas: miercolesManana },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P(MUSEOS, 180), P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro'), { tipo: 'traslado', como: 'bus 23', texto: 'Bus 23 por el Lungotevere hasta la Isla Tiberina' }, P('Isla Tiberina', 20), P('Iglesia de Santa Maria in Trastevere', 25, 'dentro'), P('Mirador del Janículo', 30), P('bajada a Trastevere', 5, 'camino'), P('Paseo por Trastevere', 30)] },
+            sobra: [MONTORIO, ACQUA_PAOLA],
+          },
+        },
+        {
+          id: 'miercoles_museos_mediodia', doc: 'desde las 13:30, toda esa parte, y el día acaba con el paseo por Trastevere',
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '13:16', hasta: '14:59' } },
+          ops: {
+            empieza: '08:00',
+            manana: { paradas: miercolesManana },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P(MUSEOS, 180), P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), taxi('Taxi a Trastevere'), P('Paseo por Trastevere', 30)] },
+            sobra: trastevereMiercoles,
+          },
+        },
+        {
+          id: 'miercoles_museos_tarde_15', doc: 'la mañana sin Museos, la del miércoles (Fontana de Trevi sin gente',
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '15:00', hasta: '15:59' } },
+          ops: {
+            empieza: '08:00',
+            manana: { paradas: miercolesManana },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P(MUSEOS, 180), P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), taxi('Taxi a Trastevere'), P('Paseo por Trastevere', 30)] },
+            sobra: trastevereMiercoles,
+          },
+        },
+        {
+          id: 'miercoles_museos_tarde_16', doc: 'Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde',
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '16:00', hasta: '16:59' } },
+          ops: {
+            empieza: '08:00',
+            manana: { paradas: miercolesManana },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), P(MUSEOS, 180), taxi('Taxi a Trastevere'), P('Paseo por Trastevere', 30)] },
+            sobra: trastevereMiercoles,
+          },
+        },
+        {
+          id: 'miercoles_museos_tarde_17', doc: 'Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde',
+          cuando: { dia_semana: ['miércoles'], reserva: { lugar: MUSEOS, desde: '17:00' } },
+          ops: {
+            empieza: '08:00',
+            manana: { paradas: miercolesManana },
+            comida: mesa('Borghiciana Pastificio Artigianale', 'Dal Toscano', 'en el Borgo'),
+            tarde: { paradas: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 60, 'dentro'), P(MUSEOS, 120), taxi('Taxi a Trastevere'), P('Paseo por Trastevere', 30)] },
+            sobra: trastevereMiercoles,
           },
         },
       ],

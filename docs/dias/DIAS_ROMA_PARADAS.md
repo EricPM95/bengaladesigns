@@ -383,9 +383,11 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
 - **Cena:** Tonnarello (o Checco er Carettiere, o Da Lucia), en Trastevere
 - **Noche:** Trastevere de noche (o la imprescindible que falte)
 - **Cierres:**
-  - el domingo, el miércoles (audiencia) y los días que cierran los Museos, este día se cambia con otro;
-  - si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas;
-  - **el miércoles** los Museos abren: van como siempre, a primera hora, y no se quitan nunca por ser miércoles. Solo cambian la Plaza y la Basílica de San Pedro, que van por la tarde (por la mañana está la audiencia del Papa): después de comer en el Borgo, antes de la Conciliazione, el Castillo y el Puente.
+  - el domingo, el miércoles (audiencia) y los días que cierran los Museos, este día se cambia con otro, siempre que se pueda (el día del Vaticano entero, con otro día del viaje que encaje);
+  - si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas (el domingo y los días que cierran los Museos);
+  - **el miércoles, si no se puede cambiar el día** (no hay otro día que encaje, el cambio haría cerrar otras cosas o liaría el viaje, o los Museos están reservados ese miércoles), los Museos abren: van como siempre, a su hora, y no se quitan nunca por ser miércoles. Cambia la Plaza y la Basílica de San Pedro: **nunca van antes de comer** (por la mañana está la audiencia del Papa), tampoco con los Museos reservados por la mañana:
+    - **Sin reserva, o con los Museos reservados hasta las 11:30:** los Museos, la comida en el Borgo, la Plaza y la Basílica y, después, lo demás de la tarde (la Conciliazione, el Castillo, el Puente y Trastevere). Con los Museos a media mañana (de 9:30 a 11:30) no cabe todo: San Pietro in Montorio y la Fontana dell'Acqua Paola pasan a «Si te sobra tiempo».
+    - **Con los Museos reservados a mediodía (de 12:00 a 14:30) o por la tarde (desde las 15:00):** la mañana sin Museos, la del miércoles (Fontana de Trevi sin gente, Plaza de España, de camino Via dei Coronari, el Puente y el Castillo por fuera), la comida en el Borgo, los Museos a su hora y, al salir, la Plaza y la Basílica. Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde (su última entrada es a las 19:15). Lo de Trastevere que no cabe (la Isla Tiberina, Santa Maria in Trastevere, San Pietro in Montorio, la Fontana dell'Acqua Paola y el Janículo) pasa a «Si te sobra tiempo»: con los Museos a las 12:00 cabe todo; a las 12:30 o las 13:00 salen San Pietro in Montorio y la Fontana dell'Acqua Paola; desde las 13:30, toda esa parte, y el día acaba con el paseo por Trastevere.
 
 **Pool:**
 - **Cúpula:** después de la Basílica ~45.
@@ -945,7 +947,7 @@ Si el viajero elige una excursión de medio día en el día de excursión (el d�
   - **Si no cabe ni la reserva,** el aviso de siempre: «… no te da tiempo. Revisa tu reserva.».
   - **El resto de su día escrito se queda en su día,** sin el bloque. Nada se pierde, nada se repite y nada se inventa. Ese día queda más corto y HOY propone qué añadir.
     - el día del Coliseo empieza en el Campidoglio (el Altar, la comida en el Gueto y la tarde del centro);
-    - el del Vaticano, con su versión sin Museos (la del miércoles: el Castillo, el Puente y Trastevere);
+    - el del Vaticano, con su versión sin Museos de los cierres (la del domingo: la mañana empieza en San Pedro con la Basílica y las Grutas, y la tarde sigue como siempre, con el Castillo, el Puente y Trastevere);
     - el de Villa Borghese, con su versión sin Galería (la del lunes).
   - **La comida de la última mañana,** solo si se sale a las 14:30 o más tarde, como siempre.
 - **Una reserva grande el día de llegada:**
