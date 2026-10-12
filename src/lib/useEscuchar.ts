@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { crearEscuchaAudio, type AudioLike } from './escucharAudio'
 
 /**
  * «Escuchar» (Tanda 6z6, de pago): la ficha de una parada en voz alta con la síntesis de voz del propio navegador (`speechSynthesis`). Sin coste y sin mandar nada fuera: solo se lee nuestro texto del «Resumen».
@@ -152,6 +153,32 @@ export function crearEscucha(sintesis: SintesisLike, crearEnunciado: (texto: str
   }
 }
 
+/**
+ * QUIÉN SUENA (Tanda 6y9, la única regla): con audio guardado, ese audio; sin él, la voz del aparato. Si el audio guardado no se puede reproducir (fichero que falta, red caída),
+ * se cambia a la voz del aparato y esa lectura empieza ya (`alCambiarDeFuente` avisa del control nuevo). Devuelve null si no hay con qué leer.
+ */
+export function crearEscuchaSegunFuente(p: {
+  audio?: string | null
+  crearAudio: ((ruta: string) => AudioLike) | null
+  sintesis: SintesisLike | null
+  crearEnunciado: (texto: string) => any
+  texto: string
+  voz: VozLike | null
+  alCambiar: (estado: EstadoEscucha) => void
+  alAvanzar?: (hechos: number, total: number) => void
+  alCambiarDeFuente?: (nueva: Escucha | null) => void
+}): Escucha | null {
+  const deVoz = (): Escucha | null => (p.sintesis ? crearEscucha(p.sintesis, p.crearEnunciado, p.alCambiar, p.alAvanzar) : null)
+  if (p.audio && p.crearAudio) {
+    return crearEscuchaAudio(p.crearAudio(p.audio), p.alCambiar, p.alAvanzar, () => {
+      const voz = deVoz()
+      p.alCambiarDeFuente?.(voz)
+      voz?.hablar(p.texto, p.voz)
+    })
+  }
+  return deVoz()
+}
+
 // ── El hook ───────────────────────────────────────────────────────────────────────────
 
 /** La síntesis del navegador, si la hay. */
@@ -177,31 +204,51 @@ export function useVozEnEspañol(): VozLike | null {
 /**
  * Leer en voz alta `texto`. `clave` identifica lo que se lee (el id de la parada): si cambia, la lectura se para. También se para al desmontar (cambio de pantalla).
  */
-export function useEscuchar(texto: string, clave: string) {
+export function useEscuchar(texto: string, clave: string, audio?: string | null) {
   const voz = useVozEnEspañol()
   const [estado, setEstado] = useState<EstadoEscucha>('parado')
   /** Cuánto se ha leído (0 a 1), por trozos de frases: para la barra de progreso de la ficha. */
   const [progreso, setProgreso] = useState(0)
   const escuchaRef = useRef<Escucha | null>(null)
+  /** Con qué fuente se creó `escuchaRef`: el audio guardado (su ruta) o la voz del aparato (null). */
+  const fuenteRef = useRef<string | null>(null)
 
+  const alAvanzar = useCallback((hechos: number, total: number) => setProgreso(total > 0 ? hechos / total : 0), [])
+
+  // LA regla (Tanda 6y9): si la historia tiene audio guardado, suena ese; si no, la voz del aparato (ver `crearEscuchaSegunFuente`).
   const escucha = useCallback((): Escucha | null => {
-    if (escuchaRef.current) return escuchaRef.current
-    const sintesis = sintesisDelNavegador()
-    if (!sintesis) return null
-    escuchaRef.current = crearEscucha(sintesis, (trozo) => new SpeechSynthesisUtterance(trozo), setEstado, (hechos, total) => setProgreso(total > 0 ? hechos / total : 0))
+    if (escuchaRef.current && fuenteRef.current === (audio ?? null)) return escuchaRef.current
+    escuchaRef.current?.parar()
+    fuenteRef.current = audio ?? null
+    escuchaRef.current = crearEscuchaSegunFuente({
+      audio,
+      crearAudio: typeof Audio !== 'undefined' ? (ruta) => new Audio(ruta) as unknown as AudioLike : null,
+      sintesis: sintesisDelNavegador(),
+      crearEnunciado: (trozo) => new SpeechSynthesisUtterance(trozo),
+      texto,
+      voz,
+      alCambiar: setEstado,
+      alAvanzar,
+      alCambiarDeFuente: (nueva) => {
+        escuchaRef.current = nueva
+        fuenteRef.current = null
+      },
+    })
     return escuchaRef.current
-  }, [])
+  }, [audio, alAvanzar, texto, voz])
 
   // Al cambiar de parada y al desmontar (cambiar de pantalla), la lectura se corta.
   useEffect(() => {
     return () => {
       escuchaRef.current?.parar()
       escuchaRef.current = null
+      fuenteRef.current = null
     }
   }, [clave])
 
   return {
-    hayVoz: voz !== null,
+    // Con audio guardado no hace falta que el aparato tenga voz en español.
+    hayVoz: voz !== null || Boolean(audio),
     estado,
     progreso: estado === 'parado' ? 0 : progreso,
     escuchar: () => escucha()?.hablar(texto, voz),

@@ -693,7 +693,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
             </div>
 
           {/* «Escuchar historia» (la lectura en voz alta de la 6z6): la barra oscura fija de abajo, como en el diseño. De pago (en la gratis, con candado), salvo la historia que la ficha marca gratis. */}
-          {conBarraEscuchar && <Escuchar barra libre={curated?.historia_gratis === true} abajo={Boolean(footerAction)} texto={textoDeLaHistoria} clave={stop.id} />}
+          {conBarraEscuchar && <Escuchar barra libre={curated?.historia_gratis === true} abajo={Boolean(footerAction)} texto={textoDeLaHistoria} clave={stop.id} sitio={{ destino: city, nombre: stop.name }} />}
 
           {footerAction && (
             <div className="shrink-0 border-t border-border bg-bg-card px-4 py-3">
