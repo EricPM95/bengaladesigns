@@ -208,6 +208,9 @@ if (PARTES.has('p2')) {
             const dd = written.days[idDia]
             const bad = dd?.fechas_malas ?? {}
             if ((bad.dias_semana ?? []).map(norm).includes(norm(fecha.weekday))) return true
+            // (El 25 de diciembre y el 1 de enero el Día de la Roma antigua es el D1-corto, todo por fuera: ese día no vale para el D1.)
+            if (idDia === 'D1' && ['12-25', '01-01'].includes(String(fecha.dateIso ?? '').slice(5))) return true
+            if ((bad.fechas ?? []).some((token) => token === String(fecha.dateIso ?? '').slice(5))) return true
             if ((bad.cerrado ?? []).some((n) => closedOnDay(placeDe(n), fecha.weekday, fecha.dateIso))) return true
             return false
           }
