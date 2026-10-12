@@ -3949,12 +3949,15 @@
     },
     {
      "id": "miercoles_audiencia",
-     "doc": "el miércoles** los Museos abren",
+     "doc": "Sin reserva, o con los Museos reservados hasta las 11:30:",
      "cuando": {
       "dia_semana": [
        "miércoles"
       ],
-      "sin_reserva": "Museos Vaticanos y Capilla Sixtina"
+      "sin_reserva_o_hasta": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "hasta": "11:45"
+      }
      },
      "ops": {
       "manana": {
@@ -3984,6 +3987,855 @@
         }
        ]
       }
+     }
+    },
+    {
+     "id": "miercoles_museos_media_manana",
+     "doc": "Con los Museos a media mañana (de 9:30 a 11:30) no cabe todo: San Pietro in Montorio y la Fontana dell'Acqua Paola pasan a «Si te sobra tiempo»",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "09:16",
+       "hasta": "11:45"
+      }
+     },
+     "ops": {
+      "tarde": {
+       "quitar": [
+        "San Pietro in Montorio y Tempietto de Bramante",
+        "Fontana dell'Acqua Paola"
+       ]
+      },
+      "sobra": [
+       {
+        "tipo": "parada",
+        "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+        "titulo": "San Pietro in Montorio y el Tempietto",
+        "min": 10,
+        "modo": null,
+        "si_cerrado": {
+         "cambiar_titulo": "El mirador de San Pietro in Montorio"
+        }
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Fontana dell'Acqua Paola",
+        "min": 10,
+        "modo": null
+       }
+      ]
+     }
+    },
+    {
+     "id": "miercoles_museos_12",
+     "doc": "con los Museos a las 12:00 cabe todo",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "11:46",
+       "hasta": "12:15"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "traslado",
+         "como": "bus 23",
+         "texto": "Bus 23 por el Lungotevere hasta la Isla Tiberina"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Isla Tiberina",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de Santa Maria in Trastevere",
+         "min": 25,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+         "titulo": "San Pietro in Montorio y el Tempietto",
+         "min": 10,
+         "modo": null,
+         "si_cerrado": {
+          "cambiar_titulo": "El mirador de San Pietro in Montorio"
+         }
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Fontana dell'Acqua Paola",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Mirador del Janículo",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de Santa Maria in Trastevere",
+         "titulo": "Bajada a Trastevere",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trastevere",
+         "titulo": "Paseo por Trastevere",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "miercoles_museos_12_30",
+     "doc": "a las 12:30 o las 13:00 salen San Pietro in Montorio y la Fontana dell'Acqua Paola",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "12:16",
+       "hasta": "13:15"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 75,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "traslado",
+         "como": "bus 23",
+         "texto": "Bus 23 por el Lungotevere hasta la Isla Tiberina"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Isla Tiberina",
+         "min": 20,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de Santa Maria in Trastevere",
+         "min": 25,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Mirador del Janículo",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Iglesia de Santa Maria in Trastevere",
+         "titulo": "Bajada a Trastevere",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trastevere",
+         "titulo": "Paseo por Trastevere",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      },
+      "sobra": [
+       {
+        "tipo": "parada",
+        "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+        "titulo": "San Pietro in Montorio y el Tempietto",
+        "min": 10,
+        "modo": null,
+        "si_cerrado": {
+         "cambiar_titulo": "El mirador de San Pietro in Montorio"
+        }
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Fontana dell'Acqua Paola",
+        "min": 10,
+        "modo": null
+       }
+      ]
+     }
+    },
+    {
+     "id": "miercoles_museos_mediodia",
+     "doc": "desde las 13:30, toda esa parte, y el día acaba con el paseo por Trastevere",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "13:16",
+       "hasta": "14:59"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a Trastevere"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trastevere",
+         "titulo": "Paseo por Trastevere",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      },
+      "sobra": [
+       {
+        "tipo": "parada",
+        "lugar": "Isla Tiberina",
+        "min": 20,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Iglesia de Santa Maria in Trastevere",
+        "min": 25,
+        "modo": "dentro"
+       },
+       {
+        "tipo": "parada",
+        "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+        "titulo": "San Pietro in Montorio y el Tempietto",
+        "min": 10,
+        "modo": null,
+        "si_cerrado": {
+         "cambiar_titulo": "El mirador de San Pietro in Montorio"
+        }
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Fontana dell'Acqua Paola",
+        "min": 10,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Mirador del Janículo",
+        "min": 30,
+        "modo": null
+       }
+      ]
+     }
+    },
+    {
+     "id": "miercoles_museos_tarde_15",
+     "doc": "la mañana sin Museos, la del miércoles (Fontana de Trevi sin gente",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "15:00",
+       "hasta": "15:59"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a Trastevere"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trastevere",
+         "titulo": "Paseo por Trastevere",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      },
+      "sobra": [
+       {
+        "tipo": "parada",
+        "lugar": "Isla Tiberina",
+        "min": 20,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Iglesia de Santa Maria in Trastevere",
+        "min": 25,
+        "modo": "dentro"
+       },
+       {
+        "tipo": "parada",
+        "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+        "titulo": "San Pietro in Montorio y el Tempietto",
+        "min": 10,
+        "modo": null,
+        "si_cerrado": {
+         "cambiar_titulo": "El mirador de San Pietro in Montorio"
+        }
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Fontana dell'Acqua Paola",
+        "min": 10,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Mirador del Janículo",
+        "min": 30,
+        "modo": null
+       }
+      ]
+     }
+    },
+    {
+     "id": "miercoles_museos_tarde_16",
+     "doc": "Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "16:00",
+       "hasta": "16:59"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 180,
+         "modo": null
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a Trastevere"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trastevere",
+         "titulo": "Paseo por Trastevere",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      },
+      "sobra": [
+       {
+        "tipo": "parada",
+        "lugar": "Isla Tiberina",
+        "min": 20,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Iglesia de Santa Maria in Trastevere",
+        "min": 25,
+        "modo": "dentro"
+       },
+       {
+        "tipo": "parada",
+        "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+        "titulo": "San Pietro in Montorio y el Tempietto",
+        "min": 10,
+        "modo": null,
+        "si_cerrado": {
+         "cambiar_titulo": "El mirador de San Pietro in Montorio"
+        }
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Fontana dell'Acqua Paola",
+        "min": 10,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Mirador del Janículo",
+        "min": 30,
+        "modo": null
+       }
+      ]
+     }
+    },
+    {
+     "id": "miercoles_museos_tarde_17",
+     "doc": "Con los Museos desde las 16:00, la Plaza y la Basílica van antes de los Museos, ya por la tarde",
+     "cuando": {
+      "dia_semana": [
+       "miércoles"
+      ],
+      "reserva": {
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "desde": "17:00"
+      }
+     },
+     "ops": {
+      "empieza": "08:00",
+      "manana": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Fontana de Trevi",
+         "min": 45,
+         "modo": null,
+         "titulo": "Fontana de Trevi, sin gente"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de España",
+         "min": 45,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via dei Coronari",
+         "min": 5,
+         "modo": "camino"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Puente Sant'Angelo",
+         "min": 10,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Castillo de Sant'Angelo",
+         "min": 30,
+         "modo": "fuera"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Via della Conciliazione",
+         "min": 10,
+         "modo": null
+        }
+       ]
+      },
+      "comida": {
+       "restaurante": "Borghiciana Pastificio Artigianale",
+       "alternativa": "Dal Toscano",
+       "zona": "en el Borgo"
+      },
+      "tarde": {
+       "paradas": [
+        {
+         "tipo": "parada",
+         "lugar": "Plaza de San Pedro",
+         "min": 30,
+         "modo": null
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Basílica de San Pedro",
+         "min": 60,
+         "modo": "dentro"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Museos Vaticanos y Capilla Sixtina",
+         "min": 120,
+         "modo": null
+        },
+        {
+         "tipo": "traslado",
+         "como": "taxi",
+         "texto": "Taxi a Trastevere"
+        },
+        {
+         "tipo": "parada",
+         "lugar": "Trastevere",
+         "titulo": "Paseo por Trastevere",
+         "min": 30,
+         "modo": null
+        }
+       ]
+      },
+      "sobra": [
+       {
+        "tipo": "parada",
+        "lugar": "Isla Tiberina",
+        "min": 20,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Iglesia de Santa Maria in Trastevere",
+        "min": 25,
+        "modo": "dentro"
+       },
+       {
+        "tipo": "parada",
+        "lugar": "San Pietro in Montorio y Tempietto de Bramante",
+        "titulo": "San Pietro in Montorio y el Tempietto",
+        "min": 10,
+        "modo": null,
+        "si_cerrado": {
+         "cambiar_titulo": "El mirador de San Pietro in Montorio"
+        }
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Fontana dell'Acqua Paola",
+        "min": 10,
+        "modo": null
+       },
+       {
+        "tipo": "parada",
+        "lugar": "Mirador del Janículo",
+        "min": 30,
+        "modo": null
+       }
+      ]
      }
     }
    ],

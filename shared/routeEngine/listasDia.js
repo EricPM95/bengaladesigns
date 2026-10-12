@@ -113,6 +113,7 @@ export function aplicarOps(trabajo, ops) {
  *   reserva { lugar, desde, hasta }   el viajero reservó ese lugar a una hora entre desde y hasta
  *   reservas [{ lugar, desde, hasta }, …]   varias reservas a la vez, todas (Tanda 6u: el Free Tour y los Museos del D3, cada uno a su hora)
  *   sin_reserva "Lugar" | [..]   el viajero NO ha reservado ese lugar (ninguno de la lista) (Tanda 6j)
+ *   sin_reserva_o_hasta { lugar, hasta }   sin reserva de ese lugar, o con la reserva a esa hora o antes (Tanda 6y7)
  *   pool "Lugar" | [..]   marcado en el pool (todos)        sin_pool "Lugar" | [..]   ninguno marcado
  *   fechas "MM-DD..MM-DD"  el día cae en esas fechas
  *   viaje_lleva [ids]      el viaje lleva alguno de esos días     viaje_sin [ids]   no lleva ninguno
@@ -155,6 +156,10 @@ export function cumple(cuando, ctx) {
         if (r.desde && m < toMin(r.desde)) return false
         if (r.hasta && m > toMin(r.hasta)) return false
       }
+    } else if (clave === 'sin_reserva_o_hasta') {
+      // Sin reserva de ese lugar, o con la reserva a esa hora o antes (el «día normal»: no crea un tramo de hora nuevo en listasReservas.js).
+      const hora = ctx.entradas?.[valor.lugar]
+      if (hora != null && toMin(hora) > toMin(valor.hasta)) return false
     } else if (clave === 'sin_reserva') {
       if ([].concat(valor).some((lugar) => ctx.entradas?.[lugar] != null)) return false
     } else if (clave === 'pool') {

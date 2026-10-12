@@ -28,16 +28,17 @@ const BASILICA = 'Basílica de San Pedro'
 console.log('1. El miércoles del Vaticano')
 {
   const doc = leer('docs/dias/DIAS_ROMA_PARADAS.md')
-  debe(/\*\*el miércoles\*\* los Museos abren: van como siempre, a primera hora, y no se quitan nunca por ser miércoles\. Solo cambian la Plaza y la Basílica de San Pedro, que van por la tarde \(por la mañana está la audiencia del Papa\)/.test(doc), '1 doc', 'el documento no dice lo de Eric sobre el miércoles')
+  // (Tanda 6y7: el miércoles se escribe de otra manera —solo si no se puede cambiar el día, y con la Plaza y la Basílica nunca antes de comer—; el detalle va en pruebaFase6y7_motor.mjs, parte 1.)
+  debe(/\*\*el miércoles, si no se puede cambiar el día\*\*.*los Museos abren: van como siempre, a su hora, y no se quitan nunca por ser miércoles/.test(doc), '1 doc', 'el documento no dice lo de Eric sobre el miércoles')
   debe(!/el miércoles sin Museos\*\* el día empieza a su hora/.test(doc), '1 doc', 'el documento sigue con la variante vieja «el miércoles sin Museos»')
   const listas = JSON.parse(fs.readFileSync('data/dias/roma/listas.json', 'utf8'))
   const texto = JSON.stringify(listas)
-  debe(texto.includes('el miércoles** los Museos abren') && !texto.includes('"doc":"el miércoles sin Museos"') && !texto.includes('"doc": "el miércoles sin Museos"'), '1 datos', 'listas.json no lleva la variante nueva del miércoles (¿falta pasar listasConvertir.mjs?)')
+  debe(texto.includes('Sin reserva, o con los Museos reservados hasta las 11:30:') && !texto.includes('"doc":"el miércoles sin Museos"') && !texto.includes('"doc": "el miércoles sin Museos"'), '1 datos', 'listas.json no lleva la variante nueva del miércoles (¿falta pasar listasConvertir.mjs?)')
   // En los datos: la variante quita la Plaza y la Basílica de la mañana y las pone al principio de la tarde; nunca quita los Museos.
   const halladas = []
   const recorre = (o) => {
     if (o && typeof o === 'object') {
-      if (o.id === 'miercoles_audiencia' && /Museos abren/.test(o.doc ?? '')) halladas.push(o)
+      if (o.id === 'miercoles_audiencia' && /Sin reserva, o con los Museos/.test(o.doc ?? '')) halladas.push(o)
       for (const v of Object.values(o)) recorre(v)
     }
   }
