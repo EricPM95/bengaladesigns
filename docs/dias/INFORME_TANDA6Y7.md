@@ -40,4 +40,9 @@ Las 31 historias v4 están en sus fichas (todas encontraron su ficha; solo el te
 
 ## Pruebas
 - **Nuevas:** `pruebaFase6y7_motor` (partes 1 a 3), `pruebaFase6y7_pantallas` (73 comprobaciones), `pruebaFase6y7_titulos` (3.642 comprobaciones: 228 viajes de prueba con 798 días, 95 con Free Tour siempre «Free Tour» primero, llegada y vuelta con título y trayecto pequeño, DÍAS y HOY con el mismo título y sin horas) y `pruebaFase6y7_historias` (554: las 31 historias idénticas al documento y la regla de 15 palabras).
-- **Resultados de la integración** (las 365 fechas y la batería completa): ver abajo.
+- **Las 365 fechas** con las cuatro partes juntas y la pantalla de espera nueva (`pruebaListas`, 8 tramos desde el 14-oct-2026, en paralelo): **0 fallos en los 8** (más de 800.000 viajes).
+- **Batería de siempre:** 54 pruebas a 0 fallos (todas las `pruebaFase6*`, `Corr6*`, `Tanda6*` y `Fotos6*`, incluidas las nuevas de la 6y7: motor 17.772 comprobaciones, pantallas 77, títulos 3.642, historias 554, cierre 3.211) y tipos limpios.
+- **La prueba larga del motor de la 6y5**, por partes (entera tarda más de 25 minutos): dos reservas a la vez, 8.644 comprobaciones; cierres y «Si te sobra tiempo», 13.495; aviso de la Fontana y tope, 14.589; todas a 0 fallos. `pruebaFase6y2_reorganizar` suelta: 782 comprobaciones, 0 fallos.
+- **Lo que queda en «No incluido»** con el pool nuevo (540 viajes por forma): 1 día, no hay pool; 2 días (hasta 3 sitios), 142 de 1.620 (8,8 %); 3 días (hasta 6), 311 de 3.240 (9,6 %); 4 días, 2 de 3.240 (0,1 %); 5 y 6 días, ninguno.
+- **Dos pruebas antiguas fuera de la batería** (`pruebaFranjas6x`, `pruebaDiasFecha6z3`) siguen fallando como antes de esta tanda: pregunta 17.
+- **Además, a petición de Eric,** se ajustó la prueba de iconos (ya no hay pantalla de carga con avión), la de pantallas (comprueba que no queda ningún texto viejo de la pantalla de carga) y la medida del tope de la 6y5 (con 1 día no hay pool).

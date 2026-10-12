@@ -283,7 +283,9 @@ if (PARTES.has('tope')) {
   const baraja = (l) => { const o = [...l]; for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(azar() * (i + 1)); [o[i], o[j]] = [o[j], o[i]] } return o }
   const medidas = {}
   for (const dias of [1, 2, 3, 4, 5, 6]) {
-    const n = dias === 1 ? 2 : dias === 2 ? 3 : 6
+    // (Tanda 6y7: con 1 día el pool no sale —tope 0—, así que no hay nada que medir; con 2 días hasta 3 sitios y con 3 o más hasta 6.)
+    if (dias === 1) { medidas[1] = { tope: 0, viajes: 0, elegidos: 0, noIncluidos: 0, porcentaje: 0 }; continue }
+    const n = dias === 2 ? 3 : 6
     let elegidos = 0
     let noIncluidos = 0
     let viajes = 0

@@ -30,4 +30,4 @@ Las de cada parte, con más detalle, están en `INFORME_PARTE_MOTOR_TANDA6Y7.md`
 16. **Superlativos en textos tuyos:** no toqué los textos de los días escritos de `roma.json` ni `docs/roma_por_que.json` («La fuente más famosa del mundo» de Trevi, «La escalinata más famosa del mundo», «La mejor colección de Bernini del mundo»…) porque son tuyos. ¿Los suavizo igual?
 
 ## Pruebas antiguas que ya fallaban
-17. `pruebaFranjas6x` y `pruebaDiasFecha6z3` fallan con «hora de la reserva 16:40» porque reservan la Fontana de Trevi, que desde la 6y6 no vende entrada, y por una frase de `reservaFueraDeDia.ts`. No son de esta tanda; hay que actualizarlas o retirarlas.
+17. `pruebaFranjas6x` (4 fallos: «ya no sale la hora de la reserva del viajero (16:40)») y `pruebaDiasFecha6z3` (3 fallos: la misma hora y una plantilla `el día ${…}` en `src/lib/reservaFueraDeDia.ts:43`) ya fallaban ANTES de esta tanda (el agente de los títulos lo comprobó en una copia limpia del commit anterior). No están en la batería de siempre y no he tocado nada de lo suyo. Hay que actualizarlas o arreglar lo que miran en una tanda aparte.
