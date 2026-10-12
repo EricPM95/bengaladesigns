@@ -1,6 +1,13 @@
 # Pendientes: ESCUCHAR Y LAS HISTORIAS
 
-**(11-oct, 22:47) Eric ya revisó las 31 historias: entran en la Tanda 6y5.** Con historia, la barra de la ficha dice «Escuchar historia» y la lee; sin historia, «Escuchar» y lee el Resumen. En HOY, «Historia» al lado de «Escuchar». La del Coliseo, gratis. Los datos dudosos de las fichas también se corrigen en la 6y5. Queda para después: las historias de los demás sitios y la voz de Eric.
+**(11-oct, 22:47) Eric ya revisó las 31 historias: entran en la Tanda 6y5.** Con historia, la barra de la ficha dice «Escuchar historia» y la lee; sin historia, no sale ningún botón (Eric). En HOY, «Historia» al lado de «Escuchar». La del Coliseo, gratis. Los datos dudosos de las fichas también se corrigen en la 6y5. Queda para después: las historias de los demás sitios y la voz de Eric.
+
+**(12-oct) Versión 4 de las historias: «que te cuenten la historia» (Eric: «me encanta»).** Las 31 reescritas como un cuento de unos 3 minutos (400–450 palabras), de principio a fin. Regla nueva: pueden contar lo importante aunque salga en la ficha, pero no copian sus frases. Para la próxima tanda:
+- cambiar en las fichas las 31 historias por las de la versión 4 (HISTORIAS_ROMA.md);
+- cambiar la prueba de la 6y5 (fallaba con 8 palabras seguidas iguales a la ficha) por «no copia frases enteras de la ficha» (por ejemplo, 15 palabras seguidas);
+- cambiar la línea de GUIA_NUEVOS_DESTINOS («la historia nunca repite lo que dice la ficha») por la regla nueva;
+- corregir en las fichas los datos equivocados que salen al final de HISTORIAS_ROMA.md (comprobándolos antes).
+- La voz: probar ElevenLabs, Google (Chirp 3 HD) y OpenAI con el texto de Trevi. Los audios se hacen una vez y se guardan (unos 80.000 caracteres las 31). Elige Eric.
 
 Punto 3 del orden de `PENDIENTES_6K.md`: va después de Roma pulida y antes de las Llegadas.
 
