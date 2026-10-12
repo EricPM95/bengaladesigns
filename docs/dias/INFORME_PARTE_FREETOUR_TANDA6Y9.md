@@ -19,7 +19,7 @@ Cambiar `` `cena_antes_si_sale_despues_de` (21:00) `` por `` `cena_antes_si_sale
 - Nueva `pruebaFase6y9_freetour.mjs`: parte 1 (motor), 1.589 comprobaciones, 0 fallos (15 tipos de día × viajes de 3, 5 y 7 días × tour a las 19:00, 19:30, 19:35, 20:00, 21:00 y 21:30; Galería en 8 turnos, con y sin otra reserva). Parte 2 (último cambio de fechas), 6 comprobaciones, 0 fallos. Comprobado que la parte de la Galería falla si se vuelve a la regla vieja.
 - `pruebaFase6y8_comida` (constante de la cena 21:00 → 22:00 y el Free Tour de noche con 19:00): 15 tipos de día, 0 fallos (~110.000 comprobaciones).
 - `pruebaTanda6u` 0 fallos (1.884 viajes); `pruebaFase6y7_motor` 0; `6y6_cierre` 0; `6y4_listas`, 6g, 6h, 6i, 6j, 6k, 6l, 6o, 6r, 6z, 6z2: exit 0 / 0 fallos; `6y5_motor` p1, p2+p4 (paso 37) y tope: 0 fallos; `6s`, `6t`, `6v`: 0 fallos; `pruebaFase6y7_pantallas` (ajustada: ahora exige que gane el último cambio): 0 fallos. `tsc -p tsconfig.app.json` limpio.
-- Muestra de ~60 fechas con `pruebaListas`: en el momento de escribir esto, 36 de las 60 terminadas, **todas 0 fallos**; el resto seguía corriendo al cerrar el informe (no tengo su cifra final).
+- Muestra de ~60 fechas con `pruebaListas`: 48 de las 60 fechas terminadas, **todas 0 fallos** (festivos, domingos, lunes, miércoles, Pascua, agosto y Ferragosto, 1 y 6 de enero entre ellas). Las 12 últimas (22-nov y diciembre, incluidos Navidad y Nochevieja) las paré sin terminar por orden del coordinador: sin cifra.
 - No se lanzaron las 365 fechas.
 
 ## Decidido por Code
