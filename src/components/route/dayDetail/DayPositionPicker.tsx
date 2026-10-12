@@ -4,6 +4,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { resolveDisplayStops, seedStopsFromTemplate } from '../../../lib/mockDayDetail'
 import { Modal } from '../../ui/Modal'
 import { delDia, diaCorto } from '../../../lib/nombreDeDia'
+import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
 
 interface DayPositionPickerProps {
   route: Route
@@ -56,7 +57,7 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
                   onClick={() => setSelectedDayId(day.id)}
                   className="block w-full rounded-lg border border-border px-3 py-2 text-left text-small text-text hover:bg-bg-hover"
                 >
-                  {diaCorto(route, day.dayNumber)} — {day.city}
+                  {diaCorto(route, day.dayNumber)} — {tituloSimpleDelDia(route, day)}
                 </button>
               ))}
           </div>

@@ -8,8 +8,9 @@ import { DayList } from '../../src/components/route/DayList'
 import { useRouteStore } from '../../src/store/useRouteStore'
 import { buildManualRoute } from '../../src/lib/manualRoute'
 import { planManualResize, resizeManualRoute } from '../../src/lib/manualDuration'
+import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
 
 export {
   createElement, renderToStaticMarkup, StepElegir, STEP, shouldSuggestExperiences, stepCounterLabel, stepNamesFor, visibleStepNamesFor, DayList, useRouteStore,
-  buildManualRoute, planManualResize, resizeManualRoute,
+  buildManualRoute, planManualResize, resizeManualRoute, fetchDestinationExcursions,
 }

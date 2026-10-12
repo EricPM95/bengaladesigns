@@ -28,7 +28,7 @@ export function AddToTripScreen({ route }: { route: Route }) {
   if (!addFlow) return null
 
   const open = (next: AddItem) => setItem(next)
-  const title = day ? `Añadiendo ${alDia(route, day.dayNumber)} · ${dayName(day)}` : `Añadir a tu viaje`
+  const title = day ? `Añadiendo ${alDia(route, day.dayNumber)} · ${dayName(route, day)}` : `Añadir a tu viaje`
   const range = route.answers.dateRange
 
   const done = (result: AddedResult) => {
@@ -101,7 +101,7 @@ export function finishAdd(result: AddedResult, previous: Route): void {
   useAddFlowStore.setState({
     addFlow: null,
     focusStopId: result.stopId,
-    toast: target ? { message: `Añadido ${alDia(store.route, target.dayNumber)} · ${dayName(target)}`, previous, id: Date.now() } : null,
+    toast: target ? { message: `Añadido ${alDia(store.route, target.dayNumber)} · ${dayName(store.route, target)}`, previous, id: Date.now() } : null,
   })
   store.setMode('days')
   store.setActiveDayId(result.dayId)

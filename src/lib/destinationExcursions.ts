@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import type { Excursion, StopEntrada } from './types'
 import { mapExcursionList, type GeneratedExcursion } from './mapGeneratedRoute'
 import type { EssentialEntry } from './bookings'
+import type { GruposDelDestino } from './tituloDelDia'
 
 export interface DestinationExcursions {
   /** Desde cuántos días de viaje sale el botón; null = este destino no tiene excursiones. */
@@ -37,6 +38,10 @@ export interface DestinationExcursions {
   etiquetasPorSitio: Record<string, string>
   /** El bloque «No necesitas entrada» de los sitios que no venden entrada pero cobran por acercarse (la tasa de la Fontana de Trevi), por nombre de lugar (Tanda 6y4; dato `entrada_de_pago`). */
   sinEntradaPorSitio: Record<string, SinEntrada>
+  /** Con qué grupos se nombra un día de este destino (Tanda 6y7, ver src/lib/tituloDelDia.ts); null = el destino no los trae y los días se llaman como siempre. */
+  gruposDia: GruposDelDestino | null
+  /** Ya han llegado los datos (o ha fallado la petición): hasta entonces el título del día no se pinta, para que no salte de un nombre a otro. */
+  cargado: boolean
 }
 
 /** «No necesitas entrada» (Tanda 6y4): lo que dice el dato de un sitio con tasa en vez de entrada. Cada parte puede faltar; lo que falta no se pinta (y sin precio, el bloque va sin números). */
@@ -48,9 +53,14 @@ export interface SinEntrada {
   detalle: string | null
 }
 
-const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, nombresCortos: {}, zonasAlojamiento: [], mapaAlojamiento: null, moneda: null, examples: null, dayNameExample: null, rating: null, etiquetasPorSitio: {}, sinEntradaPorSitio: {} }
+const EMPTY: DestinationExcursions = { fromDays: null, excursions: [], entradas: [], entradasPorSitio: {}, entradasOrden: { arriba: [], mas: [] }, nombresCortos: {}, zonasAlojamiento: [], mapaAlojamiento: null, moneda: null, examples: null, dayNameExample: null, rating: null, etiquetasPorSitio: {}, sinEntradaPorSitio: {}, gruposDia: null, cargado: false }
 const cache = new Map<string, DestinationExcursions>()
 const inFlight = new Map<string, Promise<DestinationExcursions>>()
+
+/** Lo que ya se sabe del destino, sin esperar nada (null si aún no ha llegado): para los textos que se calculan fuera de un componente (el título de un día en una hoja o en el PDF). */
+export function destinoYaCargado(destination: string | null | undefined): DestinationExcursions | null {
+  return destination ? (cache.get(destination.trim().toLowerCase()) ?? null) : null
+}
 
 export function fetchDestinationExcursions(destination: string): Promise<DestinationExcursions> {
   const key = destination.trim().toLowerCase()
@@ -60,14 +70,14 @@ export function fetchDestinationExcursions(destination: string): Promise<Destina
   if (running) return running
   const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
     .then((response) => (response.ok ? response.json() : null))
-    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; moneda?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating']; etiquetas_por_sitio?: Record<string, string>; sin_entrada_por_sitio?: Record<string, SinEntrada> } | null) => {
+    .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; moneda?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating']; etiquetas_por_sitio?: Record<string, string>; sin_entrada_por_sitio?: Record<string, SinEntrada>; grupos_dia?: GruposDelDestino | null } | null) => {
       const result: DestinationExcursions = data?.found
-        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data.nombres_cortos ?? {}, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, moneda: data.moneda ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null, etiquetasPorSitio: data.etiquetas_por_sitio ?? {}, sinEntradaPorSitio: data.sin_entrada_por_sitio ?? {} }
-        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data?.nombres_cortos ?? {}, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, moneda: data?.moneda ?? null, dayNameExample: data?.day_name_example ?? null, etiquetasPorSitio: data?.etiquetas_por_sitio ?? {}, sinEntradaPorSitio: data?.sin_entrada_por_sitio ?? {} }
+        ? { fromDays: data.from_days ?? null, excursions: mapExcursionList(data.excursions ?? []), entradas: data.entradas ?? [], entradasPorSitio: data.entradas_por_sitio ?? {}, entradasOrden: data.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data.nombres_cortos ?? {}, zonasAlojamiento: data.zonas_alojamiento ?? [], mapaAlojamiento: data.mapa_alojamiento ?? null, moneda: data.moneda ?? null, examples: data.examples ?? null, dayNameExample: data.day_name_example ?? null, rating: data.rating ?? null, etiquetasPorSitio: data.etiquetas_por_sitio ?? {}, sinEntradaPorSitio: data.sin_entrada_por_sitio ?? {}, gruposDia: data.grupos_dia ?? null, cargado: true }
+        : { ...EMPTY, entradasPorSitio: data?.entradas_por_sitio ?? {}, entradasOrden: data?.entradas_orden ?? { arriba: [], mas: [] }, nombresCortos: data?.nombres_cortos ?? {}, zonasAlojamiento: data?.zonas_alojamiento ?? [], mapaAlojamiento: data?.mapa_alojamiento ?? null, moneda: data?.moneda ?? null, dayNameExample: data?.day_name_example ?? null, etiquetasPorSitio: data?.etiquetas_por_sitio ?? {}, sinEntradaPorSitio: data?.sin_entrada_por_sitio ?? {}, gruposDia: data?.grupos_dia ?? null, cargado: true }
       cache.set(key, result)
       return result
     })
-    .catch(() => EMPTY)
+    .catch(() => ({ ...EMPTY, cargado: true }))
     .finally(() => inFlight.delete(key))
   inFlight.set(key, job)
   return job

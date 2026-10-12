@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
-import { etiquetasDeBarrio, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
+import { etiquetasDeBarrio, gruposDeDia, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { esNombreNuestro } from './engine/nombresDeFoto.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
@@ -4488,6 +4488,8 @@ app.post('/api/destination-excursions', (req, res) => {
     moneda: data?.moneda ?? null,
     // Tanda 6y4: la etiqueta de barrio de cada lugar (la de su zona, «Trastevere») y el bloque «No necesitas entrada» de los sitios que cobran por acercarse (la tasa de la Fontana de Trevi). Datos del destino.
     etiquetas_por_sitio: etiquetasDeBarrio(data),
+    // Tanda 6y7: los grupos con que se nombra cada día («Centro histórico», «Free Tour»…), del dato del destino.
+    grupos_dia: gruposDeDia(data),
     sin_entrada_por_sitio: sinEntradaPorSitio(data),
   }
   if (!data || (options.length === 0 && entradas.length === 0)) {

@@ -3,6 +3,7 @@ import type { Coordinates, DayPlan, Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { dayOfReservation, shortDateEs } from '../../../lib/bookings'
+import { nombreDelDia } from '../../../lib/tituloDelDia'
 import { numberedStopsOf, stopNumbersOf } from '../../../lib/stopKind'
 import { displayStopName } from '../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../lib/distanceMock'
@@ -82,6 +83,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   // El día de excursión (el día 4 con el interruptor en Excursión): solo la excursión (Tanda 6g).
   if (day.interruptor?.mode === 'excursion') return <TodayExcursion route={route} day={day} />
 
+  const tituloDeHoy = nombreDelDia(route, day, info.gruposDia)
   const paradas = numberedStopsOf(day)
   const numeros = stopNumbersOf(day)
   // Las saltadas («No me da tiempo») ni se ven ni cuentan: «1 de 4 visto» si de 5 hay una saltada.
@@ -174,6 +176,17 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   // ── De pago: lo de vivo ──
   return (
     <>
+      {/* El título del día, el mismo que en DÍAS (tanda 6y7, src/lib/tituloDelDia.ts); si es día de viaje, su trayecto va pequeño al lado. Sin horas. */}
+      {info.cargado && (
+        <div className="flex flex-none flex-col gap-0.5 px-1" data-hoy-titulo-del-dia>
+          <span data-titulo-del-dia="1" className="font-display text-[26px] leading-[1.08] text-text [overflow-wrap:anywhere]">{tituloDeHoy.titulo}</span>
+          {tituloDeHoy.viaje && (
+            <span className="flex flex-wrap items-baseline gap-x-1.5 text-[12.5px] font-medium text-accent">
+              Día de viaje<span data-viaje-del-dia="1" className="whitespace-nowrap text-[11.5px] font-normal text-text/55">· {tituloDeHoy.viaje}</span>
+            </span>
+          )}
+        </div>
+      )}
       {/* Solo avisa: no mueve ni quita nada del día. */}
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
       <div className="flex flex-none flex-col gap-3 rounded-[28px] bg-[#1C2230] px-2 pb-3.5 pt-2 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>

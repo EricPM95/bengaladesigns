@@ -1,5 +1,13 @@
 import { useRouteStore } from '../../../store/useRouteStore'
 import { diaCorto } from '../../../lib/nombreDeDia'
+import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
+import type { Route } from '../../../lib/types'
+
+/** El título del día (el mismo que en DÍAS); si el día ya no está en la ruta, su ciudad. */
+const nombreDeUnDia = (route: Route, dia: { id: string; city: string }): string => {
+  const day = route.days.find((candidate) => candidate.id === dia.id)
+  return day ? tituloSimpleDelDia(route, day) : dia.city
+}
 
 /** Una fila de la lista de días de «Mover a otro día». */
 export const FILA_DE_DIA = 'w-full rounded-lg px-2 py-1.5 text-left text-small text-text hover:bg-bg-hover disabled:cursor-not-allowed disabled:opacity-40'
@@ -14,7 +22,7 @@ export function ListaDeDias({ dias, onElegir, filaClassName = FILA_DE_DIA }: { d
     <>
       {dias.map((day) => (
         <button key={day.id} type="button" onClick={() => onElegir(day.id)} className={filaClassName}>
-          {diaCorto(route, day.dayNumber)} — {day.city}
+          {diaCorto(route, day.dayNumber)} — {nombreDeUnDia(route, day)}
         </button>
       ))}
     </>

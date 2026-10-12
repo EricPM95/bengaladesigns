@@ -10,6 +10,7 @@ import { hasFullDayExcursion, isEmptyDay, isFreeDay, suggestedTimeFor } from '..
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { alDia, elDia, tieneFechas, tuDia } from '../../../lib/nombreDeDia'
+import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
 import { TimeField } from '../../ui/TimeField'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 import { Icono } from '../../ui/Icono'
@@ -41,12 +42,13 @@ function shortDate(dateIso: string): string {
   return `${WEEKDAY.format(date).replace('.', '')} ${date.getDate()} ${MONTH.format(date).replace('.', '')}`
 }
 
-export const dayName = (day: DayPlan): string => day.curatedTitle ?? day.title ?? day.city
+/** El nombre del día (tanda 6y7: el mismo que en DÍAS y HOY, ver src/lib/tituloDelDia.ts). */
+export const dayName = (route: Route, day: DayPlan): string => tituloSimpleDelDia(route, day)
 
 /** "sáb 17 oct · Compras"; sin fechas, "Día 3 · Compras" (con fechas el día se llama por su fecha: tanda 6z3, punto 5). */
 export function dayOptionLabel(route: Route, day: DayPlan): string {
   const start = route.answers.dateRange?.start
-  return [start ? shortDate(addDaysToIso(start, day.dayNumber - 1)) : `Día ${day.dayNumber}`, dayName(day)].filter(Boolean).join(' · ')
+  return [start ? shortDate(addDaysToIso(start, day.dayNumber - 1)) : `Día ${day.dayNumber}`, dayName(route, day)].filter(Boolean).join(' · ')
 }
 
 /** Por qué no se puede elegir ese día (null = se puede). */

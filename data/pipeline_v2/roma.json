@@ -87,6 +87,7 @@
         12.4922
       ],
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "conflicts_with": [
         "Coliseo"
       ],
@@ -126,6 +127,7 @@
         12.4833
       ],
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "conflicts_with": [
         "Fontana de Trevi"
       ],
@@ -165,6 +167,7 @@
         12.4824
       ],
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "conflicts_with": [
         "Plaza de España"
       ],
@@ -205,6 +208,7 @@
         12.4769
       ],
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "conflicts_with": [
         "Panteón"
       ],
@@ -245,6 +249,7 @@
         12.4596
       ],
       "zone": "trastevere",
+      "grupo_dia": "Roma desde las alturas",
       "conflicts_with": [
         "Mirador del Janículo"
       ],
@@ -287,6 +292,7 @@
         12.4779
       ],
       "zone": "villa_borghese",
+      "grupo_dia": "Roma desde las alturas",
       "conflicts_with": [
         "Terraza del Pincio"
       ],
@@ -327,6 +333,7 @@
         12.4657
       ],
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "conflicts_with": [
         "Puente Sant'Angelo"
       ],
@@ -366,6 +373,7 @@
         12.4838
       ],
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "conflicts_with": [
         "Foro Romano y Palatino"
       ],
@@ -407,6 +415,7 @@
         12.473
       ],
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "conflicts_with": [
         "Piazza Navona",
         "Mercadillo de Navidad de Piazza Navona"
@@ -456,6 +465,7 @@
         12.4701
       ],
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "conflicts_with": [
         "Plaza Trilussa"
       ],
@@ -903,6 +913,7 @@
       "level": 1,
       "tier": "joya",
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8902,
         12.4922
@@ -1046,6 +1057,7 @@
       "level": 1,
       "tier": "imprescindible",
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8925,
         12.4853
@@ -1198,6 +1210,7 @@
       "level": 1,
       "tier": "imprescindible",
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8897,
         12.4905
@@ -1230,6 +1243,7 @@
       "name": "Boca de la Verdad",
       "level": 2,
       "zone": "aventino",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8881,
         12.4815
@@ -1270,6 +1284,7 @@
       "name": "Circo Máximo",
       "level": 2,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8859,
         12.4853
@@ -1317,6 +1332,7 @@
       "level": 1,
       "tier": "joya",
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9009,
         12.4833
@@ -1355,6 +1371,7 @@
       "level": 1,
       "tier": "joya",
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8986,
         12.4769
@@ -1468,6 +1485,7 @@
       "level": 1,
       "tier": "imprescindible",
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8992,
         12.473
@@ -1509,6 +1527,7 @@
       "level": 1,
       "tier": "imprescindible",
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "coordinates": [
         41.906,
         12.4825
@@ -1552,6 +1571,7 @@
       ],
       "level": 2,
       "zone": "villa_borghese",
+      "grupo_dia": "Popolo",
       "coordinates": [
         41.9106,
         12.4764
@@ -1586,6 +1606,7 @@
       "name": "Largo di Torre Argentina",
       "level": 2,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8956,
         12.4767
@@ -1615,6 +1636,7 @@
       "name": "Via del Corso",
       "level": 3,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.903,
         12.48
@@ -1643,6 +1665,7 @@
       "level": 1,
       "tier": "joya",
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9065,
         12.4536
@@ -1776,6 +1799,7 @@
       "level": 1,
       "tier": "imprescindible",
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9021,
         12.4555
@@ -1928,6 +1952,7 @@
       "level": 1,
       "tier": "imprescindible",
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9022,
         12.4573
@@ -1970,6 +1995,7 @@
       "name": "Via di Ripetta",
       "level": 3,
       "zone": "tridente",
+      "grupo_dia": "Popolo",
       "coordinates": [
         41.9068,
         12.4745
@@ -1993,6 +2019,7 @@
       "name": "Via della Conciliazione",
       "level": 3,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9024,
         12.4601
@@ -2020,6 +2047,7 @@
       "name": "Lungotevere",
       "level": 3,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9027,
         12.4655
@@ -2044,6 +2072,7 @@
       "name": "Castillo de Sant'Angelo",
       "level": 2,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9031,
         12.4663
@@ -2118,6 +2147,7 @@
       "name": "Mirador del Janículo",
       "level": 2,
       "zone": "trastevere",
+      "grupo_dia": "Roma desde las alturas",
       "coordinates": [
         41.8912,
         12.4596
@@ -2158,6 +2188,7 @@
       "name": "Galería Borghese",
       "level": 2,
       "zone": "villa_borghese",
+      "grupo_dia": "Villa Borghese",
       "coordinates": [
         41.9142,
         12.4921
@@ -2247,6 +2278,7 @@
       "name": "Parque de Villa Borghese",
       "level": 2,
       "zone": "villa_borghese",
+      "grupo_dia": "Villa Borghese",
       "coordinates": [
         41.91491,
         12.48279
@@ -2337,6 +2369,7 @@
       "name": "Bioparque de Roma",
       "level": 3,
       "zone": "villa_borghese",
+      "grupo_dia": "Villa Borghese",
       "coordinates": [
         41.9175,
         12.4853
@@ -2428,6 +2461,7 @@
       "name": "Galería Nacional de Arte Moderno",
       "level": 3,
       "zone": "villa_borghese",
+      "grupo_dia": "Villa Borghese",
       "coordinates": [
         41.917,
         12.4821
@@ -2473,6 +2507,7 @@
       "acortable": true,
       "level": 1,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8946,
         12.4833
@@ -2540,6 +2575,7 @@
       "name": "Puente Sant'Angelo",
       "level": 3,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9032,
         12.4657
@@ -2581,6 +2617,7 @@
       "name": "Isla Tiberina",
       "level": 2,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8897,
         12.4776
@@ -2610,6 +2647,7 @@
       "name": "Via dei Fori Imperiali",
       "level": 3,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8938,
         12.4857
@@ -2643,6 +2681,7 @@
       "name": "Campo de' Fiori",
       "level": 2,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8955,
         12.4723
@@ -2675,6 +2714,7 @@
       "name": "Borgo Pio",
       "level": 3,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.904,
         12.4602
@@ -2705,6 +2745,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8955,
         12.4823
@@ -2741,6 +2782,7 @@
       "duration_minutes": 60,
       "min_max": 75,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8953,
         12.486
@@ -2792,6 +2834,7 @@
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9021,
         12.4555
@@ -2889,6 +2932,7 @@
       "duration_minutes": 30,
       "min_max": 40,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8958,
         12.4797
@@ -2960,6 +3004,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8997,
         12.4747
@@ -3020,6 +3065,7 @@
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9061,
         12.4754
@@ -3113,6 +3159,7 @@
       "duration_minutes": 30,
       "min_max": 60,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8922,
         12.4781
@@ -3150,6 +3197,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8977,
         12.477
@@ -3207,6 +3255,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8989,
         12.48
@@ -3250,6 +3299,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.898,
         12.4776
@@ -3286,6 +3336,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8938,
         12.4776
@@ -3316,6 +3367,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9036,
         12.4883
@@ -3346,6 +3398,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9011,
         12.4799
@@ -3375,6 +3428,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8996,
         12.4875
@@ -3411,6 +3465,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9014,
         12.4723
@@ -3444,6 +3499,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "coordinates": [
         41.9051,
         12.4805
@@ -3476,6 +3532,7 @@
       "duration_minutes": 10,
       "min_max": 10,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8998,
         12.478
@@ -3513,6 +3570,7 @@
       "duration_minutes": 10,
       "min_max": 10,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9006,
         12.4796
@@ -3551,6 +3609,7 @@
       "duration_minutes": 10,
       "min_max": 20,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8955,
         12.471
@@ -3582,6 +3641,7 @@
       "duration_minutes": 20,
       "min_max": 45,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8933,
         12.4828
@@ -3624,6 +3684,7 @@
       "minimo_dentro": 60,
       "min_max": 150,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8931,
         12.4828
@@ -3722,6 +3783,7 @@
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8894,
         12.4975
@@ -3802,6 +3864,7 @@
       "schedule": "08:00-12:30, 15:00-18:00",
       "is_free_access": true,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8939,
         12.4932
@@ -3894,6 +3957,7 @@
       "duration_minutes": 75,
       "min_max": 90,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8913,
         12.495
@@ -3950,6 +4014,7 @@
       "duration_minutes": 60,
       "min_max": 90,
       "zone": "aventino",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8794,
         12.4931
@@ -4103,6 +4168,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "aventino",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8851,
         12.4804
@@ -4209,6 +4275,7 @@
       "last_entry": "18:15",
       "is_free_access": true,
       "zone": "esquilino",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8976,
         12.4984
@@ -4255,6 +4322,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8958,
         12.4843
@@ -4286,6 +4354,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8919,
         12.4795
@@ -4319,6 +4388,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "aventino",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8829,
         12.4784
@@ -4358,6 +4428,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "testaccio",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8764,
         12.4808
@@ -4397,6 +4468,7 @@
       "schedule": "08:00-12:00, 16:00-18:00",
       "is_free_access": true,
       "zone": "roma_antigua",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.905,
         12.494
@@ -4448,6 +4520,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8894,
         12.4697
@@ -4523,6 +4596,7 @@
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8935,
         12.467
@@ -4571,6 +4645,7 @@
       "name": "Ponte Sisto",
       "level": 3,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8923,
         12.4709
@@ -4605,6 +4680,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8914,
         12.4701
@@ -4639,6 +4715,7 @@
       "duration_minutes": 20,
       "min_max": 50,
       "zone": "villa_borghese",
+      "grupo_dia": "Roma desde las alturas",
       "coordinates": [
         41.9111,
         12.4779
@@ -4689,6 +4766,7 @@
       "name": "Basílica de San Juan de Letrán",
       "level": 2,
       "zone": "san_giovanni",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8859,
         12.5057
@@ -4736,6 +4814,7 @@
       "name": "Quartiere Coppedè",
       "level": 3,
       "zone": "nomentano",
+      "grupo_dia": "Villa Borghese",
       "coordinates": [
         41.912,
         12.508
@@ -4771,6 +4850,7 @@
       ],
       "level": 3,
       "zone": "testaccio",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8768,
         12.4751
@@ -4821,6 +4901,7 @@
       ],
       "level": 3,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8976,
         12.4808
@@ -4892,6 +4973,7 @@
       "name": "Via Appia Antica",
       "level": 3,
       "zone": "appia",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8558,
         12.5138
@@ -4927,6 +5009,7 @@
       "name": "Catacumbas de San Calixto",
       "level": 3,
       "zone": "appia",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8589,
         12.5108
@@ -4999,6 +5082,7 @@
       ],
       "level": 3,
       "zone": "testaccio",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8762,
         12.48
@@ -5139,6 +5223,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8886,
         12.4667
@@ -5193,6 +5278,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "trastevere",
+      "grupo_dia": "Roma desde las alturas",
       "coordinates": [
         41.8881,
         12.4655
@@ -5236,6 +5322,7 @@
       "duration_minutes": 30,
       "min_max": 40,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8876,
         12.4759
@@ -5296,6 +5383,7 @@
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "coordinates": [
         41.8893,
         12.47
@@ -5328,6 +5416,7 @@
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8953,
         12.4929
@@ -5365,6 +5454,7 @@
       "duration_minutes": 30,
       "min_max": 40,
       "zone": "villa_borghese",
+      "grupo_dia": "Popolo",
       "coordinates": [
         41.9115,
         12.4764
@@ -5431,6 +5521,7 @@
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "testaccio",
+      "grupo_dia": "Basílicas y el Aventino",
       "coordinates": [
         41.8796,
         12.477
@@ -5467,6 +5558,7 @@
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "coordinates": [
         41.9063,
         12.4833
@@ -5528,6 +5620,7 @@
       "duration_minutes": 45,
       "min_max": 45,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9045,
         12.4886
@@ -5576,6 +5669,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8916,
         12.491
@@ -5610,6 +5704,7 @@
       "duration_minutes": 10,
       "min_max": 20,
       "zone": "trastevere",
+      "grupo_dia": "Roma desde las alturas",
       "coordinates": [
         41.8886,
         12.4667
@@ -5648,6 +5743,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8935,
         12.4975
@@ -5681,6 +5777,7 @@
       "duration_minutes": 10,
       "min_max": 20,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.9078,
         12.4888
@@ -5713,6 +5810,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "coordinates": [
         41.908,
         12.4791
@@ -5746,6 +5844,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "coordinates": [
         41.9089,
         12.4797
@@ -5778,6 +5877,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "villa_borghese",
+      "grupo_dia": "Villa Borghese",
       "coordinates": [
         41.9087,
         12.4886
@@ -5807,6 +5907,7 @@
       "duration_minutes": 30,
       "min_max": 60,
       "zone": "villa_borghese",
+      "grupo_dia": "Roma desde las alturas",
       "coordinates": [
         41.9121,
         12.4792
@@ -5844,6 +5945,7 @@
       "duration_minutes": 45,
       "min_max": 90,
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "coordinates": [
         41.8992,
         12.473
@@ -5878,6 +5980,7 @@
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "coordinates": [
         41.9022,
         12.4573
@@ -5911,6 +6014,7 @@
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "coordinates": [
         41.8939,
         12.4833
@@ -5945,6 +6049,7 @@
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "centro_historico",
+      "grupo_dia": "Plaza de España",
       "coordinates": [
         41.9043,
         12.4793
@@ -8973,6 +9078,7 @@
       "muestra": ["trastevere"],
       "name": "Pasear por Trastevere",
       "zone": "trastevere",
+      "grupo_dia": "Trastevere",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -8988,6 +9094,7 @@
       "muestra": ["campo_de_fiori","piazza_navona"],
       "name": "Pasear por el Centro Histórico",
       "zone": "centro_historico",
+      "grupo_dia": "Centro histórico",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9003,6 +9110,7 @@
       "muestra": ["via_dei_fori_imperiali"],
       "name": "Pasear por la Roma Antigua",
       "zone": "roma_antigua",
+      "grupo_dia": "Roma antigua",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9018,6 +9126,7 @@
       "muestra": ["parque_de_villa_borghese"],
       "name": "Pasear por Villa Borghese",
       "zone": "villa_borghese",
+      "grupo_dia": "Villa Borghese",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9033,6 +9142,7 @@
       "muestra": ["borgo_pio"],
       "name": "Pasear por Prati y el Borgo",
       "zone": "vaticano",
+      "grupo_dia": "Vaticano",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9048,6 +9158,7 @@
       "muestra": ["jardin_de_los_naranjos"],
       "name": "Pasear por el Aventino",
       "zone": "aventino",
+      "grupo_dia": "Basílicas y el Aventino",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9063,6 +9174,7 @@
       "muestra": ["testaccio"],
       "name": "Pasear por Testaccio",
       "zone": "testaccio",
+      "grupo_dia": "Basílicas y el Aventino",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9078,6 +9190,7 @@
       "muestra": ["via_appia_antica"],
       "name": "Pasear por la Via Appia Antica",
       "zone": "appia",
+      "grupo_dia": "Roma antigua",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9093,6 +9206,7 @@
       "muestra": ["basilica_de_san_juan_de_letran"],
       "name": "Pasear por San Giovanni",
       "zone": "san_giovanni",
+      "grupo_dia": "Basílicas y el Aventino",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9108,6 +9222,7 @@
       "muestra": ["basilica_de_santa_maria_la_mayor"],
       "name": "Pasear por el Esquilino",
       "zone": "esquilino",
+      "grupo_dia": "Basílicas y el Aventino",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9123,6 +9238,7 @@
       "muestra": ["quartiere_coppede"],
       "name": "Pasear por el Nomentano",
       "zone": "nomentano",
+      "grupo_dia": "Villa Borghese",
       "is_filler": true,
       "min_duration": 20,
       "max_duration": 90,
@@ -9639,6 +9755,7 @@
       "zonas": {
         "tridente": {
           "nombre": "el Tridente",
+          "grupo_dia": "Plaza de España",
           "iluminado": "el Tridente iluminado",
           "foto": "Via del Corso",
           "foto_alternativas": ["Via Condotti"],
@@ -9657,12 +9774,14 @@
         },
         "trevi": {
           "nombre": "Trevi y Via del Corso",
+          "grupo_dia": "Centro histórico",
           "iluminado": "la Fontana de Trevi y Via del Corso iluminadas",
           "foto": "Fontana de Trevi",
           "foto_alternativas": ["Via del Corso"]
         },
         "centro_historico": {
           "nombre": "el Centro Histórico",
+          "grupo_dia": "Centro histórico",
           "iluminado": "Piazza Navona y el Panteón iluminados",
           "foto": "Campo de' Fiori",
           "foto_alternativas": ["Piazza Farnese"],
@@ -9674,36 +9793,42 @@
         },
         "monti": {
           "nombre": "Monti",
+          "grupo_dia": "Roma antigua",
           "iluminado": "Monti y los Foros iluminados",
           "foto": "Monti",
           "foto_alternativas": ["Piazza della Madonna dei Monti"]
         },
         "coliseo": {
           "nombre": "el Coliseo y el Celio",
+          "grupo_dia": "Roma antigua",
           "iluminado": "el Coliseo iluminado",
           "foto": "Arco de Constantino",
           "foto_alternativas": ["Basílica de San Clemente"]
         },
         "trastevere": {
           "nombre": "Trastevere",
+          "grupo_dia": "Trastevere",
           "iluminado": "Trastevere iluminado",
           "foto": "Trastevere",
           "foto_alternativas": ["Isla Tiberina"]
         },
         "testaccio": {
           "nombre": "Testaccio",
+          "grupo_dia": "Basílicas y el Aventino",
           "iluminado": "Testaccio y la Pirámide iluminados",
           "foto": "Mercado de Testaccio",
           "foto_alternativas": ["Pirámide Cestia"]
         },
         "prati": {
           "nombre": "el Borgo y Prati",
+          "grupo_dia": "Vaticano",
           "iluminado": "el Borgo iluminado",
           "foto": "Borgo Pio",
           "foto_alternativas": ["Via della Conciliazione"]
         },
         "vaticano": {
           "nombre": "el Borgo",
+          "grupo_dia": "Vaticano",
           "iluminado": "el Borgo iluminado",
           "foto": "Borgo Pio",
           "foto_alternativas": ["Via della Conciliazione"]
@@ -14483,6 +14608,21 @@
       }
     ],
     "_restaurantes": "Muchos restaurantes cierran o tienen menú especial: reserva la comida y la cena."
+  },
+  "grupos_dia": {
+    "lista": [
+      "Centro histórico",
+      "Roma antigua",
+      "Trastevere",
+      "Plaza de España",
+      "Vaticano",
+      "Villa Borghese",
+      "Popolo",
+      "Basílicas y el Aventino",
+      "Roma desde las alturas"
+    ],
+    "free_tour": "Free Tour",
+    "excursion": "Excursión desde Roma"
   },
   "por_que_lugares": {
     "Cripta de los Capuchinos": "Cinco capillas hechas con los huesos de unos 3.700 frailes, colocados en arcos, lámparas y rosetones. No es morbo: es una meditación sobre la muerte que los capuchinos hicieron a propósito. Se hace en 45 minutos y está en Via Veneto, a un paso.",
