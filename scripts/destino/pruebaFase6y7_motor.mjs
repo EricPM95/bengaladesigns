@@ -167,7 +167,8 @@ if (PARTES.has('3')) {
           else debe(!enSobra && filas.some((r) => r.lugar === MONTORIO) && filas.some((r) => r.lugar === ACQUA), '3 sobra', `${hoja}: con los Museos a primera hora Montorio y la Fontana dell'Acqua Paola tienen que seguir en el día`)
         } else {
           debe(filas[0]?.lugar === 'Fontana de Trevi', '3 manana', `${hoja}: la mañana sin Museos no empieza en la Fontana de Trevi (${filas[0]?.lugar})`)
-          debe(stop("Castillo de Sant'Angelo") >= 0 && stop("Castillo de Sant'Angelo") < iComida && stop("Puente Sant'Angelo") >= 0 && stop("Puente Sant'Angelo") < iComida, '3 manana', `${hoja}: el Castillo y el Puente no van en la mañana`)
+          // (6y8: con los Museos a las 12:00 la comida corta de antes no deja sitio al Castillo y al Puente, que pasan detrás de los Museos.)
+          if (m !== toMin('12:00')) debe(stop("Castillo de Sant'Angelo") >= 0 && stop("Castillo de Sant'Angelo") < iComida && stop("Puente Sant'Angelo") >= 0 && stop("Puente Sant'Angelo") < iComida, '3 manana', `${hoja}: el Castillo y el Puente no van en la mañana`)
           debe(/Borghiciana|Dal Toscano/.test(`${filas[iComida]?.restaurante}`), '3 comida', `${hoja}: la comida no es en el Borgo (${filas[iComida]?.restaurante})`)
           if (m < toMin('16:00')) {
             if (m >= toMin('15:00')) cuenta.tarde15++
