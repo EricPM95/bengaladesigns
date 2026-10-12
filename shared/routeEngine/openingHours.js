@@ -215,11 +215,41 @@ export function withinMonthDays(md, from, to) {
   return a <= b ? md >= a && md <= b : md >= a || md <= b
 }
 
+// Los extremos de un tramo (`from`/`to`) se escriben así (Tanda 6y9: valen para CUALQUIER año, como los da cada web oficial):
+//   - "MM-DD"                      fecha fija ("09-30").
+//   - "ultimo_<día>:M"             el último <día> del mes M ("ultimo_domingo:3" = el cambio de hora de marzo; "ultimo_domingo:10" = el de octubre).
+//   - "ultimo_<día>:M±N"           ese día más/menos N días ("ultimo_domingo:10-1" = el sábado de antes del cambio; "ultimo_domingo:10+1" = el lunes de después).
+const DIAS_TOKEN = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6 }
+
+/** El último `weekday` (0 = domingo) del mes `month` (1-12) de `year`, como "AAAA-MM-DD". */
+export function lastWeekdayOfMonthIso(year, month, weekday) {
+  const last = new Date(Date.UTC(year, month, 0, 12))
+  const back = (last.getUTCDay() - weekday + 7) % 7
+  return new Date(last.getTime() - back * 86400000).toISOString().slice(0, 10)
+}
+
+/** Un extremo de tramo → "MM-DD" en ese año (null si no se entiende). */
+export function tramoDateToMd(token, year) {
+  const text = String(token ?? '').trim()
+  if (/^\d{2}-\d{2}$/.test(text)) return text
+  const m = /^ultimo_([a-z]+):(\d{1,2})([+-]\d+)?$/.exec(text)
+  if (!m || !(m[1] in DIAS_TOKEN)) return null
+  const base = lastWeekdayOfMonthIso(year, Number(m[2]), DIAS_TOKEN[m[1]])
+  return new Date(Date.parse(`${base}T12:00:00Z`) + Number(m[3] ?? 0) * 86400000).toISOString().slice(5, 10)
+}
+
+/**
+ * ¿Cae la fecha en este tramo (`from`-`to`, ambos incluidos, puede cruzar el año)? UNA sola función para el motor, la rueda de la hora y las fichas.
+ */
+export function dateInTramo(period, dateIso) {
+  const year = Number(String(dateIso).slice(0, 4))
+  return withinMonthDays(monthDayOf(dateIso), tramoDateToMd(period?.from, year), tramoDateToMd(period?.to, year))
+}
+
 /** El periodo de `by_period` que toca en esa fecha (null si el lugar no trae periodos o no hay fecha). */
 export function periodFor(place, dateIso) {
   if (!Array.isArray(place?.by_period) || !dateIso) return null
-  const md = monthDayOf(dateIso)
-  return place.by_period.find((period) => withinMonthDays(md, period.from, period.to)) ?? null
+  return place.by_period.find((period) => dateInTramo(period, dateIso)) ?? null
 }
 
 // ── Fechas móviles y último domingo (Estaciones, revisión del 2026-09-25) ─────────────────────
