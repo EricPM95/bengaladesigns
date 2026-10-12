@@ -45,12 +45,12 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
 
 // ── 2. El tope del pool ──
 {
-  const tabla = [[1, 3], [2, 3], [3, 6], [4, 6], [5, 6], [6, 6], [7, 6], [10, 6], [14, 6], [21, 6]]
+  const tabla = [[1, 2], [2, 3], [3, 6], [4, 6], [5, 6], [6, 6], [7, 6], [10, 6], [14, 6], [21, 6]]
   for (const [dias, tope] of tabla) debe(poolSelectionLimit(dias) === tope, '2 tope', `con ${dias} días el tope es ${poolSelectionLimit(dias)} y no ${tope}`)
   debe(poolSelectionLimit(undefined) === 3, '2 tope', 'sin días el tope no es 3')
   // El recorte al acortar los días: la selección se queda en el tope nuevo (los primeros que se eligieron).
   const nombres = Array.from({ length: 9 }, (_, i) => `Sitio ${i + 1}`)
-  for (const [dias, tope] of [[4, 6], [3, 6], [2, 3], [1, 3]]) {
+  for (const [dias, tope] of [[4, 6], [3, 6], [2, 3], [1, 2]]) {
     useRouteStore.setState({ selected_curated_place_names: [...nombres] })
     useRouteStore.getState().trimCuratedPlaceSelection(poolSelectionLimit(dias))
     const quedan = useRouteStore.getState().selected_curated_place_names

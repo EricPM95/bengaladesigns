@@ -188,7 +188,6 @@ if (PARTES.has('p2')) {
       const variantes = new Set(plan.days.flatMap((d) => d.curatedDay?.variantes ?? []))
       for (const sitio of PROTEGIDOS) {
         if (!antes.has(sitio)) continue
-        if (!despues.has(sitio) && variantes.has('miercoles_audiencia') && sitio === MUSEOS) { contador.miercoles++; continue }
         debe(despues.has(sitio), 'p2_sitio_quitado', `${t}: «${sitio}» ya no está en el viaje`)
       }
       // El sitio en un día en que cierra: tiene que llevar su aviso, y no podía haber otro día.
@@ -249,11 +248,9 @@ if (PARTES.has('p4')) {
         const p = placeDe(sitio)
         const cerrado = plan.days.some((d) => (d.escritoLog ?? []).some((l) => l.que === 'quitada' && l.sitio === sitio && /^cierre de /.test(l.causa ?? '')))
         const calle = (p?.tags ?? []).includes('calle')
-        // (Los Museos de un miércoles sin su reserva los quita el documento —variante miercoles_audiencia—: pregunta abierta del informe, no es de esta regla.)
-        const miercoles = sitio === MUSEOS && plan.days.some((d) => (d.curatedDay?.variantes ?? []).includes('miercoles_audiencia'))
         // (Y lo que quita el propio documento por el día de la semana en que cae un día movido: el domingo de la Farnesina y de San Clemente, el sábado del Panteón, el lunes de las Termas.)
         const porDiaSemana = plan.days.some((d) => (d.curatedDay?.variantes ?? []).some((v) => ['domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon', 'lunes_sin_caracalla'].includes(v)))
-        debe(cerrado || calle || miercoles || porDiaSemana, 'p4_parada_perdida', `${t}: «${sitio}» ya no sale ni en «Si te sobra tiempo»`)
+        debe(cerrado || calle || porDiaSemana, 'p4_parada_perdida', `${t}: «${sitio}» ya no sale ni en «Si te sobra tiempo»`)
       }
       // El caso del encargo: en el D1 con el Coliseo a las 14:16, la Fuente de las Tortugas y el Elefantino están en «Si te sobra tiempo» del día del Coliseo.
       if (hora === '14:16' && diaColiseo.curatedDay.id === 'D1' && base.days.some((d) => d.curatedDay?.id === 'D1' && (d.escritoRows ?? []).some((r) => r.lugar === 'Fuente de las Tortugas'))) {
@@ -286,7 +283,7 @@ if (PARTES.has('tope')) {
   const baraja = (l) => { const o = [...l]; for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(azar() * (i + 1)); [o[i], o[j]] = [o[j], o[i]] } return o }
   const medidas = {}
   for (const dias of [1, 2, 3, 4, 5, 6]) {
-    const n = dias <= 2 ? 3 : 6
+    const n = dias === 1 ? 2 : dias === 2 ? 3 : 6
     let elegidos = 0
     let noIncluidos = 0
     let viajes = 0

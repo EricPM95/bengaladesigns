@@ -66,7 +66,7 @@ Lo que vamos decidiendo con Roma y que vale para cualquier destino. La lleva Cla
 - **Un solo interruptor** para todo lo de pago. Con `?version=gratis` se ve la gratis.
 - **Gratis:** los días escritos enteros, las reservas que cambian días, las entradas, las excursiones, el alojamiento (mapa) y lo útil.
 - **De pago:** los vuelos y la llegada y la vuelta, la zona, el resumen, el orden de los días según los vuelos (Tanda 7), HOY y explorar extras.
-- **Lo de pago no se enseña con candados:** simplemente no sale.
+- **Lo de pago no se enseña con candados:** simplemente no sale, salvo "Escuchar historia", que lleva candado en la versión gratis.
 - **El pago no se activa de cara al público sin la Tanda 7 hecha.**
 
 ## 7. Los datos de cada destino (archivos)

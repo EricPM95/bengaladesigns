@@ -135,7 +135,7 @@ const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [
   ...(day.spareRows ?? []).filter((r) => r.lugar && !r.relleno),
 ].map((r) => r.lugar)))
 // Las variantes del propio documento que quitan un sitio un día de cierre (domingo y miércoles del Vaticano, lunes de la Galería y de las Termas, domingo de la Farnesina y de San Clemente, sábado del Panteón): si la reserva deja ese día del viaje en un día así, quita el sitio el documento.
-const VARIANTES_DE_CIERRE = new Set(['miercoles_audiencia', 'lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon'])
+const VARIANTES_DE_CIERRE = new Set(['lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon'])
 const variantesDe = (plan) => new Set(plan.days.flatMap((day) => day.curatedDay?.variantes ?? []))
 const cerradasPorCierre = (plan) => new Set(plan.days.flatMap((day) => (day.escritoLog ?? []).filter((l) => l.que === 'quitada' && /^cierre de /.test(l.causa ?? '')).map((l) => l.sitio ?? l.lugar)))
 if (!args.sinreservasdia) {
@@ -184,13 +184,11 @@ if (!args.sinreservasdia) {
           const difIds = [...idsDe(plan)].filter((id) => !idsDe(base).has(id)).concat([...idsDe(base)].filter((id) => !idsDe(plan).has(id)))
           if (mejor.faltan.length > 0 && difIds.length > 0 && difIds.every((id) => id === 'D1' || id === 'D1-corto')) { infoPorRegla.set('cambio_de_d1_por_festivo', (infoPorRegla.get('cambio_de_d1_por_festivo') ?? 0) + 1); mejor.faltan = [] }
           if ([...antes].some((name) => !despues.has(name) && cerradas.has(name))) infoPorRegla.set('parada_cerrada_por_reserva', (infoPorRegla.get('parada_cerrada_por_reserva') ?? 0) + 1)
-          // Los Museos de un miércoles sin su reserva los quita el propio documento («el miércoles sin Museos», variante miercoles_audiencia): una reserva grande puede dejar el día del Vaticano en
-          // miércoles (el Coliseo fijado el martes), y entonces el documento los quita. No es de esta tanda: se cuenta aparte y va a las preguntas del informe.
-          // (Ahora vale para todas: el domingo y el miércoles del Vaticano, el lunes de la Galería y el de las Termas de Caracalla.)
+          // (Tanda 6y6: el miércoles ya no quita los Museos —la variante miercoles_audiencia solo pasa la Plaza y la Basílica a la tarde—; las variantes de cierre que quedan son las del domingo de la Farnesina y de San Clemente, el sábado del Panteón y el lunes de las Termas de Caracalla.)
           const antesVariantes = variantesDe(base)
           const variantesPlan = variantesDe(plan)
           const variantesBase = variantesDe(base)
-          // (Cambian las variantes de cierre: o entra una —el Vaticano cae en domingo— o sale una —el miércoles sin Museos se evita—.)
+          // (Cambian las variantes de cierre: o entra una —el Vaticano cae en domingo— o sale una —el domingo de la Farnesina se evita—.)
           const nuevasDeCierre = [...new Set([...variantesPlan, ...antesVariantes, ...variantesBase])].filter((id) => VARIANTES_DE_CIERRE.has(id) && (variantesPlan.has(id) !== antesVariantes.has(id) || variantesPlan.has(id) !== variantesBase.has(id)))
           if (nuevasDeCierre.length > 0 && (mejor.faltan.length > 0 || mejor.sobran.length > 0)) { infoPorRegla.set('cambio_por_variante_de_cierre_del_documento', (infoPorRegla.get('cambio_por_variante_de_cierre_del_documento') ?? 0) + 1); mejor.faltan = []; mejor.sobran = [] }
           if (mejor.faltan.length > 0) { fallos.push({ regla: 'paradas_perdidas', texto: `${etiqueta}: faltan ${mejor.faltan.join(', ')}` }); porRegla.set('paradas_perdidas', (porRegla.get('paradas_perdidas') ?? 0) + 1) }

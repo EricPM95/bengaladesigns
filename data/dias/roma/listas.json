@@ -3949,7 +3949,7 @@
     },
     {
      "id": "miercoles_audiencia",
-     "doc": "el miércoles sin Museos",
+     "doc": "el miércoles** los Museos abren",
      "cuando": {
       "dia_semana": [
        "miércoles"
@@ -3958,46 +3958,30 @@
      },
      "ops": {
       "manana": {
-       "paradas": [
-        {
-         "tipo": "parada",
-         "lugar": "Castillo de Sant'Angelo",
-         "min": 90,
-         "modo": "dentro",
-         "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Puente Sant'Angelo",
-         "min": 15,
-         "modo": null
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Lungotevere",
-         "min": 5,
-         "modo": "camino"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Plaza de San Pedro",
-         "min": 30,
-         "modo": null,
-         "no_antes": "12:30"
-        },
-        {
-         "tipo": "parada",
-         "lugar": "Basílica de San Pedro",
-         "min": 75,
-         "modo": "dentro"
-        }
+       "quitar": [
+        "Plaza de San Pedro",
+        "Basílica de San Pedro"
        ]
       },
       "tarde": {
-       "quitar": [
-        "Via della Conciliazione",
-        "Castillo de Sant'Angelo",
-        "Puente Sant'Angelo"
+       "insertar": [
+        {
+         "al_principio": true,
+         "parada": [
+          {
+           "tipo": "parada",
+           "lugar": "Plaza de San Pedro",
+           "min": 30,
+           "modo": null
+          },
+          {
+           "tipo": "parada",
+           "lugar": "Basílica de San Pedro",
+           "min": 75,
+           "modo": "dentro"
+          }
+         ]
+        }
        ]
       }
      }
@@ -4022,6 +4006,22 @@
        "insertar": [
         {
          "despues_de": "Basílica de San Pedro",
+         "si_hay_ancla": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "min": 45,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "despues_de": "Basílica de San Pedro",
+         "si_hay_ancla": true,
          "parada": {
           "tipo": "parada",
           "lugar": "Cúpula de San Pedro",
@@ -4084,6 +4084,22 @@
        "insertar": [
         {
          "despues_de": "Basílica de San Pedro",
+         "si_hay_ancla": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cúpula de San Pedro",
+          "min": 45,
+          "modo": "dentro",
+          "protegido": true
+         }
+        }
+       ]
+      },
+      "tarde": {
+       "insertar": [
+        {
+         "despues_de": "Basílica de San Pedro",
+         "si_hay_ancla": true,
          "parada": {
           "tipo": "parada",
           "lugar": "Cúpula de San Pedro",

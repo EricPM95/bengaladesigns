@@ -39,7 +39,8 @@ const buscar = (lista, nombre) => {
  *   quitar    → [nombre] (lugar, título o «lugar::modo»)
  *   cambiar   → { nombre: Stop }
  *   mover     → { nombre: 'despues_de:otro' | 'antes_de:otro' }
- *   insertar  → [{ despues_de | antes_de | al_principio | al_final, parada: Stop | [Stop] }]
+ *   insertar  → [{ despues_de | antes_de | al_principio | al_final, parada: Stop | [Stop], si_hay_ancla?: true }]
+ *               (con `si_hay_ancla`, si el ancla no está en ESTA lista no se inserta nada: sirve para poner un sitio detrás de otro que unos días va por la mañana y otros por la tarde)
  *   ajustar   → { nombre: { campo: valor } }
  * El orden en que se aplican es ese. Nunca reordena por su cuenta: solo hace lo que dice.
  */
@@ -70,6 +71,7 @@ export function aplicarOp(lista, op) {
     if (nuevas.length === 0) continue
     const ancla = insert.despues_de ?? insert.antes_de ?? null
     const at = ancla ? buscar(out, ancla) : -1
+    if (at < 0 && insert.si_hay_ancla) continue
     if (at < 0) out = insert.al_principio ? [...nuevas, ...out] : [...out, ...nuevas]
     else out = insert.antes_de ? [...out.slice(0, at), ...nuevas, ...out.slice(at)] : [...out.slice(0, at + 1), ...nuevas, ...out.slice(at + 1)]
   }

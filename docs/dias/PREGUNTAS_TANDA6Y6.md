@@ -1,0 +1,7 @@
+# Preguntas abiertas de la Tanda 6y6
+
+1. **El miércoles con los Museos reservados:** la variante nueva solo se activa si el viajero NO ha reservado los Museos ese miércoles (como la anterior: la reserva manda). Si los reserva por la mañana, la Plaza y la Basílica van después de los Museos, por la mañana, y puede haber audiencia. ¿Hacemos que, en miércoles, la Plaza y la Basílica vayan siempre por la tarde, también con los Museos reservados?
+2. **El orden de los días y el miércoles:** el documento sigue diciendo «el Vaticano no en domingo ni en miércoles» (cambia el día con otro si puede). Con los Museos abiertos los miércoles, no hace falta evitarlo. ¿Lo quitamos del documento y del motor, o lo dejamos como preferencia?
+3. **La última mañana con el bloque de los Museos:** una línea del documento (la de la reserva grande en la última mañana) habla del día del Vaticano «con su versión sin Museos (la del miércoles: el Castillo, el Puente y Trastevere)». Esa versión describe el miércoles de antes. No la he tocado porque el motor no la usa por nombre. ¿La reescribo para que hable de la versión sin Museos de los cierres?
+4. **Tope con 1 día:** con 2 sitios, el 50 % de lo elegido sigue sin caber (casi siempre uno de los dos). ¿Está bien así o prefieres 1 sitio con 1 día?
+5. En el secreto de la Fontana dejé la frase de Cáritas («Hoy las monedas generan más de 1 millón de euros al año para Cáritas»), que no era de las que se contradecían. ¿Se queda?

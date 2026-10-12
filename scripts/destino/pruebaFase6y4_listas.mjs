@@ -174,10 +174,8 @@ for (const inicio of FECHAS.slice(0, 2)) {
       enSuDia({ ...r, placeNames: sitio.placeNames.slice(0, 1) }, t)
       etiquetasYOrden(t)
       await quitar(r.id)
-      // (Pregunta abierta, ver el informe: al quitar la reserva de los Museos puesta en un MIÉRCOLES, el día se rehace donde está —quitar una reserva no mueve días, Tanda 6m— y el día del Vaticano de un
-      // miércoles no lleva los Museos. Es la regla del miércoles, no esta tanda: aquí no se mide.)
-      const unMiercoles = sitio.nombre === MUSEOS && new Date(`${add(inicio, dia - 1)}T12:00:00Z`).getUTCDay() === 3
-      if (!unMiercoles) mismas(antes, 'ni_una_menos_al_quitar', `${t}, al quitar la reserva`)
+      // (Tanda 6y6: los Museos abren los miércoles y no se quitan nunca por ser miércoles; al quitar la reserva, el viaje vuelve a llevar las mismas paradas también en miércoles.)
+      mismas(antes, 'ni_una_menos_al_quitar', `${t}, al quitar la reserva`)
       for (const nombre of sitio.placeNames.slice(0, 1)) debe(diasQueLlevan(nombre).length <= 1, 'sitio_en_dos_dias', `${t}: al quitar la reserva «${nombre}» sale en los días ${diasQueLlevan(nombre).join(' y ')}`)
     }
   }

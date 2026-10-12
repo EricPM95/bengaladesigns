@@ -385,7 +385,7 @@ Las horas que no salen en una tabla (las 10:15, las 11:15…) van con la fila de
 - **Cierres:**
   - el domingo, el miércoles (audiencia) y los días que cierran los Museos, este día se cambia con otro;
   - si no se puede, sin Museos: la mañana empieza en San Pedro con la Basílica y las Grutas;
-  - **el miércoles sin Museos** el día empieza a su hora, con el Castillo de Sant'Angelo por dentro (abre a las 9:00; por fuera si el viaje ya lo lleva por dentro), el Puente y el Lungotevere. Después, la Plaza y la Basílica cuando acaba la audiencia (desde las 12:30), la comida en el Borgo y la tarde de siempre.
+  - **el miércoles** los Museos abren: van como siempre, a primera hora, y no se quitan nunca por ser miércoles. Solo cambian la Plaza y la Basílica de San Pedro, que van por la tarde (por la mañana está la audiencia del Papa): después de comer en el Borgo, antes de la Conciliazione, el Castillo y el Puente.
 
 **Pool:**
 - **Cúpula:** después de la Basílica ~45.

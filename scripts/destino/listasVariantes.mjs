@@ -468,24 +468,24 @@ export default {
             noche: { lista: ['Trastevere de noche'] },
           },
         },
-        // El miércoles sin Museos: el día empieza a su hora (el Castillo abre a las 9:00) y la Plaza y la Basílica van cuando acaba la audiencia.
+        // El miércoles (Tanda 6y6): los Museos abren y van como siempre; solo la Plaza y la Basílica pasan a la tarde (por la mañana está la audiencia del Papa).
         {
-          id: 'miercoles_audiencia', doc: 'el miércoles sin Museos',
-          // (Si el viajero ya tiene los Museos reservados ese miércoles, la reserva manda y el día no va «sin Museos»: Tanda 6j, punto 9.)
+          id: 'miercoles_audiencia', doc: 'el miércoles** los Museos abren',
+          // (Si el viajero ya tiene los Museos reservados ese miércoles, la reserva manda: Tanda 6j, punto 9.)
           cuando: { dia_semana: ['miércoles'], sin_reserva: MUSEOS },
           ops: {
-            manana: { paradas: [P("Castillo de Sant'Angelo", 90, 'dentro', { titulo: "Castillo de Sant'Angelo, hasta la terraza del ángel" }), P("Puente Sant'Angelo", 15), ...camino('Lungotevere'), P('Plaza de San Pedro', 30, null, { no_antes: '12:30' }), P('Basílica de San Pedro', 75, 'dentro')] },
-            tarde: { quitar: ['Via della Conciliazione', "Castillo de Sant'Angelo", "Puente Sant'Angelo"] },
+            manana: { quitar: ['Plaza de San Pedro', 'Basílica de San Pedro'] },
+            tarde: { insertar: [{ al_principio: true, parada: [P('Plaza de San Pedro', 30), P('Basílica de San Pedro', 75, 'dentro')] }] },
           },
         },
       ],
       pool: {
-        'Cúpula de San Pedro': { doc: 'Cúpula:** después de la Basílica ~45.', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
+        'Cúpula de San Pedro': { doc: 'Cúpula:** después de la Basílica ~45.', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] }, tarde: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
         "Castillo de Sant'Angelo": { doc: 'Castillo por dentro:** ~60, en lugar de por fuera.', ops: { tarde: { cambiar: { "Castillo de Sant'Angelo": P("Castillo de Sant'Angelo", 60, 'dentro', { protegido: true }) } } } },
       },
       experiencias: {
         arte_museos: { doc: 'Arte y Museos:** los Museos con la Pinacoteca ~4 h.', ops: { manana: { ajustar: { [MUSEOS]: { min: 240, titulo: 'Museos Vaticanos y Capilla Sixtina, con la Pinacoteca' } } } } },
-        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** la Cúpula.', añade: 'Cúpula de San Pedro', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
+        naturaleza_vistas: { doc: 'Naturaleza y Vistas:** la Cúpula.', añade: 'Cúpula de San Pedro', cuando: [{ sin_reserva: MUSEOS }, { reserva: { lugar: MUSEOS, hasta: '14:59' } }], ops: { manana: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] }, tarde: { insertar: [{ despues_de: 'Basílica de San Pedro', si_hay_ancla: true, parada: P('Cúpula de San Pedro', 45, 'dentro', { protegido: true }) }] } } },
         mercadillos_navidenos: { clave: 'presepi', doc: 'Mercadillos:** «Plaza de San Pedro y los 100 Presepi».', cuando: { fechas: NAVIDAD }, ops: { manana: { ajustar: { 'Plaza de San Pedro': capa('100 Presepi in Vaticano') } } } },
       },
       lluvia_doc: "el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",

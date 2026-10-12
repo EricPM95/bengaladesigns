@@ -336,7 +336,13 @@ export function LlegadaYVuelta({
           </div>
         ) : (
           <>
-            <div onClick={onToggle} className="flex cursor-pointer items-center gap-3 px-3.5 pb-2.5 pt-3.5">
+            <div
+              onClick={() => {
+                onMitad(undefined)
+                onToggle()
+              }}
+              className="flex cursor-pointer items-center gap-3 px-3.5 pb-2.5 pt-3.5"
+            >
               <IconoBloque nombre={iconoDeMedio(ida.mode)} hecho={hecho} />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span style={tituloBloqueStyle}>Llegada y vuelta</span>
@@ -391,7 +397,8 @@ export function LlegadaYVuelta({
           onSave={(time) => {
             ;(hoja.leg === 'arrival' ? setArrivalFlightTime : setDepartureFlightTime)(time)
             setHoja(null)
-            onMitad(undefined)
+            // (Tanda 6y6: tras guardar la hora el tramo SIGUE abierto, para rellenar la referencia, la compañía y el precio sin darle a «Cambiar»; se cierra al tocar la cabecera del bloque o al salir.)
+            onMitad(hoja.leg)
             onGuardada()
           }}
         />
