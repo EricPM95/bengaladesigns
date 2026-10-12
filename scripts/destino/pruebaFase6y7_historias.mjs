@@ -1,9 +1,9 @@
-// La prueba de la Tanda 6y5, parte de las HISTORIAS: «Escuchar historia» con las 31 historias de Roma, las frases dudosas de las fichas (punto 4) y la rama de HOY gratis borrada (P23).
-//   SERVIDOR=http://localhost:8822 node scripts/destino/pruebaFase6y5_historias.mjs     (con un servidor de la app con el código de esta tanda; por defecto http://localhost:8787)
+// La prueba de la Tanda 6y7, parte de las HISTORIAS (versión 4): «Escuchar historia» con las 31 historias de Roma, las frases dudosas de las fichas y la rama de HOY gratis borrada (P23).
+//   SERVIDOR=http://localhost:8822 node scripts/destino/pruebaFase6y7_historias.mjs     (con un servidor de la app con el código de esta tanda; por defecto http://localhost:8787)
 //   (Si existe docs/dias/HISTORIAS_ROMA.md —o la ruta de la variable HISTORIAS—, cada historia de los datos se compara letra por letra con la del documento.)
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   1. LOS DATOS: no hay exactamente 31 sitios con `historia` (los de la lista de Eric), alguno trae título, «Comprobar» o notas, la historia gratis no es solo la del Coliseo, o el servidor no la manda en la ficha;
-//   2. NO REPITE LA FICHA: una historia comparte 8 palabras seguidas con la descripción, «Qué vas a ver», los consejos o los secretos de su sitio (también tras las frases nuevas del punto 4);
+//   2. NO COPIA LA FICHA (regla de Eric, 12-oct): una historia comparte 15 palabras seguidas con la descripción, «Qué vas a ver», los consejos o los secretos de su sitio (puede contar lo importante, pero no copia sus frases);
 //   3. LAS FRASES DUDOSAS (punto 4): quedan «Neptuno» en la Fontana, el 21 de junio, «técnicamente imposible» o la película como origen de la moneda, o falta alguna frase nueva;
 //   4. LA FICHA: un sitio sin historia enseña barra; la barra no dice «Escuchar historia» ni lee la historia (sino el Resumen); la historia sale escrita en una pestaña; en la gratis no suena solo la del Coliseo (en las demás, candado);
 //   5. HOY: «Historia» no sale al lado de «Escuchar» en un sitio con historia, sale en uno sin ella, o «Escuchar» deja de leer el Resumen;
@@ -23,7 +23,7 @@ const API = process.env.SERVIDOR ?? process.env.API_URL ?? 'http://localhost:878
 process.env.API_URL = API
 const leer = (f) => fs.readFileSync(f, 'utf8')
 
-// Los 31 sitios que Eric ha dado por buenos (HISTORIAS_ROMA.md, versión 3), en el orden del documento.
+// Los 31 sitios que Eric ha dado por buenos (HISTORIAS_ROMA.md, versión 4), en el orden del documento.
 const LOS_31 = [
   'Coliseo', 'Foro Romano y Palatino', 'Arco de Constantino', 'Fontana de Trevi', 'Panteón', 'Piazza Navona', 'Plaza de España', 'Museos Vaticanos y Capilla Sixtina', 'Basílica de San Pedro', 'Plaza de San Pedro', 'Altar de la Patria',
   "Castillo de Sant'Angelo", 'Boca de la Verdad', 'Largo di Torre Argentina', "Campo de' Fiori", 'Plaza del Campidoglio', 'Basílica de San Clemente', 'Iglesia de San Pietro in Vincoli', 'Ojo de la Cerradura del Aventino', 'Isla Tiberina',
@@ -44,7 +44,7 @@ for (const nombre of LOS_31) {
   const h = fichas.get(nombre)?.historia
   debe(typeof h === 'string' && h.trim().length > 0, '1 datos', `${nombre}: la historia está vacía`)
   if (typeof h !== 'string') continue
-  debe(palabras(h) >= 120 && palabras(h) <= 330, '1 datos', `${nombre}: la historia tiene ${palabras(h)} palabras (debería rondar las 200)`)
+  debe(palabras(h) >= 330 && palabras(h) <= 520, '1 datos', `${nombre}: la historia tiene ${palabras(h)} palabras (la versión 4 ronda las 400-450, unos 3 minutos)`)
   debe(!/Comprobar|^#|^>|^---|^\*\*/m.test(h), '1 datos', `${nombre}: la historia trae título, «Comprobar» o notas`)
   debe(!/\p{Extended_Pictographic}/u.test(h), '1 datos', `${nombre}: la historia lleva emojis`)
   debe(h === h.trim() && !/\r/.test(h), '1 datos', `${nombre}: la historia tiene espacios o saltos de línea sobrantes`)
@@ -70,9 +70,9 @@ debe(fichas.get(GRATIS)?.historia_gratis === true && [...fichas.values()].filter
   }
 }
 
-// ═══════════ 2. La historia no repite la ficha ═══════════
+// ═══════════ 2. La historia no copia la ficha (15 palabras seguidas) ═══════════
 const norma = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9ñ]+/g, ' ').trim().split(' ').filter(Boolean)
-const gramas = (t, n = 8) => {
+const gramas = (t, n = 15) => {
   const w = norma(t)
   const s = new Set()
   for (let i = 0; i + n <= w.length; i++) s.add(w.slice(i, i + n).join(' '))
@@ -87,7 +87,7 @@ for (const nombre of LOS_31) {
     // (Cada frase por separado: juntar dos frases con un punto no crea una repetición que no existe.)
     const comunes = []
     for (const frase of texto.split(/ \. /)) for (const g of gramas(frase)) if (h.has(g)) comunes.push(g)
-    debe(comunes.length === 0, '2 repite', `${nombre}: la historia repite la ficha (${parte}): «${comunes[0]}»`)
+    debe(comunes.length === 0, '2 copia', `${nombre}: la historia copia la ficha (${parte}): «${comunes[0]}»`)
   }
 }
 
@@ -97,6 +97,12 @@ for (const nombre of LOS_31) {
   debe(!/Neptuno/.test(trevi.description) && !trevi.what_to_see.some((x) => /Neptuno/.test(x)) && !trevi.secrets.some((x) => /Neptuno/.test(x)), '3 frases', 'la Fontana de Trevi sigue diciendo Neptuno')
   debe(/donde Océano domina las aguas/.test(trevi.description) && trevi.what_to_see.includes('La figura central de Océano dominando las aguas desde su carro'), '3 frases', 'la Fontana no dice Océano en la descripción y en «Qué vas a ver» («Océano» a secas)')
   debe(/* Tanda 6y6: Eric deja una sola frase para la costumbre (la de la 6y5 quedaba junto a otra que se contradecía) */ trevi.secrets.some((x) => x.includes('Antes de la moneda, la costumbre era beber de su agua para volver a Roma. La película de 1954 hizo famosa la moneda.')) && !trevi.secrets.some((x) => /costumbre de la moneda viene de la película/.test(x)), '3 frases', 'el secreto de la moneda de la Fontana no es el nuevo')
+  // Tanda 6y7, punto 8: sin superlativos del mundo sin suavizar en las fichas (la excepción segura es la cúpula del Panteón y alguna más, a mano).
+  debe(trevi.description.startsWith('Una de las fuentes más famosas del mundo.') && !/La fuente más famosa del mundo/.test(trevi.description), '3 frases', 'la descripción de Trevi no dice «Una de las fuentes más famosas del mundo»')
+  for (const p of fichas.values()) {
+    const textos = [p.description ?? '', ...(p.what_to_see ?? []), ...(p.tips ?? []), ...(p.secrets ?? [])].join(' | ')
+    debe(!/(la|el) (fuente|escalinata|plaza|colección de arte|iglesia|escultura barroca) (más|mayor) [^.|]{0,40}del mundo/i.test(textos), '3 frases', `${p.name}: queda un superlativo del mundo sin suavizar`)
+  }
   const panteon = fichas.get('Panteón')
   debe(panteon.secrets.some((x) => /El 21 de abril, el día del nacimiento de Roma, al mediodía/.test(x)) && !panteon.secrets.some((x) => /21 de junio|solsticio/.test(x)), '3 frases', 'el rayo del Panteón no cae el 21 de abril («el día del nacimiento de Roma»)')
   debe(panteon.secrets.some((x) => x.includes('Todavía hoy es la mayor cúpula de hormigón sin armar del mundo.')) && !panteon.secrets.some((x) => /técnicamente imposible/.test(x)), '3 frases', 'el secreto de la cúpula del Panteón no es el nuevo')
@@ -196,11 +202,11 @@ ponerSintesis([VOZ_ES])
 {
   // La barra lee la HISTORIA (no el Resumen): el texto que se le da es la historia de la ficha.
   const ficha = await fetchPlaceDetail('Roma', 'Fontana de Trevi')
-  debe(textoHistoria(ficha).startsWith('¿Ves ese jarrón de piedra enorme') && !/Un texto del Resumen/.test(textoHistoria(ficha)), '4 texto', 'el texto que lee la barra no empieza por la historia de la Fontana')
+  debe(textoHistoria(ficha).startsWith('Antes de mirar la fuente, escucha el agua.') && !/Un texto del Resumen/.test(textoHistoria(ficha)), '4 texto', 'el texto que lee la barra no empieza por la historia de la Fontana')
   debe(accesoHistoria(ficha, true) === 'libre' && accesoHistoria(ficha, false) === 'candado' && accesoHistoria(await fetchPlaceDetail('Roma', 'Coliseo'), false) === 'libre' && accesoHistoria(await fetchPlaceDetail('Roma', 'Via del Corso'), true) === 'ninguno' && accesoHistoria(null, true) === 'ninguno', '4 texto', 'accesoHistoria no da libre/candado/ninguno como toca')
-  // No se escribe en ninguna pestaña: lo que la ficha pinta (descripción, Qué vas a ver, consejos, secretos) no lleva ni una frase de la historia.
+  // No se escribe en ninguna pestaña: lo que la ficha pinta (descripción, consejos) no copia 15 palabras seguidas de la historia.
   const escrito = JSON.stringify([toStopDescription(ficha), toStopTips(ficha)])
-  const g = gramas(ficha.historia, 5)
+  const g = gramas(ficha.historia, 15)
   debe(![...g].some((x) => norma(escrito).join(' ').includes(x)), '4 pestañas', 'la historia sale escrita en la descripción o los consejos de la ficha')
   const codigo = leer('src/components/route/dayDetail/StopDetailSheet.tsx') + leer('src/components/route/dayDetail/FichaPiezas.tsx')
   debe(!/\.historia\b/.test(codigo) && (codigo.match(/textoHistoria\(curated\)/g) ?? []).length === 1 && (codigo.match(/<Escuchar /g) ?? []).length === 1 && /libre=\{curated\?\.historia_gratis === true\}/.test(codigo), '4 pestañas', 'la historia se usa en la ficha en otro sitio que la barra')
