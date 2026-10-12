@@ -1,0 +1,14 @@
+# Preguntas abiertas de la Tanda 6y9
+
+(Como mucho 5, solo lo que cambia lo que ve el viajero o choca con una regla de Eric. Lo pequeño que decidí yo está en el INFORME, en «Decidido por Code». Si las 365 fechas completas, que se lanzan después del push, dieran algún fallo, aparecerá aquí arriba como lo primero de la siguiente tanda; por ahora no hay ninguno apuntado.)
+
+1. **Horarios sin verificar en la web oficial.** Desde esta máquina no se pudo abrir ninguna web oficial (la conexión se rechaza); se comprobó con el buscador, que devuelve el texto de las páginas oficiales. Confirmado: Coliseo y Foro (29 mar a 30 sep, 1 a 24 oct, 25 oct a 28 feb), Panteón (9:00 a 19:00, última entrada 18:30), Galería Borghese (9:00 a 19:00, última entrada 17:45) y Vaticano (último domingo). **Sin verificar, con la hora más prudente puesta:**
+   - Museos Vaticanos de lunes a sábado: puse 8:00 a 20:00, última entrada 18:00; otras fuentes dicen 9:00 a 18:00.
+   - Panteón: puse franja libre cada 15 min hasta las 18:30; el Ministerio dice «por orden de llegada» y una guía dice que se compra con hora. Si es por orden de llegada, ¿quitamos la rueda de hora del Panteón?
+   - Galería Borghese, turnos: dejé la lista de antes; una guía habla de 5 turnos de 2 h (9, 11, 13, 15, 17).
+   - Coliseo y Foro de febrero y marzo de 2027: la web solo publica hasta el 28 feb 2027; puse el patrón de otros años.
+   ¿Puedes mirar tú esas webs (o decirme el horario) para cerrarlos? La tabla completa, con la fuente y la fecha de cada uno, está en `INFORME_PARTE_HORARIOS_TANDA6Y9.md`.
+2. **El Free Tour de las 19:00 aprieta la tarde del primer día** y alguna parada (en la prueba, la Iglesia del Gesù) pasa a «Si te sobra tiempo» porque después del tour ya está cerrada. Eso choca con «con una reserva no se quita nada» (regla 17). ¿Lo aceptas o prefieres que el tour de las 19:00 no desplace nada (y la parada se quede aunque ya esté cerrada, con su aviso de «cerrado»)?
+3. **La cena después de las 22:30.** Con el corte de la cena a las 22:00, una reserva que sale entre las 21:00 y las 22:00 deja la cena después y a veces pasa de las 22:30; como manda la regla 17 (no se quita nada), no se acorta ni se mueve. ¿Lo dejamos así?
+4. **Museos a las 15:00 un miércoles:** con la comida corta de la 6y8 la comida cae a las 10:30 y queda un rato libre antes de los Museos (el Castillo por dentro, que pediste, lo llena en parte: quedan unos 80 min a las 15:00 y unos 110 a las 15:30). ¿Quieres la comida a mediodía? Habría que cambiar esa regla o llenar la mañana con más paradas.
+5. **Los audios de las historias serán públicos.** Los mp3 se guardan junto a las fotos (`public/audios/roma/`) y cualquiera que conozca la dirección podría escuchar una historia de pago sin pasar por la barra (el servidor solo ofrece el audio vigente y la barra respeta el candado). ¿Te vale al lanzar, o prefieres enlaces firmados que caducan, con almacenamiento privado (más trabajo)?
