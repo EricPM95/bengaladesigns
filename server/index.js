@@ -36,6 +36,7 @@ import { halfDayExcursions } from './engine/excursions.js'
 import { buildDayBlockV3, engineFor, useWrittenDays, writtenPoolStatus } from './engine/index.js'
 import { horasDeEntrada, planDeReservas } from './engine/reservationPlan.js'
 import { audioVigente } from '../shared/audio/historiasAudio.js'
+import { periodosParaFicha } from '../shared/routeEngine/horarioDeLaFecha.js'
 import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
 import { precioTienda } from '../shared/dinero/formato.js'
@@ -4379,6 +4380,7 @@ const placeDetailCache = new Map()
 function loadPlaceDetail(destinationKey) {
   if (placeDetailCache.has(destinationKey)) return placeDetailCache.get(destinationKey)
   const byName = new Map()
+  const catalogo = findPipelineV2Data(destinationKey)?.places ?? []
   try {
     const dir = join(__dirname, '../data/pipeline_v2/detalle', destinationKey)
     for (const file of readdirSync(dir)) {
@@ -4386,6 +4388,9 @@ function loadPlaceDetail(destinationKey) {
       const parsed = JSON.parse(readFileSync(join(dir, file), 'utf8'))
       for (const place of parsed.places ?? []) {
         if (typeof place?.name !== 'string') continue
+        // Tanda 6y9: los tramos de fechas de la ficha salen de los del motor (`by_period` del catálogo), no se escriben dos veces.
+        const periodos = periodosParaFicha(catalogo.find((candidate) => candidate.name === place.name))
+        if (periodos) place.schedule = { ...(place.schedule ?? {}), periods: periodos }
         byName.set(stripAccentsLowerServer(place.name), place)
         // Prompt 2 (Tarea D): un viaje generado ANTES del renombrado tiene las paradas guardadas con
         // el nombre viejo. Los alias del lugar (que incluyen siempre su nombre anterior, ver

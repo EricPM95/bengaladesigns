@@ -7,8 +7,9 @@ import { buildDayBlockV3 } from './index.js'
 import { hasFreeTourFromAnswers, respuestasConFreeTour } from '../routeAlgorithm.js'
 import { writtenDaysFor } from './writtenDays.js'
 import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
-import { closedOnDay, lastEntryMinutes, parseHoursSessions, scheduleForDay } from '../../shared/routeEngine/openingHours.js'
+import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
+import { AVISO_DISPONIBILIDAD, horarioDeLaFecha, turnosDeReserva } from '../../shared/routeEngine/horarioDeLaFecha.js'
 
 /** «del Coliseo», «del Vaticano», «de la Galería Borghese»: cómo se nombra el día por su sitio grande. */
 const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese', 'Free Tour por Roma': 'del Free Tour' }
@@ -118,25 +119,17 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
   return result
 }
 
-const hhmm = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
-
 /**
  * Las horas a las que se puede entrar a un sitio ese día (Tanda 6k, punto 2): de la apertura a la última entrada. Sin fechas, las del mes de referencia del viaje.
- * @returns {{ cerrado: boolean, ventanas: { desde: string, hasta: string }[] }}
+ * Tanda 6y9: lo decide `horarioDeLaFecha` (shared/routeEngine/horarioDeLaFecha.js), la misma función que lee el motor; aquí solo se busca el sitio por su nombre.
+ * @returns {{ cerrado: boolean, ventanas: { desde: string, hasta: string }[], turnos: string[]|null, tramo: object|null, aviso: string }}
  */
 export function horasDeEntrada(destData, placeName, { dateIso = null, month = null, season = null } = {}) {
-  const place = (destData.places ?? []).find((candidate) => candidate.name === placeName)
-  if (!place) return { cerrado: false, ventanas: [], turnos: null }
-  const calendar = tripCalendar({ dateRangeStartIso: dateIso, month, season })
-  const iso = calendar.hasDates ? dateIso : calendar.referenceIso
-  const weekday = calendar.hasDates ? weekdayOf(dateIso) : null
-  const hours = { weekday, dateIso: iso, season: calendar.season }
-  if (calendar.hasDates && closedOnDay(place, weekday, dateIso)) return { cerrado: true, ventanas: [], turnos: null }
-  const ventanas = parseHoursSessions(scheduleForDay(place, hours)).sort((a, b) => a.open - b.open).map((session) => {
-    const last = lastEntryMinutes(place, session.open, hours)
-    return { desde: hhmm(session.open), hasta: hhmm(Math.min(session.close, last ?? session.close)) }
-  })
-  // Los sitios con turnos de entrada propios (la Galería Borghese: uno cada hora y el de las 17:45): solo esos.
-  const turnos = Array.isArray(place.turnos_reserva) ? place.turnos_reserva.filter((turno) => ventanas.length === 0 || ventanas.some((v) => turno >= v.desde && turno <= v.hasta)) : null
-  return { cerrado: false, ventanas, turnos }
+  const esFreeTour = destData.default_free_tour && placeName === destData.default_free_tour.name
+  const place = esFreeTour ? destData.default_free_tour : (destData.places ?? []).find((candidate) => candidate.name === placeName)
+  if (!place) return { cerrado: false, ventanas: [], turnos: null, tramo: null, aviso: AVISO_DISPONIBILIDAD }
+  const mes = Number.isInteger(month) ? month : tripCalendar({ season }).month
+  const reserva = turnosDeReserva(place, dateIso, mes)
+  const horario = horarioDeLaFecha(place, dateIso, mes)
+  return { cerrado: reserva.cerrado, ventanas: reserva.ventanas, turnos: reserva.turnos, tramo: horario.tramo, aviso: reserva.aviso }
 }
