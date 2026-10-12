@@ -79,10 +79,10 @@ console.log('2. Fuera la pantalla vieja')
   debe(s.screen === 'route', '2 misma pantalla', `al cambiar las fechas el almacén cambia de pantalla a «${s.screen}» (debe quedarse en la ruta)`)
   debe(s.rehaciendoRuta === true && s.keepBookingsOnNextRoute === true, '2 en marcha', 'al cambiar las fechas no se pone el rehacer en segundo plano')
   debe(s.mode === 'days', '2 misma pantalla', 'al cambiar las fechas se cambia de pestaña')
-  // Mientras hay uno en marcha, otro cambio no lo pisa.
-  const antes = JSON.stringify(s.answers.dateRange)
+  // Mientras hay uno en marcha, otro cambio gana (6y9, P7 de la 6y7): el último manda y el primero se cancela (sube el contador de generación).
+  const gen0 = s.rehacerGeneracion
   useRouteStore.getState().regenerateRouteForDates({ start: '2027-10-01', end: '2027-10-03' })
-  debe(JSON.stringify(useRouteStore.getState().answers.dateRange) === antes, '2 en marcha', 'otro cambio de fechas pisa el rehacer que está en marcha')
+  debe(useRouteStore.getState().answers.dateRange?.start === '2027-10-01' && useRouteStore.getState().rehacerGeneracion === gen0 + 1 && useRouteStore.getState().rehaciendoRuta === true, '2 en marcha', 'otro cambio de fechas no se queda con el último: el primero sigue mandando')
   // La barrita sale, y no lleva nada de la pantalla vieja.
   const barrita = html(M.RehacerRuta, {})
   const tb = plano(aTexto(barrita))

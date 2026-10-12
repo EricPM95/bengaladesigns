@@ -141,7 +141,7 @@ const tramosD1FTconTour = [10, 12, 15, 17].map((ft) => {
 // Dos partes: la del Free Tour y la del Vaticano. Cada una va en su mitad del día según su hora, y da igual cuál se reserve primero: la reservada manda y la otra se va a la otra mitad.
 // Con las dos reservadas, cada una a su hora y con la misma tabla; si no da tiempo, se pisan y sale el aviso de la 6v (la app no propone otra hora ni cambia nada).
 const FREE_TOUR = 'Free Tour por Roma'
-/** Las cuatro horas del Free Tour que llevan D3 (la de las 21:00 no: ese viaje lleva los días sin Free Tour y el tour va en la noche del D1). */
+/** Las cuatro horas del Free Tour que llevan D3 (las de las 19:00 y las 21:00 no: ese viaje lleva los días sin Free Tour y el tour va en la noche del D1). */
 const FT_HORAS = { 10: { desde: '09:00', hasta: '10:59' }, 12: { desde: '11:00', hasta: '12:59' }, 15: { desde: '14:00', hasta: '15:59' }, 17: { desde: '16:00', hasta: '17:59' } }
 /** Las horas de los Museos de la tabla del documento: A 8:00–9:00 · B 9:30–11:30 · C 12:00–13:30 · D 14:00–15:30 · E 16:00–17:00 · F 17:30–18:00. Una hora que no sale (9:15, 11:45, 13:45, 15:45, 17:15) va con la fila de la hora de antes. */
 const MU_HORAS = { A: { hasta: '09:15' }, B: { desde: '09:16', hasta: '11:45' }, C: { desde: '11:46', hasta: '13:45' }, D: { desde: '13:46', hasta: '15:45' }, E: { desde: '15:46', hasta: '17:15' }, F: { desde: '17:16' } }
@@ -366,7 +366,7 @@ export default {
         ...D1_TRAMOS,
         { id: 'sabado_panteon', doc: 'el sábado (y la víspera de festivo) el Panteón no deja entrar desde las 17:00 por la misa: aviso «entra antes».', cuando: { dia_semana: ['sábado'] }, ops: { tarde: { ajustar: { Panteón: { cierra: '17:00' } } } } },
         { id: 'free_tour_tarde', doc: 'Free Tour de tarde (15:00 o 17:00), si va en este día:** es una reserva en la tarde.', cuando: { free_tour_despues: 'tarde' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour por Roma', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, quitar_cubierto_por_tour: true } },
-        // Con el Free Tour de las 21:00 (decidido el 9-oct-2026): la noche es el Free Tour, en lugar de Trevi y la Plaza de España (el tour pasa por allí); lo que el tour recorre y ya se vio por la tarde (el Panteón, Navona) se queda: de noche se ve distinto.
+        // Con el Free Tour de las 19:00 o el de las 21:00 (9-oct y 12-oct-2026; la hora la pone $free_tour y la cena la decide la regla 4: 19:00 → después, 21:00 → antes): la noche es el Free Tour, en lugar de Trevi y la Plaza de España (el tour pasa por allí); lo que el tour recorre y ya se vio por la tarde (el Panteón, Navona) se queda: de noche se ve distinto.
         { id: 'free_tour_noche', doc: 'la noche es el 🎟 Free Tour por Roma, 21:00 ~2 h 30, en lugar de Trevi y la Plaza de España', cuando: { free_tour_despues: 'noche' }, ops: { tarde: { insertar: [{ al_final: true, parada: P('Free Tour por Roma', 150, null, { hora: '$free_tour', hora_tipo: 'turno' }) }] }, noche: null } },
       ],
       pool: {

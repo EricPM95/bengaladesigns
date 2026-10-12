@@ -3,7 +3,7 @@
 //
 // La regla general (decidida por Eric el 12-oct-2026; sale de la DURACIÓN de la visita en los datos y de la hora de la reserva, no de nombres):
 //   · COMIDA: si al salir de la reserva ya son más de las 14:30, la comida va ANTES de la reserva; si sale a las 14:30 o antes, va DESPUÉS.
-//   · CENA:   si al salir de la reserva ya son más de las 21:00, la cena va ANTES; si sale a las 21:00 o antes, va DESPUÉS. La cena nunca empieza después de las 22:30.
+//   · CENA:   si al salir de la reserva ya son más de las 22:00 (6y9; antes 21:00), la cena va ANTES; si sale a las 22:00 o antes, va DESPUÉS. La cena nunca empieza después de las 22:30.
 //   · La entrada NUNCA sale tarde (la fila de la reserva y su «Llegada a…» no llevan retraso), a ninguna hora.
 //   Dos salvedades, las dos apuntadas por el motor en el registro del día y contadas aquí: (1) si la mesa de antes no cabe antes de la «Llegada a…» (la reserva es tan temprano que ni una mesa
 //   rápida cabe) o haría llegar tarde a la reserva, la mesa va después: llegar a tiempo manda; (2) una reserva que acaba tan tarde que no deja cenar antes de las 22:30.
@@ -30,7 +30,7 @@ const toHHMM = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m
 const add = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const COMIDA_LIMITE = toMin('14:30')
-const CENA_LIMITE = toMin('21:00')
+const CENA_LIMITE = toMin('22:00') // (6y9: antes 21:00)
 const CENA_TOPE = toMin('22:30')
 // (Cabe una mesa rápida antes de la reserva si su «Llegada a…» es al menos esto después de la hora más temprana de la mesa rápida más lo que se tarda en llegar: lo mismo que cuenta el motor,
 // configuración de listasTrip.js.)
@@ -161,7 +161,7 @@ if (PARTES.has('2')) {
       const etiqueta = `${clave} ${iso}`
       paraCadaForma(D, written, { lugar: tour.name, hora, iso, freeTour: true, grande: true, etiqueta }, (dia, forma) => mirar(dia, { lugar: tour.name, hora, dur: tour.duration_minutes ?? null, etiqueta: `${etiqueta} (${forma.dias} d)`, nombre: 'Free Tour' }))
     }
-    for (const hora of ['19:30', '20:00', '21:00']) {
+    for (const hora of ['19:00', '19:30', '20:00', '21:00']) {
       const etiqueta = `${clave} ${iso} (noche)`
       paraCadaForma(D, written, { lugar: tour.name, hora, iso, freeTour: true, ftNoche: true, etiqueta }, (dia, forma) => mirar(dia, { lugar: tour.name, hora, dur: tour.duration_minutes ?? null, etiqueta: `${etiqueta} (${forma.dias} d)`, nombre: 'Free Tour de noche' }))
     }

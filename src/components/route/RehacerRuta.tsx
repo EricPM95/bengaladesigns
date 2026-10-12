@@ -10,7 +10,9 @@ import { ActualizandoRuta } from '../ui/ActualizandoRuta'
  */
 export function RehacerRuta() {
   const activo = useRouteStore((state) => state.rehaciendoRuta)
-  return activo ? <RehacerRutaEnMarcha /> : null
+  const generacion = useRouteStore((state) => state.rehacerGeneracion)
+  // (6y9, P7) Con otro cambio de fechas en marcha gana el último: la `key` desmonta el rehacer anterior (`useRouteGeneration` descarta su resultado al desmontarse) y empieza el nuevo con las fechas nuevas.
+  return activo ? <RehacerRutaEnMarcha key={generacion} /> : null
 }
 
 function RehacerRutaEnMarcha() {

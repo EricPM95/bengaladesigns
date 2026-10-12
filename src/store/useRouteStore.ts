@@ -422,6 +422,8 @@ interface RouteStoreState {
   keepBookingsOnNextRoute: boolean
   /** (Tanda 6y7) La ruta se está rehaciendo EN SEGUNDO PLANO (cambiar las fechas): el viajero sigue en su pantalla y arriba sale una barrita fina (`ActualizandoRuta`, montada por `RehacerRuta`). Ya no hay pantalla de carga. */
   rehaciendoRuta: boolean
+  /** Cuenta los rehacer de la ruta (6y9, P7 de la 6y7): si llega otro cambio de fechas con uno en marcha, gana el ÚLTIMO; `RehacerRuta` se vuelve a montar con este número y el resultado del primero ya no puede pisar al del último. */
+  rehacerGeneracion: number
   /** Dejar la ruta como estaba: el viajero cancela, o el rehacer falló y no quiere reintentarlo. */
   dejarRutaComoEstaba: () => void
   setActiveDayId: (dayId: string | null) => void
@@ -1116,12 +1118,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     }),
   keepBookingsOnNextRoute: false,
   rehaciendoRuta: false,
+  rehacerGeneracion: 0,
   dejarRutaComoEstaba: () => set({ rehaciendoRuta: false, keepBookingsOnNextRoute: false }),
   regenerateRouteForDates: (dateRange) =>
     set((state) => {
       // La ruta a mano (Tanda 6y) nunca se rehace con el motor: nada de pantalla de carga ni de generación.
-      // Tampoco se empieza otro rehacer mientras hay uno en marcha.
-      if (!state.route || isManualRoute(state.route) || state.rehaciendoRuta) return state
+      // Si ya hay un rehacer en marcha, el nuevo cambio de fechas gana (6y9, P7): `rehacerGeneracion` sube y el primero se cancela (su resultado se descarta).
+      if (!state.route || isManualRoute(state.route)) return state
       const route = state.route
       // Los días añadidos por el viajero no los planifica el motor: se quitan del final y vuelven en setRoute.
       const userDays = userAddedDays(route).length
@@ -1145,6 +1148,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         keepBookingsOnNextRoute: true,
         // (Tanda 6y7) Sin cambiar de pantalla: el viajero se queda donde estaba y `RehacerRuta` rehace la ruta en segundo plano.
         rehaciendoRuta: true,
+        rehacerGeneracion: state.rehacerGeneracion + 1,
       }
     }),
   setRouteDatesKeepingRoute: (dateRange, closures) =>

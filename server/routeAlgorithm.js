@@ -18,6 +18,7 @@ import { attachSpecialHours } from '../shared/routeEngine/specialDates.js'
 // Una sola tabla de experiencias->tags para los dos motores (ver engine/experienceTags.js).
 import { TAG_INTEREST_MAP, interestTagsFor } from './engine/experienceTags.js'
 import { fullDayExcursions } from './engine/excursions.js'
+import { esFreeTourDeNoche, franjaDelFreeTour } from '../shared/routeEngine/freeTourHoras.js'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
@@ -105,10 +106,10 @@ export function findPipelineV2Data(destination) {
   return key ? PIPELINE_V2_DATA[key] : null
 }
 
-/** El Free Tour de la noche (a las 20:30 o más tarde: el de las 21:00) no es un día con tour: el viaje lleva los días de «Sin Free Tour» y el tour va en la noche del D1 (Tanda 6u). */
+/** El Free Tour de la noche (de las 19:00 en adelante: el de las 19:00 y el de las 21:00) no es un día con tour: el viaje lleva los días de «Sin Free Tour» y el tour va en la noche del D1 (Tanda 6u, 6y9). La lista de horas vive en shared/routeEngine/freeTourHoras.js. */
 export function freeTourDeNoche(answers) {
   const ft = answers?.freeTourDespues
-  return Boolean(ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora) && Number(ft.hora.split(':')[0]) * 60 + Number(ft.hora.split(':')[1]) >= 20 * 60 + 30)
+  return Boolean(ft && esFreeTourDeNoche(ft.hora))
 }
 
 export function hasFreeTourFromAnswers(answers) {
@@ -126,7 +127,7 @@ export function respuestasConFreeTour(answers, reservas) {
   if (!reserva) return answers
   const hora = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
   const experiencias = Array.isArray(answers.experiencesPositive) ? answers.experiencesPositive : ['imprescindibles']
-  const franja = Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3)) < 13 * 60 ? 'manana' : Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3)) < 19 * 60 ? 'tarde' : 'noche'
+  const franja = franjaDelFreeTour(hora)
   return { ...answers, experiencesPositive: experiencias.includes('free_tour') ? experiencias : [...experiencias, 'free_tour'], freeTourDespues: { franja, hora, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null } }
 }
 
