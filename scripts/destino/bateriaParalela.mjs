@@ -7,7 +7,7 @@ const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/
 const conc = Number(args.conc ?? 12)
 const filtro = new RegExp(args.filtro ?? '^prueba(Fase6|Corr6|Tanda6|Fotos6)')
 const lista = fs.readdirSync('scripts/destino').filter((f) => f.endsWith('.mjs') && filtro.test(f) && !/Wikimedia|pruebaFase6y8_comida/.test(f)).sort()
-const env = { ...process.env, API_URL: 'http://localhost:8841', SERVIDOR: 'http://localhost:8841' }
+const env = { ...process.env, API_URL: process.env.API_URL ?? 'http://localhost:8841', SERVIDOR: process.env.SERVIDOR ?? process.env.API_URL ?? 'http://localhost:8841' }
 const resultados = []
 let siguiente = 0
 const correr = (f) => new Promise((resolve) => {
