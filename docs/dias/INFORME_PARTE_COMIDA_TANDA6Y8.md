@@ -26,7 +26,10 @@ Todos los sitios de Roma con reserva obligatoria o recomendada traen `duration_m
 - Batería rápida (`bateriaParalela.mjs`, 14 a la vez): todas las que dan número, 0 fallos, salvo `pruebaFase6y7_motor` (9 fallos viejos que pedían Castillo y Puente por la mañana con Museos a las 12:00: ajustada, 0) y `pruebaTanda6u` (ver abajo).
 - Las que no dan «fallos» (6i, 6l, 6o, 6j, 6r, 6g, 6h, 6k, 6y4_listas) salieron con exit 0; 6y5_motor y la muestra de ~60 fechas de `pruebaListas` NO las he podido terminar (se quedaron sin pasar).
 
-## No terminado / preguntas
+## Arreglo posterior (pedido por el coordinador)
+Ninguna parada pasa a «Si te sobra tiempo» por esta regla: quitado ese camino y la función de la cena a las 22:30 (`cena_hasta` sigue en la configuración solo para decidir cuándo cabe pasar algo detrás de una reserva: ya no, se quita también del uso). Con dos reservas del viajero el mismo día el motor no hace nada de esto (manda la lista escrita). `pruebaTanda6u`: 0 fallos (su comprobación de las 14:30 ahora ignora la configuración nueva). `pruebaFase6y8_comida`: 0 fallos en 15 tipos de día; la cena después de las 22:30 se cuenta, ya no es fallo. Se elige la regla 17 sobre «cena antes de las 22:30»; «la entrada nunca sale tarde» con una sola reserva se mantiene.
+
+## No terminado / preguntas (la 1 queda resuelta arriba)
 1. **`pruebaTanda6u`: 61 fallos `sobra_con_reserva`.** Con Free Tour + Museos el mismo día, algunas paradas (Puente, Conciliazione, Castillo, a veces la Plaza) pasan a «Si te sobra tiempo» por la nueva regla de la cena (≤22:30) o por no caber detrás de la reserva. Es lo que choca con «con reserva no se quita nada»: ¿lo aceptas o prefieres que se pasen a la hora de cenar sin quitar (cena más tarde)?
 2. Con los Museos a las 12:00 la Basílica pasa a después de los Museos si ni con la comida corta cabe.
 3. En el día de la Galería (5/7 días), una reserva extra el mismo día deja la comida después en ~10 % de los casos (se apunta en el registro).

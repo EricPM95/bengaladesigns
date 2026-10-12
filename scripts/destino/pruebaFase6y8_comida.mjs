@@ -48,7 +48,7 @@ const written = writtenDaysFor('roma')
 const travel = travelTimesFor('roma')
 
 const fallos = []
-const cuenta = { casos: 0, comprobaciones: 0, antes: 0, despues: 0, sinComida: 0, sinCena: 0, sinDuracion: new Set(), sinReserva: new Set(), forzados: 0, cenaImposible: 0, listaForzados: [], porForma: {} }
+const cuenta = { casos: 0, comprobaciones: 0, antes: 0, despues: 0, sinComida: 0, sinCena: 0, sinDuracion: new Set(), sinReserva: new Set(), forzados: 0, cenaImposible: 0, cenaTarde: 0, listaForzados: [], porForma: {} }
 const porRegla = {}
 const debe = (cond, regla, texto) => {
   cuenta.comprobaciones++
@@ -117,7 +117,8 @@ function mirar(dia, { lugar, hora, dur, nombre, etiqueta }) {
     else if (sale <= CENA_LIMITE) debe(iCena > iR, 'cena', `${etiqueta}: ${nombre ?? lugar} a las ${hora} (sale a las ${toHHMM(sale)}): la cena tiene que ir DESPUÉS y va antes`)
     // (Una reserva que acaba a las 22:15 o más tarde no deja cenar antes de las 22:30: nada que hacer, y queda en el recuento.)
     if (sale + 15 > CENA_TOPE) cuenta.cenaImposible++
-    else debe(filas[iCena].t0 <= CENA_TOPE, 'cena tope', `${etiqueta}: ${nombre ?? lugar} a las ${hora}: la cena empieza a las ${filas[iCena].hora}, después de las 22:30`)
+    else if (filas[iCena].t0 > CENA_TOPE) cuenta.cenaTarde++ // (6y8b: con una reserva nada pasa a «Si te sobra tiempo» para llegar a las 22:30 —regla 17—; se cuenta, no es fallo)
+    // (Que ninguna parada pase a «Si te sobra tiempo» por esta regla lo vigila pruebaTanda6u: el motor ya no tiene ese camino.)
   } else cuenta.sinCena++
 }
 
@@ -220,7 +221,7 @@ if (PARTES.has('4')) {
   }
 }
 
-console.log(`\n${cuenta.casos} casos (${cuenta.antes} con la comida antes, ${cuenta.despues} con la comida después; sin comida ${cuenta.sinComida}, sin cena ${cuenta.sinCena}; por forma de viaje ${JSON.stringify(cuenta.porForma)}); mesa forzada después para que no llegue tarde ${cuenta.forzados}; cena imposible (la reserva acaba después de las 22:15) ${cuenta.cenaImposible}; ${cuenta.comprobaciones} comprobaciones, ${fallos.length} fallos`)
+console.log(`\n${cuenta.casos} casos (${cuenta.antes} con la comida antes, ${cuenta.despues} con la comida después; sin comida ${cuenta.sinComida}, sin cena ${cuenta.sinCena}; por forma de viaje ${JSON.stringify(cuenta.porForma)}); mesa forzada después para que no llegue tarde ${cuenta.forzados}; cena imposible (la reserva acaba después de las 22:15) ${cuenta.cenaImposible}; cena después de las 22:30 sin quitar nada ${cuenta.cenaTarde}; ${cuenta.comprobaciones} comprobaciones, ${fallos.length} fallos`)
 if (cuenta.sinReserva.size) console.log(`  (sitios que no salen en ningún viaje esos días —cerrados o fuera de los días escritos—: ${[...cuenta.sinReserva].join(', ')})`)
 if (args.forzados) console.log(cuenta.listaForzados.slice(0, Number(args.forzados)).join('\n'))
 if (cuenta.sinDuracion.size) console.log(`  (sitios sin duración en los datos: ${[...cuenta.sinDuracion].join(', ')})`)
