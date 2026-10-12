@@ -1,5 +1,16 @@
 # Pendientes de la 6k
 
+**PARA LA 6y8 (12-oct, lo que toca el motor; sumar lo que salga de la prueba de Eric en el móvil):**
+- El pool no sale con 1 día: solo con 2 días o más (Eric). Con 2 días, tope 3; con 3 o más, 6.
+- Miércoles (decidido por Eric, 12-oct): **primero, cambiar el día del Vaticano entero con otro día**, como ya se hacía («el Vaticano no en miércoles» se queda). **Solo si no se puede** (por ejemplo, los Museos reservados un miércoles, o no hay otro día), el D2 del miércoles va así:
+  - Mañana: Museos Vaticanos y Capilla Sixtina, a primera hora (o a la hora de su reserva).
+  - Comida: en el Borgo (Borghiciana o Dal Toscano).
+  - Tarde: Plaza de San Pedro → Basílica por dentro → Via della Conciliazione → Castillo por fuera → Puente → bus 23 → Isla Tiberina → Trastevere, como siempre. Si no cabe todo, San Pietro in Montorio y la Fontana dell'Acqua Paola pasan a «Si te sobra tiempo».
+  - Regla: en miércoles, la Plaza y la Basílica nunca van antes de comer.
+  - Con los Museos reservados por la tarde: mañana como la del «miércoles por la mañana» de la vuelta (Trevi, Plaza de España, Via dei Coronari, Puente, Castillo), comida en el Borgo, los Museos a su hora y, al salir, la Plaza y la Basílica.
+  - En julio no hay audiencias (comprobar): el miércoles es un día normal.
+- Corregir en el documento la línea vieja de «la versión sin Museos (la del miércoles…)» para que diga lo de arriba. La preferencia «el Vaticano no en miércoles» se queda.
+
 **ÍNDICE POR TEMAS (11-oct):** lo de cada tema grande tiene su propio archivo en docs\dias:
 - `PENDIENTES_LLEGADAS.md`: la llegada, el primer día, el último y la vuelta (Tanda 7).
 - `PENDIENTES_ESCUCHAR.md`: Escuchar, las historias y la voz.
