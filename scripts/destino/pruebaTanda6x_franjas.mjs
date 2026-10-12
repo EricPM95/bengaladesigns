@@ -1,5 +1,5 @@
 // La prueba de «LAS FRANJAS, SIN HORA» (decisión del usuario, vale para todos los destinos):
-//   node scripts/destino/pruebaFranjas6x.mjs
+//   node scripts/destino/pruebaTanda6x_franjas.mjs
 // Hace falta el servidor de la app encendido (http://localhost:8787). Pinta la lista de DÍAS (con cada día abierto, o sea la tarjeta del día) de un viaje de Roma de 3 días con el código
 // de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs), con y sin fechas, con y sin reservas, en versión gratis y de pago. Da fallo si:
 //   1. en lo que se pinta sale una hora pegada a Mañana / Tarde / Noche / Comida / Cena («Mañana · 9:00–14:00», «COMIDA · 13:15 – 14:15», «Tarde · desde 14:00»…) — sin reserva de restaurante;
@@ -82,9 +82,13 @@ let conComida = 0
 const reservadas = []
 for (const fechas of [true, false]) {
   const route = await viaje(3, { fechas })
-  // Una entrada reservada (a su hora) en el día 1: con fechas, por fecha; sin fechas, por número de día.
-  const primera = route.days[0].stops.find((s) => s.name && !s.passThrough) ?? route.days[0].stops[0]
-  const reserva = { id: 'r1', kind: 'entrada', refId: primera.name, name: primera.name, placeNames: [primera.name], dateIso: fechas ? INICIO : null, dayNumber: fechas ? null : 1, time: '16:40' }
+  // Una entrada reservada (a su hora) en un sitio que SÍ tiene entradas en los datos (la pestañita verde sale solo en esos): con fechas, por fecha; sin fechas, por número de día.
+  const hallada = route.days.flatMap((d) => d.stops.filter((s) => s.name && !s.passThrough && !s.isFreeTour && info.entradasPorSitio[s.name]?.length).map((s) => ({ d, s })))[0]
+  debe(Boolean(hallada), '2 reserva', 'ningún sitio del viaje de prueba tiene entradas en los datos: no se puede probar la hora de la reserva')
+  const sitio = hallada.s
+  const diaReserva = hallada.d
+  const fechaReserva = new Date(Date.parse(`${INICIO}T12:00:00Z`) + (diaReserva.dayNumber - 1) * 86400000).toISOString().slice(0, 10)
+  const reserva = { id: 'r1', kind: 'entrada', refId: sitio.name, name: sitio.name, placeNames: [sitio.name], dateIso: fechas ? fechaReserva : null, dayNumber: fechas ? null : diaReserva.dayNumber, time: '16:40' }
   for (const version of ['gratis', 'completa']) {
     for (const conReservas of [false, true]) {
       const reservas = conReservas ? [reserva] : []
@@ -98,11 +102,11 @@ for (const fechas of [true, false]) {
           if (/^Mañana$/m.test(texto) || /^Tarde$/m.test(texto)) conFranjas++
           if (/^Comida$/m.test(texto) || /^Cena$/m.test(texto)) conComida++
         }
-        // La hora de la reserva del viajero sigue a la vista: en la pestañita verde de la parada, con el día 1 abierto (tanda 6z3: la cabecera cerrada ya no repite «Coliseo · 16:40»).
-        if (conReservas && activeDayId === 'd1') {
-          const ok = new RegExp(`16:40`).test(texto)
+        // La hora de la reserva del viajero sigue a la vista UNA sola vez: en la pestañita verde de la parada, con el día de la reserva abierto (tanda 6z3: la cabecera cerrada ya no repite «Coliseo · 16:40»).
+        if (conReservas && activeDayId === diaReserva.id) {
+          const ok = (texto.match(/16:40/g) ?? []).length === 1
           reservadas.push(ok)
-          debe(ok, '2 reserva', `${nombre}: ya no sale la hora de la reserva del viajero (16:40) (${plano(texto.slice(0, 300))})`)
+          debe(ok, '2 reserva', `${nombre}: la hora de la reserva del viajero (16:40) no sale una sola vez (${plano(texto.slice(0, 300))})`)
         }
         if (conReservas && !activeDayId) debe(!/16:40/.test(texto), '2 reserva', `${nombre}: la cabecera cerrada vuelve a llevar la hora de lo reservado (16:40)`)
       }

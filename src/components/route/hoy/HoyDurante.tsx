@@ -3,7 +3,7 @@ import type { Coordinates, DayPlan, Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { dayOfReservation, shortDateEs } from '../../../lib/bookings'
-import { nombreDelDia } from '../../../lib/tituloDelDia'
+import { etiquetaDeViaje, nombreDelDia } from '../../../lib/tituloDelDia'
 import { numberedStopsOf, stopNumbersOf } from '../../../lib/stopKind'
 import { displayStopName } from '../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../lib/distanceMock'
@@ -182,7 +182,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
           <span data-titulo-del-dia="1" className="font-display text-[26px] leading-[1.08] text-text [overflow-wrap:anywhere]">{tituloDeHoy.titulo}</span>
           {tituloDeHoy.viaje && (
             <span className="flex flex-wrap items-baseline gap-x-1.5 text-[12.5px] font-medium text-accent">
-              Día de viaje<span data-viaje-del-dia="1" className="whitespace-nowrap text-[11.5px] font-normal text-text/55">· {tituloDeHoy.viaje}</span>
+              {etiquetaDeViaje(tituloDeHoy.titulo)}<span data-viaje-del-dia="1" className="whitespace-nowrap text-[11.5px] font-normal text-text/55">{etiquetaDeViaje(tituloDeHoy.titulo) ? '· ' : ''}{tituloDeHoy.viaje}</span>
             </span>
           )}
         </div>

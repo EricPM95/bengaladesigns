@@ -16,5 +16,5 @@
   - La comida solo va detrás de una reserva cuando las reservas del viajero no dejan comer antes de las 15:00.
   - Borrado el viaje de pruebas «Roma 20–24 oct».
 - ✔ **3. Pruebas.** Vuelven el orden escrito, la comida antes de las 15:00, el paseo antes de cenar, el Foro nunca por fuera, la llegada con su margen y que no se quite nada con una reserva (salvo cierres); el zigzag sigue fuera. Todas a 0 fallos (ver el informe).
-- ✔ **4. Las franjas, sin hora** (añadido a mitad de la tanda). «Mañana», «Tarde», «Noche», «Comida» y «Cena», sin hora, en la tarjeta del día, la lista de DÍAS, las excursiones de medio día y el PDF; solo llevan hora las reservas del viajero y los datos reales (aperturas, lo que se tarda). Prueba nueva `pruebaFranjas6x.mjs`.
+- ✔ **4. Las franjas, sin hora** (añadido a mitad de la tanda). «Mañana», «Tarde», «Noche», «Comida» y «Cena», sin hora, en la tarjeta del día, la lista de DÍAS, las excursiones de medio día y el PDF; solo llevan hora las reservas del viajero y los datos reales (aperturas, lo que se tarda). Prueba nueva `pruebaTanda6x_franjas.mjs`.
 - ✔ **5. Documentos.** `PENDIENTES_6K.md`, `GUIA_NUEVOS_DESTINOS.md` y `PROMPT_TANDA6X_PARA_PEGAR.md` subidos tal cual.

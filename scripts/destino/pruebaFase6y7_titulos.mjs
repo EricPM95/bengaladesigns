@@ -3,7 +3,7 @@
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   1. algún sitio de roma.json (lugares, paseos por barrio y paseos libres) no tiene `grupo_dia`, o ese grupo no es de la lista de Eric (11 nombres, ni uno más), o los ejemplos de Eric no caen donde él dijo;
 //   2. la función del título (src/lib/tituloDelDia.ts) no hace lo que dice la regla: el Free Tour primero, como mucho dos nombres, la parada suelta no cambia el título, el empate lo gana el que aparece antes,
-//      la excursión, «Día libre» (también en la ruta a mano), el nombre propio del viajero y que lo que no cuenta (pausas, «pasas por…», tiempo libre) no cuente;
+//      las nocturnas que no cuentan (P11), el segundo grupo solo con 3 paradas (P14), la excursión, «Día libre» (también en la ruta a mano) y «Día de viaje» en la vuelta sintética (P13), el nombre propio del viajero y que lo que no cuenta (pausas, «pasas por…», tiempo libre) no cuente;
 //   3. en 200 viajes de prueba hechos con el motor (de 1 a 6 días, con y sin Free Tour, en fechas repartidas por el año) algún día no tiene un título de la lista, lleva más de dos nombres, no lleva el Free Tour
 //      primero cuando lo hay, o el día de llegada y el de vuelta no llevan su título Y su trayecto pequeño («Barcelona → Roma» / «Roma → Barcelona»), o alguna parada de nuestros datos se queda sin grupo;
 //   4. DÍAS y HOY no pintan el mismo título (con y sin fechas, gratis y de pago), o el título lleva una hora, o el trayecto sale grande (en el título) en vez de pequeño junto a «Día de viaje».
@@ -75,13 +75,14 @@ igual(titulo(CH), 'Centro histórico', 'tres del Centro histórico')
 igual(titulo([parada('Free Tour por Roma', { isFreeTour: true }), 'Fontana de Trevi', 'Panteón']), 'Free Tour y Centro histórico', 'el Free Tour va primero')
 igual(titulo(['Fontana de Trevi', parada('Free Tour por Roma', { isFreeTour: true }), 'Panteón', 'Coliseo', 'Foro Romano y Palatino', 'Circo Máximo']), 'Free Tour y Roma antigua', 'el Free Tour, aunque no sea lo primero del día, va primero; y solo se suma UN grupo')
 igual(titulo([parada('Free Tour por Roma', { isFreeTour: true })]), 'Free Tour', 'solo el Free Tour')
-igual(titulo(['Basílica de San Pedro', 'Plaza de San Pedro', 'Castillo de Sant\'Angelo', 'Iglesia de Santa Maria in Trastevere', 'Plaza Trilussa']), 'Vaticano y Trastevere', 'dos grupos de verdad')
+igual(titulo(['Basílica de San Pedro', 'Plaza de San Pedro', 'Castillo de Sant\'Angelo', 'Iglesia de Santa Maria in Trastevere', 'Plaza Trilussa', 'Pasear por Trastevere']), 'Vaticano y Trastevere', 'dos grupos de verdad (3 y 3)')
+igual(titulo(['Basílica de San Pedro', 'Plaza de San Pedro', 'Castillo de Sant\'Angelo', 'Iglesia de Santa Maria in Trastevere', 'Plaza Trilussa']), 'Vaticano', 'tanda 6y9 P14: un segundo grupo de 2 paradas no entra')
 igual(titulo([...CH, 'Panteón', 'Iglesia del Gesù', 'Iglesia de Santa Maria in Trastevere']), 'Centro histórico', 'una parada suelta de otro grupo no cambia el título')
-igual(titulo(['Fontana de Trevi', 'Iglesia de Santa Maria in Trastevere']), 'Centro histórico y Trastevere', 'un día de dos paradas de dos grupos')
-igual(titulo(['Coliseo', 'Foro Romano y Palatino', 'Fontana de Trevi', 'Panteón']), 'Roma antigua y Centro histórico', 'empate: gana el que aparece antes')
-igual(titulo(['Fontana de Trevi', 'Panteón', 'Coliseo', 'Foro Romano y Palatino']), 'Centro histórico y Roma antigua', 'empate: gana el que aparece antes (al revés)')
-igual(titulo(['Coliseo', 'Fontana de Trevi', 'Panteón', 'Foro Romano y Palatino', 'Basílica de Santa María la Mayor', 'Ojo de la Cerradura del Aventino']), 'Roma antigua y Centro histórico', 'con tres grupos de dos, solo dos nombres')
-igual(titulo(['Coliseo', 'Fontana de Trevi', 'Panteón', 'Foro Romano y Palatino', 'Basílica de Santa María la Mayor', 'Ojo de la Cerradura del Aventino', 'Boca de la Verdad']), 'Basílicas y el Aventino y Roma antigua', 'el grupo con más paradas va primero')
+igual(titulo(['Fontana de Trevi', 'Iglesia de Santa Maria in Trastevere']), 'Centro histórico', 'tanda 6y9 P14: un día de dos paradas de dos grupos queda con el primero')
+igual(titulo(['Coliseo', 'Foro Romano y Palatino', 'Circo Máximo', 'Fontana de Trevi', 'Panteón', 'Piazza Navona']), 'Roma antigua y Centro histórico', 'empate 3-3: gana el que aparece antes')
+igual(titulo(['Fontana de Trevi', 'Panteón', 'Piazza Navona', 'Coliseo', 'Foro Romano y Palatino', 'Circo Máximo']), 'Centro histórico y Roma antigua', 'empate 3-3: gana el que aparece antes (al revés)')
+igual(titulo(['Coliseo', 'Fontana de Trevi', 'Panteón', 'Foro Romano y Palatino', 'Basílica de Santa María la Mayor', 'Ojo de la Cerradura del Aventino']), 'Roma antigua', 'tres grupos de dos: solo el primero')
+igual(titulo(['Coliseo', 'Foro Romano y Palatino', 'Circo Máximo', 'Fontana de Trevi', 'Panteón', 'Piazza Navona', 'Iglesia del Gesù']), 'Centro histórico y Roma antigua', 'el grupo con más paradas (4) va primero aunque el otro aparezca antes')
 igual(titulo([], { dayType: 'excursion', selectedExcursionId: 'x' }), EXCURSION, 'día de excursión')
 igual(titulo(['Coliseo', 'Foro Romano y Palatino'], { dayType: 'excursion' }), EXCURSION, 'las paradas de una excursión no se cuentan')
 igual(titulo([]), 'Día libre', 'día sin paradas')
@@ -90,6 +91,11 @@ igual(titulo(['Coliseo'], { nameByUser: true, curatedTitle: 'Mi día de compras'
 igual(titulo(['Mercado de Campo de Fiori inventado por el viajero']), 'Roma', 'un sitio que no es de nuestros datos deja el nombre de siempre')
 igual(titulo([parada('Pasea y piérdete por Trastevere', { isFreeWalk: true }), parada('Pasear por Trastevere', { isZoneWalk: true }), 'Panteón']), 'Trastevere', 'el paseo por barrio y el paseo libre cuentan en su barrio')
 igual(titulo([parada('Roma iluminada', { isNightExperience: true, name: 'Fontana de Trevi' }), 'Coliseo', 'Foro Romano y Palatino']), 'Roma antigua', 'una nocturna suelta no cambia el título')
+igual(titulo(['Coliseo', 'Foro Romano y Palatino', parada('Roma iluminada', { isNightExperience: true, name: 'Fontana de Trevi' }), parada('Roma iluminada 2', { isNightExperience: true, name: 'Panteón' }), parada('Roma iluminada 3', { isNightExperience: true, name: 'Piazza Navona' })]), 'Roma antigua', 'tanda 6y9 P11: las nocturnas no cuentan, aunque sean tres de otro grupo')
+igual(titulo(['Coliseo', 'Foro Romano y Palatino', 'Circo Máximo', parada('Mirador de noche', { isNightView: true, name: 'Mirador del Janículo' }), parada('Mirador de noche 2', { isNightView: true, name: 'Terraza del Pincio' }), parada('Mirador de noche 3', { isNightView: true, name: 'Mirador del Janículo' })]), 'Roma antigua', 'tanda 6y9 P11: los miradores que llegan de noche tampoco cuentan')
+igual(titulo([parada('Roma iluminada', { isNightExperience: true, name: 'Fontana de Trevi' })]), 'Día libre', 'tanda 6y9 P11: un día con solo una nocturna se queda sin paradas')
+igual(titulo([], { isReturnLeg: true }), 'Día de viaje', 'tanda 6y9 P13: el día de vuelta sintético sin paradas se llama «Día de viaje»')
+igual(titulo([], { isReturnLeg: false }), 'Día libre', 'tanda 6y9 P13: cualquier otro día sin paradas sigue siendo «Día libre»')
 igual(titulo(['Fontana de Trevi', 'Panteón', 'Piazza Navona'], { halfDayExcursion: { id: 'e', startsAt: '08:00', endsAt: '14:00', routeStartsAt: '16:00' } }), `${EXCURSION} y Centro histórico`, 'excursión de medio día')
 igual(titulo(['Fontana de Trevi', 'Panteón', parada('Free Tour por Roma', { isFreeTour: true })], { halfDayExcursion: { id: 'e', startsAt: '08:00', endsAt: '14:00', routeStartsAt: '16:00' } }), `Free Tour y ${EXCURSION}`, 'Free Tour y excursión de medio día: solo dos nombres')
 igual(titulo(CH, { interruptor: { mode: 'excursion', default: 'roma', excursionId: null, percentPhrase: null, other: null } }), EXCURSION, 'el interruptor en Excursión')
@@ -205,6 +211,22 @@ for (const v of [{ dias: 3, ft: true, inicio: '2027-03-10' }, { dias: 2, ft: fal
       if (esperados[i].viaje) debe(textoHoy.includes('Día de viaje') && textoHoy.includes(esperados[i].viaje.replace('>', '>')), '4 HOY', `${t}, día ${d.dayNumber}: HOY no lleva «Día de viaje · ${esperados[i].viaje}»`)
     }
   }
+}
+
+// Tanda 6y9 P13: el día de vuelta sintético (viajes de varias ciudades) sin paradas se llama «Día de viaje», con su trayecto pequeño y sin repetir «Día de viaje» en la etiqueta.
+{
+  const base = await viaje(2, { dias: 2, ft: false, inicio: '2027-08-10' })
+  const vuelta = { id: 'dret', dayNumber: 3, city: 'Roma', countryCode: 'it', title: '', curatedTitle: '', stops: [], meals: [], excursions: [], isReturnLeg: true, colorIndex: 2 }
+  const ruta = { ...base, days: [...base.days, vuelta] }
+  const html = pinta(DayList, { route: ruta, activeDayId: null, onSelectDay() {}, showAllDaysOnMap: false }, ruta, { version: 'completa' })
+  pantallas++
+  const pintados = titulosPintados(html)
+  igual(pintados[pintados.length - 1], 'Día de viaje', 'la vuelta sintética en DÍAS')
+  const viajes = [...html.matchAll(/data-viaje-del-dia="1"[^>]*>([^<]*)</g)].map((m) => m[1].replace(/&gt;/g, '>'))
+  igual(viajes[viajes.length - 1], 'Roma → Barcelona', 'el trayecto pequeño de la vuelta sintética')
+  const trozoVuelta = aTexto(html).split('\nDía de viaje\n')
+  debe(trozoVuelta.length >= 2, '4 P13', 'la vuelta sintética no pinta «Día de viaje» como título')
+  debe(!/Día de viaje\n·? ?Día de viaje/.test(aTexto(html)) && !/Día de viaje\n(·\s*)?Roma → Barcelona\nDía de viaje/.test(aTexto(html)), '4 P13', 'la vuelta sintética repite «Día de viaje»')
 }
 
 // La ruta a mano: el mismo título según las paradas que ponga el viajero; el día vacío, «Día libre»; el nombre propio manda.
