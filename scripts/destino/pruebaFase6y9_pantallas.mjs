@@ -162,8 +162,8 @@ console.log('5. Nada viejo en src')
 {
   const viejos = fuentes.filter((f) => /Tu ruta se rehace con el Free Tour|el día que lo lleva cambia a su versión/.test(leer(f)))
   debe(viejos.length === 0, '5 texto viejo', `queda el texto viejo del Free Tour en: ${viejos.join(', ')}`)
-  const listas = fuentes.filter((f) => /\['10:00',\s*'12:00'/.test(leer(f)) || /hora: '17:00'/.test(leer(f)))
-  debe(listas.length === 1 && listas[0] === 'src/lib/freeTourHoras.ts', '5 una lista', `la lista de horas del Free Tour está en ${listas.join(', ')} (debe estar solo en src/lib/freeTourHoras.ts)`)
+  const listas = recorrer('shared').concat(fuentes).filter((f) => /\.(js|ts|tsx)$/.test(f) && (/\['10:00',\s*'12:00'/.test(leer(f)) || /hora: '17:00'/.test(leer(f))))
+  debe(listas.length === 1 && listas[0] === 'shared/routeEngine/freeTourHoras.js', '5 una lista', `la lista de horas del Free Tour está en ${listas.join(', ')} (debe estar solo en shared/routeEngine/freeTourHoras.js; src/lib/freeTourHoras.ts solo la adapta)`)
   const mal = fuentes.filter((f) => f !== 'src/lib/freeTourHoras.ts' && /label: 'Por la tarde', hora: '15:00'/.test(leer(f)))
   debe(mal.length === 0, '5 nombre viejo', 'la de las 15:00 sigue llamándose «Por la tarde»')
 }
