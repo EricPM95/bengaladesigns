@@ -95,7 +95,8 @@ for (const version of ['gratis', 'completa']) {
   debe(hay >= 6, '10', `${version}: no se pusieron paradas para la prueba (${hay})`)
   const t = pinta(M.DayList, { route: r, activeDayId: null, onSelectDay() {}, showAllDaysOnMap: false })
   debe(!/\b\d+ paradas?\b/i.test(t), '10', `${version}: DÍAS aún enseña el contador de paradas: ${(t.match(/\b\d+ paradas?\b/i) ?? [])[0]}`)
-  debe(/Ponle nombre|Día 2|mar|mié|jue/.test(t), '10', `${version}: DÍAS no pintó las cabeceras (${plano(t).slice(0, 120)})`)
+  // (6y7: la cabecera de cada día lleva su título —«Centro histórico y Vaticano»— en vez del nombre de la ciudad.)
+  debe(/Ponle nombre|Día libre|Centro histórico|Roma antigua|Vaticano|Día 2|mar|mié|jue/i.test(t), '10', `${version}: DÍAS no pintó las cabeceras (${plano(t).slice(0, 120)})`)
 }
 
 // ── 11. El aviso del alojamiento, solo si falta ──

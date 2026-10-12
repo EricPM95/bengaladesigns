@@ -23,6 +23,8 @@ const {
   buildManualRoute, planManualResize, resizeManualRoute,
 } = M
 globalThis.window.location.hostname = 'localhost'
+// (6y7: los títulos de los días salen de los datos del destino; hasta que llegan, el título va vacío.)
+await M.fetchDestinationExcursions('Roma')
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 const fuente = (ruta) => fs.readFileSync(ruta, 'utf8').replace(/\r\n/g, '\n')
@@ -58,25 +60,27 @@ const pintaDias = (route) => {
   const ruta = rutaMano(5)
   const html = pintaDias(ruta)
   const lineas = aTexto(html).split('\n')
-  debe(lineas.filter((l) => l === 'Ponle nombre').length === 3, '1 ponle nombre', `los 3 días de en medio sin nombre no dicen «Ponle nombre» (${lineas.filter((l) => l === 'Ponle nombre').length})`)
+  // (Tanda 6y7: un día sin nombre ya no dice «Ponle nombre»: su título sale de lo que se ve ese día y, vacío, es «Día libre». El nombre propio sigue mandando y se cambia desde «···».)
+  debe(lineas.filter((l) => l === 'Día libre').length === 5 && !lineas.includes('Ponle nombre'), '1 ponle nombre', `los 5 días vacíos no dicen «Día libre» (${lineas.filter((l) => l === 'Día libre').length}) o dicen «Ponle nombre»`)
   for (const titulo of ['jue 11 mar', 'vie 12 mar', 'sáb 13 mar']) debe(!lineas.includes(titulo), '1 ponle nombre', `el título repite la fecha «${titulo}»`)
   // El cuadrito con la fecha se queda.
   for (const [semana, numero] of [['JUE', '11'], ['VIE', '12'], ['SÁB', '13']]) debe(lineas.includes(semana) && lineas.includes(numero), '1 ponle nombre', `falta el cuadrito de la fecha «${semana} ${numero}»`)
-  debe(lineas.includes('Madrid → Roma') && lineas.includes('Roma → Madrid'), '1 ponle nombre', 'el primer y el último día ya no salen como «Madrid → Roma» / «Roma → Madrid»')
+  // (6y7: el trayecto va pequeño junto a «Día de viaje», no es el título.)
+  debe(lineas.includes('· Madrid → Roma') && lineas.includes('· Roma → Madrid') && !lineas.includes('Madrid → Roma'), '1 ponle nombre', 'el primer y el último día no llevan «Día de viaje · Madrid → Roma» / «· Roma → Madrid» pequeños')
   const botones = html.match(/<button[^>]*data-ponle-nombre="1"[^>]*>/g) ?? []
-  debe(botones.length === 3, '1 ponle nombre', `«Ponle nombre» no es un botón en los 3 días (${botones.length})`)
-  debe(botones.every((b) => /italic/.test(b) && /text-text\/45/.test(b)), '1 ponle nombre', '«Ponle nombre» no va en cursiva y gris')
+  debe(botones.length === 0, '1 ponle nombre', `queda un botón «Ponle nombre» (${botones.length}) en un destino con títulos`)
   // Un día con nombre lo conserva y deja de decir «Ponle nombre».
   const conNombre = { ...ruta, days: ruta.days.map((d) => (d.dayNumber === 3 ? { ...d, title: 'Compras', curatedTitle: 'Compras', nameByUser: true } : d)) }
   const l2 = aTexto(pintaDias(conNombre)).split('\n')
-  debe(l2.includes('Compras') && l2.filter((l) => l === 'Ponle nombre').length === 2, '1 ponle nombre', 'un día con nombre no lo conserva o sigue diciendo «Ponle nombre»')
-  // Sin fechas: también dice «Ponle nombre» (el número del día ya está en el cuadrito).
+  debe(l2.includes('Compras') && l2.filter((l) => l === 'Día libre').length === 4, '1 ponle nombre', 'un día con nombre no lo conserva o los demás dejan de decir «Día libre»')
+  // Sin fechas: igual (el número del día ya está en el cuadrito).
   const l3 = aTexto(pintaDias(rutaMano(4, { fechas: false }))).split('\n')
-  debe(l3.filter((l) => l === 'Ponle nombre').length === 2, '1 ponle nombre', 'sin fechas, los días sin nombre no dicen «Ponle nombre»')
+  debe(l3.filter((l) => l === 'Día libre').length === 4, '1 ponle nombre', 'sin fechas, los días vacíos no dicen «Día libre»')
   // Al tocarlo se abre DayNameSheet (el mismo del menú «Cambiar el nombre») con el nombre vacío.
   const lista = fuente('src/components/route/DayList.tsx')
+  // (6y7: el botón sigue solo para los destinos que no traen títulos; el nombre propio se cambia desde «···» → «Cambiar el nombre».)
   debe(/data-ponle-nombre="1"[\s\S]{0,260}setNameSheet\(\{ dayId: day\.id \}\)/.test(lista) && /event\.stopPropagation\(\)/.test(lista.slice(lista.indexOf('data-ponle-nombre'), lista.indexOf('data-ponle-nombre') + 260)), '1 ponle nombre', 'tocar «Ponle nombre» no abre DayNameSheet (o abre además la tarjeta)')
-  debe(/\{nameSheet && \(\s*<DayNameSheet/.test(lista) && /isManualRoute\(route\) && !\(route\.days\.find\(\(day\) => day\.id === nameSheet\.dayId\)\?\.nameByUser\) \? ''/.test(lista), '1 ponle nombre', 'DayNameSheet no sale vacío para un día sin nombre')
+  debe(/\{nameSheet && \(\s*<DayNameSheet/.test(lista) && /initialName=\{nameSheet\.dayId \? nombrePropioDelDia\(/.test(lista), '1 ponle nombre', 'DayNameSheet no sale vacío para un día sin nombre propio')
   // Las otras tarjetas (rutas nuestras) no cambian: el título sigue.
   const nuestra = { ...ruta, planMode: undefined, days: ruta.days.map((d) => ({ ...d, dayType: 'normal', curatedTitle: `Título ${d.dayNumber}`, title: `Título ${d.dayNumber}` })) }
   debe(!aTexto(pintaDias(nuestra)).includes('Ponle nombre'), '1 ponle nombre', 'una ruta que no es a mano dice «Ponle nombre»')

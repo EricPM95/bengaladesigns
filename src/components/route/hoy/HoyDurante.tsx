@@ -181,8 +181,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
         <div className="flex flex-none flex-col gap-0.5 px-1" data-hoy-titulo-del-dia>
           <span data-titulo-del-dia="1" className="font-display text-[26px] leading-[1.08] text-text [overflow-wrap:anywhere]">{tituloDeHoy.titulo}</span>
           {tituloDeHoy.viaje && (
-            <span className="text-[12.5px] font-medium text-accent">
-              Día de viaje <span data-viaje-del-dia="1" className="ml-1 text-[11.5px] font-normal text-text/55">· {tituloDeHoy.viaje}</span>
+            <span className="flex flex-wrap items-baseline gap-x-1.5 text-[12.5px] font-medium text-accent">
+              Día de viaje<span data-viaje-del-dia="1" className="whitespace-nowrap text-[11.5px] font-normal text-text/55">· {tituloDeHoy.viaje}</span>
             </span>
           )}
         </div>
