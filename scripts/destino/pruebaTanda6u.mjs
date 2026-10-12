@@ -202,7 +202,8 @@ try {
 // ── 4. La comida, hasta las 15:00 ─────────────────────────────────────────────────────────────────────
 if (COMIDA_HASTA_MIN !== 15 * 60) falla(`[comida_limite] el límite compartido es ${COMIDA_HASTA_MIN}, no las 15:00`)
 for (const archivo of ['shared/routeEngine/listasTrip.js', 'src/lib/todayMode.ts', 'src/components/route/dayDetail/DayDetailPanel.tsx']) {
-  const texto = readFileSync(new URL(`../../${archivo}`, import.meta.url), 'utf8')
+  // (6y8: las 14:30 de la regla «la comida va antes de la reserva si al salir son más de las 14:30» son la configuración `comida_antes_si_sale_despues_de`, no el límite viejo de la comida.)
+  const texto = readFileSync(new URL(`../../${archivo}`, import.meta.url), 'utf8').replace(/comida_antes_si_sale_despues_de: '14:30'/g, '')
   if (/['"]14:30['"]|14 \* 60 \+ 30/.test(texto) && /comida/i.test(texto.match(/.{0,120}(['"]14:30['"]|14 \* 60 \+ 30).{0,120}/)?.[0] ?? '')) falla(`[comida_14_30] ${archivo}: sigue usando las 14:30 para la comida`)
 }
 for (const inicio of INICIOS) {
