@@ -1,0 +1,17 @@
+# Preguntas de la parte de datos (Tanda 6y7)
+
+Datos de la lista «Datos de las fichas que parecen equivocados» que NO se han tocado porque no se pudieron confirmar con una fuente fiable. Cada uno: qué dice la ficha, qué dice el documento y por qué no se confirmó.
+
+1. **Panteón, rayo del 21 de abril.** Ficha: «los romanos lo diseñaron así intencionadamente». Documento: es solo una teoría. No se confirmó: la página consultada (Wikipedia) no habla del 21 de abril. Si quieres, la ficha pasa a «se dice que lo diseñaron así».
+2. **Plaza de San Pedro, obelisco.** Ficha: la descripción dice «obelisco egipcio» y los secretos dicen «romano mandado tallar en Egipto, no egipcio original» (se contradicen). Documento: se discute. No se encontró una fuente clara que lo cierre.
+3. **Piazza Navona, agua.** Ficha: «Bernini la trazó subterráneamente hasta aquí». Documento: la conducción del Acqua Vergine es de hacia 1570, antes de Bernini. No se encontró la fuente de esa fecha.
+4. **Largo di Torre Argentina, Mussolini.** Ficha: «los arqueólogos ganaron la batalla» a Mussolini. Documento: es dudoso, fue su régimen el que abrió la zona. La fuente consultada no dice quién ordenó la excavación.
+5. **Altar de la Patria, cuadrigas.** Ficha: «cada una pesa 50 toneladas». Sin fuente fiable a mano.
+6. **Castillo de Sant'Angelo, Beatrice Cenci.** Ficha: ahora dice «estuvo preso Benvenuto Cellini (y, según la tradición, Beatrice Cenci)». Cellini sí está confirmado (Wikipedia). De Cenci no se halló que estuviera en el castillo (las fuentes hablan de la cárcel Corte Savella y de la ejecución junto al castillo). Tu documento dice que sí estuvo preso: ¿tienes la fuente?
+7. **Basílica de San Pedro, tumba del apóstol.** Ficha: «Grutas Vaticanas con la tumba de San Pedro». Documento: está más abajo, en la necrópolis. No se confirmó con una fuente a mano, por eso no se cambió la descripción.
+8. **Galería Borghese, Cavalier d'Arpino.** Ficha: «por impago de impuestos». Documento: también se cuenta como castigo por tener armas. No se confirmó ninguna de las dos.
+9. **Ojo de la Cerradura, Piranesi.** Ficha: «alineó la cerradura, los setos y la cúpula a propósito». Documento: no está probado. Sin fuente.
+10. **Piazza del Popolo, nombre.** Ficha: mezcla la leyenda de Nerón con el origen del nombre (álamos o «pueblo»). Documento: no está claro. No se tocó: la ficha ya dice «en realidad, el nombre viene de los álamos», que es una de las dos hipótesis.
+11. **Santa María in Trastevere.** Ficha: «probablemente la primera dedicada a la Virgen» y «primera iglesia mariana de Roma» (secretos); columnas «de edificios romanos». Documento: se discute y no se sabe que todas las columnas sean del siglo I. Sin fuente fiable a mano.
+12. **San Clemente, sangre de toro.** Ficha: rituales de Mitra «con sangre de toro». Documento: eso es de otro culto (Cibeles). No se confirmó. Además: de la fecha del templo de Mitra solo se encontró que la casa es del siglo I y que se convirtió después en templo (la ficha ahora dice eso, sin fecha del templo).
+13. **Textos de «por qué» y de los días escritos en data/pipeline_v2/roma.json y docs/roma_por_que.json.** Dicen «La fuente más famosa del mundo» (Trevi), «La escalinata más famosa del mundo» (Plaza de España), «La mejor colección de Bernini (y Caravaggio) del mundo» (Galería Borghese), «una de las fachadas más copiadas del mundo» (Gesù) y «el puerto romano mejor conservado del mundo» (Ostia). No se han tocado: son textos de los días escritos (tuyos), no de las fichas. ¿Los suavizo igual?

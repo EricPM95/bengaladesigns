@@ -97,6 +97,12 @@ for (const nombre of LOS_31) {
   debe(!/Neptuno/.test(trevi.description) && !trevi.what_to_see.some((x) => /Neptuno/.test(x)) && !trevi.secrets.some((x) => /Neptuno/.test(x)), '3 frases', 'la Fontana de Trevi sigue diciendo Neptuno')
   debe(/donde Océano domina las aguas/.test(trevi.description) && trevi.what_to_see.includes('La figura central de Océano dominando las aguas desde su carro'), '3 frases', 'la Fontana no dice Océano en la descripción y en «Qué vas a ver» («Océano» a secas)')
   debe(/* Tanda 6y6: Eric deja una sola frase para la costumbre (la de la 6y5 quedaba junto a otra que se contradecía) */ trevi.secrets.some((x) => x.includes('Antes de la moneda, la costumbre era beber de su agua para volver a Roma. La película de 1954 hizo famosa la moneda.')) && !trevi.secrets.some((x) => /costumbre de la moneda viene de la película/.test(x)), '3 frases', 'el secreto de la moneda de la Fontana no es el nuevo')
+  // Tanda 6y7, punto 8: sin superlativos del mundo sin suavizar en las fichas (la excepción segura es la cúpula del Panteón y alguna más, a mano).
+  debe(trevi.description.startsWith('Una de las fuentes más famosas del mundo.') && !/La fuente más famosa del mundo/.test(trevi.description), '3 frases', 'la descripción de Trevi no dice «Una de las fuentes más famosas del mundo»')
+  for (const p of fichas.values()) {
+    const textos = [p.description ?? '', ...(p.what_to_see ?? []), ...(p.tips ?? []), ...(p.secrets ?? [])].join(' | ')
+    debe(!/(la|el) (fuente|escalinata|plaza|colección de arte|iglesia|escultura barroca) (más|mayor) [^.|]{0,40}del mundo/i.test(textos), '3 frases', `${p.name}: queda un superlativo del mundo sin suavizar`)
+  }
   const panteon = fichas.get('Panteón')
   debe(panteon.secrets.some((x) => /El 21 de abril, el día del nacimiento de Roma, al mediodía/.test(x)) && !panteon.secrets.some((x) => /21 de junio|solsticio/.test(x)), '3 frases', 'el rayo del Panteón no cae el 21 de abril («el día del nacimiento de Roma»)')
   debe(panteon.secrets.some((x) => x.includes('Todavía hoy es la mayor cúpula de hormigón sin armar del mundo.')) && !panteon.secrets.some((x) => /técnicamente imposible/.test(x)), '3 frases', 'el secreto de la cúpula del Panteón no es el nuevo')
