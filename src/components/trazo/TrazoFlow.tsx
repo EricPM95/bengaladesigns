@@ -24,7 +24,7 @@ import { StepPool } from './StepPool'
 import { StepSummary } from './StepSummary'
 import { StepElegir } from './StepElegir'
 import { StepManualSummary } from './StepManualSummary'
-import { STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, shouldSuggestExperiences, stepAfterChoice, stepCounterLabel, visibleStepNamesFor, usesExperiences, type PlanChoice } from './planChoice'
+import { STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, shouldSuggestExperiences, stepAfterChoice, stepCounterLabel, visibleStepNamesFor, usesExperiences, usesPool, type PlanChoice } from './planChoice'
 import { buildManualRoute, transportContextOf } from '../../lib/manualRoute'
 import './trazo.css'
 import { Icono } from '../ui/Icono'
@@ -180,6 +180,11 @@ export function TrazoFlow() {
     const experiences = deriveLegacyExperienceIds(experiencesPositive)
     // Sin pregunta de «¿Cómo son tus días?» (los medios días vendrán del vuelo) ni de la hora del Free Tour (de mañana, 10:00; se cambia desde RESERVAS).
     updateAnswers({ experiencesPositive, experiencesNegative: [], experiences, mediaJornada: undefined, freeTourDespues: undefined })
+    // (Tanda 6y7) Con 1 día no hay paso de lugares: de las experiencias se va directo al resumen.
+    if (!withPool) {
+      go(STEP.resumen)
+      return
+    }
     // Destino no curado: se pide la sugerencia de lugares ya; curado: el pool del JSON, sin Claude.
     if (curatedPool === false) suggestPlacesOnDemand(destinationName, experiences)
     else store.getState().setPlacesStepStarted(true)
@@ -271,7 +276,8 @@ export function TrazoFlow() {
       : ''
   // Con la ruta a mano no hay experiencias ni lugares: ni en la barra, ni en el panel, ni en las fichas.
   const withExperiences = usesExperiences(plan)
-  const stepNames = visibleStepNamesFor(plan, step)
+  const withPool = usesPool(plan, answers.days)
+  const stepNames = visibleStepNamesFor(plan, step, null, answers.days)
   const nExp = withExperiences ? (answers.experiencesPositive?.length ?? 0) : 0
   const expLabel = step > STEP.experiencias && nExp ? `${nExp} ${nExp === 1 ? 'experiencia' : 'experiencias'}` : ''
   const nPlaces = useRouteStore((state) => (withExperiences ? state.selected_curated_place_names.length + state.selected_place_ids.length : 0))
@@ -597,7 +603,7 @@ export function TrazoFlow() {
                 onNext={confirmExperiences}
               />,
             )}
-          {withExperiences && screen(STEP.lugares, <StepPool destinationName={destinationName ?? ''} days={answers.days} curatedPool={curatedPool} experiences={answers.experiences ?? []} onNext={() => go(STEP.resumen)} />)}
+          {withPool && screen(STEP.lugares, <StepPool destinationName={destinationName ?? ''} days={answers.days} curatedPool={curatedPool} experiences={answers.experiences ?? []} onNext={() => go(STEP.resumen)} />)}
           {withExperiences &&
             screen(
               STEP.resumen,

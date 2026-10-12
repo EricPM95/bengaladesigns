@@ -11,8 +11,9 @@ import { fetchPlacePhoto } from '../../lib/placePhoto'
  * desactivan: sin alertas, sin popups, simplemente no se pueden marcar más.
  */
 export function poolSelectionLimit(days: number | undefined): number {
-  // Tanda 6y6 (decision de Eric): 2 sitios con 1 dia, 3 con 2 dias y 6 con 3 o mas (sin dias, 3). Antes (6y5) 3 / 3 / 6; antes (6y4) 5 / 5 / 7 / 8.
-  if (days === 1) return 2
+  // Tanda 6y7 (decision de Eric): con 1 dia el pool NO sale (0: el formulario salta ese paso y, si se acorta el viaje despues de marcar, la seleccion queda vacia), 3 con 2 dias y 6 con 3 o mas (sin dias, 3).
+  // Antes (6y6) 2 / 3 / 6; antes (6y5) 3 / 3 / 6; antes (6y4) 5 / 5 / 7 / 8.
+  if (days === 1) return 0
   if (days === undefined || days <= 2) return 3
   return 6
 }

@@ -102,7 +102,8 @@ export function DatesCalendarBody({ destination, dateRange, onChangeDateRange }:
         <Title size={36}>
           ¿Cuándo estás en <Em>{city}</Em>?
         </Title>
-        <div style={{ flex: 1, minHeight: 12 }} />
+        {/* (Tanda 6y7) El calendario va justo debajo del título, arriba; «Quitar fechas» debajo del calendario. El formulario (StepDates) sí lo deja abajo, junto a su «Continuar». */}
+        <div style={{ height: 16 }} />
         <TrazoCalendar
           dateRange={dateRange}
           onSelect={(from, to) => {

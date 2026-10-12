@@ -78,7 +78,7 @@ const cuenta0 = () => llamadas.length
   // (6y4: ya no hay aviso ni espera; el paso a la pantalla siguiente es inmediato. Lo prueba pruebaFase6y4_formulario.mjs.)
   debe(/setPlan\(choice\)\s*go\(stepAfterChoice\(choice\)\)/.test(flujo) && !/AVISO_DE_ELEGIR/.test(flujo), '1 avisos', 'al tocar una tarjeta no se pasa al momento a la pantalla siguiente')
   // El camino a mano no monta nada: las pantallas de experiencias, lugares y resumen no se pintan, y «Empezar mi ruta» solo construye la ruta.
-  debe(/\{withExperiences &&\s*screen\(\s*STEP\.experiencias/.test(flujo) && /\{withExperiences && screen\(STEP\.lugares/.test(flujo) && /\{withExperiences &&\s*screen\(\s*STEP\.resumen,/.test(flujo), '1 a mano', 'las experiencias, los lugares o el resumen se pintan también en la ruta a mano')
+  debe(/\{withExperiences &&\s*screen\(\s*STEP\.experiencias/.test(flujo) && /\{withPool && screen\(STEP\.lugares/.test(flujo) && /\{withExperiences &&\s*screen\(\s*STEP\.resumen,/.test(flujo), '1 a mano', 'las experiencias, los lugares o el resumen se pintan también en la ruta a mano')
   debe(/plan === 'manual' && screen\(STEP\.resumenCorto/.test(flujo), '1 a mano', 'el resumen corto no sale solo en la ruta a mano')
   const inicio = flujo.indexOf('const startManualRoute')
   const cuerpo = flujo.slice(inicio, flujo.indexOf('\n  }\n', inicio))
@@ -253,7 +253,7 @@ for (const n of [2, 3, 4, 5]) {
   debe((fuente('src/lib/rebuildDay.ts').match(/isManualRoute\(route\)/g) ?? []).length === 2, '4 sin motor', 'rehacerDiasSinTocar o rehacerDiaConReservas no miran isManualRoute (la regla única)')
   debe(/!isManualRoute\(route\)/.test(fuente('src/components/route/reservas/AddReservationSheet.tsx')), '4 sin motor', 'AddReservationSheet pide el plan al motor en la ruta a mano')
   debe(/&& !isManualRoute\(route\)/.test(fuente('src/components/route/DatesChangeDialog.tsx')), '4 sin motor', 'DatesChangeDialog rehace la ruta a mano')
-  debe(/isManualRoute\(state\.route\)\) return state/.test(fuente('src/store/useRouteStore.ts')), '4 sin motor', 'regenerateRouteForDates rehace la ruta a mano')
+  debe(/isManualRoute\(state\.route\) \|\| state\.rehaciendoRuta\) return state/.test(fuente('src/store/useRouteStore.ts')), '4 sin motor', 'regenerateRouteForDates rehace la ruta a mano')
 }
 
 // ── 5. Sin experiencias: DÍAS, RESERVAS, EXPLORAR y el Free Tour ──

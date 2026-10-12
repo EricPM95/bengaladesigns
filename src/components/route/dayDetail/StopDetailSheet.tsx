@@ -408,288 +408,291 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
             )}
           </div>
 
-          {/* El panel sube sobre el mapa con las esquinas redondas (diseño «Ficha Lugar»); el tirador sigue moviéndolo. */}
-          <div onPointerDown={handleDragStart} className="relative z-[5] -mt-7 flex shrink-0 cursor-row-resize touch-none items-center justify-center rounded-t-[28px] bg-bg pb-1 pt-3 shadow-[0_-12px_30px_-14px_rgba(28,34,48,.4)]">
-            <span className="h-1 w-[42px] rounded bg-text/20" />
-          </div>
+          {/* El panel sube sobre el mapa con las esquinas redondas (diseño «Ficha Lugar»); el tirador sigue moviéndolo. (Tanda 6y7) El fondo es del PANEL entero, tirador incluido: antes el tirador
+              (20 px) subía 28 px sobre el mapa y el mapa quedaba pintado 8 px por debajo de él, entre el tirador y el título. */}
+          <div className="relative z-[5] -mt-7 flex min-h-0 flex-1 flex-col rounded-t-[28px] bg-bg shadow-[0_-12px_30px_-14px_rgba(28,34,48,.4)]" data-ficha-panel>
+            <div onPointerDown={handleDragStart} className="flex shrink-0 cursor-row-resize touch-none items-center justify-center pb-1 pt-3">
+              <span className="h-1 w-[42px] rounded bg-text/20" />
+            </div>
 
-          <div className="flex-1 overflow-y-auto bg-bg">
-            <div className={`mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-3 ${conBarraEscuchar ? 'pb-[110px]' : 'pb-8'}`}>
-              {/* Cabecera: la foto con la cámara en su esquina, el nombre y las etiquetas pequeñas. */}
-              <div className="flex items-start gap-3.5 px-0.5">
-                <div className="relative h-[84px] w-[84px] flex-none">
-                  <span
-                    className="absolute inset-0 overflow-hidden rounded-[20px] bg-bg-hover [clip-path:polygon(0_0,100%_0,100%_calc(100%-18px),calc(100%-22px)_100%,0_100%)]"
-                    style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}
-                  >
-                    {(photo?.small ?? stop.photoUrl) && <img src={photo?.small ?? stop.photoUrl} alt="" className="h-full w-full object-cover" />}
-                  </span>
-                  {/* Sin foto (la del servidor es «none» o está rechazada): el recuadro neutro, nunca una imagen rota ni vacía. */}
-                  {dayNumber !== null && !footerAction && (
-                    <span className="absolute -bottom-1.5 -right-1.5 z-[2] [&_[role=alert]]:absolute [&_[role=alert]]:left-[-70px] [&_[role=alert]]:top-[calc(100%+4px)] [&_[role=alert]]:z-10 [&_[role=alert]]:w-[200px] [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-bg-card [&_[role=alert]]:p-1.5 [&_[role=alert]]:shadow">
-                      <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} esquina />
+            <div className="flex-1 overflow-y-auto">
+              <div className={`mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-3 ${conBarraEscuchar ? 'pb-[110px]' : 'pb-8'}`}>
+                {/* Cabecera: la foto con la cámara en su esquina, el nombre y las etiquetas pequeñas. */}
+                <div className="flex items-start gap-3.5 px-0.5">
+                  <div className="relative h-[84px] w-[84px] flex-none">
+                    <span
+                      className="absolute inset-0 overflow-hidden rounded-[20px] bg-bg-hover [clip-path:polygon(0_0,100%_0,100%_calc(100%-18px),calc(100%-22px)_100%,0_100%)]"
+                      style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}
+                    >
+                      {(photo?.small ?? stop.photoUrl) && <img src={photo?.small ?? stop.photoUrl} alt="" className="h-full w-full object-cover" />}
                     </span>
-                  )}
-                </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-[9px] pt-0.5">
-                  <h1 className="flex items-start gap-1.5 font-display text-[27px] leading-[1.04] text-text [text-wrap:balance]">
-                    {stop.isFreeTour && <FreeTourIcon className="mt-1.5 text-accent" />}
-                    {stop.isNightExperience && <MoonIcon className="mt-1.5 text-[#5B6BC0]" />}
-                    <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
-                  </h1>
-                  <div className="flex flex-wrap items-center gap-[5px]">
-                    {stop.isNightExperience && (
-                      <span className="flex h-[26px] items-center gap-[5px] rounded-full bg-[#1a1a2e] px-[9px] text-[11.5px] font-semibold text-[#9DB4FF]">
-                        <MoonIcon />
-                        Experiencia nocturna
+                    {/* Sin foto (la del servidor es «none» o está rechazada): el recuadro neutro, nunca una imagen rota ni vacía. */}
+                    {dayNumber !== null && !footerAction && (
+                      <span className="absolute -bottom-1.5 -right-1.5 z-[2] [&_[role=alert]]:absolute [&_[role=alert]]:left-[-70px] [&_[role=alert]]:top-[calc(100%+4px)] [&_[role=alert]]:z-10 [&_[role=alert]]:w-[200px] [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-bg-card [&_[role=alert]]:p-1.5 [&_[role=alert]]:shadow">
+                        <BotonFotoParada stopName={stop.name} dayNumber={dayNumber} esquina />
                       </span>
                     )}
-                    <Pildora tono="oscura">
-                      <Icono nombre="reloj" size={12} grosor={2} />
-                      {formatDuration(stop.durationMinutes)}
-                    </Pildora>
-                    {hoursTag && (
-                      <Pildora tono={hoursTag.variant === 'closed' ? 'roja' : 'verde'}>
-                        <Icono nombre={hoursTag.variant === 'always' ? 'hecho' : 'reloj'} size={12} grosor={2.2} />
-                        {hoursTag.label}
-                      </Pildora>
-                    )}
-                    {/* "Acceso libre" (la variante `always` del hoursTag) solo es cierto si el lugar
-                        no tiene horario NI hace falta sacar entrada. Aquí sí se sabe: la ficha
-                        ampliada ya está cargada y trae `booking_url` para lo que se reserva, y el
-                        propio horario del JSON avisa cuando la reserva es obligatoria. */}
-                    {requiresBooking && <Pildora tono="roja">Requiere reserva</Pildora>}
-                    {/* Ronda 7, Issue A: la píldora de categoría genérica solo se muestra sin tags
-                        curados reales — ver mismo criterio en StopAccordion.tsx. */}
-                    {visibleTags(stop.tags).length === 0 && <Pildora>{stop.category}</Pildora>}
-                    {visibleTags(stop.tags).map((tag) => (
-                      <Pildora key={tag}>{tagLabel(tag)}</Pildora>
-                    ))}
-                    {/* La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos. */}
-                    {!stop.isFreeTour && <EtiquetaBarrio etiqueta={barrio} className="!min-h-[26px] !px-[9px] !text-[11.5px]" />}
                   </div>
-                  {recomendacion && (
-                    <button
-                      type="button"
-                      onClick={recomendacion.onToggle}
-                      aria-pressed={recomendacion.liked}
-                      aria-label={recomendacion.liked ? `Quitar me gusta de ${stop.name}` : `Me gusta ${stop.name}`}
-                      className="flex items-center gap-1.5 text-caption transition-colors"
-                      style={{ color: recomendacion.liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.6)' }}
-                    >
-                      <Icono nombre="gusta" size={17} relleno={recomendacion.liked} />
-                      {recomendacion.texto}
-                    </button>
-                  )}
+                  <div className="flex min-w-0 flex-1 flex-col gap-[9px] pt-0.5">
+                    <h1 className="flex items-start gap-1.5 font-display text-[27px] leading-[1.04] text-text [text-wrap:balance]">
+                      {stop.isFreeTour && <FreeTourIcon className="mt-1.5 text-accent" />}
+                      {stop.isNightExperience && <MoonIcon className="mt-1.5 text-[#5B6BC0]" />}
+                      <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-[5px]">
+                      {stop.isNightExperience && (
+                        <span className="flex h-[26px] items-center gap-[5px] rounded-full bg-[#1a1a2e] px-[9px] text-[11.5px] font-semibold text-[#9DB4FF]">
+                          <MoonIcon />
+                          Experiencia nocturna
+                        </span>
+                      )}
+                      <Pildora tono="oscura">
+                        <Icono nombre="reloj" size={12} grosor={2} />
+                        {formatDuration(stop.durationMinutes)}
+                      </Pildora>
+                      {hoursTag && (
+                        <Pildora tono={hoursTag.variant === 'closed' ? 'roja' : 'verde'}>
+                          <Icono nombre={hoursTag.variant === 'always' ? 'hecho' : 'reloj'} size={12} grosor={2.2} />
+                          {hoursTag.label}
+                        </Pildora>
+                      )}
+                      {/* "Acceso libre" (la variante `always` del hoursTag) solo es cierto si el lugar
+                          no tiene horario NI hace falta sacar entrada. Aquí sí se sabe: la ficha
+                          ampliada ya está cargada y trae `booking_url` para lo que se reserva, y el
+                          propio horario del JSON avisa cuando la reserva es obligatoria. */}
+                      {requiresBooking && <Pildora tono="roja">Requiere reserva</Pildora>}
+                      {/* Ronda 7, Issue A: la píldora de categoría genérica solo se muestra sin tags
+                          curados reales — ver mismo criterio en StopAccordion.tsx. */}
+                      {visibleTags(stop.tags).length === 0 && <Pildora>{stop.category}</Pildora>}
+                      {visibleTags(stop.tags).map((tag) => (
+                        <Pildora key={tag}>{tagLabel(tag)}</Pildora>
+                      ))}
+                      {/* La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos. */}
+                      {!stop.isFreeTour && <EtiquetaBarrio etiqueta={barrio} className="!min-h-[26px] !px-[9px] !text-[11.5px]" />}
+                    </div>
+                    {recomendacion && (
+                      <button
+                        type="button"
+                        onClick={recomendacion.onToggle}
+                        aria-pressed={recomendacion.liked}
+                        aria-label={recomendacion.liked ? `Quitar me gusta de ${stop.name}` : `Me gusta ${stop.name}`}
+                        className="flex items-center gap-1.5 text-caption transition-colors"
+                        style={{ color: recomendacion.liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.6)' }}
+                      >
+                        <Icono nombre="gusta" size={17} relleno={recomendacion.liked} />
+                        {recomendacion.texto}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-
-              {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
-                  que exigen sus condiciones. Las de Wikipedia llevan autor y licencia (Tanda 6z6f) solo si hay crédito completo (las de
-                  dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). Una sola pieza, `FotoCredito` (Tanda 6y2),
-                  la misma que usa la esquina de las fotos grandes. */}
-              <FotoCredito photo={photo} className="px-1 text-caption text-text-muted" />
-
-              <FichaPestanas<Tab>
-                pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label }))}
-                activa={activeTab}
-                onPick={setTab}
-              />
-
-              {activeTab === 'resumen' && stop.isFreeTour && (
-                <div className="flex flex-col gap-[18px]">
-                  <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{stop.description}</p>
-                  {/* Dónde acaba el tour (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
-                  {stop.freeTourEnd && (
-                    <p className="flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small text-text">
-                      <Icono nombre="mapa" className="h-4 w-4 shrink-0" />
-                      <span>{stop.freeTourEnd}</span>
-                    </p>
-                  )}
-
-                  {stop.freeTourMeetingPoint && (
+  
+                {/* Prompt 5: atribución de Unsplash. Obligatoria donde se muestra la foto, con los UTM
+                    que exigen sus condiciones. Las de Wikipedia llevan autor y licencia (Tanda 6z6f) solo si hay crédito completo (las de
+                    dominio público, nada) y las nuestras (`propia`) no la llevan nunca (Tanda 6z6e). Una sola pieza, `FotoCredito` (Tanda 6y2),
+                    la misma que usa la esquina de las fotos grandes. */}
+                <FotoCredito photo={photo} className="px-1 text-caption text-text-muted" />
+  
+                <FichaPestanas<Tab>
+                  pestanas={([{ id: 'resumen', label: 'Resumen' }, { id: 'tickets', label: 'Entradas' }, { id: 'tips', label: 'Tips' }] as const).filter((item) => visibleTabs.includes(item.id)).map((item) => ({ id: item.id as Tab, label: item.label }))}
+                  activa={activeTab}
+                  onPick={setTab}
+                />
+  
+                {activeTab === 'resumen' && stop.isFreeTour && (
+                  <div className="flex flex-col gap-[18px]">
+                    <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{stop.description}</p>
+                    {/* Dónde acaba el tour (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
+                    {stop.freeTourEnd && (
+                      <p className="flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small text-text">
+                        <Icono nombre="mapa" className="h-4 w-4 shrink-0" />
+                        <span>{stop.freeTourEnd}</span>
+                      </p>
+                    )}
+  
+                    {stop.freeTourMeetingPoint && (
+                      <div className="rounded-[22px] border border-text/[.07] bg-bg-card p-3.5">
+                        <h3 className="flex items-center gap-2.5 font-display text-[21px] leading-none text-text">
+                          <Icono nombre="mapa" size={18} />
+                          Punto de encuentro
+                        </h3>
+                        <p className="mt-2 text-[14px] leading-[1.5] text-text">{stop.freeTourMeetingPoint}</p>
+                      </div>
+                    )}
+  
+                    {stop.freeTourHighlights && stop.freeTourHighlights.length > 0 && (
+                      <div className="space-y-1.5">
+                        <FichaQueVeras puntos={stop.freeTourHighlights} titulo="Lugares que verás durante el tour" />
+                        <p className="px-1 text-caption italic text-text-muted">Volverás a visitar algunos de estos lugares con más calma en los próximos días de tu ruta.</p>
+                      </div>
+                    )}
+  
                     <div className="rounded-[22px] border border-text/[.07] bg-bg-card p-3.5">
                       <h3 className="flex items-center gap-2.5 font-display text-[21px] leading-none text-text">
-                        <Icono nombre="mapa" size={18} />
-                        Punto de encuentro
+                        <Icono nombre="reloj" size={18} />
+                        Horario
                       </h3>
-                      <p className="mt-2 text-[14px] leading-[1.5] text-text">{stop.freeTourMeetingPoint}</p>
+                      <p className="mt-2 text-[13px] leading-[1.55] text-text/72">
+                        Los free tours suelen tener salidas por la mañana (10:00-10:30) y por la tarde (16:00-17:00). Consulta la disponibilidad al
+                        reservar.
+                      </p>
                     </div>
-                  )}
-
-                  {stop.freeTourHighlights && stop.freeTourHighlights.length > 0 && (
-                    <div className="space-y-1.5">
-                      <FichaQueVeras puntos={stop.freeTourHighlights} titulo="Lugares que verás durante el tour" />
-                      <p className="px-1 text-caption italic text-text-muted">Volverás a visitar algunos de estos lugares con más calma en los próximos días de tu ruta.</p>
-                    </div>
-                  )}
-
-                  <div className="rounded-[22px] border border-text/[.07] bg-bg-card p-3.5">
-                    <h3 className="flex items-center gap-2.5 font-display text-[21px] leading-none text-text">
-                      <Icono nombre="reloj" size={18} />
-                      Horario
-                    </h3>
-                    <p className="mt-2 text-[13px] leading-[1.55] text-text/72">
-                      Los free tours suelen tener salidas por la mañana (10:00-10:30) y por la tarde (16:00-17:00). Consulta la disponibilidad al
-                      reservar.
-                    </p>
+  
+                    <a
+                      href={`https://www.google.com/search?q=${encodeURIComponent(`free tour gratis ${city} reserva`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-[46px] w-full items-center justify-center gap-2 rounded-full bg-accent text-body font-semibold text-white transition-colors hover:bg-accent-hover"
+                    >
+                      Reservar
+                      <Icono nombre="flecha" size={15} grosor={2} />
+                    </a>
                   </div>
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(`free tour gratis ${city} reserva`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-[46px] w-full items-center justify-center gap-2 rounded-full bg-accent text-body font-semibold text-white transition-colors hover:bg-accent-hover"
-                  >
-                    Reservar
-                    <Icono nombre="flecha" size={15} grosor={2} />
-                  </a>
-                </div>
-              )}
-
-              {activeTab === 'resumen' && !stop.isFreeTour && (
-                <div className="flex flex-col gap-[18px]">
-                  {/* La línea de la ficha (Navidad, o el Ángelus de los domingos): arriba, destacada y con su icono. */}
-                  {stop.seasonLine && (
-                    <p className="flex items-start gap-2.5 rounded-2xl border border-accent/25 bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-text">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-card text-accent">
-                        <DateNoticeSmallIcon icon={stop.seasonLineIcon === 'religioso' ? 'religioso' : 'navidad'} />
-                      </span>
-                      <span>{stop.seasonLine}</span>
-                    </p>
-                  )}
-                  {/* El paseo nocturno al que pertenece (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
-                  {stop.isNightExperience && (
-                    <p className="flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small text-text">
-                      <span className="font-medium">{stop.nightWalkName && stop.nightWalkName !== 'Paseo nocturno' ? `Paseo nocturno: ${stop.nightWalkName}` : stop.nightWalkName ? 'Paseo nocturno' : 'Experiencia nocturna'}</span>
-                    </p>
-                  )}
-                  {/* Por dentro: con su tiempo (PROMPT_UI_REPASO 11: ya no va en la tarjeta). */}
-                  {stop.visitMode === 'dentro' && (
-                    <p className="flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small text-text">
-                      <span className="font-medium">Por dentro</span> · {stop.durationMinutes} min
-                    </p>
-                  )}
-                  {/* Por fuera: el motivo, en una línea (cerrado, ya cerrado o para llegar a todo lo del día). */}
-                  {stop.visitMode === 'fuera' && stop.outsideReason && (
-                    <div className="space-y-2">
-                      <p className={`flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small ${stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre' ? 'text-accent-red' : 'text-text'}`}>
-                        <Icono nombre="camara" className="h-4 w-4 shrink-0 text-text-soft" />
-                        <span>
-                          <span className="font-medium">Por fuera</span>
-                          {/* (Lo escrito «por fuera» a propósito lleva su texto de la ficha, el mismo del «por qué» de abajo: no se repite.) */}
-                          {stop.outsideKind === 'a_proposito' && withoutLeadingEmoji(stop.why ?? '') === stop.outsideReason ? null : <> · {stop.outsideReason}</>}
+                )}
+  
+                {activeTab === 'resumen' && !stop.isFreeTour && (
+                  <div className="flex flex-col gap-[18px]">
+                    {/* La línea de la ficha (Navidad, o el Ángelus de los domingos): arriba, destacada y con su icono. */}
+                    {stop.seasonLine && (
+                      <p className="flex items-start gap-2.5 rounded-2xl border border-accent/25 bg-accent-soft px-3 py-2.5 text-small leading-relaxed text-text">
+                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-card text-accent">
+                          <DateNoticeSmallIcon icon={stop.seasonLineIcon === 'religioso' ? 'religioso' : 'navidad'} />
                         </span>
+                        <span>{stop.seasonLine}</span>
                       </p>
-                      {stop.outsideKind === 'no_cabe' && onWantInside && (
-                        <button
-                          type="button"
-                          onClick={onWantInside}
-                          className="h-10 rounded-full bg-text px-5 text-[14px] font-medium text-bg transition-transform active:scale-[.98]"
-                        >
-                          Quiero entrar
-                        </button>
-                      )}
-                    </div>
-                  )}
-                  {/* El "Por qué aquí" de la ruta, el texto grande de arriba (la tarjeta del día ya no lleva texto). */}
-                  {(stop.isRevisit && stop.revisitReason) || stop.why ? (
-                    <p className="px-1 font-display text-[22px] leading-[1.3] text-text [text-wrap:pretty]">{stop.isRevisit && stop.revisitReason ? stop.revisitReason : withoutLeadingEmoji(stop.why ?? '')}</p>
-                  ) : null}
-                  {/* Sin ficha ampliada ni texto de la IA: el texto del lugar, el nuestro, si no es ya el «por qué». */}
-                  {stop.noAiText && stop.placeText && stop.placeText !== stop.why && !(stop.isRevisit && stop.revisitReason) && (
-                    <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{stop.placeText}</p>
-                  )}
-                  {descLoading ? (
-                    <p className="flex items-center gap-2 px-1 text-small italic text-text-soft">
-                      <Spinner className="text-accent" />
-                      Preparando información de {stop.name}...
-                    </p>
-                  ) : description ? (
-                    <>
-                      {description.description && <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{description.description}</p>}
-                      {/* La ficha curada trae puntos concretos (lista); la de Claude, un párrafo. */}
-                      <FichaQueVeras puntos={queVerasLista} numerar={whatToSee.length > 0} />
-                      {description.whyRecommended && (
-                        <div className="flex flex-col gap-1.5">
-                          <span className="px-1 font-mono text-[10px] font-semibold uppercase tracking-[.16em] text-text/55">Por qué te lo recomendamos</span>
-                          <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{description.whyRecommended}</p>
-                        </div>
-                      )}
-                    </>
-                  ) : descFailed ? (
-                    <p className="px-1 text-[14px] leading-[1.6] text-text/70">{stop.description}</p>
-                  ) : null}
-
-                  {/* «Por el camino»: calles y recomendaciones de paso que ya no son parada (Via Margutta, Via del Babuino, Venchi). */}
-                  <FichaPorElCamino textos={(stop.porElCamino ?? []).map((item) => item.texto)} />
-
-                  {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
-                      de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
-                      nunca redactado por Claude, para garantizar que aparece siempre igual. */}
-                  {hayHorario && (
-                    <FichaHorario
-                      aviso={avisoHorario}
-                      avisosRojos={[stop.hoursWarning, stop.seasonNotice].filter((texto): texto is string => Boolean(texto))}
-                      avisoGris={stop.closedNotice ?? null}
-                      filas={filasHorario}
-                      parrafos={parrafosHorario}
-                      pie={pieHorario}
-                    />
-                  )}
-
-                  <FichaComoLlegar direccion={description?.address ?? null} transporte={nearbyTransit} web={description?.officialWebsite ?? null} onComoLlegar={description?.address ? () => setDirectionsOpen(true) : null} />
-                </div>
-              )}
-
-              {activeTab === 'tickets' && (
-                <div className="space-y-3">
-                  {/* El Free Tour que recorre este sitio. */}
-                  {stop.inFreeTour && (
-                    <div className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
-                      <p className="font-display text-[19px] leading-[1.1] text-text">{stop.inFreeTour.name}</p>
-                      <p className="mt-1.5 text-[13px] leading-[1.5] text-text/72">
-                        Este sitio forma parte de su recorrido
-                        {stop.inFreeTour.durationMinutes ? `, de ${formatDuration(stop.inFreeTour.durationMinutes)}` : ''}
-                        {stop.inFreeTour.meetingPoint ? `. Sale de ${stop.inFreeTour.meetingPoint}` : ''}.
+                    )}
+                    {/* El paseo nocturno al que pertenece (PROMPT_UI_REPASO_2, 5: ya no va en la tarjeta). */}
+                    {stop.isNightExperience && (
+                      <p className="flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small text-text">
+                        <span className="font-medium">{stop.nightWalkName && stop.nightWalkName !== 'Paseo nocturno' ? `Paseo nocturno: ${stop.nightWalkName}` : stop.nightWalkName ? 'Paseo nocturno' : 'Experiencia nocturna'}</span>
                       </p>
-                      {stop.inFreeTour.url && (
-                        <a href={stop.inFreeTour.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-small font-semibold text-accent underline">
-                          Ver el Free Tour
-                        </a>
-                      )}
-                    </div>
-                  )}
-                  {/* Las entradas de los datos (Tanda 6n): una debajo de otra, con [Reservar] y «¿Ya la tienes? Añádela». Un sitio con tasa en vez de entrada lleva «No necesitas entrada» (Tanda 6y4). */}
-                  {(hasEntradas || sinEntrada) && <StopEntradasTab stop={stop} sinEntrada={sinEntrada} />}
-                  {/* El Free Tour de la ruta: su ticketInfo, como hasta ahora. */}
-                  {stop.isFreeTour && ticketInfo.length > 0 && (
-                    <div className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
-                      <p className="font-display text-[19px] leading-[1.1] text-text">Entrada</p>
-                      <ul className="mt-1.5 space-y-0.5">
-                        {ticketInfo.map((line) => (
-                          <li key={line} className="text-[13px] leading-[1.5] text-text/72">
-                            {line}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'tips' && (
-                <div className="space-y-2">
-                  {tips.length === 0 && <p className="px-1 text-small text-text-soft">{descLoading ? 'Preparando los consejos…' : 'Todavía no tenemos consejos para este lugar.'}</p>}
-                  {tips.map((tip, index) => (
-                    <FichaTip key={index} tipo={tip.tipo === 'practico' ? 'practico' : 'secreto'} texto={tip.texto} />
-                  ))}
-                </div>
-              )}
+                    )}
+                    {/* Por dentro: con su tiempo (PROMPT_UI_REPASO 11: ya no va en la tarjeta). */}
+                    {stop.visitMode === 'dentro' && (
+                      <p className="flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small text-text">
+                        <span className="font-medium">Por dentro</span> · {stop.durationMinutes} min
+                      </p>
+                    )}
+                    {/* Por fuera: el motivo, en una línea (cerrado, ya cerrado o para llegar a todo lo del día). */}
+                    {stop.visitMode === 'fuera' && stop.outsideReason && (
+                      <div className="space-y-2">
+                        <p className={`flex items-center gap-2 rounded-2xl bg-bg-hover px-3 py-2.5 text-small ${stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre' ? 'text-accent-red' : 'text-text'}`}>
+                          <Icono nombre="camara" className="h-4 w-4 shrink-0 text-text-soft" />
+                          <span>
+                            <span className="font-medium">Por fuera</span>
+                            {/* (Lo escrito «por fuera» a propósito lleva su texto de la ficha, el mismo del «por qué» de abajo: no se repite.) */}
+                            {stop.outsideKind === 'a_proposito' && withoutLeadingEmoji(stop.why ?? '') === stop.outsideReason ? null : <> · {stop.outsideReason}</>}
+                          </span>
+                        </p>
+                        {stop.outsideKind === 'no_cabe' && onWantInside && (
+                          <button
+                            type="button"
+                            onClick={onWantInside}
+                            className="h-10 rounded-full bg-text px-5 text-[14px] font-medium text-bg transition-transform active:scale-[.98]"
+                          >
+                            Quiero entrar
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {/* El "Por qué aquí" de la ruta, el texto grande de arriba (la tarjeta del día ya no lleva texto). */}
+                    {(stop.isRevisit && stop.revisitReason) || stop.why ? (
+                      <p className="px-1 font-display text-[22px] leading-[1.3] text-text [text-wrap:pretty]">{stop.isRevisit && stop.revisitReason ? stop.revisitReason : withoutLeadingEmoji(stop.why ?? '')}</p>
+                    ) : null}
+                    {/* Sin ficha ampliada ni texto de la IA: el texto del lugar, el nuestro, si no es ya el «por qué». */}
+                    {stop.noAiText && stop.placeText && stop.placeText !== stop.why && !(stop.isRevisit && stop.revisitReason) && (
+                      <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{stop.placeText}</p>
+                    )}
+                    {descLoading ? (
+                      <p className="flex items-center gap-2 px-1 text-small italic text-text-soft">
+                        <Spinner className="text-accent" />
+                        Preparando información de {stop.name}...
+                      </p>
+                    ) : description ? (
+                      <>
+                        {description.description && <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{description.description}</p>}
+                        {/* La ficha curada trae puntos concretos (lista); la de Claude, un párrafo. */}
+                        <FichaQueVeras puntos={queVerasLista} numerar={whatToSee.length > 0} />
+                        {description.whyRecommended && (
+                          <div className="flex flex-col gap-1.5">
+                            <span className="px-1 font-mono text-[10px] font-semibold uppercase tracking-[.16em] text-text/55">Por qué te lo recomendamos</span>
+                            <p className="px-1 text-[14px] leading-[1.6] text-text/70 [text-wrap:pretty]">{description.whyRecommended}</p>
+                          </div>
+                        )}
+                      </>
+                    ) : descFailed ? (
+                      <p className="px-1 text-[14px] leading-[1.6] text-text/70">{stop.description}</p>
+                    ) : null}
+  
+                    {/* «Por el camino»: calles y recomendaciones de paso que ya no son parada (Via Margutta, Via del Babuino, Venchi). */}
+                    <FichaPorElCamino textos={(stop.porElCamino ?? []).map((item) => item.texto)} />
+  
+                    {/* Horario con matices — solo si hay algo real que decir más allá del rango simple
+                        de la cabecera (hoursTag); el disclaimer + link es SIEMPRE el mismo texto fijo,
+                        nunca redactado por Claude, para garantizar que aparece siempre igual. */}
+                    {hayHorario && (
+                      <FichaHorario
+                        aviso={avisoHorario}
+                        avisosRojos={[stop.hoursWarning, stop.seasonNotice].filter((texto): texto is string => Boolean(texto))}
+                        avisoGris={stop.closedNotice ?? null}
+                        filas={filasHorario}
+                        parrafos={parrafosHorario}
+                        pie={pieHorario}
+                      />
+                    )}
+  
+                    <FichaComoLlegar direccion={description?.address ?? null} transporte={nearbyTransit} web={description?.officialWebsite ?? null} onComoLlegar={description?.address ? () => setDirectionsOpen(true) : null} />
+                  </div>
+                )}
+  
+                {activeTab === 'tickets' && (
+                  <div className="space-y-3">
+                    {/* El Free Tour que recorre este sitio. */}
+                    {stop.inFreeTour && (
+                      <div className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
+                        <p className="font-display text-[19px] leading-[1.1] text-text">{stop.inFreeTour.name}</p>
+                        <p className="mt-1.5 text-[13px] leading-[1.5] text-text/72">
+                          Este sitio forma parte de su recorrido
+                          {stop.inFreeTour.durationMinutes ? `, de ${formatDuration(stop.inFreeTour.durationMinutes)}` : ''}
+                          {stop.inFreeTour.meetingPoint ? `. Sale de ${stop.inFreeTour.meetingPoint}` : ''}.
+                        </p>
+                        {stop.inFreeTour.url && (
+                          <a href={stop.inFreeTour.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-small font-semibold text-accent underline">
+                            Ver el Free Tour
+                          </a>
+                        )}
+                      </div>
+                    )}
+                    {/* Las entradas de los datos (Tanda 6n): una debajo de otra, con [Reservar] y «¿Ya la tienes? Añádela». Un sitio con tasa en vez de entrada lleva «No necesitas entrada» (Tanda 6y4). */}
+                    {(hasEntradas || sinEntrada) && <StopEntradasTab stop={stop} sinEntrada={sinEntrada} />}
+                    {/* El Free Tour de la ruta: su ticketInfo, como hasta ahora. */}
+                    {stop.isFreeTour && ticketInfo.length > 0 && (
+                      <div className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
+                        <p className="font-display text-[19px] leading-[1.1] text-text">Entrada</p>
+                        <ul className="mt-1.5 space-y-0.5">
+                          {ticketInfo.map((line) => (
+                            <li key={line} className="text-[13px] leading-[1.5] text-text/72">
+                              {line}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+  
+                {activeTab === 'tips' && (
+                  <div className="space-y-2">
+                    {tips.length === 0 && <p className="px-1 text-small text-text-soft">{descLoading ? 'Preparando los consejos…' : 'Todavía no tenemos consejos para este lugar.'}</p>}
+                    {tips.map((tip, index) => (
+                      <FichaTip key={index} tipo={tip.tipo === 'practico' ? 'practico' : 'secreto'} texto={tip.texto} />
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+            </div>
 
-          {/* «Escuchar historia» (la voz del móvil de la 6z6): la barra oscura fija de abajo, como en el diseño. De pago (en la gratis, con candado), salvo la historia que la ficha marca gratis. */}
+          {/* «Escuchar historia» (la lectura en voz alta de la 6z6): la barra oscura fija de abajo, como en el diseño. De pago (en la gratis, con candado), salvo la historia que la ficha marca gratis. */}
           {conBarraEscuchar && <Escuchar barra libre={curated?.historia_gratis === true} abajo={Boolean(footerAction)} texto={textoDeLaHistoria} clave={stop.id} />}
 
           {footerAction && (

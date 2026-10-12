@@ -44,7 +44,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
   if (barra) {
     const alPulsar = estado === 'parado' ? escuchar : estado === 'hablando' ? pausar : seguir
     const etiqueta = estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'
-    const estadoTexto = estado === 'hablando' ? 'Leyendo…' : estado === 'pausa' ? 'En pausa' : 'Voz del móvil'
+    const estadoTexto = estado === 'hablando' ? 'Leyendo…' : estado === 'pausa' ? 'En pausa' : null
     return (
       <div
         data-escuchar={estado}
@@ -57,7 +57,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
         <span className="flex min-w-0 flex-1 flex-col gap-[5px]">
           <span className="flex items-baseline justify-between gap-2">
             <span className="font-display text-[17px] leading-none">Escuchar historia</span>
-            <span className="font-mono text-[11px] font-medium text-[#FFFDF8]/60">{estadoTexto}</span>
+            {estadoTexto && <span className="font-mono text-[11px] font-medium text-[#FFFDF8]/60">{estadoTexto}</span>}
           </span>
           <span className="h-[3px] overflow-hidden rounded-[3px]" style={{ background: 'rgba(255,253,248,.18)' }}>
             <span className="block h-full transition-[width] duration-[900ms] ease-linear" style={{ width: `${Math.round(progreso * 100)}%`, background: 'oklch(0.8 0.14 70)' }} />

@@ -98,7 +98,7 @@ console.log('2. El tope del pool')
 {
   const fuente = leer('src/components/questionnaire/CuratedPlacesPool.tsx')
   const cuerpo = fuente.slice(fuente.indexOf('export function poolSelectionLimit'), fuente.indexOf('interface CuratedPlacesPoolProps'))
-  debe(/if \(days === 1\) return 2/.test(cuerpo) && /days <= 2\) return 3/.test(cuerpo) && /return 6/.test(cuerpo), '2 tope', 'poolSelectionLimit no da 2 con 1 día, 3 con 2 días y 6 con 3 o más')
+  debe(/if \(days === 1\) return 0/.test(cuerpo) && /days <= 2\) return 3/.test(cuerpo) && /return 6/.test(cuerpo), '2 tope', 'poolSelectionLimit no da 0 con 1 día (el pool no sale), 3 con 2 días y 6 con 3 o más')
   // (La función se prueba entera en pruebaFase6y4_formulario.mjs, con la tabla de 1 a 21 días; la medida de «No incluido» con ese tope va en pruebaFase6y5_motor.mjs, parte tope.)
   const motor = leer('scripts/destino/pruebaFase6y5_motor.mjs')
   debe(/const n = dias === 1 \? 2 : dias === 2 \? 3 : 6/.test(motor), '2 tope', 'la medida del «No incluido» no usa el tope de 2 con 1 día')
