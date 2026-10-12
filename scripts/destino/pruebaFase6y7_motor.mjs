@@ -168,7 +168,11 @@ if (PARTES.has('3')) {
         } else {
           debe(filas[0]?.lugar === 'Fontana de Trevi', '3 manana', `${hoja}: la mañana sin Museos no empieza en la Fontana de Trevi (${filas[0]?.lugar})`)
           // (6y8: con los Museos a las 12:00 la comida corta de antes no deja sitio al Castillo y al Puente, que pasan detrás de los Museos.)
-          if (m !== toMin('12:00')) debe(stop("Castillo de Sant'Angelo") >= 0 && stop("Castillo de Sant'Angelo") < iComida && stop("Puente Sant'Angelo") >= 0 && stop("Puente Sant'Angelo") < iComida, '3 manana', `${hoja}: el Castillo y el Puente no van en la mañana`)
+          // (6y9, P3 de Eric: con los Museos de 15:00 a 15:59 el Castillo va POR DENTRO en el hueco entre la comida y los Museos; el Puente sigue por la mañana.)
+          if (m >= toMin('15:00') && m < toMin('16:00')) {
+            const iCast = filas.findIndex((r) => r.lugar === "Castillo de Sant'Angelo" && !r.llegada)
+            debe(iCast > iComida && iCast < iMuseos && filas[iCast].modo === 'dentro' && stop("Puente Sant'Angelo") >= 0 && stop("Puente Sant'Angelo") < iComida, '3 manana', `${hoja}: con los Museos a las 15:00 el Castillo tiene que ir por dentro entre la comida y los Museos, y el Puente por la mañana`)
+          } else if (m !== toMin('12:00')) debe(stop("Castillo de Sant'Angelo") >= 0 && stop("Castillo de Sant'Angelo") < iComida && stop("Puente Sant'Angelo") >= 0 && stop("Puente Sant'Angelo") < iComida, '3 manana', `${hoja}: el Castillo y el Puente no van en la mañana`)
           debe(/Borghiciana|Dal Toscano/.test(`${filas[iComida]?.restaurante}`), '3 comida', `${hoja}: la comida no es en el Borgo (${filas[iComida]?.restaurante})`)
           if (m < toMin('16:00')) {
             if (m >= toMin('15:00')) cuenta.tarde15++

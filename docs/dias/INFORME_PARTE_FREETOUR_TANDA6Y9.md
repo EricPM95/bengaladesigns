@@ -36,3 +36,19 @@ Cambiar `` `cena_antes_si_sale_despues_de` (21:00) `` por `` `cena_antes_si_sale
 ## Preguntas abiertas
 1. Con el corte a las 22:00, una reserva que sale entre las 21:00 y las 22:00 deja la cena después y a veces pasa de las 22:30 (en las pruebas de la 6y8 salen unos cientos de casos por tipo de día, antes eran menos). Se queda así porque la regla 17 dice que no se quita nada. ¿Está bien, o prefieres que en esos casos la cena se acorte?
 2. Con el Free Tour de las 19:00, la tarde del D1 se aprieta y alguna parada (en mi prueba, la Iglesia del Gesù) pasa a «Si te sobra tiempo» porque después del tour ya está cerrada. ¿Lo aceptas?
+
+## Segunda entrega: el miércoles del Vaticano (P3 y P4 de la 6y7)
+- **P3.** Con los Museos de 15:00 a 15:59 un miércoles, el Castillo de Sant'Angelo va POR DENTRO (~1 h 30) en el hueco entre la comida y los Museos, y por la mañana ya no va por fuera (el Puente sigue por la mañana). Variante `miercoles_museos_tarde_15` en `scripts/destino/listasVariantes.mjs`; documento: D2, cierres del miércoles.
+- **P4.** La misma regla del D2 en el D0 (1 día) y en el D0-medio (última mañana): un miércoles la Plaza de San Pedro y la Basílica van DESPUÉS de comer. D0: la mañana va al revés (Panteón, Navona, Puente, Castillo por fuera, Conciliazione), comida en el Borgo, y luego la Plaza y la Basílica y la tarde de siempre. D0-medio: la Plaza y la Basílica van detrás de la comida. Con los Museos marcados o reservados hasta las 11:30: los Museos, la comida y, después, la Plaza y la Basílica. Antes, en el D0-medio, el miércoles pisaba lo de los Museos; ya no.
+- **Motor.** Una media mañana no tiene tarde, así que una variante no podía poner nada después de comer. `shared/routeEngine/listasDia.js`: la variante puede pedir `tarde: { abre: true, … }` para abrirla. Solo la usan las dos variantes del D0-medio.
+- `listasConvertir.mjs`: 0 dudas. INVARIANTES 626 y 627.
+- Pruebas: `pruebaFase6y9_freetour` parte 3 (nueva): 141 comprobaciones, 0 fallos (5 miércoles; Museos a 15:00 y 15:30 en 5 y 7 días; D0 y D0-medio, con y sin Museos; un martes el D0 sigue empezando en la Plaza). `pruebaFase6y7_motor` ajustada (con los Museos a las 15:00 el Castillo va por dentro después de comer): 17.724 comprobaciones, 0 fallos. `pruebaFase6y8_comida`: 116.000 comprobaciones, 0 fallos. `pruebaFase6y6_cierre` 0, `pruebaTanda6u` y `pruebaFase6y4_listas` exit 0.
+
+### Decidido por Code
+- El Castillo dentro dura 90 min (con 60 quedaba un hueco mayor). Aun así queda un rato libre entre la Conciliazione y los Museos (~1 h 20 a las 15:00, ~1 h 50 a las 15:30), porque la comida corta de antes se pone a las 10:30 (regla de la 6y8). Está dicho en el documento como «~1 h 30».
+- En el D0 con el Coliseo reservado hasta las 14:15 no se toca nada: ya acaba en San Pedro, después de comer.
+- Con los Museos reservados DESPUÉS de las 11:30 un miércoles en el D0 / D0-medio, no hay variante nueva (queda como estaba).
+
+### Pregunta abierta
+- ¿Quieres que la comida de esos miércoles (Museos a las 15:00) sea a mediodía en vez de a las 10:30? Habría que cambiar la regla de la comida corta de la 6y8 o llenar la mañana con más paradas.
+- Muestra de 40 fechas con `pruebaListas` (n=1; festivos, domingos, lunes y miércoles, Navidad, Año Nuevo, Reyes, Semana Santa y agosto): 40 de 40 con 0 fallos. No se lanzaron las 365.

@@ -21,7 +21,7 @@ import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
-const PARTES = new Set((args.parte ?? '1,2').split(','))
+const PARTES = new Set((args.parte ?? '1,2,3').split(','))
 const VER = Number(args.ver ?? 25)
 const toMin = (h) => Number(String(h).split(':')[0]) * 60 + Number(String(h).split(':')[1])
 const toHHMM = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
@@ -175,6 +175,69 @@ if (PARTES.has('1')) {
       }
     }
   }
+}
+
+// ═══ 7. El miércoles del Vaticano (P3 y P4 de la 6y7, respuestas de Eric) ═══
+if (PARTES.has('3')) {
+  console.log('7. El miércoles del Vaticano: el Castillo por dentro con los Museos a las 15:00 y la Plaza y la Basílica después de comer en el D0 y el D0-medio')
+  const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
+  const CAST = "Castillo de Sant'Angelo"
+  const MIERCOLES = ['2027-03-03', '2027-05-12', '2027-06-02', '2027-10-20', '2027-12-01']
+  const addDia = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
+  // P3: Museos reservados el miércoles a las 15:00 y a las 15:30 (el día 2 del viaje, que cae en miércoles porque está reservado).
+  for (const iso of MIERCOLES) {
+    for (const hora of ['15:00', '15:30']) {
+      for (const dias of [5, 7]) {
+        const p = planListasTrip({ destData: D, written, hasFreeTour: false, poolNames: [], experiencesPositive: [], travel, totalDays: dias, dateRangeStartIso: addDia(iso, -1), diaCuatro: 'roma', entradas: { [MUSEOS]: hora }, reservasGrandes: [{ name: MUSEOS, dateIso: iso, dayNumber: 2, time: hora }] })
+        const d = (p?.days ?? []).find((x) => x.hours?.dateIso === iso && (x.escritoRows ?? []).some((r) => r.lugar === MUSEOS))
+        const etiqueta = `${iso} Museos ${hora} (${dias} d)`
+        if (!d) { debe(false, 'miercoles', `${etiqueta}: el día de los Museos no sale en su miércoles`); continue }
+        const f = d.escritoRows
+        const iC = f.findIndex((r) => r.tipo === 'comida')
+        const iL = f.findIndex((r) => r.lugar === MUSEOS && r.llegada)
+        const iCast = f.findIndex((r) => r.lugar === CAST && !r.llegada)
+        debe(iCast >= 0 && f[iCast].modo === 'dentro', 'miercoles', `${etiqueta}: el Castillo no va por dentro (${f[iCast]?.modo})`)
+        debe(iC >= 0 && iCast > iC && iL > iCast, 'miercoles', `${etiqueta}: el Castillo por dentro no va entre la comida y los Museos (comida ${iC}, Castillo ${iCast}, Museos ${iL})`)
+        debe(!f.some((r) => r.lugar === CAST && !r.llegada && r.modo === 'fuera'), 'miercoles', `${etiqueta}: queda un Castillo por fuera además del de dentro`)
+        debe(!f.some((r) => r.lugar === MUSEOS && !r.llegada && r.tarde > 0) && !(f[iL]?.tarde > 0), 'tarde', `${etiqueta}: los Museos salen tarde`)
+        const antesDeMuseos = f.slice(iC + 1, iL)
+        if (hora === '15:00' && dias === 5 && iso === MIERCOLES[0]) console.log(`   (hueco entre la comida y los Museos: ${antesDeMuseos.map((r) => r.lugar ?? r.tipo).join(' → ')}; Castillo ${f[iCast]?.hora}, Museos ${f[iL]?.hora})`)
+        cuenta.viajes++
+      }
+    }
+  }
+  // P4: la Plaza de San Pedro y la Basílica, después de comer un miércoles, en el D0 (1 día) y en el D0-medio (la última mañana), sin y con los Museos marcados.
+  const FORMAS_0 = [
+    { clave: '1 día', totalDays: 2, inicio: (iso) => iso, id: 'D0' },
+    { clave: '1,5 días (última mañana)', totalDays: 3, medio: { franja: 'manana', salida: '15:00' }, inicio: (iso) => addDia(iso, -1), id: 'D0-medio' },
+  ]
+  for (const iso of MIERCOLES) {
+    for (const forma of FORMAS_0) {
+      for (const pool of [[], [MUSEOS]]) {
+        let p
+        try { p = planListasTrip({ destData: D, written, hasFreeTour: false, poolNames: pool, experiencesPositive: [], travel, totalDays: forma.totalDays, dateRangeStartIso: forma.inicio(iso), mediaJornada: forma.medio ?? null }) } catch (e) { debe(false, 'error', `${iso} ${forma.clave}: ${e.message}`); continue }
+        const dias = (p?.days ?? []).filter((x) => x.hours?.dateIso === iso)
+        const etiqueta = `${iso} ${forma.clave}${pool.length ? ' con los Museos marcados' : ''}`
+        if (dias.length === 0) { debe(false, 'miercoles', `${etiqueta}: no sale el día`); continue }
+        for (const d of dias) {
+          const f = d.escritoRows ?? []
+          const iC = f.findIndex((r) => r.tipo === 'comida')
+          const iPlaza = f.findIndex((r) => r.lugar === 'Plaza de San Pedro' && !r.llegada)
+          const iBas = f.findIndex((r) => r.lugar === 'Basílica de San Pedro' && !r.llegada)
+          cuenta.viajes++
+          if (iC < 0) { debe(false, 'miercoles', `${etiqueta}: el día no lleva comida`); continue }
+          if (iPlaza >= 0) debe(iPlaza > iC, 'miercoles', `${etiqueta} (${d.written?.id ?? d.curatedDay?.id ?? ''}): la Plaza de San Pedro va antes de comer (a las ${f[iPlaza].hora}, comida ${f[iC].hora})`)
+          if (iBas >= 0) debe(iBas > iC, 'miercoles', `${etiqueta}: la Basílica va antes de comer (a las ${f[iBas].hora}, comida ${f[iC].hora})`)
+          debe(iPlaza >= 0 || iBas >= 0, 'miercoles', `${etiqueta}: el día no lleva ni la Plaza ni la Basílica`)
+        }
+      }
+    }
+  }
+  // Y los demás días de la semana siguen como estaban: la Plaza de San Pedro por la mañana, antes de comer (D0 de un martes).
+  const m = planListasTrip({ destData: D, written, hasFreeTour: false, poolNames: [], experiencesPositive: [], travel, totalDays: 2, dateRangeStartIso: '2027-03-02' })
+  const dm = (m?.days ?? []).find((x) => x.hours?.dateIso === '2027-03-02')
+  const fm = dm?.escritoRows ?? []
+  debe(fm.findIndex((r) => r.lugar === 'Plaza de San Pedro' && !r.llegada) >= 0 && fm.findIndex((r) => r.lugar === 'Plaza de San Pedro' && !r.llegada) < fm.findIndex((r) => r.tipo === 'comida'), 'miercoles', 'un martes el D0 ya no empieza en la Plaza de San Pedro')
 }
 
 // ═══ 6. El último cambio de fechas gana ═══
