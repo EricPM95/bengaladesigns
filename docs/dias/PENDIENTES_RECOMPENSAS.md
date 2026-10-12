@@ -181,7 +181,26 @@ El mismo sello crece contigo:
 - El diseño: niveles, sellos con sus cuatro grados, marcos y la animación del emblema.
 - Sin tabla de clasificación al principio: invita a hacer trampas y no aporta al viajero.
 
+## QUÉ MERECE SELLO, Y LAS RUTAS PARA DESBLOQUEAR (Eric, 12-oct; propuesta de Claude, por decidir)
+**El problema (Eric):** un sello de Teruel, de Annecy o de Chamonix no emociona a nadie; un sello de «Los Alpes franceses» o de «La Costa Brava», sí.
+
+**Tres tipos de sello:**
+1. **Sello de destino:** solo los destinos que curamos como viaje entero (con sus días escritos): Roma, Florencia, París, Barcelona… Regla para decidir si un sitio es «destino»: que merezca un viaje de 2 días o más por sí solo, o que sea conocido en todo el mundo. Es la misma regla que ya tenemos: solo se buscan destinos curados.
+2. **Sello de país:** el primer viaje a cada país (Italia, Francia…). Va en «Tu mundo».
+3. **Sello de ruta (idea de Eric):** los sitios pequeños (Annecy, Chamonix, Cadaqués, Teruel) no tienen sello propio: cuentan para una ruta.
+
+**Las rutas para desbloquear:**
+- Las escribimos nosotros: un nombre, de 5 a 8 sitios y su sello especial, más grande y con su propio diseño. Ejemplos: «Los Alpes franceses» (Annecy, Chamonix, Yvoire…), «La Costa Brava» (Cadaqués, Begur, Calella de Palafrugell, Pals, Tossa de Mar, Roses), «La Toscana» (Siena, San Gimignano, Pienza, Montepulciano), «La Costa Amalfitana» (Positano, Amalfi, Ravello), «Cinque Terre» (sus cinco pueblos).
+- Al contrario que los emblemas, que son secretos, las rutas se ven: en el pasaporte, una página «Rutas por descubrir» con los sellos en gris y el avance («3 de 6 pueblos»).
+- El sello de la ruta sube por grados (Eric): la mitad de los sitios, bronce; tres cuartos, plata; todos, oro. Redondeando hacia arriba: con 5 sitios, 3 = bronce, 4 = plata, 5 = oro; con 6, 3 / 5 / 6; con 8, 4 / 6 / 8. Se puede hacer en uno o en varios viajes, en cualquier momento de la vida.
+- Cada pueblo se marca como los emblemas: foto del momento y ubicación (con un radio de pueblo), o foto de la galería con su fecha.
+- Cada grado da su experiencia; el oro, la que más.
+- **Dónde aparecen además:** en el buscador y en la inspiración («Rutas que puedes completar»). Al tocar una, se crea un viaje de varios destinos con esos pueblos. En la ficha de un pueblo, «Este pueblo es parte de la ruta Costa Brava».
+- **Lo que hace falta antes:** los multidestinos y las rutas en coche (la misma pieza que Islandia), y una «curación ligera» de cada pueblo: nombre, sitio en el mapa, foto y una ficha corta, sin días escritos.
+
 ## Por decidir
+- ¿Te vale la regla de «destino» (2 días o más, o conocido en todo el mundo)?
+- La lista de las primeras rutas, cuando toque.
 - Los nombres de los niveles y la experiencia de cada cosa (lo de arriba es una propuesta).
 - ¿Qué va de pago: solo sellos y marcos premium, o también el pasaporte para imprimir?
 - ¿El ✓ Visto en DÍAS para la gratis (Claude: sí)? ¿O solo en los sitios con emblema, para no dar pistas? (Claude: en todos, si no se descubre el secreto.)
