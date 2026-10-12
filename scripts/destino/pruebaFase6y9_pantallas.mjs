@@ -168,6 +168,30 @@ console.log('5. Nada viejo en src')
   debe(mal.length === 0, '5 nombre viejo', 'la de las 15:00 sigue llamándose «Por la tarde»')
 }
 
+// ── 6. Dos cambios de fechas seguidos: gana el último (P7) ──
+console.log('6. Gana el último cambio de fechas')
+{
+  const ruta = {
+    id: 'p6y9-p7', destination: 'Roma', country: 'Italia', origin: 'Madrid', createdAt: '2027-01-01', intensity: 1, budget: { items: [], total: 0 },
+    days: [1, 2, 3].map((n) => ({ id: `d${n}`, dayNumber: n, city: 'Roma', countryCode: 'it', title: '', curatedTitle: '', stops: [], meals: [], excursions: [], dayType: 'normal', timesAreFinal: true, colorIndex: n - 1 })),
+    answers: { dateRange: { start: '2027-08-10', end: '2027-08-12' }, days: 3, companion: 'solo' },
+    transportContext: { transport_option: { id: 'flight' }, archetype: null },
+  }
+  useRouteStore.setState({ screen: 'route', mode: 'days', route: ruta, rehaciendoRuta: false, rehacerGeneracion: 0, keepBookingsOnNextRoute: false })
+  useRouteStore.getState().regenerateRouteForDates({ start: '2027-09-14', end: '2027-09-16' })
+  const g1 = useRouteStore.getState().rehacerGeneracion
+  useRouteStore.getState().regenerateRouteForDates({ start: '2027-10-05', end: '2027-10-07' })
+  const s = useRouteStore.getState()
+  debe(s.answers.dateRange?.start === '2027-10-05' && s.answers.month === 9, '6 gana el último', `con dos cambios seguidos las fechas son ${s.answers.dateRange?.start} (deben ser las del último, 2027-10-05)`)
+  debe(s.rehacerGeneracion === g1 + 1 && s.rehaciendoRuta === true && s.screen === 'route', '6 gana el último', 'el segundo cambio no cuenta como un rehacer nuevo (generación) o saca al viajero de su pantalla')
+  const comp = leer('src/components/route/RehacerRuta.tsx')
+  debe(/<RehacerRutaEnMarcha key=\{generacion\}/.test(comp), '6 cancela el primero', 'RehacerRuta no se vuelve a montar con otra key por cada rehacer (el primero no se cancela)')
+  const gen = leer('src/lib/useRouteGeneration.ts')
+  debe(/cancelled = true/.test(gen) && /if \(cancelled\) return\s*\n\s*setRoute\(scheduled\)/.test(gen), '6 cancela el primero', 'useRouteGeneration no ignora el resultado de una generación cancelada')
+  const reglas = fuentes.filter((f) => /rehaciendoRuta\) return state/.test(leer(f)))
+  debe(reglas.length === 0, '6 una sola regla', `queda un sitio que ignora el segundo cambio: ${reglas.join(', ')}`)
+}
+
 console.log(`\n${comprobaciones} comprobaciones, ${fallos.length} fallos`)
 for (const f of fallos) console.log(`  FALLO [${f.regla}] ${f.texto}`)
 process.exitCode = fallos.length ? 1 : 0

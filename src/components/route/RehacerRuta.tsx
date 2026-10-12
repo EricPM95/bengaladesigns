@@ -10,7 +10,9 @@ import { ActualizandoRuta } from '../ui/ActualizandoRuta'
  */
 export function RehacerRuta() {
   const activo = useRouteStore((state) => state.rehaciendoRuta)
-  return activo ? <RehacerRutaEnMarcha /> : null
+  const generacion = useRouteStore((state) => state.rehacerGeneracion)
+  // (P7, Tanda 6y9: con otra `key` el rehacer de antes se desmonta y se cancela, porque `useRouteGeneration` ignora su resultado; gana el último cambio de fechas.)
+  return activo ? <RehacerRutaEnMarcha key={generacion} /> : null
 }
 
 function RehacerRutaEnMarcha() {

@@ -253,7 +253,7 @@ for (const n of [2, 3, 4, 5]) {
   debe((fuente('src/lib/rebuildDay.ts').match(/isManualRoute\(route\)/g) ?? []).length === 2, '4 sin motor', 'rehacerDiasSinTocar o rehacerDiaConReservas no miran isManualRoute (la regla única)')
   debe(/!isManualRoute\(route\)/.test(fuente('src/components/route/reservas/AddReservationSheet.tsx')), '4 sin motor', 'AddReservationSheet pide el plan al motor en la ruta a mano')
   debe(/&& !isManualRoute\(route\)/.test(fuente('src/components/route/DatesChangeDialog.tsx')), '4 sin motor', 'DatesChangeDialog rehace la ruta a mano')
-  debe(/isManualRoute\(state\.route\) \|\| state\.rehaciendoRuta\) return state/.test(fuente('src/store/useRouteStore.ts')), '4 sin motor', 'regenerateRouteForDates rehace la ruta a mano')
+  debe(/!state\.route \|\| isManualRoute\(state\.route\)\) return state/.test(fuente('src/store/useRouteStore.ts')), '4 sin motor', 'regenerateRouteForDates rehace la ruta a mano')
 }
 
 // ── 5. Sin experiencias: DÍAS, RESERVAS, EXPLORAR y el Free Tour ──
