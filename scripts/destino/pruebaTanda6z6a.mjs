@@ -23,7 +23,7 @@ const debe = (cond, regla, texto) => {
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_6z6a_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
   createElement, renderToStaticMarkup, BottomBar, PESTANAS, DayList, ReservasPanel, HoyView, PanelDePruebas, usePruebasUi, useRouteStore, modoVisible, diaDeHoy, diaQueSeAbreAlEntrar,
-  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba, fijarPrueba, pruebaActiva,
+  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba,
   mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions,
 } = M
 const D = findPipelineV2Data('Roma')
@@ -311,8 +311,6 @@ for (const [clave, route] of Object.entries(rutas)) {
     globalThis.window.location.hostname = host
     debe(esEntornoDePrueba() === false, '6 panel', `${host}: esEntornoDePrueba da true`)
     debe(pinta2(host, false) === '' && pinta2(host, true) === '', '6 panel', `${host}: el panel de pruebas se pinta en producción`)
-    fijarPrueba(true)
-    debe(globalThis.sessionStorage.getItem('trazo:prueba') === null && pruebaActiva() === false, '6 panel', `${host}: fijarPrueba hace algo en producción`)
   }
   // Local y vistas previas: sí.
   for (const host of ['localhost', '127.0.0.1', 'mi.localhost', 'trazo-git-rama-equipo.vercel.app', 'trazo-abc123def-equipo.vercel.app']) {
@@ -322,7 +320,7 @@ for (const [clave, route] of Object.entries(rutas)) {
     debe(/data-panel-pruebas/.test(cerrado) && />Pruebas</.test(cerrado), '6 panel', `${host}: falta el botón «Pruebas»`)
     debe(/bottom-\[92px\]/.test(cerrado) && /left-3/.test(cerrado), '6 panel', `${host}: el botón no está abajo a la izquierda por encima de la barra`)
     const abierto = aTexto(pinta2(host, true))
-    for (const trozo of ['Versión', 'Gratis', 'De pago', 'Momento del viaje', 'Antes del viaje', 'Durante · mié 10', 'Durante · jue 11', 'Durante · vie 12', 'Después del viaje', 'Fecha real', 'Números de «me gusta»', 'De prueba', 'Los de verdad']) {
+    for (const trozo of ['Versión', 'Gratis', 'De pago', 'Momento del viaje', 'Antes del viaje', 'Durante · mié 10', 'Durante · jue 11', 'Durante · vie 12', 'Después del viaje', 'Fecha real']) {
       debe(abierto.includes(trozo), '6 panel', `${host}: la hoja de pruebas no tiene «${trozo}» (${plano(abierto).slice(0, 300)})`)
     }
     debe(!/\bDía \d/.test(abierto), '6 panel', `${host}: la hoja dice «Día n» con fechas`)

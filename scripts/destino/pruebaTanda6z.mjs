@@ -1,4 +1,4 @@
-// Prueba de la Tanda 6z: «viajeros lo recomiendan» (nunca un número que no sea real, `?prueba=1` solo en local y en versiones de prueba), ningún enlace de hoteles a otra web ni datos de ejemplo,
+// Prueba de la Tanda 6z (ajustada en la 6y10: los números de «me gusta» de prueba ya no existen; queda «lo recomiendan» solo desde 20 y el entorno de prueba), ningún enlace de hoteles a otra web ni datos de ejemplo,
 // el Free Tour primero en «Entradas» para cada destino con datos, y las cuentas del alojamiento («Tu alojamiento»).
 //   node scripts/destino/pruebaTanda6z.mjs        (con el servidor de la app encendido en http://localhost:8787)
 import fs from 'node:fs'
@@ -45,62 +45,33 @@ const recargar = () => {
 
 console.log('Recomendaciones')
 {
-  // Producción (un dominio de verdad, con y sin ?prueba=1): ningún número inventado, solo los reales desde 20.
+  // (Tanda 6y10) Ya no hay números de prueba inventados: la cuenta de cada sitio es la de partida (datos de Roma) más los viajeros (src/store/useMeGustaStore.ts); aquí solo lo que decide QUÉ se enseña de esa cuenta
+  // y quién es «entorno de prueba» (el panel de pruebas y la lluvia de prueba). El detalle de los «me gusta» lo prueba pruebaFase6y10_ficha.mjs.
   for (const host of ['trazo.example.com', 'miapp.vercel.app', 'www.trazo.app']) {
     ponerPagina(host, '?prueba=1')
     const R = recargar()
-    ok(R.pruebaActiva() === false, `${host}: ?prueba=1 no hace nada`)
-    for (const lugar of lugares) {
-      ok(R.numeroDeRecomendaciones(lugar, 0) === null, `${host}: ${lugar.name} sin likes no lleva número`)
-      ok(R.numeroDeRecomendaciones(lugar, 19) === null, `${host}: ${lugar.name} con 19 likes no lleva número`)
-      ok(R.numeroDeRecomendaciones(lugar, 20) === 20, `${host}: ${lugar.name} con 20 likes enseña 20`)
-      ok(R.numeroDeRecomendaciones(lugar, 137) === 137, `${host}: ${lugar.name} con 137 likes enseña 137 (nunca sumado a uno inventado)`)
-    }
+    ok(R.esEntornoDePrueba() === false, `${host}: no es un entorno de prueba`)
   }
-  // Local sin ?prueba=1: lo mismo.
-  ponerPagina('localhost', '')
-  {
-    const R = recargar()
-    ok(R.pruebaActiva() === false, 'local sin ?prueba=1: apagado')
-    for (const lugar of lugares) ok(R.numeroDeRecomendaciones(lugar, 3) === null, `local sin prueba: ${lugar.name} sin número`)
+  for (const host of ['localhost', '127.0.0.1', 'trazo-git-rama-equipo.vercel.app', 'trazo-abc123xyz-equipo.vercel.app']) {
+    ponerPagina(host, '')
+    ok(recargar().esEntornoDePrueba() === true, `${host}: sí es un entorno de prueba`)
   }
-  // Local con ?prueba=1: números fijos por nivel, y ?prueba=0 lo apaga.
-  ponerPagina('localhost', '?prueba=1')
-  {
-    const R = recargar()
-    ok(R.pruebaActiva() === true, 'local con ?prueba=1: encendido')
-    for (const lugar of lugares.slice(0, 2)) {
-      const n = R.numeroDeRecomendaciones(lugar, 0)
-      ok(n !== null && n >= 800 && n <= 2500, `${lugar.name} (nivel 1): ${n} entre 800 y 2.500`)
-      ok(n === R.numeroDeRecomendaciones(lugar, 0), `${lugar.name}: el número es siempre el mismo`)
-      ok(R.numeroDeRecomendaciones(lugar, 7) === n, `${lugar.name}: no se suma con los reales`)
-    }
-    const n2 = R.numeroDeRecomendaciones(lugares[2], 0)
-    ok(n2 !== null && n2 >= 80 && n2 <= 600, `Ara Pacis (nivel 2): ${n2} entre 80 y 600`)
-    ok(R.numeroDeRecomendaciones(lugares[3], 0) === null, 'nivel 3: ninguno')
-    ok(R.numeroDeRecomendaciones(lugares[4], 0) === null, 'restaurante (sin nivel): ninguno')
-    ok(R.conMiles(1240) === '1.240' && R.conMiles(800) === '800' && R.conMiles(2500) === '2.500', 'el millar con punto')
-    ok(R.textoRecomendacion(1240, 0) === '1.240 viajeros lo recomiendan', 'texto de la ficha con número')
-    ok(!/\d/.test(R.textoRecomendacion(null, 5)) && !/\d/.test(R.textoRecomendacion(null, 0)), 'texto de la ficha sin número cuando no se enseña ninguno')
-    // Todos los lugares de Roma: rangos por nivel
-    const roma = JSON.parse(fs.readFileSync('data/pipeline_v2/roma.json', 'utf8'))
-    for (const lugar of roma.places) {
-      const n = R.numeroDeRecomendaciones({ name: lugar.name, level: lugar.level ?? null, kind: 'place' }, 0)
-      if (lugar.level === 1) ok(n >= 800 && n <= 2500, `${lugar.name}: nivel 1 con ${n}`)
-      else if (lugar.level === 2) ok(n >= 80 && n <= 600, `${lugar.name}: nivel 2 con ${n}`)
-      else ok(n === null, `${lugar.name}: sin número de prueba`)
-    }
-  }
-  ponerPagina('localhost', '?prueba=0')
-  ok(recargar().pruebaActiva() === false, '?prueba=0 apaga el modo de prueba')
-  // Versiones de prueba de Vercel: sí; la de producción con VITE_VERCEL_ENV=production: nunca.
-  ponerPagina('trazo-git-rama-equipo.vercel.app', '?prueba=1')
-  ok(recargar().pruebaActiva() === true, 'versión de prueba de Vercel (git): encendido')
-  ponerPagina('trazo-abc123xyz-equipo.vercel.app', '?prueba=1')
-  ok(recargar().pruebaActiva() === true, 'versión de prueba de Vercel (hash): encendido')
   const rutaProd = await cargar('src/lib/recomendaciones.ts', 'rec-prod', 'production')
-  ponerPagina('localhost', '?prueba=1')
-  ok(require(rutaProd).pruebaActiva() === false, 'VITE_VERCEL_ENV=production: nunca, ni en localhost')
+  ponerPagina('localhost', '')
+  ok(require(rutaProd).esEntornoDePrueba() === false, 'VITE_VERCEL_ENV=production: nunca, ni en localhost')
+  // Sin números de prueba: ni la función ni el panel.
+  ok(!('pruebaActiva' in recargar()) && !('fijarPrueba' in recargar()) && !('recomendacionesDePrueba' in recargar()), 'quedan los números de prueba de «me gusta»')
+  // El número solo sale desde 20 («me gusta» de partida + viajeros); nunca se inventa.
+  const R = recargar()
+  for (const lugar of lugares) {
+    ok(R.numeroDeRecomendaciones(0) === null, `${lugar.name}: con 0 no lleva número`)
+    ok(R.numeroDeRecomendaciones(19) === null, `${lugar.name}: con 19 no lleva número`)
+    ok(R.numeroDeRecomendaciones(20) === 20, `${lugar.name}: con 20 enseña 20`)
+    ok(R.numeroDeRecomendaciones(137) === 137, `${lugar.name}: con 137 enseña 137`)
+  }
+  ok(R.conMiles(1240) === '1.240' && R.conMiles(800) === '800' && R.conMiles(2500) === '2.500', 'el millar con punto')
+  ok(R.textoRecomendacion(1240) === '1.240 lo recomiendan', 'texto de la ficha con número (sin «viajeros»)')
+  ok(!/\d/.test(R.textoRecomendacion(5)) && !/\d/.test(R.textoRecomendacion(0)), 'texto de la ficha sin número cuando no se enseña ninguno')
 }
 
 console.log('Alojamiento (cuentas)')
