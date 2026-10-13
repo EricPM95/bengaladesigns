@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { COLOR_ICONO } from '../../lib/iconos'
 import { Icono } from '../ui/Icono'
 import { INK, MONO, SERIF, Title } from './trazoUi'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 import type { PlanChoice } from './planChoice'
 
 const R = COLOR_ICONO.falta
@@ -32,7 +33,7 @@ export function StepElegir({ destinationName, days, picked, onPick }: StepElegir
   const [hoverSelf, setHoverSelf] = useState(false)
   // El dibujo se apaga del todo solo al tocar «Quiero hacerla yo»; con el ratón encima solo se atenúa (y en el móvil, donde no hay «encima», nunca se queda atenuado).
   const dibujoOpacity = picked === 'manual' ? 0.25 : hoverSelf ? 0.6 : 1
-  const eyebrow = days ? `${destinationName} · ${days} ${days === 1 ? 'día' : 'días'}` : destinationName
+  const eyebrow = days ? `${destinationName} · ${textoDeDuracion(days)}` : destinationName
 
   return (
     <>

@@ -83,7 +83,7 @@ export function categoryIcon(category: ExperienceId): NombreIcono {
 
 // ── Estado en la ruta (pestaña EXPLORAR / "Pool") ──────────────────────────
 
-/** Id determinista del Stop que resultaría de añadir este lugar del pool — mismo id en todos los sitios que insertan desde el pool (PlaceFinderPanel, ExplorePanel...). */
+/** Id determinista del Stop que resultaría de añadir este lugar del pool — mismo id en todos los sitios que insertan desde el pool (ExplorePanel...). */
 export function stopIdForPoolPlace(place: PoolPlace): string {
   return `stop-${place.id}`
 }

@@ -5,6 +5,7 @@ import { formatCompactDateRangeEs } from '../../lib/dateRange'
 import { FlagIcon } from '../ui/FlagIcon'
 import { Card } from '../ui/Card'
 import { Icono } from '../ui/Icono'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 
 interface TripCardProps {
   trip: SavedTrip
@@ -18,11 +19,11 @@ function TrashIcon() {
   )
 }
 
-/** Subtítulo de fecha de la tarjeta — rango exacto si se fijó, o "{días} días" si el viaje solo tiene duración (sin fechas concretas). */
+/** Subtítulo de fecha de la tarjeta — rango exacto si se fijó, o «5 días · 4 noches» si el viaje solo tiene duración (sin fechas concretas). */
 function dateSubtitle(trip: SavedTrip): string {
   const { dateRange, days } = trip.route.answers
   if (dateRange) return formatCompactDateRangeEs(dateRange.start, dateRange.end)
-  return days ? `${days} días` : ''
+  return days ? textoDeDuracion(days) : ''
 }
 
 /**

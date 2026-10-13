@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { moverParadaAOtroDia } from '../../../lib/cambiarParada'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { dayOfReservation, shortDateEs } from '../../../lib/bookings'
 import { etiquetaDeViaje, nombreDelDia } from '../../../lib/tituloDelDia'
@@ -68,7 +69,6 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   const reservations = useRouteStore((state) => state.reservations)
   const setStopVisto = useRouteStore((state) => state.setStopVisto)
   const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
-  const moveStopToDay = useRouteStore((state) => state.moveStopToDay)
   const info = useDestinationExcursions(route.destination)
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
   // «No me da tiempo»: la parada recién saltada (para su aviso con [Deshacer]), si está preguntando por una reservada y si la hoja de días está abierta.
@@ -151,7 +151,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   }
   const pasarAOtroDia = (otroDiaId: string) => {
     if (!saltadaAviso) return
-    moveStopToDay(saltadaAviso.id, day.id, otroDiaId)
+    // Con «Deshacer», como en el menú «···» de DÍAS (Tanda 7, punto 16): sin quitar nada, la parada pasa a ese día.
+    moverParadaAOtroDia(saltadaAviso.id, day.id, otroDiaId)
     setSaltadaAviso(null)
     setHojaOtroDia(false)
   }
@@ -256,7 +257,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       </div>
 
       {saltadaAviso && <AvisoSaltada nombre={displayStopName(saltadaAviso.name)} onDeshacer={deshacerSaltada} onOtroDia={saltadaEsReservada || otrosDias.length === 0 ? null : () => setHojaOtroDia(true)} />}
-      {hojaOtroDia && <HojaPasarAOtroDia dias={otrosDias} onElegir={pasarAOtroDia} onCerrar={() => setHojaOtroDia(false)} />}
+      {hojaOtroDia && <HojaPasarAOtroDia dias={otrosDias} ahora={day.dayNumber} onElegir={pasarAOtroDia} onCerrar={() => setHojaOtroDia(false)} />}
 
       {ofrecerFoto && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>

@@ -2,10 +2,10 @@ import { useState } from 'react'
 import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { ConfirmDeleteButton } from '../../ui/ConfirmDeleteButton'
-import { PlaceFinderPanel } from '../placeFinder/PlaceFinderPanel'
+import { CambiarParada } from './CambiarParada'
 import { removeReservationWithUndo, withUndo } from '../../../store/useAddFlowStore'
+import { moverParadaAOtroDia } from '../../../lib/cambiarParada'
 import { hasOwnTime } from '../../../lib/freeDays'
-import { alDia } from '../../../lib/nombreDeDia'
 import { ListaDeDias } from './ListaDeDias'
 import { RemoveReservationDialog } from '../reservas/ReservedMarks'
 import { TimeField } from '../../ui/TimeField'
@@ -26,8 +26,6 @@ type MenuView = 'menu' | 'remove' | 'move-day' | 'change-time'
 
 /** Menú oscuro del diseño "Trazo Itinerario". */
 const menuItemClass = 'flex h-[42px] w-full items-center rounded-[10px] px-3 text-left text-[14px] font-medium text-[#F3EEE4] hover:bg-[#F3EEE4]/[.08] disabled:cursor-not-allowed disabled:opacity-40'
-/** Lista de días de "Mover a…", dentro de la cajita clara. */
-const lightItemClass = 'w-full rounded-lg px-2 py-1.5 text-left text-small text-text hover:bg-bg-hover disabled:cursor-not-allowed disabled:opacity-40'
 
 /**
  * Menú "..." por parada — Cambiar / Quitar / Mover a otro día / Mover antes / Mover después /
@@ -48,9 +46,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const removeStop = useRouteStore((state) => state.removeStop)
   const reorderStops = useRouteStore((state) => state.reorderStops)
-  const moveStopToDay = useRouteStore((state) => state.moveStopToDay)
   const updateStopTime = useRouteStore((state) => state.updateStopTime)
-  const replaceStop = useRouteStore((state) => state.replaceStop)
   const setStopSaltada = useRouteStore((state) => state.setStopSaltada)
   // Una parada reservada está fijada: solo se quita con «Quitar del viaje» (PARA_CODE_RESERVAS, 6).
   const [removingReservation, setRemovingReservation] = useState(false)
@@ -77,8 +73,8 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
 
   const handleMoveToDay = (targetDayId: string) => {
     ensureSeeded()
-    const target = otherDays.find((day) => day.id === targetDayId)
-    undoable(target ? `Movida ${alDia(route, target.dayNumber)}` : 'Movida', () => moveStopToDay(stop.id, dayId, targetDayId))
+    // Con «Deshacer» en todos los días (Tanda 7, punto 16): la parada pasa a ese día, más o menos a su hora, y no se quita nada.
+    moverParadaAOtroDia(stop.id, dayId, targetDayId)
     close()
   }
 
@@ -108,7 +104,7 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
           <div className="fixed inset-0 z-20" onClick={(event) => (event.stopPropagation(), close())} />
           <div
             onClick={(event) => event.stopPropagation()}
-            className="absolute right-0 top-[34px] z-30 flex min-w-[190px] flex-col rounded-2xl bg-[#1C2230] p-1.5 text-[#F3EEE4] shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)]"
+            className={`absolute right-0 top-[34px] z-30 flex flex-col rounded-2xl bg-[#1C2230] p-1.5 text-[#F3EEE4] shadow-[0_18px_40px_-12px_rgba(28,34,48,.5)] ${view === 'move-day' ? 'w-[min(300px,calc(100vw-32px))]' : 'min-w-[190px]'}`}
           >
             {/* Una parada que se saltó en HOY («No me da tiempo»): vuelve a la ruta como no saltada (Tanda 6z6). */}
             {view === 'menu' && stop.saltada && (
@@ -218,9 +214,8 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
             )}
 
             {view === 'move-day' && (
-              <div className="space-y-1 rounded-xl bg-bg-card p-1">
-                <p className="px-1 text-caption font-semibold uppercase tracking-wide text-text-muted">Mover a</p>
-                <ListaDeDias dias={otherDays} onElegir={handleMoveToDay} filaClassName={lightItemClass} />
+              <div className="max-h-[min(60vh,420px)] overflow-y-auto rounded-2xl bg-bg-card p-1.5">
+                <ListaDeDias dias={otherDays} ahora={route?.days.find((candidate) => candidate.id === dayId)?.dayNumber} onElegir={handleMoveToDay} />
               </div>
             )}
 
@@ -241,17 +236,17 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
         </>
       )}
 
-      <PlaceFinderPanel
+      {/* «Cambiar parada»: EXPLORAR con los monumentos y los miradores y el ⇄ en cada tarjeta (Tanda 7, punto 16). */}
+      <CambiarParada
         open={pickerOpen}
+        dayId={dayId}
+        stop={stop}
         city={city}
-        excludeStopIds={realStops.map((s) => s.id)}
-        onPick={(newStop) => {
-          ensureSeeded()
-          replaceStop(dayId, stop.id, newStop)
+        sembrar={ensureSeeded}
+        onClose={() => {
           setPickerOpen(false)
           close()
         }}
-        onClose={() => setPickerOpen(false)}
       />
       {removingReservation && stop.reservedId && (
         <RemoveReservationDialog

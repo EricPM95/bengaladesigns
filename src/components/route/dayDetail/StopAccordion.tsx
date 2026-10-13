@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { displayStopName, formatDuration } from '../../../lib/format'
 import type { HorarioDeParada } from '../../../lib/horarioDeParada'
+import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
 import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { KIND_ICON, stopKindOf } from '../../../lib/stopKind'
 import { BreakCard } from './BreakCard'
@@ -35,7 +36,7 @@ interface StopAccordionProps {
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
 const OUTSIDE_SHORT: Record<string, string> = {
-  cerrado: 'Hoy cierra',
+  cerrado: CERRADO_ESTE_DIA,
   ya_cerrado: 'A esta hora ya ha cerrado',
   no_abre: 'A esta hora no abre',
   no_cabe: 'para llegar a todo',
@@ -97,10 +98,10 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   }
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
-    // («Hoy cierra» ya lo dice «Cerrado hoy»: una sola vez.)
-    if (freeDayWarning && !(horario?.cerrado && freeDayWarning === 'Hoy cierra')) meta.push({ text: freeDayWarning, warn: true })
+    // («Cerrado este día» ya lo dice la línea del horario: una sola vez.)
+    if (freeDayWarning && !(horario?.cerrado && freeDayWarning === CERRADO_ESTE_DIA)) meta.push({ text: freeDayWarning, warn: true })
   } else {
-    if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
+    if (stop.hoursWarning && !(stop.hoursWarning === CERRADO_ESTE_DIA && meta.some((item) => item.text === CERRADO_ESTE_DIA))) meta.push({ text: stop.hoursWarning, warn: true })
     if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
   }
   // «Añadida por ti», fuera de la tarjeta (PROMPT_UI_REPASO_2, 5).
