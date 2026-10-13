@@ -7,11 +7,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { barTextOf } from '../../shared/arrival/arrivalRules.js'
+import { barTextOf, soloLoQueSeEnseña } from '../../shared/arrival/arrivalRules.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const destino = (process.argv[2] ?? 'roma').toLowerCase()
-const info = JSON.parse(fs.readFileSync(path.join(root, 'data/dias', destino, '_llegada.json'), 'utf8'))
+const info = soloLoQueSeEnseña(JSON.parse(fs.readFileSync(path.join(root, 'data/dias', destino, '_llegada.json'), 'utf8')))
 const ORIGEN = 'Barcelona'
 
 /** Horas de ejemplo para ver la barra con reserva (las del PROMPT donde las da). */

@@ -106,7 +106,7 @@ const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
       ],
       taxiPriceLabel: `${rangoImporte(50, 55, 'EUR')} (tarifa fija aeropuerto-centro)`,
       privateTransfer: { proveedor: 'getyourguide', precio: 45, moneda: 'EUR', url_afiliado: '#' },
-      officialLinkLabel: 'Horarios y precios oficiales (Trenitalia)',
+      officialLinkLabel: 'Horarios y precios oficiales del tren',
     },
     {
       code: 'CIA',
@@ -117,7 +117,7 @@ const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
         { name: 'Autobús + metro', durationLabel: '55 min', durationMinutes: 55, price: 7.5, transfers: 1 },
       ],
       taxiPriceLabel: `${rangoImporte(30, 35, 'EUR')} (tarifa fija aeropuerto-centro)`,
-      officialLinkLabel: 'Horarios y precios oficiales (Trenitalia)',
+      officialLinkLabel: 'Horarios y precios oficiales del tren',
     },
   ],
 }
@@ -157,7 +157,7 @@ export function buildArrivalDepartureDetail(cityName: string, originName: string
       kind,
       cityName,
       headline: `Llegada a ${cityName}`,
-      subtitle: `Cómo llegar al centro desde tu punto de entrada en ${cityName}`,
+      subtitle: 'Cómo llegar a tu alojamiento desde tu punto de llegada',
       whyRecommendation: `Recomendamos ir primero a ${hubReference} — desde ahí conecta el metro, el tranvía y los autobuses urbanos, así que cualquier zona de tu alojamiento queda a un solo trasbordo.`,
       airports,
     }

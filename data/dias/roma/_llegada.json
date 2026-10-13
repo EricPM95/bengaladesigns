@@ -6,7 +6,7 @@
     "avion": {
       "textos": {
         "llegada_titulo": "Llegada a Roma",
-        "llegada_sub": "Cómo llegar al centro desde tu punto de entrada en Roma",
+        "llegada_sub": "Cómo llegar a tu alojamiento desde tu punto de llegada",
         "llegada_por_que": "Recomendamos ir primero a Roma Termini, el punto de conexión principal de Roma — desde ahí conecta el metro, el tranvía y los autobuses urbanos, así que cualquier zona de tu alojamiento queda a un solo trasbordo.",
         "vuelta_titulo": "Vuelta a {origen}",
         "vuelta_sub": "Cómo llegar a tu punto de salida en Roma con margen de sobra",
@@ -40,7 +40,8 @@
               "precio": "55 €",
               "nota": "Tarifa fija por coche, con maletas y suplementos incluidos, hasta cualquier punto dentro de las murallas (casi todo el centro) (Mura Aureliane). Solo los taxis blancos de la parada de Llegadas (T1 y T3).",
               "fuente": "https://www.adr.it/pax-fco-taxi",
-              "comprobado": "2026-09-29"
+              "comprobado": "2026-09-29",
+              "no_enseñar": true
             },
             {
               "nombre": "Tren regional FL1 (Trastevere, Ostiense, Tiburtina)",
@@ -52,7 +53,7 @@
               "comprobado": "2026-09-29"
             },
             {
-              "nombre": "Autobús a Termini (Terravision)",
+              "nombre": "Autobús a Termini (andén 18)",
               "tiempo": "unos 45 min",
               "frecuencia": "cada 20 min",
               "precio": "desde 4 €",
@@ -61,7 +62,7 @@
               "comprobado": "2026-09-30"
             },
             {
-              "nombre": "Autobús a Termini (Rome Airport Bus)",
+              "nombre": "Autobús a Termini (andén 19)",
               "tiempo": "unos 50 min",
               "precio": "8 €",
               "nota": "Andén 19. Menores de 6 años, gratis.",
@@ -86,7 +87,8 @@
               "precio": "55 €",
               "nota": "Tarifa fija solo si sales de dentro de las murallas (casi todo el centro) y vas directo.",
               "fuente": "https://romamobilita.it/muoversi-a-roma/taxi/",
-              "comprobado": "2026-09-29"
+              "comprobado": "2026-09-29",
+              "no_enseñar": true
             },
             {
               "nombre": "Tren regional FL1 (desde Tiburtina, Ostiense o Trastevere)",
@@ -99,7 +101,8 @@
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg/960px-Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg",
           "foto_credito": "Wikimedia Commons",
           "por_que_llegada": "Desde Fiumicino lo más cómodo es el Leonardo Express: 32 min sin paradas hasta Termini por 14 €. Si te alojas cerca de Trastevere u Ostiense, el tren regional FL1 (8 €) te deja más cerca; ojo, el FL1 no para en Termini (sus paradas en Roma son Trastevere, Ostiense y Tiburtina).",
-          "por_que_vuelta": "El Leonardo Express sale de Termini cada 15 min (a algunas horas, cada 30) y tarda 32 min; el último es a las 23:05. El taxi oficial a tarifa fija (55 €) solo si sales de dentro de las murallas (casi todo el centro)."        },
+          "por_que_vuelta": "El Leonardo Express sale de Termini cada 15 min (a algunas horas, cada 30) y tarda 32 min; el último es a las 23:05."
+        },
         {
           "id": "cia",
           "corto": "Ciampino",
@@ -117,7 +120,8 @@
               "precio": "40 €",
               "nota": "Tarifa fija por coche, con suplementos incluidos, hasta dentro de las murallas (casi todo el centro).",
               "fuente": "https://www.adr.it/pax-cia-taxi",
-              "comprobado": "2026-09-29"
+              "comprobado": "2026-09-29",
+              "no_enseñar": true
             },
             {
               "nombre": "Ciampino Airlink (bus + tren a Termini)",
@@ -129,22 +133,22 @@
               "comprobado": "2026-09-29"
             },
             {
-              "nombre": "Autobús a Termini (Terravision)",
+              "nombre": "Autobús a Termini (opción 1)",
               "tiempo": "unos 40 min",
               "precio": "desde 6,50 €",
               "fuente": "https://www.terravision.eu/airport_transfer/bus-ciampino-airport-rome/ («Adult from 6,50€»)",
               "comprobado": "2026-09-30"
             },
             {
-              "nombre": "Autobús a Termini (Rome Airport Bus)",
+              "nombre": "Autobús a Termini (opción 2)",
               "tiempo": "unos 40 min",
               "precio": "8 €",
               "fuente": "https://www.romeairportbus.it/ (sola andata 8,00 €)",
               "comprobado": "2026-09-30"
             },
             {
-              "nombre": "Autobús ATRAL al metro Anagnina (línea A)",
-              "tiempo": "unos 20 min, y el metro al centro",
+              "nombre": "Autobús al metro Anagnina (línea A)",
+              "tiempo": "unos 20 min, y después el metro A",
               "precio": "1,20 € + 1,50 € el metro",
               "fuente": "https://www.atral-lazio.com/ («Euro 1,20 per passeggero per singola corsa»)",
               "comprobado": "2026-09-30"
@@ -158,7 +162,8 @@
               "precio": "40 €",
               "nota": "Tarifa fija solo desde dentro de las murallas (casi todo el centro).",
               "fuente": "https://romamobilita.it/muoversi-a-roma/taxi/",
-              "comprobado": "2026-09-29"
+              "comprobado": "2026-09-29",
+              "no_enseñar": true
             },
             {
               "nombre": "Ciampino Airlink (tren + bus desde Termini)",
@@ -171,14 +176,15 @@
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Aeropuerto_de_Roma-Ciampino.JPG/960px-Aeropuerto_de_Roma-Ciampino.JPG",
           "foto_credito": "Wikimedia Commons",
           "salir_antes_min": 170,
-          "por_que_llegada": "Ciampino es el aeropuerto pequeño de Roma, a unos 15 km: el bus con el tren (Ciampino Airlink, 2,70 €) o un autobús directo a Termini te dejan en el centro en menos de una hora. No hay Leonardo Express: ese tren es solo de Fiumicino.",
-          "por_que_vuelta": "A Ciampino se llega en unos 40 min desde el centro, así que sales un poco más tarde que a Fiumicino. El taxi oficial de dentro de las murallas (casi todo el centro) va a tarifa fija."        }
+          "por_que_llegada": "Ciampino es el aeropuerto pequeño de Roma, a unos 15 km: el bus con el tren (Ciampino Airlink, 2,70 €) o un autobús directo a Termini te dejan en Roma en menos de una hora. No hay Leonardo Express: ese tren es solo de Fiumicino.",
+          "por_que_vuelta": "A Ciampino se llega en unos 40 min desde Roma, así que sales un poco más tarde que a Fiumicino."
+        }
       ],
       "tips_llegada": [
         {
-          "titulo": "Nadie te lleva «en coche» desde la terminal",
-          "texto": "Si alguien se te acerca dentro ofreciendo taxi o coche, di que no: los oficiales son blancos, con «TAXI» en el techo, y esperan en la parada de Llegadas.",
-          "fuente": "https://www.adr.it/pax-fco-taxi"
+          "titulo": "Nadie te espera sin reserva",
+          "texto": "Nadie te espera sin reserva: si alguien se te acerca en la terminal ofreciendo coche, di que no. Si has reservado el traslado, te esperan con un cartel con tu nombre.",
+          "fuente": null
         },
         {
           "titulo": "Los niños no pagan el Leonardo",
@@ -212,14 +218,6 @@
           ]
         },
         {
-          "titulo": "El taxi de Ciampino sale más barato",
-          "texto": "La tarifa fija a dentro de las murallas (casi todo el centro) son 40 € (55 € desde Fiumicino), con suplementos incluidos.",
-          "fuente": "https://www.adr.it/pax-cia-taxi",
-          "solo_en": [
-            "cia"
-          ]
-        },
-        {
           "titulo": "Mira bien a qué aeropuerto llegas",
           "texto": "Muchos vuelos de bajo coste desde España usan Ciampino, no Fiumicino.",
           "fuente": null,
@@ -239,7 +237,7 @@
         },
         {
           "titulo": "Compra el billete antes",
-          "texto": "En la app de Trenitalia o en las máquinas la víspera: el último día, las colas de las taquillas se comen el margen.",
+          "texto": "En la app oficial del tren o en las máquinas la víspera: el último día, las colas de las taquillas se comen el margen.",
           "fuente": null
         },
         {
@@ -258,7 +256,8 @@
         {
           "titulo": "La tarifa fija del taxi, solo desde dentro de las murallas (casi todo el centro)",
           "texto": "Si te recoge fuera (Prati alto, el EUR), va por taxímetro y sale más caro.",
-          "fuente": "https://romamobilita.it/muoversi-a-roma/taxi/"
+          "fuente": "https://romamobilita.it/muoversi-a-roma/taxi/",
+          "no_enseñar": true
         }
       ]
     },
@@ -266,7 +265,7 @@
       "textos": {
         "llegada_titulo": "Llegada a Roma",
         "llegada_sub": "De la estación a tu alojamiento",
-        "llegada_por_que": "Los trenes de larga distancia llegan a Roma Termini o a Roma Tiburtina: de las dos sale el metro hacia el centro.",
+        "llegada_por_que": "Los trenes de larga distancia llegan a Roma Termini o a Roma Tiburtina: de las dos sale el metro hacia el resto de la ciudad.",
         "vuelta_titulo": "Vuelta a {origen}",
         "vuelta_sub": "De tu alojamiento a la estación, con margen",
         "vuelta_por_que": "Llega a la estación con tiempo: el andén sale en las pantallas poco antes de la salida."
@@ -295,7 +294,8 @@
               "tiempo": "10-20 min",
               "nota": "Por taxímetro; parada a la salida de la estación.",
               "fuente": "https://romamobilita.it/muoversi-a-roma/taxi/",
-              "comprobado": "2026-09-29"
+              "comprobado": "2026-09-29",
+              "no_enseñar": true
             }
           ],
           "foto_url": "https://images.unsplash.com/photo-1768213021718-9f738eabb363?fm=jpg&q=80&w=1080",
@@ -323,7 +323,7 @@
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/2013-06-15_Roma_Stazione_FS_Tiburtina.jpg/960px-2013-06-15_Roma_Stazione_FS_Tiburtina.jpg",
           "foto_credito": "Wikimedia Commons",
           "termini": false,
-          "por_que_llegada": "Llegas a Roma Tiburtina, al noreste del centro: dentro de la estación está el metro B (Tiburtina FS), que te deja en Termini en unos 10 min y de ahí en todo el centro.",
+          "por_que_llegada": "Llegas a Roma Tiburtina, al noreste de Roma: dentro de la estación está el metro B (Tiburtina FS), que te deja en Termini en unos 10 min y de ahí a cualquier zona.",
           "por_que_vuelta": "Sal con tiempo hacia Tiburtina: el metro B te deja dentro de la estación (Tiburtina FS), y el andén sale en las pantallas poco antes de la salida.",
           "a_la_salida": [
             {
@@ -385,7 +385,7 @@
       "textos": {
         "llegada_titulo": "Llegada a Roma",
         "llegada_sub": "De la estación de autobuses a tu alojamiento",
-        "llegada_por_que": "Los autobuses de larga distancia llegan a la Autostazione Tiburtina (Tibus): al lado está el metro B, que te deja en Termini y en el centro.",
+        "llegada_por_que": "Los autobuses de larga distancia llegan a la estación de autobuses de Tiburtina: al lado está el metro B, que te deja en Termini y de ahí a cualquier zona.",
         "vuelta_titulo": "Vuelta a {origen}",
         "vuelta_sub": "De tu alojamiento a la estación de autobuses, con margen",
         "vuelta_por_que": "Sal con tiempo hacia Tiburtina: el metro B te deja en Tiburtina FS, junto a la estación de autobuses."
@@ -395,7 +395,7 @@
         {
           "id": "tibus",
           "corto": "Tiburtina",
-          "nombre": "Autostazione Tiburtina (Tibus)",
+          "nombre": "Estación de autobuses de Tiburtina",
           "barra": "TIBURTINA",
           "foto": "Roma Tiburtina bus station",
           "al_centro_min": 25,
@@ -429,7 +429,7 @@
       "tips_llegada": [
         {
           "titulo": "El metro se llama «Tiburtina FS»",
-          "texto": "Es la parada de la línea B junto a la estación de trenes y autobuses: desde ahí, Termini y el centro.",
+          "texto": "Es la parada de la línea B junto a la estación de trenes y autobuses: desde ahí, Termini y el resto de Roma.",
           "fuente": "https://www.atac.roma.it/docs/default-source/mappe-tpl/mappa-metropolitana-linea-b-b1.pdf"
         },
         {
@@ -440,7 +440,7 @@
       ],
       "tips_vuelta": [
         {
-          "titulo": "Llega con margen a Tibus",
+          "titulo": "Llega con margen a la estación de autobuses",
           "texto": "Las dársenas se anuncian tarde y la estación es grande: cuenta con perder unos minutos buscando la tuya.",
           "fuente": null
         }
@@ -450,7 +450,7 @@
       "textos": {
         "llegada_titulo": "Llegada a Roma",
         "llegada_sub": "Del puerto de Civitavecchia a Roma",
-        "llegada_por_que": "Los barcos llegan a Civitavecchia, a unos 80 km de Roma. Lo más cómodo: la lanzadera del puerto, el tren regional hasta Roma y, desde la estación, el metro o un taxi.",
+        "llegada_por_que": "Los barcos llegan a Civitavecchia, a unos 80 km de Roma. Lo más cómodo: la lanzadera del puerto, el tren regional hasta Roma y, desde la estación, el metro.",
         "vuelta_titulo": "Vuelta a {origen}",
         "vuelta_sub": "De Roma al puerto de Civitavecchia, con margen",
         "vuelta_por_que": "Cuenta el tren hasta Civitavecchia, el paso por el puerto y la hora de embarque de tu naviera."
@@ -476,7 +476,7 @@
               "comprobado": "2026-09-29"
             },
             {
-              "nombre": "Autobús de la estación a los barcos (Portlink)",
+              "nombre": "Autobús de la estación a los barcos",
               "tiempo": "unos 15 min",
               "frecuencia": "cada 20-25 min, los días con barcos",
               "precio": "6 €",
@@ -495,7 +495,8 @@
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Forte_Michelangelo_2014.jpg/960px-Forte_Michelangelo_2014.jpg",
-          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons"        }
+          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons"
+        }
       ],
       "tips_llegada": [
         {
@@ -505,7 +506,7 @@
         },
         {
           "titulo": "La lanzadera del puerto es gratis",
-          "texto": "No pagues un taxi para salir del puerto: la lanzadera te deja en Largo della Pace, a un paseo de la estación.",
+          "texto": "No hace falta pagar nada para salir del puerto: la lanzadera te deja en Largo della Pace, a un paseo de la estación.",
           "fuente": "https://civitavecchia.portmobility.it/en/shuttles"
         }
       ],
@@ -524,7 +525,7 @@
         "llegada_por_que": "El centro de Roma es una zona de tráfico limitado (ZTL) vigilada con cámaras: deja el coche fuera y muévete en metro o andando.",
         "vuelta_titulo": "Vuelta a {origen}",
         "vuelta_sub": "Sal de Roma sin pasar por la ZTL",
-        "vuelta_por_que": "Planifica la salida por fuera del centro: la ZTL también vigila por la tarde y algunas noches."
+        "vuelta_por_que": "Planifica la salida por fuera de la ZTL: también vigila por la tarde y algunas noches."
       },
       "puntos": [
         {
@@ -564,19 +565,19 @@
       "tips_llegada": [
         {
           "titulo": "La ZTL también vigila de noche",
-          "texto": "En Trastevere y en el centro hay cámaras que multan también por la noche algunos días: no entres «solo un momento».",
+          "texto": "En Trastevere y en el centro histórico hay cámaras que multan también por la noche algunos días: no entres «solo un momento».",
           "fuente": "https://romamobilita.it/infomobilita/ztl-tutti-gli-orari/"
         },
         {
           "titulo": "El coche de alquiler, fuera",
-          "texto": "Recógelo y devuélvelo en el aeropuerto o en Termini, no en el centro: te ahorras la ZTL de ida y de vuelta.",
+          "texto": "Recógelo y devuélvelo en el aeropuerto o en Termini, no dentro de la ZTL: te ahorras la ZTL de ida y de vuelta.",
           "fuente": null
         }
       ],
       "tips_vuelta": [
         {
           "titulo": "Sal por el GRA",
-          "texto": "El anillo de circunvalación (GRA) te saca de Roma sin cruzar el centro: ponlo en el navegador como primer destino.",
+          "texto": "El anillo de circunvalación (GRA) te saca de Roma sin cruzar la ciudad: ponlo en el navegador como primer destino.",
           "fuente": null
         }
       ]
@@ -590,16 +591,21 @@
   },
   "consigna": {
     "titulo": "Si aún no puedes entrar al alojamiento",
-    "texto": "La consigna de Termini (KiPoint) está a nivel de los andenes, en el lado de Via Giolitti, de 7:00 a 21:00, desde 6 € por maleta.",
+    "texto": "La consigna de Termini está a nivel de los andenes, en el lado de Via Giolitti, de 7:00 a 21:00, desde 6 € por maleta.",
     "fuente": "https://www.kibag.it/en/deposito-bagagli-roma/deposito-bagagli-roma-termini/ (KiPoint/KiBag Termini: todos los días de 7:00 a 21:00, «from € 6»)",
     "comprobado": "2026-09-30"
   },
   "ultima_tarde": {
-    "texto": "Aprovecha la mañana sin prisas: deja la maleta en la consigna o en el alojamiento, sal a la hora que te marcamos y llegarás con margen."
+    "texto": "Aprovecha la mañana sin prisas: deja la maleta en la consigna o en tu alojamiento y sal con margen."
   },
   "maleta": {
     "titulo": "La maleta, el último día",
-    "texto": "Déjala en tu alojamiento (pregunta si te la guardan después de la salida) o en la consigna de Termini (KiPoint, andenes lado Via Giolitti, 7:00-21:00, desde 6 € por maleta) y recógela de camino.",
+    "texto": "Déjala en tu alojamiento (pregunta si te la guardan después de dejar la habitación) o en la consigna de Termini y recógela de camino.",
+    "consigna": {
+      "sitio": "a nivel de los andenes de Termini, en el lado de Via Giolitti",
+      "horario": "todos los días de 7:00 a 21:00",
+      "precio": "desde 6 € por maleta"
+    },
     "fuente": "https://www.kibag.it/en/deposito-bagagli-roma/deposito-bagagli-roma-termini/ (KiPoint/KiBag Termini: todos los días de 7:00 a 21:00, «from € 6»)",
     "comprobado": "2026-09-30"
   },
@@ -612,5 +618,805 @@
       "nombre": "Mercato Centrale",
       "texto": "Junto a los andenes de Termini, en el lado de Via Giolitti: para comer algo antes del tren."
     }
-  ]
+  ],
+  "tramos": {
+    "leonardo_express": {
+      "medio": "tren",
+      "nombre": "Leonardo Express",
+      "de": "Aeropuerto de Fiumicino",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "14 €",
+      "tiempo": "32 min, sin paradas",
+      "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/orario-digitale/collegamenti/orari-leonardo-express.pdf (horario de verano 14 jun-12 dic 2026: último tren diario desde el aeropuerto a las 23:23; los de las 23:53 y 0:23 no salen todos los días)",
+      "comprobado": "2026-09-30",
+      "horario": {
+        "ida": {
+          "texto_tarde": "A esta hora ya no hay tren: el último Leonardo Express sale del aeropuerto a las 23:23.",
+          "texto_pronto": "A esta hora aún no hay tren: el primer Leonardo Express sale del aeropuerto a las 5:38.",
+          "tramos_de_fechas": [
+            {
+              "from": "06-14",
+              "to": "12-12",
+              "anio": 2026,
+              "primero": "05:38",
+              "ultimo": "23:23"
+            }
+          ],
+          "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/orario-digitale/collegamenti/orari-leonardo-express.pdf (horario de verano 14 jun-12 dic 2026; los de las 23:53 y 0:23 no salen todos los días)",
+          "comprobado": "2026-09-30"
+        },
+        "vuelta": {
+          "texto_tarde": "A esta hora ya no hay tren: el último Leonardo Express sale de Termini a las 23:05.",
+          "texto_pronto": "A esta hora aún no hay tren: el primer Leonardo Express sale de Termini a las 4:50.",
+          "tramos_de_fechas": [
+            {
+              "primero": "04:50",
+              "ultimo": "23:05"
+            }
+          ],
+          "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/leonardo-express.html (la página no dice hasta cuándo vale: se aplica todo el año)",
+          "comprobado": "2026-10-13"
+        }
+      },
+      "id": "leonardo_express"
+    },
+    "bus_fco_termini_18": {
+      "medio": "autobus",
+      "nombre": "Autobús a Termini (andén 18)",
+      "de": "Aeropuerto de Fiumicino",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "desde 4 €",
+      "tiempo": "unos 45 min",
+      "frecuencia": "cada 20 min",
+      "nota": "Andén 18. El precio cambia según el día.",
+      "fuente": "https://www.terravision.eu/airport_transfer/bus-fiumicino-airport-rome/ («Adult from 4,00€»)",
+      "comprobado": "2026-10-13",
+      "sin_horario": "La web oficial de la empresa solo dice «cada 20 min», sin primero ni último.",
+      "id": "bus_fco_termini_18"
+    },
+    "bus_fco_termini_19": {
+      "medio": "autobus",
+      "nombre": "Autobús a Termini (andén 19)",
+      "de": "Aeropuerto de Fiumicino",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "8 €",
+      "tiempo": "unos 50 min",
+      "nota": "Andén 19. Menores de 6 años, gratis.",
+      "fuente": "https://www.romeairportbus.it/ (sola andata 8,00 €)",
+      "comprobado": "2026-10-13",
+      "horario": {
+        "ida": {
+          "tramos_de_fechas": [
+            {
+              "primero": "06:00",
+              "ultimo": "23:55"
+            }
+          ],
+          "fuente": "https://www.romeairportbus.it/ (Fiumicino → Termini: primero 6:00, último 23:55)",
+          "comprobado": "2026-10-13"
+        },
+        "vuelta": {
+          "tramos_de_fechas": [
+            {
+              "primero": "04:30",
+              "ultimo": "01:00"
+            }
+          ],
+          "fuente": "https://www.romeairportbus.it/ (Termini → Fiumicino: primero 4:30, último 1:00 de la madrugada)",
+          "comprobado": "2026-10-13"
+        }
+      },
+      "id": "bus_fco_termini_19"
+    },
+    "fl1_fco_trastevere": {
+      "medio": "tren",
+      "nombre": "Tren FL1",
+      "de": "Aeropuerto de Fiumicino",
+      "a": "Roma Trastevere",
+      "precio": "8 €",
+      "tiempo": "unos 27 min",
+      "frecuencia": "cada 15 min (domingos y festivos, cada 30)",
+      "nota": "El FL1 para en Roma Trastevere, Ostiense y Tiburtina, no en Termini.",
+      "fuente": "https://www.trenitalia.com/en/services/connections-to-and-from-rome-fiumicino-airport.html (precio y frecuencia); los 27 min y las paradas, de la nota de Claude en docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "comprobado": "2026-10-13",
+      "id": "fl1_fco_trastevere"
+    },
+    "fl1_tiburtina_trastevere": {
+      "medio": "tren",
+      "nombre": "Tren FL1",
+      "de": "Roma Tiburtina",
+      "a": "Roma Trastevere",
+      "nota": "Directo. El FL1 para en Roma Trastevere, Ostiense y Tiburtina, no en Termini.",
+      "fuente": "docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "comprobado": "2026-10-13",
+      "id": "fl1_tiburtina_trastevere"
+    },
+    "tranvia_8": {
+      "medio": "tranvia",
+      "nombre": "Tranvía 8",
+      "de": "Roma Trastevere",
+      "a": "Trastevere",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. ATAC lo dio por restablecido entero el 21-sep-2026 (docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)).",
+      "id": "tranvia_8"
+    },
+    "metro_b_termini_cavour": {
+      "medio": "metro",
+      "nombre": "Metro B",
+      "de": "Roma Termini",
+      "a": "Cavour",
+      "detalle": "1 parada",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "metro_b_termini_cavour"
+    },
+    "metro_b_tiburtina_cavour": {
+      "medio": "metro",
+      "nombre": "Metro B",
+      "de": "Roma Tiburtina",
+      "a": "Cavour",
+      "detalle": "directo",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "metro_b_tiburtina_cavour"
+    },
+    "metro_b_tiburtina_termini": {
+      "medio": "metro",
+      "nombre": "Metro B",
+      "de": "Roma Tiburtina",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "tiempo": "unos 10 min",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio y tiempo ya en el dato de Tiburtina (BIT, 29-sep-2026)",
+      "id": "metro_b_tiburtina_termini"
+    },
+    "metro_a_termini_spagna": {
+      "medio": "metro",
+      "nombre": "Metro A",
+      "de": "Roma Termini",
+      "a": "Spagna",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "metro_a_termini_spagna"
+    },
+    "metro_a_termini_ottaviano": {
+      "medio": "metro",
+      "nombre": "Metro A",
+      "de": "Roma Termini",
+      "a": "Ottaviano",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "metro_a_termini_ottaviano"
+    },
+    "metro_a_anagnina_spagna": {
+      "medio": "metro",
+      "nombre": "Metro A",
+      "de": "Anagnina",
+      "a": "Spagna",
+      "detalle": "directo",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "metro_a_anagnina_spagna"
+    },
+    "metro_a_anagnina_ottaviano": {
+      "medio": "metro",
+      "nombre": "Metro A",
+      "de": "Anagnina",
+      "a": "Ottaviano",
+      "detalle": "directo",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "metro_a_anagnina_ottaviano"
+    },
+    "bus_40_64_termini_argentina": {
+      "medio": "autobus",
+      "nombre": "Bus 40 o 64",
+      "de": "Roma Termini",
+      "a": "Largo di Torre Argentina",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "bus_40_64_termini_argentina"
+    },
+    "bus_64_sanpietro_argentina": {
+      "medio": "autobus",
+      "nombre": "Bus 64",
+      "de": "Roma San Pietro",
+      "a": "Largo di Torre Argentina",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. Línea y parada: docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "id": "bus_64_sanpietro_argentina"
+    },
+    "andando_sanpietro_prati": {
+      "medio": "andando",
+      "nombre": "Andando",
+      "de": "Roma San Pietro",
+      "a": "Prati",
+      "tiempo": "unos 20 min",
+      "fuente": "docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "comprobado": "2026-10-13",
+      "id": "andando_sanpietro_prati"
+    },
+    "andando_termini": {
+      "medio": "andando",
+      "nombre": "Andando",
+      "de": "Roma Termini",
+      "a": "Termini",
+      "nota": "Ya estás.",
+      "fuente": "docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+      "comprobado": "2026-10-13",
+      "id": "andando_termini"
+    },
+    "airlink_cia_termini": {
+      "medio": "bus_tren",
+      "nombre": "Ciampino Airlink (bus + tren)",
+      "de": "Aeropuerto de Ciampino",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "2,70 €",
+      "tiempo": "10 min de bus a la estación de Ciampino y el tren a Termini",
+      "frecuencia": "cada 20 min",
+      "nota": "Sale del andén 6. El precio suma el bus y el tren.",
+      "fuente": "https://www.trenitalia.com/it/regionale/collegamenti-regionale/ciampino-airlink.html",
+      "comprobado": "2026-09-29",
+      "id": "airlink_cia_termini"
+    },
+    "bus_cia_termini_1": {
+      "medio": "autobus",
+      "nombre": "Autobús a Termini (opción 1)",
+      "de": "Aeropuerto de Ciampino",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "desde 6,50 €",
+      "tiempo": "unos 40 min",
+      "fuente": "https://www.terravision.eu/airport_transfer/bus-ciampino-airport-rome/ («Adult from 6,50€»)",
+      "comprobado": "2026-09-30",
+      "sin_horario": "La web oficial no da primero ni último.",
+      "id": "bus_cia_termini_1"
+    },
+    "bus_cia_termini_2": {
+      "medio": "autobus",
+      "nombre": "Autobús a Termini (opción 2)",
+      "de": "Aeropuerto de Ciampino",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "8 €",
+      "tiempo": "unos 40 min",
+      "fuente": "https://www.romeairportbus.it/ (sola andata 8,00 €)",
+      "comprobado": "2026-09-30",
+      "sin_horario": "La página consultada solo da los horarios de Fiumicino.",
+      "id": "bus_cia_termini_2"
+    },
+    "bus_cia_anagnina": {
+      "medio": "autobus",
+      "nombre": "Autobús al metro Anagnina",
+      "de": "Aeropuerto de Ciampino",
+      "a": "Anagnina",
+      "precio": "1,20 €",
+      "tiempo": "unos 20 min",
+      "nota": "Después, el metro A (1,50 €).",
+      "fuente": "https://www.atral-lazio.com/index.php#ciampino",
+      "comprobado": "2026-10-13",
+      "horario_publicado_sin_usar": {
+        "laborables": "8:15-22:40",
+        "festivos": "5:05-23:00 (directo)",
+        "nota": "La web dice que el horario de Anagnina es de octubre de 2024: no se usa para decidir qué sigue funcionando hasta que Eric lo confirme."
+      },
+      "id": "bus_cia_anagnina"
+    },
+    "tren_civ_sanpietro": {
+      "medio": "tren",
+      "nombre": "Tren regional",
+      "de": "Puerto de Civitavecchia",
+      "a": "Roma San Pietro",
+      "precio": "4,60 €",
+      "verificar": "Los km exactos Civitavecchia–Roma no salen en la tarifa: si fueran más de 80, serían 5,10 €.",
+      "nota_parada": "Mira en tu billete que el tren pare en Roma San Pietro.",
+      "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf (Tariffa 39/8 Lazio, desde el 05-07-2026: 71-80 km, 2.ª clase, 4,60 €) · Paradas en Roma comprobadas en un tren de ejemplo (Roma San Pietro, Roma Trastevere, Roma Ostiense y Roma Termini; e656.net/orario/treno/12539) y en la guía del puerto (civitavecchia.portmobility.it). La web de Trenitalia no las lista por tren, por eso la nota de «mira en tu billete».",
+      "comprobado": "2026-09-30",
+      "id": "tren_civ_sanpietro"
+    },
+    "tren_civ_trastevere": {
+      "medio": "tren",
+      "nombre": "Tren regional",
+      "de": "Puerto de Civitavecchia",
+      "a": "Roma Trastevere",
+      "precio": "4,60 €",
+      "verificar": "Los km exactos Civitavecchia–Roma no salen en la tarifa: si fueran más de 80, serían 5,10 €.",
+      "nota_parada": "Mira en tu billete que el tren pare en Roma Trastevere.",
+      "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf (Tariffa 39/8 Lazio, desde el 05-07-2026: 71-80 km, 2.ª clase, 4,60 €) · Paradas en Roma comprobadas en un tren de ejemplo (Roma San Pietro, Roma Trastevere, Roma Ostiense y Roma Termini; e656.net/orario/treno/12539) y en la guía del puerto (civitavecchia.portmobility.it). La web de Trenitalia no las lista por tren, por eso la nota de «mira en tu billete».",
+      "comprobado": "2026-09-30",
+      "id": "tren_civ_trastevere"
+    },
+    "tren_civ_termini": {
+      "medio": "tren",
+      "nombre": "Tren regional",
+      "de": "Puerto de Civitavecchia",
+      "a": "Roma Termini",
+      "a_id": "termini",
+      "precio": "4,60 €",
+      "tiempo": "unos 60-80 min",
+      "frecuencia": "cada 30 min",
+      "verificar": "Los km exactos Civitavecchia–Roma no salen en la tarifa: si fueran más de 80, serían 5,10 €.",
+      "nota": "Compra el billete antes de subir: en Civitavecchia no se vende a bordo.",
+      "fuente": "https://www.trenitalia.com/content/dam/trenitalia/allegati/info/condizioni-generali-di-trasporto/parte-iii-trasporto-regionale/tariffa-39/Tariffa_39_8_Lazio.pdf (Tariffa 39/8 Lazio, desde el 05-07-2026: 71-80 km, 2.ª clase, 4,60 €)",
+      "comprobado": "2026-09-30",
+      "id": "tren_civ_termini"
+    },
+    "tranvia_8_desde_argentina": {
+      "medio": "tranvia",
+      "nombre": "Tranvía 8",
+      "de": "Largo di Torre Argentina",
+      "a": "Trastevere",
+      "precio": "1,50 €",
+      "fuente": "https://www.atac.roma.it/en/tickets-and-passes/bit",
+      "comprobado": "2026-10-13",
+      "nota_fuente": "Precio: billete BIT. ATAC lo dio por restablecido entero el 21-sep-2026 (docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)).",
+      "id": "tranvia_8_desde_argentina"
+    }
+  },
+  "lugares": {
+    "fco": "Aeropuerto de Fiumicino",
+    "cia": "Aeropuerto de Ciampino",
+    "termini": "Roma Termini",
+    "tiburtina": "Roma Tiburtina",
+    "tibus": "Estación de autobuses de Tiburtina",
+    "civ": "Puerto de Civitavecchia"
+  },
+  "para_tu_zona": {
+    "_nota": "La tabla «Para tu zona» (Tanda 7, punto 13). `zonas[zona][columna]` = las opciones de esa celda, en orden: la primera es «Tu mejor opción». Cada opción es una lista de tramos (ids de `tramos`, con su medio, de dónde a dónde, precio y tiempo; sin dato, sin tiempo). `pasa_por_termini`: Termini es parada intermedia (texto 3 del resumen); `otro_billete_desde`: posición del primer tramo que es otro billete. Para la vuelta, los tramos se leen al revés (lo hace shared/arrival/paraTuZona.js). Sin textos de pantalla.",
+    "comprobado": "2026-10-13",
+    "fuente": "docs/dias/PARA_CODE_TANDA7_v3.md, punto 13 (tabla «Para tu zona» de Eric)",
+    "columnas": {
+      "fco": {
+        "puntos": [
+          "fco"
+        ],
+        "referencia_horaria": "leonardo_express"
+      },
+      "cia": {
+        "puntos": [
+          "cia"
+        ]
+      },
+      "termini": {
+        "puntos": [
+          "termini"
+        ]
+      },
+      "tiburtina": {
+        "puntos": [
+          "tiburtina",
+          "tibus"
+        ]
+      },
+      "civitavecchia": {
+        "puntos": [
+          "civitavecchia"
+        ]
+      }
+    },
+    "zona_sin_saber": {
+      "id": "nose",
+      "usar_zona": "termini",
+      "quitar_del_resumen": [
+        2,
+        3
+      ],
+      "arriba": "Cuando sepas dónde duermes, ponlo en RESERVAS y te diremos cómo llegar hasta tu puerta."
+    },
+    "nota_otro_billete": "Es otro billete (1,50 €, vale 100 min).",
+    "traslado_privado": {
+      "tarjeta_llegada": "Te esperan a la salida con tu nombre y te dejan en la puerta de tu alojamiento o donde tú quieras.",
+      "tarjeta_vuelta": "Te recogen en la puerta de tu alojamiento o donde tú quieras y te dejan en el aeropuerto.",
+      "etiqueta": "Ideal si viajas en pareja, en familia o con amigos",
+      "precio": null,
+      "proveedor": null,
+      "nota": "Sin precio, sin proveedor y sin decir que es más barato (punto 13). El enlace de reserva lo pone la pestaña Traslado de la app, no estos datos."
+    },
+    "descartadas": [
+      {
+        "id": "autobus_fco_prati",
+        "motivo": "Autobús de Fiumicino a Via Crescenzio / Piazza Adriana (Prati): la web oficial de la empresa (consultada el 13-oct-2026) solo dice que hay un servicio directo con parada en Via Crescenzio, sin precio ni tiempo; los 7 € y los 40 min vienen de webs no oficiales. Fuera de la tabla hasta que Eric lo confirme.",
+        "fuente": "https://www.terravision.eu/airport_transfer/bus-fiumicino-airport-rome/",
+        "comprobado": "2026-10-13"
+      }
+    ],
+    "zonas": {
+      "termini": {
+        "fco": [
+          {
+            "id": "leonardo",
+            "tramos": [
+              "leonardo_express"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "bus18",
+            "tramos": [
+              "bus_fco_termini_18"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "bus19",
+            "tramos": [
+              "bus_fco_termini_19"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "cia": [
+          {
+            "id": "airlink",
+            "tramos": [
+              "airlink_cia_termini"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "bus1",
+            "tramos": [
+              "bus_cia_termini_1"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "bus2",
+            "tramos": [
+              "bus_cia_termini_2"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "termini": [
+          {
+            "id": "andando",
+            "tramos": [
+              "andando_termini"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "tiburtina": [
+          {
+            "id": "metro_b",
+            "tramos": [
+              "metro_b_tiburtina_termini"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "civitavecchia": [
+          {
+            "id": "tren",
+            "tramos": [
+              "tren_civ_termini"
+            ],
+            "pasa_por_termini": false
+          }
+        ]
+      },
+      "monti": {
+        "fco": [
+          {
+            "id": "leonardo_metro_b",
+            "tramos": [
+              "leonardo_express",
+              "metro_b_termini_cavour"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "cia": [
+          {
+            "id": "airlink_metro_b",
+            "tramos": [
+              "airlink_cia_termini",
+              "metro_b_termini_cavour"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "termini": [
+          {
+            "id": "metro_b",
+            "tramos": [
+              "metro_b_termini_cavour"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "tiburtina": [
+          {
+            "id": "metro_b",
+            "tramos": [
+              "metro_b_tiburtina_cavour"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "civitavecchia": [
+          {
+            "id": "tren_metro_b",
+            "tramos": [
+              "tren_civ_termini",
+              "metro_b_termini_cavour"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ]
+      },
+      "centro": {
+        "fco": [
+          {
+            "id": "leonardo_bus",
+            "tramos": [
+              "leonardo_express",
+              "bus_40_64_termini_argentina"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "cia": [
+          {
+            "id": "airlink_bus",
+            "tramos": [
+              "airlink_cia_termini",
+              "bus_40_64_termini_argentina"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "termini": [
+          {
+            "id": "bus",
+            "tramos": [
+              "bus_40_64_termini_argentina"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "tiburtina": [
+          {
+            "id": "metro_b_bus",
+            "tramos": [
+              "metro_b_tiburtina_termini",
+              "bus_40_64_termini_argentina"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "civitavecchia": [
+          {
+            "id": "tren_sanpietro_bus64",
+            "tramos": [
+              "tren_civ_sanpietro",
+              "bus_64_sanpietro_argentina"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "tren_termini_bus",
+            "tramos": [
+              "tren_civ_termini",
+              "bus_40_64_termini_argentina"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ]
+      },
+      "plaza_de_espana": {
+        "fco": [
+          {
+            "id": "leonardo_metro_a",
+            "tramos": [
+              "leonardo_express",
+              "metro_a_termini_spagna"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "cia": [
+          {
+            "id": "anagnina_metro_a",
+            "tramos": [
+              "bus_cia_anagnina",
+              "metro_a_anagnina_spagna"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "airlink_metro_a",
+            "tramos": [
+              "airlink_cia_termini",
+              "metro_a_termini_spagna"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "termini": [
+          {
+            "id": "metro_a",
+            "tramos": [
+              "metro_a_termini_spagna"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "tiburtina": [
+          {
+            "id": "metro_b_metro_a",
+            "tramos": [
+              "metro_b_tiburtina_termini",
+              "metro_a_termini_spagna"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "civitavecchia": [
+          {
+            "id": "tren_metro_a",
+            "tramos": [
+              "tren_civ_termini",
+              "metro_a_termini_spagna"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ]
+      },
+      "prati": {
+        "fco": [
+          {
+            "id": "leonardo_metro_a",
+            "tramos": [
+              "leonardo_express",
+              "metro_a_termini_ottaviano"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "cia": [
+          {
+            "id": "anagnina_metro_a",
+            "tramos": [
+              "bus_cia_anagnina",
+              "metro_a_anagnina_ottaviano"
+            ],
+            "pasa_por_termini": false
+          },
+          {
+            "id": "airlink_metro_a",
+            "tramos": [
+              "airlink_cia_termini",
+              "metro_a_termini_ottaviano"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "termini": [
+          {
+            "id": "metro_a",
+            "tramos": [
+              "metro_a_termini_ottaviano"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "tiburtina": [
+          {
+            "id": "metro_b_metro_a",
+            "tramos": [
+              "metro_b_tiburtina_termini",
+              "metro_a_termini_ottaviano"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "civitavecchia": [
+          {
+            "id": "tren_andando",
+            "tramos": [
+              "tren_civ_sanpietro",
+              "andando_sanpietro_prati"
+            ],
+            "pasa_por_termini": false
+          }
+        ]
+      },
+      "trastevere": {
+        "fco": [
+          {
+            "id": "fl1_tranvia",
+            "tramos": [
+              "fl1_fco_trastevere",
+              "tranvia_8"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "cia": [
+          {
+            "id": "airlink_bus_tranvia",
+            "tramos": [
+              "airlink_cia_termini",
+              "bus_40_64_termini_argentina",
+              "tranvia_8_desde_argentina"
+            ],
+            "otro_billete_desde": 1,
+            "pasa_por_termini": true
+          }
+        ],
+        "termini": [
+          {
+            "id": "bus_tranvia",
+            "tramos": [
+              "bus_40_64_termini_argentina",
+              "tranvia_8_desde_argentina"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "tiburtina": [
+          {
+            "id": "fl1_tranvia",
+            "tramos": [
+              "fl1_tiburtina_trastevere",
+              "tranvia_8"
+            ],
+            "pasa_por_termini": false
+          }
+        ],
+        "civitavecchia": [
+          {
+            "id": "tren_tranvia",
+            "tramos": [
+              "tren_civ_trastevere",
+              "tranvia_8"
+            ],
+            "pasa_por_termini": false
+          }
+        ]
+      }
+    }
+  },
+  "_nota_tanda7": "Tanda 7 (13-oct-2026): `no_enseñar: true` = se queda en los datos pero no se enseña (el taxi). Los nombres de empresas solo quedan en los campos `fuente`. `tramos` + `para_tu_zona` = la tabla de Eric; `horario` de un tramo = su primero y último (tramos de fechas; sin `from`/`to` vale todo el año). Lo lee shared/arrival/paraTuZona.js."
 }

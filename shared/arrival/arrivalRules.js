@@ -13,6 +13,16 @@ export const minutesToHHMM = (minutes) => `${String(Math.floor(minutes / 60)).pa
 
 export const hhmmToMinutes = toMinutes
 
+/**
+ * Lo que se enseña de los datos de llegada (Tanda 7): quita, en cualquier lista, lo que lleve `no_enseñar: true` (el taxi: se queda en
+ * el fichero pero no se enseña, ni en la ficha ni en «Para tu zona» ni en los Tips). No cambia el original.
+ */
+export function soloLoQueSeEnseña(value) {
+  if (Array.isArray(value)) return value.filter((item) => !(item && typeof item === 'object' && item['no_enseñar'] === true)).map(soloLoQueSeEnseña)
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, soloLoQueSeEnseña(inner)]))
+  return value
+}
+
 /** El medio del formulario ('flight', 'train'…) en el de la llegada. (No hay crucero: el ferry es un ferry, también en un viaje de un día.) */
 export function arrivalModeOf(optionId, contentDays) {
   switch (optionId) {

@@ -20,6 +20,8 @@ export interface ArrivalOption {
   nota?: string
   fuente?: string | null
   comprobado?: string
+  /** Se queda en los datos pero no se enseña (el taxi). El servidor ya lo quita; `soloLoQueSeEnseña` (arrivalRules.js) hace lo mismo. */
+  no_enseñar?: boolean
 }
 
 export interface ArrivalPoint {
@@ -88,6 +90,9 @@ export interface ArrivalInfo {
   ultima_tarde?: ArrivalInfoBlock
   maleta?: ArrivalInfoBlock
   ultima_hora?: { nombre: string; texto: string }[]
+  /** Tanda 7: los tramos y la tabla «Para tu zona» (se leen con shared/arrival/paraTuZona.js). */
+  tramos?: Record<string, unknown>
+  para_tu_zona?: Record<string, unknown>
 }
 
 /** El medio del formulario ('flight', 'train'…) en el de la llegada. */
@@ -163,10 +168,8 @@ export function fallbackArrivalInfo(city: string, origin: string): ArrivalInfo {
     foto: `${airport.name} airport`,
     al_centro_min: 60,
     distancia: airport.distanceToCenterLabel,
-    al_centro: [
-      ...airport.transitOptions.map((option, index) => ({ nombre: option.name, mas_comodo: index === 0, tiempo: option.durationLabel })),
-      { nombre: 'Taxi', tiempo: airport.taxiPriceLabel },
-    ],
+    // (Tanda 7: sin taxi como forma de llegar.)
+    al_centro: airport.transitOptions.map((option, index) => ({ nombre: option.name, mas_comodo: index === 0, tiempo: option.durationLabel })),
   }))
   const medio: ArrivalMedio = {
     textos: {

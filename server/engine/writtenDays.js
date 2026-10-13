@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { withinMonthDays } from '../../shared/routeEngine/openingHours.js'
+import { soloLoQueSeEnseña } from '../../shared/arrival/arrivalRules.js'
 
 const DIAS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'data', 'dias')
 const cache = new Map()
@@ -178,7 +179,8 @@ export function arrivalInfoFor(destinationKey) {
   if (!key) return null
   if (arrivalCache.has(key)) return arrivalCache.get(key)
   const file = join(DIAS_DIR, key, '_llegada.json')
-  const value = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  // Lo marcado `no_enseñar` (el taxi) se queda en el fichero pero no sale de aquí (Tanda 7).
+  const value = existsSync(file) ? soloLoQueSeEnseña(JSON.parse(readFileSync(file, 'utf8'))) : null
   arrivalCache.set(key, value)
   return value
 }
