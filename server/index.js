@@ -6,7 +6,7 @@ import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { etiquetasDeBarrio, gruposDeDia, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { esNombreNuestro } from './engine/nombresDeFoto.js'
-import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
+import { sitiosGrandesDe } from '../shared/routeEngine/listasReservas.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
@@ -2551,7 +2551,8 @@ function readTransportContext(body) {
  * dayNumber, time }]), el Free Tour de tarde o de noche (`answers.freeTourDespues`: { franja, hora }) y el medio día (`answers.mediaJornada`:
  * { franja, llegada?, salida? }). Sale de aquí, en las mismas claves que lee buildDayBlockV3.
  */
-function engineExtrasFromRequest(body, answers, dayNumber) {
+function engineExtrasFromRequest(body, answers, dayNumber, destData) {
+  const sitiosGrandes = sitiosGrandesDe(destData)
   const start = answers?.dateRange?.start ?? null
   const dayIso = start ? new Date(Date.parse(`${start}T12:00:00Z`) + (Number(dayNumber) - 1) * 86400000).toISOString().slice(0, 10) : null
   const entradas = {}
@@ -2566,7 +2567,7 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   const reservasGrandes = []
   for (const reserva of Array.isArray(body?.reservas) ? body.reservas : []) {
     if (!reserva || (!reserva.dateIso && !Number.isInteger(Number(reserva.dayNumber)))) continue
-    const name = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).find((candidate) => RESERVAS_GRANDES.has(candidate))
+    const name = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).find((candidate) => sitiosGrandes.has(candidate))
     if (name) reservasGrandes.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null, time: /^\d{1,2}:\d{2}$/.test(String(reserva.time ?? '')) ? (String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)) : null })
   }
   // Las reservas de TODO el viaje con su día (Tanda 6y4, punto 7): cada día que se pide por separado ve el mismo viaje, y un sitio reservado sale del día que lo llevaba y va al de su reserva
@@ -2575,7 +2576,7 @@ function engineExtrasFromRequest(body, answers, dayNumber) {
   for (const reserva of Array.isArray(body?.reservas) ? body.reservas : []) {
     if (!reserva || (!reserva.dateIso && !Number.isInteger(Number(reserva.dayNumber))) || !/^\d{1,2}:\d{2}$/.test(String(reserva.time ?? ''))) continue
     const nombres = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).filter((candidate) => typeof candidate === 'string')
-    if (nombres.some((candidate) => RESERVAS_GRANDES.has(candidate))) continue
+    if (nombres.some((candidate) => sitiosGrandes.has(candidate))) continue
     const time = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
     for (const name of nombres) reservasViaje.push({ name, dateIso: reserva.dateIso ?? null, dayNumber: reserva.dayNumber ?? null, time })
   }
@@ -4538,6 +4539,8 @@ app.post('/api/destination-excursions', (req, res) => {
     etiquetas_por_sitio: etiquetasDeBarrio(data),
     // Tanda 6y7: los grupos con que se nombra cada día («Centro histórico», «Free Tour»…), del dato del destino.
     grupos_dia: gruposDeDia(data),
+    // Tanda 6y10: los sitios grandes del destino (`sitios_grandes.lugares`): una reserva de uno de ellos mueve el día entero. Un destino sin el campo no tiene.
+    sitios_grandes: Array.isArray(data?.sitios_grandes?.lugares) ? data.sitios_grandes.lugares.map(({ nombre, del, el }) => ({ nombre, del, el })) : [],
     sin_entrada_por_sitio: sinEntradaPorSitio(data),
   }
   if (!data || (options.length === 0 && entradas.length === 0)) {
@@ -5508,7 +5511,7 @@ app.post('/api/curated-day-inside', async (req, res) => {
         month: Number.isInteger(answers.month) ? answers.month : null,
         season: answers.season ?? null,
         insideNames,
-        ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+        ...engineExtrasFromRequest(req.body, answers, Number(day_number), destData),
       })
     const already = Array.isArray(inside_names) ? inside_names : []
     const before = await build(already)
@@ -5549,7 +5552,7 @@ app.post('/api/rebuild-day', async (req, res) => {
       // «Crear mi propio día» (Tanda 6g): los sitios que el viajero ha elegido para este día; con ellos el motor monta el día (en orden, sin zigzag, con su comida y su cena).
       sitiosPropios: Array.isArray(own_places) ? own_places.filter((name) => typeof name === 'string').slice(0, 30) : [],
       nombreDiaPropio: typeof own_day_name === 'string' && own_day_name.trim() ? own_day_name.trim().slice(0, 40) : undefined,
-      ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+      ...engineExtrasFromRequest(req.body, answers, Number(day_number), destData),
     })
     if (!day) {
       res.status(422).json({ error: 'Este día no se puede rehacer.' })
@@ -5610,7 +5613,7 @@ app.post('/api/adjust-day', async (req, res) => {
       engine: 'v4',
       month: Number.isInteger(answers.month) ? answers.month : null,
       season: answers.season ?? null,
-      ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+      ...engineExtrasFromRequest(req.body, answers, Number(day_number), destData),
       ajuste: { dayNumber: Number(day_number), doneNames: Array.isArray(done_names) ? done_names.map(String) : [], nowMinutes: Number(now_minutes), mode, dropNames: Array.isArray(drop_names) ? drop_names.map(String) : [] },
     })
     if (!day) {
@@ -5671,7 +5674,7 @@ app.post('/api/check-time', async (req, res) => {
       engine: 'v4',
       month: Number.isInteger(answers.month) ? answers.month : null,
       season: answers.season ?? null,
-      ...engineExtrasFromRequest(req.body, answers, Number(day_number)),
+      ...engineExtrasFromRequest(req.body, answers, Number(day_number), destData),
       chequeo: { dayNumber: Number(day_number), doneNames: Array.isArray(done_names) ? done_names.map(String) : [], nowMinutes: Number(now_minutes) },
     })
     const check = day?.time_check
@@ -5784,7 +5787,7 @@ app.post('/api/generate-day-block', async (req, res) => {
             answers.dateRange?.start,
             must_include_places,
             answers.experiencesPositive,
-            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, engine, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null, ...engineExtrasFromRequest(req.body, answers, blockDayNumbers[0]) },
+            { city: destination, scheduler: chosenEngine === 'v3' ? 'v3' : undefined, engine, month: Number.isInteger(answers.month) ? answers.month : null, season: answers.season ?? null, ...engineExtrasFromRequest(req.body, answers, blockDayNumbers[0], pipelineV2Data) },
           )
         : await buildDayBlockV2(
         pipelineV2Data,

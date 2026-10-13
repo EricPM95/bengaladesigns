@@ -21,6 +21,8 @@ const debe = (cond, regla, texto) => {
 
 const { M } = await prepararSSR('scripts/destino/_6y4_listas_entrada.tsx')
 const { useRouteStore, mapGeneratedRouteToRoute } = M
+// (Como en la app, que ya tiene cargados los datos del destino cuando el viajero reserva: de ahí salen los sitios grandes, Tanda 6y10.)
+await M.fetchDestinationExcursions('Roma')
 const consolaError = console.error
 console.error = (...a) => (/useLayoutEffect|Warning:/.test(String(a[0])) ? undefined : consolaError(...a))
 

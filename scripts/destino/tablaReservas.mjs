@@ -3,7 +3,7 @@
 //   node scripts/destino/tablaReservas.mjs [salida=docs/dias/TABLA_RESERVAS.md]
 import fs from 'node:fs'
 import { planListasTrip } from '../../shared/routeEngine/listasTrip.js'
-import { claseDeReserva } from '../../shared/routeEngine/listasReservas.js'
+import { claseDeReserva, sitiosGrandesDe } from '../../shared/routeEngine/listasReservas.js'
 import { comprobarViaje } from './comprobacionesListas.mjs'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { writtenDaysFor } from '../../server/engine/writtenDays.js'
@@ -40,7 +40,7 @@ for (const caso of CASOS) {
   const dia = written.days[caso.dia]
   salida.push(`## ${caso.dia} · ${caso.lugar}`, '', 'Hora | Clase | Lista | En el motor', '--- | --- | --- | ---')
   for (const hora of caso.lugar === 'Galería Borghese' ? TURNOS_GALERIA : HORAS) {
-    const clase = claseDeReserva(dia, caso.lugar, hora, { tieneFreeTour: Boolean(caso.ft) })
+    const clase = claseDeReserva(dia, caso.lugar, hora, { sitiosGrandes: sitiosGrandesDe(D), tieneFreeTour: Boolean(caso.ft) })
     let motor = ''
     try {
       const p = plan(caso, hora)

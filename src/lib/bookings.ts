@@ -4,7 +4,7 @@
  * (`Reservation`); las filas, el día de cada una y el % salen de aquí. Funciones puras, para todos los destinos: lo de cada destino (las tres
  * entradas imprescindibles, las excursiones) llega de sus datos.
  */
-import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
+import { destinoYaCargado } from './destinationExcursions'
 import type { Importe } from './dinero'
 import type { DayPlan, Excursion, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
@@ -41,12 +41,17 @@ export interface Reservation {
   aviso?: string | null
 }
 
-/** Las reservas grandes: tienen su día escrito, y su fecha mueve el día entero (Tanda 6j, punto 9). */
-export const BIG_RESERVATION_PLACES: string[] = [...RESERVAS_GRANDES]
+/**
+ * Los sitios grandes del viaje (Tanda 6y10): los del destino (`sitios_grandes` de sus datos, que llegan con `/api/destination-excursions`). Tienen su día escrito, y la fecha de su reserva
+ * mueve el día entero (Tanda 6j, punto 9). Sin los datos del destino cargados, o en un destino que no los trae, no hay sitios grandes.
+ */
+export function sitiosGrandesDelViaje(route: Pick<Route, 'destination'> | null | undefined): string[] {
+  return (destinoYaCargado(route?.destination)?.sitiosGrandes ?? []).map((sitio) => sitio.nombre)
+}
 
-/** ¿Es una reserva de entrada de un sitio grande? */
-export function isBigReservation(reservation: Pick<Reservation, 'kind' | 'placeNames'>): boolean {
-  return reservation.kind === 'entrada' && reservation.placeNames.some((name) => BIG_RESERVATION_PLACES.includes(name))
+/** ¿Es una reserva de entrada de un sitio grande? (`sitiosGrandes`: los del destino, ver `sitiosGrandesDelViaje`.) */
+export function isBigReservation(reservation: Pick<Reservation, 'kind' | 'placeNames'>, sitiosGrandes: readonly string[]): boolean {
+  return reservation.kind === 'entrada' && reservation.placeNames.some((name) => sitiosGrandes.includes(name))
 }
 
 /** Las tres entradas imprescindibles de un destino (`entradas_reservas` de sus datos). */

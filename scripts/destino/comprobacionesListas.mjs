@@ -4,7 +4,7 @@
 //   3. Sin zigzag.                                                     7. Las reservas, a su hora, con su «Llegada a…».
 //   4. La pirámide: ningún imprescindible quitado la primera vez.      8. Ninguna comida después de las 15:00 (salvo delante solo imprescindibles).
 // No hay prueba de «huecos»: el tiempo libre es del viajero.
-import { RESERVAS_GRANDES as RESERVAS_GRANDES_PRUEBA } from '../../shared/routeEngine/listasReservas.js'
+import { sitiosGrandesDe } from '../../shared/routeEngine/listasReservas.js'
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, parseHoursSessions } from '../../shared/routeEngine/openingHours.js'
 import { straightLineMeters } from '../../shared/routeEngine/travelTimes.js'
 import { COMIDA_HASTA_MIN } from '../../shared/routeEngine/comida.js'
@@ -179,7 +179,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     for (const x of rows.filter((r) => r.llegada)) {
       const objetivo = rows.find((r) => r.id && r.fija && r.lugar === x.lugar && !r.llegada && r.hora_tipo)
       if (!objetivo) continue
-      const grande = RESERVAS_GRANDES_PRUEBA.has(x.lugar) && objetivo.hora_tipo === 'reserva'
+      const grande = sitiosGrandesDe(D).has(x.lugar) && objetivo.hora_tipo === 'reserva'
       const esperado = x.tipo === 'tour' || objetivo.tipo === 'tour' ? 15 : grande ? 30 : 15
       if (x.min !== esperado) falla('llegada', dia, `«Llegada a ${x.lugar}» dura ${x.min} min y debería durar ${esperado}`)
     }

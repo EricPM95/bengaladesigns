@@ -1,7 +1,7 @@
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { Excursion, Route } from '../../../lib/types'
-import { BIG_RESERVATION_PLACES, dateOfDay, dayLineOf, dayOfReservation, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
+import { dateOfDay, dayLineOf, dayOfReservation, dayOnDate, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { alDia, ElDia, elDia } from '../../../lib/nombreDeDia'
 import { reservasParaMotor } from '../../../lib/engineReservas'
 import { excursionTargetDays } from '../../../lib/excursionOffer'
@@ -16,6 +16,7 @@ import { usePrecioEditable } from '../../../lib/useMoneda'
 import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
+import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
 import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
 
@@ -90,10 +91,6 @@ async function fileToBase64(file: File): Promise<{ media_type: string; data: str
   return { media_type: file.type, data: url.split(',')[1] }
 }
 
-/** El nombre del día de un sitio grande, como se dice en la hoja y en el aviso. */
-const DEL: Record<string, string> = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese', 'Free Tour por Roma': 'del Free Tour' }
-const EL: Record<string, string> = { Coliseo: 'el Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'el Vaticano', 'Galería Borghese': 'la Galería Borghese', 'Free Tour por Roma': 'el Free Tour' }
-
 /**
  * Red de seguridad de esta ventana (Tanda 6k, punto 1): si algo falla al dibujarla, la ventana se cierra, sale un aviso en la campana y la app sigue funcionando;
  * nunca la pantalla de «Algo ha ido mal» por una reserva.
@@ -138,6 +135,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const [readError, setReadError] = useState<string | null>(null)
   const [read, setRead] = useState(false)
   // Los datos del Free Tour del destino (Tanda 6y2): en una ruta a mano, la reserva del Free Tour crea su parada con ellos.
+  const { sitiosGrandes: fichasSitiosGrandes } = useDestinationExcursions(route.destination)
+  const sitiosGrandes = fichasSitiosGrandes.map((sitio) => sitio.nombre)
   const { freeTourEntry } = useDestinationPool(route.destination, target.refId === 'Free Tour' && isManualRoute(route))
   const hasDates = Boolean(route.answers.dateRange)
   const days = useMemo(() => route.days.filter((day) => !day.isReturnLeg), [route.days])
@@ -171,7 +170,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const moved = Boolean(resolvedDay && target.currentDayId && resolvedDay.id !== target.currentDayId)
   const validTime = /^\d{1,2}:\d{2}$/.test(fields.time)
   const ready = Boolean(resolvedDay && validTime)
-  const bigPlace = target.placeNames.find((name) => BIG_RESERVATION_PLACES.includes(name)) ?? null
+  const bigPlace = target.placeNames.find((name) => sitiosGrandes.includes(name)) ?? null
   const isFreeTour = target.refId === 'Free Tour'
   // El sitio cuyas horas de entrada se piden al servidor: el grande, o el primero que cubre la entrada (el Free Tour no tiene: sus cinco horas son fijas).
   const hoursPlace = isExcursion || isFreeTour ? null : (bigPlace ?? target.placeNames[0] ?? null)
@@ -395,12 +394,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     const reservation = draftReservation()
     if (!reservation) return
     let aviso: string | null = null
-    const sitio = bigPlace ? EL[bigPlace] : 'el sitio'
+    const sitio = fichasSitiosGrandes.find((s) => s.nombre === bigPlace)?.el ?? 'el sitio'
     if (plan?.sinMover?.motivo === 'excursion') {
       const excursion = resolvedDay.excursions?.find((option) => option.id === resolvedDay.selectedExcursionId)?.title ?? 'la excursión'
       aviso = `${ElDia(route, resolvedDay.dayNumber)} tienes la excursión a ${excursion.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '')}: no da tiempo a visitar también ${sitio}.`
     } else if (blocked != null) {
-      aviso = `Tienes cambios tuyos en ${elDia(route, blocked)}: no se puede mover el día ${bigPlace ? DEL[bigPlace] : ''} ${alDia(route, resolvedDay.dayNumber)} sin perderlos. La reserva queda guardada en Reservas y tu ruta no cambia.`
+      aviso = `Tienes cambios tuyos en ${elDia(route, blocked)}: no se puede mover el día ${fichasSitiosGrandes.find((s) => s.nombre === bigPlace)?.del ?? ''} ${alDia(route, resolvedDay.dayNumber)} sin perderlos. La reserva queda guardada en Reservas y tu ruta no cambia.`
     }
     if (aviso) {
       reservation.noMueve = true

@@ -6,8 +6,29 @@
 const toMin = (hhmm) => Number(String(hhmm).split(':')[0]) * 60 + Number(String(hhmm).split(':')[1])
 const hhmm = (min) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`
 
-/** Las reservas grandes: las que tienen su día escrito por tramos de hora (regla 17). En un día que no las trae escritas, la hora no tiene lista. */
-export const RESERVAS_GRANDES = new Set(['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese', 'Free Tour por Roma'])
+const SIN_SITIOS = new Set()
+const cacheSitios = new WeakMap()
+
+/**
+ * Los sitios grandes de un destino (Tanda 6y10): los que tienen su día escrito por tramos de hora (regla 17); en un día que no los trae escritos, la hora no tiene lista.
+ * Salen de los datos del destino (`sitios_grandes.lugares`: { nombre, del, el, dias, nunca_se_quita }); un destino que no trae el campo no tiene sitios grandes.
+ * Devuelve un Set de nombres de lugar.
+ */
+export function sitiosGrandesDe(destData) {
+  const lugares = destData?.sitios_grandes?.lugares
+  if (!Array.isArray(lugares)) return SIN_SITIOS
+  let set = cacheSitios.get(destData)
+  if (!set) {
+    set = new Set(lugares.map((sitio) => sitio?.nombre).filter((nombre) => typeof nombre === 'string'))
+    cacheSitios.set(destData, set)
+  }
+  return set
+}
+
+/** La ficha de un sitio grande (`{ nombre, del, el, dias, nunca_se_quita }`), o null si el destino no lo marca como grande. */
+export function sitioGrandeDe(destData, nombre) {
+  return (destData?.sitios_grandes?.lugares ?? []).find((sitio) => sitio?.nombre === nombre) ?? null
+}
 
 /** Los tramos con lista escrita de un sitio en un día: [{ id, desde, hasta, horas }] (minutos desde las 0:00; sin duplicar los pares «el Foro después / antes»). */
 export function tramosDeReserva(dia, lugar) {
@@ -38,9 +59,9 @@ export function tieneReservasEscritas(dia, lugar) {
   return Boolean(dia?.reservas?.[lugar]) || tramosDeReserva(dia, lugar).length > 0
 }
 
-/** Qué lista tiene ese día para esa hora (Tanda 6u, regla 17: la app solo lo usa para montar el día; nunca propone otra hora). */
+/** Qué lista tiene ese día para esa hora (Tanda 6u, regla 17: la app solo lo usa para montar el día; nunca propone otra hora). `contexto.sitiosGrandes`: el Set de `sitiosGrandesDe(destData)`; sin él, ningún sitio es grande. */
 export function claseDeReserva(dia, lugar, hora, contexto = {}) {
-  if (!tieneReservasEscritas(dia, lugar)) return RESERVAS_GRANDES.has(lugar) ? { clase: 'sin_lista' } : { clase: 'sin_definir' }
+  if (!tieneReservasEscritas(dia, lugar)) return (contexto.sitiosGrandes ?? SIN_SITIOS).has(lugar) ? { clase: 'sin_lista' } : { clase: 'sin_definir' }
   const m = toMin(hora)
   const lim = dia?.reservas?.[lugar]?.no_cabe_antes
   if (contexto.tieneFreeTour && lim && m < toMin(lim)) return { clase: 'no_cabe', motivo: 'free_tour_museos', desde: lim }
