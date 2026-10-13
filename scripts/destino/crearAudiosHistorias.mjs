@@ -4,7 +4,7 @@
  *     node scripts/destino/crearAudiosHistorias.mjs
  *
  * Qué hace: lee las historias de data/pipeline_v2/detalle/<destino>/*.json (campo `historia`), y para cada una que NO tenga ya su audio al día
- * crea el .mp3 con la voz elegida (shared/audio/historiasAudio.js) y lo guarda en public/audios/<destino>/<sitio>.mp3.
+ * crea el .mp3 con la voz elegida (shared/audio/historiasAudio.js) y lo guarda en public/audios/<destino>/<sitio>-<huella>.mp3 (la huella sale del texto y de la voz: un nombre que no se puede adivinar; Tanda 6y10).
  * Apunta en data/audios/<destino>.json, por sitio, la huella del texto con el que se creó: si la historia cambia (o cambia la voz o sus ajustes),
  * la próxima vez SOLO se rehace ese audio. Los que ya están al día no se tocan ni gastan créditos.
  *
@@ -18,7 +18,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { MAX_CARACTERES_POR_LLAMADA, VOZ_HISTORIAS, huellaDeLaVoz, huellaDelTexto, identificadorDeSitio, textoDelAudio } from '../../shared/audio/historiasAudio.js'
+import { MAX_CARACTERES_POR_LLAMADA, VOZ_HISTORIAS, huellaDeLaVoz, huellaDelTexto, identificadorDeSitio, nombreDelFichero, textoDelAudio } from '../../shared/audio/historiasAudio.js'
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const argumentos = process.argv.slice(2)
@@ -53,7 +53,8 @@ function leerHistorias() {
     for (const lugar of datos.places ?? []) {
       const texto = textoDelAudio(lugar?.historia)
       if (!texto) continue
-      lista.push({ id: identificadorDeSitio(lugar.name), nombre: lugar.name, texto, huella: huellaDelTexto(lugar.historia) })
+      const id = identificadorDeSitio(lugar.name)
+      lista.push({ id, nombre: lugar.name, texto, huella: huellaDelTexto(lugar.historia), fichero: nombreDelFichero(id, lugar.historia) })
     }
   }
   return lista
@@ -126,7 +127,7 @@ async function principal() {
   const vozCambio = Boolean(indice.voz) && indice.voz !== vozAhora
   const alDia = (h) => {
     const entrada = indice.sitios?.[h.id]
-    return Boolean(entrada) && !vozCambio && entrada.huella_texto === h.huella && existsSync(join(carpetaAudios, `${h.id}.mp3`))
+    return Boolean(entrada) && !vozCambio && entrada.huella_texto === h.huella && entrada.fichero === h.fichero && existsSync(join(carpetaAudios, h.fichero))
   }
   const pendientes = elegidas.filter((h) => !alDia(h))
   const caracteres = pendientes.reduce((suma, h) => suma + h.texto.length, 0)
@@ -139,7 +140,11 @@ async function principal() {
     return
   }
   if (simular) {
-    for (const h of pendientes) console.log(`  crearía ${h.id}.mp3  (${numero(h.texto.length)} caracteres)`)
+    for (const h of pendientes) {
+      const viejo = indice.sitios?.[h.id]?.fichero
+      if (viejo && viejo !== h.fichero) console.log(`  (${h.id}: el texto o la voz ha cambiado: hay que recrearlo; el fichero viejo ${viejo} dejará de usarse)`)
+    }
+    for (const h of pendientes) console.log(`  crearía ${h.fichero}  (${numero(h.texto.length)} caracteres)`)
     console.log(`Modo simulación: no se ha llamado a nadie ni se ha escrito nada. Gastaría unos ${numero(caracteres)} caracteres (créditos) de la voz.`)
     return
   }
@@ -160,17 +165,20 @@ async function principal() {
   indice.voz = vozAhora
   indice.voz_ajustes = { ...VOZ_HISTORIAS }
   indice.sitios ??= {}
+  const sobrantes = []
   let hechos = 0
   let gastados = 0
   for (const h of pendientes) {
-    process.stdout.write(`Creando ${h.id}.mp3 (${numero(h.texto.length)} caracteres)... `)
+    process.stdout.write(`Creando ${h.fichero} (${numero(h.texto.length)} caracteres)... `)
     try {
       const partes = []
       for (const trozo of trocear(h.texto)) partes.push(await pedirAudio(clave, trozo))
-      const fichero = `${h.id}.mp3`
+      const fichero = h.fichero
+      const anterior = indice.sitios[h.id]?.fichero
       writeFileSync(join(carpetaAudios, fichero), Buffer.concat(partes))
       indice.sitios[h.id] = { nombre: h.nombre, fichero, huella_texto: h.huella, caracteres: h.texto.length, creado: new Date().toISOString().slice(0, 10) }
       guardarIndice(indice)
+      if (anterior && anterior !== fichero) sobrantes.push(anterior)
       hechos++
       gastados += h.texto.length
       console.log('hecho.')
@@ -182,6 +190,7 @@ async function principal() {
       return
     }
   }
+  if (sobrantes.length) console.log(`Ficheros viejos que ya no se usan (puedes borrarlos de ${carpetaAudios}): ${sobrantes.join(", ")}`)
   console.log(`Terminado: ${hechos} audios creados, ${numero(gastados)} caracteres gastados.`)
 }
 

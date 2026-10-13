@@ -4464,18 +4464,26 @@ app.post('/api/place-detail', (req, res) => {
 // en su memoria una ficha vieja sin audio. Solo se mira; este servidor nunca crea audios (los crea scripts/destino/crearAudiosHistorias.mjs).
 const indicesDeAudio = new Map()
 function indiceDeAudios(destinationKey) {
-  if (indicesDeAudio.has(destinationKey)) return indicesDeAudio.get(destinationKey)
-  let indice = null
+  const ruta = join(__dirname, '../data/audios', `${destinationKey}.json`)
   try {
-    indice = JSON.parse(readFileSync(join(__dirname, '../data/audios', `${destinationKey}.json`), 'utf8'))
+    // Se vuelve a leer solo si el fichero ha cambiado (fecha de modificación): al crear audios nuevos no hace falta reiniciar el servidor.
+    const fecha = statSync(ruta).mtimeMs
+    const recordado = indicesDeAudio.get(destinationKey)
+    if (recordado && recordado.fecha === fecha) return recordado.indice
+    const indice = JSON.parse(readFileSync(ruta, 'utf8'))
+    indicesDeAudio.set(destinationKey, { fecha, indice })
+    return indice
   } catch {
     // Sin índice todavía (los audios aún no se han creado): ninguna historia lleva audio.
+    indicesDeAudio.delete(destinationKey)
+    return null
   }
-  indicesDeAudio.set(destinationKey, indice)
-  return indice
 }
 
+// (Tanda 6y10) NINGUNA lista pública: el índice (data/audios/) nunca se envía ni se sirve, y este endpoint contesta SOLO con la ruta del audio de ESE sitio, que lleva en el nombre
+// la huella del texto y la voz (no se puede adivinar). Este servidor no sirve carpetas ni listados: los .mp3 se piden de uno en uno por su dirección exacta.
 app.post('/api/historia-audio', (req, res) => {
+  res.set('Cache-Control', 'no-store')
   const { destination, name } = req.body ?? {}
   if (!destination || typeof name !== 'string' || !name.trim()) {
     res.status(400).json({ error: 'Faltan datos necesarios (destination, name).' })

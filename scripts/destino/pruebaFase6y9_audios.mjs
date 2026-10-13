@@ -10,7 +10,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { audioVigente, huellaDelTexto, identificadorDeSitio, textoDelAudio, VOZ_HISTORIAS } from '../../shared/audio/historiasAudio.js'
+import { audioVigente, huellaDelTexto, identificadorDeSitio, nombreDelFichero, textoDelAudio, VOZ_HISTORIAS } from '../../shared/audio/historiasAudio.js'
 import { prepararSSR } from './_ssr.mjs'
 
 const fallos = []
@@ -153,8 +153,8 @@ const crear = (audioRuta, { audioFalla = false, sintesis = nuevaSintesis() } = {
   debe(new Set(ids).size === 31 && ids.every((i) => /^[a-z0-9_]+$/.test(i)), '2 índice', 'los identificadores de sitio no son 31 distintos y limpios')
   const coliseo = porNombre.get('Coliseo')
   const trevi = porNombre.get('Fontana de Trevi')
-  const indice = { voz: 'x', sitios: { coliseo: { fichero: 'coliseo.mp3', huella_texto: huellaDelTexto(coliseo) }, panteon: { fichero: 'panteon.mp3', huella_texto: huellaDelTexto('un texto viejo') } } }
-  debe(audioVigente(indice, 'roma', 'Coliseo', coliseo) === '/audios/roma/coliseo.mp3', '2 índice', 'el audio de un texto sin cambios debe ofrecerse')
+  const indice = { voz: 'x', sitios: { coliseo: { fichero: nombreDelFichero('coliseo', coliseo), huella_texto: huellaDelTexto(coliseo) }, panteon: { fichero: nombreDelFichero('panteon', 'un texto viejo'), huella_texto: huellaDelTexto('un texto viejo') } } }
+  debe(audioVigente(indice, 'roma', 'Coliseo', coliseo) === `/audios/roma/${nombreDelFichero('coliseo', coliseo)}`, '2 índice', 'el audio de un texto sin cambios debe ofrecerse')
   debe(audioVigente(indice, 'roma', 'Fontana de Trevi', trevi) === null, '2 índice', 'un sitio sin audio en el índice no debe ofrecer ninguno')
   debe(audioVigente(indice, 'roma', 'Panteón', porNombre.get('Panteón')) === null, '2 índice', 'un audio de un texto que ha cambiado NO debe ofrecerse')
   debe(audioVigente(null, 'roma', 'Coliseo', coliseo) === null, '2 índice', 'sin índice no debe ofrecerse nada')
@@ -190,7 +190,7 @@ const crear = (audioRuta, { audioFalla = false, sintesis = nuevaSintesis() } = {
   // Nombres de fichero públicos.
   const publicos = fs.existsSync('public/audios') ? fs.readdirSync('public/audios', { recursive: true }).map(String) : []
   debe(publicos.every(sinEmpresa), '3 sin empresa', 'un fichero público de audio lleva el nombre de la empresa de voz')
-  debe(/^[a-z0-9_]+$/.test(identificadorDeSitio('Fontana de Trevi')), '3 sin empresa', 'el nombre de fichero no sale limpio')
+  debe(/^[a-z0-9_]+-[0-9a-f]{24}\.mp3$/.test(nombreDelFichero(identificadorDeSitio('Fontana de Trevi'), 'x')), '3 sin empresa', 'el nombre de fichero no sale limpio')
 }
 
 // ═══════════ 4. El programa ═══════════
