@@ -344,6 +344,14 @@ export function massWeekday(place, hours = {}) {
   return hours.weekday
 }
 
+// ── Cierres por fecha: UN formato y UNA función para cualquier año y cualquier destino (Tanda 6y10) ──
+//   - `closed_on`: días de la semana en que cierra siempre ("domingo").
+//   - `closed_dates`: lista de reglas de fecha, evaluadas SOLO por `matchesDateToken` (nadie más compara fechas de cierre):
+//       "12-25"          cada año ese día · "easter" / "easter+1" / "easter-2" Pascua móvil (el lunes de Pascua es easter+1; Pascua sale de `easterIso`)
+//       "08-10..08-24"   rango de cada año · "first_sunday" el primer domingo del mes · "AAAA-MM-DD" un solo año (solo si la web lo publica así; no se usa en Roma)
+//   - `last_sunday` { windows, last_entry, except: [reglas] }: cierra los domingos pero abre el ÚLTIMO domingo del mes con ese horario, salvo si cae en alguna regla de `except` (mismas reglas de fecha).
+//   - `special_hours` [{ fecha, hasta?, windows, last_entry }]: ese día abre con otro horario (el 24 y el 31 de diciembre en los Museos Vaticanos). Cuenta como día ABIERTO.
+//   Orden de lectura (`closedOnDay`): fecha cerrada → día de la semana cerrado (salvo el último domingo) → abierto, con el horario especial si lo hay.
 /**
  * ¿Cierra el lugar ese día por fecha (`closed_dates`: "12-25", "easter+1")? Solo con fechas
  * reales: sin ellas el día 15 del mes es una referencia, no un día del viaje.

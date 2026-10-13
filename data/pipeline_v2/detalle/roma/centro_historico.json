@@ -79,19 +79,13 @@
       "schedule": {
         "periods": [
           {
-            "dates": "Todo el año (lun–sáb)",
+            "dates": "Todo el año (todos los días)",
             "hours": "09:00–19:00",
-            "last_entry": "18:45"
-          },
-          {
-            "dates": "Todo el año (dom)",
-            "hours": "09:00–18:00",
-            "last_entry": "17:45"
+            "last_entry": "18:30"
           }
         ],
         "closed": [
           "1 ene",
-          "15 ago",
           "25 dic"
         ],
         "notes": "Reserva online obligatoria (se agotan con días de antelación). Reserva lo antes posible, sobre todo en temporada alta."

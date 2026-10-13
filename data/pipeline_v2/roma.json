@@ -1016,11 +1016,11 @@
         "01-01"
       ],
       "hours_audit": {
-        "confianza": "alta (marzo 1-28: media)",
+        "confianza": "alta",
         "fuente": "https://colosseo.it/orari-e-biglietti/",
-        "nota": "La web oficial publica 29 mar–30 sep, 1–24 oct y 25 oct 2026–28 feb 2027. Marzo antes del cambio de hora aún no está publicado para 2027: se usa el patrón de años anteriores (17:00 hasta el 15, 17:30 hasta el cambio de hora).",
-        "comprobado_web": "Buscador (páginas de colosseo.it), 2026-10-12: 29 mar–30 sep 08:30-19:15 (última entrada 18:15); 1–24 oct 08:30-18:30 (17:30); 25 oct 2026–28 feb 2027 08:30-16:30 (15:30). Cierra 25 dic y 1 ene. Febrero y marzo de 2027, sin publicar: se usa el patrón de otros años.",
-        "fecha": "2026-09-25"
+        "nota": "Horario normal de la web oficial, también en febrero y marzo de 2027: 29 mar–30 sep 08:30-19:15 (última entrada 18:15); 1–24 oct 08:30-18:30 (17:30); 25 oct–28 feb 08:30-16:30 (15:30); marzo antes del cambio de hora 08:30-17:00 y 08:30-17:30 (tramos de la tabla). Cierra el 25 de diciembre y el 1 de enero.",
+        "comprobado_web": "Eric, mirado en la web oficial, 2026-10-13: horario normal, también febrero y marzo de 2027. Cierra 25 dic y 1 ene.",
+        "fecha": "2026-10-13"
       },
       "minutos_fuera": 20,
       "por_fuera": "Hoy lo ves por fuera, y también impresiona. Rodéalo entero: por el lado de Monti está la parte que aún conserva sus tres pisos de arcos completos. Es la mejor foto.",
@@ -1140,11 +1140,11 @@
         "01-01"
       ],
       "hours_audit": {
-        "confianza": "alta (marzo 1-28: media)",
+        "confianza": "alta",
         "fuente": "https://colosseo.it/orari-e-biglietti/",
-        "nota": "Mismo calendario de cierres que el Coliseo; abre a las 09:00.",
-        "comprobado_web": "Buscador (páginas de colosseo.it), 2026-10-12: mismo calendario que el Coliseo, abriendo a las 09:00. 1–24 oct 09:00-18:30 (17:30); 25 oct–28 feb 09:00-16:30 (15:30).",
-        "fecha": "2026-09-25"
+        "nota": "Horario normal de la web oficial, también en febrero y marzo de 2027: 29 mar–30 sep 09:00-19:15 (última entrada 18:15); 1–24 oct 09:00-18:30 (17:30); 25 oct–28 feb 09:00-16:30 (15:30); marzo antes del cambio de hora 09:00-17:00 y 09:00-17:30 (tramos de la tabla). Cierra el 25 de diciembre y el 1 de enero.",
+        "comprobado_web": "Eric, mirado en la web oficial, 2026-10-13: horario normal, también febrero y marzo de 2027. Cierra 25 dic y 1 ene.",
+        "fecha": "2026-10-13"
       },
       "minutos_fuera": 15,
       "por_fuera": "Hoy lo ves desde arriba, que es la mejor vista. Asómate desde Via dei Fori Imperiali o desde el mirador de detrás del Campidoglio: tendrás el Foro entero a tus pies, con sus columnas y arcos.",
@@ -1334,7 +1334,7 @@
       "id": "panteon",
       "name": "Panteón",
       "reserva_paso": 15,
-      "reserva_nota": "SIN VERIFICAR: la web del Ministerio dice que se entra por orden de llegada y una guía de viajes dice que la entrada se compra con hora. Se deja la franja libre, de la apertura a la última entrada.",
+      "reserva_nota": "Entrada con hora: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día.",
       "level": 1,
       "tier": "joya",
       "zone": "centro_historico",
@@ -1374,71 +1374,35 @@
       "windows": [
         "09:00-19:00"
       ],
-      "by_day": {
-        "lun-vie": [
-          "09:00-19:00"
-        ],
-        "sab": [
-          "09:00-16:00"
-        ],
-        "dom": [
-          "09:00-09:30",
-          "11:45-19:00"
-        ]
-      },
       "last_entry": "18:30",
       "closed_on": [],
       "reservation": "recomendada",
-      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). Durante las misas solo entran fieles y la venta de entradas se corta una hora antes: sábado desde las 16:00 (misa 17:00) y domingo hacia las 10:30. En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 1 ene, 15 ago y 25 dic. Entrada: 7 €.",
+      "card_text": "Todos los días de 09:00 a 19:00 (última entrada 18:30). En agosto, apertura nocturna 19:00-23:00 (salvo jueves). Cierra 1 ene y 25 dic. Entrada: 7 €.",
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
         "Se compra online o en taquilla (taquilla hasta las 18:00).",
         "Entrada: 7 € (desde el 1 de julio de 2026)."
       ],
-      "misas_festivos": [
-        "01-01",
-        "06-29",
-        "01-06",
-        "easter+1",
-        "04-25",
-        "05-01",
-        "06-02",
-        "08-15",
-        "11-01",
-        "12-08",
-        "12-25",
-        "12-26"
-      ],
-      "_misas_festivos": "Festivos nacionales de Italia. La web oficial del Panteón: misa a las 17:00 los sábados y las vísperas de festivo (venta cortada a las 16:00) y a las 10:30 los domingos y los festivos (venta cortada a las 09:30). El motor lee el festivo como un domingo y su víspera como un sábado (massWeekday, openingHours.js). Pendiente de decidir: el 29 de junio (San Pedro y San Pablo, festivo solo en Roma).",
       "closed_dates": [
-        "08-15",
         "12-25",
         "01-01"
       ],
       "hours_audit": {
-        "confianza": "alta (sábado y domingo: media)",
-        "fuente": "https://www.pantheonroma.com/en/openings-info/ (web oficial del Capítulo: 09:00-19:00, última entrada 18:45, cierra 1 ene, 15 ago y 25 dic) + https://it.vatican-city.it/pantheon-roma/ (misas: sábado 17:00, domingo 10:30; venta suspendida 1 h antes)",
-        "nota": "La web oficial no publica el horario de las misas. \"Sábados, solo de 09:00 a 16:00\" sale de la misa de las 17:00 con la venta cortada una hora antes; es posible que tras la misa se vuelva a entrar hasta las 19:00, sin confirmar: se deja lo prudente.",
-        "comprobado_web": "Buscador (cultura.gov.it), 2026-10-12: todos los días 09:00-19:00, última entrada 18:30, taquillas hasta las 18:00 (se deja la última entrada de 18:30). Sin publicar el horario de las misas.",
-        "fecha": "2026-09-25"
+        "confianza": "alta",
+        "fuente": "Web oficial del Panteón (pantheonroma.com y cultura.gov.it), mirada por Eric",
+        "nota": "Todos los días de 09:00 a 19:00, última entrada 18:30. Cierra el 1 de enero y el 25 de diciembre. La entrada lleva hora (la rueda se queda). Sin horario de misas ni cierres de agosto: no se meten.",
+        "comprobado_web": "Eric, mirado en la web oficial, 2026-10-13: todos los días 09:00-19:00, última entrada 18:30; cierra 1 ene y 25 dic.",
+        "fecha": "2026-10-13"
       },
       "minutos_fuera": 15,
       "por_fuera": "Aunque hoy no entres, merece pararse. Fíjate en las 16 columnas de granito del pórtico: cada una es de una sola pieza y la trajeron desde Egipto. En la plaza tienes una fuente con obelisco.",
       "lo_mejor_dentro": "ponerte bajo el óculo y ver la tumba de Rafael",
       "closed_dates_audit": {
         "01-01": {
-          "estado": "abre con horario especial (probable)",
-          "fuente": "cultura.gov.it, «1 gennaio 2026 al Pantheon» (09:00-17:00, última entrada 16:30). pantheonroma.com dice que cierra el 1 de enero: manda el aviso del Ministerio de ese año.",
-          "comprobado": "2026-09-30",
-          "antes": "[\"01-01\",\"08-15\",\"12-25\"]"
-        },
-        "08-15": {
-          "estado": "cierra (hasta que se publique)",
-          "verificar": true,
-          "fuente": "Dos fuentes oficiales que no coinciden. pantheonroma.com (el Capítulo): cierra el 1 de enero, el 15 de agosto y el 25 de diciembre. cultura.gov.it (el Ministerio): abrió el 15 de agosto de 2022, 2023 y 2026 con el horario de siempre. Para 2027 no hay nada publicado: sigue como cerrado, con el mismo criterio que el Castillo.",
-          "revisar": "agosto de 2027, en cultura.gov.it",
-          "comprobado": "2026-10-01"
+          "estado": "cierra",
+          "fuente": "Eric, mirado en la web oficial, 2026-10-13: cierra el 1 de enero y el 25 de diciembre. El 15 de agosto ya no cierra.",
+          "comprobado": "2026-10-13"
         },
         "fechas_clave": {
           "estado": "abre",
@@ -1676,7 +1640,7 @@
       ],
       "last_entry": "18:00",
       "reservation": "recomendada",
-      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, lunes de Pascua, 1 may, 29 jun, 14-15 ago, 8, 25 y 26 dic).",
+      "card_text": "Lunes a sábado de 08:00 a 20:00 (última entrada 18:00; hay que dejar las salas 30 min antes del cierre). Cerrado los domingos, salvo el último domingo del mes: 09:00-14:00 (última entrada 12:30). Cierra también en varios festivos (1 y 6 ene, 11 feb, 19 mar, lunes de Pascua, 1 may, 29 jun, 14-15 ago, 1 nov, 8, 25 y 26 dic). El 24 y el 31 de diciembre abren de 08:00 a 15:00 (última entrada 13:00).",
       "ticket_info": [
         "De pago.",
         "Reserva recomendada.",
@@ -1693,11 +1657,10 @@
         "06-29",
         "08-14",
         "08-15",
+        "11-01",
         "12-08",
         "12-25",
-        "12-26",
-        "2027-08-16",
-        "2027-11-01"
+        "12-26"
       ],
       "last_sunday": {
         "windows": [
@@ -1715,9 +1678,9 @@
       "hours_audit": {
         "confianza": "alta",
         "fuente": "https://www.museivaticani.va/content/museivaticani/it/info/orari-musei-vaticani.html",
-        "nota": "La web publica \"6 aprile\" (lunes de Pascua de 2026): se guarda como easter+1 para que valga cada año. El último domingo no abre si coincide con Pascua, 29 jun, 25, 26 o 31 dic.",
-        "comprobado_web": "Buscador, 2026-10-12: el último domingo del mes 09:00-14:00 (última entrada 12:30) confirmado. El horario de lunes a sábado no se pudo volver a ver en la web oficial: se deja el del 2026-09-25.",
-        "fecha": "2026-09-25"
+        "nota": "Lunes a sábado 08:00-20:00 (última entrada 18:00). Último domingo de cada mes 09:00-14:00 (última entrada 12:30), salvo si cae en Pascua, 29 jun, 25, 26 o 31 dic. Cierran: los domingos (menos el último del mes), 1 y 6 ene, 11 feb, 19 mar, lunes de Pascua (easter+1, vale cada año), 1 may, 29 jun, 14 y 15 ago, 1 nov, 8, 25 y 26 dic. El 24 y el 31 de dic abren de 08:00 a 15:00 (special_hours, última entrada 13:00 del calendario oficial). Sin fechas sueltas de un solo año.",
+        "comprobado_web": "Eric, mirado en la web oficial, 2026-10-13: horario y lista de cierres tal cual los publica la web.",
+        "fecha": "2026-10-13"
       },
       "special_hours": [
         {
@@ -1748,15 +1711,10 @@
         }
       ],
       "closed_dates_audit": {
-        "2027-08-16": {
-          "estado": "cierra (el 15 cae en domingo)",
-          "fuente": "Calendario oficial de los Museos Vaticanos 2027 (m.museivaticani.va/content/dam/museivaticani/pdf/utilities/calendario_musei.pdf), día marcado en rojo (cierre).",
-          "comprobado": "2026-09-30"
-        },
-        "2027-11-01": {
-          "estado": "cierra (lunes, Todos los Santos)",
-          "fuente": "Calendario oficial de los Museos Vaticanos 2027 (m.museivaticani.va/content/dam/museivaticani/pdf/utilities/calendario_musei.pdf), día marcado en rojo (cierre).",
-          "comprobado": "2026-09-30"
+        "11-01": {
+          "estado": "cierra (Todos los Santos, cada año)",
+          "fuente": "Eric, mirado en la web oficial, 2026-10-13: la web publica el 1 de noviembre como cierre. Se quitaron las fechas sueltas de 2027 (16 ago y 1 nov) que no salen en la lista de la web.",
+          "comprobado": "2026-10-13"
         }
       }
     },
@@ -2157,7 +2115,7 @@
     {
       "id": "galeria_borghese",
       "name": "Galería Borghese",
-      "reserva_nota": "Entrada con hora fija (reserva obligatoria). Horario oficial 09:00-19:00, última entrada 17:45 (cultura.gov.it, 2026-10-12). SIN VERIFICAR: las horas de los turnos (cada hora y la de las 17:45) salen de la auditoría anterior; una guía de viajes habla de 5 turnos de 2 horas (9, 11, 13, 15 y 17).",
+      "reserva_nota": "Entrada con hora fija (reserva obligatoria). Horario oficial 09:00-19:00 de martes a domingo; no se entra después de las 17:00. Turnos de 2 horas: 9:00, 11:00, 13:00, 15:00 y 17:00.",
       "level": 2,
       "zone": "villa_borghese",
       "grupo_dia": "Villa Borghese",
@@ -2194,7 +2152,14 @@
       "windows": [
         "09:00-19:00"
       ],
-      "last_entry": "17:45",
+      "last_entry": "17:00",
+      "hours_audit": {
+        "confianza": "alta",
+        "fuente": "https://galleriaborghese.cultura.gov.it/info (web oficial de la Galería)",
+        "nota": "Martes a domingo 09:00-19:00, no se entra después de las 17:00. Turnos de 2 horas: 9, 11, 13, 15 y 17. Cierra los lunes, el 25 de diciembre y el 1 de enero. Sin cierres nuevos (el lunes de Pascua cae en lunes: ya cerrado).",
+        "comprobado_web": "Eric, mirado en la web oficial, 2026-10-13: 09:00-19:00, última entrada 17:00, turnos 9, 11, 13, 15 y 17; cierra lunes.",
+        "fecha": "2026-10-13"
+      },
       "reservation": "obligatoria",
       "card_text": "Martes a domingo de 09:00 a 19:00, con entrada por turnos cada 2 horas (9:00, 11:00, 13:00, 15:00 y 17:00; visita de 2 h). Reserva obligatoria. Cerrado lunes, 25 dic y 1 ene.",
       "ticket_info": [
@@ -2213,36 +2178,21 @@
         "cada_minutos": 120,
         "desde": "09:00",
         "hasta": "17:00",
-        "nota": "Turnos cada 2 horas, de 9:00 a 17:00 (9:00, 11:00, 13:00, 15:00 y 17:00), con reserva (decisión del usuario, 6-oct-2026): sin reserva puesta, el motor coge el turno real más cercano."
+        "nota": "Turnos cada 2 horas, de 9:00 a 17:00 (9:00, 11:00, 13:00, 15:00 y 17:00), con reserva (web oficial, mirada por Eric el 13-oct-2026): sin reserva puesta, el motor coge el turno real más cercano."
       },
       "closed_dates_audit": {
         "01-01": {
           "estado": "cierra",
           "fuente": "galleriaborghese.cultura.gov.it/info: cierra el lunes, el 25 de diciembre y el 1 de enero.",
           "comprobado": "2026-09-30"
-        },
-        "lunes_festivos": {
-          "estado": "cierra (hasta que se publique)",
-          "verificar": true,
-          "fechas": [
-            "2027-03-29"
-          ],
-          "fuente": "galleriaborghese.cultura.gov.it: cierra el lunes, el 25 de diciembre y el 1 de enero. cultura.gov.it: abrió el Lunes de Pascua de 2022, 2024, 2025 y 2026 (9:00-19:00). Para 2027 no hay nada publicado: el lunes 29 de marzo de 2027 sigue como cerrado, con el mismo criterio que el Castillo.",
-          "revisar": "marzo de 2027",
-          "comprobado": "2026-10-01"
         }
       },
       "turnos_reserva": [
         "09:00",
-        "10:00",
         "11:00",
-        "12:00",
         "13:00",
-        "14:00",
         "15:00",
-        "16:00",
-        "17:00",
-        "17:45"
+        "17:00"
       ]
     },
     {
