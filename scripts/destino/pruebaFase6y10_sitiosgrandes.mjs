@@ -85,7 +85,7 @@ console.log(`1. Roma igual: ${comparados} viajes comparados (${conPlan} con plan
   const sitiosViejos = VIEJO.res.RESERVAS_GRANDES
   for (const dia of Object.values(NUEVO.written.days)) for (const lugar of [...ANTES, 'Panteón', 'Altar de la Patria']) for (const hora of horas) for (const tieneFreeTour of [false, true]) for (const excursionManana of [false, true]) {
     const a = JSON.stringify(VIEJO.res.claseDeReserva(dia, lugar, hora, { tieneFreeTour, excursionManana }))
-    const b = JSON.stringify(claseDeReserva(dia, lugar, hora, { sitiosGrandes: sitiosGrandesDe(NUEVO.D), tieneFreeTour, excursionManana }))
+    const b = JSON.stringify(claseDeReserva(dia, lugar, hora, { sitiosGrandes: sitiosGrandesDe(NUEVO.D), destData: NUEVO.D, tieneFreeTour, excursionManana }))
     n++
     if (a !== b) dist++
   }

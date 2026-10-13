@@ -40,7 +40,7 @@ for (const caso of CASOS) {
   const dia = written.days[caso.dia]
   salida.push(`## ${caso.dia} · ${caso.lugar}`, '', 'Hora | Clase | Lista | En el motor', '--- | --- | --- | ---')
   for (const hora of caso.lugar === 'Galería Borghese' ? TURNOS_GALERIA : HORAS) {
-    const clase = claseDeReserva(dia, caso.lugar, hora, { sitiosGrandes: sitiosGrandesDe(D), tieneFreeTour: Boolean(caso.ft) })
+    const clase = claseDeReserva(dia, caso.lugar, hora, { sitiosGrandes: sitiosGrandesDe(D), destData: D, tieneFreeTour: Boolean(caso.ft) })
     let motor = ''
     try {
       const p = plan(caso, hora)

@@ -237,6 +237,8 @@ export interface MockStopDetail {
   outsideReason?: string | null
   /** Ver Stop.outsideKind: solo 'no_cabe' deja pedir "Quiero entrar"; 'cerrado' y 'ya_cerrado' van en rojo. */
   outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | 'a_proposito'
+  /** Ver Stop.closedThisDay: la tarjeta dice «Cerrado este día». */
+  closedThisDay?: boolean
   /** Ver Stop.tags en types.ts — píldoras de color en StopAccordion/StopDetailSheet (ver tagColors.ts). */
   tags?: string[]
   /** Ver Stop.scheduleText en types.ts. */
@@ -341,6 +343,7 @@ export function shellFromStop(stop: Stop): MockStopDetail {
     freeTourEnd: stop.freeTourEnd,
     outsideReason: stop.outsideReason ?? null,
     outsideKind: stop.outsideKind,
+    closedThisDay: stop.closedThisDay,
     tags: stop.tags,
     scheduleText: stop.scheduleText,
     hoursCard: stop.hoursCard ?? null,

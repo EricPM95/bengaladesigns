@@ -549,7 +549,7 @@ export function planListasTrip(args) {
     }
     host.aplicadas.push(`reserva:${hora}`)
     // Regla 17: si el viajero insiste en una hora sin lista escrita, se aplica la regla general (4) y queda apuntado.
-    const clase = claseDeReserva(host.dia, lugar, hora, { sitiosGrandes, tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
+    const clase = claseDeReserva(host.dia, lugar, hora, { sitiosGrandes, destData, tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
     if (clase.clase === 'sin_lista' || clase.clase === 'no_cabe') host.log.push({ id: null, lugar, sitio: lugar, que: 'aviso', causa: clase.clase === 'sin_lista' ? `reserva sin lista: ${lugar} a las ${hora} no tiene lista escrita para este día; se aplica la regla general (4)` : `reserva que no cabe: ${lugar} a las ${hora} es una combinación que no cabe; se aplica la regla general (4)` })
   }
 
@@ -835,14 +835,18 @@ export function planListasTrip(args) {
       const comida = sim.find((it) => it.kind === 'comida')
       const cena = sim.find((it) => it.kind === 'cena')
       const manana = sim.filter((it) => it.franja === 'manana' && it.kind === 'stop')
-      const tarde = sim.filter((it) => it.franja === 'tarde' && it.kind === 'stop')
+      // (Tanda 7, VIAJES_REVISION «El día no cabe del todo: sobran 150 min»: el Free Tour de la noche tiene su hora y no se mueve ni se quita; si acaba después de la hora de cenar —el de las 19:00 o el de las 21:00—
+      // eso no es tiempo que sobre de la tarde: no hay nada que quitar para arreglarlo. Se cuenta solo lo que sí se puede mover; la tarde se mide hasta su última parada que no es el tour, y la cena que va detrás
+      // del tour (regla 4) cae donde acaba el tour.)
+      const tarde = sim.filter((it) => it.franja === 'tarde' && it.kind === 'stop' && it.tipo !== 'tour')
       // (Un solo límite para todos los días, con o sin hora fija: la comida no empieza después de las 15:00; solo se toca si pasa de ahí.)
       const limiteComida = toMin(cfg.comida_hasta)
       const maniana = comida ? comida.llegaA - limiteComida : manana.length ? manana.at(-1).t1 - limiteComida : 0
       // La tarde acaba como tarde a la hora de la cena más el margen; si no hay cena, a esa hora.
       const finTarde = tarde.length ? tarde.at(-1).t1 : 0
       const sinCena = finTarde - tardeHasta
-      const conCena = cena ? cena.llegaA - (tardeHasta + 30) : 0
+      const cenaTrasElTour = cena ? sim.some((it) => it.tipo === 'tour' && it.t1 > tardeHasta && sim.indexOf(it) < sim.indexOf(cena)) : false
+      const conCena = cena && !cenaTrasElTour ? cena.llegaA - (tardeHasta + 30) : 0
       return { manana: maniana, tarde: Math.max(sinCena, conCena), sim }
     }
     const baseReglas = (lista) => reglas.todas(lista, { vistosAntes: estado.vistos, dentroAntes: estado.dentro })

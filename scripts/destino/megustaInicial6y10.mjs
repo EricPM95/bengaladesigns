@@ -36,6 +36,42 @@ export function cifraPorNivel(nombre, nivel) {
   return 0
 }
 
+// ═══ Tanda 7 (Eric, 13-oct): los lugares ya no salen de la semilla, salen de un ORDEN escrito (de más a menos conocido) ═══
+// Los seis primeros llevan cifras FIJAS (cada uno 15 o más por encima del siguiente, el primero por encima de 400). Todos los demás, por debajo de 290.
+// Los rangos de siempre se quedan: imprescindibles y nivel 1 de 100 a 199 · nivel 2 de 50 a 99 · nivel 3 a 0. La excepción son los seis primeros (de 305 a 412, fuera de 100–199).
+export const FIJAS = [
+  ['Coliseo', 412],
+  ['Fontana de Trevi', 391],
+  ['Museos Vaticanos y Capilla Sixtina', 368],
+  ['Basílica de San Pedro', 347],
+  ['Panteón', 326],
+  ['Plaza de España', 305],
+]
+/** El resto de imprescindibles y del nivel 1, de más a menos conocido (cifras de 199 a 139, de 15 en 15). */
+export const ORDEN_NIVEL_1 = ['Piazza Navona', 'Foro Romano y Palatino', 'Plaza de San Pedro', 'Altar de la Patria', 'Arco de Constantino']
+/** El nivel 2, de más a menos conocido (cifras de 99 a 52). */
+export const ORDEN_NIVEL_2 = [
+  'Galería Borghese', "Castillo de Sant'Angelo", 'Trastevere', 'Cúpula de San Pedro', 'Museos Capitolinos', 'Plaza del Campidoglio', 'Boca de la Verdad',
+  'Basílica de San Juan de Letrán', 'Basílica de Santa María la Mayor', 'Termas de Caracalla', 'Circo Máximo', "Campo de' Fiori", 'Isla Tiberina',
+  'Parque de Villa Borghese', 'Mirador del Janículo', 'Terraza del Pincio', 'Barrio Judío', 'Cripta de los Capuchinos', 'Basílica de San Clemente',
+  'Domus Aurea', 'Piazza del Popolo', 'Trinità dei Monti', 'Iglesia de San Pietro in Vincoli', 'Ara Pacis', 'Iglesia de Santa Maria in Trastevere',
+  'Santa Maria del Popolo', 'Iglesia de San Luigi dei Francesi', 'Iglesia del Gesù', 'Mercados de Trajano', 'Monti', 'Testaccio', 'Largo di Torre Argentina',
+  'Villa Farnesina', 'Jardín de los Naranjos', 'San Pietro in Montorio y Tempietto de Bramante',
+]
+const CIFRA_N1 = (i) => 199 - i * 15
+const CIFRA_N2 = (i) => Math.round(99 - i * 1.38)
+
+/** La cifra de un lugar: fija (los seis primeros), por su sitio en el orden escrito, o la de siempre por nivel (nivel 3: 0; un lugar nuevo sin orden escrito cae a la semilla de su nivel). */
+export function cifraDeLugar(nombre, nivel) {
+  const fija = FIJAS.find(([n]) => n === nombre)
+  if (fija) return fija[1]
+  const i1 = ORDEN_NIVEL_1.indexOf(nombre)
+  if (i1 >= 0) return CIFRA_N1(i1)
+  const i2 = ORDEN_NIVEL_2.indexOf(nombre)
+  if (i2 >= 0) return CIFRA_N2(i2)
+  return cifraPorNivel(nombre, nivel)
+}
+
 /** Cuántas veces sale cada restaurante en los días escritos (comida y cena: el principal, la alternativa y la tercera, en todas las partes, variantes y pools). */
 export function vecesPorRestaurante(listas, nombres) {
   const veces = new Map()
@@ -52,7 +88,7 @@ export function vecesPorRestaurante(listas, nombres) {
 export function calcular() {
   const datos = JSON.parse(fs.readFileSync(FICHERO, 'utf8'))
   const listas = JSON.parse(fs.readFileSync(LISTAS, 'utf8'))
-  const lugares = datos.places.map((p) => ({ tipo: 'places', nombre: p.name, nivel: p.level ?? null, cifra: cifraPorNivel(p.name, p.level ?? null) }))
+  const lugares = datos.places.map((p) => ({ tipo: 'places', nombre: p.name, nivel: p.level ?? null, cifra: cifraDeLugar(p.name, p.level ?? null) }))
   const ranking = vecesPorRestaurante(listas, new Set(datos.restaurants.map((r) => r.name)))
   const conCifra = new Map(ranking.slice(0, RESTAURANTES_CON_CIFRA).map(([nombre, veces]) => [nombre, veces]))
   const restaurantes = datos.restaurants.map((r) => ({ tipo: 'restaurants', nombre: r.name, veces: ranking.find(([n]) => n === r.name)?.[1] ?? 0, cifra: conCifra.has(r.name) ? entre(r.name, 100, 199) : 0 }))
