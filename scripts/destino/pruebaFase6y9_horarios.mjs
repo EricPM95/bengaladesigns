@@ -179,7 +179,8 @@ for (const place of conTramos) {
 {
   const borghese = D.places.find((p) => p.name === 'Galería Borghese')
   const t = turnosDeReserva(borghese, '2026-10-15')
-  ok(t.tipo === 'turnos' && t.turnos?.[0] === '09:00' && t.turnos.at(-1) === '17:45', `Borghese: turnos ${JSON.stringify(t.turnos)}`)
+  // (6y10: Eric miró la web oficial el 13-oct-2026: turnos de 2 horas, 9, 11, 13, 15 y 17; ya no hay un turno a las 17:45.)
+  ok(t.tipo === 'turnos' && JSON.stringify(t.turnos) === JSON.stringify(['09:00', '11:00', '13:00', '15:00', '17:00']), `Borghese: turnos ${JSON.stringify(t.turnos)}`)
   ok(t.aviso === AVISO_DISPONIBILIDAD && /^Recuerda revisar la disponibilidad/.test(t.aviso), 'el aviso de disponibilidad no es el de Eric')
   const ft = turnosDeReserva(D.default_free_tour, '2026-10-15')
   ok(JSON.stringify(ft.turnos) === JSON.stringify(['10:00', '12:00', '15:00', '17:00', '19:00', '21:00']), `Free Tour: turnos ${JSON.stringify(ft.turnos)}`)
