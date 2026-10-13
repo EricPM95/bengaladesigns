@@ -2592,7 +2592,12 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
   const diaCuatro = answers?.diaCuatro === 'roma' || answers?.diaCuatro === 'excursion' ? answers.diaCuatro : null
   // «Eliminar reserva» (Tanda 6m): el día se rehace en su sitio, con el orden de días que el viajero ya ve (`force_order`); sin esto, al faltar la reserva el motor reordenaría los días.
   const forceOrder = Array.isArray(body?.force_order) && body.force_order.length > 0 && body.force_order.every((id) => typeof id === 'string') ? body.force_order : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder }
+  // La llegada con horas (Tanda 7, de pago): `body.llegada` = { hora: 'HH:MM', medio: 'avion'|'tren'|'bus'|'ferry', puntoId?, zona?, aMano? }. Sin ella, con `pago: false`, en coche o con la ruta a mano, el motor no la usa.
+  const ll = body?.llegada
+  const llegada = ll && typeof ll === 'object' && ll.pago !== false && ll.aMano !== true && /^\d{1,2}:\d{2}$/.test(String(ll.hora ?? ''))
+    ? { hora: String(ll.hora).length === 4 ? `0${ll.hora}` : String(ll.hora), medio: ['avion', 'tren', 'bus', 'ferry'].includes(ll.medio) ? ll.medio : 'avion', puntoId: typeof ll.puntoId === 'string' ? ll.puntoId : null, zona: typeof ll.zona === 'string' ? ll.zona : null, excursionReservada: ll.excursionReservada && typeof ll.excursionReservada === 'object' ? ll.excursionReservada : null }
+    : null
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder, llegada }
 }
 
 function hasRequiredAnswers(answers) {

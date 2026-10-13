@@ -34,7 +34,8 @@ export const paradasDelDia = (dia, { sinCamino = false } = {}) =>
  *                        forceOrder, halfDayOwner, tour, noTourOn, openCheck }
  */
 export function ordenarDias(env) {
-  const { destData, written, cityDays: todosLosDias, contentDays, hasFreeTour, hoursOf, realDateIso, closedThatDay, calendar, poolNames, selected, mediaJornada, forceOrder, noTourOn, tour } = env
+  const { destData, cityDays: todosLosDias, contentDays, hasFreeTour, hoursOf, realDateIso, closedThatDay, calendar, poolNames, selected, mediaJornada, forceOrder, noTourOn, tour } = env
+  let written = env.written
   // El día propio del viajero («Crear mi propio día», Tanda 6g) no entra en el reparto de fechas: va fijo en su día y los demás se ordenan como si ese día fuera el de la excursión.
   // `env.propios` = { número de día: id del día escrito que se monta con sus sitios }. Con el interruptor en Roma sin día propio, los días de Roma van en su orden de la tabla
   // (D5, D6, D7) y el día que se gana va al final: no hay nada fijo.
@@ -67,6 +68,15 @@ export function ordenarDias(env) {
     chosen = halfFirst ? [half, ...whole] : [...whole, half]
     halfPosition = halfFirst ? 0 : 3
   } else chosen = row.map((item) => (typeof item === 'string' ? item : sinGaleria && contentDays < 4 ? item.sin_galeria : item.con_galeria)).slice(0, tablaLen)
+  // ── LLEGADA (Tanda 7, agente F): con la hora de llegada del viajero, la fila de la tabla elige el día 1 y, si hace falta, todo se corre un día y se cae el último (llegadaDia1.js). ──
+  let llegadaDecision = null
+  if (env.llegada) {
+    llegadaDecision = env.llegada(chosen)
+    if (llegadaDecision?.aplica && !llegadaDecision.reiniciarSinFreeTour) {
+      chosen = llegadaDecision.chosen
+      written = { ...written, days: { ...written.days, ...(llegadaDecision.extraDays ?? {}) } }
+    }
+  }
   if (chosen.some((id) => !written.days[id])) return null
   const halfDayOwner = Object.fromEntries(Object.entries(destData.curated_routes?.excursiones?.media_jornada ?? {}).map(([id, excursion]) => [excursion, id]))
 
@@ -139,7 +149,9 @@ export function ordenarDias(env) {
       }))
     }
     // Las reservas grandes (Tanda 6j, punto 9): el día escrito que lleva el sitio reservado va FIJO en la fecha de la reserva; los demás se ordenan con las reglas de siempre en los huecos que quedan.
-    const fijos = new Map(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]])
+    // (La llegada con horas deja fijo el día 1 cuando es una versión escrita para la llegada: no se cambia con otro por un cierre.)
+    const fijosBase = [...(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]]), ...(llegadaDecision?.aplica && llegadaDecision.fijoPrimero ? [[0, llegadaDecision.fijoPrimero]] : [])]
+    const fijos = new Map(fijosBase)
     // (El Free Tour reservado se coloca después de las demás reservas grandes: si su día lo ocupa otra —los Museos, en otra fecha—, el Free Tour va en otro día, Tanda 6w.)
     const esTour = (reserva) => Boolean(tour) && reserva.name === tour.name
     for (const reserva of (env.reservasGrandes ?? []).filter((r) => !esTour(r))) {
@@ -223,8 +235,8 @@ export function ordenarDias(env) {
       }
       return best
     }
-    const sinReservas = mejorOrden(new Map(halfPosition == null ? [] : [[halfPosition, chosen[halfPosition]]]), chosen)
-    const best = fijos.size > (halfPosition == null ? 0 : 1) ? mejorOrden(fijos, sinReservas.candidate) : sinReservas
+    const sinReservas = mejorOrden(new Map(fijosBase), chosen)
+    const best = fijos.size > fijosBase.length ? mejorOrden(fijos, sinReservas.candidate) : sinReservas
     order = best.candidate
   }
   const orderSinPin = order
@@ -256,5 +268,5 @@ export function ordenarDias(env) {
   // Los días que cambian de sitio respecto a la tabla y por qué: lo que les cuesta en su fecha de la tabla (un sitio cerrado, una mala fecha, un horario especial). Para el informe y la prueba del orden.
   const motivosOrden = {}
   chosen.forEach((id, slot) => { const why = fixedWhy.get(id)?.[slot] ?? []; if (orderSinPin.indexOf(id) !== slot && why.length > 0) motivosOrden[id] = why })
-  return { chosen, order, halfPosition, dateMoves, motivosOrden, reservasColocadas, reservasSinDia, ftSeparado }
+  return { chosen, order, halfPosition, dateMoves, motivosOrden, reservasColocadas, reservasSinDia, ftSeparado, llegadaDecision, written }
 }

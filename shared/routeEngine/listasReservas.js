@@ -25,6 +25,16 @@ export function sitiosGrandesDe(destData) {
   return set
 }
 
+/**
+ * Las horas hasta las que un sitio grande NO cabe en un día con excursión de mañana (`sitios_grandes.lugares[].no_cabe_con_excursion_hasta`; en Roma, el Coliseo hasta las 16:30). Antes estaba escrito
+ * en `claseDeReserva`. Devuelve { nombre: 'HH:MM' }; un destino que no lo marca no tiene límite.
+ */
+export function limitesConExcursionDe(destData) {
+  const out = {}
+  for (const sitio of destData?.sitios_grandes?.lugares ?? []) if (sitio?.nombre && typeof sitio.no_cabe_con_excursion_hasta === 'string') out[sitio.nombre] = sitio.no_cabe_con_excursion_hasta
+  return out
+}
+
 /** La ficha de un sitio grande (`{ nombre, del, el, dias, nunca_se_quita }`), o null si el destino no lo marca como grande. */
 export function sitioGrandeDe(destData, nombre) {
   return (destData?.sitios_grandes?.lugares ?? []).find((sitio) => sitio?.nombre === nombre) ?? null
@@ -65,7 +75,8 @@ export function claseDeReserva(dia, lugar, hora, contexto = {}) {
   const m = toMin(hora)
   const lim = dia?.reservas?.[lugar]?.no_cabe_antes
   if (contexto.tieneFreeTour && lim && m < toMin(lim)) return { clase: 'no_cabe', motivo: 'free_tour_museos', desde: lim }
-  if (contexto.excursionManana && lugar === 'Coliseo' && m <= 16 * 60 + 30) return { clase: 'no_cabe', motivo: 'excursion_coliseo' }
+  const limiteExcursion = (contexto.limitesConExcursion ?? {})[lugar]
+  if (contexto.excursionManana && limiteExcursion && m <= toMin(limiteExcursion)) return { clase: 'no_cabe', motivo: 'excursion_coliseo' }
   const tramo = tramosDeReserva(dia, lugar).find((t) => m >= t.desde && m <= t.hasta)
   if (tramo) return { clase: 'lista', tramo: tramo.id }
   const normal = tramoNormal(dia, lugar)

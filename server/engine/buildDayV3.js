@@ -660,7 +660,10 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Navidad y Año Nuevo: «Con reserva», «Con reserva: menú de Nochevieja» o «En Navidad, reserva con antelación».
     ...(meal.note ? { reservation_note: meal.note } : {}),
     // Dónde se come: el restaurante que eligió el programador (lunchSpots.js), con su zona.
-    ...(meal.type === 'lunch' && meal.spot
+    // La comida al llegar (Tanda 7): «Comida, cerca de tu alojamiento», sin restaurante nuestro.
+    ...(meal.type === 'lunch' && meal.sinRestaurante
+      ? { no_restaurant: true, title: meal.label ?? 'Comida, cerca de tu alojamiento' }
+      : meal.type === 'lunch' && meal.spot
       ? { zone: meal.spot.zone, zone_display: `en ${String(meal.spot.zone).replace(/\s*\/\s*/g, ' y ')}`, restaurant: meal.spot.name, latitude: meal.coordinates[0], longitude: meal.coordinates[1] }
       : meal.type === 'lunch'
         ? zoneFields(destData, tripDay.lunchZone ?? zoneBefore(meal.start) ?? dinnerZone, 'comida')
@@ -806,6 +809,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // (Un día escrito: las horas son las del documento, sin redondear.)
     stops: tripDay.tardeLibre ? [] : tripDay.escrito ? [...stops.filter((stop) => !stop.is_arrival), ...nightStops.map((stop) => (tripDay.listas ? { ...stop, orientative_time: true, franja: 'noche' } : stop))].sort((a, b) => toMinutes(a.suggested_time) - toMinutes(b.suggested_time)) : quarterHourStops([...stops, ...nightStops]),
     ...(tripDay.listas ? { spare_stops: spareStops, sunset_text: tripDay.sunsetText ?? null, rain_plan: rainPlan, franjas: tripDay.franjas ?? [] } : {}),
+    // El día de llegada con horas (Tanda 7): qué lista lleva, si es de noche, el texto de la llegada y los bloques de sus reservas grandes (ver INFORME_PARTE_MOTORLLEGADA_TANDA7.md).
+    ...(tripDay.llegadaDia ? { arrival_day: tripDay.llegadaDia } : {}),
     // HOY: «Vas bien de tiempo» / «Vas justo» (solo cuando el servidor lo pide con `chequeo`).
     ...(tripDay.timeCheck
       ? {

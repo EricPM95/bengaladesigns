@@ -314,7 +314,7 @@ async function buildDayBlockV3Inner(
   const insideMinutes = written?.destino?.minutos_por_dentro ?? destData.destination_config?.minutos_por_dentro ?? {}
   const montarPropio = (overrides = {}) => ({ dayNumber, ...diaPropio({ destData, written, placeNames: options.sitiosPropios, insideMinutes, id: 'DX', name: options.nombreDiaPropio ?? 'Mi día', overrides }) })
   let propio = written && Array.isArray(options.sitiosPropios) && options.sitiosPropios.length > 0 ? montarPropio() : null
-  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null, reservasGrandes: options.reservasGrandes ?? [], reservasViaje: options.reservasViaje ?? [] })
+  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null, reservasGrandes: options.reservasGrandes ?? [], reservasViaje: options.reservasViaje ?? [], llegada: options.llegada ?? null })
   let writtenPlan = written ? writtenPlanFor(written, destKey, planArgs()) : null
   // «Crear mi propio día»: una segunda vuelta con lo que el motor hizo de verdad en la primera (un sitio ya visto por dentro en el viaje pasa a verse por fuera, y dura menos), para repartir bien la mañana y la tarde.
   if (propio && writtenPlan) {
@@ -451,6 +451,8 @@ function buildCityDayV3(destData, trip, tripDay, options) {
     dayVisitedNames,
     tourRepeats,
   })
+  // La llegada con horas (Tanda 7): el primer día lleva el resumen de lo que ha decidido el motor (qué día se corrió, qué se cayó, los avisos) para la hoja del resumen y para el día de vuelta.
+  if (tripDay.llegadaDia?.es_dia_1 && trip.llegada) day.arrival_plan = trip.llegada
   // Lo elegido a mano y los imprescindibles que no han cabido en ningún día, con su motivo. Nunca en
   // silencio: en un viaje de un día es el "No te dio tiempo".
   // Días escritos (tanda 2, 5-oct-2026): el motivo solo se pone si es por un cierre o un festivo («Cerrado el lunes», «Cerrado el 25 de diciembre»); en el resto de casos, solo el nombre.

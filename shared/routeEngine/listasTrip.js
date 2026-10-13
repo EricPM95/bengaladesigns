@@ -33,7 +33,8 @@ import { availabilityLabel, availableForTrip, seasonFit } from './availability.j
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
-import { claseDeReserva, sitiosGrandesDe } from './listasReservas.js'
+import { claseDeReserva, limitesConExcursionDe, sitiosGrandesDe } from './listasReservas.js'
+import { aplicarOpsLlegada, decidirLlegada, MEDIOS_CON_HORA } from './llegadaDia1.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 import { COMIDA_HASTA } from './comida.js'
@@ -101,10 +102,15 @@ function avisoDe(stop, mes = null, invierno = MESES_INVIERNO) {
  * @returns el plan (misma forma que el motor anterior) o null si falta algún día escrito
  */
 export function planListasTrip(args) {
-  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [], reservasViaje = [] } = args
+  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada: mediaJornadaIn = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [], reservasViaje = [], llegada: llegadaIn = null } = args
   if (!writtenIn?.days) return null
   // («Crear mi propio día»: el día que el viajero monta con sus sitios es un día escrito más, hecho al vuelo (diaPropio.js), y va fijo en su día.)
-  const written = diaPropio ? { ...writtenIn, days: { ...writtenIn.days, [diaPropio.id]: diaPropio.dia } } : writtenIn
+  let written = diaPropio ? { ...writtenIn, days: { ...writtenIn.days, [diaPropio.id]: diaPropio.dia } } : writtenIn
+  // ── LLEGADA CON HORAS (Tanda 7, agente F; de pago): `llegada` = { hora, medio, puntoId?, zona?, pago?, aMano? }. Sin ella, con `pago: false`, en coche o con la ruta a mano, el motor no cambia nada. ──
+  // Con la llegada puesta, el medio día de las salidas de antes (`mediaJornada`) deja de usarse: las horas del vuelo ya dicen cuánto queda de cada día (llegadaDia1.js).
+  const llegadaPide = Boolean(llegadaIn && llegadaIn.pago !== false && llegadaIn.aMano !== true && llegadaIn.hora && MEDIOS_CON_HORA.includes(llegadaIn.medio ?? 'avion') && !(diaPropio && Number(diaPropio.dayNumber) === 1))
+  const mediaJornada = llegadaPide ? null : mediaJornadaIn
+  const diasOriginales = written.days
   const poolNames = poolNamesIn
   const franjasDestino = written.destino?.franjas ?? destData.destination_config?.franjas ?? {}
   const cfg = { ...FRANJAS, ...franjasDestino, llegada: { ...FRANJAS.llegada, ...(franjasDestino.llegada ?? {}) } }
@@ -177,13 +183,29 @@ export function planListasTrip(args) {
   const ordenado = ordenarDias({
     propios: diaPropio ? { [diaPropio.dayNumber]: diaPropio.id } : {},
     reservasGrandes,
+    // La llegada con horas: la decisión del día 1 (se pide una vez que se sabe la tabla de días del viaje).
+    llegada: llegadaPide ? (chosen) => {
+      const ftReserva = tour ? (reservasGrandes ?? []).find((r) => r && r.name === tour.name) ?? null : null
+      return decidirLlegada({
+        destData, written, entrada: llegadaIn, chosen, n: contentDays, hasFreeTour, ftReserva, ftHora: ftReserva?.time ?? (tour ? entradas?.[tour.name] ?? null : null), tourName: tour?.name ?? null,
+        fecha1: calendar.hasDates ? calendar.dateOfDay(1) : null, mes: calendar.month, reservasGrandes, sitiosGrandes: destData.sitios_grandes?.lugares ?? [], nivelDe,
+        dia: (k) => { const d = cityDays[k]; return d ? { dayNumber: d.dayNumber, dateIso: realDateIso(d), weekday: hoursOf(d).weekday ?? null, noTour: noTourOn(d) } : null },
+      })
+    } : null,
     // El Free Tour de tarde o de noche que el viajero ha reservado, con su fecha: el día escrito que lo lleva va fijo en esa fecha (Tanda 6u).
     freeTourFijo: freeTourDespues && ftFranja && ftFranja !== 'manana' && (freeTourDespues.dateIso || freeTourDespues.dayNumber != null) ? { franja: ftFranja, dateIso: freeTourDespues.dateIso ?? null, dayNumber: freeTourDespues.dayNumber ?? null } : null,
     destData, written, cityDays, contentDays, hasFreeTour, hoursOf, realDateIso, closedThatDay, calendar, poolNames, selected, mediaJornada, forceOrder, noTourOn, tour,
     cerradoA: (lugar, hora, day) => placeByName.get(lugar) && openCheck(placeByName.get(lugar), toMin(hora), 15, hoursOf(day)).ok !== true,
   })
   if (!ordenado) return null
-  const { order, dateMoves, motivosOrden, ftSeparado } = ordenado
+  const { order, dateMoves, motivosOrden, ftSeparado, llegadaDecision } = ordenado
+  // El Free Tour sin hora que con la llegada no cabe: el viaje se rehace con sus días de «Sin Free Tour» y la hoja del resumen lo dice.
+  if (llegadaDecision?.reiniciarSinFreeTour) {
+    const sin = planListasTrip({ ...args, hasFreeTour: false, freeTourDespues: null, experiencesPositive: (args.experiencesPositive ?? []).filter((id) => id !== 'free_tour'), llegada: { ...llegadaIn, _sinTour: true } })
+    if (sin?.llegada) { sin.llegada.avisos = [...llegadaDecision.publico.avisos, ...sin.llegada.avisos]; sin.llegada.caso = `free_tour_no_se_pone+${sin.llegada.caso}` }
+    return sin
+  }
+  written = ordenado.written ?? written
 
   // ── Utilidades de coordenadas y trayectos ────────────────────────────────────────────────────────────────────
   const walkLeg = (from, to) => (Array.isArray(from) && Array.isArray(to) ? Math.round(travel?.leg(from, to)?.minutes ?? Math.round((straightLineMeters(from, to) * 1.3) / 80)) : 0)
@@ -283,7 +305,7 @@ export function planListasTrip(args) {
   }
   const contextoDe = (dia, day, hours, parte, index) => ({
     weekday: hours.weekday, dateIso: calendar.hasDates ? hours.dateIso : null, month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null,
-    hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: entradasDeDia(index), poolNames, experiencias: selected, orden: order, parte, enFechas,
+    hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: index === 0 && llegadaDecision?.entradasApp ? { ...entradasDeDia(index), ...llegadaDecision.entradasApp } : entradasDeDia(index), forzar: dia.llegada_ops?.forzar ?? [], poolNames, experiencias: selected, orden: order, parte, enFechas,
     // (Un sitio que cierra ese día activa las variantes «si cierra, sin él» del documento. Si es de los que NUNCA se quitan —el Vaticano, la Galería Borghese— y ningún día del viaje abre, se queda
     // en su día como parada «Cerrado este día», sin ocupar tiempo y con su aviso (Tanda 6y10, 1b), y el resto del día es la versión sin él.)
     cerrado: (name) => closedThatDay(name, day),
@@ -327,7 +349,9 @@ export function planListasTrip(args) {
     // El mismo día SIN las reservas grandes (Tanda 6y5, P4): la fila de la tabla de la hora reservada puede llevar menos paradas que el día de siempre. Lo que ya no cabe no desaparece:
     // pasa a «Si te sobra tiempo» de ese día (paso 5.0b).
     const sinGrandes = Object.fromEntries(Object.entries(ctx.entradas ?? {}).filter(([name]) => !sitiosGrandes.has(name)))
-    const control = Object.keys(sinGrandes).length !== Object.keys(ctx.entradas ?? {}).length ? aplicarVariantes(construirBase(), dia, { ...ctx, entradas: sinGrandes }, []) : null
+    if (dia.llegada_ops) trabajo = aplicarOpsLlegada(trabajo, dia.llegada_ops, written.days)
+    const controlBase = Object.keys(sinGrandes).length !== Object.keys(ctx.entradas ?? {}).length ? aplicarVariantes(construirBase(), dia, { ...ctx, entradas: sinGrandes }, []) : null
+    const control = controlBase && dia.llegada_ops ? aplicarOpsLlegada(controlBase, dia.llegada_ops, written.days) : controlBase
     const conReserva = new Set([...trabajo.manana, ...trabajo.tarde, ...(trabajo.sobra ?? [])].filter((s) => s.tipo !== 'traslado').map((s) => s.lugar))
     const sinReservaVistos = new Set()
     const perdidasPorReserva = control ? [...control.manana, ...control.tarde].filter((s) => {
@@ -347,7 +371,7 @@ export function planListasTrip(args) {
       trabajo = { ...trabajo, manana: trabajo.manana.filter((s) => s.lugar !== tour.name), tarde: trabajo.tarde.filter((s) => s.lugar !== tour.name) }
       aplicadas.push('sin_free_tour')
     }
-    return { id, index, dia, day, hours, parteKey, trabajo, perdidasPorReserva, aplicadas, log, ctx, pooled: [], soloTarde: Boolean(day.halfDayExcursion?.soloTarde) }
+    return { id, index, dia, day, hours, parteKey, trabajo, perdidasPorReserva, aplicadas, log, ctx, pooled: [], soloTarde: Boolean(day.halfDayExcursion?.soloTarde), sinAjustes: dia.llegada_ops?.sin_ajustes === true, llegadaBloques: dia.llegada_ops?.bloques ?? [], diaLlegada: dia.llegada_ops?.dia_llegada === true }
   }
   const drafts = order.map((id, index) => preparar(id, index))
 
@@ -471,6 +495,39 @@ export function planListasTrip(args) {
     if (at <= nManana && !draft.soloTarde) draft.trabajo.manana.splice(Math.min(at, nManana), 0, visita)
     else draft.trabajo.tarde.splice(Math.max(0, at - nManana), 0, visita)
   }
+  // LLEGADA (Tanda 7, F): una reserva grande del día 1 con la llegada desde las 14:00 (o 13:00 en invierno) lleva SOLO su bloque (el Coliseo con el Arco y el Foro, los Museos con la Plaza y la Basílica,
+  // la Galería con el parque), entero y sin mirar si cabe: se mete en la ruta de la fila en el puesto que le toca por su hora, como una reserva pequeña (lo que va antes en su orden y lo demás después).
+  // El bloque sale de la lista del día escrito del sitio, con la tabla de la hora de la reserva (`diasOriginales`, sin los ajustes de la llegada).
+  for (const d of drafts) {
+    for (const bloque of d.llegadaBloques ?? []) {
+      const dia = diasOriginales[bloque.fuente]
+      if (!dia) continue
+      const parte = dia.partes.unica ?? Object.values(dia.partes)[0]
+      const base = copiarParte(parte)
+      if (dia.hereda_manana_de) base.manana = clone(diasOriginales[dia.hereda_manana_de].partes.unica.manana)
+      const origen = aplicarVariantes(base, dia, { ...contextoDe(dia, d.day, d.hours, null, d.index), entradas: { [bloque.sitio]: bloque.hora } }, [])
+      const secuencia = [...origen.manana, ...origen.tarde]
+      const delBloque = secuencia.filter((s) => s.tipo !== 'traslado' && bloque.lugares.includes(s.lugar) && s.modo !== 'camino')
+      const yaEsta = (lugar) => [...d.trabajo.manana, ...d.trabajo.tarde, ...(d.trabajo.sobra ?? [])].some((s) => s.tipo !== 'traslado' && s.lugar === lugar)
+      const iReserva = delBloque.findIndex((s) => s.lugar === bloque.sitio)
+      if (iReserva < 0) continue
+      // La primera parada del bloque va donde le toca por su hora (la hora de la reserva menos lo que dura lo que va delante en el bloque); el resto del bloque, detrás, tal cual, en su orden.
+      const t = toMin(bloque.hora)
+      const largo = (s) => (s.min ?? 10) + 8
+      const nuevas = delBloque.filter((s) => !yaEsta(s.lugar)).map((s) => ({ ...s, protegido: true, llegada_bloque: bloque.sitio, hora: undefined, hora_tipo: s.lugar === bloque.sitio ? s.hora_tipo : undefined }))
+      if (nuevas.length > 0) {
+        const delante = delBloque.slice(0, iReserva).reduce((suma, o) => suma + largo(o), 0)
+        meterPorHora(d, nuevas[0], t - delante)
+        let anterior = nuevas[0]
+        for (const visita of nuevas.slice(1)) {
+          const lista = d.trabajo.manana.includes(anterior) ? d.trabajo.manana : d.trabajo.tarde
+          lista.splice(lista.indexOf(anterior) + 1, 0, visita)
+          anterior = visita
+        }
+      }
+      d.aplicadas.push(`bloque_de_la_reserva:${bloque.sitio}`)
+    }
+  }
   for (const r of reservasViaje ?? []) {
     if (!r?.name || sitiosGrandes.has(r.name) || !/^\d{1,2}:\d{2}$/.test(String(r.time ?? ''))) continue
     const slot = cityDays.findIndex((day) => (calendar.hasDates && r.dateIso ? hoursOf(day).dateIso === r.dateIso : day.dayNumber === Number(r.dayNumber)))
@@ -549,7 +606,7 @@ export function planListasTrip(args) {
     }
     host.aplicadas.push(`reserva:${hora}`)
     // Regla 17: si el viajero insiste en una hora sin lista escrita, se aplica la regla general (4) y queda apuntado.
-    const clase = claseDeReserva(host.dia, lugar, hora, { sitiosGrandes, tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
+    const clase = claseDeReserva(host.dia, lugar, hora, { sitiosGrandes, limitesConExcursion: limitesConExcursionDe(destData), tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
     if (clase.clase === 'sin_lista' || clase.clase === 'no_cabe') host.log.push({ id: null, lugar, sitio: lugar, que: 'aviso', causa: clase.clase === 'sin_lista' ? `reserva sin lista: ${lugar} a las ${hora} no tiene lista escrita para este día; se aplica la regla general (4)` : `reserva que no cabe: ${lugar} a las ${hora} es una combinación que no cabe; se aplica la regla general (4)` })
   }
 
@@ -757,6 +814,7 @@ export function planListasTrip(args) {
       const usadasHoy = new Set()
       return lista.map((item, i) => {
         if (item.kind !== 'comida' && item.kind !== 'cena') return item
+        if (item.sin_restaurante) return item // (la comida al llegar: sin restaurante nuestro, Tanda 7)
         const meal = item.kind === 'cena' ? 'cena' : 'comida'
         // (Una comida rápida antes de una reserva empieza pronto, pero el restaurante se mira abierto desde la hora de comer de siempre: son recomendaciones, no una mesa reservada.)
         const start = item.kind === 'comida' && item.corta ? Math.max(sim[i].t0, toMin(cfg.comida_antes_desde)) : sim[i].t0
@@ -924,7 +982,7 @@ export function planListasTrip(args) {
     }
     const ajustar = (lista) => {
       let out = lista
-      if (conReservaDelViajero(lista)) return out
+      if (conReservaDelViajero(lista) || draft.sinAjustes) return out
       for (let guard = 0; guard < 80; guard++) {
         const e = exceso(out)
         if (e.manana > 0) {
@@ -1530,7 +1588,7 @@ export function planListasTrip(args) {
 
     // 5.10 Lo que cuenta como visto para los días que vienen.
     for (const item of final) {
-      if (item.kind === 'comida' || item.kind === 'cena') estado.mesas.add(item.restaurante)
+      if ((item.kind === 'comida' || item.kind === 'cena') && item.restaurante) estado.mesas.add(item.restaurante)
       if (item.kind !== 'stop' || item.llegada) continue
       // (Lo que cierra y se queda como «Cerrado este día» no se ha visto: no cuenta como visto ni por dentro, pero tampoco es un imprescindible que se quede fuera sin explicar.)
       if (item.cerrado_este_dia) { estado.cerrados.add(item.lugar); continue }
@@ -1761,7 +1819,7 @@ export function planListasTrip(args) {
         const NAVIDAD = reservaCfg.fechas ?? []
         const sinDato = r && !r.closed_on && !r.closed_dates && !/\d{1,2}:\d{2}\s*-/.test(String(r.hours ?? ''))
         const nota = !NAVIDAD.includes(mmdd) ? (/con reserva/i.test(item.nota ?? '') ? 'Con reserva' : null) : sinDato ? reservaCfg.sin_dato ?? 'En Navidad, reserva con antelación' : (item.kind === 'cena' && reservaCfg.cena_especial?.[mmdd]) || reservaCfg.texto || 'Con reserva'
-        if (item.kind === 'comida') meals.push({ type: 'lunch', start, end: start + item.min, eatMinutes: item.min, coordinates: chosen?.coordinates ?? null, ...(chosen ? { spot: { name: chosen.name, zone: chosen.zone } } : {}), eatStart: start, ...(nota ? { note: nota } : {}) })
+        if (item.kind === 'comida') meals.push({ type: 'lunch', ...(item.sin_restaurante ? { sinRestaurante: true, label: item.titulo ?? null } : {}), start, end: start + item.min, eatMinutes: item.min, coordinates: chosen?.coordinates ?? null, ...(chosen ? { spot: { name: chosen.name, zone: chosen.zone } } : {}), eatStart: start, ...(nota ? { note: nota } : {}) })
         else {
           dinnerRestaurant = chosen
           meals.push({ type: 'dinner', start, end: start + item.min, coordinates: chosen?.coordinates ?? null, walkMinutes: item.leg ?? 0, ...(nota ? { note: nota } : {}) })
@@ -1893,6 +1951,7 @@ export function planListasTrip(args) {
       continue
     }
     const plan = procesarDia(drafts[index], skeletonDay)
+    if ((index === 0 || drafts[index].diaLlegada) && llegadaDecision?.aplica) plan.llegadaDia = { ...(index === 0 ? llegadaDecision.publico.dia1 : {}), es_dia_1: index === 0, bloques: drafts[index].llegadaBloques.map((b) => b.sitio) }
     days.push(plan)
     cityPlanned.push(plan)
     if (plan.escritoNights.length > 0) nightsByDay.set(plan.dayNumber, plan.escritoNights)
@@ -1957,6 +2016,7 @@ export function planListasTrip(args) {
     motivosOrden,
     problems,
     dayNotices,
+    ...(llegadaDecision?.aplica ? { llegada: llegadaDecision.publico } : {}),
     ...(ftFranja ? { freeTourInfo: { franja: ftFranja, hora: freeTourDespues?.hora ?? null, dayId: ftDayIndex >= 0 ? order[ftDayIndex] : null, order: [...order], motivo: ftDayIndex >= 0 ? null : 'ningún día lo lleva' } } : {}),
   }
 }

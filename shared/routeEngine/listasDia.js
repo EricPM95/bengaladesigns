@@ -188,7 +188,8 @@ export function cumple(cuando, ctx) {
 export function aplicarVariantes(trabajo, dia, ctx, aplicadas) {
   let out = trabajo
   for (const variante of dia.variantes ?? []) {
-    if (!cumple(variante.cuando, ctx)) continue
+    // (Tanda 7: `ctx.forzar` = ids de variantes que valen aunque su condición no se cumpla; lo usa la llegada con horas, ver llegadaDia1.js.)
+    if (!cumple(variante.cuando, ctx) && !(ctx.forzar ?? []).includes(variante.id)) continue
     out = aplicarOps(out, variante.ops)
     aplicadas.push(variante.id)
   }
