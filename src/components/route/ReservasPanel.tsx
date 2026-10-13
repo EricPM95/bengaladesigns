@@ -24,6 +24,7 @@ import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
 import { Icono } from '../ui/Icono'
+import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
 
 interface ReservasPanelProps {
   route: Route
@@ -32,10 +33,10 @@ interface ReservasPanelProps {
 
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
 
-/** «10 – 14 ago 2027», «30 sep – 3 oct 2027» o, sin fechas, «5 días». */
+/** «10 – 14 ago 2027», «30 sep – 3 oct 2027» o, sin fechas, «5 días · 4 noches». */
 export function rangoDelViaje(route: Route): string {
   const range = route.answers.dateRange
-  if (!range?.start || !range?.end) return `${route.days.filter((day) => !day.isReturnLeg).length} días`
+  if (!range?.start || !range?.end) return textoDeDuracion(diasDelViaje(route))
   const start = new Date(`${range.start}T12:00:00`)
   const end = new Date(`${range.end}T12:00:00`)
   const mes = (date: Date) => MES.format(date).replace('.', '')

@@ -14,6 +14,7 @@ import { withUndo } from '../../store/useAddFlowStore'
 import { Icono } from '../ui/Icono'
 import { BanderaDestino } from '../ui/BanderaDestino'
 import { TarjetaRecuerdosEnRuta } from './fotos/TarjetaRecuerdos'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 
 interface RouteOverviewProps {
   route: Route
@@ -76,7 +77,12 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
         const cityChanged = destinoCambiado(route, segment.city)
         const firstNumber = segmentDays[0]?.dayNumber ?? 1
         const lastNumber = segmentDays[segmentDays.length - 1]?.dayNumber ?? firstNumber
-        const dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1))}` : null
+        // «5 días · 4 noches» (Tanda 7, punto 1): el último tramo cuenta también el día de vuelta (que duerme en casa, no en el destino), con su fecha.
+        const esElUltimo = index === segments.length - 1
+        const conVuelta = esElUltimo && route.days.some((day) => day.isReturnLeg)
+        // (Un tramo que no es el último duerme todos sus días; el último, uno menos si no lleva el día de vuelta aparte.)
+        const duracion = textoDeDuracion(count + (conVuelta ? 1 : 0), esElUltimo && !conVuelta ? count - 1 : count)
+        const dates = tripStart ? `${shortDate(addDaysToIso(tripStart, firstNumber - 1))} – ${shortDate(addDaysToIso(tripStart, lastNumber - 1 + (conVuelta ? 1 : 0)))}` : null
         return (
           <div key={segment.id}>
             {index > 0 && <DestinationDistanceConnector from={segmentCentroid(segments[index - 1], route.days)} to={segmentCentroid(segment, route.days)} />}
@@ -86,10 +92,11 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
               <BanderaDestino countryCode={segment.countryCode} />
               <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span className="truncate font-display text-[24px] leading-[1.05] text-text">{segment.city}</span>
-                <span className="whitespace-nowrap text-[12px] text-text/55">
-                  {count} día{count === 1 ? '' : 's'}
-                  {dates ? ` · ${dates}` : ''}
+                {/* Dos líneas: «5 días · 4 noches» y debajo las fechas (junto a la bombilla y el deshacer no caben en una a 375 px). */}
+                <span data-duracion-del-viaje="1" className="whitespace-nowrap text-[12px] text-text/55">
+                  {duracion}
                 </span>
+                {dates && <span className="whitespace-nowrap text-[12px] leading-none text-text/40">{dates}</span>}
               </span>
             </button>
             <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />

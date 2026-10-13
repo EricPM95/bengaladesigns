@@ -1,6 +1,6 @@
 import { BanderaDestino } from '../ui/BanderaDestino'
 import { Icono } from '../ui/Icono'
-import { plural, textoDeFotos, type ResumenViaje } from '../../lib/viajesPerfil'
+import { textoDeFotos, type ResumenViaje } from '../../lib/viajesPerfil'
 
 /**
  * Un viaje de «Mis viajes» (diseño del Perfil, Tanda 6y4): la bandera del destino (la misma de la tarjeta del destino de RUTA: el cuadrado redondeado con las franjas inclinadas), el destino en grande,
@@ -9,7 +9,8 @@ import { plural, textoDeFotos, type ResumenViaje } from '../../lib/viajesPerfil'
  * `fotos`: null mientras se cuentan (no se enseña un «Sin fotos» falso).
  */
 export function FilaDeViaje({ viaje, fotos, abierto, onAbrir, onAbrirViaje }: { viaje: ResumenViaje; fotos: number | null; abierto: boolean; onAbrir: () => void; onAbrirViaje: () => void }) {
-  const cuando = [viaje.cuando, plural(viaje.dias, 'día', 'días')].filter(Boolean).join(' · ')
+  // Cada trozo entero en su línea («5 días · 4 noches» no se parte): si no caben juntos, el segundo baja.
+  const trozos = [viaje.cuando, viaje.duracion].filter(Boolean)
   const sePuedeAbrir = !abierto && Boolean(viaje.guardado)
   return (
     <div className={`overflow-hidden rounded-[18px] border bg-white text-[#1C2230] shadow-[0_1px_2px_rgba(28,34,48,.04)] transition-colors hover:border-text/20 ${abierto ? 'border-accent/30' : 'border-text/[.08]'}`}>
@@ -19,7 +20,12 @@ export function FilaDeViaje({ viaje, fotos, abierto, onAbrir, onAbrirViaje }: { 
           <span className="truncate font-display text-[20px] leading-[1.05]">{viaje.destino}</span>
           <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
             <span className="text-text/60" style={{ font: "500 11.5px 'Geist Mono',monospace" }}>
-              {cuando}
+              {trozos.map((trozo, i) => (
+                <span key={trozo} className="whitespace-nowrap">
+                  {i > 0 ? ' · ' : ''}
+                  {trozo}
+                </span>
+              ))}
             </span>
             {fotos !== null && (
               <span className="flex items-center gap-1 text-[11.5px] font-medium text-text/60" data-fotos-del-viaje>

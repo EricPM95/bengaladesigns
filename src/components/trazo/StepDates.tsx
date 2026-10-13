@@ -33,6 +33,8 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
   const [flexMonth, setFlexMonth] = useState<number | null>(!dateRange && month !== undefined ? month : null)
 
   const nights = start && end ? Math.round((end - start) / 864e5) : 0
+  /** Las noches de las fechas flexibles (`days` − 1): lo que se pregunta; 0 = «Solo un día». */
+  const flexNights = Math.max(0, flexDays - 1)
 
   const confirmRange = () => {
     if (!start || !end) return
@@ -78,21 +80,28 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
       >
         <div style={{ font: `500 11px/1 ${MONO}`, letterSpacing: '.14em', color: ACCENT, textTransform: 'uppercase' }}>Fechas flexibles</div>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginTop: 10 }}>
-          <h2 style={{ margin: 0, font: `400 32px/1.02 ${SERIF}`, maxWidth: 190 }}>¿Cuántos días?</h2>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={{ font: `400 84px/.8 ${SERIF}`, color: ACCENT }}>{flexDays}</span>
-            <span style={{ font: "400 15px 'Geist'", color: 'rgba(28,34,48,.75)' }}>{flexDays === 1 ? 'día' : 'días'}</span>
+          <h2 style={{ margin: 0, font: `400 32px/1.02 ${SERIF}`, maxWidth: 190 }}>¿Cuántas noches?</h2>
+          {/* Se pregunta por las noches; por dentro se guarda igual que siempre: `days` = noches + 1. */}
+          <div data-cuantas-noches="1" style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            {flexNights === 0 ? (
+              <span style={{ font: `400 34px/1 ${SERIF}`, color: ACCENT }}>Solo un día</span>
+            ) : (
+              <>
+                <span style={{ font: `400 84px/.8 ${SERIF}`, color: ACCENT }}>{flexNights}</span>
+                <span style={{ font: "400 15px 'Geist'", color: 'rgba(28,34,48,.75)' }}>{flexNights === 1 ? 'noche' : 'noches'}</span>
+              </>
+            )}
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,minmax(0,1fr))', gap: 4, marginTop: 20 }}>
-          {Array.from({ length: MAX_DAYS }, (_, i) => i + 1).map((n) => {
-            const sel = n === flexDays
-            const under = n < flexDays
+          {Array.from({ length: MAX_DAYS - 1 }, (_, i) => i + 1).map((n) => {
+            const sel = n === flexNights
+            const under = n < flexNights
             return (
               <button
                 key={n}
                 type="button"
-                onClick={() => setFlexDays(n)}
+                onClick={() => setFlexDays(n + 1)}
                 style={{
                   height: 34,
                   border: 'none',
@@ -109,6 +118,26 @@ export function StepDates({ destinationName, days, dateRange, month, onChange, o
             )
           })}
         </div>
+        <button
+          type="button"
+          data-solo-un-dia="1"
+          aria-pressed={flexNights === 0}
+          onClick={() => setFlexDays(1)}
+          style={{
+            height: 34,
+            marginTop: 6,
+            width: '100%',
+            border: 'none',
+            borderRadius: 10,
+            background: flexNights === 0 ? AMBER : 'rgba(28,34,48,.04)',
+            color: flexNights === 0 ? '#FFFFFF' : INK,
+            font: `${flexNights === 0 ? 600 : 400} 14px 'Geist'`,
+            cursor: 'pointer',
+            transition: 'background .25s,color .25s',
+          }}
+        >
+          Solo un día
+        </button>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(28,34,48,.08)' }}>
           <h2 style={{ margin: 0, font: `400 26px/1 ${SERIF}` }}>¿Qué mes?</h2>
           <span style={{ font: `500 11px ${MONO}`, letterSpacing: '.1em', textTransform: 'uppercase', color: ACCENT }}>

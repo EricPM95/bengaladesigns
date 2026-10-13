@@ -12,6 +12,7 @@ import { todayIso } from '../lib/dateRange'
 import { lluviaDePruebaActiva } from '../lib/lluviaDePrueba'
 import { fetchHourlyRain, type HourlyRain } from '../lib/rainForecast'
 import { usePruebasUi } from '../store/usePruebasUi'
+import { textoDeDias, textoDeDuracion } from '../lib/duracionViaje'
 
 export interface AppNotice {
   id: string
@@ -86,7 +87,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           id: 'days-over-dates',
           kind: 'warning',
           title: 'Tienes más días que fechas',
-          text: `Tu viaje es de ${tripDays} ${tripDays === 1 ? 'día' : 'días'} y ahora tienes ${route.days.length}. Añade un día más a tu viaje o elimina el que menos te convenga.`,
+          text: `Tu viaje es de ${textoDeDuracion(tripDays)} y ahora tienes ${textoDeDias(route.days.length)}. Añade un día más a tu viaje o elimina el que menos te convenga.`,
           action: 'open-dates',
           actionLabel: 'Añadir un día a mis fechas',
           read: false,

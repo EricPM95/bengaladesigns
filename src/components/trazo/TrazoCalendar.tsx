@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { DateRange } from '../../lib/types'
 import { isoToLocalDate, tocarDiaDelRango } from '../../lib/dateRange'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 import { AMBER, ACCENT, INK, MONO, SERIF, panelStyle } from './trazoUi'
 
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -144,7 +145,7 @@ export function TrazoCalendar({ dateRange, onSelect, onPreviewMonth }: TrazoCale
         }}
       >
         <span>{summary}</span>
-        <span style={{ font: `500 12px ${MONO}`, color: ACCENT }}>{nights ? `${nights + 1} días` : ''}</span>
+        <span style={{ font: `500 12px ${MONO}`, color: ACCENT }}><span data-duracion-del-calendario="1">{start && end ? textoDeDuracion(nights + 1) : ''}</span></span>
       </div>
     </div>
   )

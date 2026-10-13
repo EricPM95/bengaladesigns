@@ -5,6 +5,7 @@ import type { GenerationResumeState } from '../../lib/routeGenerationOrchestrato
 import type { GenerationStatus } from '../../lib/useRouteGeneration'
 import { cityCode } from './cityCode'
 import { usesPool } from './planChoice'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 import { ACCENT, AMBER, Cta, GhostButton, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
 
 const MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -91,7 +92,7 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
     { k: 'Fechas', v: datesLabel(answers.dateRange, answers.month) },
     { k: 'Estación', v: answers.season ? SEASON_FX[answers.season].name : '—' },
     { k: 'Compañía', v: answers.companion ? COMPANION[answers.companion] : '—' },
-    { k: 'Duración', v: `${days} ${days === 1 ? 'día' : 'días'}` },
+    { k: 'Duración', v: textoDeDuracion(days) },
     // (Tanda 6y7) Con 1 día no hay paso de lugares: la fila tampoco sale.
     ...(usesPool('auto', answers.days) ? [{ k: 'Lugares', v: chosen ? `${chosen} ${chosen === 1 ? 'lugar elegido' : 'lugares elegidos'}` : '—' }] : []),
     { k: 'Experiencias', v: experiences.join(' · ') || '—' },
@@ -101,7 +102,7 @@ export function StepSummary({ origin, destination, status, checkpoint, route, er
     status === 'error'
       ? errorMessage ?? 'No se pudo generar la ruta.'
       : status === 'done' && stops !== null
-        ? `${days} ${days === 1 ? 'día' : 'días'} · ${stops} planes a tu medida`
+        ? `${textoDeDuracion(days)} · ${stops} planes a tu medida`
         : progress > 0.66
           ? 'Poniendo las horas de cada día…'
           : progress > 0.3

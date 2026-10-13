@@ -6,6 +6,7 @@ import { Icono } from '../../ui/Icono'
 import { NewTripSheet } from '../../layout/NewTripSheet'
 import { TarjetaRecuerdos } from '../fotos/TarjetaRecuerdos'
 import { FRAMBUESA, TarjetaOscura } from './piezas'
+import { diasDelViaje, textoDeDuracion } from '../../../lib/duracionViaje'
 
 /**
  * HOY después del viaje (Tanda 6z3 y 6z6, diseño «Después del viaje»; solo de pago, como todo HOY): la tarjeta «Tu viaje a Roma» con sus días en fichas de fecha, «Guarda tus recuerdos» con las fotos del viaje
@@ -14,7 +15,9 @@ import { FRAMBUESA, TarjetaOscura } from './piezas'
 export function HoyDespues({ route, startIso }: { route: Route; startIso: string }) {
   const [nuevoViaje, setNuevoViaje] = useState(false)
   const dias = route.days.filter((day) => !day.isReturnLeg)
-  const finIso = addDaysToIso(startIso, Math.max(0, dias.length - 1))
+  // El texto de arriba cuenta el viaje entero («5 días · 4 noches», con el día de vuelta); las fichas de abajo, los días de ruta.
+  const totalDias = diasDelViaje(route)
+  const finIso = addDaysToIso(startIso, Math.max(0, totalDias - 1))
   return (
     <>
       <TarjetaOscura brillo="oklch(0.55 0.11 150 / .35)" abajo>
@@ -22,7 +25,7 @@ export function HoyDespues({ route, startIso }: { route: Route; startIso: string
           Tu viaje a <em style={{ color: 'oklch(0.78 0.11 15)' }}>{route.destination}</em>
         </span>
         <span className="relative text-[#FFFDF8]/75" style={{ font: "500 12px 'Geist Mono',monospace" }}>
-          {dias.length} {dias.length === 1 ? 'día' : 'días'} · {formatHeaderDateRangeShortEs(startIso, finIso)}
+          {textoDeDuracion(totalDias)} · {formatHeaderDateRangeShortEs(startIso, finIso)}
         </span>
         <div className="relative mt-2.5 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${Math.min(Math.max(dias.length, 1), 5)},1fr)` }}>
           {dias.map((day) => {

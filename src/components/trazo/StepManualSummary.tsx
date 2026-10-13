@@ -2,6 +2,7 @@ import type { Place } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { cityCode } from './cityCode'
 import { COMPANION, datesLabel, transportModeLabel } from './StepSummary'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 import { ACCENT, Cta, INK, MONO, SEASON_FX, SERIF, Title } from './trazoUi'
 
 interface StepManualSummaryProps {
@@ -26,7 +27,7 @@ export function StepManualSummary({ origin, destination, onStart }: StepManualSu
     { k: 'Fechas', v: datesLabel(answers.dateRange, answers.month) },
     { k: 'Estación', v: answers.season ? SEASON_FX[answers.season].name : '—' },
     { k: 'Compañía', v: answers.companion ? COMPANION[answers.companion] : '—' },
-    { k: 'Duración', v: `${days} ${days === 1 ? 'día' : 'días'}` },
+    { k: 'Duración', v: textoDeDuracion(days) },
   ]
 
   return (
