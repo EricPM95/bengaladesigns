@@ -22,7 +22,7 @@ export function anadirExcursionEnDiaNuevo(excursion: Excursion): string | null {
 export async function cambiarDiaPorExcursion(day: DayPlan, excursion: Excursion): Promise<string | null> {
   const route = useRouteStore.getState().route
   if (!route) return null
-  const dayId = await cambiarConDeshacer(mensajeDeCambio(route, day), async () => {
+  const dayId = await cambiarConDeshacer(mensajeDeCambio(), async () => {
     // El día 4 lleva su interruptor [Roma | Excursión]: la excursión se pone en su página, como en «¿Dónde la ponemos?».
     if (day.interruptor && (await ponerExcursionEnElDia(day.id, excursion))) return day.id
     return useRouteStore.getState().placeExcursion(excursion, { dayId: day.id })

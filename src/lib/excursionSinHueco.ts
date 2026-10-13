@@ -12,7 +12,7 @@ import type { DayPlan, Excursion, Route, Stop } from './types'
 import { dayOfReservation, type Reservation } from './bookings'
 import { excursionTargetDays } from './excursionOffer'
 import { hasFullDayExcursion, placeExcursionIn } from './freeDays'
-import { diaProsa, elDia } from './nombreDeDia'
+import { diaProsa } from './nombreDeDia'
 
 export type PesoDeSitio = 'imprescindible' | 'nivel1'
 /** Nombre de sitio → cuánto pesa. Un sitio que no sale es de los demás. */
@@ -34,8 +34,8 @@ export function pesoDeParada(stop: Pick<Stop, 'name' | 'fullName'>, importancia:
 export interface PerdidaDelDia {
   imprescindibles: string[]
   nivel1: string[]
-  /** Paradas que no son ni imprescindibles ni de nivel 1. */
-  otras: number
+  /** Nombres de las paradas que no son ni imprescindibles ni de nivel 1. */
+  otras: string[]
   /** El día ya llevaba una excursión (de medio día o elegida) que también se va. */
   llevabaExcursion: boolean
 }
@@ -51,13 +51,13 @@ export function paradasQueSePierden(route: Route, day: DayPlan, excursion: Excur
 
 /** Lo que pierde ese día. Los descansos y los huecos libres no cuentan como paradas. */
 export function perdidaDeCambiar(route: Route, day: DayPlan, excursion: Excursion, importancia: ImportanciaPorSitio): PerdidaDelDia {
-  const perdida: PerdidaDelDia = { imprescindibles: [], nivel1: [], otras: 0, llevabaExcursion: Boolean(day.selectedExcursionId) || Boolean(day.halfDayExcursion && !day.halfDayExcursionDeclined) }
+  const perdida: PerdidaDelDia = { imprescindibles: [], nivel1: [], otras: [], llevabaExcursion: Boolean(day.selectedExcursionId) || Boolean(day.halfDayExcursion && !day.halfDayExcursionDeclined) }
   for (const stop of paradasQueSePierden(route, day, excursion)) {
     if (stop.isBreak || stop.isFreeTime) continue
     const peso = pesoDeParada(stop, importancia)
     if (peso === 'imprescindible') perdida.imprescindibles.push(stop.name)
     else if (peso === 'nivel1') perdida.nivel1.push(stop.name)
-    else perdida.otras++
+    else perdida.otras.push(stop.name)
   }
   return perdida
 }
@@ -79,7 +79,7 @@ export function diaConReserva(route: Route, reservations: Reservation[], day: Da
 
 /** Menor = se pierde menos. */
 function comparaPerdida(a: PerdidaDelDia, b: PerdidaDelDia): number {
-  return a.imprescindibles.length - b.imprescindibles.length || a.nivel1.length - b.nivel1.length || a.otras - b.otras
+  return a.imprescindibles.length - b.imprescindibles.length || a.nivel1.length - b.nivel1.length || a.otras.length - b.otras.length
 }
 
 /**
@@ -101,30 +101,28 @@ export function opcionesDeCambio(route: Route, reservations: Reservation[], excu
 
 const lista = (nombres: string[]): string => (nombres.length <= 1 ? (nombres[0] ?? '') : `${nombres.slice(0, -1).join(', ')} y ${nombres.at(-1)}`)
 
-/** Los nombres que se dicen en el «¿Estás seguro?» antes de contar el resto («y 3 paradas más»). */
+/** Cuántos nombres de paradas (después de los imprescindibles, que van todos) se dicen en el «¿Estás seguro?» antes de contar el resto («y 7 más»). */
 const NOMBRES_A_LA_VISTA = 4
 
 /**
- * El texto del «¿Estás seguro?» al cambiar un día por la excursión: qué día pasa a ser la excursión y qué se pierde, con los imprescindibles primero.
- * «Martes 14 pasará a ser «Excursión a Pompeya». Se pierde lo que tienes ese día: los imprescindibles Coliseo y Foro Romano, Panteón y 3 paradas más.»
+ * El texto del «¿Estás seguro?» al cambiar un día por la excursión: qué día pasa a ser la excursión y qué se pierde, con los imprescindibles primero (todos, por su nombre), luego los sitios de
+ * nivel 1 y las demás paradas (cuatro nombres) y, del resto, solo cuántas.
+ * «Martes 14 pasará a ser «Excursión a Pompeya». Se pierde lo que tienes ese día: los imprescindibles Coliseo y Foro Romano, Panteón, Ara Pacis, Trastevere y 6 más.»
  */
 export function textoDeConfirmar(route: Route, day: DayPlan, excursion: Excursion, perdida: PerdidaDelDia): string {
   const dia = diaProsa(route, day.dayNumber)
   const cabeza = `${dia.charAt(0).toUpperCase()}${dia.slice(1)} pasará a ser «${excursion.title}».`
-  const nombres = [...perdida.imprescindibles, ...perdida.nivel1]
-  const visibles = nombres.slice(0, NOMBRES_A_LA_VISTA)
-  const partes: string[] = []
-  const imprescindiblesVisibles = visibles.filter((nombre) => perdida.imprescindibles.includes(nombre))
-  const nivel1Visibles = visibles.filter((nombre) => !perdida.imprescindibles.includes(nombre))
-  if (imprescindiblesVisibles.length > 0) partes.push(`${imprescindiblesVisibles.length === 1 ? 'el imprescindible' : 'los imprescindibles'} ${lista(imprescindiblesVisibles)}`)
-  if (nivel1Visibles.length > 0) partes.push(lista(nivel1Visibles))
-  const resto = nombres.length - visibles.length + perdida.otras
-  if (resto > 0) partes.push(`${resto} ${resto === 1 ? 'parada más' : 'paradas más'}`)
-  if (partes.length === 0) return perdida.llevabaExcursion ? `${cabeza} Se va la excursión que tenías ese día.` : `${cabeza} Ese día no llevaba paradas.`
-  return `${cabeza} Se pierde lo que tienes ese día: ${lista(partes)}.${perdida.llevabaExcursion ? ' Y la excursión que tenías.' : ''}`
+  const piezas: string[] = []
+  if (perdida.imprescindibles.length > 0) piezas.push(`${perdida.imprescindibles.length === 1 ? 'el imprescindible' : 'los imprescindibles'} ${lista(perdida.imprescindibles)}`)
+  const demas = [...perdida.nivel1, ...perdida.otras]
+  piezas.push(...demas.slice(0, NOMBRES_A_LA_VISTA))
+  const resto = demas.length - NOMBRES_A_LA_VISTA
+  if (resto > 0) piezas.push(`${resto} más`)
+  if (piezas.length === 0) return perdida.llevabaExcursion ? `${cabeza} Se va la excursión que tenías ese día.` : `${cabeza} Ese día no llevaba paradas.`
+  return `${cabeza} Se pierde lo que tienes ese día: ${lista(piezas)}.${perdida.llevabaExcursion ? ' Y la excursión que tenías.' : ''}`
 }
 
-/** El aviso corto de abajo (con «Deshacer») al cambiar un día. */
-export function mensajeDeCambio(route: Route, day: DayPlan): string {
-  return `Cambiado ${elDia(route, day.dayNumber)} por la excursión`
+/** El aviso corto de abajo (con «Deshacer») al cambiar un día; corto para que quepa entero en un móvil (el día cambiado ya queda abierto detrás). */
+export function mensajeDeCambio(): string {
+  return 'Día cambiado por la excursión'
 }

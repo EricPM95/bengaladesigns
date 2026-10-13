@@ -168,8 +168,8 @@ function recomendadoDeReferencia(ruta, reservas, importancia, excursion) {
   // El orden de la comparación: un imprescindible pesa más que muchas paradas de nivel 1 y estas más que muchas sueltas.
   const p2 = filas.find((f) => f.day.id === 'd2').perdida
   const p3 = filas.find((f) => f.day.id === 'd3').perdida
-  debe(p2.imprescindibles.join() === 'Gran Faro,Puente Viejo' && p2.otras === 1, '3 pérdida', `lo que pierde d2 está mal: ${JSON.stringify(p2)}`)
-  debe(p3.nivel1.join() === 'Mercado Alto,Torre Norte' && p3.otras === 3 && p3.imprescindibles.length === 0, '3 pérdida', `lo que pierde d3 está mal: ${JSON.stringify(p3)}`)
+  debe(p2.imprescindibles.join() === 'Gran Faro,Puente Viejo' && p2.otras.length === 1, '3 pérdida', `lo que pierde d2 está mal: ${JSON.stringify(p2)}`)
+  debe(p3.nivel1.join() === 'Mercado Alto,Torre Norte' && p3.otras.length === 3 && p3.imprescindibles.length === 0, '3 pérdida', `lo que pierde d3 está mal: ${JSON.stringify(p3)}`)
   // 1) Si el día con menos paradas lleva un imprescindible, gana otro con más paradas pero sin imprescindibles.
   const r1 = rutaDe('Ciudadfalsa', [['A1'], ['Gran Faro'], ['Plaza 1', 'Plaza 2', 'Plaza 3', 'Plaza 4'], ['Plaza 5'], ['A5']])
   const o1 = opcionesDeCambio(r1, [], EXC, IMPORTANCIA_X)
@@ -218,13 +218,13 @@ function recomendadoDeReferencia(ruta, reservas, importancia, excursion) {
 
   // El «¿Estás seguro?» nombra lo que se pierde (con los imprescindibles delante) y el día que cambia.
   const textoD2 = textoDeConfirmar(ruta, ruta.days[1], EXC, perdidaDeCambiar(ruta, ruta.days[1], EXC, IMPORTANCIA_X))
-  debe(/Gran Faro/.test(textoD2) && /Puente Viejo/.test(textoD2) && /imprescindibles/.test(textoD2) && /Excursión al Valle/.test(textoD2) && /1 parada más/.test(textoD2) && /Se pierde/.test(textoD2), '3 estás seguro', `el texto no nombra lo que se pierde: ${textoD2}`)
-  debe(textoD2.indexOf('imprescindibles') < textoD2.indexOf('parada más'), '3 estás seguro', 'los imprescindibles no van antes del resto')
+  debe(/Gran Faro/.test(textoD2) && /Puente Viejo/.test(textoD2) && /imprescindibles/.test(textoD2) && /Excursión al Valle/.test(textoD2) && /Plaza C/.test(textoD2) && /Se pierde/.test(textoD2), '3 estás seguro', `el texto no nombra lo que se pierde: ${textoD2}`)
+  debe(textoD2.indexOf('imprescindibles') < textoD2.indexOf('Plaza C'), '3 estás seguro', 'los imprescindibles no van antes del resto')
   const textoD3 = textoDeConfirmar(ruta, ruta.days[2], EXC, perdidaDeCambiar(ruta, ruta.days[2], EXC, IMPORTANCIA_X))
-  debe(/Mercado Alto/.test(textoD3) && /Torre Norte/.test(textoD3) && /3 paradas más/.test(textoD3) && !/imprescindible/.test(textoD3), '3 estás seguro', `el texto de d3 está mal: ${textoD3}`)
+  debe(/Mercado Alto/.test(textoD3) && /Torre Norte/.test(textoD3) && /Plaza D/.test(textoD3) && /1 más/.test(textoD3) && !/imprescindible/.test(textoD3), '3 estás seguro', `el texto de d3 está mal: ${textoD3}`)
   const rutaMuchas = rutaDe('Ciudadfalsa', [['A1'], ['Gran Faro', 'Puente Viejo', 'Mercado Alto', 'Torre Norte', 'Plaza 1', 'Plaza 2'], ['A3']])
   const textoMuchas = textoDeConfirmar(rutaMuchas, rutaMuchas.days[1], EXC, perdidaDeCambiar(rutaMuchas, rutaMuchas.days[1], EXC, IMPORTANCIA_X))
-  debe(/2 paradas más/.test(textoMuchas), '3 estás seguro', `con muchos sitios el texto no cuenta el resto: ${textoMuchas}`)
+  debe(/Plaza 1/.test(textoMuchas) && /Plaza 2/.test(textoMuchas) && !/más/.test(textoMuchas), '3 estás seguro', `con muchos sitios el texto no nombra todos: ${textoMuchas}`)
 
   // Cambiar de verdad, con reservas y otras reservas puestas, y «Deshacer».
   const reservasB = [{ id: 'res-9', kind: 'entrada', refId: 'Plaza G', name: 'Entrada a Plaza G', placeNames: ['Plaza G'], dateIso: sumaDias(INICIO, 3), dayNumber: null, time: '10:00' }]
@@ -238,7 +238,7 @@ function recomendadoDeReferencia(ruta, reservas, importancia, excursion) {
   debe(cambiado.title === EXC.title && cambiado.dayType === 'excursion' && cambiado.stops.length === 0 && cambiado.selectedExcursionId === EXC.id, '3 cambiar', 'el día no pasó a ser la excursión (con su nombre y sin paradas)')
   debe(despues.days.length === antes.route.days.length && JSON.stringify(despues.answers) === JSON.stringify(antes.route.answers), '3 cambiar', 'cambiar un día movió días o fechas')
   debe(antes.route.days.filter((d) => d.id !== 'd2').every((d) => JSON.stringify(despues.days.find((x) => x.id === d.id)) === JSON.stringify(d)), '3 cambiar', 'otro día cambió')
-  debe(toast()?.previous && /Cambiado/.test(toast().message) && tienda().mode === 'days' && tienda().activeDayId === 'd2', '3 cambiar', 'falta el aviso con «Deshacer» o no se abre el día')
+  debe(toast()?.previous && /Día cambiado por la excursión/.test(toast().message) && tienda().mode === 'days' && tienda().activeDayId === 'd2', '3 cambiar', 'falta el aviso con «Deshacer» o no se abre el día')
   useAddFlowStore.getState().undo()
   const vuelto = copia({ route: ahora(), reservations: tienda().reservations, transportBookings: tienda().transportBookings, insuranceBooking: tienda().insuranceBooking })
   debe(JSON.stringify(vuelto) === JSON.stringify(antes), '3 deshacer', 'Deshacer no devuelve el viaje idéntico')
