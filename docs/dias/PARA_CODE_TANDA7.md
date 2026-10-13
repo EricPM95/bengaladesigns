@@ -1,3 +1,5 @@
+Sustituido por PARA_CODE_TANDA7_v3.md (13-oct-2026).
+
 # Para Code · Tanda 7: llegadas y vueltas
 
 **Empieza cuando la 6j esté subida** (ya lo está: a9d2651).

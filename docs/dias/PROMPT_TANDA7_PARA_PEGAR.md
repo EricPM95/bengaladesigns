@@ -1,3 +1,5 @@
+Sustituido por PARA_CODE_TANDA7_v3.md (13-oct-2026).
+
 Empieza la Tanda 7: está en docs\dias\PARA_CODE_TANDA7.md. Léela entera y hazla toda, en el orden de los puntos.
 
 Antes de empezar: docs\dias\DIAS_ROMA_PARADAS.md tiene la sección final «Llegadas y vueltas» reescrita entera. Pásalo por el convertidor y no lo toques. Mucho de lo que hace falta ya existe en la app (las horas de vuelo y los aeropuertos en RESERVAS, _llegada.json, la barra de llegada y de vuelta, la ventana de llegada, la campana de avisos y la hoja de la 6j): úsalo, no lo hagas de nuevo.

@@ -1,3 +1,5 @@
+Sustituido por PARA_CODE_TANDA7_v3.md (13-oct-2026).
+
 Tanda 7 (después de la 6y10). Las llegadas y las vueltas: el día de llegada y el día de vuelta según la hora del vuelo, el tren, el autobús o el barco. Es la parte de pago y tiene que quedar perfecta. Va todo en este archivo.
 
 Antes de nada: Claude ha copiado en docs\dias PENDIENTES_LLEGADAS.md, PENDIENTES_6K.md y este archivo. Súbelos en el primer commit, sin tocarlos. Este archivo sustituye a PARA_CODE_TANDA7.md y a PROMPT_TANDA7_PARA_PEGAR.md (del 8-oct): no los sigas. Pon arriba de cada uno una sola línea: «Sustituido por PARA_CODE_TANDA7_v2.md (12-oct-2026).»
