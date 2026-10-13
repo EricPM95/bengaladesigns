@@ -34,7 +34,7 @@ import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
 import { claseDeReserva, limitesConExcursionDe, sitiosGrandesDe } from './listasReservas.js'
-import { aplicarOpsLlegada, decidirLlegada, MEDIOS_CON_HORA } from './llegadaDia1.js'
+import { aplicarOpsLlegada, decidirLlegada, excursionEnDia1, libreDeLlegada, MEDIOS_CON_HORA } from './llegadaDia1.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 import { COMIDA_HASTA } from './comida.js'
@@ -121,7 +121,10 @@ export function planListasTrip(args) {
   const catalogueByName = new Map((destData.night_experiences ?? []).map((entry) => [entry.name, entry]))
   const selected = (experiencesPositive ?? []).filter((id) => id in TAG_INTEREST_MAP && id !== 'free_tour')
   const tour = destData.default_free_tour ?? null
-  const skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, interruptor: { modo: diaCuatro, mediaJornada: Boolean(mediaJornada) }, propios: diaPropio ? [diaPropio.dayNumber] : [] })
+  // Una excursión que el viajero reservó para el día de llegada, y sale cuando ya está libre: ese día lleva la excursión (llegadaDia1.js); la del día 4 de siempre vuelve a Roma, que no se hacen dos.
+  const excursionDia1 = llegadaPide && excursionEnDia1(llegadaIn.excursionReservada ?? null, { fecha1: calendar.hasDates ? calendar.dateOfDay(1) : null, libre: libreDeLlegada(destData, written, llegadaIn) }) === 'lleva_el_dia'
+  let skeleton = tripDays({ destData, totalDays, hasFreeTour: hasFreeTourIn, dateRangeStartIso, interruptor: { modo: excursionDia1 ? 'roma' : diaCuatro, mediaJornada: Boolean(mediaJornada) }, propios: diaPropio ? [diaPropio.dayNumber] : [] })
+  if (excursionDia1) skeleton = skeleton.map((day, i) => (i === 0 ? { ...day, isExcursion: true, isBlank: false, interruptor: false, curated: null, halfDayExcursion: null } : day))
   const contentDays = skeleton.length
   const cityDays = skeleton.filter((day) => !day.isBlank && !day.isExcursion)
   // Free Tour: en un viaje de 1,5 días o menos NO se ofrece.
@@ -187,7 +190,7 @@ export function planListasTrip(args) {
     llegada: llegadaPide ? (chosen) => {
       const ftReserva = tour ? (reservasGrandes ?? []).find((r) => r && r.name === tour.name) ?? null : null
       return decidirLlegada({
-        destData, written, entrada: llegadaIn, chosen, n: contentDays, hasFreeTour, ftReserva, ftHora: ftReserva?.time ?? (tour ? entradas?.[tour.name] ?? null : null), tourName: tour?.name ?? null,
+        destData, written, entrada: llegadaIn, chosen, n: contentDays, hasFreeTour, ftReserva, reservasViaje, excursion: llegadaIn.excursionReservada ?? null, excursionDia1, ftHora: ftReserva?.time ?? (tour ? entradas?.[tour.name] ?? null : null), tourName: tour?.name ?? null,
         fecha1: calendar.hasDates ? calendar.dateOfDay(1) : null, mes: calendar.month, reservasGrandes, sitiosGrandes: destData.sitios_grandes?.lugares ?? [], nivelDe,
         dia: (k) => { const d = cityDays[k]; return d ? { dayNumber: d.dayNumber, dateIso: realDateIso(d), weekday: hoursOf(d).weekday ?? null, noTour: noTourOn(d) } : null },
       })
@@ -1170,6 +1173,7 @@ export function planListasTrip(args) {
       for (const mesa of MESAS) {
         const iMesa = out.findIndex((it) => it.kind === mesa.kind)
         if (iMesa < 0) continue
+        if (out[iMesa].sin_restaurante) continue // (la comida al llegar va ANTES de la primera parada y no se mueve nunca, Tanda 7)
         const limite = toMin(cfg[mesa.sale])
         const fijas = out.map((it, i) => ({ it, i })).filter(({ it }) => esReservaFija(it))
         const debeAntes = ({ it, i }) => opciones[mesa.opcion] !== false && salidaDe(it) > limite && cabeLaMesaAntes(out, i, mesa)
@@ -1303,6 +1307,8 @@ export function planListasTrip(args) {
     }
     /** Cuánto se pasa la cena de su hora tope (para elegir entre las opciones de abajo). */
     const cenaTardia = (lista) => Math.max(0, (simular(lista).find((it) => it.kind === 'cena')?.t0 ?? 0) - toMin(cfg.cena_hasta))
+    /** Cuánto se pasa la comida de su hora tope (15:00): una comida detrás de una reserva de la noche no es una opción (Tanda 7: en las listas de la llegada, que no se recortan por minutos, la comida se quedaba al final del día). */
+    const comidaTardia = (lista) => { const c = simular(lista).find((it) => it.kind === 'comida'); return c ? Math.max(0, c.t0 - toMin(cfg.comida_hasta)) : 0 }
     const mesasYReservas = (lista) => {
       // (Regla 17: con DOS horas fijas del viajero el mismo día no se mueve ni se quita nada por la comida o la cena: manda la lista escrita, como antes de la 6y8.)
       if (lista.filter((it) => it.kind === 'stop' && !it.llegada && it.hora && !it.turno_real && (it.hora_tipo || it.tipo === 'tour')).length >= 2) return lista
@@ -1318,7 +1324,7 @@ export function planListasTrip(args) {
         const l0 = log.length
         const s0 = spare.length
         const out = comidaPronto(acomodarReservas(colocarMesas(lista, opciones)))
-        const puntos = retrasoDe(out) + cenaTardia(out)
+        const puntos = retrasoDe(out) + cenaTardia(out) + comidaTardia(out)
         const nuevoLog = log.slice(l0)
         const nuevaSpare = spare.slice(s0)
         log.length = l0
@@ -1951,7 +1957,7 @@ export function planListasTrip(args) {
       continue
     }
     const plan = procesarDia(drafts[index], skeletonDay)
-    if ((index === 0 || drafts[index].diaLlegada) && llegadaDecision?.aplica) plan.llegadaDia = { ...(index === 0 ? llegadaDecision.publico.dia1 : {}), es_dia_1: index === 0, bloques: drafts[index].llegadaBloques.map((b) => b.sitio) }
+    if ((index === 0 || drafts[index].diaLlegada) && llegadaDecision?.aplica) plan.llegadaDia = { ...(index === 0 ? llegadaDecision.publico.dia1 : {}), ...(index === 0 ? { lista: drafts[index].id } : {}), es_dia_1: index === 0, bloques: drafts[index].llegadaBloques.map((b) => b.sitio) }
     days.push(plan)
     cityPlanned.push(plan)
     if (plan.escritoNights.length > 0) nightsByDay.set(plan.dayNumber, plan.escritoNights)

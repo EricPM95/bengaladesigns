@@ -14,6 +14,7 @@
  */
 import { FREE_TOUR_HORAS, franjaDelFreeTour } from './freeTourHoras.js'
 import { horarioDeLaFecha } from './horarioDeLaFecha.js'
+import { COMIDA_HASTA_MIN } from './comida.js'
 
 const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(value)))
 export const aMin = (hora) => {
@@ -147,6 +148,7 @@ export function limpiarTraslados(lista) {
  *   quitar            → los lugares que se ven en otro día (la «versión sin esa visita» de una reserva grande, o la parte del Vaticano de una llegada con Free Tour)
  *   cena_y_noche_de   → la cena y la noche de otro día escrito (la parte del Free Tour sin el Vaticano cena donde acaba el tour)
  *   comida_al_llegar  → la parada «Comida, cerca de tu alojamiento», sin restaurante nuestro, antes de la primera parada: { min, titulo }
+ *   sin_comida        → el día no lleva comida (el viajero llega cuando ya pasó la hora de comer)
  *   sobra_extra       → lo que el día deja para «Si te sobra tiempo»
  *   empieza           → el día empieza más tarde (nunca antes de lo que ya decía)
  * @param {object} trabajo  { manana, comida, tarde, cena, noche, empieza, sobra, franjas }
@@ -168,6 +170,7 @@ export function aplicarOpsLlegada(trabajo, ops, dias = {}) {
       out.franjas.tarde = true
     }
   }
+  if (ops.sin_comida) { out.comida = null }
   if (ops.comida_al_llegar) {
     out.comida = { restaurante: null, alternativa: null, tercera: null, zona: null, sin_restaurante: true, titulo: ops.comida_al_llegar.titulo ?? 'Comida, cerca de tu alojamiento', min: ops.comida_al_llegar.min ?? 60, doc: 'comida al llegar' }
     out.franjas.manana = true
@@ -200,6 +203,33 @@ function conOps(dias, extraDays, id, ops, cambios = {}) {
 
 /** La hora de empezar el día: «libre» redondeada hacia arriba de 5 en 5 (se usa por dentro y no se enseña). */
 const empiezaDesde = (libreMin) => aHHMM(Math.min(Math.ceil(libreMin / 5) * 5, 23 * 60 + 55))
+
+/** «Libre» (minutos) de una llegada, o null si no se puede saber (sin datos del destino, en coche…). Es lo único que el motor necesita antes de repartir los días. */
+export function libreDeLlegada(destData, written, entrada) {
+  const info = written?.llegadaInfo
+  if (!entrada || !info) return null
+  const medio = entrada.medio ?? 'avion'
+  const llegadaMin = aMin(entrada.hora)
+  if (!MEDIOS_CON_HORA.includes(medio) || llegadaMin == null) return null
+  const punto = puntoDeLlegada(info, medio, entrada.puntoId)
+  if (!punto) return null
+  const extra = destData?.destination_config?.llegada?.libre_extra_min
+  return minutosLibre(llegadaMin, punto, Number.isFinite(extra) ? extra : 30)
+}
+
+/**
+ * Una excursión que el viajero ha reservado (`{ dateIso | dayNumber, salida?, vuelta?, nombre? }`) y el día 1:
+ *   'lleva_el_dia'  sale cuando ya está libre (o sin hora): ese día lleva la excursión;
+ *   'no_llega'      sale antes de estar libre: el aviso de reservas contra el vuelo (la excursión se queda donde está);
+ *   null            no es del día 1.
+ */
+export function excursionEnDia1(excursion, { fecha1 = null, libre = null } = {}) {
+  if (!excursion) return null
+  const esDia1 = fecha1 && excursion.dateIso ? excursion.dateIso === fecha1 : Number(excursion.dayNumber) === 1
+  if (!esDia1) return null
+  const salida = aMin(excursion.salida)
+  return salida != null && libre != null && salida < libre ? 'no_llega' : 'lleva_el_dia'
+}
 
 /** La variante de `diaRef` que dice lo mismo que la variante `id` de `dia` (la del Coliseo por la tarde del D1 y la de su día con Free Tour): misma condición. */
 function varianteEquivalente(dia, id, diaRef) {
@@ -263,8 +293,34 @@ export function decidirLlegada(c) {
   const esDia1 = (r) => Boolean(r) && (c.fecha1 && r.dateIso ? r.dateIso === c.fecha1 : Number(r.dayNumber) === 1)
   x.esDia1 = esDia1
   x.reservasDia1 = (c.reservasGrandes ?? []).filter((r) => r && r.name !== c.tourName && r.time && esDia1(r))
+  x.reservasPequenasDia1 = (c.reservasViaje ?? []).filter((r) => r && r.name && r.time && esDia1(r))
+  x.reservasOtrosDias = (c.reservasGrandes ?? []).filter((r) => r && r.name !== c.tourName && (r.dateIso || Number.isInteger(Number(r.dayNumber))) && !esDia1(r))
   // ¿Está el Free Tour reservado en OTRO día? Entonces el día 1 no es el suyo.
   x.ftEnDia1 = !c.ftReserva || esDia1(c.ftReserva)
+
+  // Dos reservas grandes del día 1 que se cruzan (la segunda empieza antes de que acabe la primera, con lo que dura cada una en los datos): el aviso «coinciden» de siempre.
+  {
+    const duracion = (nombre) => destData.places?.find((q) => q.name === nombre)?.duration_minutes ?? 60
+    const ordenadas = [...x.reservasDia1].sort((p, q) => aMin(p.time) - aMin(q.time))
+    for (let i = 1; i < ordenadas.length; i++) {
+      const antes = ordenadas[i - 1]
+      const despues = ordenadas[i]
+      if (aMin(despues.time) < aMin(antes.time) + duracion(antes.name)) {
+        x.avisos.push({ tipo: 'reservas_coinciden', sitios: [antes.name, despues.name], campana: true, botones: ['ver_mis_reservas'], texto: `Tu entrada ${aSitio(x.nombreCorto(antes.name))} y tu entrada ${aSitio(x.nombreCorto(despues.name))} coinciden. Revisa una de las dos reservas.` })
+      }
+    }
+  }
+
+  // Una excursión reservada: el día 1 la lleva (el motor ya ha quitado ese día de los de ciudad) o el aviso de que sale antes de estar libre.
+  const exc = excursionEnDia1(c.excursion, { fecha1: c.fecha1, libre })
+  if (exc === 'no_llega') {
+    x.avisos.push({ tipo: 'excursion_antes_de_llegar', sitio: c.excursion.nombre ?? null, hora_reserva: horaEnTexto(c.excursion.salida), hora_llegada: horaEnTexto(entrada.hora), campana: true, botones: ['ver_reserva'], texto: `${verboDeLlegada(medio, punto).replace(/^Llegas a .*/, 'Llegas')} a las ${horaEnTexto(entrada.hora)} y tu excursión${c.excursion.nombre ? ` a ${c.excursion.nombre}` : ''} sale a las ${horaEnTexto(c.excursion.salida)}: no llegas. Revisa tu reserva.` })
+  }
+  if (c.excursionDia1 === true) {
+    x.publico.caso = 'excursion_el_dia_1'
+    x.publico.orden = [...c.chosen]
+    return finalizar({ ...x, chosen: [...c.chosen], fijoPrimero: null, diaCaido: null })
+  }
 
   const ft = cfg.free_tour
   const conTour = Boolean(c.hasFreeTour && ft && x.cfg && c.chosen[0] === ft.dia && c.n >= 2)
@@ -276,23 +332,40 @@ export function decidirLlegada(c) {
 
 /** ═══ SIN FREE TOUR DE MAÑANA EN EL DÍA 1 ═══ */
 function decidirNormal(x) {
-  const { cfg, fila, dias, publico, pasa, esMadrugada, reservasDia1, sitioDe, refId, avisos, dejado, medio, punto, entrada, libre } = x
+  const { cfg, dias, publico, esMadrugada, reservasDia1, sitioDe, refId, dejado, medio, punto, entrada, libre } = x
   const chosen0 = [...x.chosen]
   const tablaLen = chosen0.length
-  const lista = (() => {
-    const listas = fila.listas ?? []
-    if (fila.segun_zona) return listas.find((l) => dias[l.lista]?.inicio === x.inicioZona) ?? listas[0]
-    return listas[0]
-  })()
+  const extraDays = x.extraDays
+  const listaDe = (f) => {
+    const listas = f.listas ?? []
+    return f.segun_zona ? listas.find((l) => dias[l.lista]?.inicio === x.inicioZona) ?? listas[0] : listas[0]
+  }
+  let fila = x.fila
+  let pasa = x.pasa
+  let lista = listaDe(fila)
+  // El día que la fila sustituye está reservado para OTRO día (el Coliseo reservado el día 3, con una llegada que lo gastaría el día 1): el día 1 no puede gastarlo. Con una llegada de versión
+  // rápida o de tarde, el día 1 pasa a ser la ruta del centro (con su comida al llegar) y el D1 baja a su día; con la tranquila, el D1 de siempre y que lo reparta la reserva.
+  const choqueConElDia = !pasa && !esMadrugada && lista?.lista !== cfg.dia_roma_antigua && x.reservasOtrosDias.some((r) => (sitioDe(r.name)?.dias ?? []).includes(refId))
+  if (choqueConElDia) {
+    const tabla = x.written.llegadas?.dia1?.[x.tablaId] ?? []
+    const centro = tabla.filter((f) => f.pasa_al_dia_2 && f.segun_zona)
+    const filaCentro = centro.filter((f) => f.comida_al_llegar).at(-1) ?? centro[0]
+    if (filaCentro && listaDe(filaCentro) && dias[listaDe(filaCentro).lista]) {
+      fila = filaCentro
+      pasa = true
+      lista = listaDe(filaCentro)
+      publico.fila = { ...publico.fila, desviada_por_reserva: true }
+    }
+  }
   if (!lista || !dias[lista.lista]) return { aplica: false, motivo: 'lista_sin_escribir' }
   const esElDiaDeSiempre = lista.lista === cfg.dia_roma_antigua // «antes de las 10:00»: el D1 de siempre (en marzo-octubre, su versión tranquila)
-  const extraDays = x.extraDays
   const chosen = [...chosen0]
   const slotRef = Math.max(0, chosen0.indexOf(refId))
   let fijoPrimero = null
   let diaCaido = null
   let forzar = []
   let versionId = refId
+  const choqueTranquilo = x.reservasOtrosDias.some((r) => (sitioDe(r.name)?.dias ?? []).includes(refId))
 
   if (!pasa && reservasDia1.length > 0 && !esMadrugada) {
     // 2.0 Una reserva grande el día 1 ANTES de las 14:00 (en invierno, de las 13:00): ese día es el día escrito de ese sitio. El Coliseo: el D1 de siempre con la tabla de SU hora
@@ -302,11 +375,13 @@ function decidirNormal(x) {
     avisarReservasAntesDeLlegar(x)
   } else if (esElDiaDeSiempre) {
     publico.caso = esMadrugada ? 'madrugada' : lista.variante ? 'tranquilo' : 'd1_de_siempre'
-    if (lista.variante && tablaLen >= 2) {
+    if (lista.variante && tablaLen >= 2 && !choqueTranquilo) {
       // (La variante del D1 o, si el día que se sustituye es el de los viajes con Free Tour, su equivalente en ese día.)
       const idVariante = refId === cfg.dia_roma_antigua ? lista.variante : varianteEquivalente(dias[cfg.dia_roma_antigua], lista.variante, dias[refId])
-      if (idVariante) { forzar = [idVariante]; fijoPrimero = refId }
+      if (idVariante) forzar = [idVariante]
     }
+    // El día 1 es el D1 (el documento: «El día 1 es el D1 en una versión según la hora»): va fijo el día 1, los demás días se reparten como sin vuelos. Solo si una reserva grande de otro día lo reclama no se fija.
+    if (!choqueTranquilo) fijoPrimero = refId
     avisarReservasAntesDeLlegar(x)
   } else if (!pasa) {
     publico.caso = lista.lista.includes('rapido') ? 'rapido' : 'de_tarde'
@@ -341,6 +416,8 @@ function decidirNormal(x) {
       publico.bloques.push({ sitio: r.name, hora: aHHMM(aMin(r.time)), lugares: sitio.bloque, fuente })
       publico.caso = `${publico.caso}+reserva_grande`
     }
+    // Un día que la llegada tarde dejó fuera y una reserva grande reclama vuelve solo («si reservas la Galería, te ponemos su día»): sale el último día que no lleva otra reserva.
+    diaCaido = reponerDiasDeReservas(x, chosen, chosen0, diaCaido)
   }
 
   // La versión hereda del día que sustituye lo que el viajero ha pedido (pool, experiencias, sugerencias) y el Free Tour de la noche, que va «en la noche del D1».
@@ -352,16 +429,21 @@ function decidirNormal(x) {
 
   // Lo que cambia dentro del día 1 (se aplica en `preparar`, con las variantes ya puestas). Solo las listas escritas para la llegada no se recortan por minutos.
   const opsDia1 = { dia_llegada: true }
+  // Una lista escrita PARA la llegada (rápida, de tarde, la ruta del centro…) no se recorta por minutos y empieza cuando el viajero está libre; la versión tranquila es el D1 de siempre, con
+  // sus reglas de siempre (la comida antes de las 15:00…), y empieza a su hora.
   const esVersion = pasa || versionId !== refId || forzar.length > 0
-  if (esVersion) {
+  const listaDeLlegada = pasa || versionId !== refId
+  if (listaDeLlegada) {
     opsDia1.sin_ajustes = true
     opsDia1.empieza = empiezaDesde(libre)
   }
   if (forzar.length) opsDia1.forzar = forzar
-  if (fila.comida_al_llegar && publico.caso !== 'reserva_grande_dia_completo') opsDia1.comida_al_llegar = { min: fila.comida_corta_min ?? 60, titulo: 'Comida, cerca de tu alojamiento' }
+  if (fila.comida_al_llegar && pasa) opsDia1.comida_al_llegar = { min: fila.comida_corta_min ?? 60, titulo: 'Comida, cerca de tu alojamiento' }
+  else if (fila.comida_al_llegar && versionId !== refId) opsDia1.comida_al_llegar = { min: fila.comida_corta_min ?? 60, titulo: 'Comida, cerca de tu alojamiento' }
   if (publico.bloques.length > 0) opsDia1.bloques = publico.bloques.map((b) => ({ sitio: b.sitio, hora: b.hora, fuente: b.fuente, lugares: b.lugares }))
   const dia1Id = chosen[0]
-  if (dias[dia1Id] && (esVersion || pasa || publico.caso === 'madrugada' || publico.caso === 'd1_de_siempre' || publico.caso === 'reserva_grande_dia_completo')) conOps(dias, extraDays, dia1Id, opsDia1)
+  // (El día 1 de una reserva grande de antes de las 14:00 puede acabar siendo otro día: ese caso lo marca el orden de los días, no una lista nuestra.)
+  if (dias[dia1Id] && publico.caso !== 'reserva_grande_dia_completo') conOps(dias, extraDays, dia1Id, opsDia1)
 
   // La «versión sin esa visita» de los días donde estaba la reserva: nada se pierde y nada se repite.
   for (const b of publico.bloques) {
@@ -389,13 +471,42 @@ function decidirNormal(x) {
   publico.orden = chosen
   // Si el día 1 es de noche (desde las 20:30), lo que se queda fuera va al «Si te sobra tiempo» del día 2.
   if (publico.dia1.de_noche && dejado.length > 0 && chosen.length > 1) for (const d of dejado) d.dia = 2
-  return finalizar({ ...x, chosen, fijoPrimero, diaCaido })
+  return finalizar({ ...x, chosen, fijoPrimero, diaCaido, fila, pasa })
+}
+
+/**
+ * Los días que la llegada tarde dejó fuera pero que una reserva grande (de cualquier día) necesita vuelven solos: cada uno sustituye al último día del viaje que no es el 1 ni lleva
+ * otra reserva (el de menos importancia). «Si el viajero reserva la Galería, su día vuelve solo.» Solo vale para un día que SÍ estaba en la tabla del viaje y la llegada dejó fuera.
+ */
+function reponerDiasDeReservas(x, chosen, chosen0, diaCaido) {
+  const { dias } = x
+  const lleva = (id, lugar) => {
+    const d = dias[id]
+    const paradas = [...Object.values(d?.partes ?? {}).flatMap((p) => [...(p.manana ?? []), ...(p.tarde ?? [])]), ...(d?.hereda_manana_de && dias[d.hereda_manana_de] ? dias[d.hereda_manana_de].partes?.unica?.manana ?? [] : [])]
+    return paradas.some((s) => s.lugar === lugar && s.tipo !== 'traslado' && s.modo !== 'camino')
+  }
+  const reservas = [...x.reservasDia1, ...x.reservasOtrosDias]
+  const protegidos = new Set()
+  for (const r of reservas) for (const id of chosen) if (lleva(id, r.name)) protegidos.add(id)
+  let caido = diaCaido
+  for (const r of x.reservasOtrosDias) {
+    if (chosen.some((id) => lleva(id, r.name))) continue
+    const vuelve = chosen0.find((id) => lleva(id, r.name))
+    if (!vuelve) continue
+    const i = chosen.map((id, k) => k).filter((k) => k > 0 && !protegidos.has(chosen[k])).at(-1)
+    if (i == null) continue
+    caido = { id: chosen[i], motivo: 'vuelve_el_dia_de_una_reserva', vuelve }
+    chosen[i] = vuelve
+    protegidos.add(vuelve)
+    x.publico.dias_que_vuelven = [...(x.publico.dias_que_vuelven ?? []), { id: vuelve, por: r.name, sale: caido.id }]
+  }
+  return caido
 }
 
 /** El aviso de una reserva grande ANTES de estar libre (se compara con «libre», sin margen): se queda en su sitio y sale el aviso (campana). */
 function avisarReservasAntesDeLlegar(x) {
   if (x.esMadrugada) return
-  for (const r of x.reservasDia1) {
+  for (const r of [...x.reservasDia1, ...x.reservasPequenasDia1]) {
     if (aMin(r.time) >= x.libre) continue
     x.avisos.push({
       tipo: 'reserva_antes_de_llegar', sitio: r.name, hora_reserva: horaEnTexto(r.time), hora_llegada: horaEnTexto(x.entrada.hora), campana: true, botones: ['ver_reserva'],
@@ -501,6 +612,14 @@ function decidirConFreeTour(x) {
     publico.orden = chosen0
     return finalizar({ ...x, chosen: chosen0, fijoPrimero: null, diaCaido: null, entradasApp })
   }
+  // Con una reserva grande de otro sitio (los Museos, la Galería, el Coliseo) en cualquier día, el reparto de los días ya lo manda esa reserva: la llegada solo avisa y no cambia nada.
+  const otrasGrandes = (x.reservasGrandes ?? []).some((r) => r && r.name !== x.tourName && (r.dateIso || Number.isInteger(Number(r.dayNumber))))
+  if (libre <= aMin(hora) - margen && otrasGrandes) {
+    publico.caso = `${base}_con_otras_reservas`
+    publico.dia1 = { lista: dia3, nombre: dias[dia3]?.nombre ?? null, variante: null, comida_al_llegar: false, sin_paradas: false, texto: null, inicio_ruta: null, de_noche: false, sin_cambios: true }
+    publico.orden = chosen0
+    return finalizar({ ...x, chosen: chosen0, fijoPrimero: null, diaCaido: null, entradasApp: null })
+  }
   if (libre <= aMin(hora) - margen) {
     // Solo la parte del Free Tour; el día 2 el del Vaticano y el día 3 el de la Roma antigua.
     publico.caso = `${base}_solo_la_parte_del_tour`
@@ -513,7 +632,11 @@ function decidirConFreeTour(x) {
     const diaCaido = caidos.length ? { id: caidos.at(-1), motivo: 'el_dia_1_pasa_al_dia_2' } : { id: chosen0[1], motivo: 'dos_noches_free_tour' }
     const opsTour = { dia_llegada: true, sin_ajustes: true, quitar: ft.quitar_en_la_parte_del_tour ?? [], cena_y_noche_de: ft.cena_y_noche_de ?? null, empieza: empiezaDesde(libre) }
     // La comida al llegar si el tour es por la tarde (la comida va ANTES del tour); por la mañana o a mediodía, la del día, después.
-    if (franjaDelFreeTour(hora) !== 'manana') opsTour.comida_al_llegar = { min: 60, titulo: 'Comida, cerca de tu alojamiento' }
+    // (Pero la comida nunca empieza después de las 15:00: si el viajero llega más tarde, el día no lleva comida.)
+    if (franjaDelFreeTour(hora) !== 'manana') {
+      if (libre <= COMIDA_HASTA_MIN) opsTour.comida_al_llegar = { min: 60, titulo: 'Comida, cerca de tu alojamiento' }
+      else opsTour.sin_comida = true
+    }
     conOps(dias, extraDays, dia3, opsTour)
     publico.pasa_al_dia_2 = true
     x.diaCorrido = diaV

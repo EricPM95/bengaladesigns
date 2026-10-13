@@ -8906,7 +8906,7 @@
     "lugares": [
       { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "dias": ["D1", "D1-FT"], "no_cabe_con_excursion_hasta": "16:30", "bloque": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"], "sin_la_visita": { "D1": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "D1-FT": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "D1-vaticano": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] } } },
       { "nombre": "Museos Vaticanos y Capilla Sixtina", "del": "del Vaticano", "el": "el Vaticano", "dias": ["D2", "D3"], "nunca_se_quita": true, "bloque": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"], "sin_la_visita": { "D2": { "variante": "sin_museos" }, "D3": { "variante": "domingo_sin_museos" }, "D1-vaticano": { "quitar": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"] } } },
-      { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true, "bloque": ["Galería Borghese", "Parque de Villa Borghese"], "sin_la_visita": { "D4": { "variante": "lunes_sin_galeria" } } },
+      { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true, "bloque": ["Galería Borghese", "Parque de Villa Borghese"], "sin_la_visita": { "D4": { "variante": "lunes_sin_galeria", "quitar": ["Parque de Villa Borghese"] } } },
       { "nombre": "Free Tour por Roma", "del": "del Free Tour", "el": "el Free Tour", "dias": ["D3", "D1"] }
     ]
   },

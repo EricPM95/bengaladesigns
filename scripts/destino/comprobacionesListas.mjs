@@ -52,15 +52,15 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     // (Regla 17, Tanda 6w y 6x: con una reserva del viajero el día lleva todo y la app solo lo ordena: lo que no cabe antes de la hora fija va detrás de ella, en su orden escrito. El zigzag no se mide en esos días.)
     const conReserva = rows.some((r) => r.hora_tipo === 'reserva' && !r.llegada)
     const fijasHoy = rows.filter((r) => r.fija && !r.llegada).length
-    // 1. El orden
+    // 1. El orden (con una hora fija, la comida y —desde la 6y8— la cena van donde las pone la regla de la reserva: no se miden)
     const base = new Map((dia.ordenBase ?? []).map((id, i) => [id, i]))
     // (Un cierre manda sobre el orden escrito —regla 5—: lo que a su hora ya habría cerrado y el motor adelanta a primera hora, con su línea «adelanta» en el registro, no cuenta en el orden.)
     const adelantadas = new Set(log.filter((l) => l.que === 'adelanta').map((l) => l.id))
     const hayFija = rows.some((r) => r.fija && !r.llegada)
-    const secuencia = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida')).map((r) => base.get(r.id))
+    const secuencia = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && (r.tipo === 'comida' || r.tipo === 'cena'))).map((r) => base.get(r.id))
     {
       // Con una reserva, lo que iba ANTES de la reserva en la lista y sale DESPUÉS de ella (lo que pasa detrás) va aparte; el resto sigue el orden de la lista, y lo de detrás también.
-      const filasConBase = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.relleno && r.tipo !== 'traslado' && !(hayFija && r.tipo === 'comida'))
+      const filasConBase = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.relleno && r.tipo !== 'traslado' && !(hayFija && (r.tipo === 'comida' || r.tipo === 'cena')))
       // Lo que pasa detrás: lo que sale después de una hora fija (reserva o Free Tour) y en la lista iba antes de ella.
       const detras = new Set()
       filasConBase.forEach((fija, kFija) => {
@@ -257,7 +257,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
       // (Tanda 6d: el miércoles del D2 sin Museos también empieza a su hora; solo quedan los medios días de tarde.)
       const excusado = /medio/.test(dia.curatedDay.id) && dia.written?.grupo === 'tarde'
       // (Si lo primero del día es una hora fija —o su «Llegada a…»—, el día empieza a esa hora: no hay nada que hacer antes y no se inventa.)
-      if (!conReserva && primera && !excusado && !dia.halfDayExcursion && !primera.llegada && !primera.fija && primera.t0 > esperado + 15) falla('dia_empieza_tarde', dia, `el día empieza a las ${Math.floor(primera.t0 / 60)}:${String(primera.t0 % 60).padStart(2, '0')} y debería empezar a las ${Math.floor(esperado / 60)}:${String(esperado % 60).padStart(2, '0')}`)
+      if (!conReserva && primera && !excusado && !dia.halfDayExcursion && !dia.llegadaDia && !primera.llegada && !primera.fija && primera.t0 > esperado + 15) falla('dia_empieza_tarde', dia, `el día empieza a las ${Math.floor(primera.t0 / 60)}:${String(primera.t0 % 60).padStart(2, '0')} y debería empezar a las ${Math.floor(esperado / 60)}:${String(esperado % 60).padStart(2, '0')}`)
     }
     // (Un «de camino» no va a «Si te sobra tiempo».)
     for (const sp of dia.spareRows ?? []) if (sp.modo === 'camino') falla('camino_en_sobra', dia, `«${sp.titulo ?? sp.lugar}» va de camino y está en «Si te sobra tiempo»`)
@@ -312,7 +312,8 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const primeros = completos.slice(0, 2)
     const faltan = buscados.filter((id) => completos.length >= 2 && !primeros.some((d) => d.curatedDay.id === id) && completos.some((d) => d.curatedDay.id === id))
     // (Una reserva grande con su fecha pone el día de su sitio en esa fecha a propósito, Tanda 6j: el orden de los días ya no es el de la tabla.)
-    for (const id of reservaConDia ? [] : faltan) {
+    // (Tanda 7: con la llegada tarde el D1 pasa al día 2 y el D2 al día 3 a propósito; el orden de los días de la llegada lo mira pruebaTanda7_llegada.mjs.)
+    for (const id of reservaConDia || plan.llegada?.pasa_al_dia_2 ? [] : faltan) {
       // (Lo que el documento marca como mala fecha de ese día: días de la semana, fechas y sitios que cierran; con eso el motor lo cambia por el día siguiente.)
       // (El motor dice por qué retrasó el día: lo que le cuesta en su sitio de la tabla —un sitio cerrado, una mala fecha del documento, un horario especial—; sin motivo es un fallo.)
       const motivo = Object.entries(plan.motivosOrden ?? {}).map(([otro, razones]) => `${otro}: ${razones.join(', ')}`).join('; ')
