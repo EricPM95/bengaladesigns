@@ -208,3 +208,14 @@ El mismo sello crece contigo:
 - ¿Qué logros salen en la gratis y cuáles solo en la de pago?
 - ¿El pasaporte de sellos es gratis para todos? (Claude: sí, es lo que hace volver.)
 - La lista final de logros y regalos, cuando esté el diseño.
+
+## (13-oct, noche) TANDA 8: HOY PARA TODOS Y LOS LOGROS (Eric: sí; va justo después de la Tanda 7)
+- **HOY para todos, con dos niveles** (cambia lo del 10-oct «HOY solo de pago, 4 pestañas en la gratis»: ahora 5 pestañas para todos).
+  - Gratis: la lista de las paradas de hoy, [Visto], [No me da tiempo] y [Hacer foto] al marcar visto (una foto por parada); los logros ocultos y los sellos.
+  - De pago: además, la siguiente parada, Cómo llegar, Escuchar, Historia, Cerca de ti y «Más para tu día». En la gratis salen con un candado pequeño (no escondidos).
+- **Estar allí de verdad:** el logro solo cuenta con una foto hecha con la cámara de la app en ese momento, y la ubicación (solo al hacer la foto, con su permiso) a unos 150 m del sitio. Una foto de la galería va al álbum, pero no da logros. No se guarda la ubicación para nada más.
+- **Logros ocultos:** el viajero no sabe que existen; al hacer la foto en el sitio, «¡Has encontrado un logro secreto!».
+- **El sello del destino**, al final del viaje, por los sitios con foto: la mitad, bronce; tres cuartos, plata; todos, oro.
+- **Sin cuenta**, los logros se guardan en el móvil, con «Crea tu cuenta para no perder tus logros».
+- Para preparar con Claude mientras Code hace la 7: qué lleva HOY en la gratis, los textos, cuáles son los logros ocultos de Roma y el diseño.
+- Tanda sin motor: solo batería rápida, sin las 365.

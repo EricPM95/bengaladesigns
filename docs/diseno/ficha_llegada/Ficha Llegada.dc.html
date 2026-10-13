@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 80px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:26px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:760px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Ficha · cómo llegar y cómo irse</span>
+    <span style="font:400 42px/1 'Instrument Serif',serif">Llegada y vuelta, <em style="color:oklch(0.55 0.17 5)">en Roma</em></span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px 44px;align-items:flex-start">
+  <sc-for list="{{ phones }}" as="p" hint-placeholder-count="3">
+    <div id="{{ p.id }}" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ p.id }}</span>
+        <span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ p.cap }}</span>
+      </div>
+      <div data-screen-label="{{ p.id }} {{ p.cap }}" style="position:relative;width:390px;height:844px;flex:none;margin-top:4px;border-radius:50px;overflow:hidden;background:#F2EFE7;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+
+        <div style="position:absolute;left:0;right:0;top:0;height:360px;overflow:hidden">
+          <svg width="390" height="360" viewBox="0 0 390 360" style="position:absolute;inset:0">
+            <path d="M-20 300 C40 290 90 320 130 360 L-20 360Z" fill="#CFE3EA"></path>
+            <path d="M240 40 C290 24 344 52 334 100 C316 132 266 124 250 96Z" fill="#DCE8CF"></path>
+            <path d="M120 150 C140 140 160 160 152 184 C142 200 122 194 118 176Z" fill="#DCE8CF"></path>
+            <g stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"><path d="M-10 110 L400 150"></path><path d="M-10 240 L400 196"></path><path d="M150 -10 L190 370"></path><path d="M300 -10 L330 370"></path><path d="M20 330 L250 120"></path></g>
+            <g stroke="#E6E0D3" stroke-width="1.5" fill="none"><path d="M-10 180 L400 120"></path><path d="M240 -10 L262 370"></path><path d="M70 -10 L40 370"></path></g>
+            <path d="M178 -10 C196 60 160 110 184 170 S232 250 210 300 S190 360 196 380" fill="none" stroke="#B9D7E5" stroke-width="9" stroke-linecap="round"></path>
+            <g font-family="Geist Mono" font-size="9" letter-spacing="1.3" fill="rgba(28,34,48,.35)"><text x="96" y="96">PRATI</text><text x="250" y="230">ESQUILINO</text><text x="40" y="214">TRASTEVERE</text><text x="22" y="320">MAR TIRRENO</text></g>
+            <path d="{{ p.route }}" fill="none" stroke="#FFFDF8" stroke-width="6" stroke-linecap="round"></path>
+            <path d="{{ p.route }}" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 6"></path>
+          </svg>
+          <span style="position:absolute;left:62px;top:282px;margin:-17px 0 0 -17px;width:34px;height:34px;border-radius:50%;background:#1C2230;color:#FFFDF8;box-shadow:0 0 0 3px #FFFDF8,0 6px 14px -6px rgba(28,34,48,.6);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.plane }}"></path></svg></span>
+          <span style="position:absolute;left:84px;top:300px;height:24px;padding:0 9px;border-radius:999px;background:#FFFDF8;box-shadow:0 4px 10px -6px rgba(28,34,48,.5);display:flex;align-items:center;font:600 11px 'Geist'">Fiumicino</span>
+          <span style="position:absolute;left:296px;top:168px;margin:-13px 0 0 -13px;width:26px;height:26px;border-radius:50%;background:#FFFDF8;color:#1C2230;border:2px solid #1C2230;display:flex;align-items:center;justify-content:center;font:700 11px 'Geist'">T</span>
+          <span style="position:absolute;left:252px;top:186px;height:24px;padding:0 9px;border-radius:999px;background:#FFFDF8;box-shadow:0 4px 10px -6px rgba(28,34,48,.5);display:flex;align-items:center;font:600 11px 'Geist'">Termini</span>
+          <span style="position:absolute;left:212px;top:122px;margin:-15px 0 0 -15px;width:30px;height:30px;border-radius:50%;background:oklch(0.55 0.17 5);color:#fff;box-shadow:0 0 0 3px #FFFDF8,0 6px 14px -6px rgba(28,34,48,.6);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.pin }}"></path></svg></span>
+          <span style="position:absolute;left:234px;top:109px;height:26px;padding:0 10px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;font:500 11.5px 'Geist';white-space:nowrap">Centro · Piazza Navona</span>
+          <button onClick="{{ p.back }}" aria-label="Atrás" style="position:absolute;left:18px;top:58px;width:44px;height:44px;border-radius:50%;border:none;background:#FFFDF8;color:#1C2230;box-shadow:0 8px 18px -10px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></button>
+          <span style="position:absolute;right:18px;top:64px;height:32px;padding:0 13px;border-radius:999px;background:#FFFDF8;box-shadow:0 8px 18px -10px rgba(28,34,48,.5);display:flex;align-items:center;font:600 12.5px 'Geist';z-index:4">{{ p.day }}</span>
+        </div>
+        <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+        <div style="position:absolute;left:0;right:0;top:0;height:52px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+
+        <div style="position:absolute;left:0;right:0;top:330px;bottom:0;border-radius:28px 28px 0 0;background:#F5EFE4;box-shadow:0 -12px 30px -14px rgba(28,34,48,.4);display:flex;flex-direction:column;overflow:hidden">
+          <span style="position:absolute;top:8px;left:50%;margin-left:-21px;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.2);z-index:5"></span>
+          <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:22px 16px 40px;display:flex;flex-direction:column;gap:16px">
+
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:0 2px">
+              <span style="position:relative;width:72px;height:72px;flex:none;border-radius:20px;clip-path:polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 20px) 100%,0 100%);background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ p.planeTf }}"><path d="{{ ic.plane }}"></path></svg></span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;padding-top:1px">
+                <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ p.eye }}</span>
+                <h1 style="margin:0;font:400 26px/1.04 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance">{{ p.title }}</h1>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px">
+                  <span style="height:26px;padding:0 9px 0 7px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:5px;font:600 11.5px 'Geist'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.clock }}"></path></svg>{{ p.time }}</span>
+                  <span style="height:26px;padding:0 9px;border-radius:999px;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;font:500 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.8)">{{ p.flight }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="position:sticky;top:-20px;z-index:4;margin:0 -16px;padding:8px 16px;background:#F5EFE4">
+              <div style="position:relative;display:grid;grid-template-columns:repeat(3,1fr);height:44px;padding:4px;border-radius:999px;background:#EDE4D3">
+                <span style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:999px;background:#1C2230;transform:{{ p.knob }};transition:transform .4s cubic-bezier(.2,.8,.2,1)"></span>
+                <sc-for list="{{ p.tabs }}" as="t" hint-placeholder-count="3">
+                  <button onClick="{{ t.pick }}" aria-pressed="{{ t.on }}" style="position:relative;border:none;background:transparent;font:600 13.5px 'Geist';color:{{ t.c }};cursor:pointer;transition:color .3s">{{ t.n }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ p.isRes }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:14px;animation:pop .35s ease both">
+                <div style="display:flex;flex-direction:column;gap:4px;padding:0 4px">
+                  <p style="margin:0;font:400 23px/1.25 'Instrument Serif',serif;text-wrap:pretty">{{ p.intro1 }} <strong style="font-weight:400;font-style:italic;color:oklch(0.5 0.17 5)">{{ p.introB }}</strong> a las <strong style="font-weight:400;font-style:italic;color:oklch(0.5 0.17 5)">{{ p.time }}</strong>.</p>
+                  <span style="font:400 13.5px/1.45 'Geist';color:rgba(28,34,48,.68)">{{ p.intro2 }}</span>
+                </div>
+
+                <sc-if value="{{ p.late }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:16px;background:oklch(0.55 0.17 5 / .08);border:1px solid oklch(0.55 0.17 5 / .25)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.5 0.17 5)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><path d="{{ ic.clock }}"></path></svg>
+                    <span style="font:400 13px/1.45 'Geist';text-wrap:pretty">A esta hora ya no hay tren: el último Leonardo Express sale del aeropuerto a las <strong style="font-weight:600">23:23</strong>.</span>
+                  </div>
+                  <div style="position:relative;display:flex;flex-direction:column;gap:10px;padding:16px 16px 14px;border-radius:22px;background:#1C2230;color:#FFFDF8;box-shadow:0 18px 30px -18px rgba(28,34,48,.7)">
+                    <span style="align-self:flex-start;height:24px;padding:0 10px;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;font:700 10.5px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase">Tu mejor opción</span>
+                    <span style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;flex:none;border-radius:12px;background:rgba(255,253,248,.12);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.car }}"></path></svg></span><span style="font:400 24px/1 'Instrument Serif',serif">Traslado privado</span></span>
+                    <span style="font:400 13.5px/1.5 'Geist';color:rgba(255,253,248,.82);text-wrap:pretty">{{ p.trTxt }}</span>
+                    <span style="align-self:flex-start;padding:5px 10px;border-radius:999px;background:rgba(255,253,248,.1);font:500 11.5px/1.3 'Geist';color:rgba(255,253,248,.85)">Ideal si viajas en pareja, en familia o con amigos</span>
+                    <button onClick="{{ p.goTr }}" style="margin-top:2px;height:48px;border:none;border-radius:999px;background:oklch(0.55 0.17 5);color:#FFFFFF;font:600 14.5px 'Geist';display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer">Reservar traslado<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ p.hasBest }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;border-radius:22px;background:#FFFFFF;border:1.5px solid oklch(0.8 0.14 70);box-shadow:0 14px 30px -20px rgba(28,34,48,.45);overflow:hidden">
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px 10px">
+                      <span style="align-self:flex-start;height:24px;padding:0 10px;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;font:700 10.5px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase">Tu mejor opción</span>
+                      <span style="font:400 20px/1.15 'Instrument Serif',serif;text-wrap:balance">{{ p.bestT }}</span>
+                    </div>
+                    <div style="position:relative;padding:2px 16px 4px">
+                      <span style="position:absolute;left:33px;top:26px;bottom:32px;border-left:1.5px dashed rgba(28,34,48,.25)"></span>
+                      <sc-for list="{{ p.steps }}" as="s" hint-placeholder-count="2">
+                        <div style="position:relative;display:flex;gap:12px;padding:8px 0">
+                          <span style="width:34px;height:34px;flex:none;border-radius:50%;background:#F5EFE4;border:1.5px solid rgba(28,34,48,.12);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ s.icon }}"></path></svg></span>
+                          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding-top:2px">
+                            <span style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font:600 14px 'Geist'">{{ s.n }}</span><span style="flex:none;font:400 22px/1 'Instrument Serif',serif">{{ s.p }}</span></span>
+                            <span style="font:400 12.5px/1.45 'Geist';color:rgba(28,34,48,.66);text-wrap:pretty">{{ s.d }}</span>
+                          </span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <span style="margin:4px 12px 12px;padding:9px 12px;border-radius:12px;background:#F5EFE4;font:400 11.5px/1.45 'Geist';color:rgba(28,34,48,.68);text-wrap:pretty">{{ p.note }}</span>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ p.hasTermini }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:20px;background:oklch(0.95 0.025 230);border:1px solid oklch(0.56 0.1 230 / .2)">
+                    <span style="width:34px;height:34px;flex:none;border-radius:50%;background:oklch(0.56 0.1 230);color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px 'Geist'">T</span>
+                    <span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:400 19px/1.1 'Instrument Serif',serif;color:oklch(0.3 0.06 240)">Todo pasa por Termini</span><span style="font:400 13px/1.5 'Geist';color:oklch(0.34 0.05 240);text-wrap:pretty">Casi todo el transporte público llega a <strong style="font-weight:600">Termini</strong>, la estación principal. Desde allí, el bus 40 o 64 hasta Largo di Torre Argentina: es otro billete (1,50 €, vale 100 min).</span></span>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ p.hasOthers }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <span style="padding:0 4px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ p.othersT }}</span>
+                    <div style="border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:2px 14px">
+                      <sc-for list="{{ p.others }}" as="o" hint-placeholder-count="2">
+                        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid {{ o.bd }}">
+                          <span style="width:30px;height:30px;flex:none;border-radius:10px;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.bus }}"></path></svg></span>
+                          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+                            <span style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font:600 13.5px 'Geist'">Autobús a Termini</span><span style="flex:none;font:400 19px/1 'Instrument Serif',serif">{{ o.p }}</span></span>
+                            <span style="display:flex;flex-wrap:wrap;gap:4px"><sc-for list="{{ o.chips }}" as="c" hint-placeholder-count="3"><span style="height:22px;padding:0 8px;border-radius:999px;background:#F5EFE4;font:500 11px/22px 'Geist';color:rgba(28,34,48,.75);white-space:nowrap">{{ c }}</span></sc-for></span>
+                            <span style="font:400 11.5px/1.4 'Geist';color:rgba(28,34,48,.55)">{{ o.d }}</span>
+                            <button onClick="{{ o.buy }}" style="align-self:flex-start;margin-top:3px;height:34px;padding:0 13px 0 10px;border-radius:999px;border:none;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:7px;font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer" style-active="transform:scale(.97)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.ticket }}"></path></svg>Comprar billete · {{ o.p }}</button>
+                          </span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ p.transMid }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;min-height:96px;border-radius:20px;background:#FFFFFF;border:1px solid rgba(28,34,48,.08);box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 22px -18px rgba(28,34,48,.4);overflow:hidden">
+                    <span style="width:60px;flex:none;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:oklch(0.55 0.17 5);color:#FFFFFF;display:flex;align-items:center;padding-left:13px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.car }}"></path></svg></span>
+                    <span style="flex:1;min-width:0;padding:12px 14px 12px 4px;display:flex;flex-direction:column;gap:6px">
+                      <span style="font:400 19px/1.05 'Instrument Serif',serif">Traslado privado</span>
+                      <span style="font:400 12px/1.45 'Geist';color:rgba(28,34,48,.66);text-wrap:pretty">{{ p.trTxt }}</span>
+                      <span style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:2px">
+                        <button onClick="{{ p.goTr }}" style="height:32px;padding:0 13px;border:none;border-radius:999px;background:oklch(0.55 0.17 5);color:#FFFFFF;box-shadow:0 8px 16px -8px oklch(0.55 0.17 5);font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer">Reservar traslado</button>
+                        <span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">Ideal en pareja, familia o amigos</span>
+                      </span>
+                    </span>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ p.hasStart }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:20px;background:oklch(0.96 0.035 150);border:1px solid oklch(0.55 0.11 150 / .3)">
+                    <span style="display:flex;align-items:center;gap:10px"><span style="width:32px;height:32px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.pin }}"></path></svg></span><span style="font:400 19px/1.15 'Instrument Serif',serif;color:oklch(0.3 0.08 150)">Tu ruta empieza en <em>Piazza Navona</em>.</span></span>
+                    <button onClick="{{ p.toHotel }}" style="align-self:flex-start;height:40px;padding:0 14px 0 12px;border-radius:999px;border:1px solid oklch(0.55 0.11 150 / .4);background:#FFFFFF;color:oklch(0.3 0.08 150);display:flex;align-items:center;gap:7px;font:600 13px 'Geist';cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.compass }}"></path></svg>Cómo llegar a tu alojamiento</button>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ p.hasMaleta }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:20px;background:oklch(0.95 0.03 80);border:1px solid oklch(0.8 0.1 75 / .35)">
+                    <span style="width:36px;height:36px;flex:none;border-radius:12px;background:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.bag }}"></path></svg></span>
+                    <span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:400 19px/1.1 'Instrument Serif',serif">La maleta, el último día</span><span style="font:400 13px/1.5 'Geist';color:rgba(28,34,48,.75);text-wrap:pretty">Déjala en tu alojamiento (pregunta si te la guardan después de dejar la habitación) o en la consigna de Termini (a nivel de los andenes, lado Via Giolitti, de 7:00 a 21:00, desde 6 € por maleta) y recógela de camino.</span></span>
+                  </div>
+                  <span style="padding:10px 0 4px;text-align:center;font:italic 400 30px/1 'Instrument Serif',serif;color:oklch(0.5 0.17 5)">Arrivederci, Roma.</span>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ p.isTr }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:12px;animation:pop .35s ease both">
+                <div style="position:relative;display:flex;flex-direction:column;gap:12px;padding:18px 16px 16px;border-radius:24px;background:#1C2230;color:#FFFDF8;overflow:hidden;box-shadow:0 18px 30px -18px rgba(28,34,48,.7)">
+                  <span style="position:absolute;right:-40px;top:-50px;width:170px;height:170px;border-radius:50%;background:oklch(0.55 0.17 5 / .45);filter:blur(28px)"></span>
+                  <span style="position:relative;display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;flex:none;border-radius:14px;background:oklch(0.55 0.17 5);color:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.car }}"></path></svg></span><span style="font:400 28px/1 'Instrument Serif',serif">Traslado privado</span></span>
+                  <span style="position:relative;font:400 14px/1.55 'Geist';color:rgba(255,253,248,.85);text-wrap:pretty">{{ p.trTxt }}</span>
+                  <div style="position:relative;display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,253,248,.08)">
+                    <span style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:none"><span style="width:10px;height:10px;border-radius:50%;background:#FFFDF8"></span><span style="height:18px;border-left:1.5px dashed rgba(255,253,248,.4)"></span><span style="width:10px;height:10px;border-radius:50%;border:2px solid oklch(0.72 0.14 5)"></span></span>
+                    <span style="flex:1;display:flex;flex-direction:column;gap:12px;font:500 13px 'Geist'"><span>{{ p.trFrom }}</span><span>{{ p.trTo }}</span></span>
+                  </div>
+                  <span style="position:relative;align-self:flex-start;padding:5px 10px;border-radius:999px;background:rgba(255,253,248,.1);font:500 11.5px/1.3 'Geist';color:rgba(255,253,248,.85)">Ideal si viajas en pareja, en familia o con amigos</span>
+                  <button onClick="{{ p.book }}" style="position:relative;height:52px;border:none;border-radius:999px;background:oklch(0.55 0.17 5);color:#FFFFFF;font:600 15px 'Geist';display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer">Reservar traslado<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><path d="{{ ic.shield }}"></path></svg>
+                  <span style="font:400 12.5px/1.5 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">{{ p.trSafe }}</span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ p.isTips }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px;animation:pop .35s ease both">
+                <sc-for list="{{ p.tips }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;gap:12px;padding:14px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07)">
+                    <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.i }}"></path></svg></span>
+                    <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 18px/1.15 'Instrument Serif',serif">{{ t.h }}</span><span style="font:400 13px/1.5 'Geist';color:rgba(28,34,48,.7);text-wrap:pretty">{{ t.t }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ p.toastOn }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;left:50%;bottom:40px;height:40px;padding:0 16px;border-radius:999px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;animation:toast 2.2s ease both;z-index:40">{{ toastTxt }}</div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC={
+plane:'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
+train:'M7 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 11h14M9 15h.01M15 15h.01M8 18l-2 3M16 18l2 3',
+bus:'M6 3.5h12a2 2 0 0 1 2 2V17H4V5.5a2 2 0 0 1 2-2zM4 11h16M7.5 20.5V17M16.5 20.5V17M8 14h.01M16 14h.01M9 7h6',
+car:'M5 16v-5l2-5h10l2 5v5M5 16h14v3H5zM7.5 13h.01M16.5 13h.01',
+pin:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+clock:'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
+compass:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.8 8.2l-2.3 5.3-5.3 2.3 2.3-5.3z',
+bag:'M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5M8 7.5V20M16 7.5V20',
+shield:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+ticket:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',
+wallet:'M3.5 7.5v10a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-13a2 2 0 0 1 0-4h10.5v4M20.5 11.5H17a2 2 0 0 0 0 4h3.5',
+drop:'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z',
+hand:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'};
+const TIP={
+valida:{i:IC.ticket,h:'Valida el billete de papel',t:'Si lo compras en la máquina, pásalo por la validadora verde antes de subir: sin validar, es como si no lo llevaras.'},
+nadie:{i:IC.shield,h:'Nadie te espera sin reserva',t:'Si alguien se te acerca en la terminal ofreciendo coche, di que no. Si has reservado el traslado, te esperan con un cartel con tu nombre.'},
+cartera:{i:IC.wallet,h:'En Termini, la cartera delante',t:'El vestíbulo y la bajada al metro van llenos a todas horas: la mochila por delante y el móvil en el bolsillo, no en la mano.'},
+consigna:{i:IC.bag,h:'Si aún no puedes entrar al alojamiento',t:'La consigna de Termini está a nivel de los andenes, en el lado de Via Giolitti. Abre de 7:00 a 21:00 y cuesta desde 6 € por maleta.'},
+agua:{i:IC.drop,h:'El agua es gratis',t:'Las fuentecillas de hierro de las calles (los «nasoni») dan agua potable y fresca todo el día.'},
+ultimo:{i:IC.clock,h:'El último tren',t:'El último Leonardo Express sale de Termini a las 23:05.'}};
+const OTHERS=[{p:'desde 4 €',chips:['Andén 18','Unos 45 min','Cada 20 min'],d:'El precio cambia según el día. Luego, el bus 40 o 64.'},{p:'8 €',chips:['Andén 19','Unos 50 min'],d:'Menores de 6 años, gratis. Luego, el bus 40 o 64.'}];
+const ARR={eye:'Llegada · mar 10 oct',day:'Mar, 10 oct',title:'Madrid → Roma Fiumicino',flight:'Vuelo XX1234',intro1:'Aterrizas en',introB:'Fiumicino',intro2:'32 km al centro de Roma.',
+  bestT:'Leonardo Express a Termini y bus 40 o 64 hasta Largo di Torre Argentina',
+  steps:[{icon:IC.train,n:'Tren a Termini',p:'14 €',d:'32 min sin paradas · cada 15 min (a algunas horas, cada 30)'},{icon:IC.bus,n:'Bus 40 o 64',p:'1,50 €',d:'Billete BIT, vale 100 min desde que lo validas'}],
+  note:'Menores de 4 años, gratis. Con cada adulto que paga, un niño de 4 a 11 años también gratis.',
+  trTxt:'Te esperan a la salida con tu nombre y te dejan en la puerta de tu alojamiento o donde tú quieras.',trFrom:'Salida de llegadas · Fiumicino',trTo:'Tu alojamiento · Centro',
+  trSafe:'Te esperan con un cartel con tu nombre. Si alguien se te acerca en la terminal ofreciendo coche sin reserva, di que no.',
+  tips:['valida','nadie','cartera','consigna','agua'],route:'M62 282 C130 250 220 200 296 168 C270 150 240 130 212 122',planeTf:'none'};
+const RET={eye:'Vuelta · sáb 14 oct',day:'Sáb, 14 oct',title:'Roma Fiumicino → Madrid',flight:'Vuelo XX1235',time:'19:00',intro1:'Tu vuelo sale de',introB:'Fiumicino',intro2:'Te recomendamos estar en el aeropuerto 2 horas antes.',
+  bestT:'Bus 40 o 64 hasta Termini y Leonardo Express',
+  steps:[{icon:IC.bus,n:'Bus 40 o 64',p:'1,50 €',d:'Billete BIT, 100 min'},{icon:IC.train,n:'Tren al aeropuerto',p:'14 €',d:'Sale de los andenes 23 y 24 · 32 min sin paradas · cada 15 min (a algunas horas, cada 30)'}],
+  note:'El último tren sale de Termini a las 23:05.',
+  trTxt:'Te recogen en la puerta de tu alojamiento o donde tú quieras y te dejan en el aeropuerto.',trFrom:'Tu alojamiento · Centro',trTo:'Fiumicino · salidas',
+  trSafe:'Reserva con tiempo y pon la hora de recogida pensando en estar 2 horas antes en el aeropuerto.',
+  tips:['consigna','valida','cartera','ultimo'],route:'M212 122 C240 130 270 150 296 168 C220 200 130 250 62 282',planeTf:'scaleX(-1)'};
+class Component extends DCLogic {
+  state={tab:{a:0,b:0,c:0},toast:null};
+  componentWillUnmount(){clearTimeout(this.tt);}
+  toast(fid,txt){this.setState({toast:{fid,txt}});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
+  phone(k,id,cap,D,opt){const s=this.state,tb=s.tab[k];const setTab=i=>this.setState(st=>({tab:{...st.tab,[k]:i}}));
+    const late=!!opt.late,ret=!!opt.ret;
+    return{...D,id,cap,time:opt.time||D.time,late,
+      tabs:['Resumen','Traslado','Tips'].map((n,i)=>({n,on:tb===i?'true':'false',c:tb===i?'#FFFDF8':'rgba(28,34,48,.65)',pick:()=>setTab(i)})),
+      knob:`translateX(${tb*100}%)`,isRes:tb===0,isTr:tb===1,isTips:tb===2,
+      hasBest:!late,hasTermini:!ret,hasOthers:!ret,othersT:late?'Otras opciones · solo lo que sigue funcionando':'Otras opciones',
+      others:OTHERS.map((o,i)=>({...o,buy:()=>this.toast(id,'Abriendo la compra del billete…'),bd:i<OTHERS.length-1?'rgba(28,34,48,.07)':'transparent'})),
+      transMid:!late,hasStart:!ret,hasMaleta:ret,
+      tips:D.tips.map(t=>TIP[t]),
+      goTr:()=>setTab(1),book:()=>this.toast(id,'Abriendo la reserva del traslado…'),toHotel:()=>this.toast(id,'Abriendo el mapa…'),back:()=>this.toast(id,'Volver a Reservas'),
+      toastOn:!!(s.toast&&s.toast.fid===id)};}
+  renderVals(){const s=this.state;
+    return{ic:IC,toastTxt:s.toast?s.toast.txt:'',
+      phones:[this.phone('a','1a','Llegada · 13:00',ARR,{time:'13:00'}),this.phone('b','1b','Llegada tarde · 23:30',ARR,{time:'23:30',late:true}),this.phone('c','1c','Vuelta · 19:00',RET,{ret:true})]};}
+}
+</script>
+</body>
+</html>
