@@ -67,7 +67,7 @@ export function attachSpecialHours(destData) {
   for (const entry of destData?.fechas_especiales?.fechas ?? []) {
     const rule = entry.horario_especial
     // Solo `confirmado: true`: con "probable" el horario no se aplica (el reparto solo evita ese día, specialHoursToAvoid).
-    // Salvo con `aplicar: true` (el 1 de enero: las Termas de Caracalla abren con horario corto; el Coliseo y el Foro cierran, por su `closed_dates`): el reparto evita ese día y, si no puede,
+    // Salvo con `aplicar: true` (el 1 de enero: las Termas de Caracalla abren con un horario reducido; el Coliseo y el Foro cierran, por su `closed_dates`): el reparto evita ese día y, si no puede,
     // la visita va dentro de ese horario, que es el prudente.
     if (rule?.confirmado !== true && !(rule?.confirmado === 'probable' && rule.aplicar === true)) continue
     for (const [name, hours] of Object.entries(rule.lugares ?? {})) {

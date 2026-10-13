@@ -499,6 +499,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
       stop.outside = true
       stop.outside_reason = visit.place.outsideReason
       stop.outside_kind = visit.place.outsideKind ?? 'no_cabe'
+      // La parada que se queda en su día cerrada, sin tiempo (Tanda 6y10, 1b): su tarjeta dice «Cerrado este día», no el «Hoy cierra» rojo (Tanda 7, punto 15).
+      if (visit.place.closedThisDay) stop.closed_this_day = true
       // (Lo escrito «por fuera» es una decisión del día, el Castillo de Sant'Angelo: no es «por fuera para llegar a todo».)
       if (visit.place.outsideAuthored) stop.outside_authored = true
     } else if ((sourcePlace?.type === 'interior' && (sourcePlace.level ?? 3) <= 2 || visit.place.writtenInside) && !stop.pass_through && !visit.place.passBy) stop.visit_mode = 'dentro'

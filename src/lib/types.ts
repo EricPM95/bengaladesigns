@@ -307,6 +307,8 @@ export interface Stop {
   visitMode?: 'dentro' | 'fuera'
   /** Por qué va por fuera: cerrado ese día, ya cerrado a esa hora o no cabe (solo este deja pedir "Quiero entrar"). */
   outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | 'a_proposito'
+  /** La parada se queda en su día cerrada, sin tiempo (no hay otro día en el viaje): su tarjeta dice «Cerrado este día», no el «Hoy cierra» rojo. */
+  closedThisDay?: boolean
   /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
   freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "Bus 118, unos 25 min". */

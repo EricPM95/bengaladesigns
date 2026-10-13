@@ -36,11 +36,6 @@
     },
     "disponibilidad": {
       "_que_es": "Días sin Free Tour y horas de salida. Si un día no hay tour, el día que lo lleva no cae en esa fecha si el viaje lo permite; si no hay más remedio, el tour no se pone y el viajero ve el `aviso`. sin_tour: fechas \"MM-DD\", \"easter±N\" o \"AAAA-MM-DD\", o { fecha, fuente, comprobado }. horas_especiales: fechas en las que el tour solo sale a ciertas horas; el día escrito que lleva el tour trae su variante de esa fecha y la prueba comprueba que el tour va a una de esas horas.",
-      "horas": [
-        "10:00",
-        "16:00"
-      ],
-      "horas_nota": "La app dice que los tours suelen salir por la mañana (10:00-10:30) y por la tarde (16:00-17:00). Sin comprobar en la web de la empresa.",
       "sin_tour": [],
       "aviso": "Hoy no hay Free Tour: hemos dejado el día sin él. Compruébalo en la web del tour, por si ese año sí sale.",
       "fuente": "civitatis.com/es/roma/free-tour-roma/ — la ficha no publica horarios ni días sin tour: solo se ven al elegir fecha en el calendario de reserva. Festivos de Navidad: comprobados por el usuario en ese calendario el 2026-09-30 (hay tour, solo a las 12:00).",
@@ -8900,9 +8895,9 @@
     }
   ],
   "sitios_grandes": {
-    "_nota": "Tanda 6y10. Los sitios grandes del destino: los que tienen su día escrito por tramos de hora. Una reserva de uno de ellos en otro día mueve el día entero; la de un sitio pequeño solo mueve esa parada. Antes eran listas fijas en el código; ahora el motor y la app lo leen de aquí. Cada sitio: nombre (el del lugar), del y el (cómo se dice en los avisos), dias (los días escritos que son suyos) y nunca_se_quita (el motor no lo quita de su día aunque cierre). Un destino sin este campo no tiene sitios grandes.",
+    "_nota": "Tanda 6y10. Los sitios grandes del destino: los que tienen su día escrito por tramos de hora. Una reserva de uno de ellos en otro día mueve el día entero; la de un sitio pequeño solo mueve esa parada. Antes eran listas fijas en el código; ahora el motor y la app lo leen de aquí. Cada sitio: nombre (el del lugar), del y el (cómo se dice en los avisos), dias (los días escritos que son suyos) y nunca_se_quita (el motor no lo quita de su día aunque cierre). Opcional: no_cabe_con_excursion_hasta (\"HH:MM\"): con una excursión de mañana, una reserva de ese sitio a esa hora o antes no cabe (Roma: el Coliseo, 16:30); el motor lo lee de aquí. Un destino sin este campo no tiene sitios grandes.",
     "lugares": [
-      { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "dias": ["D1", "D1-FT"] },
+      { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "dias": ["D1", "D1-FT"], "no_cabe_con_excursion_hasta": "16:30" },
       { "nombre": "Museos Vaticanos y Capilla Sixtina", "del": "del Vaticano", "el": "el Vaticano", "dias": ["D2", "D3"], "nunca_se_quita": true },
       { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true },
       { "nombre": "Free Tour por Roma", "del": "del Free Tour", "el": "el Free Tour", "dias": ["D3", "D1"] }

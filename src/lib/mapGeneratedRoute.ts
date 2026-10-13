@@ -103,6 +103,8 @@ export interface GeneratedStop {
   visit_mode?: 'dentro' | 'fuera' | null
   /** Por qué va por fuera: cerrado, ya cerrado o no cabe — Stop.outsideKind. */
   outside_kind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | 'a_proposito' | null
+  /** La parada se queda en su día cerrada, sin tiempo — Stop.closedThisDay («Cerrado este día»). */
+  closed_this_day?: boolean | null
   /** Free Tour: dónde acaba y, si se come justo después, que la comida es por esa zona — Stop.freeTourEnd. */
   free_tour_end?: string | null
   /** El tramo en bus o metro hasta esta parada — Stop.transitLabel ("Bus 118, unos 25 min"). */
@@ -511,6 +513,7 @@ export function mapStop(dayNumber: number, generated: GeneratedStop): Stop {
     ...(generated.outside ? { outsideReason: generated.outside_reason ?? 'Hoy lo ves por fuera para llegar a todo lo del día' } : {}),
     ...(generated.visit_mode ? { visitMode: generated.visit_mode } : {}),
     ...(generated.outside_kind ? { outsideKind: generated.outside_kind } : {}),
+    ...(generated.closed_this_day ? { closedThisDay: true } : {}),
     ...(generated.tags && generated.tags.length > 0 ? { tags: generated.tags } : {}),
     ...(generated.schedule ? { scheduleText: generated.schedule } : {}),
     ...(generated.hours_card ? { hoursCard: generated.hours_card } : {}),

@@ -59,13 +59,18 @@ export function tieneReservasEscritas(dia, lugar) {
   return Boolean(dia?.reservas?.[lugar]) || tramosDeReserva(dia, lugar).length > 0
 }
 
-/** Qué lista tiene ese día para esa hora (Tanda 6u, regla 17: la app solo lo usa para montar el día; nunca propone otra hora). `contexto.sitiosGrandes`: el Set de `sitiosGrandesDe(destData)`; sin él, ningún sitio es grande. */
+/**
+ * Qué lista tiene ese día para esa hora (Tanda 6u, regla 17: la app solo lo usa para montar el día; nunca propone otra hora). `contexto.sitiosGrandes`: el Set de `sitiosGrandesDe(destData)`; sin él, ningún sitio es grande.
+ * `contexto.destData` (Tanda 7): los datos del destino. De ahí sale la regla de la excursión de mañana: un sitio grande con `no_cabe_con_excursion_hasta: "HH:MM"` no cabe
+ * con una excursión de mañana si su reserva es a esa hora o antes (en Roma, el Coliseo: 16:30). Sin `destData` o sin el campo, no hay regla.
+ */
 export function claseDeReserva(dia, lugar, hora, contexto = {}) {
   if (!tieneReservasEscritas(dia, lugar)) return (contexto.sitiosGrandes ?? SIN_SITIOS).has(lugar) ? { clase: 'sin_lista' } : { clase: 'sin_definir' }
   const m = toMin(hora)
   const lim = dia?.reservas?.[lugar]?.no_cabe_antes
   if (contexto.tieneFreeTour && lim && m < toMin(lim)) return { clase: 'no_cabe', motivo: 'free_tour_museos', desde: lim }
-  if (contexto.excursionManana && lugar === 'Coliseo' && m <= 16 * 60 + 30) return { clase: 'no_cabe', motivo: 'excursion_coliseo' }
+  const hastaConExcursion = sitioGrandeDe(contexto.destData, lugar)?.no_cabe_con_excursion_hasta
+  if (contexto.excursionManana && hastaConExcursion && m <= toMin(hastaConExcursion)) return { clase: 'no_cabe', motivo: 'excursion_coliseo' }
   const tramo = tramosDeReserva(dia, lugar).find((t) => m >= t.desde && m <= t.hasta)
   if (tramo) return { clase: 'lista', tramo: tramo.id }
   const normal = tramoNormal(dia, lugar)

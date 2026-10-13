@@ -87,10 +87,13 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   if (tripWarning) meta.push({ text: tripWarning, warn: true })
   // El horario de ese día, en pequeño (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15»; cerrado, «Cerrado hoy» en rojo. Plazas, fuentes y
   // calles (sin horario en los datos) no llevan nada. Por fuera solo se dice si está cerrado. (Un paseo libre no tiene horario: es la calle.)
-  if (horario && !stop.isNightExperience && !stop.isFreeWalk && (stop.visitMode !== 'fuera' || horario.cerrado)) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
-  meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
+  // La parada que se queda en su día cerrada (no hay otro día en el viaje; Tanda 7, punto 15) lleva una sola marca, «Cerrado este día», en lugar del «Cerrado hoy» / «Hoy cierra» rojo.
+  const cerradoEsteDia = Boolean(stop.closedThisDay)
+  if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && (stop.visitMode !== 'fuera' || horario.cerrado)) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
+  if (cerradoEsteDia) meta.push({ text: 'Cerrado este día', warn: true })
+  else meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
   // Por fuera porque cierra: el motivo, en rojo (si cierra ese día ya lo dice «Cerrado hoy», una sola vez). (Por falta de tiempo no es un problema: va en la ficha.)
-  if (stop.visitMode === 'fuera') {
+  if (stop.visitMode === 'fuera' && !cerradoEsteDia) {
     const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
     const short = stop.outsideKind === 'no_abre' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
     if (closed && short && !(horario?.cerrado && stop.outsideKind === 'cerrado')) meta.push({ text: short, warn: true })
@@ -98,7 +101,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
     // («Hoy cierra» ya lo dice «Cerrado hoy»: una sola vez.)
-    if (freeDayWarning && !(horario?.cerrado && freeDayWarning === 'Hoy cierra')) meta.push({ text: freeDayWarning, warn: true })
+    if (freeDayWarning && !cerradoEsteDia && !(horario?.cerrado && freeDayWarning === 'Hoy cierra')) meta.push({ text: freeDayWarning, warn: true })
   } else {
     if (stop.hoursWarning) meta.push({ text: stop.hoursWarning, warn: true })
     if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
