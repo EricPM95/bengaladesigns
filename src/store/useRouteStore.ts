@@ -400,7 +400,7 @@ interface RouteStoreState {
    * como ella; sus paradas se quitan y el resto no cambia; con la varita del día vuelve tal como estaba) o va a un día nuevo al final. Una
    * de medio día solo ocupa la mañana: la tarde sigue en el destino. Devuelve el día, que queda abierto en Días.
    */
-  placeExcursion: (excursion: Excursion, target: { dayId: string } | { newDay: true }) => string | null
+  placeExcursion: (excursion: Excursion, target: { dayId: string } | { newDay: true; extendTrip?: true }) => string | null
   /** El aviso que se reabre al tocar la etiqueta de un día (null = cerrado). No se guarda. */
   openDateNoticeId: string | null
   setOpenDateNoticeId: (id: string | null) => void

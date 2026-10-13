@@ -88,10 +88,32 @@ function bookingsNow(): BookingsSnapshot {
  * Ningún sitio de la pantalla llama a las funciones de quitar del almacén sin pasar por aquí (lo comprueba `scripts/destino/pruebaFase6y4_reservas.mjs`).
  */
 export function quitarConDeshacer(message: string, change: () => void): void {
+  cambiarConDeshacer(message, change)
+}
+
+/**
+ * Hace el cambio (síncrono o no) y deja el aviso con «Deshacer», que devuelve la ruta (días, fechas y vuelta) y TODO lo reservado tal cual estaba. Es la pieza de siempre de `quitarConDeshacer`,
+ * para cambios que no quitan reservas (Tanda 6y10: la excursión en un día nuevo o en lugar de un día). Devuelve lo que devuelva el cambio.
+ */
+export function cambiarConDeshacer<T>(message: string, change: () => T): T {
   const previous = useRouteStore.getState().route
   const previousBookings = bookingsNow()
-  change()
-  useAddFlowStore.setState({ toast: { message, previous, previousReservations: previousBookings.reservations, previousBookings, id: Date.now() } })
+  const result = change()
+  const avisar = () => useAddFlowStore.setState({ toast: { message, previous, previousReservations: previousBookings.reservations, previousBookings, id: Date.now() } })
+  // (Un cambio que tarda, como el interruptor del día 4, deja el aviso cuando acaba; la ruta de «antes» se tomó antes de empezar.)
+  if (result instanceof Promise) return result.then((hecho) => (avisar(), hecho)) as T
+  avisar()
+  return result
+}
+
+/**
+ * Vuelta a Días tras poner una excursión con los días llenos (Tanda 6y10): el aviso ya lo dejó `cambiarConDeshacer` (con su «Deshacer»); aquí solo se cierra la pantalla de añadir y se abre el día.
+ */
+export function openDayAfterExcursion(dayId: string): void {
+  useAddFlowStore.setState({ addFlow: null, focusStopId: null })
+  const store = useRouteStore.getState()
+  store.setMode('days')
+  store.setActiveDayId(dayId)
 }
 
 /** El aviso de cada tipo de reserva al quitarla. */

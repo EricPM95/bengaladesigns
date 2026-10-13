@@ -14,6 +14,7 @@ import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
 import { TimeField } from '../../ui/TimeField'
 import { placeholderPhoto, stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 import { Icono } from '../../ui/Icono'
+import { ExcursionSinHueco } from '../excursions/ExcursionSinHueco'
 
 /** Lo que se añade: un lugar, un restaurante (va como comida o cena) o una excursión. */
 export type AddItem = { kind: 'place'; place: DestinationPlace } | { kind: 'excursion'; excursion: Excursion }
@@ -237,6 +238,8 @@ export function AddToDaySheet({ route, item, initialDayId, onClose, onAdded }: A
           >
             {day ? `Añadir ${alDia(route, day.dayNumber)}` : 'Ningún día libre para esto'}
           </button>
+          {/* Una excursión que no cabe en ningún día (Tanda 6y10): debajo, las dos salidas, cada una con su «Deshacer». */}
+          {item.kind === 'excursion' && !firstFree && <ExcursionSinHueco route={route} excursion={item.excursion} onClose={onClose} />}
         </div>
       </div>
     </div>,
