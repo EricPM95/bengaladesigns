@@ -8902,11 +8902,11 @@
     }
   ],
   "sitios_grandes": {
-    "_nota": "Tanda 6y10. Los sitios grandes del destino: los que tienen su día escrito por tramos de hora. Una reserva de uno de ellos en otro día mueve el día entero; la de un sitio pequeño solo mueve esa parada. Antes eran listas fijas en el código; ahora el motor y la app lo leen de aquí. Cada sitio: nombre (el del lugar), del y el (cómo se dice en los avisos), dias (los días escritos que son suyos) y nunca_se_quita (el motor no lo quita de su día aunque cierre). Un destino sin este campo no tiene sitios grandes.",
+    "_nota": "Tanda 6y10. Los sitios grandes del destino: los que tienen su día escrito por tramos de hora. Una reserva de uno de ellos en otro día mueve el día entero; la de un sitio pequeño solo mueve esa parada. Antes eran listas fijas en el código; ahora el motor y la app lo leen de aquí. Cada sitio: nombre (el del lugar), del y el (cómo se dice en los avisos), dias (los días escritos que son suyos) y nunca_se_quita (el motor no lo quita de su día aunque cierre). Un destino sin este campo no tiene sitios grandes. Tanda 7 (vuelta): `entrada_a` (cómo se dice «Tu entrada …» en los avisos de reservas contra el vuelo) y `bloque` (lo que lleva a un medio día —el día de llegada desde las 14:00 o el de vuelta— una reserva de ese sitio: las paradas en el orden de su día escrito para esa hora; `despues_de_comer`: en esos días de la semana, esas paradas nunca van antes de comer: después de la comida si la fila la lleva, y si no, a «Si te sobra tiempo»).",
     "lugares": [
-      { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "dias": ["D1", "D1-FT"] },
-      { "nombre": "Museos Vaticanos y Capilla Sixtina", "del": "del Vaticano", "el": "el Vaticano", "dias": ["D2", "D3"], "nunca_se_quita": true },
-      { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true },
+      { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "entrada_a": "al Coliseo", "dias": ["D1", "D1-FT"], "bloque": { "paradas": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] } },
+      { "nombre": "Museos Vaticanos y Capilla Sixtina", "del": "del Vaticano", "el": "el Vaticano", "entrada_a": "a los Museos Vaticanos", "dias": ["D2", "D3"], "nunca_se_quita": true, "bloque": { "paradas": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"], "despues_de_comer": { "dias_semana": ["miércoles"], "paradas": ["Plaza de San Pedro", "Basílica de San Pedro"] } } },
+      { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "entrada_a": "a la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true, "bloque": { "paradas": ["Galería Borghese", "Parque de Villa Borghese"] } },
       { "nombre": "Free Tour por Roma", "del": "del Free Tour", "el": "el Free Tour", "dias": ["D3", "D1"] }
     ]
   },

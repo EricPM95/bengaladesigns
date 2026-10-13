@@ -25,10 +25,12 @@ export function writtenDaysFor(destinationKey) {
     const days = {}
     let destino = {}
     let extraPool = null
+    // (Tanda 7: las tablas de las llegadas y las vueltas de `listas.json` —por filas de hora, las últimas mañanas—: el motor las lee de aquí.)
+    let llegadas = null
     for (const file of readdirSync(dir).filter((name) => name.endsWith('.json')).sort()) {
       const data = JSON.parse(readFileSync(join(dir, file), 'utf8'))
       if (file === '_destino.json') destino = data
-      else if (file === 'listas.json') Object.assign(days, data.dias ?? {})
+      else if (file === 'listas.json') { Object.assign(days, data.dias ?? {}); llegadas = data.llegadas ?? null }
       else if (file === '_pool_d0.json') extraPool = data
     }
     // (El sitio de cada extra del pool en el viaje de 1 día, D0: `_pool_d0.json` se suma a `_destino.json › pool`.)
@@ -36,7 +38,7 @@ export function writtenDaysFor(destinationKey) {
       destino.pool = destino.pool ?? {}
       for (const [name, site] of Object.entries(extraPool)) if (!name.startsWith('_')) destino.pool[name] = { ...(destino.pool[name] ?? {}), sitios: [...(destino.pool[name]?.sitios ?? []), site] }
     }
-    value = Object.keys(days).length > 0 ? { destino, days } : null
+    value = Object.keys(days).length > 0 ? { destino, days, llegadas } : null
   }
   cache.set(key, value)
   return value
