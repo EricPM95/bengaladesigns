@@ -34,7 +34,11 @@ const CENA_LIMITE = toMin('22:00') // (6y9: antes 21:00)
 const CENA_TOPE = toMin('22:30')
 // (Cabe una mesa rápida antes de la reserva si su «Llegada a…» es al menos esto después de la hora más temprana de la mesa rápida más lo que se tarda en llegar: lo mismo que cuenta el motor,
 // configuración de listasTrip.js.)
-const CABE_ANTES = { comida: toMin('10:30') + 45 + 12, cena: toMin('18:00') + 60 + 12 }
+// (Tanda 6y10: la comida nunca antes de las 12:00 —la mesa corta cabe antes de la «Llegada a…» si esta es al menos a las 12:00 + 45 + 12— salvo ante una reserva de 12:00 a 13:00, donde la comida corta
+// (30 min, desde las 11:15) hace de llegada y cuenta hasta la hora de la reserva: 11:15 + 30 + 12.)
+const CABE_ANTES = { comida: toMin('12:00') + 45 + 12, cena: toMin('18:00') + 60 + 12 }
+const CABE_ANTES_VENTANA = toMin('11:15') + 30 + 12
+const enVentana = (hora) => toMin(hora) >= toMin('12:00') && toMin(hora) <= toMin('13:00')
 
 // Tipos de día: un lunes, un martes, un miércoles, un jueves, un viernes, un sábado y un domingo normales, más festivos y fechas especiales.
 const DIAS_TIPO = {
@@ -109,7 +113,7 @@ function mirar(dia, { lugar, hora, dur, nombre, etiqueta }) {
   const forzado = (dia.escritoLog ?? []).some((l) => /no puede ir antes de la reserva/.test(l.causa ?? ''))
   if (forzado) { cuenta.forzados++; cuenta.listaForzados.push(`${etiqueta} ${nombre ?? lugar} ${hora}`) }
   if (iComida >= 0) {
-    if (sale > COMIDA_LIMITE && llegadaMin >= CABE_ANTES.comida) { cuenta.antes++; debe(iComida < inicioR || forzado, 'comida', `${etiqueta}: ${nombre ?? lugar} a las ${hora} (${dur} min, sale a las ${toHHMM(sale)}): la comida tiene que ir ANTES y va después`) }
+    if (sale > COMIDA_LIMITE && (enVentana(hora) ? toMin(hora) >= CABE_ANTES_VENTANA : llegadaMin >= CABE_ANTES.comida)) { cuenta.antes++; debe(iComida < inicioR || forzado, 'comida', `${etiqueta}: ${nombre ?? lugar} a las ${hora} (${dur} min, sale a las ${toHHMM(sale)}): la comida tiene que ir ANTES y va después`) }
     else { cuenta.despues++; debe(iComida > iR, 'comida', `${etiqueta}: ${nombre ?? lugar} a las ${hora} (${dur} min, sale a las ${toHHMM(sale)}): la comida tiene que ir DESPUÉS y va antes`) }
   } else cuenta.sinComida++
   if (iCena >= 0) {
@@ -212,7 +216,9 @@ if (PARTES.has('4')) {
         const iLleg = filas.findIndex((r) => r.llegada && r.lugar === lugar)
         const etiqueta = `${clave} ${lugar} ${hora} (${forma.dias} d)`
         debe(iComida >= 0 && iR >= 0, 'eric', `${etiqueta}: falta la comida o la reserva`)
-        if (donde === 'antes') debe(iComida < (iLleg >= 0 ? iLleg : iR), 'eric', `${etiqueta}: la comida tenía que ir antes`)
+        // (6y10: con la comida nunca antes de las 12:00, el Coliseo a las 13:30 en un día sin restaurantes abiertos cerca puede no llegar a tiempo con la mesa antes: el motor lo deja después y lo apunta —la entrada nunca sale tarde—.)
+        const forzadoCaso = (dia.escritoLog ?? []).some((l) => /no puede ir antes de la reserva/.test(l.causa ?? ''))
+        if (donde === 'antes') debe(iComida < (iLleg >= 0 ? iLleg : iR) || forzadoCaso, 'eric', `${etiqueta}: la comida tenía que ir antes`)
         else debe(iComida > iR, 'eric', `${etiqueta}: la comida tenía que ir después`)
         debe(iR >= 0 && !(filas[iR].tarde > 0), 'eric', `${etiqueta}: sale tarde (${filas[iR]?.tarde} min)`)
       })

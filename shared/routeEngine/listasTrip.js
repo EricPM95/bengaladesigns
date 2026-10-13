@@ -43,6 +43,8 @@ const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(valu
 const slug = (text) => norm(text).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
 const OUTSIDE_MINUTES = 15
 const MESES_INVIERNO = [11, 12, 1, 2]
+/** La marca de un sitio que cierra ese día y se queda en su día porque no hay otro (Tanda 6y10, 1b). */
+const CERRADO_ESTE_DIA = 'Cerrado este día'
 const OUTSIDE_REASONS = { cerrado: 'Hoy cierra', no_cabe: 'Hoy lo ves por fuera para llegar a todo lo del día', viaje_corto: 'En un viaje corto lo ves por fuera: no da tiempo a entrar' }
 /** Valores por defecto de las franjas (lo del destino manda: `destination_config.franjas`). Provisional (PREGUNTAS_TANDA6). */
 const FRANJAS = {
@@ -50,7 +52,10 @@ const FRANJAS = {
   // La comida y la cena según la reserva (Tanda 6y8, todos los destinos): si al salir de la reserva ya es más tarde de esta hora, la mesa va ANTES de la reserva; si no, DESPUÉS. La cena no se retrasa quitando paradas: con una reserva nada pasa a «Si te sobra tiempo» (regla 17), solo se ordena.
   // `entre_reservas_min`: lo que se deja para ir de una reserva a la siguiente cuando la app elige el turno de una entrada junto a otra reserva del viajero.
   // Antes de una reserva la mesa se cuenta corta (`*_rapida_min`, desde `*_rapida_desde`) solo si la normal haría llegar tarde: solo ponemos la parada, cuánto tarda en comer lo decide el viajero.
-  comida_antes_si_sale_despues_de: '14:30', cena_antes_si_sale_despues_de: '22:00', cena_hasta: '22:30', comida_rapida_min: 45, comida_rapida_desde: '10:30', cena_rapida_min: 60, cena_rapida_desde: '18:00', tolerancia_hora_min: 5, entre_reservas_min: 30, cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
+  // LA COMIDA NUNCA VA ANTES DE LAS 12:00 (Tanda 6y10, P4, Eric): `comida_rapida_desde` es 12:00 para todas las reservas. La única excepción (`comida_rapida_excepcion`): una reserva que empieza entre `reserva_desde` y
+  // `reserva_hasta` (en Roma, los Museos de 12:00 a 13:00) con la comida antes: la comida corta (`min`: 30) puede empezar desde `desde` (11:15), cerca del sitio, y esa comida hace de «Llegada a…»: la reserva no se pone
+  // tarde por el rato de llegada (este solo se acorta hasta lo que queda). Vale para cualquier destino: la regla no lee nombres.
+  comida_antes_si_sale_despues_de: '14:30', cena_antes_si_sale_despues_de: '22:00', cena_hasta: '22:30', comida_rapida_min: 45, comida_rapida_desde: '12:00', comida_rapida_excepcion: { reserva_desde: '12:00', reserva_hasta: '13:00', desde: '11:15', min: 30 }, cena_rapida_min: 60, cena_rapida_desde: '18:00', tolerancia_hora_min: 5, entre_reservas_min: 30, cena_desde_verano: '20:00', meses_verano: [5, 6, 7, 8, 9], tarde_margen_min: 60,
   llegada: { reserva: 30, turno: 15, tour: 15 }, excursion_tarde_desde: '16:00', hueco_para_parada_corta: 20, cerca_m: 450, andar_max_min: 25, comida_junto_min: 12, taxi_max_min: 15, manana_hasta: '14:00', vas_bien_min: 45, espera_max_min: 15, espera_plaza_max_min: 40, espera_plaza_cerca_min: 5, cerca_max_min: 30, tarde_medio_desde: '16:00', comida_antes_desde: '12:00', hueco_llenar_min: 60, cerca_andar_min: 15, hueco_reserva_min: 30, sugerencia_cerca_min: 10, sugerencia_lejos_min: 90, sugerencia_lejos_andar_min: 20, sugerencia_lejos_transporte_min: 15,
 }
 
@@ -241,6 +246,7 @@ export function planListasTrip(args) {
     dentro: new Set(), // lo que ya va por dentro
     mesas: new Set(), // restaurantes ya usados
     noches: new Set(), // nocturnas ya usadas
+    cerrados: new Set(), // lugares que cierran y se quedan como «Cerrado este día» (no vistos)
     visitadoEn: new Map(), // lugar → número del día en que ya fue parada (para «Ya lo visitaste el día n» en un «de camino»)
   }
   const problems = []
@@ -278,8 +284,9 @@ export function planListasTrip(args) {
   const contextoDe = (dia, day, hours, parte, index) => ({
     weekday: hours.weekday, dateIso: calendar.hasDates ? hours.dateIso : null, month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null,
     hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: entradasDeDia(index), poolNames, experiencias: selected, orden: order, parte, enFechas,
-    // (Un sitio que NUNCA se quita —el Vaticano, la Galería Borghese— no activa las variantes «si cierra, sin él»: si ningún día del viaje abre, se queda en el suyo con su aviso, Tanda 6y5.)
-    cerrado: (name) => !noSeQuitan.has(name) && closedThatDay(name, day),
+    // (Un sitio que cierra ese día activa las variantes «si cierra, sin él» del documento. Si es de los que NUNCA se quitan —el Vaticano, la Galería Borghese— y ningún día del viaje abre, se queda
+    // en su día como parada «Cerrado este día», sin ocupar tiempo y con su aviso (Tanda 6y10, 1b), y el resto del día es la versión sin él.)
+    cerrado: (name) => closedThatDay(name, day),
   })
 
   const preparar = (id, index) => {
@@ -302,6 +309,21 @@ export function planListasTrip(args) {
     const aplicadas = []
     const ctx = contextoDe(dia, day, hours, parteKey === 'unica' ? null : parteKey, index)
     let trabajo = aplicarVariantes(base, dia, ctx, aplicadas)
+    // Lo que NUNCA se quita (el Vaticano, la Galería Borghese) y ese día cierra, porque ningún otro día del viaje abre (Tanda 6y10, 1b): la versión «sin él» del documento ya ha quitado el sitio de la lista;
+    // aquí vuelve a su puesto como parada marcada «Cerrado este día» (no se quita: decide el viajero). Después, en 5.2b, sale de la secuencia del día para no ocupar tiempo.
+    for (const name of noSeQuitan) {
+      if (!closedThatDay(name, day)) continue
+      const esElSitio = (s) => s.lugar === name && s.tipo !== 'traslado' && s.modo !== 'camino'
+      if ([...trabajo.manana, ...trabajo.tarde].some(esElSitio)) continue
+      const original = construirBase()
+      for (const key of ['manana', 'tarde']) {
+        const at = original[key].findIndex(esElSitio)
+        if (at < 0) continue
+        const donde = Math.min(at, trabajo[key].length)
+        trabajo = { ...trabajo, [key]: [...trabajo[key].slice(0, donde), { ...original[key][at], cerrado_este_dia: true }, ...trabajo[key].slice(donde)] }
+        break
+      }
+    }
     // El mismo día SIN las reservas grandes (Tanda 6y5, P4): la fila de la tabla de la hora reservada puede llevar menos paradas que el día de siempre. Lo que ya no cabe no desaparece:
     // pasa a «Si te sobra tiempo» de ese día (paso 5.0b).
     const sinGrandes = Object.fromEntries(Object.entries(ctx.entradas ?? {}).filter(([name]) => !sitiosGrandes.has(name)))
@@ -583,6 +605,27 @@ export function planListasTrip(args) {
       })
     }
 
+    // 5.2b Lo que NUNCA se quita y ese día cierra (Tanda 6y10, 1b): se saca de la secuencia del día —no lleva «Llegada a…», no ocupa tiempo ni cuenta para nada— y vuelve al final en su puesto como
+    // parada «Cerrado este día», con su aviso (se queda, no se quita: decide el viajero). El resto del día es la versión «sin él» del documento. (Una reserva del viajero con el sitio cerrado sigue su camino: se queda y avisa.)
+    const cerradosEseDia = []
+    {
+      const sale = []
+      const antes = []
+      for (const item of items) {
+        const esMarca = item.kind === 'stop' && !item.llegada && noSeQuitan.has(item.lugar) && item.modo !== 'fuera' && item.modo !== 'camino' && !(item.hora_tipo === 'reserva' && item.hora)
+          && (item.cerrado_este_dia === true || closedThatDay(item.lugar, skeletonDay, item.ignora_temporada === true))
+        if (esMarca) cerradosEseDia.push({ item, antes: [...antes].reverse() })
+        else { sale.push(item); antes.push(item.id) }
+      }
+      items = sale
+      for (const { item } of cerradosEseDia) {
+        const aviso = closedStaysNotice(destData, placeByName.get(item.lugar), hours) ?? `Ese día ${item.lugar} está cerrado`
+        item.aviso_cierre = aviso
+        problems.push({ tipo: 'cierra_sin_otro_dia', lugar: item.lugar, aviso, dayNumber })
+        log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'aviso', causa: `cierre de ${item.lugar}: ningún otro día del viaje lo permite; se queda en su día con el aviso` })
+      }
+    }
+
     /** Cerrado todo el rato de su franja (la mañana hasta el límite de la comida; la tarde desde que empieza la comida): no abre cuando le toca. */
     const cerradoEnFranja = (item, source) => {
       if (item.modo === 'camino' || item.modo === 'fuera' || item.tipo !== 'parada' || item.hora_tipo === 'reserva' || source.type !== 'interior') return false
@@ -615,14 +658,7 @@ export function planListasTrip(args) {
         problems.push({ tipo: 'reserva_cerrada', lugar: item.lugar, hora: item.hora, cierre: null, dayNumber })
         return [{ ...item, cerrado_todo_el_dia: false }]
       }
-      // Un sitio que nunca se quita (Tanda 6y5, P2 y P3): si llega aquí cerrado es que ningún otro día del viaje lo permite (el orden de los días ya probó todos los cambios). Se queda en su
-      // día, por dentro, con el aviso de que ese día cierra; decide el viajero. Nunca desaparece ni pasa a «Si te sobra tiempo» por cerrar.
-      if (noSeQuitan.has(item.lugar) && item.modo !== 'fuera' && closedThatDay(item.lugar, skeletonDay, item.ignora_temporada === true)) {
-        const aviso = closedStaysNotice(destData, placeByName.get(item.lugar), hours) ?? `Ese día ${item.lugar} está cerrado`
-        problems.push({ tipo: 'cierra_sin_otro_dia', lugar: item.lugar, aviso, dayNumber })
-        log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'aviso', causa: `cierre de ${item.lugar}: ningún otro día del viaje lo permite; se queda en su día con el aviso` })
-        return [{ ...item, cierra_hoy: true, aviso_cierre: aviso }]
-      }
+      // (Un sitio que nunca se quita y cierra ese día ya salió de la secuencia en 5.2b: vuelve al final como «Cerrado este día».)
       if (item.si_cerrado?.cambiar_titulo) {
         log.push({ id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'titulo', causa: `${item.lugar} está cerrado hoy: la parada es «${item.si_cerrado.cambiar_titulo}»` })
         return [{ ...item, titulo: item.si_cerrado.cambiar_titulo, modo: 'fuera', min: item.si_cerrado.min ?? Math.min(item.min, source.minutos_fuera ?? 10), motivo_fuera: motivoCierre(source) }]
@@ -660,12 +696,17 @@ export function planListasTrip(args) {
       const info = written.destino?.llegadas ?? {}
       const texto = tipoLlegada === 'tour' ? `${info.free_tour?.texto ?? ''}${tour?.meeting_point ? ` Punto de encuentro: ${tour.meeting_point}.` : ''}`.trim() : info.por_lugar?.[item.lugar] ?? info[tipoLlegada]?.texto ?? null
       const titulo = tipoLlegada === 'tour' ? info.free_tour?.titulo ?? 'Llegada al punto de encuentro del Free Tour' : `Llegada a ${item.lugar}`
-      const llegada = { kind: 'stop', tipo: tipoLlegada === 'tour' ? 'tour' : 'parada', llegada: true, lugar: item.lugar, titulo, texto_llegada: texto, min: margen, modo: 'fuera', franja: item.franja, id: idDe({ tipo: 'llegada', lugar: item.lugar }), de: item.id, hora: item.hora ? toHHMM(toMin(item.hora) - margen) : undefined }
+      const llegada = { kind: 'stop', tipo: tipoLlegada === 'tour' ? 'tour' : 'parada', llegada: true, lugar: item.lugar, titulo, texto_llegada: texto, min: margen, modo: 'fuera', franja: item.franja, id: idDe({ tipo: 'llegada', lugar: item.lugar }), de: item.id, hora: item.hora ? toHHMM(toMin(item.hora) - margen) : undefined, entrada: item.hora ?? null }
       return [llegada, { ...item, llegada_incluida: true }]
     })
     items = conLlegada(items)
 
     // ── Horas orientativas: la suma de lo que dura cada parada más el trayecto ─────────────────────────────────
+    /** ¿Esta hora de reserva cae en la ventana de la excepción de la comida corta (`comida_rapida_excepcion`)? */
+    const enVentanaDeComida = (hora) => {
+      const excepcion = cfg.comida_rapida_excepcion
+      return Boolean(excepcion && hora && toMin(hora) >= toMin(excepcion.reserva_desde) && toMin(hora) <= toMin(excepcion.reserva_hasta))
+    }
     const startPoint = { t: empiezaMin }
     const simular = (lista, desde = startPoint.t, prev0 = null) => {
       let t = desde
@@ -692,13 +733,15 @@ export function planListasTrip(args) {
         if (item.kind === 'comida') start = Math.max(llega, item.piso != null ? item.piso : toMin(cfg.comida_desde))
         else if (item.kind === 'cena') start = Math.max(llega, item.piso != null ? item.piso : cenaDesde)
         if (item.no_antes) start = Math.max(start, toMin(item.no_antes))
-        if (item.hora) {
+        // La «Llegada a…» de una reserva de la ventana, detrás de una comida: la comida hace de llegada, y el rato de llegada solo dura lo que queda hasta la hora de la reserva.
+        const llegadaElastica = item.llegada === true && Boolean(item.entrada) && anterior?.kind === 'comida' && enVentanaDeComida(item.entrada)
+        if (item.hora && !llegadaElastica) {
           const fija = toMin(item.hora)
           // (Hasta `tolerancia_hora_min` de retraso cuenta como llegar a su hora: la hora de la parada es orientativa y andar un poco más deprisa lo cubre.)
           if (llega <= fija || llega - fija <= cfg.tolerancia_hora_min) start = fija
           else { start = llega; tarde = llega - fija }
         }
-        const end = start + (item.min ?? 0)
+        const end = start + (llegadaElastica ? Math.max(0, Math.min(item.min ?? 0, toMin(item.entrada) - start)) : item.min ?? 0)
         t = end
         prev = endCoordsOf(item) ?? c ?? prev
         anterior = item
@@ -903,18 +946,18 @@ export function planListasTrip(args) {
      *   - se espera si son 15 min o menos;
      *   - si no, pasa a por fuera o de camino (la fachada), con su aviso «Abre a las…» (nunca se cambia el orden);
      *   - y si no se ve desde fuera, pasa a «Si te sobra tiempo».
-     * Con una reserva del viajero (Tanda 6z5) no se hace nada de esto: el día sigue su lista escrita tal cual, y a qué hora llega el viajero a cada sitio es cosa suya. Lo que cierra ese
-     * día (regla 5) ya está resuelto al elegir la lista; el horario y la última entrada de cada parada los enseña la tarjeta, que son datos reales, y decide el viajero.
+     * Con una reserva del viajero (Tanda 6z5) el día sigue su lista escrita tal cual y el orden no cambia; desde la 6y10 (1c) también se mira el horario real de cada visita por dentro (un sitio que a su hora ya
+     * habrá cerrado, o que aún no habrá abierto, no sale «por dentro» con una hora imposible). Lo que cierra ese día (regla 5) ya está resuelto al elegir la lista.
      */
     const resolverHorarios = (lista) => {
-      // (La reserva es la que PUSO el viajero: el turno que la app coge de la Galería sin reserva puesta, `turno_real`, no cuenta.)
-      if (lista.some((it) => it.kind === 'stop' && it.hora_tipo === 'reserva' && it.hora && !it.turno_real && !it.llegada)) return lista
+      // (Tanda 6y10, 1c: también con una reserva del viajero cada visita por dentro se mira con SU horario real de ese día: no se mueve nada ni se quita por el tiempo, pero una visita que a su hora ya habrá
+      // cerrado va por fuera con su aviso, y una que aún no habrá abierto espera o, si falta mucho, va por fuera con su aviso. Lo que tiene hora fija —la reserva y el Free Tour— no se toca.)
       let out = lista
       const hechos = new Set()
       for (let guard = 0; guard < 40; guard++) {
         const sim = simular(out)
         const malo = sim.find((it) => {
-          if (it.kind !== 'stop' || it.llegada || it.tipo !== 'parada' || it.modo === 'fuera' || it.modo === 'camino' || it.hora || it.cierra_hoy || hechos.has(it.id)) return false
+          if (it.kind !== 'stop' || it.llegada || it.tipo !== 'parada' || it.modo === 'fuera' || it.modo === 'camino' || it.hora || hechos.has(it.id)) return false
           const source = sourceOf(it)
           if (!source || source.type !== 'interior') return false
           return openCheck(source, it.t0, it.min ?? 20, hours).ok !== true
@@ -951,6 +994,9 @@ export function planListasTrip(args) {
           log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'modo+min', causa: `llega hacia las ${toHHMM(malo.t0)} y ${horaAbre ? `no abre hasta las ${horaAbre}` : 'ya ha cerrado'}: va por ${camino ? 'de camino' : 'fuera'} con su aviso` })
           continue
         }
+        // (Con una reserva del viajero el día lleva todo lo que tiene escrito —regla 17—: lo que no se ve desde fuera y a su hora estará cerrado se queda donde está; la tarjeta enseña su horario real y decide el viajero.)
+        const conReserva = conReservaDelViajero(out)
+        if (conReserva && !esPrimeraVez(out, malo)) continue
         // 3. «Si te sobra tiempo» (si no es un imprescindible la primera vez)
         if (!esPrimeraVez(out, malo) && !esFijo(malo)) {
           const { lista: nueva, caminos } = mandarASobra(out, malo)
@@ -1044,11 +1090,18 @@ export function planListasTrip(args) {
       { kind: 'comida', opcion: 'comida', sale: 'comida_antes_si_sale_despues_de', rapidaMin: 'comida_rapida_min', rapidaDesde: 'comida_rapida_desde' },
       { kind: 'cena', opcion: 'cena', sale: 'cena_antes_si_sale_despues_de', rapidaMin: 'cena_rapida_min', rapidaDesde: 'cena_rapida_desde' },
     ]
+    /** Desde qué hora puede empezar la mesa corta de antes de esta reserva: la comida, nunca antes de las 12:00 salvo ante una reserva a mediodía (`comida_rapida_excepcion`); la cena, desde su hora. */
+    const mesaCorta = (mesa, reserva) => {
+      if (mesa.kind === 'comida' && enVentanaDeComida(reserva?.hora)) return { piso: toMin(cfg.comida_rapida_excepcion.desde), min: cfg.comida_rapida_excepcion.min ?? cfg[mesa.rapidaMin] }
+      return { piso: toMin(cfg[mesa.rapidaDesde]), min: cfg[mesa.rapidaMin] }
+    }
     /** ¿Cabe la mesa (rápida) antes de la «Llegada a…» de esta reserva? Lo que dura la mesa rápida, desde su hora más temprana, más lo que se tarda en llegar. */
     const cabeLaMesaAntes = (lista, i, mesa) => {
       const g = inicioGrupo(lista, i)
-      const hora = lista[g].hora ?? lista[g + 1]?.hora ?? lista[i].hora
-      return toMin(hora) >= toMin(cfg[mesa.rapidaDesde]) + cfg[mesa.rapidaMin] + cfg.comida_junto_min
+      // (Ante una reserva de la ventana de la comida corta, la comida hace de «Llegada a…»: cuenta hasta la hora de la reserva, no hasta su llegada.)
+      const hora = mesa.kind === 'comida' && enVentanaDeComida(lista[i].hora) ? lista[i].hora : lista[g].hora ?? lista[g + 1]?.hora ?? lista[i].hora
+      const corta = mesaCorta(mesa, lista[i])
+      return toMin(hora) >= corta.piso + corta.min + cfg.comida_junto_min
     }
     /**
      * La comida y la cena en el lado de la reserva que toca. Solo mueve la mesa, y solo si está del lado contrario. `opciones.comida` / `opciones.cena`: false = esa mesa no se pone antes de ninguna
@@ -1128,7 +1181,7 @@ export function planListasTrip(args) {
           if (iMesa >= 0) {
             const mesa = intento[iMesa]
             const conf = MESAS.find((m) => m.kind === mesa.kind)
-            const corta = intento.map((it, k) => (k === iMesa ? { ...it, corta: true, min: Math.min(it.min ?? 999, cfg[conf.rapidaMin]), piso: toMin(cfg[conf.rapidaDesde]) } : it))
+            const corta = intento.map((it, k) => (k === iMesa ? { ...it, corta: true, min: Math.min(it.min ?? 999, mesaCorta(conf, R).min), piso: mesaCorta(conf, R).piso } : it))
             if (tardeDe(corta) < ahora) {
               log.push({ id: mesa.id, lugar: mesa.restaurante, sitio: null, que: 'mesa_corta', causa: `${mesa.kind === 'cena' ? 'la cena' : 'la comida'} va antes de ${R.lugar} (a las ${R.hora}) y la normal haría llegar tarde: se cuenta corta` })
               intento = corta
@@ -1273,6 +1326,8 @@ export function planListasTrip(args) {
     items = items.map((it) => (it.kind === 'stop' && it.modo === 'camino' && !it.llegada && estado.visitadoEn.has(it.lugar) ? { ...it, visitado_dia: estado.visitadoEn.get(it.lugar) } : it))
     // (Lo último que cambia horas —los horarios de apertura, los restaurantes— ya está hecho: la reserva no puede haber quedado tarde.)
     items = mesasYReservas(items)
+    // (Mover una mesa cambia las horas de lo que viene detrás: los avisos de apertura se rehacen con las horas de verdad, también en un día con reserva —Tanda 6y10, 1c—.)
+    items = horariosCoherentes(items)
     let final = simular(items)
     // HOY: «Voy con retraso» y «Estoy cansado». Lo hecho se queda; lo que falta se recalcula desde ahora.
     if (ajuste && ajuste.dayNumber === dayNumber) {
@@ -1323,6 +1378,15 @@ export function planListasTrip(args) {
       const ultimoHecho = hechos.at(-1)
       const desde = Math.max(ajuste.nowMinutes, ultimoHecho ? ultimoHecho.t1 : 0)
       final = [...hechos, ...simular(resto, desde, ultimoHecho ? endCoordsOf(ultimoHecho) : null)]
+    }
+
+    // Lo que cierra y nunca se quita vuelve a su puesto (después de lo que iba delante), sin ocupar tiempo: «Cerrado este día» (5.2b).
+    for (const { item, antes } of cerradosEseDia) {
+      const idPrevio = antes.find((id) => final.some((it) => it.id === id))
+      const at = idPrevio ? final.findIndex((it) => it.id === idPrevio) + 1 : 0
+      // (Al principio del día, la marca va a la hora de empezar el día —la versión «sin él» puede dejar la mañana vacía: un miércoles, la Plaza y la Basílica van después de comer—.)
+      const t = at > 0 ? final[at - 1].t1 : Math.min(startPoint.t, final.find((it) => it.kind === 'stop')?.t0 ?? startPoint.t)
+      final = [...final.slice(0, at), { ...item, kind: 'stop', modo: 'fuera', min: 0, hora: undefined, hora_tipo: undefined, cerrado_este_dia: true, motivo_fuera: CERRADO_ESTE_DIA, t0: t, t1: t, leg: 0, llegaA: t, tarde: 0 }, ...final.slice(at)]
     }
 
     // 5.9 (antes, porque HOY mira la noche del día) Nocturnas (regla 12): la escrita; si ya salió, la imprescindible que falte; si no, la más cercana a la cena que no haya salido.
@@ -1468,6 +1532,8 @@ export function planListasTrip(args) {
     for (const item of final) {
       if (item.kind === 'comida' || item.kind === 'cena') estado.mesas.add(item.restaurante)
       if (item.kind !== 'stop' || item.llegada) continue
+      // (Lo que cierra y se queda como «Cerrado este día» no se ha visto: no cuenta como visto ni por dentro, pero tampoco es un imprescindible que se quede fuera sin explicar.)
+      if (item.cerrado_este_dia) { estado.cerrados.add(item.lugar); continue }
       estado.vistos.add(item.lugar)
       if (item.modo !== 'camino' && !estado.visitadoEn.has(item.lugar)) estado.visitadoEn.set(item.lugar, dayNumber)
       if (item.modo === 'dentro') estado.dentro.add(item.lugar)
@@ -1578,7 +1644,26 @@ export function planListasTrip(args) {
 
   // ── De los elementos del día a lo que el formato de día entiende ─────────────────────────────────────────────────────
   const mesesInvierno = destData.destination_config?.context_banners?.meses_invierno ?? MESES_INVIERNO
-  const stopNota = (item, hours) => avisoDe(item, hours?.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null, mesesInvierno)
+  /**
+   * «Abre a las…» (Tanda 6y10, 1d): solo si la ruta llega ANTES de que abra, UNA sola vez y con la hora de ESE día (la del horario real, no la que el documento escribe para un día cualquiera).
+   * Si la parada ya lleva el aviso calculado con la hora real (`aviso_horario`, cuando pasa a por fuera) no se repite; si la ruta llega con el sitio abierto, no sale nada.
+   */
+  const abreAviso = (item, hours) => {
+    if (!item.abre || item.aviso_horario) return null
+    if (item.t0 == null) return item.abre // (sin hora —«Si te sobra tiempo»—: el del documento)
+    const source = sourceOf(item)
+    const sesiones = source ? parseHoursSessions(effectiveSchedule(source, hours)).sort((a, b) => a.open - b.open) : []
+    if (sesiones.length === 0) return item.t0 < toMin(item.abre) ? item.abre : null
+    if (sesiones.some((s) => item.t0 >= s.open && item.t0 < s.close)) return null
+    const proxima = sesiones.find((s) => s.open > item.t0)
+    return proxima ? toHHMM(proxima.open) : null
+  }
+  const stopNota = (item, hours) => {
+    const abre = abreAviso(item, hours)
+    // (Si la parada trae el «abre a las…» del documento y la ruta llega con el sitio abierto, tampoco sale el texto escrito del documento que dice lo mismo.)
+    const avisos = item.abre && !abre ? (item.avisos ?? []).filter((texto) => !/\babre\b/i.test(texto)) : item.avisos
+    return avisoDe({ ...item, abre: abre ?? undefined, avisos }, hours?.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null, mesesInvierno)
+  }
   function lugarListo(item, hours) {
     const source = sourceOf(item)
     if (!source) return null
@@ -1591,7 +1676,7 @@ export function planListasTrip(args) {
       // el tour es una parada con su hora
     } else if (modo === 'fuera' || item.motivo_fuera) {
       ready = {
-        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera === OUTSIDE_REASONS.cerrado ? 'cerrado' : item.motivo_fuera ? 'no_abre' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
+        ...source, visitOutside: true, outsideReason: item.motivo_fuera ?? source.por_fuera ?? null, outsideKind: item.fuera_por_horario ? (String(item.motivo_fuera ?? '').startsWith('A esta hora aún no ha abierto') ? 'no_abre' : 'ya_cerrado') : item.motivo_fuera === OUTSIDE_REASONS.cerrado || item.cerrado_este_dia ? 'cerrado' : item.motivo_fuera ? 'no_abre' : 'a_proposito', outsideAuthored: !item.motivo_fuera,
         coordinates: source.pass_by?.coordinates ?? source.coordinates, duration_minutes: item.min, windows: undefined, by_period: undefined, by_season: undefined, by_day: undefined, schedule: undefined, last_entry: undefined, type: 'exterior',
       }
     } else if (modo === 'camino') {
@@ -1600,6 +1685,7 @@ export function planListasTrip(args) {
       ready.duration_minutes = item.min
       if (modo === 'dentro') ready = { ...ready, writtenInside: true }
     }
+    if (item.cerrado_este_dia) ready.closedThisDay = true // (Tanda 6y10, 1b: «Cerrado este día», sin tiempo y con su aviso.)
     if (modo !== 'camino' && (item.no_calle || isStreet(source))) ready.notStreet = true
     if (item.transit) ready = { ...ready, transitMinutes: item.transit.min, transitHow: transitHow(item.transit.como), transit: { how: transitHow(item.transit.como), minutes: item.transit.min } }
     const aviso = stopNota(item, hours)
@@ -1661,7 +1747,7 @@ export function planListasTrip(args) {
         if (!place) { problems.push({ tipo: 'lugar_desconocido', lugar: item.lugar, dayNumber: skeletonDay.dayNumber }); return }
         const unitId = `${draft.id}:${item.id}`
         const start = Math.max(redondea(item.t0), lastEnd)
-        const duration = Math.max(5, item.t1 - item.t0)
+        const duration = item.cerrado_este_dia ? 0 : Math.max(5, item.t1 - item.t0)
         const level = place.level ?? 3
         units.push({ id: unitId, group: null, places: [place], slot: item.franja, blockId: draft.id, role: place.passThrough ? 'de_paso' : 'parada', dropRank: 1, priority: level === 1 ? PRIORITY.ESSENTIAL : item.protegido ? PRIORITY.POOL : PRIORITY.THEME, curatedIndex: index, poolIndex: null, ...(item.titulo && !item.llegada ? { stretchTitle: item.titulo, stretchWhy: item.texto_titulo ?? null, stretchBase: -100000 } : {}) })
         visits.push({ unitId, place, start, end: start + duration, chained: false, walkMinutes: item.leg ?? 0, walkSource: 'matrix', ...(item.hora && !item.llegada ? { fixedAt: toMin(item.hora), fixedMargin: 0, horaTipo: item.hora_tipo ?? 'turno', ...(item.turno_real ? { turnoRecomendado: true } : {}), ...(notaDeLlegada(item) ? { arrivalNote: notaDeLlegada(item) } : {}) } : {}), orientative: !item.hora, franja: item.franja })
@@ -1720,7 +1806,7 @@ export function planListasTrip(args) {
       untypedAfternoon: false, reorderedBlocks: [], closedAnchors: [], otherRestaurants: [],
       written: { version: null, escrito: true, tabla: draft.id, grupo: draft.parteKey },
       escritoNights, escritoLog: log.map((entry) => ({ ...entry, fecha: fecha ?? null })),
-      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, franja_doc: item.franja_doc ?? item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true })),
+      escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, franja_doc: item.franja_doc ?? item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true, cerrado_este_dia: item.cerrado_este_dia === true })),
       tardeLibre,
       spare: spareVisits,
       spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true })),
@@ -1813,7 +1899,7 @@ export function planListasTrip(args) {
   }
 
   // ── Lo que no salió del todo ─────────────────────────────────────────────────────────────────────────────────────
-  const vistoEnViaje = new Set([...estado.vistos])
+  const vistoEnViaje = new Set([...estado.vistos, ...estado.cerrados])
   const seenAtNight = new Set([...nightsByDay.values()].flat().flatMap((entry) => entry.conflicts_with ?? []))
   // Lo marcado en el pool que no tiene sitio escrito pero el viaje ya enseña (pasa de camino, sale de noche, o es un barrio del que se ve una parada) no «queda fuera».
   {

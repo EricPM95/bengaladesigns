@@ -14,6 +14,11 @@ import { specialHoursToAvoid } from './specialDates.js'
 const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const EVITAR_COST = 300
 const SPECIAL_HOURS_COST = 400
+// Lo que se pierde si un sitio cae en un día en que cierra, según lo que importa (Tanda 6y10, punto 1a): primero se salvan los de nivel 1 (los imprescindibles), luego los de nivel 2, y lo demás pesa lo de siempre.
+// Con esto, si algo tiene que caer en un día cerrado, es lo de menor importancia («es normal que alguno se pierda alguna vez»); y si dos órdenes pierden lo mismo, gana el de siempre (el que menos mueve los días).
+const PESO_CIERRE_POR_NIVEL = { 1: 10000, 2: 100 }
+// Hasta cuántos días libres se prueban TODOS los órdenes (8! = 40.320); con más, se mejora el orden de la tabla cambiando los días de dos en dos.
+const MAX_DIAS_TODOS_LOS_ORDENES = 8
 
 function permutations(list) {
   if (list.length <= 1) return [list]
@@ -65,20 +70,29 @@ export function ordenarDias(env) {
   if (chosen.some((id) => !written.days[id])) return null
   const halfDayOwner = Object.fromEntries(Object.entries(destData.curated_routes?.excursiones?.media_jornada ?? {}).map(([id, excursion]) => [excursion, id]))
 
-  const carries = (dia, name) => paradasDelDia(dia, { sinCamino: true }).some((stop) => stop.lugar === name)
+  // (Un día que hereda la mañana de otro —el D1-FT, la de la Roma antigua— lleva también las paradas de esa mañana: cuentan para los cierres y los horarios especiales, Tanda 6y10, 1a.)
+  const mananaHeredada = (dia) => (dia.hereda_manana_de && written.days[dia.hereda_manana_de] ? written.days[dia.hereda_manana_de].partes?.unica?.manana ?? [] : []).filter((stop) => stop.lugar)
+  const paradasDe = (dia, opciones) => [...paradasDelDia(dia, opciones), ...mananaHeredada(dia).filter((stop) => !opciones?.sinCamino || stop.modo !== 'camino')]
+  const carries = (dia, name) => paradasDe(dia, { sinCamino: true }).some((stop) => stop.lugar === name)
   const carriesTour = (dia) => Boolean(tour) && paradasDelDia(dia).some((stop) => stop.lugar === tour.name)
   const violates = (dia, day) => carriesTour(dia) && noTourOn(day)
-  /** Lo que le va mal a un día escrito en una fecha (`fechas_malas`: días de la semana, fechas MM-DD y sitios que ese día cierran): 1000 por cada una. */
-  const badDateCost = (dia, day) => {
+  const levelOf = new Map((destData.places ?? []).map((place) => [place.name, place.level ?? 3]))
+  /**
+   * Lo que le va mal a un día escrito en una fecha (`fechas_malas`: días de la semana, fechas MM-DD y sitios que ese día cierran): 1000 por cada una.
+   * Devuelve también los sitios de su lista `cerrado` que ese día cierran. Si alguno cierra, el día de la semana o la fecha que el documento marca por ese cierre (el domingo del Vaticano)
+   * ya está contado en el cierre: no se cuenta dos veces (Tanda 6y10, 1e: si el otro día también cierra, cambiar de día no gana nada).
+   */
+  const badDate = (dia, day) => {
     const bad = dia.fechas_malas
-    if (!bad || !calendar.hasDates) return 0
+    if (!bad || !calendar.hasDates) return { cost: 0, cerrados: [] }
     const hours = hoursOf(day)
-    let cost = 0
-    if (hours.weekday && (bad.dias_semana ?? []).includes(norm(hours.weekday))) cost += 1000
-    if (hours.dateIso && (bad.fechas ?? []).some((token) => matchesDateToken(token, hours.dateIso))) cost += 1000
-    if ((bad.cerrado ?? []).some((name) => closedThatDay(name, day))) cost += 1000
-    if ((bad.cerrado_a ?? []).some(({ lugar, hora }) => env.cerradoA(lugar, hora, day))) cost += 1000
-    return cost
+    const cerrados = (bad.cerrado ?? []).filter((name) => closedThatDay(name, day))
+    const cerradosA = (bad.cerrado_a ?? []).filter(({ lugar, hora }) => env.cerradoA(lugar, hora, day)).map(({ lugar }) => lugar)
+    const explicadoPorCierre = cerrados.length > 0
+    let cost = (cerrados.length > 0 ? 1000 : 0) + (cerradosA.length > 0 ? 1000 : 0)
+    if (!explicadoPorCierre && hours.weekday && (bad.dias_semana ?? []).includes(norm(hours.weekday))) cost += 1000
+    if (!explicadoPorCierre && hours.dateIso && (bad.fechas ?? []).some((token) => matchesDateToken(token, hours.dateIso))) cost += 1000
+    return { cost, cerrados: [...cerrados, ...cerradosA] }
   }
   const avoidSpecial = calendar.hasDates ? specialHoursToAvoid(destData) : []
   let order = chosen
@@ -103,7 +117,7 @@ export function ordenarDias(env) {
     fixedWhy = new Map()
     for (const id of chosen) {
       const dia = written.days[id]
-      const entries = [...new Set(paradasDelDia(dia).filter((stop) => stop.modo === 'dentro' || stop.hora_tipo).map((stop) => stop.lugar))]
+      const entries = [...new Set(paradasDe(dia).filter((stop) => stop.modo === 'dentro' || stop.hora_tipo).map((stop) => stop.lugar))]
       const whyByDay = []
       fixedWhy.set(id, whyByDay)
       fixedCost.set(id, cityDays.map((day, dayIndex) => {
@@ -113,9 +127,12 @@ export function ordenarDias(env) {
         const halfId = day.halfDayExcursion?.id ?? null
         if (day.halfDayExcursion?.soloTarde) { /* (la tarde de un día de ciudad con excursión de medio día: ese día va donde toca) */ }
         else if (halfId ? halfDayOwner[halfId] !== id : Object.values(halfDayOwner).includes(id)) { cost += 5000; why('día de excursión de medio día') }
-        for (const name of entries) if (closedThatDay(name, day)) { cost += EVITAR_COST; why(`${name} cerrado`) }
+        const cierran = new Set()
+        for (const name of entries) if (closedThatDay(name, day)) { cost += EVITAR_COST; cierran.add(name); why(`${name} cerrado`) }
         for (const rule of avoidSpecial) if (hoursOf(day).dateIso && matchesDateRange(rule.fecha, rule.hasta, hoursOf(day).dateIso) && rule.lugares.some((name) => carries(dia, name))) { cost += SPECIAL_HOURS_COST; why(`horario especial (${rule.fecha})`) }
-        { const bad = badDateCost(dia, day); if (bad > 0) { cost += bad; why('mala fecha del documento') } }
+        { const bad = badDate(dia, day); if (bad.cost > 0) { cost += bad.cost; why('mala fecha del documento') } for (const name of bad.cerrados) cierran.add(name) }
+        // (Cuánto importa lo que cierra: un imprescindible cerrado pesa mucho más que una Galería; ver PESO_CIERRE_POR_NIVEL.)
+        for (const name of cierran) cost += PESO_CIERRE_POR_NIVEL[levelOf.get(name) ?? 3] ?? 0
         // (Lo marcado en el pool que ese día no abre —la Galería Borghese el lunes— va mejor en el otro día.)
         for (const name of poolNames) if (dia.pool?.[name] && closedThatDay(name, day)) { cost += 600; why(`${name} (del pool) cerrado`) }
         return cost
@@ -169,18 +186,40 @@ export function ordenarDias(env) {
     }
     // El mejor orden con unos días fijos, midiendo lo que se aleja cada día de `referencia` (Tanda 6k): sin reservas, de la tabla; con una reserva, del orden que el viajero ya veía sin ella,
     // para que cambien de sitio los menos días posibles (dos días enteros, uno por otro, y algún día más solo si un cierre lo obliga).
+    // (Tanda 6y10, 1a: se prueban TODOS los órdenes de los días libres, no solo cambiar un día con el siguiente; gana el que menos pierde —primero imprescindibles, luego nivel 2…, ver PESO_CIERRE_POR_NIVEL—
+    // y, si empatan, el que menos mueve los días respecto a `referencia`.)
     const mejorOrden = (fijosDe, referencia) => {
-      let best = null
       const libres = chosen.filter((id) => ![...fijosDe.values()].includes(id))
-      const candidates = permutations(libres).map((perm) => { let k = 0; return chosen.map((_, index) => (fijosDe.has(index) ? fijosDe.get(index) : perm[k++])) })
-      for (const candidate of candidates) {
+      const completo = (perm) => { let k = 0; return chosen.map((_, index) => (fijosDe.has(index) ? fijosDe.get(index) : perm[k++])) }
+      const costeDe = (candidate) => {
         let cost = 0
         candidate.forEach((id, index) => {
           cost += fixedCost.get(id)[index]
           cost += Math.abs(index - referencia.indexOf(id))
           if (id !== referencia[index]) cost += 0.01
         })
-        if (!best || cost < best.cost) best = { candidate, cost }
+        return cost
+      }
+      let best = null
+      if (libres.length <= MAX_DIAS_TODOS_LOS_ORDENES) {
+        for (const perm of permutations(libres)) {
+          const candidate = completo(perm)
+          const cost = costeDe(candidate)
+          if (!best || cost < best.cost) best = { candidate, cost }
+        }
+        return best
+      }
+      // Demasiados días para probarlos todos: se parte del orden de la referencia y se cambian dos días mientras mejore.
+      let perm = referencia.filter((id) => libres.includes(id))
+      best = { candidate: completo(perm), cost: costeDe(completo(perm)) }
+      for (let mejora = true; mejora;) {
+        mejora = false
+        for (let i = 0; i < perm.length; i++) for (let j = i + 1; j < perm.length; j++) {
+          const otra = [...perm]
+          ;[otra[i], otra[j]] = [otra[j], otra[i]]
+          const cost = costeDe(completo(otra))
+          if (cost < best.cost) { best = { candidate: completo(otra), cost }; perm = otra; mejora = true }
+        }
       }
       return best
     }

@@ -135,7 +135,8 @@ const paradasDe = (plan) => new Set(plan.days.flatMap((day) => [
   ...(day.spareRows ?? []).filter((r) => r.lugar && !r.relleno),
 ].map((r) => r.lugar)))
 // Las variantes del propio documento que quitan un sitio un día de cierre (domingo y miércoles del Vaticano, lunes de la Galería y de las Termas, domingo de la Farnesina y de San Clemente, sábado del Panteón): si la reserva deja ese día del viaje en un día así, quita el sitio el documento.
-const VARIANTES_DE_CIERRE = new Set(['lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon'])
+// (6y10: las versiones «sin él» del Vaticano y de la Galería vuelven a activarse cuando ningún día del viaje abre —el sitio se queda como «Cerrado este día»—: si una reserva cambia ese día, cambia la versión.)
+const VARIANTES_DE_CIERRE = new Set(['lunes_sin_caracalla', 'domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon', 'lunes_sin_galeria', 'sin_museos', 'domingo_sin_museos'])
 const variantesDe = (plan) => new Set(plan.days.flatMap((day) => day.curatedDay?.variantes ?? []))
 const cerradasPorCierre = (plan) => new Set(plan.days.flatMap((day) => (day.escritoLog ?? []).filter((l) => l.que === 'quitada' && /^cierre de /.test(l.causa ?? '')).map((l) => l.sitio ?? l.lugar)))
 if (!args.sinreservasdia) {

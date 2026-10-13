@@ -114,7 +114,9 @@ for (const dias of [2, 3, 4]) {
         const coliseo = (day.escritoRows ?? []).find((r) => r.lugar === 'Coliseo' && r.hora_tipo === 'reserva')
         if (!foro || !coliseo) continue
         const cerrado = (day.escritoLog ?? []).some((e) => /cierre de Foro|Foro Romano y Palatino: hoy cierra|cerrado hoy/i.test(`${e.lugar} ${e.causa}`) && e.lugar === 'Foro Romano y Palatino')
-        if (foro.modo === 'fuera' && !cerrado) falla(`[foro_por_fuera] ${etiqueta} día ${day.dayNumber}: el Foro va por fuera (${foro.hora}) sin estar cerrado ese día`)
+        // (6y10, 1c: también con una reserva se mira el horario real; el Foro a una hora a la que ya ha cerrado o aún no ha abierto va por fuera con su aviso, y el registro lo dice.)
+        const porHorario = (day.escritoLog ?? []).some((e) => e.lugar === 'Foro Romano y Palatino' && e.que === 'modo+min' && /ya ha cerrado|no abre hasta/.test(e.causa ?? ''))
+        if (foro.modo === 'fuera' && !cerrado && !porHorario) falla(`[foro_por_fuera] ${etiqueta} día ${day.dayNumber}: el Foro va por fuera (${foro.hora}) sin estar cerrado ese día`)
       }
     }
   }

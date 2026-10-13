@@ -435,7 +435,7 @@ export default {
           cuando: { reserva: { lugar: MUSEOS, desde: '09:16', hasta: '11:45' } },
           ops: { empieza: '08:00', manana: { paradas: [P('Basílica de San Pedro', 60, 'dentro'), P('Plaza de San Pedro', 30), P(MUSEOS, 180)] } },
         },
-        // Los Museos reservados de 12:00 a 14:30: la comida va antes (los Museos duran ~3 h y al salir ya son más de las 14:30: regla 4, Tanda 6y8). El motor la cuenta corta (45 min, desde las 10:30) para que la
+        // Los Museos reservados de 12:00 a 14:30: la comida va antes (los Museos duran ~3 h y al salir ya son más de las 14:30: regla 4, Tanda 6y8). El motor la cuenta corta (30 min, desde las 11:15 —única excepción a «la comida nunca antes de las 12:00», Tanda 6y10— y hace de llegada) para que la
         // entrada no salga tarde, y lo que no cabe antes (el Castillo y el Puente) lo pasa detrás de los Museos, de camino a Trastevere: por eso la fila de las 12:00 a las 13:00 ya lo trae escrito así.
         {
           id: 'museos_mediodia_12', doc: 'Museos reservados a mediodía (de 12:00 a 14:30)', horas: ['12:00', '12:30', '13:00'],
