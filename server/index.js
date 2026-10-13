@@ -4486,7 +4486,8 @@ function indiceDeAudios(destinationKey) {
 }
 
 // (Tanda 6y10) NINGUNA lista pública: el índice (data/audios/) nunca se envía ni se sirve, y este endpoint contesta SOLO con la ruta del audio de ESE sitio, que lleva en el nombre
-// la huella del texto y la voz (no se puede adivinar). Este servidor no sirve carpetas ni listados: los .mp3 se piden de uno en uno por su dirección exacta.
+// la huella del texto, la voz y (Tanda 7) el secreto de la casa `AUDIOS_SECRETO` (no se puede adivinar). Este servidor no sirve carpetas ni listados: los .mp3 se piden de uno en uno por su dirección exacta.
+// El secreto se lee del entorno dentro de `audioVigente` (shared/audio/historiasAudio.js): el MISMO que usa el programa que crea los audios. Sin valor puesto, todo como antes.
 app.post('/api/historia-audio', (req, res) => {
   res.set('Cache-Control', 'no-store')
   const { destination, name } = req.body ?? {}
