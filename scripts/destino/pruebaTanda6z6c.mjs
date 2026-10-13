@@ -216,7 +216,7 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
   debe(horas.every((m, i) => i === 0 || horas[i - 1] <= m), '4 avisos', `los avisos no van los que cierran antes primero (${lineas})`)
   // La función, con casos hechos a mano: máximo 3, orden, y sin lo visto, saltado, cerrado, sin hora ni «al anochecer».
   const h = (cierra, texto = `Abre 9:00 – ${cierra}`, cerrado = false) => ({ abre: '9:00', cierra, ultimaEntrada: null, cerrado, tramos: [], texto })
-  const mapa = { a: h('19:00'), b: h('13:30'), c: h('17:00'), d: h('11:00'), e: h('17:00', 'Abre 7:00 – al anochecer'), f: h(null, 'Cerrado hoy', true), g: h('10:00'), i: null, j: h('9:30') }
+  const mapa = { a: h('19:00'), b: h('13:30'), c: h('17:00'), d: h('11:00'), e: h('17:00', 'Abre 7:00 – al anochecer'), f: h(null, 'Cerrado este día', true), g: h('10:00'), i: null, j: h('9:30') }
   const lista = Object.keys(mapa).map((id) => ({ id, name: id.toUpperCase() }))
   lista.find((x) => x.id === 'g').checkedInAt = '2027-03-10T09:00'
   lista.find((x) => x.id === 'j').saltada = true

@@ -1,6 +1,6 @@
 /**
  * El horario de una parada UN día concreto (Tanda 6z5, tarea A): lo que sale en pequeño debajo del nombre de la tarjeta,
- * en DÍAS y en HOY — «Abre 9:00 – 19:15 · Última entrada 18:15», «Abre 9:00 – 13:00 y 15:00 – 19:00» o «Cerrado hoy».
+ * en DÍAS y en HOY — «Abre 9:00 – 19:15 · Última entrada 18:15», «Abre 9:00 – 13:00 y 15:00 – 19:00» o «Cerrado este día».
  *
  * Es el ÚNICO sitio donde se decide: lee los datos reales del lugar (`hours_data` del catálogo del destino: horario por
  * época, por día de la semana, por periodo, días y fechas de cierre, horarios especiales y `last_entry`) con los MISMOS
@@ -13,6 +13,7 @@ import { closedOnDay, lastEntryMinutes, parseHoursSessions, placeWindows, season
 import { fetchDestinationPlaces } from './destinationPlacesApi'
 import { useRouteStore } from '../store/useRouteStore'
 import { formatDaySessions } from './stopHoursTag'
+import { CERRADO_ESTE_DIA } from './placeHoursOnDate'
 
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 
@@ -112,7 +113,7 @@ export function horarioDeParada(lugar: LugarConHorario, fechaIso: string | null,
   const texto = franjas ? franjas.join(', ') : typeof datos.schedule === 'string' ? formatDaySessions(datos.schedule) : null
   const tramosEnMinutos = (parseHoursSessions(texto) as { open: number; close: number }[]).sort((a, b) => a.open - b.open)
   // Con fecha, un día sin ningún tramo (o de cierre) es un día cerrado; sin ellos y sin fecha no hay nada que enseñar.
-  if (cerradoElDia || (fecha !== null && franjas !== null && tramosEnMinutos.length === 0)) return { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: 'Cerrado hoy' }
+  if (cerradoElDia || (fecha !== null && franjas !== null && tramosEnMinutos.length === 0)) return { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (tramosEnMinutos.length === 0) return null
 
   // Los parques que cierran «al anochecer» ("07:00-sunset"): el motor los pasa a las 17:00 por prudencia; aquí se dice lo que son.
