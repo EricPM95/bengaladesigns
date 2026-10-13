@@ -114,9 +114,17 @@ for (const dias of [4, 5, 6]) {
             if (!fila) continue
             // (El miércoles de la audiencia el día va al revés y la Piazza Navona abre la mañana: es su variante escrita.)
             if ((d6.curatedDay.variantes ?? []).includes('miercoles_audiencia')) continue
-            if (fila.modo !== 'camino') falla('d6_de_camino', `${etiqueta}: en el D6 «${lugar}» no va de camino`)
+            // (Tanda 7, regla nueva de Eric: los imprescindibles NUNCA van «de camino»: si ya se vieron otro día, salen otra vez como parada corta (~10 min) y sin «Ya lo visitaste». Solo lo que no es
+            //  imprescindible va de camino con «Ya lo visitaste el {día}». Navona es imprescindible; el Campidoglio, no.)
+            const imprescindible = (D.places.find((p) => p.name === lugar)?.level ?? 3) === 1
             const enD1 = d1 && d1.dayNumber < d6.dayNumber && filas(d1).some((r) => r.lugar === lugar && r.modo !== 'camino')
-            if (enD1 && fila.visitado_dia !== d1.dayNumber) falla('d6_ya_visitado', `${etiqueta}: en el D6 «${lugar}» no dice «Ya lo visitaste el día ${d1.dayNumber}»`)
+            if (imprescindible) {
+              if (fila.modo === 'camino') falla('d6_imprescindible_de_camino', `${etiqueta}: en el D6 «${lugar}» es un imprescindible y va de camino`)
+              if (fila.min > 15) falla('d6_imprescindible_parada_corta', `${etiqueta}: en el D6 «${lugar}» debería ser una parada corta (~10 min) y dura ${fila.min}`)
+            } else {
+              if (fila.modo !== 'camino') falla('d6_de_camino', `${etiqueta}: en el D6 «${lugar}» no va de camino`)
+              if (enD1 && fila.visitado_dia !== d1.dayNumber) falla('d6_ya_visitado', `${etiqueta}: en el D6 «${lugar}» no dice «Ya lo visitaste el día ${d1.dayNumber}»`)
+            }
           }
         }
         // 9. Lo de siempre: nada cerrado, sin zigzag, por dentro una sola vez (las mismas comprobaciones del motor).

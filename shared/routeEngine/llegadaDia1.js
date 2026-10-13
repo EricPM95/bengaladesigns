@@ -417,7 +417,16 @@ function decidirNormal(x) {
       publico.caso = `${publico.caso}+reserva_grande`
     }
     // Un día que la llegada tarde dejó fuera y una reserva grande reclama vuelve solo («si reservas la Galería, te ponemos su día»): sale el último día que no lleva otra reserva.
+    const antes = [...chosen]
     diaCaido = reponerDiasDeReservas(x, chosen, chosen0, diaCaido)
+    // Con 2 noches, el día 2 es el «D1+Vaticano»; si el Free Tour reservado lo reclama, el día 2 es el del Free Tour y la Roma antigua se queda sin día (a «Si te sobra tiempo» y, si cabe, a la mañana de la vuelta).
+    if (tablaLen === 2 && chosen[1] !== antes[1]) {
+      publico.dia_sustituido = { id: antes[1], motivo: 'una_reserva_reclama_el_dia' }
+      diaCaido = null
+      x.diaCorrido = null
+      dejarFuera(x, [cfg.dia_roma_antigua], chosen, { dia: 1 })
+      for (const d of dejado) publico.hooks.vuelta.pendientes.push({ lugar: d.lugar, motivo: d.motivo, de_dia: d.de_dia })
+    }
   }
 
   // La versión hereda del día que sustituye lo que el viajero ha pedido (pool, experiencias, sugerencias) y el Free Tour de la noche, que va «en la noche del D1».
@@ -485,11 +494,12 @@ function reponerDiasDeReservas(x, chosen, chosen0, diaCaido) {
     const paradas = [...Object.values(d?.partes ?? {}).flatMap((p) => [...(p.manana ?? []), ...(p.tarde ?? [])]), ...(d?.hereda_manana_de && dias[d.hereda_manana_de] ? dias[d.hereda_manana_de].partes?.unica?.manana ?? [] : [])]
     return paradas.some((s) => s.lugar === lugar && s.tipo !== 'traslado' && s.modo !== 'camino')
   }
-  const reservas = [...x.reservasDia1, ...x.reservasOtrosDias]
+  const tourReservado = x.ftReserva && !x.ftEnDia1 ? [{ ...x.ftReserva, name: x.tourName }] : []
+  const reservas = [...x.reservasDia1, ...x.reservasOtrosDias, ...tourReservado]
   const protegidos = new Set()
   for (const r of reservas) for (const id of chosen) if (lleva(id, r.name)) protegidos.add(id)
   let caido = diaCaido
-  for (const r of x.reservasOtrosDias) {
+  for (const r of [...x.reservasOtrosDias, ...tourReservado]) {
     if (chosen.some((id) => lleva(id, r.name))) continue
     const vuelve = chosen0.find((id) => lleva(id, r.name))
     if (!vuelve) continue

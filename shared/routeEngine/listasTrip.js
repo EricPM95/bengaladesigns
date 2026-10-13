@@ -1307,8 +1307,11 @@ export function planListasTrip(args) {
     }
     /** Cuánto se pasa la cena de su hora tope (para elegir entre las opciones de abajo). */
     const cenaTardia = (lista) => Math.max(0, (simular(lista).find((it) => it.kind === 'cena')?.t0 ?? 0) - toMin(cfg.cena_hasta))
-    /** Cuánto se pasa la comida de su hora tope (15:00): una comida detrás de una reserva de la noche no es una opción (Tanda 7: en las listas de la llegada, que no se recortan por minutos, la comida se quedaba al final del día). */
-    const comidaTardia = (lista) => { const c = simular(lista).find((it) => it.kind === 'comida'); return c ? Math.max(0, c.t0 - toMin(cfg.comida_hasta)) : 0 }
+    /**
+     * Cuánto se pasa la comida de su hora tope (15:00). Solo en el día de llegada (`draft.diaLlegada`; sus listas escritas no se recortan por minutos): ahí una comida detrás de una reserva de la noche
+     * no es una opción (la comida se quedaba al final del día). En los demás días no cuenta, como siempre: la entrada nunca sale tarde (6y8).
+     */
+    const comidaTardia = (lista) => { if (!draft.diaLlegada) return 0; const c = simular(lista).find((it) => it.kind === 'comida'); return c ? Math.max(0, c.t0 - toMin(cfg.comida_hasta)) : 0 }
     const mesasYReservas = (lista) => {
       // (Regla 17: con DOS horas fijas del viajero el mismo día no se mueve ni se quita nada por la comida o la cena: manda la lista escrita, como antes de la 6y8.)
       if (lista.filter((it) => it.kind === 'stop' && !it.llegada && it.hora && !it.turno_real && (it.hora_tipo || it.tipo === 'tour')).length >= 2) return lista

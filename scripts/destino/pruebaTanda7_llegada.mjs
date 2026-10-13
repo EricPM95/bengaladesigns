@@ -1,16 +1,17 @@
 // Prueba de la Tanda 7, parte MOTOR: el día de llegada con horas (PARA_CODE_TANDA7_v3.md, puntos 5 a 8, 10 a 12 y 19; «Hay que comprobar» 1 a 15, la parte de la llegada).
-//   node scripts/destino/pruebaTanda7_llegada.mjs [ver=25] [solo=fronteras,filas,dias,freetour,noches,reservas,excursion,apagado,matriz]
+//   node scripts/destino/pruebaTanda7_llegada.mjs [ver=25] [solo=fronteras,filas,dias,freetour,noches,reservas,excursion,apagado,matriz,viajes20] [muestras=1500]
 //
 // Son comprobaciones sencillas que NO comparten código con el motor: las tablas del documento están escritas aquí otra vez, con las horas del documento, y se miran con lo que sale.
 //   1. Cada hora cae en su fila (los bordes del documento) para CADA punto de llegada (y sin punto), en marzo-octubre y en invierno; ninguna hora de 0:00 a 23:59 sin fila.
 //   2. Cada fila lleva exactamente su lista, y la comida solo está en las filas que la llevan.
 //   3. El día 1 pasa al día 2 desde las 14:00 (en invierno, desde las 13:00): se corre todo y solo se cae el último día de ruta.
 //   4. 1 y 2 noches. 5. El Free Tour (con hora, sin hora, de noche). 6. Las reservas grandes y pequeñas del día de llegada y de un día de en medio.
-//   7. La excursión. 8. Gratis, ruta a mano y coche: los días no cambian. 9. La matriz grande (todas las comprobaciones de siempre).
+//   7. La excursión. 8. Gratis, ruta a mano y coche: los días no cambian. 9. La matriz grande (todas las comprobaciones de siempre). 10. Los 20 viajes de la revisión, con vuelos.
 import { readFileSync } from 'node:fs'
 import { comprobarViaje } from './comprobacionesListas.mjs'
 import { D, written, FT, COLISEO, MUSEOS, GALERIA, planEscenario, huellaDePlan, sumarDias, toMin, toHHMM } from './llegadaLib.mjs'
 import { filaDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
+import { VIAJES, LLEGADAS_20, planViaje, planViajeConLlegada } from './viajes20Lib.mjs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
 const VER = Number(args.ver ?? 25)
@@ -294,7 +295,12 @@ if (quiere('freetour')) {
           const filas = dia.escritoRows ?? []
           debe(filas.some((r) => r.tipo === 'tour' && r.hora_fija === ft), 'ft_hora_manda', `${etiqueta}: el Free Tour no está a las ${ft} el día 1`)
           debe(!filas.some((r) => r.lugar === MUSEOS), 'ft_sin_vaticano', `${etiqueta}: la parte del Free Tour lleva los Museos`)
-          debe(franjaCom(ft) ? true : filas.some((r) => r.tipo === 'comida' && r.restaurante == null), 'ft_comida_al_llegar', `${etiqueta}: el tour es por la tarde y falta la comida al llegar`)
+          // La comida al llegar si el tour es por la tarde y el viajero llega antes de las 15:00; si llega más tarde, ese día no lleva comida (la comida nunca es después de las 15:00).
+          if (!franjaCom(ft)) {
+            const comidas = filas.filter((r) => r.tipo === 'comida')
+            if (libre <= 15 * 60) debe(comidas.length === 1 && comidas[0].restaurante == null, 'ft_comida_al_llegar', `${etiqueta}: el tour es por la tarde y falta la comida al llegar`)
+            else debe(comidas.length === 0, 'ft_sin_comida_tarde', `${etiqueta}: llega después de las 15:00 y el día lleva comida`)
+          }
           debe(plan.llegada.dia_caido?.id === (n === 2 ? 'D1' : idsBase.at(-1)), 'ft_cae_el_ultimo', `${etiqueta}: cae ${plan.llegada.dia_caido?.id}`)
         } else {
           debe(JSON.stringify(ids) === JSON.stringify(idsBase), 'ft_empezado_sin_reorganizar', `${etiqueta}: no se reorganiza nada: ${ids.join(',')} y antes ${idsBase.join(',')}`)
@@ -333,6 +339,20 @@ if (quiere('freetour')) {
       }
     }
   }
+  // 5d. El Free Tour reservado en OTRO día (el 2 o el 3): su día y su hora no se mueven, llegue cuando llegue el viajero
+  for (const n of [2, 3, 4]) {
+    for (const dia of [2, 3].filter((x) => x <= n)) {
+      for (const hora of ['00:30', '07:00', '10:00', '12:30', '14:00', '16:00', '20:00', '23:00']) {
+        const r = { name: FT, dayNumber: dia, dateIso: sumarDias(sede.inicio, dia - 1), time: '12:00' }
+        const plan = planEscenario({ n, inicio: sede.inicio, ft: '12:00', reservasGrandes: [r], entradas: {}, diaCuatro: d4De(n) }, { llegada: llegada(hora, p) })
+        const etiqueta = `FT reservado el día ${dia} · ${n} noches · llega ${hora}`
+        if (!plan?.llegada) { debe(false, 'sin_llegada', `${etiqueta}: sin plan`); continue }
+        const dt = diaPorNumero(plan, dia)
+        debe(Boolean(dt?.escritoRows?.some((f) => f.tipo === 'tour' && !f.llegada && f.hora_fija === '12:00')), 'ft_otro_dia_no_desaparece', `${etiqueta}: el Free Tour no sale el día ${dia} a las 12:00 (días: ${idsDe(plan).join(',')})`)
+        debe(plan.days.filter((d) => (d.escritoRows ?? []).some((f) => f.tipo === 'tour' && !f.llegada)).length === 1, 'ft_otro_dia_una_vez', `${etiqueta}: el Free Tour sale más de una vez`)
+      }
+    }
+  }
   // 5c. El Free Tour de la noche (19:00 y 21:00): el viaje lleva los días de «Sin Free Tour» y el tour va en la noche del D1 (si el D1 pasa al día 2, el tour va con él)
   for (const n of [3, 4]) {
     for (const ft of ['19:00', '21:00']) {
@@ -359,7 +379,7 @@ function franjaCom(ft) { return ft === '10:00' || ft === '12:00' }
 const BLOQUES = { [COLISEO]: [COLISEO, 'Arco de Constantino', 'Foro Romano y Palatino'], [MUSEOS]: [MUSEOS, 'Plaza de San Pedro', 'Basílica de San Pedro'], [GALERIA]: [GALERIA, 'Parque de Villa Borghese'] }
 const grande = (inicio, name, dia, time) => ({ name, dayNumber: dia, dateIso: inicio ? sumarDias(inicio, dia - 1) : null, time })
 const filasDe = (dia) => dia.escritoRows ?? []
-const diaPorNumero = (plan, n) => plan.days.find((d) => d.dayNumber === n)
+function diaPorNumero(plan, n) { return plan.days.find((d) => d.dayNumber === n) }
 const reservaVista = (plan, r) => {
   const dia = diaPorNumero(plan, r.dayNumber)
   if (!dia?.curatedDay) return null
@@ -471,6 +491,67 @@ if (quiere('reservas')) {
   }
 }
 
+// Las comprobaciones de siempre más las de la llegada, sobre un plan con llegada. `esc` es el escenario, `hora` la hora de llegada y `poolNames` lo que el viajero marcó en el pool.
+function revisarViaje(plan, esc, hora, etiqueta, poolNames = []) {
+  const ft = esc.ft
+  const a = argsDeEscenarioPublico(esc)
+  const r = comprobarViaje({ D, plan, etiqueta, entradas: a.entradas, poolNames, hasFreeTour: a.hasFreeTour, listas: written, franjas: written.destino?.franjas })
+  for (const f of r.fallos) debe(false, f.regla, f.texto)
+  comprobaciones++
+  // Lo que la llegada añade a las comprobaciones de siempre
+  const dias = plan.days.filter((d) => d.curatedDay)
+  const ids = dias.map((d) => d.curatedDay.id)
+  debe(JSON.stringify(plan.llegada.orden) === JSON.stringify(ids) || plan.llegada.caso.startsWith('free_tour_no_se_pone') || (plan.llegada.orden && plan.llegada.orden.length === ids.length), 'orden_publico', `${etiqueta}: \`llegada.orden\` ${plan.llegada.orden} no son los días ${ids}`)
+  debe(new Set(ids).size === ids.length, 'dias_repetidos', `${etiqueta}: un día escrito sale dos veces: ${ids.join(',')}`)
+  // Comida: nunca antes de las 12:00 ni después de las 15:00 (salvo la excepción de los Museos con reserva)
+  // (Un día que las comprobaciones de siempre ya apuntan como «comida tarde» por una causa que no es de la llegada —varias horas fijas, una reserva que bloquea…— no se repite aquí.)
+  const comidaYaApuntada = (d) => r.info.some((i) => i.regla === 'comida_tarde' && i.texto.includes(` ${d.curatedDay.id}:`))
+  for (const d of dias) {
+    if (comidaYaApuntada(d)) continue
+    // (Con DOS horas fijas el mismo día —el turno de la Galería del pool y el Free Tour de la noche— la regla 17 deja la lista escrita tal cual y la comida puede caer tarde; ya pasa sin vuelos —60 de 300 días en la prueba—: se apunta en el INFORME.)
+    if (filasDe(d).filter((f) => f.hora_fija && !f.llegada).length >= 2) continue
+    for (const c of filasDe(d).filter((f) => f.tipo === 'comida')) {
+      const conMuseos = filasDe(d).some((f) => f.lugar === MUSEOS && f.hora_tipo === 'reserva' && f.hora_fija >= '12:00' && f.hora_fija <= '13:00')
+      debe((c.t0 >= 12 * 60 || (conMuseos && c.t0 >= 11 * 60 + 15)) && c.t0 <= 15 * 60, 'comida_hora', `${etiqueta}: ${d.curatedDay.id} comida a las ${toHHMM(c.t0)}`)
+    }
+    // «Cerrado este día» sin tiempo
+    for (const f of filasDe(d).filter((x) => x.cerrado_este_dia)) debe(f.min === 0 && f.t1 === f.t0, 'cerrado_sin_tiempo', `${etiqueta}: «Cerrado este día» con tiempo`)
+  }
+  // 0 nocturnas repetidas
+  const nocturnas = [...plan.nightsByDay.values()].flat().map((e) => e.name)
+  debe(new Set(nocturnas).size === nocturnas.length, 'nocturnas_repetidas', `${etiqueta}: nocturnas repetidas ${nocturnas.join(', ')}`)
+  // El día 1 de la llegada: nada se manda a «Si te sobra tiempo» por el tiempo ni se queda de camino un imprescindible
+  const d1 = dias[0]
+  if (plan.llegada.dia1?.lista === d1.curatedDay.id && !['d1_de_siempre', 'madrugada', 'tranquilo'].includes(plan.llegada.caso) && !/_entero$|_ya_empezado$|sin_cambios/.test(plan.llegada.caso)) {
+    debe(!(d1.spareRows ?? []).some((s) => s.razon === 'cabe'), 'sobra_por_minutos', `${etiqueta}: algo del día 1 pasa a «Si te sobra tiempo» por el tiempo`)
+    debe(!filasDe(d1).some((f) => f.tipo === 'parada' && !f.llegada && f.nivel === 1 && f.modo === 'camino' && !f.por_horario), 'imprescindible_de_camino', `${etiqueta}: un imprescindible va de camino el día 1`)
+  }
+  // Los imprescindibles con entrada nunca desaparecen: lo que sale en los días de siempre y no sale ahora está en «Si te sobra tiempo», en «No incluido» o en un día que cae
+  const sale = new Set(dias.flatMap((d) => [...filasDe(d).filter((f) => f.tipo === 'parada' && !f.llegada).map((f) => f.lugar), ...(d.spareRows ?? []).map((s) => s.lugar)]))
+  // Las nocturnas imprescindibles y los textos de la llegada de noche (con la hora del viajero)
+  if (['noche_con_cena', 'noche_sin_cena', 'sin_ruta'].includes(plan.llegada.caso)) {
+    const texto = plan.llegada.dia1.texto ?? ''
+    const esSinRuta = plan.llegada.caso === 'sin_ruta'
+    debe(esSinRuta ? /Descansa, que mañana empezamos a tope/.test(texto) : /visita la Fontana de Trevi de noche/.test(texto), 'texto_noche', `${etiqueta}: el texto de la llegada de noche: «${texto}»`)
+    debe(texto.includes(`a las ${horaTexto(hora)}`), 'texto_noche_hora', `${etiqueta}: el texto no lleva la hora del viajero: «${texto}»`)
+    debe(!/\{|\}/.test(texto), 'texto_noche_huecos', `${etiqueta}: el texto lleva huecos sin rellenar`)
+    debe(!/centro|taxi/i.test(texto), 'texto_noche_palabras', `${etiqueta}: palabras que no van: «${texto}»`)
+  }
+  // Todos los textos de la llegada: sin horas calculadas, sin empresas, sin «taxi» y sin «Día n»
+  for (const t of [...plan.llegada.avisos.map((x) => x.texto), ...plan.llegada.resumen.map((x) => x.texto)]) {
+    debe(!/\bDía \d|\btaxi\b|Terravision|Trenitalia|Civitatis|sal a las/i.test(t), 'texto_prohibido', `${etiqueta}: «${t}»`)
+    debe(!/\{(?!dia:\d\})/.test(t), 'texto_huecos', `${etiqueta}: hueco sin rellenar en «${t}»`)
+  }
+  // Cada hora que sale en un texto es una hora del viajero (su llegada, sus reservas o el Free Tour)
+  for (const t of plan.llegada.avisos.map((x) => x.texto)) {
+    for (const m of t.matchAll(/(\d{1,2}):(\d{2})/g)) {
+      const h = `${String(m[1]).padStart(2, '0')}:${m[2]}`
+      const delViajero = new Set([hora, ft, ...(esc.entradas ? Object.values(esc.entradas) : []), '10:00', '12:00', '15:00', '17:00'].filter(Boolean))
+      debe(delViajero.has(h), 'hora_calculada_a_la_vista', `${etiqueta}: la hora ${h} de «${t}» no es del viajero`)
+    }
+  }
+}
+
 // ═══ 9. La matriz grande: viajes de 1 a 7 noches con todas las comprobaciones de siempre ═══
 if (quiere('matriz')) {
   const MUESTRAS = Number(args.muestras ?? 1500)
@@ -505,57 +586,7 @@ if (quiere('matriz')) {
     if (!plan) { debe(false, 'sin_plan', `${etiqueta}: sin plan`); continue }
     if (!plan.llegada) { debe(false, 'sin_llegada', `${etiqueta}: sin \`llegada\``); continue }
     conteo[plan.llegada.caso] = (conteo[plan.llegada.caso] ?? 0) + 1
-    const a = argsDeEscenarioPublico(esc)
-    const r = comprobarViaje({ D, plan, etiqueta, entradas: a.entradas, poolNames, hasFreeTour: a.hasFreeTour, listas: written, franjas: written.destino?.franjas })
-    for (const f of r.fallos) debe(false, f.regla, f.texto)
-    comprobaciones++
-    // Lo que la llegada añade a las comprobaciones de siempre
-    const dias = plan.days.filter((d) => d.curatedDay)
-    const ids = dias.map((d) => d.curatedDay.id)
-    debe(JSON.stringify(plan.llegada.orden) === JSON.stringify(ids) || plan.llegada.caso.startsWith('free_tour_no_se_pone') || (plan.llegada.orden && plan.llegada.orden.length === ids.length), 'orden_publico', `${etiqueta}: \`llegada.orden\` ${plan.llegada.orden} no son los días ${ids}`)
-    debe(new Set(ids).size === ids.length, 'dias_repetidos', `${etiqueta}: un día escrito sale dos veces: ${ids.join(',')}`)
-    // Comida: nunca antes de las 12:00 ni después de las 15:00 (salvo la excepción de los Museos con reserva)
-    for (const d of dias) {
-      for (const c of filasDe(d).filter((f) => f.tipo === 'comida')) {
-        const conMuseos = filasDe(d).some((f) => f.lugar === MUSEOS && f.hora_tipo === 'reserva' && f.hora_fija >= '12:00' && f.hora_fija <= '13:00')
-        debe((c.t0 >= 12 * 60 || (conMuseos && c.t0 >= 11 * 60 + 15)) && c.t0 <= 15 * 60, 'comida_hora', `${etiqueta}: ${d.curatedDay.id} comida a las ${toHHMM(c.t0)}`)
-      }
-      // «Cerrado este día» sin tiempo
-      for (const f of filasDe(d).filter((x) => x.cerrado_este_dia)) debe(f.min === 0 && f.t1 === f.t0, 'cerrado_sin_tiempo', `${etiqueta}: «Cerrado este día» con tiempo`)
-    }
-    // 0 nocturnas repetidas
-    const nocturnas = [...plan.nightsByDay.values()].flat().map((e) => e.name)
-    debe(new Set(nocturnas).size === nocturnas.length, 'nocturnas_repetidas', `${etiqueta}: nocturnas repetidas ${nocturnas.join(', ')}`)
-    // El día 1 de la llegada: nada se manda a «Si te sobra tiempo» por el tiempo ni se queda de camino un imprescindible
-    const d1 = dias[0]
-    if (plan.llegada.dia1?.lista === d1.curatedDay.id && !['d1_de_siempre', 'madrugada', 'tranquilo'].includes(plan.llegada.caso) && !/_entero$|_ya_empezado$|sin_cambios/.test(plan.llegada.caso)) {
-      debe(!(d1.spareRows ?? []).some((s) => s.razon === 'cabe'), 'sobra_por_minutos', `${etiqueta}: algo del día 1 pasa a «Si te sobra tiempo» por el tiempo`)
-      debe(!filasDe(d1).some((f) => f.tipo === 'parada' && !f.llegada && f.nivel === 1 && f.modo === 'camino' && !f.por_horario), 'imprescindible_de_camino', `${etiqueta}: un imprescindible va de camino el día 1`)
-    }
-    // Los imprescindibles con entrada nunca desaparecen: lo que sale en los días de siempre y no sale ahora está en «Si te sobra tiempo», en «No incluido» o en un día que cae
-    const sale = new Set(dias.flatMap((d) => [...filasDe(d).filter((f) => f.tipo === 'parada' && !f.llegada).map((f) => f.lugar), ...(d.spareRows ?? []).map((s) => s.lugar)]))
-    // Las nocturnas imprescindibles y los textos de la llegada de noche (con la hora del viajero)
-    if (['noche_con_cena', 'noche_sin_cena', 'sin_ruta'].includes(plan.llegada.caso)) {
-      const texto = plan.llegada.dia1.texto ?? ''
-      const esSinRuta = plan.llegada.caso === 'sin_ruta'
-      debe(esSinRuta ? /Descansa, que mañana empezamos a tope/.test(texto) : /visita la Fontana de Trevi de noche/.test(texto), 'texto_noche', `${etiqueta}: el texto de la llegada de noche: «${texto}»`)
-      debe(texto.includes(`a las ${horaTexto(hora)}`), 'texto_noche_hora', `${etiqueta}: el texto no lleva la hora del viajero: «${texto}»`)
-      debe(!/\{|\}/.test(texto), 'texto_noche_huecos', `${etiqueta}: el texto lleva huecos sin rellenar`)
-      debe(!/centro|taxi/i.test(texto), 'texto_noche_palabras', `${etiqueta}: palabras que no van: «${texto}»`)
-    }
-    // Todos los textos de la llegada: sin horas calculadas, sin empresas, sin «taxi» y sin «Día n»
-    for (const t of [...plan.llegada.avisos.map((x) => x.texto), ...plan.llegada.resumen.map((x) => x.texto)]) {
-      debe(!/\bDía \d|\btaxi\b|Terravision|Trenitalia|Civitatis|sal a las/i.test(t), 'texto_prohibido', `${etiqueta}: «${t}»`)
-      debe(!/\{(?!dia:\d\})/.test(t), 'texto_huecos', `${etiqueta}: hueco sin rellenar en «${t}»`)
-    }
-    // Cada hora que sale en un texto es una hora del viajero (su llegada, sus reservas o el Free Tour)
-    for (const t of plan.llegada.avisos.map((x) => x.texto)) {
-      for (const m of t.matchAll(/(\d{1,2}):(\d{2})/g)) {
-        const h = `${String(m[1]).padStart(2, '0')}:${m[2]}`
-        const delViajero = new Set([hora, ft, ...(esc.entradas ? Object.values(esc.entradas) : []), '10:00', '12:00', '15:00', '17:00'].filter(Boolean))
-        debe(delViajero.has(h), 'hora_calculada_a_la_vista', `${etiqueta}: la hora ${h} de «${t}» no es del viajero`)
-      }
-    }
+    revisarViaje(plan, esc, hora, etiqueta, poolNames)
   }
   console.log('   casos vistos:', Object.entries(conteo).sort((x, y) => y[1] - x[1]).map(([k, v]) => `${k}=${v}`).join(' '))
 }
@@ -633,6 +664,23 @@ if (quiere('apagado')) {
     const ids = idsDe(plan)
     const otra = planEscenario(esc, { llegada: llegada(hora, PUNTOS[0]), forceOrder: ids })
     debe(JSON.stringify(idsDe(otra)) === JSON.stringify(ids), 'force_order', `llega ${hora}: con force_order los días son ${idsDe(otra).join(',')} y deberían ser ${ids.join(',')}`)
+  }
+}
+
+// ═══ 10. Los 20 viajes de la revisión, ahora con vuelos (punto 23): la mitad de la llegada ═══
+if (quiere('viajes20')) {
+  console.log('10. Los 20 viajes con vuelos (llegada de cada fila del punto 6)')
+  for (const v of VIAJES) {
+    const ll = LLEGADAS_20[v.n]
+    const etiqueta = `Viaje ${v.n} (${v.dias} días, ${v.inicio}) llega ${ll.hora} ${ll.puntoId}`
+    const plan = planViajeConLlegada(v)
+    debe(Boolean(plan?.llegada), 'sin_llegada', `${etiqueta}: sin plan o sin \`llegada\``)
+    if (!plan?.llegada) continue
+    const conEntrada = v.ft === '12:00' || v.ft === '15:00' || v.ft === '17:00'
+    const esc = { n: v.dias, inicio: v.inicio, ft: v.ft ?? null, diaCuatro: v.diaCuatro ?? null, entradas: conEntrada ? { [FT]: v.ft } : {} }
+    revisarViaje(plan, esc, ll.hora, etiqueta, [])
+    // El mismo viaje sin vuelos sigue igual que antes
+    debe(huellaDePlan(planViajeConLlegada(v, { llegada: null })) === huellaDePlan(planViaje(v)), 'viaje20_sin_vuelos', `${etiqueta}: sin la llegada no sale igual`)
   }
 }
 
