@@ -57,6 +57,25 @@ const dia1De = (plan) => plan.days.find((d) => d.curatedDay)
 const idsDe = (plan) => plan.days.filter((d) => d.curatedDay).map((d) => d.curatedDay.id)
 const llegada = (hora, p, zona = 'centro', extra = {}) => ({ hora, medio: p.medio, puntoId: p.id, zona, ...extra })
 
+// ═══ La tabla de fronteras por punto (para el INFORME): `node scripts/destino/pruebaTanda7_llegada.mjs fronteras=1` escribe, para cada punto, desde qué hora de llegada cae el viajero en cada fila ═══
+if (args.fronteras) {
+  for (const tablaId of ['marzo_octubre', 'invierno']) {
+    console.log(`\n### ${tablaId === 'invierno' ? 'Invierno' : 'De marzo a octubre'}\n`)
+    const filas = written.llegadas.dia1[tablaId]
+    console.log(`| Fila (libre a las…) | ${PUNTOS.filter((p) => !p.sin).map((p) => p.id).join(' | ')} |`)
+    console.log(`|---|${PUNTOS.filter((p) => !p.sin).map(() => '---').join('|')}|`)
+    filas.forEach((fila, k) => {
+      const celdas = PUNTOS.filter((p) => !p.sin).map((p) => {
+        let primero = null
+        for (let minuto = 0; minuto < 1440 && primero == null; minuto++) { const r = filaDeLlegada(filas, minuto, minuto + traslado(p) + 30); if (r?.indice === k) primero = minuto }
+        return primero == null ? '—' : `desde ${hhmm(primero)}`
+      })
+      console.log(`| ${fila.por === 'llegada' ? 'llega de 0:00 a 4:59' : `${fila.desde}${fila.hasta ? `–${fila.hasta}` : ' o más tarde'}`} · ${fila.listas.map((l) => l.lista).join(' / ')}${fila.pasa_al_dia_2 ? ' · el D1 pasa al día 2' : ''} | ${celdas.join(' | ')} |`)
+    })
+  }
+  process.exit(0)
+}
+
 // ═══ 1 y 2. Los bordes de cada fila, para cada punto, y lo que lleva cada fila ═══
 if (quiere('fronteras')) {
   console.log('1. Cada hora cae en su fila (cada punto, marzo-octubre e invierno, con y sin fechas)')
@@ -339,6 +358,22 @@ if (quiere('freetour')) {
       }
     }
   }
+  // 5e. Los días de horas especiales (Nochebuena, Navidad, Nochevieja, Año Nuevo y Reyes: el tour solo sale a las 12:00): sin hora, la app elige solo entre las de ese día, también el día siguiente
+  const ESPECIALES = ['12-24', '12-25', '12-31', '01-01', '01-06']
+  for (const inicio of ['2026-12-23', '2026-12-24', '2026-12-30', '2026-12-31', '2027-01-05']) {
+    for (const n of [2, 3]) {
+      for (const hora of ['06:00', '09:00', '11:00', '13:00', '15:30', '17:30']) {
+        const plan = planEscenario({ n, inicio, ft: '10:00', entradas: {}, diaCuatro: null }, { llegada: llegada(hora, p) })
+        const etiqueta = `FT sin hora en fechas especiales · ${inicio} · ${n} noches · llega ${hora}`
+        if (!plan?.llegada) { debe(false, 'sin_llegada', `${etiqueta}: sin plan`); continue }
+        for (const dia of plan.days.filter((d) => (d.escritoRows ?? []).some((f) => f.tipo === 'tour' && !f.llegada))) {
+          const tour = dia.escritoRows.find((f) => f.tipo === 'tour' && !f.llegada)
+          const permitidas = ESPECIALES.includes(dia.hours.dateIso.slice(5)) ? ['12:00'] : HORAS_FT
+          debe(permitidas.includes(tour.hora_fija), 'ft_horas_especiales', `${etiqueta}: el Free Tour del ${dia.hours.dateIso} sale a las ${tour.hora_fija} y ese día solo hay ${permitidas.join(', ')}`)
+        }
+      }
+    }
+  }
   // 5d. El Free Tour reservado en OTRO día (el 2 o el 3): su día y su hora no se mueven, llegue cuando llegue el viajero
   for (const n of [2, 3, 4]) {
     for (const dia of [2, 3].filter((x) => x <= n)) {
@@ -445,7 +480,7 @@ if (quiere('reservas')) {
   }
   // 6b. Dos reservas grandes en el mismo medio día: cada bloque a su hora; si se cruzan, el aviso «coinciden»
   for (const [a, b] of [[[COLISEO, '14:30'], [MUSEOS, '17:30']], [[COLISEO, '17:00'], [GALERIA, '17:30']], [[MUSEOS, '15:00'], [GALERIA, '18:00']], [[COLISEO, '16:00'], [MUSEOS, '16:30']]]) {
-    for (const hora of ['12:30', '13:20', '15:00']) {
+    for (const hora of ['07:00', '10:30', '12:30', '13:20', '15:00']) {
       const rs = [grande(sede.inicio, a[0], 1, a[1]), grande(sede.inicio, b[0], 1, b[1])]
       const plan = planEscenario({ n: 4, inicio: sede.inicio, diaCuatro: 'roma', reservasGrandes: rs, entradas: Object.fromEntries(rs.map((x) => [x.name, x.time])) }, { llegada: llegada(hora, p) })
       const etiqueta = `dos reservas ${a[0].split(' ')[0]} ${a[1]} + ${b[0].split(' ')[0]} ${b[1]} · llega ${hora}`

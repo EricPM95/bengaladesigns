@@ -190,9 +190,10 @@ export function planListasTrip(args) {
     llegada: llegadaPide ? (chosen) => {
       const ftReserva = tour ? (reservasGrandes ?? []).find((r) => r && r.name === tour.name) ?? null : null
       return decidirLlegada({
-        destData, written, entrada: llegadaIn, chosen, n: contentDays, hasFreeTour, ftReserva, reservasViaje, excursion: llegadaIn.excursionReservada ?? null, excursionDia1, ftHora: ftReserva?.time ?? (tour ? entradas?.[tour.name] ?? null : null), tourName: tour?.name ?? null,
+        destData, written, entrada: llegadaIn, chosen, n: contentDays, hasFreeTour, ftReserva, reservasViaje, entradas, excursion: llegadaIn.excursionReservada ?? null, excursionDia1, ftHora: ftReserva?.time ?? (tour ? entradas?.[tour.name] ?? null : null), tourName: tour?.name ?? null,
         fecha1: calendar.hasDates ? calendar.dateOfDay(1) : null, mes: calendar.month, reservasGrandes, sitiosGrandes: destData.sitios_grandes?.lugares ?? [], nivelDe,
         dia: (k) => { const d = cityDays[k]; return d ? { dayNumber: d.dayNumber, dateIso: realDateIso(d), weekday: hoursOf(d).weekday ?? null, noTour: noTourOn(d) } : null },
+        cerrado: (name, k) => Boolean(cityDays[k]) && closedThatDay(name, cityDays[k]),
       })
     } : null,
     // El Free Tour de tarde o de noche que el viajero ha reservado, con su fecha: el día escrito que lo lleva va fijo en esa fecha (Tanda 6u).
@@ -308,7 +309,7 @@ export function planListasTrip(args) {
   }
   const contextoDe = (dia, day, hours, parte, index) => ({
     weekday: hours.weekday, dateIso: calendar.hasDates ? hours.dateIso : null, month: hours.dateIso ? Number(String(hours.dateIso).slice(5, 7)) : Number.isInteger(calendar.month) ? calendar.month + 1 : null,
-    hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: index === 0 && llegadaDecision?.entradasApp ? { ...entradasDeDia(index), ...llegadaDecision.entradasApp } : entradasDeDia(index), forzar: dia.llegada_ops?.forzar ?? [], poolNames, experiencias: selected, orden: order, parte, enFechas,
+    hasFreeTour, freeTourFranja: ftDayIndex === index ? ftFranja : null, tourName: tour?.name ?? null, ftAqui: Boolean(ftSeparado) && ftSeparado.slotFt === index, ftOtroDia: Boolean(ftSeparado) && ftSeparado.slotOtro === index, entradas: llegadaDecision?.entradasApp?.[index] ? { ...entradasDeDia(index), ...llegadaDecision.entradasApp[index] } : entradasDeDia(index), forzar: dia.llegada_ops?.forzar ?? [], poolNames, experiencias: selected, orden: order, parte, enFechas,
     // (Un sitio que cierra ese día activa las variantes «si cierra, sin él» del documento. Si es de los que NUNCA se quitan —el Vaticano, la Galería Borghese— y ningún día del viaje abre, se queda
     // en su día como parada «Cerrado este día», sin ocupar tiempo y con su aviso (Tanda 6y10, 1b), y el resto del día es la versión sin él.)
     cerrado: (name) => closedThatDay(name, day),
@@ -983,9 +984,12 @@ export function planListasTrip(args) {
       }
       return null
     }
+    // En el día de llegada con una lista escrita para la llegada (`draft.sinAjustes`) no se recorta nada por minutos (Tanda 7, punto 6: «el motor no quita ni mueve nada por minutos»). Si el viajero ha añadido algo (pool,
+    // experiencias, una reserva: `protegido`), el día se ajusta como siempre: lo que no cabe pasa a «Si te sobra tiempo».
+    const sinRecortar = draft.sinAjustes === true && ![...draft.trabajo.manana, ...draft.trabajo.tarde].some((s) => s.protegido === true)
     const ajustar = (lista) => {
       let out = lista
-      if (conReservaDelViajero(lista) || draft.sinAjustes) return out
+      if (conReservaDelViajero(lista) || sinRecortar) return out
       for (let guard = 0; guard < 80; guard++) {
         const e = exceso(out)
         if (e.manana > 0) {
@@ -1876,7 +1880,7 @@ export function planListasTrip(args) {
       escritoRows: final.map((item) => ({ id: item.id, tipo: item.kind === 'stop' ? (item.tipo ?? 'parada') : item.kind, lugar: item.lugar ?? item.restaurante ?? item.noche ?? null, titulo: item.titulo ?? null, restaurante: item.restaurante ?? null, hora: toHHMM(item.t0 ?? 0), t0: item.t0 ?? 0, t1: item.t1 ?? 0, llegaA: item.llegaA ?? null, tarde: item.tarde ?? 0, hora_fija: item.hora ?? null, min: item.min ?? 0, modo: item.modo ?? null, llegada: item.llegada === true, hora_tipo: item.hora_tipo ?? null, fija: Boolean(item.hora), nivel: nivelDe(item.lugar), franja: item.franja, franja_doc: item.franja_doc ?? item.franja, de: item.de ?? null, relleno: item.relleno ?? null, protegido: item.protegido === true, por_horario: item.fuera_por_horario === true, previo_min: item.previo_horario?.min ?? null, visitado_dia: item.visitado_dia ?? null, no_quita_noche: item.no_quita_noche === true, cerrado_este_dia: item.cerrado_este_dia === true })),
       tardeLibre,
       spare: spareVisits,
-      spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true })),
+      spareRows: spare.map((item) => ({ razon: item.razon ?? null, id: item.id, lugar: item.lugar, titulo: item.titulo ?? null, franja: item.franja, nivel: nivelDe(item.lugar), modo: item.modo ?? null, protegido: item.protegido === true, por_llegada: item.por_llegada === true })),
       ordenBase: draft.ordenBase,
       sunsetText: aviso,
       rainPlan: lluvia,
