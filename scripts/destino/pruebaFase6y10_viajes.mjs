@@ -122,9 +122,9 @@ for (const v of VIAJES) {
   const d15 = diaDe(plan, '2027-08-15')
   debe(Boolean(d15 && (d15.escritoRows ?? []).some((r) => r.cerrado_este_dia && r.lugar === MUSEOS)), 'cambio_sin_ganar', 'Viaje 5: el 15 de agosto los Museos no salen «Cerrado este día»')
 }
-// b) 14-16 de agosto (tres días): no hay ningún día en que abran los Museos.
+// b) 14-15 de agosto (los dos días cierran los Museos; el 16 ya abren): no hay ningún día en que abran los Museos dentro del viaje.
 {
-  const plan = planListasTrip({ destData: D, written, totalDays: 4, hasFreeTour: false, poolNames: [], experiencesPositive: [], dateRangeStartIso: '2027-08-14', travel, entradas: {}, freeTourDespues: null, mediaJornada: null, diaCuatro: null })
+  const plan = planListasTrip({ destData: D, written, totalDays: 3, hasFreeTour: false, poolNames: [], experiencesPositive: [], dateRangeStartIso: '2027-08-14', travel, entradas: {}, freeTourDespues: null, mediaJornada: null, diaCuatro: null })
   const dia = plan.days.find((d) => d.curatedDay?.id === 'D2')
   debe(Boolean(dia), 'cerrado_este_dia', '14-16 de agosto: no sale el día del Vaticano')
   if (dia) {
@@ -136,7 +136,7 @@ for (const v of VIAJES) {
     debe(!filas.some((r) => r.lugar === MUSEOS && !r.cerrado_este_dia && r.min > 0), 'cerrado_este_dia', '14-16 de agosto: los Museos salen además con tiempo')
     const visita = dia.schedule.visits.find((v) => v.place.name === MUSEOS)
     debe(visita?.place.outsideKind === 'cerrado' && visita?.place.outsideReason === 'Cerrado este día' && visita.end === visita.start, 'cerrado_este_dia', `14-16 de agosto: la visita de los Museos no lleva la marca (${visita?.place.outsideKind} / ${visita?.place.outsideReason})`)
-    debe(/cerrados el 16 de agosto/.test(visita?.place.stopNotice ?? ''), 'cerrado_este_dia', `14-16 de agosto: los Museos no llevan su aviso (${visita?.place.stopNotice})`)
+    debe(/cerrados el 15 de agosto/.test(visita?.place.stopNotice ?? ''), 'cerrado_este_dia', `14-16 de agosto: los Museos no llevan su aviso (${visita?.place.stopNotice})`)
     debe(plan.dayNotices.some((n) => n.dayNumber === dia.dayNumber && n.name === MUSEOS), 'cerrado_este_dia', '14-16 de agosto: falta el aviso del día de los Museos')
     // El resto del día es la versión sin Museos del documento: la Plaza, la Basílica con las Grutas y lo de la tarde.
     debe((dia.curatedDay.variantes ?? []).includes('sin_museos'), 'cerrado_este_dia', `14-16 de agosto: el día no usa la versión sin Museos (${(dia.curatedDay.variantes ?? []).join(',')})`)
