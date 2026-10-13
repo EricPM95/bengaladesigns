@@ -174,7 +174,15 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     }
     // 6c. El Foro y el Palatino, nunca por fuera por la hora (Tanda 6w).
     // (Tanda 6z5: el motor nunca pasa el Foro a por fuera ni de camino en un día con reserva —ni por la hora ni por que no quepa—: va antes o después del Coliseo, donde dice la tabla. Lo que la propia lista escribe por fuera, como el Foro visto desde fuera en un día, no cuenta: nadie lo ha cambiado.)
-    for (const x of rows.filter((r) => r.lugar === 'Foro Romano y Palatino' && !r.llegada && (r.por_horario || (conReserva && r.previo_min != null && (r.modo === 'fuera' || r.modo === 'camino'))))) falla('foro_por_fuera', dia, `el Foro y el Palatino van ${x.modo === 'camino' ? 'de camino' : 'por fuera'} en un día con reserva (hacia las ${Math.floor(x.t0 / 60)}:${String(x.t0 % 60).padStart(2, '0')})`)
+    // (Tanda 6y10, 1c: con su horario real. Si el Foro, a la hora a la que llega la ruta, ya ha cerrado o no ha abierto —un Coliseo reservado a las 16:00 en invierno—, por fuera con su aviso es lo correcto; solo es un fallo si a esa hora estaba abierto.)
+    const foroAbierto = (x) => {
+      const p = place('Foro Romano y Palatino')
+      const sesiones = p ? parseHoursSessions(effectiveSchedule(p, dia.hours)) : []
+      const duracion = x.previo_min ?? x.min
+      const ultima = p ? lastEntryMinutes(p, x.t0, dia.hours) : null
+      return sesiones.length === 0 || (sesiones.some((s2) => x.t0 >= s2.open && x.t0 + duracion <= s2.close) && (ultima == null || x.t0 <= ultima))
+    }
+    for (const x of rows.filter((r) => r.lugar === 'Foro Romano y Palatino' && !r.llegada && (r.por_horario || (conReserva && r.previo_min != null && (r.modo === 'fuera' || r.modo === 'camino'))) && foroAbierto(r))) falla('foro_por_fuera', dia, `el Foro y el Palatino van ${x.modo === 'camino' ? 'de camino' : 'por fuera'} en un día con reserva (hacia las ${Math.floor(x.t0 / 60)}:${String(x.t0 % 60).padStart(2, '0')})`)
     // 7. Las reservas, a su hora, con su «Llegada a…» (30 min en las reservas grandes, 15 en el Free Tour y en los turnos: regla 4)
     for (const x of rows.filter((r) => r.llegada)) {
       const objetivo = rows.find((r) => r.id && r.fija && r.lugar === x.lugar && !r.llegada && r.hora_tipo)

@@ -210,6 +210,9 @@ if (PARTES.has('p2')) {
             // (El 25 de diciembre y el 1 de enero el Día de la Roma antigua es el D1-corto, todo por fuera: ese día no vale para el D1.)
             if (idDia === 'D1' && ['12-25', '01-01'].includes(String(fecha.dateIso ?? '').slice(5))) return true
             if ((bad.fechas ?? []).some((token) => token === String(fecha.dateIso ?? '').slice(5))) return true
+            // (6y10: un día que hereda la mañana de otro —el D1-FT, la de la Roma antigua— lleva sus visitas por dentro: si alguna cierra ese día, el día no vale ahí.)
+            const heredado = dd?.hereda_manana_de ? written.days[dd.hereda_manana_de]?.partes?.unica?.manana ?? [] : []
+            if (heredado.some((s) => s.lugar && s.modo === 'dentro' && placeDe(s.lugar) && closedOnDay(placeDe(s.lugar), fecha.weekday, fecha.dateIso))) return true
             if ((bad.cerrado ?? []).some((n) => closedOnDay(placeDe(n), fecha.weekday, fecha.dateIso))) return true
             return false
           }
