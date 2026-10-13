@@ -48,16 +48,34 @@ export function identificadorDeSitio(nombre) {
     .replace(/^_+|_+$/g, '')
 }
 
-/** La ruta pública del audio de un sitio (la que el navegador pide). */
-export const rutaPublicaDelAudio = (destino, idSitio) => `/audios/${destino}/${idSitio}.mp3`
+/** Cuántos caracteres hexadecimales de la huella lleva el nombre del fichero (24 = 96 bits: no se puede adivinar). */
+export const LARGO_HUELLA_EN_NOMBRE = 24
 
 /**
- * El audio que toca ofrecer para una historia: el de su entrada del índice si la huella del texto actual coincide; si no, null.
- * `indice` es data/audios/<destino>.json: { voz: <huella>, sitios: { <id>: { huella_texto, caracteres, fichero } } }.
+ * La huella del AUDIO (Tanda 6y10): sha-256 del texto de la historia (normalizado) + la voz y todos sus ajustes (id de voz, modelo, estabilidad, similitud, formato, idioma).
+ * Mismo texto con la misma voz = misma huella; cambia una letra del texto, o la voz, o el modelo, y cambia entera.
+ */
+export function huellaDelAudio(historia, voz = VOZ_HISTORIAS) {
+  const { nombre: _nombre, ...ajustes } = voz
+  return createHash('sha256').update(JSON.stringify({ texto: textoDelAudio(historia), voz: ajustes }), 'utf8').digest('hex')
+}
+
+/** El nombre del fichero de un audio: `<sitio>-<huella>.mp3`. Sin conocer el texto exacto (y la voz) no se puede calcular, y no hay ninguna lista pública que lo diga. */
+export function nombreDelFichero(idSitio, historia, voz = VOZ_HISTORIAS) {
+  return `${idSitio}-${huellaDelAudio(historia, voz).slice(0, LARGO_HUELLA_EN_NOMBRE)}.mp3`
+}
+
+/** La ruta pública del audio (la que el navegador pide): /audios/<destino>/<fichero con huella>. */
+export const rutaPublicaDelAudio = (destino, fichero) => `/audios/${destino}/${fichero}`
+
+/**
+ * El audio que toca ofrecer para una historia: la ruta SOLO de ese sitio, y solo si el índice lo tiene con el nombre que corresponde al texto y la voz de AHORA; si no, null.
+ * `indice` es data/audios/<destino>.json (solo en el servidor, nunca público): { voz, sitios: { <id>: { fichero, huella_texto, caracteres } } }.
  */
 export function audioVigente(indice, destino, nombre, historia) {
   const id = identificadorDeSitio(nombre)
   const entrada = indice?.sitios?.[id]
   if (!entrada || !entrada.fichero || entrada.huella_texto !== huellaDelTexto(historia)) return null
-  return rutaPublicaDelAudio(destino, id)
+  if (entrada.fichero !== nombreDelFichero(id, historia)) return null
+  return rutaPublicaDelAudio(destino, entrada.fichero)
 }
