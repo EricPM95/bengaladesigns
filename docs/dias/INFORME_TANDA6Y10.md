@@ -30,3 +30,8 @@ Informes de cada parte: `INFORME_PARTE_HORARIOS_TANDA6Y10.md`, `INFORME_PARTE_MO
 - Audios: huella de 24 hex que incluye la voz; el programa avisa de los ficheros viejos pero no los borra; el servidor relee el índice por fecha.
 - Corregido a mano al juntar: dos conflictos entre agentes (`server/index.js`, `destinationExcursions.ts`, `roma.json`), conservando lo de los dos lados.
 - Invariantes 632 a 641; la 593 lleva una nota que remite a la 636.
+
+## Las 365 fechas completas (después del push)
+Lanzadas con todo ya subido (`_correr365.mjs`, desde el 13-oct-2026, 16 tramos a la vez, 47 minutos): **815.401 viajes y 2.220.758 días, 0 fallos en los 16 tramos.** No hay nada que apuntar arriba de `PREGUNTAS_TANDA6Y10.md`.
+
+Nota sobre `pruebaFase6y10_sitiosgrandes`: contra `bef2731` (el código de antes de toda la tanda) da diferencias, porque la tanda cambió más cosas (horarios, comida, fichas). Aislando solo ese cambio (comparando el estado justo antes y justo después de juntarlo): 23.120 viajes y 8.400 casos de reserva por hora, 0 diferencias.

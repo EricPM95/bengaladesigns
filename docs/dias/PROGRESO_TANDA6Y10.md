@@ -12,5 +12,5 @@
 - [x] Pruebas: batería en serie (70 pruebas), muestra de 54 fechas (119.673 viajes, 0 fallos) y las nuevas de la 6y10
 - [x] Capturas a 375 px (`docs/dias/img/6y10-*.jpg`)
 - [x] Informe, preguntas e invariantes (632 a 641)
-- [ ] Push a origin (bloqueado: pendiente de permiso)
+- [x] Push a origin (b950ee2)
 - [ ] Después del push: las 365 fechas completas, con el resultado al final de `INFORME_TANDA6Y10.md` en un commit aparte
