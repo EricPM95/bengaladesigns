@@ -131,9 +131,10 @@ console.log('4. La guía y la ida y la vuelta')
   const guia = leer('docs/dias/GUIA_NUEVOS_DESTINOS.md')
   debe(/Lo de pago no se enseña con candados:\*\* simplemente no sale, salvo "Escuchar historia", que lleva candado en la versión gratis\./.test(guia), '4 guía', 'la guía no dice lo del candado de «Escuchar historia»')
   const tramo = leer('src/components/route/reservas/LlegadaYVuelta.tsx')
-  const desde = tramo.indexOf('onSave={(time) => {')
-  const guardar = tramo.slice(desde, tramo.indexOf('onGuardada()', desde))
-  debe(/onMitad\(hoja\.leg\)/.test(guardar) && !/onMitad\(undefined\)/.test(guardar), '4 tramo', 'al guardar la hora el tramo no se queda abierto')
+  // (Tanda 7: la hoja guarda hora y punto, `onSave={(time, pointId) => {`, y avisa con `onCambioDeVuelo` en lugar de abrir «¿Ajustamos tu ruta?».)
+  const desde = tramo.indexOf('onSave={(time, pointId) => {')
+  const guardar = tramo.slice(desde, tramo.indexOf("onCambioDeVuelo({ que: 'hora'", desde))
+  debe(desde > 0 && /onMitad\(hojaLeg\.leg\)/.test(guardar) && !/onMitad\(undefined\)/.test(guardar), '4 tramo', 'al guardar la hora el tramo no se queda abierto')
   debe(/onClick=\{\(\) => \{\s*onMitad\(undefined\)\s*onToggle\(\)\s*\}\}/.test(tramo), '4 tramo', 'al tocar la cabecera no se cierra el tramo abierto')
 }
 

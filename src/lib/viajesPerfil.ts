@@ -7,6 +7,7 @@ import { getTodayTripContext, getTodayTripStatus } from './todayMode'
 import { mesDelViaje } from './resumenViaje'
 import { numberedStopsOf } from './stopKind'
 import { dayCountryCode } from './flagColors'
+import { diasDelViaje, textoDeDuracion } from './duracionViaje'
 
 /**
  * Los viajes del Perfil (Tanda 6z6): de los viajes guardados en este dispositivo salen la lista («Roma · 13 – 16 oct 2026 · 4 días»), las chinchetas del globo (una por destino)
@@ -34,9 +35,11 @@ export interface ResumenViaje {
   paradas: number
   /** «13 – 16 oct 2026», o el mes («octubre») si no hay fechas; '' si no hay ni eso. */
   cuando: string
-  /** «Roma · 13 – 16 oct 2026 · 4 días». */
+  /** «5 días · 4 noches» (el viaje entero, con el día de vuelta). */
+  duracion: string
+  /** «Roma · 13 – 17 oct 2026 · 5 días · 4 noches». */
   rotulo: string
-  /** «4 días · 23 paradas». */
+  /** «5 días · 4 noches · 23 paradas». */
   resumen: string
   fase: 'proximo' | 'hecho'
   /** Los países (códigos ISO en minúscula) por los que pasa el viaje, sin repetir y en orden; solo los que se conocen. */
@@ -68,6 +71,8 @@ export function resumenDeViaje(route: Route, guardado: SavedTrip | null, hoyIso:
   const cuando = rango?.start && rango?.end ? `${formatHeaderDateRangeShortEs(rango.start, rango.end)} ${rango.end.slice(0, 4)}` : (mesDelViaje(route) ?? '')
   const estado = getTodayTripStatus(route, hoyIso)
   const nDias = dias.length || (route.answers.days ?? 0)
+  // Lo que se escribe es la duración del viaje entero («5 días · 4 noches», con el día de vuelta); la cifra del mapa sigue contando los días de ruta (Tanda 7, punto 1).
+  const duracion = textoDeDuracion(diasDelViaje(route))
   // La bandera y los países salen de los mismos tramos que la tarjeta del destino de RUTA (`buildDestinationSegments` + `dayCountryCode`).
   const tramos = buildDestinationSegments(route.days).map((tramo) => ({ ciudad: tramo.city, pais: dayCountryCode(tramo.countryCode, tramo.city) }))
   const paises = [...new Set(tramos.map((t) => t.pais).filter((p): p is string => !!p))]
@@ -82,8 +87,9 @@ export function resumenDeViaje(route: Route, guardado: SavedTrip | null, hoyIso:
     dias: nDias,
     paradas,
     cuando,
-    rotulo: [route.destination, cuando, plural(nDias, 'día', 'días')].filter(Boolean).join(' · '),
-    resumen: `${plural(nDias, 'día', 'días')} · ${plural(paradas, 'parada', 'paradas')}`,
+    duracion,
+    rotulo: [route.destination, cuando, duracion].filter(Boolean).join(' · '),
+    resumen: `${duracion} · ${plural(paradas, 'parada', 'paradas')}`,
     fase: estado?.phase === 'after' ? 'hecho' : 'proximo',
     paises,
     pais: tramos[0]?.pais ?? dayCountryCode(null, route.destination),

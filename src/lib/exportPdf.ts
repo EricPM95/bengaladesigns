@@ -5,6 +5,7 @@ import { formatoImporte, precioTienda } from './dinero'
 import type { Route } from './types'
 import { diaTitulo } from './nombreDeDia'
 import { tituloSimpleDelDia } from './tituloDelDia'
+import { textoDeDuracion } from './duracionViaje'
 
 const MARGIN = 15
 const PAGE_WIDTH = 210
@@ -42,7 +43,7 @@ export function exportRouteToPdf(route: Route) {
   }
 
   writeLine(`Ruta: ${route.destination}`, { size: 22, bold: true, gap: 2 })
-  writeLine(`${route.days.length} días · desde ${route.origin}`, { size: 11, color: [110, 110, 110], gap: 8 })
+  writeLine(`${textoDeDuracion(route.days.length)} · desde ${route.origin}`, { size: 11, color: [110, 110, 110], gap: 8 })
 
   route.days.forEach((day) => {
     ensureSpace(16)

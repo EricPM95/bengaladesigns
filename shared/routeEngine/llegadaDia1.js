@@ -380,10 +380,10 @@ function decidirNormal(x) {
     if (dueno && carrierDe(dueno) === refId) fijoPrimero = refId
     for (const r of porHora.filter((q) => q !== dueno)) {
       const sitio = sitioDe(r.name)
-      if (!sitio?.bloque) continue
+      if (!sitio?.bloque?.paradas?.length) continue
       const fuente = (sitio.dias ?? []).find((id) => dias[id]) ?? null
       // (Si el día escrito de ese sitio es el que se queda de día 1 por otra reserva, ya lo lleva: la reserva del dueño.)
-      publico.bloques.push({ sitio: r.name, hora: aHHMM(aMin(r.time)), lugares: sitio.bloque, fuente })
+      publico.bloques.push({ sitio: r.name, hora: aHHMM(aMin(r.time)), lugares: sitio.bloque.paradas, fuente })
     }
     avisarReservasAntesDeLlegar(x)
   } else if (esElDiaDeSiempre) {
@@ -424,9 +424,9 @@ function decidirNormal(x) {
     // Los bloques de las reservas grandes del día 1: el bloque entero a su hora, dentro de la ruta de la fila; el resto de su día, sin esa visita.
     for (const r of reservasDia1) {
       const sitio = sitioDe(r.name)
-      if (!sitio?.bloque) continue
+      if (!sitio?.bloque?.paradas?.length) continue
       const fuente = (sitio.dias ?? []).find((id) => dias[id]) ?? null
-      publico.bloques.push({ sitio: r.name, hora: aHHMM(aMin(r.time)), lugares: sitio.bloque, fuente })
+      publico.bloques.push({ sitio: r.name, hora: aHHMM(aMin(r.time)), lugares: sitio.bloque.paradas, fuente })
       publico.caso = `${publico.caso}+reserva_grande`
     }
     // Un día que la llegada tarde dejó fuera y una reserva grande reclama vuelve solo («si reservas la Galería, te ponemos su día»): sale el último día que no lleva otra reserva.

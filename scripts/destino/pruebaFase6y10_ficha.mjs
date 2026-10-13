@@ -19,7 +19,7 @@
 //     9. la ficha y EXPLORAR no usan la misma pieza `MeGusta`, hay otra cuenta o corazón escritos a mano, o el código escribe nombres de sitios, colores a mano o emojis.
 import fs from 'node:fs'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
-import { calcular, cifraPorNivel } from './megustaInicial6y10.mjs'
+import { calcular, cifraPorNivel, FIJAS } from './megustaInicial6y10.mjs'
 import { prepararSSR } from './_ssr.mjs'
 
 const fallos = []
@@ -95,13 +95,19 @@ debe(D.megusta_inicial_nota === NOTA, '4 nota', `falta la nota «${NOTA}» en lo
 debe(D.places.length > 0 && D.places.every((p) => Number.isInteger(p.megusta_inicial)), '4 campo', 'algún lugar no lleva `megusta_inicial` entero')
 debe(D.restaurants.length > 0 && D.restaurants.every((r) => Number.isInteger(r.megusta_inicial)), '4 campo', 'algún restaurante no lleva `megusta_inicial` entero')
 const rango = (nivel) => (nivel === 1 ? [100, 199] : nivel === 2 ? [50, 99] : [0, 0])
+// (Tanda 7, Eric 13-oct: los seis primeros llevan cifras fijas, de 305 a 412, fuera de 100–199: la excepción escrita.)
+const SEIS_FIJOS = new Map(FIJAS)
 for (const p of D.places) {
+  if (SEIS_FIJOS.has(p.name)) {
+    debe(p.megusta_inicial === SEIS_FIJOS.get(p.name), '4 rango', `${p.name} debe tener ${SEIS_FIJOS.get(p.name)} y tiene ${p.megusta_inicial}`)
+    continue
+  }
   const [min, max] = rango(p.level)
   debe(p.megusta_inicial >= min && p.megusta_inicial <= max, '4 rango', `${p.name} (nivel ${p.level}) tiene ${p.megusta_inicial}: fuera de ${min}–${max}`)
 }
 debe(D.places.filter((p) => p.level === 1).length >= 10 && D.places.filter((p) => p.level === 2).length >= 20 && D.places.filter((p) => p.level === 3).length >= 20, '4 rango', 'la prueba no encuentra lugares de nivel 1, 2 y 3')
 // «Imprescindibles» y nivel 1 son lo mismo en los datos (`tier` imprescindible/joya con `level: 1`): todos entre 100 y 199.
-debe(D.places.filter((p) => p.tier === 'imprescindible' || p.tier === 'joya').every((p) => p.level === 1 && p.megusta_inicial >= 100 && p.megusta_inicial <= 199), '4 rango', 'un imprescindible no está entre 100 y 199')
+debe(D.places.filter((p) => p.tier === 'imprescindible' || p.tier === 'joya').every((p) => p.level === 1 && (SEIS_FIJOS.has(p.name) || (p.megusta_inicial >= 100 && p.megusta_inicial <= 199))), '4 rango', 'un imprescindible (que no es de los seis primeros) no está entre 100 y 199')
 const conCifra = D.restaurants.filter((r) => r.megusta_inicial > 0)
 debe(conCifra.length >= 20 && conCifra.length <= 25, '4 restaurantes', `llevan cifra ${conCifra.length} restaurantes (deben ser de 20 a 25)`)
 debe(conCifra.every((r) => r.megusta_inicial >= 100 && r.megusta_inicial <= 199), '4 restaurantes', 'un restaurante con cifra está fuera de 100–199')

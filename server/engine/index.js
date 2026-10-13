@@ -33,7 +33,7 @@ import { planCuratedTrip } from '../../shared/routeEngine/curatedTrip.js'
 import { interruptorDia4 } from '../../shared/routeEngine/tripSkeleton.js'
 import { diaPropio } from '../../shared/routeEngine/diaPropio.js'
 import { planListasTrip, poolStatusFor } from '../../shared/routeEngine/listasTrip.js'
-import { writtenDaysFor } from './writtenDays.js'
+import { writtenDaysFor, arrivalInfoFor } from './writtenDays.js'
 import { dinnerZones } from '../../shared/routeEngine/dinnerZones.js'
 import { findPipelineV2Key } from '../routeAlgorithm.js'
 import { TAG_INTEREST_MAP } from '../../shared/routeEngine/experienceTags.js'
@@ -92,7 +92,8 @@ function attachInterruptor(day, { destData, destKey, dayNumber, totalDays, dateR
 const writtenPlanCache = new Map()
 function writtenPlanFor(written, destKey, args) {
   const { destData, ...rest } = args
-  const key = JSON.stringify([destKey, rest])
+  // (Los datos de llegada que viajan en `vuelta.info` son enormes y no cambian de un viaje a otro: no entran en la clave.)
+  const key = JSON.stringify([destKey, rest.vuelta ? { ...rest, vuelta: { ...rest.vuelta, info: undefined } } : rest])
   if (writtenPlanCache.has(key)) return writtenPlanCache.get(key)
   const plan = planListasTrip({ ...args, written, travel: travelTimesFor(destKey) })
   writtenPlanCache.set(key, plan)
@@ -314,7 +315,7 @@ async function buildDayBlockV3Inner(
   const insideMinutes = written?.destino?.minutos_por_dentro ?? destData.destination_config?.minutos_por_dentro ?? {}
   const montarPropio = (overrides = {}) => ({ dayNumber, ...diaPropio({ destData, written, placeNames: options.sitiosPropios, insideMinutes, id: 'DX', name: options.nombreDiaPropio ?? 'Mi día', overrides }) })
   let propio = written && Array.isArray(options.sitiosPropios) && options.sitiosPropios.length > 0 ? montarPropio() : null
-  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null, reservasGrandes: options.reservasGrandes ?? [], reservasViaje: options.reservasViaje ?? [], llegada: options.llegada ?? null })
+  const planArgs = () => ({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, forceOrder, entradas: options.entradas ?? {}, mediaJornada: options.mediaJornada ?? null, freeTourDespues: options.freeTourDespues ?? null, diaCuatro: options.diaCuatro === 'roma' || options.diaCuatro === 'excursion' ? options.diaCuatro : propio ? 'roma' : null, diaPropio: propio, ajuste: options.ajuste ?? null, chequeo: options.chequeo ?? null, reservasGrandes: options.reservasGrandes ?? [], reservasViaje: options.reservasViaje ?? [], llegada: options.llegada ?? null, vuelta: options.vuelta ? { ...options.vuelta, info: arrivalInfoFor(destKey) } : null })
   let writtenPlan = written ? writtenPlanFor(written, destKey, planArgs()) : null
   // «Crear mi propio día»: una segunda vuelta con lo que el motor hizo de verdad en la primera (un sitio ya visto por dentro en el viaje pasa a verse por fuera, y dura menos), para repartir bien la mañana y la tarde.
   if (propio && writtenPlan) {
@@ -328,6 +329,14 @@ async function buildDayBlockV3Inner(
   const plan = writtenPlan ?? (isV3 ? planner({ ...tripArgs, month: options.month ?? null, season: options.season ?? null, travel: travelTimesFor(destKey) }) : preplanTrip(tripArgs))
 
   const dayPlan = plan.days.find((day) => day.dayNumber === dayNumber)
+  // El día de vuelta con horas (Tanda 7): el último día del viaje, solo con una vuelta de pago. Sin paradas (solo el traslado) es un día vacío con su tarjeta; con ellas, un día de ciudad como los demás.
+  if (!dayPlan && isV3 && plan.vuelta && dayNumber === totalDays) {
+    const { diaPlan, interno: _interno, ...visible } = plan.vuelta
+    const day = diaPlan ? buildCityDayV3(destData, { ...plan, days: [...plan.days, diaPlan] }, diaPlan, { ...options, experiencesPositive: experiencesPositive ?? [], poolNames: mustIncludePlaces ?? [] }) : { ...buildManualDayV2(dayNumber), title: 'Día de viaje' }
+    day.is_return_leg = true
+    day.return_day = visible
+    return day
+  }
   if (!dayPlan) return null
 
   // Más allá de `max_auto_days` el día sale EN BLANCO a propósito: el destino ya no da para más

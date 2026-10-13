@@ -6,10 +6,12 @@
 //   3. EL ENDPOINT: contesta SOLO con la ruta del audio de ese sitio (nunca la lista ni otros sitios); texto cambiado -> null; sin audio -> null; otro método -> no responde;
 //   4. SIN AUDIO -> VOZ DEL MÓVIL (la regla de quién suena sigue igual);
 //   5. EL PROGRAMA: `--simular` usa los mismos nombres que la app; avisa de «hay que recrearlo» si el texto cambió; no toca nada.
+//   6. EL SECRETO (Tanda 7, AUDIOS_SECRETO): sin él, la huella es la de siempre; con él, otra; el servidor y el programa usan el mismo; el programa avisa si falta y nunca enseña su valor.
 // Para la parte 3 y 5 escribe un índice de prueba en data/audios/roma.json (y un .mp3 falso) y LOS BORRA al terminar; si ya existía un índice real, no lo toca y se salta esas partes.
 import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
-import { audioVigente, huellaDeLaVoz, huellaDelAudio, huellaDelTexto, identificadorDeSitio, nombreDelFichero, VOZ_HISTORIAS } from '../../shared/audio/historiasAudio.js'
+import { createHash } from 'node:crypto'
+import { audioVigente, huellaDeLaVoz, huellaDelAudio, huellaDelTexto, identificadorDeSitio, nombreDelFichero, secretoDeAudios, VOZ_HISTORIAS } from '../../shared/audio/historiasAudio.js'
 import { prepararSSR } from './_ssr.mjs'
 
 const fallos = []
@@ -150,6 +152,45 @@ if (existiaIndice) {
       // no vacía o no existía
     }
   }
+}
+
+// ═══════════ 6. El secreto de la casa (Tanda 7: AUDIOS_SECRETO) ═══════════
+{
+  const t = porNombre.get('Coliseo')
+  const { nombre: _n, ...ajustes } = VOZ_HISTORIAS
+  const deAntes = createHash('sha256').update(JSON.stringify({ texto: t.replace(/\s+/g, ' ').trim(), voz: ajustes }), 'utf8').digest('hex')
+  debe(huellaDelAudio(t, VOZ_HISTORIAS, '') === deAntes, '6 secreto', 'sin secreto la huella ya no es la de antes (debe ser idéntica)')
+  const conA = huellaDelAudio(t, VOZ_HISTORIAS, 'secreto-a')
+  const conB = huellaDelAudio(t, VOZ_HISTORIAS, 'secreto-b')
+  debe(conA !== deAntes && conB !== deAntes && conA !== conB && conA === huellaDelAudio(t, VOZ_HISTORIAS, 'secreto-a'), '6 secreto', 'el secreto no cambia la huella (o no es fija)')
+  debe(nombreDelFichero('coliseo', t, VOZ_HISTORIAS, 'secreto-a') !== nombreDelFichero('coliseo', t, VOZ_HISTORIAS, '') && !nombreDelFichero('coliseo', t, VOZ_HISTORIAS, 'secreto-a').includes('secreto'), '6 secreto', 'el secreto no cambia el nombre del fichero, o sale escrito en él')
+  // Por defecto lee el entorno: sin variable = sin secreto; con ella, el nombre cambia.
+  const antes = process.env.AUDIOS_SECRETO
+  delete process.env.AUDIOS_SECRETO
+  const sinEntorno = nombreDelFichero('coliseo', t)
+  debe(secretoDeAudios() === '' && sinEntorno === nombreDelFichero('coliseo', t, VOZ_HISTORIAS, ''), '6 secreto', 'sin la variable de entorno el nombre no es el de siempre')
+  process.env.AUDIOS_SECRETO = '  secreto-a  '
+  debe(secretoDeAudios() === 'secreto-a' && nombreDelFichero('coliseo', t) === nombreDelFichero('coliseo', t, VOZ_HISTORIAS, 'secreto-a') && nombreDelFichero('coliseo', t) !== sinEntorno, '6 secreto', 'con AUDIOS_SECRETO el nombre no lo usa (o no recorta los espacios)')
+  // Un índice hecho sin secreto no se ofrece cuando el servidor tiene secreto, y al revés.
+  const indSin = { sitios: { coliseo: { fichero: sinEntorno, huella_texto: huellaDelTexto(t) } } }
+  const indCon = { sitios: { coliseo: { fichero: nombreDelFichero('coliseo', t, VOZ_HISTORIAS, 'secreto-a'), huella_texto: huellaDelTexto(t) } } }
+  debe(audioVigente(indSin, 'roma', 'Coliseo', t) === null && audioVigente(indCon, 'roma', 'Coliseo', t) === `/audios/roma/${indCon.sitios.coliseo.fichero}`, '6 secreto', 'con secreto, el servidor ofrece un audio hecho sin él (o no ofrece el hecho con él)')
+  delete process.env.AUDIOS_SECRETO
+  debe(audioVigente(indSin, 'roma', 'Coliseo', t) === `/audios/roma/${sinEntorno}` && audioVigente(indCon, 'roma', 'Coliseo', t) === null, '6 secreto', 'sin secreto, el servidor ya no se comporta como antes')
+  if (antes !== undefined) process.env.AUDIOS_SECRETO = antes
+  // El programa: avisa sin secreto; con secreto usa otros nombres y no enseña el valor.
+  const programa = 'scripts/destino/crearAudiosHistorias.mjs'
+  const sinS = spawnSync('node', [programa, '--simular'], { encoding: 'utf8', env: { ...process.env, ELEVENLABS_API_KEY: '', AUDIOS_SECRETO: '' } })
+  const conS = spawnSync('node', [programa, '--simular'], { encoding: 'utf8', env: { ...process.env, ELEVENLABS_API_KEY: '', AUDIOS_SECRETO: 'valor-muy-privado-123' } })
+  debe(/AVISO: no hay AUDIOS_SECRETO/.test(sinS.stdout) && !/AUDIOS_SECRETO puesto/.test(sinS.stdout), '6 secreto', 'el programa no avisa de que falta AUDIOS_SECRETO')
+  debe(/AUDIOS_SECRETO puesto/.test(conS.stdout) && !/AVISO: no hay AUDIOS_SECRETO/.test(conS.stdout), '6 secreto', 'el programa no dice que usa AUDIOS_SECRETO')
+  debe(!conS.stdout.includes('valor-muy-privado-123') && !conS.stderr.includes('valor-muy-privado-123'), '6 secreto', 'el programa enseña el valor del secreto')
+  const nombresSin = new Set(sinS.stdout.match(/[a-z0-9_]+-[0-9a-f]{24}\.mp3/g) ?? [])
+  const nombresCon = new Set(conS.stdout.match(/[a-z0-9_]+-[0-9a-f]{24}\.mp3/g) ?? [])
+  debe(nombresSin.size === 31 && nombresCon.size === 31 && [...nombresCon].every((n) => !nombresSin.has(n)), '6 secreto', 'con secreto el programa no usa nombres distintos (o no sale la lista de 31)')
+  debe(sinS.status === 0 && conS.status === 0, '6 secreto', '--simular ha fallado')
+  const yaIndice = fs.existsSync(rutaIndice)
+  debe(!yaIndice || existiaIndice, '6 secreto', '--simular ha creado un índice')
 }
 
 // ═══════════ 4. Sin audio -> voz del móvil ═══════════

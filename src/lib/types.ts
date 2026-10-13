@@ -307,6 +307,8 @@ export interface Stop {
   visitMode?: 'dentro' | 'fuera'
   /** Por qué va por fuera: cerrado ese día, ya cerrado a esa hora o no cabe (solo este deja pedir "Quiero entrar"). */
   outsideKind?: 'cerrado' | 'ya_cerrado' | 'no_abre' | 'no_cabe' | 'al_lado' | 'a_proposito'
+  /** La parada se queda en su día cerrada, sin tiempo (no hay otro día en el viaje): su tarjeta dice «Cerrado este día», no el «Hoy cierra» rojo. */
+  closedThisDay?: boolean
   /** Free Tour: "El tour acaba en Piazza Navona: te hemos buscado la comida por esa zona…". */
   freeTourEnd?: string
   /** El tramo hasta aquí lo hace el día en bus o metro: "Bus 118, unos 25 min". */
@@ -872,6 +874,20 @@ export interface Route {
   departurePointId?: string | null
   /** La zona del alojamiento elegida en RESERVAS (de pago, Tanda 6s): el id de `zonas_alojamiento` del destino ('prati'…); 'nose' = «Aún no lo sé». Todavía no cambia la ruta (la usará la Tanda 7). Ausente = sin elegir. */
   accommodationZone?: string | null
+  /**
+   * Tanda 7 (RESERVAS): las casillas OPCIONALES del billete. Texto libre del viajero. Para el motor no cambian nada (solo cuentan la llegada a Roma y la salida de Roma).
+   * - `arrivalOtroPunto` / `arrivalOtraHora`: la ida, de dónde sale («Barcelona-El Prat (BCN)») y a qué hora sale («08:55»).
+   * - `departureOtroPunto` / `departureOtraHora`: la vuelta, a dónde llega y a qué hora llega.
+   * Se guardan con el viaje (la columna JSON `route` de `trips`: sin migración).
+   */
+  arrivalOtroPunto?: string | null
+  arrivalOtraHora?: string | null
+  departureOtroPunto?: string | null
+  departureOtraHora?: string | null
+  /** Tanda 7: la dirección del alojamiento (opcional, de pago). Solo con ella existe [Cómo llegar a tu alojamiento]. */
+  accommodationAddress?: string | null
+  /** Tanda 7: la fecha (yyyy-mm-dd) de la vuelta que el viajero ya tiene vista. Si las fechas del viaje cambian y esta ya no es la última, sale el aviso «revisa que tu vuelta sigue siendo…» hasta que abre su vuelta o la cambia. */
+  departureFechaVista?: string | null
   /** Lo que eligió el viajero al poner la hora del vuelo (ventana «¿Ajustamos tu ruta a tu vuelo?»): `auto` = ajustar el primer y el último día a sus horas, `manual` = la ruta se queda como está. Ausente = aún no ha elegido. */
   flightAdjust?: 'auto' | 'manual' | null
   /** Ver TripDefaultTransport. Ausente en rutas generadas antes de este campo y en las rutas dev/manuales — quien lo lee cae a 'public'. */

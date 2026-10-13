@@ -3,6 +3,7 @@ import { config } from 'dotenv'
 import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/dinnerZones.js'
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
+import { FREE_TOUR_HORAS } from '../shared/routeEngine/freeTourHoras.js'
 import { etiquetasDeBarrio, gruposDeDia, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
 import { importanciaDeSitios } from '../shared/routeEngine/importanciaDeSitios.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
@@ -2585,7 +2586,9 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
   const ftValido = ft && typeof ft.hora === 'string' && /^\d{1,2}:\d{2}$/.test(ft.hora)
   // El Free Tour de la noche (21:00) va en el D1; los demás (10:00, 12:00, 15:00, 17:00) son el día D3 de su hora: su hora entra como la de una reserva (Tanda 6u).
   const freeTourDespues = ftValido && freeTourDeNoche(answers) ? { franja: 'noche', hora: ft.hora, dateIso: typeof ft.dateIso === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ft.dateIso) ? ft.dateIso : null, dayNumber: Number.isInteger(Number(ft.dayNumber)) ? Number(ft.dayNumber) : null } : null
-  if (ftValido && !freeTourDespues && !entradas['Free Tour por Roma']) entradas['Free Tour por Roma'] = ft.hora.length === 4 ? `0${ft.hora}` : ft.hora
+  // (Tanda 7: el nombre del Free Tour es el del destino, `default_free_tour.name`; ya no hay un texto fijo «Free Tour por Roma». Un destino sin Free Tour no lo pone.)
+  const nombreFreeTour = destData?.default_free_tour?.name ?? null
+  if (ftValido && !freeTourDespues && nombreFreeTour && !entradas[nombreFreeTour]) entradas[nombreFreeTour] = ft.hora.length === 4 ? `0${ft.hora}` : ft.hora
   const mj = answers?.mediaJornada
   const mediaJornada = mj && (mj.franja === 'manana' || mj.franja === 'tarde') ? { franja: mj.franja, llegada: mj.llegada ?? null, salida: mj.salida ?? null, posicion: mj.posicion === 'primero' || mj.posicion === 'ultimo' ? mj.posicion : null } : null
   // El interruptor del día 4 (Tanda 6g): lo que el viajero ha puesto, 'roma' o 'excursion'; sin él, el de por defecto del viaje.
@@ -2597,7 +2600,17 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
   const llegada = ll && typeof ll === 'object' && ll.pago !== false && ll.aMano !== true && /^\d{1,2}:\d{2}$/.test(String(ll.hora ?? ''))
     ? { hora: String(ll.hora).length === 4 ? `0${ll.hora}` : String(ll.hora), medio: ['avion', 'tren', 'bus', 'ferry'].includes(ll.medio) ? ll.medio : 'avion', puntoId: typeof ll.puntoId === 'string' ? ll.puntoId : null, zona: typeof ll.zona === 'string' ? ll.zona : null, excursionReservada: ll.excursionReservada && typeof ll.excursionReservada === 'object' ? ll.excursionReservada : null }
     : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder, llegada }
+  // El día de vuelta con horas (Tanda 7): solo de pago. El cliente manda `vuelta` { hora, modo, puntoId, zona, aMano, diaCaidoAlLlegar, excursion } cuando el viajero ha puesto la hora de su vuelta en RESERVAS; sin ella (sin vuelos, la gratis), nada cambia.
+  const vb = body?.vuelta
+  const vueltaValida = vb && typeof vb === 'object' && vb.pago !== false && /^\d{1,2}:\d{2}$/.test(String(vb.hora ?? ''))
+  const vuelta = vueltaValida
+    ? {
+        hora: String(vb.hora), modo: typeof vb.modo === 'string' ? vb.modo : 'flight', puntoId: typeof vb.puntoId === 'string' ? vb.puntoId : null, zona: typeof vb.zona === 'string' ? vb.zona : null, aMano: vb.aMano === true,
+        diaCaidoAlLlegar: typeof vb.diaCaidoAlLlegar === 'string' || Array.isArray(vb.diaCaidoAlLlegar) ? vb.diaCaidoAlLlegar : null,
+        excursion: vb.excursion && typeof vb.excursion === 'object' && typeof vb.excursion.nombre === 'string' ? { nombre: vb.excursion.nombre.slice(0, 60), vuelve: /^\d{1,2}:\d{2}$/.test(String(vb.excursion.vuelve ?? '')) ? String(vb.excursion.vuelve) : null, medioDia: vb.excursion.medioDia === true, dateIso: typeof vb.excursion.dateIso === 'string' ? vb.excursion.dateIso : null, dayNumber: Number.isInteger(Number(vb.excursion.dayNumber)) ? Number(vb.excursion.dayNumber) : null } : null,
+      }
+    : null
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder, llegada, ...(vuelta ? { vuelta } : {}) }
 }
 
 function hasRequiredAnswers(answers) {
@@ -4323,7 +4336,8 @@ app.post('/api/destination-places', (req, res) => {
           schedule: null,
           search_aliases: ['free tour', 'tour gratis', 'tour gratuito', 'visita guiada'],
           requires_ticket: true,
-          hours_card: [ft.meeting_point ? `Punto de encuentro: ${ft.meeting_point}.` : null, Array.isArray(ft.disponibilidad?.horas) && ft.disponibilidad.horas.length ? `Sale a las ${ft.disponibilidad.horas.join(' y a las ')}.` : null, Array.isArray(ft.covers) && ft.covers.length ? `Recorre: ${ft.covers.join(', ')}.` : null].filter(Boolean).join(' ') || null,
+          // (Tanda 7: las horas salen de la lista única del Free Tour, `freeTourHoras.js`; `default_free_tour.disponibilidad.horas` ya no existe.)
+          hours_card: [ft.meeting_point ? `Punto de encuentro: ${ft.meeting_point}.` : null, `Sale a las ${FREE_TOUR_HORAS.map((turno) => turno.hora).reduce((texto, hora, i, todas) => (i === 0 ? hora : `${texto}${i === todas.length - 1 ? ' y ' : ', '}${hora}`), '')}.`, Array.isArray(ft.covers) && ft.covers.length ? `Recorre: ${ft.covers.join(', ')}.` : null].filter(Boolean).join(' ') || null,
           reservation: 'recomendada',
           ticket_info: ft.tip ? [ft.tip] : null,
           // Ruta a mano (Tanda 6y2): el Free Tour entra en el día como una parada más con estos datos (punto de encuentro, lo que recorre, su consejo).
@@ -4491,7 +4505,8 @@ function indiceDeAudios(destinationKey) {
 }
 
 // (Tanda 6y10) NINGUNA lista pública: el índice (data/audios/) nunca se envía ni se sirve, y este endpoint contesta SOLO con la ruta del audio de ESE sitio, que lleva en el nombre
-// la huella del texto y la voz (no se puede adivinar). Este servidor no sirve carpetas ni listados: los .mp3 se piden de uno en uno por su dirección exacta.
+// la huella del texto, la voz y (Tanda 7) el secreto de la casa `AUDIOS_SECRETO` (no se puede adivinar). Este servidor no sirve carpetas ni listados: los .mp3 se piden de uno en uno por su dirección exacta.
+// El secreto se lee del entorno dentro de `audioVigente` (shared/audio/historiasAudio.js): el MISMO que usa el programa que crea los audios. Sin valor puesto, todo como antes.
 app.post('/api/historia-audio', (req, res) => {
   res.set('Cache-Control', 'no-store')
   const { destination, name } = req.body ?? {}

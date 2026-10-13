@@ -14,11 +14,12 @@
  *   --destino=<d>    otro destino (por defecto, roma).
  *
  * La clave ELEVENLABS_API_KEY se lee de .env.local (o del entorno). Nunca se escribe en ningún fichero ni se muestra.
+ * El «secreto» AUDIOS_SECRETO (Tanda 7) se lee igual y entra en la huella de cada audio; el servidor usa el mismo. Sin él, el programa avisa y se comporta como antes.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { MAX_CARACTERES_POR_LLAMADA, VOZ_HISTORIAS, huellaDeLaVoz, huellaDelTexto, identificadorDeSitio, nombreDelFichero, textoDelAudio } from '../../shared/audio/historiasAudio.js'
+import { MAX_CARACTERES_POR_LLAMADA, VOZ_HISTORIAS, huellaDeLaVoz, huellaDelTexto, identificadorDeSitio, nombreDelFichero, secretoDeAudios, textoDelAudio } from '../../shared/audio/historiasAudio.js'
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const argumentos = process.argv.slice(2)
@@ -31,17 +32,26 @@ const carpetaDetalle = join(raiz, 'data', 'pipeline_v2', 'detalle', destino)
 const carpetaAudios = join(raiz, 'public', 'audios', destino)
 const rutaIndice = join(raiz, 'data', 'audios', `${destino}.json`)
 
-/** La clave, de .env.local o del entorno. Se devuelve para usarla en la llamada; nunca se imprime ni se guarda. */
-function leerClave() {
-  if (process.env.ELEVENLABS_API_KEY?.trim()) return process.env.ELEVENLABS_API_KEY.trim()
+/** Una variable, de .env.local o del entorno. Se devuelve para usarla; nunca se imprime ni se guarda. */
+function leerVariable(nombre) {
+  if (process.env[nombre]?.trim()) return process.env[nombre].trim()
   const ruta = join(raiz, '.env.local')
   if (!existsSync(ruta)) return ''
   for (const linea of readFileSync(ruta, 'utf8').split(/\r?\n/)) {
-    const m = /^\s*ELEVENLABS_API_KEY\s*=\s*(.*?)\s*$/.exec(linea)
+    const m = new RegExp(`^\\s*${nombre}\\s*=\\s*(.*?)\\s*$`).exec(linea)
     if (m) return m[1].replace(/^['"]|['"]$/g, '')
   }
   return ''
 }
+const leerClave = () => leerVariable('ELEVENLABS_API_KEY')
+
+// (Tanda 7) El secreto de la casa entra en la huella de cada audio. El servidor lo lee de su entorno (.env.local en local, las variables de Vercel en producción):
+// aquí se pone en el entorno de este programa, así que `nombreDelFichero` (shared/audio/historiasAudio.js) lo usa igual que el servidor. Nunca se muestra ni se guarda.
+if (!process.env.AUDIOS_SECRETO?.trim()) {
+  const secreto = leerVariable('AUDIOS_SECRETO')
+  if (secreto) process.env.AUDIOS_SECRETO = secreto
+}
+const conSecreto = Boolean(secretoDeAudios())
 
 /** Las historias del destino: { id, nombre, texto, huella }. */
 function leerHistorias() {
@@ -133,6 +143,11 @@ async function principal() {
   const caracteres = pendientes.reduce((suma, h) => suma + h.texto.length, 0)
 
   console.log(`Destino: ${destino}. Historias: ${elegidas.length}. Ya al día: ${elegidas.length - pendientes.length}. Por crear: ${pendientes.length}.`)
+  if (!conSecreto) {
+    console.log('AVISO: no hay AUDIOS_SECRETO. Los nombres de los audios se calculan solo con el texto y la voz, y alguien que conozca la historia podría adivinarlos. Pon AUDIOS_SECRETO=... en el archivo .env.local (y el mismo valor en las variables de entorno de Vercel) antes de crear los audios definitivos.')
+  } else {
+    console.log('AUDIOS_SECRETO puesto: entra en el nombre de cada audio. Tiene que ser el mismo valor en el servidor; si lo cambias, los audios se recrean con nombres nuevos y los viejos dejan de usarse.')
+  }
   if (vozCambio) console.log('La voz o sus ajustes han cambiado desde la última vez: se rehacen todos los audios.')
   if (vozCambio && solo && !simular) {
     console.log('Con la voz o los ajustes cambiados hay que rehacerlos todos: lanza la orden sin --solo. No se ha hecho nada.')

@@ -3,10 +3,10 @@
 // Pinta con el código de verdad de la app (react-dom/server, empaquetado con esbuild; ver _ssr.mjs). Da fallo si:
 //   A. HORARIO (src/lib/horarioDeParada.ts, el único sitio donde se decide)
 //     1. un lugar con horario conocido no da «Abre 9:00 – 19:15»; uno con última entrada no la da («· Última entrada 18:15»); uno con dos tramos no los junta con «y»;
-//     2. un lugar cerrado ese día de la semana no da «Cerrado hoy» (ni lo da un día en que sí abre);
+//     2. un lugar cerrado ese día de la semana no da «Cerrado este día» (ni lo da un día en que sí abre);
 //     3. una plaza, una fuente o una calle (sin horario en los datos) da algo;
 //     4. sin fechas, un horario que cambia según la época o el día da algo (no se sabe cuál toca); uno único sí;
-//     5. la tarjeta de DÍAS o la lista de HOY no enseña ese horario, o repite «Cerrado hoy»/«Hoy cierra», o una plaza enseña «Abre…» o «Acceso libre»;
+//     5. la tarjeta de DÍAS o la lista de HOY no enseña ese horario, o repite «Cerrado este día»/«Hoy cierra», o una plaza enseña «Abre…» o «Acceso libre»;
 //   B. «NO ME DA TIEMPO» (solo de pago, durante el viaje)
 //     6. en HOY de pago falta el botón [No me da tiempo]; en la gratis sale;
 //     7. una parada saltada no sale tachada y gris, sigue siendo «la siguiente» o cuenta en «n de m visto»;
@@ -71,7 +71,7 @@ const cierraAlgunDia = lugares.find((p) => (datosDe(p).closed_on ?? []).length >
 const diaCierre = cierraAlgunDia ? sinTildes(datosDe(cierraAlgunDia).closed_on[0]) : null
 const fechaCierre = diaCierre ? proximoDia(DIAS.find((d) => sinTildes(d) === diaCierre)) : INICIO
 const hCerrado = cierraAlgunDia ? horarioDeParada({ hoursData: datosDe(cierraAlgunDia) }, fechaCierre) : null
-debe(hCerrado?.cerrado === true && hCerrado.texto === 'Cerrado hoy', 'A2 cerrado', `${cierraAlgunDia?.name} cierra los ${diaCierre} y el ${fechaCierre} no dice «Cerrado hoy» (${hCerrado?.texto})`)
+debe(hCerrado?.cerrado === true && hCerrado.texto === 'Cerrado este día', 'A2 cerrado', `${cierraAlgunDia?.name} cierra los ${diaCierre} y el ${fechaCierre} no dice «Cerrado este día» (${hCerrado?.texto})`)
 if (cierraAlgunDia) {
   const otroDia = DIAS.map((d) => proximoDia(d)).find((f) => sinTildes(DIAS[new Date(`${f}T12:00:00`).getDay()]) !== diaCierre && !(datosDe(cierraAlgunDia).closed_on ?? []).map(sinTildes).includes(sinTildes(DIAS[new Date(`${f}T12:00:00`).getDay()])))
   const hAbre = horarioDeParada({ hoursData: datosDe(cierraAlgunDia) }, otroDia)
@@ -153,7 +153,7 @@ for (const parada of paradas) {
 }
 debe(conHorario >= 1 && sinHorarioPintado >= 1, 'A5 DÍAS', `el día 1 no tiene a la vez paradas con y sin horario para comparar (${conHorario} con, ${sinHorarioPintado} sin)`)
 
-// «Cerrado hoy», una sola vez: un lugar cerrado ese miércoles puesto en el día 1 (con sus datos reales).
+// «Cerrado este día», una sola vez: un lugar cerrado ese miércoles puesto en el día 1 (con sus datos reales).
 const cierraMiercoles = lugares.find((p) => (datosDe(p).closed_on ?? []).map(sinTildes).includes('miercoles') && !(datosDe(p).special_hours ?? null))
 const rutaCerrada = JSON.parse(JSON.stringify(route))
 const stopCerrada = rutaCerrada.days[0].stops.find((s) => !s.passThrough && !s.isBreak && !s.isArrival && s.visitMode !== 'fuera')
@@ -167,11 +167,11 @@ if (cierraMiercoles) {
 }
 const nombreCerrada = stopCerrada.name
 const diasCerrada = aTexto(pinta(DayList, { route: rutaCerrada, activeDayId: 'd1', onSelectDay() {}, showAllDaysOnMap: false }, rutaCerrada, { mode: 'days' }))
-const veces = (diasCerrada.match(/Cerrado hoy/g) ?? []).length
-debe(veces === 1, 'A5 cerrado', `una parada cerrada ese día debería decir «Cerrado hoy» UNA vez en DÍAS y lo dice ${veces} (${(trozo(diasCerrada, nombreCerrada) ?? '').slice(0, 200)})`)
+const veces = (diasCerrada.match(/Cerrado este día/g) ?? []).length
+debe(veces === 1, 'A5 cerrado', `una parada cerrada ese día debería decir «Cerrado este día» UNA vez en DÍAS y lo dice ${veces} (${(trozo(diasCerrada, nombreCerrada) ?? '').slice(0, 200)})`)
 debe(!/Hoy cierra/.test(trozo(diasCerrada, nombreCerrada) ?? ''), 'A5 cerrado', 'la tarjeta cerrada repite «Hoy cierra»')
 const hoyCerrada = aTexto(pinta(HoyView, { route: rutaCerrada, onPonFechas() {} }, rutaCerrada, { hoy: INICIO }))
-debe(/Cerrado hoy/.test(hoyCerrada), 'A5 cerrado', `en HOY una parada cerrada ese día no dice «Cerrado hoy» (${plano(hoyCerrada).slice(0, 300)})`)
+debe(/Cerrado este día/.test(hoyCerrada), 'A5 cerrado', `en HOY una parada cerrada ese día no dice «Cerrado este día» (${plano(hoyCerrada).slice(0, 300)})`)
 
 // HOY (solo de pago desde la 6z6; en la gratis la pestaña no está): el horario bajo el nombre.
 for (const version of ['completa']) {
@@ -235,7 +235,7 @@ debe(!/Pasarla a otro día/.test(aTexto(renderToStaticMarkup(createElement(Aviso
 ponerVersion('completa')
 useRouteStore.setState({ ...estadoBase, route, dev_simulated_today_iso: INICIO })
 const hoja = aTexto(renderToStaticMarkup(createElement(HojaPasarAOtroDia, { dias: [{ id: 'd2', dayNumber: 2, city: 'Roma' }, { id: 'd3', dayNumber: 3, city: 'Roma' }], onElegir() {}, onCerrar() {} })))
-debe(/Pasarla a otro día/.test(hoja) && /jue 11 — [A-ZÁÉÍÓÚ]/.test(hoja) && /vie 12 — [A-ZÁÉÍÓÚ]/.test(hoja), 'B9 hoja', `la hoja de [Pasarla a otro día] no lista los días como «Mover a otro día» (${plano(hoja)})`)
+debe(/Pasarla a otro día/.test(hoja) && /Jueves 11/.test(hoja) && /Viernes 12/.test(hoja), 'B9 hoja', `la hoja de [Pasarla a otro día] no lista los días como «Mover a otro día» (${plano(hoja)})`)
 // La lista de días es la misma pieza que usa el menú «···» de DÍAS.
 const menuFuente = fs.readFileSync('src/components/route/dayDetail/StopMenu.tsx', 'utf8')
 const hoyFuente = fs.readFileSync('src/components/route/hoy/saltar.tsx', 'utf8')

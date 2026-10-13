@@ -21,15 +21,18 @@ export function placeHoursOnDate(hoursData: Record<string, unknown> | null | und
   return { closed: Boolean(closedOnDay(hoursData, weekday, dateIso)), schedule: (effectiveSchedule(hoursData, hours) as string | null) ?? null }
 }
 
+/** Lo que dice la tarjeta de una parada que ese día está cerrada (Tanda 7, punto 15): «Cerrado este día», nunca «Hoy cierra». */
+export const CERRADO_ESTE_DIA = 'Cerrado este día'
+
 /**
- * Lo único que sale en rojo en una parada de un día libre (decisión del usuario, 2026-09-28): "Hoy cierra" y, si el
+ * Lo único que sale en rojo en una parada de un día libre (decisión del usuario, 2026-09-28): "Cerrado este día" y, si el
  * viajero le ha puesto hora, "Cerrado a esa hora". null si no pasa nada (o sin fechas).
  */
 export function freeDayStopWarning(stop: { time?: string; durationMinutes: number; hoursData?: Record<string, unknown> | null; scheduleText?: string | null; hours?: string | null }, dateIso: string | null): string | null {
   if (!dateIso) return null
   const onDate = placeHoursOnDate(stop.hoursData ?? (stop.scheduleText || stop.hours ? { schedule: stop.scheduleText ?? stop.hours } : null), dateIso)
   if (!onDate) return null
-  if (onDate.closed) return 'Hoy cierra'
+  if (onDate.closed) return CERRADO_ESTE_DIA
   const match = /^(\d{1,2}):(\d{2})$/.exec(stop.time ?? '')
   if (!match || !onDate.schedule) return null
   const start = Number(match[1]) * 60 + Number(match[2])

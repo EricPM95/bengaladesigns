@@ -63,6 +63,8 @@ import {
 import { withManualDayNames } from '../lib/manualRoute'
 import { bookingsAfterRemovingDays, planManualResize, resizeManualRoute, reservationsOfDays } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
+import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
+import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -568,6 +570,14 @@ interface RouteStoreState {
   removeFlightLeg: (kind: 'arrival' | 'departure') => void
   /** La zona del alojamiento (de pago, Tanda 6s). */
   setAccommodationZone: (zone: string | null) => void
+  /** Tanda 7: la casilla opcional «el otro lado» del billete: el punto (de dónde sale la ida / a dónde llega la vuelta); vacío o null lo quita. */
+  setLegOtroPunto: (kind: 'arrival' | 'departure', texto: string | null) => void
+  /** Tanda 7: la casilla opcional «la otra hora» del billete (la de salida de la ida / la de llegada de la vuelta), «HH:MM»; null la quita. */
+  setLegOtraHora: (kind: 'arrival' | 'departure', hora: string | null) => void
+  /** Tanda 7: la dirección del alojamiento (opcional, de pago); vacío o null la quita. */
+  setAccommodationAddress: (direccion: string | null) => void
+  /** Tanda 7: el viajero ya ha visto su vuelta con las fechas de ahora: se va el aviso «revisa que tu vuelta sigue siendo…». */
+  marcarVueltaVista: () => void
   setFlightAdjust: (choice: 'auto' | 'manual' | null) => void
   /** "Optimizar ruta" en RESERVAS — recalcula el horario REAL de un único día (llegada o vuelta) a partir de la hora de vuelo introducida, ver stopScheduling.ts. No toca el resto de días. */
   optimizeDayWithRealTransport: (dayId: string, kind: 'arrival' | 'departure', flightTime: string) => Promise<void>
@@ -1037,7 +1047,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       const rebuilt = state.keepBookingsOnNextRoute ? withUserDaysBack(replanned, userAddedDays(state.route)) : replanned
       // Cada día con su color, y la copia de la ruta tal como se crea ("Volver a mi ruta original").
       const colored = withDayColors(rebuilt)
-      const route = { ...colored, editedManually: false, originalRoute: originalRouteOf(colored) }
+      // (Tanda 7: al rehacer el viaje se queda lo que el viajero puso en RESERVAS —horas, puntos, casillas del billete, zona y dirección—, que el motor no trae.)
+      const route = { ...colored, ...(state.keepBookingsOnNextRoute ? camposDelViajero(state.route) : {}), editedManually: false, originalRoute: originalRouteOf(colored) }
       return {
       // Rutas guardadas antes de que los días llevaran su país (Roma salía como "Destino"): se rellena aquí.
       route: route.days.some((day) => !day.countryCode && dayCountryCode(null, day.city))
@@ -1069,7 +1080,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       keepBookingsOnNextRoute: false,
       // (Viajes guardados antes de los colores fijos y de la copia original: se completan al abrirlos.)
       route: (() => {
-        const colored = withDayColors(payload.route)
+        // (Tanda 7: un viaje guardado con hora de vuelta de antes de sellarse se sella al abrirlo con la fecha de vuelta de ese momento; si luego cambian las fechas, la campana avisa.)
+        const colored = sellarVueltaAlAbrir(withDayColors(payload.route))
         return colored.originalRoute || colored.editedManually ? colored : { ...colored, originalRoute: originalRouteOf(colored) }
       })(),
       accommodationSelections: payload.bookings.accommodationSelections,
@@ -1164,7 +1176,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           days: state.route.days.map((day) => ({
             ...day,
             // "Hoy cierra" en su línea de horario; el aviso de sin fechas ("cerrado los lunes a esta hora") ya no vale.
-            stops: day.stops.map((stop) => ({ ...stop, hoursWarning: closed.has(`${day.dayNumber}|${stop.name}`) ? 'Hoy cierra' : null })),
+            stops: day.stops.map((stop) => ({ ...stop, hoursWarning: closed.has(`${day.dayNumber}|${stop.name}`) ? CERRADO_ESTE_DIA : null })),
           })),
         },
       }
@@ -1436,7 +1448,16 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return {
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, ...updates } : stop)),
+          stops: day.stops.map((stop, at) => {
+            if (stop.id === stopId) {
+              // El sitio cambia (otras coordenadas): su paseo hasta la siguiente parada ya no vale, se vuelve a pedir («Cambiar parada», Tanda 7).
+              if (!updates.coordinates) return { ...stop, ...updates }
+              return { ...stop, walkingTimeToNextMinutes: undefined, nextStopNote: undefined, ...updates, nextLegPending: at < day.stops.length - 1 || undefined }
+            }
+            // …y el de la parada de justo antes hasta este sitio también.
+            if (updates.coordinates && day.stops[at + 1]?.id === stopId) return { ...stop, walkingTimeToNextMinutes: undefined, nextStopNote: undefined, nextLegPending: true }
+            return stop
+          }),
         })),
       }
     }),
@@ -1721,18 +1742,35 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
 
   setArrivalFlightTime: (time) =>
     set((state) => (state.route ? { route: { ...state.route, arrivalFlightTime: time } } : state)),
+  // (Tanda 7: poner o cambiar la hora de la vuelta es «verla»: queda sellada con la fecha de vuelta de ahora y el aviso de cambio de fechas se va.)
   setDepartureFlightTime: (time) =>
-    set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time } } : state)),
+    set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time, departureFechaVista: state.route.answers.dateRange?.end ?? null } } : state)),
   setFlightAdjust: (choice) => set((state) => (state.route ? { route: { ...state.route, flightAdjust: choice } } : state)),
   setArrivalPointId: (kind, pointId) =>
     set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPointId' : 'departurePointId']: pointId } } : state)),
   removeFlightLeg: (kind) =>
     set((state) =>
       state.route
-        ? { route: { ...state.route, ...(kind === 'arrival' ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null, arrivalCompania: null } : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null, departureCompania: null }) } }
+        ? {
+            route: {
+              ...state.route,
+              ...(kind === 'arrival'
+                ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null, arrivalCompania: null, arrivalOtroPunto: null, arrivalOtraHora: null }
+                : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null, departureCompania: null, departureOtroPunto: null, departureOtraHora: null, departureFechaVista: null }),
+            },
+          }
         : state,
     ),
   setAccommodationZone: (zone) => set((state) => (state.route ? { route: { ...state.route, accommodationZone: zone } } : state)),
+  setLegOtroPunto: (kind, texto) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtroPunto' : 'departureOtroPunto']: texto?.trim() ? texto.trim().slice(0, 60) : null } } : state)),
+  setLegOtraHora: (kind, hora) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtraHora' : 'departureOtraHora']: hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : null } } : state)),
+  setAccommodationAddress: (direccion) => set((state) => (state.route ? { route: { ...state.route, accommodationAddress: direccion?.trim() ? direccion.trim().slice(0, 160) : null } } : state)),
+  marcarVueltaVista: () =>
+    set((state) => {
+      const fin = state.route?.answers.dateRange?.end ?? null
+      if (!state.route || !state.route.departureFlightTime || state.route.departureFechaVista === fin) return state
+      return { route: { ...state.route, departureFechaVista: fin } }
+    }),
 
   optimizeDayWithRealTransport: async (dayId, kind, flightTime) => {
     const state = get()

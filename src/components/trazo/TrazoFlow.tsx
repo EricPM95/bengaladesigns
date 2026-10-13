@@ -27,6 +27,7 @@ import { StepManualSummary } from './StepManualSummary'
 import { STEP, backStepFrom, isSummaryStep, shouldGenerateRoute, shouldSuggestExperiences, stepAfterChoice, stepCounterLabel, visibleStepNamesFor, usesExperiences, usesPool, type PlanChoice } from './planChoice'
 import { buildManualRoute, transportContextOf } from '../../lib/manualRoute'
 import './trazo.css'
+import { textoDeDuracion } from '../../lib/duracionViaje'
 import { Icono } from '../ui/Icono'
 
 /** Lo que tarda el aviso corto de la pantalla de elegir antes de pasar a la pantalla siguiente. */
@@ -272,7 +273,7 @@ export function TrazoFlow() {
         return `${sd} ${MS[sm - 1]} – ${ed} ${MS[em - 1]}`
       })()
     : answers.days && answers.month !== undefined
-      ? `${answers.days} ${answers.days === 1 ? 'día' : 'días'} · ${MONTHS[answers.month]}`
+      ? `${textoDeDuracion(answers.days)} · ${MONTHS[answers.month]}`
       : ''
   // Con la ruta a mano no hay experiencias ni lugares: ni en la barra, ni en el panel, ni en las fichas.
   const withExperiences = usesExperiences(plan)

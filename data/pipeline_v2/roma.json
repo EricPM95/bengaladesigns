@@ -36,11 +36,6 @@
     },
     "disponibilidad": {
       "_que_es": "Días sin Free Tour y horas de salida. Si un día no hay tour, el día que lo lleva no cae en esa fecha si el viaje lo permite; si no hay más remedio, el tour no se pone y el viajero ve el `aviso`. sin_tour: fechas \"MM-DD\", \"easter±N\" o \"AAAA-MM-DD\", o { fecha, fuente, comprobado }. horas_especiales: fechas en las que el tour solo sale a ciertas horas; el día escrito que lleva el tour trae su variante de esa fecha y la prueba comprueba que el tour va a una de esas horas.",
-      "horas": [
-        "10:00",
-        "16:00"
-      ],
-      "horas_nota": "La app dice que los tours suelen salir por la mañana (10:00-10:30) y por la tarde (16:00-17:00). Sin comprobar en la web de la empresa.",
       "sin_tour": [],
       "aviso": "Hoy no hay Free Tour: hemos dejado el día sin él. Compruébalo en la web del tour, por si ese año sí sale.",
       "fuente": "civitatis.com/es/roma/free-tour-roma/ — la ficha no publica horarios ni días sin tour: solo se ven al elegir fecha en el calendario de reserva. Festivos de Navidad: comprobados por el usuario en ese calendario el 2026-09-30 (hay tour, solo a las 12:00).",
@@ -911,7 +906,7 @@
     {
       "id": "coliseo",
       "name": "Coliseo",
-      "megusta_inicial": 164,
+      "megusta_inicial": 412,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con franja horaria: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día (quien compró la entrada oficial sin guía puede entrar hasta entonces; las visitas guiadas acaban antes).",
       "level": 1,
@@ -1029,17 +1024,16 @@
       "lo_mejor_dentro": "recorrer sus gradas y asomarte a la arena",
       "closed_dates_audit": {
         "01-01": {
-          "estado": "abre con horario especial (probable)",
-          "fuente": "colosseo.it, «Special opening on January 1, 2026» (08:30-16:30, última entrada 15:30; solo el recorrido normal del primer y segundo orden, sin arena ni subterráneos). También abrió el 1 de enero de 2025.",
-          "comprobado": "2026-09-30",
-          "antes": "[\"12-25\",\"01-01\"]"
+          "estado": "cierra",
+          "fuente": "colosseo.it/orari, comprobado el 13-oct-2026: «Chiuso: 25 dicembre 2026, 1° gennaio 2027».",
+          "comprobado": "2026-10-13"
         }
       }
     },
     {
       "id": "foro_romano_y_palatino",
       "name": "Foro Romano y Palatino",
-      "megusta_inicial": 132,
+      "megusta_inicial": 184,
       "level": 1,
       "tier": "imprescindible",
       "zone": "roma_antigua",
@@ -1164,17 +1158,16 @@
       "entrada_nota": "Entrada de la Vía Sacra, junto al Arco de Constantino y al lado del Coliseo (Tanda 6b: el Foro se entra por el lado del Coliseo y se sale por el Campidoglio). Coordenada aproximada, por revisar.",
       "closed_dates_audit": {
         "01-01": {
-          "estado": "abre con horario especial (probable)",
-          "fuente": "colosseo.it, «Special opening on January 1, 2026» (08:30-16:30, última entrada 15:30; sin los sitios SUPER).",
-          "comprobado": "2026-09-30",
-          "antes": "[\"12-25\",\"01-01\"]"
+          "estado": "cierra",
+          "fuente": "colosseo.it/orari, comprobado el 13-oct-2026: «Chiuso: 25 dicembre 2026, 1° gennaio 2027». El Foro se entra con la entrada del Coliseo.",
+          "comprobado": "2026-10-13"
         }
       }
     },
     {
       "id": "arco_de_constantino",
       "name": "Arco de Constantino",
-      "megusta_inicial": 145,
+      "megusta_inicial": 139,
       "level": 1,
       "tier": "imprescindible",
       "zone": "roma_antigua",
@@ -1209,7 +1202,7 @@
     {
       "id": "boca_de_la_verdad",
       "name": "Boca de la Verdad",
-      "megusta_inicial": 65,
+      "megusta_inicial": 91,
       "level": 2,
       "zone": "aventino",
       "grupo_dia": "Basílicas y el Aventino",
@@ -1251,7 +1244,7 @@
     {
       "id": "circo_maximo",
       "name": "Circo Máximo",
-      "megusta_inicial": 83,
+      "megusta_inicial": 85,
       "level": 2,
       "zone": "roma_antigua",
       "grupo_dia": "Roma antigua",
@@ -1281,7 +1274,7 @@
     {
       "id": "fontana_de_trevi",
       "name": "Fontana de Trevi",
-      "megusta_inicial": 145,
+      "megusta_inicial": 391,
       "entrada_de_pago": {
         "desde": "2026-02-02",
         "precio": "2 €",
@@ -1339,7 +1332,7 @@
     {
       "id": "panteon",
       "name": "Panteón",
-      "megusta_inicial": 133,
+      "megusta_inicial": 326,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con hora: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día.",
       "level": 1,
@@ -1421,7 +1414,7 @@
     {
       "id": "piazza_navona",
       "name": "Piazza Navona",
-      "megusta_inicial": 165,
+      "megusta_inicial": 199,
       "level": 1,
       "tier": "imprescindible",
       "zone": "centro_historico",
@@ -1460,7 +1453,7 @@
     {
       "id": "plaza_de_espana",
       "name": "Plaza de España",
-      "megusta_inicial": 155,
+      "megusta_inicial": 305,
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
         {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."}
@@ -1505,7 +1498,7 @@
     {
       "id": "piazza_del_popolo",
       "name": "Piazza del Popolo",
-      "megusta_inicial": 59,
+      "megusta_inicial": 71,
       "texto_espera": "haz unas fotos en la Piazza del Popolo",
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
@@ -1546,7 +1539,7 @@
     {
       "id": "largo_di_torre_argentina",
       "name": "Largo di Torre Argentina",
-      "megusta_inicial": 68,
+      "megusta_inicial": 56,
       "level": 2,
       "zone": "centro_historico",
       "grupo_dia": "Centro histórico",
@@ -1606,7 +1599,7 @@
     {
       "id": "museos_vaticanos_y_capilla_sixtina",
       "name": "Museos Vaticanos y Capilla Sixtina",
-      "megusta_inicial": 194,
+      "megusta_inicial": 368,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con franja horaria: se elige la hora al comprarla, de la apertura a la última entrada oficial de ese día.",
       "level": 1,
@@ -1626,9 +1619,9 @@
       "closed_on": [
         "domingo"
       ],
-      "tip": "Reserva SIEMPRE online con antelación (se agotan). Primera hora (08:00) o viernes noche (19:00-23:00 en temporada). La Capilla Sixtina está al FINAL del recorrido — no intentes ir directa. Calcula 3 horas mínimo.",
+      "tip": "Reserva SIEMPRE online con antelación (se agotan). Primera hora (08:00). La Capilla Sixtina está al FINAL del recorrido — no intentes ir directa. Calcula 3 horas mínimo.",
       "photo_tip": "Prohibido hacer fotos en la Capilla Sixtina (pero todo el mundo las hace). En la Galería de los Mapas, la perspectiva del pasillo infinito es espectacular.",
-      "best_time": "primera hora (08:00) o viernes noche",
+      "best_time": "primera hora (08:00)",
       "tags": [
         "museo",
         "arte"
@@ -1734,7 +1727,7 @@
     {
       "id": "basilica_de_san_pedro",
       "name": "Basílica de San Pedro",
-      "megusta_inicial": 188,
+      "megusta_inicial": 347,
       "por_fuera": "Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.",
       "festivos_domingo": [
         "06-29"
@@ -1892,7 +1885,7 @@
     {
       "id": "plaza_de_san_pedro",
       "name": "Plaza de San Pedro",
-      "megusta_inicial": 175,
+      "megusta_inicial": 169,
       "level": 1,
       "tier": "imprescindible",
       "zone": "vaticano",
@@ -2017,7 +2010,7 @@
     {
       "id": "castillo_de_santangelo",
       "name": "Castillo de Sant'Angelo",
-      "megusta_inicial": 94,
+      "megusta_inicial": 98,
       "level": 2,
       "zone": "vaticano",
       "grupo_dia": "Vaticano",
@@ -2093,7 +2086,7 @@
     {
       "id": "mirador_del_janiculo",
       "name": "Mirador del Janículo",
-      "megusta_inicial": 90,
+      "megusta_inicial": 80,
       "level": 2,
       "zone": "trastevere",
       "grupo_dia": "Roma desde las alturas",
@@ -2135,7 +2128,7 @@
     {
       "id": "galeria_borghese",
       "name": "Galería Borghese",
-      "megusta_inicial": 94,
+      "megusta_inicial": 99,
       "reserva_nota": "Entrada con hora fija (reserva obligatoria). Horario oficial 09:00-19:00 de martes a domingo; no se entra después de las 17:00. Turnos de 2 horas: 9:00, 11:00, 13:00, 15:00 y 17:00.",
       "level": 2,
       "zone": "villa_borghese",
@@ -2219,7 +2212,7 @@
     {
       "id": "parque_de_villa_borghese",
       "name": "Parque de Villa Borghese",
-      "megusta_inicial": 88,
+      "megusta_inicial": 81,
       "level": 2,
       "zone": "villa_borghese",
       "grupo_dia": "Villa Borghese",
@@ -2431,7 +2424,7 @@
     {
       "id": "altar_de_la_patria",
       "name": "Altar de la Patria",
-      "megusta_inicial": 151,
+      "megusta_inicial": 154,
       "acortable": true,
       "level": 1,
       "zone": "roma_antigua",
@@ -2544,7 +2537,7 @@
     {
       "id": "isla_tiberina",
       "name": "Isla Tiberina",
-      "megusta_inicial": 52,
+      "megusta_inicial": 82,
       "level": 2,
       "zone": "trastevere",
       "grupo_dia": "Trastevere",
@@ -2610,7 +2603,7 @@
     {
       "id": "campo_de_fiori",
       "name": "Campo de' Fiori",
-      "megusta_inicial": 82,
+      "megusta_inicial": 84,
       "level": 2,
       "zone": "centro_historico",
       "grupo_dia": "Centro histórico",
@@ -2713,7 +2706,7 @@
     {
       "id": "mercados_de_trajano",
       "name": "Mercados de Trajano",
-      "megusta_inicial": 93,
+      "megusta_inicial": 60,
       "duration_minutes": 60,
       "min_max": 75,
       "zone": "roma_antigua",
@@ -2849,7 +2842,7 @@
     {
       "id": "iglesia_del_gesu",
       "name": "Iglesia del Gesù",
-      "megusta_inicial": 86,
+      "megusta_inicial": 62,
       "hours_audit": {
         "confianza": "media",
         "fuente": "https://www.turismoroma.it/it/luoghi/chiesa-del-ges%C3%B9 (Roma Capitale)",
@@ -2928,7 +2921,7 @@
     {
       "id": "iglesia_de_san_luigi_dei_francesi",
       "name": "Iglesia de San Luigi dei Francesi",
-      "megusta_inicial": 85,
+      "megusta_inicial": 63,
       "festivos_domingo": [
         "06-29"
       ],
@@ -2993,7 +2986,7 @@
     {
       "id": "ara_pacis",
       "name": "Ara Pacis",
-      "megusta_inicial": 82,
+      "megusta_inicial": 67,
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "centro_historico",
@@ -3088,7 +3081,7 @@
     {
       "id": "barrio_judio",
       "name": "Barrio Judío",
-      "megusta_inicial": 98,
+      "megusta_inicial": 77,
       "duration_minutes": 30,
       "min_max": 60,
       "zone": "centro_historico",
@@ -3626,7 +3619,7 @@
     {
       "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
-      "megusta_inicial": 86,
+      "megusta_inicial": 93,
       "duration_minutes": 120,
       "minimo_dentro": 60,
       "min_max": 150,
@@ -3724,7 +3717,7 @@
     {
       "id": "basilica_de_san_clemente",
       "name": "Basílica de San Clemente",
-      "megusta_inicial": 57,
+      "megusta_inicial": 74,
       "festivos_domingo": [
         "06-29"
       ],
@@ -3807,7 +3800,7 @@
     {
       "id": "iglesia_de_san_pietro_in_vincoli",
       "name": "Iglesia de San Pietro in Vincoli",
-      "megusta_inicial": 98,
+      "megusta_inicial": 69,
       "duration_minutes": 20,
       "min_max": 30,
       "schedule": "08:00-12:30, 15:00-18:00",
@@ -3885,7 +3878,7 @@
     {
       "id": "domus_aurea",
       "name": "Domus Aurea",
-      "megusta_inicial": 58,
+      "megusta_inicial": 73,
       "duration_minutes": 75,
       "min_max": 90,
       "zone": "roma_antigua",
@@ -3943,7 +3936,7 @@
     {
       "id": "termas_de_caracalla",
       "name": "Termas de Caracalla",
-      "megusta_inicial": 57,
+      "megusta_inicial": 87,
       "duration_minutes": 60,
       "min_max": 90,
       "zone": "aventino",
@@ -4079,7 +4072,7 @@
     {
       "id": "jardin_de_los_naranjos",
       "name": "Jardín de los Naranjos",
-      "megusta_inicial": 56,
+      "megusta_inicial": 53,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "aventino",
@@ -4170,7 +4163,7 @@
     {
       "id": "basilica_de_santa_maria_la_mayor",
       "name": "Basílica de Santa María la Mayor",
-      "megusta_inicial": 97,
+      "megusta_inicial": 88,
       "duration_minutes": 30,
       "min_max": 40,
       "schedule": "07:00-18:45",
@@ -4424,7 +4417,7 @@
     {
       "id": "iglesia_de_santa_maria_in_trastevere",
       "name": "Iglesia de Santa Maria in Trastevere",
-      "megusta_inicial": 60,
+      "megusta_inicial": 66,
       "hours_audit": {
         "confianza": "media",
         "fuente": "https://turismoroma.it/it/luoghi/basilica-di-santa-maria-trastevere (Roma Capitale)",
@@ -4504,7 +4497,7 @@
     {
       "id": "villa_farnesina",
       "name": "Villa Farnesina",
-      "megusta_inicial": 81,
+      "megusta_inicial": 55,
       "closed_dates": [
         "06-29"
       ],
@@ -4629,7 +4622,7 @@
     {
       "id": "terraza_del_pincio",
       "name": "Terraza del Pincio",
-      "megusta_inicial": 86,
+      "megusta_inicial": 78,
       "duration_minutes": 20,
       "min_max": 50,
       "zone": "villa_borghese",
@@ -4682,7 +4675,7 @@
     {
       "id": "basilica_de_san_juan_de_letran",
       "name": "Basílica de San Juan de Letrán",
-      "megusta_inicial": 54,
+      "megusta_inicial": 89,
       "level": 2,
       "zone": "san_giovanni",
       "grupo_dia": "Basílicas y el Aventino",
@@ -5145,7 +5138,7 @@
       "visible_desde_calle": false,
       "camino_alternativa": "El mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
-      "megusta_inicial": 70,
+      "megusta_inicial": 52,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "trastevere",
@@ -5308,7 +5301,7 @@
     {
       "id": "trastevere",
       "name": "Trastevere",
-      "megusta_inicial": 57,
+      "megusta_inicial": 96,
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "trastevere",
@@ -5342,7 +5335,7 @@
     {
       "id": "monti",
       "name": "Monti",
-      "megusta_inicial": 52,
+      "megusta_inicial": 59,
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "roma_antigua",
@@ -5378,7 +5371,7 @@
     {
       "id": "santa_maria_del_popolo",
       "name": "Santa Maria del Popolo",
-      "megusta_inicial": 84,
+      "megusta_inicial": 65,
       "festivos_domingo": [
         "06-29"
       ],
@@ -5449,7 +5442,7 @@
     {
       "id": "testaccio",
       "name": "Testaccio",
-      "megusta_inicial": 56,
+      "megusta_inicial": 58,
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "testaccio",
@@ -5484,7 +5477,7 @@
     {
       "id": "trinita_dei_monti",
       "name": "Trinità dei Monti",
-      "megusta_inicial": 79,
+      "megusta_inicial": 70,
       "festivos_domingo": [
         "06-29"
       ],
@@ -5550,7 +5543,7 @@
     {
       "id": "cripta_de_los_capuchinos",
       "name": "Cripta de los Capuchinos",
-      "megusta_inicial": 75,
+      "megusta_inicial": 76,
       "duration_minutes": 45,
       "min_max": 45,
       "zone": "centro_historico",
@@ -8902,11 +8895,11 @@
     }
   ],
   "sitios_grandes": {
-    "_nota": "Tanda 6y10. Los sitios grandes del destino: los que tienen su día escrito por tramos de hora. Una reserva de uno de ellos en otro día mueve el día entero; la de un sitio pequeño solo mueve esa parada. Antes eran listas fijas en el código; ahora el motor y la app lo leen de aquí. Cada sitio: nombre (el del lugar), del y el (cómo se dice en los avisos), dias (los días escritos que son suyos) y nunca_se_quita (el motor no lo quita de su día aunque cierre). Un destino sin este campo no tiene sitios grandes.",
+    "_nota": "Tanda 6y10. Los sitios grandes del destino: los que tienen su día escrito por tramos de hora. Una reserva de uno de ellos en otro día mueve el día entero; la de un sitio pequeño solo mueve esa parada. Antes eran listas fijas en el código; ahora el motor y la app lo leen de aquí. Cada sitio: nombre (el del lugar), del y el (cómo se dice en los avisos), dias (los días escritos que son suyos) y nunca_se_quita (el motor no lo quita de su día aunque cierre). Opcional: no_cabe_con_excursion_hasta (\"HH:MM\"): con una excursión de mañana, una reserva de ese sitio a esa hora o antes no cabe (Roma: el Coliseo, 16:30); el motor lo lee de aquí. Un destino sin este campo no tiene sitios grandes. Tanda 7 (vuelta): `entrada_a` (cómo se dice «Tu entrada …» en los avisos de reservas contra el vuelo) y `bloque` (lo que lleva a un medio día —el día de llegada desde las 14:00 o el de vuelta— una reserva de ese sitio: las paradas en el orden de su día escrito para esa hora; `despues_de_comer`: en esos días de la semana, esas paradas nunca van antes de comer: después de la comida si la fila la lleva, y si no, a «Si te sobra tiempo»).",
     "lugares": [
-      { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "dias": ["D1", "D1-FT"], "no_cabe_con_excursion_hasta": "16:30", "bloque": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"], "sin_la_visita": { "D1": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "D1-FT": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "D1-vaticano": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] } } },
-      { "nombre": "Museos Vaticanos y Capilla Sixtina", "del": "del Vaticano", "el": "el Vaticano", "dias": ["D2", "D3"], "nunca_se_quita": true, "bloque": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"], "sin_la_visita": { "D2": { "variante": "sin_museos" }, "D3": { "variante": "domingo_sin_museos" }, "D1-vaticano": { "quitar": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"] } } },
-      { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true, "bloque": ["Galería Borghese", "Parque de Villa Borghese"], "sin_la_visita": { "D4": { "variante": "lunes_sin_galeria", "quitar": ["Parque de Villa Borghese"] } } },
+      { "nombre": "Coliseo", "del": "del Coliseo", "el": "el Coliseo", "entrada_a": "al Coliseo", "dias": ["D1", "D1-FT"], "no_cabe_con_excursion_hasta": "16:30", "bloque": { "paradas": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "sin_la_visita": { "D1": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "D1-FT": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] }, "D1-vaticano": { "quitar": ["Coliseo", "Arco de Constantino", "Foro Romano y Palatino"] } } },
+      { "nombre": "Museos Vaticanos y Capilla Sixtina", "del": "del Vaticano", "el": "el Vaticano", "entrada_a": "a los Museos Vaticanos", "dias": ["D2", "D3"], "nunca_se_quita": true, "bloque": { "paradas": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"], "despues_de_comer": { "dias_semana": ["miércoles"], "paradas": ["Plaza de San Pedro", "Basílica de San Pedro"] } }, "sin_la_visita": { "D2": { "variante": "sin_museos" }, "D3": { "variante": "domingo_sin_museos" }, "D1-vaticano": { "quitar": ["Museos Vaticanos y Capilla Sixtina", "Plaza de San Pedro", "Basílica de San Pedro"] } } },
+      { "nombre": "Galería Borghese", "del": "de la Galería Borghese", "el": "la Galería Borghese", "entrada_a": "a la Galería Borghese", "dias": ["D4"], "nunca_se_quita": true, "bloque": { "paradas": ["Galería Borghese", "Parque de Villa Borghese"] }, "sin_la_visita": { "D4": { "variante": "lunes_sin_galeria", "quitar": ["Parque de Villa Borghese"] } } },
       { "nombre": "Free Tour por Roma", "del": "del Free Tour", "el": "el Free Tour", "dias": ["D3", "D1"] }
     ]
   },
@@ -13871,33 +13864,15 @@
         "tipo": "festivo",
         "icono": "fiesta",
         "titulo": "1 de enero · Año Nuevo",
-        "texto": "El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día.",
-        "fuente": "colosseo.it («Special opening on January 1, 2026») y cultura.gov.it («1 gennaio 2026 al Pantheon»); Museos Vaticanos: museivaticani.va. Horarios de la temporada 2025-26: revisar cada diciembre. Misa de las 10:00 y Ángelus de las 12:00: press.vatican.va, boletines del 1 de enero de 2026.",
+        "texto": "El Coliseo, el Foro, el Panteón y los Museos Vaticanos cierran. Hemos empezado tu día más tarde y hemos puesto esas visitas otro día.",
+        "fuente": "El Coliseo y el Foro cierran el 1 de enero: colosseo.it/orari, comprobado el 13-oct-2026 («Chiuso: 25 dicembre 2026, 1° gennaio 2027»). Panteón y Museos Vaticanos: sus calendarios oficiales (closed_dates). Termas de Caracalla: cultura.gov.it («1 gennaio 2026 alle Terme di Caracalla»). Misa de las 10:00 y Ángelus de las 12:00: press.vatican.va, boletines del 1 de enero de 2026.",
         "verificar": true,
-        "comprobado": "2026-09-30",
+        "comprobado": "2026-10-13",
         "horario_especial": {
           "confirmado": "probable",
           "aplicar": true,
-          "_nota": "probable + aplicar: el reparto evita ese día si puede y, si no puede, la visita va dentro de este horario (el prudente).",
+          "_nota": "probable + aplicar: el reparto evita ese día si puede y, si no puede, la visita va dentro de este horario (el prudente). El Coliseo, el Foro y el Panteón ya no están aquí: cierran el 1 de enero (closed_dates de cada uno).",
           "lugares": {
-            "Coliseo": {
-              "windows": [
-                "08:30-16:30"
-              ],
-              "last_entry": "15:30"
-            },
-            "Foro Romano y Palatino": {
-              "windows": [
-                "08:30-16:30"
-              ],
-              "last_entry": "15:30"
-            },
-            "Panteón": {
-              "windows": [
-                "09:00-17:00"
-              ],
-              "last_entry": "16:30"
-            },
             "Termas de Caracalla": {
               "windows": [
                 "09:30-16:30"
@@ -13914,34 +13889,37 @@
           "comida_como_tarde": "14:30",
           "_nota": "Si el 31 está en el viaje, el 1 de enero empieza a las 10:00; si así no cabe, con la variante `empieza_tarde` del día escrito (el Campidoglio y el Altar de la Patria pasan a la tarde); y si tampoco, a las 9:30."
         },
-        "contexto": "El Coliseo y el Foro abren con horario corto y los Museos Vaticanos cierran.",
+        "contexto": "El Coliseo, el Foro, el Panteón y los Museos Vaticanos cierran.",
         "hecho": [
           [
             {
               "si": {
                 "empieza_tarde": true,
                 "otro_dia": [
+                  "Coliseo",
+                  "Foro Romano y Palatino",
+                  "Panteón",
                   "Museos Vaticanos y Capilla Sixtina"
                 ]
               },
-              "texto": "Hemos empezado tu día más tarde y hemos puesto el Vaticano otro día."
+              "texto": "Hemos empezado tu día más tarde y hemos puesto esas visitas otro día."
             },
             {
               "si": {
                 "empieza_tarde": true
               },
-              "texto": "Hemos empezado tu día más tarde y tus visitas van dentro de ese horario."
+              "texto": "Hemos empezado tu día más tarde."
             },
             {
               "si": {
                 "otro_dia": [
+                  "Coliseo",
+                  "Foro Romano y Palatino",
+                  "Panteón",
                   "Museos Vaticanos y Capilla Sixtina"
                 ]
               },
-              "texto": "Hemos puesto el Vaticano otro día y tus visitas de hoy dentro de ese horario."
-            },
-            {
-              "texto": "Hemos puesto tus visitas de hoy dentro de ese horario."
+              "texto": "Hemos puesto esas visitas otro día."
             }
           ]
         ],

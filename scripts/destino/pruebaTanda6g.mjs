@@ -165,7 +165,8 @@ for (const ruta of [...recorrer('src'), ...recorrer('server'), ...recorrer('shar
 viajes++
 const lista = leer('src/components/route/DayList.tsx')
 for (const linea of lista.split(String.fromCharCode(10))) if (/Día de (viaje|excursión)/.test(linea) && /accent-red/.test(linea)) falla('etiqueta_roja', `DayList.tsx: una etiqueta de día en rojo: ${linea.trim().slice(0, 90)}`)
-if (!/text-accent">Día de viaje/.test(lista)) falla('etiqueta_roja', 'DayList.tsx: «Día de viaje» no va en el naranja de la app')
+// (Desde la 6y7 la etiqueta no se escribe a mano: sale de `etiquetaDeViaje(title)`, «Día de viaje» en src/lib/tituloDelDia.ts; lo que se comprueba es que ese párrafo va en el naranja de la app.)
+if (!/text-accent">\{etiquetaDeViaje\(title\)\}/.test(lista) || !/Día de viaje/.test(leer('src/lib/tituloDelDia.ts'))) falla('etiqueta_roja', 'DayList.tsx: «Día de viaje» no va en el naranja de la app')
 if (/accent-red/.test(leer('src/components/route/dayDetail/excursion/ExcursionCardMeta.tsx'))) falla('etiqueta_roja', 'ExcursionCardMeta.tsx: «Día de excursión» en rojo')
 const panel = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
 if (!/grid grid-cols-3 rounded-2xl bg-bg-hover/.test(panel) || !/showsRoute && !enExcursion && stops.length > 0/.test(panel)) falla('resumen_del_dia', 'DayDetailPanel.tsx: el resumen del día no tiene su fondo y sus tres columnas, o sale en el día de excursión')
