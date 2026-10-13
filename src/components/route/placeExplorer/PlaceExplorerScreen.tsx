@@ -26,7 +26,7 @@ import { StopDetailSheet, type DayStopRef } from '../dayDetail/StopDetailSheet'
 import { RestaurantDetailSheet } from './RestaurantDetailSheet'
 import { Spinner } from '../../ui/Spinner'
 import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
-import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
+import { CERRADO_ESTE_DIA, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
 import { explorarConCercania } from '../../../lib/explorarDePago'
@@ -102,6 +102,15 @@ interface PlaceExplorerScreenProps {
     onConfirm: () => void
     busy?: boolean
     hint?: string
+  }
+  /**
+   * «Cambiar parada» (Tanda 7, punto 16): la pantalla sale con su pregunta arriba («¿Por cuál quieres cambiar {parada}?») y el botón de la esquina de cada tarjeta deja de ser el «+» y es el icono de intercambiar.
+   * Al tocarlo, `onElegir` recibe el sitio ya hecho parada (quien llama lo pone en el día y a la hora de la parada que se cambia). Lo que ya está en el viaje sale con «Ya en tu viaje» y sin el icono. Solo se ven lugares
+   * (no restaurantes, excursiones ni baños). Los filtros los cambia el viajero; sin esta prop, la pantalla es la de siempre, con su «+».
+   */
+  cambiarParada?: {
+    pregunta: string
+    onElegir: (stop: Stop) => void
   }
   onClose: () => void
 }
@@ -339,12 +348,15 @@ export function PlaceExplorerScreen({
   quickAddLabel = '+ Añadir',
   toiletsEnabled = false,
   pickMode,
+  cambiarParada,
   onClose,
 }: PlaceExplorerScreenProps) {
   /** Ruta a mano (Tanda 6y): la lista va en el orden de la ruta a mano y lo que ya está en otro día lleva «En tu día 2». */
   const manualOrder = isManualRoute(route)
   /** Solo las atracciones se pueden marcar en el modo elegir varios. */
   const picking = Boolean(pickMode)
+  /** «Cambiar parada»: solo lugares que se pueden visitar, cada uno con su icono de intercambiar. */
+  const cambiando = Boolean(cambiarParada)
   const pickable = (place: DestinationPlace) => Boolean(pickMode) && place.kind === 'place'
   const pickedNames = useMemo(() => new Set(pickMode?.selected ?? []), [pickMode?.selected])
   // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
@@ -352,10 +364,10 @@ export function PlaceExplorerScreen({
   const { freeTourEntry } = useDestinationPool(destination, open)
   const places = useMemo(() => {
     // Elegir varios (Tanda 6y2, pregunta 9): solo salen los sitios que se pueden marcar (las atracciones). Fuera restaurantes, baños, fuentes y el Free Tour (que no se marca: es una reserva); en EXPLORAR normal siguen.
-    if (picking) return allPlaces.filter((place) => place.kind === 'place')
+    if (picking || cambiando) return allPlaces.filter((place) => place.kind === 'place')
     const base = toiletsEnabled ? allPlaces : allPlaces.filter((place) => place.kind !== 'toilet')
     return freeTourEntry ? [...base, freeTourEntry] : base
-  }, [allPlaces, toiletsEnabled, freeTourEntry, picking])
+  }, [allPlaces, toiletsEnabled, freeTourEntry, picking, cambiando])
   const mainZone = (label: string | null | undefined) => String(label ?? '').split('/')[0].trim()
   /** De la zona de la comida o la cena que se está cambiando. */
   const isRecommended = (place: DestinationPlace) => Boolean(recommendedZone) && place.kind === 'restaurant' && mainZone(place.zone_label) === mainZone(recommendedZone)
@@ -740,6 +752,13 @@ export function PlaceExplorerScreen({
     onQuickPick(stopFromPlace(place, photo ?? placeholderPhoto(place.name)))
   }
 
+  /** El ⇄ de «Cambiar parada»: el sitio, ya hecho parada (con su foto si llega pronto), a quien lo cambia. */
+  const elegirCambio = async (place: DestinationPlace) => {
+    if (!cambiarParada) return
+    const photo = await Promise.race([fetchPlacePhoto(place.photo_name ?? place.name, destination), new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500))]).catch(() => null)
+    cambiarParada.onElegir(stopFromPlace(place, photo ?? placeholderPhoto(place.name)))
+  }
+
   const addSelected = () => {
     if (!selected || !onPick) return
     onPick(stopFromPlace(selected, selectedPhoto ?? placeholderPhoto(selected.name)))
@@ -763,7 +782,7 @@ export function PlaceExplorerScreen({
   const inRouteCount = route ? places.filter((place) => place.kind === 'place' && isNameAlreadyInRoute(place.name, stopEntries)).length : 0
   const toiletsAvailable = toiletsEnabled && places.some((place) => isOsmPoint(place))
   const fountainsAvailable = toiletsEnabled && places.some((place) => place.kind === 'fountain')
-  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode)) && (chip.id !== 'restaurantes' || !pickMode) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
+  const chipRow = PLACE_FILTER_CHIPS.filter((chip) => (chip.id !== 'excursiones' || (excursions.length > 0 && !pickMode && !cambiando)) && (chip.id !== 'restaurantes' || (!pickMode && !cambiando)) && (chip.id !== 'banos' || toiletsAvailable) && (chip.id !== 'fuentes' || fountainsAvailable))
   const iconBox = (name: ExploreIconName, size = 15) => (
     <Icono nombre={EXPLORE_ICONOS[name]} size={size} />
   )
@@ -814,6 +833,11 @@ export function PlaceExplorerScreen({
         </header>
 
         {pickMode?.hint && <p className="shrink-0 px-4 pb-2 text-center text-small text-text-soft">{pickMode.hint}</p>}
+        {cambiarParada && (
+          <p data-pregunta-cambiar-parada="1" className="shrink-0 px-4 pb-2.5 text-center font-display text-text" style={{ fontSize: 21, lineHeight: 1.15 }}>
+            {cambiarParada.pregunta}
+          </p>
+        )}
 
         {/* Filtros de categoría — encima del mapa, scrollables, todos apagados al abrir (salvo los que traiga EXPLORAR). */}
         <div className="flex shrink-0 items-center gap-1.5 px-4 pb-3">
@@ -1203,12 +1227,12 @@ export function PlaceExplorerScreen({
                             {/* (Tanda 6y10) La etiqueta lila de barrio («Trastevere») ya no sale en EXPLORAR: solo en los acordeones de DÍAS y HOY. */}
                             {visitable && alreadyInRoute && (
                               <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
-                                {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). */}
-                                {manualOrder && !place.solo_entradas ? (inRouteDayTag(place.name) ?? '✓ En ruta') : '✓ En ruta'}
+                                {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). «Cambiar parada»: «Ya en tu viaje». */}
+                                {cambiando ? 'Ya en tu viaje' : manualOrder && !place.solo_entradas ? (inRouteDayTag(place.name) ?? '✓ En ruta') : '✓ En ruta'}
                               </span>
                             )}
                             {isRecommended(place) && <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">Recomendado</span>}
-                            {closedToday(place) && <span className="text-caption font-semibold text-text-muted">Hoy cierra</span>}
+                            {closedToday(place) && <span className="text-caption font-semibold text-text-muted">{CERRADO_ESTE_DIA}</span>}
                           </span>
                         )}
                         <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap text-text/60" style={{ font: "400 11.5px 'Geist'" }}>
@@ -1281,6 +1305,23 @@ export function PlaceExplorerScreen({
                               )}
                             </span>
                           </button>
+                        ) : cambiando ? (
+                          alreadyInRoute ? (
+                            <span className="h-11 w-11" />
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => elegirCambio(place)}
+                              data-cambiar-por={place.name}
+                              aria-label={`Cambiar por ${place.name}`}
+                              title="Cambiar por este"
+                              className="flex h-11 w-11 items-center justify-center"
+                            >
+                              <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: `1.5px solid ${warm}`, color: 'rgb(var(--accent-hover))' }}>
+                                <Icono nombre="intercambiar" size={15} />
+                              </span>
+                            </button>
+                          )
                         ) : inThisDay ? (
                           <span className="flex h-11 w-11 items-center justify-center" aria-label={`${place.name} ya está en este día`} title="Ya está en este día">
                             <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ border: '1.5px solid rgba(28,34,48,.18)', color: 'rgba(28,34,48,.3)' }}>
@@ -1398,7 +1439,7 @@ export function PlaceExplorerScreen({
               { id: `pool-${selected.name}`, name: selected.name, coordinates: selected.coordinates, photoUrl: selectedPhoto ?? undefined },
             ]}
             isAnchor={false}
-            footerAction={selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
+            footerAction={cambiarParada ? (isNameAlreadyInRoute(selected.name, stopEntries) ? undefined : { label: 'Cambiar por este →', onClick: () => elegirCambio(selected) }) : selected.solo_entradas ? ((onAddFreeTour ?? onFreeTour) && !pickMode ? { label: '+ Añadir', onClick: (onAddFreeTour ?? onFreeTour)! } : undefined) : pickMode ? (pickable(selected) ? { label: pickedNames.has(selected.name) ? 'Quitar de mi día' : 'Añadir a mi día →', onClick: () => { pickMode.onToggle(selected.name); setSelected(null) } } : undefined) : onPick ? { label: dayNumber ? `Añadir ${alDia(route, dayNumber)} →` : 'Añadir a mi ruta →', onClick: addSelected } : onQuickAdd ? { label: '+ Añadir', onClick: () => onQuickAdd(selected) } : undefined}
             onClose={() => setSelected(null)}
           />
         )}

@@ -59,12 +59,10 @@ export function AvisoSaltada({ nombre, onDeshacer, onOtroDia }: { nombre: string
 }
 
 /** La hoja con los días a los que pasar la parada: la misma lista que «Mover a otro día» del menú de cada parada en DÍAS (ListaDeDias). */
-export function HojaPasarAOtroDia({ dias, onElegir, onCerrar }: { dias: { id: string; dayNumber: number; city: string }[]; onElegir: (dayId: string) => void; onCerrar: () => void }) {
+export function HojaPasarAOtroDia({ dias, ahora, onElegir, onCerrar }: { dias: { id: string; dayNumber: number; city: string }[]; ahora?: number; onElegir: (dayId: string) => void; onCerrar: () => void }) {
   return (
     <PickerSheet title="Pasarla a otro día" onClose={onCerrar} onDone={onCerrar} doneLabel="Cancelar">
-      <div className="flex flex-col gap-1">
-        <ListaDeDias dias={dias} onElegir={onElegir} filaClassName="w-full rounded-xl px-3 py-3 text-left text-[15px] text-text hover:bg-bg-hover" />
-      </div>
+      <ListaDeDias dias={dias} ahora={ahora} onElegir={onElegir} />
     </PickerSheet>
   )
 }

@@ -63,6 +63,7 @@ import {
 import { withManualDayNames } from '../lib/manualRoute'
 import { bookingsAfterRemovingDays, planManualResize, resizeManualRoute, reservationsOfDays } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
+import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -1164,7 +1165,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
           days: state.route.days.map((day) => ({
             ...day,
             // "Hoy cierra" en su línea de horario; el aviso de sin fechas ("cerrado los lunes a esta hora") ya no vale.
-            stops: day.stops.map((stop) => ({ ...stop, hoursWarning: closed.has(`${day.dayNumber}|${stop.name}`) ? 'Hoy cierra' : null })),
+            stops: day.stops.map((stop) => ({ ...stop, hoursWarning: closed.has(`${day.dayNumber}|${stop.name}`) ? CERRADO_ESTE_DIA : null })),
           })),
         },
       }
@@ -1436,7 +1437,16 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return {
         route: updateDay(state.route, dayId, (day) => ({
           ...day,
-          stops: day.stops.map((stop) => (stop.id === stopId ? { ...stop, ...updates } : stop)),
+          stops: day.stops.map((stop, at) => {
+            if (stop.id === stopId) {
+              // El sitio cambia (otras coordenadas): su paseo hasta la siguiente parada ya no vale, se vuelve a pedir («Cambiar parada», Tanda 7).
+              if (!updates.coordinates) return { ...stop, ...updates }
+              return { ...stop, walkingTimeToNextMinutes: undefined, nextStopNote: undefined, ...updates, nextLegPending: at < day.stops.length - 1 || undefined }
+            }
+            // …y el de la parada de justo antes hasta este sitio también.
+            if (updates.coordinates && day.stops[at + 1]?.id === stopId) return { ...stop, walkingTimeToNextMinutes: undefined, nextStopNote: undefined, nextLegPending: true }
+            return stop
+          }),
         })),
       }
     }),
