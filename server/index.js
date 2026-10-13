@@ -4,6 +4,7 @@ import { dinnerZones, servesDinner, servesLunch } from '../shared/routeEngine/di
 import { TAG_INTEREST_MAP } from '../shared/routeEngine/experienceTags.js'
 import { availabilityLabel } from '../shared/routeEngine/availability.js'
 import { etiquetasDeBarrio, gruposDeDia, sinEntradaPorSitio } from '../shared/routeEngine/fichaLugar.js'
+import { importanciaDeSitios } from '../shared/routeEngine/importanciaDeSitios.js'
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { esNombreNuestro } from './engine/nombresDeFoto.js'
 import { RESERVAS_GRANDES } from '../shared/routeEngine/listasReservas.js'
@@ -4530,6 +4531,8 @@ app.post('/api/destination-excursions', (req, res) => {
     etiquetas_por_sitio: etiquetasDeBarrio(data),
     // Tanda 6y7: los grupos con que se nombra cada día («Centro histórico», «Free Tour»…), del dato del destino.
     grupos_dia: gruposDeDia(data),
+    // Tanda 6y10: cuánto pesa cada sitio ('imprescindible' o 'nivel1'), para «Cambiar un día por la excursión» (qué día pierde menos). Dato del destino.
+    importancia_por_sitio: importanciaDeSitios(data),
     sin_entrada_por_sitio: sinEntradaPorSitio(data),
   }
   if (!data || (options.length === 0 && entradas.length === 0)) {

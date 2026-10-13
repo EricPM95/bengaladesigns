@@ -95,7 +95,7 @@ function withDayCount(route: Route, days: DayPlan[]): Route {
  * paradas se quitan y el resto del viaje no cambia. Una de medio día solo ocupa la mañana (hasta las 14:00). Devuelve la ruta y el día, o null si ya
  * hay 14 días.
  */
-export function placeExcursionIn(route: Route, excursion: Excursion, target: { dayId: string } | { newDay: true }): { route: Route; dayId: string } | null {
+export function placeExcursionIn(route: Route, excursion: Excursion, target: { dayId: string } | { newDay: true; extendTrip?: true }): { route: Route; dayId: string } | null {
   let next = route
   let dayId: string
   const isNew = 'newDay' in target
@@ -103,6 +103,8 @@ export function placeExcursionIn(route: Route, excursion: Excursion, target: { d
     const added = addFreeDay(route, excursion.title)
     if (!added) return null
     next = withDayColors(added.route)
+    // «Añadir en un día nuevo» con los días llenos (Tanda 6y10): el viaje gana de verdad un día (la duración y la fecha de vuelta pasan al día siguiente).
+    if (target.extendTrip) next = withOneMoreTripDay(next, route)
     dayId = added.dayId
   } else dayId = target.dayId
   const half = excursion.length === 'half-day'
@@ -149,6 +151,22 @@ export function withExcursionOnSwitchDay(route: Route, dayId: string, excursion:
         ...(day.interruptor.mode === 'excursion' ? { selectedExcursionId: excursion.id } : {}),
       }
     }),
+  }
+}
+
+/**
+ * El viaje gana un día (Tanda 6y10): la duración (`answers.days`) sube uno y, con fechas, la de vuelta pasa al día siguiente. Se cuenta desde la ruta de ANTES de añadir el día,
+ * así los días de más que ya hubiera (la línea «Tienes más días que fechas») siguen igual que estaban. `antes` es la ruta antes del cambio.
+ */
+export function withOneMoreTripDay(route: Route, antes: Route): Route {
+  const range = route.answers.dateRange
+  return {
+    ...route,
+    answers: {
+      ...route.answers,
+      days: (antes.answers.days ?? antes.days.length) + 1,
+      dateRange: range ? { ...range, end: addDaysToIso(range.end, 1) } : range,
+    },
   }
 }
 
