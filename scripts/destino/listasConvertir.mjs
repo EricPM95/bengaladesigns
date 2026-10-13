@@ -210,7 +210,9 @@ function nocheDe(texto, dia) {
 }
 
 // ── El documento, día a día ─────────────────────────────────────────────────────────────────────────────────────
-const IDS = ['D0', 'D0-medio', 'D1-corto', 'D1', 'D2', 'D3', 'D1-FT', 'DT-medio', 'DM-medio', 'D4', 'DA-medio', 'D5', 'D6', 'D7']
+// (Tanda 7, punto 18: las listas nuevas de las llegadas y las vueltas —el día 1 a buen paso, la ruta del centro, D1+Vaticano, las mañanas cortas y la tarjeta «Hoy vuelves a casa»— son días del documento como los demás.)
+const LISTAS_TANDA7 = ['D1-rapido', 'D1-rapido-invierno-10', 'D1-rapido-invierno-11', 'D1-tarde', 'D1-centro-navona', 'D1-centro-espana', 'D1-centro-entera-navona', 'D1-centro-entera-espana', 'D1-anochecer-navona', 'D1-anochecer-espana', 'D1-noche', 'D1-noche-sin-cena', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DV-traslado']
+const IDS = ['D0', 'D0-medio', 'D1-corto', 'D1', 'D2', 'D3', 'D1-FT', 'DT-medio', 'DM-medio', 'D4', 'DA-medio', 'D5', 'D6', 'D7', ...LISTAS_TANDA7]
 const secciones = []
 for (let i = 0; i < lineas.length; i++) {
   const h = /^(#{2,3})\s+(.+?)\s+·\s+(D[0-9A-Za-z-]+)\b(.*)$/.exec(lineas[i])
@@ -221,7 +223,9 @@ for (let k = 0; k < secciones.length; k++) {
   for (let j = secciones[k].desde + 1; j < lineas.length; j++) if (/^(#{2,3})\s/.test(lineas[j]) || /^---\s*$/.test(lineas[j])) { hasta = j; break }
   secciones[k].cuerpo = lineas.slice(secciones[k].desde + 1, hasta)
 }
-const FLAT = new Set(['D0-medio', 'DT-medio', 'DM-medio', 'DA-medio'])
+const FLAT = new Set(['D0-medio', 'DT-medio', 'DM-medio', 'DA-medio', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula'])
+/** Un texto escrito entre «», sin las comillas (si todo el valor va entre comillas). */
+const sinComillas = (texto) => { const t = texto.trim(); return t.startsWith('«') && t.endsWith('»') ? t.slice(1, -1).trim() : t }
 
 const dias = {}
 for (const seccion of secciones) {
@@ -266,6 +270,16 @@ for (const seccion of secciones) {
         continue
       }
       if (nombreEt === 'tarde') { parte = parte ?? tomarParte('unica'); franja = 'tarde'; modo = 'lista'; continue }
+      // (Tanda 7) «Si te sobra tiempo»: las paradas que la versión del día deja fuera, en su orden, con sus minutos. «Texto…»: un texto de la lista (la llegada de noche, «Hoy vuelves a casa»).
+      // «Empieza en»: por dónde empieza la ruta del centro. «El miércoles»: en las mañanas cortas, que ese día se usa la siguiente de la tabla.
+      if (nombreEt === 'si te sobra tiempo') { parte = parte ?? tomarParte('unica'); parte.sobra = partirComas(resto).map((n) => paradaDe(n, id)).filter((s) => !s.sin_resolver); modo = 'prosa'; continue }
+      if (nombreEt === 'texto' || nombreEt.startsWith('texto ')) {
+        const clave = nombreEt === 'texto' ? 'texto' : nombreEt.replace(/^texto (?:del? )?(?:la |los |el )?/, '').trim().replace(/\s+/g, '_')
+        ;(dia.textos ??= {})[clave] = sinComillas(resto)
+        modo = 'prosa'; continue
+      }
+      if (nombreEt === 'empieza en') { dia.inicio = norm(resto).startsWith('navona') ? 'navona' : norm(resto).startsWith('plaza de espana') ? 'plaza_de_espana' : (duda(id, `No sé por dónde empieza «${resto}».`, 'inicio'), null); modo = 'prosa'; continue }
+      if (nombreEt === 'el miercoles' && /siguiente/i.test(resto)) { dia.miercoles = 'siguiente'; modo = 'prosa'; continue }
       if (nombreEt === 'comida') { parte = parte ?? tomarParte('unica'); parte.comida = mesaDe(resto, id); franja = 'tarde'; modo = FLAT.has(id) ? 'lista' : 'prosa'; continue }
       if (nombreEt === 'cena') { parte = parte ?? tomarParte('unica'); parte.cena = mesaDe(resto, id); modo = FLAT.has(id) ? 'prosa' : 'prosa'; continue }
       if (nombreEt === 'noche') { parte = parte ?? tomarParte('unica'); parte.noche = nocheDe(resto, id); modo = 'prosa'; continue }
@@ -334,12 +348,138 @@ for (const cambio of variantes.ajustes_base ?? []) {
 // ── Comprobaciones de lo convertido ───────────────────────────────────────────────────────────────────────────────
 for (const dia of Object.values(dias)) {
   const mesas = Object.values(dia.partes).flatMap((p) => [p.comida, p.cena].filter(Boolean))
-  if (Object.keys(dia.partes).length === 0) duda(dia.id, 'El día no trae ninguna lista.', 'día')
+  if (Object.keys(dia.partes).length === 0 && !dia.textos) duda(dia.id, 'El día no trae ninguna lista.', 'día')
   for (const parte of Object.values(dia.partes)) for (const stop of [...parte.manana, ...parte.tarde]) if (stop.lugar && !places.has(norm(stop.lugar)) && stop.tipo !== 'tour' && stop.tipo !== 'desayuno') duda(dia.id, `El sitio «${stop.lugar}» no está en roma.json.`, 'paradas')
   if (mesas.some((m) => !m.restaurante)) duda(dia.id, 'Una comida o cena sin restaurante reconocido.', 'mesas')
 }
 
-const salida = { formato: 'listas', fuente: DOC, generado: 'scripts/destino/listasConvertir.mjs', destino: 'roma', dias }
+// ── Las tablas de las llegadas y las vueltas (Tanda 7, punto 6, 9 y 18) ─────────────────────────────────────────────────────
+// Cada fila de una tabla de hora apunta a una lista escrita en el documento. La hora solo elige la fila; el motor no cuenta minutos.
+/** Las filas de la primera tabla que cuelga del encabezado cuyo título cumple `titulo` (cualquier nivel de #). */
+function tablaDe(titulo, donde) {
+  const i = lineas.findIndex((l) => /^#{2,6}\s/.test(l) && titulo.test(l.replace(/^#+\s*/, '')))
+  if (i < 0) { duda(donde, `No encuentro el apartado «${titulo}» del documento.`, 'tablas'); return [] }
+  const filas = []
+  for (let j = i + 1; j < lineas.length && !/^#{2,6}\s/.test(lineas[j]); j++) if (/^\s*\|/.test(lineas[j])) filas.push(lineas[j].trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim()))
+  return filas.slice(2)
+}
+const hhmm = (t) => t.padStart(5, '0')
+const menosUnMinuto = (t) => { const [h, m] = t.split(':').map(Number); const x = h * 60 + m - 1; return `${String(Math.floor(x / 60)).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}` }
+/** «llega de 0:00 a 4:59» · «antes de las 10:00» · «de 10:00 a 11:59» · «a las 23:00 o más tarde» → { desde, hasta } (hasta: null = sin final). */
+function rangoDe(texto, donde) {
+  let m
+  if ((m = /^llega de (\d{1,2}:\d{2}) a (\d{1,2}:\d{2})$/i.exec(texto))) return { por: 'llegada', desde: hhmm(m[1]), hasta: hhmm(m[2]) }
+  if ((m = /^antes de las (\d{1,2}:\d{2})$/i.exec(texto))) return { desde: '00:00', hasta: menosUnMinuto(hhmm(m[1])) }
+  if ((m = /^de (\d{1,2}:\d{2}) a (\d{1,2}:\d{2})$/i.exec(texto))) return { desde: hhmm(m[1]), hasta: hhmm(m[2]) }
+  if ((m = /^a las (\d{1,2}:\d{2}) o más tarde$/i.exec(texto))) return { desde: hhmm(m[1]), hasta: null }
+  duda(donde, `No entiendo la hora «${texto}» de la tabla.`, 'tablas')
+  return null
+}
+/** Que las filas cubran las 24 horas, una detrás de otra, sin huecos ni solapes. */
+function cubrenElDia(filas, donde) {
+  const libres = filas.filter((f) => f.por !== 'llegada').sort((a, b) => a.desde.localeCompare(b.desde))
+  let esperado = '00:00'
+  for (const f of libres) {
+    if (f.desde !== esperado) duda(donde, `La tabla tiene un hueco o un solape en ${esperado} (la fila empieza a las ${f.desde}).`, 'tablas')
+    if (f.hasta == null) { esperado = null; break }
+    esperado = (() => { const [h, m] = f.hasta.split(':').map(Number); const x = h * 60 + m + 1; return `${String(Math.floor(x / 60)).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}` })()
+  }
+  if (esperado !== null) duda(donde, `La tabla no llega al final del día (se queda en ${esperado}).`, 'tablas')
+}
+/** «D1 · desde las 9:00» / «D1-centro-navona o D1-centro-espana · comida al llegar · el D1 pasa al día 2» / «D1 («Por la tarde (a las 15:30 o más tarde)»)». */
+function celdaDelDia1(celda, donde) {
+  const trozos = celda.split(' · ').map((s) => s.trim())
+  const listasTexto = trozos[0]
+  const fila = { listas: [] }
+  const conVariante = /^(D[0-9A-Za-z-]+)\s*\(«(.+)»\)$/.exec(listasTexto)
+  const piezas = conVariante ? [listasTexto] : listasTexto.split(/\s+o\s+/)
+  for (const pieza of piezas) {
+    const v = /^(D[0-9A-Za-z-]+)\s*\(«(.+)»\)$/.exec(pieza)
+    const id = v ? v[1] : pieza
+    if (!dias[id]) { duda(donde, `La tabla habla de una lista que no está en el documento: «${id}».`, 'tablas'); continue }
+    const entrada = { lista: id }
+    if (v) {
+      const variante = (dias[id].variantes ?? []).find((x) => String(x.doc ?? '').startsWith(v[2]))
+      if (variante) entrada.variante = variante.id
+      else duda(donde, `La tabla cita la versión «${v[2]}» de ${id}, que no existe.`, 'tablas')
+    }
+    fila.listas.push(entrada)
+  }
+  if (fila.listas.length > 1) fila.segun_zona = true
+  for (const flag of trozos.slice(1)) {
+    let m
+    if (/^comida al llegar$/i.test(flag)) fila.comida_al_llegar = true
+    else if ((m = /^comida corta \((\d+) min\)$/i.exec(flag))) fila.comida_corta_min = Number(m[1])
+    else if (/^el D1 pasa al día 2$/i.test(flag)) fila.pasa_al_dia_2 = true
+    else if ((m = /^desde las (\d{1,2}:\d{2})$/i.exec(flag))) fila.empieza = hhmm(m[1])
+    else duda(donde, `No entiendo «${flag}» en la tabla del día 1.`, 'tablas')
+  }
+  return fila
+}
+const llegadas = { dia1: {}, vuelta: {}, ultimas_mananas: [], inicio_por_zona: {} }
+for (const [clave, titulo] of [['marzo_octubre', /^El día 1, de marzo a octubre$/], ['invierno', /^El día 1, en invierno$/]]) {
+  const filas = []
+  for (const [rango, celda] of tablaDe(titulo, 'dia1')) {
+    const r = rangoDe(rango, `dia1 ${clave}`)
+    if (r) filas.push({ ...r, ...celdaDelDia1(celda, `dia1 ${clave}`), doc: `${rango} | ${celda}` })
+  }
+  cubrenElDia(filas, `dia1 ${clave}`)
+  if (!filas.some((f) => f.por === 'llegada')) duda(`dia1 ${clave}`, 'Falta la fila de la llegada de madrugada.', 'tablas')
+  llegadas.dia1[clave] = filas
+}
+{
+  const zonas = D.destination_config?.zonas_alojamiento ?? []
+  for (const [zona, empieza] of tablaDe(/^Por dónde empieza la ruta del centro \(según la zona\)$/, 'inicio')) {
+    const hallada = zonas.find((z) => norm(z.nombre) === norm(zona) || norm(z.nombre).startsWith(`${norm(zona)} (`))
+    const inicio = norm(empieza).startsWith('navona') ? 'navona' : norm(empieza).startsWith('plaza de espana') ? 'plaza_de_espana' : null
+    if (!hallada || !inicio) { duda('inicio', `No entiendo la fila «${zona} | ${empieza}» de por dónde empieza la ruta del centro.`, 'tablas'); continue }
+    llegadas.inicio_por_zona[hallada.id] = inicio
+  }
+  for (const z of zonas) if (!llegadas.inicio_por_zona[z.id]) duda('inicio', `La zona «${z.nombre}» no tiene por dónde empezar la ruta del centro.`, 'tablas')
+}
+{
+  const LLEVA = new Set(['solo-traslado', 'manana-corta', 'manana-sin-comida', 'manana-con-comida', 'dia-mas'])
+  const filas = []
+  for (const [rango, queDia, lleva] of tablaDe(/^Qué lleva el día de vuelta según la hora$/, 'vuelta')) {
+    const r = rangoDe(rango.replace(/^de (\d)/, 'de $1'), 'vuelta')
+    if (!r) continue
+    const [codigo, ...flags] = lleva.split(' · ').map((s) => s.trim())
+    if (!LLEVA.has(codigo)) { duda('vuelta', `No entiendo qué lleva la fila «${rango}»: «${codigo}».`, 'tablas'); continue }
+    const fila = { desde: r.desde, hasta: r.hasta, lleva: codigo.replace(/-/g, '_'), doc: `${rango} | ${queDia}` }
+    for (const flag of flags) {
+      if (/^el día de antes con cena y sin nocturna$/i.test(flag)) fila.dia_antes = 'con_cena_sin_nocturna'
+      else if (/^tarde libre$/i.test(flag)) fila.tarde_libre = true
+      else if (/^sin cena ni noche$/i.test(flag)) fila.sin_cena_ni_noche = true
+      else duda('vuelta', `No entiendo «${flag}» en la tabla del día de vuelta.`, 'tablas')
+    }
+    filas.push(fila)
+  }
+  cubrenElDia(filas, 'vuelta')
+  llegadas.vuelta = { hora_de: 'vuelo', punto_de_la_tabla: 'fiumicino', margen_de_la_tabla: '03:00', filas }
+}
+{
+  const SALTOS = { 'el 25 de diciembre': '12-25', 'el domingo de pascua': 'pascua', 'el miercoles': 'miercoles' }
+  for (const [orden, ultima, corta, principal, salta] of tablaDe(/^Las últimas mañanas \(en su orden\)$/, 'ultimas')) {
+    const fila = { orden: Number(orden) }
+    if (/^la hoja/i.test(ultima)) fila.hoja = /«(.+)»/.exec(ultima)?.[1] ?? null
+    else {
+      const [id, franjaTexto] = ultima.replace(/\s*\([^)]*\)\s*$/, '').split(' · ').map((s) => s.trim())
+      if (!dias[id]) { duda('ultimas', `La última mañana ${orden} habla de una lista que no existe: «${id}».`, 'tablas'); continue }
+      fila.lista = id
+      fila.parte = dias[id].partes.manana ? 'manana' : 'unica'
+      fila.franja = 'manana'
+      if (franjaTexto && !/^(de )?ma[nñ]ana$/i.test(norm(franjaTexto))) duda('ultimas', `No entiendo la franja «${franjaTexto}» de la última mañana ${orden}.`, 'tablas')
+    }
+    fila.corta = /^D[0-9A-Za-z-]+$/.test(corta) ? corta : null
+    if (fila.corta && !dias[fila.corta]) duda('ultimas', `La mañana corta «${fila.corta}» no existe.`, 'tablas')
+    fila.lo_principal = norm(principal) === 'no hay' ? [] : principal.split(' · ').map((n) => { const lugar = resolver(n.trim(), 'ultimas')?.lugar; if (!lugar) duda('ultimas', `«${n}» (lo principal de la última mañana ${orden}) no está en roma.json.`, 'tablas'); return lugar }).filter(Boolean)
+    fila.se_salta = norm(salta) === 'nada' ? [] : salta.split(' · ').map((s) => SALTOS[norm(s.trim())] ?? (duda('ultimas', `No entiendo «${s}» en lo que se salta de la última mañana ${orden}.`, 'tablas'), null)).filter(Boolean)
+    llegadas.ultimas_mananas.push(fila)
+  }
+  if (llegadas.ultimas_mananas.length !== 6) duda('ultimas', `Tendría que haber 6 filas en las últimas mañanas y hay ${llegadas.ultimas_mananas.length}.`, 'tablas')
+}
+
+const salida = { formato: 'listas', fuente: DOC, generado: 'scripts/destino/listasConvertir.mjs', destino: 'roma', dias, llegadas }
 fs.writeFileSync(OUT, `${JSON.stringify(salida, null, 1)}\n`)
 const textoDudas = ['# Dudas del convertidor (Tanda 6)', '', 'Lo que `scripts/destino/listasConvertir.mjs` no ha entendido como dato o ha tenido que completar. Se vuelve a generar al convertir.', '', ...(dudas.length ? dudas.map((d) => `- **${d.dia}** (${d.donde}): ${d.texto}`) : ['Ninguna.']), ''].join('\n')
 fs.writeFileSync(DUDAS, textoDudas)

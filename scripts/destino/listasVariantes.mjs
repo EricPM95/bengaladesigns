@@ -695,7 +695,7 @@ export default {
           ops: { tarde: { ajustar: { 'Galería Borghese': { min: 75 } } } },
         },
         { id: 'lunes_sin_galeria', doc: 'si no se puede, en lugar de la Galería, la Cripta de los Capuchinos (Via Veneto, ~45; abre a las 10:00), después de la Fuente del Tritón.', cuando: { cerrado: 'Galería Borghese' }, ops: { manana: { quitar: ['Galería Borghese'], insertar: [{ despues_de: 'Fuente del Tritón', parada: P('Cripta de los Capuchinos', 45, 'dentro') }] } } },
-        { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el Tritón, Via Veneto ni Porta Pinciana del principio: **el día empieza directamente en Villa Borghese**', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano', 'Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'] }, tarde: { ajustar: { 'Plaza de España': { modo: 'camino', min: 5 } } }, empieza: '09:00' } },
+        { id: 'con_free_tour_de_manana', doc: 'Con Free Tour de mañana:** sin Trevi ni desayuno, y sin el Tritón, Via Veneto ni Porta Pinciana del principio: **el día empieza directamente en Villa Borghese**', cuando: { free_tour: true }, ops: { manana: { quitar: ['Fontana de Trevi', 'Desayuno romano', 'Fuente del Tritón', 'Via Veneto', 'Porta Pinciana'] }, tarde: { ajustar: { 'Plaza de España': { modo: null, min: 10 } } }, empieza: '09:00' } },
       ],
       experiencias: {
         naturaleza_vistas: { doc: 'Naturaleza y Vistas:** el lago de Villa Borghese ~60.', ops: { manana: { ajustar: { 'Parque de Villa Borghese': { min: 60 } } } } },
@@ -739,7 +739,7 @@ export default {
           id: 'miercoles_audiencia', doc: 'Miércoles (audiencia):** la mañana va al revés y la Cúpula al final, cuando acaba la audiencia (desde las 12:30)',
           cuando: { dia_semana: ['miércoles'], mes: [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12] },
           ops: {
-            manana: { paradas: [P('Piazza Navona', 20), ...camino('Panteón', 'Via dei Coronari', "Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 90, 'dentro', { titulo: "Castillo de Sant'Angelo, hasta la terraza del ángel" }), ...camino('Via della Conciliazione'), P('Plaza de San Pedro', 5, 'camino', { no_antes: '12:30' }), P('Cúpula de San Pedro', 75, 'dentro')] },
+            manana: { paradas: [P('Piazza Navona', 20), P('Panteón', 10), ...camino('Via dei Coronari', "Puente Sant'Angelo"), P("Castillo de Sant'Angelo", 90, 'dentro', { titulo: "Castillo de Sant'Angelo, hasta la terraza del ángel" }), ...camino('Via della Conciliazione'), P('Plaza de San Pedro', 10, null, { no_antes: '12:30' }), P('Cúpula de San Pedro', 75, 'dentro')] },
             comida: mesa('Ristorante Arlù', '200 Gradi', 'en el Borgo'),
           },
         },
