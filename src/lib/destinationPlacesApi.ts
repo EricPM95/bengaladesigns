@@ -27,6 +27,8 @@ export interface DestinationPlace {
   type: string | null
   tags: string[]
   level: number | null
+  /** Los «me gusta» de partida del sitio (las redes de Eric, aproximado por debajo del real; Tanda 6y10): una cifra fija de los datos. La cuenta que se enseña es esta MÁS los de los viajeros (`useMeGustaStore`). */
+  likes_initial?: number
   /** Su puesto en la lista a mano del destino (`pool_lista`; 0 = el primero), SIN tener en cuenta su nivel (el nivel va aparte en `level`); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */
   essential_rank?: number | null
   schedule: string | null

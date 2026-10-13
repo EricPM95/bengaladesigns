@@ -11,7 +11,7 @@
 //   C. LA HORA DE LA ENTRADA, UNA SOLA VEZ (punto 6)
 //     6. con una entrada reservada el motor no escribe «Llega unos 30 minutos antes: …» (15 en el Free Tour) sin hora calculada; la ficha repite la hora o no dice «✓ Tu entrada: 10:30»; DÍAS, HOY (gratis y de pago) o RESERVAS enseñan la hora más de una vez;
 //   D. LA ETIQUETA «TRASTEVERE» (punto 18)
-//     7. los sitios con etiqueta no son EXACTAMENTE los 10 de la zona «trastevere» de los datos más su paseo (6y5; los restaurantes no), o falta en DÍAS, HOY, EXPLORAR o la ficha, o sale en otro sitio;
+//     7. los sitios con etiqueta no son EXACTAMENTE los 10 de la zona «trastevere» de los datos más su paseo (6y5; los restaurantes no), o falta en DÍAS o HOY, o sale en otro sitio (6y10: ni en EXPLORAR ni en la ficha);
 //     8. su lila no está definido una sola vez (token), no tiene contraste suficiente, o se confunde con los colores de los días o con el frambuesa.
 import fs from 'node:fs'
 import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
@@ -341,7 +341,8 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   const etiquetas = (html) => veces(html, /data-etiqueta-barrio="Trastevere"/g)
   debe(etiquetas(renderToStaticMarkup(createElement(EtiquetaBarrio, { etiqueta: 'Trastevere' }))) === 1 && renderToStaticMarkup(createElement(EtiquetaBarrio, { etiqueta: null })) === '', '7 componente', 'EtiquetaBarrio no pinta con etiqueta o pinta sin ella')
   // La ficha.
-  debe(etiquetas(hojaSimple(isla)) === 1, '7 ficha', 'la ficha de la Isla Tiberina no lleva «Trastevere»')
+  // (Tanda 6y10: la etiqueta de barrio ya NO sale en la ficha ni en EXPLORAR; solo en los acordeones de DÍAS y HOY. Lo comprueba también pruebaFase6y10_ficha.mjs.)
+  debe(etiquetas(hojaSimple(isla)) === 0, '7 ficha', 'la ficha de la Isla Tiberina lleva «Trastevere» (6y10: ya no)')
   debe(etiquetas(hojaSimple(coliseoCat)) === 0 && etiquetas(hojaSimple(fontana)) === 0, '7 ficha', 'la ficha de un sitio de otra zona lleva «Trastevere»')
   // DÍAS y HOY: un día con una parada de Trastevere (y otras que no).
   const rutaT = JSON.parse(JSON.stringify(ruta))
@@ -373,7 +374,7 @@ const hojaSimple = (stop, { version = 'completa', extra = {}, voces } = {}) => {
   const soloT = catalogo.filter((p) => p.kind === 'place' && zonaDe.get(p.name) === 'trastevere')
   const soloOtros = catalogo.filter((p) => p.kind === 'place' && zonaDe.get(p.name) && zonaDe.get(p.name) !== 'trastevere')
   debe(soloT.length >= 5 && soloOtros.length >= 20, '7 EXPLORAR', 'la prueba no encuentra lugares de Trastevere y de otras zonas en el catálogo')
-  debe(etiquetas(explorador(soloT)) >= Math.min(5, soloT.length), '7 EXPLORAR', `EXPLORAR no pone «Trastevere» en sus lugares de esa zona (${etiquetas(explorador(soloT))} de ${soloT.length})`)
+  debe(etiquetas(explorador(soloT)) === 0, '7 EXPLORAR', `EXPLORAR pone «Trastevere» en sus lugares de esa zona (${etiquetas(explorador(soloT))} de ${soloT.length}; 6y10: ya no)`)
   debe(etiquetas(explorador(soloOtros)) === 0, '7 EXPLORAR', 'EXPLORAR pone «Trastevere» a lugares de otra zona')
   // Y los restaurantes (no son lugares de la ruta) no la llevan.
   const restaurantes = catalogo.filter((p) => p.kind === 'restaurant')

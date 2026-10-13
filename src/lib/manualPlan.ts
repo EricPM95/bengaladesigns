@@ -23,7 +23,7 @@ export function isManualPlanDay(route: Pick<Route, 'planMode'> | null | undefine
 
 /**
  * El orden de la lista completa del destino en una ruta a mano (EXPLORAR y «Añadir parada»), en este orden y sin repetir nada (Tanda 6y3):
- *   1. lo que más «me gusta» tiene DE VERDAD (`place_likes`; los números de prueba de `?prueba=1` solo se pintan, nunca ordenan);
+ *   1. lo que más «me gusta» tiene (la cuenta única de cada sitio: los de partida de los datos MÁS los de los viajeros; Tanda 6y10);
  *   2. los de nivel 1 (`level === 1`);
  *   3. los de `pool_lista` (la lista a mano del destino, en su orden; `essential_rank` es su puesto) que NO han salido ya por el nivel 1;
  *   4. el resto, con el orden de siempre (nivel, orden editorial, alfabético).

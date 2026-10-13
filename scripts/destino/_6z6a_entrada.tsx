@@ -14,13 +14,13 @@ import { esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO } from '../../src/lib/
 import { buildEntradasBloque } from '../../src/lib/bookings'
 import { legsOf } from '../../src/lib/reservasLegs'
 import { pagoActivo, fijarVersion } from '../../src/lib/pago'
-import { esEntornoDePrueba, fijarPrueba, pruebaActiva } from '../../src/lib/recomendaciones'
+import { esEntornoDePrueba } from '../../src/lib/recomendaciones'
 import { mapSingleGeneratedDay } from '../../src/lib/mapGeneratedRoute'
 import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
 
 export {
   createElement, renderToStaticMarkup, BottomBar, PESTANAS, DayList, ReservasPanel, HoyView, PanelDePruebas, usePruebasUi, useRouteStore, modoVisible, diaDeHoy, diaQueSeAbreAlEntrar,
-  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba, fijarPrueba, pruebaActiva,
+  esDiaCompleto, minutosDelDia, TEXTO_DIA_COMPLETO, buildEntradasBloque, legsOf, pagoActivo, fijarVersion, esEntornoDePrueba,
   mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions,
 }

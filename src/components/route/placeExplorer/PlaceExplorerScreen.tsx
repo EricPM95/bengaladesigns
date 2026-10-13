@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Excursion, Route, Stop } from '../../../lib/types'
 import { isOsmPoint, type DestinationPlace } from '../../../lib/destinationPlacesApi'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
-import { conMiles, numeroDeRecomendaciones, textoRecomendacion } from '../../../lib/recomendaciones'
 import { routeHasFreeTour } from '../reservas/FreeTourSheet'
 import {
   PLACE_FILTER_CHIPS,
@@ -15,7 +14,8 @@ import {
   type PlaceFilterId,
   type RestaurantSubCategory,
 } from '../../../lib/placeCategories'
-import { fetchPlaceLikes, togglePlaceLike, EMPTY_PLACE_LIKES, type PlaceLikes } from '../../../lib/placeLikesApi'
+import { claveDeDestino, totalesDe, useMeGustaStore } from '../../../store/useMeGustaStore'
+import { MeGusta } from '../../ui/MeGusta'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { buildRouteStopEntries, isNameAlreadyInRoute } from '../../../lib/routeStopsIndex'
 import { haversineMeters, hasRealCoordinates } from '../../../lib/distanceMock'
@@ -29,8 +29,6 @@ import { CIVITATIS_RED } from '../../../lib/affiliateLinks'
 import { placeHoursOnDate } from '../../../lib/placeHoursOnDate'
 import { CARD_STYLE, CATEGORY_STYLE, EXPLORE_ICONOS, EXPLORE_ICONS, solidOf, type ExploreIconName } from '../../../lib/exploreStyle'
 import { Icono } from '../../ui/Icono'
-import { EtiquetaBarrio } from '../../ui/EtiquetaBarrio'
-import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { explorarConCercania } from '../../../lib/explorarDePago'
 import { compareManualExplorer, isManualRoute } from '../../../lib/manualPlan'
 import { diaCorto } from '../../../lib/nombreDeDia'
@@ -352,8 +350,6 @@ export function PlaceExplorerScreen({
   // Los baños solo entran si quien abre la pantalla los quiere (Explorar): en el «+» de los días no se enseñan.
   // El Free Tour del destino, que solo sale bajo «Entradas» (Tanda 6z): se pide aquí (el cliente lo cachea por destino).
   const { freeTourEntry } = useDestinationPool(destination, open)
-  /** La etiqueta de barrio de cada lugar («Trastevere», Tanda 6y4): la de su zona en los datos del destino. */
-  const etiquetasDeBarrio = useDestinationExcursions(destination).etiquetasPorSitio
   const places = useMemo(() => {
     // Elegir varios (Tanda 6y2, pregunta 9): solo salen los sitios que se pueden marcar (las atracciones). Fuera restaurantes, baños, fuentes y el Free Tour (que no se marca: es una reserva); en EXPLORAR normal siguen.
     if (picking) return allPlaces.filter((place) => place.kind === 'place')
@@ -373,7 +369,9 @@ export function PlaceExplorerScreen({
   const [activeSubCategory, setActiveSubCategory] = useState<RestaurantSubCategory | null>(null)
   const [query, setQuery] = useState(initialQuery ?? '')
   const [tab, setTab] = useState<BottomTab>('recommended')
-  const [likes, setLikes] = useState<PlaceLikes>(EMPTY_PLACE_LIKES)
+  /** La cuenta única de «me gusta» (Tanda 6y10): los de partida de cada sitio más los de los viajeros, la misma que enseña la ficha. El orden de «Recomendados» usa la SUMA. */
+  const cuentaMeGusta = useMeGustaStore((state) => state.cuentas[claveDeDestino(destination)])
+  const likesTotales = useMemo(() => totalesDe(cuentaMeGusta), [cuentaMeGusta])
   const [selected, setSelected] = useState<DestinationPlace | null>(null)
   /** Un baño tocado en el mapa o en la lista: se resalta, pero no abre ficha (no tiene) ni se puede añadir a un día. */
   const [selectedToilet, setSelectedToilet] = useState<string | null>(null)
@@ -428,13 +426,7 @@ export function PlaceExplorerScreen({
 
   useEffect(() => {
     if (!open) return
-    let cancelled = false
-    fetchPlaceLikes(destination).then((found) => {
-      if (!cancelled) setLikes(found)
-    })
-    return () => {
-      cancelled = true
-    }
+    void useMeGustaStore.getState().cargar(destination)
   }, [open, destination])
 
   // La ubicación se pide SOLO al entrar en "Cerca de ti", nunca al abrir la pantalla: el permiso del
@@ -585,13 +577,13 @@ export function PlaceExplorerScreen({
     // Recomendados: los más votados primero. Sin likes todavía (o con empate) manda el nivel curado
     // del destino, que es exactamente "lo imprescindible primero" — nunca un orden arbitrario.
     // Ruta a mano (Tanda 6y): más «me gusta» de verdad, luego los imprescindibles de la lista del destino, luego el nivel 1 y el resto (manualPlan.ts).
-    if (manualOrder) return [...filtered].sort((a, b) => compareManualExplorer(a, b, likes.counts))
+    if (manualOrder) return [...filtered].sort((a, b) => compareManualExplorer(a, b, likesTotales))
     return [...filtered].sort((a, b) => {
       // «Entradas»: el Free Tour del destino, siempre el primero.
       if (a.solo_entradas !== b.solo_entradas) return a.solo_entradas ? -1 : 1
       const zoneDiff = Number(isRecommended(b)) - Number(isRecommended(a))
       if (zoneDiff !== 0) return zoneDiff
-      const likeDiff = (likes.counts.get(b.name) ?? 0) - (likes.counts.get(a.name) ?? 0)
+      const likeDiff = (likesTotales.get(b.name) ?? 0) - (likesTotales.get(a.name) ?? 0)
       if (likeDiff !== 0) return likeDiff
       const levelDiff = (a.level ?? 9) - (b.level ?? 9)
       if (levelDiff !== 0) return levelDiff
@@ -601,7 +593,7 @@ export function PlaceExplorerScreen({
       return a.name.localeCompare(b.name, 'es')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likes, recommendedZone, manualOrder])
+  }, [places, needle, queryTooShort, activeFilters, activeSubCategory, tab, position, likesTotales, recommendedZone, manualOrder])
 
   // Prompt 3 (bug 1): el mapa recibe SIEMPRE el catálogo entero, pase lo que pase con los filtros,
   // y lo que cambia al marcar un chip es únicamente qué pines están ocultos. Antes se le pasaba solo
@@ -740,24 +732,6 @@ export function PlaceExplorerScreen({
   const visibleMarkerCount = dayMarkers.length + visiblePinIds.size + (excursionsActive ? excursionMarkers.length : 0)
   // Con Excursiones encendido el mapa se aleja lo justo para ver los destinos (a veces lejos de la ciudad); si hay más filtros, también sus pines.
   const fitIds = !excursionsActive ? recenterIds : excursionsActive ? [...excursionMarkers.map((marker) => marker.id), ...(placeFiltersActive ? [...visiblePinIds] : [])] : null
-
-  const onToggleLike = async (place: DestinationPlace) => {
-    const next = !likes.mine.has(place.name)
-    // Optimista: el corazón responde al instante y solo se revierte si Supabase dice que no.
-    const applyLocally = (liked: boolean) =>
-      setLikes((prev) => {
-        const counts = new Map(prev.counts)
-        const mine = new Set(prev.mine)
-        counts.set(place.name, Math.max(0, (counts.get(place.name) ?? 0) + (liked ? 1 : -1)))
-        if (liked) mine.add(place.name)
-        else mine.delete(place.name)
-        return { counts, mine }
-      })
-
-    applyLocally(next)
-    const confirmed = await togglePlaceLike(destination, place.name, next)
-    if (confirmed === null) applyLocally(!next)
-  }
 
   /** El «+» de «Añadir parada»: lo añade directo a ese día, sin preguntar (Tanda 6z). */
   const addDirect = async (place: DestinationPlace) => {
@@ -1184,9 +1158,6 @@ export function PlaceExplorerScreen({
                 const style = place.filter_category ? CATEGORY_STYLE[place.filter_category] : null
                 const color = solidOf(style?.color ?? '#6B7280')
                 const toilet = isOsmPoint(place)
-                // Solo se enseña un número de recomendaciones si es real (desde 20) o si es el modo de prueba `?prueba=1` (ver recomendaciones.ts).
-                const likeShown = numeroDeRecomendaciones(place, likes.counts.get(place.name) ?? 0)
-                const liked = likes.mine.has(place.name)
                 // El Free Tour no es una parada con su nombre: «en ruta» es que la ruta lo lleve (la hora se elige en su hoja).
                 const alreadyInRoute = !toilet && (place.solo_entradas ? Boolean(route && routeHasFreeTour(route)) : isNameAlreadyInRoute(place.name, stopEntries))
                 const distance = position && hasRealCoordinates(place.coordinates) ? haversineMeters(position, place.coordinates) : null
@@ -1227,10 +1198,9 @@ export function PlaceExplorerScreen({
                         <span className="truncate font-display text-text" style={{ fontSize: 18, lineHeight: 1.1 }}>
                           {place.name}
                         </span>
-                        {(isRecommended(place) || closedToday(place) || (visitable && alreadyInRoute) || (visitable && etiquetasDeBarrio[place.name])) && (
+                        {(isRecommended(place) || closedToday(place) || (visitable && alreadyInRoute)) && (
                           <span className="flex items-center gap-1.5">
-                            {/* La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos. Sin etiqueta, el renglón no sale. */}
-                            {visitable && <EtiquetaBarrio etiqueta={etiquetasDeBarrio[place.name]} />}
+                            {/* (Tanda 6y10) La etiqueta lila de barrio («Trastevere») ya no sale en EXPLORAR: solo en los acordeones de DÍAS y HOY. */}
                             {visitable && alreadyInRoute && (
                               <span className="rounded-full px-1.5 py-0.5 text-caption font-semibold" style={{ background: 'oklch(0.96 0.035 150)', color: 'oklch(0.45 0.11 150)' }}>
                                 {/* Ruta a mano: con su día, «En tu día 2» (con fechas, «En tu lun 13»). */}
@@ -1326,32 +1296,12 @@ export function PlaceExplorerScreen({
                         ) : (
                           <span className="h-11 w-11" />
                         )}
-                        <button
-                          type="button"
-                          onClick={() => onToggleLike(place)}
-                          aria-pressed={liked}
-                          aria-label={liked ? `Quitar me gusta de ${place.name}` : `Me gusta ${place.name}`}
-                          className="flex h-11 min-w-11 items-center justify-end gap-[3px] pl-1 pr-2.5 transition-colors"
-                          style={{ color: liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.55)', font: "500 12px 'Geist'" }}
-                        >
-                          <Icono nombre="gusta" size={17} relleno={liked} />
-                          {likeShown !== null && <span className="tabular-nums">{conMiles(likeShown)}</span>}
-                        </button>
+                        <MeGusta destino={destination} nombre={place.name} variante="tarjeta" className="h-11 min-w-11 pl-1 pr-2.5" />
                       </div>
                     )}
                     {!toilet && !visitable && (
                       <div className="flex shrink-0 flex-col items-end justify-between" style={{ padding: '6px 10px 9px 4px' }}>
-                        <button
-                          type="button"
-                          onClick={() => onToggleLike(place)}
-                          aria-pressed={liked}
-                          aria-label={liked ? `Quitar me gusta de ${place.name}` : `Me gusta ${place.name}`}
-                          className="flex h-[30px] min-w-[30px] items-center gap-[3px] px-1 transition-colors"
-                          style={{ color: liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.55)', font: "500 12px 'Geist'" }}
-                        >
-                          <Icono nombre="gusta" size={17} relleno={liked} />
-                          {likeShown !== null && <span className="tabular-nums">{conMiles(likeShown)}</span>}
-                        </button>
+                        <MeGusta destino={destination} nombre={place.name} variante="tarjeta" className="h-[30px] min-w-[30px] px-1" />
                         {pickable(place) ? (
                           <button
                             type="button"
@@ -1416,10 +1366,7 @@ export function PlaceExplorerScreen({
             parada: no tiene qué ver, ni entradas, ni sitio en el itinerario. */}
         <RestaurantDetailSheet
           restaurant={selected?.kind === 'restaurant' ? selected : null}
-          likeCount={selected ? (likes.counts.get(selected.name) ?? 0) : 0}
-          likeShown={selected ? numeroDeRecomendaciones(selected, likes.counts.get(selected.name) ?? 0) : null}
-          liked={selected ? likes.mine.has(selected.name) : false}
-          onToggleLike={() => selected && onToggleLike(selected)}
+          destino={destination}
           onClose={() => setSelected(null)}
         />
 
@@ -1442,11 +1389,6 @@ export function PlaceExplorerScreen({
             city={destination}
             dayNumber={dayNumber}
             dateIso={dateIso}
-            recomendacion={
-              selected.solo_entradas
-                ? undefined
-                : { liked: likes.mine.has(selected.name), texto: textoRecomendacion(numeroDeRecomendaciones(selected, likes.counts.get(selected.name) ?? 0), likes.counts.get(selected.name) ?? 0), onToggle: () => onToggleLike(selected) }
-            }
             // El lugar que se está mirando todavía no es una parada del día, así que se añade al
             // final de la lista del mapa de la ficha: así sale resaltado en su sitio real y, cuando
             // se abre desde el "+", se ve dónde cae respecto a las paradas que ya hay. Desde

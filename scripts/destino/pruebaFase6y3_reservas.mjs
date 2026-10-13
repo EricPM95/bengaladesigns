@@ -117,11 +117,12 @@ const FT = 'Free Tour por Roma'
   // Empate de «me gusta»: manda el grupo.
   const empate = orden(new Map([['Trastevere', 5], ['Plaza de San Pedro', 5]]))
   debe(empate[0] === 'Plaza de San Pedro' && empate[1] === 'Trastevere', '1 orden', `con los mismos «me gusta», el nivel 1 no va antes que pool_lista: ${empate.slice(0, 2).join(', ')}`)
-  // Los números de `?prueba=1` solo se pintan: la regla no los mira, y la pantalla le pasa solo los reales.
+  // La regla no mira números de prueba (ya no los hay) y la pantalla le pasa la cuenta única.
   const reglaFuente = fs.readFileSync('src/lib/manualPlan.ts', 'utf8')
   const pantalla = fs.readFileSync('src/components/route/placeExplorer/PlaceExplorerScreen.tsx', 'utf8')
   debe(!/numeroDeRecomendaciones|prueba/.test(reglaFuente.replace(/\/\*\*[\s\S]*?\*\//g, '')), '1 prueba', 'la regla de orden mira los números de prueba')
-  debe(/compareManualExplorer\(a, b, likes\.counts\)/.test(pantalla) && !/compareManualExplorer\([^)]*numeroDeRecomendaciones/.test(pantalla), '1 prueba', 'la pantalla no pasa solo los «me gusta» reales a la regla')
+  // (Tanda 6y10: la regla usa la CUENTA ÚNICA —los de partida más los de los viajeros—, no solo los de la nube.)
+  debe(/compareManualExplorer\(a, b, likesTotales\)/.test(pantalla) && /likesTotales = useMemo\(\(\) => totalesDe\(/.test(pantalla) && !/compareManualExplorer\([^)]*numeroDeRecomendaciones/.test(pantalla), '1 prueba', 'la pantalla no pasa la cuenta única (partida + viajeros) a la regla')
   debe((pantalla.match(/compareManualExplorer\(/g) ?? []).length === 1 && !/essential_rank/.test(pantalla), '1 una regla', 'el orden de la ruta a mano no está en un solo sitio')
   const pantallaAnadir = fs.readFileSync('src/components/route/manualRoute/ManualAddStopsScreen.tsx', 'utf8')
   debe(!/\.sort\(/.test(pantallaAnadir) && /manualOrder|isManualRoute/.test(pantalla), '1 una regla', 'ManualAddStopsScreen ordena por su cuenta')

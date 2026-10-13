@@ -4172,6 +4172,8 @@ app.post('/api/destination-places', (req, res) => {
       type: place.type ?? null,
       tags: Array.isArray(place.tags) ? place.tags : [],
       level: place.level ?? null,
+      // Los «me gusta» de partida (Tanda 6y10): las redes de Eric, aproximado por debajo del real (campo `megusta_inicial` del sitio). Se suman a los de los viajeros: la cuenta es una sola por sitio.
+      likes_initial: Number.isFinite(place.megusta_inicial) ? place.megusta_inicial : 0,
       // Ruta a mano (Tanda 6y3): su puesto en la lista a mano del destino (`pool_lista`), o null; el nivel va aparte (`level`). El orden de «Añadir parada» en una ruta a mano pone primero los más
       // «me gusta», luego el nivel 1, luego estos (sin repetir) y el resto.
       essential_rank: (() => {
@@ -4234,6 +4236,7 @@ app.post('/api/destination-places', (req, res) => {
       type: null,
       tags: [],
       level: null,
+      likes_initial: Number.isFinite(place.megusta_inicial) ? place.megusta_inicial : 0,
       schedule: place.hours ?? null,
       sub_category: place.sub_category ?? null,
       address: place.address ?? null,

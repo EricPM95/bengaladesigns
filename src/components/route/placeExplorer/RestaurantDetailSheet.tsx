@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 import { findRestaurantSubCategory } from '../../../lib/placeCategories'
-import { textoRecomendacion } from '../../../lib/recomendaciones'
+import { MeGusta } from '../../ui/MeGusta'
 import { buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
 import { ClockIcon } from '../../ui/TimeIcons'
 import { Icono } from '../../ui/Icono'
@@ -10,11 +10,8 @@ import { Icono } from '../../ui/Icono'
 interface RestaurantDetailSheetProps {
   /** null = cerrada. */
   restaurant: DestinationPlace | null
-  likeCount: number
-  /** El número que se puede enseñar (real desde 20, o el de prueba); null = ninguno. */
-  likeShown: number | null
-  liked: boolean
-  onToggleLike: () => void
+  /** El destino del catálogo (la clave de la cuenta de «me gusta»). */
+  destino: string
   onClose: () => void
 }
 
@@ -33,12 +30,6 @@ function PlateIcon() {
 function BulbIcon() {
   return (
     <Icono nombre="tips" className="h-4 w-4 shrink-0" />
-  )
-}
-
-function HeartIcon({ filled }: { filled: boolean }) {
-  return (
-    <Icono nombre="gusta" className="h-5 w-5 shrink-0" relleno={filled} />
   )
 }
 
@@ -62,7 +53,7 @@ function Section({ icon, title, children }: { icon: ReactNode; title: string; ch
  * Nunca lleva "Añadir a mi ruta": un restaurante no es una parada del itinerario (ver `kind` en
  * destinationPlacesApi.ts). El botón es "Cómo llegar".
  */
-export function RestaurantDetailSheet({ restaurant, likeCount, likeShown, liked, onToggleLike, onClose }: RestaurantDetailSheetProps) {
+export function RestaurantDetailSheet({ restaurant, destino, onClose }: RestaurantDetailSheetProps) {
   const sub = restaurant ? findRestaurantSubCategory(restaurant.sub_category) : null
 
   return (
@@ -105,22 +96,8 @@ export function RestaurantDetailSheet({ restaurant, likeCount, likeShown, liked,
 
               {restaurant.best_for && <p className="text-small text-text-soft">{restaurant.best_for}</p>}
 
-              <div className="flex items-center gap-2 rounded-xl border border-border p-2.5">
-                <button
-                  type="button"
-                  onClick={onToggleLike}
-                  aria-pressed={liked}
-                  aria-label={liked ? `Quitar me gusta de ${restaurant.name}` : `Me gusta ${restaurant.name}`}
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors ${
-                    liked ? 'text-accent' : 'text-text-muted hover:text-text-soft'
-                  }`}
-                >
-                  <HeartIcon filled={liked} />
-                </button>
-                <p className="text-small text-text-soft">
-                  {textoRecomendacion(likeShown, likeCount)}
-                </p>
-              </div>
+              {/* El mismo corazón y la misma cuenta que la ficha de un lugar y que la tarjeta de EXPLORAR (Tanda 6y10). */}
+              <MeGusta destino={destino} nombre={restaurant.name} variante="ficha" />
 
               {restaurant.what_to_order && (
                 <Section icon={<PlateIcon />} title="Qué pedir">

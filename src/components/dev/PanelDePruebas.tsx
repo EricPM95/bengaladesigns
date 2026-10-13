@@ -3,7 +3,7 @@ import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { usePruebasUi } from '../../store/usePruebasUi'
 import { fijarVersion, pagoActivo } from '../../lib/pago'
-import { esEntornoDePrueba, fijarPrueba, pruebaActiva } from '../../lib/recomendaciones'
+import { esEntornoDePrueba } from '../../lib/recomendaciones'
 import { fijarLluviaDePrueba, lluviaDePruebaActiva } from '../../lib/lluviaDePrueba'
 import { getTodayTripStatus } from '../../lib/todayMode'
 import { addDaysToIso } from '../../lib/dateRange'
@@ -69,7 +69,6 @@ function Panel({ route }: { route: Route }) {
   }
 
   const pago = pagoActivo()
-  const prueba = pruebaActiva()
   const lluvia = lluviaDePruebaActiva()
   const inicio = route.answers.dateRange?.start ?? null
   const estado = getTodayTripStatus(route, simulada ?? undefined)
@@ -135,18 +134,6 @@ function Panel({ route }: { route: Route }) {
 
           <div className="mt-5 flex flex-col gap-2">
             <span className="text-text/50" style={ojoStyle}>
-              Números de «me gusta»
-            </span>
-            <Opciones
-              opciones={[
-                { clave: 'prueba-si', texto: 'De prueba', activa: prueba, onElegir: () => { fijarPrueba(true); repintar() } },
-                { clave: 'prueba-no', texto: 'Los de verdad', activa: !prueba, onElegir: () => { fijarPrueba(false); repintar() } },
-              ]}
-            />
-          </div>
-
-          <div className="mt-5 flex flex-col gap-2">
-            <span className="text-text/50" style={ojoStyle}>
               Lluvia de prueba
             </span>
             <Opciones
@@ -163,8 +150,7 @@ function Panel({ route }: { route: Route }) {
 }
 
 /**
- * EL PANEL DE PRUEBAS (Tanda 6z6): un botón «Pruebas» abajo a la izquierda, por encima de la barra, que abre una hoja con la versión (gratis o de pago), el momento del viaje (con el simulador de fecha) y los
- * números de prueba de «me gusta» y, desde la 6z6d, la «lluvia de prueba» (la app se porta como si el servidor dijera que llueve). SOLO en local y en las vistas previas: usa el mismo criterio que `?prueba=1` (`esEntornoDePrueba`, src/lib/recomendaciones.ts); en producción no se pinta nada.
+ * EL PANEL DE PRUEBAS (Tanda 6z6): un botón «Pruebas» abajo a la izquierda, por encima de la barra, que abre una hoja con la versión (gratis o de pago), el momento del viaje (con el simulador de fecha) y, desde la 6z6d, la «lluvia de prueba» (la app se porta como si el servidor dijera que llueve). (Los números de «me gusta» de prueba se quitaron en la 6y10: los de partida son datos reales.) SOLO en local y en las vistas previas (`esEntornoDePrueba`, src/lib/recomendaciones.ts); en producción no se pinta nada.
  */
 export function PanelDePruebas({ route }: { route: Route }) {
   if (!esEntornoDePrueba()) return null

@@ -911,6 +911,7 @@
     {
       "id": "coliseo",
       "name": "Coliseo",
+      "megusta_inicial": 164,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con franja horaria: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día (quien compró la entrada oficial sin guía puede entrar hasta entonces; las visitas guiadas acaban antes).",
       "level": 1,
@@ -1038,6 +1039,7 @@
     {
       "id": "foro_romano_y_palatino",
       "name": "Foro Romano y Palatino",
+      "megusta_inicial": 132,
       "level": 1,
       "tier": "imprescindible",
       "zone": "roma_antigua",
@@ -1172,6 +1174,7 @@
     {
       "id": "arco_de_constantino",
       "name": "Arco de Constantino",
+      "megusta_inicial": 145,
       "level": 1,
       "tier": "imprescindible",
       "zone": "roma_antigua",
@@ -1206,6 +1209,7 @@
     {
       "id": "boca_de_la_verdad",
       "name": "Boca de la Verdad",
+      "megusta_inicial": 65,
       "level": 2,
       "zone": "aventino",
       "grupo_dia": "Basílicas y el Aventino",
@@ -1247,6 +1251,7 @@
     {
       "id": "circo_maximo",
       "name": "Circo Máximo",
+      "megusta_inicial": 83,
       "level": 2,
       "zone": "roma_antigua",
       "grupo_dia": "Roma antigua",
@@ -1276,6 +1281,7 @@
     {
       "id": "fontana_de_trevi",
       "name": "Fontana de Trevi",
+      "megusta_inicial": 145,
       "entrada_de_pago": {
         "desde": "2026-02-02",
         "precio": "2 €",
@@ -1333,6 +1339,7 @@
     {
       "id": "panteon",
       "name": "Panteón",
+      "megusta_inicial": 133,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con hora: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día.",
       "level": 1,
@@ -1414,6 +1421,7 @@
     {
       "id": "piazza_navona",
       "name": "Piazza Navona",
+      "megusta_inicial": 165,
       "level": 1,
       "tier": "imprescindible",
       "zone": "centro_historico",
@@ -1452,6 +1460,7 @@
     {
       "id": "plaza_de_espana",
       "name": "Plaza de España",
+      "megusta_inicial": 155,
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
         {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."}
@@ -1496,6 +1505,7 @@
     {
       "id": "piazza_del_popolo",
       "name": "Piazza del Popolo",
+      "megusta_inicial": 59,
       "texto_espera": "haz unas fotos en la Piazza del Popolo",
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via Margutta, la calle de los artistas: en el número 51 vivía Gregory Peck en Vacaciones en Roma."},
@@ -1536,6 +1546,7 @@
     {
       "id": "largo_di_torre_argentina",
       "name": "Largo di Torre Argentina",
+      "megusta_inicial": 68,
       "level": 2,
       "zone": "centro_historico",
       "grupo_dia": "Centro histórico",
@@ -1566,6 +1577,7 @@
     {
       "id": "via_del_corso",
       "name": "Via del Corso",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "centro_historico",
       "grupo_dia": "Centro histórico",
@@ -1594,6 +1606,7 @@
     {
       "id": "museos_vaticanos_y_capilla_sixtina",
       "name": "Museos Vaticanos y Capilla Sixtina",
+      "megusta_inicial": 194,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con franja horaria: se elige la hora al comprarla, de la apertura a la última entrada oficial de ese día.",
       "level": 1,
@@ -1721,6 +1734,7 @@
     {
       "id": "basilica_de_san_pedro",
       "name": "Basílica de San Pedro",
+      "megusta_inicial": 188,
       "por_fuera": "Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.",
       "festivos_domingo": [
         "06-29"
@@ -1878,6 +1892,7 @@
     {
       "id": "plaza_de_san_pedro",
       "name": "Plaza de San Pedro",
+      "megusta_inicial": 175,
       "level": 1,
       "tier": "imprescindible",
       "zone": "vaticano",
@@ -1922,6 +1937,7 @@
     {
       "id": "via_di_ripetta",
       "name": "Via di Ripetta",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "tridente",
       "grupo_dia": "Popolo",
@@ -1946,6 +1962,7 @@
     {
       "id": "via_della_conciliazione",
       "name": "Via della Conciliazione",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
       "grupo_dia": "Vaticano",
@@ -1974,6 +1991,7 @@
     {
       "id": "lungotevere",
       "name": "Lungotevere",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
       "grupo_dia": "Vaticano",
@@ -1999,6 +2017,7 @@
     {
       "id": "castillo_de_santangelo",
       "name": "Castillo de Sant'Angelo",
+      "megusta_inicial": 94,
       "level": 2,
       "zone": "vaticano",
       "grupo_dia": "Vaticano",
@@ -2074,6 +2093,7 @@
     {
       "id": "mirador_del_janiculo",
       "name": "Mirador del Janículo",
+      "megusta_inicial": 90,
       "level": 2,
       "zone": "trastevere",
       "grupo_dia": "Roma desde las alturas",
@@ -2115,6 +2135,7 @@
     {
       "id": "galeria_borghese",
       "name": "Galería Borghese",
+      "megusta_inicial": 94,
       "reserva_nota": "Entrada con hora fija (reserva obligatoria). Horario oficial 09:00-19:00 de martes a domingo; no se entra después de las 17:00. Turnos de 2 horas: 9:00, 11:00, 13:00, 15:00 y 17:00.",
       "level": 2,
       "zone": "villa_borghese",
@@ -2198,6 +2219,7 @@
     {
       "id": "parque_de_villa_borghese",
       "name": "Parque de Villa Borghese",
+      "megusta_inicial": 88,
       "level": 2,
       "zone": "villa_borghese",
       "grupo_dia": "Villa Borghese",
@@ -2289,6 +2311,7 @@
     {
       "id": "bioparque_de_roma",
       "name": "Bioparque de Roma",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "villa_borghese",
       "grupo_dia": "Villa Borghese",
@@ -2362,6 +2385,7 @@
     {
       "id": "galeria_nacional_de_arte_moderno",
       "name": "Galería Nacional de Arte Moderno",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "villa_borghese",
       "grupo_dia": "Villa Borghese",
@@ -2407,6 +2431,7 @@
     {
       "id": "altar_de_la_patria",
       "name": "Altar de la Patria",
+      "megusta_inicial": 151,
       "acortable": true,
       "level": 1,
       "zone": "roma_antigua",
@@ -2476,6 +2501,7 @@
     {
       "id": "puente_santangelo",
       "name": "Puente Sant'Angelo",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
       "grupo_dia": "Vaticano",
@@ -2518,6 +2544,7 @@
     {
       "id": "isla_tiberina",
       "name": "Isla Tiberina",
+      "megusta_inicial": 52,
       "level": 2,
       "zone": "trastevere",
       "grupo_dia": "Trastevere",
@@ -2548,6 +2575,7 @@
     {
       "id": "via_dei_fori_imperiali",
       "name": "Via dei Fori Imperiali",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "roma_antigua",
       "grupo_dia": "Roma antigua",
@@ -2582,6 +2610,7 @@
     {
       "id": "campo_de_fiori",
       "name": "Campo de' Fiori",
+      "megusta_inicial": 82,
       "level": 2,
       "zone": "centro_historico",
       "grupo_dia": "Centro histórico",
@@ -2615,6 +2644,7 @@
     {
       "id": "borgo_pio",
       "name": "Borgo Pio",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
       "grupo_dia": "Vaticano",
@@ -2645,6 +2675,7 @@
     {
       "id": "plaza_venecia",
       "name": "Plaza Venecia",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "roma_antigua",
@@ -2682,6 +2713,7 @@
     {
       "id": "mercados_de_trajano",
       "name": "Mercados de Trajano",
+      "megusta_inicial": 93,
       "duration_minutes": 60,
       "min_max": 75,
       "zone": "roma_antigua",
@@ -2733,6 +2765,7 @@
     {
       "id": "cupula_de_san_pedro",
       "name": "Cúpula de San Pedro",
+      "megusta_inicial": 95,
       "por_fuera": "Hoy no se sube, pero se ve mejor de lejos: desde la plaza, la fachada la tapa en parte. Échate atrás por Via della Conciliazione y la verás entera.",
       "duration_minutes": 45,
       "min_max": 60,
@@ -2816,6 +2849,7 @@
     {
       "id": "iglesia_del_gesu",
       "name": "Iglesia del Gesù",
+      "megusta_inicial": 86,
       "hours_audit": {
         "confianza": "media",
         "fuente": "https://www.turismoroma.it/it/luoghi/chiesa-del-ges%C3%B9 (Roma Capitale)",
@@ -2894,6 +2928,7 @@
     {
       "id": "iglesia_de_san_luigi_dei_francesi",
       "name": "Iglesia de San Luigi dei Francesi",
+      "megusta_inicial": 85,
       "festivos_domingo": [
         "06-29"
       ],
@@ -2958,6 +2993,7 @@
     {
       "id": "ara_pacis",
       "name": "Ara Pacis",
+      "megusta_inicial": 82,
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "centro_historico",
@@ -3052,6 +3088,7 @@
     {
       "id": "barrio_judio",
       "name": "Barrio Judío",
+      "megusta_inicial": 98,
       "duration_minutes": 30,
       "min_max": 60,
       "zone": "centro_historico",
@@ -3086,6 +3123,7 @@
     {
       "id": "iglesia_de_santa_maria_sopra_minerva",
       "name": "Iglesia de Santa Maria sopra Minerva",
+      "megusta_inicial": 0,
       "por_fuera": "Hoy la ves por fuera: delante tienes el Elefantino de Bernini, un elefante que carga un obelisco egipcio. Detrás de esa fachada tan sencilla está la única iglesia gótica de Roma.",
       "festivos_domingo": [
         "06-29"
@@ -3147,6 +3185,7 @@
     {
       "id": "iglesia_de_san_ignacio_de_loyola",
       "name": "Iglesia de San Ignacio de Loyola",
+      "megusta_inicial": 0,
       "por_fuera": "Hoy la ves por fuera, y la plaza es lo mejor: Piazza di Sant'Ignazio parece un decorado de teatro, con sus edificios curvos del siglo XVIII mirando a la fachada.",
       "duration_minutes": 20,
       "min_max": 30,
@@ -3192,6 +3231,7 @@
     {
       "id": "elefantino_de_bernini",
       "name": "Elefantino de Bernini",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
@@ -3229,6 +3269,7 @@
     {
       "id": "fuente_de_las_tortugas",
       "name": "Fuente de las Tortugas",
+      "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
@@ -3260,6 +3301,7 @@
     {
       "id": "fuente_del_triton",
       "name": "Fuente del Tritón",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
@@ -3291,6 +3333,7 @@
     {
       "id": "plaza_colonna",
       "name": "Plaza Colonna",
+      "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
@@ -3321,6 +3364,7 @@
     {
       "id": "plaza_del_quirinal",
       "name": "Plaza del Quirinal",
+      "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "centro_historico",
@@ -3358,6 +3402,7 @@
     {
       "id": "via_dei_coronari",
       "name": "Via dei Coronari",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
@@ -3392,6 +3437,7 @@
     {
       "id": "via_condotti",
       "name": "Via Condotti",
+      "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "centro_historico",
@@ -3425,6 +3471,7 @@
     {
       "id": "templo_de_adriano",
       "name": "Templo de Adriano",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 10,
       "zone": "centro_historico",
@@ -3463,6 +3510,7 @@
     {
       "id": "piazza_colonna",
       "name": "Piazza Colonna",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 10,
       "zone": "centro_historico",
@@ -3502,6 +3550,7 @@
     {
       "id": "plaza_farnese",
       "name": "Plaza Farnese",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 20,
       "zone": "centro_historico",
@@ -3534,6 +3583,7 @@
     {
       "id": "plaza_del_campidoglio",
       "name": "Plaza del Campidoglio",
+      "megusta_inicial": 92,
       "duration_minutes": 20,
       "min_max": 45,
       "zone": "roma_antigua",
@@ -3576,6 +3626,7 @@
     {
       "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
+      "megusta_inicial": 86,
       "duration_minutes": 120,
       "minimo_dentro": 60,
       "min_max": 150,
@@ -3673,6 +3724,7 @@
     {
       "id": "basilica_de_san_clemente",
       "name": "Basílica de San Clemente",
+      "megusta_inicial": 57,
       "festivos_domingo": [
         "06-29"
       ],
@@ -3755,6 +3807,7 @@
     {
       "id": "iglesia_de_san_pietro_in_vincoli",
       "name": "Iglesia de San Pietro in Vincoli",
+      "megusta_inicial": 98,
       "duration_minutes": 20,
       "min_max": 30,
       "schedule": "08:00-12:30, 15:00-18:00",
@@ -3832,6 +3885,7 @@
     {
       "id": "domus_aurea",
       "name": "Domus Aurea",
+      "megusta_inicial": 58,
       "duration_minutes": 75,
       "min_max": 90,
       "zone": "roma_antigua",
@@ -3889,6 +3943,7 @@
     {
       "id": "termas_de_caracalla",
       "name": "Termas de Caracalla",
+      "megusta_inicial": 57,
       "duration_minutes": 60,
       "min_max": 90,
       "zone": "aventino",
@@ -4024,6 +4079,7 @@
     {
       "id": "jardin_de_los_naranjos",
       "name": "Jardín de los Naranjos",
+      "megusta_inicial": 56,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "aventino",
@@ -4114,6 +4170,7 @@
     {
       "id": "basilica_de_santa_maria_la_mayor",
       "name": "Basílica de Santa María la Mayor",
+      "megusta_inicial": 97,
       "duration_minutes": 30,
       "min_max": 40,
       "schedule": "07:00-18:45",
@@ -4164,6 +4221,7 @@
     {
       "id": "columna_de_trajano",
       "name": "Columna de Trajano",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "roma_antigua",
@@ -4196,6 +4254,7 @@
     {
       "id": "teatro_de_marcelo",
       "name": "Teatro de Marcelo",
+      "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "roma_antigua",
@@ -4230,6 +4289,7 @@
     {
       "id": "ojo_de_la_cerradura_del_aventino",
       "name": "Ojo de la Cerradura del Aventino",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "aventino",
@@ -4270,6 +4330,7 @@
     {
       "id": "piramide_cestia",
       "name": "Pirámide Cestia",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "testaccio",
@@ -4305,6 +4366,7 @@
     {
       "id": "iglesia_de_santa_maria_della_vittoria",
       "name": "Iglesia de Santa Maria della Vittoria",
+      "megusta_inicial": 0,
       "festivos_domingo": [
         "06-29"
       ],
@@ -4362,6 +4424,7 @@
     {
       "id": "iglesia_de_santa_maria_in_trastevere",
       "name": "Iglesia de Santa Maria in Trastevere",
+      "megusta_inicial": 60,
       "hours_audit": {
         "confianza": "media",
         "fuente": "https://turismoroma.it/it/luoghi/basilica-di-santa-maria-trastevere (Roma Capitale)",
@@ -4441,6 +4504,7 @@
     {
       "id": "villa_farnesina",
       "name": "Villa Farnesina",
+      "megusta_inicial": 81,
       "closed_dates": [
         "06-29"
       ],
@@ -4494,6 +4558,7 @@
     {
       "id": "ponte_sisto",
       "name": "Ponte Sisto",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "centro_historico",
       "grupo_dia": "Centro histórico",
@@ -4528,6 +4593,7 @@
     {
       "id": "plaza_trilussa",
       "name": "Plaza Trilussa",
+      "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "trastevere",
@@ -4563,6 +4629,7 @@
     {
       "id": "terraza_del_pincio",
       "name": "Terraza del Pincio",
+      "megusta_inicial": 86,
       "duration_minutes": 20,
       "min_max": 50,
       "zone": "villa_borghese",
@@ -4615,6 +4682,7 @@
     {
       "id": "basilica_de_san_juan_de_letran",
       "name": "Basílica de San Juan de Letrán",
+      "megusta_inicial": 54,
       "level": 2,
       "zone": "san_giovanni",
       "grupo_dia": "Basílicas y el Aventino",
@@ -4663,6 +4731,7 @@
     {
       "id": "quartiere_coppede",
       "name": "Quartiere Coppedè",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "nomentano",
       "grupo_dia": "Villa Borghese",
@@ -4696,6 +4765,7 @@
     {
       "id": "mercado_de_testaccio",
       "name": "Mercado de Testaccio",
+      "megusta_inicial": 0,
       "closed_dates": [
         "06-29"
       ],
@@ -4747,6 +4817,7 @@
     {
       "id": "palazzo_doria_pamphilj",
       "name": "Palazzo Doria Pamphilj",
+      "megusta_inicial": 0,
       "festivos_domingo": [
         "06-29"
       ],
@@ -4822,6 +4893,7 @@
     {
       "id": "via_appia_antica",
       "name": "Via Appia Antica",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "appia",
       "grupo_dia": "Roma antigua",
@@ -4858,6 +4930,7 @@
     {
       "id": "catacumbas_de_san_calixto",
       "name": "Catacumbas de San Calixto",
+      "megusta_inicial": 0,
       "level": 3,
       "zone": "appia",
       "grupo_dia": "Roma antigua",
@@ -4928,6 +5001,7 @@
     {
       "id": "cementerio_protestante",
       "name": "Cementerio Protestante",
+      "megusta_inicial": 0,
       "festivos_domingo": [
         "06-29"
       ],
@@ -5071,6 +5145,7 @@
       "visible_desde_calle": false,
       "camino_alternativa": "El mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
+      "megusta_inicial": 70,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "trastevere",
@@ -5126,6 +5201,7 @@
     {
       "id": "fontana_dellacqua_paola",
       "name": "Fontana dell'Acqua Paola",
+      "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
       "zone": "trastevere",
@@ -5166,6 +5242,7 @@
     {
       "id": "basilica_de_santa_cecilia_in_trastevere",
       "name": "Basílica de Santa Cecilia in Trastevere",
+      "megusta_inicial": 0,
       "por_fuera": "Hoy la ves por fuera: desde la verja se ve el patio con su jardín y, detrás, el campanario románico. Es uno de los rincones más tranquilos de Trastevere.",
       "festivos_domingo": [
         "06-29"
@@ -5231,6 +5308,7 @@
     {
       "id": "trastevere",
       "name": "Trastevere",
+      "megusta_inicial": 57,
       "duration_minutes": 45,
       "min_max": 60,
       "zone": "trastevere",
@@ -5264,6 +5342,7 @@
     {
       "id": "monti",
       "name": "Monti",
+      "megusta_inicial": 52,
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "roma_antigua",
@@ -5299,6 +5378,7 @@
     {
       "id": "santa_maria_del_popolo",
       "name": "Santa Maria del Popolo",
+      "megusta_inicial": 84,
       "festivos_domingo": [
         "06-29"
       ],
@@ -5369,6 +5449,7 @@
     {
       "id": "testaccio",
       "name": "Testaccio",
+      "megusta_inicial": 56,
       "duration_minutes": 40,
       "min_max": 60,
       "zone": "testaccio",
@@ -5403,6 +5484,7 @@
     {
       "id": "trinita_dei_monti",
       "name": "Trinità dei Monti",
+      "megusta_inicial": 79,
       "festivos_domingo": [
         "06-29"
       ],
@@ -5468,6 +5550,7 @@
     {
       "id": "cripta_de_los_capuchinos",
       "name": "Cripta de los Capuchinos",
+      "megusta_inicial": 75,
       "duration_minutes": 45,
       "min_max": 45,
       "zone": "centro_historico",
@@ -5517,6 +5600,7 @@
     {
       "id": "terraza_largo_gaetana_agnesi",
       "name": "Terraza de Largo Gaetana Agnesi",
+      "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "roma_antigua",
@@ -5552,6 +5636,7 @@
     {
       "id": "mirador_de_san_pietro_in_montorio",
       "name": "Mirador de San Pietro in Montorio",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 20,
       "zone": "trastevere",
@@ -5588,6 +5673,7 @@
     {
       "id": "colle_oppio",
       "name": "Colle Oppio",
+      "megusta_inicial": 0,
       "windows": ["07:00-19:00"],
       "schedule": "07:00-19:00",
       "horario_nota": "El jardín cierra a las 19:00 (decidido en la Tanda 4): en C y D el sol se pone más tarde, y el Coliseo se ve mejor desde la terraza de Largo Gaetana Agnesi.",
@@ -5625,6 +5711,7 @@
     {
       "id": "via_veneto",
       "name": "Via Veneto",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 20,
       "zone": "centro_historico",
@@ -5658,6 +5745,7 @@
     {
       "id": "via_del_babuino",
       "name": "Via del Babuino",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
@@ -5692,6 +5780,7 @@
     {
       "id": "via_margutta",
       "name": "Via Margutta",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "centro_historico",
@@ -5725,6 +5814,7 @@
     {
       "id": "porta_pinciana",
       "name": "Porta Pinciana",
+      "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "villa_borghese",
@@ -5755,6 +5845,7 @@
     {
       "id": "jardines_del_pincio",
       "name": "Jardines del Pincio",
+      "megusta_inicial": 0,
       "duration_minutes": 30,
       "min_max": 60,
       "zone": "villa_borghese",
@@ -5789,6 +5880,7 @@
     {
       "id": "mercadillo_de_navidad_de_piazza_navona",
       "name": "Mercadillo de Navidad de Piazza Navona",
+      "megusta_inicial": 0,
       "capa_de": "Piazza Navona",
       "_nota": "Una capa, no una parada más (PROMPT_ROMA_NAVIDAD 2): con la experiencia de mercadillos elegida y en sus fechas, la parada de Piazza Navona pasa a llevar este título, este tiempo y este texto. Nunca salen dos paradas en el mismo sitio.",
       "titulo_parada": "Piazza Navona y su mercadillo navideño",
@@ -5828,6 +5920,7 @@
     {
       "id": "100_presepi_in_vaticano",
       "name": "100 Presepi in Vaticano",
+      "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
       "zone": "vaticano",
@@ -5862,6 +5955,7 @@
     {
       "id": "santo_bambino_de_aracoeli",
       "name": "Santo Bambino de Aracoeli",
+      "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
       "zone": "roma_antigua",
@@ -5896,6 +5990,7 @@
     {
       "id": "luces_de_navidad_del_tridente",
       "name": "Luces de Navidad del Tridente",
+      "megusta_inicial": 0,
       "titulo_parada": "Via del Corso, Condotti, Babuino y Margutta, con sus luces de Navidad",
       "duration_minutes": 40,
       "min_max": 60,
@@ -7260,9 +7355,11 @@
       "centro_historico_to_nomentano": 40
     }
   },
+  "megusta_inicial_nota": "redes de Eric, aproximado por debajo del real",
   "restaurants": [
     {
       "name": "Armando al Pantheon",
+      "megusta_inicial": 162,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Salita dei Crescenzi, 31, 00186 Roma",
@@ -7284,6 +7381,7 @@
     },
     {
       "name": "Trattoria Da Enzo al 29",
+      "megusta_inicial": 108,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via dei Vascellari, 29, 00153 Roma",
@@ -7309,6 +7407,7 @@
     },
     {
       "name": "Felice a Testaccio",
+      "megusta_inicial": 199,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Mastro Giorgio, 29, 00153 Roma",
@@ -7327,6 +7426,7 @@
     },
     {
       "name": "Trattoria Monti",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via di San Vito, 13A, 00185 Roma",
@@ -7348,6 +7448,7 @@
     },
     {
       "name": "Trattoria Dal Cavalier Gino",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo Rosini, 4, 00186 Roma",
@@ -7369,6 +7470,7 @@
     },
     {
       "name": "Tonnarello",
+      "megusta_inicial": 141,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via della Paglia, 77, 00153 Roma",
@@ -7387,6 +7489,7 @@
     },
     {
       "name": "Da Lucia",
+      "megusta_inicial": 159,
       "sub_category": "trattoria",
       "tipo_local": "restaurante",
       "meal": "ambos",
@@ -7404,6 +7507,7 @@
     },
     {
       "name": "Checco er Carettiere",
+      "megusta_inicial": 132,
       "sub_category": "trattoria",
       "tipo_local": "restaurante",
       "meal": "ambos",
@@ -7420,6 +7524,7 @@
     },
     {
       "name": "Da Teo",
+      "megusta_inicial": 0,
       "sub_category": "trattoria",
       "tipo_local": "restaurante",
       "meal": "ambos",
@@ -7437,6 +7542,7 @@
     },
     {
       "name": "Taverna Trilussa",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via del Politeama, 23/25, 00153 Roma",
@@ -7459,6 +7565,7 @@
     },
     {
       "name": "SantoPalato",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Piazza Tarquinia, 4A/B, 00183 Roma",
@@ -7485,6 +7592,7 @@
     },
     {
       "name": "Pizzarium (Bonci)",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "horno",
       "meal": "ambos",
       "address": "Via della Meloria, 43, 00136 Roma",
@@ -7507,6 +7615,7 @@
     },
     {
       "name": "Antico Forno Roscioli",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "horno",
       "meal": "comida",
       "address": "Via dei Chiavari, 34, 00186 Roma",
@@ -7528,6 +7637,7 @@
     },
     {
       "name": "Forno Campo de' Fiori",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "horno",
       "meal": "comida",
       "address": "Vicolo del Gallo, 14, 00186 Roma",
@@ -7546,6 +7656,7 @@
     },
     {
       "name": "Ai Marmi (Panattoni)",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Viale di Trastevere, 53, 00153 Roma",
@@ -7571,6 +7682,7 @@
     },
     {
       "name": "Da Remo",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Piazza di Santa Maria Liberatrice, 44, 00153 Roma",
@@ -7596,6 +7708,7 @@
     },
     {
       "name": "Fatamorgana",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via dei Chiavari, 37, 00186 Roma",
       "coordinates": {
@@ -7613,6 +7726,7 @@
     },
     {
       "name": "Fior di Luna",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via della Lungaretta, 96, 00153 Roma",
       "coordinates": {
@@ -7630,6 +7744,7 @@
     },
     {
       "name": "Gelateria dei Gracchi",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via dei Gracchi, 272, 00192 Roma",
       "coordinates": {
@@ -7647,6 +7762,7 @@
     },
     {
       "name": "Neve di Latte",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via Federico Cesi, 1, 00193 Roma",
       "coordinates": {
@@ -7668,6 +7784,7 @@
     },
     {
       "name": "Otaleg",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via di San Cosimato, 14A, 00153 Roma",
       "coordinates": {
@@ -7689,6 +7806,7 @@
     },
     {
       "name": "Gelateria Valentino",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via del Lavatore 96, 00187 Roma",
       "coordinates": {
@@ -7706,6 +7824,7 @@
     },
     {
       "name": "Fatamorgana (Via Laurina)",
+      "megusta_inicial": 0,
       "sub_category": "gelato", "tipo_local": "heladeria",
       "address": "Via Laurina 10, 00187 Roma",
       "coordinates": {
@@ -7723,6 +7842,7 @@
     },
     {
       "name": "Roscioli Caffè Pasticceria",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Piazza Benedetto Cairoli, 16, 00186 Roma",
       "coordinates": {
@@ -7740,6 +7860,7 @@
     },
     {
       "name": "Caffè Sant'Eustachio",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Piazza di Sant'Eustachio, 82, 00186 Roma",
       "coordinates": {
@@ -7757,6 +7878,7 @@
     },
     {
       "name": "La Casa del Caffè Tazza d'Oro",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via degli Orfani, 84, 00186 Roma",
       "coordinates": {
@@ -7774,6 +7896,7 @@
     },
     {
       "name": "Faro - Caffè Specialty",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via Piave, 55, 00187 Roma",
       "coordinates": {
@@ -7795,6 +7918,7 @@
     },
     {
       "name": "Girarrosto Fiorentino",
+      "megusta_inicial": 0,
       "sub_category": "restaurante", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Sicilia, 46, 00187 Roma",
@@ -7817,6 +7941,7 @@
     },
     {
       "name": "Pasticceria Regoli",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via dello Statuto, 60, 00185 Roma",
       "coordinates": {
@@ -7838,6 +7963,7 @@
     },
     {
       "name": "Freni e Frizioni",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via del Politeama, 4-6, 00153 Roma",
       "coordinates": {
@@ -7859,6 +7985,7 @@
     },
     {
       "name": "Il Goccetto",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via dei Banchi Vecchi, 14, 00186 Roma",
       "coordinates": {
@@ -7879,6 +8006,7 @@
     },
     {
       "name": "Il Sorpasso",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via Properzio, 31/33, 00193 Roma",
       "coordinates": {
@@ -7900,6 +8028,7 @@
     },
     {
       "name": "Enoteca Ferrara",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Piazza Trilussa, 41, 00153 Roma",
       "coordinates": {
@@ -7921,6 +8050,7 @@
     },
     {
       "name": "Barnum Cafe",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via del Pellegrino, 87, 00186 Roma",
       "coordinates": {
@@ -7938,6 +8068,7 @@
     },
     {
       "name": "Ma Che Siete Venuti a Fà",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via Benedetta, 25, 00153 Roma",
       "coordinates": {
@@ -7959,6 +8090,7 @@
     },
     {
       "name": "Trapizzino (Trastevere)",
+      "megusta_inicial": 0,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Piazza Trilussa, 46, 00153 Roma",
@@ -7981,6 +8113,7 @@
     },
     {
       "name": "Supplizio",
+      "megusta_inicial": 173,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Via dei Banchi Vecchi, 143, 00186 Roma",
@@ -8002,6 +8135,7 @@
     },
     {
       "name": "Dar Filettaro a Santa Barbara",
+      "megusta_inicial": 0,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "cena",
       "address": "Largo dei Librari, 88, 00186 Roma",
@@ -8023,6 +8157,7 @@
     },
     {
       "name": "Er Buchetto",
+      "megusta_inicial": 0,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Via del Viminale, 2F, 00185 Roma",
@@ -8041,6 +8176,7 @@
     },
     {
       "name": "Mordi e Vai",
+      "megusta_inicial": 0,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "comida",
       "address": "Mercato di Testaccio, box 15, Via Beniamino Franklin 12e, 00153 Roma",
@@ -8066,6 +8202,7 @@
     },
     {
       "name": "La Prosciutteria (Trastevere)",
+      "megusta_inicial": 0,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "ambos",
       "address": "Via della Scala, 71, 00153 Roma",
@@ -8084,6 +8221,7 @@
     },
     {
       "name": "200 Gradi",
+      "megusta_inicial": 0,
       "sub_category": "street_food", "tipo_local": "comida_rapida",
       "meal": "comida",
       "address": "Piazza del Risorgimento 3, 00192 Roma",
@@ -8102,6 +8240,7 @@
     },
     {
       "name": "Pizzeria Da Baffetto",
+      "megusta_inicial": 148,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Via del Governo Vecchio, 114, 00186 Roma",
@@ -8120,6 +8259,7 @@
     },
     {
       "name": "Coming Out",
+      "megusta_inicial": 0,
       "sub_category": "pub", "tipo_local": "pub",
       "meal": "copa",
       "address": "Via di S. Giovanni in Laterano 8, 00184 Roma",
@@ -8138,6 +8278,7 @@
     },
     {
       "name": "Li Rioni",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "cena",
       "address": "Via dei Santi Quattro 24, 00184 Roma",
@@ -8159,6 +8300,7 @@
     },
     {
       "name": "La Prezzemolina",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "comida",
       "address": "Via del Colosseo 1/E-F, 00184 Roma",
@@ -8177,6 +8319,7 @@
     },
     {
       "name": "La Boccaccia",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "ambos",
       "address": "Via Leonina 73, 00184 Roma",
@@ -8195,6 +8338,7 @@
     },
     {
       "name": "Piccolo Buco",
+      "megusta_inicial": 0,
       "sub_category": "pizza", "tipo_local": "pizzeria",
       "meal": "ambos",
       "address": "Via del Lavatore 91, 00187 Roma",
@@ -8216,6 +8360,7 @@
     },
     {
       "name": "Ai Tre Scalini",
+      "megusta_inicial": 0,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "address": "Via Panisperna, 251, 00184 Roma",
       "coordinates": {
@@ -8237,6 +8382,7 @@
     },
     {
       "name": "Buccone Vini e Olii",
+      "megusta_inicial": 106,
       "sub_category": "aperitivo", "tipo_local": "bar_de_vinos",
       "meal": "ambos",
       "address": "Via di Ripetta 19/20, 00186 Roma",
@@ -8255,6 +8401,7 @@
     },
     {
       "name": "Panella - L'Arte del Pane",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via Merulana, 54, 00185 Roma",
       "coordinates": {
@@ -8276,6 +8423,7 @@
     },
     {
       "name": "Pompi",
+      "megusta_inicial": 0,
       "sub_category": "cafe", "tipo_local": "cafeteria",
       "address": "Via della Croce 88, 00187 Roma",
       "coordinates": {
@@ -8293,6 +8441,7 @@
     },
     {
       "name": "Osteria Fernanda",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Crescenzo del Monte, 18, 00153 Roma",
@@ -8319,6 +8468,7 @@
     },
     {
       "name": "Il Bocconcino",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Ostilia 23, 00184 Roma",
@@ -8340,6 +8490,7 @@
     },
     {
       "name": "La Taverna dei Fori Imperiali",
+      "megusta_inicial": 123,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via della Madonna dei Monti 9, 00184 Roma",
@@ -8361,6 +8512,7 @@
     },
     {
       "name": "Enoteca Corsi",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Gesù 87/88, 00186 Roma",
@@ -8382,6 +8534,7 @@
     },
     {
       "name": "Il Gabriello",
+      "megusta_inicial": 198,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Vittoria 51, 00187 Roma",
@@ -8403,6 +8556,7 @@
     },
     {
       "name": "Edy",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo del Babuino 4, 00187 Roma",
@@ -8424,6 +8578,7 @@
     },
     {
       "name": "Sgarro Bistrot",
+      "megusta_inicial": 100,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Belsiana 14, 00187 Roma",
@@ -8442,6 +8597,7 @@
     },
     {
       "name": "Poldo e Gianna Osteria",
+      "megusta_inicial": 126,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo Rosini 6/7, 00186 Roma",
@@ -8463,6 +8619,7 @@
     },
     {
       "name": "Piccolo Arancio",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Vicolo Scanderbeg 112, 00187 Roma",
@@ -8484,6 +8641,7 @@
     },
     {
       "name": "Colline Emiliane",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via degli Avignonesi 22, 00187 Roma",
@@ -8506,6 +8664,7 @@
     },
     {
       "name": "Ristorante Arlù",
+      "megusta_inicial": 0,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "comida",
       "address": "Borgo Pio 135, 00193 Roma",
@@ -8524,6 +8683,7 @@
     },
     {
       "name": "Borghiciana Pastificio Artigianale",
+      "megusta_inicial": 198,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "comida",
       "address": "Borgo Pio 186, 00193 Roma",
@@ -8545,6 +8705,7 @@
     },
     {
       "name": "Trattoria Valentino",
+      "megusta_inicial": 147,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Boschetto 37, 00184 Roma",
@@ -8566,6 +8727,7 @@
     },
     {
       "name": "Dal Toscano",
+      "megusta_inicial": 163,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Germanico 58-60, 00192 Roma",
@@ -8591,6 +8753,7 @@
     },
     {
       "name": "L'Arcangelo",
+      "megusta_inicial": 162,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Giuseppe Gioachino Belli 59",
@@ -8638,6 +8801,7 @@
     },
     {
       "name": "Osteria dell'Angelo",
+      "megusta_inicial": 162,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via Giovanni Bettolo 24-32",
@@ -8660,6 +8824,7 @@
     },
     {
       "name": "Nonna Betta",
+      "megusta_inicial": 190,
       "sub_category": "cocina judeo-romana", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Portico d'Ottavia, 16, 00186 Roma",
@@ -8682,6 +8847,7 @@
     },
     {
       "name": "Giggetto al Portico d'Ottavia",
+      "megusta_inicial": 103,
       "sub_category": "trattoria romana", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via del Portico d'Ottavia, 21/a-22, 00186 Roma",
@@ -8704,6 +8870,7 @@
     },
     {
       "name": "Piperno",
+      "megusta_inicial": 151,
       "sub_category": "cocina judeo-romana", "tipo_local": "restaurante",
       "meal": "ambos",
       "address": "Via Monte de' Cenci, 9, 00186 Roma",
