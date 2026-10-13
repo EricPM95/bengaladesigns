@@ -10717,9 +10717,9 @@
       {
        "tipo": "parada",
        "lugar": "Fontana de Trevi",
-       "modo": "camino",
-       "doc": "Fontana de Trevi",
-       "min": 5
+       "modo": null,
+       "doc": "Fontana de Trevi ~10",
+       "min": 10
       },
       {
        "tipo": "parada",
@@ -11475,8 +11475,8 @@
       "tarde": {
        "ajustar": {
         "Plaza de España": {
-         "modo": "camino",
-         "min": 5
+         "modo": null,
+         "min": 10
         }
        }
       },
@@ -12009,9 +12009,9 @@
       {
        "tipo": "parada",
        "lugar": "Plaza de San Pedro",
-       "modo": "camino",
-       "doc": "Plaza de San Pedro",
-       "min": 5
+       "modo": null,
+       "doc": "Plaza de San Pedro ~10",
+       "min": 10
       },
       {
        "tipo": "parada",
@@ -12045,19 +12045,16 @@
       {
        "tipo": "parada",
        "lugar": "Piazza Navona",
-       "modo": "camino",
-       "doc": "Piazza Navona («Ya lo visitaste el día 1»)",
-       "min": 5,
-       "notas": [
-        "«Ya lo visitaste el día 1»"
-       ]
+       "modo": null,
+       "doc": "Piazza Navona ~10",
+       "min": 10
       },
       {
        "tipo": "parada",
        "lugar": "Panteón",
-       "modo": "camino",
-       "doc": "Panteón",
-       "min": 5
+       "modo": null,
+       "doc": "Panteón ~10",
+       "min": 10
       }
      ],
      "comida": {
@@ -12072,10 +12069,10 @@
        "tipo": "parada",
        "lugar": "Plaza del Campidoglio",
        "modo": "camino",
-       "doc": "Plaza del Campidoglio («Ya lo visitaste el día 1»)",
+       "doc": "Plaza del Campidoglio («Ya lo visitaste el {día}»)",
        "min": 5,
        "notas": [
-        "«Ya lo visitaste el día 1»"
+        "«Ya lo visitaste el {día}»"
        ]
       },
       {
@@ -12234,8 +12231,8 @@
         {
          "tipo": "parada",
          "lugar": "Panteón",
-         "min": 5,
-         "modo": "camino"
+         "min": 10,
+         "modo": null
         },
         {
          "tipo": "parada",
@@ -12265,8 +12262,8 @@
         {
          "tipo": "parada",
          "lugar": "Plaza de San Pedro",
-         "min": 5,
-         "modo": "camino",
+         "min": 10,
+         "modo": null,
          "no_antes": "12:30"
         },
         {
@@ -12520,6 +12517,1897 @@
      }
     }
    ]
+  },
+  "D1-rapido": {
+   "id": "D1-rapido",
+   "nombre": "La ruta rápida del día 1 (marzo a octubre)",
+   "titulo_documento": "La ruta rápida del día 1 (marzo a octubre) · D1-rapido",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15 (con su etiqueta de reserva)",
+       "min": 15,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~20",
+       "min": 20
+      }
+     ],
+     "comida": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)",
+       "min": 90,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "dentro",
+       "doc": "Altar de la Patria, por dentro ~45",
+       "min": 45
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [
+       "Plaza de España (noche)"
+      ],
+      "doc": "la Plaza de España y la Escalinata"
+     },
+     "sobra": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": null,
+       "doc": "Fuente de las Tortugas ~5",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Largo di Torre Argentina",
+       "modo": null,
+       "doc": "Largo di Torre Argentina ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Luigi dei Francesi",
+       "titulo": "San Luigi dei Francesi (los Caravaggio)",
+       "modo": null,
+       "doc": "San Luigi dei Francesi (los Caravaggio) ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "modo": null,
+       "doc": "Iglesia del Gesù ~20",
+       "min": 20
+      }
+     ]
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "D1-rapido-invierno-10": {
+   "id": "D1-rapido-invierno-10",
+   "nombre": "La ruta rápida del día 1 en invierno, libre de 10:00 a 10:59",
+   "titulo_documento": "La ruta rápida del día 1 en invierno, libre de 10:00 a 10:59 · D1-rapido-invierno-10",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)",
+       "min": 90,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
+      }
+     ],
+     "comida": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": "Piperno",
+      "zona": "en el Barrio Judío",
+      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "dentro",
+       "doc": "Altar de la Patria, por dentro ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "dentro",
+       "doc": "Panteón, por dentro ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi y la Plaza de España"
+     },
+     "sobra": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": null,
+       "doc": "Fuente de las Tortugas ~5",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Largo di Torre Argentina",
+       "modo": null,
+       "doc": "Largo di Torre Argentina ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Luigi dei Francesi",
+       "titulo": "San Luigi dei Francesi (los Caravaggio)",
+       "modo": null,
+       "doc": "San Luigi dei Francesi (los Caravaggio) ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "modo": null,
+       "doc": "Iglesia del Gesù ~20",
+       "min": 20
+      }
+     ]
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "D1-rapido-invierno-11": {
+   "id": "D1-rapido-invierno-11",
+   "nombre": "La ruta rápida del día 1 en invierno, libre de 11:00 a 11:59",
+   "titulo_documento": "La ruta rápida del día 1 en invierno, libre de 11:00 a 11:59 · D1-rapido-invierno-11",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": {
+      "restaurante": "La Taverna dei Fori Imperiali",
+      "alternativa": "Trattoria Valentino",
+      "tercera": null,
+      "zona": "en Monti",
+      "doc": "La Taverna dei Fori Imperiali (o Trattoria Valentino), en Monti"
+     },
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)",
+       "min": 90,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "dentro",
+       "doc": "Altar de la Patria, por dentro ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "dentro",
+       "doc": "Panteón, por dentro ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi y la Plaza de España"
+     },
+     "sobra": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": null,
+       "doc": "Fuente de las Tortugas ~5",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Largo di Torre Argentina",
+       "modo": null,
+       "doc": "Largo di Torre Argentina ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Luigi dei Francesi",
+       "titulo": "San Luigi dei Francesi (los Caravaggio)",
+       "modo": null,
+       "doc": "San Luigi dei Francesi (los Caravaggio) ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "modo": null,
+       "doc": "Iglesia del Gesù ~20",
+       "min": 20
+      }
+     ]
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "D1-tarde": {
+   "id": "D1-tarde",
+   "nombre": "El día 1 de tarde",
+   "titulo_documento": "El día 1 de tarde · D1-tarde",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)",
+       "min": 90,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "dentro",
+       "doc": "Altar de la Patria, por dentro ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "dentro",
+       "doc": "Panteón, por dentro ~45 (parada normal al atardecer, sin aviso de su última entrada)",
+       "min": 45,
+       "notas": [
+        "parada normal al atardecer, sin aviso de su última entrada"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~45",
+       "min": 45
+      }
+     ],
+     "cena": {
+      "restaurante": "Pizzeria Da Baffetto",
+      "alternativa": "Armando al Pantheon",
+      "tercera": null,
+      "zona": null,
+      "doc": "Da Baffetto (o Armando al Pantheon)"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi y la Plaza de España"
+     },
+     "sobra": [
+      {
+       "tipo": "parada",
+       "lugar": "Barrio Judío",
+       "modo": null,
+       "doc": "Barrio Judío ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fuente de las Tortugas",
+       "modo": null,
+       "doc": "Fuente de las Tortugas ~5",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Largo di Torre Argentina",
+       "modo": null,
+       "doc": "Largo di Torre Argentina ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia de San Luigi dei Francesi",
+       "titulo": "San Luigi dei Francesi (los Caravaggio)",
+       "modo": null,
+       "doc": "San Luigi dei Francesi (los Caravaggio) ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Iglesia del Gesù",
+       "modo": null,
+       "doc": "Iglesia del Gesù ~20",
+       "min": 20
+      }
+     ]
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "D1-centro-navona": {
+   "id": "D1-centro-navona",
+   "nombre": "La ruta del centro a buen paso, desde Navona",
+   "titulo_documento": "La ruta del centro a buen paso, desde Navona · D1-centro-navona",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15 (con su etiqueta de reserva)",
+       "min": 15,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Condotti",
+       "modo": null,
+       "doc": "Via Condotti ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~15",
+       "min": 15
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [],
+      "doc": "la nocturna que toque (regla 13): no repite lo visto ese día; suele ser el Coliseo y el Foro desde el Campidoglio (taxi, 15 min o menos)",
+      "libre": true,
+      "texto": "la nocturna que toque (regla 13): no repite lo visto ese día; suele ser el Coliseo y el Foro desde el Campidoglio (taxi, 15 min o menos)"
+     },
+     "sobra": [
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~20",
+       "min": 20
+      }
+     ]
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "inicio": "navona"
+  },
+  "D1-centro-espana": {
+   "id": "D1-centro-espana",
+   "nombre": "La ruta del centro a buen paso, desde la Plaza de España",
+   "titulo_documento": "La ruta del centro a buen paso, desde la Plaza de España · D1-centro-espana",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via del Corso",
+       "modo": "camino",
+       "doc": "Via del Corso",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15 (con su etiqueta de reserva)",
+       "min": 15,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      }
+     ],
+     "cena": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "noche": {
+      "lista": [],
+      "doc": "la nocturna que toque (regla 13): no repite lo visto ese día; suele ser el Coliseo y el Foro desde el Campidoglio (taxi, 15 min o menos)",
+      "libre": true,
+      "texto": "la nocturna que toque (regla 13): no repite lo visto ese día; suele ser el Coliseo y el Foro desde el Campidoglio (taxi, 15 min o menos)"
+     },
+     "sobra": [
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~20",
+       "min": 20
+      }
+     ]
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "inicio": "plaza_de_espana"
+  },
+  "D1-centro-entera-navona": {
+   "id": "D1-centro-entera-navona",
+   "nombre": "La ruta del centro entera, desde Navona",
+   "titulo_documento": "La ruta del centro entera, desde Navona · D1-centro-entera-navona",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~30 (con su etiqueta de reserva)",
+       "min": 30,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via Condotti",
+       "modo": null,
+       "doc": "Via Condotti ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~20",
+       "min": 20
+      }
+     ],
+     "cena": {
+      "restaurante": "Il Gabriello",
+      "alternativa": "Poldo e Gianna Osteria",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Il Gabriello (o Poldo e Gianna Osteria), en el Tridente"
+     },
+     "noche": {
+      "lista": [],
+      "doc": "la nocturna que toque (regla 13): no repite lo visto ese día",
+      "libre": true,
+      "texto": "la nocturna que toque (regla 13): no repite lo visto ese día"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "inicio": "navona"
+  },
+  "D1-centro-entera-espana": {
+   "id": "D1-centro-entera-espana",
+   "nombre": "La ruta del centro entera, desde la Plaza de España",
+   "titulo_documento": "La ruta del centro entera, desde la Plaza de España · D1-centro-entera-espana",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via del Corso",
+       "modo": "camino",
+       "doc": "Via del Corso",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~30 (con su etiqueta de reserva)",
+       "min": 30,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~45",
+       "min": 45
+      }
+     ],
+     "cena": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "noche": {
+      "lista": [],
+      "doc": "la nocturna que toque (regla 13): no repite lo visto ese día",
+      "libre": true,
+      "texto": "la nocturna que toque (regla 13): no repite lo visto ese día"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "inicio": "plaza_de_espana"
+  },
+  "D1-anochecer-navona": {
+   "id": "D1-anochecer-navona",
+   "nombre": "La llegada al anochecer, desde Navona",
+   "titulo_documento": "La llegada al anochecer, desde Navona · D1-anochecer-navona",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15 (con su etiqueta de reserva)",
+       "min": 15,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      }
+     ],
+     "cena": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)",
+       "Plaza de España (noche)"
+      ],
+      "doc": "Fontana de Trevi y la Plaza de España"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "inicio": "navona"
+  },
+  "D1-anochecer-espana": {
+   "id": "D1-anochecer-espana",
+   "nombre": "La llegada al anochecer, desde la Plaza de España",
+   "titulo_documento": "La llegada al anochecer, desde la Plaza de España · D1-anochecer-espana",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Panteón",
+       "modo": "fuera",
+       "doc": "Panteón, por fuera ~15 (con su etiqueta de reserva)",
+       "min": 15,
+       "notas": [
+        "con su etiqueta de reserva"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~20",
+       "min": 20
+      }
+     ],
+     "cena": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)"
+      ],
+      "doc": "Fontana de Trevi"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "inicio": "plaza_de_espana"
+  },
+  "D1-noche": {
+   "id": "D1-noche",
+   "nombre": "La llegada de noche, con cena",
+   "titulo_documento": "La llegada de noche, con cena · D1-noche",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [],
+     "cena": {
+      "restaurante": "Armando al Pantheon",
+      "alternativa": "Pizzeria Da Baffetto",
+      "tercera": null,
+      "zona": null,
+      "doc": "Armando al Pantheon (o Da Baffetto)"
+     },
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)"
+      ],
+      "doc": "Fontana de Trevi"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "textos": {
+    "texto": "{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope."
+   }
+  },
+  "D1-noche-sin-cena": {
+   "id": "D1-noche-sin-cena",
+   "nombre": "La llegada de noche, sin cena",
+   "titulo_documento": "La llegada de noche, sin cena · D1-noche-sin-cena",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": {
+      "lista": [
+       "Fontana de Trevi (noche)"
+      ],
+      "doc": "Fontana de Trevi"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "textos": {
+    "texto": "{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope."
+   }
+  },
+  "D1-sin-ruta": {
+   "id": "D1-sin-ruta",
+   "nombre": "La llegada tardísima, sin ruta",
+   "titulo_documento": "La llegada tardísima, sin ruta · D1-sin-ruta",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "textos": {
+    "texto": "{Llegada} a las {hora}. Descansa, que mañana empezamos a tope."
+   }
+  },
+  "D1-vaticano": {
+   "id": "D1-vaticano",
+   "nombre": "D1+Vaticano (2 noches con llegada tarde)",
+   "titulo_documento": "D1+Vaticano (2 noches con llegada tarde) · D1-vaticano",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 30 (se sale por el Campidoglio)",
+       "min": 90,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Altar de la Patria",
+       "modo": "dentro",
+       "doc": "Altar de la Patria, por dentro ~45",
+       "min": 45
+      }
+     ],
+     "comida": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": "Piperno",
+      "zona": "en el Barrio Judío",
+      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+     },
+     "tarde": [
+      {
+       "tipo": "traslado",
+       "como": "taxi",
+       "texto": "Taxi a la entrada de los Museos",
+       "doc": "Taxi a la entrada de los Museos"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Museos Vaticanos y Capilla Sixtina",
+       "modo": null,
+       "doc": "🎟 Museos Vaticanos y Capilla Sixtina ~2 h 30 (turno de tarde)",
+       "min": 150,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno de tarde"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro ~1 h (abre hasta las 20:00; última entrada a las 19:15)",
+       "min": 60,
+       "notas": [
+        "abre hasta las 20:00; última entrada a las 19:15"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": null,
+       "doc": "Via della Conciliazione ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~15",
+       "min": 15
+      }
+     ],
+     "cena": {
+      "restaurante": "L'Arcangelo",
+      "alternativa": "Osteria dell'Angelo",
+      "tercera": null,
+      "zona": "en Prati",
+      "doc": "L'Arcangelo (o Osteria dell'Angelo), en Prati"
+     },
+     "noche": {
+      "lista": [],
+      "doc": "la pareja de nocturnas que toque (regla 13)",
+      "libre": true,
+      "texto": "la pareja de nocturnas que toque (regla 13)"
+     }
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "DC-vaticano": {
+   "id": "DC-vaticano",
+   "nombre": "Mañana corta del Vaticano",
+   "titulo_documento": "Mañana corta del Vaticano · DC-vaticano",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": null,
+       "doc": "Via della Conciliazione ~10",
+       "min": 10
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "miercoles": "siguiente"
+  },
+  "DC-roma-antigua": {
+   "id": "DC-roma-antigua",
+   "nombre": "Mañana corta de la Roma antigua",
+   "titulo_documento": "Mañana corta de la Roma antigua · DC-roma-antigua",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "fuera",
+       "doc": "Coliseo, por fuera ~30 (con su etiqueta de reserva: si lo reserva, manda su hora)",
+       "min": 30,
+       "notas": [
+        "con su etiqueta de reserva: si lo reserva, manda su hora"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "coordenadas": [
+        41.8928,
+        12.4845
+       ],
+       "modo": "fuera",
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
+       "min": 15
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "DC-pincio-popolo": {
+   "id": "DC-pincio-popolo",
+   "nombre": "Mañana corta del Pincio y el Popolo",
+   "titulo_documento": "Mañana corta del Pincio y el Popolo · DC-pincio-popolo",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~15",
+       "min": 15
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "DC-aventino": {
+   "id": "DC-aventino",
+   "nombre": "Mañana corta del Aventino",
+   "titulo_documento": "Mañana corta del Aventino · DC-aventino",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Circo Máximo",
+       "modo": null,
+       "doc": "Circo Máximo ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardín de los Naranjos",
+       "modo": null,
+       "doc": "Jardín de los Naranjos ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ojo de la Cerradura del Aventino",
+       "modo": null,
+       "doc": "Ojo de la Cerradura del Aventino ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Pirámide Cestia",
+       "modo": null,
+       "doc": "Pirámide Cestia ~10 (al lado del metro Piramide y del tren al aeropuerto)",
+       "min": 10,
+       "notas": [
+        "al lado del metro Piramide y del tren al aeropuerto"
+       ]
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null
+  },
+  "DC-cupula": {
+   "id": "DC-cupula",
+   "nombre": "Mañana corta de la Cúpula",
+   "titulo_documento": "Mañana corta de la Cúpula · DC-cupula",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Cúpula de San Pedro",
+       "modo": null,
+       "doc": "Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)",
+       "min": 75,
+       "notas": [
+        "se sale por la Basílica"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~10",
+       "min": 10
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "miercoles": "siguiente"
+  },
+  "DV-traslado": {
+   "id": "DV-traslado",
+   "nombre": "Hoy vuelves a casa (la tarjeta del día de vuelta)",
+   "titulo_documento": "Hoy vuelves a casa (la tarjeta del día de vuelta) · DV-traslado",
+   "partes": {
+    "unica": {
+     "manana": [],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "textos": {
+    "titulo": "Hoy vuelves a casa",
+    "avion": "Tu vuelo sale de {punto} a las {hora}. Te recomendamos estar en el aeropuerto 2 horas antes, por eso hoy no te hemos puesto paradas: es el día de irte con calma.",
+    "tren_o_autobus": "Tu tren sale de {punto} a las {hora}. Llega a la estación con tiempo, por eso hoy no te hemos puesto paradas.",
+    "barco": "Tu barco sale de Civitavecchia a las {hora}. Mira en tu reserva a qué hora cierra el embarque; por eso hoy no te hemos puesto paradas.",
+    "madrugada": "Tu vuelo sale esta noche, a las {hora}. Te recomendamos estar en el aeropuerto 2 horas antes: mañana es el día de irte con calma.",
+    "desde_tu_zona": "Desde tu zona ({zona}): {su mejor opción}.",
+    "explorar": "¿Crees que te da tiempo a ver algo? Aquí tienes los monumentos de Roma.",
+    "despedida": "Esperamos que hayas disfrutado de Roma. ¡Nos vemos en tu próximo viaje!",
+    "tarde_libre": "La tarde es tuya hasta que te vayas."
+   }
+  }
+ },
+ "llegadas": {
+  "dia1": {
+   "marzo_octubre": [
+    {
+     "por": "llegada",
+     "desde": "00:00",
+     "hasta": "04:59",
+     "listas": [
+      {
+       "lista": "D1"
+      }
+     ],
+     "empieza": "09:00",
+     "doc": "llega de 0:00 a 4:59 | D1 · desde las 9:00"
+    },
+    {
+     "desde": "00:00",
+     "hasta": "09:59",
+     "listas": [
+      {
+       "lista": "D1",
+       "variante": "coliseo_tarde"
+      }
+     ],
+     "doc": "antes de las 10:00 | D1 («Por la tarde (a las 15:30 o más tarde)»)"
+    },
+    {
+     "desde": "10:00",
+     "hasta": "11:59",
+     "listas": [
+      {
+       "lista": "D1-rapido"
+      }
+     ],
+     "doc": "de 10:00 a 11:59 | D1-rapido"
+    },
+    {
+     "desde": "12:00",
+     "hasta": "13:59",
+     "listas": [
+      {
+       "lista": "D1-tarde"
+      }
+     ],
+     "comida_al_llegar": true,
+     "doc": "de 12:00 a 13:59 | D1-tarde · comida al llegar"
+    },
+    {
+     "desde": "14:00",
+     "hasta": "14:59",
+     "listas": [
+      {
+       "lista": "D1-centro-navona"
+      },
+      {
+       "lista": "D1-centro-espana"
+      }
+     ],
+     "segun_zona": true,
+     "comida_al_llegar": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 14:00 a 14:59 | D1-centro-navona o D1-centro-espana · comida al llegar · el D1 pasa al día 2"
+    },
+    {
+     "desde": "15:00",
+     "hasta": "18:59",
+     "listas": [
+      {
+       "lista": "D1-centro-navona"
+      },
+      {
+       "lista": "D1-centro-espana"
+      }
+     ],
+     "segun_zona": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 15:00 a 18:59 | D1-centro-navona o D1-centro-espana · el D1 pasa al día 2"
+    },
+    {
+     "desde": "19:00",
+     "hasta": "20:29",
+     "listas": [
+      {
+       "lista": "D1-anochecer-navona"
+      },
+      {
+       "lista": "D1-anochecer-espana"
+      }
+     ],
+     "segun_zona": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 19:00 a 20:29 | D1-anochecer-navona o D1-anochecer-espana · el D1 pasa al día 2"
+    },
+    {
+     "desde": "20:30",
+     "hasta": "21:59",
+     "listas": [
+      {
+       "lista": "D1-noche"
+      }
+     ],
+     "pasa_al_dia_2": true,
+     "doc": "de 20:30 a 21:59 | D1-noche · el D1 pasa al día 2"
+    },
+    {
+     "desde": "22:00",
+     "hasta": "22:59",
+     "listas": [
+      {
+       "lista": "D1-noche-sin-cena"
+      }
+     ],
+     "pasa_al_dia_2": true,
+     "doc": "de 22:00 a 22:59 | D1-noche-sin-cena · el D1 pasa al día 2"
+    },
+    {
+     "desde": "23:00",
+     "hasta": null,
+     "listas": [
+      {
+       "lista": "D1-sin-ruta"
+      }
+     ],
+     "pasa_al_dia_2": true,
+     "doc": "a las 23:00 o más tarde | D1-sin-ruta · el D1 pasa al día 2"
+    }
+   ],
+   "invierno": [
+    {
+     "por": "llegada",
+     "desde": "00:00",
+     "hasta": "04:59",
+     "listas": [
+      {
+       "lista": "D1"
+      }
+     ],
+     "empieza": "09:00",
+     "doc": "llega de 0:00 a 4:59 | D1 · desde las 9:00"
+    },
+    {
+     "desde": "00:00",
+     "hasta": "09:59",
+     "listas": [
+      {
+       "lista": "D1"
+      }
+     ],
+     "doc": "antes de las 10:00 | D1"
+    },
+    {
+     "desde": "10:00",
+     "hasta": "10:59",
+     "listas": [
+      {
+       "lista": "D1-rapido-invierno-10"
+      }
+     ],
+     "doc": "de 10:00 a 10:59 | D1-rapido-invierno-10"
+    },
+    {
+     "desde": "11:00",
+     "hasta": "11:59",
+     "listas": [
+      {
+       "lista": "D1-rapido-invierno-11"
+      }
+     ],
+     "doc": "de 11:00 a 11:59 | D1-rapido-invierno-11"
+    },
+    {
+     "desde": "12:00",
+     "hasta": "12:59",
+     "listas": [
+      {
+       "lista": "D1-tarde"
+      }
+     ],
+     "comida_al_llegar": true,
+     "comida_corta_min": 45,
+     "doc": "de 12:00 a 12:59 | D1-tarde · comida al llegar · comida corta (45 min)"
+    },
+    {
+     "desde": "13:00",
+     "hasta": "13:59",
+     "listas": [
+      {
+       "lista": "D1-centro-entera-navona"
+      },
+      {
+       "lista": "D1-centro-entera-espana"
+      }
+     ],
+     "segun_zona": true,
+     "comida_al_llegar": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 13:00 a 13:59 | D1-centro-entera-navona o D1-centro-entera-espana · comida al llegar · el D1 pasa al día 2"
+    },
+    {
+     "desde": "14:00",
+     "hasta": "14:59",
+     "listas": [
+      {
+       "lista": "D1-centro-navona"
+      },
+      {
+       "lista": "D1-centro-espana"
+      }
+     ],
+     "segun_zona": true,
+     "comida_al_llegar": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 14:00 a 14:59 | D1-centro-navona o D1-centro-espana · comida al llegar · el D1 pasa al día 2"
+    },
+    {
+     "desde": "15:00",
+     "hasta": "18:59",
+     "listas": [
+      {
+       "lista": "D1-centro-navona"
+      },
+      {
+       "lista": "D1-centro-espana"
+      }
+     ],
+     "segun_zona": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 15:00 a 18:59 | D1-centro-navona o D1-centro-espana · el D1 pasa al día 2"
+    },
+    {
+     "desde": "19:00",
+     "hasta": "20:29",
+     "listas": [
+      {
+       "lista": "D1-anochecer-navona"
+      },
+      {
+       "lista": "D1-anochecer-espana"
+      }
+     ],
+     "segun_zona": true,
+     "pasa_al_dia_2": true,
+     "doc": "de 19:00 a 20:29 | D1-anochecer-navona o D1-anochecer-espana · el D1 pasa al día 2"
+    },
+    {
+     "desde": "20:30",
+     "hasta": "21:59",
+     "listas": [
+      {
+       "lista": "D1-noche"
+      }
+     ],
+     "pasa_al_dia_2": true,
+     "doc": "de 20:30 a 21:59 | D1-noche · el D1 pasa al día 2"
+    },
+    {
+     "desde": "22:00",
+     "hasta": "22:59",
+     "listas": [
+      {
+       "lista": "D1-noche-sin-cena"
+      }
+     ],
+     "pasa_al_dia_2": true,
+     "doc": "de 22:00 a 22:59 | D1-noche-sin-cena · el D1 pasa al día 2"
+    },
+    {
+     "desde": "23:00",
+     "hasta": null,
+     "listas": [
+      {
+       "lista": "D1-sin-ruta"
+      }
+     ],
+     "pasa_al_dia_2": true,
+     "doc": "a las 23:00 o más tarde | D1-sin-ruta · el D1 pasa al día 2"
+    }
+   ]
+  },
+  "vuelta": {
+   "hora_de": "vuelo",
+   "punto_de_la_tabla": "fiumicino",
+   "margen_de_la_tabla": "03:00",
+   "filas": [
+    {
+     "desde": "00:00",
+     "hasta": "04:59",
+     "lleva": "solo_traslado",
+     "doc": "de 0:00 a 4:59 | cuenta como la noche de antes: el último día de ruta con su cena y sin nocturna; el día de vuelta, solo el traslado",
+     "dia_antes": "con_cena_sin_nocturna"
+    },
+    {
+     "desde": "05:00",
+     "hasta": "08:59",
+     "lleva": "solo_traslado",
+     "doc": "de 5:00 a 8:59 | solo el traslado; el día de antes, normal, con su noche"
+    },
+    {
+     "desde": "09:00",
+     "hasta": "13:29",
+     "lleva": "solo_traslado",
+     "doc": "de 9:00 a 13:29 | solo el traslado"
+    },
+    {
+     "desde": "13:30",
+     "hasta": "14:59",
+     "lleva": "manana_corta",
+     "doc": "de 13:30 a 14:59 | una mañana corta (abajo), sin comida"
+    },
+    {
+     "desde": "15:00",
+     "hasta": "16:59",
+     "lleva": "manana_sin_comida",
+     "doc": "de 15:00 a 16:59 | la última mañana entera, sin comida: lo que su lista lleva después de la comida, a «Si te sobra tiempo»"
+    },
+    {
+     "desde": "17:00",
+     "hasta": "22:59",
+     "lleva": "manana_con_comida",
+     "doc": "de 17:00 a 22:59 | la última mañana con comida; después, «La tarde es tuya hasta que te vayas.» y [+ Añadir lugares] (como la excursión de medio día)",
+     "tarde_libre": true
+    },
+    {
+     "desde": "23:00",
+     "hasta": null,
+     "lleva": "dia_mas",
+     "doc": "a las 23:00 o más tarde | un día más entero, sin cena ni noche: el día que se cayó al llegar si se cayó alguno; si no, el siguiente día escrito que el viaje no lleva; si no queda ninguno, la última mañana con comida y la tarde libre",
+     "sin_cena_ni_noche": true
+    }
+   ]
+  },
+  "ultimas_mananas": [
+   {
+    "orden": 1,
+    "lista": "D0-medio",
+    "parte": "manana",
+    "franja": "manana",
+    "corta": "DC-vaticano",
+    "lo_principal": [
+     "Plaza de San Pedro"
+    ],
+    "se_salta": [
+     "12-25",
+     "pascua"
+    ]
+   },
+   {
+    "orden": 2,
+    "lista": "D1",
+    "parte": "unica",
+    "franja": "manana",
+    "corta": "DC-roma-antigua",
+    "lo_principal": [
+     "Coliseo",
+     "Foro Romano y Palatino"
+    ],
+    "se_salta": []
+   },
+   {
+    "orden": 3,
+    "lista": "DT-medio",
+    "parte": "manana",
+    "franja": "manana",
+    "corta": "DC-pincio-popolo",
+    "lo_principal": [
+     "Terraza del Pincio",
+     "Piazza del Popolo"
+    ],
+    "se_salta": []
+   },
+   {
+    "orden": 4,
+    "lista": "DA-medio",
+    "parte": "unica",
+    "franja": "manana",
+    "corta": "DC-aventino",
+    "lo_principal": [
+     "Jardín de los Naranjos",
+     "Circo Máximo"
+    ],
+    "se_salta": []
+   },
+   {
+    "orden": 5,
+    "lista": "D6",
+    "parte": "unica",
+    "franja": "manana",
+    "corta": "DC-cupula",
+    "lo_principal": [
+     "Cúpula de San Pedro"
+    ],
+    "se_salta": []
+   },
+   {
+    "orden": 6,
+    "hoja": "Ya has visto lo mejor de Roma",
+    "corta": null,
+    "lo_principal": [],
+    "se_salta": []
+   }
+  ],
+  "inicio_por_zona": {
+   "centro": "navona",
+   "prati": "navona",
+   "trastevere": "navona",
+   "monti": "navona",
+   "nose": "navona",
+   "plaza_de_espana": "plaza_de_espana",
+   "termini": "plaza_de_espana"
   }
  }
 }
