@@ -180,6 +180,7 @@ const recorrer = (carpeta, salida = []) => {
     if (a !== b) dist++
   }
   debe(dist === 0, '5 igual', `${dist} de ${n} casos de claseDeReserva salen distintos que con el código de antes`)
+  console.log(`5. claseDeReserva: ${n} casos comparados con el código de antes (${conRegla} por la regla del Coliseo con excursión), ${dist} diferencias`)
   debe(conRegla > 20, '5 igual', `la prueba casi no pasa por la regla del Coliseo (${conRegla} casos)`)
   // Sin el dato (otro destino) no hay regla; el 16:30 es el del dato.
   const sinDato = { ...D, sitios_grandes: { lugares: D.sitios_grandes.lugares.map((s) => { const { no_cabe_con_excursion_hasta: _x, ...resto } = s; return resto }) } }
