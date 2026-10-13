@@ -2595,7 +2595,17 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
   const diaCuatro = answers?.diaCuatro === 'roma' || answers?.diaCuatro === 'excursion' ? answers.diaCuatro : null
   // «Eliminar reserva» (Tanda 6m): el día se rehace en su sitio, con el orden de días que el viajero ya ve (`force_order`); sin esto, al faltar la reserva el motor reordenaría los días.
   const forceOrder = Array.isArray(body?.force_order) && body.force_order.length > 0 && body.force_order.every((id) => typeof id === 'string') ? body.force_order : null
-  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder }
+  // El día de vuelta con horas (Tanda 7): solo de pago. El cliente manda `vuelta` { hora, modo, puntoId, zona, aMano, diaCaidoAlLlegar, excursion } cuando el viajero ha puesto la hora de su vuelta en RESERVAS; sin ella (sin vuelos, la gratis), nada cambia.
+  const vb = body?.vuelta
+  const vueltaValida = vb && typeof vb === 'object' && vb.pago !== false && /^\d{1,2}:\d{2}$/.test(String(vb.hora ?? ''))
+  const vuelta = vueltaValida
+    ? {
+        hora: String(vb.hora), modo: typeof vb.modo === 'string' ? vb.modo : 'flight', puntoId: typeof vb.puntoId === 'string' ? vb.puntoId : null, zona: typeof vb.zona === 'string' ? vb.zona : null, aMano: vb.aMano === true,
+        diaCaidoAlLlegar: typeof vb.diaCaidoAlLlegar === 'string' || Array.isArray(vb.diaCaidoAlLlegar) ? vb.diaCaidoAlLlegar : null,
+        excursion: vb.excursion && typeof vb.excursion === 'object' && typeof vb.excursion.nombre === 'string' ? { nombre: vb.excursion.nombre.slice(0, 60), vuelve: /^\d{1,2}:\d{2}$/.test(String(vb.excursion.vuelve ?? '')) ? String(vb.excursion.vuelve) : null, medioDia: vb.excursion.medioDia === true, dateIso: typeof vb.excursion.dateIso === 'string' ? vb.excursion.dateIso : null, dayNumber: Number.isInteger(Number(vb.excursion.dayNumber)) ? Number(vb.excursion.dayNumber) : null } : null,
+      }
+    : null
+  return { entradas, freeTourDespues, mediaJornada, diaCuatro, reservasGrandes, reservasViaje, forceOrder, ...(vuelta ? { vuelta } : {}) }
 }
 
 function hasRequiredAnswers(answers) {
