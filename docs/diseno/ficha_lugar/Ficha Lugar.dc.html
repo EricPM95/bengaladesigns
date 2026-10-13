@@ -56,9 +56,11 @@ a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px">
               <span style="height:26px;padding:0 9px 0 7px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:5px;font:600 11.5px 'Geist'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>45 min</span>
               <span style="height:26px;padding:0 9px 0 7px;border-radius:999px;background:oklch(0.96 0.035 150);border:1px solid oklch(0.55 0.11 150 / .3);color:oklch(0.36 0.09 150);display:flex;align-items:center;gap:5px;font:600 11.5px 'Geist'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Acceso libre</span>
-              <span style="height:26px;padding:0 9px;border-radius:999px;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;font:500 11.5px 'Geist';color:rgba(28,34,48,.75)">Fuente</span>
-              <span style="height:26px;padding:0 9px;border-radius:999px;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;font:500 11.5px 'Geist';color:rgba(28,34,48,.75)">Monumento</span>
             </div>
+            <button onClick="{{ like }}" aria-pressed="{{ likedA }}" aria-label="Recomendar" style="align-self:flex-start;height:28px;margin-top:-2px;padding:0 10px 0 7px;border-radius:999px;border:1px solid {{ likeBd }};background:{{ likeBg }};display:flex;align-items:center;gap:6px;cursor:pointer;transition:background .3s,border-color .3s">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="{{ heartFill }}" stroke="oklch(0.55 0.17 5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ heartTf }};transition:transform .35s cubic-bezier(.3,1.6,.5,1)"><path d="M12 20s-7.5-4.5-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.5 12 20 12 20z"></path></svg>
+              <span style="font:500 11.5px 'Geist';color:#1C2230;white-space:nowrap"><strong style="font-weight:700">{{ likeN }}</strong> viajeros lo recomiendan</span>
+            </button>
           </div>
         </div>
 
@@ -179,7 +181,7 @@ a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
 <script type="text/x-dc" data-dc-script>
 const DUR=130;
 class Component extends DCLogic {
-  state={tab:0,playing:false,t:0,toast:null};
+  state={tab:0,playing:false,t:0,toast:null,liked:false};
   componentWillUnmount(){clearInterval(this.iv);clearTimeout(this.tt);}
   toast(txt){this.setState({toast:txt});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
   togglePlay(){if(this.state.playing){clearInterval(this.iv);this.setState({playing:false});return;}
@@ -191,6 +193,10 @@ class Component extends DCLogic {
     return{
       pins:P.map(([x,y,n])=>{const sel=n==='3';return{x:x+'px',y:y+'px',n,s:sel?'30px':'24px',m:sel?'-15px 0 0 -15px':'-12px 0 0 -12px',bg:sel?'oklch(0.55 0.17 5)':'#FFFFFF',fg:sel?'#fff':'#1C2230',fs:sel?'13px':'11px',z:sel?'2':'1'};}),
       back:()=>this.toast('Volver a la ruta'),
+      like:()=>this.setState(st=>({liked:!st.liked})),likedA:s.liked?'true':'false',
+      likeN:(1284+(s.liked?1:0)).toLocaleString('es-ES'),likeSub:s.liked?'Tú también lo recomiendas':'Toca el corazón si te gustó',likeSubC:s.liked?'oklch(0.5 0.17 5)':'rgba(28,34,48,.55)',
+      likeBd:s.liked?'oklch(0.55 0.17 5 / .4)':'rgba(28,34,48,.14)',likeBg:s.liked?'oklch(0.55 0.17 5 / .08)':'transparent',
+      heartBg:s.liked?'oklch(0.55 0.17 5)':'oklch(0.55 0.17 5 / .1)',heartFg:s.liked?'#FFFFFF':'oklch(0.55 0.17 5)',heartFill:s.liked?'oklch(0.55 0.17 5)':'none',heartTf:s.liked?'scale(1.15)':'scale(1)',
       tabs:['Resumen','Entradas','Tips'].map((n,i)=>({n,on:s.tab===i?'true':'false',c:s.tab===i?'#FFFDF8':'rgba(28,34,48,.65)',pick:()=>this.setState({tab:i})})),
       knob:`translateX(${s.tab*100}%)`,isRes:s.tab===0,isEnt:s.tab===1,isTips:s.tab===2,
       see:see.map((t,i)=>({t,n:String(i+1),bd:i<see.length-1?'rgba(28,34,48,.07)':'transparent'})),

@@ -2,6 +2,27 @@
 
 **REGLA DE PRUEBAS (Eric, 12-oct):** si la tanda no toca el motor, sin las 365 fechas (solo las rápidas). Si lo toca, una muestra de unas 60 fechas (festivos, domingos, lunes, miércoles, Navidad) durante la tanda, y las 365 al final del día. Las pruebas, en paralelo.
 
+**PARA LA 6y10 (Eric, 12-oct, 23:34): LOS «ME GUSTA» DE PARTIDA.** Son «me gusta» reales de las redes de Eric; como no sabe el número exacto, se pone siempre una cifra por debajo de la real:
+- imprescindibles y nivel 1: entre 100 y 199;
+- nivel 2: entre 50 y 99;
+- nivel 3: ninguno (0);
+- los 20–25 restaurantes que más salen en los días escritos (los que más visita la gente): entre 100 y 199.
+- Cada sitio, una cifra fija guardada en sus datos (no al azar cada vez que se abre), en un campo propio («me gusta de partida»), con la nota de dónde sale: «redes de Eric, aproximado por debajo del real». Los «me gusta» de los viajeros de la app se suman encima. Más adelante, si Eric saca los números exactos de sus vídeos, se cambian.
+- El orden de EXPLORAR por «me gusta» usa la suma.
+- El texto que acompaña la cifra, donde se vea, habla de la comunidad de Bengala (sus redes y la app), no de «viajeros de la app» solos: en el botón del corazón de la ficha, «{n} lo recomiendan» (el diseño ponía «viajeros lo recomiendan»).
+- (13-oct, 00:05) La ficha del lugar, como el diseño nuevo (Ficha Lugar con el corazón): dentro de la ficha solo dos etiquetas, el reloj con el horario de ese día («08:30–16:00», sin «Abierto» ni «Abre a las…») y el reloj de arena con el tiempo recomendado; nada de «Monumento», «Mirador», «Ruinas», «Reserva obligatoria»… (esas salen fuera). Debajo, el corazón para dar «me gusta». Todo esto va en la PROMPT_TANDA6Y10.
+
+**REGLA DE LOS CRÉDITOS (Eric, 12-oct, 23:25):** solo se dan créditos a quien nos obliga por su licencia o sus condiciones; a nadie más. Hoy: el tiempo (Open-Meteo, CC BY 4.0: en «Créditos») y los mapas (Mapbox y OpenStreetMap: su logo y su línea pequeña en el propio mapa, que lo piden ahí, no en «Créditos»). Antes de lanzar, Code revisa qué más lo exige (fotos de Wikimedia que queden, la empresa de voz si su plan lo pide) y quita los créditos que no hagan falta.
+
+**PARA LA 6y10 (Eric, 12-oct, 23:21): la etiqueta lila «Trastevere» solo en los acordeones de los días (DÍAS y HOY).** En EXPLORAR, en las listas, no sale. (Hoy sale en DÍAS, HOY, EXPLORAR y la ficha: quitarla de EXPLORAR; en la ficha, preguntar a Eric o dejarla, decide Code y lo apunta.)
+
+**PARA LA 6y10 (Eric, 12-oct, 22:53): AÑADIR UNA EXCURSIÓN CUANDO LOS DÍAS ESTÁN LLENOS.** En EXPLORAR › Excursiones › [+ Añadir], hoy sale que no cabe en ningún día (está bien). Añadir dos opciones:
+- **[Añadir en un día nuevo]:** el viaje gana un día al final con la excursión (con fechas, la vuelta pasa al día siguiente). Sin aviso propio aquí (Eric): si la vuelta de RESERVAS ya no cuadra con las fechas, sale el aviso de siempre en la campana y el viajero decide (quitar un día o cambiar la vuelta). Todo con el diseño nuevo de la app, en su misma línea. Con [Deshacer].
+- **[Cambiar un día por la excursión]:** sale la lista de días con su título; el viajero elige uno. Los días con imprescindibles llevan «(lleva imprescindibles)» y el que menos tiene sale arriba como recomendado. Antes de cambiar, el «¿Estás seguro?» de siempre nombrando lo que se pierde ese día; lo que tenía el día pasa a «Si te sobra tiempo» de los otros días si cabe (nada se borra sin que lo decida él). Un día con una reserva suya no se puede elegir para esto: sale en gris con «Tienes una reserva este día». Con [Deshacer].
+- Igual en todos los destinos.
+
+**PARA LA 6y10, LO PRIMERO: las respuestas a PREGUNTAS_TANDA6Y7.md no se aplicaron.** El punto 0 de la 6y8 (P2–P17: Castillo por dentro en el hueco del miércoles, D0 y D0-medio, gana el último cambio de fechas, nocturnas fuera del título, «Día de viaje», segundo grupo con 3 paradas, los 12 datos de las fichas, los superlativos de los días escritos, las dos pruebas viejas y la plantilla rota `el día ${…}`) no llegó a Code: Claude copió el archivo antes de acabar de editarlo. **Resuelto:** Eric se las pasó a Code como añadido a la 6y9 (12-oct, 22:36); comprobar en el INFORME de la 6y9 que están todas. Lección: editar, comprobar y luego copiar; nunca a la vez.
+
 **PARA LA 6y9, LO PRIMERO (12-oct, Eric: «error gravísimo»): los horarios por temporada están mal.** En roma.json el Coliseo tiene 4 estaciones (invierno, primavera, verano, otoño) y en «otoño» pone cierre 16:30 y última entrada 15:30. Lo oficial (captura de Eric, web del Parque): del 1 al 24 de octubre de 2026, 8:30–18:30, última entrada 17:30 (el Coliseo abre a las 8:30; el Foro y el Palatino y la Domus Aurea, a las 9:00). Por eso la rueda de la hora solo deja hasta las 15:30 y el motor cree que el Foro cierra a las 16:30 en octubre. Arreglo:
 - cambiar las 4 estaciones por tramos de fechas, como los da la web oficial (por ejemplo: desde el último domingo de marzo hasta el 31 de agosto; septiembre; del 1 de octubre al último sábado de octubre; del último domingo de octubre en adelante…);
 - comprobar en la web oficial de cada sitio los tramos del Coliseo, el Foro y Palatino, los Museos Vaticanos, la Galería Borghese y todos los demás sitios que usan «by_season», y apuntar la fuente y la fecha de la comprobación;
