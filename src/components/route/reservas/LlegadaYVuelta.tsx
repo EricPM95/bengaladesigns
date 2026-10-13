@@ -20,6 +20,8 @@ const HORAS = Array.from({ length: (24 * 60 - 360) / 5 }, (_, i) => {
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 })
 const HORA_POR_DEFECTO: Record<LegKind, string> = { arrival: '11:15', departure: '18:05' }
+/** Donde arranca la rueda de la hora del otro lado (opcional): la ida sale antes de llegar; la vuelta llega después de salir. */
+const HORA_OTRO_LADO: Record<LegKind, string> = { arrival: '09:00', departure: '20:30' }
 
 /** El enlace de buscar billete: el que ya usaban las filas de transporte. */
 const BUSCAR_BILLETE = 'https://www.skyscanner.net'
@@ -47,7 +49,8 @@ export function HojaHoraLlegada({
   onClose: () => void
 }) {
   const inicial = otra ? leg.otraHora : leg.time
-  const [hora, setHora] = useState(inicial && HORAS.includes(inicial) ? inicial : HORA_POR_DEFECTO[leg.kind])
+  // (La rueda arranca en una hora de salida o de llegada razonable; no es ninguna hora que calcule la app: solo cuenta lo que el viajero guarda. La del otro lado, a otra altura que la de Roma.)
+  const [hora, setHora] = useState(inicial && HORAS.includes(inicial) ? inicial : otra ? HORA_OTRO_LADO[leg.kind] : HORA_POR_DEFECTO[leg.kind])
   const [puntoId, setPuntoId] = useState<string | null>(leg.point?.id ?? null)
   const punto = leg.points.find((candidate) => candidate.id === puntoId) ?? null
   const pideEl = !otra && leg.hasButtons
@@ -265,7 +268,10 @@ function MitadAbierta({
             {esIda ? 'De dónde sales · opcional' : 'A dónde llegas · opcional'}
           </span>
           <div className="grid grid-cols-2 gap-1.5">
-            <CasillaTexto key={`otro-${leg.kind}-${leg.mode}`} etiqueta={esIda ? 'Sale de' : 'Llega a'} dato="otro-punto" valor={leg.otroPunto ?? ''} ejemplo={esIda ? 'Barcelona-El Prat (BCN)' : 'Barcelona-El Prat (BCN)'} onGuardar={onOtroPunto} />
+            {/* (El punto, de ancho completo: «Barcelona-El Prat (BCN)» no cabe en media fila.) */}
+            <div className="col-span-2">
+              <CasillaTexto key={`otro-${leg.kind}-${leg.mode}`} etiqueta={esIda ? 'Sale de' : 'Llega a'} dato="otro-punto" valor={leg.otroPunto ?? ''} ejemplo={origen} onGuardar={onOtroPunto} />
+            </div>
             <CasillaToque etiqueta={esIda ? 'Sale' : 'Llega'} dato="otra-hora" valor={leg.otraHora} vacio="Opcional" icono="reloj" onClick={onOtraHora} />
           </div>
         </div>
@@ -311,7 +317,7 @@ function MitadAbierta({
 export function LlegadaYVuelta({
   route,
   info,
-  zonas,
+  zonas = [],
   abierto,
   onToggle,
   onAbrir,
@@ -358,9 +364,11 @@ export function LlegadaYVuelta({
   const abiertaAhora: LegKind | null = mitadAbierta === undefined ? (!ida.done ? 'arrival' : !vuelta.done ? 'departure' : null) : mitadAbierta
   // El viajero ha abierto su vuelta: ya la ha visto con las fechas de ahora.
   const vueltaAbierta = abierto && abiertaAhora === 'departure'
+  // (Con la fecha de la vuelta en la dependencia: si cambian las fechas con la vuelta a la vista, la ve con su día nuevo y no hace falta avisarle.)
+  const fechaDeLaVuelta = route.answers.dateRange?.end ?? null
   useEffect(() => {
     if (vueltaAbierta) marcarVueltaVista()
-  }, [vueltaAbierta, marcarVueltaVista])
+  }, [vueltaAbierta, fechaDeLaVuelta, marcarVueltaVista])
   const etiqueta = legsTag(ida, vuelta)
   // «¿Aún no tienes vuelo? Buscar vuelos»: para el medio de la mitad que falta o de la que está abierta.
   const modos = [...new Set([ida, vuelta].filter((leg) => !leg.done || abiertaAhora === leg.kind).map((leg) => leg.mode))].filter((modo) => modo !== 'coche')

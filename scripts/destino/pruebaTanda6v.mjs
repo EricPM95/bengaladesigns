@@ -249,7 +249,11 @@ for (const [nombre, route] of [['sin horas', route5], ['con horas', { ...route5,
   const t = pinta(route, 'gratis').texto
   debe(!/¿Ajustamos tu ruta|Ajustamos|Adaptar tu ruta|vuelo llega a las/.test(t), '6 gratis', `gratis ${nombre}: sale algo de «¿Ajustamos tu ruta a tu vuelo?» (${plano(t).slice(0, 160)})`)
 }
-debe(/\{pago && adjustSheetOpen && <FlightAdjustSheet/.test(fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')), '6 gratis', 'la ventana del vuelo no está protegida por el interruptor de pago')
+// (Tanda 7: la hoja «¿Ajustamos tu ruta a tu vuelo?» ya no existe —punto 20—; lo que queda por proteger es que «Llegada y vuelta» solo sale de pago, y que ya no hay hoja.)
+{
+  const panel = fs.readFileSync('src/components/route/ReservasPanel.tsx', 'utf8')
+  debe(!/FlightAdjustSheet/.test(panel) && /const llegada = pago && unDestino/.test(panel), '6 gratis', 'ReservasPanel sigue con la hoja del vuelo, o «Llegada y vuelta» no está protegida por el interruptor de pago')
+}
 
 const resumen = [...porRegla.entries()].map(([r, n]) => `${r}: ${n}`).join(' · ')
 const md = [

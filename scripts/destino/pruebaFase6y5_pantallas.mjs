@@ -99,7 +99,8 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
       debe(JSON.stringify(botones) === JSON.stringify(medio.botones), '2 botones', `${etiqueta}: los botones deberían ser ${JSON.stringify(medio.botones)} y son ${JSON.stringify(botones)}`)
       // Las cuatro casillas, en dos columnas.
       const casillas = [...marcado.matchAll(/data-casilla="([^"]+)"/g)].map((m) => m[1])
-      debe(JSON.stringify(casillas) === JSON.stringify([esIda ? 'Llega' : 'Sale', 'Precio', medio.ref, medio.cia]), '2 casillas', `${etiqueta}: las casillas deberían ser ${esIda ? 'Llega' : 'Sale'}, Precio, ${medio.ref}, ${medio.cia} y son ${JSON.stringify(casillas)}`)
+      // (Tanda 7: tras las cuatro de siempre, las dos opcionales del otro lado —el punto y la otra hora—, en su sección aparte.)
+      debe(JSON.stringify(casillas) === JSON.stringify([esIda ? 'Llega' : 'Sale', 'Precio', medio.ref, medio.cia, 'otro-punto', 'otra-hora']), '2 casillas', `${etiqueta}: las casillas deberían ser ${esIda ? 'Llega' : 'Sale'}, Precio, ${medio.ref}, ${medio.cia} y son ${JSON.stringify(casillas)}`)
       debe(/<div class="grid grid-cols-2 gap-1\.5"><button[^>]*data-casilla="(Llega|Sale)"/.test(marcado), '2 casillas', `${etiqueta}: las casillas no están en dos columnas`)
       debe(/placeholder="AB 1234"/.test(marcado), '2 casillas', `${etiqueta}: la casilla de la referencia no enseña «AB 1234»`)
       debe(!/Código del|Guardar · /.test(t), '2 casillas', `${etiqueta}: el tramo abierto conserva el campo viejo «Código del…»`)
@@ -144,7 +145,8 @@ for (const [nombre, medio] of Object.entries(MEDIOS)) {
   poner('completa', ruta)
   const leg = M.legOf(ruta, info, 'arrival')
   const hoja = pinta(M.HojaHoraLlegada, { leg, ciudad: 'Roma', onSave() {}, onClose() {} })
-  debe(/Hora de llegada/.test(hoja) && /Guardar · /.test(hoja) && !/Precio|Código/.test(hoja), '2 hoja', `la hoja de la hora debe ser solo la rueda (${plano(hoja).slice(0, 200)})`)
+  // (Tanda 7: sin punto elegido, [Guardar] pide primero el punto de Roma; con él, «Guardar · hora».)
+  debe(/Hora de llegada/.test(hoja) && /Guardar · |Elige primero el punto/.test(hoja) && !/Precio|Código/.test(hoja), '2 hoja', `la hoja de la hora debe ser solo la rueda (${plano(hoja).slice(0, 200)})`)
 }
 // La aerolínea (compañía, naviera) se guarda como el código, viaja con el viaje y se borra al quitar el tramo.
 {

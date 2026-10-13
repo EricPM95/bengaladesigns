@@ -52,7 +52,7 @@ async function viaje(dias, { fechas }) {
     id: `f6z6a-${dias}-${fechas ? 'f' : 'n'}`, destination: 'Roma', country: 'Italia', origin: 'Madrid', createdAt: '2027-01-01', intensity: 1, budget: { items: [], total: 0 },
     days: dayPlans,
     answers: { dateRange: fechas ? { start: INICIO, end: sumaDias(INICIO, dias - 1) } : undefined, month: fechas ? undefined : 9, days: dias, companion: 'couple' },
-    arrivalFlightTime: '09:00', departureFlightTime: '19:30',
+    // (Tanda 7: con hora y sin punto, un viaje de antes usa el punto del traslado más largo y la mitad ya cuenta como hecha; por eso las horas solo se ponen con los puntos, en `listo`.)
     transportContext: { transport_option: { id: 'flight' }, archetype: null },
   }
 }
@@ -127,6 +127,8 @@ async function reservasListas(route, version) {
   if (version === 'completa') {
     const legs = legsOf(route, infoLlegada)
     listo.accommodationZone = info.zonasAlojamiento[0]?.id ?? null
+    listo.arrivalFlightTime = '09:00'
+    listo.departureFlightTime = '19:30'
     listo.arrivalPointId = legs.arrival.points[0]?.id ?? route.arrivalPointId
     listo.departurePointId = legs.departure.points[0]?.id ?? route.departurePointId
   }

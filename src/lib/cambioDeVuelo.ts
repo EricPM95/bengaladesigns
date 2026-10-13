@@ -20,7 +20,7 @@ export interface CambioDeVuelo {
 export type EnCambioDeVuelo = (cambio: CambioDeVuelo) => void
 
 /**
- * El rehacer de siempre (el de «gana el último» y la barrita «Actualizando tu ruta…»: `regenerateRouteForDates`, que rehace los destinos curados SIN Claude), puesto en marcha por un cambio de
+ * El rehacer de siempre (el de «gana el último» y la barrita fina de `ActualizandoRuta`: `regenerateRouteForDates`, que rehace los destinos curados SIN Claude), puesto en marcha por un cambio de
  * vuelo. Solo de pago, solo en rutas nuestras de un destino curado y sin cambios a mano: los días cambiados a mano no se tocan (esa decisión, y la de qué se rehace de verdad, son del agente del rehacer).
  */
 export function rehacerPorCambioDeVuelo(_cambio: CambioDeVuelo, route?: Route | null): boolean {
