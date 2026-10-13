@@ -213,6 +213,25 @@ export function medioOf(info: ArrivalInfo, mode: ArrivalMode): ArrivalMedio | nu
 /** El nombre corto de un punto: el de los botones («Fiumicino», «Termini»). */
 export const puntoCorto = (point: ArrivalPoint): string => point.corto ?? point.nombre
 
+/**
+ * El punto de Roma que se usa cuando hay hora y el viajero no eligió punto (un viaje de antes de la Tanda 7): el del traslado más largo de ese medio — avión, Fiumicino; tren, Tiburtina; autobús, la estación de
+ * autobuses de Tiburtina; barco, Civitavecchia. Sale de los datos del destino (`al_centro_min`), no de nombres escritos en el código; a igualdad, el primero de la lista. Sin puntos, null.
+ */
+export function puntoPorDefecto(medio: ArrivalMedio | null | undefined): ArrivalPoint | null {
+  const puntos = medio?.puntos ?? []
+  let mejor: ArrivalPoint | null = null
+  for (const punto of puntos) if (!mejor || punto.al_centro_min > mejor.al_centro_min) mejor = punto
+  return mejor
+}
+
+/** El punto de Roma de una mitad: el que eligió el viajero o, con hora y sin elegir, el de `puntoPorDefecto`. Sin hora y sin elegir, null (y con un solo punto, ese). */
+export function puntoDeLaMitad(medio: ArrivalMedio | null | undefined, elegidoId: string | null | undefined, hayHora: boolean): { point: ArrivalPoint | null; porDefecto: boolean } {
+  const puntos = medio?.puntos ?? []
+  const elegido = puntos.find((candidate) => candidate.id === elegidoId) ?? (puntos.length === 1 ? puntos[0] : null)
+  if (elegido) return { point: elegido, porDefecto: false }
+  return hayHora ? { point: puntoPorDefecto(medio), porDefecto: true } : { point: null, porDefecto: false }
+}
+
 const BOOKING_WORD: Record<ArrivalMode, { arrival: string; departure: string }> = {
   avion: { arrival: 'Vuelo de llegada', departure: 'Vuelo de salida' },
   tren: { arrival: 'Tren de llegada', departure: 'Tren de salida' },

@@ -12,6 +12,10 @@ import { todayIso } from '../lib/dateRange'
 import { lluviaDePruebaActiva } from '../lib/lluviaDePrueba'
 import { fetchHourlyRain, type HourlyRain } from '../lib/rainForecast'
 import { usePruebasUi } from '../store/usePruebasUi'
+import { useReservasFocusStore } from '../store/useReservasFocusStore'
+import { pagoActivo } from '../lib/pago'
+import { elDia } from '../lib/nombreDeDia'
+import { vueltaCambiada } from '../lib/datosDelViajero'
 
 export interface AppNotice {
   id: string
@@ -89,6 +93,23 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           text: `Tu viaje es de ${tripDays} ${tripDays === 1 ? 'día' : 'días'} y ahora tienes ${route.days.length}. Añade un día más a tu viaje o elimina el que menos te convenga.`,
           action: 'open-dates',
           actionLabel: 'Añadir un día a mis fechas',
+          read: false,
+          canMarkRead: false,
+        })
+      }
+      // Tanda 7 (de pago): las fechas del viaje cambiaron y la vuelta tenía hora. Se queda en la campana hasta que el viajero abre su vuelta o la cambia (`marcarVueltaVista`); la app no cambia la vuelta.
+      if (pagoActivo() && vueltaCambiada(route)) {
+        const diaDeVuelta = route.days.at(-1)?.dayNumber ?? route.days.length
+        items.push({
+          id: 'vuelta-fechas',
+          kind: 'warning',
+          title: 'Revisa tu vuelta',
+          text: `Has cambiado los días del viaje: revisa que tu vuelta sigue siendo ${elDia(route, diaDeVuelta)}.`,
+          actionLabel: 'Ver mi vuelta',
+          run: () => {
+            useRouteStore.getState().setMode('bookings')
+            useReservasFocusStore.getState().pedir('llegada', 'departure')
+          },
           read: false,
           canMarkRead: false,
         })

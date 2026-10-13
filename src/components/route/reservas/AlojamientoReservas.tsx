@@ -10,9 +10,40 @@ import { BloqueShell, CambiarBoton, EliminarTexto, EstadoBloque, FlechaBloque, I
 import { Icono } from '../../ui/Icono'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { TimeListWheel } from '../../ui/TimeListWheel'
+import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
+import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
+
+/**
+ * La casilla «Dirección de tu alojamiento (opcional)» (Tanda 7, de pago): texto libre que se guarda al salir del campo (`route.accommodationAddress`). Solo con ella existe [Cómo llegar a tu alojamiento]
+ * (`BotonComoLlegarAlojamiento`), que aquí sale debajo para que el viajero compruebe que el enlace lleva a su puerta.
+ */
+function CampoDireccion({ valor, onGuardar }: { valor: string; onGuardar: (texto: string | null) => void }) {
+  const [texto, setTexto] = useState(valor)
+  return (
+    <div className="flex flex-col gap-2" data-direccion-alojamiento>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-[14px] font-medium">Dirección de tu alojamiento (opcional)</span>
+        <input
+          value={texto}
+          onChange={(event) => setTexto(event.target.value)}
+          onBlur={() => onGuardar(texto)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') event.currentTarget.blur()
+          }}
+          maxLength={160}
+          autoComplete="street-address"
+          placeholder="Calle, número y ciudad"
+          data-casilla="direccion"
+          className="h-12 w-full rounded-[14px] border border-text/15 bg-white px-3.5 text-[14.5px] outline-none placeholder:text-text/35 focus:border-text/40"
+        />
+      </label>
+      <BotonComoLlegarAlojamiento direccion={valor} />
+    </div>
+  )
+}
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
-function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExcursions['zonasAlojamiento']; actual: string | null; onGuardar: (id: string) => void; onClose: () => void }) {
+export function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExcursions['zonasAlojamiento']; actual: string | null; onGuardar: (id: string) => void; onClose: () => void }) {
   const [id, setId] = useState(() => (zonas.some((zona) => zona.id === actual) ? (actual as string) : (zonas[0]?.id ?? '')))
   const elegida = zonas.find((zona) => zona.id === id) ?? zonas[0]
   return (
@@ -48,9 +79,26 @@ function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExc
  * noches del viaje, el precio si lo dijo, [Cambiar] y [Eliminar]. De pago, además, «¿En qué zona te alojas?» con su campo y su rueda (siempre a la vista; «Aún no lo sé» sigue contando «Falta»).
  * Poner el alojamiento es gratis en las dos versiones; la zona, solo de pago. El alojamiento solo informa: la zona (de pago) es lo que orienta la ruta. Se guarda con el viaje, uno por destino.
  */
-export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { route: Route; info: DestinationExcursions; pago: boolean; abierto: boolean; onToggle: () => void }) {
+export function AlojamientoReservas({
+  route,
+  info,
+  pago,
+  abierto,
+  onToggle,
+  onCambioDeVuelo,
+}: {
+  route: Route
+  info: DestinationExcursions
+  pago: boolean
+  abierto: boolean
+  onToggle: () => void
+  /** El enganche de la Tanda 7 (`src/lib/cambioDeVuelo.ts`): se llama al elegir o cambiar la zona. */
+  onCambioDeVuelo?: EnCambioDeVuelo
+}) {
   const zona = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const setZona = useRouteStore((state) => state.setAccommodationZone)
+  const direccion = useRouteStore((state) => state.route?.accommodationAddress ?? null)
+  const setDireccion = useRouteStore((state) => state.setAccommodationAddress)
   const setHotel = useRouteStore((state) => state.setAccommodationHotel)
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
@@ -133,8 +181,12 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
                   <span className="min-w-0 truncate">{elegida ? elegida.nombre : 'Elige tu zona'}</span>
                   <FlechaBloque abierto={false} />
                 </button>
+                <span className="text-[11.5px] leading-[1.4] text-text/60" data-texto-zona>
+                  Con tu zona, tu ruta queda aún más a tu medida: te decimos cómo llegar desde el aeropuerto y por dónde empezar tu primer día.
+                </span>
               </div>
             )}
+            {pago && <CampoDireccion key={direccion ?? ''} valor={direccion ?? ''} onGuardar={setDireccion} />}
           </div>
         )}
       </BloqueShell>
@@ -145,6 +197,7 @@ export function AlojamientoReservas({ route, info, pago, abierto, onToggle }: { 
           onGuardar={(id) => {
             setZona(id)
             setZonaAbierta(false)
+            onCambioDeVuelo?.({ que: 'zona', mitad: null })
           }}
           onClose={() => setZonaAbierta(false)}
         />
