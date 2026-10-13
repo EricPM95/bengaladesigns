@@ -19,7 +19,7 @@
  * (diaPropio.js) y las pruebas.
  */
 import { copiarParte, aplicarVariantes, norm } from './listasDia.js'
-import { RESERVAS_GRANDES } from './listasReservas.js'
+import { sitiosGrandesDe } from './listasReservas.js'
 import { straightLineMeters } from './travelTimes.js'
 
 const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(value)))
@@ -231,6 +231,7 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
   const sinCambios = { order: original, changed: false, mealAfter: {}, groups: [] }
   if (stops.length < 2 || !written?.days || !destData) return sinCambios
   const cat = catalogo(written, destData)
+  const sitiosGrandes = sitiosGrandesDe(destData)
 
   // 1. Qué es cada parada: «Llegada a…», nocturna o parada.
   const info = new Map()
@@ -260,7 +261,7 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
   const entradas = {}
   for (const s of cuerpo) {
     const i = info.get(s.id)
-    if (i.lugar && i.hora != null && RESERVAS_GRANDES.has(i.lugar)) entradas[i.lugar] = s.reservedTime.replace(/^(\d):/, '0$1:')
+    if (i.lugar && i.hora != null && sitiosGrandes.has(i.lugar)) entradas[i.lugar] = s.reservedTime.replace(/^(\d):/, '0$1:')
   }
   const contexto = { entradas, hasFreeTour }
   const grupos = new Map()
@@ -416,7 +417,7 @@ export function reorganizarDia({ stops, written, destData, hasLunch = false, has
     g.fin = coords.at(-1) ?? null
     const horas = g.ordenado.map((id) => info.get(id).hora).filter((h) => h != null)
     g.hora = horas.length ? Math.min(...horas) : null
-    if (g.hora != null && !g.fila && !g.ordenado.some((id) => RESERVAS_GRANDES.has(info.get(id).lugar))) g.franja = g.hora >= MEDIODIA ? 'tarde' : 'manana'
+    if (g.hora != null && !g.fila && !g.ordenado.some((id) => sitiosGrandes.has(info.get(id).lugar))) g.franja = g.hora >= MEDIODIA ? 'tarde' : 'manana'
   }
 
   // 6. Los grupos entre sí. Prioridad: lo reservado; los momentos (primera hora sin gente al principio, paseo de antes de cenar al final de la tarde, nocturnas de noche); dentro de cada grupo

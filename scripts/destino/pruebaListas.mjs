@@ -7,7 +7,7 @@ import { findPipelineV2Data } from '../../server/routeAlgorithm.js'
 import { writtenDaysFor } from '../../server/engine/writtenDays.js'
 import { travelTimesFor } from '../../server/engine/buildDayV3.js'
 import { comprobarViaje } from './comprobacionesListas.mjs'
-import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
+import { sitiosGrandesDe } from '../../shared/routeEngine/listasReservas.js'
 import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
@@ -149,7 +149,7 @@ if (!args.sinreservasdia) {
       if (!base) continue
       const antesBase = paradasDe(base)
       for (const R of RESERVAS_DIA) {
-        const grande = RESERVAS_GRANDES.has(R.name)
+        const grande = sitiosGrandesDe(D).has(R.name)
         for (let k = 1; k <= forma.dias; k++) {
           const dateIso = addDays(inicio, k - 1)
           // Una reserva grande en un día de excursión o en una fecha en que el sitio cierra no puede ir allí (Tanda 6j): la app la guarda con su aviso y el viaje se queda como estaba. No se prueba.

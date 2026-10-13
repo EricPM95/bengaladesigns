@@ -33,7 +33,7 @@ import { availabilityLabel, availableForTrip, seasonFit } from './availability.j
 import { TAG_INTEREST_MAP } from './experienceTags.js'
 import { isStreet } from './localRules.js'
 import { ordenarDias, paradasDelDia } from './listasOrden.js'
-import { claseDeReserva, RESERVAS_GRANDES } from './listasReservas.js'
+import { claseDeReserva, sitiosGrandesDe } from './listasReservas.js'
 import { copiarParte, aplicarVariantes, aplicarExperiencias, aplicarOps, aplicarOp, cumple, norm, toMin, toHHMM } from './listasDia.js'
 import { crearReglas, valorDe } from './listasReglas.js'
 import { COMIDA_HASTA } from './comida.js'
@@ -104,6 +104,7 @@ export function planListasTrip(args) {
   const franjasDestino = written.destino?.franjas ?? destData.destination_config?.franjas ?? {}
   const cfg = { ...FRANJAS, ...franjasDestino, llegada: { ...FRANJAS.llegada, ...(franjasDestino.llegada ?? {}) } }
   const calendar = tripCalendar({ dateRangeStartIso, month, season })
+  const sitiosGrandes = sitiosGrandesDe(destData)
   const placeByName = new Map((destData.places ?? []).map((place) => [place.name, place]))
   const restaurantByName = new Map((destData.restaurants ?? []).map((restaurant) => [restaurant.name, restaurant]))
   const catalogueByName = new Map((destData.night_experiences ?? []).map((entry) => [entry.name, entry]))
@@ -303,7 +304,7 @@ export function planListasTrip(args) {
     let trabajo = aplicarVariantes(base, dia, ctx, aplicadas)
     // El mismo día SIN las reservas grandes (Tanda 6y5, P4): la fila de la tabla de la hora reservada puede llevar menos paradas que el día de siempre. Lo que ya no cabe no desaparece:
     // pasa a «Si te sobra tiempo» de ese día (paso 5.0b).
-    const sinGrandes = Object.fromEntries(Object.entries(ctx.entradas ?? {}).filter(([name]) => !RESERVAS_GRANDES.has(name)))
+    const sinGrandes = Object.fromEntries(Object.entries(ctx.entradas ?? {}).filter(([name]) => !sitiosGrandes.has(name)))
     const control = Object.keys(sinGrandes).length !== Object.keys(ctx.entradas ?? {}).length ? aplicarVariantes(construirBase(), dia, { ...ctx, entradas: sinGrandes }, []) : null
     const conReserva = new Set([...trabajo.manana, ...trabajo.tarde, ...(trabajo.sobra ?? [])].filter((s) => s.tipo !== 'traslado').map((s) => s.lugar))
     const sinReservaVistos = new Set()
@@ -449,7 +450,7 @@ export function planListasTrip(args) {
     else draft.trabajo.tarde.splice(Math.max(0, at - nManana), 0, visita)
   }
   for (const r of reservasViaje ?? []) {
-    if (!r?.name || RESERVAS_GRANDES.has(r.name) || !/^\d{1,2}:\d{2}$/.test(String(r.time ?? ''))) continue
+    if (!r?.name || sitiosGrandes.has(r.name) || !/^\d{1,2}:\d{2}$/.test(String(r.time ?? ''))) continue
     const slot = cityDays.findIndex((day) => (calendar.hasDates && r.dateIso ? hoursOf(day).dateIso === r.dateIso : day.dayNumber === Number(r.dayNumber)))
     if (slot < 0 || !drafts[slot]) continue
     const destino = drafts[slot]
@@ -526,7 +527,7 @@ export function planListasTrip(args) {
     }
     host.aplicadas.push(`reserva:${hora}`)
     // Regla 17: si el viajero insiste en una hora sin lista escrita, se aplica la regla general (4) y queda apuntado.
-    const clase = claseDeReserva(host.dia, lugar, hora, { tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
+    const clase = claseDeReserva(host.dia, lugar, hora, { sitiosGrandes, tieneFreeTour: hasFreeTour, excursionManana: Boolean(host.day?.halfDayExcursion && host.day.halfDayExcursion.soloTarde) })
     if (clase.clase === 'sin_lista' || clase.clase === 'no_cabe') host.log.push({ id: null, lugar, sitio: lugar, que: 'aviso', causa: clase.clase === 'sin_lista' ? `reserva sin lista: ${lugar} a las ${hora} no tiene lista escrita para este día; se aplica la regla general (4)` : `reserva que no cabe: ${lugar} a las ${hora} es una combinación que no cabe; se aplica la regla general (4)` })
   }
 
@@ -654,7 +655,7 @@ export function planListasTrip(args) {
       if (item.kind !== 'stop' || item.llegada || !(item.hora_tipo || item.tipo === 'tour')) return [item]
       if (item.llegada_incluida) return [item]
       // (30 min en las reservas grandes —el Coliseo, los Museos, la Galería—, por las colas de seguridad; 15 en el Free Tour y en los turnos.)
-      const tipoLlegada = item.tipo === 'tour' ? 'tour' : item.hora_tipo === 'reserva' && RESERVAS_GRANDES.has(item.lugar) ? 'reserva' : 'turno'
+      const tipoLlegada = item.tipo === 'tour' ? 'tour' : item.hora_tipo === 'reserva' && sitiosGrandes.has(item.lugar) ? 'reserva' : 'turno'
       const margen = cfg.llegada[tipoLlegada]
       const info = written.destino?.llegadas ?? {}
       const texto = tipoLlegada === 'tour' ? `${info.free_tour?.texto ?? ''}${tour?.meeting_point ? ` Punto de encuentro: ${tour.meeting_point}.` : ''}`.trim() : info.por_lugar?.[item.lugar] ?? info[tipoLlegada]?.texto ?? null
@@ -985,7 +986,7 @@ export function planListasTrip(args) {
         const dur = duracionDe(it)
         const iEste = out.findIndex((x) => x.id === it.id)
         const ajenas = out.map((o, i) => ({ o, i })).filter(({ o }) => esReservaFija(o))
-        const margenDe = (o) => (RESERVAS_GRANDES.has(o.lugar) && o.hora_tipo === 'reserva' ? cfg.llegada.reserva : cfg.llegada.turno)
+        const margenDe = (o) => (sitiosGrandes.has(o.lugar) && o.hora_tipo === 'reserva' ? cfg.llegada.reserva : cfg.llegada.turno)
         const libres = horas.filter((t) => ajenas.every(({ o, i }) => (i < iEste ? t - cfg.llegada.turno >= toMin(o.hora) + duracionDe(o) + cfg.entre_reservas_min : t + dur + cfg.entre_reservas_min <= toMin(o.hora) - margenDe(o))))
         const elegido = (libres.length ? libres : horas).reduce((mejor, t) => (Math.abs(t - natural) < Math.abs(mejor - natural) ? t : mejor))
         out = out.map((x) => (x.id === it.id ? { ...x, hora: toHHMM(elegido), turno_real: true } : x.llegada && x.de === it.id ? { ...x, hora: toHHMM(elegido - x.min) } : x))

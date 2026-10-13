@@ -6,7 +6,7 @@ import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readin
 import { isManualRoute } from '../lib/manualPlan'
 import { FREE_TOUR_REF, isManualFreeTourReservation, pedirFotoDelFreeTour, withManualFreeTour, withoutManualFreeTour } from '../lib/freeTourManual'
 import type { DestinationPlace } from '../lib/destinationPlacesApi'
-import { dayOfReservation, isBigReservation, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
+import { dayOfReservation, isBigReservation, sitiosGrandesDelViaje, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
 import type {
   ChosenRestaurant,
   AccommodationMode,
@@ -938,7 +938,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
       // Una reserva grande (Coliseo, Museos, Galería) con otra fecha mueve el día ENTERO a esa fecha (Tanda 6j, 9): el motor ordena todos los días con ella fija. Se piden todos los días
       // y solo si llegan todos se cambian (todo o nada). Nada se arranca antes: una parada sola que se va de su día dejaba el día a medias (Tanda 6k, punto 2).
-      if (isBigReservation(reservation) && !reservation.noMueve) {
+      if (isBigReservation(reservation, sitiosGrandesDelViaje(route)) && !reservation.noMueve) {
         if (unpinned !== route) set({ route: unpinned })
         void import('../lib/rebuildDay')
           .then((module) => module.rehacerDiasSinTocar(null))
@@ -985,7 +985,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     })
     // (Tanda 6m: quitar una reserva no mueve ningún día: ese día se rehace en su sitio, con el orden que el viajero ya ve, y la parada vuelve a su lista normal, sin hora fija.)
     if (removedDay && !isManualRoute(get().route)) {
-      if (removed && isBigReservation(removed)) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: true }))
+      if (removed && isBigReservation(removed, sitiosGrandesDelViaje(get().route))) void import('../lib/rebuildDay').then((module) => module.rehacerDiaConReservas(removedDay.id, { mantenerOrden: true }))
       // Sin la reserva de un sitio que no es de los grandes, el sitio vuelve al día que lo llevaba (Tanda 6y4, punto 7): hay que rehacer todos los días, sin cambiar su orden.
       else void import('../lib/rebuildDay').then((module) => module.rehacerDiasSinTocar(null, { mantenerOrden: true }))
     }

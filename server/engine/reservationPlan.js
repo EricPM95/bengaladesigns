@@ -6,14 +6,11 @@
 import { buildDayBlockV3 } from './index.js'
 import { hasFreeTourFromAnswers, respuestasConFreeTour } from '../routeAlgorithm.js'
 import { writtenDaysFor } from './writtenDays.js'
-import { RESERVAS_GRANDES } from '../../shared/routeEngine/listasReservas.js'
+import { sitioGrandeDe, sitiosGrandesDe } from '../../shared/routeEngine/listasReservas.js'
 import { closedOnDay } from '../../shared/routeEngine/openingHours.js'
 import { tripCalendar } from '../../shared/routeEngine/tripCalendar.js'
 import { AVISO_DISPONIBILIDAD, horarioDeLaFecha, turnosDeReserva } from '../../shared/routeEngine/horarioDeLaFecha.js'
 
-/** «del Coliseo», «del Vaticano», «de la Galería Borghese»: cómo se nombra el día por su sitio grande. */
-const DEL = { Coliseo: 'del Coliseo', 'Museos Vaticanos y Capilla Sixtina': 'del Vaticano', 'Galería Borghese': 'de la Galería Borghese', 'Free Tour por Roma': 'del Free Tour' }
-const DIAS_DEL_SITIO = { Coliseo: ['D1', 'D1-FT'], 'Museos Vaticanos y Capilla Sixtina': ['D2', 'D3'], 'Galería Borghese': ['D4'], 'Free Tour por Roma': ['D3', 'D1'] }
 const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 const norm = (text) => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -48,28 +45,29 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
   const totalDays = allDays.length + 1
   const start = answers.dateRange?.start ?? null
   const dateOf = (dayNumber) => (start ? addDays(start, dayNumber - 1) : null)
-  const grande = (nueva?.placeNames ?? []).find((name) => RESERVAS_GRANDES.has(name)) ?? null
+  const sitiosGrandes = sitiosGrandesDe(destData)
+  const grande = (nueva?.placeNames ?? []).find((name) => sitiosGrandes.has(name)) ?? null
   const base = { antes: [], despues: [], cambia: false, principal: null, mensaje: null, motivos: [], sinMover: null, cambios: [] }
   if (!grande || dayNumbers.length === 0) return base
   const written = writtenDaysFor(destKey)
   const reservasAntes = (body.reservas_antes ?? []).filter((r) => r && r.dateIso !== undefined)
   // (El «antes» con las respuestas de antes de esta reserva: si la reserva es el Free Tour, el viaje antes no lo llevaba a esa hora.)
   const answersAntes = respuestasConFreeTour(body.answers_sin_reservas ?? answers, reservasAntes)
-  const antes = await ordenDe({ destData, answers: answersAntes, totalDays, dayNumbers, body, extras: { engineExtras: (n) => engineExtras({ ...body, reservas: reservasAntes }, answersAntes, n) } })
-  const despues = await ordenDe({ destData, answers, totalDays, dayNumbers, body, extras: { engineExtras: (n) => engineExtras(body, answers, n) } })
+  const antes = await ordenDe({ destData, answers: answersAntes, totalDays, dayNumbers, body, extras: { engineExtras: (n) => engineExtras({ ...body, reservas: reservasAntes }, answersAntes, n, destData) } })
+  const despues = await ordenDe({ destData, answers, totalDays, dayNumbers, body, extras: { engineExtras: (n) => engineExtras(body, answers, n, destData) } })
   const result = { ...base, antes, despues }
   // Dos reservas grandes el mismo día (el Coliseo por la mañana y los Museos por la tarde, o al revés): no se mueve el día entero, cada una va a su hora en ese día. Se apunta en el registro.
-  const otra = reservasAntes.find((r) => (nueva.dateIso ? r.dateIso === nueva.dateIso : Number(r.dayNumber) === Number(nueva.dayNumber)) && (r.placeNames ?? []).some((name) => RESERVAS_GRANDES.has(name) && name !== grande))
-  if (otra) console.info(`[reservation-plan] dos reservas grandes el mismo día (${nueva.dateIso ?? `día ${nueva.dayNumber}`}): ${grande} y ${otra.placeNames.find((name) => RESERVAS_GRANDES.has(name))}; cada una a su hora, sin mover el día entero`)
+  const otra = reservasAntes.find((r) => (nueva.dateIso ? r.dateIso === nueva.dateIso : Number(r.dayNumber) === Number(nueva.dayNumber)) && (r.placeNames ?? []).some((name) => sitiosGrandes.has(name) && name !== grande))
+  if (otra) console.info(`[reservation-plan] dos reservas grandes el mismo día (${nueva.dateIso ?? `día ${nueva.dayNumber}`}): ${grande} y ${otra.placeNames.find((name) => sitiosGrandes.has(name))}; cada una a su hora, sin mover el día entero`)
   const reservaDay = (nueva.dateIso ? dayNumbers.find((n) => dateOf(n) === nueva.dateIso) : Number(nueva.dayNumber)) ?? null
   if (!reservaDay) return result
   // (El día de cada sitio grande es el suyo escrito, no cualquiera que lo nombre en su pool: el Coliseo es del D1, los Museos del D2 —o del D3 con Free Tour— y la Galería del D4.)
-  const diaDelSitio = (lista) => lista.find((entry) => entry.curatedId && DIAS_DEL_SITIO[grande]?.includes(entry.curatedId))
+  const diaDelSitio = (lista) => lista.find((entry) => entry.curatedId && sitioGrandeDe(destData, grande)?.dias?.includes(entry.curatedId))
   const antesDia = diaDelSitio(antes)
   const despuesDia = despues.find((entry) => entry.dayNumber === reservaDay)
   // (Ya estaba en ese día, o ese día es una excursión: no se mueve nada.)
   // (El Free Tour es la excepción: el viaje antes no lo llevaba, así que no hay un día suyo «de antes»; lo que cambia es el conjunto de días.)
-  if ((!antesDia && grande !== 'Free Tour por Roma') || !despuesDia) return result
+  if ((!antesDia && grande !== destData.default_free_tour?.name) || !despuesDia) return result
   if (despuesDia.isExcursion) return { ...result, sinMover: { motivo: 'excursion' } }
   const cambios = despues.filter((entry, index) => entry.curatedId !== antes[index]?.curatedId)
   if (cambios.length === 0) return result
@@ -79,7 +77,7 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
   result.principal = { sitio: grande, dayNumber: reservaDay, dateIso: fecha }
   const nombre = (entry) => `el día ${entry.name ? `${String(entry.name).replace(/^D[ií]a /i, '')}` : entry.curatedId}`
   const ciudad = body.destination
-  result.mensaje = `Para que tengas una buena experiencia en ${ciudad}, vamos a mover el día ${DEL[grande]} al día ${reservaDay}${fecha ? ` (${dateText(fecha)})` : ''}, con tu reserva.`
+  result.mensaje = `Para que tengas una buena experiencia en ${ciudad}, vamos a mover el día ${sitioGrandeDe(destData, grande)?.del ?? grande} al día ${reservaDay}${fecha ? ` (${dateText(fecha)})` : ''}, con tu reserva.`
   // Los demás días que se mueven: si no es solo el hueco que dejó el día reservado (un cambio sencillo de dos), el motivo es un cierre real de ese día en su fecha.
   const slotAntes = antes.find((entry) => entry.curatedId === despuesDia.curatedId)?.dayNumber ?? null
   for (const entry of despues) {
@@ -106,9 +104,8 @@ export async function planDeReservas({ destData, destKey, body, answers, engineE
   }
   // Tanda 6y5 (P2 y P3): el Vaticano o la Galería nunca se quitan de su día. Si tras el cambio uno de los dos cae en un día que cierra y ningún otro día del viaje lo permite, se queda donde está y la hoja lo dice.
   if (start) {
-    const QUE = { 'Museos Vaticanos y Capilla Sixtina': 'el Vaticano', 'Galería Borghese': 'la Galería Borghese' }
-    for (const [sitio, nombreSitio] of Object.entries(QUE)) {
-      const entry = despues.find((candidate) => DIAS_DEL_SITIO[sitio]?.includes(candidate.curatedId))
+    for (const { nombre: sitio, el: nombreSitio, dias } of (destData.sitios_grandes?.lugares ?? []).filter((candidato) => candidato.nunca_se_quita)) {
+      const entry = despues.find((candidate) => dias?.includes(candidate.curatedId))
       const fecha = entry ? dateOf(entry.dayNumber) : null
       const place = (destData.places ?? []).find((candidate) => candidate.name === sitio)
       if (fecha && place && closedOnDay(place, weekdayOf(fecha), fecha) && !(nueva.placeNames ?? []).includes(sitio)) {
