@@ -55,9 +55,12 @@ import { COMIDA_HASTA_MIN } from '../../../../shared/routeEngine/comida.js'
 import { ArrivalDetailSheet } from './ArrivalDetailSheet'
 import { ArrivalReturnBar } from './ArrivalReturnBar'
 import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
-import { pagoActivo } from '../../../lib/pago'
+import { pagoActivo, pedirPago } from '../../../lib/pago'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
-import { barTextOf, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
+import { BilleteDeVuelo } from './BilleteDeVuelo'
+import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
+import { billeteDe } from '../../../lib/billete'
+import { barTextOf, puntoDeLaMitad, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
 import { AddStopScreen } from '../addStop/AddStopScreen'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
@@ -388,14 +391,27 @@ export function DayDetailPanel({
   // La barra (Tanda 6t): el punto es el elegido en RESERVAS (no el primero de la lista) y ninguna hora la calcula la app. Las horas de arriba (centro, salir) solo montan el día por dentro.
   const pago = pagoActivo()
   const destinoNombre = arrivalInfo.ciudad || route?.destination || day.city
-  const arrivalChosen = arrivalMedio?.puntos.find((point) => point.id === route?.arrivalPointId) ?? null
-  const departureChosen = departureMedio?.puntos.find((point) => point.id === route?.departurePointId) ?? null
+  // (Tanda 7: con hora y sin punto elegido —un viaje de antes—, el del traslado más largo de ese medio.)
+  const arrivalChosen = puntoDeLaMitad(arrivalMedio, route?.arrivalPointId, Boolean(arrivalTime)).point
+  const departureChosen = puntoDeLaMitad(departureMedio, route?.departurePointId, Boolean(departureTime)).point
+  // El billete (Tanda 7, de pago): con la hora de Roma puesta, en lugar de la barra. En coche no hay billete.
+  const billeteLlegada = pago && route ? billeteDe({ route, kind: 'llegada', mode: modes.arrival, point: arrivalChosen }) : null
+  const billeteVuelta = pago && route ? billeteDe({ route, kind: 'vuelta', mode: modes.departure, point: departureChosen }) : null
+  // La tarjeta «Tu último día también cuenta» (Tanda 7): solo en la gratis, en el día de vuelta, y no en coche. Pequeña si el viajero ya añadió lugares a ese día.
+  const tarjetaUltimoDia = !pago && Boolean(route) && day.isReturnLeg === true && modes.departure !== 'coche'
+  const tarjetaUltimoDiaPequena = day.stops.length > 0
   const arrivalBarText = barTextOf({ kind: 'llegada', mode: modes.arrival, point: arrivalChosen, origin, destino: destinoNombre, time: modes.arrival === 'coche' ? null : arrivalTime, pago, codigo: route?.arrivalCodigo ?? null })
   const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago, codigo: route?.departureCodigo ?? null })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
   const pedirReservas = useReservasFocusStore((state) => state.pedir)
   const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const setMode = useRouteStore((state) => state.setMode)
+  const marcarVueltaVista = useRouteStore((state) => state.marcarVueltaVista)
+  /** Abrir la ficha de la vuelta es «ver la vuelta» (Tanda 7): se va el aviso de la campana de «has cambiado los días del viaje». */
+  const abrirFichaDeVuelta = () => {
+    marcarVueltaVista()
+    setArrivalSheet('vuelta')
+  }
   /** «+ AÑADIR VUELO» y «Editar»: a Reservas, al bloque «Llegada y vuelta» (de pago), con la mitad que se pide abierta. */
   const goToBooking = (which: 'llegada' | 'vuelta') => {
     setArrivalSheet(null)
@@ -1354,7 +1370,11 @@ export function DayDetailPanel({
           {isFirstDayOfTrip && route && (
             // (Hasta «MAÑANA», los 28 px de la cabecera: PROMPT_UI_REPASO_3, 2.)
             <div className="space-y-1.5 pt-2">
-              <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={pago ? () => goToBooking('llegada') : undefined} />
+              {billeteLlegada ? (
+                <BilleteDeVuelo billete={billeteLlegada} onOpen={() => setArrivalSheet('llegada')} />
+              ) : (
+                <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={pago ? () => goToBooking('llegada') : undefined} />
+              )}
               {arrivalConflict && centerMinutes != null && (
                 <button
                   type="button"
@@ -1491,7 +1511,11 @@ export function DayDetailPanel({
           {/* Con una excursión de día entero no sale: su tarjeta ya dice que ocupa el día entero. */}
           {/* Ruta a mano (Tanda 6y): [Añadir parada] (y [Añadir excursión] en un día en blanco) en lugar de «Añadir lugares». */}
           {dayType === 'manual' && route && isManualRoute(route) && <ManualDayFooter route={route} day={day} />}
-          {dayType === 'manual' && !isManualRoute(route) && (
+          {/* Tanda 7: la tarjeta del día de vuelta, solo en la gratis (de pago está el «+ AÑADIR VUELO» de la barra); en coche no hay hora y no sale. Grande con el día en blanco; pequeña debajo de los lugares que añadió. */}
+          {tarjetaUltimoDia && (
+            <TarjetaTuUltimoDia pequena={tarjetaUltimoDiaPequena} onAnadirVuelta={pedirPago} onMontarlo={() => openAddFlow(day.id)} />
+          )}
+          {dayType === 'manual' && !isManualRoute(route) && !(tarjetaUltimoDia && !tarjetaUltimoDiaPequena) && (
               <button
                 type="button"
                 onClick={() => openAddFlow(day.id)}
@@ -1557,7 +1581,11 @@ export function DayDetailPanel({
                   Ajustar este día a tu vuelta
                 </button>
               )}
-              <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => setArrivalSheet('vuelta')} onAdd={pago ? () => goToBooking('vuelta') : undefined} />
+              {billeteVuelta ? (
+                <BilleteDeVuelo billete={billeteVuelta} onOpen={() => abrirFichaDeVuelta()} />
+              ) : (
+                <ArrivalReturnBar mode={modes.departure} text={returnBarText} onOpen={() => abrirFichaDeVuelta()} onAdd={pago ? () => goToBooking('vuelta') : undefined} />
+              )}
               <p className="pt-4 text-center font-display text-[19px] italic text-text/60">
                 Fin del viaje.{arrivalInfo.despedida ? ` ${arrivalInfo.despedida}` : ''}
               </p>

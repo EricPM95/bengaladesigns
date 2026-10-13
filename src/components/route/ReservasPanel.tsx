@@ -4,16 +4,15 @@ import type { Route } from '../../lib/types'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useReservasFocusStore, type BloqueReservasId } from '../../store/useReservasFocusStore'
 import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
-import { detectFlightOpportunities } from '../../lib/flightOpportunity'
+import { rehacerPorCambioDeVuelo, type EnCambioDeVuelo } from '../../lib/cambioDeVuelo'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { buildEntradasBloque, hasEnoughDaysForExcursions } from '../../lib/bookings'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
-import { centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo } from '../../lib/arrivalReturn'
+import { useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
 import { pagoActivo } from '../../lib/pago'
 import { getTodayTripStatus } from '../../lib/todayMode'
 import { DestinationReservasAccordion } from './reservas/DestinationReservasAccordion'
-import { FlightAdjustSheet } from './reservas/FlightAdjustSheet'
 import { BotonCartera } from '../presupuesto/BotonCartera'
 import { LlegadaYVuelta } from './reservas/LlegadaYVuelta'
 import { AlojamientoReservas } from './reservas/AlojamientoReservas'
@@ -29,6 +28,8 @@ import { diasDelViaje, textoDeDuracion } from '../../lib/duracionViaje'
 interface ReservasPanelProps {
   route: Route
   onClose: () => void
+  /** Tanda 7: el enganche de los cambios de vuelo (ver `src/lib/cambioDeVuelo.ts`). Sin él, se usa `rehacerPorCambioDeVuelo` (el rehacer de siempre en segundo plano). */
+  onCambioDeVuelo?: EnCambioDeVuelo
 }
 
 const MES = new Intl.DateTimeFormat('es-ES', { month: 'short' })
@@ -50,10 +51,8 @@ export function rangoDelViaje(route: Route): string {
  * Entradas y Free Tour, Excursiones y Útil para el viaje. El presupuesto NO se abre desde aquí abajo: solo desde la cartera de la cabecera (la de esta pantalla, `BotonCartera`). Todo lo de pago va detrás del mismo interruptor (`pagoActivo`, src/lib/pago.ts). En el ordenador, en dos columnas. Los viajes de varios
  * destinos conservan además el acordeón de cada destino. El % de «viaje listo» (useTripReadiness.ts) ya no sale en esta cabecera; solo queda el «!» de Reservas en la barra de abajo.
  */
-export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
+export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanelProps) {
   const pago = pagoActivo()
-  const setFlightAdjust = useRouteStore((state) => state.setFlightAdjust)
-  const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const reservations = useRouteStore((state) => state.reservations)
   const accommodationZone = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const accommodationSelections = useRouteStore((state) => state.accommodationSelections)
@@ -67,19 +66,14 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
   const [abiertos, setAbiertos] = useState<Record<string, boolean>>({})
   /** La mitad de «Llegada y vuelta» abierta: undefined = la que falta; null = ninguna. */
   const [mitad, setMitad] = useState<LegKind | null | undefined>(undefined)
-  /** La ventana «¿Ajustamos tu ruta a tu vuelo?»: sale al terminar de poner la hora de llegada o de salida. */
-  const [adjustSheetOpen, setAdjustSheetOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const info = useDestinationExcursions(route.destination)
   // Las excursiones solo salen en los viajes de los días que marca el destino (`excursiones_desde_dias`): si no, ni el hueco.
   const hayExcursiones = info.excursions.length > 0 && hasEnoughDaysForExcursions(route, info.fromDays)
   const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
-  const modes = tripModes(route)
-  const opportunities = detectFlightOpportunities(route)
   const segments = buildDestinationSegments(route.days)
   const unDestino = segments.length <= 1
-  const day1Id = route.days[0]?.id
 
   const abrir = (bloque: string, valor = true) => setAbiertos((previous) => ({ ...previous, [bloque]: valor }))
   const alternar = (bloque: string) => setAbiertos((previous) => ({ ...previous, [bloque]: !previous[bloque] }))
@@ -102,26 +96,11 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
     useDatesCalendarStore.getState().request()
   }
 
-  const handleRecalculate = async (dayId: string) => {
-    // Recalcula el horario REAL de ESTE día a partir del vuelo introducido (ver stopScheduling.ts, "Optimizar ruta") — día 1 usa la hora de llegada, el último día la de vuelta.
-    const kind = dayId === day1Id ? 'arrival' : 'departure'
-    const flightTime = kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime
-    const medio = medioOf(arrivalInfo, kind === 'arrival' ? modes.arrival : modes.departure)
-    const pointId = kind === 'arrival' ? route.arrivalPointId : route.departurePointId
-    const point = medio?.puntos.find((candidate) => candidate.id === pointId) ?? medio?.puntos[0] ?? null
-    const keyMinutes = kind === 'arrival' ? centerMinutesOf(flightTime, point) : leaveMinutesOf(flightTime, modes.departure, medio, point)
-    if (keyMinutes != null) await fitDayToTrip(dayId, kind, keyMinutes)
-  }
-  /** «Sí, ajústala por mí»: lo que la app ya hacía con «Optimizar ruta», en cada día con oportunidad, con las horas que ya hay. */
-  const adjustForMe = async () => {
-    setAdjustSheetOpen(false)
-    setFlightAdjust('auto')
-    for (const opportunity of opportunities) if (opportunity.actionable) await handleRecalculate(opportunity.dayId)
-  }
-  const adjustMyself = () => {
-    setAdjustSheetOpen(false)
-    setFlightAdjust('manual')
-  }
+  /**
+   * (Tanda 7) Al poner, cambiar o borrar una hora de Roma, un punto de Roma o la zona, los días se rehacen solos en segundo plano (`rehacerPorCambioDeVuelo`, que usa el rehacer de siempre: «Actualizando tu
+   * ruta…», gana el último). Sustituye a la ventana «¿Ajustamos tu ruta a tu vuelo?». Es el punto de enganche para la hoja del resumen y para la decisión de qué se rehace de verdad.
+   */
+  const cambioDeVuelo: EnCambioDeVuelo = (cambio) => (onCambioDeVuelo ?? ((c) => void rehacerPorCambioDeVuelo(c)))(cambio)
 
   // El resumen de arriba, dentro de la tarjeta (gratis y de pago): dos o tres fichas.
   const { enRuta: entradas } = buildEntradasBloque(route, info.entradasOrden, info.entradas, reservations)
@@ -141,22 +120,15 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
       <LlegadaYVuelta
         route={route}
         info={arrivalInfo}
+        zonas={info.zonasAlojamiento}
         abierto={Boolean(abiertos.llegada)}
         onToggle={() => alternar('llegada')}
         onAbrir={() => abrir('llegada')}
         mitadAbierta={mitad}
         onMitad={setMitad}
-        onGuardada={() => setAdjustSheetOpen(true)}
+        onCambioDeVuelo={cambioDeVuelo}
         onFechas={abrirFechas}
       />
-      {opportunities
-        .filter((opportunity) => !opportunity.actionable)
-        .map((opportunity) => (
-          <div key={opportunity.dayId} className="flex items-start gap-3 rounded-[20px] border border-border bg-bg-hover p-3.5">
-            <Icono nombre="noche" size={18} className="mt-0.5 shrink-0" />
-            <p className="min-w-0 flex-1 text-small text-text">{opportunity.reason}</p>
-          </div>
-        ))}
     </>
   )
 
@@ -195,7 +167,7 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
               <div className="flex min-w-0 flex-col gap-3.5">
                 {llegada}
                 {unDestino ? (
-                  <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} />
+                  <AlojamientoReservas route={route} info={info} pago={pago} abierto={Boolean(abiertos.aloj)} onToggle={() => alternar('aloj')} onCambioDeVuelo={cambioDeVuelo} />
                 ) : (
                   <div className="flex flex-col gap-2.5">
                     <span className="text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
@@ -233,7 +205,6 @@ export function ReservasPanel({ route, onClose }: ReservasPanelProps) {
           </div>
         </div>
 
-        {pago && adjustSheetOpen && <FlightAdjustSheet onAuto={adjustForMe} onManual={adjustMyself} onClose={() => setAdjustSheetOpen(false)} />}
       </motion.div>
     </AnimatePresence>
   )

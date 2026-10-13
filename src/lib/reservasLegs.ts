@@ -1,6 +1,6 @@
 import type { Route } from './types'
 import { fechaCorta } from './nombreDeDia'
-import { medioOf, puntoCorto, tripModes, type ArrivalInfo, type ArrivalMode, type ArrivalPoint } from './arrivalReturn'
+import { medioOf, puntoCorto, puntoDeLaMitad, tripModes, type ArrivalInfo, type ArrivalMode, type ArrivalPoint } from './arrivalReturn'
 
 /**
  * La ida y la vuelta de RESERVAS (de pago, Tanda 6s): para cada mitad, el medio que eligió el viajero en el formulario, su hora, su punto y si está hecha.
@@ -22,6 +22,11 @@ export interface LegState {
   hasButtons: boolean
   /** El punto elegido, o el único que hay; null = sin elegir. */
   point: ArrivalPoint | null
+  /** true si el punto no lo eligió el viajero: es el del traslado más largo de ese medio (un viaje de antes de la Tanda 7 con hora y sin punto). */
+  pointPorDefecto: boolean
+  /** Tanda 7, las casillas opcionales: el punto del otro lado (de dónde sale la ida / a dónde llega la vuelta) y la otra hora (la de salida de la ida / la de llegada de la vuelta). null = vacías. */
+  otroPunto: string | null
+  otraHora: string | null
   /** Hecha: en coche siempre; si no, con hora y punto. */
   done: boolean
   dateIso: string | null
@@ -41,8 +46,9 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
   const medio = medioOf(info, mode)
   const points = mode === 'coche' ? [] : (medio?.puntos ?? [])
   const chosenId = kind === 'arrival' ? route.arrivalPointId : route.departurePointId
-  const point = points.find((candidate) => candidate.id === chosenId) ?? (points.length === 1 ? points[0] : null)
   const time = (kind === 'arrival' ? route.arrivalFlightTime : route.departureFlightTime) || null
+  // (Tanda 7: con hora y sin punto elegido —un viaje de antes—, el punto del traslado más largo de ese medio.)
+  const { point, porDefecto } = puntoDeLaMitad(medio ? { ...medio, puntos: points } : null, chosenId, Boolean(time))
   const done = mode === 'coche' || (Boolean(time) && (points.length === 0 || point !== null))
   const range = route.answers.dateRange
   const dateIso = (kind === 'arrival' ? range?.start : range?.end) ?? null
@@ -56,6 +62,9 @@ export function legOf(route: Route, info: ArrivalInfo, kind: LegKind): LegState 
     points,
     hasButtons: points.length > 1,
     point,
+    pointPorDefecto: porDefecto,
+    otroPunto: ((kind === 'arrival' ? route.arrivalOtroPunto : route.departureOtroPunto) ?? '').trim() || null,
+    otraHora: (kind === 'arrival' ? route.arrivalOtraHora : route.departureOtraHora) || null,
     done,
     dateIso,
     dayNumber: kind === 'arrival' ? 1 : (last?.dayNumber ?? route.days.length),
