@@ -516,7 +516,8 @@ export function formatDayV3({ destData, tripDay, city, nightChain = [], dayVisit
     // Conciliazione, 45. Solo cuando el máximo es el mismo en los dos ritmos.)
     const walkMax = paseoMaxOf(sourcePlace, false)
     if (walkMax != null && walkMax === paseoMaxOf(sourcePlace, true)) stop.max_minutes = Math.min(stop.max_minutes ?? Infinity, walkMax)
-    if (sourcePlace?.level === 1 && (stop.pass_through || visit.place.passThrough || visit.place.passBy || visit.place.visitOutside)) {
+    // (Un sitio que cierra ese día y se queda como «Cerrado este día», Tanda 6y10, no se enseña por fuera: su aviso es el suyo —`notice`—, no el de «te lo enseñamos por fuera».)
+    if (sourcePlace?.level === 1 && !visit.place.closedThisDay && (stop.pass_through || visit.place.passThrough || visit.place.passBy || visit.place.visitOutside)) {
       const notice = closedOutsideNotice(destData, sourcePlace, tripDay.hours ?? {})
       if (notice) stop.closed_notice = notice
     }
