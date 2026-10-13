@@ -4,7 +4,6 @@ import type { Coordinates } from '../../../lib/types'
 import type { MockStopDetail } from '../../../lib/mockDayDetail'
 import { fetchPlacePhotoDetail, photoNameOf, type PlacePhoto } from '../../../lib/placePhoto'
 import { displayStopName, formatDuration } from '../../../lib/format'
-import { tagLabel, visibleTags } from '../../../lib/tagColors'
 import { formatShortDateEs } from '../../../lib/dateRange'
 import { computeStopHoursTag } from '../../../lib/stopHoursTag'
 import { describeStop, type StopDescription } from '../../../lib/describeStopApi'
@@ -21,7 +20,9 @@ import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
 import { Icono } from '../../ui/Icono'
-import { EtiquetaBarrio } from '../../ui/EtiquetaBarrio'
+import { MeGusta } from '../../ui/MeGusta'
+import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { etiquetaDeHorario } from '../../../lib/etiquetaHorario'
 import { FotoCredito } from '../../ui/FotoCredito'
 import { BotonFotoParada } from '../fotos/BotonFotoParada'
 import { Escuchar } from '../hoy/Escuchar'
@@ -79,21 +80,16 @@ interface StopDetailSheetProps {
   /** "Quiero entrar" (decisión del usuario, 2026-09-28): arriba del todo en Resumen, debajo del motivo, solo si la
       parada va por fuera por tiempo (`outsideKind: 'no_cabe'`). */
   onWantInside?: () => void
-  /** «Viajeros lo recomiendan» (Tanda 6z): el corazón y el texto junto al nombre. El texto solo lleva un número si es real o del modo de prueba (ver recomendaciones.ts). */
-  recomendacion?: { liked: boolean; texto: string; onToggle: () => void }
 }
 
 /** Una píldora de las etiquetas pequeñas de debajo del nombre (diseño «Ficha Lugar»): `oscura` (la duración), `verde` (acceso libre / abierto), `roja` (requiere reserva / cerrado) o de contorno (el tipo). */
-function Pildora({ tono = 'contorno', children }: { tono?: 'oscura' | 'verde' | 'roja' | 'contorno'; children: ReactNode }) {
-  const estilo =
-    tono === 'oscura'
-      ? 'bg-text text-bg'
-      : tono === 'verde'
-        ? 'border border-[oklch(0.55_0.11_150_/_.3)] bg-[oklch(0.96_0.035_150)] text-[oklch(0.36_0.09_150)]'
-        : tono === 'roja'
-          ? 'border border-accent-red/30 bg-accent-red/10 text-accent-red'
-          : 'border border-text/[.14] text-text/75'
-  return <span className={`flex h-[26px] items-center gap-[5px] rounded-full px-[9px] text-[11.5px] ${tono === 'contorno' ? 'font-medium' : 'font-semibold'} ${estilo}`}>{children}</span>
+function Pildora({ tono = 'contorno', datos, children }: { tono?: 'oscura' | 'roja' | 'contorno'; datos: 'horario' | 'tiempo'; children: ReactNode }) {
+  const estilo = tono === 'oscura' ? 'bg-text text-bg' : tono === 'roja' ? 'border border-accent-red/30 bg-accent-red/10 text-accent-red' : 'border border-text/[.14] text-text/75'
+  return (
+    <span data-etiqueta-ficha={datos} className={`flex h-[26px] items-center gap-[5px] rounded-full px-[9px] text-[11.5px] ${tono === 'contorno' ? 'font-medium' : 'font-semibold'} ${estilo}`}>
+      {children}
+    </span>
+  )
 }
 
 /** Las líneas de un texto de horario largo (una por renglón), sin las vacías. */
@@ -114,14 +110,13 @@ function lineasDe(texto: string | null | undefined): string[] {
  * Tanda 6y4: el DISEÑO NUEVO («Ficha Lugar.dc.html»): foto con la cámara en su esquina, nombre en serif, etiquetas pequeñas, pestañas con bolita, y en Resumen el texto, «Qué vas a ver», «Por el camino»,
  * «Horario» y «Cómo llegar»; abajo, la barra «Escuchar historia» (solo en los sitios con historia; de pago). Cada sección sale solo si nuestros datos la traen (las piezas viven en `FichaPiezas.tsx`).
  */
-export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside, recomendacion }: StopDetailSheetProps) {
+export function StopDetailSheet({ stop, initialTab = null, visitTime = null, city, dayNumber, dateIso, dayStops, isAnchor, onClose, externalContent, footerAction, onWantInside }: StopDetailSheetProps) {
   const [tab, setTab] = useState<Tab>(initialTab ?? 'resumen')
   // Prompt 5: la foto real del lugar y su procedencia. Unsplash exige atribución visible allí donde
   // se muestra la foto; las de Wikipedia no la necesitan, por eso hace falta saber de cuál viene.
   const [photo, setPhoto] = useState<PlacePhoto | null>(null)
-  // Tanda 6y4: lo que dicen los datos del destino de este lugar: la etiqueta de barrio («Trastevere») y, si cobra por acercarse en vez de vender entrada, el bloque «No necesitas entrada».
+  // Tanda 6y4: lo que dicen los datos del destino de este lugar: si cobra por acercarse en vez de vender entrada, el bloque «No necesitas entrada». (La etiqueta de barrio ya no sale en la ficha: 6y10.)
   const infoDestino = useDestinationExcursions(city)
-  const barrio = stop ? (infoDestino.etiquetasPorSitio[stop.name] ?? null) : null
   const sinEntrada = stop ? (infoDestino.sinEntradaPorSitio[stop.name] ?? null) : null
   useEffect(() => {
     // (Un paseo libre sin zona con foto no busca por su nombre: sale el color neutro.)
@@ -309,11 +304,10 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   const hoursTag = stop && !stop.isFreeWalk
     ? computeStopHoursTag(stop.hours, visitMinutes ?? new Date().getHours() * 60 + new Date().getMinutes(), visitMinutes !== null)
     : null
-  // Dos fuentes, las dos ya disponibles aquí sin pedir nada extra: el enlace de reserva de la ficha
-  // ampliada (Coliseo, Galería Borghese, Museos Vaticanos, Castel Sant'Angelo…) y el propio texto de
-  // horario del JSON del destino, que lo dice cuando es obligatoria (Panteón, Domus Aurea).
-  const requiresBooking =
-    stop?.reservation === 'obligatoria' || Boolean(curated?.extras?.booking_url) || /reserva\s+(online\s+)?obligatoria/i.test(stop?.hours ?? '')
+  // (Tanda 6y10) La etiqueta del reloj de debajo del nombre: el horario de ESE día (o del mes del viaje, sin fechas) con la misma función que las tarjetas de DÍAS y HOY (horarioDeParada, que lee los datos con el módulo del motor).
+  const horarioDe = useHorarioDeParadas(city, dateIso)
+  const horario = stop && !stop.isFreeWalk && !stop.isBreak ? horarioDe({ name: stop.name, scheduleText: stop.scheduleText, hours: stop.hours }) : null
+  const etiquetaReloj = etiquetaDeHorario(horario)
   // El horario auditado (texto largo con días, épocas y festivos) manda sobre el de la ficha curada.
   const hoursDetail = stop?.hoursCard || description?.hoursDetail || null
   // Solo los lugares con afiliación de tours (ver mockDayDetail.ts) tienen sentido con
@@ -440,49 +434,21 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                       <span>{stop.nightViewTitle ?? displayStopName(stop.name)}</span>
                     </h1>
                     <div className="flex flex-wrap items-center gap-[5px]">
-                      {stop.isNightExperience && (
-                        <span className="flex h-[26px] items-center gap-[5px] rounded-full bg-[#1a1a2e] px-[9px] text-[11.5px] font-semibold text-[#9DB4FF]">
-                          <MoonIcon />
-                          Experiencia nocturna
-                        </span>
-                      )}
-                      <Pildora tono="oscura">
-                        <Icono nombre="reloj" size={12} grosor={2} />
-                        {formatDuration(stop.durationMinutes)}
-                      </Pildora>
-                      {hoursTag && (
-                        <Pildora tono={hoursTag.variant === 'closed' ? 'roja' : 'verde'}>
-                          <Icono nombre={hoursTag.variant === 'always' ? 'hecho' : 'reloj'} size={12} grosor={2.2} />
-                          {hoursTag.label}
+                      {/* (Tanda 6y10) Debajo del nombre, SOLO dos etiquetas: el reloj con el horario de ese día (sin texto; «Cerrado» si ese día no abre) y el reloj de arena con el tiempo que recomendamos.
+                          El tipo («Monumento»), la reserva, el acceso libre y el barrio no salen aquí: viven fuera de la ficha (listas y tarjetas). */}
+                      {etiquetaReloj && (
+                        <Pildora tono={horario?.cerrado ? 'roja' : 'contorno'} datos="horario">
+                          <Icono nombre="reloj" size={12} grosor={2} />
+                          {etiquetaReloj}
                         </Pildora>
                       )}
-                      {/* "Acceso libre" (la variante `always` del hoursTag) solo es cierto si el lugar
-                          no tiene horario NI hace falta sacar entrada. Aquí sí se sabe: la ficha
-                          ampliada ya está cargada y trae `booking_url` para lo que se reserva, y el
-                          propio horario del JSON avisa cuando la reserva es obligatoria. */}
-                      {requiresBooking && <Pildora tono="roja">Requiere reserva</Pildora>}
-                      {/* Ronda 7, Issue A: la píldora de categoría genérica solo se muestra sin tags
-                          curados reales — ver mismo criterio en StopAccordion.tsx. */}
-                      {visibleTags(stop.tags).length === 0 && <Pildora>{stop.category}</Pildora>}
-                      {visibleTags(stop.tags).map((tag) => (
-                        <Pildora key={tag}>{tagLabel(tag)}</Pildora>
-                      ))}
-                      {/* La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos. */}
-                      {!stop.isFreeTour && <EtiquetaBarrio etiqueta={barrio} className="!min-h-[26px] !px-[9px] !text-[11.5px]" />}
+                      <Pildora tono="oscura" datos="tiempo">
+                        <Icono nombre="arena" size={12} grosor={2} />
+                        {formatDuration(stop.durationMinutes)}
+                      </Pildora>
                     </div>
-                    {recomendacion && (
-                      <button
-                        type="button"
-                        onClick={recomendacion.onToggle}
-                        aria-pressed={recomendacion.liked}
-                        aria-label={recomendacion.liked ? `Quitar me gusta de ${stop.name}` : `Me gusta ${stop.name}`}
-                        className="flex items-center gap-1.5 text-caption transition-colors"
-                        style={{ color: recomendacion.liked ? 'oklch(0.6 0.2 25)' : 'rgba(28,34,48,.6)' }}
-                      >
-                        <Icono nombre="gusta" size={17} relleno={recomendacion.liked} />
-                        {recomendacion.texto}
-                      </button>
-                    )}
+                    {/* El corazón de «me gusta»: la misma cuenta que el de EXPLORAR (src/store/useMeGustaStore.ts). Solo en los sitios del catálogo del destino. */}
+                    {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && <MeGusta destino={city} nombre={stop.name} variante="ficha" />}
                   </div>
                 </div>
   
