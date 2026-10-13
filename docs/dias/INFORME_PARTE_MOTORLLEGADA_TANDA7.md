@@ -101,6 +101,8 @@ Los datos que lee, todos del destino: `listas.json › llegadas.dia1` e `inicio_
 
 Otras pruebas, **0 fallos**: `pruebaFase6y4_listas`, `6y6_cierre`, `6y7_motor` partes 1-3, `6y8_comida`, `6y9_freetour`, `6y10_viajes`, `6y10_comida`, `pruebaTanda6g…6z6d`, `pruebaTanda7_documento`, `pruebaTanda7_datosllegada` y la muestra de fechas de `pruebaListas` (ver el final).
 
+**`pruebaFase6y10_sitiosgrandes` no se puede usar ya como comprobación:** compara el motor con la lista fija de antes de la 6y10 (commit `bef2731`) y, tres tandas después, el motor cambia por muchas otras cosas (da «el resultado cambia» en los viajes de 1 día, que no tienen que ver con la llegada). Solo vale en su commit. Lo que yo he movido (la regla del Coliseo con la excursión a los datos) la cubre `limitesConExcursionDe` y la prueba lo recibe por el dato nuevo.
+
 `pruebaTanda6g` daba miles de fallos porque comprobaba lo contrario de la regla nueva de Eric (Navona y el Panteón del D6 «de camino» con «Ya lo visitaste»). La he actualizado: un imprescindible no va de camino y es una parada corta (≤ 15 min); solo lo que no es imprescindible va de camino con «Ya lo visitaste el {día}».
 
 ### Tabla de fronteras por punto (desde qué hora de llegada cae el viajero en cada fila)
@@ -121,6 +123,10 @@ Sale de `node scripts/destino/pruebaTanda7_llegada.mjs fronteras=1` (el motor, n
 | 23:00 o más tarde · sin ruta · D1 al día 2 | 21:30 | 21:40 | 22:15 | 22:05 | 22:05 | 20:30 |
 
 En **invierno** cambian solo las filas de la mañana: 10:00–10:59 rápida de invierno 10 (igual que arriba), **11:00–11:59** rápida de invierno 11 (9:30, 9:40, 10:15, 10:05, 10:05, 8:30), **12:00–12:59** de tarde con comida corta (10:30, 10:40, 11:15, 11:05, 11:05, 9:30) y **13:00–13:59** la ruta del centro entera con comida y el D1 al día 2 (11:30, 11:40, 12:15, 12:05, 12:05, 10:30). Las tres tablas coinciden con las del agente de datos de llegada. Sin punto: el del traslado más largo de su medio (avión Fiumicino, tren Tiburtina, autobús la estación de autobuses de Tiburtina, barco Civitavecchia).
+
+**Resultado final (13-14 oct):** `pruebaTanda7_llegada` 59.334 comprobaciones, **0 fallos**; sin vuelos 483/483 iguales; `pruebaListas` con `llegada=` (14 fechas × 8 horas, 543 viajes cada una, con pool, reservas, experiencias y Free Tour): **0 fallos** en los 112 pases; `pruebaFase6y4_listas` 643/0, `6y6_cierre` 0, `6y7_motor` 1-3 17.724/0, `6y8_comida` 53.559/0, `6y9_freetour` 0, `6y10_viajes` 118/0, `6y10_comida` 2.593/0, `Tanda6h/6i/6j/6k/6l/6r` 0, `Tanda7_documento` y `datosllegada` 0; la batería de pantallas (SSR, servidor propio) en 0 salvo las de abajo. `tsc -p tsconfig.app.json` limpio.
+
+**Fallan, pero NO por esta parte** (los comprobé en una copia de `main`): `pruebaFase6y2_reorganizar` (3 fallos) y `pruebaFase6y_reorganizar` (fallos de `C_comidas`/`C_reserva_manana`) fallan igual en `main`; `pruebaTanda6g` conserva su fallo de siempre `etiqueta_roja` en `DayList.tsx` (pantallas; sigue ahí, no lo he tocado). `pruebaFase6y5_motor` (muy larga) se pasó del tope de 25 min de la batería y no la he esperado entera. **Muestra de 54 fechas sin llegada** (festivos, domingos, lunes, miércoles, Navidad, Semana Santa, agosto, cambios de hora): 119.673 viajes, 324.948 días, **0 fallos** (las mismas cifras que antes de esta parte).
 
 ## 6. Para el agente de la vuelta (ganchos)
 

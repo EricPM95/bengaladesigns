@@ -107,6 +107,18 @@ if (quiere('fronteras')) {
       }
     }
   }
+  // «Invierno» por el horario de la fecha (nunca fechas a mano): los días de los dos cambios de hora, la Navidad y los límites; sin fechas, el día 15 del mes.
+  const INVIERNO_SABIDO = { '2026-10-24': false, '2026-10-25': true, '2026-10-31': true, '2026-12-24': true, '2026-12-25': true, '2026-12-26': true, '2027-01-01': true, '2027-01-12': true, '2027-02-27': true, '2027-03-26': false, '2027-03-27': false, '2027-03-28': false, '2027-06-08': false, '2027-08-15': false, '2027-10-30': false, '2027-10-31': true }
+  for (const [inicio, esperado] of Object.entries(INVIERNO_SABIDO)) {
+    for (const hora of ['08:40', '13:00', '16:00']) {
+      const plan = planEscenario({ n: 3, inicio }, { llegada: llegada(hora, PUNTOS[0]) })
+      debe(plan?.llegada?.entrada.invierno === esperado && plan.llegada.tabla === (esperado ? 'invierno' : 'marzo_octubre'), 'invierno_por_fecha', `${inicio} llega ${hora}: invierno debería ser ${esperado} y es ${plan?.llegada?.entrada.invierno}`)
+    }
+  }
+  for (const [mes, esperado] of [[0, true], [1, true], [2, false], [4, false], [5, false], [9, false], [10, true], [11, true]]) {
+    const plan = planEscenario({ n: 3, inicio: null, mes }, { llegada: llegada('13:00', PUNTOS[0]) })
+    debe(plan?.llegada?.entrada.invierno === esperado, 'invierno_sin_fechas', `sin fechas, mes ${mes + 1}: invierno debería ser ${esperado} y es ${plan?.llegada?.entrada.invierno}`)
+  }
   // Ninguna hora de 0:00 a 23:59 se queda sin fila, para ningún punto (mirando la tabla de datos tal cual)
   for (const tablaId of ['marzo_octubre', 'invierno']) {
     const tabla = written.llegadas.dia1[tablaId]
@@ -558,7 +570,7 @@ function revisarViaje(plan, esc, hora, etiqueta, poolNames = []) {
   // El día 1 de la llegada: nada se manda a «Si te sobra tiempo» por el tiempo ni se queda de camino un imprescindible
   const d1 = dias[0]
   if (plan.llegada.dia1?.lista === d1.curatedDay.id && !['d1_de_siempre', 'madrugada', 'tranquilo'].includes(plan.llegada.caso) && !/_entero$|_ya_empezado$|sin_cambios/.test(plan.llegada.caso)) {
-    debe(!(d1.spareRows ?? []).some((s) => s.razon === 'cabe'), 'sobra_por_minutos', `${etiqueta}: algo del día 1 pasa a «Si te sobra tiempo» por el tiempo`)
+    debe(filasDe(d1).some((f) => f.protegido) || !(d1.spareRows ?? []).some((s) => s.razon === 'cabe'), 'sobra_por_minutos', `${etiqueta}: algo del día 1 pasa a «Si te sobra tiempo» por el tiempo`)
     debe(!filasDe(d1).some((f) => f.tipo === 'parada' && !f.llegada && f.nivel === 1 && f.modo === 'camino' && !f.por_horario), 'imprescindible_de_camino', `${etiqueta}: un imprescindible va de camino el día 1`)
   }
   // Los imprescindibles con entrada nunca desaparecen: lo que sale en los días de siempre y no sale ahora está en «Si te sobra tiempo», en «No incluido» o en un día que cae
