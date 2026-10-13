@@ -96,7 +96,7 @@ const cuenta0 = () => llamadas.length
   ponerVersion('completa')
   const html = renderToStaticMarkup(createElement(StepElegir, { destinationName: 'Roma', days: 5, picked: null, onPick() {} }))
   const texto = aTexto(html)
-  for (const frase of ['Roma · 5 días', '¡Sí, hazla por mí!', 'RECOMENDADO', 'Lo hacemos todo: el orden de cada día, los tiempos entre sitios, dónde comer y qué reservar.', 'Quiero hacerla yo', 'Crea una ruta a tu gusto: tú eliges los sitios y el orden, y compártela con tus amigos.', 'Día 1', 'Día 2', 'Día 3'])
+  for (const frase of ['Roma · 5 días · 4 noches', '¡Sí, hazla por mí!', 'RECOMENDADO', 'Lo hacemos todo: el orden de cada día, los tiempos entre sitios, dónde comer y qué reservar.', 'Quiero hacerla yo', 'Crea una ruta a tu gusto: tú eliges los sitios y el orden, y compártela con tus amigos.', 'Día 1', 'Día 2', 'Día 3'])
     debe(texto.split('\n').includes(frase), '2 elegir', `falta el texto «${frase}»: ${plano(texto).slice(0, 300)}`)
   debe(/¿Te montamos el itinerario <em[^>]*>día a día<\/em>\?/.test(html), '2 elegir', 'el título no es «¿Te montamos el itinerario día a día?» con «día a día» resaltado')
   debe(/<em style="color:oklch\(0\.55 0\.17 5\)">/.test(html), '2 elegir', '«día a día» no va en el frambuesa de la app')

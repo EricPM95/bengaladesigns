@@ -235,7 +235,7 @@ debe(!/Pasarla a otro día/.test(aTexto(renderToStaticMarkup(createElement(Aviso
 ponerVersion('completa')
 useRouteStore.setState({ ...estadoBase, route, dev_simulated_today_iso: INICIO })
 const hoja = aTexto(renderToStaticMarkup(createElement(HojaPasarAOtroDia, { dias: [{ id: 'd2', dayNumber: 2, city: 'Roma' }, { id: 'd3', dayNumber: 3, city: 'Roma' }], onElegir() {}, onCerrar() {} })))
-debe(/Pasarla a otro día/.test(hoja) && /jue 11 — [A-ZÁÉÍÓÚ]/.test(hoja) && /vie 12 — [A-ZÁÉÍÓÚ]/.test(hoja), 'B9 hoja', `la hoja de [Pasarla a otro día] no lista los días como «Mover a otro día» (${plano(hoja)})`)
+debe(/Pasarla a otro día/.test(hoja) && /Jueves 11/.test(hoja) && /Viernes 12/.test(hoja), 'B9 hoja', `la hoja de [Pasarla a otro día] no lista los días como «Mover a otro día» (${plano(hoja)})`)
 // La lista de días es la misma pieza que usa el menú «···» de DÍAS.
 const menuFuente = fs.readFileSync('src/components/route/dayDetail/StopMenu.tsx', 'utf8')
 const hoyFuente = fs.readFileSync('src/components/route/hoy/saltar.tsx', 'utf8')
