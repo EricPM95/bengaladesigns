@@ -30,6 +30,15 @@ function monthDayForDay(dateRangeStartIso, dayNumber) {
   return `${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`
 }
 
+/**
+ * LOS DÍAS DE RUTA DE UN VIAJE (Tanda 7, reparto por noches; invariante 21): «n días · n−1 noches» llevan n−1 días de ruta y el último día es el de vuelta, que crea la app (`appendReturnLegDay`) y no lleva ruta.
+ * Es el ÚNICO sitio donde se decide cuántos días de ruta tiene un viaje de `diasDelViaje` días (mínimo 1: con una sola fecha, o en «Solo un día», no hay día de vuelta aparte). Lo usan el esqueleto
+ * del servidor (`/api/generate-skeleton`) y el motor; nadie más debe escribir `días − 1`.
+ */
+export function diasDeRuta(diasDelViaje) {
+  return Math.max(1, Math.floor(Number(diasDelViaje) || 1) - 1)
+}
+
 /** La franja curada a mano de ese día, si el destino tiene reparto para esa duración. */
 export function curatedFranja(destData, totalDays, hasFreeTour, dayNumber) {
   const variant = destData?.zone_distribution?.[`${totalDays}_days`]?.[hasFreeTour ? 'with_free_tour' : 'without_free_tour']
@@ -46,7 +55,7 @@ export function curatedFranja(destData, totalDays, hasFreeTour, dayNumber) {
 export function interruptorDia4(destData, { totalDays, dateRangeStartIso = null, mediaJornada = false } = {}) {
   const config = destData?.destination_config ?? {}
   const sw = config.excursion_interruptor
-  const contentDays = Math.max(1, totalDays - 1)
+  const contentDays = diasDeRuta(totalDays)
   if (!sw || mediaJornada || contentDays < (sw.desde_dias ?? 4)) return null
   const mmdd = monthDayForDay(dateRangeStartIso, sw.dia)
   const porFecha = mmdd != null && (config.excursion_fechas_no ?? []).includes(mmdd)
@@ -64,7 +73,7 @@ export function tripDays({ destData, totalDays, hasFreeTour, dateRangeStartIso =
   const coreDays = config.core_days ?? totalDays
   const maxAutoDays = config.max_auto_days ?? totalDays
   // El último día es la vuelta y no lleva ruta (invariante 21).
-  const contentDays = Math.max(1, totalDays - 1)
+  const contentDays = diasDeRuta(totalDays)
 
   // El día del interruptor (Roma): el día 4 es o la excursión o un día de Roma.
   const sw = interruptor ? interruptorDia4(destData, { totalDays, dateRangeStartIso, mediaJornada: interruptor.mediaJornada === true }) : null

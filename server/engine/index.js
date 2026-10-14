@@ -30,7 +30,7 @@ import { MID_DAY_GAP_MINUTES, planTrip } from '../../shared/routeEngine/planTrip
 import { planShortTrip, shortTripSlots } from '../../shared/routeEngine/shortTrip.js'
 import { planBlockTrip } from '../../shared/routeEngine/blockTrip.js'
 import { planCuratedTrip } from '../../shared/routeEngine/curatedTrip.js'
-import { interruptorDia4 } from '../../shared/routeEngine/tripSkeleton.js'
+import { diasDeRuta, interruptorDia4 } from '../../shared/routeEngine/tripSkeleton.js'
 import { diaPropio } from '../../shared/routeEngine/diaPropio.js'
 import { planListasTrip, poolStatusFor } from '../../shared/routeEngine/listasTrip.js'
 import { writtenDaysFor } from './writtenDays.js'
@@ -228,7 +228,7 @@ export async function buildDayBlockV3(...args) {
   if (day?.not_included) {
     const [destData, totalDays, , dayNumber, , dateRangeStartIso] = args
     const dateIso = day.engine_log && dateRangeStartIso ? new Date(Date.parse(`${dateRangeStartIso}T12:00:00Z`) + (Number(dayNumber) - 1) * 86400000) : null
-    day.not_included = tidyNotIncluded({ ...day, date_iso: dateIso ? dateIso.toISOString().slice(0, 10) : null, weekday_name: dateIso ? ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dateIso.getUTCDay()] : null }, { contentDays: Math.max(1, totalDays - 1), destData, tripDays: dateRangeStartIso ? Array.from({ length: Math.max(1, totalDays - 1) }, (_, index) => new Date(Date.parse(`${dateRangeStartIso}T12:00:00Z`) + index * 86400000).toISOString().slice(0, 10)) : [] })
+    day.not_included = tidyNotIncluded({ ...day, date_iso: dateIso ? dateIso.toISOString().slice(0, 10) : null, weekday_name: dateIso ? ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][dateIso.getUTCDay()] : null }, { contentDays: diasDeRuta(totalDays), destData, tripDays: dateRangeStartIso ? Array.from({ length: diasDeRuta(totalDays) }, (_, index) => new Date(Date.parse(`${dateRangeStartIso}T12:00:00Z`) + index * 86400000).toISOString().slice(0, 10)) : [] })
   }
   delete day?.trip_engine_log
   return day
@@ -251,7 +251,7 @@ async function buildDayBlockV3Inner(
     dateRangeStartIso,
     month: options.month ?? null,
     season: options.season ?? null,
-    contentDays: Math.max(1, totalDays - 1),
+    contentDays: diasDeRuta(totalDays),
   })
 
   // El reparto del viaje ENTERO se recalcula en cada llamada: es una función pura y cuesta
@@ -264,7 +264,7 @@ async function buildDayBlockV3Inner(
   // horas). 1,5 días llegará con los vuelos, que son los que dicen cuántas franjas quedan.
   // (Roma: el viaje de un día sin Free Tour y sin pool ya es un día escrito, D0; con algo marcado en el pool se queda el reparto de antes.)
   const oneDayWritten = Boolean(useWrittenDays(options.engine) && destData.curated_routes?.por_dias_ciudad?.['1'] && true)
-  if (isV3 && destData.short_trips?.blocks && Math.max(1, totalDays - 1) === 1 && !oneDayWritten) {
+  if (isV3 && destData.short_trips?.blocks && diasDeRuta(totalDays) === 1 && !oneDayWritten) {
     const travel = travelTimesFor(findPipelineV2Key(destData.destination ?? options.city ?? ''))
     // En las fechas en que el tour solo sale a una hora que parte el día (`disponibilidad.horas_especiales`: a las 12:00
     // el 24, 25 y 31 de diciembre y el 1 y 6 de enero), un viaje de un día no lo lleva: el día va sin tour y lo dice.

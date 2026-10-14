@@ -985,8 +985,9 @@ export function mapGeneratedRouteToRoute(
   }
 
   // El array de días generado representa NOCHES ("1 día generado = 1 noche"); appendReturnLegDay
-  // añade un día final de "vuelta" que no es noche. El pipeline (server/index.js, contentDaysFor)
-  // ya pide exactamente `answers.days - 1` noches para que sumando el día de vuelta el total
+  // añade un día final de "vuelta" que no es noche. El pipeline (server/index.js, /api/generate-skeleton,
+  // con `diasDeRuta` de shared/routeEngine/tripSkeleton.js) ya pide exactamente `answers.days - 1` noches
+  // en los destinos con motor de días escritos para que sumando el día de vuelta el total
   // coincida con lo que el viajero eligió — este chequeo es el invariante que lo garantiza: solo
   // añade el día de vuelta si con los días ya generados NO se alcanza el total pedido (evita
   // duplicar el +1 si algo más arriba cambia y ya llegan `answers.days` días completos).

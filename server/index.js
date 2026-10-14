@@ -9,6 +9,7 @@ import { importanciaDeSitios } from '../shared/routeEngine/importanciaDeSitios.j
 import { arrivalInfoFor, entradasDe, fotoOculta, ownPhotoFile, photosFor, tipsFor, wikimediaCreditFor, writtenDaysFor } from './engine/writtenDays.js'
 import { esNombreNuestro } from './engine/nombresDeFoto.js'
 import { sitiosGrandesDe } from '../shared/routeEngine/listasReservas.js'
+import { diasDeRuta } from '../shared/routeEngine/tripSkeleton.js'
 import { reorganizarDia, puntoZonaAlojamiento } from '../shared/routeEngine/reorganizarDia.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
@@ -3076,7 +3077,7 @@ app.post('/api/regenerate-route-redistribute', async (req, res) => {
   // answers.days-1) fue un bug real: mapGeneratedRouteToRoute nunca añadía el día de vuelta al ver
   // que ya había "suficientes" días, y algo aguas abajo de esa forma resultante rompía en silencio
   // (tryRouteCacheReuse lo capturaba con un catch mudo, cayendo al pipeline completo sin avisar).
-  const contentDays = Math.max(answers.days - 1, 1)
+  const contentDays = diasDeRuta(answers.days)
 
   try {
     const response = await anthropic.messages.create({
@@ -3216,8 +3217,12 @@ app.post('/api/generate-skeleton', async (req, res) => {
   }
 
   const transportContext = readTransportContext(req.body)
-  const totalDays = Number(answers.days) > 0 ? Number(answers.days) : 1
+  const tripDaysAsked = Number(answers.days) > 0 ? Number(answers.days) : 1
   const defaultTransport = resolveDefaultTransport(destination)
+  // LOS DÍAS DE RUTA (Tanda 7, reparto por noches; invariante 21): en un destino con motor de días escritos «n días · n−1 noches» piden n−1 días de ruta, y el día de vuelta lo crea el cliente
+  // (appendReturnLegDay), sin ruta. Es la misma cuenta que hace el motor (diasDeRuta). Los demás destinos (los hace Claude) se quedan como estaban: `answers.days` días.
+  const writtenDaysTrip = Boolean(writtenDaysFor(findPipelineV2Key(destination)))
+  const totalDays = writtenDaysTrip ? diasDeRuta(tripDaysAsked) : tripDaysAsked
 
   // Pipeline v2 (algoritmo JS puro, ver routeAlgorithm.js) — solo Roma por ahora, y solo hasta 5
   // días (zone_distribution no cubre más). Fuera de ese rango, o para cualquier otro destino,
