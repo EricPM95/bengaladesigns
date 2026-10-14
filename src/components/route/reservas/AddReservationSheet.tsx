@@ -19,6 +19,7 @@ import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
 import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
+import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
 export interface ReservationTarget {
@@ -295,7 +296,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     }
     let cancelled = false
     const others = reservations.filter((other) => !(other.kind === draft.kind && other.refId === draft.refId))
-    fetch('/api/reservation-plan', {
+    // (Tanda 7, de pago: la hora de llegada y de vuelta del viajero viajan con la petición, o el plan de la reserva se calcularía sin ellas.)
+    llegadaVueltaDe(route, [...others, draft])
+      .then((vuelo) => fetch('/api/reservation-plan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -308,8 +311,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         reservas: reservasParaMotor([...others, draft]),
         // (Cambiar una reserva que ya hay: el «antes» es el viaje como está ahora, con ella; así «mover el día» solo sale si la nueva hora o el nuevo día cambian algo.)
         reservas_antes: reservasParaMotor(existing && existing.refId === draft.refId ? [...others, existing] : others),
+        ...vuelo,
       }),
-    })
+    }))
       .then((response) => (response.ok ? (response.json() as Promise<ReservationPlan>) : null))
       .then((body) => {
         if (!cancelled) {

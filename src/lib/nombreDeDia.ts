@@ -54,6 +54,12 @@ export function diaCorto(fuente: FuenteDeFechas, dayNumber: number): string {
   return iso ? fechaCorta(iso) : `Día ${dayNumber}`
 }
 
+/** Forma corta SIN artículo, para prosa de las hojas y los avisos de los vuelos: «mar 10» (sin fechas, «día 2»). Con el artículo delante: «el mar 10» / «el día 2». */
+export function diaCortoProsa(fuente: FuenteDeFechas, dayNumber: number): string {
+  const iso = fechaDelDia(fuente, dayNumber)
+  return iso ? fechaCorta(iso) : `día ${dayNumber}`
+}
+
 /** Forma larga SIN artículo, para prosa: «martes 14» (sin fechas, «día 2»). Con el artículo delante: `elDia`, `alDia`, `delDia`, `tuDia`. */
 export function diaProsa(fuente: FuenteDeFechas, dayNumber: number): string {
   const iso = fechaDelDia(fuente, dayNumber)

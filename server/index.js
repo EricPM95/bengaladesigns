@@ -5685,6 +5685,37 @@ app.post('/api/reservation-plan', async (req, res) => {
   }
 })
 
+// Los avisos de reservas contra los vuelos (Tanda 7, punto 14): «no llegas a tiempo», «no te da tiempo», «la excursión vuelve tarde»… Los dan los motores de la llegada y de la vuelta como datos; aquí solo se
+// piden con la hora de llegada, la de vuelta y las reservas del viajero, y se devuelven los avisos (nunca un día). Sirve también a la ruta a mano, que no rehace ningún día pero sí enseña estos avisos. Sin Claude.
+app.post('/api/avisos-de-vuelo', async (req, res) => {
+  const { destination, answers, all_days, must_include_places, inside_names } = req.body ?? {}
+  const destData = findPipelineV2Data(destination)
+  if (!destination || !answers || !destData || !Array.isArray(all_days) || all_days.length === 0 || !destData.curated_routes?.por_dias_ciudad) {
+    res.json({ llegada: [], vuelta: [] })
+    return
+  }
+  try {
+    const totalDays = all_days.length + 1
+    const pedir = (dayNumber) =>
+      buildDayBlockV3(destData, totalDays, hasFreeTourFromAnswers(answers), dayNumber, null, answers.dateRange?.start, must_include_places ?? [], answers.experiencesPositive, {
+        city: destination,
+        scheduler: 'v3',
+        engine: 'v4',
+        month: Number.isInteger(answers.month) ? answers.month : null,
+        season: answers.season ?? null,
+        insideNames: Array.isArray(inside_names) ? inside_names : [],
+        ...engineExtrasFromRequest(req.body, answers, dayNumber, destData),
+      })
+    const extras = engineExtrasFromRequest(req.body, answers, 1, destData)
+    const dia1 = extras.llegada ? await pedir(1) : null
+    const diaVuelta = extras.vuelta ? await pedir(totalDays) : null
+    res.json({ llegada: dia1?.arrival_plan?.avisos ?? [], vuelta: diaVuelta?.return_day?.avisos ?? [] })
+  } catch (error) {
+    console.error('[avisos-de-vuelo]', error)
+    res.json({ llegada: [], vuelta: [] })
+  }
+})
+
 app.post('/api/check-time', async (req, res) => {
   const { destination, answers, all_days, day_number, done_names, now_minutes, must_include_places } = req.body ?? {}
   const destData = findPipelineV2Data(destination)

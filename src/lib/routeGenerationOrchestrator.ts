@@ -2,6 +2,7 @@ import type { QuestionnaireAnswers, Route, TransportContext, TripDefaultTranspor
 import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDay } from './mapGeneratedRoute'
 import { encodeExperienceCategories } from './experienceCategoryBank'
 import { reservasActuales } from './engineReservas'
+import { llegadaVueltaActuales } from './llegadaVuelta'
 import { elDia } from './nombreDeDia'
 
 /** Misma clave que espera route_cache/computeRouteCacheMatch en server/index.js — ver encodeExperienceCategories. */
@@ -398,6 +399,8 @@ async function requestDayBlockWithRetry(
         // endpoint relee zone_distribution desde cero y no confía en `places_for_block`.
         must_include_places: mustIncludePlaces,
         reservas: await reservasActuales(),
+        // Tanda 7 (de pago): la hora de llegada y la de vuelta del viajero, al rehacer el viaje. Sin ellas (la gratis, a mano, coche, sin hora) no se manda nada.
+        ...(await llegadaVueltaActuales({ soloSiRehace: true })),
         ...transportContext,
       })
     } catch (error) {
@@ -410,6 +413,34 @@ async function requestDayBlockWithRetry(
     }
   }
   throw lastError
+}
+
+/**
+ * El día de vuelta con la hora del viajero (Tanda 7, de pago): el servidor lo monta con el mismo motor (`/api/rebuild-day` con el número de día del final: la última mañana, «un día más» o «Día de
+ * viaje» sin paradas) y lo devuelve con `return_day`. Solo si el viajero ha puesto la hora de su vuelta y el viaje tiene día de vuelta aparte (con una sola fecha no lo hay). Sin respuesta o sin
+ * motor para este destino, null: el día de vuelta de siempre, en blanco, y la app no se para (avisa, no prohíbe).
+ */
+async function requestReturnDay(params: GenerationParams, skeleton: SkeletonResponse): Promise<GeneratedDay | null> {
+  const { destination, answers, mustIncludePlaces } = params
+  if (skeleton.days.length === 0 || skeleton.days.length >= answers.days) return null
+  const datos = await llegadaVueltaActuales({ soloSiRehace: true })
+  if (!datos.vuelta) return null
+  try {
+    const result = await postJson<{ day?: GeneratedDay }>('/api/rebuild-day', {
+      destination,
+      answers,
+      all_days: skeleton.days.map((day) => ({ day_number: day.day_number, city: day.city })),
+      day_number: skeleton.days.length + 1,
+      must_include_places: mustIncludePlaces,
+      inside_names: [],
+      reservas: await reservasActuales(),
+      ...datos,
+    })
+    return result.day ?? null
+  } catch (error) {
+    console.warn('[vuelta] no se pudo montar el día de vuelta con la hora del viajero; se queda el de siempre:', error)
+    return null
+  }
 }
 
 /** Un día ya generado (con contenido real) no se vuelve a pedir al reanudar una generación a medias — ver el filtro de pendingBlocks más abajo. */
@@ -600,6 +631,12 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   const pendingBlocks = blocks.filter((block) => block.some((day) => !isDayAlreadyGenerated(generated, day.day_number)))
   completedBlocks = totalBlocks - pendingBlocks.length
 
+  // Tanda 7: el día de vuelta con la hora del viajero, ANTES del último punto de control (el que cierra la generación se lleva `generated` tal cual).
+  if (!generated.return_leg_day) {
+    const vuelta = await requestReturnDay(params, skeleton)
+    if (vuelta) generated = { ...generated, return_leg_day: vuelta }
+  }
+
   if (pendingBlocks.length > 0) {
     const allDaysLight = skeleton.days.map(toLightDaySummary)
     const settled = await settlePendingBlocks({
@@ -628,7 +665,10 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   // comentario en GeneratedRouteResponse) — si no se guardara aquí, una ruta servida desde caché
   // perdería para siempre sus tarjetas de "segunda visita recomendada" (bug real encontrado en vivo:
   // tryRouteCacheReuse llamaba a mapGeneratedRouteToRoute sin ese argumento en absoluto).
-  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), { ...generated, recommended_revisits: recommendedRevisits })
+  // (El día de vuelta con la hora de un viajero es suyo: nunca a la caché de rutas.)
+  const { return_leg_day: _vueltaDelViajero, ...paraLaCache } = generated
+  void _vueltaDelViajero
+  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), { ...paraLaCache, recommended_revisits: recommendedRevisits })
 
   // anchorNames alimenta el caché de tips con búsqueda web (ver StopDetailSheet.tsx/anchor-tips) —
   // antes solo cubría 2-3 "anclas" sueltas por día, ahora cubre la lista completa de lugares elegida

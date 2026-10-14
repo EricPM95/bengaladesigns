@@ -21,7 +21,7 @@ interface AddFlowState {
   focusStopId: string | null
   setFocusStopId: (id: string | null) => void
   /** Aviso con "Deshacer": la ruta de antes del cambio. */
-  toast: { message: string; previous: Route | null; previousReservations?: Reservation[]; previousBookings?: BookingsSnapshot; id: number } | null
+  toast: { message: string; previous: Route | null; previousReservations?: Reservation[]; previousBookings?: BookingsSnapshot; id: number; /** Lo que hay que hacer además de devolver la ruta (Tanda 7: cortar el rehacer por un cambio de vuelo que sigue en marcha). */ alDeshacer?: () => void } | null
   dismissToast: () => void
   undo: () => void
 }
@@ -41,6 +41,9 @@ export const useAddFlowStore = create<AddFlowState>((set, get) => ({
     const previous = get().toast?.previous
     const previousReservations = get().toast?.previousReservations
     const previousBookings = get().toast?.previousBookings
+    const alDeshacer = get().toast?.alDeshacer
+    // (Tanda 7: «Quitar el vuelo» + «Deshacer» mientras el rehacer sigue en marcha: se corta ANTES de devolver la ruta, o su resultado acabaría encima de lo deshecho.)
+    alDeshacer?.()
     // (Con las reservas de antes: si el cambio las borró —la varita—, volver atrás las devuelve. Y, si el aviso es de quitar una reserva de cualquier tipo (`quitarConDeshacer`), TODO lo reservado de antes:
     // entradas, excursiones, alojamiento, billetes, seguro, eSIM, tarjeta y coche, tal cual estaban.)
     if (previous) useRouteStore.setState({ route: previous, ...(previousReservations ? { reservations: previousReservations } : {}), ...(previousBookings ?? {}) })

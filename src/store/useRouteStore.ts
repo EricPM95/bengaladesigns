@@ -4,6 +4,7 @@ import type { TuAlojamiento } from '../lib/tuAlojamiento'
 import type { Importe } from '../lib/dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import { isManualRoute } from '../lib/manualPlan'
+import type { PlanLlegada, PlanVuelta } from '../lib/planLlegadaVuelta'
 import { FREE_TOUR_REF, isManualFreeTourReservation, pedirFotoDelFreeTour, withManualFreeTour, withoutManualFreeTour } from '../lib/freeTourManual'
 import type { DestinationPlace } from '../lib/destinationPlacesApi'
 import { dayOfReservation, isBigReservation, sitiosGrandesDelViaje, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
@@ -575,6 +576,8 @@ interface RouteStoreState {
   setAccommodationAddress: (direccion: string | null) => void
   /** Tanda 7: el viajero ya ha visto su vuelta con las fechas de ahora: se va el aviso «revisa que tu vuelta sigue siendo…». */
   marcarVueltaVista: () => void
+  /** Tanda 7: guarda el plan de la llegada y/o el de la vuelta que dio el motor al rehacer días sueltos (reservas, Free Tour…). `undefined` = no cambia; `null` los quita. */
+  ponerPlanes: (planes: { llegada?: PlanLlegada | null; vuelta?: PlanVuelta | null }) => void
 }
 
 const updateDay = (route: Route, dayId: string, updater: (day: DayPlan) => DayPlan): Route => ({
@@ -1756,6 +1759,17 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setLegOtroPunto: (kind, texto) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtroPunto' : 'departureOtroPunto']: texto?.trim() ? texto.trim().slice(0, 60) : null } } : state)),
   setLegOtraHora: (kind, hora) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtraHora' : 'departureOtraHora']: hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : null } } : state)),
   setAccommodationAddress: (direccion) => set((state) => (state.route ? { route: { ...state.route, accommodationAddress: direccion?.trim() ? direccion.trim().slice(0, 160) : null } } : state)),
+  ponerPlanes: (planes) =>
+    set((state) => {
+      if (!state.route || (planes.llegada === undefined && planes.vuelta === undefined)) return state
+      return {
+        route: {
+          ...state.route,
+          ...(planes.llegada !== undefined ? { planLlegada: planes.llegada } : {}),
+          ...(planes.vuelta !== undefined ? { planVuelta: planes.vuelta } : {}),
+        },
+      }
+    }),
   marcarVueltaVista: () =>
     set((state) => {
       const fin = state.route?.answers.dateRange?.end ?? null

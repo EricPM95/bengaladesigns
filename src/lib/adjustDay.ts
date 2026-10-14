@@ -1,6 +1,7 @@
 import { mapSingleGeneratedDay, type GeneratedDay } from './mapGeneratedRoute'
 import { enrichRoutePhotos } from './placePhoto'
 import { isManualRoute } from './manualPlan'
+import { llegadaVueltaDe } from './llegadaVuelta'
 
 export type AdjustMode = 'justo' | 'cansado'
 
@@ -31,6 +32,8 @@ export async function adjustDay(dayId: string, mode: AdjustMode, nowMinutes: num
         answers: route.answers,
         all_days: route.days.filter((other) => !other.isReturnLeg).map((other) => ({ day_number: other.dayNumber, city: other.city })),
         day_number: day.dayNumber,
+        // Tanda 7 (de pago): el día se recalcula con la hora de llegada y de vuelta del viajero, o volvería a ser el día de siempre.
+        ...(await llegadaVueltaDe(route, useRouteStore.getState().reservations)),
         done_ids: done.map((stop) => stop.id),
         done_names: done.flatMap((stop) => [stop.name, stop.fullName].filter(Boolean)),
         now_minutes: nowMinutes,

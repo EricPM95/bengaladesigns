@@ -2,6 +2,8 @@ import { mapSingleGeneratedDay, type GeneratedDay } from './mapGeneratedRoute'
 import { enrichRoutePhotos } from './placePhoto'
 import { reservasParaMotor } from './engineReservas'
 import { isManualRoute } from './manualPlan'
+import { llegadaVueltaDe } from './llegadaVuelta'
+import type { PlanLlegada, PlanVuelta } from './planLlegadaVuelta'
 
 /**
  * Añade (o quita) el Free Tour desde la app (Tanda 6f, 5): el viaje se acuerda de la franja y cada día de ciudad se rehace con las reglas de siempre
@@ -28,9 +30,13 @@ export async function rehacerDiasSinTocar(except: string | string[] | null, opci
   // Una ruta a mano (Tanda 6y) no la rehace el motor nunca: los días son del viajero. Nada que rehacer, y nada falla.
   if (isManualRoute(route)) return true
   const cityDays = route.days.filter((day) => !day.isReturnLeg)
+  // Tanda 7 (de pago): la hora de llegada y la de vuelta del viajero viajan con cada día que se pide; si el día de vuelta lo montó el motor con su hora, se rehace con los demás.
+  const vuelo = await llegadaVueltaDe(route, reservations)
+  const diasARehacer = [...cityDays, ...(vuelo.vuelta && route.planVuelta ? route.days.filter((day) => day.isReturnLeg) : [])]
   let ok = true
   const rehechos: { id: string; next: ReturnType<typeof mapSingleGeneratedDay> }[] = []
-  for (const day of cityDays) {
+  const planes: { llegada?: PlanLlegada; vuelta?: PlanVuelta } = {}
+  for (const day of diasARehacer) {
     if (exceptIds.has(day.id) || day.originalSnapshot || day.dayType === 'excursion' || day.userAdded || day.ownDay) continue
     try {
       const response = await fetch('/api/rebuild-day', {
@@ -44,6 +50,7 @@ export async function rehacerDiasSinTocar(except: string | string[] | null, opci
           must_include_places: route.mustIncludePlaces ?? [],
           inside_names: route.insideNames ?? [],
           reservas: reservasParaMotor(reservations),
+          ...vuelo,
           ...(opciones.mantenerOrden ? { force_order: ordenDeLosDias(route) } : {}),
         }),
       })
@@ -59,6 +66,8 @@ export async function rehacerDiasSinTocar(except: string | string[] | null, opci
       const next = mapSingleGeneratedDay(route.destination, body.day, day)
       await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
       rehechos.push({ id: day.id, next })
+      if (body.day.arrival_plan) planes.llegada = body.day.arrival_plan
+      if (body.day.return_day) planes.vuelta = body.day.return_day
     } catch {
       ok = false
     }
@@ -70,6 +79,8 @@ export async function rehacerDiasSinTocar(except: string | string[] | null, opci
     if (!actual || actual.originalSnapshot) continue
     useRouteStore.getState().replaceDayRebuilt(id, next)
   }
+  // Tanda 7: el plan de la llegada y el de la vuelta que dio el motor con lo que el viaje recuerda ahora (reservas, Free Tour…).
+  useRouteStore.getState().ponerPlanes(planes)
   return true
 }
 
@@ -84,8 +95,11 @@ export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerO
   const { route, reservations } = useRouteStore.getState()
   const day = route?.days.find((other) => other.id === dayId)
   // (Una ruta a mano no la rehace el motor: la reserva se queda en su sitio y los demás sitios no se mueven. Tanda 6y.)
-  if (!route || !day || day.originalSnapshot || day.isReturnLeg || isManualRoute(route)) return
+  // (El día de vuelta solo se rehace si lo montó el motor con la hora de vuelta del viajero: Tanda 7.)
+  if (!route || !day || day.originalSnapshot || (day.isReturnLeg && !route.planVuelta) || isManualRoute(route)) return
   try {
+    const vuelo = await llegadaVueltaDe(route, reservations)
+    if (day.isReturnLeg && !vuelo.vuelta) return
     const response = await fetch('/api/rebuild-day', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -97,6 +111,7 @@ export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerO
         must_include_places: route.mustIncludePlaces ?? [],
         inside_names: route.insideNames ?? [],
         reservas: reservasParaMotor(reservations),
+        ...vuelo,
         ...(opciones.mantenerOrden ? { force_order: ordenDeLosDias(route) } : {}),
       }),
     })
@@ -109,6 +124,7 @@ export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerO
     const actual = useRouteStore.getState().route?.days.find((other) => other.id === dayId)
     if (!actual || actual.originalSnapshot) return
     useRouteStore.getState().replaceDayRebuilt(dayId, next)
+    useRouteStore.getState().ponerPlanes({ llegada: body.day.arrival_plan, vuelta: body.day.return_day })
   } catch {
     // Sin respuesta del servidor: el día se queda como está.
   }

@@ -17,6 +17,9 @@ import { useReservasFocusStore } from '../store/useReservasFocusStore'
 import { pagoActivo } from '../lib/pago'
 import { elDia } from '../lib/nombreDeDia'
 import { vueltaCambiada } from '../lib/datosDelViajero'
+import { useAvisosVueloStore } from '../store/useAvisosVueloStore'
+import { avisosParaLaCampana, bloqueDeReservasDelAviso, diaDelAviso } from '../lib/avisosDeVuelo'
+import { pasarDiaARoma } from '../lib/pasarDiaARoma'
 
 export interface AppNotice {
   id: string
@@ -28,6 +31,8 @@ export interface AppNotice {
   actionLabel?: string
   /** Un botón que hace algo en el momento (Tanda 6y2: «Pasar al mié 15»): la campana lo ejecuta y se cierra. Sale con `actionLabel`. */
   run?: () => void
+  /** Varios botones que hacen algo en el momento (Tanda 7: [Ver mi reserva] · [Pasar este día a Roma]): cada uno con su texto; la campana lo ejecuta y se cierra. */
+  acciones?: { label: string; run: () => void }[]
   /** Leído = ya no cuenta. Los errores y los avisos de estado nunca están leídos: cuentan hasta que se arreglan. */
   read: boolean
   /** Se puede marcar como leído (info y amigos). */
@@ -55,6 +60,7 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
   const nombresCortos = useDestinationExcursions(route?.destination).nombresCortos
   const datosDeHorario = useDatosDeHorario(route?.destination)
   const syncStatus = useSyncStore((state) => state.status)
+  const avisosVuelo = useAvisosVueloStore((state) => state.avisos)
   const readIds = useNoticesStore((state) => state.readIds)
   const pushed = useNoticesStore((state) => state.pushed)
   // La lluvia: se mira solo hoy y mañana (el día y su víspera). `repintado` y la lluvia de prueba son del panel de pruebas (solo local y vistas previas).
@@ -115,6 +121,27 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
           canMarkRead: false,
         })
       }
+      // Tanda 7 (de pago): las reservas que no cuadran con la hora de llegada o de vuelta (lo dan los motores). Se quedan hasta que el viajero lo arregla y se van solos; nada se cambia sin que él lo pulse.
+      if (pagoActivo()) {
+        for (const vuelo of avisosParaLaCampana(avisosVuelo, route)) {
+          const acciones: { label: string; run: () => void }[] = []
+          for (const boton of vuelo.botones) {
+            if (boton.id === 'ver_reserva' || boton.id === 'ver_mis_reservas') {
+              acciones.push({
+                label: boton.texto,
+                run: () => {
+                  useRouteStore.getState().setMode('bookings')
+                  useReservasFocusStore.getState().pedir(bloqueDeReservasDelAviso(vuelo.aviso))
+                },
+              })
+            } else if (boton.id === 'pasar_a_roma') {
+              const dia = diaDelAviso(vuelo.aviso, vuelo.mitad)
+              if (dia !== null) acciones.push({ label: boton.texto, run: () => void pasarDiaARoma(dia) })
+            }
+          }
+          items.push({ id: vuelo.id, kind: 'warning', title: vuelo.titulo, text: vuelo.texto, acciones, read: false, canMarkRead: false })
+        }
+      }
       for (const solape of reservationOverlaps(route, reservations, nombresCortos)) {
         items.push({ id: solape.id, kind: 'warning', title: solape.kind === 'justo' ? 'Vas justo entre dos reservas' : 'Dos reservas coinciden', text: solape.text, action: 'open-reservas', actionLabel: 'Ver mis reservas', read: false, canMarkRead: false })
       }
@@ -151,5 +178,5 @@ export function useAppNotices(): { items: AppNotice[]; unreadCount: number } {
     const order: Record<NoticeKind, number> = { error: 0, warning: 1, friend: 2, info: 3 }
     items.sort((a, b) => Number(a.read) - Number(b.read) || order[a.kind] - order[b.kind])
     return { items, unreadCount: items.filter((item) => !item.read).length }
-  }, [route, reservations, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias])
+  }, [route, reservations, nombresCortos, datosDeHorario, syncStatus, readIds, pushed, dismissContextBanner, aMirar, lluvias, avisosVuelo])
 }

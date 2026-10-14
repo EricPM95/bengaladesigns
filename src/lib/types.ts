@@ -1,5 +1,6 @@
 import type { Importe } from './dinero'
 import type { NombreIcono } from './iconos'
+import type { PlanLlegada, PlanVuelta } from './planLlegadaVuelta'
 // ── App flow ──────────────────────────────────────────────
 
 export type AppScreen = 'destination' | 'myTrips' | 'questionnaire' | 'loading' | 'route' | 'devQuickRoute'
@@ -886,6 +887,12 @@ export interface Route {
   departureOtraHora?: string | null
   /** Tanda 7: la dirección del alojamiento (opcional, de pago). Solo con ella existe [Cómo llegar a tu alojamiento]. */
   accommodationAddress?: string | null
+  /**
+   * Tanda 7 (de pago): lo que el motor decidió con la hora de llegada y la de vuelta del viajero (`day.arrival_plan` del día 1 y `day.return_day` del día de vuelta), guardado al generar o rehacer
+   * la ruta. Las pantallas (ficha de llegada y vuelta, tarjeta «Hoy vuelves a casa», hoja del resumen, campana) leen de aquí. Ausente = sin horas puestas, la gratis, coche o la ruta a mano.
+   */
+  planLlegada?: PlanLlegada | null
+  planVuelta?: PlanVuelta | null
   /** Tanda 7: la fecha (yyyy-mm-dd) de la vuelta que el viajero ya tiene vista. Si las fechas del viaje cambian y esta ya no es la última, sale el aviso «revisa que tu vuelta sigue siendo…» hasta que abre su vuelta o la cambia. */
   departureFechaVista?: string | null
   /** Ver TripDefaultTransport. Ausente en rutas generadas antes de este campo y en las rutas dev/manuales — quien lo lee cae a 'public'. */
