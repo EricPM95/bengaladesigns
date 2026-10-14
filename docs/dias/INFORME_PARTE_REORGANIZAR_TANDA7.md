@@ -40,4 +40,13 @@ La prueba nueva comprueba: que las marcadas son exactamente las del documento ba
 
 ## Resultados
 
-Ver el resumen final del agente (pruebas pasadas).
+Todo en 0 fallos:
+
+- Reorganizar: `pruebaFase6y2_reorganizar` (782) y `pruebaFase6y_reorganizar` (1166), que fallaban, vuelven a pasar; `pruebaTanda7_reorganizar` (71).
+- Llegada y vuelta: `pruebaTanda7_llegada` (59.334), `_vuelta` (53.901), `_integracion`, `_reparto` (2.087), `_documento` (420), `_datosllegada`, `_respuestas` (261).
+- Motor y datos: `pruebaFase6y4_listas`, `6y6_cierre`, `6y7_motor` (partes 1-3), `6y8_comida`, `6y9_freetour`, `6y10_viajes`, `_comida`, `_horarios`, `_excursion`, `pruebaTanda6h` a `6l` y `6o`, `6z`, `6z2`.
+- Pantallas (en serie): `pruebaFase6y2_*` a `6y10_*`, `pruebaFase6y_formulario` y `_manual`, `pruebaTanda7_ficha/hoy/conexion/reservas/mover/unificado`, `pruebaCorr6z6*`, `pruebaTanda6s/6t/6v/6x/6z3/6z3_dias/6z5/6z6a-d`.
+- Muestra de 54 fechas con `pruebaListas`: 119.673 viajes, 324.948 días, 0 fallos (igual que antes: Roma sin vuelos ni llegada sale exactamente igual).
+- `npx tsc --noEmit -p tsconfig.app.json`: limpio.
+
+Nota: `pruebaFase6y_formulario` tiene el puerto 8787 escrito dentro; se corrió con una copia temporal apuntando al servidor propio (458 comprobaciones, 0 fallos) y la copia se borró.
