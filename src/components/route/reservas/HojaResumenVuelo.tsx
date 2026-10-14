@@ -1,4 +1,5 @@
 import { useRouteStore } from '../../../store/useRouteStore'
+import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { useResumenVueloStore } from '../../../store/useResumenVueloStore'
 import { useDatesCalendarStore } from '../../../store/useDatesCalendarStore'
 import { HojaAbajo, ojoStyle } from './HojaAbajo'
@@ -21,6 +22,7 @@ function HojaResumenAbierta({ items, destination }: { items: { id: string; texto
   const cerrar = useResumenVueloStore((state) => state.cerrar)
   const pedirFechas = useDatesCalendarStore((state) => state.request)
   const enlaceFreeTour = useEnlaceDelFreeTour(destination)
+  const hayDeshacer = useAddFlowStore((state) => Boolean(state.toast?.previous))
 
   const alPulsar = (boton: string) => {
     if (boton === 'cambiar_fechas') {
@@ -30,7 +32,7 @@ function HojaResumenAbierta({ items, destination }: { items: { id: string; texto
   }
 
   return (
-    <HojaAbajo titleId="resumen-vuelo-titulo" onClose={cerrar} capa={95}>
+    <HojaAbajo titleId="resumen-vuelo-titulo" onClose={cerrar} capa={94}>
       <p className="text-accent" style={ojoStyle}>
         Tus vuelos
       </p>
@@ -58,6 +60,8 @@ function HojaResumenAbierta({ items, destination }: { items: { id: string; texto
       <button type="button" onClick={cerrar} className="mt-6 h-12 w-full rounded-full bg-text text-[15px] font-medium text-bg transition-transform active:scale-[.98]">
         De acuerdo
       </button>
+      {/* (El aviso «Deshacer» de quitar el vuelo flota encima de la hoja: se le deja sitio para que no tape [De acuerdo].) */}
+      {hayDeshacer && <div className="h-16" aria-hidden="true" />}
     </HojaAbajo>
   )
 }

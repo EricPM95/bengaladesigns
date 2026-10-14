@@ -46,6 +46,7 @@ export interface AppNotice {
  * Hoy se reúnen aquí:
  *  1. «Cambios sin guardar» (error de guardado en la nube): cuenta mientras no se guarde.
  *  2. «Tu viaje es de N días y ahora tienes M» (antes, una línea bajo «+ Añadir día»): cuenta mientras haya más días que fechas.
+ *  2a. Reservas contra los vuelos (Tanda 7, de pago): «no llegas a tiempo», «no te da tiempo», la excursión que no cuadra, con [Ver mi reserva] y [Pasar este día a Roma]. Los dan los motores (`/api/avisos-de-vuelo`, `useAvisosDeVuelo`); se quedan hasta que se arreglan.
  *  2b. «Dos reservas coinciden» (Tanda 6v): cuenta mientras se pisen; se va solo cuando se arregla.
  *  2b2. «Tu entrada al Coliseo es el mié 15, pero en tu ruta el Coliseo está el mar 14.» (Tanda 6y2; solo ruta a mano): una por reserva fuera de su día, con su botón; no mueve nada hasta que se pulsa.
  *  2c. «Mañana llueve en Roma por la tarde» / «Hoy llueve en Roma por la tarde» (Tanda 6z6e; gratis y de pago): uno por día del viaje, con la previsión de nuestro servidor; sin previsión, ninguno.

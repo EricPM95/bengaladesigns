@@ -14,7 +14,7 @@ import { construirResumen, firmaDeLosDias } from './resumenDeVuelo'
  * NO avisan de un cambio: el código del vuelo, la compañía, el precio, las casillas opcionales (el otro punto y la otra hora) ni la dirección del alojamiento; para el motor no cambian nada.
  *
  * LO QUE PASA DESPUÉS (Tanda 7, punto 4 de la conexión):
- *  1. `rehacerPorCambioDeVuelo` rehace los días en segundo plano con el rehacer de siempre (`regenerateRouteForDates`, la barrita «Actualizando tu ruta…» de `ActualizandoRuta`; «gana el último»:
+ *  1. `rehacerPorCambioDeVuelo` rehace los días en segundo plano con el rehacer de siempre (`regenerateRouteForDates`, la barrita fina de `ActualizandoRuta`; «gana el último»:
  *     un cambio nuevo cancela el rehacer anterior y la hoja cuenta los dos). Los datos del viajero (`llegada`/`vuelta` con su hora, punto y zona) viajan en cada petición (`llegadaVuelta.ts`).
  *  2. Al acabar (`terminarRehacer`, que llama `RehacerRuta`) los días que el viajero cambió a mano se quedan como estaban, las reservas siguen en su día (el motor las recibe), y sale UNA
  *     sola hoja del resumen (`resumenDeVuelo.ts`) con lo que ha cambiado.
