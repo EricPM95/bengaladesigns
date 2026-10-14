@@ -23,3 +23,16 @@ Como mucho cinco. Lo pequeño está decidido en `INFORME_TANDA7.md` («Decidido 
 5. **Los horarios que faltan para que «Para tu zona» funcione de noche.** Solo hay dato oficial del Leonardo Express (del 14-jun al 12-dic de 2026) y del autobús del andén 19. Faltan los de Ciampino, Tiburtina, Civitavecchia, FL1, metro, bus 40/64, tranvía 8, los nocturnos y el Leonardo de invierno (desde el 13-dic-2026), y el Leonardo da 23:23 en el PDF con fechas y 23:27 en la página general. ¿Abrimos de pago con esto (fuera de ese tramo nunca hay «modo noche»: sale la regla normal), o esperas a tener los horarios? **Mi propuesta:** abrir ya; tú me pasas los horarios de invierno antes del 13-dic y el resto cuando los tengas (la lista completa está en `INFORME_TANDA7.md`). Uso 23:23 (el que lleva fechas).
 
 Las demás dudas, cada una con su propuesta, están al final de cada informe de parte (`INFORME_PARTE_*_TANDA7.md`): por ejemplo, los Museos reservados con la llegada tarde (se repiten la Plaza y la Basílica), el Free Tour de las 19:00 con la llegada tranquila, el Coliseo reservado en un día de en medio con una llegada rápida, la comida a medianoche con dos horas fijas, «Cerrado este día» en rojo o en gris, el chip «Atracciones» o «Monumentos», «Tu autobús sale…», la cabecera de RUTA sin días, el título de la hoja del resumen y las preguntas del reparto por noches.
+
+## Respuestas de Eric (14-oct)
+
+Solo se apuntan; no se toca código. Lo que haya que cambiar llega en la próxima tanda.
+
+1. **Las mañanas de la vuelta que no caben con el vuelo más temprano de su fila.**
+   - Las mañanas cortas (vuelo de 13:30) se quedan como están: de 3 a 7 minutos no cambian lo que ve el viajero.
+   - Las mañanas enteras (vuelos de 15:00 y de 17:00) no se cortan por minutos, por la regla de «sin cuentas al minuto». Claude va a escribir a mano listas más cortas para esas filas en `DIAS_ROMA_PARADAS.md`, y llegarán en la próxima tanda.
+   - Mientras tanto, nada cambia.
+2. **«Reorganizar este día» con los Museos reservados.** Manda la reserva. El arreglo que ya se hizo (las listas de llegada y vuelta marcadas y saltadas por «Reorganizar») vale. **Resuelta.**
+3. **El traslado privado sin enlaces.** Eric pasará los enlaces antes de abrir la versión de pago. Hasta entonces, la tarjeta del traslado sale sin botón, como ahora.
+4. **Los destinos que no son de Roma.** Se dejan como están (tantos días de ruta como días del viaje, sin día de vuelta aparte) hasta que cada destino tenga sus días escritos.
+5. **Los horarios de transporte que faltan.** Se abre la versión de pago con lo que hay. Fuera del tramo con dato, sin «modo noche», con la regla normal. Se usa 23:23 para el Leonardo Express, el que lleva fechas. Claude está buscando los horarios que faltan (Ciampino, Tiburtina, Civitavecchia, FL1, metro, bus 40/64, tranvía 8, nocturnos y el Leonardo de invierno desde el 13-dic) y llegarán en la próxima tanda.
