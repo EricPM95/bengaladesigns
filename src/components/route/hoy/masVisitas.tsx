@@ -41,7 +41,7 @@ export function useDatosDeImportancia(destino: string): DatosDeImportancia {
 export function useMasVisitas(route: Route, day: DayPlan): MasVisita[] {
   const datos = useDatosDeImportancia(route.destination)
   if (!pagoActivo()) return []
-  return masVisitasDe(day, datos)
+  return masVisitasDe(route, day, datos)
 }
 
 /** [+ Más visitas]: del aspecto de [No me da tiempo] (borde claro sobre la tarjeta oscura). */

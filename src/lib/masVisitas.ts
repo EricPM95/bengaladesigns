@@ -1,5 +1,6 @@
 import type { Coordinates, DayPlan, Route, Stop } from './types'
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
+import { esDiaDeLlegada } from './tituloDelDia'
 
 /**
  * «MÁS PARA TU DÍA» EN HOY (Tanda 7, punto 11; de pago). En los días que el motor ha dejado en una versión recortada (la ruta del centro «a buen paso», la rápida y la de tarde del día de llegada, y las mañanas
@@ -13,18 +14,13 @@ const CASOS_DE_LLEGADA_RECORTADOS = new Set(['rapido', 'de_tarde', 'ruta_del_cen
 /** El caso sin lo que lleva detrás de un `+` (`rapido+reserva_grande` → `rapido`). */
 export const casoBase = (caso: string | null | undefined): string => (caso ?? '').split('+')[0]
 
-/** El día que lleva la llegada: el primero que no es de vuelta. */
-export function esDiaDeLlegada(route: Pick<Route, 'days'>, day: Pick<DayPlan, 'id'>): boolean {
-  return route.days.find((candidate) => !candidate.isReturnLeg)?.id === day.id
-}
-
 /**
- * ¿El día salió en una versión recortada? Lo marca el motor en el propio día: el día de llegada con la llegada rápida, de tarde o de la ruta del centro a buen paso (`arrivalPlan.caso`), y el día de vuelta con
- * una mañana (`returnDay.contenido === 'manana'`: las mañanas cortas y las que dejan lo de después de la comida en «Si te sobra tiempo»).
+ * ¿El día salió en una versión recortada? Lo marca el motor en los planes de la ruta: el día de llegada con la llegada rápida, de tarde o de la ruta del centro a buen paso (`Route.planLlegada.caso`), y el día de vuelta
+ * con una mañana (`Route.planVuelta.contenido === 'manana'`: las mañanas cortas y las que dejan lo de después de la comida en «Si te sobra tiempo»).
  */
-export function diaRecortado(day: Pick<DayPlan, 'arrivalPlan' | 'returnDay'>): boolean {
-  if (day.arrivalPlan && CASOS_DE_LLEGADA_RECORTADOS.has(casoBase(day.arrivalPlan.caso))) return true
-  return day.returnDay?.contenido === 'manana'
+export function diaRecortado(route: Pick<Route, 'days' | 'arrivalFlightTime' | 'planLlegada' | 'planVuelta'>, day: DayPlan): boolean {
+  if (esDiaDeLlegada(route, day) && route.planLlegada && CASOS_DE_LLEGADA_RECORTADOS.has(casoBase(route.planLlegada.caso))) return true
+  return day.isReturnLeg === true && route.planVuelta?.contenido === 'manana'
 }
 
 /** Cuánto pesa un sitio: 0 imprescindible, 1 nivel 1, 2 nivel 2, 3 nivel 3, 4 lo demás. Sale de los datos de cada destino (`importancia_por_sitio` y el `level` del catálogo); nada escrito para Roma. */
@@ -70,8 +66,8 @@ function metrosAlDia(stop: Stop, paradas: Stop[]): number | null {
  * La lista de la hoja «Más para tu día»: lo que hay en «Si te sobra tiempo» del día (el motor ya deja fuera restaurantes y nocturnas), sin lo que el día ya lleva, de la más importante a la menos y, a igual peso, la más
  * cercana a la ruta de hoy primero. Vacía si el día no salió recortado.
  */
-export function masVisitasDe(day: DayPlan, datos: DatosDeImportancia): MasVisita[] {
-  if (!diaRecortado(day)) return []
+export function masVisitasDe(route: Pick<Route, 'days' | 'arrivalFlightTime' | 'planLlegada' | 'planVuelta'>, day: DayPlan, datos: DatosDeImportancia): MasVisita[] {
+  if (!diaRecortado(route, day)) return []
   const enElDia = new Set(day.stops.map((stop) => stop.name))
   const candidatas = (day.spareStops ?? []).filter((stop) => !noEsVisita(stop) && !stop.isNightExperience && !enElDia.has(stop.name))
   const lista = candidatas.map((stop) => ({ stop, peso: pesoDe(stop.name, datos), metros: metrosAlDia(stop, day.stops) }))

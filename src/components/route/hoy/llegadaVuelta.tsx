@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import type { DayPlan, Route } from '../../../lib/types'
 import { medioOf, puntoDeLaMitad, tripModes, useArrivalInfo, type ArrivalMode, type ArrivalPoint } from '../../../lib/arrivalReturn'
 import { billeteDe, type DatosBillete } from '../../../lib/billete'
@@ -59,7 +60,7 @@ export function useFichasDeHoy(route: Route, day: DayPlan, dateIso: string | nul
     setAbierta(cual)
   }
   const esVuelta = abierta === 'vuelta'
-  const hoja = (
+  const ficha = (
     <ArrivalReturnSheet
       open={abierta !== null}
       route={route}
@@ -79,6 +80,8 @@ export function useFichasDeHoy(route: Route, day: DayPlan, dateIso: string | nul
       onClose={() => setAbierta(null)}
     />
   )
+  // La ficha va a pantalla completa, por encima de la cabecera y de la barra de abajo: fuera del contenedor de HOY (en el navegador, en el body; el servidor de las pruebas no tiene `document` y la pinta en su sitio).
+  const hoja = typeof document === 'undefined' ? ficha : createPortal(ficha, document.body)
   return { llegada, vuelta, abrir, hoja }
 }
 

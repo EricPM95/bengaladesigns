@@ -8,6 +8,8 @@
  * Los campos que la app no usa se dejan abiertos (`[clave: string]: unknown`) para que un campo nuevo del motor no rompa nada.
  */
 
+import type { DayPlan, Route, TarjetaHoyVuelvesDato } from './types'
+
 /** Un botón de un aviso o de la hoja: la llegada manda solo el id (`'ver_reserva'`) y la vuelta el id con su texto. */
 export type BotonDeAviso = string | { id: string; texto: string }
 
@@ -63,8 +65,10 @@ export interface PlanVuelta {
   contenido?: string | null
   fecha?: { dayNumber: number; dateIso: string | null; weekday?: string | null }
   ultimoDiaDeRuta?: { dayNumber: number; dateIso: string | null }
-  tarjeta?: Record<string, unknown> | null
-  tarjetaUltimoDia?: Record<string, unknown> | null
+  /** «Hoy vuelves a casa»: solo si el día va sin paradas. */
+  tarjeta?: TarjetaHoyVuelvesDato | null
+  /** Solo con una salida de madrugada: la misma tarjeta, al final del último día de ruta. */
+  tarjetaUltimoDia?: TarjetaHoyVuelvesDato | null
   resumen?: { tipo: string; plantilla: string; dayNumber: number; dateIso: string | null; madrugada?: boolean } | null
   avisos?: AvisoDelMotor[]
   [clave: string]: unknown
@@ -88,3 +92,15 @@ export function botonesDe(botones: BotonDeAviso[] | undefined): { id: string; te
 
 /** ¿Va a la campana? (la llegada lo marca con `campana: true`, la vuelta con `donde: 'campana'`). */
 export const vaALaCampana = (aviso: AvisoDelMotor): boolean => aviso.campana === true || aviso.donde === 'campana'
+
+/**
+ * La tarjeta «Hoy vuelves a casa» que toca a un día, la misma en DÍAS y en HOY: la del día de vuelta (`planVuelta.tarjeta`, solo si el día va sin paradas) y, con una salida de madrugada, la del final
+ * del último día de ruta (`planVuelta.tarjetaUltimoDia`). null en cualquier otro día.
+ */
+export function tarjetaHoyVuelvesDelDia(route: Pick<Route, 'days' | 'planVuelta'>, day: Pick<DayPlan, 'id' | 'isReturnLeg'>): TarjetaHoyVuelvesDato | null {
+  const plan = route.planVuelta
+  if (!plan) return null
+  if (day.isReturnLeg) return plan.tarjeta ?? null
+  const ultimoDiaDeRuta = [...route.days].reverse().find((candidate) => !candidate.isReturnLeg)
+  return day.id === ultimoDiaDeRuta?.id ? (plan.tarjetaUltimoDia ?? null) : null
+}

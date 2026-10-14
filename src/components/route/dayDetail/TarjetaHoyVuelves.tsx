@@ -2,7 +2,7 @@ import type { TarjetaHoyVuelvesDato } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
 
 export interface TarjetaHoyVuelvesProps {
-  /** La tarjeta tal cual la da el motor (`day.returnDay.tarjeta`; con salida de madrugada, `returnDay.tarjetaUltimoDia`). Todos los textos vienen hechos: aquí solo se dibujan. */
+  /** La tarjeta tal cual la da el motor (`Route.planVuelta.tarjeta`; con salida de madrugada, `Route.planVuelta.tarjetaUltimoDia`; ver `tarjetaHoyVuelvesDelDia`). Todos los textos vienen hechos: aquí solo se dibujan. */
   tarjeta: TarjetaHoyVuelvesDato
   /** [Ver cómo ir]: abre la ficha de vuelta. */
   onVerComoIr: () => void

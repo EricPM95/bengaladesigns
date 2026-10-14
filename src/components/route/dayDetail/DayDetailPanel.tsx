@@ -60,6 +60,7 @@ import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
 import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
+import { tarjetaHoyVuelvesDelDia } from '../../../lib/planLlegadaVuelta'
 import { useExploreAperturaStore, type AperturaExplorar } from '../../../store/useExploreAperturaStore'
 import { billeteDe } from '../../../lib/billete'
 import { barTextOf, puntoDeLaMitad, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
@@ -416,10 +417,8 @@ export function DayDetailPanel({
     pedirExplorar(apertura)
     setMode('explore')
   }
-  // La tarjeta «Hoy vuelves a casa» (de pago): la del día de vuelta sin paradas y, con salida de madrugada, la del final del último día de ruta. El motor la deja en `returnDay` del día de vuelta.
-  const diaDeVuelta = route?.days.find((candidate) => candidate.isReturnLeg) ?? null
-  const ultimoDiaDeRuta = route ? [...route.days].reverse().find((candidate) => !candidate.isReturnLeg) ?? null : null
-  const tarjetaHoyVuelves = !pago ? null : day.isReturnLeg ? (day.returnDay?.tarjeta ?? null) : day.id === ultimoDiaDeRuta?.id ? (diaDeVuelta?.returnDay?.tarjetaUltimoDia ?? null) : null
+  // La tarjeta «Hoy vuelves a casa» (de pago): la del día de vuelta sin paradas y, con salida de madrugada, la del final del último día de ruta. El motor la deja en `Route.planVuelta` (`tarjeta` y `tarjetaUltimoDia`); HOY la lee con la misma función.
+  const tarjetaHoyVuelves = !pago || !route ? null : tarjetaHoyVuelvesDelDia(route, day)
   /** «+ AÑADIR VUELO» y «Editar»: a Reservas, al bloque «Llegada y vuelta» (de pago), con la mitad que se pide abierta. */
   const goToBooking = (which: 'llegada' | 'vuelta') => {
     setArrivalSheet(null)

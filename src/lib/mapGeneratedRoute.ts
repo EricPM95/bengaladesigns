@@ -2,7 +2,6 @@ import { precioTienda } from './dinero'
 import { esNombreIcono } from './iconos'
 import type {
   ArrivalDayInfo,
-  ReturnDayInfo,
   DateNoticeIcon,
   DayType,
   ExcursionProminence,
@@ -18,7 +17,6 @@ import type {
   Route,
   Stop,
   StopCategory,
-  TarjetaVuelvesInfo,
   TicketOption,
   TransportContext,
   TransportSegment,
@@ -205,26 +203,6 @@ interface GeneratedMeal {
   no_restaurant?: boolean
 }
 
-/** La tarjeta «Hoy vuelves a casa» tal como sale del motor (`plan.vuelta.tarjeta`). */
-interface GeneratedTarjetaVuelves {
-  titulo?: string
-  texto?: string
-  desde_tu_zona?: { texto?: string } | null
-  ver_como_ir?: { texto?: string } | null
-  explorar?: { texto?: string; boton?: string } | null
-  despedida?: string | null
-  madrugada?: boolean
-}
-
-/** `day.return_day` (Tanda 7): lo visible de `plan.vuelta`. */
-interface GeneratedReturnDay {
-  contenido?: string | null
-  medio?: string | null
-  punto?: { id?: string | null } | null
-  tarjeta?: GeneratedTarjetaVuelves | null
-  tarjetaUltimoDia?: GeneratedTarjetaVuelves | null
-}
-
 export interface GeneratedDay {
   day_number: number
   title: string
@@ -242,9 +220,12 @@ export interface GeneratedDay {
   rainy_alternative?: string
   /** Tanda 6: paradas que no caben y pasan a «Si te sobra tiempo» (misma forma que stops, más spare_reason). */
   spare_stops?: GeneratedStop[]
-  /** Tanda 7: el día que lleva la llegada con horas (DayPlan.arrivalDay) y el de vuelta (DayPlan.returnDay). */
+  /** Tanda 7: lo que el motor dice del día que lleva la llegada (`DayPlan.arrivalDay`) y, solo en el día 1 con la hora de llegada puesta, el plan de la llegada (`Route.planLlegada`). */
   arrival_day?: ArrivalDayInfo | null
-  return_day?: ReturnDayInfo | null
+  arrival_plan?: PlanLlegada | null
+  /** Tanda 7: el día de vuelta que monta el motor con la hora de vuelta (`DayPlan.isReturnLeg`) y su plan, con la tarjeta «Hoy vuelves a casa» (`Route.planVuelta`). */
+  is_return_leg?: boolean
+  return_day?: PlanVuelta | null
   /** Tanda 6b: las franjas del día y la tarjeta de descanso. */
   franjas?: { id: 'manana' | 'tarde' | 'cena'; label: string; from: string; to?: string | null }[]
   /** Tanda 6: «Hoy el sol se pone a las 17:05». */
@@ -284,20 +265,10 @@ export interface GeneratedDay {
   /** El interruptor del día 4 (Tanda 6g) — ver DayPlan.interruptor — y las excursiones de la página. */
   interruptor?: { mode: 'roma' | 'excursion'; default: 'roma' | 'excursion'; by_date?: boolean } | null
   excursion_page?: { phrase: string | null; options: GeneratedExcursionPage[] } | null
-  /** Llegada y vuelta con horas (Tanda 7, de pago): lo que el motor dice de este día (ver DayPlan.arrivalDay, arrivalPlan y returnDay). */
-  is_return_leg?: boolean
-  arrival_day?: { lista?: string; nombre?: string | null; variante?: string | null; es_dia_1?: boolean; sin_paradas?: boolean; de_noche?: boolean } | null
-  arrival_plan?: { caso?: string; entrada?: { punto_id?: string | null; medio?: string | null } | null } | null
-  return_day?: GeneratedReturnDay | null
   /** El viajero montó este día con sus sitios — ver DayPlan.ownDay. */
   own_day?: boolean
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
   curated_alternative?: { title: string; places: string[] } | null
-  /** Tanda 7: el plan de la llegada con horas, solo en el día 1 y solo con la hora de llegada puesta — ver Route.planLlegada. */
-  arrival_plan?: PlanLlegada
-  /** Tanda 7: el día de vuelta que monta el motor con la hora de vuelta (el plan va en `return_day`) — ver Route.planVuelta. */
-  is_return_leg?: boolean
-  return_day?: PlanVuelta
 }
 
 /** Una excursión de la página del día 4, tal como viaja del servidor (server/engine/excursionPage.js). */
@@ -812,17 +783,12 @@ function mapPhaseTransitionFacts(transitions?: GeneratedPhaseTransition[]): Phas
   return facts
 }
 
-function mapTarjetaVuelves(tarjeta: GeneratedTarjetaVuelves | null | undefined): TarjetaVuelvesInfo | null {
-  if (!tarjeta?.titulo || !tarjeta.texto) return null
-  return {
-    titulo: tarjeta.titulo,
-    texto: tarjeta.texto,
-    desdeTuZona: tarjeta.desde_tu_zona?.texto ? { texto: tarjeta.desde_tu_zona.texto } : null,
-    verComoIr: tarjeta.ver_como_ir?.texto ? { texto: tarjeta.ver_como_ir.texto } : null,
-    explorar: tarjeta.explorar?.texto ? { texto: tarjeta.explorar.texto, boton: tarjeta.explorar.boton ?? '' } : null,
-    despedida: tarjeta.despedida ?? null,
-    madrugada: tarjeta.madrugada === true,
-  }
+/**
+ * LOS DOS PLANES DE LA RUTA (Tanda 7), el único sitio que los lee del JSON del motor: `day.arrival_plan` (el día 1, con la hora de llegada puesta) y `day.return_day` (el día de vuelta). Se guardan tal cual en
+ * `Route.planLlegada` y `Route.planVuelta`, y de ahí leen la ficha, HOY, la hoja del resumen y los avisos. Al generar la ruta y al rehacer días se usa esta misma función.
+ */
+export function planesDelMotor(days: GeneratedDay[]): { llegada: PlanLlegada | null; vuelta: PlanVuelta | null } {
+  return { llegada: days.find((day) => day.arrival_plan)?.arrival_plan ?? null, vuelta: days.find((day) => day.return_day)?.return_day ?? null }
 }
 
 function mapDay(
@@ -853,9 +819,8 @@ function mapDay(
     poolNotices: poolNoticesByDay?.get(generated.day_number),
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     ...(generated.spare_stops?.length ? { spareStops: generated.spare_stops.map((stop) => mapStop(generated.day_number, stop)) } : {}),
-    // Tanda 7: lo que el motor dice del día de llegada y del de vuelta (ver DayPlan.arrivalDay / returnDay).
+    // Tanda 7: lo que el motor dice del día que lleva la llegada, tal cual (DayPlan.arrivalDay). El plan de la llegada y el de la vuelta no van en el día: van en la ruta (Route.planLlegada, Route.planVuelta).
     ...(generated.arrival_day ? { arrivalDay: generated.arrival_day } : {}),
-    ...(generated.return_day ? { returnDay: generated.return_day } : {}),
     ...(generated.franjas?.length ? { franjas: generated.franjas.map((f) => ({ id: f.id, label: f.label, from: f.from, to: f.to ?? null })) } : {}),
     ...(generated.sunset_text ? { sunsetText: generated.sunset_text } : {}),
     ...(generated.rain_plan?.text
@@ -870,13 +835,6 @@ function mapDay(
       : {}),
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
     ...(generated.is_return_leg ? { isReturnLeg: true } : {}),
-    ...(generated.arrival_day
-      ? { arrivalDay: { lista: generated.arrival_day.lista ?? '', nombre: generated.arrival_day.nombre ?? null, variante: generated.arrival_day.variante ?? null, esDia1: generated.arrival_day.es_dia_1 === true, sinParadas: generated.arrival_day.sin_paradas === true, deNoche: generated.arrival_day.de_noche === true } }
-      : {}),
-    ...(generated.arrival_plan?.caso ? { arrivalPlan: { caso: generated.arrival_plan.caso, puntoId: generated.arrival_plan.entrada?.punto_id ?? null, medio: generated.arrival_plan.entrada?.medio ?? null } } : {}),
-    ...(generated.return_day
-      ? { returnDay: { contenido: generated.return_day.contenido ?? null, medio: generated.return_day.medio ?? null, puntoId: generated.return_day.punto?.id ?? null, tarjeta: mapTarjetaVuelves(generated.return_day.tarjeta), tarjetaUltimoDia: mapTarjetaVuelves(generated.return_day.tarjetaUltimoDia) } }
-      : {}),
     isExcursionDay: generated.type === 'excursion',
     dayType: asDayType(generated.type),
     // La preseleccionada entra YA elegida: el día de excursión no es un formulario en blanco, es
@@ -1048,8 +1006,7 @@ export function mapGeneratedRouteToRoute(
     }
     return mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
   })()
-  const planLlegada: PlanLlegada | null = generated.days.find((day) => day.arrival_plan)?.arrival_plan ?? null
-  const planVuelta: PlanVuelta | null = vueltaDelMotor?.return_day ?? null
+  const { llegada: planLlegada, vuelta: planVuelta } = planesDelMotor([...generated.days, ...(vueltaDelMotor ? [vueltaDelMotor] : [])])
 
   return {
     id: `route-${slugify(destination)}-${Date.now()}`,

@@ -410,7 +410,7 @@ console.log('9. La tarjeta «Hoy vuelves a casa»')
   // En DÍAS: el panel del día de vuelta la pinta de pago; en la gratis no sale.
   const ruta = viaje({ extra: { arrivalFlightTime: '10:00', arrivalPointId: 'fco', departureFlightTime: '10:00', departurePointId: 'fco', accommodationZone: 'centro' } })
   const tarjetaReal = (await pide(4, { hora: '10:00', modo: 'flight', puntoId: 'fco', zona: 'centro' })).return_day.tarjeta
-  ruta.days[ruta.days.length - 1].returnDay = { tarjeta: tarjetaReal }
+  ruta.planVuelta = { tarjeta: tarjetaReal }
   const panelDe = (dia, extras = {}) =>
     html(DayDetailPanel, { day: dia, travel: null, isLastDay: dia.isReturnLeg === true, origin: 'Barcelona', stay: null, allDays: ruta.days.filter((d) => !d.isReturnLeg).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city })), isFirstDayOfTrip: dia.dayNumber === 1, showCamperBlock: false, showRentalCarBlock: false, ...extras })
   poner(ruta)
@@ -419,7 +419,7 @@ console.log('9. La tarjeta «Hoy vuelves a casa»')
   debe(!/Tu último día también cuenta/.test(aTexto(dv2)), '9 de pago no sale la tarjeta de la gratis', '')
   // Madrugada: al final del último día de ruta.
   const rutaM = viaje({ extra: { departureFlightTime: '02:00', departurePointId: 'fco' } })
-  rutaM.days[rutaM.days.length - 1].returnDay = { tarjetaUltimoDia: tm }
+  rutaM.planVuelta = { tarjetaUltimoDia: tm }
   poner(rutaM)
   const ultimo = rutaM.days[rutaM.days.length - 2]
   const pU = html(DayDetailPanel, { day: ultimo, travel: null, isLastDay: false, origin: 'Barcelona', stay: null, allDays: rutaM.days.filter((d) => !d.isReturnLeg).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city })), isFirstDayOfTrip: false, showCamperBlock: false, showRentalCarBlock: false })
@@ -516,7 +516,7 @@ console.log('6. Los textos del código')
   debe(/Añade tu \$\{label\.palabra\} y ajustamos tu día/.test(leer('shared/arrival/arrivalRules.js')), '6 la barra de llegada no cambia', '')
   // El mapeo de las marcas del motor.
   const mapa = leer('src/lib/mapGeneratedRoute.ts')
-  debe(/no_restaurant/.test(mapa) && /noRestaurant: true/.test(mapa) && /arrivalDay: generated\.arrival_day/.test(mapa) && /returnDay: generated\.return_day/.test(mapa), '5 el cliente lee las marcas del motor (no_restaurant, arrival_day, return_day)', '')
+  debe(/no_restaurant/.test(mapa) && /noRestaurant: true/.test(mapa) && /arrivalDay: generated\.arrival_day/.test(mapa) && /planVuelta/.test(mapa) && /\.return_day/.test(mapa) && !/returnDay/.test(mapa), '5 el cliente lee las marcas del motor (no_restaurant, arrival_day, return_day)', '')
   // Los datos: las coordenadas de los puntos para el mapa pequeño.
   const puntos = Object.values(info.medios).flatMap((m) => m.puntos)
   debe(puntos.filter((p) => p.id !== 'ztl').every((p) => p.coordenadas && Number.isFinite(p.coordenadas.lat)), '1 los puntos traen sus coordenadas para el mapa pequeño', puntos.filter((p) => !p.coordenadas).map((p) => p.id).join(','))

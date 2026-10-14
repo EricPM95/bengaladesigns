@@ -4,7 +4,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { moverParadaAOtroDia } from '../../../lib/cambiarParada'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { dayOfReservation, shortDateEs } from '../../../lib/bookings'
-import { etiquetaDeViaje, nombreDelDia } from '../../../lib/tituloDelDia'
+import { esDiaDeLlegada, etiquetaDeViaje, nombreDelDia } from '../../../lib/tituloDelDia'
 import { numberedStopsOf, stopNumbersOf } from '../../../lib/stopKind'
 import { displayStopName } from '../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../lib/distanceMock'
@@ -25,9 +25,10 @@ import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../lib/his
 import { avisosDeCierre } from '../../../lib/avisosDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../lib/diaCompleto'
 import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
-import { esDiaDeLlegada } from '../../../lib/masVisitas'
+import { tarjetaHoyVuelvesDelDia } from '../../../lib/planLlegadaVuelta'
+import { useExploreAperturaStore } from '../../../store/useExploreAperturaStore'
+import { TarjetaHoyVuelves } from '../dayDetail/TarjetaHoyVuelves'
 import { BotonAlojamientoHoy, TarjetaLlegadaHoy, TarjetaVueltaHoy, useFichasDeHoy } from './llegadaVuelta'
-import { SlotVuelvesACasa } from './SlotVuelvesACasa'
 import { anadirMasVisita, BotonMasVisitas, HojaMasVisitas, useMasVisitas } from './masVisitas'
 
 /** El horario de la parada ese día, en pequeño bajo su nombre: «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy». Nada si no tiene horario (plazas, fuentes). */
@@ -90,6 +91,13 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   const fichas = useFichasDeHoy(route, day, dateIso)
   const masVisitas = useMasVisitas(route, day)
   const [hojaMasVisitas, setHojaMasVisitas] = useState(false)
+  // [Explorar monumentos] de «Hoy vuelves a casa»: abre EXPLORAR en Atracciones (con «Cerca de mí» si la tarjeta lo pide), igual que en DÍAS.
+  const setMode = useRouteStore((state) => state.setMode)
+  const pedirExplorar = useExploreAperturaStore((state) => state.pedir)
+  const explorarMonumentos = (cerca: boolean) => {
+    pedirExplorar({ categoria: 'atracciones', origen: null, cerca })
+    setMode('explore')
+  }
 
   // El día de excursión (el día 4 con el interruptor en Excursión): solo la excursión (Tanda 6g).
   if (day.interruptor?.mode === 'excursion') {
@@ -143,10 +151,11 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   // Qué lleva hoy de llegada y de vuelta (Tanda 7, punto 15). La llegada va antes de la primera parada; la vuelta, después de la última, y sin paradas el día es la tarjeta «Hoy vuelves a casa».
   const esLlegada = esDiaDeLlegada(route, day)
   const esVuelta = Boolean(day.isReturnLeg)
-  const ultimoDiaDeRuta = !esVuelta && route.days.filter((otro) => !otro.isReturnLeg).at(-1)?.id === day.id
-  const tarjetaUltimoDia = ultimoDiaDeRuta ? (route.days.find((otro) => otro.isReturnLeg)?.returnDay?.tarjetaUltimoDia ?? null) : null
   const sinParadasDeVuelta = esVuelta && paradas.length === 0
-  const tarjetaVuelvesACasa = sinParadasDeVuelta ? (day.returnDay?.tarjeta ?? null) : null
+  // «Hoy vuelves a casa»: la misma tarjeta (y la misma función) que en DÍAS. El día de vuelta sin paradas la lleva en lugar de «Siguiente parada»; con una salida de madrugada, el último día de ruta la lleva al final.
+  const tarjetaVuelvesACasa = tarjetaHoyVuelvesDelDia(route, day)
+  const tarjetaDeVueltaEnLugarDeLaSiguiente = sinParadasDeVuelta ? tarjetaVuelvesACasa : null
+  const tarjetaAlFinalDelDia = !esVuelta ? tarjetaVuelvesACasa : null
 
   // ── «No me da tiempo» (solo de pago): la parada queda saltada y se pasa a la siguiente; si tiene la entrada reservada, antes se pregunta ──
   const reservaSiguiente = siguiente ? reservaDe(siguiente) : null
@@ -206,9 +215,11 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {info.cargado && (
         <div className="flex flex-none flex-col gap-0.5 px-1" data-hoy-titulo-del-dia>
           <span data-titulo-del-dia="1" className="font-display text-[26px] leading-[1.08] text-text [overflow-wrap:anywhere]">{tituloDeHoy.titulo}</span>
+          {/* «Barcelona → Roma · Día de viaje» (el trayecto primero, como en DÍAS); si el título ya dice «Día de viaje», solo el trayecto. */}
           {tituloDeHoy.viaje && (
-            <span className="flex flex-wrap items-baseline gap-x-1.5 text-[12.5px] font-medium text-accent">
-              {etiquetaDeViaje(tituloDeHoy.titulo)}<span data-viaje-del-dia="1" className="whitespace-nowrap text-[11.5px] font-normal text-text/55">{etiquetaDeViaje(tituloDeHoy.titulo) ? '· ' : ''}{tituloDeHoy.viaje}</span>
+            <span className="flex flex-wrap items-baseline gap-x-1.5 text-[11.5px] font-normal text-text/55">
+              <span data-viaje-del-dia="1" className="whitespace-nowrap">{tituloDeHoy.viaje}</span>
+              {etiquetaDeViaje(tituloDeHoy.titulo) && <span data-marca-dia-de-viaje="1" className="whitespace-nowrap">· {etiquetaDeViaje(tituloDeHoy.titulo)}</span>}
             </span>
           )}
         </div>
@@ -217,8 +228,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
       {/* El día de llegada, ANTES de la primera parada (Tanda 7, punto 15): «Llegada a Fiumicino» con el billete y, si hay dirección, [Cómo llegar a tu alojamiento]. */}
       {esLlegada && <TarjetaLlegadaHoy route={route} mitad={fichas.llegada} onAbrir={() => fichas.abrir('llegada')} />}
-      {/* El día de vuelta sin paradas: la tarjeta «Hoy vuelves a casa» (la ranura de H) en lugar de «Siguiente parada». */}
-      {tarjetaVuelvesACasa && <SlotVuelvesACasa tarjeta={tarjetaVuelvesACasa} onVerComoIr={() => fichas.abrir('vuelta')} />}
+      {/* El día de vuelta sin paradas: la tarjeta «Hoy vuelves a casa» en lugar de «Siguiente parada». */}
+      {tarjetaDeVueltaEnLugarDeLaSiguiente && <TarjetaHoyVuelves tarjeta={tarjetaDeVueltaEnLugarDeLaSiguiente} onVerComoIr={() => fichas.abrir('vuelta')} onExplorarMonumentos={() => explorarMonumentos(tarjetaDeVueltaEnLugarDeLaSiguiente.explorar.cerca_de_mi)} />}
       {!sinParadasDeVuelta && (
       <div className="flex flex-none flex-col gap-3 rounded-[28px] bg-[#1C2230] px-2 pb-3.5 pt-2 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
         {siguiente && hasRealCoordinates(siguiente.coordinates) ? <MapaHastaLaParada desde={origen} hasta={siguiente.coordinates} /> : <div className="h-[118px] rounded-[21px] bg-[#2A3141]" aria-hidden="true" />}
@@ -391,7 +402,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {/* El día de vuelta, DESPUÉS de la última parada (Tanda 7, punto 15): «Llegada al aeropuerto de Fiumicino» con [Cómo llegar] y «Ver cómo ir». */}
       {esVuelta && !sinParadasDeVuelta && <TarjetaVueltaHoy route={route} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} />}
       {/* Una salida de madrugada: el último día de ruta termina con «Tu vuelo sale esta noche…». */}
-      {tarjetaUltimoDia && <SlotVuelvesACasa tarjeta={tarjetaUltimoDia} onVerComoIr={() => fichas.abrir('vuelta')} />}
+      {tarjetaAlFinalDelDia && <TarjetaHoyVuelves tarjeta={tarjetaAlFinalDelDia} onVerComoIr={() => fichas.abrir('vuelta')} onExplorarMonumentos={() => explorarMonumentos(tarjetaAlFinalDelDia.explorar.cerca_de_mi)} />}
       {/* Al acabar cada día (menos el de vuelta): [Cómo llegar a tu alojamiento], solo con la dirección de RESERVAS › Alojamiento. */}
       {!esVuelta && <BotonAlojamientoHoy route={route} />}
 

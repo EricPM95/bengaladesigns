@@ -1,4 +1,4 @@
-import { mapSingleGeneratedDay, type GeneratedDay } from './mapGeneratedRoute'
+import { mapSingleGeneratedDay, planesDelMotor, type GeneratedDay } from './mapGeneratedRoute'
 import { enrichRoutePhotos } from './placePhoto'
 import { reservasParaMotor } from './engineReservas'
 import { isManualRoute } from './manualPlan'
@@ -66,8 +66,9 @@ export async function rehacerDiasSinTocar(except: string | string[] | null, opci
       const next = mapSingleGeneratedDay(route.destination, body.day, day)
       await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
       rehechos.push({ id: day.id, next })
-      if (body.day.arrival_plan) planes.llegada = body.day.arrival_plan
-      if (body.day.return_day) planes.vuelta = body.day.return_day
+      const delDia = planesDelMotor([body.day])
+      if (delDia.llegada) planes.llegada = delDia.llegada
+      if (delDia.vuelta) planes.vuelta = delDia.vuelta
     } catch {
       ok = false
     }
@@ -124,7 +125,8 @@ export async function rehacerDiaConReservas(dayId: string, opciones: { mantenerO
     const actual = useRouteStore.getState().route?.days.find((other) => other.id === dayId)
     if (!actual || actual.originalSnapshot) return
     useRouteStore.getState().replaceDayRebuilt(dayId, next)
-    useRouteStore.getState().ponerPlanes({ llegada: body.day.arrival_plan, vuelta: body.day.return_day })
+    const delDia = planesDelMotor([body.day])
+    useRouteStore.getState().ponerPlanes({ llegada: delDia.llegada ?? undefined, vuelta: delDia.vuelta ?? undefined })
   } catch {
     // Sin respuesta del servidor: el día se queda como está.
   }

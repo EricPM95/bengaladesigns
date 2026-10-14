@@ -8,7 +8,7 @@ import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../.
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { construirFicha, nombreDeZona } from '../../../lib/fichaLlegada'
 import { direccionDelAlojamiento } from '../../../lib/direccionAlojamiento'
-import { paradasParaElTitulo } from '../../../lib/tituloDelDia'
+import { esDiaDeLlegada, paradasParaElTitulo } from '../../../lib/tituloDelDia'
 import { displayStopName } from '../../../lib/format'
 import { ARRIVAL_MARKER_BG, ARRIVAL_MARKER_TEXT } from '../../../lib/arrivalIcon'
 import { FichaResumen } from './FichaResumen'
@@ -195,7 +195,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const destino = useDestinationExcursions(route.destination)
   const puntoDeLaFicha: ArrivalPoint | null = shownPoints.length === 1 ? shownPoints[0] : null
   // El día que lleva la llegada (el primero, o el que el motor marca como día 1) y lo que dice de su comida y de su primera parada.
-  const diaLlegada = route.days.find((day) => day.arrivalDay?.es_dia_1) ?? route.days[0] ?? null
+  const diaLlegada = route.days.find((day) => esDiaDeLlegada(route, day)) ?? route.days[0] ?? null
   const comidaAlLlegar = Boolean(diaLlegada?.meals.some((meal) => meal.noRestaurant)) || Boolean(diaLlegada?.arrivalDay?.comida_al_llegar)
   const primeraParada = diaLlegada && !diaLlegada.arrivalDay?.sin_paradas ? (paradasParaElTitulo(diaLlegada)[0]?.name ?? null) : null
   const ficha = useMemo(() => {

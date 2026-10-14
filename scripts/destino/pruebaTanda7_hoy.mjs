@@ -28,7 +28,7 @@ const debe = (cond, regla, texto) => {
 
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_tanda7_hoy_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
-  createElement, renderToStaticMarkup, HoyView, HojaMasVisitas, anadirMasVisita, useRouteStore, useAddFlowStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, fetchDestinationPlaces, catalogoEnMemoria,
+  createElement, renderToStaticMarkup, HoyView, HojaMasVisitas, anadirMasVisita, useRouteStore, useAddFlowStore, mapSingleGeneratedDay, planesDelMotor, fetchArrivalInfo, fetchDestinationExcursions, fetchDestinationPlaces, catalogoEnMemoria,
   cargaDatosDeHorario, masVisitasDe, diaRecortado, posicionDeMenosRodeo, primerHuecoLibre, casoBase, esDiaDeLlegada, tituloDeLlegada, tituloDeVuelta, destinoDelPunto, BotonComoLlegarAlojamiento,
 } = M
 const D = findPipelineV2Data('Roma')
@@ -69,12 +69,16 @@ const cuenta = (html, texto) => html.split(texto).length - 1
 async function viaje({ noches, llegada = null, vuelta = null, ida = 'flight', vueltaMedio = null, direccion = DIRECCION, puntoLlegada = 'fco', puntoVuelta = 'fco', horaLlegada, horaVuelta, mod = (d) => d }) {
   const extras = { ...(llegada ? { llegada } : {}), ...(vuelta ? { vuelta } : {}) }
   const days = []
+  const generados = []
   const total = noches + 1
   for (let d = 1; d <= noches; d++) {
     const generado = await buildDayBlockV3(D, total, false, d, null, INICIO, [], [], { ...BASE, ...extras })
+    generados.push(generado)
     days.push({ ...mapSingleGeneratedDay('Roma', generado, { id: `d${d}`, dayNumber: d, city: 'Roma', title: '', stops: [], meals: [], excursions: [] }), id: `d${d}`, dayNumber: d, colorIndex: d - 1 })
   }
   const generadoVuelta = vuelta ? await buildDayBlockV3(D, total, false, total, null, INICIO, [], [], { ...BASE, ...extras }) : null
+  if (generadoVuelta) generados.push(generadoVuelta)
+  const planes = planesDelMotor(generados)
   const ultimo = generadoVuelta
     ? { ...mapSingleGeneratedDay('Roma', generadoVuelta, { id: `d${total}`, dayNumber: total, city: 'Roma', title: '', stops: [], meals: [], excursions: [] }), id: `d${total}`, dayNumber: total, colorIndex: noches }
     : { id: `d${total}`, dayNumber: total, city: 'Roma', title: 'Vuelta desde Roma', stops: [], meals: [], isReturnLeg: true }
@@ -84,6 +88,8 @@ async function viaje({ noches, llegada = null, vuelta = null, ida = 'flight', vu
     days: days.map(mod),
     answers: { dateRange: { start: INICIO, end: sumaDias(INICIO, noches) }, days: noches, companion: 'couple' },
     transportContext: { transport_option: { id: ida }, archetype: null },
+    ...(planes.llegada ? { planLlegada: planes.llegada } : {}),
+    ...(planes.vuelta ? { planVuelta: planes.vuelta } : {}),
     ...(vueltaMedio ? { returnTransportOptionId: vueltaMedio } : {}),
     ...(horaLlegada ? { arrivalFlightTime: horaLlegada, arrivalPointId: puntoLlegada, arrivalCodigo: 'IB3214', arrivalOtroPunto: 'Barcelona-El Prat (BCN)', arrivalOtraHora: '10:40' } : {}),
     ...(horaVuelta ? { departureFlightTime: horaVuelta, departurePointId: puntoVuelta, departureCodigo: 'IB3215' } : {}),
@@ -106,12 +112,13 @@ console.log('0. El día del motor llega entero a la pantalla')
 const rutaMini = await viaje({ noches: 1, llegada: LL('12:30'), horaLlegada: '12:30', horaVuelta: '19:00' })
 {
   const d1 = rutaMini.days[0]
-  debe(d1.arrivalPlan && casoBase(d1.arrivalPlan.caso) === 'ruta_del_centro', '0 contrato', `el día 1 no trae arrivalPlan.caso=ruta_del_centro (${JSON.stringify(d1.arrivalPlan)})`)
-  debe(d1.arrivalDay?.esDia1 === true && d1.arrivalDay.lista, '0 contrato', 'el día 1 no trae arrivalDay')
-  debe(diaRecortado(d1) === true, '0 contrato', 'la ruta del centro a buen paso no cuenta como día recortado')
+  debe(rutaMini.planLlegada && casoBase(rutaMini.planLlegada.caso) === 'ruta_del_centro', '0 contrato', `la ruta no trae planLlegada.caso=ruta_del_centro (${JSON.stringify(rutaMini.planLlegada)?.slice(0, 160)})`)
+  debe(d1.arrivalDay?.es_dia_1 === true && d1.arrivalDay.lista, '0 contrato', 'el día 1 no trae arrivalDay')
+  debe(d1.arrivalPlan === undefined && d1.returnDay === undefined, '0 contrato', 'los planes no van en el día: van en la ruta (una sola forma)')
+  debe(diaRecortado(rutaMini, d1) === true, '0 contrato', 'la ruta del centro a buen paso no cuenta como día recortado')
   const rutaConVuelta = await viaje({ noches: 3, llegada: LL('08:30'), vuelta: VU('10:00'), horaLlegada: '08:30', horaVuelta: '10:00' })
   const dv = rutaConVuelta.days.at(-1)
-  debe(dv.isReturnLeg === true && dv.returnDay?.contenido === 'sin_paradas' && dv.returnDay.tarjeta?.titulo === 'Hoy vuelves a casa', '0 contrato', `el día de vuelta sin paradas no trae isReturnLeg ni la tarjeta (${JSON.stringify(dv.returnDay)?.slice(0, 200)})`)
+  debe(dv.isReturnLeg === true && rutaConVuelta.planVuelta?.contenido === 'sin_paradas' && rutaConVuelta.planVuelta.tarjeta?.titulo === 'Hoy vuelves a casa', '0 contrato', `el día de vuelta sin paradas no trae isReturnLeg ni la tarjeta (${JSON.stringify(rutaConVuelta.planVuelta)?.slice(0, 200)})`)
   debe(esDiaDeLlegada(rutaConVuelta, rutaConVuelta.days[0]) && !esDiaDeLlegada(rutaConVuelta, rutaConVuelta.days[1]), '0 contrato', 'esDiaDeLlegada no marca solo el primer día')
 }
 
@@ -179,6 +186,9 @@ console.log('A. Los cinco puntos')
   const sinPunto = await viaje({ noches: 3, horaLlegada: '12:30', puntoLlegada: undefined })
   delete sinPunto.arrivalPointId
   debe(/Llegada a Fiumicino/.test(plano(aTexto(pintaHoy(sinPunto, 1)))), 'A1 puntos', 'con hora y sin punto elegido no sale «Llegada a Fiumicino» (el del traslado más largo)')
+  // La línea pequeña del día de llegada: «{origen} → Roma · Día de viaje» (el mismo orden que en DÍAS).
+  const lineaLlegada = plano(aTexto(bloque(pintaHoy(sinPunto, 1), 'data-hoy-titulo-del-dia')))
+  debe(/Barcelona → Roma · Día de viaje$/.test(lineaLlegada), 'A línea pequeña', `la línea pequeña del día de llegada no es «Barcelona → Roma · Día de viaje»: ${lineaLlegada}`)
   // En coche no hay billete.
   const coche = await viaje({ noches: 3, ida: 'car', horaLlegada: '12:30' })
   debe(!pintaHoy(coche, 1).includes('data-hoy-llegada'), 'A1 coche', 'en coche sale la tarjeta de llegada')
@@ -189,7 +199,7 @@ console.log('B. El día de vuelta, después de la última parada')
 {
   const ruta = await viaje({ noches: 4, llegada: LL('08:30'), vuelta: VU('15:00'), horaLlegada: '08:30', horaVuelta: '15:00' })
   const dv = ruta.days.at(-1)
-  debe(dv.isReturnLeg && dv.returnDay?.contenido === 'manana' && dv.stops.length > 0, 'B3 vuelta', `el día de vuelta de prueba no es una mañana con paradas (${dv.returnDay?.contenido}, ${dv.stops.length})`)
+  debe(dv.isReturnLeg && ruta.planVuelta?.contenido === 'manana' && dv.stops.length > 0, 'B3 vuelta', `el día de vuelta de prueba no es una mañana con paradas (${ruta.planVuelta?.contenido}, ${dv.stops.length})`)
   const html = pintaHoy(ruta, 5)
   const tarjeta = bloque(html, 'data-hoy-vuelta="1"')
   const texto = plano(aTexto(tarjeta))
@@ -229,18 +239,21 @@ console.log('B. El día de vuelta sin paradas y la salida de madrugada')
 {
   const ruta = await viaje({ noches: 3, llegada: LL('08:30'), vuelta: VU('10:00'), horaLlegada: '08:30', horaVuelta: '10:00' })
   const html = pintaHoy(ruta, 4)
-  const tarjeta = bloque(html, 'data-hoy-vuelves-a-casa="1"')
+  const tarjeta = bloque(html, 'data-tarjeta-hoy-vuelves')
   const texto = plano(aTexto(tarjeta))
   debe(tarjeta !== '' && /Hoy vuelves a casa/.test(texto) && /Tu vuelo sale de Fiumicino a las 10:00/.test(texto), 'B4 sin paradas', `falta la tarjeta «Hoy vuelves a casa» con su texto: ${texto.slice(0, 200)}`)
   debe(/Ver cómo ir/.test(texto), 'B4 sin paradas', 'la tarjeta no lleva [Ver cómo ir]')
+  debe(/data-hoy-vuelves="ver-como-ir"/.test(tarjeta) && /data-hoy-vuelves="explorar-monumentos"/.test(tarjeta) && /Explorar monumentos/.test(texto) && /Esperamos que hayas disfrutado de Roma/.test(texto), 'B4 misma tarjeta', 'la tarjeta de HOY no es la de DÍAS (ver cómo ir, explorar monumentos y despedida)')
+  const tituloVuelta = plano(aTexto(bloque(html, 'data-hoy-titulo-del-dia')))
+  debe(/^Día de viaje Roma → Barcelona$/.test(tituloVuelta), 'B4 línea pequeña', `el día de vuelta sin paradas debe decir «Día de viaje» y debajo solo «Roma → Barcelona»: ${tituloVuelta}`)
   debe(!html.includes('Siguiente parada') && !html.includes('Todo visto') && !html.includes('data-hoy-vuelta="1"') && !/Hoy · .* visto/.test(aTexto(html)), 'B4 sin paradas', 'el día de vuelta sin paradas enseña «Siguiente parada», «Todo visto», la lista o la llegada al aeropuerto')
   debe(!html.includes('data-mas-visitas'), 'B4 sin paradas', 'el día de vuelta sin paradas lleva [+ Más visitas]')
   // La madrugada: el último día de ruta cierra con «Tu vuelo sale esta noche…».
   const noche = await viaje({ noches: 3, llegada: LL('08:30'), vuelta: VU('02:00'), horaLlegada: '08:30', horaVuelta: '02:00' })
   const htmlNoche = pintaHoy(noche, 3)
-  const t = plano(aTexto(bloque(htmlNoche, 'data-hoy-vuelves-a-casa="1"')))
-  debe(/Tu vuelo sale esta noche, a las 2:00/.test(t) && htmlNoche.indexOf('data-hoy-vuelves-a-casa') > htmlNoche.indexOf('Hoy ·'), 'B4 madrugada', `el último día de ruta no cierra con «Tu vuelo sale esta noche…» después de la lista: ${t.slice(0, 160)}`)
-  debe(!pintaHoy(noche, 2).includes('data-hoy-vuelves-a-casa'), 'B4 madrugada', 'un día de ruta que no es el último enseña la tarjeta de la madrugada')
+  const t = plano(aTexto(bloque(htmlNoche, 'data-tarjeta-hoy-vuelves')))
+  debe(/Tu vuelo sale esta noche, a las 2:00/.test(t) && htmlNoche.indexOf('data-tarjeta-hoy-vuelves') > htmlNoche.indexOf('Hoy ·'), 'B4 madrugada', `el último día de ruta no cierra con «Tu vuelo sale esta noche…» después de la lista: ${t.slice(0, 160)}`)
+  debe(!pintaHoy(noche, 2).includes('data-tarjeta-hoy-vuelves'), 'B4 madrugada', 'un día de ruta que no es el último enseña la tarjeta de la madrugada')
 }
 
 // ═══ C. Más para tu día ═══
@@ -256,7 +269,7 @@ const datos = () => ({ importanciaPorSitio: excursiones.importanciaPorSitio, niv
 {
   // Día 1 recortado (la ruta del centro a buen paso, 1 noche): el Coliseo, el Foro y el Altar quedaron en «Si te sobra tiempo».
   const d1 = rutaMini.days[0]
-  const visitas = masVisitasDe(d1, datos())
+  const visitas = masVisitasDe(rutaMini, d1, datos())
   const nombresSobra = (d1.spareStops ?? []).map((s) => s.name).sort()
   debe(visitas.length === nombresSobra.length && visitas.length >= 2 && visitas.map((v) => v.stop.name).sort().join('|') === nombresSobra.join('|'), 'C5 lista', `la lista no es lo que dejó fuera el día (${visitas.map((v) => v.stop.name)} / ${nombresSobra})`)
   for (let i = 1; i < visitas.length; i++) {
@@ -268,33 +281,33 @@ const datos = () => ({ importanciaPorSitio: excursiones.importanciaPorSitio, niv
   // Mañana del día de vuelta con cuatro: nivel y, a igual nivel, lo más cercano.
   const rutaD6 = await viaje({ noches: 4, llegada: LL('08:30'), vuelta: VU('15:00'), horaLlegada: '08:30', horaVuelta: '15:00' })
   const dv = rutaD6.days.at(-1)
-  const vv = masVisitasDe(dv, datos())
-  debe(dv.returnDay?.contenido === 'manana' && vv.length === 4, 'C6 orden', `el día de vuelta de 4 noches no deja 4 visitas fuera (${vv.length})`)
+  const vv = masVisitasDe(rutaD6, dv, datos())
+  debe(rutaD6.planVuelta?.contenido === 'manana' && vv.length === 4, 'C6 orden', `el día de vuelta de 4 noches no deja 4 visitas fuera (${vv.length})`)
   for (let i = 1; i < vv.length; i++) debe(vv[i - 1].peso <= vv[i].peso && (vv[i - 1].peso < vv[i].peso || (vv[i - 1].metros ?? Infinity) <= (vv[i].metros ?? Infinity)), 'C6 orden', `D6: orden roto en ${vv[i - 1].stop.name} / ${vv[i].stop.name}`)
   // Orden por cercanía a igual peso, con una lista armada a mano (lejos y cerca del recorrido).
   const dia = JSON.parse(JSON.stringify(rutaMini.days[0]))
   const ref = dia.stops.find((s) => s.coordinates?.lat)
   const falsa = (id, name, dLat) => ({ id, name, time: '', description: '', durationMinutes: 30, coordinates: { lat: ref.coordinates.lat + dLat, lng: ref.coordinates.lng }, photoUrl: '' })
   dia.spareStops = [falsa('f1', 'Lugar Lejos', 0.05), falsa('f2', 'Lugar Cerca', 0.001), falsa('f3', 'Lugar Medio', 0.01)]
-  const ordenCerca = masVisitasDe(dia, { importanciaPorSitio: {}, nivelPorSitio: { 'Lugar Lejos': 2, 'Lugar Cerca': 2, 'Lugar Medio': 2 } }).map((v) => v.stop.name)
+  const ordenCerca = masVisitasDe(rutaMini, dia, { importanciaPorSitio: {}, nivelPorSitio: { 'Lugar Lejos': 2, 'Lugar Cerca': 2, 'Lugar Medio': 2 } }).map((v) => v.stop.name)
   debe(ordenCerca.join('|') === 'Lugar Cerca|Lugar Medio|Lugar Lejos', 'C6 orden', `a igual nivel no va la más cercana primero: ${ordenCerca}`)
-  const ordenPeso = masVisitasDe(dia, { importanciaPorSitio: { 'Lugar Lejos': 'imprescindible', 'Lugar Medio': 'nivel1' }, nivelPorSitio: { 'Lugar Cerca': 3 } }).map((v) => v.stop.name)
+  const ordenPeso = masVisitasDe(rutaMini, dia, { importanciaPorSitio: { 'Lugar Lejos': 'imprescindible', 'Lugar Medio': 'nivel1' }, nivelPorSitio: { 'Lugar Cerca': 3 } }).map((v) => v.stop.name)
   debe(ordenPeso.join('|') === 'Lugar Lejos|Lugar Medio|Lugar Cerca', 'C6 orden', `imprescindible, nivel 1, 2, 3 no se respeta: ${ordenPeso}`)
   // Solo en los días recortados.
   const diaNormal = JSON.parse(JSON.stringify(rutaD6.days[1]))
   diaNormal.spareStops = dia.spareStops
-  debe(masVisitasDe(diaNormal, datos()).length === 0 && !diaRecortado(diaNormal), 'C5 solo recortados', 'un día de ruta normal con cosas en «Si te sobra tiempo» ofrece más visitas')
+  debe(masVisitasDe(rutaD6, diaNormal, datos()).length === 0 && !diaRecortado(rutaD6, diaNormal), 'C5 solo recortados', 'un día de ruta normal con cosas en «Si te sobra tiempo» ofrece más visitas')
   const tranquilo = await viaje({ noches: 3, llegada: LL('06:30'), horaLlegada: '06:30' })
   const d1t = JSON.parse(JSON.stringify(tranquilo.days[0]))
   d1t.spareStops = dia.spareStops
-  debe(!diaRecortado(d1t) && masVisitasDe(d1t, datos()).length === 0, 'C5 solo recortados', `el día 1 tranquilo (${d1t.arrivalPlan?.caso}) cuenta como recortado`)
+  debe(!diaRecortado(tranquilo, d1t) && masVisitasDe(tranquilo, d1t, datos()).length === 0, 'C5 solo recortados', `el día 1 tranquilo (${tranquilo.planLlegada?.caso}) cuenta como recortado`)
   const sinNada = JSON.parse(JSON.stringify(rutaMini.days[0]))
   sinNada.spareStops = []
-  debe(masVisitasDe(sinNada, datos()).length === 0, 'C5 solo si queda', 'un día recortado sin nada fuera ofrece más visitas')
+  debe(masVisitasDe(rutaMini, sinNada, datos()).length === 0, 'C5 solo si queda', 'un día recortado sin nada fuera ofrece más visitas')
   // Lo que el día ya lleva, o no es una visita, no sale.
   const conRepetida = JSON.parse(JSON.stringify(rutaMini.days[0]))
   conRepetida.spareStops = [{ ...falsa('r1', conRepetida.stops[0].name, 0.001) }, { ...falsa('r2', 'Pausa', 0.002), isBreak: true }, falsa('r3', 'Visita buena', 0.003)]
-  debe(masVisitasDe(conRepetida, datos()).map((v) => v.stop.name).join('|') === 'Visita buena', 'C5 solo visitas', 'la lista incluye lo que el día ya lleva o una pausa')
+  debe(masVisitasDe(rutaMini, conRepetida, datos()).map((v) => v.stop.name).join('|') === 'Visita buena', 'C5 solo visitas', 'la lista incluye lo que el día ya lleva o una pausa')
 
   // En pantalla: el botón en los recortados con algo fuera; no en el resto.
   const htmlD1 = pintaHoy(rutaMini, 1)
@@ -336,7 +349,7 @@ console.log('C. [Añadir] y [Deshacer]')
   const ruta = await preparar()
   const antes = copia(useRouteStore.getState().route)
   const dia = useRouteStore.getState().route.days[0]
-  const lista = masVisitasDe(dia, datos())
+  const lista = masVisitasDe(ruta, dia, datos())
   const primera = lista[0]
   // Dónde debería entrar: el hueco de menor rodeo, comprobado por fuerza bruta.
   const rodeo = (hueco) => {
@@ -377,7 +390,7 @@ console.log('C. [Añadir] y [Deshacer]')
   const vistas = dia2.stops.map((s, i) => (i < 3 ? { ...s, checkedInAt: '2027-05-05T12:00:00Z' } : s))
   useRouteStore.setState({ route: { ...useRouteStore.getState().route, days: [{ ...dia2, stops: vistas }, ...useRouteStore.getState().route.days.slice(1)] } })
   const diaVisto = useRouteStore.getState().route.days[0]
-  const visita2 = masVisitasDe(diaVisto, datos())[0]
+  const visita2 = masVisitasDe(useRouteStore.getState().route, diaVisto, datos())[0]
   anadirMasVisita(useRouteStore.getState().route, diaVisto, visita2)
   const ids2 = useRouteStore.getState().route.days[0].stops.map((s) => s.id)
   debe(ids2.indexOf(visita2.stop.id) >= 3, 'C7 rodeo', `la visita entró en el hueco ${ids2.indexOf(visita2.stop.id)}, antes de lo ya visto`)
@@ -388,12 +401,12 @@ console.log('C. [Añadir] y [Deshacer]')
   let n = 0
   while (n++ < 10) {
     const d = useRouteStore.getState().route.days[0]
-    const l = masVisitasDe(d, datos())
+    const l = masVisitasDe(useRouteStore.getState().route, d, datos())
     if (l.length === 0) break
     anadirMasVisita(useRouteStore.getState().route, d, l[0])
   }
   const fin = useRouteStore.getState().route
-  debe(masVisitasDe(fin.days[0], datos()).length === 0 && (fin.days[0].spareStops ?? []).length === 0, 'C7 todas', 'tras añadirlas todas siguen saliendo más visitas')
+  debe(masVisitasDe(fin, fin.days[0], datos()).length === 0 && (fin.days[0].spareStops ?? []).length === 0, 'C7 todas', 'tras añadirlas todas siguen saliendo más visitas')
   const htmlFin = renderToStaticMarkup(createElement(HoyView, { route: fin, onPonFechas() {} }))
   debe(!htmlFin.includes('data-mas-visitas'), 'C7 todas', 'con la última añadida, el botón [+ Más visitas] sigue saliendo')
   void r3
@@ -426,7 +439,7 @@ console.log('E. Textos: sin «sal a las…», sin horas calculadas, sin empresas
   for (const [ruta, dias] of rutas) {
     for (const n of dias) {
       const html = pintaHoy(ruta, n)
-      const piezas = ['data-hoy-llegada="1"', 'data-hoy-vuelta="1"', 'data-hoy-vuelves-a-casa="1"', 'data-hoja-mas-visitas'].map((m) => bloque(html, m)).filter(Boolean)
+      const piezas = ['data-hoy-llegada="1"', 'data-hoy-vuelta="1"', 'data-tarjeta-hoy-vuelves', 'data-hoja-mas-visitas'].map((m) => bloque(html, m)).filter(Boolean)
       for (const pieza of piezas) {
         const t = plano(aTexto(pieza))
         debe(!/sal(ga|e|id)?\s+a\s+las/i.test(t) && !/sal(ga|e)\s+(de|con)/i.test(t) || /Tu (vuelo|tren|autobús|barco) sale/.test(t), 'E textos', `texto con «sal a las…»: ${t.slice(0, 160)}`)
@@ -438,8 +451,11 @@ console.log('E. Textos: sin «sal a las…», sin horas calculadas, sin empresas
       }
     }
   }
+  const durante = fs.readFileSync('src/components/route/hoy/HoyDurante.tsx', 'utf8')
+  debe(/TarjetaHoyVuelves/.test(durante) && !fs.existsSync('src/components/route/hoy/SlotVuelvesACasa.tsx'), 'B4 misma tarjeta', 'HOY no usa TarjetaHoyVuelves o sigue la ranura provisional')
+  debe(/categoria: 'atracciones', origen: null, cerca/.test(durante) && /setMode\('explore'\)/.test(durante) && /fichas\.abrir\('vuelta'\)/.test(durante), 'B4 botones', '[Explorar monumentos] y [Ver cómo ir] no están cableados en HOY')
   // Los fuentes nuevos: ni emojis ni colores a mano nuevos ni empresas.
-  for (const f of ['src/components/route/hoy/llegadaVuelta.tsx', 'src/components/route/hoy/masVisitas.tsx', 'src/components/route/hoy/SlotVuelvesACasa.tsx', 'src/lib/masVisitas.ts', 'src/lib/llegadaVueltaHoy.ts']) {
+  for (const f of ['src/components/route/hoy/llegadaVuelta.tsx', 'src/components/route/hoy/masVisitas.tsx', 'src/lib/masVisitas.ts', 'src/lib/llegadaVueltaHoy.ts']) {
     const src = fs.readFileSync(f, 'utf8')
     const literales = (src.match(/'[^'\n]*'|"[^"\n]*"|`[^`\n]*`/g) ?? []).join('\n')
     debe(!EMOJI.test(src), 'E fuentes', `${f}: emoji en el código`)

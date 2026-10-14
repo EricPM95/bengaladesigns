@@ -59,9 +59,11 @@ export function lineaDeViaje(titulo: string, viaje: string | null): string {
   return titulo === DIA_DE_VIAJE ? viaje : `${viaje} · ${DIA_DE_VIAJE}`
 }
 
-/** ¿Es el día que lleva la llegada? Lo dice el motor (`arrivalDay`) o, en un viaje con la hora de llegada puesta, es el primer día. */
-export function esDiaDeLlegada(route: Route, day: DayPlan): boolean {
-  return Boolean(day.arrivalDay) || (route.days[0]?.id === day.id && Boolean(route.arrivalFlightTime))
+/**
+ * ¿Es el día que lleva la llegada? La única definición (la ficha, DÍAS, HOY y el título la usan): lo dice el motor (`arrivalDay.es_dia_1`) o, en un viaje con la hora de llegada puesta, es el primer día.
+ */
+export function esDiaDeLlegada(route: Pick<Route, 'days' | 'arrivalFlightTime'>, day: Pick<DayPlan, 'id' | 'arrivalDay'>): boolean {
+  return day.arrivalDay?.es_dia_1 === true || (route.days[0]?.id === day.id && Boolean(route.arrivalFlightTime))
 }
 
 const quitarAcentos = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
