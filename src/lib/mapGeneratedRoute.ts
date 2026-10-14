@@ -16,6 +16,7 @@ import type {
   Route,
   Stop,
   StopCategory,
+  TarjetaVuelvesInfo,
   TicketOption,
   TransportContext,
   TransportSegment,
@@ -199,6 +200,26 @@ interface GeneratedMeal {
   longitude?: number
 }
 
+/** La tarjeta «Hoy vuelves a casa» tal como sale del motor (`plan.vuelta.tarjeta`). */
+interface GeneratedTarjetaVuelves {
+  titulo?: string
+  texto?: string
+  desde_tu_zona?: { texto?: string } | null
+  ver_como_ir?: { texto?: string } | null
+  explorar?: { texto?: string; boton?: string } | null
+  despedida?: string | null
+  madrugada?: boolean
+}
+
+/** `day.return_day` (Tanda 7): lo visible de `plan.vuelta`. */
+interface GeneratedReturnDay {
+  contenido?: string | null
+  medio?: string | null
+  punto?: { id?: string | null } | null
+  tarjeta?: GeneratedTarjetaVuelves | null
+  tarjetaUltimoDia?: GeneratedTarjetaVuelves | null
+}
+
 export interface GeneratedDay {
   day_number: number
   title: string
@@ -255,6 +276,11 @@ export interface GeneratedDay {
   /** El interruptor del día 4 (Tanda 6g) — ver DayPlan.interruptor — y las excursiones de la página. */
   interruptor?: { mode: 'roma' | 'excursion'; default: 'roma' | 'excursion'; by_date?: boolean } | null
   excursion_page?: { phrase: string | null; options: GeneratedExcursionPage[] } | null
+  /** Llegada y vuelta con horas (Tanda 7, de pago): lo que el motor dice de este día (ver DayPlan.arrivalDay, arrivalPlan y returnDay). */
+  is_return_leg?: boolean
+  arrival_day?: { lista?: string; nombre?: string | null; variante?: string | null; es_dia_1?: boolean; sin_paradas?: boolean; de_noche?: boolean } | null
+  arrival_plan?: { caso?: string; entrada?: { punto_id?: string | null; medio?: string | null } | null } | null
+  return_day?: GeneratedReturnDay | null
   /** El viajero montó este día con sus sitios — ver DayPlan.ownDay. */
   own_day?: boolean
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
@@ -770,6 +796,19 @@ function mapPhaseTransitionFacts(transitions?: GeneratedPhaseTransition[]): Phas
   return facts
 }
 
+function mapTarjetaVuelves(tarjeta: GeneratedTarjetaVuelves | null | undefined): TarjetaVuelvesInfo | null {
+  if (!tarjeta?.titulo || !tarjeta.texto) return null
+  return {
+    titulo: tarjeta.titulo,
+    texto: tarjeta.texto,
+    desdeTuZona: tarjeta.desde_tu_zona?.texto ? { texto: tarjeta.desde_tu_zona.texto } : null,
+    verComoIr: tarjeta.ver_como_ir?.texto ? { texto: tarjeta.ver_como_ir.texto } : null,
+    explorar: tarjeta.explorar?.texto ? { texto: tarjeta.explorar.texto, boton: tarjeta.explorar.boton ?? '' } : null,
+    despedida: tarjeta.despedida ?? null,
+    madrugada: tarjeta.madrugada === true,
+  }
+}
+
 function mapDay(
   destination: string,
   generated: GeneratedDay,
@@ -811,6 +850,14 @@ function mapDay(
         }
       : {}),
     rainPlanB: generated.rainy_alternative ? { note: generated.rainy_alternative } : undefined,
+    ...(generated.is_return_leg ? { isReturnLeg: true } : {}),
+    ...(generated.arrival_day
+      ? { arrivalDay: { lista: generated.arrival_day.lista ?? '', nombre: generated.arrival_day.nombre ?? null, variante: generated.arrival_day.variante ?? null, esDia1: generated.arrival_day.es_dia_1 === true, sinParadas: generated.arrival_day.sin_paradas === true, deNoche: generated.arrival_day.de_noche === true } }
+      : {}),
+    ...(generated.arrival_plan?.caso ? { arrivalPlan: { caso: generated.arrival_plan.caso, puntoId: generated.arrival_plan.entrada?.punto_id ?? null, medio: generated.arrival_plan.entrada?.medio ?? null } } : {}),
+    ...(generated.return_day
+      ? { returnDay: { contenido: generated.return_day.contenido ?? null, medio: generated.return_day.medio ?? null, puntoId: generated.return_day.punto?.id ?? null, tarjeta: mapTarjetaVuelves(generated.return_day.tarjeta), tarjetaUltimoDia: mapTarjetaVuelves(generated.return_day.tarjetaUltimoDia) } }
+      : {}),
     isExcursionDay: generated.type === 'excursion',
     dayType: asDayType(generated.type),
     // La preseleccionada entra YA elegida: el día de excursión no es un formulario en blanco, es

@@ -106,6 +106,11 @@ const EMPTY_CATALOG: DestinationCatalog = { places: [], excursions: [], freeTour
 const cache = new Map<string, DestinationCatalog>()
 const inFlight = new Map<string, Promise<DestinationCatalog>>()
 
+/** El catálogo del destino si ya se pidió (sin pedirlo ahora); null si no. Sirve para pintar ya con los datos, sin esperar un repintado. */
+export function catalogoEnMemoria(destination: string): DestinationCatalog | null {
+  return cache.get(destination.trim().toLowerCase()) ?? null
+}
+
 export async function fetchDestinationPlaces(destination: string): Promise<DestinationCatalog> {
   const key = destination.trim().toLowerCase()
   const cached = cache.get(key)

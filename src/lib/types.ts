@@ -698,6 +698,44 @@ export interface RainPlan {
   slot: "manana" | "tarde" | "dia"
 }
 
+// ── Llegada y vuelta con horas (Tanda 7): lo que el motor devuelve en cada día, ya en camelCase ──
+
+/** La tarjeta «Hoy vuelves a casa» (o «Tu vuelo sale esta noche…») tal como la devuelve el motor. Su pantalla es un componente aparte; aquí solo el dato. */
+export interface TarjetaVuelvesInfo {
+  titulo: string
+  texto: string
+  desdeTuZona?: { texto: string } | null
+  verComoIr?: { texto: string } | null
+  explorar?: { texto: string; boton: string } | null
+  despedida?: string | null
+  madrugada?: boolean
+}
+
+export interface ArrivalDayInfo {
+  lista: string
+  nombre: string | null
+  variante: string | null
+  esDia1: boolean
+  sinParadas: boolean
+  deNoche: boolean
+}
+
+export interface ArrivalPlanInfo {
+  /** `rapido`, `de_tarde`, `ruta_del_centro`…, a veces con `+reserva_grande` detrás (ver el informe del motor de llegada). */
+  caso: string
+  puntoId: string | null
+  medio: string | null
+}
+
+export interface ReturnDayInfo {
+  /** Lo que lleva de verdad el día: `sin_paradas`, `manana`, `dia_mas`, `bloques`, `solo_reservas`, `hoja`, `excursion` o null. */
+  contenido: string | null
+  medio: string | null
+  puntoId: string | null
+  tarjeta?: TarjetaVuelvesInfo | null
+  tarjetaUltimoDia?: TarjetaVuelvesInfo | null
+}
+
 // ── Day plan ──────────────────────────────────────────────
 
 export interface DayFranja {
@@ -813,6 +851,12 @@ export interface DayPlan {
   countryCode?: string | null
   /** true solo para el día sintético de vuelta a origen añadido al final del viaje (ver appendReturnLegDay) — no representa una noche real, se excluye del recuento de noches en buildDestinationSegments. */
   isReturnLeg?: boolean
+  /** Tanda 7 (llegada con horas, de pago): lo que el motor dice del día de llegada. Solo en el día que lleva la llegada. */
+  arrivalDay?: ArrivalDayInfo | null
+  /** Tanda 7: el resumen de la llegada (solo en el primer día de ciudad, cuando la llegada ha actuado). HOY lo lee para saber si el día salió en una versión recortada. */
+  arrivalPlan?: ArrivalPlanInfo | null
+  /** Tanda 7 (vuelta con horas, de pago): lo que el motor dice del día de vuelta. Solo en el día de vuelta. */
+  returnDay?: ReturnDayInfo | null
   /** true solo para días del pipeline v2 (ver routeAlgorithm.js) — sus horas ya son definitivas y sus paradas de relleno no llevan `isNightExperience` aunque caigan de noche, así que DayDetailPanel.tsx no debe usar la hora como criterio de la sección "NOCHE" para este día (solo el flag). Los días de la ruta Claude-driven (todos los demás destinos) siguen clasificando "NOCHE" por hora, comportamiento de siempre. */
   timesAreFinal?: boolean
 }

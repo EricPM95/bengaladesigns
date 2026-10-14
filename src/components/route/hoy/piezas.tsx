@@ -11,9 +11,9 @@ export const AZUL = 'oklch(0.56 0.1 230)'
 export const ojoMono = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase' as const }
 
 /** La caja blanca de HOY (esquinas de 22, borde fino y sombra suave). */
-export function CajaBlanca({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function CajaBlanca({ children, className = '', ...resto }: { children: ReactNode; className?: string; [dato: `data-${string}`]: string | undefined }) {
   return (
-    <div className={`flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5 ${className}`} style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)' }}>
+    <div {...resto} className={`flex flex-none flex-col gap-2.5 rounded-[22px] bg-[#FFFDF8] p-3.5 ${className}`} style={{ border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 1px 2px rgba(28,34,48,.05),0 12px 30px -22px rgba(28,34,48,.35)' }}>
       {children}
     </div>
   )

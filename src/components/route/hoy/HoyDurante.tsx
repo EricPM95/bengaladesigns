@@ -24,9 +24,16 @@ import { textoResumenDeParada } from '../../../lib/useEscuchar'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../lib/historia'
 import { avisosDeCierre } from '../../../lib/avisosDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../lib/diaCompleto'
+import { CERRADO_ESTE_DIA } from '../../../lib/placeHoursOnDate'
+import { esDiaDeLlegada } from '../../../lib/masVisitas'
+import { BotonAlojamientoHoy, TarjetaLlegadaHoy, TarjetaVueltaHoy, useFichasDeHoy } from './llegadaVuelta'
+import { SlotVuelvesACasa } from './SlotVuelvesACasa'
+import { anadirMasVisita, BotonMasVisitas, HojaMasVisitas, useMasVisitas } from './masVisitas'
 
 /** El horario de la parada ese día, en pequeño bajo su nombre: «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy». Nada si no tiene horario (plazas, fuentes). */
-function LineaDeHorario({ horario, oscuro = false }: { horario: HorarioDeParada | null; oscuro?: boolean }) {
+function LineaDeHorario({ horario, oscuro = false, cerradoEsteDia = false }: { horario: HorarioDeParada | null; oscuro?: boolean; cerradoEsteDia?: boolean }) {
+  // (Tanda 7, punto 15: la parada que se queda en su día cerrada lleva «Cerrado este día», no el «Hoy cierra» rojo, aunque sus datos de horario no lo digan.)
+  if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (!horario) return null
   return (
     <span className={`${oscuro ? 'text-[12px]' : 'text-[11px]'} leading-[1.3]`} style={{ color: horario.cerrado ? (oscuro ? 'oklch(0.78 0.11 15)' : 'oklch(0.5 0.17 5)') : oscuro ? 'rgba(255,253,248,.7)' : 'rgba(28,34,48,.55)' }}>
@@ -79,9 +86,20 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   const [ubicacionEstado, setUbicacionEstado] = useState<'libre' | 'pidiendo' | 'no'>('libre')
   const [ultimoVisto, setUltimoVisto] = useState<Stop | null>(null)
   const [ofrecerFoto, setOfrecerFoto] = useState<Stop | null>(null)
+  // La llegada y la vuelta (Tanda 7, de pago): el billete, el punto elegido en RESERVAS y la ficha. Y «Más para tu día»: las visitas que la versión recortada dejó fuera.
+  const fichas = useFichasDeHoy(route, day, dateIso)
+  const masVisitas = useMasVisitas(route, day)
+  const [hojaMasVisitas, setHojaMasVisitas] = useState(false)
 
   // El día de excursión (el día 4 con el interruptor en Excursión): solo la excursión (Tanda 6g).
-  if (day.interruptor?.mode === 'excursion') return <TodayExcursion route={route} day={day} />
+  if (day.interruptor?.mode === 'excursion') {
+    return (
+      <>
+        <TodayExcursion route={route} day={day} />
+        <BotonAlojamientoHoy route={route} />
+      </>
+    )
+  }
 
   const tituloDeHoy = nombreDelDia(route, day, info.gruposDia)
   const paradas = numberedStopsOf(day)
@@ -120,8 +138,15 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
   // «Cerca de ti» (Baños / Fuentes / Comer): desde donde está el viajero si compartió su ubicación; si no, desde la siguiente parada.
   const origenCerca = ubicacion ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null)
   // Los avisos del día: lo que cierra hoy de lo que queda por ver (horario real, los que cierran antes primero, 3 como mucho).
-  const cierres = avisosDeCierre(vigentes, horarioDe, (stop) => displayStopName(stop.name))
+  const cierres = avisosDeCierre(vigentes.filter((stop) => !stop.closedThisDay), horarioDe, (stop) => displayStopName(stop.name))
   const diaCompleto = esDiaCompleto(route, day, reservations)
+  // Qué lleva hoy de llegada y de vuelta (Tanda 7, punto 15). La llegada va antes de la primera parada; la vuelta, después de la última, y sin paradas el día es la tarjeta «Hoy vuelves a casa».
+  const esLlegada = esDiaDeLlegada(route, day)
+  const esVuelta = Boolean(day.isReturnLeg)
+  const ultimoDiaDeRuta = !esVuelta && route.days.filter((otro) => !otro.isReturnLeg).at(-1)?.id === day.id
+  const tarjetaUltimoDia = ultimoDiaDeRuta ? (route.days.find((otro) => otro.isReturnLeg)?.returnDay?.tarjetaUltimoDia ?? null) : null
+  const sinParadasDeVuelta = esVuelta && paradas.length === 0
+  const tarjetaVuelvesACasa = sinParadasDeVuelta ? (day.returnDay?.tarjeta ?? null) : null
 
   // ── «No me da tiempo» (solo de pago): la parada queda saltada y se pasa a la siguiente; si tiene la entrada reservada, antes se pregunta ──
   const reservaSiguiente = siguiente ? reservaDe(siguiente) : null
@@ -190,6 +215,11 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       )}
       {/* Solo avisa: no mueve ni quita nada del día. */}
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
+      {/* El día de llegada, ANTES de la primera parada (Tanda 7, punto 15): «Llegada a Fiumicino» con el billete y, si hay dirección, [Cómo llegar a tu alojamiento]. */}
+      {esLlegada && <TarjetaLlegadaHoy route={route} mitad={fichas.llegada} onAbrir={() => fichas.abrir('llegada')} />}
+      {/* El día de vuelta sin paradas: la tarjeta «Hoy vuelves a casa» (la ranura de H) en lugar de «Siguiente parada». */}
+      {tarjetaVuelvesACasa && <SlotVuelvesACasa tarjeta={tarjetaVuelvesACasa} onVerComoIr={() => fichas.abrir('vuelta')} />}
+      {!sinParadasDeVuelta && (
       <div className="flex flex-none flex-col gap-3 rounded-[28px] bg-[#1C2230] px-2 pb-3.5 pt-2 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
         {siguiente && hasRealCoordinates(siguiente.coordinates) ? <MapaHastaLaParada desde={origen} hasta={siguiente.coordinates} /> : <div className="h-[118px] rounded-[21px] bg-[#2A3141]" aria-hidden="true" />}
         {siguiente ? (
@@ -197,7 +227,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
             <div className="flex flex-col gap-1.5 px-2">
               <span style={{ ...ojoMono, color: 'oklch(0.78 0.11 15)' }}>Siguiente parada · {numeros.get(siguiente.id)}</span>
               <span style={{ font: "400 34px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
-              <LineaDeHorario horario={horarioDe(siguiente)} oscuro />
+              <LineaDeHorario horario={horarioDe(siguiente)} oscuro cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
               <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro className="self-start" />
               <div className="flex items-center gap-2">
                 <span className="min-w-0 flex-1 text-[13px] leading-[1.4] text-[#FFFDF8]/75">
@@ -237,24 +267,39 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                 Visto
               </button>
             </div>
-            <BotonNoMeDaTiempo onClick={pulsarNoMeDaTiempo} />
+            {masVisitas.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                <BotonNoMeDaTiempo onClick={pulsarNoMeDaTiempo} />
+                <BotonMasVisitas onClick={() => setHojaMasVisitas(true)} />
+              </div>
+            ) : (
+              <BotonNoMeDaTiempo onClick={pulsarNoMeDaTiempo} />
+            )}
             </div>
             )}
           </>
         ) : (
-          <div className="flex items-center gap-3 px-2">
-            <span className="flex-1" style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>
-              {paradas.some((stop) => stop.saltada) ? 'Es todo' : 'Todo visto'} <em style={{ color: 'oklch(0.78 0.11 150)' }}>por hoy</em>
-            </span>
-            {ultimoVisto && (
-              <button type="button" onClick={deshacer} className="flex h-11 items-center gap-1.5 rounded-full border-[1.5px] border-[#FFFDF8]/40 px-3.5 text-[13px] font-semibold text-[#FFFDF8]">
-                <Icono nombre="recuperar" size={15} grosor={1.8} />
-                Deshacer
-              </button>
+          <>
+            <div className="flex items-center gap-3 px-2">
+              <span className="flex-1" style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>
+                {paradas.some((stop) => stop.saltada) ? 'Es todo' : 'Todo visto'} <em style={{ color: 'oklch(0.78 0.11 150)' }}>por hoy</em>
+              </span>
+              {ultimoVisto && (
+                <button type="button" onClick={deshacer} className="flex h-11 items-center gap-1.5 rounded-full border-[1.5px] border-[#FFFDF8]/40 px-3.5 text-[13px] font-semibold text-[#FFFDF8]">
+                  <Icono nombre="recuperar" size={15} grosor={1.8} />
+                  Deshacer
+                </button>
+              )}
+            </div>
+            {masVisitas.length > 0 && (
+              <div className="px-1.5">
+                <BotonMasVisitas onClick={() => setHojaMasVisitas(true)} />
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
+      )}
 
       {saltadaAviso && <AvisoSaltada nombre={displayStopName(saltadaAviso.name)} onDeshacer={deshacerSaltada} onOtroDia={saltadaEsReservada || otrosDias.length === 0 ? null : () => setHojaOtroDia(true)} />}
       {hojaOtroDia && <HojaPasarAOtroDia dias={otrosDias} ahora={day.dayNumber} onElegir={pasarAOtroDia} onCerrar={() => setHojaOtroDia(false)} />}
@@ -298,8 +343,9 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
 
       <RainAlert day={day} dateIso={dateIso} when="hoy" />
 
-      <CercaDeTi origen={origenCerca} />
+      {!sinParadasDeVuelta && <CercaDeTi origen={origenCerca} />}
 
+      {!sinParadasDeVuelta && (
       <div className="flex flex-none flex-col gap-2 pt-1.5">
         <span className="pl-1 text-text/55" style={{ ...ojoMono, letterSpacing: '.14em' }}>
           Hoy · {shortDateEs(dateIso)} · {vistas} de {vigentes.length} visto
@@ -321,7 +367,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   <span className={saltada ? 'line-through' : undefined} style={{ font: ahora ? "400 18px/1.15 'Instrument Serif',serif" : "400 14px/1.3 'Geist'", color: saltada ? 'rgba(28,34,48,.4)' : vista ? 'oklch(0.42 0.09 150)' : TINTA, textWrap: 'balance' as never }}>
                     {displayStopName(stop.name)}
                   </span>
-                  {saltada ? <span className="text-[11px] leading-[1.3] text-text/40">Saltada</span> : <LineaDeHorario horario={horarioDe(stop)} />}
+                  {saltada ? <span className="text-[11px] leading-[1.3] text-text/40">Saltada</span> : <LineaDeHorario horario={horarioDe(stop)} cerradoEsteDia={Boolean(stop.closedThisDay)} />}
                   {!saltada && <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />}
                 </span>
                 {saltada && (
@@ -340,9 +386,29 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
           })}
         </div>
       </div>
+      )}
+
+      {/* El día de vuelta, DESPUÉS de la última parada (Tanda 7, punto 15): «Llegada al aeropuerto de Fiumicino» con [Cómo llegar] y «Ver cómo ir». */}
+      {esVuelta && !sinParadasDeVuelta && <TarjetaVueltaHoy route={route} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} />}
+      {/* Una salida de madrugada: el último día de ruta termina con «Tu vuelo sale esta noche…». */}
+      {tarjetaUltimoDia && <SlotVuelvesACasa tarjeta={tarjetaUltimoDia} onVerComoIr={() => fichas.abrir('vuelta')} />}
+      {/* Al acabar cada día (menos el de vuelta): [Cómo llegar a tu alojamiento], solo con la dirección de RESERVAS › Alojamiento. */}
+      {!esVuelta && <BotonAlojamientoHoy route={route} />}
 
       {/* Al final de HOY: las fotos de hoy y [+ Foto] para las sueltas (sin parada). El bloque grande «Guarda tus recuerdos» sale solo después del viaje. */}
       <TusFotosDeHoy day={day} />
+
+      {fichas.hoja}
+      {hojaMasVisitas && masVisitas.length > 0 && (
+        <HojaMasVisitas
+          visitas={masVisitas}
+          onAnadir={(visita) => {
+            anadirMasVisita(route, day, visita)
+            if (masVisitas.length <= 1) setHojaMasVisitas(false)
+          }}
+          onCerrar={() => setHojaMasVisitas(false)}
+        />
+      )}
     </>
   )
 }

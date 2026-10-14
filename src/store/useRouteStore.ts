@@ -533,7 +533,8 @@ interface RouteStoreState {
   markDidntMakeCutAdded: (dayId: string, itemId: string) => void
 
   /** Tanda 6 — «Si te sobra tiempo» → «Añadir»: la parada pasa al día (al final de su franja, por su hora orientativa) y sale de la lista. */
-  addSpareStop: (dayId: string, stopId: string) => void
+  /** «Si te sobra tiempo» → el día. Sin `index`, al final de su franja; con él (HOY, «Más para tu día»), en ese hueco exacto. */
+  addSpareStop: (dayId: string, stopId: string, index?: number) => void
   /** Tanda 6b — HOY: una sugerencia entra en el día tras la parada `afterIndex` y, si venía de «Si te sobra tiempo», sale de esa lista. */
   addSuggestedStop: (dayId: string, stop: Stop, afterIndex: number) => void
   /** Tanda 6 — HOY: sustituye el día por el que devuelve /api/adjust-day (retraso / cansado). */
@@ -1660,13 +1661,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
     }),
 
-  addSpareStop: (dayId, stopId) => {
+  addSpareStop: (dayId, stopId, index) => {
     const day = get().route?.days.find((other) => other.id === dayId)
     const spare = day?.spareStops?.find((stop) => stop.id === stopId)
     if (!day || !spare) return
     const { spareReason: _reason, ...stop } = spare
     void _reason
-    get().insertStopAt(dayId, spareInsertIndex(day.stops, stop), { ...stop, addedByUser: true })
+    get().insertStopAt(dayId, index ?? spareInsertIndex(day.stops, stop), { ...stop, addedByUser: true })
     set((state) => (state.route ? { route: updateDay(state.route, dayId, (current) => ({ ...current, spareStops: (current.spareStops ?? []).filter((other) => other.id !== stopId) })) } : state))
   },
   addSuggestedStop: (dayId, stop, afterIndex) => {

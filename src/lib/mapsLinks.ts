@@ -32,3 +32,9 @@ export function buildGoogleMapsUrlFromHere(destination: string): string {
   const params = new URLSearchParams({ api: '1', destination, travelmode: 'walking' })
   return `https://www.google.com/maps/dir/?${params.toString()}`
 }
+
+/** HOY, el día de vuelta: [Cómo llegar] al aeropuerto, la estación o el puerto (Google Maps, en transporte público, desde donde esté el viajero). Solo lleva el punto, nunca una hora. */
+export function buildGoogleMapsUrlToPlaceTransit(destination: string): string {
+  const params = new URLSearchParams({ api: '1', destination, travelmode: 'transit' })
+  return `https://www.google.com/maps/dir/?${params.toString()}`
+}
