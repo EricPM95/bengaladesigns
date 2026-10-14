@@ -26,7 +26,7 @@ import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
 import { isDayPinned } from '../../lib/bookings'
-import { lineaDeViaje, nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
+import { etiquetaDeViaje, nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
 import { SaleCards } from './reservas/SaleCards'
 import { diaCorto, diaProsa, elDia, fechaDelDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
@@ -296,7 +296,11 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
                 {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). El trayecto («Madrid → Roma») va pequeño, junto a la marca, y no es el título (tanda 6y7). */}
                 {travel && !day.userAdded && (
-                  <p className="flex flex-wrap items-baseline gap-x-1.5 text-[12.5px] font-medium text-text/55">{nombre.viaje && <span data-viaje-del-dia="1" className="whitespace-nowrap text-[11.5px] font-normal text-text/55">{lineaDeViaje(title, nombre.viaje)}</span>}</p>
+                  <p className="flex flex-wrap items-baseline gap-x-1.5 text-[11.5px] font-normal text-text/55">
+                    {/* Tanda 7: «Barcelona → Roma · Día de viaje» (el trayecto primero); si el título ya dice «Día de viaje», solo el trayecto. */}
+                    {nombre.viaje && <span data-viaje-del-dia="1" className="whitespace-nowrap">{nombre.viaje}</span>}
+                    {nombre.viaje && etiquetaDeViaje(title) && <span data-marca-dia-de-viaje="1" className="whitespace-nowrap">· {etiquetaDeViaje(title)}</span>}
+                  </p>
                 )}
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
                 {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '') ?? null} />}

@@ -276,7 +276,7 @@ debe(/useExploreAperturaStore/.test(fuenteExplorar) && /\.tomar\(\)/.test(fuente
   debe(pago.split('\n').includes('Baños') && pago.split('\n').includes('Fuentes'), '2 pago EXPLORAR', 'EXPLORAR de pago no tiene los filtros de baños y fuentes')
   // El pedido de HOY (con origen) abre en «Cerca de ti» sin pedir la ubicación; el cableado de ExplorePanel usa la misma regla.
   const pantalla = fuente('src/components/route/placeExplorer/PlaceExplorerScreen.tsx')
-  debe(/cercaDeMi && \(initialFiltersKey === 'banos' \|\| initialFiltersKey === 'fuentes' \|\| initialOriginKey\)/.test(pantalla) && /setPosition\(initialOrigin\)/.test(pantalla) && /setGeoStatus\('ready'\)/.test(pantalla), '2 pago EXPLORAR', 'con un origen dado, la pantalla no entra en «Cerca de ti» con esa posición')
+  debe(/cercaDeMi && \(initialFiltersKey === 'banos' \|\| initialFiltersKey === 'fuentes' \|\| initialOriginKey \|\| initialNearby\)/.test(pantalla) && /setPosition\(initialOrigin\)/.test(pantalla) && /setGeoStatus\('ready'\)/.test(pantalla), '2 pago EXPLORAR', 'con un origen dado, la pantalla no entra en «Cerca de ti» con esa posición')
   const explorar = fuente('src/components/route/ExplorePanel.tsx')
   debe(/toiletsEnabled=\{banosYFuentes\}/.test(explorar) && /banosYFuentes && curatedPool\.some\(\(place\) => place\.kind === 'toilet'\)/.test(explorar) && /banosYFuentes && curatedPool\.some\(\(place\) => place\.kind === 'fountain'\)/.test(explorar), '1 gratis EXPLORAR', 'ExplorePanel no usa explorarConBanosYFuentes para las tarjetas y el filtro de baños y fuentes')
   // La regla vive en UN sitio.

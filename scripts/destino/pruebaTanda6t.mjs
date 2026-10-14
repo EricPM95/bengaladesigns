@@ -225,7 +225,9 @@ for (const mode of MODOS) {
   const r = route('avion', { departureFlightTime: '18:05', departurePointId: 'cia' })
   const t = hoja(r, 'vuelta', 'completa', '18:05', 'cia')
   debe(!/Libre hasta|Maleta a las|Sal a las/.test(t), '2 horas de la app', 'la vuelta con hora enseña la tabla «Libre hasta / Maleta a las / Sal a las»')
-  if (info.ultima_tarde?.texto) debe(t.includes('Tu última tarde, sin prisas') && t.includes(info.ultima_tarde.texto.slice(0, 40)), '2 horas de la app', 'la vuelta no enseña el texto general de la última tarde')
+  // (Tanda 7: con la hora puesta, la ficha de vuelta sigue el punto 13 —sin «Tu última tarde»—; el texto general sale sin vuelo puesto.)
+  const sinHora = hoja(r, 'vuelta', 'completa', null, null)
+  if (info.ultima_tarde?.texto) debe(sinHora.includes('Tu última tarde, sin prisas') && sinHora.includes(info.ultima_tarde.texto.slice(0, 40)), '2 horas de la app', 'la vuelta no enseña el texto general de la última tarde')
 }
 
 // ── RESERVAS: la línea cerrada de llegada y vuelta, sin «libre hacia las …» ─────────────────────────────────────────────────────────────────────

@@ -66,7 +66,8 @@ const pintaDias = (route) => {
   // El cuadrito con la fecha se queda.
   for (const [semana, numero] of [['JUE', '11'], ['VIE', '12'], ['SÁB', '13']]) debe(lineas.includes(semana) && lineas.includes(numero), '1 ponle nombre', `falta el cuadrito de la fecha «${semana} ${numero}»`)
   // (6y7: el trayecto va pequeño junto a «Día de viaje», no es el título.)
-  debe(lineas.includes('· Madrid → Roma') && lineas.includes('· Roma → Madrid') && !lineas.includes('Madrid → Roma'), '1 ponle nombre', 'el primer y el último día no llevan «Día de viaje · Madrid → Roma» / «· Roma → Madrid» pequeños')
+  // (Tanda 7, punto 15: la línea pequeña es «Madrid → Roma · Día de viaje»: el trayecto primero y la marca detrás; un día de llegada o de vuelta sin paradas se llama «Día de viaje» y solo lleva el trayecto.)
+  debe(lineas.includes('Madrid → Roma') && lineas.includes('Roma → Madrid'), '1 ponle nombre', 'el primer y el último día no llevan «Madrid → Roma» / «Roma → Madrid» pequeños')
   const botones = html.match(/<button[^>]*data-ponle-nombre="1"[^>]*>/g) ?? []
   debe(botones.length === 0, '1 ponle nombre', `queda un botón «Ponle nombre» (${botones.length}) en un destino con títulos`)
   // Un día con nombre lo conserva y deja de decir «Ponle nombre».
