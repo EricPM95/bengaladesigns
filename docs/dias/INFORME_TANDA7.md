@@ -198,4 +198,7 @@ Playwright con el Chrome del equipo, Supabase bloqueado a propósito (por eso a 
 
 ## Pruebas finales del cierre (batería, muestra de fechas, 365 fechas)
 
-(lo rellena el coordinador)
+- **Batería en serie** (pruebas de pantallas una detrás de otra, 82 pruebas de `Fase6`, `Corr6`, `Tanda6`, `Tanda7` y `Fotos6`): 80 en 0 fallos y 2 con fallo (`pruebaFase6y2_reorganizar`, 3 fallos, y `pruebaFase6y_reorganizar`, 4). Esos 2 fallos NO eran de antes: nacían de las listas nuevas de llegada y vuelta, que «Reorganizar» tomaba por días de ruta. Se arreglaron con una marca en los datos (`solo_llegada_o_vuelta`; ver `INFORME_PARTE_REORGANIZAR_TANDA7.md`) y tras el arreglo vuelven a 0 fallos (782 y 1.166 comprobaciones), igual que `pruebaTanda7_reorganizar` (71), `_integracion`, `_reparto`, `_documento`, `_respuestas` (261) y `pruebaFase6y10_viajes` (118).
+- **Muestra de 54 fechas** (`pruebaListas`, con el arreglo ya puesto): 119.673 viajes y 324.948 días, 0 fallos. Es idéntica a la de antes de la tanda: Roma sin vuelos ni llegada sale exactamente igual.
+- **Aparte:** `pruebaFase6y5_motor` no se lanzó (tarda más de 40 minutos) y `pruebaFase6y10_sitiosgrandes` solo sirve con `ref=` (una copia del código de antes).
+- **Las 365 fechas completas:** se lanzan después del push; su resultado va abajo, en un commit aparte.

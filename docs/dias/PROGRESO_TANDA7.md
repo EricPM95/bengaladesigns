@@ -31,5 +31,5 @@ Prompt: `PARA_CODE_TANDA7_v3.md`. Entre paréntesis, la parte que lo hizo (cada 
 - [x] Pruebas de cada parte, de la integración y de la tanda entera (batería rápida y muestra de 54 fechas, 0 fallos)
 - [x] Capturas a 375 px (`docs/dias/img/7-*.jpg`)
 - [x] Informe, preguntas e invariantes (642 a 681)
-- [ ] Push a origin
+- [x] Push a origin
 - [ ] Después del push: las 365 fechas completas, con el resultado al final de `INFORME_TANDA7.md` en un commit aparte
