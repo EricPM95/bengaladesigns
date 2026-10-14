@@ -44,7 +44,9 @@ Todo en serie (las de pantallas) con el servidor propio en el puerto 8897; las d
 
 **Las que fallaban en `main` y no empeoran (no se tocan):** `pruebaFase6y2_reorganizar` (3 fallos, los mismos: Museos reservados a las 9:00 en la tarde por el día escrito `D1-vaticano`) y `pruebaFase6y_reorganizar` (4 fallos, los mismos).
 
-**Motor (en 0 fallos, sin tocar el motor):** `pruebaTanda7_llegada` (59.334), `_vuelta` (53.901), `_integracion`, `_documento`, `_datosllegada`, `_respuestas` (261); `pruebaFase6y4_listas` (643), `6y5_motor`, `6y6_cierre` (3.219), `6y7_motor` (17.724), `6y8_comida`, `6y10_comida` (2.593), `6y10_excursion`, `6y10_horarios` (110.990), `6y10_sitiosgrandes`, `6y10_viajes` (118).
+**Motor (en 0 fallos, sin tocar el motor):** `pruebaTanda7_llegada` (59.334), `_vuelta` (53.901), `_integracion`, `_documento`, `_datosllegada`, `_respuestas` (261); `pruebaFase6y4_listas` (643), `6y6_cierre` (3.219), `6y7_motor` (17.724), `6y8_comida`, `6y10_comida` (2.593), `6y10_excursion`, `6y10_horarios` (110.990), `6y10_sitiosgrandes`, `6y10_viajes` (118).
+
+(`pruebaFase6y5_motor` no estaba en la lista y se lanzó de más: tras 40 minutos sin acabar se paró. El motor no tiene ningún cambio en esta parte.)
 
 **Ajustes mínimos a pruebas que dejaban de valer:**
 - `pruebaTanda7_hoy.mjs` y su entrada: los viajes de prueba ponen `planLlegada`/`planVuelta` en la ruta con `planesDelMotor` (antes los ponían dentro del día); `masVisitasDe`/`diaRecortado` reciben la ruta; la tarjeta de HOY se busca por `data-tarjeta-hoy-vuelves` (ya no por la ranura); `esDiaDeLlegada` se importa de `tituloDelDia`; se añaden comprobaciones de la tarjeta compartida, de los botones y de la línea pequeña (128 en total).
