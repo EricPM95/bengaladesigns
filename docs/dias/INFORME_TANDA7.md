@@ -202,3 +202,6 @@ Playwright con el Chrome del equipo, Supabase bloqueado a propósito (por eso a 
 - **Muestra de 54 fechas** (`pruebaListas`, con el arreglo ya puesto): 119.673 viajes y 324.948 días, 0 fallos. Es idéntica a la de antes de la tanda: Roma sin vuelos ni llegada sale exactamente igual.
 - **Aparte:** `pruebaFase6y5_motor` no se lanzó (tarda más de 40 minutos) y `pruebaFase6y10_sitiosgrandes` solo sirve con `ref=` (una copia del código de antes).
 - **Las 365 fechas completas:** se lanzan después del push; su resultado va abajo, en un commit aparte.
+
+## Las 365 fechas completas (después del push)
+Lanzadas con todo ya subido (`_correr365.mjs`, desde el 14-oct-2026, 16 tramos a la vez, 57 minutos): **815.393 viajes y 2.220.718 días, 0 fallos en los 16 tramos.** No hay nada que apuntar arriba de `PREGUNTAS_TANDA7.md`.
