@@ -261,9 +261,7 @@ for (const dias of [2, 3, 4, 5]) {
   await rehacerDiaConReservas('d1')
   debe((await checkTime('d1', 600)) === null, '7 motor', 'HOY pregunta «vas bien/justo» al motor en una ruta a mano')
   debe((await adjustDay('d1', 'cansado', 600)).ok === false, '7 motor', 'HOY ajusta el día con el motor en una ruta a mano')
-  await useRouteStore.getState().fitDayToTrip('d1', 'departure', 11 * 60)
-  await useRouteStore.getState().fitDayToTrip('d1', 'arrival', 14 * 60)
-  await useRouteStore.getState().optimizeDayWithRealTransport('d1', 'arrival', '10:00')
+  // (Tanda 7: «Ajustar este día a tu llegada / vuelta» ya no existe; las horas del vuelo nunca tocan un día a mano. Lo comprueba también `pruebaTanda7_conexion`.)
   const igual = useRouteStore.getState().route
   debe(JSON.stringify(nombresDe(igual)) === JSON.stringify(nombresDe(ruta)) && igual.days[0].stops.every((s) => !s.time), '7 motor', 'la llegada o la vuelta recortan o reordenan un día a mano')
   debe(llamadasAlMotor.length === 0, '7 motor', `se llama al motor: ${llamadasAlMotor.join(', ')}`)

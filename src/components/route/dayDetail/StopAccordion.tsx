@@ -28,7 +28,7 @@ interface StopAccordionProps {
   freeDayWarning?: string | null
   /** El número, en el color del día (como su pin): relleno claro y número fuerte. */
   numberColors?: { bg: string; text: string }
-  /** El primer o el último día: «Llegas después» o «Ya te has ido», en rojo (la llegada y la vuelta). */
+  /** Un aviso en rojo de la parada (un día movido a otra fecha: «Hoy cierra»…). */
   tripWarning?: string | null
   /** Su horario ese día («Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy»), de src/lib/horarioDeParada.ts; null/undefined = sin horario (plazas, fuentes, calles). */
   horario?: HorarioDeParada | null
@@ -83,7 +83,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
 
   // La tarjeta, más limpia (PROMPT_UI_REPASO 11): la hora, el nombre, una línea con el horario y el tiempo de visita, y las
   // etiquetas. «Reserva…» va en la ficha (Entradas) y «Por dentro / Por fuera» también (Resumen). En la tarjeta solo se
-  // queda lo rojo, cuando hay un problema («Hoy cierra», «Cerrado a esa hora», «Llegas después»…).
+  // queda lo rojo, cuando hay un problema («Hoy cierra», «Cerrado a esa hora»…).
   const meta: CardMeta[] = []
   if (tripWarning) meta.push({ text: tripWarning, warn: true })
   // El horario de ese día, en pequeño (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15»; cerrado, «Cerrado hoy» en rojo. Plazas, fuentes y

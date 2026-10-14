@@ -23,7 +23,7 @@ const debe = (cond, regla, texto) => {
 }
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_6z3_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
-const { createElement, renderToStaticMarkup, DayList, ReservasPanel, EntradasYFreeTour, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, detectFlightOpportunities, nombreDeDia, dayLineOf, legDayText } = M
+const { createElement, renderToStaticMarkup, DayList, ReservasPanel, EntradasYFreeTour, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, nombreDeDia, dayLineOf, legDayText } = M
 const D = findPipelineV2Data('Roma')
 await fetchArrivalInfo('Roma')
 const info = await fetchDestinationExcursions('Roma')
@@ -86,11 +86,7 @@ debe(nombreDeDia.elDia(sinFechas, 2) === 'el día 2' && nombreDeDia.alDia(sinFec
     debe(!DIA_N.test(legDayText({ dateIso: '2027-03-10', dayNumber })), '2 puras con fechas', `legDayText con fecha: «${legDayText({ dateIso: '2027-03-10', dayNumber })}»`)
     debe(legDayText({ dateIso: null, dayNumber }) === `Día ${dayNumber}`, '3 puras sin fechas', 'legDayText sin fecha no da «Día n»')
   }
-  const conVuelo = detectFlightOpportunities(rCon)
-  const sinVuelo = detectFlightOpportunities(rSin)
-  debe(conVuelo.length === 2 && sinVuelo.length === 2, '2 puras con fechas', `los avisos de vuelo no salen (${conVuelo.length}/${sinVuelo.length})`)
-  for (const o of conVuelo) debe(!DIA_N.test(o.reason), '2 puras con fechas', `aviso de vuelo con fechas: «${o.reason}»`)
-  for (const o of sinVuelo) debe(DIA_N.test(o.reason), '3 puras sin fechas', `aviso de vuelo sin fechas ya no dice «día n»: «${o.reason}»`)
+  // (Tanda 7: las «oportunidades de vuelo» de `flightOpportunity.ts` ya no existen; los textos de los vuelos los comprueba `pruebaTanda7_conexion`.)
 }
 
 // ── Pantallas ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────

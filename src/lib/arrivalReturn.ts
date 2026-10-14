@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { MealSlot, Route } from './types'
+import type { Route } from './types'
 import { buildArrivalDepartureDetail } from './mockDayDetail'
 import * as rules from '../../shared/arrival/arrivalRules.js'
 
@@ -39,7 +39,7 @@ export interface ArrivalPoint {
   foto_credito?: string
   /** Cuánto antes de la salida hay que dejar la ciudad desde este punto, si no vale el del medio (Ciampino ≠ Fiumicino). */
   salir_antes_min?: number
-  /** Del punto de llegada al centro, en minutos: la hora "EN EL CENTRO". */
+  /** Del punto de llegada al centro, en minutos (dato del destino; el motor lo suma por dentro, nunca se enseña como hora). */
   al_centro_min: number
   distancia?: string
   al_centro: ArrivalOption[]
@@ -106,7 +106,6 @@ export function tripModes(route: Route): { arrival: ArrivalMode; departure: Arri
   return { arrival, departure }
 }
 
-const toMinutes: (hhmm: string | null | undefined) => number | null = rules.hhmmToMinutes
 const toHHMM: (minutes: number) => string = rules.minutesToHHMM
 export const minutesToHHMM = toHHMM
 
@@ -250,35 +249,4 @@ export function bookingLabelsOf(modes: { arrival: ArrivalMode; departure: Arriva
     arrival: BOOKING_WORD[modes.arrival].arrival,
     departure: BOOKING_WORD[modes.departure].departure,
   }
-}
-
-/**
- * Después de «Ajustar este día a tu llegada / vuelta»: las comidas siguen a las paradas. Una comida que empieza mientras
- * una parada sigue abierta se corre detrás de ella (de 5 en 5, con su misma duración); una que acaba antes de llegar al
- * centro o empieza después de la hora de salir se quita (la varita lo devuelve). Nunca inventa una comida.
- */
-export function fitMealsToStops(
-  meals: MealSlot[],
-  stops: { time?: string | null; durationMinutes: number }[],
-  bounds: { from?: number | null; until?: number | null },
-): MealSlot[] {
-  const spans = stops
-    .map((stop) => {
-      const start = toMinutes(stop.time)
-      return start == null ? null : { start, end: start + stop.durationMinutes }
-    })
-    .filter((span): span is { start: number; end: number } => span != null)
-  return meals.flatMap((meal) => {
-    const start = toMinutes(meal.time)
-    if (start == null || meal.mealTime === 'breakfast') return [meal]
-    const windowEnd = toMinutes(meal.windowEnd)
-    const length = windowEnd != null && windowEnd > start ? windowEnd - start : meal.mealTime === 'dinner' ? 90 : 75
-    let newStart = start
-    for (const span of spans) if (span.start < newStart && span.end > newStart) newStart = Math.ceil(span.end / 5) * 5
-    if (bounds.from != null && newStart + length <= bounds.from) return []
-    if (bounds.from != null && newStart < bounds.from) newStart = Math.ceil(bounds.from / 5) * 5
-    if (bounds.until != null && newStart >= bounds.until) return []
-    if (newStart === start) return [meal]
-    return [{ ...meal, time: toHHMM(newStart), ...(meal.windowEnd ? { windowEnd: toHHMM(newStart + length) } : {}) }]
-  })
 }

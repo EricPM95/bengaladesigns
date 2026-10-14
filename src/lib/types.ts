@@ -848,7 +848,6 @@ export interface Route {
   planMode?: 'auto' | 'manual'
   /** El centro de la ciudad de destino (Tanda 6y): lo pone la ruta a mano, que no tiene paradas de las que sacarlo, para que el mapa de RUTA, DÍAS y EXPLORAR salga centrado en la ciudad. */
   destinationCoordinates?: Coordinates | null
-  /** Hora del vuelo de llegada en formato "HH:MM", introducida en Reservas — null/undefined si no se ha registrado. Dispara la comprobación de oportunidad de recálculo del primer día (ver flightOpportunity.ts). */
   /** Lo que costó el billete de ida y el de vuelta, total de todas las personas (Tanda 6z2); null si no lo dijo. Si es un mismo billete, se pone en la ida y la vuelta se queda vacía. */
   arrivalPrecio?: Importe | null
   departurePrecio?: Importe | null
@@ -864,8 +863,9 @@ export interface Route {
   personas?: number | null
   /** Los gastos sueltos del presupuesto («Extras»). */
   gastosExtras?: GastoExtra[]
+  /** Hora de llegada a Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.llegada`). null/undefined = sin registrar. */
   arrivalFlightTime?: string | null
-  /** Hora del vuelo de salida en formato "HH:MM", introducida en Reservas — null/undefined si no se ha registrado. Dispara la comprobación de oportunidad de recálculo del último día. */
+  /** Hora de salida de Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.vuelta`). null/undefined = sin registrar. */
   departureFlightTime?: string | null
   /** El medio de la vuelta si es distinto del de la ida (mismos ids que transport_option: 'flight', 'train'…); ausente = el mismo. */
   returnTransportOptionId?: string | null
@@ -888,8 +888,6 @@ export interface Route {
   accommodationAddress?: string | null
   /** Tanda 7: la fecha (yyyy-mm-dd) de la vuelta que el viajero ya tiene vista. Si las fechas del viaje cambian y esta ya no es la última, sale el aviso «revisa que tu vuelta sigue siendo…» hasta que abre su vuelta o la cambia. */
   departureFechaVista?: string | null
-  /** Lo que eligió el viajero al poner la hora del vuelo (ventana «¿Ajustamos tu ruta a tu vuelo?»): `auto` = ajustar el primer y el último día a sus horas, `manual` = la ruta se queda como está. Ausente = aún no ha elegido. */
-  flightAdjust?: 'auto' | 'manual' | null
   /** Ver TripDefaultTransport. Ausente en rutas generadas antes de este campo y en las rutas dev/manuales — quien lo lee cae a 'public'. */
   defaultTransport?: TripDefaultTransport
   /** Nombres de las anclas (Paso 1 del pipeline, /api/generate-anchors) usadas para generar esta ruta — permite a StopDetailSheet saber si una parada es una "ancla" (lugar obligatorio del destino, con tip cacheado + búsqueda web en tips_anclas) o una parada normal del pool (tip simple, sin caché). Vacío en rutas dev/manuales, que no pasan por ese paso. */

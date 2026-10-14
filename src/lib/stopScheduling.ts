@@ -7,8 +7,7 @@ import { minutesToTime, roundToNearestQuarterHour, roundUpToQuarterHour } from '
 /**
  * Cálculo real del horario de un día — sustituye a confiar en `suggested_time`/`travel_to_next` de
  * Claude (una estimación de la propia IA, sin verificar) por un cálculo determinista: la PRIMERA
- * parada empieza a una hora fija (según el cronotipo del cuestionario, o el horario real de
- * transporte cuando se conoce — ver `optimizeDayWithRealTransport` para día 1/último día), y cada
+ * parada empieza a una hora fija (según el cronotipo del cuestionario; el día de llegada y el de vuelta con horas los monta el motor), y cada
  * parada siguiente hereda fin de la anterior + colchón según el ritmo + tiempo a pie REAL entre
  * paradas (Mapbox Directions, mismo proveedor que el resto de la app). El nº de paradas que caben en
  * el día es consecuencia de este cálculo: si una parada ya no cabe antes de que acabe la ventana
@@ -71,9 +70,7 @@ export interface StopScheduleResult {
 /**
  * Recalcula el horario real de las paradas de UN día, en su orden actual (el orden/contenido ya
  * decidido por Claude o por el viajero no cambia, solo la HORA). `firstStopStartMinutes` fija la
- * hora de la primera parada (cronotipo, o transporte real para día 1/último día); `dayEndMinutes`
- * por defecto es `DAY_END_MINUTES`, pero `optimizeDayWithRealTransport` lo
- * sobrescribe con la hora real de salida para el último día.
+ * hora de la primera parada (cronotipo); `dayEndMinutes` por defecto es `DAY_END_MINUTES`.
  */
 export async function computeRealStopSchedule(
   stops: Stop[],
@@ -152,10 +149,8 @@ export function overflowToDidntMakeCut(overflow: Stop[]): DidntMakeCutItem[] {
 /**
  * Aplica el horario real a TODOS los días de una ruta recién generada — un solo paso tras
  * `mapGeneratedRouteToRoute` (ver App.tsx `PreparandoViajeContainer`), antes de mostrarle la ruta al
- * viajero. Día 1 y el último día usan la MISMA hora de inicio según ritmo que el resto por ahora (todavía no
- * existe un horario de transporte real en este punto — el viajero lo introduce más tarde en
- * RESERVAS); en cuanto lo hace, `optimizeDayWithRealTransport` vuelve a calcular solo ese día con la
- * hora real. Los días sin paradas (de plantilla, o el sintético de vuelta) se dejan tal cual.
+ * viajero. Día 1 y el último día usan la MISMA hora de inicio según ritmo que el resto; con las horas
+ * del viajero en RESERVAS los monta el motor (Tanda 7), no esta función. Los días sin paradas (de plantilla, o el sintético de vuelta) se dejan tal cual.
  */
 export async function applyRealStopSchedule(route: Route): Promise<Route> {
   const firstStopStartMinutes = DAY_START_MINUTES
@@ -168,25 +163,4 @@ export async function applyRealStopSchedule(route: Route): Promise<Route> {
     }),
   )
   return { ...route, days }
-}
-
-/**
- * Recalcula SOLO un día (llegada o vuelta) con la hora real de transporte — "Optimizar ruta" en
- * RESERVAS (ReservasPanel.tsx), cuando el viajero introduce su vuelo/tren real. Mismo margen de
- * traslado aeropuerto↔centro ya asumido en flightOpportunity.ts (TRANSFER_BUFFER_MINUTES) para
- * decidir si una oportunidad es aprovechable — reutilizado aquí para no tener dos supuestos
- * distintos del mismo traslado en la app.
- */
-const REAL_TRANSPORT_TRANSFER_MINUTES = 60
-
-export async function optimizeDayWithRealTransport(
-  day: { stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] },
-  kind: 'arrival' | 'departure',
-  flightTimeMinutes: number,
-): Promise<{ stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] }> {
-  const firstStopStartMinutes = kind === 'arrival' ? flightTimeMinutes + REAL_TRANSPORT_TRANSFER_MINUTES : DAY_START_MINUTES
-  const dayEndMinutes = kind === 'departure' ? flightTimeMinutes - REAL_TRANSPORT_TRANSFER_MINUTES : undefined
-  const { scheduled, overflow } = await computeRealStopSchedule(day.stops, firstStopStartMinutes, dayEndMinutes)
-  if (overflow.length === 0) return { ...day, stops: scheduled }
-  return { ...day, stops: scheduled, didntMakeCut: [...(day.didntMakeCut ?? []), ...overflowToDidntMakeCut(overflow)] }
 }
