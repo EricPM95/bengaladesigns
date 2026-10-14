@@ -18,7 +18,7 @@
  * Puro: recibe lo que necesita (las paradas del día, los días escritos y los datos del destino) y devuelve el orden. Lo usan el servidor (`/api/reorganizar-dia`), «Crear mi propio día»
  * (diaPropio.js) y las pruebas.
  */
-import { copiarParte, aplicarVariantes, norm } from './listasDia.js'
+import { copiarParte, aplicarVariantes, norm, esDiaDeRuta } from './listasDia.js'
 import { sitiosGrandesDe } from './listasReservas.js'
 import { straightLineMeters } from './travelTimes.js'
 
@@ -58,6 +58,8 @@ function construirCatalogo(written, destData) {
   const noches = []
   for (const place of destData.places ?? []) addIndice(place.name, place.name)
   for (const [id, dia] of Object.entries(written.days ?? {})) {
+    // (Las listas de la llegada y de la vuelta no son días de ruta: ni se reconocen aquí ni ordenan nada. Las marca el convertidor.)
+    if (!esDiaDeRuta(dia)) continue
     const parts = []
     for (const [key, parte] of Object.entries(dia.partes ?? {})) {
       const base = copiarParte(parte)

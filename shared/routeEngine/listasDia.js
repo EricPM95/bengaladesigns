@@ -12,6 +12,12 @@ const clone = (value) => (value == null ? value : JSON.parse(JSON.stringify(valu
 export const toMin = (hhmm) => Number(String(hhmm).slice(0, 2)) * 60 + Number(String(hhmm).slice(3, 5))
 export const toHHMM = (minutes) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(Math.round(minutes % 60)).padStart(2, '0')}`
 
+/**
+ * ¿Esta lista escrita es un día de RUTA? Las que el convertidor marca con `solo_llegada_o_vuelta` (las de la llegada y la vuelta: el motor las elige por las tablas `llegadas`)
+ * no lo son: no se reconocen en «Reorganizar», ni se ordenan ni se reparten como un día más del viaje. Un destino sin esa marca se comporta como siempre.
+ */
+export const esDiaDeRuta = (dia) => !dia?.solo_llegada_o_vuelta
+
 /** Una copia de la parte del día (la lista de verdad) lista para tocar. */
 export function copiarParte(parte) {
   // (Qué franjas tiene esta parte del día: un medio día de tarde no tiene mañana, y lo que el documento cambia en la mañana no se aplica.)

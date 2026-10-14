@@ -216,7 +216,19 @@ const IDS = ['D0', 'D0-medio', 'D1-corto', 'D1', 'D2', 'D3', 'D1-FT', 'DT-medio'
 const secciones = []
 for (let i = 0; i < lineas.length; i++) {
   const h = /^(#{2,3})\s+(.+?)\s+·\s+(D[0-9A-Za-z-]+)\b(.*)$/.exec(lineas[i])
-  if (h && IDS.includes(h[3])) secciones.push({ id: h[3], nombre: h[2].trim(), desde: i, titulo: lineas[i] })
+  if (h && IDS.includes(h[3])) secciones.push({ id: h[3], nombre: h[2].trim(), desde: i, titulo: lineas[i], solo_llegada_o_vuelta: false })
+}
+// (Tanda 7, arreglo de Reorganizar) Las listas que cuelgan del encabezado «## Llegadas y vueltas» solo sirven a la llegada y a la vuelta (el motor las elige por las tablas `llegadas`): no son días de ruta.
+// Se marcan en los datos (`solo_llegada_o_vuelta: true`) y quien recorre los días como candidatos de ruta (Reorganizar…) las salta. Un destino sin ese encabezado no marca nada.
+const ENCABEZADO_LLEGADAS_Y_VUELTAS = /^Llegadas y vueltas\b/i
+{
+  let dentro = false
+  let k = 0
+  for (let i = 0; i < lineas.length && k < secciones.length; i++) {
+    const titulo = /^##\s+(.+?)\s*$/.exec(lineas[i])
+    if (titulo) dentro = ENCABEZADO_LLEGADAS_Y_VUELTAS.test(titulo[1])
+    if (i === secciones[k].desde) { secciones[k].solo_llegada_o_vuelta = dentro; k++ }
+  }
 }
 for (let k = 0; k < secciones.length; k++) {
   let hasta = lineas.length
@@ -231,6 +243,7 @@ const dias = {}
 for (const seccion of secciones) {
   const { id } = seccion
   const dia = { id, nombre: seccion.nombre, titulo_documento: seccion.titulo.replace(/^#+\s*/, ''), partes: {}, lluvia: null, quedarme: null }
+  if (seccion.solo_llegada_o_vuelta) dia.solo_llegada_o_vuelta = true
   const parteNombre = FLAT.has(id) && (id === 'D0-medio' || id === 'DT-medio') ? null : 'unica'
   let parte = parteNombre ? (dia.partes[parteNombre] ??= { manana: [], comida: null, tarde: [], cena: null, noche: null }) : null
   let franja = FLAT.has(id) ? 'manana' : null

@@ -12662,7 +12662,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "D1-rapido-invierno-10": {
    "id": "D1-rapido-invierno-10",
@@ -12799,7 +12800,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "D1-rapido-invierno-11": {
    "id": "D1-rapido-invierno-11",
@@ -12935,7 +12937,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "D1-tarde": {
    "id": "D1-tarde",
@@ -13068,7 +13071,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "D1-centro-navona": {
    "id": "D1-centro-navona",
@@ -13159,6 +13163,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "inicio": "navona"
   },
   "D1-centro-espana": {
@@ -13250,6 +13255,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "inicio": "plaza_de_espana"
   },
   "D1-centro-entera-navona": {
@@ -13339,6 +13345,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "inicio": "navona"
   },
   "D1-centro-entera-espana": {
@@ -13428,6 +13435,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "inicio": "plaza_de_espana"
   },
   "D1-anochecer-navona": {
@@ -13475,6 +13483,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "inicio": "navona"
   },
   "D1-anochecer-espana": {
@@ -13536,6 +13545,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "inicio": "plaza_de_espana"
   },
   "D1-noche": {
@@ -13564,6 +13574,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "textos": {
     "texto": "{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope."
    }
@@ -13588,6 +13599,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "textos": {
     "texto": "{Llegada} a las {hora}. Cuando dejes las maletas, visita la Fontana de Trevi de noche para un primer contacto con la ciudad. Mañana empezamos a tope."
    }
@@ -13607,6 +13619,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "textos": {
     "texto": "{Llegada} a las {hora}. Descansa, que mañana empezamos a tope."
    }
@@ -13748,7 +13761,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "DC-vaticano": {
    "id": "DC-vaticano",
@@ -13787,6 +13801,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "miercoles": "siguiente"
   },
   "DC-roma-antigua": {
@@ -13840,7 +13855,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "DC-pincio-popolo": {
    "id": "DC-pincio-popolo",
@@ -13886,7 +13902,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "DC-aventino": {
    "id": "DC-aventino",
@@ -13934,7 +13951,8 @@
     }
    },
    "lluvia": null,
-   "quedarme": null
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
   },
   "DC-cupula": {
    "id": "DC-cupula",
@@ -13969,6 +13987,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "miercoles": "siguiente"
   },
   "DV-traslado": {
@@ -13986,6 +14005,7 @@
    },
    "lluvia": null,
    "quedarme": null,
+   "solo_llegada_o_vuelta": true,
    "textos": {
     "titulo": "Hoy vuelves a casa",
     "avion": "Tu vuelo sale de {punto} a las {hora}. Te recomendamos estar en el aeropuerto 2 horas antes, por eso hoy no te hemos puesto paradas: es el día de irte con calma.",
