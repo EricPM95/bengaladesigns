@@ -101,7 +101,11 @@
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg/960px-Rome_Fiumicino_Leonardo_da_Vinci_International_Airport%2C_Aeroporto_internazionale_di_Roma-Fiumicino_%22Leonardo_da_Vinci%22.jpg",
           "foto_credito": "Wikimedia Commons",
           "por_que_llegada": "Desde Fiumicino lo más cómodo es el Leonardo Express: 32 min sin paradas hasta Termini por 14 €. Si te alojas cerca de Trastevere u Ostiense, el tren regional FL1 (8 €) te deja más cerca; ojo, el FL1 no para en Termini (sus paradas en Roma son Trastevere, Ostiense y Tiburtina).",
-          "por_que_vuelta": "El Leonardo Express sale de Termini cada 15 min (a algunas horas, cada 30) y tarda 32 min; el último es a las 23:05."
+          "por_que_vuelta": "El Leonardo Express sale de Termini cada 15 min (a algunas horas, cada 30) y tarda 32 min; el último es a las 23:05.",
+          "coordenadas": {
+            "lat": 41.8003,
+            "lng": 12.2389
+          }
         },
         {
           "id": "cia",
@@ -177,7 +181,11 @@
           "foto_credito": "Wikimedia Commons",
           "salir_antes_min": 170,
           "por_que_llegada": "Ciampino es el aeropuerto pequeño de Roma, a unos 15 km: el bus con el tren (Ciampino Airlink, 2,70 €) o un autobús directo a Termini te dejan en Roma en menos de una hora. No hay Leonardo Express: ese tren es solo de Fiumicino.",
-          "por_que_vuelta": "A Ciampino se llega en unos 40 min desde Roma, así que sales un poco más tarde que a Fiumicino."
+          "por_que_vuelta": "A Ciampino se llega en unos 40 min desde Roma, así que sales un poco más tarde que a Fiumicino.",
+          "coordenadas": {
+            "lat": 41.7998,
+            "lng": 12.5949
+          }
         }
       ],
       "tips_llegada": [
@@ -301,7 +309,11 @@
           "foto_url": "https://images.unsplash.com/photo-1768213021718-9f738eabb363?fm=jpg&q=80&w=1080",
           "foto_credito": "Nico Ruge, Unsplash",
           "por_que_llegada": "Llegas a Roma Termini: desde ahí salen las dos líneas de metro y la mayoría de los autobuses.",
-          "por_que_vuelta": "Llega a Termini con tiempo: los andenes se anuncian poco antes de salir y algunos quedan lejos de la entrada."
+          "por_que_vuelta": "Llega a Termini con tiempo: los andenes se anuncian poco antes de salir y algunos quedan lejos de la entrada.",
+          "coordenadas": {
+            "lat": 41.9009,
+            "lng": 12.5017
+          }
         },
         {
           "id": "tiburtina",
@@ -336,7 +348,11 @@
               "comprobado": "2026-09-30"
             }
           ],
-          "salir_antes_min": 55
+          "salir_antes_min": 55,
+          "coordenadas": {
+            "lat": 41.9106,
+            "lng": 12.5306
+          }
         }
       ],
       "tips_llegada": [
@@ -423,7 +439,11 @@
               "comprobado": "2026-09-30"
             }
           ],
-          "salir_antes_min": 55
+          "salir_antes_min": 55,
+          "coordenadas": {
+            "lat": 41.9113,
+            "lng": 12.5322
+          }
         }
       ],
       "tips_llegada": [
@@ -495,7 +515,11 @@
             }
           ],
           "foto_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Forte_Michelangelo_2014.jpg/960px-Forte_Michelangelo_2014.jpg",
-          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons"
+          "foto_credito": "Forte Michelangelo, junto al puerto · Wikimedia Commons",
+          "coordenadas": {
+            "lat": 42.0925,
+            "lng": 11.7938
+          }
         }
       ],
       "tips_llegada": [
@@ -1035,7 +1059,8 @@
       "etiqueta": "Ideal si viajas en pareja, en familia o con amigos",
       "precio": null,
       "proveedor": null,
-      "nota": "Sin precio, sin proveedor y sin decir que es más barato (punto 13). El enlace de reserva lo pone la pestaña Traslado de la app, no estos datos."
+      "nota": "Sin precio, sin proveedor y sin decir que es más barato (punto 13). El enlace de reserva lo pone la pestaña Traslado de la app, no estos datos.",
+      "tarjeta_vuelta_barco": "Te recogen en la puerta de tu alojamiento o donde tú quieras y te dejan en el puerto."
     },
     "descartadas": [
       {

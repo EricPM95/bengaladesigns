@@ -1,6 +1,8 @@
 import { precioTienda } from './dinero'
 import { esNombreIcono } from './iconos'
 import type {
+  ArrivalDayInfo,
+  ReturnDayInfo,
   DateNoticeIcon,
   DayType,
   ExcursionProminence,
@@ -197,6 +199,8 @@ interface GeneratedMeal {
   restaurant?: string | null
   latitude?: number
   longitude?: number
+  /** Tanda 7: la comida al llegar, sin restaurante nuestro — MealSlot.noRestaurant. */
+  no_restaurant?: boolean
 }
 
 export interface GeneratedDay {
@@ -216,6 +220,9 @@ export interface GeneratedDay {
   rainy_alternative?: string
   /** Tanda 6: paradas que no caben y pasan a «Si te sobra tiempo» (misma forma que stops, más spare_reason). */
   spare_stops?: GeneratedStop[]
+  /** Tanda 7: el día que lleva la llegada con horas (DayPlan.arrivalDay) y el de vuelta (DayPlan.returnDay). */
+  arrival_day?: ArrivalDayInfo | null
+  return_day?: ReturnDayInfo | null
   /** Tanda 6b: las franjas del día y la tarjeta de descanso. */
   franjas?: { id: 'manana' | 'tarde' | 'cena'; label: string; from: string; to?: string | null }[]
   /** Tanda 6: «Hoy el sol se pone a las 17:05». */
@@ -582,6 +589,7 @@ function mapMeal(dayNumber: number, generated: GeneratedMeal): MealSlot {
     curatedZone: generated.zone ?? null,
     curatedZoneDisplay: generated.zone_display ?? null,
     ...(generated.reservation_note ? { reservationNote: generated.reservation_note } : {}),
+    ...(generated.no_restaurant ? { noRestaurant: true } : {}),
     ...(generated.window_end ? { windowEnd: generated.window_end } : {}),
     ...(typeof generated.latitude === 'number' && typeof generated.longitude === 'number' ? { coordinates: { lat: generated.latitude, lng: generated.longitude } } : {}),
     ...(generated.restaurant && typeof generated.latitude === 'number' && typeof generated.longitude === 'number'
@@ -798,6 +806,9 @@ function mapDay(
     poolNotices: poolNoticesByDay?.get(generated.day_number),
     recommendedRevisits: recommendedRevisitsByDay?.get(generated.day_number),
     ...(generated.spare_stops?.length ? { spareStops: generated.spare_stops.map((stop) => mapStop(generated.day_number, stop)) } : {}),
+    // Tanda 7: lo que el motor dice del día de llegada y del de vuelta (ver DayPlan.arrivalDay / returnDay).
+    ...(generated.arrival_day ? { arrivalDay: generated.arrival_day } : {}),
+    ...(generated.return_day ? { returnDay: generated.return_day } : {}),
     ...(generated.franjas?.length ? { franjas: generated.franjas.map((f) => ({ id: f.id, label: f.label, from: f.from, to: f.to ?? null })) } : {}),
     ...(generated.sunset_text ? { sunsetText: generated.sunset_text } : {}),
     ...(generated.rain_plan?.text

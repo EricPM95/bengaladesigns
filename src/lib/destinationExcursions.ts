@@ -23,7 +23,7 @@ export interface DestinationExcursions {
   /** El nombre corto de cada reserva con su artículo («los Museos», «el Free Tour»), por nombre de reserva (`entradas_nombres_cortos`); lo usan los avisos de reservas. Sin él, el aviso usa el nombre completo. */
   nombresCortos: Record<string, string>
   /** Las zonas para elegir alojamiento (id, nombre y, si lo hay, una pista: «Vaticano»); la última es «Aún no lo sé». */
-  zonasAlojamiento: { id: string; nombre: string; sub?: string }[]
+  zonasAlojamiento: { id: string; nombre: string; sub?: string; coordinates?: { lat: number; lng: number } }[]
   /** El mapa de alojamientos de la hoja (datos del destino). */
   mapaAlojamiento: { embed: string; embed_guardado?: string; usar?: 'embed' | 'embed_guardado' } | null
   /** La moneda del destino («EUR»), de sus datos; null si no la dice. */

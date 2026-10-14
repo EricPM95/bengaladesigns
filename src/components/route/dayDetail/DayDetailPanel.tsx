@@ -59,6 +59,8 @@ import { pagoActivo, pedirPago } from '../../../lib/pago'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
+import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
+import { useExploreAperturaStore, type AperturaExplorar } from '../../../store/useExploreAperturaStore'
 import { billeteDe } from '../../../lib/billete'
 import { barTextOf, puntoDeLaMitad, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
 import { AddStopScreen } from '../addStop/AddStopScreen'
@@ -412,6 +414,17 @@ export function DayDetailPanel({
     marcarVueltaVista()
     setArrivalSheet('vuelta')
   }
+  /** [Explorar restaurantes] de la ficha de llegada y [Explorar monumentos] de la tarjeta «Hoy vuelves a casa» (Tanda 7): cierran la ficha y abren EXPLORAR con ese filtro. */
+  const pedirExplorar = useExploreAperturaStore((state) => state.pedir)
+  const abrirExplorar = (apertura: AperturaExplorar) => {
+    setArrivalSheet(null)
+    pedirExplorar(apertura)
+    setMode('explore')
+  }
+  // La tarjeta «Hoy vuelves a casa» (de pago): la del día de vuelta sin paradas y, con salida de madrugada, la del final del último día de ruta. El motor la deja en `returnDay` del día de vuelta.
+  const diaDeVuelta = route?.days.find((candidate) => candidate.isReturnLeg) ?? null
+  const ultimoDiaDeRuta = route ? [...route.days].reverse().find((candidate) => !candidate.isReturnLeg) ?? null : null
+  const tarjetaHoyVuelves = !pago ? null : day.isReturnLeg ? (day.returnDay?.tarjeta ?? null) : day.id === ultimoDiaDeRuta?.id ? (diaDeVuelta?.returnDay?.tarjetaUltimoDia ?? null) : null
   /** «+ AÑADIR VUELO» y «Editar»: a Reservas, al bloque «Llegada y vuelta» (de pago), con la mitad que se pide abierta. */
   const goToBooking = (which: 'llegada' | 'vuelta') => {
     setArrivalSheet(null)
@@ -1515,6 +1528,15 @@ export function DayDetailPanel({
           {tarjetaUltimoDia && (
             <TarjetaTuUltimoDia pequena={tarjetaUltimoDiaPequena} onAnadirVuelta={pedirPago} onMontarlo={() => openAddFlow(day.id)} />
           )}
+          {/* Tanda 7: «Hoy vuelves a casa» (de pago): el día de vuelta sin paradas y, con una salida de madrugada, el final del último día de ruta. */}
+          {tarjetaHoyVuelves && (
+            <TarjetaHoyVuelves
+              className="mt-2"
+              tarjeta={tarjetaHoyVuelves}
+              onVerComoIr={() => abrirFichaDeVuelta()}
+              onExplorarMonumentos={() => abrirExplorar({ categoria: 'atracciones', origen: null, cerca: tarjetaHoyVuelves.explorar.cerca_de_mi })}
+            />
+          )}
           {dayType === 'manual' && !isManualRoute(route) && !(tarjetaUltimoDia && !tarjetaUltimoDiaPequena) && (
               <button
                 type="button"
@@ -1720,6 +1742,7 @@ export function DayDetailPanel({
           time={arrivalSheet === 'vuelta' ? departureTime : arrivalTime}
           pointId={arrivalSheet === 'vuelta' ? (route.departurePointId ?? null) : (route.arrivalPointId ?? null)}
           onEditBooking={() => goToBooking(arrivalSheet ?? 'llegada')}
+          onExplorarRestaurantes={() => abrirExplorar({ categoria: 'restaurantes', origen: null })}
           onClose={() => setArrivalSheet(null)}
         />
       )}

@@ -42,6 +42,8 @@ export interface ArrivalPoint {
   /** Del punto de llegada al centro, en minutos: la hora "EN EL CENTRO". */
   al_centro_min: number
   distancia?: string
+  /** Dónde está el punto (Tanda 7): para el mapa pequeño de la ficha. */
+  coordenadas?: { lat: number; lng: number }
   al_centro: ArrivalOption[]
   a_la_salida?: ArrivalOption[]
   /** El traslado privado de este punto (pestaña «Traslados»): solo el enlace; sin precio ni proveedor. Solo en Fiumicino, Ciampino y Civitavecchia. */

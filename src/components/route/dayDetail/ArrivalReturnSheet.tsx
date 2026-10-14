@@ -1,11 +1,19 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Route } from '../../../lib/types'
 import { buildCombinedDaysLines, buildCombinedDaysMarkers } from '../../../lib/routeMapMarkers'
 import { buildDestinationSegments } from '../../../lib/destinationSegments'
 import { useArrivalMarkers } from '../../../lib/useArrivalMarkers'
-import { StopsMapView } from '../../map/StopsMapView'
+import { StopsMapView, type StopsMapMarker, type StopsMapMarkerLine } from '../../map/StopsMapView'
+import { useDestinationExcursions } from '../../../lib/destinationExcursions'
+import { construirFicha, nombreDeZona } from '../../../lib/fichaLlegada'
+import { direccionDelAlojamiento } from '../../../lib/direccionAlojamiento'
+import { paradasParaElTitulo } from '../../../lib/tituloDelDia'
+import { displayStopName } from '../../../lib/format'
+import { ARRIVAL_MARKER_BG, ARRIVAL_MARKER_TEXT } from '../../../lib/arrivalIcon'
+import { FichaResumen } from './FichaResumen'
 import {
+  puntoDeLaMitad,
   puntoCorto,
   type ArrivalInfo,
   type ArrivalMedio,
@@ -53,6 +61,8 @@ export interface ArrivalReturnSheetProps {
   pointId: string | null
   onEditBooking: () => void
   onClose: () => void
+  /** [Explorar restaurantes] de «la comida al llegar»: cierra la ficha y abre EXPLORAR › Restaurantes (con «Recomendados» y «Cerca de mí»). */
+  onExplorarRestaurantes?: () => void
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -158,13 +168,14 @@ function TipList({ tips }: { tips: ArrivalTip[] }) {
  * ninguna hora que calcule la app (Tanda 6t). Traslados, solo en aeropuerto y puerto, con el enlace del punto.
  */
 export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
-  const { open, kind, route, mode, info, medio, origin, dateIso, time, pointId, onEditBooking, onClose } = props
+  const { open, kind, route, mode, info, medio, origin, dateIso, time, pointId, onEditBooking, onClose, onExplorarRestaurantes } = props
   const [tab, setTab] = useState<Tab>('resumen')
 
   const pago = pagoActivo()
   const [verOtro, setVerOtro] = useState(false)
   const points = medio?.puntos ?? []
-  const chosen: ArrivalPoint | null = points.find((point) => point.id === pointId) ?? null
+  // (Tanda 7: con la hora puesta y sin punto elegido —un viaje de antes—, el del traslado más largo de ese medio.)
+  const chosen: ArrivalPoint | null = puntoDeLaMitad(medio, pointId, Boolean(time)).point
   const otro: ArrivalPoint | null = chosen ? (points.find((point) => point.id !== chosen.id) ?? null) : null
   // De pago y con el punto elegido, solo ese punto (o el otro, si el viajero lo quiere mirar); sin elegir, o en la versión gratis, todos.
   const shownPoints: ArrivalPoint[] = pago && chosen ? [verOtro && otro ? otro : chosen] : points
@@ -179,6 +190,45 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   // Arriba, el mapa del viaje entero (el de la pestaña Ruta): los días con sus líneas y el punto de llegada.
   const segments = buildDestinationSegments(route.days)
   const arrivalMarkers = useArrivalMarkers(route, segments)
+
+  // LA FICHA (Tanda 7, de pago y con la hora puesta): el resumen del diseño, con «Para tu zona». Sin hora, o en la gratis, la información general de siempre.
+  const destino = useDestinationExcursions(route.destination)
+  const puntoDeLaFicha: ArrivalPoint | null = shownPoints.length === 1 ? shownPoints[0] : null
+  // El día que lleva la llegada (el primero, o el que el motor marca como día 1) y lo que dice de su comida y de su primera parada.
+  const diaLlegada = route.days.find((day) => day.arrivalDay?.es_dia_1) ?? route.days[0] ?? null
+  const comidaAlLlegar = Boolean(diaLlegada?.meals.some((meal) => meal.noRestaurant)) || Boolean(diaLlegada?.arrivalDay?.comida_al_llegar)
+  const primeraParada = diaLlegada && !diaLlegada.arrivalDay?.sin_paradas ? (paradasParaElTitulo(diaLlegada)[0]?.name ?? null) : null
+  const ficha = useMemo(() => {
+    if (!pago || !time || !medio || !puntoDeLaFicha || mode === 'coche') return null
+    return construirFicha({
+      kind,
+      mode,
+      info,
+      medio,
+      point: puntoDeLaFicha,
+      hora: time,
+      dateIso,
+      mes: route.answers.month ?? null,
+      zonaId: route.accommodationZone ?? null,
+      zonas: destino.zonasAlojamiento,
+      comidaAlLlegar,
+      primeraParada: primeraParada ? displayStopName(primeraParada) : null,
+    })
+  }, [pago, time, medio, puntoDeLaFicha, mode, kind, info, dateIso, route.answers.month, route.accommodationZone, destino.zonasAlojamiento, comidaAlLlegar, primeraParada])
+  // El mapa pequeño de arriba (el punto, Termini si pasa por allí y su zona): solo con la ficha.
+  const mapaDeLaFicha = useMemo(() => {
+    if (!ficha || !puntoDeLaFicha?.coordenadas) return null
+    const markers: StopsMapMarker[] = [
+      { id: 'ficha-punto', name: puntoCorto(puntoDeLaFicha), coordinates: puntoDeLaFicha.coordenadas, number: 0, bg: ARRIVAL_MARKER_BG, text: ARRIVAL_MARKER_TEXT, icon: mode === 'avion' ? 'avion' : mode === 'ferry' ? 'barco' : mode === 'bus' ? 'bus' : 'tren' },
+    ]
+    const termini = Object.values(info.medios).flatMap((m) => m?.puntos ?? []).find((point) => point.id === 'termini')?.coordenadas ?? null
+    const zona = destino.zonasAlojamiento.find((candidate) => candidate.id === (route.accommodationZone ?? ''))
+    if (termini && ficha.pasaPorTermini) markers.push({ id: 'ficha-termini', name: 'Termini', coordinates: termini, number: 0, bg: '#FFFDF8', text: '#1C2230', icon: 'T' })
+    if (zona?.coordinates && !ficha.sinZona) markers.push({ id: 'ficha-zona', name: nombreDeZona(zona.nombre), coordinates: zona.coordinates, number: 0, bg: '#BD3964', text: '#ffffff', icon: 'casa' })
+    const camino = markers.map((marker) => marker.coordinates)
+    const lines: StopsMapMarkerLine[] = camino.length > 1 ? [{ id: 'ficha-camino', coordinates: camino, color: '#1C2230', dashed: true, width: 3 }] : []
+    return { markers, lines }
+  }, [ficha, puntoDeLaFicha, mode, info, destino.zonasAlojamiento, route.accommodationZone])
 
   if (!medio) return null
   const arrival = kind === 'llegada'
@@ -207,7 +257,11 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg">
           <div className="flex-1 overflow-y-auto">
             <div className="relative h-[30vh] min-h-[180px] w-full overflow-hidden bg-bg-hover">
-              <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} lines={buildCombinedDaysLines(route.days)} />
+              {mapaDeLaFicha ? (
+                <StopsMapView markers={mapaDeLaFicha.markers} lines={mapaDeLaFicha.lines} />
+              ) : (
+                <StopsMapView markers={[...buildCombinedDaysMarkers(route.days), ...arrivalMarkers]} lines={buildCombinedDaysLines(route.days)} />
+              )}
               <button
                 type="button"
                 onClick={onClose}
@@ -258,7 +312,16 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                 </div>
               )}
 
-              {activeTab === 'resumen' && (
+              {activeTab === 'resumen' && ficha && (
+                <FichaResumen
+                  ficha={ficha}
+                  direccion={direccionDelAlojamiento(route)}
+                  onReservarTraslado={privatePoints.length > 0 && tabs.includes('traslados') ? () => setTab('traslados') : undefined}
+                  onExplorarRestaurantes={() => onExplorarRestaurantes?.()}
+                />
+              )}
+
+              {activeTab === 'resumen' && !ficha && (
                 <div className="space-y-6">
                   <p className="text-[13.5px] leading-relaxed text-text/75">{why}</p>
 
@@ -274,8 +337,8 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                       mode === 'coche'
                         ? 'La ZTL y dónde aparcar'
                         : arrival
-                          ? `De ${point.nombre} al centro`
-                          : `Del centro a ${point.nombre}`
+                          ? `De ${point.nombre} a tu alojamiento`
+                          : `De tu alojamiento a ${point.nombre}`
                     return (
                       <Section key={point.id} title={heading}>
                         {point.distancia && <p className="-mt-1 text-[12px] text-text/55">{point.distancia}</p>}
@@ -307,7 +370,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                 <div className="space-y-3">
                   <p className="text-[13.5px] leading-relaxed text-text/75">
                     {arrival
-                      ? `¿Vienes en familia, en grupo o en pareja y quieres aprovechar ${info.ciudad} al máximo? Con un traslado privado te recogen y te llevan directo adonde tú quieras: al centro de la ciudad o a la puerta de tu alojamiento. Sin colas, sin trasbordos y sin cargar con las maletas.`
+                      ? `¿Vienes en familia, en grupo o en pareja y quieres aprovechar ${info.ciudad} al máximo? Con un traslado privado te esperan a la salida con tu nombre y te dejan en la puerta de tu alojamiento o donde tú quieras. Sin colas, sin trasbordos y sin cargar con las maletas.`
                       : `El último día, sin trasbordos ni maletas por el metro: un traslado privado te recoge en tu alojamiento y te lleva directo a ${privatePoints.map(puntoCorto).join(' o ')}. Ideal si vais en familia, en grupo o en pareja.`}
                   </p>
                   {privatePoints.map((point) => (

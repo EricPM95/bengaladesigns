@@ -527,6 +527,40 @@ export interface MealSlot {
   chosenRestaurant?: ChosenRestaurant | null
   /** El restaurante curado que pone el motor (decisión del usuario, 2026-09-28); el viajero lo puede cambiar. */
   recommendedRestaurant?: ChosenRestaurant | null
+  /** Tanda 7: la comida al llegar («Comida, cerca de tu alojamiento»): el motor no pone restaurante nuestro (`meals[].no_restaurant`). La ficha de llegada, con esta marca, enseña «Explorar restaurantes». */
+  noRestaurant?: boolean
+}
+
+/** Lo que el motor dice del día de llegada (`day.arrival_day`, Tanda 7). Solo se leen estos campos en las pantallas; el resto viaja tal cual. */
+export interface ArrivalDayInfo {
+  /** El día va sin paradas: se llama «Día de viaje». */
+  sin_paradas?: boolean
+  comida_al_llegar?: boolean
+  de_noche?: boolean
+  es_dia_1?: boolean
+  texto?: string | null
+  [clave: string]: unknown
+}
+
+/** La tarjeta «Hoy vuelves a casa» como la da el motor (`return_day.tarjeta`, Tanda 7): ver `TarjetaHoyVuelves.tsx`. */
+export interface TarjetaHoyVuelvesDato {
+  titulo: string
+  texto: string
+  desde_tu_zona: { texto: string; zona?: string; zona_nombre?: string | null; sin_zona?: boolean; aviso?: string | null; traslado_privado?: string | null } | null
+  ver_como_ir: { texto: string; abre: 'ficha_de_vuelta' }
+  explorar: { texto: string; boton: string; abre: 'explorar_monumentos'; cerca_de_mi: boolean }
+  despedida: string
+  /** Con una salida de madrugada, la misma tarjeta va al final del último día de ruta («Tu vuelo sale esta noche…»). */
+  madrugada: boolean
+}
+
+/** Lo que el motor dice del día de vuelta (`day.return_day`, Tanda 7). */
+export interface ReturnDayInfo {
+  /** Solo si el día va sin paradas (el viajero se va pronto o el día no lleva mañana). */
+  tarjeta?: TarjetaHoyVuelvesDato | null
+  /** Solo con una salida de madrugada: la tarjeta del final del último día de ruta. */
+  tarjetaUltimoDia?: TarjetaHoyVuelvesDato | null
+  [clave: string]: unknown
 }
 
 /** Un restaurante elegido por el viajero: no es una parada, va en su comida o su cena. */
@@ -764,6 +798,10 @@ export interface DayPlan {
   /** El día tal como lo dio el motor, antes del primer cambio del viajero (decisión del usuario, 2026-09-28): "Volver a
       la ruta original" lo recupera EXACTAMENTE, sin regenerar. Solo en los días nuestros; se guarda con el viaje. */
   originalSnapshot?: DayPlan | null
+  /** Tanda 7 (llegada con horas): lo que el motor dice del día que lleva la llegada (`day.arrival_day`): `sin_paradas` (el día se llama «Día de viaje»), `comida_al_llegar`, `de_noche`, `es_dia_1`, `texto`… */
+  arrivalDay?: ArrivalDayInfo | null
+  /** Tanda 7 (vuelta con horas): lo que el motor dice del día de vuelta (`day.return_day`) y, con salida de madrugada, del último día de ruta: la tarjeta «Hoy vuelves a casa» ya estructurada. */
+  returnDay?: ReturnDayInfo | null
   /** Día libre (lo organiza el viajero) sin horas: las paradas en orden y el paseo entre ellas ("Sin hora"). */
   untimed?: boolean
   /** Día que el viajero ha añadido al final del viaje ("+ Añadir día"): el motor no lo toca nunca y se puede quitar. */

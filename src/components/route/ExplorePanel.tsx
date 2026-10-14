@@ -150,6 +150,8 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [freeTourOpen, setFreeTourOpen] = useState(false)
   /** Desde dónde se ordena por cercanía cuando EXPLORAR se abre desde HOY («Cerca de ti»). */
   const [origenApertura, setOrigenApertura] = useState<Coordinates | null>(null)
+  /** EXPLORAR se abre directamente en «Cerca de mí» (la tarjeta «Hoy vuelves a casa», Tanda 7). */
+  const [aperturaCerca, setAperturaCerca] = useState(false)
   const banosYFuentes = explorarConBanosYFuentes()
   // «Cerca de ti» de HOY deja aquí lo que pide (filtro + punto de partida): se lee y se vacía al abrir.
   const pedido = useExploreAperturaStore((state) => state.pedido)
@@ -159,6 +161,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     if (!apertura) return
     if ((apertura.categoria === 'banos' || apertura.categoria === 'fuentes') && !banosYFuentes) return
     setOrigenApertura(apertura.origen)
+    setAperturaCerca(Boolean(apertura.cerca))
     setActiveCard(apertura.categoria)
   }, [pedido, banosYFuentes])
 
@@ -205,6 +208,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const backToCards = () => {
     setActiveCard(null)
     setOrigenApertura(null)
+    setAperturaCerca(false)
     setResults(null)
     onSelectResultId(null)
   }
@@ -245,6 +249,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         route={route}
         initialFilters={[activeCard]}
         initialOrigin={origenApertura}
+        initialNearby={aperturaCerca}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
         onAddFreeTour={freeTourAvailable(route) ? () => setFreeTourOpen(true) : undefined}
         onQuickAdd={(place) => setAddItem({ kind: 'place', place })}
