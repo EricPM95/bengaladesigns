@@ -26,7 +26,7 @@ import { tripCalendar } from './tripCalendar.js'
 import { closedOnDay, effectiveSchedule, lastEntryMinutes, matchesDateRange, matchesDateToken, parseHoursSessions } from './openingHours.js'
 import { sunsetFor } from './sunset.js'
 import { tripDays, weekdayForDay } from './tripSkeleton.js'
-import { prepararVuelta, disponerVuelta, armarBloque, tarjetaHoyVuelves, avisosDeVuelta, resumenDeVuelta, normalizaHora } from './vueltaDia.js'
+import { prepararVuelta, datosDeVuelta, disponerVuelta, armarBloque, tarjetaHoyVuelves, avisosDeVuelta, resumenDeVuelta, normalizaHora } from './vueltaDia.js'
 import { straightLineMeters } from './travelTimes.js'
 import { nocheValida } from './nightLimit.js'
 import { franjaDelFreeTour } from './freeTourHoras.js'
@@ -105,10 +105,12 @@ function avisoDe(stop, mes = null, invierno = MESES_INVIERNO) {
  * @returns el plan (misma forma que el motor anterior) o null si falta algún día escrito. Con `vuelta`: `plan.vuelta` (ver shared/routeEngine/vueltaDia.js y docs/dias/INFORME_PARTE_MOTORVUELTA_TANDA7.md).
  */
 export function planListasTrip(args) {
-  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada: mediaJornadaIn = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [], reservasViaje = [], llegada: llegadaIn = null, vuelta = null } = args
+  const { destData, written: writtenIn, totalDays, hasFreeTour: hasFreeTourIn = false, poolNames: poolNamesIn = [], experiencesPositive = [], dateRangeStartIso = null, month = null, season = null, travel, forceOrder = null, entradas = {}, freeTourDespues: freeTourDespuesIn = null, mediaJornada: mediaJornadaIn = null, diaCuatro = null, diaPropio = null, ajuste = null, chequeo = null, reservasGrandes = [], reservasViaje = [], llegada: llegadaIn = null, vuelta: vueltaIn = null } = args
   if (!writtenIn?.days) return null
   // («Crear mi propio día»: el día que el viajero monta con sus sitios es un día escrito más, hecho al vuelo (diaPropio.js), y va fijo en su día.)
   let written = diaPropio ? { ...writtenIn, days: { ...writtenIn.days, [diaPropio.id]: diaPropio.dia } } : writtenIn
+  // La vuelta lleva SIEMPRE los datos de los puntos del destino (`_llegada.json`), los mismos que lee la llegada (`written.llegadaInfo`): una sola fuente. Quien llame puede darle los suyos en `vuelta.info`.
+  const vuelta = vueltaIn ? { ...vueltaIn, info: vueltaIn.info ?? written?.llegadaInfo ?? null } : null
   // ── LLEGADA CON HORAS (Tanda 7, agente F; de pago): `llegada` = { hora, medio, puntoId?, zona?, pago?, aMano? }. Sin ella, con `pago: false`, en coche o con la ruta a mano, el motor no cambia nada. ──
   // Con la llegada puesta, el medio día de las salidas de antes (`mediaJornada`) deja de usarse: las horas del vuelo ya dicen cuánto queda de cada día (llegadaDia1.js).
   const llegadaPide = Boolean(llegadaIn && llegadaIn.pago !== false && llegadaIn.aMano !== true && llegadaIn.hora && MEDIOS_CON_HORA.includes(llegadaIn.medio ?? 'avion') && !(diaPropio && Number(diaPropio.dayNumber) === 1))
@@ -185,6 +187,22 @@ export function planListasTrip(args) {
     return { closed: true, opensAt: next?.open ?? null }
   }
 
+  // GANCHO LLEGADA → VUELTA, segunda parte (Tanda 7, integración): los días de la tabla que la llegada ha cambiado por una versión suya (el D1 por «la rápida», «la ruta del centro»…) y que NO son el día caído.
+  // Siguen en el viaje con otra forma: «un día más» de la vuelta no los puede traer otra vez como si faltaran (`hooks.vuelta.sustituidos`).
+  const conSustituidos = (decision, tabla) => {
+    if (decision?.aplica && decision.publico?.hooks?.vuelta) {
+      const caido = decision.publico.hooks.vuelta.vuelve_como_dia_mas ?? null
+      decision.publico.hooks.vuelta.sustituidos = tabla.filter((id) => !decision.chosen.includes(id) && id !== caido)
+    }
+    return decision
+  }
+
+  // LAS RESERVAS DEL DÍA DE VUELTA son de la vuelta (vueltaDia.js las trata allí, con su bloque a su hora). La llegada no las debe tomar por reservas «de otro día» que reclaman el día 1 (el Coliseo reservado
+  // el día de vuelta no le quita el D1 a la llegada): se le pasan solo las reservas grandes de los días de ruta. Solo con una vuelta de pago que corre de verdad (la ruta a mano no la usa).
+  const vueltaTrataSusReservas = Boolean(vuelta && vuelta.pago !== false && vuelta.aMano !== true && written.llegadas?.vuelta && totalDays >= 2 && datosDeVuelta(vuelta, vuelta.info))
+  const esDeVuelta = (r) => (calendar.hasDates && r?.dateIso ? r.dateIso === calendar.dateOfDay(contentDays + 1) : Number(r?.dayNumber) === contentDays + 1)
+  const reservasParaLlegada = vueltaTrataSusReservas ? (reservasGrandes ?? []).filter((r) => !esDeVuelta(r)) : reservasGrandes
+
   // ── 1. Qué días van y en qué orden ───────────────────────────────────────────────────────────────────────────
   const ordenado = ordenarDias({
     propios: diaPropio ? { [diaPropio.dayNumber]: diaPropio.id } : {},
@@ -192,12 +210,12 @@ export function planListasTrip(args) {
     // La llegada con horas: la decisión del día 1 (se pide una vez que se sabe la tabla de días del viaje).
     llegada: llegadaPide ? (chosen) => {
       const ftReserva = tour ? (reservasGrandes ?? []).find((r) => r && r.name === tour.name) ?? null : null
-      return decidirLlegada({
+      return conSustituidos(decidirLlegada({
         destData, written, entrada: llegadaIn, chosen, n: contentDays, hasFreeTour, ftReserva, reservasViaje, entradas, excursion: llegadaIn.excursionReservada ?? null, excursionDia1, ftHora: ftReserva?.time ?? (tour ? entradas?.[tour.name] ?? null : null), tourName: tour?.name ?? null,
-        fecha1: calendar.hasDates ? calendar.dateOfDay(1) : null, mes: calendar.month, reservasGrandes, sitiosGrandes: destData.sitios_grandes?.lugares ?? [], nivelDe,
+        fecha1: calendar.hasDates ? calendar.dateOfDay(1) : null, mes: calendar.month, reservasGrandes: reservasParaLlegada, sitiosGrandes: destData.sitios_grandes?.lugares ?? [], nivelDe,
         dia: (k) => { const d = cityDays[k]; return d ? { dayNumber: d.dayNumber, dateIso: realDateIso(d), weekday: hoursOf(d).weekday ?? null, noTour: noTourOn(d) } : null },
         cerrado: (name, k) => Boolean(cityDays[k]) && closedThatDay(name, cityDays[k]),
-      })
+      }), chosen)
     } : null,
     // El Free Tour de tarde o de noche que el viajero ha reservado, con su fecha: el día escrito que lo lleva va fijo en esa fecha (Tanda 6u).
     freeTourFijo: freeTourDespues && ftFranja && ftFranja !== 'manana' && (freeTourDespues.dateIso || freeTourDespues.dayNumber != null) ? { franja: ftFranja, dateIso: freeTourDespues.dateIso ?? null, dayNumber: freeTourDespues.dayNumber ?? null } : null,
@@ -2027,6 +2045,18 @@ export function planListasTrip(args) {
         draft.aplicadas.push(`vuelta:reserva:${r.name}`)
       }
     }
+    /**
+     * «Un día más» (el día que se cayó al llegar o el siguiente que el viaje no lleva) puede traer sitios que la ruta ya ha visto (la ruta del centro de la llegada y el día de Villa Borghese
+     * llevan los dos la Fontana de Trevi y la Plaza de España). Se aplica la regla de siempre de los imprescindibles: si ya se vieron otro día del viaje, un imprescindible sale otra vez como
+     * parada corta (~10 min) y lo que no es imprescindible pasa a «de camino» (con «Ya lo visitaste el día n»). Lo que ya iba de camino o por fuera no se toca.
+     */
+    const conLoYaVisto = (trabajo) => {
+      const ajusta = (s) => {
+        if (s.tipo === 'traslado' || !s.lugar || s.modo === 'camino' || s.modo === 'fuera' || !estado.vistos.has(s.lugar)) return s
+        return (nivelDe(s.lugar) ?? 3) === 1 ? { ...s, min: Math.min(s.min ?? 10, 10) } : { ...s, modo: 'camino', min: Math.min(s.min ?? 5, 5) }
+      }
+      return { ...trabajo, manana: trabajo.manana.map(ajusta), tarde: trabajo.tarde.map(ajusta) }
+    }
     /** Lo que va después de la comida pasa a «Si te sobra tiempo» (y lo que ya ha salido en el viaje no se repite). */
     const tardeASobra = (trabajo, causa) => {
       const yaEnLista = new Set([...trabajo.manana, ...(trabajo.sobra ?? [])].map((s) => s.lugar))
@@ -2039,7 +2069,7 @@ export function planListasTrip(args) {
     let nota = null
     // (La ruta a mano: ni se recorta ni se rehace nada; solo salen los avisos de las reservas contra el vuelo.)
     if (!Vactiva) return { disp: null, plan: null, ...montarPublico(V, null, null, []) }
-    disp = disponerVuelta(V, { written, destData, vistos: new Set(estado.vistos), orden: order, hasFreeTour, diaCaidoAlLlegar })
+    disp = disponerVuelta(V, { written, destData, vistos: new Set(estado.vistos), orden: [...order, ...(llegadaDecision?.aplica ? llegadaDecision.publico?.hooks?.vuelta?.sustituidos ?? [] : [])], hasFreeTour, diaCaidoAlLlegar })
     if (disp.tipo === 'manana') {
       const id = disp.corta ? disp.fila.corta : disp.fila.lista
       const dia = written.days[id]
@@ -2048,7 +2078,7 @@ export function planListasTrip(args) {
       draft.unitPrefix = `vuelta:${id}`
       draft.dia = { ...draft.dia, lluvia: null }
       const conTarde = disp.conComida ? 'el documento lo deja para «Si te sobra tiempo» en este día: lo que va después de la comida (la tarde es del viajero)' : 'el documento lo deja para «Si te sobra tiempo» en este día: lo que va después de la comida (este día no lleva comida)'
-      draft.trabajo = { ...tardeASobra(draft.trabajo, conTarde), comida: disp.conComida ? draft.trabajo.comida : null, cena: null, noche: null }
+      draft.trabajo = conLoYaVisto({ ...tardeASobra(draft.trabajo, conTarde), comida: disp.conComida ? draft.trabajo.comida : null, cena: null, noche: null })
       nota = draft.trabajo.empieza ? null : `la hora de empezar de ${id} no está escrita: se usa la de un día normal`
       meterReservas(draft, V.reservas.pequenas)
     } else if (disp.tipo === 'dia_mas') {
@@ -2056,7 +2086,7 @@ export function planListasTrip(args) {
       draft = preparar(disp.lista, -1, { day: retDay, parteKey: dia.partes.unica ? 'unica' : Object.keys(dia.partes)[0], entradas: entradasVuelta })
       draft.unitPrefix = `vuelta:${disp.lista}`
       draft.dia = { ...draft.dia, lluvia: null }
-      draft.trabajo = { ...draft.trabajo, cena: null, noche: null }
+      draft.trabajo = conLoYaVisto({ ...draft.trabajo, cena: null, noche: null })
       meterReservas(draft, V.reservas.pequenas)
     } else if (disp.tipo === 'bloques') {
       // (Lo que el día del sitio se ha quedado en su versión sin esa visita —la Plaza y la Basílica del Vaticano sin Museos— no se repite en el bloque.)

@@ -216,7 +216,11 @@ export function prepararVuelta(env) {
   const exc = vuelta.excursion
   const mismoDia = (dia) => (calendar.hasDates && exc?.dateIso ? exc.dateIso === dia.dateIso : exc?.dayNumber != null && Number(exc.dayNumber) === dia.dayNumber)
   const excursion = exc?.nombre ? { nombre: exc.nombre, vuelve: normalizaHora(exc.vuelve), medioDia: exc.medioDia === true, enVuelta: mismoDia({ dayNumber, dateIso }), enUltimoDia: mismoDia(ultimoDeRuta) } : null
-  const dueños = new Set(grandes.flatMap((g) => g.sitio.dias ?? []))
+  // Los días escritos en los que está la visita de un sitio grande: los suyos (`dias`), las versiones que la llegada hace de ellos (las claves de `sin_la_visita`) y cualquier otro día cuya lista lleve esa visita
+  // (el D1 «de tarde», «la rápida»…: las versiones del día 1 que llevan el Coliseo). Todos se quedan sin ella cuando su reserva es del día de vuelta. Sale de las listas y de los datos del destino, sin nombres escritos aquí.
+  const llevaLaVisita = (dia, nombre) => Object.values(dia?.partes ?? {}).some((parte) => Object.values(parte ?? {}).some((lista) => Array.isArray(lista) && lista.some((s) => s?.lugar === nombre && s.modo !== 'camino' && s.modo !== 'fuera')))
+  const diasDelSitio = (sitio) => [...new Set([...(sitio.dias ?? []), ...Object.keys(sitio.sin_la_visita ?? {}), ...Object.entries(written.days ?? {}).filter(([, dia]) => llevaLaVisita(dia, sitio.nombre)).map(([id]) => id)])]
+  const dueños = new Set(grandes.flatMap((g) => diasDelSitio(g.sitio)))
   const nombresDeBloques = [...new Set(grandes.flatMap((g) => g.sitio.bloque.paradas))]
   const reservados = new Set(grandes.map((g) => g.name))
   // Lo que cada día del sitio se queda aunque sea del bloque (porque sin ello su mañana o su tarde quedaba vacía): el bloque del día de vuelta no lo repite.
@@ -227,7 +231,7 @@ export function prepararVuelta(env) {
     dia: { dayNumber, dateIso, weekday: env.weekdayDe ? env.weekdayDe(dayNumber) : null },
     ultimoDeRuta, excursion, reservas: { vuelta: enVuelta, ultimoDia: enUltimoDia, grandes, pequenas },
     // El día de un sitio grande reservado el día de vuelta se queda en su día en la versión sin esa visita: el sitio «cierra» para él y su bloque sale de la lista.
-    cerradoEn: (diaId, nombre) => grandes.some((g) => g.name === nombre && (g.sitio.dias ?? []).includes(diaId)),
+    cerradoEn: (diaId, nombre) => grandes.some((g) => g.name === nombre && diasDelSitio(g.sitio).includes(diaId)),
     conservadas,
     limpiar: (diaId, trabajo) => {
       if (!dueños.has(diaId) || !trabajo) return trabajo

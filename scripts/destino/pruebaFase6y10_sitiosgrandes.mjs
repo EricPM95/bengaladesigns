@@ -1,14 +1,17 @@
 // Tanda 6y10: los sitios grandes salen de los DATOS del destino (`sitios_grandes`), no de una lista fija del código.
-//   node scripts/destino/pruebaFase6y10_sitiosgrandes.mjs ref=<carpeta con una copia del código de ANTES (commit bef2731)> [fechas=40] [servidor=http://localhost:8863] [servidor_ref=http://localhost:8864]
-// 1. Roma sale IGUAL que antes: el mismo viaje, con el motor viejo (lista fija) y con el nuevo (datos), para 1 a 7 días, con y sin Free Tour, con cada reserva grande en cada día y varias horas, en unas 40 fechas del año.
-// 2. Lo mismo con los servidores (reservation-plan y rebuild-day), si se dan los dos.
-// 3. Un destino de mentira con otros sitios grandes (sin Coliseo) se comporta con SU lista; un destino sin el campo se comporta como uno sin sitios grandes (sin romper).
+//   node scripts/destino/pruebaFase6y10_sitiosgrandes.mjs [ref=<carpeta con una copia del código de ANTES (commit bef2731)>] [fechas=40] [servidor=http://localhost:8863] [servidor_ref=http://localhost:8864]
+// 0. Los sitios grandes de Roma en los datos son los de siempre (Coliseo, Museos, Galería, Free Tour).
+// 1. (SOLO CON ref=) Roma sale IGUAL que antes: el mismo viaje, con el motor viejo (lista fija) y con el nuevo (datos), para 1 a 7 días, con y sin Free Tour, con cada reserva grande en cada día y varias horas, en unas 40 fechas del año.
+// 2. (SOLO CON ref= y servidor_ref=) Lo mismo con los servidores (reservation-plan y rebuild-day).
+// 3. Un destino de mentira con otros sitios grandes (sin Coliseo) se comporta con SU lista; un destino sin el campo se comporta como uno sin sitios grandes (sin romper). Esta parte no necesita ref=.
+//
+// NOTA (integración de la Tanda 7): las partes 1 y 2 comparan Roma con el código de ANTES de la 6y10. Desde la Tanda 7 Roma ya no sale igual que en ese commit (hay llegada y vuelta con horas, más cosas
+// de la tanda) y la comparación solo vale contra un commit concreto de esa época: es una HERRAMIENTA con `ref=`, no una prueba de la rutina. Sin `ref=` se saltan y pasan las partes 0 y 3.
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
-if (!args.ref) { console.error('Falta ref=<carpeta del código de antes>'); process.exit(2) }
-const REF = path.resolve(args.ref)
+const REF = args.ref ? path.resolve(args.ref) : null
 const NFECHAS = Number(args.fechas ?? 40)
 const fallos = []
 const debe = (cond, regla, texto) => { if (!cond) { fallos.push(`${regla}: ${texto}`) } }
@@ -21,17 +24,17 @@ const cargar = async (raiz) => {
   return { planListasTrip: trip.planListasTrip, D: alg.findPipelineV2Data('Roma'), written: written.writtenDaysFor('roma'), travel: times.travelTimesFor('roma'), res }
 }
 const NUEVO = await cargar(process.cwd())
-const VIEJO = await cargar(REF)
+const VIEJO = REF ? await cargar(REF) : null
+if (!VIEJO) console.log('(sin ref=: se saltan las partes 1 y 2, que comparan con el código de antes; ver la nota de arriba)')
 const { sitiosGrandesDe, sitioGrandeDe, claseDeReserva } = NUEVO.res
 
 // ── 0. El dato está y es el de la lista fija de antes ──
 const ANTES = ['Coliseo', 'Museos Vaticanos y Capilla Sixtina', 'Galería Borghese', 'Free Tour por Roma']
-debe(!VIEJO.D.sitios_grandes, '0 dato', 'la copia de antes ya trae el campo (la referencia no es la de antes)')
-debe(JSON.stringify([...VIEJO.res.RESERVAS_GRANDES]) === JSON.stringify(ANTES), '0 dato', 'la lista fija de antes no es la que se esperaba')
+if (VIEJO) debe(!VIEJO.D.sitios_grandes, '0 dato', 'la copia de antes ya trae el campo (la referencia no es la de antes)')
+if (VIEJO) debe(JSON.stringify([...VIEJO.res.RESERVAS_GRANDES]) === JSON.stringify(ANTES), '0 dato', 'la lista fija de antes no es la que se esperaba')
 debe(JSON.stringify([...sitiosGrandesDe(NUEVO.D)]) === JSON.stringify(ANTES), '0 dato', `los sitios grandes de Roma en los datos no son los de la lista fija de antes: ${[...sitiosGrandesDe(NUEVO.D)]}`)
 debe(NUEVO.res.RESERVAS_GRANDES === undefined, '0 dato', 'sigue exportándose la lista fija RESERVAS_GRANDES')
-const sinCambioEnElResto = JSON.stringify({ ...NUEVO.D, sitios_grandes: undefined }) === JSON.stringify(VIEJO.D)
-debe(sinCambioEnElResto, '0 dato', 'los datos de Roma han cambiado en algo más que el campo nuevo')
+if (VIEJO) debe(JSON.stringify({ ...NUEVO.D, sitios_grandes: undefined }) === JSON.stringify(VIEJO.D), '0 dato', 'los datos de Roma han cambiado en algo más que el campo nuevo')
 
 // ── 1. Roma igual que antes ──
 const MUSEOS = 'Museos Vaticanos y Capilla Sixtina'
@@ -56,7 +59,7 @@ let comparados = 0
 let distintos = 0
 let conPlan = 0
 const t0 = Date.now()
-for (const forma of FORMAS) {
+if (VIEJO) for (const forma of FORMAS) {
   for (const inicio of fechas) {
     const casos = [{ extra: {}, pool: [], etiqueta: 'sin reservas' }, { extra: {}, pool: ['Galería Borghese', "Castillo de Sant'Angelo"], etiqueta: 'con pool' }]
     for (const R of RESERVAS) for (let k = 1; k <= forma.dias; k++) {
@@ -73,11 +76,11 @@ for (const forma of FORMAS) {
     }
   }
 }
-debe(conPlan > comparados * 0.9, '1 muestra', `casi ningún viaje sale con plan (${conPlan} de ${comparados}): la prueba no mira nada`)
-console.log(`1. Roma igual: ${comparados} viajes comparados (${conPlan} con plan), ${distintos} diferencias, ${((Date.now() - t0) / 1000).toFixed(0)} s`)
+if (VIEJO) debe(conPlan > comparados * 0.9, '1 muestra', `casi ningún viaje sale con plan (${conPlan} de ${comparados}): la prueba no mira nada`)
+if (VIEJO) console.log(`1. Roma igual: ${comparados} viajes comparados (${conPlan} con plan), ${distintos} diferencias, ${((Date.now() - t0) / 1000).toFixed(0)} s`)
 
 // ── 1b. claseDeReserva: la tabla de todas las listas, igual con la lista de antes y con la de los datos ──
-{
+if (VIEJO) {
   let n = 0
   let dist = 0
   const horas = []
@@ -99,7 +102,7 @@ const peticion = async (base, ruta, cuerpo) => {
   const r = await fetch(`${base}${ruta}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
   return `${r.status} ${await r.text()}`
 }
-if (args.servidor && args.servidor_ref) {
+if (VIEJO && args.servidor && args.servidor_ref) {
   let n = 0
   let dist = 0
   const ahora = fechas.filter((_, i) => i % 4 === 0)

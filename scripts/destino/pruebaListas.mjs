@@ -18,7 +18,9 @@ const paso = Number(args.paso ?? 1)
 // Tanda 7: `llegada=HH:MM` pone a TODOS los viajes la misma llegada (avión a Fiumicino, zona `zona=` o Centro; `punto=` otro punto, `medio=` otro medio): la prueba de siempre, con vuelos. Con la llegada puesta el medio día
 // de las salidas de antes no se usa (se salta) y solo corre la parte de las formas, extras y fechas: las reservas con día y los pares se miran sin vuelos.
 const LLEGADA = args.llegada ? { hora: args.llegada, medio: args.medio ?? 'avion', puntoId: args.punto ?? (args.medio ? null : 'fco'), zona: args.zona ?? 'centro' } : null
-if (LLEGADA) { args.sinreservasdia = '1'; args.sinpares = '1' }
+// Tanda 7 (integración): `vuelta=HH:MM` pone a TODOS los viajes la misma vuelta (vuelo desde Fiumicino; `vmedio=` y `vpunto=` para otro medio u otro punto). Se puede combinar con `llegada=`: los días de ruta salen con las dos.
+const VUELTA = args.vuelta ? { hora: args.vuelta, modo: args.vmedio ?? 'flight', puntoId: args.vpunto ?? (args.vmedio ? null : 'fco'), zona: args.zona ?? 'centro' } : null
+if (LLEGADA || VUELTA) { args.sinreservasdia = '1'; args.sinpares = '1' }
 const SOLO = args.dias ? new Set(args.dias.split(',')) : null
 const out = args.out ?? 'docs/dias/PRUEBA_LISTAS.md'
 const addDays = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10)
@@ -105,7 +107,7 @@ let nulos = 0
 const t0 = Date.now()
 for (const forma of FORMAS) {
   if (SOLO && !SOLO.has(forma.g)) continue
-  if (LLEGADA && forma.medio) continue
+  if ((LLEGADA || VUELTA) && forma.medio) continue
   for (const extra of EXTRAS) {
     // El Free Tour de después solo en viajes de 2 días o más sin Free Tour de mañana; las reservas y el pool, en todos.
     if (extra.ftDespues && (forma.ft || forma.dias < 2 || forma.medio)) continue
@@ -113,7 +115,7 @@ for (const forma of FORMAS) {
       const poolNames = extra.pool ?? []
       const entradas = extra.entradas ?? {}
       const exp = [...(forma.ft ? ['imprescindibles', 'free_tour'] : []), ...(extra.exp ?? [])]
-      const plan = planListasTrip({ destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames, experiencesPositive: exp, dateRangeStartIso: inicio, travel, entradas, freeTourDespues: extra.ftDespues ?? null, mediaJornada: forma.medio ?? null, diaCuatro: forma.diaCuatro ?? null, ...(LLEGADA ? { llegada: LLEGADA } : {}) })
+      const plan = planListasTrip({ destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames, experiencesPositive: exp, dateRangeStartIso: inicio, travel, entradas, freeTourDespues: extra.ftDespues ?? null, mediaJornada: forma.medio ?? null, diaCuatro: forma.diaCuatro ?? null, ...(LLEGADA ? { llegada: LLEGADA } : {}), ...(VUELTA ? { vuelta: VUELTA } : {}) })
       resumen.viajes++
       if (!plan) { nulos++; fallos.push({ regla: 'sin_plan', texto: `${forma.clave}${extra.clave ? ` + ${extra.clave}` : ''} · ${inicio}: el motor no devuelve plan` }); porRegla.set('sin_plan', (porRegla.get('sin_plan') ?? 0) + 1); continue }
       const etiqueta = `${forma.clave}${extra.clave ? ` + ${extra.clave}` : ''} · inicio ${inicio}`
