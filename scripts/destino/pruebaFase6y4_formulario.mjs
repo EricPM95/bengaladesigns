@@ -123,7 +123,7 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
   debe(/onOpenDates=\{ponFechas\}/.test(ruta) && /onPonFechas=\{ponFechas\}/.test(ruta), '3 una puerta', 'la cabecera de la app o HOY no usan ponFechas')
   // «Añade un día más a tu viaje» y demás: quien pide el calendario pasa por request().
   const quienes = recorrer('src').filter((r) => /useDatesCalendarStore/.test(fuente(r)) && !/useDatesCalendarStore\.ts$/.test(r)).map((r) => r.replace('src/components/', ''))
-  debe(quienes.length === 4 && quienes.every((r) => /DatesCalendarModal|MapDestinationHeader|ReservasPanel|RouteView/.test(r)), '3 una puerta', `usan el almacén del calendario: ${quienes.join(', ')}`)
+  debe(quienes.length === 5 && quienes.every((r) => /DatesCalendarModal|MapDestinationHeader|ReservasPanel|RouteView|HojaResumenVuelo/.test(r)), '3 una puerta', `usan el almacén del calendario: ${quienes.join(', ')}`)
   // Montado en RESERVAS y en el resto de pestañas, con el diálogo de acortar.
   debe((ruta.match(/\{datesCalendar\}/g) ?? []).length === 2 && (ruta.match(/\{datesDialog\}/g) ?? []).length === 2, '3 una puerta', 'el calendario o el «¿Estás seguro?» no están montados en RESERVAS y en las demás pestañas')
 }

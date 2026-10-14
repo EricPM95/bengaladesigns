@@ -1,6 +1,7 @@
 import { mapStop, type GeneratedStop } from './mapGeneratedRoute'
 import type { Stop } from './types'
 import { isManualRoute } from './manualPlan'
+import { llegadaVueltaDe } from './llegadaVuelta'
 
 export interface CheckTimeResult {
   status: 'bien' | 'justo' | 'normal' | 'hueco'
@@ -33,6 +34,8 @@ export async function checkTime(dayId: string, nowMinutes: number): Promise<Chec
         day_number: day.dayNumber,
         done_names: done.flatMap((stop) => [stop.name, stop.fullName].filter(Boolean)),
         now_minutes: nowMinutes,
+        // Tanda 7 (de pago): el día que se mira es el de la hora de llegada y de vuelta del viajero.
+        ...(await llegadaVueltaDe(route, useRouteStore.getState().reservations)),
       }),
     })
     if (!response.ok) return null

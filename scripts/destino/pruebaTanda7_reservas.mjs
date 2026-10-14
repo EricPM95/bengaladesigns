@@ -482,8 +482,10 @@ console.log('10. El enganche onCambioDeVuelo y el rehacer')
   poner(curada)
   debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === true && llamadas.length === 1 && llamadas[0].start === '2027-03-10', '10 rehacer', 'un cambio de vuelo en una ruta curada de pago no pone en marcha el rehacer')
   llamadas = []
+  // (Tanda 7, conexión: una ruta con días cambiados a mano SÍ se rehace; esos días no se tocan —lo comprueba `pruebaTanda7_conexion`—. Antes no se rehacía nada.)
   poner({ ...curada, editedManually: true })
-  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === false && llamadas.length === 0, '10 a mano no se toca', 'una ruta cambiada a mano no debe rehacerse sola')
+  debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === true && llamadas.length === 1, '10 a mano no se toca', 'una ruta con días cambiados a mano debe rehacerse (sus días no se tocan)')
+  llamadas = []
   poner({ ...curada, planMode: 'manual' })
   debe(rehacerPorCambioDeVuelo({ que: 'hora', mitad: 'arrival' }) === false && llamadas.length === 0, '10 ruta a mano', 'la ruta a mano nunca se rehace')
   poner(viaje())

@@ -4,6 +4,7 @@ import type { TuAlojamiento } from '../lib/tuAlojamiento'
 import type { Importe } from '../lib/dinero'
 import type { EsimStatus, GeneralBooking, TransportBooking } from '../lib/readiness'
 import { isManualRoute } from '../lib/manualPlan'
+import type { PlanLlegada, PlanVuelta } from '../lib/planLlegadaVuelta'
 import { FREE_TOUR_REF, isManualFreeTourReservation, pedirFotoDelFreeTour, withManualFreeTour, withoutManualFreeTour } from '../lib/freeTourManual'
 import type { DestinationPlace } from '../lib/destinationPlacesApi'
 import { dayOfReservation, isBigReservation, sitiosGrandesDelViaje, isDayPinned, newCampaignCode, placeReservedEntrance, reapplyReservations, unpinReservedStops, type Reservation, type SaleMatch } from '../lib/bookings'
@@ -15,7 +16,6 @@ import type {
   GastoExtra,
   DateRange,
   DayPlan,
-  DidntMakeCutItem,
   DestinationArchetype,
   Excursion,
   ExperienceId,
@@ -34,8 +34,6 @@ import type {
 } from '../lib/types'
 import type { TripPayload } from '../lib/tripPersistence'
 import { minutesToTime, parseTimeToMinutes, roundToNearestQuarterHour, roundUpToQuarterHour } from '../lib/time'
-import { optimizeDayWithRealTransport as computeOptimizedDay, overflowToDidntMakeCut } from '../lib/stopScheduling'
-import { fitMealsToStops } from '../lib/arrivalReturn'
 import { spareInsertIndex } from '../lib/spareStops'
 import { getTodayTripContext } from '../lib/todayMode'
 import { daysBetweenInclusive } from '../lib/dateRange'
@@ -579,11 +577,8 @@ interface RouteStoreState {
   setAccommodationAddress: (direccion: string | null) => void
   /** Tanda 7: el viajero ya ha visto su vuelta con las fechas de ahora: se va el aviso «revisa que tu vuelta sigue siendo…». */
   marcarVueltaVista: () => void
-  setFlightAdjust: (choice: 'auto' | 'manual' | null) => void
-  /** "Optimizar ruta" en RESERVAS — recalcula el horario REAL de un único día (llegada o vuelta) a partir de la hora de vuelo introducida, ver stopScheduling.ts. No toca el resto de días. */
-  optimizeDayWithRealTransport: (dayId: string, kind: 'arrival' | 'departure', flightTime: string) => Promise<void>
-  /** «Ajustar este día a tu llegada / vuelta»: la llegada reprograma desde la hora en el centro; la vuelta quita lo que acaba después de la hora de salir. Las comidas siguen a las paradas. */
-  fitDayToTrip: (dayId: string, kind: 'arrival' | 'departure', keyMinutes: number) => Promise<void>
+  /** Tanda 7: guarda el plan de la llegada y/o el de la vuelta que dio el motor al rehacer días sueltos (reservas, Free Tour…). `undefined` = no cambia; `null` los quita. */
+  ponerPlanes: (planes: { llegada?: PlanLlegada | null; vuelta?: PlanVuelta | null }) => void
 }
 
 const updateDay = (route: Route, dayId: string, updater: (day: DayPlan) => DayPlan): Route => ({
@@ -1746,7 +1741,6 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   // (Tanda 7: poner o cambiar la hora de la vuelta es «verla»: queda sellada con la fecha de vuelta de ahora y el aviso de cambio de fechas se va.)
   setDepartureFlightTime: (time) =>
     set((state) => (state.route ? { route: { ...state.route, departureFlightTime: time, departureFechaVista: state.route.answers.dateRange?.end ?? null } } : state)),
-  setFlightAdjust: (choice) => set((state) => (state.route ? { route: { ...state.route, flightAdjust: choice } } : state)),
   setArrivalPointId: (kind, pointId) =>
     set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalPointId' : 'departurePointId']: pointId } } : state)),
   removeFlightLeg: (kind) =>
@@ -1766,55 +1760,23 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setLegOtroPunto: (kind, texto) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtroPunto' : 'departureOtroPunto']: texto?.trim() ? texto.trim().slice(0, 60) : null } } : state)),
   setLegOtraHora: (kind, hora) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtraHora' : 'departureOtraHora']: hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : null } } : state)),
   setAccommodationAddress: (direccion) => set((state) => (state.route ? { route: { ...state.route, accommodationAddress: direccion?.trim() ? direccion.trim().slice(0, 160) : null } } : state)),
+  ponerPlanes: (planes) =>
+    set((state) => {
+      if (!state.route || (planes.llegada === undefined && planes.vuelta === undefined)) return state
+      return {
+        route: {
+          ...state.route,
+          ...(planes.llegada !== undefined ? { planLlegada: planes.llegada } : {}),
+          ...(planes.vuelta !== undefined ? { planVuelta: planes.vuelta } : {}),
+        },
+      }
+    }),
   marcarVueltaVista: () =>
     set((state) => {
       const fin = state.route?.answers.dateRange?.end ?? null
       if (!state.route || !state.route.departureFlightTime || state.route.departureFechaVista === fin) return state
       return { route: { ...state.route, departureFechaVista: fin } }
     }),
-
-  optimizeDayWithRealTransport: async (dayId, kind, flightTime) => {
-    const state = get()
-    if (!state.route || isManualRoute(state.route)) return
-    const day = state.route.days.find((candidate) => candidate.id === dayId)
-    if (!day || day.stops.length === 0) return
-    const flightTimeMinutes = parseTimeToMinutes(flightTime)
-    if (Number.isNaN(flightTimeMinutes)) return
-    const optimized = await computeOptimizedDay(day, kind, flightTimeMinutes)
-    set((current) => (current.route ? { route: updateDay(current.route, dayId, (d) => ({ ...d, ...optimized })) } : current))
-  },
-
-  fitDayToTrip: async (dayId, kind, keyMinutes) => {
-    const state = get()
-    // Una ruta a mano no se ajusta sola a la llegada ni a la vuelta (Tanda 6y): ni mueve ni quita paradas; el viajero decide.
-    if (!state.route || isManualRoute(state.route)) return
-    const day = state.route.days.find((candidate) => candidate.id === dayId)
-    if (!day || day.stops.length === 0) return
-    let optimized: { stops: Stop[]; didntMakeCut?: DidntMakeCutItem[] }
-    if (kind === 'departure') {
-      // La vuelta no rehace el día: las horas del motor se quedan y sale lo que acaba después de la hora de salir.
-      const fits = (stop: Stop) => {
-        const start = parseTimeToMinutes(stop.time ?? '')
-        return Number.isNaN(start) || start + stop.durationMinutes <= keyMinutes
-      }
-      const overflow = day.stops.filter((stop) => !fits(stop))
-      optimized = { stops: day.stops.filter(fits), didntMakeCut: [...(day.didntMakeCut ?? []), ...overflowToDidntMakeCut(overflow)] }
-    } else {
-      // La llegada sí: el día empieza a la hora en el centro (optimizeDayWithRealTransport suma 60 min de traslado).
-      optimized = await computeOptimizedDay(day, 'arrival', keyMinutes - 60)
-    }
-    // Las comidas siguen a las paradas (la de las 13:30 no puede pisar el Coliseo que ahora empieza a las 12:30).
-    const meals = fitMealsToStops(day.meals, optimized.stops, kind === 'arrival' ? { from: keyMinutes } : { until: keyMinutes })
-    // Es un cambio del viajero: el día guarda su copia («Volver al día original») y la varita sale.
-    set((current) => {
-      if (!current.route) return current
-      const updated = updateDay(current.route, dayId, (d) => {
-        const { originalSnapshot, ...plain } = d
-        return { ...d, ...optimized, meals, originalSnapshot: originalSnapshot ?? (JSON.parse(JSON.stringify(plain)) as DayPlan) }
-      })
-      return { route: { ...updated, editedManually: true } }
-    })
-  },
 }))
 
 // Lo que cuenta como "el viajero ha cambiado la ruta a mano" (PROMPT_PENDIENTE G): si luego pone fechas desde el mapa,

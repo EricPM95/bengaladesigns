@@ -72,6 +72,19 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
                           {item.actionLabel}
                         </button>
                       )}
+                      {(item.acciones ?? []).map((accion) => (
+                        <button
+                          key={accion.label}
+                          type="button"
+                          onClick={() => {
+                            accion.run()
+                            onClose()
+                          }}
+                          className="rounded-full border border-accent px-3 py-1 text-caption font-semibold text-accent transition-colors hover:bg-accent-soft"
+                        >
+                          {accion.label}
+                        </button>
+                      ))}
                       {item.canMarkRead && !item.read && (
                         <button type="button" onClick={() => read(item)} className="text-caption font-semibold text-text-soft underline underline-offset-2">
                           Marcar como leído

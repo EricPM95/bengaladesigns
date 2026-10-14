@@ -15,8 +15,9 @@ import { HojaPrecio } from './HojaPrecio'
 import { formatoImporte, leerImporte, type Importe } from '../../../lib/dinero'
 import { Icono } from '../../ui/Icono'
 
-const HORAS = Array.from({ length: (24 * 60 - 360) / 5 }, (_, i) => {
-  const m = 360 + i * 5
+// (Tanda 7: las 24 horas, de 5 en 5. Una llegada a las 0:30 o un vuelo a las 2:00 son horas de verdad —el motor las trata como «la noche de antes»—; la rueda ya no empieza a las 6:00.)
+const HORAS = Array.from({ length: (24 * 60) / 5 }, (_, i) => {
+  const m = i * 5
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 })
 const HORA_POR_DEFECTO: Record<LegKind, string> = { arrival: '11:15', departure: '18:05' }

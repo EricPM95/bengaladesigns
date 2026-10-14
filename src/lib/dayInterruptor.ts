@@ -17,6 +17,7 @@ import { dateOfDay, dayOfReservation, reapplyReservations, type Reservation } fr
 import { withDayColors } from './freeDays'
 import { elDia } from './nombreDeDia'
 import { rehacerDiasSinTocar } from './rebuildDay'
+import { llegadaVueltaDe } from './llegadaVuelta'
 import { useRouteStore } from '../store/useRouteStore'
 
 export type CambioInterruptor = { ok: true } | { ok: false; motivo: 'bloqueado'; aviso: string } | { ok: false; motivo: 'error' }
@@ -49,6 +50,8 @@ async function pedirDia(previous: DayPlan, dayNumber: number, patch: { answers?:
         must_include_places: route.mustIncludePlaces ?? [],
         inside_names: route.insideNames ?? [],
         reservas: reservasParaMotor(reservations),
+        // Tanda 7 (de pago): la hora de llegada y de vuelta del viajero.
+        ...(await llegadaVueltaDe(route, reservations)),
         ...(patch.ownPlaces ? { own_places: patch.ownPlaces, own_day_name: patch.ownName } : {}),
       }),
     })

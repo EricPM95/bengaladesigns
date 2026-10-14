@@ -313,6 +313,8 @@ export function reapplyReservations(route: Route, reservations: Reservation[]): 
       next = placeReservedEntrance(next, reservation)
       continue
     }
+    // (Tanda 7: una excursión que el viajero dejó sin día con «Pasar este día a Roma» sigue en sus reservas, pero no vuelve a ocupar el día.)
+    if (reservation.noMueve) continue
     const day = dayOfReservation(next, reservation)
     // (El día 4 lleva su interruptor: la excursión reservada se queda elegida en su página; el día no se cambia por otro.)
     if (day?.interruptor) {

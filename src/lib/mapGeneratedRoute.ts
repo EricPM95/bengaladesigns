@@ -29,6 +29,7 @@ import { buildTransportSegment, type CityTransitionFact } from './cityTransition
 import { buildPhaseTransportSegment, type PhaseTransitionFact } from './phaseTransitionTransport'
 import { appendReturnLegDay } from './tripDays'
 import { DATE_NOTICE_ICONS } from './dateNotices'
+import type { PlanLlegada, PlanVuelta } from './planLlegadaVuelta'
 
 // ── Tipos de la respuesta cruda de Claude (ver ROUTE_SYSTEM_PROMPT en server/index.js) ──
 
@@ -292,6 +293,11 @@ export interface GeneratedDay {
   own_day?: boolean
   /** Solo días de excursión con ruta curada — ver DayPlan.curatedAlternative. */
   curated_alternative?: { title: string; places: string[] } | null
+  /** Tanda 7: el plan de la llegada con horas, solo en el día 1 y solo con la hora de llegada puesta — ver Route.planLlegada. */
+  arrival_plan?: PlanLlegada
+  /** Tanda 7: el día de vuelta que monta el motor con la hora de vuelta (el plan va en `return_day`) — ver Route.planVuelta. */
+  is_return_leg?: boolean
+  return_day?: PlanVuelta
 }
 
 /** Una excursión de la página del día 4, tal como viaja del servidor (server/engine/excursionPage.js). */
@@ -410,6 +416,8 @@ export interface GeneratedRouteResponse {
    * routeGenerationOrchestrator.ts) — no lo usa nada de mapGeneratedRouteToRoute directamente, que
    * sigue recibiendo recommendedRevisits como su propio parámetro aparte. */
   recommended_revisits?: { name: string; day_number: number; reason: string }[]
+  /** Tanda 7 (de pago, con la hora de vuelta puesta): el día de vuelta que monta el motor (la mañana de la última visita o «Día de viaje» sin paradas, con `return_day`). Va dentro del punto de control para que sobreviva a reanudar; nunca a la caché de rutas. */
+  return_leg_day?: GeneratedDay | null
   /** Cómo se mueve el viajero en este destino cuando ir a pie deja de tener sentido — llega desde generate-skeleton (ver resolveDefaultTransport en server/index.js) y acaba en Route.defaultTransport. */
   default_transport?: TripDefaultTransport
 }
@@ -938,6 +946,8 @@ export function mapSingleGeneratedDay(destination: string, generated: GeneratedD
     poolNotices: previous.poolNotices,
     recommendedRevisits: previous.recommendedRevisits,
     countryCode: day.countryCode ?? previous.countryCode,
+    // (Tanda 7: el día de vuelta que monta el motor sigue siendo el día de vuelta.)
+    ...(previous.isReturnLeg ? { isReturnLeg: true as const } : {}),
   }
 }
 
@@ -1025,9 +1035,21 @@ export function mapGeneratedRouteToRoute(
   const mappedDays = generated.days.map((day) =>
     mapDay(destination, day, excursionsByDay, transportByDay, didntMakeCut, recommendedRevisitsByDay, poolNoticesByDay),
   )
-  dedupeFreeTour(mappedDays)
-  dedupeUnaVez(mappedDays)
-  const days = mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
+  // Tanda 7 (de pago, con la hora de vuelta puesta): el día de vuelta lo monta el motor (la última mañana o «Día de viaje» sin paradas). Va en lugar del sintético, con el mismo número y el mismo id.
+  const vueltaDelMotor = generated.return_leg_day ?? null
+  const dedupables = mappedDays.length < answers.days && vueltaDelMotor ? [...mappedDays, mapDay(destination, { ...vueltaDelMotor, day_number: mappedDays.length + 1, city: mappedDays.at(-1)?.city ?? destination }, new Map(), new Map())] : mappedDays
+  dedupeFreeTour(dedupables)
+  dedupeUnaVez(dedupables)
+  const days = (() => {
+    if (dedupables.length > mappedDays.length) {
+      const vuelta = dedupables[dedupables.length - 1]
+      const anterior = mappedDays.at(-1)
+      return [...mappedDays, { ...vuelta, id: anterior ? `${anterior.id}-return` : vuelta.id, countryCode: vuelta.countryCode ?? anterior?.countryCode ?? null, isReturnLeg: true as const }]
+    }
+    return mappedDays.length < answers.days ? appendReturnLegDay(mappedDays) : mappedDays
+  })()
+  const planLlegada: PlanLlegada | null = generated.days.find((day) => day.arrival_plan)?.arrival_plan ?? null
+  const planVuelta: PlanVuelta | null = vueltaDelMotor?.return_day ?? null
 
   return {
     id: `route-${slugify(destination)}-${Date.now()}`,
@@ -1040,6 +1062,8 @@ export function mapGeneratedRouteToRoute(
     intensity: 5,
     createdAt: new Date().toISOString(),
     defaultTransport: generated.default_transport,
+    ...(planLlegada ? { planLlegada } : {}),
+    ...(planVuelta ? { planVuelta } : {}),
     anchorNames,
     contextBanner: generated.days.find((day) => day.context_banner)?.context_banner ?? null,
     seasonNote: (() => {

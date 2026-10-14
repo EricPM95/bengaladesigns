@@ -62,7 +62,7 @@ import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
 import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
 import { useExploreAperturaStore, type AperturaExplorar } from '../../../store/useExploreAperturaStore'
 import { billeteDe } from '../../../lib/billete'
-import { barTextOf, puntoDeLaMitad, centerMinutesOf, leaveMinutesOf, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
+import { barTextOf, puntoDeLaMitad, medioOf, tripModes, useArrivalInfo, type ArrivalMode } from '../../../lib/arrivalReturn'
 import { AddStopScreen } from '../addStop/AddStopScreen'
 import { PlaceExplorerScreen } from '../placeExplorer/PlaceExplorerScreen'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
@@ -378,18 +378,14 @@ export function DayDetailPanel({
     day.dayNumber === 1 || isLastDay ? (route?.transportContext.transport_option?.id ?? null) : (day.transport?.mode ?? null)
 
   // La llegada y la vuelta (PROMPT_UI, Parte 3): van con la POSICIÓN, no con el día — la llegada en el primer día del
-  // viaje y la vuelta en el último, así que si se borra o se mueve uno, el nuevo primero o último las hereda. La hora
-  // en el centro y la de salir marcan las paradas que no caben («Llegas después», «Ya te has ido»).
+  // viaje y la vuelta en el último, así que si se borra o se mueve uno, el nuevo primero o último las hereda. Las horas del
+  // viajero solo ponen la barra o el billete; los días los monta el motor (Tanda 7).
   const arrivalInfo = useArrivalInfo(route?.destination ?? day.city, day.city, origin)
   const modes: { arrival: ArrivalMode; departure: ArrivalMode } = route ? tripModes(route) : { arrival: 'avion', departure: 'avion' }
   const arrivalMedio = medioOf(arrivalInfo, modes.arrival)
   const departureMedio = medioOf(arrivalInfo, modes.departure)
-  const arrivalPoint = arrivalMedio?.puntos.find((point) => point.id === route?.arrivalPointId) ?? arrivalMedio?.puntos[0] ?? null
-  const departurePoint = departureMedio?.puntos.find((point) => point.id === route?.departurePointId) ?? departureMedio?.puntos[0] ?? null
   const arrivalTime = route?.arrivalFlightTime ?? null
   const departureTime = route?.departureFlightTime ?? null
-  const centerMinutes = isFirstDayOfTrip && modes.arrival !== 'coche' ? centerMinutesOf(arrivalTime, arrivalPoint) : null
-  const leaveMinutes = isLastDay ? leaveMinutesOf(departureTime, modes.departure, departureMedio, departurePoint) : null
   // La barra (Tanda 6t): el punto es el elegido en RESERVAS (no el primero de la lista) y ninguna hora la calcula la app. Las horas de arriba (centro, salir) solo montan el día por dentro.
   const pago = pagoActivo()
   const destinoNombre = arrivalInfo.ciudad || route?.destination || day.city
@@ -406,7 +402,6 @@ export function DayDetailPanel({
   const returnBarText = barTextOf({ kind: 'vuelta', mode: modes.departure, point: departureChosen, origin, destino: destinoNombre, time: modes.departure === 'coche' ? null : departureTime, pago, codigo: route?.departureCodigo ?? null })
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
   const pedirReservas = useReservasFocusStore((state) => state.pedir)
-  const fitDayToTrip = useRouteStore((state) => state.fitDayToTrip)
   const setMode = useRouteStore((state) => state.setMode)
   const marcarVueltaVista = useRouteStore((state) => state.marcarVueltaVista)
   /** Abrir la ficha de la vuelta es «ver la vuelta» (Tanda 7): se va el aviso de la campana de «has cambiado los días del viaje». */
@@ -765,18 +760,15 @@ export function DayDetailPanel({
   const lunchMeal = day.meals.find((meal) => meal.mealTime === 'lunch')
   const lunchStart = lunchMeal?.windowEnd ? parseTimeToMinutes(lunchMeal.time) : NaN
   const lastBeforeLunch = Number.isNaN(lunchStart) ? -1 : schedule.filter((item) => item.startMinutes < lunchStart).length - 1
-  // «Ajustar este día a tu llegada / vuelta» quita la comida o la cena que ya no toca (antes de llegar, después de irte):
-  // sin ella en el día, el primer o el último día no la vuelven a poner por franja.
-  const mealDroppedByTrip = (mealTime: 'lunch' | 'dinner') => (centerMinutes != null || leaveMinutes != null) && day.meals.length > 0 && !day.meals.some((meal) => meal.mealTime === mealTime)
   // (Donde el viajero la dejó al arrastrarla, si la movió y ese sitio sigue existiendo: PROMPT_UI_REPASO_3, 3.)
   const movedMeal = (mealTime: 'lunch' | 'dinner'): number | null => {
     const at = day.mealAfter?.[mealTime]
     return at != null && at >= -1 && at < schedule.length ? at : null
   }
-  const lunchInsertionIndex = mealDroppedByTrip('lunch') ? null : movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW))
+  const lunchInsertionIndex = movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW))
   const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
-  const dinnerInsertionIndex = mealDroppedByTrip('dinner') ? null : movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day))
+  const dinnerInsertionIndex = movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day))
   const destino = route?.destination ?? day.city
 
   /**
@@ -953,16 +945,7 @@ export function DayDetailPanel({
   // Un día movido de su fecha (PROMPT_UI_REPASO 10): si en la nueva cae un cierre, la marca roja de siempre en esa parada.
   const originalDayNumber = route?.originalRoute?.days.find((candidate) => candidate.id === day.id)?.dayNumber
   const movedDay = !freeDay && originalDayNumber != null && originalDayNumber !== day.dayNumber
-  /** «Llegas después» (empieza antes de que estés en el centro) o «Ya te has ido» (acaba después de la hora de salir). */
-  const tripWarningOf = (start: number, end: number, passThrough?: boolean): string | null => {
-    if (freeDay || day.untimed) return null
-    if (centerMinutes != null && start < centerMinutes) return 'Llegas después'
-    if (leaveMinutes != null && end > leaveMinutes && !passThrough) return 'Ya te has ido'
-    if (leaveMinutes != null && start >= leaveMinutes) return 'Ya te has ido'
-    return null
-  }
-  const arrivalConflict = centerMinutes != null && realStops.length > 0 && schedule.some((entry, index) => tripWarningOf(entry.startMinutes, entry.endMinutes, stops[index]?.passThrough) === 'Llegas después')
-  const departureConflict =leaveMinutes != null && realStops.length > 0 && schedule.some((entry, index) => tripWarningOf(entry.startMinutes, entry.endMinutes, stops[index]?.passThrough) === 'Ya te has ido')
+  // (Tanda 7: el primer y el último día los monta el motor con las horas del viajero; la pantalla ya no marca paradas con «Llegas después» ni «Ya te has ido».)
   if (muestraParadas) {
     stops.forEach((_stop, index) => {
       timeline.push({ type: 'stop', index })
@@ -1154,7 +1137,7 @@ export function DayDetailPanel({
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
               horario={horarioDe({ ...stop, hoursData: realStop?.hoursData })}
-              tripWarning={tripWarningOf(startMinutes, startMinutes + stop.durationMinutes, stop.passThrough) ?? (movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
+              tripWarning={(movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}
               onOpen={() => {
                 setDetailTab(null)
@@ -1388,15 +1371,6 @@ export function DayDetailPanel({
               ) : (
                 <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={pago ? () => goToBooking('llegada') : undefined} />
               )}
-              {arrivalConflict && centerMinutes != null && (
-                <button
-                  type="button"
-                  onClick={() => fitDayToTrip(day.id, 'arrival', centerMinutes)}
-                  className="px-1 text-[12.5px] font-medium text-accent underline underline-offset-2 hover:text-accent-hover"
-                >
-                  Ajustar este día a tu llegada
-                </button>
-              )}
             </div>
           )}
 
@@ -1594,15 +1568,6 @@ export function DayDetailPanel({
           {/* La vuelta: el último día, al final del todo, y la despedida en el idioma del destino. */}
           {isLastDay && route && (
             <div className="space-y-1.5 pt-6">
-              {departureConflict && leaveMinutes != null && (
-                <button
-                  type="button"
-                  onClick={() => fitDayToTrip(day.id, 'departure', leaveMinutes)}
-                  className="px-1 text-[12.5px] font-medium text-accent underline underline-offset-2 hover:text-accent-hover"
-                >
-                  Ajustar este día a tu vuelta
-                </button>
-              )}
               {billeteVuelta ? (
                 <BilleteDeVuelo billete={billeteVuelta} onOpen={() => abrirFichaDeVuelta()} />
               ) : (

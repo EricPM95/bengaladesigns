@@ -12,9 +12,8 @@ import { useRouteStore } from '../../src/store/useRouteStore'
 import { mapSingleGeneratedDay } from '../../src/lib/mapGeneratedRoute'
 import { fetchArrivalInfo } from '../../src/lib/arrivalReturn'
 import { fetchDestinationExcursions } from '../../src/lib/destinationExcursions'
-import { detectFlightOpportunities } from '../../src/lib/flightOpportunity'
 import * as nombreDeDia from '../../src/lib/nombreDeDia'
 import { dayLineOf } from '../../src/lib/bookings'
 import { legDayText } from '../../src/lib/reservasLegs'
 
-export { createElement, renderToStaticMarkup, DayList, ReservasPanel, EntradasYFreeTour, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, detectFlightOpportunities, nombreDeDia, dayLineOf, legDayText }
+export { createElement, renderToStaticMarkup, DayList, ReservasPanel, EntradasYFreeTour, AddToDaySheet, AddDayChooser, WhereSheet, DayPositionPicker, useRouteStore, mapSingleGeneratedDay, fetchArrivalInfo, fetchDestinationExcursions, nombreDeDia, dayLineOf, legDayText }

@@ -7,6 +7,7 @@ import { enrichRoutePhotos } from '../../../lib/placePhoto'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { elDia } from '../../../lib/nombreDeDia'
 import { isManualRoute } from '../../../lib/manualPlan'
+import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
 
 /**
  * "Quiero entrar" (PROMPT_PENDIENTE F): el interruptor de una parada que va por fuera. El motor rehace ese día curado
@@ -45,6 +46,8 @@ export function useWantInside(route: Route | null, day: DayPlan) {
           must_include_places: route.mustIncludePlaces ?? selectedPool,
           inside_names: route.insideNames ?? [],
           add: stopName,
+          // Tanda 7 (de pago): el día se rehace con la hora de llegada y de vuelta del viajero.
+          ...(await llegadaVueltaDe(route, useRouteStore.getState().reservations)),
         }),
       })
       const body = (await response.json()) as InsideResponse & { error?: string }
