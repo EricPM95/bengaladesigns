@@ -279,7 +279,7 @@ for (const version of ['gratis', 'completa']) {
     ruta.days.forEach((dia, i) => {
       const viaje = i === 0 ? 'Madrid → Roma' : i === ruta.days.length - 1 ? 'Roma → Madrid' : null
       // (6y2: su fecha ya está en la ficha y no se repite. 6y7: el día vacío dice «Día libre»; el trayecto va pequeño junto a «Día de viaje», no es el título.)
-      debe(texto.split('\n').includes('Día libre') && (viaje === null || texto.split('\n').includes(`· ${viaje}`)), '5 DÍAS', `${que}: DÍAS no enseña el día «Día libre${viaje ? ` · ${viaje}` : ''}»: ${plano(texto).slice(0, 220)}`)
+      debe(texto.split('\n').includes('Día libre') && (viaje === null || texto.split('\n').includes(viaje)), '5 DÍAS', `${que}: DÍAS no enseña el día «Día libre${viaje ? ` · ${viaje}` : ''}»: ${plano(texto).slice(0, 220)}`)
       if (inicio) debe(texto.split('\n').includes(String(Number(addDays(inicio, i).slice(8, 10)))), '5 DÍAS', `${que}: DÍAS no enseña la ficha del día ${addDays(inicio, i)}`)
       else debe(texto.toUpperCase().includes(`DÍA ${i + 1}`), '5 DÍAS', `${que}: DÍAS no enseña «Día ${i + 1}»`)
     })

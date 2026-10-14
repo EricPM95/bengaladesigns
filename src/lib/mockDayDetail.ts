@@ -57,8 +57,6 @@ export interface AirportOption {
   /** "32 km al centro" — dato fijo del aeropuerto en sí, independiente de la hora de vuelo. */
   distanceToCenterLabel: string
   transitOptions: TransitOption[]
-  /** Precio orientativo del taxi — nunca lleva botón de compra/venta, no hay afiliado que lo monetice. */
-  taxiPriceLabel: string
   /** undefined = Civitatis/GetYourGuide no venden traslado privado para este aeropuerto — la pestaña "Traslados" de ArrivalDetailSheet.tsx no se muestra en absoluto. */
   privateTransfer?: PrivateTransferInfo
   officialLinkLabel: string
@@ -104,7 +102,6 @@ const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
         { name: 'Tren regional FL1', durationLabel: '48 min', durationMinutes: 48, price: 8, transfers: 0, stopName: 'Roma Tiburtina' },
         { name: 'Autobús lanzadera', durationLabel: '55 min', durationMinutes: 55, price: 6, transfers: 0, stopName: 'Roma Termini' },
       ],
-      taxiPriceLabel: `${rangoImporte(50, 55, 'EUR')} (tarifa fija aeropuerto-centro)`,
       privateTransfer: { proveedor: 'getyourguide', precio: 45, moneda: 'EUR', url_afiliado: '#' },
       officialLinkLabel: 'Horarios y precios oficiales del tren',
     },
@@ -116,7 +113,6 @@ const MULTI_AIRPORT_CITIES: Record<string, AirportOption[]> = {
         { name: 'Autobús directo a Termini', durationLabel: '40 min', durationMinutes: 40, price: 6, transfers: 0, stopName: 'Roma Termini' },
         { name: 'Autobús + metro', durationLabel: '55 min', durationMinutes: 55, price: 7.5, transfers: 1 },
       ],
-      taxiPriceLabel: `${rangoImporte(30, 35, 'EUR')} (tarifa fija aeropuerto-centro)`,
       officialLinkLabel: 'Horarios y precios oficiales del tren',
     },
   ],
@@ -130,7 +126,7 @@ function genericAirport(cityName: string): AirportOption {
     distanceToCenterLabel: '20-30 km al centro',
     transitOptions: [
       {
-        name: 'Tren/autobús directo al centro',
+        name: 'Tren o autobús directo a la ciudad',
         durationLabel: '35-45 min',
         durationMinutes: 40,
         price: 10,
@@ -138,7 +134,6 @@ function genericAirport(cityName: string): AirportOption {
         ...(rand() > 0.5 ? { affiliateTicket: { proveedor: 'civitatis' as const, precio: 10, moneda: 'EUR', url_afiliado: '#' } } : {}),
       },
     ],
-    taxiPriceLabel: `${rangoImporte(25, 35, 'EUR')} orientativo`,
     ...(rand() > 0.4 ? { privateTransfer: { proveedor: 'getyourguide' as const, precio: 40, moneda: 'EUR', url_afiliado: '#' } } : {}),
     officialLinkLabel: 'Horarios y precios oficiales del operador local',
   }

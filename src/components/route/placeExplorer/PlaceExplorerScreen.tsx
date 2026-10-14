@@ -68,6 +68,8 @@ interface PlaceExplorerScreenProps {
   initialFilters?: PlaceFilterId[]
   /** Desde dónde se ordena «Cerca de ti» al abrir (HOY, «Cerca de ti»: donde está el viajero o la siguiente parada). Con él se entra directo en «Cerca de ti» y no se pide la ubicación. Solo de pago. */
   initialOrigin?: Coordinates | null
+  /** Abrir directamente en «Cerca de ti» (ordenado por cercanía, pidiendo la ubicación si no hay punto de partida): la tarjeta «Hoy vuelves a casa» (Tanda 7). Solo de pago. */
+  initialNearby?: boolean
   /** Las excursiones del destino, para el filtro "Excursiones" (ver useDestinationPool). Vacío en un
       destino sin catálogo curado — el chip entonces ni se pinta. */
   excursions?: Excursion[]
@@ -336,6 +338,7 @@ export function PlaceExplorerScreen({
   route = null,
   initialFilters = [],
   initialOrigin = null,
+  initialNearby = false,
   excursions = [],
   initialQuery,
   focusCoordinates = null,
@@ -424,7 +427,7 @@ export function PlaceExplorerScreen({
     setActiveSubCategory(null)
     setQuery(initialQuery ?? '')
     // Baños y Fuentes se abren en «Cerca de ti» (los más cercanos primero); el resto, en «Recomendados».
-    setTab(cercaDeMi && (initialFiltersKey === 'banos' || initialFiltersKey === 'fuentes' || initialOriginKey) ? 'nearby' : 'recommended')
+    setTab(cercaDeMi && (initialFiltersKey === 'banos' || initialFiltersKey === 'fuentes' || initialOriginKey || initialNearby) ? 'nearby' : 'recommended')
     // Con un punto de partida dado (HOY), la cercanía se cuenta desde ahí y no se pide la ubicación.
     if (cercaDeMi && initialOrigin) {
       setPosition(initialOrigin)
@@ -434,7 +437,7 @@ export function PlaceExplorerScreen({
     setSelectedExcursion(null)
     setSelectedPhoto(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, initialFiltersKey, initialQuery, initialOriginKey, cercaDeMi])
+  }, [open, initialFiltersKey, initialQuery, initialOriginKey, initialNearby, cercaDeMi])
 
   useEffect(() => {
     if (!open) return

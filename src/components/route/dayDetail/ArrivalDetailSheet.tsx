@@ -255,10 +255,6 @@ export function ArrivalDetailSheet({ detail, dayNumber, dateIso, dayStops, trans
                           )}
                         </div>
                       ))}
-                      <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-                        <p className="flex items-center gap-1.5 text-small text-text-soft"><Icono nombre="coche" size={16} className="shrink-0" />Taxi</p>
-                        <p className="shrink-0 text-caption font-medium text-text-muted">{airport.taxiPriceLabel}</p>
-                      </div>
                     </div>
                   </div>
 

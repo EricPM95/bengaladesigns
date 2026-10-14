@@ -21,7 +21,7 @@ import type { DayPlan, Route, Stop } from './types'
  *     · si no, el grupo con MÁS paradas va primero. Un segundo grupo solo se suma si tiene al menos 3 paradas (tanda 6y9, P14:
  *       una o dos paradas sueltas de otro grupo no cambian el título).
  *  5. Empates: gana el grupo que aparece antes en el día (por hora; sin horas, por orden).
- *  6. Un día sin paradas se llama «Día libre»; el día de vuelta sintético de un viaje de varias ciudades (`isReturnLeg`) sin paradas, «Día de viaje» (tanda 6y9, P13). Si tiene paradas pero ninguna es de nuestros datos (un sitio que el viajero buscó en el mapa), queda el nombre de siempre.
+ *  6. Un día sin paradas se llama «Día libre»; un día de LLEGADA o de VUELTA sin paradas (el de vuelta, `isReturnLeg`; el de llegada, `esDiaDeLlegada`), «Día de viaje», nunca «Día libre» (tanda 6y9, P13; tanda 7, punto 15). Si tiene paradas pero ninguna es de nuestros datos (un sitio que el viajero buscó en el mapa), queda el nombre de siempre.
  *  7. El trayecto («Barcelona → Roma») NO es el título: va pequeño junto a «Día de viaje» (`viaje`).
  */
 
@@ -48,6 +48,20 @@ export const DIA_DE_VIAJE = 'Día de viaje'
 /** La marca pequeña junto al trayecto de un día de viaje: «Día de viaje · Madrid → Roma»; si el título ya dice «Día de viaje», vacía y solo queda «Madrid → Roma». */
 export function etiquetaDeViaje(titulo: string): string {
   return titulo === DIA_DE_VIAJE ? '' : DIA_DE_VIAJE
+}
+
+/**
+ * La línea pequeña de debajo del título de un día de llegada o de vuelta (Tanda 7, punto 15): «Barcelona → Roma · Día de viaje». Si el título ya dice «Día de viaje» (el día no lleva paradas),
+ * solo el trayecto, sin repetir las palabras. Sin trayecto, vacía.
+ */
+export function lineaDeViaje(titulo: string, viaje: string | null): string {
+  if (!viaje) return ''
+  return titulo === DIA_DE_VIAJE ? viaje : `${viaje} · ${DIA_DE_VIAJE}`
+}
+
+/** ¿Es el día que lleva la llegada? Lo dice el motor (`arrivalDay`) o, en un viaje con la hora de llegada puesta, es el primer día. */
+export function esDiaDeLlegada(route: Route, day: DayPlan): boolean {
+  return Boolean(day.arrivalDay) || (route.days[0]?.id === day.id && Boolean(route.arrivalFlightTime))
 }
 
 const quitarAcentos = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
@@ -137,7 +151,7 @@ export function nombreDelDia(route: Route, day: DayPlan, grupos: GruposDelDestin
   const soloGrupos = paradas.filter((stop) => !stop.isFreeTour).map((stop) => grupoDeParada(stop, grupos))
   const nombres = gruposQueNombranElDia(soloGrupos, marcadores)
   if (nombres.length > 0) return sinTrayecto(nombres.join(' y '))
-  if (paradas.length === 0) return sinTrayecto(day.isReturnLeg ? DIA_DE_VIAJE : FREE_DAY_DEFAULT_NAME)
+  if (paradas.length === 0) return sinTrayecto(day.isReturnLeg || esDiaDeLlegada(route, day) ? DIA_DE_VIAJE : FREE_DAY_DEFAULT_NAME)
   return sinTrayecto(nombreDeSiempre(route, day, false).titulo)
 }
 
