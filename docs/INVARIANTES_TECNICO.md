@@ -91,6 +91,7 @@ Lo que manda sobre cómo se monta una ruta está en `docs/REGLAS_RUTAS.md`; si u
 
 21. **`contentDays = días - 1`**: el último día es la vuelta (`appendReturnLegDay`) y no lleva ruta.
     *Se cayó una vez y generó un día fantasma.*
+    **Nota (Tanda 7):** ahora es cierta también en la app real: `diasDeRuta(n)` (`shared/routeEngine/tripSkeleton.js`) es el único sitio donde se cuenta y el esqueleto del servidor lo pide así en los destinos con días escritos (Roma). Ver la 642 de `INVARIANTES_PANTALLA.md`.
 
     **Ojo con quién llama.** El esqueleto curado (`buildSkeletonV2`) devuelve días que TODOS llevan
     contenido — no incluye la vuelta, la añade el cliente. Por eso `generate-day-block` le pasa al
