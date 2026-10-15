@@ -299,7 +299,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   <p className="flex flex-wrap items-baseline gap-x-1.5 text-[11.5px] font-normal text-text/55">
                     {/* Tanda 7: «Barcelona → Roma · Día de viaje» (el trayecto primero); si el título ya dice «Día de viaje», solo el trayecto. */}
                     {nombre.viaje && <span data-viaje-del-dia="1" className="whitespace-nowrap">{nombre.viaje}</span>}
-                    {nombre.viaje && etiquetaDeViaje(title) && <span data-marca-dia-de-viaje="1" className="whitespace-nowrap">· {etiquetaDeViaje(title)}</span>}
+                    {nombre.viaje && etiquetaDeViaje(title) && <span data-marca-dia-de-viaje="1" className="whitespace-nowrap">· <span className="text-accent">{etiquetaDeViaje(title)}</span></span>}
                   </p>
                 )}
                 {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}

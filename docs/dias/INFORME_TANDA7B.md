@@ -37,3 +37,9 @@ Las mañanas cortas (13:30) no se tocaron: `DC-vaticano` (+3 min), `DC-roma-anti
 - **Batería** (82 pruebas): todas en 0 fallos salvo `pruebaTanda6g` (fallo anterior, ver arriba) y `pruebaFase6y5_motor`, que no se lanza por lo larga (más de 20 min), como en la tanda anterior. Las 7 que fallaron al lanzarla por primera vez (`ficha`, `formulario`, `6z6c`, `6z6d`, `documento`, `hoy`, `6u`) se arreglaron o se repitieron con los servidores arrancados y dan 0.
 - **Muestra de 61 fechas** (`pruebaListas`, desde el 16-oct-2026, una de cada 6): 136.384 viajes y 371.508 días, **0 fallos** (3.807 s).
 - **Las 365 fechas completas:** se lanzan después del push; su resultado va abajo, en un commit aparte.
+
+## Las 365 fechas completas (después del primer push, c406899)
+Lanzadas con todo ya subido (`_correr365.mjs desde=2026-10-16`, 16 tramos a la vez, 2.999 s): **815.379 viajes y 2.220.668 días, 0 fallos en los 16 tramos.**
+
+## El fallo anterior de `pruebaTanda6g`, arreglado
+Eric confirmó que fue un descuido (la etiqueta «Día de viaje» va en el naranja de la app, `text-accent`, como «Día de excursión»; decidido en la Tanda 6g). Se arregló la pantalla, no la prueba: en `DayList.tsx` (línea 302) el texto «Día de viaje» vuelve a llevar `text-accent`; el «·» y el trayecto se quedan en gris. No toca el motor, así que no se repitieron las fechas. `pruebaTanda6g`: 0 fallos. Batería rápida de nuevo (82 pruebas, con los servidores 8787 y 8883): 81 en 0 fallos; `pruebaFase6y5_motor` no se cuenta (se para a los 1.500 s, como en la tanda anterior; las 365 fechas ya revisan el motor). En la pestaña Días «Día de viaje» y «Día de excursión» (`ExcursionCardMeta.tsx`) van en naranja y no queda ninguna etiqueta de día con `accent-red`. El título grande de un día sin paradas que se llama «Día de viaje» no es la etiqueta y se queda como está.
