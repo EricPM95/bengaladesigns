@@ -717,6 +717,13 @@ export default {
       lluvia_ops: lluvia({ ops: { manana: { ajustar: { 'Boca de la Verdad': { modo: 'dentro', min: 20, titulo: 'Santa Maria in Cosmedin, la iglesia de la Boca de la Verdad' }, 'Jardín de los Naranjos': { min: 20 }, 'Ojo de la Cerradura del Aventino': { min: 10 } } } } }),
     },
 
+    // ── La mañana sin comida del Aventino (vuelo de 15:00 a 16:59; Tanda 7b) ────────────────────────────────────────────────
+    'DS-aventino': {
+      variantes: [
+        { id: 'lunes_sin_caracalla', doc: 'Lunes (Caracalla cierra):** empieza en el Circo Máximo y al final van la Pirámide Cestia ~10 (al lado del metro Piramide y del tren al aeropuerto) y el Cementerio Protestante ~30.', cuando: { cerrado: 'Termas de Caracalla' }, ops: { manana: { quitar: ['Termas de Caracalla'], insertar: [{ al_final: true, parada: P('Pirámide Cestia', 10) }, { al_final: true, parada: P('Cementerio Protestante', 30) }] } } },
+      ],
+    },
+
     // ── Las basílicas y el Aventino ──────────────────────────────────────────────────────────────────────────────────────────────
     D5: {
       variantes: [

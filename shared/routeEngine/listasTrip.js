@@ -2071,9 +2071,9 @@ export function planListasTrip(args) {
     if (!Vactiva) return { disp: null, plan: null, ...montarPublico(V, null, null, []) }
     disp = disponerVuelta(V, { written, destData, vistos: new Set(estado.vistos), orden: [...order, ...(llegadaDecision?.aplica ? llegadaDecision.publico?.hooks?.vuelta?.sustituidos ?? [] : [])], hasFreeTour, diaCaidoAlLlegar })
     if (disp.tipo === 'manana') {
-      const id = disp.corta ? disp.fila.corta : disp.fila.lista
+      const id = disp.listaPropia ?? (disp.corta ? disp.fila.corta : disp.fila.lista)
       const dia = written.days[id]
-      const parteKey = disp.corta ? (dia.partes.unica ? 'unica' : Object.keys(dia.partes)[0]) : disp.fila.parte ?? 'unica'
+      const parteKey = disp.corta || disp.listaPropia ? (dia.partes.unica ? 'unica' : Object.keys(dia.partes)[0]) : disp.fila.parte ?? 'unica'
       draft = preparar(id, -1, { day: retDay, parteKey, entradas: entradasVuelta })
       draft.unitPrefix = `vuelta:${id}`
       draft.dia = { ...draft.dia, lluvia: null }
@@ -2141,7 +2141,7 @@ export function planListasTrip(args) {
         ultimoDiaDeRuta: V.ultimoDeRuta,
         contenido,
         listaId: plan?.curatedDay?.id ?? null,
-        manana: disp?.tipo === 'manana' ? { lista: disp.corta ? disp.fila.corta : disp.fila.lista, orden: disp.fila.orden, corta: disp.corta, saltadas: disp.saltadas ?? [] } : null,
+        manana: disp?.tipo === 'manana' ? { lista: disp.listaPropia ?? (disp.corta ? disp.fila.corta : disp.fila.lista), orden: disp.fila.orden, corta: disp.corta, saltadas: disp.saltadas ?? [] } : null,
         diaMas: disp?.tipo === 'dia_mas' ? { lista: disp.lista, origen: disp.origen } : null,
         hoja: disp?.tipo === 'hoja' ? disp.hoja : null,
         excursion: V.excursion ? { nombre: V.excursion.nombre, vuelve: V.excursion.vuelve, medioDia: V.excursion.medioDia, enVuelta: V.excursion.enVuelta, enUltimoDia: V.excursion.enUltimoDia } : null,

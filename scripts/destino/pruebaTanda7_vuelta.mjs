@@ -110,6 +110,8 @@ function vistoDeDia(plan, { conTour = false } = {}) {
 const serial = (v) => JSON.stringify(v, (k, x) => (x instanceof Map ? [...x.entries()] : x instanceof Set ? [...x] : x))
 const sinNoche = (plan) => serial({ ...plan, nightsByDay: undefined, vuelta: undefined, days: plan.days.map((d) => ({ ...d, escritoNights: undefined, curatedDay: { ...d.curatedDay, variantes: (d.curatedDay?.variantes ?? []).filter((v) => !String(v).startsWith('vuelta:')) } })) })
 const ULTIMAS = written.llegadas.ultimas_mananas
+/** La lista que esa fila pone según lo que lleva el día (Tanda 7b): la corta, la propia sin comida, la propia con comida (si la tiene) o la de siempre. */
+const listaDe = (fila, lleva) => (lleva === 'manana_corta' ? fila.corta : lleva === 'manana_sin_comida' ? fila.sin_comida ?? fila.lista : fila.con_comida ?? fila.lista)
 /** La última mañana que debería salir (recalculada aparte): la primera de la tabla sin lo principal visto, sin su día saltado y que no sea la del miércoles. */
 function ultimaEsperada(plan, iso, conTour, copiaWritten = written) {
   const vistos = vistoDeDia(plan, { conTour })
@@ -222,8 +224,9 @@ function comprobarVuelta({ etiqueta, plan, base, dias, caso, horaMin, puntoId, h
       debe(V.contenido === 'hoja' && V.hoja === 'Ya has visto lo mejor de Roma', 'ultima_manana', `${etiqueta}: debería ser la hoja «Ya has visto lo mejor de Roma» y sale ${V.contenido}`)
     } else {
       const elegida = V.manana?.lista
-      const cortaDe = ULTIMAS.find((u) => u.lista === esperada)?.corta
-      debe(elegida === (lleva === 'manana_corta' ? cortaDe : esperada), 'ultima_manana', `${etiqueta}: la última mañana es ${elegida} y debería ser ${lleva === 'manana_corta' ? cortaDe : esperada}`)
+      const filaEsperada = ULTIMAS.find((u) => u.lista === esperada)
+      const listaEsperada = filaEsperada ? listaDe(filaEsperada, lleva) : esperada
+      debe(elegida === listaEsperada, 'ultima_manana', `${etiqueta}: la última mañana es ${elegida} y debería ser ${listaEsperada}`)
       debe(V.manana?.corta === (lleva === 'manana_corta'), 'ultima_manana', `${etiqueta}: corta=${V.manana?.corta}`)
       // Nunca repite lo principal ya visto.
       const fila = ULTIMAS.find((u) => u.lista === esperada)
@@ -324,18 +327,18 @@ for (const v of VIAJES_VUELTA) {
     { nombre: 'un sábado cualquiera', inicio: '2027-05-08', quitar: [], pone: ['D0-medio'] },
   ]
   for (const c of casos) {
-    for (const [hora, cortaOEntera] of [['13:30', true], ['15:00', false], ['17:00', false]]) {
+    for (const [hora, llevaHora] of [['13:30', 'manana_corta'], ['15:00', 'manana_sin_comida'], ['17:00', 'manana_con_comida']]) {
       const plan = planListasTrip({ ...baseArgs(3, { inicio: c.inicio, fechas: true }), written: copia, vuelta: { hora, modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
       const sale = plan.vuelta.manana?.lista
-      const vaticano = cortaOEntera ? 'DC-vaticano' : 'D0-medio'
-      for (const id of c.quitar) debe(sale !== id && sale !== ULTIMAS.find((u) => u.lista === id)?.corta, 'fecha_salta', `${c.nombre} ${hora}: sale ${sale} y esa mañana se salta`)
-      for (const id of c.pone) debe(sale === (cortaOEntera ? ULTIMAS.find((u) => u.lista === id).corta : id), 'fecha_no_salta', `${c.nombre} ${hora}: debería salir el Vaticano (${vaticano}) y sale ${sale}`)
+      const vaticano = listaDe(ULTIMAS.find((u) => u.lista === 'D0-medio'), llevaHora)
+      for (const id of c.quitar) debe(sale !== id && ![llevaHora].some((l) => sale === listaDe(ULTIMAS.find((u) => u.lista === id), l)), 'fecha_salta', `${c.nombre} ${hora}: sale ${sale} y esa mañana se salta`)
+      for (const id of c.pone) debe(sale === listaDe(ULTIMAS.find((u) => u.lista === id), llevaHora), 'fecha_no_salta', `${c.nombre} ${hora}: debería salir el Vaticano (${vaticano}) y sale ${sale}`)
       debe(Boolean(plan.vuelta.manana?.saltadas) || c.quitar.length === 0, 'fecha_salta', `${c.nombre} ${hora}: la mañana saltada no queda apuntada`)
     }
   }
   // Sin fechas no se puede saber el día de la semana ni la fecha: no se salta nada.
   const plan = planListasTrip({ ...baseArgs(3, { inicio: null, fechas: false, mes: 6 }), written: copia, vuelta: { hora: '15:00', modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
-  debe(plan.vuelta.manana?.lista === 'D0-medio', 'fecha_no_salta', `sin fechas sale ${plan.vuelta.manana?.lista}`)
+  debe(plan.vuelta.manana?.lista === listaDe(ULTIMAS.find((u) => u.lista === 'D0-medio'), 'manana_sin_comida'), 'fecha_no_salta', `sin fechas sale ${plan.vuelta.manana?.lista}`)
 }
 
 // ═══ 4. Las reservas grandes el día de vuelta ═══
@@ -664,7 +667,7 @@ const TABLA_CABE = []
         const plan = planListasTrip({ ...baseArgs(1, { inicio, fechas: true }), diaCuatro: 'roma', diaPropio: propio, written: copia, vuelta: { hora, modo: 'flight', puntoId: 'fco', zona: 'centro', info: INFO } })
         const V = plan.vuelta
         const etiqueta = `${fila.lista} ${lleva} ${nombre}`
-        debe(V.lleva === lleva && V.manana?.lista === (lleva === 'manana_corta' ? fila.corta : fila.lista), 'lista_forzada', `${etiqueta}: sale ${V.manana?.lista}`)
+        debe(V.lleva === lleva && V.manana?.lista === listaDe(fila, lleva), 'lista_forzada', `${etiqueta}: sale ${V.manana?.lista}`)
         const rows = V.diaPlan?.escritoRows ?? []
         const fin = Math.max(0, ...rows.filter((r) => r.tipo !== 'noche').map((r) => r.t1))
         const salir = V.interno.salirMin

@@ -179,7 +179,7 @@ console.log('3. Las últimas mañanas y las mañanas cortas')
 console.log('4. Ningún imprescindible «de camino»')
 {
   const place = new Map(D.places.map((p) => [p.name, p]))
-  const PERMITIDO = (ruta, stop) => (stop.lugar === 'Basílica de San Pedro' && /^D0-medio/.test(ruta)) || /escalinata/i.test(stop.titulo ?? '')
+  const PERMITIDO = (ruta, stop) => (stop.lugar === 'Basílica de San Pedro' && /^(D0-medio|DCC-vaticano)/.test(ruta)) || /escalinata/i.test(stop.titulo ?? '')
   const malos = []
   const recorre = (o, ruta) => {
     if (Array.isArray(o)) o.forEach((x, i) => recorre(x, `${ruta}[${i}]`))

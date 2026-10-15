@@ -117,7 +117,7 @@ export function elegirUltimaManana({ ultimas, vistos, written, weekday, dateIso 
     const visto = (fila.lo_principal ?? []).find((lugar) => vistos.has(lugar))
     if (visto) { saltadas.push({ lista: fila.lista, motivo: `ya has visto ${visto}` }); continue }
     if (seSaltaEseDia(fila.se_salta, dateIso)) { saltadas.push({ lista: fila.lista, motivo: 'se salta ese día' }); continue }
-    if (weekday && sinTilde(weekday) === 'miercoles' && (written.days?.[fila.corta]?.miercoles === 'siguiente' || dia.miercoles === 'siguiente')) { saltadas.push({ lista: fila.lista, motivo: 'el miércoles (la audiencia)' }); continue }
+    if (weekday && sinTilde(weekday) === 'miercoles' && [fila.corta, fila.sin_comida, fila.con_comida].some((id) => id && written.days?.[id]?.miercoles === 'siguiente') || (weekday && sinTilde(weekday) === 'miercoles' && dia.miercoles === 'siguiente')) { saltadas.push({ lista: fila.lista, motivo: 'el miércoles (la audiencia)' }); continue }
     return { fila, hoja: null, saltadas }
   }
   return { fila: null, hoja: null, saltadas }
@@ -283,9 +283,10 @@ export function disponerVuelta(V, { written, destData, vistos, orden, hasFreeTou
   }
   const e = elegida()
   if (lleva === 'manana_corta') return e.fila ? { tipo: 'manana', ...e, corta: true, conComida: false, tardeLibre: false } : { tipo: 'hoja', ...e, tardeLibre: false }
-  if (lleva === 'manana_sin_comida') return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: false, tardeLibre: false } : { tipo: 'hoja', ...e, tardeLibre: false }
+  // (Tanda 7b) Con su lista propia —sin comida o con comida— la mañana es esa lista, escrita para el rato que hay; sin ella, la mañana de siempre.
+  if (lleva === 'manana_sin_comida') return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: false, tardeLibre: false, ...(e.fila.sin_comida ? { listaPropia: e.fila.sin_comida } : {}) } : { tipo: 'hoja', ...e, tardeLibre: false }
   // manana_con_comida
-  return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: true, tardeLibre: V.fila.tarde_libre === true } : { tipo: 'hoja', ...e, conComida: true, tardeLibre: V.fila.tarde_libre === true }
+  return e.fila ? { tipo: 'manana', ...e, corta: false, conComida: true, tardeLibre: V.fila.tarde_libre === true, ...(e.fila.con_comida ? { listaPropia: e.fila.con_comida } : {}) } : { tipo: 'hoja', ...e, conComida: true, tardeLibre: V.fila.tarde_libre === true }
 }
 
 // ── Los textos y los avisos (solo con datos del viajero y del destino) ──────────────────────────────────────────────────────────────

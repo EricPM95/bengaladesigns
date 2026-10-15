@@ -278,11 +278,11 @@ const datos = () => ({ importanciaPorSitio: excursiones.importanciaPorSitio, niv
     debe(a.peso <= b.peso && (a.peso < b.peso || (a.metros ?? Infinity) <= (b.metros ?? Infinity)), 'C6 orden', `orden roto entre ${a.stop.name} (peso ${a.peso}, ${Math.round(a.metros ?? -1)} m) y ${b.stop.name} (peso ${b.peso}, ${Math.round(b.metros ?? -1)} m)`)
     debe(a.peso === pesoDe(a.stop.name), 'C6 orden', `${a.stop.name}: el peso no sale de los datos`)
   }
-  // Mañana del día de vuelta con cuatro: nivel y, a igual nivel, lo más cercano.
-  const rutaD6 = await viaje({ noches: 4, llegada: LL('08:30'), vuelta: VU('15:00'), horaLlegada: '08:30', horaVuelta: '15:00' })
+  // Mañana del día de vuelta recortada: nivel y, a igual nivel, lo más cercano. (Tanda 7b: con vuelo de 15:00 la mañana es la lista sin comida y no deja nada fuera; con 17:00 la Cúpula y el Vaticano tienen lista con comida; el Aventino (3 noches) deja 2 visitas fuera.)
+  const rutaD6 = await viaje({ noches: 3, llegada: LL('08:30'), vuelta: VU('17:00'), horaLlegada: '08:30', horaVuelta: '17:00' })
   const dv = rutaD6.days.at(-1)
   const vv = masVisitasDe(rutaD6, dv, datos())
-  debe(rutaD6.planVuelta?.contenido === 'manana' && vv.length === 4, 'C6 orden', `el día de vuelta de 4 noches no deja 4 visitas fuera (${vv.length})`)
+  debe(rutaD6.planVuelta?.contenido === 'manana' && vv.length === 2, 'C6 orden', `el día de vuelta de 3 noches no deja 2 visitas fuera (${vv.length})`)
   for (let i = 1; i < vv.length; i++) debe(vv[i - 1].peso <= vv[i].peso && (vv[i - 1].peso < vv[i].peso || (vv[i - 1].metros ?? Infinity) <= (vv[i].metros ?? Infinity)), 'C6 orden', `D6: orden roto en ${vv[i - 1].stop.name} / ${vv[i].stop.name}`)
   // Orden por cercanía a igual peso, con una lista armada a mano (lejos y cerca del recorrido).
   const dia = JSON.parse(JSON.stringify(rutaMini.days[0]))
@@ -313,10 +313,10 @@ const datos = () => ({ importanciaPorSitio: excursiones.importanciaPorSitio, niv
   const htmlD1 = pintaHoy(rutaMini, 1)
   debe(cuenta(htmlD1, 'data-mas-visitas') === 1 && /Más visitas/.test(aTexto(htmlD1)), 'C5 botón', `el día 1 recortado no lleva [+ Más visitas] (${cuenta(htmlD1, 'data-mas-visitas')})`)
   debe(htmlD1.indexOf('data-mas-visitas') > htmlD1.indexOf('No me da tiempo') && htmlD1.indexOf('Visto') < htmlD1.indexOf('data-mas-visitas'), 'C5 botón', '[+ Más visitas] no va junto a [Visto] y [No me da tiempo]')
-  const htmlVuelta = pintaHoy(rutaD6, 5)
+  const htmlVuelta = pintaHoy(rutaD6, 4)
   debe(cuenta(htmlVuelta, 'data-mas-visitas') === 1, 'C5 botón', 'la mañana del día de vuelta recortada no lleva [+ Más visitas]')
   debe(!pintaHoy(rutaD6, 2).includes('data-mas-visitas') && !pintaHoy(rutaD6, 1).includes('data-mas-visitas'), 'C5 botón', 'un día no recortado lleva [+ Más visitas]')
-  debe(pintaHoy(rutaD6, 5, 'gratis').trim() === '', 'C5 gratis', 'en la gratis sale algo')
+  debe(pintaHoy(rutaD6, 4, 'gratis').trim() === '', 'C5 gratis', 'en la gratis sale algo')
   // Todo visto: el botón sigue (es cuando se va bien de tiempo).
   const rutaTodoVisto = JSON.parse(JSON.stringify(rutaMini))
   rutaTodoVisto.days[0].stops = rutaTodoVisto.days[0].stops.map((s) => ({ ...s, checkedInAt: '2027-05-05T12:00:00Z' }))

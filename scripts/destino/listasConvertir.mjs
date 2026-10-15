@@ -211,7 +211,7 @@ function nocheDe(texto, dia) {
 
 // ── El documento, día a día ─────────────────────────────────────────────────────────────────────────────────────
 // (Tanda 7, punto 18: las listas nuevas de las llegadas y las vueltas —el día 1 a buen paso, la ruta del centro, D1+Vaticano, las mañanas cortas y la tarjeta «Hoy vuelves a casa»— son días del documento como los demás.)
-const LISTAS_TANDA7 = ['D1-rapido', 'D1-rapido-invierno-10', 'D1-rapido-invierno-11', 'D1-tarde', 'D1-centro-navona', 'D1-centro-espana', 'D1-centro-entera-navona', 'D1-centro-entera-espana', 'D1-anochecer-navona', 'D1-anochecer-espana', 'D1-noche', 'D1-noche-sin-cena', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DV-traslado']
+const LISTAS_TANDA7 = ['D1-rapido', 'D1-rapido-invierno-10', 'D1-rapido-invierno-11', 'D1-tarde', 'D1-centro-navona', 'D1-centro-espana', 'D1-centro-entera-navona', 'D1-centro-entera-espana', 'D1-anochecer-navona', 'D1-anochecer-espana', 'D1-noche', 'D1-noche-sin-cena', 'D1-sin-ruta', 'D1-vaticano', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DS-vaticano', 'DS-roma-antigua', 'DS-pincio-popolo', 'DS-aventino', 'DS-cupula', 'DCC-vaticano', 'DCC-roma-antigua', 'DCC-cupula', 'DV-traslado']
 const IDS = ['D0', 'D0-medio', 'D1-corto', 'D1', 'D2', 'D3', 'D1-FT', 'DT-medio', 'DM-medio', 'D4', 'DA-medio', 'D5', 'D6', 'D7', ...LISTAS_TANDA7]
 const secciones = []
 for (let i = 0; i < lineas.length; i++) {
@@ -235,7 +235,7 @@ for (let k = 0; k < secciones.length; k++) {
   for (let j = secciones[k].desde + 1; j < lineas.length; j++) if (/^(#{2,3})\s/.test(lineas[j]) || /^---\s*$/.test(lineas[j])) { hasta = j; break }
   secciones[k].cuerpo = lineas.slice(secciones[k].desde + 1, hasta)
 }
-const FLAT = new Set(['D0-medio', 'DT-medio', 'DM-medio', 'DA-medio', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula'])
+const FLAT = new Set(['D0-medio', 'DT-medio', 'DM-medio', 'DA-medio', 'DC-vaticano', 'DC-roma-antigua', 'DC-pincio-popolo', 'DC-aventino', 'DC-cupula', 'DS-vaticano', 'DS-roma-antigua', 'DS-pincio-popolo', 'DS-aventino', 'DS-cupula', 'DCC-vaticano', 'DCC-roma-antigua', 'DCC-cupula'])
 /** Un texto escrito entre «», sin las comillas (si todo el valor va entre comillas). */
 const sinComillas = (texto) => { const t = texto.trim(); return t.startsWith('«') && t.endsWith('»') ? t.slice(1, -1).trim() : t }
 
@@ -485,6 +485,8 @@ for (const [clave, titulo] of [['marzo_octubre', /^El día 1, de marzo a octubre
     }
     fila.corta = /^D[0-9A-Za-z-]+$/.test(corta) ? corta : null
     if (fila.corta && !dias[fila.corta]) duda('ultimas', `La mañana corta «${fila.corta}» no existe.`, 'tablas')
+    // (Tanda 7b) Las listas propias del vuelo de 15:00 a 16:59 (DS-…, sin comida) y del de 17:00 a 22:59 (DCC-…, con comida): se enlazan por el nombre de la mañana corta (DC-vaticano → DS-vaticano / DCC-vaticano). La que el documento no escribe no se enlaza: esa fila usa la mañana de siempre.
+    if (fila.corta) for (const [clave, prefijo] of [['sin_comida', 'DS-'], ['con_comida', 'DCC-']]) { const propia = fila.corta.replace(/^DC-/, prefijo); if (propia !== fila.corta && dias[propia]) fila[clave] = propia }
     fila.lo_principal = norm(principal) === 'no hay' ? [] : principal.split(' · ').map((n) => { const lugar = resolver(n.trim(), 'ultimas')?.lugar; if (!lugar) duda('ultimas', `«${n}» (lo principal de la última mañana ${orden}) no está en roma.json.`, 'tablas'); return lugar }).filter(Boolean)
     fila.se_salta = norm(salta) === 'nada' ? [] : salta.split(' · ').map((s) => SALTOS[norm(s.trim())] ?? (duda('ultimas', `No entiendo «${s}» en lo que se salta de la última mañana ${orden}.`, 'tablas'), null)).filter(Boolean)
     llegadas.ultimas_mananas.push(fila)

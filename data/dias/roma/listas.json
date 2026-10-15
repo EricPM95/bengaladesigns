@@ -13990,6 +13990,579 @@
    "solo_llegada_o_vuelta": true,
    "miercoles": "siguiente"
   },
+  "DS-vaticano": {
+   "id": "DS-vaticano",
+   "nombre": "Mañana sin comida del Vaticano",
+   "titulo_documento": "Mañana sin comida del Vaticano · DS-vaticano",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "dentro",
+       "doc": "Basílica de San Pedro, por dentro ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": null,
+       "doc": "Via della Conciliazione ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~10",
+       "min": 10
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true,
+   "miercoles": "siguiente"
+  },
+  "DS-roma-antigua": {
+   "id": "DS-roma-antigua",
+   "nombre": "Mañana sin comida de la Roma antigua",
+   "titulo_documento": "Mañana sin comida de la Roma antigua · DS-roma-antigua",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "titulo": "El Foro Romano, desde la terraza del Campidoglio",
+       "coordenadas": [
+        41.8928,
+        12.4845
+       ],
+       "modo": "fuera",
+       "doc": "El Foro Romano, desde la terraza del Campidoglio ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
+  },
+  "DS-pincio-popolo": {
+   "id": "DS-pincio-popolo",
+   "nombre": "Mañana sin comida del Pincio y el Popolo",
+   "titulo_documento": "Mañana sin comida del Pincio y el Popolo · DS-pincio-popolo",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "titulo": "Fontana de Trevi, sin gente",
+       "modo": null,
+       "doc": "Fontana de Trevi sin gente ~45 (el día empieza a las 7:30)",
+       "min": 45,
+       "empieza_dia": "07:30"
+      },
+      {
+       "tipo": "desayuno",
+       "lugar": "Desayuno romano",
+       "titulo": "Desayuno",
+       "min": 30,
+       "modo": null,
+       "doc": "Desayuno"
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via del Babuino",
+       "titulo": "Via del Babuino y Via Margutta",
+       "modo": "camino",
+       "doc": "Via del Babuino y Via Margutta",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza del Popolo",
+       "modo": null,
+       "doc": "Piazza del Popolo ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Terraza del Pincio",
+       "modo": null,
+       "doc": "Terraza del Pincio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardines del Pincio",
+       "modo": "camino",
+       "doc": "los Jardines del Pincio",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Trinità dei Monti",
+       "titulo": "Escalinata y Trinità dei Monti",
+       "modo": null,
+       "doc": "Escalinata y Trinità dei Monti ~20",
+       "min": 20
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null,
+     "empieza": "07:30"
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
+  },
+  "DS-aventino": {
+   "id": "DS-aventino",
+   "nombre": "Mañana sin comida del Aventino",
+   "titulo_documento": "Mañana sin comida del Aventino · DS-aventino",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Termas de Caracalla",
+       "modo": "dentro",
+       "doc": "Termas de Caracalla, por dentro ~1 h (abre a las 9:00)",
+       "min": 60,
+       "notas": [
+        "abre a las 9:00"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Circo Máximo",
+       "modo": null,
+       "doc": "Circo Máximo ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Boca de la Verdad",
+       "modo": null,
+       "doc": "Boca de la Verdad ~15",
+       "min": 15
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Jardín de los Naranjos",
+       "modo": null,
+       "doc": "Jardín de los Naranjos ~25",
+       "min": 25
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Ojo de la Cerradura del Aventino",
+       "modo": null,
+       "doc": "Ojo de la Cerradura del Aventino ~15",
+       "min": 15
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true,
+   "variantes": [
+    {
+     "id": "lunes_sin_caracalla",
+     "doc": "Lunes (Caracalla cierra):** empieza en el Circo Máximo y al final van la Pirámide Cestia ~10 (al lado del metro Piramide y del tren al aeropuerto) y el Cementerio Protestante ~30.",
+     "cuando": {
+      "cerrado": "Termas de Caracalla"
+     },
+     "ops": {
+      "manana": {
+       "quitar": [
+        "Termas de Caracalla"
+       ],
+       "insertar": [
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Pirámide Cestia",
+          "min": 10,
+          "modo": null
+         }
+        },
+        {
+         "al_final": true,
+         "parada": {
+          "tipo": "parada",
+          "lugar": "Cementerio Protestante",
+          "min": 30,
+          "modo": null
+         }
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "DS-cupula": {
+   "id": "DS-cupula",
+   "nombre": "Mañana sin comida de la Cúpula",
+   "titulo_documento": "Mañana sin comida de la Cúpula · DS-cupula",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Cúpula de San Pedro",
+       "modo": null,
+       "doc": "Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)",
+       "min": 75,
+       "notas": [
+        "se sale por la Basílica"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": null,
+       "doc": "Via della Conciliazione ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~10",
+       "min": 10
+      }
+     ],
+     "comida": null,
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true,
+   "miercoles": "siguiente"
+  },
+  "DCC-vaticano": {
+   "id": "DCC-vaticano",
+   "nombre": "Mañana con comida del Vaticano",
+   "titulo_documento": "Mañana con comida del Vaticano · DCC-vaticano",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~45",
+       "min": 45
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Basílica de San Pedro",
+       "modo": "camino",
+       "doc": "Basílica (la fachada)",
+       "min": 5,
+       "notas": [
+        "la fachada"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": null,
+       "doc": "Via della Conciliazione ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "modo": "fuera",
+       "doc": "Castillo de Sant'Angelo, por fuera ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via dei Coronari",
+       "modo": "camino",
+       "doc": "Via dei Coronari",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Fontana de Trevi",
+       "modo": null,
+       "doc": "Fontana de Trevi ~30",
+       "min": 30
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de España",
+       "modo": null,
+       "doc": "Plaza de España ~30",
+       "min": 30
+      }
+     ],
+     "comida": {
+      "restaurante": "Poldo e Gianna Osteria",
+      "alternativa": "Edy",
+      "tercera": null,
+      "zona": "en el Tridente",
+      "doc": "Poldo e Gianna Osteria (o Edy), en el Tridente"
+     },
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true,
+   "miercoles": "siguiente"
+  },
+  "DCC-roma-antigua": {
+   "id": "DCC-roma-antigua",
+   "nombre": "Mañana con comida de la Roma antigua",
+   "titulo_documento": "Mañana con comida de la Roma antigua · DCC-roma-antigua",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Coliseo",
+       "modo": "dentro",
+       "doc": "🎟 Coliseo, por dentro ~1 h 15 (turno)",
+       "min": 75,
+       "hora_tipo": "turno",
+       "notas": [
+        "turno"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Arco de Constantino",
+       "modo": null,
+       "doc": "Arco de Constantino ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Foro Romano y Palatino",
+       "modo": "dentro",
+       "doc": "Foro Romano y Palatino, por dentro ~1 h 15 (se sale por el Campidoglio)",
+       "min": 75,
+       "notas": [
+        "se sale por el Campidoglio"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza del Campidoglio",
+       "modo": null,
+       "doc": "Plaza del Campidoglio ~20",
+       "min": 20
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza Venecia",
+       "modo": null,
+       "doc": "Piazza Venezia ~10",
+       "min": 10
+      }
+     ],
+     "comida": {
+      "restaurante": "Nonna Betta",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": "Piperno",
+      "zona": "en el Barrio Judío",
+      "doc": "Nonna Betta (o Giggetto), en el Barrio Judío"
+     },
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true
+  },
+  "DCC-cupula": {
+   "id": "DCC-cupula",
+   "nombre": "Mañana con comida de la Cúpula",
+   "titulo_documento": "Mañana con comida de la Cúpula · DCC-cupula",
+   "partes": {
+    "unica": {
+     "manana": [
+      {
+       "tipo": "parada",
+       "lugar": "Cúpula de San Pedro",
+       "modo": null,
+       "doc": "Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)",
+       "min": 75,
+       "notas": [
+        "se sale por la Basílica"
+       ]
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Plaza de San Pedro",
+       "modo": null,
+       "doc": "Plaza de San Pedro ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via della Conciliazione",
+       "modo": null,
+       "doc": "Via della Conciliazione ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Castillo de Sant'Angelo",
+       "titulo": "Castillo de Sant'Angelo, hasta la terraza del ángel",
+       "modo": "dentro",
+       "doc": "Castillo de Sant'Angelo, hasta la terraza del ángel, por dentro ~1 h",
+       "min": 60
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Puente Sant'Angelo",
+       "modo": null,
+       "doc": "Puente Sant'Angelo ~10",
+       "min": 10
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Via dei Coronari",
+       "modo": "camino",
+       "doc": "Via dei Coronari",
+       "min": 5
+      },
+      {
+       "tipo": "parada",
+       "lugar": "Piazza Navona",
+       "modo": null,
+       "doc": "Piazza Navona ~10",
+       "min": 10
+      }
+     ],
+     "comida": {
+      "restaurante": "Enoteca Corsi",
+      "alternativa": "Giggetto al Portico d'Ottavia",
+      "tercera": null,
+      "zona": null,
+      "doc": "Enoteca Corsi (o Giggetto al Portico d'Ottavia)"
+     },
+     "tarde": [],
+     "cena": null,
+     "noche": null
+    }
+   },
+   "lluvia": null,
+   "quedarme": null,
+   "solo_llegada_o_vuelta": true,
+   "miercoles": "siguiente"
+  },
   "DV-traslado": {
    "id": "DV-traslado",
    "nombre": "Hoy vuelves a casa (la tarjeta del día de vuelta)",
@@ -14332,13 +14905,13 @@
      "desde": "15:00",
      "hasta": "16:59",
      "lleva": "manana_sin_comida",
-     "doc": "de 15:00 a 16:59 | la última mañana entera, sin comida: lo que su lista lleva después de la comida, a «Si te sobra tiempo»"
+     "doc": "de 15:00 a 16:59 | la última mañana sin comida: su lista sin comida (abajo)"
     },
     {
      "desde": "17:00",
      "hasta": "22:59",
      "lleva": "manana_con_comida",
-     "doc": "de 17:00 a 22:59 | la última mañana con comida; después, «La tarde es tuya hasta que te vayas.» y [+ Añadir lugares] (como la excursión de medio día)",
+     "doc": "de 17:00 a 22:59 | la última mañana con comida: su lista con comida (abajo) si la tiene; si no, la mañana de siempre. Después, «La tarde es tuya hasta que te vayas.» y [+ Añadir lugares] (como la excursión de medio día)",
      "tarde_libre": true
     },
     {
@@ -14357,6 +14930,8 @@
     "parte": "manana",
     "franja": "manana",
     "corta": "DC-vaticano",
+    "sin_comida": "DS-vaticano",
+    "con_comida": "DCC-vaticano",
     "lo_principal": [
      "Plaza de San Pedro"
     ],
@@ -14371,6 +14946,8 @@
     "parte": "unica",
     "franja": "manana",
     "corta": "DC-roma-antigua",
+    "sin_comida": "DS-roma-antigua",
+    "con_comida": "DCC-roma-antigua",
     "lo_principal": [
      "Coliseo",
      "Foro Romano y Palatino"
@@ -14383,6 +14960,7 @@
     "parte": "manana",
     "franja": "manana",
     "corta": "DC-pincio-popolo",
+    "sin_comida": "DS-pincio-popolo",
     "lo_principal": [
      "Terraza del Pincio",
      "Piazza del Popolo"
@@ -14395,6 +14973,7 @@
     "parte": "unica",
     "franja": "manana",
     "corta": "DC-aventino",
+    "sin_comida": "DS-aventino",
     "lo_principal": [
      "Jardín de los Naranjos",
      "Circo Máximo"
@@ -14407,6 +14986,8 @@
     "parte": "unica",
     "franja": "manana",
     "corta": "DC-cupula",
+    "sin_comida": "DS-cupula",
+    "con_comida": "DCC-cupula",
     "lo_principal": [
      "Cúpula de San Pedro"
     ],

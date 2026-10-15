@@ -1227,8 +1227,8 @@ La hora de la tabla es la del **vuelo** (la que pone el viajero); por dentro se 
 | de 5:00 a 8:59 | solo el traslado; el día de antes, normal, con su noche | solo-traslado |
 | de 9:00 a 13:29 | solo el traslado | solo-traslado |
 | de 13:30 a 14:59 | una mañana corta (abajo), sin comida | manana-corta |
-| de 15:00 a 16:59 | la última mañana entera, sin comida: lo que su lista lleva después de la comida, a «Si te sobra tiempo» | manana-sin-comida |
-| de 17:00 a 22:59 | la última mañana con comida; después, «La tarde es tuya hasta que te vayas.» y [+ Añadir lugares] (como la excursión de medio día) | manana-con-comida · tarde libre |
+| de 15:00 a 16:59 | la última mañana sin comida: su lista sin comida (abajo) | manana-sin-comida |
+| de 17:00 a 22:59 | la última mañana con comida: su lista con comida (abajo) si la tiene; si no, la mañana de siempre. Después, «La tarde es tuya hasta que te vayas.» y [+ Añadir lugares] (como la excursión de medio día) | manana-con-comida · tarde libre |
 | a las 23:00 o más tarde | un día más entero, sin cena ni noche: el día que se cayó al llegar si se cayó alguno; si no, el siguiente día escrito que el viaje no lleva; si no queda ninguno, la última mañana con comida y la tarde libre | dia-mas · sin cena ni noche |
 
 - **Una reserva pequeña el día de vuelta:** su parada a su hora, dentro de la mañana; no se quita nada.
@@ -1282,6 +1282,88 @@ Unas pocas paradas cercanas, de 1 h 15 a 1 h 30 en total. Cada una cumple las re
 - Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)
 - Plaza de San Pedro ~10
 - **El miércoles:** la siguiente de la tabla (por la audiencia del Papa).
+
+### Las mañanas sin comida (vuelo de 15:00 a 16:59)
+Las mismas 5 últimas mañanas y en el mismo orden de la tabla «Las últimas mañanas». Solo paradas, sin comida. Están pensadas para unas 2 h 30 con lo que se anda. Cada lista cumple las reglas de cierres y de lluvia de su día de origen (el D0-medio, el D1, el DT-medio, el DA-medio o el D6), salvo lo que se dice aquí.
+
+### Mañana sin comida del Vaticano · DS-vaticano
+- Plaza de San Pedro ~30
+- Basílica de San Pedro, por dentro ~45
+- Via della Conciliazione ~10
+- Castillo de Sant'Angelo, por fuera ~30
+- Puente Sant'Angelo ~10
+- **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
+
+### Mañana sin comida de la Roma antigua · DS-roma-antigua
+- 🎟 Coliseo, por dentro ~1 h 15 (turno)
+- Arco de Constantino ~10
+- Plaza del Campidoglio ~20
+- El Foro Romano, desde la terraza del Campidoglio ~15
+- Piazza Venezia ~10
+
+### Mañana sin comida del Pincio y el Popolo · DS-pincio-popolo
+El DT-medio de mañana sin Santa Maria del Popolo ni Via Condotti. Empieza a las 7:30, como el DT-medio.
+- Fontana de Trevi sin gente ~45 (el día empieza a las 7:30)
+- Desayuno
+- Plaza de España ~45
+- *de camino:* Via del Babuino y Via Margutta
+- Piazza del Popolo ~20
+- Terraza del Pincio ~20
+- *de camino:* los Jardines del Pincio
+- Escalinata y Trinità dei Monti ~20
+
+### Mañana sin comida del Aventino · DS-aventino
+- Termas de Caracalla, por dentro ~1 h (abre a las 9:00)
+- Circo Máximo ~15
+- Boca de la Verdad ~15
+- Jardín de los Naranjos ~25
+- Ojo de la Cerradura del Aventino ~15
+- **Lunes (Caracalla cierra):** empieza en el Circo Máximo y al final van la Pirámide Cestia ~10 (al lado del metro Piramide y del tren al aeropuerto) y el Cementerio Protestante ~30.
+
+### Mañana sin comida de la Cúpula · DS-cupula
+- Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)
+- Plaza de San Pedro ~10
+- Via della Conciliazione ~10
+- Castillo de Sant'Angelo, por fuera ~30
+- Puente Sant'Angelo ~10
+- **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
+
+### Las mañanas con comida (vuelo de 17:00 a 22:59)
+Solo las 3 que no cabían. El Pincio y el Popolo y el Aventino usan su mañana de siempre, con su comida.
+
+### Mañana con comida del Vaticano · DCC-vaticano
+El D0-medio de mañana, con Trevi y la Plaza de España más cortas.
+- Plaza de San Pedro ~45
+- *de camino:* Basílica (la fachada)
+- Via della Conciliazione ~10
+- Castillo de Sant'Angelo, por fuera ~30
+- Puente Sant'Angelo ~10
+- *de camino:* Via dei Coronari
+- Fontana de Trevi ~30
+- Plaza de España ~30
+- **Comida:** Poldo e Gianna Osteria (o Edy), en el Tridente
+- **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
+
+### Mañana con comida de la Roma antigua · DCC-roma-antigua
+- 🎟 Coliseo, por dentro ~1 h 15 (turno)
+- Arco de Constantino ~10
+- Foro Romano y Palatino, por dentro ~1 h 15 (se sale por el Campidoglio)
+- Plaza del Campidoglio ~20
+- Piazza Venezia ~10
+- **Comida:** Nonna Betta (o Giggetto), en el Barrio Judío
+
+### Mañana con comida de la Cúpula · DCC-cupula
+El D6 de mañana, con el Castillo más corto y sin el Panteón.
+- Cúpula de San Pedro ~1 h 15 (se sale por la Basílica)
+- Plaza de San Pedro ~10
+- Via della Conciliazione ~10
+- Castillo de Sant'Angelo, hasta la terraza del ángel, por dentro ~1 h
+- Puente Sant'Angelo ~10
+- *de camino:* Via dei Coronari
+- Piazza Navona ~10
+- **Comida:** Enoteca Corsi (o Giggetto al Portico d'Ottavia)
+- **Lunes:** el Castillo cierra: por fuera ~30, como en el D6.
+- **El miércoles:** la siguiente de la tabla (por la audiencia del Papa), como siempre.
 
 ### El día de vuelta sin paradas (solo el traslado; de pago)
 Una tarjeta para que sepa por qué, en DÍAS y en HOY. Con un vuelo de 0:00 a 4:59, la misma tarjeta va también al final del último día de ruta («Tu vuelo sale esta noche, a las {hora}…»).

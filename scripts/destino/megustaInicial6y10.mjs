@@ -81,7 +81,8 @@ export function vecesPorRestaurante(listas, nombres) {
     if ('restaurante' in nodo) for (const campo of ['restaurante', 'alternativa', 'tercera']) if (typeof nodo[campo] === 'string' && nombres.has(nodo[campo])) veces.set(nodo[campo], (veces.get(nodo[campo]) ?? 0) + 1)
     Object.values(nodo).forEach(andar)
   }
-  andar(listas.dias)
+  // (Tanda 7b: las mañanas con comida de la vuelta —DCC-…— repiten la comida de su día de origen: no cuentan dos veces.)
+  andar(Object.fromEntries(Object.entries(listas.dias).filter(([id]) => !/^DCC-/.test(id))))
   return [...veces.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'es'))
 }
 
