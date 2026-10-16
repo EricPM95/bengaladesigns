@@ -64,3 +64,28 @@ Las credenciales del sandbox NO van aquí: Eric las pone en Vercel y en el .env.
 - Todo desde nuestro servidor, nunca desde el móvil: el usuario y la contraseña de la API no pueden llegar al móvil.
 - Guardar las respuestas en Supabase un tiempo (como las fotos de Unsplash), para no pasar del límite y para que la app vaya rápida.
 - Empezar por el sandbox; con la certificación, cambiar a producción.
+
+## Las horas de las entradas (Eric, 16-oct, 21:57)
+- Al elegir la hora de una entrada, solo salen las horas que quedan libres ese día.
+- Con pocas plazas, se dice: «Últimas 3 plazas», «5 plazas disponibles». Siempre con el número real de la API, nunca inventado. Por encima de 10, no se dice nada.
+- Al abrir el selector de hora, el calendario se pide de nuevo (sin caché larga), para que las plazas estén al día.
+- Si el viajero ya tiene su entrada («Ya tengo mi entrada»), puede poner la hora que sea: la app avisa, no prohíbe.
+- Design: dibujar el selector de hora con las plazas (va en el paso 3 o 4).
+
+## Lo que encontró Code en el sandbox (parte 1, 16-oct, 22:24; commit dfa841d)
+- Roma sí está (destino 19): 36 actividades y traslados.
+- De nuestros 8 enlaces se resuelven 3: Free Tour (2671), Florencia y Pisa (142547), Ostia Antica (2283). No se resuelven: Pompeya y Sorrento, Nápoles y Pompeya en tren, Costa Amalfitana, Florencia en tren y Tívoli (siguen con precio y nota provisionales). Las entradas se emparejaron a mano con 9 sitios.
+- Errores o dudas de la documentación, para decírselo a Civitatis (nos pidieron feedback):
+  - la cabecera no es `Authentication` como dice la documentación: funciona `Authorization: Bearer <token>`;
+  - el sandbox da enlaces a qa.civitatis.com (la app los cambia a www.civitatis.com);
+  - la nota: ¿es de 0 a 10? Code la divide entre 2 para dejarla de 0 a 5 (suposición);
+  - la nota y las opiniones de la lista no coinciden con las de la ficha (Code usa las de la ficha);
+  - el precio de los Vaticanos sale 16.500 € en el sandbox (79 € en su calendario): Code descarta precios de más de 2.000 €.
+- Pendiente: Eric abre un par de enlaces de «Reservar» con la API encendida y comprueba que abren la actividad en la web real.
+- Migración 0022 (caché), sin aplicar: va después de la 0020 y la 0021, pero no depende de ellas.
+- El punto de encuentro, de momento, es un enlace «Ver en el mapa», no una chincheta en nuestro mapa.
+
+## Decisiones (Eric, 16-oct, 23:21)
+- El «412 lo recomiendan» del Coliseo (`megusta_inicial`, aproximado a las redes de Eric) se queda como está.
+- La contraseña del sandbox se queda como está.
+- «Reservar» va directo a Civitatis (no pasa por el selector). Encima del botón, una etiqueta verde con la hora recomendada: «Te recomendamos reservar a las 11:00» (la hora libre que mejor encaja con su ruta), más «· Últimas 3 plazas» si quedan 10 o menos. Si ese día no queda nada: «Ese día no quedan plazas» y el otro día del viaje que sí tiene. Sin fechas o sin la API, no sale nada.

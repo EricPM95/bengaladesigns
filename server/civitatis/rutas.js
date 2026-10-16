@@ -4,6 +4,8 @@
  *   GET  /api/civitatis/estado                      → { activa, entorno, hayClaves }  (nada secreto)
  *   GET  /api/civitatis/horas?lugar=Coliseo&fecha=AAAA-MM-DD[&fresco=1]
  *                                                   → { ok, datos: { fecha, sinPlazas, horas: [{ hora, plazas, aviso }] } }
+ *   GET  /api/civitatis/horas-rango?lugar=Coliseo&desde=…&hasta=…[&fresco=1]
+ *                                                   → { ok, datos: { actividadId, conHorasFijas, dias: { 'AAAA-MM-DD': { sinPlazas, horas } } } }   (la hora recomendada de la ficha)
  *   GET  /api/civitatis/free-tour?desde=…&hasta=…[&fresco=1]
  *                                                   → { ok, datos: { dias: { 'AAAA-MM-DD': [{ hora, plazas, aviso }] } } }
  *   POST /api/civitatis/cerca  { lat, lng }         → { ok, datos: [actividades cerca] }   (la pestaña «Entradas» de un sitio sin entradas escritas a mano)
@@ -34,6 +36,21 @@ export function registrarRutasCivitatis(app, servicio) {
       if (!id) return res.json({ ok: false, motivo: 'sin_actividad' })
       if (!esFecha(fecha)) return res.json({ ok: false, motivo: 'fechas_malas' })
       res.json(await servicio.horasLibres(id, fecha, { fresco: fresco(req) }))
+    } catch {
+      res.json({ ok: false, motivo: 'no_disponible' })
+    }
+  })
+
+  app.get('/api/civitatis/horas-rango', async (req, res) => {
+    try {
+      const lugar = String(req.query?.lugar ?? '')
+      const desde = String(req.query?.desde ?? '')
+      const hasta = String(req.query?.hasta ?? '')
+      const destino = String(req.query?.destino ?? 'Roma')
+      const id = datosDelDestino(destino)?.horas?.[lugar]
+      if (!activa) return res.json({ ok: false, motivo: 'apagada' })
+      if (!id) return res.json({ ok: false, motivo: 'sin_actividad' })
+      res.json(await servicio.horasEnRango(id, desde, hasta, { fresco: fresco(req) }))
     } catch {
       res.json({ ok: false, motivo: 'no_disponible' })
     }

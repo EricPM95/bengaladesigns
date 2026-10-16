@@ -215,6 +215,11 @@ export function horasParaLaApp(calendario, fechaIso, ajustesPlazas) {
   return { fecha: fechaIso, sinPlazas: libres.length === 0, horas: libres.map((h) => ({ hora: h.hora, plazas: h.plazas, aviso: textoDePlazas(h.plazas, ajustesPlazas) })) }
 }
 
+/** ¿La actividad trabaja con horas fijas? (Alguna franja del calendario con hora válida, aunque esté agotada.) Sin horas fijas (entrada abierta todo el día), no hay hora que recomendar. */
+export function tieneHorasFijas(calendario) {
+  return Object.values(calendario?.baseRates ?? {}).some((tarifa) => (tarifa?.hours ?? []).some((h) => /^\d{1,2}:\d{2}$/.test(String(h?.hour ?? ''))))
+}
+
 /** Pasa «9:5» o «09:05» a «09:05» (o null). */
 export const horaNormalizada = (hhmm) => {
   const m = /^(\d{1,2}):(\d{2})/.exec(String(hhmm ?? ''))

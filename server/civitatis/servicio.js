@@ -8,7 +8,7 @@
 import fs from 'node:fs'
 import { crearClienteCivitatis } from './cliente.js'
 import { crearCache } from './cache.js'
-import { fichaDeActividad, fichaCorta, horasParaLaApp, precioMinimoDelCalendario, diasConHoras, horasLibresDelDia, enlaceDeActividad } from './mapeo.js'
+import { fichaDeActividad, fichaCorta, horasParaLaApp, precioMinimoDelCalendario, diasConHoras, horasLibresDelDia, enlaceDeActividad, tieneHorasFijas } from './mapeo.js'
 
 const leerJson = (ruta) => JSON.parse(fs.readFileSync(new URL(ruta, import.meta.url), 'utf8'))
 
@@ -90,6 +90,20 @@ export function crearServicioCivitatis(opciones = {}) {
     return { ok: true, datos: { dias, conHoras: diasConHoras(r.datos) }, viejo: r.viejo === true }
   }
 
+  /** Las horas libres de cada día de un rango (la hora recomendada de la ficha): { conHorasFijas, dias: { 'AAAA-MM-DD': { sinPlazas, horas } } }. Un rango de más de 60 días no se pide. */
+  async function horasEnRango(id, desde, hasta, { fresco = false } = {}) {
+    if (!activa) return apagada
+    if (!esFecha(desde) || !esFecha(hasta) || desde > hasta || fechaMas(desde, 60) < hasta) return { ok: false, motivo: 'fechas_malas' }
+    const r = await calendario(id, desde, hasta, { fresco })
+    if (!r.ok) return r
+    const dias = {}
+    for (let dia = desde, i = 0; i < 70 && dia <= hasta; i++, dia = fechaMas(dia, 1)) {
+      const { sinPlazas, horas } = horasParaLaApp(r.datos, dia, ajustes.plazas)
+      dias[dia] = { sinPlazas, horas }
+    }
+    return { ok: true, datos: { actividadId: Number(id), conHorasFijas: tieneHorasFijas(r.datos), dias }, viejo: r.viejo === true }
+  }
+
   /** Las actividades cerca de unas coordenadas (la pestaña «Entradas» de un sitio que no tiene número de lugar de Google). `distancia` en km. */
   async function cercaDe(lat, lng, distancia = 0.3, limite = 6) {
     if (!activa) return apagada
@@ -167,5 +181,5 @@ export function crearServicioCivitatis(opciones = {}) {
     return { opciones: opciones2, enriquecidas }
   }
 
-  return { activa, actividad, calendario, horasLibres, freeTourHoras, cercaDe, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
+  return { activa, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
 }

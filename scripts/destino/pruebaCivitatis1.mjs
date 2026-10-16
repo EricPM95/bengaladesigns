@@ -355,6 +355,13 @@ console.log('4. El servicio: la caché, la API caída y lo que se monta')
   debe(Object.keys(ft.datos.dias).join() === '2026-10-19,2026-10-20,2026-10-21', 'free_tour', 'un día por fecha pedida')
   debe(ft.datos.dias['2026-10-19'].every((x2) => x2.plazas === null && x2.aviso === null), 'free_tour', 'sin límite de plazas: no se dice nada')
 
+  // (d2) La hora recomendada: el calendario de un rango, con las horas de cada día y si la actividad las tiene fijas
+  const rango = await svcF.horasEnRango(2671, '2026-10-19', '2026-10-21')
+  debe(rango.ok && rango.datos.actividadId === 2671 && rango.datos.conHorasFijas === true && rango.datos.dias['2026-10-19'].horas.map((x2) => x2.hora).join() === '10:00,17:00', 'hora_recomendada', 'el rango trae las horas de cada día, la actividad de la que son y que tiene horas fijas')
+  debe((await svcF.horasEnRango(2671, '2026-10-21', '2026-10-19')).motivo === 'fechas_malas' && (await svcF.horasEnRango(2671, '2026-01-01', '2026-12-31')).motivo === 'fechas_malas', 'hora_recomendada', 'un rango al revés o de más de 60 días no se pide')
+  debe(crearServicioCivitatis({ activa: false }).horasEnRango && (await crearServicioCivitatis({ activa: false }).horasEnRango(2671, '2026-10-19', '2026-10-21')).motivo === 'apagada', 'hora_recomendada', 'con el interruptor apagado no pide nada')
+  debe(mapeo.tieneHorasFijas({ schedule: [{ date: '2026-11-02', baseRatesId: ['a'] }], baseRates: { a: { hours: [] } } }) === false && mapeo.tieneHorasFijas({ baseRates: { a: { hours: [{ hour: '9:30', quota: 0 }] } } }) === true && mapeo.tieneHorasFijas(null) === false, 'hora_recomendada', 'una actividad sin horas fijas se distingue de una agotada')
+
   // (e) Las actividades cerca de un sitio
   const sCerca = servidorFalso()
   const svcC = crearServicioCivitatis({ activa: true, cliente: nuevoCliente(sCerca), cache: crearCache() })
@@ -419,7 +426,7 @@ console.log('6. Lo del móvil: el interruptor, la rueda de horas y «Ya tengo mi
 {
   const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-civitatis-'))
   const salida = path.join(carpeta, 'civ.cjs')
-  fs.writeFileSync(path.join(carpeta, 'entrada.ts'), `export { calcularCivitatisActiva, ruedaConHorasLibres, avisoDeLaHora, horaFueraDelCalendario, enlaceAlPuntoDeEncuentro } from '${path.resolve('src/lib/civitatis.ts').replace(/\\/g, '/')}'\n`)
+  fs.writeFileSync(path.join(carpeta, 'entrada.ts'), `export { calcularCivitatisActiva, ruedaConHorasLibres, avisoDeLaHora, horaFueraDelCalendario, enlaceAlPuntoDeEncuentro, recomendarHora, diaLargoEs } from '${path.resolve('src/lib/civitatis.ts').replace(/\\/g, '/')}'\n`)
   await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', define: { 'import.meta.env': '{"DEV":false}' } })
   const M = createRequire(import.meta.url)(salida)
   const c = M.calcularCivitatisActiva
@@ -433,6 +440,35 @@ console.log('6. Lo del móvil: el interruptor, la rueda de horas y «Ya tengo mi
   debe(M.avisoDeLaHora(libres, '9:30') === 'Últimas 3 plazas' && M.avisoDeLaHora(libres, '11:00') === null && M.avisoDeLaHora(null, '09:30') === null, 'rueda', 'el aviso de plazas de la hora elegida; con más de 10, nada')
   debe(M.horaFueraDelCalendario(libres, '10:00') === true && M.horaFueraDelCalendario(libres, '09:30') === false && M.horaFueraDelCalendario(null, '10:00') === false && M.horaFueraDelCalendario({ fecha: 'x', sinPlazas: true, horas: [] }, '10:00') === false, 'ya_tengo', '«Ya tengo mi entrada»: una hora que no sale en el calendario se detecta para avisar (nunca para prohibir)')
   debe(M.enlaceAlPuntoDeEncuentro({ lat: 41.89, lng: 12.49 }) === 'https://www.google.com/maps/search/?api=1&query=41.89,12.49' && M.enlaceAlPuntoDeEncuentro({ lat: null, lng: null }) === null, 'mapa', 'el punto de encuentro, al mapa con sus coordenadas')
+  // La hora recomendada (etiqueta verde encima de «Reservar»)
+  const h = (hora, plazas = null, aviso = null) => ({ hora, plazas, aviso })
+  const rango = {
+    actividadId: 3834,
+    conHorasFijas: true,
+    dias: {
+      '2026-11-02': { sinPlazas: false, horas: [h('09:00'), h('10:30'), h('11:30', 3, 'Últimas 3 plazas'), h('16:00')] },
+      '2026-11-03': { sinPlazas: true, horas: [] },
+      '2026-11-04': { sinPlazas: false, horas: [h('09:00')] },
+      '2026-11-05': { sinPlazas: false, horas: [h('15:00')] },
+      '2026-11-06': { sinPlazas: true, horas: [] },
+    },
+  }
+  const viaje = ['2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06']
+  const r1 = M.recomendarHora(rango, '2026-11-02', '10:20', viaje)
+  debe(r1?.tipo === 'hora' && r1.hora === '10:30' && r1.texto === 'Te recomendamos reservar a las 10:30', 'hora_recomendada', 'la hora libre más cercana a la de la ruta (10:20 → 10:30)')
+  const empate = M.recomendarHora({ ...rango, dias: { '2026-11-02': { sinPlazas: false, horas: [h('10:00'), h('11:00')] } } }, '2026-11-02', '10:30', ['2026-11-02'])
+  debe(empate?.hora === '10:00', 'hora_recomendada', 'con dos igual de cerca, la más temprana (10:30 entre 10:00 y 11:00 → 10:00)')
+  const pocas = M.recomendarHora(rango, '2026-11-02', '11:40', viaje)
+  debe(pocas?.hora === '11:30' && pocas.texto === 'Te recomendamos reservar a las 11:30 · Últimas 3 plazas', 'hora_recomendada', 'con 10 plazas o menos, el número real de la API en la etiqueta')
+  const sinPlazasConOtro = M.recomendarHora(rango, '2026-11-03', '10:00', viaje)
+  debe(sinPlazasConOtro?.tipo === 'sin_plazas' && sinPlazasConOtro.alternativa === '2026-11-02' && sinPlazasConOtro.texto === 'Ese día no quedan plazas. El lunes 2 sí hay', 'hora_recomendada', 'día sin plazas con otro día que sí: el más cercano de su viaje (empate: el más temprano)')
+  debe(M.recomendarHora(rango, '2026-11-06', '10:00', ['2026-11-03', '2026-11-06'])?.texto === 'Ese día no quedan plazas', 'hora_recomendada', 'día sin plazas y sin otro día de su viaje con plazas (aunque otros días del calendario sí tengan): solo «Ese día no quedan plazas»')
+  debe(M.recomendarHora(rango, null, '10:00', viaje) === null && M.recomendarHora(null, '2026-11-02', '10:00', viaje) === null, 'hora_recomendada', 'sin fechas o sin datos de la API: nada')
+  debe(M.recomendarHora({ ...rango, conHorasFijas: false }, '2026-11-02', '10:00', viaje) === null && M.recomendarHora(rango, '2026-11-02', null, viaje) === null && M.recomendarHora(rango, '2027-01-01', '10:00', viaje) === null, 'hora_recomendada', 'actividad sin horas fijas, sin hora de ruta o día fuera del calendario: nada')
+  debe(M.diaLargoEs('2026-11-04') === 'miércoles 4', 'hora_recomendada', 'el día se dice «miércoles 4»')
+  const pestana = fs.readFileSync('src/components/route/reservas/StopReservation.tsx', 'utf8')
+  debe(pestana.includes('data-hora-recomendada') && pestana.includes('useHorasEnRango(') && pestana.includes('nombre="tips"') && pestana.includes('bg-accent-green-soft') && !pestana.includes('✓ Tu hora') && pestana.includes('horasDelViaje?.actividadId === entrada.civitatis?.id'), 'hora_recomendada', 'la pestaña Entradas pone la etiqueta (bombilla, no ✓, mismo verde) solo en la entrada de la que son las horas')
+  debe(pestana.indexOf('data-hora-recomendada') < pestana.indexOf("openTicketShop(entrada.url"), 'hora_recomendada', 'la etiqueta va encima del botón «Reservar», y el botón sigue yendo directo a la tienda')
   // Las piezas de la hoja: lo que se ha escrito en el código
   const hoja = fs.readFileSync('src/components/route/reservas/AddReservationSheet.tsx', 'utf8')
   debe(hoja.includes("useHorasLibres(") && hoja.includes('aperturas') && !hoja.includes('Ya tengo mi entrada') && !hoja.includes('Esa hora no sale libre en el calendario') && hoja.includes("modo === 'reservar'") && hoja.includes('data-aviso="disponibilidad"') && hoja.includes("horasApi.estado === 'ok'"), 'hoja', 'la hoja pide las horas cada vez que se abre el selector; sin casilla «Ya tengo mi entrada» (desde «Añádela», cualquier hora; solo en modo reservar se filtran) y el aviso de disponibilidad se oculta solo con la API cubriendo el sitio')

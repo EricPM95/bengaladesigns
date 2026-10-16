@@ -160,3 +160,91 @@ export function useActividadesCerca(lat: number | null | undefined, lng: number 
   }, [encendido, lat, lng, clave])
   return encendido && resultado?.clave === clave ? resultado.lista : []
 }
+
+/* ------------------------------------------------------------------ */
+/* La hora recomendada (encima de «Reservar»)                          */
+/* ------------------------------------------------------------------ */
+
+/** Lo que da `/api/civitatis/horas-rango`: las horas libres de cada día de un rango y de qué actividad son. */
+export interface HorasEnRango {
+  actividadId: number
+  /** La actividad trabaja con horas fijas (si no, no hay hora que recomendar). */
+  conHorasFijas: boolean
+  dias: Record<string, { sinPlazas: boolean; horas: HoraLibre[] }>
+}
+
+const aMinutos = (hhmm: string): number | null => {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm)
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null
+}
+
+/** Pura: de las horas libres, la más cercana a la hora a la que la ruta lleva la parada; con dos igual de cerca, la más temprana. Sin horas o sin hora de ruta válida, null. */
+export function horaMasCercana(horas: HoraLibre[], horaRuta: string | null): HoraLibre | null {
+  const objetivo = horaRuta ? aMinutos(horaRuta) : null
+  if (objetivo == null) return null
+  let mejor: HoraLibre | null = null
+  let distancia = Infinity
+  for (const h of [...horas].sort((a, b) => a.hora.localeCompare(b.hora))) {
+    const minutos = aMinutos(h.hora)
+    if (minutos == null) continue
+    const d = Math.abs(minutos - objetivo)
+    if (d < distancia) {
+      mejor = h
+      distancia = d
+    }
+  }
+  return mejor
+}
+
+const DIA_LARGO = new Intl.DateTimeFormat('es-ES', { weekday: 'long', timeZone: 'UTC' })
+/** «miércoles 21». */
+export function diaLargoEs(fechaIso: string): string {
+  const fecha = new Date(`${fechaIso}T12:00:00Z`)
+  return `${DIA_LARGO.format(fecha)} ${Number(fechaIso.slice(8, 10))}`
+}
+
+export type HoraRecomendada = { tipo: 'hora'; hora: string; aviso: string | null; texto: string } | { tipo: 'sin_plazas'; alternativa: string | null; texto: string }
+
+/**
+ * Pura: lo que dice la etiqueta verde encima de «Reservar». `diasDelViaje`: las fechas de su viaje (la alternativa sale SOLO de ahí; la más cercana al día de la parada, la más temprana si empatan).
+ * Nada (null) sin fecha, sin datos, sin hora de ruta o si la actividad no tiene horas fijas.
+ */
+export function recomendarHora(datos: HorasEnRango | null, fechaParada: string | null, horaRuta: string | null, diasDelViaje: string[]): HoraRecomendada | null {
+  if (!datos || !datos.conHorasFijas || !fechaParada) return null
+  const dia = datos.dias[fechaParada]
+  if (!dia) return null
+  if (dia.horas.length > 0) {
+    const elegida = horaMasCercana(dia.horas, horaRuta)
+    if (!elegida) return null
+    const texto = `Te recomendamos reservar a las ${elegida.hora}${elegida.aviso ? ` · ${elegida.aviso}` : ''}`
+    return { tipo: 'hora', hora: elegida.hora, aviso: elegida.aviso, texto }
+  }
+  const base = new Date(`${fechaParada}T12:00:00Z`).getTime()
+  const candidatos = diasDelViaje
+    .filter((f) => f !== fechaParada && (datos.dias[f]?.horas.length ?? 0) > 0)
+    .sort((a, b) => Math.abs(new Date(`${a}T12:00:00Z`).getTime() - base) - Math.abs(new Date(`${b}T12:00:00Z`).getTime() - base) || a.localeCompare(b))
+  const alternativa = candidatos[0] ?? null
+  return { tipo: 'sin_plazas', alternativa, texto: alternativa ? `Ese día no quedan plazas. El ${diaLargoEs(alternativa)} sí hay` : 'Ese día no quedan plazas' }
+}
+
+/** Las horas libres de cada día del viaje para una entrada (siempre frescas: las plazas tienen que estar al día). `clave` null, o el interruptor apagado, no pide nada. */
+export function useHorasEnRango(lugar: string | null, desde: string | null, hasta: string | null, destino: string, clave: string | null): HorasEnRango | null {
+  const activo = civitatisActiva() && Boolean(lugar) && Boolean(desde) && Boolean(hasta) && Boolean(clave)
+  const [resultado, setResultado] = useState<{ clave: string; datos: HorasEnRango | null } | null>(null)
+  useEffect(() => {
+    if (!activo || !lugar || !desde || !hasta || !clave) return undefined
+    let cancelado = false
+    fetch(`/api/civitatis/horas-rango?${new URLSearchParams({ lugar, desde, hasta, destino, fresco: '1' }).toString()}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((cuerpo: { ok?: boolean; datos?: HorasEnRango } | null) => {
+        if (!cancelado) setResultado({ clave, datos: cuerpo?.ok && cuerpo.datos?.dias ? cuerpo.datos : null })
+      })
+      .catch(() => {
+        if (!cancelado) setResultado({ clave, datos: null })
+      })
+    return () => {
+      cancelado = true
+    }
+  }, [activo, lugar, desde, hasta, destino, clave])
+  return activo && resultado?.clave === clave ? resultado.datos : null
+}

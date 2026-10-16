@@ -98,3 +98,18 @@ Lo que sabemos: Civitatis manda un documento de certificación técnica al acaba
 - **Las entradas de la API sustituyen a las nuestras** en 9 sitios. Si prefieres que se sumen, es cambiar una línea (`enriquecerEntradas` en `server/civitatis/servicio.js`).
 - **Las cinco excursiones sin resolver** siguen provisionales. Hay que encontrar su actividad en el catálogo (con `POST /search` o en otros destinos) o corregir sus enlaces.
 - **«Cerca de ti» en HOY, reservar o pagar dentro de la app y el paso a producción** no entran en esta tanda, como pediste.
+
+## Añadido: la hora recomendada encima de «Reservar»
+
+**Qué hace.** En la pestaña «Entradas» de la ficha, encima de «Reservar» (que sigue yendo directo a la tienda), una etiqueta pequeña con la hora que le recomendamos: de las horas libres de ese día en el calendario de la API, la más cercana a la hora a la que su ruta lleva esa parada (con dos igual de cerca, la más temprana). El día es el de esa parada en su ruta.
+
+**Cómo se ve** (provisional, la buena la dibuja Design):
+- Hora: píldora verde (el mismo verde de «Reservada», pero con **bombilla**, no con ✓): «💡 Te recomendamos reservar a las 11:00». Con 10 plazas o menos y el número real: «… a las 11:00 · Últimas 3 plazas».
+- Día sin plazas: píldora gris, «Ese día no quedan plazas», y si otro día **de su viaje** sí tiene, «Ese día no quedan plazas. El miércoles 21 sí hay» (el más cercano; empate, el más temprano).
+- Nada, sin etiqueta: sin fechas, con la API apagada o sin datos, si la actividad no tiene horas fijas, si la entrada ya está reservada, o si el sitio no tiene calendario conectado.
+
+**Cómo funciona.** Ruta nueva `GET /api/civitatis/horas-rango` (mismo interruptor apagado): las horas libres de cada día del viaje de una vez, la actividad de la que son y si trabaja con horas fijas. Se pide al abrir la pestaña, sin la caché de una hora. La etiqueta sale solo en la entrada de la que son esas horas (en el Coliseo, la principal, no en la segunda). No toca el motor de rutas.
+
+**Prueba.** `pruebaCivitatis1`: 147 comprobaciones, 0 fallos (14 nuevas: la más cercana, el empate, pocas plazas, día sin plazas con otro día que sí, sin alternativa, sin fechas, sin horas fijas, el rango en el servicio y la etiqueta encima del botón).
+
+**No lo he visto en pantalla** con la API encendida (está apagada y el sandbox solo responde de 7:00 a 2:00); lo probado es la lógica y el código de la pestaña.

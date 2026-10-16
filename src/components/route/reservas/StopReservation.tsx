@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { dateOfDay } from '../../../lib/bookings'
+import { recomendarHora, useHorasEnRango } from '../../../lib/civitatis'
+import { Icono } from '../../ui/Icono'
 import { precioTienda } from '../../../lib/dinero'
 import type { Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
@@ -43,6 +46,13 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   const found = useRouteStop(stop.id)
   const data = useStopEntradas(stop)
   const [sheet, setSheet] = useState(false)
+  // La hora recomendada (API de consulta, solo encendida): se pide el calendario de los días del viaje al abrir la pestaña (sin la caché: las plazas, al día). Con la entrada ya reservada, no sale.
+  const [apertura] = useState(() => String(Date.now()))
+  const fechasDelViaje = route && route.answers.dateRange ? route.days.map((day) => dateOfDay(route, day)).filter((iso): iso is string => Boolean(iso)) : []
+  const fechaDeLaParada = route && found ? dateOfDay(route, found.day) : null
+  const lugarDeLaHora = stop.isFreeTour ? 'Free Tour' : stop.name
+  const horasDelViaje = useHorasEnRango(lugarDeLaHora, fechasDelViaje[0] ?? null, fechasDelViaje[fechasDelViaje.length - 1] ?? null, route?.destination ?? '', data && !data.reservation && fechaDeLaParada ? apertura : null)
+  const recomendada = recomendarHora(horasDelViaje, fechaDeLaParada, found?.stop.time ?? null, fechasDelViaje)
   if (sinEntrada) return <FichaSinEntrada bloque={sinEntrada} />
   if (!route || !data) return null
   const { reservation } = data
@@ -56,6 +66,15 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
           </div>
           {/* (Con la API de consulta encendida, los datos reales de la actividad; sin ella, la línea de siempre.) */}
           {entrada.civitatis ? <DatosDeLaActividad datos={entrada.civitatis} /> : entrada.incluye && <p className="mt-1.5 text-[13px] leading-[1.5] text-text/72">{entrada.incluye}</p>}
+          {recomendada && horasDelViaje?.actividadId === entrada.civitatis?.id && (
+            <p
+              className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium ${recomendada.tipo === 'hora' ? 'bg-accent-green-soft text-accent-green' : 'bg-text/[.05] text-text-soft'}`}
+              data-hora-recomendada={recomendada.tipo}
+            >
+              {recomendada.tipo === 'hora' && <Icono nombre="tips" size={13} />}
+              {recomendada.texto}
+            </p>
+          )}
           <button
             type="button"
             onClick={() => openTicketShop(entrada.url ?? buildActivitySearchUrl(`${entrada.nombre} ${route.destination}`))}
