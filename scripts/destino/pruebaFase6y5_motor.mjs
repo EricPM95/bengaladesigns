@@ -253,7 +253,10 @@ if (PARTES.has('p4')) {
         const calle = (p?.tags ?? []).includes('calle')
         // (Y lo que quita el propio documento por el día de la semana en que cae un día movido: el domingo de la Farnesina y de San Clemente, el sábado del Panteón, el lunes de las Termas.)
         const porDiaSemana = plan.days.some((d) => (d.curatedDay?.variantes ?? []).some((v) => ['domingo_farnesina', 'domingo_san_clemente', 'sabado_panteon', 'lunes_sin_caracalla'].includes(v)))
-        debe(cerrado || calle || porDiaSemana, 'p4_parada_perdida', `${t}: «${sitio}» ya no sale ni en «Si te sobra tiempo»`)
+        // (Un recambio que deja de hacer falta no es una parada perdida: la Cripta de los Capuchinos entra «en lugar de la Galería» solo el día en que la Galería cierra. Si con la reserva ese día cambia de fecha y
+        // la variante ya no está en ningún día, el sitio al que sustituía vuelve y el recambio sobra. Vale para cualquier variante que depende de la fecha —un cierre o un día de la semana— y mete esa parada.)
+        const recambio = base.days.some((d) => (written.days[d.curatedDay?.id]?.variantes ?? []).some((v) => (d.curatedDay?.variantes ?? []).includes(v.id) && (v.cuando?.cerrado || v.cuando?.dia_semana) && JSON.stringify(v.ops ?? {}).includes(JSON.stringify(sitio)) && !plan.days.some((p) => (p.curatedDay?.variantes ?? []).includes(v.id))))
+        debe(cerrado || calle || porDiaSemana || recambio, 'p4_parada_perdida', `${t}: «${sitio}» ya no sale ni en «Si te sobra tiempo»`)
       }
       // El caso del encargo: en el D1 con el Coliseo a las 14:16, la Fuente de las Tortugas y el Elefantino están en «Si te sobra tiempo» del día del Coliseo.
       if (hora === '14:16' && diaColiseo.curatedDay.id === 'D1' && base.days.some((d) => d.curatedDay?.id === 'D1' && (d.escritoRows ?? []).some((r) => r.lugar === 'Fuente de las Tortugas'))) {
