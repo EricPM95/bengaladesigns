@@ -1,6 +1,8 @@
 import { supabase } from './supabaseClient'
 import { bootstrapTraveler } from './tripPersistence'
 import { pagoActivo } from './pago'
+import { cuentasActivas } from './cuentas'
+import { leerDatosDeFoto, type DatosDeFoto } from './exifFoto'
 
 /**
  * Las fotos del viaje (Tanda 6z3, punto 6): el viajero hace o sube fotos durante el viaje y se
@@ -87,6 +89,8 @@ export interface FotoPreparada {
   bytes: number
   /** La copia pequeña (unos 400 px, sin metadatos), que se sube junto a la grande. */
   miniatura?: { blob: Blob; bytes: number }
+  /** Lo que se leyó de la foto antes de quitarle los datos escondidos (cuándo, dónde, si es de cámara). Solo con las cuentas encendidas; va a `trip_photo_meta`, nunca dentro de la foto. */
+  datos?: DatosDeFoto
 }
 
 /* ------------------------------------------------------------------ */
@@ -150,35 +154,84 @@ export function quitarMetadatosJpeg(bytes: Uint8Array): Uint8Array {
 /* Preparar la foto en el navegador                                    */
 /* ------------------------------------------------------------------ */
 
-/** Lee la foto (con su orientación), la reduce a 1.600 px, la pasa a JPEG y le quita los metadatos. */
+/** Con las cuentas, cada foto grande se deja en unos 300 KB (antes, 1.600 px a calidad 0,82, que suele dar 400–900 KB). */
+export const OBJETIVO_BYTES = 300 * 1024
+/** Sin bajar de aquí: una foto más pequeña o más borrosa ya no sirve para recordar. */
+export const LADO_MINIMO_PX = 1000
+export const CALIDAD_MINIMA = 0.55
+
+/**
+ * Pura: los intentos (lado largo en píxeles, calidad JPEG) para dejar la foto en el tamaño objetivo, del primero (el de siempre) al último (el más pequeño que se permite).
+ * Primero baja la calidad; si aun así pesa, baja el lado un 15 % y vuelve a empezar.
+ */
+export function pasosDeCompresion(ladoOriginal: number): { lado: number; calidad: number }[] {
+  const lado0 = Math.max(1, Math.min(ladoOriginal, LADO_MAXIMO_PX))
+  const calidades = [CALIDAD_JPEG, 0.74, 0.66, 0.6, CALIDAD_MINIMA]
+  const pasos: { lado: number; calidad: number }[] = []
+  let lado = lado0
+  for (;;) {
+    for (const calidad of calidades) pasos.push({ lado: Math.round(lado), calidad })
+    const siguiente = lado * 0.85
+    if (siguiente < LADO_MINIMO_PX || siguiente >= lado) break
+    lado = siguiente
+  }
+  return pasos
+}
+
+/** Lee la foto (con su orientación), la reduce, la pasa a JPEG y le quita los metadatos. Con las cuentas, antes de quitarlos lee la fecha y el sitio, y la deja en unos 300 KB. */
 export async function prepararFoto(file: File | Blob): Promise<FotoPreparada> {
+  const conCuentas = cuentasActivas()
+  // Lo que cuenta la foto de sí misma: se lee ANTES de pasarla por el lienzo, que lo descarta.
+  let datos: DatosDeFoto | undefined
+  if (conCuentas) {
+    try {
+      datos = leerDatosDeFoto(new Uint8Array(await file.arrayBuffer()))
+    } catch {
+      datos = undefined
+    }
+  }
   // 'from-image' aplica la orientación del móvil: el canvas sale derecho y sin necesitar el EXIF.
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
-  const escala = Math.min(1, LADO_MAXIMO_PX / Math.max(bitmap.width, bitmap.height))
-  const ancho = Math.max(1, Math.round(bitmap.width * escala))
-  const alto = Math.max(1, Math.round(bitmap.height * escala))
-  const canvas = document.createElement('canvas')
-  canvas.width = ancho
-  canvas.height = alto
-  const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('No se pudo preparar la foto.')
-  ctx.drawImage(bitmap, 0, 0, ancho, alto)
-  // La copia pequeña, de la misma foto ya orientada (se hace antes de soltar el mapa de bits).
-  const escalaMin = Math.min(1, LADO_MINIATURA_PX / Math.max(ancho, alto))
-  const lienzoMin = document.createElement('canvas')
-  lienzoMin.width = Math.max(1, Math.round(ancho * escalaMin))
-  lienzoMin.height = Math.max(1, Math.round(alto * escalaMin))
-  lienzoMin.getContext('2d')?.drawImage(canvas, 0, 0, lienzoMin.width, lienzoMin.height)
-  bitmap.close?.()
   const aBlobLimpio = async (lienzo: HTMLCanvasElement, calidad: number): Promise<Blob | null> => {
     const jpeg = await new Promise<Blob | null>((resolve) => lienzo.toBlob(resolve, 'image/jpeg', calidad))
     if (!jpeg) return null
     return new Blob([quitarMetadatosJpeg(new Uint8Array(await jpeg.arrayBuffer())) as BlobPart], { type: 'image/jpeg' })
   }
-  const blob = await aBlobLimpio(canvas, CALIDAD_JPEG)
-  if (!blob) throw new Error('No se pudo preparar la foto.')
-  const blobMin = await aBlobLimpio(lienzoMin, CALIDAD_MINIATURA)
-  return { blob, width: ancho, height: alto, bytes: blob.size, ...(blobMin ? { miniatura: { blob: blobMin, bytes: blobMin.size } } : {}) }
+  const dibujar = (ladoLargo: number): HTMLCanvasElement => {
+    const escala = Math.min(1, ladoLargo / Math.max(bitmap.width, bitmap.height))
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.max(1, Math.round(bitmap.width * escala))
+    canvas.height = Math.max(1, Math.round(bitmap.height * escala))
+    const ctx = canvas.getContext('2d')
+    if (!ctx) throw new Error('No se pudo preparar la foto.')
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+    return canvas
+  }
+  try {
+    const pasos = conCuentas ? pasosDeCompresion(Math.max(bitmap.width, bitmap.height)) : [{ lado: LADO_MAXIMO_PX, calidad: CALIDAD_JPEG }]
+    let canvas = dibujar(pasos[0].lado)
+    // La copia pequeña, de la misma foto ya orientada (de la primera versión, la mayor).
+    const escalaMin = Math.min(1, LADO_MINIATURA_PX / Math.max(canvas.width, canvas.height))
+    const lienzoMin = document.createElement('canvas')
+    lienzoMin.width = Math.max(1, Math.round(canvas.width * escalaMin))
+    lienzoMin.height = Math.max(1, Math.round(canvas.height * escalaMin))
+    lienzoMin.getContext('2d')?.drawImage(canvas, 0, 0, lienzoMin.width, lienzoMin.height)
+    let blob: Blob | null = null
+    let ladoActual = pasos[0].lado
+    for (const paso of pasos) {
+      if (paso.lado !== ladoActual) {
+        canvas = dibujar(paso.lado)
+        ladoActual = paso.lado
+      }
+      blob = await aBlobLimpio(canvas, paso.calidad)
+      if (blob && (!conCuentas || blob.size <= OBJETIVO_BYTES)) break
+    }
+    if (!blob) throw new Error('No se pudo preparar la foto.')
+    const blobMin = await aBlobLimpio(lienzoMin, CALIDAD_MINIATURA)
+    return { blob, width: canvas.width, height: canvas.height, bytes: blob.size, ...(blobMin ? { miniatura: { blob: blobMin, bytes: blobMin.size } } : {}), ...(datos ? { datos } : {}) }
+  } finally {
+    bitmap.close?.()
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -344,6 +397,18 @@ export async function subirFotoPreparada(args: Omit<SubirFotoArgs, 'file'>, prep
     }
     const { data: firmada } = await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(ruta, SEGUNDOS_URL_FIRMADA)
     const { data: firmadaMin } = hayMiniatura ? await supabase.storage.from(BUCKET_FOTOS).createSignedUrl(rutaMiniatura(ruta), SEGUNDOS_URL_FIRMADA) : { data: null }
+    // Lo que se leyó de la foto antes de quitarle los datos (cuándo, dónde, si es de cámara): aparte, en nuestra tabla. Si falla, la foto vale igual.
+    if (preparada.datos && cuentasActivas()) {
+      const { error: errorDatos } = await supabase.from('trip_photo_meta').insert({
+        photo_id: (data as Fila).id,
+        user_id: userId,
+        taken_at: preparada.datos.tomadaEn,
+        lat: preparada.datos.lat,
+        lng: preparada.datos.lng,
+        con_camara: preparada.datos.conCamara,
+      })
+      if (errorDatos) console.warn('[fotos] no se pudieron guardar los datos de la foto:', errorDatos.message)
+    }
     const foto = deFila(data as Fila, firmada?.signedUrl ?? '', firmadaMin?.signedUrl ?? '')
     avisarCambio()
     avisarAnadida({ foto, miniatura: preparada.miniatura?.blob ?? preparada.blob })
@@ -407,5 +472,55 @@ export async function borrarFoto(foto: Pick<FotoViaje, 'id' | 'storagePath'>): P
   } catch (error) {
     console.warn('[fotos] fallo borrando la foto:', error)
     return 'No se ha podido eliminar la foto. Inténtalo de nuevo.'
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* [Guardar en mi galería]                                             */
+/* ------------------------------------------------------------------ */
+
+/** Pura: el nombre del archivo que se baja, «routy-dia-3-foro-romano-1a2b3c.jpg». */
+export function nombreDeArchivo(foto: Pick<FotoViaje, 'dayNumber' | 'stopName' | 'id'>): string {
+  const sitio = (foto.stopName ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40)
+  return `routy-dia-${foto.dayNumber}${sitio ? `-${sitio}` : ''}-${foto.id.slice(0, 6)}.jpg`
+}
+
+/**
+ * Baja la foto grande al móvil. Donde el navegador deja compartir archivos (iPhone, Android) sale la hoja de compartir con «Guardar imagen»; si no, se descarga el archivo.
+ * Devuelve un error en palabras sencillas, o null si todo fue bien.
+ */
+export async function guardarEnMiGaleria(foto: Pick<FotoViaje, 'url' | 'dayNumber' | 'stopName' | 'id'>): Promise<string | null> {
+  const ERROR = 'No se ha podido bajar la foto. Inténtalo de nuevo.'
+  if (!foto.url) return ERROR
+  try {
+    const respuesta = await fetch(foto.url)
+    if (!respuesta.ok) return ERROR
+    const blob = await respuesta.blob()
+    const nombre = nombreDeArchivo(foto)
+    const archivo = new File([blob], nombre, { type: 'image/jpeg' })
+    if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [archivo] })) {
+      try {
+        await navigator.share({ files: [archivo] })
+        return null
+      } catch (error) {
+        if ((error as { name?: string })?.name === 'AbortError') return null // (cerró la hoja: no es un fallo)
+      }
+    }
+    const enlace = document.createElement('a')
+    enlace.href = URL.createObjectURL(blob)
+    enlace.download = nombre
+    document.body.appendChild(enlace)
+    enlace.click()
+    enlace.remove()
+    setTimeout(() => URL.revokeObjectURL(enlace.href), 10_000)
+    return null
+  } catch {
+    return ERROR
   }
 }

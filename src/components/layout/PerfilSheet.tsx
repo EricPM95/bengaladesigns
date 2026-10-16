@@ -8,6 +8,7 @@ import { useNumeroFotos } from '../../lib/useNumeroFotos'
 import { chinchetasDeViajes, cifrasDelPerfil, viajePorId, viajesDelPerfil, type ResumenViaje } from '../../lib/viajesPerfil'
 import { Icono } from '../ui/Icono'
 import { Creditos } from '../perfil/Creditos'
+import { CuentaEnPerfil } from '../cuenta/CuentaEnPerfil'
 import { FichaDeViaje } from '../perfil/FichaDeViaje'
 import { FilaDeViaje } from '../perfil/FilaDeViaje'
 import { MapaMisViajes } from '../perfil/MapaMisViajes'
@@ -86,6 +87,7 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                     <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} onAbrirViaje={() => abrirViaje(viaje)} />
                   ))}
                 </div>
+                <CuentaEnPerfil />
                 <button type="button" onClick={() => setCreditosOpen(true)} className="self-start p-1 text-[12px] text-text/50 underline underline-offset-[3px]">
                   Créditos
                 </button>

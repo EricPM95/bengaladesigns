@@ -42,6 +42,7 @@ import { audioVigente } from '../shared/audio/historiasAudio.js'
 import { periodosParaFicha } from '../shared/routeEngine/horarioDeLaFecha.js'
 import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
+import { registrarRutasCuentas } from './cuentas.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
@@ -4541,6 +4542,8 @@ app.get('/api/cambio', async (_req, res) => {
 
 // El tiempo (Tanda 6z6c): previsión de Open-Meteo con caché del servidor de ~3 h por coordenadas redondeadas; la app nunca llama al proveedor.
 registrarRutasTiempo(app)
+// Las cuentas (parte 1): reclamar lo de una sesión anónima y borrar la cuenta. Con la clave de servicio de Supabase; sin ella responden 503 y no tocan nada.
+registrarRutasCuentas(app, salesAdmin)
 
 app.post('/api/destination-excursions', (req, res) => {
   const destination = req.body?.destination

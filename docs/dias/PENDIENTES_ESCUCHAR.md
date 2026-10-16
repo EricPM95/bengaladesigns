@@ -12,6 +12,8 @@
 - **Para la 6y9 (preparar sin pagar):** que la barra «Escuchar historia» reproduzca el audio guardado de cada historia si existe y, si no, la voz del móvil como ahora; y dejar listo un programa que, con la clave ELEVENLABS_API_KEY de .env.local (la pone Eric, nunca en el chat ni en el código), cree los 31 audios con esa voz y esos ajustes, los guarde y no los vuelva a crear si ya existen (solo los de las historias que cambien). No se lanza hasta antes de lanzar la app.
 - **(12-oct, Eric) ElevenLabs: elegir la voz ya, con la cuenta gratis; pagar solo justo antes de lanzar.** Un mes del plan Creator, con las historias ya cerradas (comprobados los datos), para no pagar meses ni rehacer audios si cambia un texto. Hasta entonces, la voz del móvil. Va en la lista de «antes de lanzar».
 
+**(13-oct, 22:14, Eric) ESCUCHAR SOLO ES LA HISTORIA.** En toda la app (ficha y HOY), el único audio es la historia: «Escuchar historia», solo donde hay historia (la del Coliseo, gratis). Fuera la lectura de la ficha con la voz del móvil (`textoResumenDeParada` en voz alta). En HOY, en lugar de [Escuchar] (la ficha leída), un botón [Sobre este lugar] que abre una hoja con el texto útil del Resumen de la ficha: el porqué, la descripción, «Qué vas a ver» y «Por qué te lo recomendamos»; sin Cómo llegar, sin etiquetas, sin botones, solo el texto. Así no hay que grabar las fichas: solo las 31 historias (unos 80.000 caracteres).
+
 Punto 3 del orden de `PENDIENTES_6K.md`: va después de Roma pulida y antes de las Llegadas.
 
 ## Lo que hay ahora
