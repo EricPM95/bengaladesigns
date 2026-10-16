@@ -1,0 +1,1053 @@
+[
+ {
+  "id": 3834,
+  "type": 1,
+  "lang": "es",
+  "guideLanguages": [
+   "es"
+  ],
+  "destinationId": 19,
+  "secondaryDestinationId": [],
+  "popularity": 23978,
+  "isGoldenTour": false,
+  "title": "Coliseo, Foro y Palatino + Arena de gladiadores",
+  "voucherType": 0,
+  "hasDeferredVoucher": false,
+  "relatedActivities": [
+   {
+    "id": 12811,
+    "lang": "en",
+    "url": "https://qa.civitatis.com/en/rome/colosseum-tour"
+   },
+   {
+    "id": 27430,
+    "lang": "pt",
+    "url": "https://qa.civitatis.com/pt/roma/tour-coliseu-arena-gladiadores"
+   },
+   {
+    "id": 27814,
+    "lang": "fr",
+    "url": "https://qa.civitatis.com/fr/rome/visite-colisee-gladiateurs"
+   },
+   {
+    "id": 100638,
+    "lang": "it",
+    "url": "https://qa.civitatis.com/it/roma/colosseo-arena-gladiatori-foro-palatino"
+   }
+  ],
+  "score": 8.8,
+  "reviews": 2068,
+  "isTopActivity": false,
+  "tags": [
+   {
+    "key": "FREE_CANCELLATION",
+    "label": "Cancelación gratuita"
+   },
+   {
+    "key": "ONLY_IN_LANG",
+    "label": "Solo en español"
+   }
+  ],
+  "persons": 125403,
+  "url": "https://qa.civitatis.com/es/roma/tour-coliseo-arena-gladiadores",
+  "description": "La <strong>Arena de gladiadores</strong> es el summum de la <strong>visita del Coliseo Romano</strong>. Además, recorreremos&nbsp;<strong>el Foro y el Palatino</strong>, grandes vestigios de la Roma Imperial.",
+  "raw_description": "La Arena de gladiadores es el summum de la visita del Coliseo Romano. Además, recorreremos&nbsp;el Foro y el Palatino, grandes vestigios de la Roma Imperial.",
+  "longDescription": "<h2>El Coliseo, el Foro y el Palatino</h2>\n<p>Descubre los grandes vestigios de la Roma Imperial en este tour que incluye una visita a la Arena de gladiadores del Coliseo.</p>\n\n<h2>Itinerario</h2>\n<p>Reúnase en la estación de metro Colosseo para iniciar la visita al Anfiteatro Flavio, conocido como el Coliseo de Roma. Explore la Arena del Coliseo de Roma y conozca los combates de gladiadores. Continúe la ruta con la visita al Palatino, la colina que albergaba las residencias de los emperadores romanos. Concluya en el Foro Romano, donde podrá ver esculturas de gobernantes como Trajano.</p>\n\n<h2>Cambios en el itinerario</h2>\n<p>En caso de no poder acceder a la Arena por motivos climáticos, se realizará una visita regular al Coliseo, Foro y Palatino, con reembolso de la diferencia de precio.</p>\n\n<h2>Menores de 2 años</h2>\n<p>Los menores de 2 años pueden participar de forma gratuita en brazos de sus padres durante la actividad.",
+  "rawLongDescription": "El Coliseo, el Foro y el Palatino\nDescubre los grandes vestigios de la Roma Imperial en este tour que incluye una visita a la Arena de gladiadores del Coliseo.\n\nItinerario\nReúnase en la estación de metro Colosseo para iniciar la visita al Anfiteatro Flavio, conocido como el Coliseo de Roma. Explore la Arena del Coliseo de Roma y conozca los combates de gladiadores. Continúe la ruta con la visita al Palatino, la colina que albergaba las residencias de los emperadores romanos. Concluya en el Foro Romano, donde podrá ver esculturas de gobernantes como Trajano.\n\nCambios en el itinerario\nEn caso de no poder acceder a la Arena por motivos climáticos, se realizará una visita regular al Coliseo, Foro y Palatino, con reembolso de la diferencia de precio.\n\nMenores de 2 años\nLos menores de 2 años pueden participar de forma gratuita en brazos de sus padres durante la actividad.",
+  "minAge": 0,
+  "hasAdditionalQuestions": false,
+  "hasPickup": false,
+  "hasPassengersQuestions": true,
+  "photos": {
+   "header": [
+    {
+     "caption": "Coliseo, Foro y Palatino + Arena de gladiadores",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-m.jpg",
+      "grid": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-grid.jpg",
+      "list": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-list.jpg",
+      "list_responsive": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-list-m.jpg"
+     }
+    }
+   ],
+   "gallery": []
+  },
+  "typologies": [
+   {
+    "id": 1,
+    "key": "visitas-guiadas",
+    "description": "Visitas guiadas"
+   },
+   {
+    "id": 13,
+    "key": "museos",
+    "description": "Museos y monumentos"
+   }
+  ],
+  "category": {
+   "id": 1,
+   "description": "Visitas guiadas y free tours"
+  },
+  "subcategory": {
+   "id": 2,
+   "description": "Visitas guiadas por museos o monumentos"
+  },
+  "amountType": "PVP",
+  "minimumPrice": 53,
+  "isFreeTour": false,
+  "currency": "EUR",
+  "originalPrice": 53,
+  "included": [
+   "Guía en español.",
+   "Entradas con acceso preferente a la Arena de gladiadores del Coliseo, el Foro Romano y el Palatino (24EUR)."
+  ],
+  "notIncluded": [
+   "Acceso a las gradas inferiores o subterráneos del Coliseo."
+  ],
+  "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 32 días antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+  "cancelPolicies": [
+   {
+    "hours": 768,
+    "penalty": 0,
+    "type": "percent"
+   }
+  ],
+  "MinimumPaxPerBooking": 0,
+  "minimumPaxPerActivity": 0,
+  "maximumPaxPerActivity": 30,
+  "infoVoucher": "<p>El punto de encuentro es la parada de<strong> metro Colosseo (Línea B), en la salida de abajo</strong>, en la Via dei Fori Imperiali, entre el quiosco verde y la fuente.&nbsp;Cuidado: no esperéis en la salida del metro de arriba (Via Nicola Salvi, la plaza de arriba), que es donde se paran los taxis, en este caso hay&nbsp;que meterse en la boca del metro y bajar las escaleras para salir en la salida de abajo.</p>\n\n<h2>Importante</h2>\n\n<ul class=\"listado\">\n\t<li>Es imprescindible llevar el <strong>DNI o pasaporte en vigor</strong> de todos los participantes el día de la actividad.</li>\n\t<li>Es importante llegar al punto de encuentro con 10 minutos de antelación para poder hacer el check in, el tour comienza a la hora exacta. <strong>En caso de retraso no será posible incorporarse al grupo ni corresponderá reembolso. </strong>Recomendamos calcular el tiempo de trayecto con Google Maps.</li>\n\t<li>El tour se realiza siempre, haga sol, llueva o nieve, y <strong>no permite cancelaciones por causas climatológicas</strong>. <em>Si por motivos de seguridad uno o más sitios arqueológicos no se pueden visitar solo</em>&nbsp;se reembolsará el dinero cuando el Coliseo determine su cierre y permita reintegrar las entradas.<em>&nbsp;S</em><em>i esta situación se conoce antes del inicio del tour, se os ofrecerán diferentes alternativas.</em></li>\n\t<li>Si por algún motivo no se pudiera hacer el<strong> tour de la Arena</strong>, se hará una visita regular por el Coliseo, Foro y Palatino. En estos casos, se os devolverá la diferencia de precio.</li>\n\t<li>El orden de las visitas puede sufrir modificaciones.</li>\n\t<li>Esta visita incluye las&nbsp;<strong>entradas reservadas</strong>: accederéis a los monumentos&nbsp;<strong>con acceso prioritario saltando las colas de taquilla</strong>. En los periodos de alta afluencia de los visitantes <strong>no siempre es posible saltar la cola del control en el acceso&nbsp;a los monumentos</strong>. En todo caso, la cola será mucho más rápida que la de los visitantes sin entrada reservada.&nbsp;</li>\n\t<li>Los bebés de menores de 2 años solamente podrán participar en la actividad de forma gratuita si van en los brazos de sus padres.</li>\n\t<li>Esta actividad no es apta&nbsp;para realizar en sillas de ruedas, ni con carritos de bebé.</li>\n\t<li>Durante el tour os facilitarán auriculares de un solo uso. Para ser respetuosos con el medio ambiente y evitar este desperdicio, os sugerimos que llevéis vuestros propios auriculares.</li>\n\t<li>Esta entrada<strong> no es válida para grupos escolares</strong>.&nbsp;En caso de presentar este voucher para un grupo escolar, no será posible acceder al monumento y será necesario adquirir las entradas correctas, previa comprobación de disponibilidad, abonando de nuevo el importe.</li>\n</ul>\n\n<h2>Entradas</h2>\n\n<p>Reservando esta actividad, el cliente autoriza a la agencia organizadora a adquirir&nbsp;la entrada necesaria para la realización de la visita guiada y que el precio de dicha entrada es de 24EUR.</p>\n",
+  "duration": {
+   "min": 150,
+   "max": 180,
+   "duration": 180
+  },
+  "advance": {
+   "days": 0,
+   "hour": null,
+   "minutes_before": 180
+  },
+  "address": {
+   "address": "",
+   "shortAddress": "Estación de metro Colosseo, salida Via dei Fori Imperiali.",
+   "latitude": 41.891226,
+   "longitude": 12.491262,
+   "zoom": 17
+  },
+  "providersInfo": [],
+  "accessibility": {
+   "code": 201,
+   "description": "No es accesible en silla de ruedas."
+  },
+  "isCategoryPaxGroup": false,
+  "hasDynamicPrice": false,
+  "rates": [
+   {
+    "id": 0,
+    "text": "Tour en español",
+    "categories": [
+     {
+      "id": 0,
+      "text": "Adultos",
+      "canBookAlone": true,
+      "group": []
+     },
+     {
+      "id": 1,
+      "text": "Jóvenes de 6 a 17 años",
+      "canBookAlone": false,
+      "group": []
+     },
+     {
+      "id": 2,
+      "text": "Niños de 2 a 5 años",
+      "canBookAlone": false,
+      "group": []
+     },
+     {
+      "id": 3,
+      "text": "Menores de 2 años",
+      "canBookAlone": false,
+      "group": []
+     }
+    ],
+    "pickup": {
+     "status": "not_included"
+    }
+   }
+  ]
+ },
+ {
+  "id": 84,
+  "type": 1,
+  "lang": "es",
+  "guideLanguages": [
+   "es"
+  ],
+  "destinationId": 19,
+  "secondaryDestinationId": [],
+  "popularity": 15886,
+  "isGoldenTour": true,
+  "title": "Visita guiada por los Museos Vaticanos y Capilla Sixtina",
+  "voucherType": 0,
+  "hasDeferredVoucher": false,
+  "relatedActivities": [
+   {
+    "id": 1603,
+    "lang": "en",
+    "url": "https://qa.civitatis.com/en/rome/vatican-city-tour"
+   },
+   {
+    "id": 1604,
+    "lang": "pt",
+    "url": "https://qa.civitatis.com/pt/roma/visita-guiada-vaticano"
+   },
+   {
+    "id": 1800,
+    "lang": "it",
+    "url": "https://qa.civitatis.com/it/roma/visita-guidata-vaticano"
+   },
+   {
+    "id": 2435,
+    "lang": "fr",
+    "url": "https://qa.civitatis.com/fr/rome/visite-guidee-vatican"
+   }
+  ],
+  "score": 8.7,
+  "reviews": 4272,
+  "isTopActivity": false,
+  "tags": [
+   {
+    "key": "SKIP_LINE",
+    "label": "Sin colas"
+   },
+   {
+    "key": "FREE_CANCELLATION",
+    "label": "Cancelación gratuita"
+   },
+   {
+    "key": "ONLY_IN_LANG",
+    "label": "Solo en español"
+   }
+  ],
+  "persons": 487527,
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-vaticano",
+  "description": "En esta <strong>visita por los Museos Vaticanos y la Capilla Sixtina</strong> veremos una de las colecciones de arte más importantes del mundo. ¡Incluye <strong>entrada preferente</strong>!",
+  "raw_description": "En esta visita por los Museos Vaticanos y la Capilla Sixtina veremos una de las colecciones de arte más importantes del mundo. ¡Incluye entrada preferente!",
+  "longDescription": "<p>En esta visita guiada por el Vaticano conoceremos los Museos Vaticanos y la Capilla Sixtina. El precio incluye entrada preferente, por lo que nos saltaremos las interminables colas.</p>\n\n<h2>Itinerario</h2>\n\n<p>En esta visita guiada conoceremos dos de los lugares más importantes de Roma. Los Museos Vaticanos recogen la mayor colección de arte de la Iglesia Católica Romana. Se incluye la visita a la Galería de los Mapas, la Galería de los Candelabros, la Galería de los Tapetes y El Patio del Belvedere, donde veremos esculturas, pinturas y otras obras de arte. También descubriremos la emblemática Capilla Sixtina, con algunas de las pinturas más famosas de todos los tiempos. Se debe respetar el silencio en este lugar sagrado. Nuestros guías revelarán historias sobre el oscuro pasado del Vaticano durante la visita.</p>\n\n<h2>Basílica de San Pedro</h2>\n\n<p>El acceso a la Basílica de San Pedro desde la Capilla Sixtina suele estar abierto, pero no siempre garantizado debido a eventos religiosos. Si deseáis visitar la basílica por vuestra cuenta después del tour, podéis acceder desde la Plaza de San Pedro.</p>\n\n<h2>Experiencia ampliada</h2>\n\n<p>Si queréis conocer los lugares imprescindibles de Roma, podéis reservar nuestra oferta que combina el tour del Vaticano con la visita al Coliseo, el Foro y el Palatino.</p>",
+  "rawLongDescription": "En esta visita guiada por el Vaticano conoceremos los Museos Vaticanos y la Capilla Sixtina. El precio incluye entrada preferente, por lo que nos saltaremos las interminables colas.\n\nItinerario\n\nEn esta visita guiada conoceremos dos de los lugares más importantes de Roma. Los Museos Vaticanos recogen la mayor colección de arte de la Iglesia Católica Romana. Se incluye la visita a la Galería de los Mapas, la Galería de los Candelabros, la Galería de los Tapetes y El Patio del Belvedere, donde veremos esculturas, pinturas y otras obras de arte. También descubriremos la emblemática Capilla Sixtina, con algunas de las pinturas más famosas de todos los tiempos. Se debe respetar el silencio en este lugar sagrado. Nuestros guías revelarán historias sobre el oscuro pasado del Vaticano durante la visita.\n\nBasílica de San Pedro\n\nEl acceso a la Basílica de San Pedro desde la Capilla Sixtina suele estar abierto, pero no siempre garantizado debido a eventos religiosos. Si deseáis visitar la basílica por vuestra cuenta después del tour, podéis acceder desde la Plaza de San Pedro.\n\nExperiencia ampliada\n\nSi queréis conocer los lugares imprescindibles de Roma, podéis reservar nuestra oferta que combina el tour del Vaticano con la visita al Coliseo, el Foro y el Palatino.",
+  "minAge": 0,
+  "hasAdditionalQuestions": false,
+  "hasPickup": false,
+  "hasPassengersQuestions": true,
+  "photos": {
+   "header": [
+    {
+     "caption": "Visita guiada por los Museos Vaticanos y Capilla Sixtina",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-m.jpg",
+      "grid": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-grid.jpg",
+      "list": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-list.jpg",
+      "list_responsive": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-list-m.jpg"
+     }
+    }
+   ],
+   "gallery": [
+    {
+     "caption": "Los Museos Vaticanos albergan un gran patrimonio artístico",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/galeria/galeria-museos-vaticanos.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/galeria-museos-vaticanos.jpg",
+      "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/galeria-museos-vaticanos.jpg"
+     }
+    }
+   ]
+  },
+  "typologies": [
+   {
+    "id": 1,
+    "key": "visitas-guiadas",
+    "description": "Visitas guiadas"
+   },
+   {
+    "id": 13,
+    "key": "museos",
+    "description": "Museos y monumentos"
+   },
+   {
+    "id": 113,
+    "key": "vaticano",
+    "description": "Vaticano"
+   }
+  ],
+  "category": {
+   "id": 1,
+   "description": "Visitas guiadas y free tours"
+  },
+  "subcategory": {
+   "id": 2,
+   "description": "Visitas guiadas por museos o monumentos"
+  },
+  "amountType": "PVP",
+  "minimumPrice": 16500,
+  "isFreeTour": false,
+  "currency": "EUR",
+  "originalPrice": 16500,
+  "included": [
+   "Guía en español.",
+   "Entrada sin colas a los Museos Vaticanos y a la Capilla Sixtina (22EUR).",
+   "Uso de auriculares para seguir mejor las explicaciones."
+  ],
+  "notIncluded": [],
+  "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 24 horas antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+  "cancelPolicies": [
+   {
+    "hours": 24,
+    "penalty": 0,
+    "type": "percent"
+   }
+  ],
+  "MinimumPaxPerBooking": 0,
+  "minimumPaxPerActivity": 127,
+  "maximumPaxPerActivity": 13000,
+  "infoVoucher": "<p>El tour comienza en el Viale Giulio Cesare 229, en la puerta del Cine Giulio Cesare (a 100 metros de la parada de metro Ottaviano, Línea A).</p>\n\n<p>A continuación, podéis ver el enlace con la ubicación exacta:</p>\n\n<p><a href=\"https://goo.gl/maps/pMNzpiqXGQ5SnMRU6\">https://goo.gl/maps/pMNzpiqXGQ5SnMRU6</a></p>\n\n<h2>Importante</h2>\n\n<ul class=\"listado\">\n\t<li>Es importante llegar al punto de encuentro con <strong>10&nbsp;minutos de antelación para poder hacer el check-in</strong>. En caso de retraso no será posible incorporarse al grupo ni corresponderá reembolso.</li>\n\t<li>Es recomendable llevar el DNI o el pasaporte por posibles controles.</li>\n\t<li>Para acceder a la Basílica de San Pedro y la Capilla Sixtina, tanto mujeres como hombres deberán llevar cubiertos los hombros y las rodillas.</li>\n\t<li>Se permite el acceso con mochilas y paraguas pequeños, botellas de agua y comida siempre y cuando no se consuma dentro de las instalaciones.</li>\n\t<li>Recordamos que la actividad se realiza en grupo y es guiada así que se prevé seguir un recorrido especifico, que <strong>no podrá ser realizado en silla de ruedas ni con carritos de bebe.</strong> Estos últimos se podrán dejar en la consigna al inicio del tour y no podrán ser recogidos hasta finalizar la visita. Tampoco se aconseja la realización del tour a personas que tienen dificultades para caminar.</li>\n\t<li>Atención, la Santa Sede puede cerrar la Basílica de San Pedro y/o la Capilla Sixtina con motivo de celebraciones litúrgicas sin previo aviso. En estos casos no se procede a la devolución.</li>\n\t<li><strong>El tour no permite cancelaciones por causas climatológicas.</strong></li>\n\t<li>Este tour incluye las entradas reservadas: accederéis a los monumentos con acceso prioritario saltando las colas de taquilla. En los periodos de alta aﬂuencia de visitantes no siempre es posible saltar la cola que podrá formarse en el acceso prioritario. En todo caso, la cola será mucho más rápida que la de los visitantes sin entrada reservada.</li>\n\t<li>Las personas que tienen una <strong>minusvalía superior al 74%</strong> pueden obtener la devolución de la entrada a los museos. Para ello deben informar al proveedor y adjuntar el certificado de minusvalía al menos <strong>72 horas</strong> antes del inicio del tour. <strong>Si no se notifica previamente, se pierde el derecho al reembolso del billete</strong>.</li>\n\t<li>La Capilla Sixtina es un lugar de culto. Por lo que no está permitido hablar, hacer fotos y/o vídeos. Por este motivo los guías explican la Capilla fuera de la misma.</li>\n\t<li>Esta entrada<strong> no es válida para grupos escolares</strong>.&nbsp;En caso de presentar este voucher para un grupo escolar, no será posible acceder al monumento y será necesario adquirir las entradas correctas, previa comprobación de disponibilidad, abonando de nuevo el importe.</li>\n</ul>\n\n<h2>Basílica de San Pedro</h2>\n\n<p>La entrada a la Basílica es gratuita y abre a las 7:00 horas. Podréis visitarla por vuestra cuenta antes o después del tour, accediendo desde la Plaza de San Pedro.</p>\n\n<p>Si durante la realización del tour el acceso entre los museos y la Basílica se encuentra abierto nuestros guías les darán la posibilidad de dejarles dentro para que puedan verla por su cuenta sin necesidad de salir, hacer la fila y pasar el control de seguridad de nuevo.</p>\n\n<p>Debido a la audiencia papal, acto que se realiza los miércoles, no se puede garantizar el acceso a la Basílica de San Pedro.</p>\n",
+  "duration": {
+   "min": 420,
+   "max": 0,
+   "duration": 420
+  },
+  "advance": {
+   "days": 0,
+   "hour": null,
+   "minutes_before": 120
+  },
+  "address": {
+   "address": "",
+   "shortAddress": "Viale Giulio Cesare 229, frente al cine Giulio Cesare (Metro A Ottaviano). ",
+   "latitude": 41.9086683,
+   "longitude": 12.4558222,
+   "zoom": 16
+  },
+  "providersInfo": [],
+  "accessibility": {
+   "code": 201,
+   "description": "No es accesible en silla de ruedas."
+  },
+  "isCategoryPaxGroup": false,
+  "hasDynamicPrice": false,
+  "rates": [
+   {
+    "id": 0,
+    "text": "Tour en español",
+    "categories": [
+     {
+      "id": 0,
+      "text": "Adultos",
+      "canBookAlone": true,
+      "group": []
+     },
+     {
+      "id": 1,
+      "text": "Niños de 6 a 17 años",
+      "canBookAlone": false,
+      "group": []
+     },
+     {
+      "id": 2,
+      "text": "Menores de 6 años",
+      "canBookAlone": false,
+      "group": []
+     }
+    ],
+    "pickup": {
+     "status": "not_included"
+    }
+   }
+  ]
+ },
+ {
+  "id": 170340,
+  "type": 1,
+  "lang": "es",
+  "guideLanguages": [],
+  "destinationId": 19,
+  "secondaryDestinationId": [],
+  "popularity": 11394,
+  "isGoldenTour": false,
+  "title": "Entrada al Panteón de Agripa sin colas",
+  "voucherType": 0,
+  "hasDeferredVoucher": false,
+  "relatedActivities": [
+   {
+    "id": 170341,
+    "lang": "en",
+    "url": "https://qa.civitatis.com/en/rome/pantheon-ticket"
+   },
+   {
+    "id": 170342,
+    "lang": "fr",
+    "url": "https://qa.civitatis.com/fr/rome/billet-pantheon-agrippa-audioguide"
+   },
+   {
+    "id": 170343,
+    "lang": "it",
+    "url": "https://qa.civitatis.com/it/roma/biglietti-pantheon-agrippa"
+   },
+   {
+    "id": 170344,
+    "lang": "pt",
+    "url": "https://qa.civitatis.com/pt/roma/ingresso-panteao-agripa-audioguia"
+   }
+  ],
+  "score": 8.7,
+  "reviews": 36,
+  "isTopActivity": false,
+  "tags": [
+   {
+    "key": "SKIP_LINE",
+    "label": "Sin colas"
+   },
+   {
+    "key": "ACCESSIBILITY",
+    "label": "Accesible en silla de ruedas"
+   },
+   {
+    "key": "FREE_CANCELLATION",
+    "label": "Cancelación gratuita"
+   }
+  ],
+  "persons": 31190,
+  "url": "https://qa.civitatis.com/es/roma/entrada-panteon-agripa-audioguia",
+  "description": "Con esta <b>entrada al Panteón de Agripa&nbsp;sin colas</b> podréis visitar <b>uno de los grandes monumentos de la Antigua Roma</b>. ¡Imprescindible si estáis en la Ciudad Eterna!",
+  "raw_description": "Con esta entrada al Panteón de Agripa&nbsp;sin colas podréis visitar uno de los grandes monumentos de la Antigua Roma. ¡Imprescindible si estáis en la Ciudad Eterna!",
+  "longDescription": "<p>Con esta <b>entrada al Panteón de Agripa sin colas</b> podréis visitar <b>uno de los grandes monumentos de la Antigua Roma</b>. Imprescindible si estáis en la Ciudad Eterna.</p>\n\n<h2>¿Por qué visitar el Panteón de Agripa?</h2>\n\n<p>Situado en una de las principales zonas monumentales de la capital italiana, el <b>Panteón de Agripa</b> es una de las <b>joyas arquitectónicas de la Antigua Roma</b>. No tendréis que esperar la cola.</p>\n\n<p>Vuestra <b>entrada al Panteón de Agripa</b> os permitirá acceder al monumento sin pasar por taquilla. En su interior, la atención se dirige hacia la <b>cúpula del panteón</b>, que cuenta con un <b>óculo</b> de casi 9 metros de diámetro por el que entra luz natural.</p>\n\n<p>En el interior del Panteón de Agripa también se encuentra la <b>tumba del pintor Rafael Sanzio</b> y otros personajes, como el <b>rey Víctor Manuel II</b>. Asimismo, se pueden contemplar diversas <b>esculturas</b> y <b>obras pictóricas</b>.</p>\n\n<h2>Horario y punto de encuentro</h2>\n\n<p>A la hora indicada debéis presentaros en el <strong>número 56 de la Via del Pozzo delle Cornacchie</strong>, a 5 minutos a pie del Panteón de Agripa. <strong>Os proporcionaremos la entrada</strong> y os acompañaremos hasta el panteón, donde podréis visitar el monumento por vuestra cuenta con la entrada entregada.</p>",
+  "rawLongDescription": "Con esta entrada al Panteón de Agripa sin colas podréis visitar uno de los grandes monumentos de la Antigua Roma. Imprescindible si estáis en la Ciudad Eterna.\n\n¿Por qué visitar el Panteón de Agripa?\n\nSituado en una de las principales zonas monumentales de la capital italiana, el Panteón de Agripa es una de las joyas arquitectónicas de la Antigua Roma. No tendréis que esperar la cola.\n\nVuestra entrada al Panteón de Agripa os permitirá acceder al monumento sin pasar por taquilla. En su interior, la atención se dirige hacia la cúpula del panteón, que cuenta con un óculo de casi 9 metros de diámetro por el que entra luz natural.\n\nEn el interior del Panteón de Agripa también se encuentra la tumba del pintor Rafael Sanzio y otros personajes, como el rey Víctor Manuel II. Asimismo, se pueden contemplar diversas esculturas y obras pictóricas.\n\nHorario y punto de encuentro\n\nA la hora indicada debéis presentaros en el número 56 de la Via del Pozzo delle Cornacchie, a 5 minutos a pie del Panteón de Agripa. Os proporcionaremos la entrada y os acompañaremos hasta el panteón, donde podréis visitar el monumento por vuestra cuenta con la entrada entregada.",
+  "minAge": 0,
+  "hasAdditionalQuestions": null,
+  "hasPickup": false,
+  "hasPassengersQuestions": null,
+  "photos": {
+   "header": [
+    {
+     "caption": "Entrada al Panteón de Agripa sin colas",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-m.jpg",
+      "grid": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-grid.jpg",
+      "list": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-list.jpg",
+      "list_responsive": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-list-m.jpg"
+     }
+    }
+   ],
+   "gallery": [
+    {
+     "caption": "Óculo del Panteón de Agripa",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/galeria/oculo-panteon-agripa-roma.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/oculo-panteon-agripa-roma.jpg",
+      "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/oculo-panteon-agripa-roma.jpg"
+     }
+    },
+    {
+     "caption": "Visitando el interior del Panteón de Agripa",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/galeria/detalle-interior-panteon-agripa.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/detalle-interior-panteon-agripa.jpg",
+      "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/detalle-interior-panteon-agripa.jpg"
+     }
+    },
+    {
+     "caption": "Arquitectura del Panteón de Agripa",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/galeria/detalle-columnas-panteon-agripa.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/detalle-columnas-panteon-agripa.jpg",
+      "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/detalle-columnas-panteon-agripa.jpg"
+     }
+    },
+    {
+     "caption": "Columnatas del Panteón de Agripa",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/galeria/columnatas-panteon-agripa.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/columnatas-panteon-agripa.jpg",
+      "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/columnatas-panteon-agripa.jpg"
+     }
+    }
+   ]
+  },
+  "typologies": [],
+  "category": {
+   "id": 5,
+   "description": "Entradas"
+  },
+  "subcategory": {
+   "id": 61,
+   "description": "Atracciones turísticas"
+  },
+  "amountType": "PVP",
+  "minimumPrice": 11,
+  "isFreeTour": false,
+  "currency": "EUR",
+  "originalPrice": 11,
+  "included": [
+   "Entrada al Panteón de Agripa sin colas."
+  ],
+  "notIncluded": [],
+  "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 24 horas antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+  "cancelPolicies": [
+   {
+    "hours": 24,
+    "penalty": 0,
+    "type": "percent"
+   }
+  ],
+  "MinimumPaxPerBooking": 1,
+  "minimumPaxPerActivity": 1,
+  "maximumPaxPerActivity": null,
+  "infoVoucher": "<p><b>10 minutos antes</b> de la hora indicada, debéis presentaros en el siguiente punto de Roma para recoger vuestra entrada: <b>Via del Pozzo delle Cornacchie, 56, 00186 Roma RM, Italia (oficinas de Best in Rome Tour)</b>. Si no encontráis el punto de encuentro, llamad al teléfono de emergencia indicado en este voucher.</p>\n\n<p><b>Código de vestimenta</b>: no se permite acceder al Panteón de Agripa con pantalones cortos, chalecos y blusas sin mangas.</p>\n\n<h2>Entrada sin colas</h2>\n\n<p>Tened en cuenta que con esta entrada accederéis al Panteón de Agripa sin hacer fila en la taquilla. Sin embargo, tendréis que pasar obligatoriamente por un control de seguridad, cuya fila es independiente y no se puede saltar.</p>\n",
+  "duration": {
+   "min": 0,
+   "max": 0,
+   "duration": 0
+  },
+  "advance": {
+   "days": 0,
+   "hour": null,
+   "minutes_before": 0
+  },
+  "address": {
+   "address": "",
+   "shortAddress": "Via del Pozzo delle Cornacchie, 56.",
+   "latitude": 41.8999558,
+   "longitude": 12.4754812,
+   "zoom": 17
+  },
+  "providersInfo": [],
+  "accessibility": {
+   "code": 0,
+   "description": "Accesible en silla de ruedas. Es necesario indicarlo en la reserva. Aseos accesibles. Es necesario un acompañante."
+  },
+  "isCategoryPaxGroup": false,
+  "hasDynamicPrice": false,
+  "rates": [
+   {
+    "id": 0,
+    "text": "Entrada",
+    "categories": [
+     {
+      "id": 0,
+      "text": "Adultos",
+      "canBookAlone": true,
+      "group": []
+     },
+     {
+      "id": 1,
+      "text": "Niños de 3 a 15 años",
+      "canBookAlone": false,
+      "group": []
+     },
+     {
+      "id": 2,
+      "text": "Menores de 3 años",
+      "canBookAlone": false,
+      "group": []
+     }
+    ],
+    "pickup": {
+     "status": "not_included"
+    }
+   }
+  ]
+ },
+ {
+  "id": 47029,
+  "type": 1,
+  "lang": "es",
+  "guideLanguages": [
+   "es"
+  ],
+  "destinationId": 19,
+  "secondaryDestinationId": [],
+  "popularity": 7481,
+  "isGoldenTour": false,
+  "title": "Coliseo Subterráneo y Arena + Foro y Palatino",
+  "voucherType": 0,
+  "hasDeferredVoucher": false,
+  "relatedActivities": [
+   {
+    "id": 53281,
+    "lang": "en",
+    "url": "https://qa.civitatis.com/en/rome/colosseum-underground-tour"
+   }
+  ],
+  "score": 9,
+  "reviews": 108,
+  "isTopActivity": false,
+  "tags": [
+   {
+    "key": "ONLY_IN_LANG",
+    "label": "Solo en español"
+   }
+  ],
+  "persons": 40887,
+  "url": "https://qa.civitatis.com/es/roma/visita-coliseo-subterraneo",
+  "description": "Si os apasiona la Roma Imperial, <b>adentraros en la Arena y los subterráneos del Coliseo será una experiencia única</b>. Además, <strong>descubriremos el Foro y el Palatino</strong>.",
+  "raw_description": "Si os apasiona la Roma Imperial, adentraros en la Arena y los subterráneos del Coliseo será una experiencia única. Además, descubriremos el Foro y el Palatino.",
+  "longDescription": "<p>Si os apasiona la Roma Imperial, adentraros en la Arena y en los subterráneos del Coliseo será una experiencia inolvidable. Además de visitar el Coliseo al completo, en este tour descubriremos los Foros y el Palatino.</p>\n\n<h2>Itinerario</h2>\n\n<p>El tour comienza junto a la Via dei Fori Imperiali de Roma. Comenzaremos visitando la Arena de Gladiadores, donde pasaremos 15 minutos descubriendo los juegos, eventos y combates que se sucedieron allí durante casi cinco siglos.</p>\n\n<p>Descenderemos a los subterráneos del Coliseo, su parte más enigmática, donde recorreremos durante 20 minutos las áreas donde los gladiadores se preparaban para luchar, explorando la arquitectura y el funcionamiento de los ascensores que daban acceso a la Arena.</p>\n\n<p>Finalizaremos la visita guiada accediendo a las gradas superiores del Coliseo, declarado Patrimonio de la Humanidad. Luego, pasaremos junto al Arco de Constantino para dirigirnos al Foro Romano, donde contemplaremos los templos y construcciones de emperadores como Marco Aurelio y Trajano.</p>\n\n<p>Terminaremos la ruta en el Palatino, que alberga los yacimientos arqueológicos de las antiguas residencias de los emperadores romanos, desde donde se obtienen las mejores vistas de Roma.</p>\n\n<h2>Importante</h2>\n\n<ul class=\"listado\">\n\t<li>El horario de inicio del tour puede variar hasta un máximo de 3 horas de anticipación o aplazamiento. El operador local se pondrá en contacto antes del tour para confirmar la hora exacta de inicio.</li>\n\t<li>Este tour no está disponible el primer domingo de mes.</li>\n</ul>",
+  "rawLongDescription": "Si os apasiona la Roma Imperial, adentraros en la Arena y en los subterráneos del Coliseo será una experiencia inolvidable. Además de visitar el Coliseo al completo, en este tour descubriremos los Foros y el Palatino.\n\nItinerario\n\nEl tour comienza junto a la Via dei Fori Imperiali de Roma. Comenzaremos visitando la Arena de Gladiadores, donde pasaremos 15 minutos descubriendo los juegos, eventos y combates que se sucedieron allí durante casi cinco siglos.\n\nDescenderemos a los subterráneos del Coliseo, su parte más enigmática, donde recorreremos durante 20 minutos las áreas donde los gladiadores se preparaban para luchar, explorando la arquitectura y el funcionamiento de los ascensores que daban acceso a la Arena.\n\nFinalizaremos la visita guiada accediendo a las gradas superiores del Coliseo, declarado Patrimonio de la Humanidad. Luego, pasaremos junto al Arco de Constantino para dirigirnos al Foro Romano, donde contemplaremos los templos y construcciones de emperadores como Marco Aurelio y Trajano.\n\nTerminaremos la ruta en el Palatino, que alberga los yacimientos arqueológicos de las antiguas residencias de los emperadores romanos, desde donde se obtienen las mejores vistas de Roma.\n\nImportante\n\n\n\tEl horario de inicio del tour puede variar hasta un máximo de 3 horas de anticipación o aplazamiento. El operador local se pondrá en contacto antes del tour para confirmar la hora exacta de inicio.\n\tEste tour no está disponible el primer domingo de mes.\n",
+  "minAge": 0,
+  "hasAdditionalQuestions": false,
+  "hasPickup": false,
+  "hasPassengersQuestions": true,
+  "photos": {
+   "header": [
+    {
+     "caption": "Coliseo Subterráneo y Arena + Foro y Palatino",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/visita-coliseo-subterraneo.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/visita-coliseo-subterraneo-m.jpg",
+      "grid": "https://cdn2.civitatis.com/italia/roma/visita-coliseo-subterraneo-grid.jpg",
+      "list": "https://cdn2.civitatis.com/italia/roma/visita-coliseo-subterraneo-list.jpg",
+      "list_responsive": "https://cdn2.civitatis.com/italia/roma/visita-coliseo-subterraneo-list-m.jpg"
+     }
+    }
+   ],
+   "gallery": [
+    {
+     "caption": "Coliseo romano",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/galeria/coliseo-roma-foro-romano.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/coliseo-roma-foro-romano.jpg",
+      "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/coliseo-roma-foro-romano.jpg"
+     }
+    }
+   ]
+  },
+  "typologies": [
+   {
+    "id": 1,
+    "key": "visitas-guiadas",
+    "description": "Visitas guiadas"
+   },
+   {
+    "id": 13,
+    "key": "museos",
+    "description": "Museos y monumentos"
+   }
+  ],
+  "category": {
+   "id": 1,
+   "description": "Visitas guiadas y free tours"
+  },
+  "subcategory": {
+   "id": 2,
+   "description": "Visitas guiadas por museos o monumentos"
+  },
+  "amountType": "PVP",
+  "minimumPrice": 100,
+  "isFreeTour": false,
+  "currency": "EUR",
+  "originalPrice": 100,
+  "included": [
+   "Guía en español.",
+   "Entradas al Coliseo, el Foro y el Palatino.",
+   "Acceso a la Arena de los gladiadores del Coliseo.",
+   "Acceso a las gradas inferiores o subterráneos del Coliseo.",
+   "Grupos reducidos, no habrá más de 20 personas."
+  ],
+  "notIncluded": [],
+  "cancelPolicy": "No reembolsable. Esta actividad no permite modificaciones.",
+  "cancelPolicies": [
+   {
+    "hours": 0,
+    "penalty": 100,
+    "type": "percent"
+   }
+  ],
+  "MinimumPaxPerBooking": 0,
+  "minimumPaxPerActivity": 0,
+  "maximumPaxPerActivity": 10,
+  "infoVoucher": "<p>El punto de encuentro es en la siguiente dirección:&nbsp;<strong>Via dei Fori Imperiali, 1, Roma</strong>, frente a la zona exterior de la Basílica de San Cosme y San Damián. Os pedimos que estéis allí <strong>20 minutos antes del comienzo del tour</strong>. Para ser identificado, el guía llevará un cartel con el logotipo de Vivicos.</p>\n\n<h2>Horarios</h2>\n\n<ul>\n\t<li>El tour podrá&nbsp;sufrir un cambio de máximo <strong>3 horas de anticipación&nbsp;o aplazamiento</strong>.</li>\n\t<li>Toda comunicación&nbsp;será realizada a través del número&nbsp;telefónico que hayáis facilitado al hacer la reserva,&nbsp;o a través del portal de&nbsp;<a data-saferedirecturl=\"https://www.google.com/url?q=http://civitatis.com&amp;source=gmail&amp;ust=1717654186416000&amp;usg=AOvVaw2Xg9hOktLUWqy6m4lwBAeC\" href=\"http://civitatis.com/\" target=\"_blank\">civitatis.com</a>&nbsp;(por favor, incluir números correctos para que podamos contactar con mayor rapidez).</li>\n\t<li>Los datos personales son sumamente importantes para las entradas nominativas del coliseo romano, por favor, poned vuestros nombres completos como figura en el documento, igualmente para los menores de edad.</li>\n</ul>\n\n<h2>Información adicional</h2>\n\n<p>Los fines de semana, festivos y fechas especiales el tiempo de acceso y duración de la actividad puede verse afectado ligeramente debido a la afluencia de visitantes.</p>\n\n<h2>Importante</h2>\n\n<ul class=\"listado\">\n\t<li>Las entradas son nominativas y no admiten cambio. <strong>Debéis mostrar un DNI/Pasaporte antes de entrar</strong>. Por favor, <strong>aseguraos de que vuestros nombres están reflejados tal y como aparecen en su DNI/Pasaporte</strong>, ya que no se podrá acceder en caso de nombres mal escritos o&nbsp;caracteres incorrectos. Es posible que pueda haber un ligero retraso en el acceso prioritario de grupos&nbsp;debido a este control.&nbsp;En caso de no disponer de los datos obligatorios solicitados por el proveedor o en caso de disponer de datos incorrectos (nombre mal escrito, nombre del niño en lugar de nombre de adulto etc...), procederemos a cancelar su reserva con carácter <strong>no reembolsable</strong>.</li>\n\t<li>Esta visita incluye las&nbsp;<strong>entradas reservadas</strong>.&nbsp;</li>\n\t<li><b>Restricciones de mochilas y otros objetos</b>: no es posible realizar esta visita con mochilas grandes, paraguas largos y otros objetos voluminosos.</li>\n\t<li>Esta actividad no es apta para realizar en sillas de ruedas&nbsp;ni con carritos de bebé.</li>\n\t<li>Durante el tour os facilitarán auriculares de un solo uso. Para ser respetuosos con el medio ambiente y evitar este desperdicio, os sugerimos que llevéis vuestros propios auriculares.</li>\n</ul>\n\n<h2>Reservas separadas</h2>\n\n<p>Si un grupo realiza reservas separadas corre el riesgo de terminar en grupos&nbsp;diferentes. Si queréis ir juntos, tendréis que poneros&nbsp;en contacto con el proveedor de la actividad. Ellos harán todo lo posible por meteros en el mismo grupo siempre y cuando lo permita la disponibilidad.</p>\n",
+  "duration": {
+   "min": 150,
+   "max": 180,
+   "duration": 180
+  },
+  "advance": {
+   "days": 0,
+   "hour": null,
+   "minutes_before": 4320
+  },
+  "address": {
+   "address": "",
+   "shortAddress": "Via de Fori Imperiali, 1.",
+   "latitude": 41.892609,
+   "longitude": 12.488346,
+   "zoom": 17
+  },
+  "providersInfo": [],
+  "accessibility": {
+   "code": 201,
+   "description": "No es accesible en silla de ruedas."
+  },
+  "isCategoryPaxGroup": false,
+  "hasDynamicPrice": false,
+  "rates": [
+   {
+    "id": 0,
+    "text": "Tour en español",
+    "categories": [
+     {
+      "id": 0,
+      "text": "Adultos",
+      "canBookAlone": true,
+      "group": []
+     },
+     {
+      "id": 1,
+      "text": "Menores de 18 años",
+      "canBookAlone": false,
+      "group": []
+     }
+    ],
+    "pickup": {
+     "status": "not_included"
+    }
+   }
+  ]
+ },
+ {
+  "id": 83,
+  "type": 1,
+  "lang": "es",
+  "guideLanguages": [
+   "es"
+  ],
+  "destinationId": 19,
+  "secondaryDestinationId": [],
+  "popularity": 4127,
+  "isGoldenTour": false,
+  "title": "Visita guiada por el Coliseo, Foro y Palatino",
+  "voucherType": 0,
+  "hasDeferredVoucher": false,
+  "relatedActivities": [
+   {
+    "id": 1608,
+    "lang": "en",
+    "url": "https://qa.civitatis.com/en/rome/colosseum-roman-forum-palatine-hill-guided-tour"
+   },
+   {
+    "id": 1612,
+    "lang": "fr",
+    "url": "https://qa.civitatis.com/fr/rome/visite-guidee-rome-antique"
+   },
+   {
+    "id": 1614,
+    "lang": "pt",
+    "url": "https://qa.civitatis.com/pt/roma/visita-guiada-roma-antiga"
+   },
+   {
+    "id": 1805,
+    "lang": "it",
+    "url": "https://qa.civitatis.com/it/roma/visita-guidata-roma-antica"
+   }
+  ],
+  "score": 8.9,
+  "reviews": 3321,
+  "isTopActivity": false,
+  "tags": [
+   {
+    "key": "SKIP_LINE",
+    "label": "Sin colas"
+   },
+   {
+    "key": "FREE_CANCELLATION",
+    "label": "Cancelación gratuita"
+   },
+   {
+    "key": "ONLY_IN_LANG",
+    "label": "Solo en español"
+   }
+  ],
+  "persons": 349146,
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-roma-antigua",
+  "description": "La <strong>visita guiada por el Coliseo, Foro y Palatino</strong> os llevará a conocer la gloria del Imperio Romano. Un tour en español por más de <strong>2.000 años de historia</strong>.",
+  "raw_description": "La visita guiada por el Coliseo, Foro y Palatino os llevará a conocer la gloria del Imperio Romano. Un tour en español por más de 2.000 años de historia.",
+  "longDescription": "<p>La visita guiada por el Coliseo, Foro y Palatino es una forma ideal de conocer la capital italiana y su historia en un recorrido de tres horas.</p>\n\n<h2>Itinerario</h2>\n\n<p>Nos reuniremos en la parada de metro Colosseo para comenzar el tour. En primer lugar, visitaremos el Coliseo, el anfiteatro más grande del mundo. Luego nos dirigiremos al monte Palatino, hogar de las familias reales y del Emperador. Por último, exploraremos el Foro Romano, símbolo de la vida en la Antigua Roma.</p>\n\n<h2>Visita el Coliseo de forma más completa</h2>\n\n<p>Para una experiencia más completa, se ofrecen dos alternativas: Tour por el Coliseo y Arena + Foro y Palatino o Tour por el Coliseo Subterráneo y Arena + Foro y Palatino.</p>\n\n<h2>¡Ahorra! Roma en un día</h2>\n\n<p>Descubre la Antigua Roma y los Museos Vaticanos en un día con nuestra oferta especial que incluye la Capilla Sixtina y la Basílica de San Pedro.</p>",
+  "rawLongDescription": "La visita guiada por el Coliseo, Foro y Palatino es una forma ideal de conocer la capital italiana y su historia en un recorrido de tres horas.\n\nItinerario\n\nNos reuniremos en la parada de metro Colosseo para comenzar el tour. En primer lugar, visitaremos el Coliseo, el anfiteatro más grande del mundo. Luego nos dirigiremos al monte Palatino, hogar de las familias reales y del Emperador. Por último, exploraremos el Foro Romano, símbolo de la vida en la Antigua Roma.\n\nVisita el Coliseo de forma más completa\n\nPara una experiencia más completa, se ofrecen dos alternativas: Tour por el Coliseo y Arena + Foro y Palatino o Tour por el Coliseo Subterráneo y Arena + Foro y Palatino.\n\n¡Ahorra! Roma en un día\n\nDescubre la Antigua Roma y los Museos Vaticanos en un día con nuestra oferta especial que incluye la Capilla Sixtina y la Basílica de San Pedro.",
+  "minAge": 0,
+  "hasAdditionalQuestions": false,
+  "hasPickup": false,
+  "hasPassengersQuestions": true,
+  "photos": {
+   "header": [
+    {
+     "caption": "Visita guiada por el Coliseo, Foro y Palatino",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/visita-guiada-roma-antigua.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/visita-guiada-roma-antigua-m.jpg",
+      "grid": "https://cdn2.civitatis.com/italia/roma/visita-guiada-roma-antigua-grid.jpg",
+      "list": "https://cdn2.civitatis.com/italia/roma/visita-guiada-roma-antigua-list.jpg",
+      "list_responsive": "https://cdn2.civitatis.com/italia/roma/visita-guiada-roma-antigua-list-m.jpg"
+     }
+    }
+   ],
+   "gallery": []
+  },
+  "typologies": [
+   {
+    "id": 1,
+    "key": "visitas-guiadas",
+    "description": "Visitas guiadas"
+   },
+   {
+    "id": 13,
+    "key": "museos",
+    "description": "Museos y monumentos"
+   }
+  ],
+  "category": {
+   "id": 1,
+   "description": "Visitas guiadas y free tours"
+  },
+  "subcategory": {
+   "id": 2,
+   "description": "Visitas guiadas por museos o monumentos"
+  },
+  "amountType": "PVP",
+  "minimumPrice": 50,
+  "isFreeTour": false,
+  "currency": "EUR",
+  "originalPrice": 50,
+  "included": [
+   "Guía en español.",
+   "Entrada con acceso preferente al Coliseo, Foro y Palatino (18EUR)."
+  ],
+  "notIncluded": [],
+  "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 3 días antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+  "cancelPolicies": [
+   {
+    "hours": 72,
+    "penalty": 0,
+    "type": "percent"
+   }
+  ],
+  "MinimumPaxPerBooking": 0,
+  "minimumPaxPerActivity": 0,
+  "maximumPaxPerActivity": 30,
+  "infoVoucher": "<h2>Punto de encuentro</h2>\n\n<p>El punto de encuentro es la parada de metro Colosseo (Línea B), en la salida de abajo, en la Via dei Fori Imperiali, entre el quiosco verde y la fuente.</p>\n\n<p>A continuación, les dejamos el enlace con la ubicación exacta:</p>\n\n<p><a href=\"https://goo.gl/maps/fPwkddfiCABmAKjD8\" target=\"_blank\">https://goo.gl/maps/fPwkddfiCABmAKjD8</a></p>\n\n<h2>Importante</h2>\n\n<ul>\n\t<li>Es imprescindible llevar el <strong>DNI o pasaporte en vigor</strong> de todos los participantes el día de la actividad.</li>\n\t<li>Es importante llegar al punto de encuentro con <strong>10&nbsp;minutos de antelación para poder hacer el check-in</strong>. En caso de retraso no será posible incorporarse al grupo ni corresponderá reembolso.</li>\n\t<li><strong>El tour no permite cancelaciones por causas climatológicas.</strong></li>\n\t<li>Si por motivos de seguridad uno o más sitios arqueológicos no se pueden visitar, solo se reembolsará el dinero cuando el Coliseo determine su cierre y permita reintegrar las entradas. Si esta situación se conoce antes del inicio del tour, se os ofrecerán diferentes alternativas.</li>\n\t<li>El orden de las visitas puede sufrir modificaciones.</li>\n\t<li>Esta visita incluye las entradas reservadas: accederéis a los monumentos con acceso prioritario saltando las colas de taquilla. En los periodos de alta afluencia de los visitantes no siempre es posible saltar la cola del control en el acceso a los monumentos. En todo caso, la cola será mucho más rápida que la de los visitantes sin entrada reservada.</li>\n\t<li>En los días de verano os aconsejamos llevar: sombrero, crema solar y botella de agua.</li>\n\t<li>Esta actividad <strong>no es apta para realizar en silla de ruedas ni con carritos de bebé. </strong>Tampoco se aconseja a personas que tienen dificultades para caminar.</li>\n\t<li>Durante el tour os facilitarán auriculares desechables. Para ser respetuosos con el medio ambiente y evitar este desperdicio, os sugerimos que llevéis vuestros propios auriculares.</li>\n\t<li>Esta entrada<strong> no es válida para grupos escolares</strong>.&nbsp;En caso de presentar este voucher para un grupo escolar, no será posible acceder al monumento y será necesario adquirir las entradas correctas, previa comprobación de disponibilidad, abonando de nuevo el importe.</li>\n</ul>\n\n<h2>Entradas</h2>\n\n<p>Reservando esta actividad, el cliente autoriza a la agencia organizadora a adquirir&nbsp;la entrada necesaria para la realización de la visita guiada y que el precio de dicha entrada es de 18EUR.</p>\n",
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  },
+  "advance": {
+   "days": 0,
+   "hour": null,
+   "minutes_before": 120
+  },
+  "address": {
+   "address": "",
+   "shortAddress": "Parada de metro Colosseo, salida Via dei Fori Imperiali.",
+   "latitude": 41.891226,
+   "longitude": 12.491262,
+   "zoom": 17
+  },
+  "providersInfo": [],
+  "accessibility": {
+   "code": 201,
+   "description": "No es accesible en silla de ruedas."
+  },
+  "isCategoryPaxGroup": false,
+  "hasDynamicPrice": false,
+  "rates": [
+   {
+    "id": 0,
+    "text": "Tour en español",
+    "categories": [
+     {
+      "id": 0,
+      "text": "Adultos",
+      "canBookAlone": true,
+      "group": []
+     },
+     {
+      "id": 1,
+      "text": "Niños de 6 a 17 años",
+      "canBookAlone": false,
+      "group": []
+     },
+     {
+      "id": 2,
+      "text": "Menores de 6 años",
+      "canBookAlone": false,
+      "group": []
+     }
+    ],
+    "pickup": {
+     "status": "not_included"
+    }
+   }
+  ]
+ },
+ {
+  "id": 350,
+  "type": 1,
+  "lang": "es",
+  "guideLanguages": [
+   "es"
+  ],
+  "destinationId": 19,
+  "secondaryDestinationId": [],
+  "popularity": 1937,
+  "isGoldenTour": false,
+  "title": "Tour nocturno por la Roma iluminada",
+  "voucherType": 0,
+  "hasDeferredVoucher": false,
+  "relatedActivities": [
+   {
+    "id": 4350,
+    "lang": "pt",
+    "url": "https://qa.civitatis.com/pt/roma/tour-noturno-roma-iluminada"
+   },
+   {
+    "id": 14467,
+    "lang": "en",
+    "url": "https://qa.civitatis.com/en/rome/night-tour"
+   },
+   {
+    "id": 27826,
+    "lang": "fr",
+    "url": "https://qa.civitatis.com/fr/rome/visite-nocturne-rome"
+   },
+   {
+    "id": 32626,
+    "lang": "it",
+    "url": "https://qa.civitatis.com/it/roma/tour-roma-illuminata"
+   }
+  ],
+  "score": 9.3,
+  "reviews": 302,
+  "isTopActivity": false,
+  "tags": [
+   {
+    "key": "FREE_CANCELLATION",
+    "label": "Cancelación gratuita"
+   },
+   {
+    "key": "ONLY_IN_LANG",
+    "label": "Solo en español"
+   }
+  ],
+  "persons": 49762,
+  "url": "https://qa.civitatis.com/es/roma/tour-nocturno-roma-iluminada",
+  "description": "En este <strong>tour por la Roma iluminada</strong>&nbsp;recorreremos las <b>plazas, calles y monumentos más representativos</b><strong> de la capital italiana</strong> cuando la ciudad se viste de gala.",
+  "raw_description": "En este tour por la Roma iluminada&nbsp;recorreremos las plazas, calles y monumentos más representativos de la capital italiana cuando la ciudad se viste de gala.",
+  "longDescription": "<h2>Tour por la Roma iluminada</h2>\n<p>Recorre las plazas, calles y monumentos más representativos de Roma cuando la ciudad se ilumina al anochecer. Incluye paradas en el Vaticano, Plaza Venecia, Plaza del Campidoglio y Plaza Navona.</p>\n\n<h2>Itinerario</h2>\n<p>Punto de encuentro: iglesia de Santa María de los Ángeles en la plaza de la República. Visita en minibús a lugares como la plaza de la República, termas de Diocleziano, Circo Máximo, Palatino y Coliseo. Parada en el mirador del Monte Capitolino y caminata hasta el Teatro Marcello, Plaza del Campidoglio y plaza Navona. Finaliza en la plaza de San Pedro.</p>\n\n<p>Posibilidad de finalizar en Trastevere para disfrutar de la gastronomía local. Duración: 2,5-3 horas.</p>\n\n<h2>Tour en verano</h2>\n<p>En los meses de julio y agosto, algunas paradas se realizan al atardecer debido a la mayor cantidad de luz solar. Visita a Coliseo, Foros Imperiales y Circo Máximo antes de que se enciendan las luces.</p>\n\n<h2>Tiempo de paradas</h2>\n<p>El recorrido se realiza en minibús o autobús con paradas breves de 5-10 minutos, excepto en Plaza Navona y Plaza de San Pedro (20 minutos). Parte del recorrido se hace a pie (30-40 minutos) para disfrutar del ambiente iluminado de Roma.</p>",
+  "rawLongDescription": "Tour por la Roma iluminada\nRecorre las plazas, calles y monumentos más representativos de Roma cuando la ciudad se ilumina al anochecer. Incluye paradas en el Vaticano, Plaza Venecia, Plaza del Campidoglio y Plaza Navona.\n\nItinerario\nPunto de encuentro: iglesia de Santa María de los Ángeles en la plaza de la República. Visita en minibús a lugares como la plaza de la República, termas de Diocleziano, Circo Máximo, Palatino y Coliseo. Parada en el mirador del Monte Capitolino y caminata hasta el Teatro Marcello, Plaza del Campidoglio y plaza Navona. Finaliza en la plaza de San Pedro.\n\nPosibilidad de finalizar en Trastevere para disfrutar de la gastronomía local. Duración: 2,5-3 horas.\n\nTour en verano\nEn los meses de julio y agosto, algunas paradas se realizan al atardecer debido a la mayor cantidad de luz solar. Visita a Coliseo, Foros Imperiales y Circo Máximo antes de que se enciendan las luces.\n\nTiempo de paradas\nEl recorrido se realiza en minibús o autobús con paradas breves de 5-10 minutos, excepto en Plaza Navona y Plaza de San Pedro (20 minutos). Parte del recorrido se hace a pie (30-40 minutos) para disfrutar del ambiente iluminado de Roma.",
+  "minAge": 0,
+  "hasAdditionalQuestions": false,
+  "hasPickup": false,
+  "hasPassengersQuestions": false,
+  "photos": {
+   "header": [
+    {
+     "caption": "Tour nocturno por la Roma iluminada",
+     "paths": {
+      "original": "https://cdn2.civitatis.com/italia/roma/tour-nocturno-roma-iluminada.jpg",
+      "thumbnail": "https://cdn2.civitatis.com/italia/roma/tour-nocturno-roma-iluminada-m.jpg",
+      "grid": "https://cdn2.civitatis.com/italia/roma/tour-nocturno-roma-iluminada-grid.jpg",
+      "list": "https://cdn2.civitatis.com/italia/roma/tour-nocturno-roma-iluminada-list.jpg",
+      "list_responsive": "https://cdn2.civitatis.com/italia/roma/tour-nocturno-roma-iluminada-list-m.jpg"
+     }
+    }
+   ],
+   "gallery": []
+  },
+  "typologies": [
+   {
+    "id": 1,
+    "key": "visitas-guiadas",
+    "description": "Visitas guiadas"
+   }
+  ],
+  "category": {
+   "id": 1,
+   "description": "Visitas guiadas y free tours"
+  },
+  "subcategory": {
+   "id": 1,
+   "description": "Visita guiada a pie"
+  },
+  "amountType": "PVP",
+  "minimumPrice": 65,
+  "isFreeTour": false,
+  "currency": "EUR",
+  "originalPrice": 65,
+  "included": [
+   "Transporte en coche, minibús o autobús.",
+   "Guía en español.",
+   "Tour en grupo reducido, no habrá más de 24 personas."
+  ],
+  "notIncluded": [],
+  "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 48 horas antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+  "cancelPolicies": [
+   {
+    "hours": 48,
+    "penalty": 0,
+    "type": "percent"
+   }
+  ],
+  "MinimumPaxPerBooking": 0,
+  "minimumPaxPerActivity": 6,
+  "maximumPaxPerActivity": null,
+  "infoVoucher": "<p>El punto de encuentro es la<strong>&nbsp;Piazza della Repubblica, 48</strong>, concretamente&nbsp;en el <strong>quiosco verde&nbsp;enfrente del cinema The Space</strong>&nbsp;y al lado del<strong>&nbsp;hotel Anantara Palazzo Naiadi Rome</strong>.&nbsp;</p>\n\n<p>Si queréis llegar en&nbsp;<strong>metro</strong>, la parada es&nbsp;<strong>Repubblica</strong>&nbsp;(línea A) o&nbsp;<strong>Termini</strong>&nbsp;(línea B). Si tenéis cualquier problema,&nbsp;no dudéis en llamar al proveedor, os atenderán en español. Por favor, llegad 10 minutos antes para no retrasar al grupo.</p>\n\n<h2>Cambios en el itinerario</h2>\n\n<p>En algunas ocasiones, el&nbsp;itinerario puede sufrir leves modificaciones por festividades y eventos que están fuera de nuestro alcance.</p>\n",
+  "duration": {
+   "min": 150,
+   "max": 180,
+   "duration": 180
+  },
+  "advance": {
+   "days": 0,
+   "hour": null,
+   "minutes_before": 2160
+  },
+  "address": {
+   "address": "",
+   "shortAddress": "Piazza della Repubblica.",
+   "latitude": 41.9022406938721,
+   "longitude": 12.49586516136097,
+   "zoom": 16
+  },
+  "providersInfo": [],
+  "accessibility": {
+   "code": 200,
+   "description": "No es accesible en silla de ruedas."
+  },
+  "isCategoryPaxGroup": false,
+  "hasDynamicPrice": false,
+  "rates": [
+   {
+    "id": 0,
+    "text": "Tour en español",
+    "categories": [
+     {
+      "id": 0,
+      "text": "Adultos",
+      "canBookAlone": true,
+      "group": []
+     },
+     {
+      "id": 1,
+      "text": "Menores de 3 años",
+      "canBookAlone": false,
+      "group": []
+     }
+    ],
+    "pickup": {
+     "status": "not_included"
+    }
+   }
+  ]
+ }
+]

@@ -226,6 +226,31 @@ export interface StopEntrada {
   incluye: string | null
   desde: number | null
   url: string | null
+  /** Los datos reales de la actividad (API de consulta; solo con el interruptor encendido): precio, nota, fotos, qué incluye… Sin él, la entrada es la de los datos de siempre. */
+  civitatis?: DatosDeActividad
+}
+
+/** Lo que la API de consulta da de una actividad, ya pasado a lo que enseña la app (server/civitatis/mapeo.js › fichaDeActividad). Lo que no da, null o lista vacía: nunca un número inventado. */
+export interface DatosDeActividad {
+  id: number
+  nombre: string
+  gratis: boolean
+  desde: number | null
+  /** El precio de antes (se tacha), solo si es más alto que el de ahora. */
+  original: number | null
+  moneda: string | null
+  /** De 0 a 5. */
+  valoracion: number | null
+  opiniones: number | null
+  fotos: { principal: { url: string; grande: string | null; pie: string | null } | null; galeria: { url: string; grande: string | null; pie: string | null }[] }
+  incluye: string[]
+  noIncluye: string[]
+  cancelacion: string | null
+  reservarHasta: string | null
+  duracion: string | null
+  puntoDeEncuentro: { texto: string | null; lat: number | null; lng: number | null } | null
+  idiomas: string[]
+  url: string | null
 }
 
 export interface Stop {

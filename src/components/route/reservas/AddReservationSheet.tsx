@@ -19,6 +19,7 @@ import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
 import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
+import { avisoDeLaHora, civitatisActiva, horaFueraDelCalendario, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
@@ -236,10 +237,25 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const entryHours = useHorarioDeEntrada({ destination: route.destination, place: hoursPlace, dateIso: hasDates ? fields.dateIso : null, month: route.answers.month ?? null, season: route.answers.season ?? null }, hoursKey)
   const window0 = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? { min: entryHours.ventanas[0].desde, max: entryHours.ventanas[entryHours.ventanas.length - 1].hasta } : null
   /** Las horas de la rueda (Tanda 6y9: de la apertura a la ÚLTIMA ENTRADA oficial de esa fecha, o los turnos reales del sitio). La hora de la reserva que ya hay siempre está. */
+  // La API de consulta (parte 1, con el interruptor encendido): las horas LIBRES de ese día según el calendario, con las plazas si quedan pocas. Se pide de nuevo cada vez que se abre el selector
+  // (sin la caché de una hora) para que las plazas estén al día. Sin datos o con el interruptor apagado, la rueda de siempre. «Ya tengo mi entrada»: cualquier hora, con aviso (avisa, no prohíbe).
+  const [aperturas, setAperturas] = useState(0)
+  useEffect(() => {
+    if (view === 'hora') setAperturas((n) => n + 1)
+  }, [view])
+  const [yaTengo, setYaTengo] = useState(false)
+  const lugarDeLasHoras = isExcursion ? null : isFreeTour ? 'Free Tour' : (bigPlace ?? target.placeNames[0] ?? null)
+  const claveDeLasHoras = view === 'hora' && hasDates && fields.dateIso && resolvedDay && aperturas > 0 ? `${lugarDeLasHoras}|${fields.dateIso}|${aperturas}` : null
+  const horasApi = useHorasLibres(lugarDeLasHoras, hasDates ? fields.dateIso : null, route.destination, claveDeLasHoras)
+  const horasDelDia = horasApi.estado === 'ok' ? horasApi.datos : null
+  const filtrando = horasDelDia != null && horasDelDia.horas.length > 0 && !yaTengo
   const wheelItems = useMemo(() => {
     const propia = existing && /^\d{1,2}:\d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
-    return horasDeLaRueda(entryHours, propia)
-  }, [entryHours])
+    const base = horasDeLaRueda(entryHours, propia)
+    return filtrando ? ruedaConHorasLibres(base, horasDelDia, propia) : base
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entryHours, filtrando, horasDelDia])
+  const horasDelFreeTour = filtrando && isFreeTour && horasDelDia ? horasDelDia.horas.map((h) => h.hora) : FREE_TOUR_HOURS
   const pickupItems = useMemo(() => {
     const out: string[] = []
     for (let m = 300; m <= 660; m += 5) out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
@@ -501,7 +517,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               <div className="mt-3.5">
                 {isFreeTour ? (
                   <div className="grid grid-cols-3 gap-2">
-                    {FREE_TOUR_HOURS.map((hour) => (
+                    {horasDelFreeTour.map((hour) => (
                       <button
                         key={hour}
                         type="button"
@@ -516,6 +532,42 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   <TimeListWheel items={rueda} value={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : rueda[0]} onChange={(hhmm) => set({ time: hhmm })} label={isExcursion ? 'Hora de recogida' : 'Hora de la entrada'} />
                 )}
               </div>
+
+              {civitatisActiva() && !isExcursion && horasApi.estado !== 'apagado' && (
+                <div className="mt-3 space-y-1.5" data-civitatis-horas>
+                  {horasApi.estado === 'cargando' && <p className="text-center text-[12.5px] text-text-soft">Mirando las horas libres…</p>}
+                  {horasDelDia?.sinPlazas && (
+                    <p className="text-center text-[12.5px] leading-snug text-accent-red" data-aviso="sin-plazas">
+                      Ese día no quedan horas libres. Prueba otro día.
+                    </p>
+                  )}
+                  {horasDelDia && horasDelDia.horas.some((h) => h.aviso) && (
+                    <ul className="m-0 flex list-none flex-wrap justify-center gap-x-3 gap-y-0.5 p-0 text-[12.5px] text-text/75" data-aviso="plazas">
+                      {horasDelDia.horas.filter((h) => h.aviso).map((h) => (
+                        <li key={h.hora}>
+                          {h.hora} · {h.aviso}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {horasDelDia && horasDelDia.horas.length > 0 && (
+                    <label className="flex items-center justify-center gap-2 text-[12.5px] text-text-soft">
+                      <input type="checkbox" checked={yaTengo} onChange={(event) => setYaTengo(event.target.checked)} />
+                      Ya tengo mi entrada
+                    </label>
+                  )}
+                  {yaTengo && horaFueraDelCalendario(horasDelDia, validTime ? fields.time : null) && (
+                    <p className="text-center text-[12.5px] leading-snug text-text-soft" data-aviso="fuera-del-calendario">
+                      Esa hora no sale libre en el calendario. Como ya tienes tu entrada, la dejamos.
+                    </p>
+                  )}
+                  {!yaTengo && avisoDeLaHora(horasDelDia, validTime ? fields.time : null) && (
+                    <p className="text-center text-[12.5px] font-medium leading-snug text-text" data-aviso="plazas-de-esta-hora">
+                      {avisoDeLaHora(horasDelDia, validTime ? fields.time : null)}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {!isExcursion && (
                 <p className="mt-3 text-center text-[12.5px] leading-snug text-text-soft" data-aviso="disponibilidad">

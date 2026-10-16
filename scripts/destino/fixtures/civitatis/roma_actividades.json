@@ -1,0 +1,542 @@
+[
+ {
+  "id": 3834,
+  "title": "Coliseo, Foro y Palatino + Arena de gladiadores",
+  "url": "https://qa.civitatis.com/es/roma/tour-coliseo-arena-gladiadores",
+  "minimumPrice": 53,
+  "currency": "EUR",
+  "score": 8.8,
+  "reviews": 2068,
+  "isFreeTour": false,
+  "duration": {
+   "min": 150,
+   "max": 180,
+   "duration": 180
+  }
+ },
+ {
+  "id": 84,
+  "title": "Visita guiada por los Museos Vaticanos y Capilla Sixtina",
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-vaticano",
+  "minimumPrice": 16500,
+  "currency": "EUR",
+  "score": 8.7,
+  "reviews": 4272,
+  "isFreeTour": false,
+  "duration": {
+   "min": 420,
+   "max": 0,
+   "duration": 420
+  }
+ },
+ {
+  "id": 170340,
+  "title": "Entrada al Panteón de Agripa sin colas",
+  "url": "https://qa.civitatis.com/es/roma/entrada-panteon-agripa-audioguia",
+  "minimumPrice": 11,
+  "currency": "EUR",
+  "score": 8.7,
+  "reviews": 36,
+  "isFreeTour": false,
+  "duration": {
+   "min": 0,
+   "max": 0,
+   "duration": 0
+  }
+ },
+ {
+  "id": 47029,
+  "title": "Coliseo Subterráneo y Arena + Foro y Palatino",
+  "url": "https://qa.civitatis.com/es/roma/visita-coliseo-subterraneo",
+  "minimumPrice": 100,
+  "currency": "EUR",
+  "score": 9,
+  "reviews": 108,
+  "isFreeTour": false,
+  "duration": {
+   "min": 150,
+   "max": 180,
+   "duration": 180
+  }
+ },
+ {
+  "id": 83,
+  "title": "Visita guiada por el Coliseo, Foro y Palatino",
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-roma-antigua",
+  "minimumPrice": 50,
+  "currency": "EUR",
+  "score": 8.9,
+  "reviews": 3321,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 350,
+  "title": "Tour nocturno por la Roma iluminada",
+  "url": "https://qa.civitatis.com/es/roma/tour-nocturno-roma-iluminada",
+  "minimumPrice": 65,
+  "currency": "EUR",
+  "score": 9.3,
+  "reviews": 302,
+  "isFreeTour": false,
+  "duration": {
+   "min": 150,
+   "max": 180,
+   "duration": 180
+  }
+ },
+ {
+  "id": 99390,
+  "title": "Tour privado por Roma ¡Tú eliges!",
+  "url": "https://qa.civitatis.com/es/roma/tour-privado-roma",
+  "minimumPrice": 65,
+  "currency": "EUR",
+  "score": 9.6,
+  "reviews": 128,
+  "isFreeTour": false,
+  "duration": {
+   "min": 120,
+   "max": 0,
+   "duration": 120
+  }
+ },
+ {
+  "id": 75875,
+  "title": "Visita guiada por la Basílica de San Pedro",
+  "url": "https://qa.civitatis.com/es/roma/subida-cupula-san-pedro",
+  "minimumPrice": 48,
+  "currency": "EUR",
+  "score": 7.7,
+  "reviews": 106,
+  "isFreeTour": false,
+  "duration": {
+   "min": 90,
+   "max": 180,
+   "duration": 180
+  }
+ },
+ {
+  "id": 2671,
+  "title": "Free tour por Roma",
+  "url": "https://qa.civitatis.com/es/roma/free-tour-roma",
+  "minimumPrice": 0,
+  "currency": "EUR",
+  "score": 9.2,
+  "reviews": 1979,
+  "isFreeTour": true,
+  "duration": {
+   "min": 120,
+   "max": 0,
+   "duration": 120
+  }
+ },
+ {
+  "id": 185,
+  "title": "Catacumbas de la Vía Appia + San Sebastián y San Pablo Extramuros",
+  "url": "https://qa.civitatis.com/es/roma/excursion-catacumbas-roma",
+  "minimumPrice": 65,
+  "currency": "EUR",
+  "score": 8.2,
+  "reviews": 104,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 6161,
+  "title": "Free tour de los misterios y leyendas de Roma",
+  "url": "https://qa.civitatis.com/es/roma/free-tour-misterios-leyendas",
+  "minimumPrice": 0,
+  "currency": "EUR",
+  "score": 9.1,
+  "reviews": 552,
+  "isFreeTour": true,
+  "duration": {
+   "min": 120,
+   "max": 150,
+   "duration": 150
+  }
+ },
+ {
+  "id": 28115,
+  "title": "Free tour por las iglesias barrocas",
+  "url": "https://qa.civitatis.com/es/roma/free-tour-iglesias-barrocas",
+  "minimumPrice": 0,
+  "currency": "EUR",
+  "score": 9.9,
+  "reviews": 16,
+  "isFreeTour": true,
+  "duration": {
+   "min": 120,
+   "max": 0,
+   "duration": 120
+  }
+ },
+ {
+  "id": 120417,
+  "title": "Free tour por Letrán y la Escalera Santa",
+  "url": "https://qa.civitatis.com/es/roma/free-tour-letran-escalera-santa",
+  "minimumPrice": 0,
+  "currency": "EUR",
+  "score": 5,
+  "reviews": 2,
+  "isFreeTour": true,
+  "duration": {
+   "min": 150,
+   "max": 0,
+   "duration": 150
+  }
+ },
+ {
+  "id": 79691,
+  "title": "Autobús entre el aeropuerto Fiumicino y Roma",
+  "url": "https://qa.civitatis.com/es/roma/autobus-aeropuerto-fiumicino-roma",
+  "minimumPrice": 7,
+  "currency": "EUR",
+  "score": 8.6,
+  "reviews": 282,
+  "isFreeTour": false,
+  "duration": {
+   "min": 30,
+   "max": 70,
+   "duration": 70
+  }
+ },
+ {
+  "id": 125646,
+  "title": "Free tour por la Roma Imperial",
+  "url": "https://qa.civitatis.com/es/roma/free-tour-roma-imperial",
+  "minimumPrice": 0,
+  "currency": "EUR",
+  "score": 9.3,
+  "reviews": 102,
+  "isFreeTour": true,
+  "duration": {
+   "min": 120,
+   "max": 0,
+   "duration": 120
+  }
+ },
+ {
+  "id": 2341,
+  "title": "Tour gastronómico por el barrio del Trastevere",
+  "url": "https://qa.civitatis.com/es/roma/tour-gastronomico-barrio-trastevere",
+  "minimumPrice": 30,
+  "currency": "EUR",
+  "score": 8.8,
+  "reviews": 124,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 2040,
+  "title": "Visita guiada por el Trastevere y barrio judío",
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-barrio-judio",
+  "minimumPrice": 27,
+  "currency": "EUR",
+  "score": 9.4,
+  "reviews": 370,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 79757,
+  "title": "Autobús entre el aeropuerto Ciampino y Roma",
+  "url": "https://qa.civitatis.com/es/roma/autobus-aeropuerto-ciampino-roma",
+  "minimumPrice": 6,
+  "currency": "EUR",
+  "score": 8.3,
+  "reviews": 348,
+  "isFreeTour": false,
+  "duration": {
+   "min": 35,
+   "max": 45,
+   "duration": 45
+  }
+ },
+ {
+  "id": 142547,
+  "title": "Excursión a Florencia y Pisa",
+  "url": "https://qa.civitatis.com/es/roma/excursion-florencia-pisa",
+  "minimumPrice": 129,
+  "currency": "EUR",
+  "score": 8.1,
+  "reviews": 53,
+  "isFreeTour": false,
+  "duration": {
+   "min": 840,
+   "max": 0,
+   "duration": 840
+  }
+ },
+ {
+  "id": 2023,
+  "title": "Visita guiada por el Panteón de Agripa",
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-panteon-agripa",
+  "minimumPrice": 30.9,
+  "currency": "EUR",
+  "score": 8.7,
+  "reviews": 29,
+  "isFreeTour": false,
+  "duration": {
+   "min": 60,
+   "max": 0,
+   "duration": 60
+  }
+ },
+ {
+  "id": 2026,
+  "title": "Visita guiada por los Museos Capitolinos y alrededores",
+  "url": "https://qa.civitatis.com/es/roma/visita-guiada-museos-capitolinos",
+  "minimumPrice": 50,
+  "currency": "EUR",
+  "score": 9.2,
+  "reviews": 24,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 99912,
+  "title": "Entrada a Mostra di Leonardo",
+  "url": "https://qa.civitatis.com/es/roma/entrada-mostra-di-leonardo",
+  "minimumPrice": 9,
+  "currency": "EUR",
+  "score": 8.4,
+  "reviews": 43,
+  "isFreeTour": false,
+  "duration": {
+   "min": 0,
+   "max": 0,
+   "duration": 0
+  }
+ },
+ {
+  "id": 2283,
+  "title": "Excursión a Ostia Antica",
+  "url": "https://qa.civitatis.com/es/roma/excursion-ostia-antica",
+  "minimumPrice": 50,
+  "currency": "EUR",
+  "score": 9.3,
+  "reviews": 33,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 14854,
+  "title": "Tour en bicicleta por Roma",
+  "url": "https://qa.civitatis.com/es/roma/tour-bicicleta-roma",
+  "minimumPrice": 49.5,
+  "currency": "EUR",
+  "score": 9.6,
+  "reviews": 58,
+  "isFreeTour": false,
+  "duration": {
+   "min": 150,
+   "max": 240,
+   "duration": 240
+  }
+ },
+ {
+  "id": 175270,
+  "title": "Entrada al Castillo de Sant’Angelo con audioguía",
+  "url": "https://qa.civitatis.com/es/roma/entrada-castillo-sant-angelo-audioguia",
+  "minimumPrice": 25,
+  "currency": "EUR",
+  "score": 8,
+  "reviews": 4,
+  "isFreeTour": false,
+  "duration": {
+   "min": 0,
+   "max": 0,
+   "duration": 0
+  }
+ },
+ {
+  "id": 53905,
+  "title": "Entradas para Welcome to Rome",
+  "url": "https://qa.civitatis.com/es/roma/entradas-wecome-rome",
+  "minimumPrice": 18,
+  "currency": "EUR",
+  "score": 9.1,
+  "reviews": 19,
+  "isFreeTour": false,
+  "duration": {
+   "min": 60,
+   "max": 0,
+   "duration": 60
+  }
+ },
+ {
+  "id": 33202,
+  "title": "Cripta de los Capuchinos y Santa María de la Victoria",
+  "url": "https://qa.civitatis.com/es/roma/cripta-capuchinos-santa-maria-victoria",
+  "minimumPrice": 30,
+  "currency": "EUR",
+  "score": 8.867924528,
+  "reviews": 53,
+  "isFreeTour": false,
+  "duration": {
+   "min": 120,
+   "max": 0,
+   "duration": 120
+  }
+ },
+ {
+  "id": 143705,
+  "title": "Tour en tuk tuk por Roma",
+  "url": "https://qa.civitatis.com/es/roma/tour-tuk-tuk-roma",
+  "minimumPrice": 150,
+  "currency": "EUR",
+  "score": 8.6,
+  "reviews": 7,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 165003,
+  "title": "Tour de la Fontana de Trevi y sus subterráneos",
+  "url": "https://qa.civitatis.com/es/roma/tour-fontana-trevi-subterraneos",
+  "minimumPrice": 35,
+  "currency": "EUR",
+  "score": 8,
+  "reviews": 15,
+  "isFreeTour": false,
+  "duration": {
+   "min": 40,
+   "max": 0,
+   "duration": 40
+  }
+ },
+ {
+  "id": 164293,
+  "title": "Pub Crawl ¡Tour de fiesta por Roma!",
+  "url": "https://qa.civitatis.com/es/roma/pub-crawl-roma",
+  "minimumPrice": 25,
+  "currency": "EUR",
+  "score": 10,
+  "reviews": 3,
+  "isFreeTour": false,
+  "duration": {
+   "min": 240,
+   "max": 0,
+   "duration": 240
+  }
+ },
+ {
+  "id": 33241,
+  "title": "Tour por las Catacumbas de Priscila",
+  "url": "https://qa.civitatis.com/es/roma/tour-catacumbas-priscila",
+  "minimumPrice": 25,
+  "currency": "EUR",
+  "score": 6.333333332,
+  "reviews": 6,
+  "isFreeTour": false,
+  "duration": {
+   "min": 120,
+   "max": 0,
+   "duration": 120
+  }
+ },
+ {
+  "id": 163226,
+  "title": "Sesión fotográfica privada en el exterior del Coliseo",
+  "url": "https://qa.civitatis.com/es/roma/sesion-fotografica-privada-coliseo",
+  "minimumPrice": 45,
+  "currency": "EUR",
+  "score": 10,
+  "reviews": 2,
+  "isFreeTour": false,
+  "duration": {
+   "min": 15,
+   "max": 45,
+   "duration": 45
+  }
+ },
+ {
+  "id": 6207,
+  "title": "Tour de vinos por Roma",
+  "url": "https://qa.civitatis.com/es/roma/tour-vino",
+  "minimumPrice": 40,
+  "currency": "EUR",
+  "score": 8,
+  "reviews": 5,
+  "isFreeTour": false,
+  "duration": {
+   "min": 90,
+   "max": 0,
+   "duration": 90
+  }
+ },
+ {
+  "id": 153828,
+  "title": "Excursión a Siena, San Gimignano y Chianti",
+  "url": "https://qa.civitatis.com/es/roma/excursion-siena-san-gimignano-chianti",
+  "minimumPrice": 169,
+  "currency": "EUR",
+  "score": 6.8,
+  "reviews": 5,
+  "isFreeTour": false,
+  "duration": {
+   "min": 720,
+   "max": 0,
+   "duration": 720
+  }
+ },
+ {
+  "id": 167921,
+  "title": "Tour privado en tuk tuk por Roma",
+  "url": "https://qa.civitatis.com/es/roma/tour-privado-tuk-tuk-roma",
+  "minimumPrice": 320,
+  "currency": "EUR",
+  "score": 8,
+  "reviews": 4,
+  "isFreeTour": false,
+  "duration": {
+   "min": 180,
+   "max": 0,
+   "duration": 180
+  }
+ },
+ {
+  "id": 48763,
+  "title": "Seguro de viaje Civitatis",
+  "url": "https://qa.civitatis.com/es/general/seguro-viaje",
+  "minimumPrice": 50,
+  "currency": "EUR",
+  "score": 8.3,
+  "reviews": 226,
+  "isFreeTour": false,
+  "duration": {
+   "min": 7200,
+   "max": 44640,
+   "duration": 44640
+  }
+ }
+]

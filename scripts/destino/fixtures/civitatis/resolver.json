@@ -1,0 +1,81 @@
+[
+ {
+  "nombre": "Free Tour",
+  "url": "https://www.civitatis.com/es/roma/free-tour-roma/",
+  "ok": true,
+  "activity_id": 2671,
+  "motivo": null,
+  "meta": {
+   "destination_id": 19,
+   "country_id": 112,
+   "country_name": "Italia",
+   "destination_name": "Roma"
+  }
+ },
+ {
+  "nombre": "Excursión: Excursión a Pompeya y Sorrento",
+  "url": "https://www.civitatis.com/es/roma/excursion-pompeya-sorrento/",
+  "ok": false,
+  "activity_id": null,
+  "motivo": "no_encontrado",
+  "meta": null
+ },
+ {
+  "nombre": "Excursión: Excursión a Florencia y Pisa",
+  "url": "https://www.civitatis.com/es/roma/excursion-florencia-pisa/",
+  "ok": true,
+  "activity_id": 142547,
+  "motivo": null,
+  "meta": {
+   "destination_id": 19,
+   "country_id": 112,
+   "country_name": "Italia",
+   "destination_name": "Roma"
+  }
+ },
+ {
+  "nombre": "Excursión: Excursión a Nápoles y Pompeya en tren",
+  "url": "https://www.civitatis.com/es/roma/excursion-napoles-pompeya-tren/",
+  "ok": false,
+  "activity_id": null,
+  "motivo": "no_encontrado",
+  "meta": null
+ },
+ {
+  "nombre": "Excursión: Excursión a la Costa Amalfitana",
+  "url": "https://www.civitatis.com/es/roma/excursion-costa-amalfitana/",
+  "ok": false,
+  "activity_id": null,
+  "motivo": "no_encontrado",
+  "meta": null
+ },
+ {
+  "nombre": "Excursión: Excursión a Florencia en tren de alta velocidad",
+  "url": "https://www.civitatis.com/es/roma/excursion-florencia-tren/",
+  "ok": false,
+  "activity_id": null,
+  "motivo": "no_encontrado",
+  "meta": null
+ },
+ {
+  "nombre": "Excursión: Excursión a Ostia Antica",
+  "url": "https://www.civitatis.com/es/roma/excursion-ostia-antica/",
+  "ok": true,
+  "activity_id": 2283,
+  "motivo": null,
+  "meta": {
+   "destination_id": 19,
+   "country_id": 112,
+   "country_name": "Italia",
+   "destination_name": "Roma"
+  }
+ },
+ {
+  "nombre": "Excursión: Excursión a Tívoli — Villa d'Este y Villa Adriana",
+  "url": "https://www.civitatis.com/es/roma/excursion-villa-adriana-villa-este/",
+  "ok": false,
+  "activity_id": null,
+  "motivo": "no_encontrado",
+  "meta": null
+ }
+]

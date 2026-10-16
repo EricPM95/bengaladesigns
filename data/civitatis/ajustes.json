@@ -1,0 +1,22 @@
+{
+  "_que_es": "Los ajustes de la API de consulta (parte 1, sandbox). Todo se cambia aquí, sin tocar código. Los tiempos de guardado (ttl_segundos) son provisionales: estamos esperando a que nos diga cuánto podemos guardar lo que da la API (pregunta 3 de docs/dias/API_CIVITATIS.md). Mientras tanto, cortos.",
+  "ttl_segundos": {
+    "catalogo": 86400,
+    "actividad": 86400,
+    "calendario": 3600,
+    "traslados": 86400,
+    "resolver": 604800,
+    "cerca": 86400
+  },
+  "peticiones_por_segundo": 8,
+  "plazas": {
+    "_nota": "Si en una hora quedan este número de plazas o menos, se dice con el número real de la API. Con más, no se dice nada. Con 'ultimas_hasta' o menos: «Últimas N plazas»; entre ese número y 'avisar_hasta': «N plazas disponibles».",
+    "avisar_hasta": 10,
+    "ultimas_hasta": 3
+  },
+  "precio_maximo_creible_eur": 2000,
+  "_precio_maximo_creible_eur": "El sandbox da 16500 € como precio 'desde' de los Museos Vaticanos (en su calendario cuesta 79 €). Un precio por encima de esto se descarta y se usa el del calendario; si tampoco, el de nuestros datos.",
+  "dias_del_calendario": 60,
+  "idioma": "es",
+  "moneda": "EUR"
+}

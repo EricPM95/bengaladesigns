@@ -43,6 +43,10 @@ import { periodosParaFicha } from '../shared/routeEngine/horarioDeLaFecha.js'
 import { cambioDelDia } from './cambio.js'
 import { registrarRutasTiempo } from './tiempo.js'
 import { registrarRutasCuentas } from './cuentas.js'
+import { crearClienteCivitatis, civitatisActiva } from './civitatis/cliente.js'
+import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
+import { crearServicioCivitatis, AJUSTES as AJUSTES_CIVITATIS } from './civitatis/servicio.js'
+import { registrarRutasCivitatis } from './civitatis/rutas.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
@@ -4545,11 +4549,27 @@ app.get('/api/cambio', async (_req, res) => {
 registrarRutasTiempo(app)
 // Las cuentas (parte 1): reclamar lo de una sesión anónima y borrar la cuenta. Con la clave de servicio de Supabase; sin ella responden 503 y no tocan nada.
 registrarRutasCuentas(app, salesAdmin)
+// La API de consulta (parte 1, sandbox): apagada salvo CIVITATIS_API_ACTIVA=true. Todo pasa por aquí; el móvil nunca ve el usuario, la contraseña ni el token. La caché usa Supabase si está la clave (tabla `civitatis_cache`, migración 0022).
+const civitatis = crearServicioCivitatis({
+  activa: civitatisActiva(),
+  cliente: crearClienteCivitatis({ peticionesPorSegundo: AJUSTES_CIVITATIS.peticiones_por_segundo }),
+  cache: crearCacheCivitatis({ admin: salesAdmin }),
+})
+registrarRutasCivitatis(app, civitatis)
 
-app.post('/api/destination-excursions', (req, res) => {
+app.post('/api/destination-excursions', async (req, res) => {
   const destination = req.body?.destination
   const data = destination ? findPipelineV2Data(destination) : null
-  const options = data?.excursions?.options ?? []
+  let options = data?.excursions?.options ?? []
+  // La API de consulta (parte 1): solo si el servidor la tiene encendida Y la app la pide (`civitatis: true`, su interruptor). Si falla, se queda lo de hoy.
+  const conCivitatis = civitatis.activa && req.body?.civitatis === true
+  if (conCivitatis) {
+    try {
+      options = (await civitatis.enriquecerExcursiones(destination, options)).opciones
+    } catch {
+      /* se queda lo de hoy */
+    }
+  }
   // Las tres entradas imprescindibles de Reservas, elegidas al curar el destino (`entradas_reservas`): nombre y los lugares de la ruta que cubre.
   // El ejemplo del campo «Nombre del día» de «+ Añadir día» (dato de cada destino: `destination_config.ejemplo_nombre_dia`).
   const dayNameExample = data?.destination_config?.ejemplo_nombre_dia ?? null
@@ -4558,7 +4578,14 @@ app.post('/api/destination-excursions', (req, res) => {
   // (Tanda 6y4) UNA sola regla para «este sitio tiene entrada que se compra»: un sitio con `entrada_de_pago` en los datos (la Fontana de Trevi: una tasa que se paga allí para bajar junto al agua) NO la tiene,
   // así que no sale en `entradas_por_sitio` (ni pestaña «Entradas», ni pestañita, ni «Reservar entrada») ni en la lista de «Entradas y Free Tour» de RESERVAS. Su ficha y sus datos no se tocan.
   const sinEntradaQueComprar = (name) => (data?.places ?? []).some((place) => place.name === name && place.entrada_de_pago)
-  const entradasPorSitio = Object.fromEntries(Object.entries(entradasDe(findPipelineV2Key(destination ?? '') ?? '')).filter(([name]) => !sinEntradaQueComprar(name)))
+  let entradasPorSitio = Object.fromEntries(Object.entries(entradasDe(findPipelineV2Key(destination ?? '') ?? '')).filter(([name]) => !sinEntradaQueComprar(name)))
+  if (conCivitatis) {
+    try {
+      entradasPorSitio = (await civitatis.enriquecerEntradas(destination, entradasPorSitio)).entradasPorSitio
+    } catch {
+      /* se queda lo de hoy */
+    }
+  }
   // Tanda 6s: el orden del bloque de entradas, las zonas del alojamiento y el mapa de alojamientos (datos del destino).
   const reservasExtra = {
     // Los nombres cortos de las reservas para los avisos «coinciden» y «vas justo» (dato del destino; sin ellos, el aviso usa el nombre completo).
@@ -5123,6 +5150,8 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
     // menos. El enlace sigue yendo a la búsqueda y no al `civitatis_slug`: un slug equivocado es un
     // 404 delante del viajero, y una búsqueda no puede romperse.
     civitatis_search: option.civitatis_search ?? null,
+    // La página de la actividad de verdad, si la API de consulta la ha resuelto (parte 1; con el interruptor encendido). Sin ella, la búsqueda de arriba.
+    civitatis_url: option.civitatis?.url ?? null,
     // Con qué se busca su foto (en inglés: "Pompeii ruins"): con el nombre en español salía cualquier cosa.
     photo_name: option.photo_name ?? null,
     suggested_day: dayNumber,

@@ -1,0 +1,1544 @@
+{
+ "activityId": "3834",
+ "currency": "EUR",
+ "timeZone": "Europe/Rome",
+ "hasHours": true,
+ "schedule": [
+  {
+   "date": "2026-10-17",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a09"
+   ]
+  },
+  {
+   "date": "2026-10-18",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0a"
+   ]
+  },
+  {
+   "date": "2026-10-19",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0b"
+   ]
+  },
+  {
+   "date": "2026-10-20",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0c"
+   ]
+  },
+  {
+   "date": "2026-10-21",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0b"
+   ]
+  },
+  {
+   "date": "2026-10-22",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0b"
+   ]
+  },
+  {
+   "date": "2026-10-23",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0b"
+   ]
+  },
+  {
+   "date": "2026-10-24",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0d"
+   ]
+  },
+  {
+   "date": "2026-10-25",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0e"
+   ]
+  },
+  {
+   "date": "2026-10-26",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0f"
+   ]
+  },
+  {
+   "date": "2026-10-27",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a10"
+   ]
+  },
+  {
+   "date": "2026-10-28",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a11"
+   ]
+  },
+  {
+   "date": "2026-10-29",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a0f"
+   ]
+  },
+  {
+   "date": "2026-10-30",
+   "baseRatesId": [
+    "6ad141ddc7eeb1cb20d20a12"
+   ]
+  }
+ ],
+ "baseRates": {
+  "6ad141ddc7eeb1cb20d20a09": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a09",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 36,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 36,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "14:30",
+     "quota": 41,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 41,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "15:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a0a": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a0a",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 36,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 36,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "14:30",
+     "quota": 48,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 48,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "15:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a0b": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a0b",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "14:30",
+     "quota": 48,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 48,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "15:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a0c": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a0c",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 22,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 22,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "14:30",
+     "quota": 48,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 48,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "15:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a0d": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a0d",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 20,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 20,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "14:30",
+     "quota": 41,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 41,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "hour": "15:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a0e": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a0e",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 22,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 22,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a0f": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a0f",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 24,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 24,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a10": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a10",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 23,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 23,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a11": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a11",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 21,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 21,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "6ad141ddc7eeb1cb20d20a12": {
+   "baseRateId": "6ad141ddc7eeb1cb20d20a12",
+   "hours": [
+    {
+     "hour": "11:00",
+     "quota": 20,
+     "rates": [
+      {
+       "id": 0,
+       "text": "Tour en español",
+       "quota": 20,
+       "supplements": [],
+       "categories": [
+        {
+         "id": 0,
+         "text": "Adultos",
+         "age": {
+          "minimum": 6,
+          "maximum": null
+         },
+         "group": {},
+         "price": 53,
+         "originalPrice": 53,
+         "supplement": [],
+         "canBookAlone": true,
+         "amountType": "PVP"
+        },
+        {
+         "id": 1,
+         "text": "Jóvenes de 6 a 17 años",
+         "age": {
+          "minimum": 6,
+          "maximum": 17
+         },
+         "group": {},
+         "price": 37,
+         "originalPrice": 37,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 2,
+         "text": "Niños de 2 a 5 años",
+         "age": {
+          "minimum": 2,
+          "maximum": 5
+         },
+         "group": {},
+         "price": 25,
+         "originalPrice": 25,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        },
+        {
+         "id": 3,
+         "text": "Menores de 2 años",
+         "age": {
+          "minimum": 0,
+          "maximum": 1
+         },
+         "group": {},
+         "price": 0,
+         "originalPrice": 0,
+         "supplement": [],
+         "canBookAlone": false,
+         "amountType": "PVP"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

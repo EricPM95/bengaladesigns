@@ -6,6 +6,7 @@ import type { SinEntrada } from '../../../lib/destinationExcursions'
 import { notaDeLlegadaSinHora } from '../../../lib/notaDeLlegada'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { AddReservationSheet } from './AddReservationSheet'
+import { DatosDeLaActividad } from './DatosDeLaActividad'
 import { openTicketShop } from './EntradaCard'
 import { LockIcon, ReservedDetails } from './ReservedMarks'
 import { useStopEntradas } from './useStopEntradas'
@@ -51,9 +52,10 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         <div key={entrada.nombre} className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
           <div className="flex items-baseline justify-between gap-2.5">
             <p className="font-display text-[19px] leading-[1.1] text-text">{entrada.nombre}</p>
-            {entrada.desde != null && <span className="font-display text-[22px] leading-none text-text">{`Desde ${precioTienda(entrada.desde)}`}</span>}
+            {entrada.civitatis?.gratis ? <span className="font-display text-[22px] leading-none text-text">Gratis</span> : entrada.desde != null && <span className="font-display text-[22px] leading-none text-text">{`Desde ${precioTienda(entrada.desde)}`}</span>}
           </div>
-          {entrada.incluye && <p className="mt-1.5 text-[13px] leading-[1.5] text-text/72">{entrada.incluye}</p>}
+          {/* (Con la API de consulta encendida, los datos reales de la actividad; sin ella, la línea de siempre.) */}
+          {entrada.civitatis ? <DatosDeLaActividad datos={entrada.civitatis} /> : entrada.incluye && <p className="mt-1.5 text-[13px] leading-[1.5] text-text/72">{entrada.incluye}</p>}
           <button
             type="button"
             onClick={() => openTicketShop(entrada.url ?? buildActivitySearchUrl(`${entrada.nombre} ${route.destination}`))}

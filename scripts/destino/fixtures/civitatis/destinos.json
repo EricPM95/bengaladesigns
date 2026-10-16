@@ -1,0 +1,43 @@
+{
+ "total": 4217,
+ "conActividades": 3761,
+ "conTraslados": 811,
+ "muestra": [
+  {
+   "id": 1,
+   "countryId": 112,
+   "name": "Venecia",
+   "hasTransfers": true,
+   "hasActivities": true,
+   "gps": {
+    "latitude": 45.43472,
+    "longitude": 12.338333
+   },
+   "iata": "VCE"
+  },
+  {
+   "id": 19,
+   "countryId": 112,
+   "name": "Roma",
+   "hasTransfers": true,
+   "hasActivities": true,
+   "gps": {
+    "latitude": 41.89049,
+    "longitude": 12.494159
+   },
+   "iata": "ROM"
+  },
+  {
+   "id": 20,
+   "countryId": 112,
+   "name": "Florencia",
+   "hasTransfers": true,
+   "hasActivities": true,
+   "gps": {
+    "latitude": 43.768708,
+    "longitude": 11.256866
+   },
+   "iata": "FLR"
+  }
+ ]
+}

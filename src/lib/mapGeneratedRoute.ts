@@ -359,6 +359,8 @@ export interface GeneratedExcursion {
   estimated_price: string
   /** Búsqueda curada para el enlace de reserva — ver excursionsAvailablePayload en server/index.js. */
   civitatis_search?: string | null
+  /** La página de la actividad de verdad (solo con la API de consulta encendida y la excursión resuelta); sin ella, la búsqueda de siempre. */
+  civitatis_url?: string | null
   /** Dónde arranca la excursión, tal cual lo publica el operador — solo las curadas. */
   meeting_point?: string | null
   /** El precio y la nota están puestos a mano hasta que se integre la API de afiliados. */
@@ -713,7 +715,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       meetingPoint: excursion.meeting_point ?? null,
       provisionalPricing: excursion.provisional_pricing ?? false,
       bestSeller: excursion.best_seller === true,
-      bookUrl: buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
+      bookUrl: excursion.civitatis_url || buildExcursionSearchUrl(excursion.name, excursion.civitatis_search),
     }
     byDay.set(dayNumber, [...(byDay.get(dayNumber) ?? []), mapped])
   }

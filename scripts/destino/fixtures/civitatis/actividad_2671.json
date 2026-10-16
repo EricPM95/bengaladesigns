@@ -1,0 +1,180 @@
+{
+ "id": 2671,
+ "type": 1,
+ "lang": "es",
+ "guideLanguages": [
+  "es"
+ ],
+ "destinationId": 19,
+ "secondaryDestinationId": [],
+ "popularity": 1659,
+ "isGoldenTour": true,
+ "title": "Free tour por Roma",
+ "voucherType": 0,
+ "hasDeferredVoucher": false,
+ "relatedActivities": [
+  {
+   "id": 16093,
+   "lang": "it",
+   "url": "https://qa.civitatis.com/it/roma/free-tour-roma"
+  },
+  {
+   "id": 16378,
+   "lang": "en",
+   "url": "https://qa.civitatis.com/en/rome/free-tour"
+  },
+  {
+   "id": 22663,
+   "lang": "fr",
+   "url": "https://qa.civitatis.com/fr/rome/free-tour-rome"
+  },
+  {
+   "id": 2671,
+   "lang": "mx",
+   "url": "https://qa.civitatis.com/mx/roma/free-tour-roma"
+  },
+  {
+   "id": 2671,
+   "lang": "ar",
+   "url": "https://qa.civitatis.com/ar/roma/free-tour-roma"
+  }
+ ],
+ "score": 9,
+ "reviews": 42394,
+ "isTopActivity": false,
+ "tags": [
+  {
+   "key": "SMALL_GROUP",
+   "label": "Grupo de hasta 12 personas"
+  },
+  {
+   "key": "FREE_CANCELLATION",
+   "label": "Cancelación gratuita"
+  },
+  {
+   "key": "ONLY_IN_LANG",
+   "label": "Solo en español"
+  }
+ ],
+ "persons": 997566,
+ "url": "https://qa.civitatis.com/es/roma/free-tour-roma",
+ "description": "<strong>La ciudad de los césares, del Barroco y, por supuesto, la Ciudad Eterna</strong>. En nuestro <strong>free tour por Roma</strong> descubriremos la monumentalidad de la capital italiana.",
+ "raw_description": "La ciudad de los césares, del Barroco y, por supuesto, la Ciudad Eterna. En nuestro free tour por Roma descubriremos la monumentalidad de la capital italiana.",
+ "longDescription": "<h2>Itinerario</h2>\n<p>El <strong>free tour por Roma</strong> comienza en la <b>plaza de España</b>, famosa por su historia y escenas icónicas de cine. Visitaremos la <b>Fontana de Trevi</b>, obra maestra barroca de Nicola Salvi, inmortalizada en <em>La dolce vita</em>. Admiraremos el <b>Panteón de Agripa</b> y otros monumentos del centro histórico, finalizando en la <b>plaza Navona</b>.</p>\n\n<h2>Grupos</h2>\n<p>Para el <strong>free tour por Roma</strong>, se limita la reserva a un máximo de 6 personas. Grupos más grandes deben optar por un <a href=\"https://www.civitatis.com/es/roma/tour-privado-roma/\" title=\"Tour privado por Roma\">tour privado por Roma</a>.</p>",
+ "rawLongDescription": "Itinerario\nEl free tour por Roma comienza en la plaza de España, famosa por su historia y escenas icónicas de cine. Visitaremos la Fontana de Trevi, obra maestra barroca de Nicola Salvi, inmortalizada en La dolce vita. Admiraremos el Panteón de Agripa y otros monumentos del centro histórico, finalizando en la plaza Navona.\n\nGrupos\nPara el free tour por Roma, se limita la reserva a un máximo de 6 personas. Grupos más grandes deben optar por un tour privado por Roma.",
+ "minAge": 0,
+ "hasAdditionalQuestions": false,
+ "hasPickup": false,
+ "hasPassengersQuestions": false,
+ "photos": {
+  "header": [
+   {
+    "caption": "Free tour por Roma",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/free-tour-roma.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/free-tour-roma-m.jpg",
+     "grid": "https://cdn2.civitatis.com/italia/roma/free-tour-roma-grid.jpg",
+     "list": "https://cdn2.civitatis.com/italia/roma/free-tour-roma-list.jpg",
+     "list_responsive": "https://cdn2.civitatis.com/italia/roma/free-tour-roma-list-m.jpg"
+    }
+   }
+  ],
+  "gallery": []
+ },
+ "typologies": [
+  {
+   "id": 1,
+   "key": "visitas-guiadas",
+   "description": "Visitas guiadas"
+  },
+  {
+   "id": 109,
+   "key": "free-tours",
+   "description": "Free tours"
+  }
+ ],
+ "category": {
+  "id": 1,
+  "description": "Visitas guiadas y free tours"
+ },
+ "subcategory": {
+  "id": 109,
+  "description": "Free Tours"
+ },
+ "amountType": "PVP",
+ "minimumPrice": 0,
+ "isFreeTour": true,
+ "currency": "EUR",
+ "originalPrice": 0,
+ "included": [
+  "Guía de habla española."
+ ],
+ "notIncluded": [
+  "Propinas."
+ ],
+ "cancelPolicy": "Si no vas a poder asistir al tour, por favor, cancela la reserva, si no, el guía te estará esperando.",
+ "cancelPolicies": [
+  {
+   "hours": 0,
+   "penalty": 0,
+   "type": "percent"
+  }
+ ],
+ "MinimumPaxPerBooking": 0,
+ "minimumPaxPerActivity": 0,
+ "maximumPaxPerActivity": 6,
+ "infoVoucher": "<p><strong>10 minutos antes </strong>de la hora indicada, el&nbsp;guía os estará esperando con un <strong>cartel de Civitatis</strong>&nbsp;junto al <strong>quiosco de flores situado en la Plaza de España</strong>, en la<strong> esquina con la calle Vicolo del Bottino</strong>. <!-- Si venís en metro, debéis bajaros en la estación Spagna (línea A, la de color rojo anaranjado) y tomar la salida de la calle Vicolo del Bottino, que da acceso a un restaurante McDonald´s. ¡--></p>\n",
+ "duration": {
+  "min": 120,
+  "max": 0,
+  "duration": 120
+ },
+ "advance": {
+  "days": 0,
+  "hour": null,
+  "minutes_before": 0
+ },
+ "address": {
+  "address": "",
+  "shortAddress": "Plaza de España, esquina Vicolo del Bottino.",
+  "latitude": 41.906277,
+  "longitude": 12.48218,
+  "zoom": 15
+ },
+ "providersInfo": [],
+ "accessibility": {
+  "code": 200,
+  "description": "No es accesible en silla de ruedas."
+ },
+ "isCategoryPaxGroup": false,
+ "hasDynamicPrice": false,
+ "rates": [
+  {
+   "id": 0,
+   "text": "Tour en español",
+   "categories": [
+    {
+     "id": 0,
+     "text": "Adultos",
+     "canBookAlone": true,
+     "group": []
+    },
+    {
+     "id": 1,
+     "text": "Niños de 6 a 12 años",
+     "canBookAlone": false,
+     "group": []
+    },
+    {
+     "id": 2,
+     "text": "Menores de 6 años",
+     "canBookAlone": false,
+     "group": []
+    }
+   ],
+   "pickup": {
+    "status": "not_included"
+   }
+  }
+ ]
+}

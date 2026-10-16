@@ -9,6 +9,7 @@ import type { Excursion, StopEntrada } from './types'
 import { mapExcursionList, type GeneratedExcursion } from './mapGeneratedRoute'
 import type { EssentialEntry } from './bookings'
 import type { GruposDelDestino } from './tituloDelDia'
+import { civitatisActiva } from './civitatis'
 
 export interface DestinationExcursions {
   /** Desde cuántos días de viaje sale el botón; null = este destino no tiene excursiones. */
@@ -74,12 +75,14 @@ export function destinoYaCargado(destination: string | null | undefined): Destin
 }
 
 export function fetchDestinationExcursions(destination: string): Promise<DestinationExcursions> {
-  const key = destination.trim().toLowerCase()
+  // (Con la API de consulta encendida, el servidor devuelve las entradas y las excursiones con datos reales: otra clave, para no mezclar lo uno con lo otro.)
+  const conCivitatis = civitatisActiva()
+  const key = `${destination.trim().toLowerCase()}${conCivitatis ? '|civitatis' : ''}`
   const cached = cache.get(key)
   if (cached) return Promise.resolve(cached)
   const running = inFlight.get(key)
   if (running) return running
-  const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination }) })
+  const job = fetch('/api/destination-excursions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination, ...(conCivitatis ? { civitatis: true } : {}) }) })
     .then((response) => (response.ok ? response.json() : null))
     .then((data: { found?: boolean; from_days?: number | null; examples?: string | null; day_name_example?: string | null; entradas?: EssentialEntry[]; entradas_por_sitio?: Record<string, StopEntrada[]>; entradas_orden?: { arriba: string[]; mas: string[] }; nombres_cortos?: Record<string, string>; zonas_alojamiento?: DestinationExcursions['zonasAlojamiento']; mapa_alojamiento?: DestinationExcursions['mapaAlojamiento']; moneda?: string | null; excursions?: GeneratedExcursion[]; rating?: DestinationExcursions['rating']; etiquetas_por_sitio?: Record<string, string>; sin_entrada_por_sitio?: Record<string, SinEntrada>; grupos_dia?: GruposDelDestino | null; sitios_grandes?: SitioGrande[]; importancia_por_sitio?: Record<string, 'imprescindible' | 'nivel1'> } | null) => {
       const result: DestinationExcursions = data?.found

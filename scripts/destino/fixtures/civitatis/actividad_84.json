@@ -1,0 +1,204 @@
+{
+ "id": 84,
+ "type": 1,
+ "lang": "es",
+ "guideLanguages": [
+  "es"
+ ],
+ "destinationId": 19,
+ "secondaryDestinationId": [],
+ "popularity": 15886,
+ "isGoldenTour": true,
+ "title": "Visita guiada por los Museos Vaticanos y Capilla Sixtina",
+ "voucherType": 0,
+ "hasDeferredVoucher": false,
+ "relatedActivities": [
+  {
+   "id": 1603,
+   "lang": "en",
+   "url": "https://qa.civitatis.com/en/rome/vatican-city-tour"
+  },
+  {
+   "id": 1604,
+   "lang": "pt",
+   "url": "https://qa.civitatis.com/pt/roma/visita-guiada-vaticano"
+  },
+  {
+   "id": 1800,
+   "lang": "it",
+   "url": "https://qa.civitatis.com/it/roma/visita-guidata-vaticano"
+  },
+  {
+   "id": 2435,
+   "lang": "fr",
+   "url": "https://qa.civitatis.com/fr/rome/visite-guidee-vatican"
+  },
+  {
+   "id": 84,
+   "lang": "mx",
+   "url": "https://qa.civitatis.com/mx/roma/visita-guiada-vaticano"
+  },
+  {
+   "id": 84,
+   "lang": "ar",
+   "url": "https://qa.civitatis.com/ar/roma/visita-guiada-vaticano"
+  },
+  {
+   "id": 1604,
+   "lang": "br",
+   "url": "https://qa.civitatis.com/br/roma/visita-guiada-vaticano"
+  }
+ ],
+ "score": 9.2,
+ "reviews": 52378,
+ "isTopActivity": false,
+ "tags": [
+  {
+   "key": "SKIP_LINE",
+   "label": "Sin colas"
+  },
+  {
+   "key": "FREE_CANCELLATION",
+   "label": "Cancelación gratuita"
+  },
+  {
+   "key": "ONLY_IN_LANG",
+   "label": "Solo en español"
+  }
+ ],
+ "persons": 487527,
+ "url": "https://qa.civitatis.com/es/roma/visita-guiada-vaticano",
+ "description": "En esta <strong>visita por los Museos Vaticanos y la Capilla Sixtina</strong> veremos una de las colecciones de arte más importantes del mundo. ¡Incluye <strong>entrada preferente</strong>!",
+ "raw_description": "En esta visita por los Museos Vaticanos y la Capilla Sixtina veremos una de las colecciones de arte más importantes del mundo. ¡Incluye entrada preferente!",
+ "longDescription": "<p>En esta visita guiada por el Vaticano conoceremos los Museos Vaticanos y la Capilla Sixtina. El precio incluye entrada preferente, por lo que nos saltaremos las interminables colas.</p>\n\n<h2>Itinerario</h2>\n\n<p>En esta visita guiada conoceremos dos de los lugares más importantes de Roma. Los Museos Vaticanos recogen la mayor colección de arte de la Iglesia Católica Romana. Se incluye la visita a la Galería de los Mapas, la Galería de los Candelabros, la Galería de los Tapetes y El Patio del Belvedere, donde veremos esculturas, pinturas y otras obras de arte. También descubriremos la emblemática Capilla Sixtina, con algunas de las pinturas más famosas de todos los tiempos. Se debe respetar el silencio en este lugar sagrado. Nuestros guías revelarán historias sobre el oscuro pasado del Vaticano durante la visita.</p>\n\n<h2>Basílica de San Pedro</h2>\n\n<p>El acceso a la Basílica de San Pedro desde la Capilla Sixtina suele estar abierto, pero no siempre garantizado debido a eventos religiosos. Si deseáis visitar la basílica por vuestra cuenta después del tour, podéis acceder desde la Plaza de San Pedro.</p>\n\n<h2>Experiencia ampliada</h2>\n\n<p>Si queréis conocer los lugares imprescindibles de Roma, podéis reservar nuestra oferta que combina el tour del Vaticano con la visita al Coliseo, el Foro y el Palatino.</p>",
+ "rawLongDescription": "En esta visita guiada por el Vaticano conoceremos los Museos Vaticanos y la Capilla Sixtina. El precio incluye entrada preferente, por lo que nos saltaremos las interminables colas.\n\nItinerario\n\nEn esta visita guiada conoceremos dos de los lugares más importantes de Roma. Los Museos Vaticanos recogen la mayor colección de arte de la Iglesia Católica Romana. Se incluye la visita a la Galería de los Mapas, la Galería de los Candelabros, la Galería de los Tapetes y El Patio del Belvedere, donde veremos esculturas, pinturas y otras obras de arte. También descubriremos la emblemática Capilla Sixtina, con algunas de las pinturas más famosas de todos los tiempos. Se debe respetar el silencio en este lugar sagrado. Nuestros guías revelarán historias sobre el oscuro pasado del Vaticano durante la visita.\n\nBasílica de San Pedro\n\nEl acceso a la Basílica de San Pedro desde la Capilla Sixtina suele estar abierto, pero no siempre garantizado debido a eventos religiosos. Si deseáis visitar la basílica por vuestra cuenta después del tour, podéis acceder desde la Plaza de San Pedro.\n\nExperiencia ampliada\n\nSi queréis conocer los lugares imprescindibles de Roma, podéis reservar nuestra oferta que combina el tour del Vaticano con la visita al Coliseo, el Foro y el Palatino.",
+ "minAge": 0,
+ "hasAdditionalQuestions": false,
+ "hasPickup": false,
+ "hasPassengersQuestions": true,
+ "photos": {
+  "header": [
+   {
+    "caption": "Visita guiada por los Museos Vaticanos y Capilla Sixtina",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-m.jpg",
+     "grid": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-grid.jpg",
+     "list": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-list.jpg",
+     "list_responsive": "https://cdn2.civitatis.com/italia/roma/visita-guiada-vaticano-list-m.jpg"
+    }
+   }
+  ],
+  "gallery": [
+   {
+    "caption": "Los Museos Vaticanos albergan un gran patrimonio artístico",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/galeria/galeria-museos-vaticanos.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/galeria-museos-vaticanos.jpg",
+     "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/galeria-museos-vaticanos.jpg"
+    }
+   }
+  ]
+ },
+ "typologies": [
+  {
+   "id": 1,
+   "key": "visitas-guiadas",
+   "description": "Visitas guiadas"
+  },
+  {
+   "id": 13,
+   "key": "museos",
+   "description": "Museos y monumentos"
+  },
+  {
+   "id": 113,
+   "key": "vaticano",
+   "description": "Vaticano"
+  }
+ ],
+ "category": {
+  "id": 1,
+  "description": "Visitas guiadas y free tours"
+ },
+ "subcategory": {
+  "id": 2,
+  "description": "Visitas guiadas por museos o monumentos"
+ },
+ "amountType": "PVP",
+ "minimumPrice": 16500,
+ "isFreeTour": false,
+ "currency": "EUR",
+ "originalPrice": 16500,
+ "included": [
+  "Guía en español.",
+  "Entrada sin colas a los Museos Vaticanos y a la Capilla Sixtina (22EUR).",
+  "Uso de auriculares para seguir mejor las explicaciones."
+ ],
+ "notIncluded": [],
+ "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 24 horas antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+ "cancelPolicies": [
+  {
+   "hours": 24,
+   "penalty": 0,
+   "type": "percent"
+  }
+ ],
+ "MinimumPaxPerBooking": 0,
+ "minimumPaxPerActivity": 127,
+ "maximumPaxPerActivity": 13000,
+ "infoVoucher": "<p>El tour comienza en el Viale Giulio Cesare 229, en la puerta del Cine Giulio Cesare (a 100 metros de la parada de metro Ottaviano, Línea A).</p>\n\n<p>A continuación, podéis ver el enlace con la ubicación exacta:</p>\n\n<p><a href=\"https://goo.gl/maps/pMNzpiqXGQ5SnMRU6\">https://goo.gl/maps/pMNzpiqXGQ5SnMRU6</a></p>\n\n<h2>Importante</h2>\n\n<ul class=\"listado\">\n\t<li>Es importante llegar al punto de encuentro con <strong>10&nbsp;minutos de antelación para poder hacer el check-in</strong>. En caso de retraso no será posible incorporarse al grupo ni corresponderá reembolso.</li>\n\t<li>Es recomendable llevar el DNI o el pasaporte por posibles controles.</li>\n\t<li>Para acceder a la Basílica de San Pedro y la Capilla Sixtina, tanto mujeres como hombres deberán llevar cubiertos los hombros y las rodillas.</li>\n\t<li>Se permite el acceso con mochilas y paraguas pequeños, botellas de agua y comida siempre y cuando no se consuma dentro de las instalaciones.</li>\n\t<li>Recordamos que la actividad se realiza en grupo y es guiada así que se prevé seguir un recorrido especifico, que <strong>no podrá ser realizado en silla de ruedas ni con carritos de bebe.</strong> Estos últimos se podrán dejar en la consigna al inicio del tour y no podrán ser recogidos hasta finalizar la visita. Tampoco se aconseja la realización del tour a personas que tienen dificultades para caminar.</li>\n\t<li>Atención, la Santa Sede puede cerrar la Basílica de San Pedro y/o la Capilla Sixtina con motivo de celebraciones litúrgicas sin previo aviso. En estos casos no se procede a la devolución.</li>\n\t<li><strong>El tour no permite cancelaciones por causas climatológicas.</strong></li>\n\t<li>Este tour incluye las entradas reservadas: accederéis a los monumentos con acceso prioritario saltando las colas de taquilla. En los periodos de alta aﬂuencia de visitantes no siempre es posible saltar la cola que podrá formarse en el acceso prioritario. En todo caso, la cola será mucho más rápida que la de los visitantes sin entrada reservada.</li>\n\t<li>Las personas que tienen una <strong>minusvalía superior al 74%</strong> pueden obtener la devolución de la entrada a los museos. Para ello deben informar al proveedor y adjuntar el certificado de minusvalía al menos <strong>72 horas</strong> antes del inicio del tour. <strong>Si no se notifica previamente, se pierde el derecho al reembolso del billete</strong>.</li>\n\t<li>La Capilla Sixtina es un lugar de culto. Por lo que no está permitido hablar, hacer fotos y/o vídeos. Por este motivo los guías explican la Capilla fuera de la misma.</li>\n\t<li>Esta entrada<strong> no es válida para grupos escolares</strong>.&nbsp;En caso de presentar este voucher para un grupo escolar, no será posible acceder al monumento y será necesario adquirir las entradas correctas, previa comprobación de disponibilidad, abonando de nuevo el importe.</li>\n</ul>\n\n<h2>Basílica de San Pedro</h2>\n\n<p>La entrada a la Basílica es gratuita y abre a las 7:00 horas. Podréis visitarla por vuestra cuenta antes o después del tour, accediendo desde la Plaza de San Pedro.</p>\n\n<p>Si durante la realización del tour el acceso entre los museos y la Basílica se encuentra abierto nuestros guías les darán la posibilidad de dejarles dentro para que puedan verla por su cuenta sin necesidad de salir, hacer la fila y pasar el control de seguridad de nuevo.</p>\n\n<p>Debido a la audiencia papal, acto que se realiza los miércoles, no se puede garantizar el acceso a la Basílica de San Pedro.</p>\n",
+ "duration": {
+  "min": 420,
+  "max": 0,
+  "duration": 420
+ },
+ "advance": {
+  "days": 0,
+  "hour": null,
+  "minutes_before": 120
+ },
+ "address": {
+  "address": "",
+  "shortAddress": "Viale Giulio Cesare 229, frente al cine Giulio Cesare (Metro A Ottaviano). ",
+  "latitude": 41.9086683,
+  "longitude": 12.4558222,
+  "zoom": 16
+ },
+ "providersInfo": [],
+ "accessibility": {
+  "code": 201,
+  "description": "No es accesible en silla de ruedas."
+ },
+ "isCategoryPaxGroup": false,
+ "hasDynamicPrice": false,
+ "rates": [
+  {
+   "id": 0,
+   "text": "Tour en español",
+   "categories": [
+    {
+     "id": 0,
+     "text": "Adultos",
+     "canBookAlone": true,
+     "group": []
+    },
+    {
+     "id": 1,
+     "text": "Niños de 6 a 17 años",
+     "canBookAlone": false,
+     "group": []
+    },
+    {
+     "id": 2,
+     "text": "Menores de 6 años",
+     "canBookAlone": false,
+     "group": []
+    }
+   ],
+   "pickup": {
+    "status": "not_included"
+   }
+  }
+ ]
+}

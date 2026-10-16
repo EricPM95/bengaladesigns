@@ -24,6 +24,7 @@ import {
 } from '../../../lib/arrivalReturn'
 import { openTicketShop } from '../reservas/EntradaCard'
 import { pagoActivo } from '../../../lib/pago'
+import { useEnlaceDeTraslados } from '../../../lib/enlaceDeTraslados'
 import { ARRIVAL_PETROL, ModeIcon } from './ArrivalReturnBar'
 import { Icono } from '../../ui/Icono'
 
@@ -237,7 +238,9 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
   const onePoint = shownPoints.length === 1 ? shownPoints[0] : null
   const why = (arrival ? onePoint?.por_que_llegada : onePoint?.por_que_vuelta) ?? (arrival ? medio.textos.llegada_por_que : medio.textos.vuelta_por_que)
   // La pestaña «Traslados» (Tanda 6t): solo en aeropuerto y puerto, y solo con el punto que tenga enlace de traslado en los datos. Con el punto elegido en RESERVAS, el de ese punto; sin elegir, los de todos.
-  const privatePoints = TRASLADO_EN.includes(mode) ? shownPoints.filter((point) => point.traslado?.url) : []
+  // (Parte 1 de la API de consulta, con el interruptor encendido: el enlace de traslados del destino; si la API no lo da, el de los datos de siempre.)
+  const enlaceDeTraslados = useEnlaceDeTraslados(route.destination)
+  const privatePoints = TRASLADO_EN.includes(mode) ? shownPoints.filter((point) => point.traslado?.url || enlaceDeTraslados) : []
   // Un tip de un punto (`solo_en`) sale solo si ese punto está a la vista (con reserva, el elegido; sin ella, todos); uno con fecha de fin (`hasta`), solo hasta
   // esa fecha (la del viaje o, sin ella, la de hoy).
   const tipDate = dateIso ?? new Date().toISOString().slice(0, 10)
@@ -374,7 +377,7 @@ export function ArrivalReturnSheet(props: ArrivalReturnSheetProps) {
                       : `El último día, sin trasbordos ni maletas por el metro: un traslado privado te recoge en tu alojamiento y te lleva directo a ${privatePoints.map(puntoCorto).join(' o ')}. Ideal si vais en familia, en grupo o en pareja.`}
                   </p>
                   {privatePoints.map((point) => (
-                    <TrasladoCard key={point.id} title={arrival ? `De ${puntoCorto(point)} a tu alojamiento` : `De tu alojamiento a ${puntoCorto(point)}`} href={point.traslado!.url} />
+                    <TrasladoCard key={point.id} title={arrival ? `De ${puntoCorto(point)} a tu alojamiento` : `De tu alojamiento a ${puntoCorto(point)}`} href={enlaceDeTraslados ?? point.traslado!.url} />
                   ))}
                 </div>
               )}

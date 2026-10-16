@@ -46,6 +46,11 @@ Todo lo de la Tanda 8 está en `APUNTES_TRAS_TANDA7.md` y `BRIEF_DISENO_LOGROS.m
 - Supabase → URL Configuration: Site URL `https://bengaladesigns.vercel.app` y Redirect URL `https://bengaladesigns.vercel.app/**`.
 - Falta: el servicio de correos (necesita dominio propio, cuando se decida el nombre); aplicar la migración 0020 (cuando estén las pantallas de Design); al salir, pasar Google de Prueba a Publicado y poner el nombre definitivo en Branding.
 
+## Decisiones tras las cuentas, parte 2 (Eric, 16-oct, 21:05)
+- Plaza de un pase regalado: si quien la recibió no la usa o borra su cuenta, se pierde. No vuelve al pase. Se queda como lo dejó Code en la 0021.
+- Migraciones pendientes, para cuando se prueben las cuentas con las pantallas de Design: 0017 (ventas del afiliado; comprobar si ya está) y después 0020 y 0021, juntas y en ese orden.
+- El registro de ventas del afiliado nunca funcionó en producción (sin la clave y sin `SALES_INGEST_SECRET`). No afecta a lo que paga Civitatis; solo a nuestra copia.
+
 ## Para la próxima tanda de Code (cuentas, parte 2)
 - Eric puso en Vercel `SUPABASE_SERVICE_ROLE_KEY` (16-oct, 18:11) como Secret, con una clave nueva de Supabase de las que empiezan por `sb_secret_` (no la antigua `service_role`). Code tiene que comprobar que su versión de supabase-js la acepta en el servidor; si no, decírselo a Eric.
 - Cambiar el borrado de cuenta: el pase que es para otra persona se queda con esa persona; un viaje compartido no se borra, pasa a administrarlo el invitado que entró primero.

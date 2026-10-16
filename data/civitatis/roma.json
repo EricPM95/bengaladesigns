@@ -1,0 +1,30 @@
+{
+  "_que_es": "Qué actividad de la API de consulta es cada cosa de Roma (parte 1, sandbox). Los números salen de la exploración del 16-oct-2026 (scripts/destino/civitatisExplorar.mjs): son los de la web de verdad, que el sandbox reconoce al resolver su enlace. Lo que no está aquí se queda como hoy (nuestros datos y nuestros enlaces).",
+  "destino": { "id": 19, "nombre": "Roma" },
+  "entradas": {
+    "_nota": "Por nombre de sitio, como en data/dias/roma/_entradas.json. Con estos números, la pestaña «Entradas» de la ficha enseña las actividades con datos reales en vez de la entrada escrita a mano. Máximo dos por sitio.",
+    "Coliseo": [3834, 83],
+    "Foro Romano y Palatino": [3834, 83],
+    "Panteón": [170340, 2023],
+    "Museos Vaticanos y Capilla Sixtina": [84],
+    "Castillo de Sant'Angelo": [175270],
+    "Museos Capitolinos": [2026],
+    "Catacumbas de San Calixto": [185],
+    "Cripta de los Capuchinos": [33202],
+    "Free Tour": [2671]
+  },
+  "horas": {
+    "_nota": "La actividad cuyo calendario da las horas libres de la rueda «Hora de entrada» de una reserva, por nombre de sitio. Una sola por sitio (si no, no se sabría de cuál son las plazas). El Foro va con el Coliseo: es la misma entrada.",
+    "Coliseo": 3834,
+    "Foro Romano y Palatino": 3834,
+    "Panteón": 170340,
+    "Museos Vaticanos y Capilla Sixtina": 84,
+    "Free Tour": 2671
+  },
+  "excursiones": {
+    "_nota": "El id de cada excursión nuestra (data/pipeline_v2/roma.json › excursions.options) → su actividad. Las que no salen no se han podido resolver con el enlace que teníamos y siguen con precio y nota provisionales.",
+    "florencia_pisa": 142547,
+    "ostia_antica": 2283
+  },
+  "free_tour": 2671
+}

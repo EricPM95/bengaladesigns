@@ -1,0 +1,208 @@
+{
+ "id": 170340,
+ "type": 1,
+ "lang": "es",
+ "guideLanguages": [],
+ "destinationId": 19,
+ "secondaryDestinationId": [],
+ "popularity": 11394,
+ "isGoldenTour": false,
+ "title": "Entrada al Panteón de Agripa sin colas",
+ "voucherType": 0,
+ "hasDeferredVoucher": false,
+ "relatedActivities": [
+  {
+   "id": 170341,
+   "lang": "en",
+   "url": "https://qa.civitatis.com/en/rome/pantheon-ticket"
+  },
+  {
+   "id": 170342,
+   "lang": "fr",
+   "url": "https://qa.civitatis.com/fr/rome/billet-pantheon-agrippa-audioguide"
+  },
+  {
+   "id": 170343,
+   "lang": "it",
+   "url": "https://qa.civitatis.com/it/roma/biglietti-pantheon-agrippa"
+  },
+  {
+   "id": 170344,
+   "lang": "pt",
+   "url": "https://qa.civitatis.com/pt/roma/ingresso-panteao-agripa-audioguia"
+  },
+  {
+   "id": 170340,
+   "lang": "mx",
+   "url": "https://qa.civitatis.com/mx/roma/entrada-panteon-agripa-audioguia"
+  },
+  {
+   "id": 170340,
+   "lang": "ar",
+   "url": "https://qa.civitatis.com/ar/roma/entrada-panteon-agripa-audioguia"
+  },
+  {
+   "id": 170344,
+   "lang": "br",
+   "url": "https://qa.civitatis.com/br/roma/ingresso-panteao-agripa-audioguia"
+  }
+ ],
+ "score": 7.6,
+ "reviews": 1642,
+ "isTopActivity": false,
+ "tags": [
+  {
+   "key": "SKIP_LINE",
+   "label": "Sin colas"
+  },
+  {
+   "key": "ACCESSIBILITY",
+   "label": "Accesible en silla de ruedas"
+  },
+  {
+   "key": "FREE_CANCELLATION",
+   "label": "Cancelación gratuita"
+  }
+ ],
+ "persons": 31190,
+ "url": "https://qa.civitatis.com/es/roma/entrada-panteon-agripa-audioguia",
+ "description": "Con esta <b>entrada al Panteón de Agripa&nbsp;sin colas</b> podréis visitar <b>uno de los grandes monumentos de la Antigua Roma</b>. ¡Imprescindible si estáis en la Ciudad Eterna!",
+ "raw_description": "Con esta entrada al Panteón de Agripa&nbsp;sin colas podréis visitar uno de los grandes monumentos de la Antigua Roma. ¡Imprescindible si estáis en la Ciudad Eterna!",
+ "longDescription": "<p>Con esta <b>entrada al Panteón de Agripa sin colas</b> podréis visitar <b>uno de los grandes monumentos de la Antigua Roma</b>. Imprescindible si estáis en la Ciudad Eterna.</p>\n\n<h2>¿Por qué visitar el Panteón de Agripa?</h2>\n\n<p>Situado en una de las principales zonas monumentales de la capital italiana, el <b>Panteón de Agripa</b> es una de las <b>joyas arquitectónicas de la Antigua Roma</b>. No tendréis que esperar la cola.</p>\n\n<p>Vuestra <b>entrada al Panteón de Agripa</b> os permitirá acceder al monumento sin pasar por taquilla. En su interior, la atención se dirige hacia la <b>cúpula del panteón</b>, que cuenta con un <b>óculo</b> de casi 9 metros de diámetro por el que entra luz natural.</p>\n\n<p>En el interior del Panteón de Agripa también se encuentra la <b>tumba del pintor Rafael Sanzio</b> y otros personajes, como el <b>rey Víctor Manuel II</b>. Asimismo, se pueden contemplar diversas <b>esculturas</b> y <b>obras pictóricas</b>.</p>\n\n<h2>Horario y punto de encuentro</h2>\n\n<p>A la hora indicada debéis presentaros en el <strong>número 56 de la Via del Pozzo delle Cornacchie</strong>, a 5 minutos a pie del Panteón de Agripa. <strong>Os proporcionaremos la entrada</strong> y os acompañaremos hasta el panteón, donde podréis visitar el monumento por vuestra cuenta con la entrada entregada.</p>",
+ "rawLongDescription": "Con esta entrada al Panteón de Agripa sin colas podréis visitar uno de los grandes monumentos de la Antigua Roma. Imprescindible si estáis en la Ciudad Eterna.\n\n¿Por qué visitar el Panteón de Agripa?\n\nSituado en una de las principales zonas monumentales de la capital italiana, el Panteón de Agripa es una de las joyas arquitectónicas de la Antigua Roma. No tendréis que esperar la cola.\n\nVuestra entrada al Panteón de Agripa os permitirá acceder al monumento sin pasar por taquilla. En su interior, la atención se dirige hacia la cúpula del panteón, que cuenta con un óculo de casi 9 metros de diámetro por el que entra luz natural.\n\nEn el interior del Panteón de Agripa también se encuentra la tumba del pintor Rafael Sanzio y otros personajes, como el rey Víctor Manuel II. Asimismo, se pueden contemplar diversas esculturas y obras pictóricas.\n\nHorario y punto de encuentro\n\nA la hora indicada debéis presentaros en el número 56 de la Via del Pozzo delle Cornacchie, a 5 minutos a pie del Panteón de Agripa. Os proporcionaremos la entrada y os acompañaremos hasta el panteón, donde podréis visitar el monumento por vuestra cuenta con la entrada entregada.",
+ "minAge": 0,
+ "hasAdditionalQuestions": null,
+ "hasPickup": false,
+ "hasPassengersQuestions": null,
+ "photos": {
+  "header": [
+   {
+    "caption": "Entrada al Panteón de Agripa sin colas",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-m.jpg",
+     "grid": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-grid.jpg",
+     "list": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-list.jpg",
+     "list_responsive": "https://cdn2.civitatis.com/italia/roma/entrada-panteon-agripa-audioguia-list-m.jpg"
+    }
+   }
+  ],
+  "gallery": [
+   {
+    "caption": "Óculo del Panteón de Agripa",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/galeria/oculo-panteon-agripa-roma.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/oculo-panteon-agripa-roma.jpg",
+     "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/oculo-panteon-agripa-roma.jpg"
+    }
+   },
+   {
+    "caption": "Visitando el interior del Panteón de Agripa",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/galeria/detalle-interior-panteon-agripa.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/detalle-interior-panteon-agripa.jpg",
+     "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/detalle-interior-panteon-agripa.jpg"
+    }
+   },
+   {
+    "caption": "Arquitectura del Panteón de Agripa",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/galeria/detalle-columnas-panteon-agripa.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/detalle-columnas-panteon-agripa.jpg",
+     "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/detalle-columnas-panteon-agripa.jpg"
+    }
+   },
+   {
+    "caption": "Columnatas del Panteón de Agripa",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/galeria/columnatas-panteon-agripa.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/galeria/thumbs/columnatas-panteon-agripa.jpg",
+     "big": "https://cdn2.civitatis.com/italia/roma/galeria/big/columnatas-panteon-agripa.jpg"
+    }
+   }
+  ]
+ },
+ "typologies": [],
+ "category": {
+  "id": 5,
+  "description": "Entradas"
+ },
+ "subcategory": {
+  "id": 61,
+  "description": "Atracciones turísticas"
+ },
+ "amountType": "PVP",
+ "minimumPrice": 11,
+ "isFreeTour": false,
+ "currency": "EUR",
+ "originalPrice": 11,
+ "included": [
+  "Entrada al Panteón de Agripa sin colas."
+ ],
+ "notIncluded": [],
+ "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 24 horas antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+ "cancelPolicies": [
+  {
+   "hours": 24,
+   "penalty": 0,
+   "type": "percent"
+  }
+ ],
+ "MinimumPaxPerBooking": 1,
+ "minimumPaxPerActivity": 1,
+ "maximumPaxPerActivity": null,
+ "infoVoucher": "<p><b>10 minutos antes</b> de la hora indicada, debéis presentaros en el siguiente punto de Roma para recoger vuestra entrada: <b>Via del Pozzo delle Cornacchie, 56, 00186 Roma RM, Italia (oficinas de Best in Rome Tour)</b>. Si no encontráis el punto de encuentro, llamad al teléfono de emergencia indicado en este voucher.</p>\n\n<p><b>Código de vestimenta</b>: no se permite acceder al Panteón de Agripa con pantalones cortos, chalecos y blusas sin mangas.</p>\n\n<h2>Entrada sin colas</h2>\n\n<p>Tened en cuenta que con esta entrada accederéis al Panteón de Agripa sin hacer fila en la taquilla. Sin embargo, tendréis que pasar obligatoriamente por un control de seguridad, cuya fila es independiente y no se puede saltar.</p>\n",
+ "duration": {
+  "min": 0,
+  "max": 0,
+  "duration": 0
+ },
+ "advance": {
+  "days": 0,
+  "hour": null,
+  "minutes_before": 0
+ },
+ "address": {
+  "address": "",
+  "shortAddress": "Via del Pozzo delle Cornacchie, 56.",
+  "latitude": 41.8999558,
+  "longitude": 12.4754812,
+  "zoom": 17
+ },
+ "providersInfo": [],
+ "accessibility": {
+  "code": 0,
+  "description": "Accesible en silla de ruedas. Es necesario indicarlo en la reserva. Aseos accesibles. Es necesario un acompañante."
+ },
+ "isCategoryPaxGroup": false,
+ "hasDynamicPrice": false,
+ "rates": [
+  {
+   "id": 0,
+   "text": "Entrada",
+   "categories": [
+    {
+     "id": 0,
+     "text": "Adultos",
+     "canBookAlone": true,
+     "group": []
+    },
+    {
+     "id": 1,
+     "text": "Niños de 3 a 15 años",
+     "canBookAlone": false,
+     "group": []
+    },
+    {
+     "id": 2,
+     "text": "Menores de 3 años",
+     "canBookAlone": false,
+     "group": []
+    }
+   ],
+   "pickup": {
+    "status": "not_included"
+   }
+  }
+ ]
+}

@@ -1,0 +1,193 @@
+{
+ "id": 3834,
+ "type": 1,
+ "lang": "es",
+ "guideLanguages": [
+  "es"
+ ],
+ "destinationId": 19,
+ "secondaryDestinationId": [],
+ "popularity": 23978,
+ "isGoldenTour": false,
+ "title": "Coliseo, Foro y Palatino + Arena de gladiadores",
+ "voucherType": 0,
+ "hasDeferredVoucher": false,
+ "relatedActivities": [
+  {
+   "id": 12811,
+   "lang": "en",
+   "url": "https://qa.civitatis.com/en/rome/colosseum-tour"
+  },
+  {
+   "id": 27430,
+   "lang": "pt",
+   "url": "https://qa.civitatis.com/pt/roma/tour-coliseu-arena-gladiadores"
+  },
+  {
+   "id": 27814,
+   "lang": "fr",
+   "url": "https://qa.civitatis.com/fr/rome/visite-colisee-gladiateurs"
+  },
+  {
+   "id": 100638,
+   "lang": "it",
+   "url": "https://qa.civitatis.com/it/roma/colosseo-arena-gladiatori-foro-palatino"
+  },
+  {
+   "id": 3834,
+   "lang": "mx",
+   "url": "https://qa.civitatis.com/mx/roma/tour-coliseo-arena-gladiadores"
+  },
+  {
+   "id": 3834,
+   "lang": "ar",
+   "url": "https://qa.civitatis.com/ar/roma/tour-coliseo-arena-gladiadores"
+  },
+  {
+   "id": 27430,
+   "lang": "br",
+   "url": "https://qa.civitatis.com/br/roma/tour-coliseu-arena-gladiadores"
+  }
+ ],
+ "score": 9.3,
+ "reviews": 16210,
+ "isTopActivity": false,
+ "tags": [
+  {
+   "key": "FREE_CANCELLATION",
+   "label": "Cancelación gratuita"
+  },
+  {
+   "key": "ONLY_IN_LANG",
+   "label": "Solo en español"
+  }
+ ],
+ "persons": 125403,
+ "url": "https://qa.civitatis.com/es/roma/tour-coliseo-arena-gladiadores",
+ "description": "La <strong>Arena de gladiadores</strong> es el summum de la <strong>visita del Coliseo Romano</strong>. Además, recorreremos&nbsp;<strong>el Foro y el Palatino</strong>, grandes vestigios de la Roma Imperial.",
+ "raw_description": "La Arena de gladiadores es el summum de la visita del Coliseo Romano. Además, recorreremos&nbsp;el Foro y el Palatino, grandes vestigios de la Roma Imperial.",
+ "longDescription": "<h2>El Coliseo, el Foro y el Palatino</h2>\n<p>Descubre los grandes vestigios de la Roma Imperial en este tour que incluye una visita a la Arena de gladiadores del Coliseo.</p>\n\n<h2>Itinerario</h2>\n<p>Reúnase en la estación de metro Colosseo para iniciar la visita al Anfiteatro Flavio, conocido como el Coliseo de Roma. Explore la Arena del Coliseo de Roma y conozca los combates de gladiadores. Continúe la ruta con la visita al Palatino, la colina que albergaba las residencias de los emperadores romanos. Concluya en el Foro Romano, donde podrá ver esculturas de gobernantes como Trajano.</p>\n\n<h2>Cambios en el itinerario</h2>\n<p>En caso de no poder acceder a la Arena por motivos climáticos, se realizará una visita regular al Coliseo, Foro y Palatino, con reembolso de la diferencia de precio.</p>\n\n<h2>Menores de 2 años</h2>\n<p>Los menores de 2 años pueden participar de forma gratuita en brazos de sus padres durante la actividad.",
+ "rawLongDescription": "El Coliseo, el Foro y el Palatino\nDescubre los grandes vestigios de la Roma Imperial en este tour que incluye una visita a la Arena de gladiadores del Coliseo.\n\nItinerario\nReúnase en la estación de metro Colosseo para iniciar la visita al Anfiteatro Flavio, conocido como el Coliseo de Roma. Explore la Arena del Coliseo de Roma y conozca los combates de gladiadores. Continúe la ruta con la visita al Palatino, la colina que albergaba las residencias de los emperadores romanos. Concluya en el Foro Romano, donde podrá ver esculturas de gobernantes como Trajano.\n\nCambios en el itinerario\nEn caso de no poder acceder a la Arena por motivos climáticos, se realizará una visita regular al Coliseo, Foro y Palatino, con reembolso de la diferencia de precio.\n\nMenores de 2 años\nLos menores de 2 años pueden participar de forma gratuita en brazos de sus padres durante la actividad.",
+ "minAge": 0,
+ "hasAdditionalQuestions": false,
+ "hasPickup": false,
+ "hasPassengersQuestions": true,
+ "photos": {
+  "header": [
+   {
+    "caption": "Coliseo, Foro y Palatino + Arena de gladiadores",
+    "paths": {
+     "original": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores.jpg",
+     "thumbnail": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-m.jpg",
+     "grid": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-grid.jpg",
+     "list": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-list.jpg",
+     "list_responsive": "https://cdn2.civitatis.com/italia/roma/tour-coliseo-arena-gladiadores-list-m.jpg"
+    }
+   }
+  ],
+  "gallery": []
+ },
+ "typologies": [
+  {
+   "id": 1,
+   "key": "visitas-guiadas",
+   "description": "Visitas guiadas"
+  },
+  {
+   "id": 13,
+   "key": "museos",
+   "description": "Museos y monumentos"
+  }
+ ],
+ "category": {
+  "id": 1,
+  "description": "Visitas guiadas y free tours"
+ },
+ "subcategory": {
+  "id": 2,
+  "description": "Visitas guiadas por museos o monumentos"
+ },
+ "amountType": "PVP",
+ "minimumPrice": 53,
+ "isFreeTour": false,
+ "currency": "EUR",
+ "originalPrice": 53,
+ "included": [
+  "Guía en español.",
+  "Entradas con acceso preferente a la Arena de gladiadores del Coliseo, el Foro Romano y el Palatino (24EUR)."
+ ],
+ "notIncluded": [
+  "Acceso a las gradas inferiores o subterráneos del Coliseo."
+ ],
+ "cancelPolicy": "¡Gratis! Cancela sin gastos hasta 32 días antes de la actividad. Si cancelas con menos tiempo, llegas tarde o no te presentas, no se ofrecerá ningún reembolso.",
+ "cancelPolicies": [
+  {
+   "hours": 768,
+   "penalty": 0,
+   "type": "percent"
+  }
+ ],
+ "MinimumPaxPerBooking": 0,
+ "minimumPaxPerActivity": 0,
+ "maximumPaxPerActivity": 30,
+ "infoVoucher": "<p>El punto de encuentro es la parada de<strong> metro Colosseo (Línea B), en la salida de abajo</strong>, en la Via dei Fori Imperiali, entre el quiosco verde y la fuente.&nbsp;Cuidado: no esperéis en la salida del metro de arriba (Via Nicola Salvi, la plaza de arriba), que es donde se paran los taxis, en este caso hay&nbsp;que meterse en la boca del metro y bajar las escaleras para salir en la salida de abajo.</p>\n\n<h2>Importante</h2>\n\n<ul class=\"listado\">\n\t<li>Es imprescindible llevar el <strong>DNI o pasaporte en vigor</strong> de todos los participantes el día de la actividad.</li>\n\t<li>Es importante llegar al punto de encuentro con 10 minutos de antelación para poder hacer el check in, el tour comienza a la hora exacta. <strong>En caso de retraso no será posible incorporarse al grupo ni corresponderá reembolso. </strong>Recomendamos calcular el tiempo de trayecto con Google Maps.</li>\n\t<li>El tour se realiza siempre, haga sol, llueva o nieve, y <strong>no permite cancelaciones por causas climatológicas</strong>. <em>Si por motivos de seguridad uno o más sitios arqueológicos no se pueden visitar solo</em>&nbsp;se reembolsará el dinero cuando el Coliseo determine su cierre y permita reintegrar las entradas.<em>&nbsp;S</em><em>i esta situación se conoce antes del inicio del tour, se os ofrecerán diferentes alternativas.</em></li>\n\t<li>Si por algún motivo no se pudiera hacer el<strong> tour de la Arena</strong>, se hará una visita regular por el Coliseo, Foro y Palatino. En estos casos, se os devolverá la diferencia de precio.</li>\n\t<li>El orden de las visitas puede sufrir modificaciones.</li>\n\t<li>Esta visita incluye las&nbsp;<strong>entradas reservadas</strong>: accederéis a los monumentos&nbsp;<strong>con acceso prioritario saltando las colas de taquilla</strong>. En los periodos de alta afluencia de los visitantes <strong>no siempre es posible saltar la cola del control en el acceso&nbsp;a los monumentos</strong>. En todo caso, la cola será mucho más rápida que la de los visitantes sin entrada reservada.&nbsp;</li>\n\t<li>Los bebés de menores de 2 años solamente podrán participar en la actividad de forma gratuita si van en los brazos de sus padres.</li>\n\t<li>Esta actividad no es apta&nbsp;para realizar en sillas de ruedas, ni con carritos de bebé.</li>\n\t<li>Durante el tour os facilitarán auriculares de un solo uso. Para ser respetuosos con el medio ambiente y evitar este desperdicio, os sugerimos que llevéis vuestros propios auriculares.</li>\n\t<li>Esta entrada<strong> no es válida para grupos escolares</strong>.&nbsp;En caso de presentar este voucher para un grupo escolar, no será posible acceder al monumento y será necesario adquirir las entradas correctas, previa comprobación de disponibilidad, abonando de nuevo el importe.</li>\n</ul>\n\n<h2>Entradas</h2>\n\n<p>Reservando esta actividad, el cliente autoriza a la agencia organizadora a adquirir&nbsp;la entrada necesaria para la realización de la visita guiada y que el precio de dicha entrada es de 24EUR.</p>\n",
+ "duration": {
+  "min": 150,
+  "max": 180,
+  "duration": 180
+ },
+ "advance": {
+  "days": 0,
+  "hour": null,
+  "minutes_before": 180
+ },
+ "address": {
+  "address": "",
+  "shortAddress": "Estación de metro Colosseo, salida Via dei Fori Imperiali.",
+  "latitude": 41.891226,
+  "longitude": 12.491262,
+  "zoom": 17
+ },
+ "providersInfo": [],
+ "accessibility": {
+  "code": 201,
+  "description": "No es accesible en silla de ruedas."
+ },
+ "isCategoryPaxGroup": false,
+ "hasDynamicPrice": false,
+ "rates": [
+  {
+   "id": 0,
+   "text": "Tour en español",
+   "categories": [
+    {
+     "id": 0,
+     "text": "Adultos",
+     "canBookAlone": true,
+     "group": []
+    },
+    {
+     "id": 1,
+     "text": "Jóvenes de 6 a 17 años",
+     "canBookAlone": false,
+     "group": []
+    },
+    {
+     "id": 2,
+     "text": "Niños de 2 a 5 años",
+     "canBookAlone": false,
+     "group": []
+    },
+    {
+     "id": 3,
+     "text": "Menores de 2 años",
+     "canBookAlone": false,
+     "group": []
+    }
+   ],
+   "pickup": {
+    "status": "not_included"
+   }
+  }
+ ]
+}

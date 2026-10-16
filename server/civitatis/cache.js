@@ -1,0 +1,94 @@
+/**
+ * La caché de las respuestas de la API de consulta (parte 1): en memoria y en Supabase (tabla `civitatis_cache`, migración 0022, sin aplicar), como las fotos de Unsplash.
+ * Para no pedir lo mismo cada vez, no acercarnos al límite de peticiones y que la app vaya rápida. Cuánto vive cada cosa está en `data/civitatis/ajustes.json › ttl_segundos`
+ * (provisional: esperamos a que nos digan cuánto se puede guardar).
+ *
+ *   · Primero memoria, luego Supabase, luego la API. Lo que llega de la API se guarda en las dos.
+ *   · Si la API falla pero hay algo guardado (aunque ya caducado), se usa eso, marcado `viejo: true`: mejor un dato de hace un rato que ninguno. Si no hay nada, se devuelve el fallo.
+ *   · `fresco: true` se salta la caché (por ejemplo, al abrir el selector de hora: las plazas tienen que estar al día), pero lo que llega sí se guarda.
+ *   · Dos peticiones iguales a la vez comparten la misma respuesta.
+ * Sin Supabase (o sin la tabla), todo sigue funcionando solo con la memoria.
+ */
+
+export function crearCache({ admin = null, ahora = () => Date.now() } = {}) {
+  const memoria = new Map() // clave → { valor, caduca }
+  const enVuelo = new Map() // clave → Promise
+  const estadisticas = { aciertosMemoria: 0, aciertosBase: 0, fallos: 0, viejos: 0 }
+  let baseRota = false // (la tabla no existe o no se puede usar: no se insiste)
+
+  async function leerBase(clave) {
+    if (!admin || baseRota) return null
+    try {
+      const { data, error } = await admin.from('civitatis_cache').select('valor, caduca_en').eq('clave', clave).maybeSingle()
+      if (error) {
+        baseRota = true
+        return null
+      }
+      return data ? { valor: data.valor, caduca: Date.parse(data.caduca_en) } : null
+    } catch {
+      baseRota = true
+      return null
+    }
+  }
+
+  async function escribirBase(clave, valor, caduca) {
+    if (!admin || baseRota) return
+    try {
+      const { error } = await admin.from('civitatis_cache').upsert({ clave, valor, caduca_en: new Date(caduca).toISOString() }, { onConflict: 'clave' })
+      if (error) baseRota = true
+    } catch {
+      baseRota = true
+    }
+  }
+
+  /**
+   * @param {string} clave
+   * @param {number} ttlSegundos
+   * @param {() => Promise<{ ok: boolean, datos?: any, motivo?: string }>} cargar  pide la API
+   * @param {{ fresco?: boolean }} [opciones]
+   * @returns {Promise<{ ok: true, datos: any, viejo?: boolean, origen: 'memoria'|'base'|'api'|'viejo' } | { ok: false, motivo: string }>}
+   */
+  async function obtener(clave, ttlSegundos, cargar, { fresco = false } = {}) {
+    const t = ahora()
+    if (!fresco) {
+      const enMemoria = memoria.get(clave)
+      if (enMemoria && enMemoria.caduca > t) {
+        estadisticas.aciertosMemoria++
+        return { ok: true, datos: enMemoria.valor, origen: 'memoria' }
+      }
+      const enBase = await leerBase(clave)
+      if (enBase && enBase.caduca > t) {
+        memoria.set(clave, enBase)
+        estadisticas.aciertosBase++
+        return { ok: true, datos: enBase.valor, origen: 'base' }
+      }
+    }
+    const llave = `${fresco ? 'fresco' : 'normal'}|${clave}`
+    if (!enVuelo.has(llave)) {
+      enVuelo.set(
+        llave,
+        (async () => {
+          estadisticas.fallos++
+          const respuesta = await cargar()
+          if (respuesta?.ok) {
+            const caduca = ahora() + Math.max(0, ttlSegundos) * 1000
+            memoria.set(clave, { valor: respuesta.datos, caduca })
+            void escribirBase(clave, respuesta.datos, caduca)
+            return { ok: true, datos: respuesta.datos, origen: 'api' }
+          }
+          // La API ha fallado: lo viejo, si hay.
+          const viejoEnMemoria = memoria.get(clave)
+          const viejo = viejoEnMemoria ?? (await leerBase(clave))
+          if (viejo) {
+            estadisticas.viejos++
+            return { ok: true, datos: viejo.valor, viejo: true, origen: 'viejo' }
+          }
+          return { ok: false, motivo: respuesta?.motivo ?? 'no_disponible' }
+        })().finally(() => enVuelo.delete(llave)),
+      )
+    }
+    return enVuelo.get(llave)
+  }
+
+  return { obtener, estadisticas, vaciarMemoria: () => memoria.clear(), tamano: () => memoria.size }
+}

@@ -19,6 +19,8 @@ import { withoutLeadingEmoji } from '../../../lib/stopKind'
 import { DateNoticeSmallIcon } from '../DateNoticeIcons'
 import { StopEntradasTab } from '../reservas/StopReservation'
 import { useStopEntradas } from '../reservas/useStopEntradas'
+import { ActividadesDelSitio } from '../reservas/ActividadesDelSitio'
+import { useActividadesCerca } from '../../../lib/civitatis'
 import { Icono } from '../../ui/Icono'
 import { MeGusta } from '../../ui/MeGusta'
 import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
@@ -317,7 +319,10 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // La entrada oficial (precio y condiciones del lugar) va siempre en Tickets, haya o no proveedores.
   const ticketInfo = stop?.ticketInfo ?? []
   const hasEntradas = useStopEntradas(stop) != null
-  const hasTickets = hasEntradas || ticketInfo.length > 0 || sinEntrada != null
+  // La API de consulta (parte 1, con el interruptor encendido): las actividades cerca del sitio, si no tiene entradas escritas a mano ni «No necesitas entrada». Nuestros sitios no traen el número de lugar de Google: se busca por coordenadas.
+  const coordenadasDelSitio = dayStops.find((dayStop) => dayStop.id === stop?.id)?.coordinates
+  const actividadesCerca = useActividadesCerca(coordenadasDelSitio?.lat, coordenadasDelSitio?.lng, Boolean(stop) && !stop?.isFreeTour && !hasEntradas && sinEntrada == null)
+  const hasTickets = hasEntradas || ticketInfo.length > 0 || sinEntrada != null || actividadesCerca.length > 0
   // Free Tour: 3 tips nativos del pipeline (persuasivo/propina/práctico), nunca bajo demanda.
   // Ancla: tips reales con búsqueda web (0-3, práctico/secreto), ver anchorTipsApi.ts. Parada
   // normal: 0-3 tips de describeStopApi.ts (entradas combinadas, acceso gratuito parcial, horarios
@@ -343,7 +348,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // «Entradas» (PARA_CODE_NAVONA 6) nunca sale en un sitio de acceso libre, salvo que esté en el recorrido de un Free
   // Tour, una visita guiada o una actividad: entonces sí, y en ella va ese tour o esa visita.
   // La pestaña «Entradas» solo sale en sitios con entradas en los datos (o en el recorrido de un Free Tour), o con su «No necesitas entrada» (la tasa de la Fontana de Trevi).
-  const showTickets = hasEntradas || Boolean(stop?.inFreeTour) || sinEntrada != null
+  const showTickets = hasEntradas || Boolean(stop?.inFreeTour) || sinEntrada != null || actividadesCerca.length > 0
   const visibleTabs: Tab[] = stop?.isFreeTour ? ['resumen', ...(hasTickets ? (['tickets'] as const) : []), ...(hasTips ? (['tips'] as const) : [])] : ['resumen', ...(showTickets ? (['tickets'] as const) : []), 'tips']
   // Si el tab guardado quedó en uno que ya no está visible (p.ej. se abrió otro lugar sin ese
   // contenido), cae a "resumen".
@@ -630,6 +635,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                     )}
                     {/* Las entradas de los datos (Tanda 6n): una debajo de otra, con [Reservar] y «¿Ya la tienes? Añádela». Un sitio con tasa en vez de entrada lleva «No necesitas entrada» (Tanda 6y4). */}
                     {(hasEntradas || sinEntrada) && <StopEntradasTab stop={stop} sinEntrada={sinEntrada} />}
+                    {actividadesCerca.length > 0 && <ActividadesDelSitio lista={actividadesCerca} />}
                     {/* El Free Tour de la ruta: su ticketInfo, como hasta ahora. */}
                     {stop.isFreeTour && ticketInfo.length > 0 && (
                       <div className="rounded-[20px] border border-text/[.07] bg-bg-card p-3.5">
