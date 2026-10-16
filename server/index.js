@@ -466,7 +466,7 @@ RESPOND ONLY IN VALID JSON (no markdown, no backticks, no explanation):
 {
   "description": "2-3 sentences: what this place is, historical/general context.",
   "what_youll_see": "2-3 sentences: the concrete experience INSIDE this specific place — what you'll actually walk through, see or do there.",
-  "why_recommended": "1-2 sentences: why this specific place is worth including in a trip to this city.",
+  "why_recommended": "1-2 short sentences in simple words saying why THIS place is worth a visit in itself: what makes it unique or iconic (a landmark of the city, something you will not find anywhere else, what people remember from it). NEVER route logistics: no distances, walking times, 'from here', 'nearby', 'on the way', 'before/after', nothing about how it fits the day. No figures you are not certain about.",
   "address": "Real, specific street address as 'Street, City' — or null if you don't genuinely know it.",
   "official_website": "Real official website URL (just the domain or full URL) if this place has one — or null if it doesn't have one or you're not confident.",
   "hours_detail": "Only when opening hours genuinely have seasonal/weekday nuance worth knowing (e.g. 'Lunes a sábado: 8:00–20:00 (última entrada 18:00). Último domingo del mes: 9:00–14:00 (última entrada 12:30)') — null if you don't have specific nuance beyond a simple range, never invent precision you don't have.",
@@ -504,7 +504,8 @@ app.post('/api/describe-stop', async (req, res) => {
 
   // En caché como el resto de fichas (misma tabla que poi-content, con su propio "destino" para no mezclar
   // formatos): la descripción se paga una sola vez por lugar, no en cada sesión.
-  const cacheDestination = `describe:${findPipelineV2Key(city) ?? String(city).trim().toLowerCase()}`
+  // («describe2:»: la versión del pedido. Los textos guardados con el pedido viejo («describe:…») ya no se leen nunca; los nuevos se guardan aparte. Para limpiar los viejos de la base: delete from place_content_cache where destination like 'describe:%';)
+  const cacheDestination = `describe2:${findPipelineV2Key(city) ?? String(city).trim().toLowerCase()}`
   if (supabaseAdmin) {
     try {
       const { data, error } = await supabaseAdmin.from('place_content_cache').select('id, place_data, hit_count').eq('place_name', name).eq('destination', cacheDestination).maybeSingle()
@@ -4201,6 +4202,8 @@ app.post('/api/destination-places', (req, res) => {
       type: place.type ?? null,
       tags: Array.isArray(place.tags) ? place.tags : [],
       level: place.level ?? null,
+      // «Por qué te lo recomendamos» (campo nuestro del sitio, escrito a mano y aprobado): la ficha lo enseña tal cual, sin IA. Null si el sitio no lo tiene (entonces escribe la IA).
+      por_que_recomendamos: typeof place.por_que_recomendamos === 'string' && place.por_que_recomendamos.trim() ? place.por_que_recomendamos : null,
       // Los «me gusta» de partida (Tanda 6y10): las redes de Eric, aproximado por debajo del real (campo `megusta_inicial` del sitio). Se suman a los de los viajeros: la cuenta es una sola por sitio.
       likes_initial: Number.isFinite(place.megusta_inicial) ? place.megusta_inicial : 0,
       // Ruta a mano (Tanda 6y3): su puesto en la lista a mano del destino (`pool_lista`), o null; el nivel va aparte (`level`). El orden de «Añadir parada» en una ruta a mano pone primero los más

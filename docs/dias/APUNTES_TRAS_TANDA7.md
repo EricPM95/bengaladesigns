@@ -698,3 +698,8 @@ Todo está en `NOMBRES_LOGROS.md`. Decidido:
 - Sorpresas seguidas: sin límite de pantallas; tocar = siguiente; [Saltar todo] = al final. Al final, siempre el resumen del día (el mismo que al acabar la ruta).
 - Foto de otro sitio: «Esta foto no es de la Fontana de Trevi.» + [Elegir otra foto].
 - **Plazo para reclamar (Eric, 17:34; regla nueva):** 30 días desde el último día del viaje para subir las fotos que faltan; después se pierde. Lo pendiente sale en la parada, el resumen del día, el resumen del viaje y Mis viajes (con cuenta atrás: «Te quedan 10 días para reclamar tu premio»). Aviso en el móvil 3 días antes (o email). Desde casa, solo con foto de la galería de esas fechas y ese sitio.
+
+## 30. «Por qué te lo recomendamos»: aprobados (Eric, 16-oct, 23:34)
+- Los 95 textos de POR_QUE_RECOMENDAMOS_ROMA.md, aprobados todos, con sus datos (los 50.000 del Coliseo, Van Gogh, Klimt y Monet en la GNAM, Fellini en Via Margutta).
+- «Plaza Colonna» y «Piazza Colonna»: si en los datos son el mismo sitio dos veces, se queda uno solo (el que sale en las rutas) con el texto de «Plaza Colonna», y el otro nombre pasa a alias.
+- Va como tanda pequeña aparte, sin esperar a la Tanda 8.

@@ -29,6 +29,8 @@ export interface DestinationPlace {
   level: number | null
   /** Los «me gusta» de partida del sitio (las redes de Eric, aproximado por debajo del real; Tanda 6y10): una cifra fija de los datos. La cuenta que se enseña es esta MÁS los de los viajeros (`useMeGustaStore`). */
   likes_initial?: number
+  /** «Por qué te lo recomendamos»: el texto nuestro del sitio (escrito a mano, sin IA); null o ausente si no lo tiene. */
+  por_que_recomendamos?: string | null
   /** Su puesto en la lista a mano del destino (`pool_lista`; 0 = el primero), SIN tener en cuenta su nivel (el nivel va aparte en `level`); null si no está. Lo usa el orden de la ruta a mano (manualPlan.ts). */
   essential_rank?: number | null
   schedule: string | null
@@ -109,6 +111,13 @@ const inFlight = new Map<string, Promise<DestinationCatalog>>()
 /** El catálogo del destino si ya se pidió (sin pedirlo ahora); null si no. Sirve para pintar ya con los datos, sin esperar un repintado. */
 export function catalogoEnMemoria(destination: string): DestinationCatalog | null {
   return cache.get(destination.trim().toLowerCase()) ?? null
+}
+
+/** El texto nuestro de «Por qué te lo recomendamos» de un sitio (null si el catálogo no está o el sitio no lo tiene). */
+export function porQueRecomendamosDe(catalogo: DestinationCatalog | null, nombre: string | null | undefined): string | null {
+  if (!catalogo || !nombre) return null
+  const texto = catalogo.places.find((sitio) => sitio.kind === 'place' && sitio.name === nombre)?.por_que_recomendamos
+  return typeof texto === 'string' && texto.trim() ? texto : null
 }
 
 export async function fetchDestinationPlaces(destination: string): Promise<DestinationCatalog> {

@@ -5,7 +5,7 @@ import fs from 'node:fs'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
 const conc = Number(args.conc ?? 12)
-const filtro = new RegExp(args.filtro ?? '^prueba(Fase6|Corr6|Tanda6|Fotos6|Cuentas|Civitatis)')
+const filtro = new RegExp(args.filtro ?? '^prueba(Fase6|Corr6|Tanda6|Fotos6|Cuentas|Civitatis|PorQue)')
 const lista = fs.readdirSync('scripts/destino').filter((f) => f.endsWith('.mjs') && filtro.test(f) && !/Wikimedia|pruebaFase6y8_comida/.test(f)).sort()
 const env = { ...process.env, API_URL: process.env.API_URL ?? 'http://localhost:8841', SERVIDOR: process.env.SERVIDOR ?? process.env.API_URL ?? 'http://localhost:8841' }
 const resultados = []

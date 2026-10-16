@@ -768,7 +768,7 @@
         "Elefantino de Bernini",
         "Fuente de las Tortugas",
         "Fuente del Tritón",
-        "Plaza Colonna",
+        "Piazza Colonna",
         "Via Condotti",
         "Plaza Farnese",
         "Palazzo Doria Pamphilj"
@@ -906,6 +906,7 @@
     {
       "id": "coliseo",
       "name": "Coliseo",
+      "por_que_recomendamos": "Es el símbolo de Roma y una de las siete maravillas del mundo moderno. Entrar en el anfiteatro donde se llenaban 50.000 romanos para ver a los gladiadores es de esas cosas que se recuerdan toda la vida.",
       "megusta_inicial": 412,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con franja horaria: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día (quien compró la entrada oficial sin guía puede entrar hasta entonces; las visitas guiadas acaban antes).",
@@ -1033,6 +1034,7 @@
     {
       "id": "foro_romano_y_palatino",
       "name": "Foro Romano y Palatino",
+      "por_que_recomendamos": "Aquí estaba el centro de la vida de la antigua Roma: templos, tribunales y mercados. Y en la colina del Palatino, donde según la leyenda nació la ciudad, vivían los emperadores.",
       "megusta_inicial": 184,
       "level": 1,
       "tier": "imprescindible",
@@ -1167,6 +1169,7 @@
     {
       "id": "arco_de_constantino",
       "name": "Arco de Constantino",
+      "por_que_recomendamos": "Es el arco de triunfo más grande que queda de la antigua Roma, junto al Coliseo. Lo levantaron para celebrar la victoria del primer emperador cristiano.",
       "megusta_inicial": 139,
       "level": 1,
       "tier": "imprescindible",
@@ -1202,6 +1205,7 @@
     {
       "id": "boca_de_la_verdad",
       "name": "Boca de la Verdad",
+      "por_que_recomendamos": "Según la leyenda, muerde la mano de quien miente. Meter la mano en esta gran máscara de piedra es uno de los momentos más divertidos del viaje.",
       "megusta_inicial": 91,
       "level": 2,
       "zone": "aventino",
@@ -1244,6 +1248,7 @@
     {
       "id": "circo_maximo",
       "name": "Circo Máximo",
+      "por_que_recomendamos": "Aquí se celebraban las carreras de carros de la antigua Roma, en el estadio más grande que tuvo la ciudad. Hoy es una gran explanada que todavía conserva su forma.",
       "megusta_inicial": 85,
       "level": 2,
       "zone": "roma_antigua",
@@ -1274,6 +1279,7 @@
     {
       "id": "fontana_de_trevi",
       "name": "Fontana de Trevi",
+      "por_que_recomendamos": "Es la fuente más famosa del mundo y una de las imágenes más reconocibles de Roma. Tirar la moneda de espaldas, para volver algún día, es un ritual que no te puedes saltar.",
       "megusta_inicial": 391,
       "entrada_de_pago": {
         "desde": "2026-02-02",
@@ -1332,6 +1338,7 @@
     {
       "id": "panteon",
       "name": "Panteón",
+      "por_que_recomendamos": "Es el edificio de la antigua Roma mejor conservado, con casi 2.000 años, y sigue en uso. Su cúpula, con el gran agujero abierto al cielo, todavía hoy deja sin palabras a los arquitectos.",
       "megusta_inicial": 326,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con hora: se elige la hora al comprarla. La rueda va de la apertura a la última entrada oficial de ese día.",
@@ -1414,6 +1421,7 @@
     {
       "id": "piazza_navona",
       "name": "Piazza Navona",
+      "por_que_recomendamos": "Es la plaza más bonita del barroco romano, con la Fuente de los Cuatro Ríos de Bernini en el centro. Conserva la forma del estadio romano que había debajo y está llena de vida a cualquier hora.",
       "megusta_inicial": 199,
       "level": 1,
       "tier": "imprescindible",
@@ -1453,6 +1461,7 @@
     {
       "id": "plaza_de_espana",
       "name": "Plaza de España",
+      "por_que_recomendamos": "Es uno de los iconos de Roma: la escalinata más famosa del mundo, punto de encuentro desde hace tres siglos. Sentarse en sus escalones es parte del viaje.",
       "megusta_inicial": 305,
       "por_el_camino": [
         {"texto":"Desvíate 5 minutos por Via del Babuino y busca la estatua del Babuino, una de las «estatuas parlantes» de Roma, junto a la iglesia de Sant'Atanasio."},
@@ -1498,6 +1507,7 @@
     {
       "id": "piazza_del_popolo",
       "name": "Piazza del Popolo",
+      "por_que_recomendamos": "Es la gran entrada a Roma desde el norte, con su obelisco egipcio y sus iglesias gemelas. Una de las plazas más bonitas de la ciudad.",
       "megusta_inicial": 71,
       "texto_espera": "haz unas fotos en la Piazza del Popolo",
       "por_el_camino": [
@@ -1539,6 +1549,7 @@
     {
       "id": "largo_di_torre_argentina",
       "name": "Largo di Torre Argentina",
+      "por_que_recomendamos": "Son cuatro templos de la antigua República en mitad de la ciudad. Aquí cerca fue asesinado Julio César, y hoy es también la casa de los gatos de Roma.",
       "megusta_inicial": 56,
       "level": 2,
       "zone": "centro_historico",
@@ -1570,6 +1581,7 @@
     {
       "id": "via_del_corso",
       "name": "Via del Corso",
+      "por_que_recomendamos": "Es la calle principal del centro, recta desde la Piazza del Popolo hasta Piazza Venezia. Llena de tiendas y de palacios.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "centro_historico",
@@ -1599,6 +1611,7 @@
     {
       "id": "museos_vaticanos_y_capilla_sixtina",
       "name": "Museos Vaticanos y Capilla Sixtina",
+      "por_que_recomendamos": "Es una de las colecciones de arte más grandes del mundo, reunida por los papas durante cinco siglos. Al final del recorrido te espera la Capilla Sixtina, con el techo y el Juicio Final de Miguel Ángel.",
       "megusta_inicial": 368,
       "reserva_paso": 15,
       "reserva_nota": "Entrada con franja horaria: se elige la hora al comprarla, de la apertura a la última entrada oficial de ese día.",
@@ -1727,6 +1740,7 @@
     {
       "id": "basilica_de_san_pedro",
       "name": "Basílica de San Pedro",
+      "por_que_recomendamos": "Es la iglesia más grande del mundo cristiano y el corazón del Vaticano. Dentro están la Piedad de Miguel Ángel y el baldaquino de Bernini, y la entrada es gratis.",
       "megusta_inicial": 347,
       "por_fuera": "Hoy la ves desde la plaza: la fachada y, detrás, la cúpula de Miguel Ángel. Busca uno de los dos discos de piedra del suelo, entre el obelisco y las fuentes: desde ahí, las cuatro filas de columnas de Bernini se ven como una sola.",
       "festivos_domingo": [
@@ -1885,6 +1899,7 @@
     {
       "id": "plaza_de_san_pedro",
       "name": "Plaza de San Pedro",
+      "por_que_recomendamos": "Es la gran plaza de Bernini, abrazada por sus columnatas como dos brazos abiertos. Pisarla es entrar en otro país: el Vaticano, el más pequeño del mundo.",
       "megusta_inicial": 169,
       "level": 1,
       "tier": "imprescindible",
@@ -1930,6 +1945,7 @@
     {
       "id": "via_di_ripetta",
       "name": "Via di Ripetta",
+      "por_que_recomendamos": "Es una calle tranquila del Tridente, con galerías de arte y tiendas, entre la Piazza del Popolo y el río.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "tridente",
@@ -1955,6 +1971,7 @@
     {
       "id": "via_della_conciliazione",
       "name": "Via della Conciliazione",
+      "por_que_recomendamos": "Es la gran avenida que lleva a San Pedro, con la cúpula al fondo. Una de las vistas más famosas del Vaticano.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
@@ -1984,6 +2001,7 @@
     {
       "id": "lungotevere",
       "name": "Lungotevere",
+      "por_que_recomendamos": "Es el paseo junto al Tíber, con sus plátanos y sus puentes. Muy bonito al atardecer.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
@@ -2010,6 +2028,7 @@
     {
       "id": "castillo_de_santangelo",
       "name": "Castillo de Sant'Angelo",
+      "por_que_recomendamos": "Empezó siendo la tumba del emperador Adriano y acabó como fortaleza y refugio de los papas. Su terraza, con el ángel en lo alto, regala una de las mejores vistas del río y de San Pedro.",
       "megusta_inicial": 98,
       "level": 2,
       "zone": "vaticano",
@@ -2086,6 +2105,7 @@
     {
       "id": "mirador_del_janiculo",
       "name": "Mirador del Janículo",
+      "por_que_recomendamos": "Es uno de los mejores miradores de Roma: desde aquí ves la ciudad entera, con sus cúpulas y sus tejados. Al atardecer es precioso.",
       "megusta_inicial": 80,
       "level": 2,
       "zone": "trastevere",
@@ -2128,6 +2148,7 @@
     {
       "id": "galeria_borghese",
       "name": "Galería Borghese",
+      "por_que_recomendamos": "Es una pequeña joya: en unas pocas salas reúne las mejores esculturas de Bernini y varios cuadros de Caravaggio. Para muchos, el museo más bonito de Roma.",
       "megusta_inicial": 99,
       "reserva_nota": "Entrada con hora fija (reserva obligatoria). Horario oficial 09:00-19:00 de martes a domingo; no se entra después de las 17:00. Turnos de 2 horas: 9:00, 11:00, 13:00, 15:00 y 17:00.",
       "level": 2,
@@ -2212,6 +2233,7 @@
     {
       "id": "parque_de_villa_borghese",
       "name": "Parque de Villa Borghese",
+      "por_que_recomendamos": "Es el gran parque de Roma: jardines, un lago con barcas y rincones tranquilos en pleno centro. Perfecto para descansar del ruido de la ciudad.",
       "megusta_inicial": 81,
       "level": 2,
       "zone": "villa_borghese",
@@ -2304,6 +2326,7 @@
     {
       "id": "bioparque_de_roma",
       "name": "Bioparque de Roma",
+      "por_que_recomendamos": "Es el zoo de Roma, dentro de Villa Borghese. Un buen plan si viajas con niños.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "villa_borghese",
@@ -2378,6 +2401,7 @@
     {
       "id": "galeria_nacional_de_arte_moderno",
       "name": "Galería Nacional de Arte Moderno",
+      "por_que_recomendamos": "Es el gran museo de arte de los siglos XIX y XX de Italia, en un palacio dentro de Villa Borghese. Tranquilo y con obras de Van Gogh, Klimt y Monet.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "villa_borghese",
@@ -2424,6 +2448,7 @@
     {
       "id": "altar_de_la_patria",
       "name": "Altar de la Patria",
+      "por_que_recomendamos": "Es el gran monumento blanco que se ve desde media Roma, levantado en honor al primer rey de la Italia unida. Desde su terraza tienes una de las mejores vistas de la ciudad.",
       "megusta_inicial": 154,
       "acortable": true,
       "level": 1,
@@ -2494,6 +2519,7 @@
     {
       "id": "puente_santangelo",
       "name": "Puente Sant'Angelo",
+      "por_que_recomendamos": "Es el puente más bonito de Roma, con los diez ángeles de Bernini y su escuela. Lleva directo al Castillo.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
@@ -2537,6 +2563,7 @@
     {
       "id": "isla_tiberina",
       "name": "Isla Tiberina",
+      "por_que_recomendamos": "Es la única isla de Roma, en mitad del Tíber, con forma de barco. Un rincón tranquilo con mucha historia, entre el centro y Trastevere.",
       "megusta_inicial": 82,
       "level": 2,
       "zone": "trastevere",
@@ -2568,6 +2595,7 @@
     {
       "id": "via_dei_fori_imperiali",
       "name": "Via dei Fori Imperiali",
+      "por_que_recomendamos": "Es la gran avenida que une el Coliseo con Piazza Venezia, con los foros de los emperadores a los dos lados.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "roma_antigua",
@@ -2603,6 +2631,7 @@
     {
       "id": "campo_de_fiori",
       "name": "Campo de' Fiori",
+      "por_que_recomendamos": "Es una de las plazas con más vida de Roma: por la mañana, su mercado de flores y frutas; por la noche, sus terrazas.",
       "megusta_inicial": 84,
       "level": 2,
       "zone": "centro_historico",
@@ -2637,6 +2666,7 @@
     {
       "id": "borgo_pio",
       "name": "Borgo Pio",
+      "por_que_recomendamos": "Es un pequeño barrio junto al Vaticano, con calles tranquilas, trattorias y tiendas de recuerdos religiosos.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "vaticano",
@@ -2668,6 +2698,7 @@
     {
       "id": "plaza_venecia",
       "name": "Plaza Venecia",
+      "por_que_recomendamos": "Es el centro de Roma, donde se cruzan las grandes avenidas, con el Altar de la Patria delante.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -2706,6 +2737,7 @@
     {
       "id": "mercados_de_trajano",
       "name": "Mercados de Trajano",
+      "por_que_recomendamos": "Es el gran centro comercial de la antigua Roma, con sus tiendas en varios pisos. Pasear por él es ver cómo vivía y compraba la gente hace casi 2.000 años.",
       "megusta_inicial": 60,
       "duration_minutes": 60,
       "min_max": 75,
@@ -2758,6 +2790,7 @@
     {
       "id": "cupula_de_san_pedro",
       "name": "Cúpula de San Pedro",
+      "por_que_recomendamos": "Subir a la cúpula de Miguel Ángel es ver Roma entera a tus pies, con la Plaza de San Pedro justo debajo. Es una de las vistas más bonitas de la ciudad.",
       "megusta_inicial": 95,
       "por_fuera": "Hoy no se sube, pero se ve mejor de lejos: desde la plaza, la fachada la tapa en parte. Échate atrás por Via della Conciliazione y la verás entera.",
       "duration_minutes": 45,
@@ -2842,6 +2875,7 @@
     {
       "id": "iglesia_del_gesu",
       "name": "Iglesia del Gesù",
+      "por_que_recomendamos": "Es la iglesia madre de los jesuitas y un modelo del barroco que se copió por todo el mundo. Su techo pintado parece abrirse al cielo.",
       "megusta_inicial": 62,
       "hours_audit": {
         "confianza": "media",
@@ -2921,6 +2955,7 @@
     {
       "id": "iglesia_de_san_luigi_dei_francesi",
       "name": "Iglesia de San Luigi dei Francesi",
+      "por_que_recomendamos": "Guarda tres cuadros de Caravaggio sobre la vida de San Mateo, de lo mejor que pintó. Y se pueden ver gratis.",
       "megusta_inicial": 63,
       "festivos_domingo": [
         "06-29"
@@ -2986,6 +3021,7 @@
     {
       "id": "ara_pacis",
       "name": "Ara Pacis",
+      "por_que_recomendamos": "Es el altar que el emperador Augusto levantó para celebrar la paz, con sus relieves de mármol casi intactos. Una de las obras más bonitas del arte romano.",
       "megusta_inicial": 67,
       "duration_minutes": 45,
       "min_max": 60,
@@ -3081,6 +3117,7 @@
     {
       "id": "barrio_judio",
       "name": "Barrio Judío",
+      "por_que_recomendamos": "Es uno de los barrios judíos más antiguos de Europa, con su sinagoga y sus calles estrechas. Aquí se come la famosa alcachofa a la judía.",
       "megusta_inicial": 77,
       "duration_minutes": 30,
       "min_max": 60,
@@ -3116,6 +3153,7 @@
     {
       "id": "iglesia_de_santa_maria_sopra_minerva",
       "name": "Iglesia de Santa Maria sopra Minerva",
+      "por_que_recomendamos": "Es la única gran iglesia gótica de Roma, con su techo azul lleno de estrellas y un Cristo de Miguel Ángel.",
       "megusta_inicial": 0,
       "por_fuera": "Hoy la ves por fuera: delante tienes el Elefantino de Bernini, un elefante que carga un obelisco egipcio. Detrás de esa fachada tan sencilla está la única iglesia gótica de Roma.",
       "festivos_domingo": [
@@ -3178,6 +3216,7 @@
     {
       "id": "iglesia_de_san_ignacio_de_loyola",
       "name": "Iglesia de San Ignacio de Loyola",
+      "por_que_recomendamos": "Su techo pintado engaña a la vista: parece abrirse al cielo, y la cúpula que ves es solo una pintura.",
       "megusta_inicial": 0,
       "por_fuera": "Hoy la ves por fuera, y la plaza es lo mejor: Piazza di Sant'Ignazio parece un decorado de teatro, con sus edificios curvos del siglo XVIII mirando a la fachada.",
       "duration_minutes": 20,
@@ -3224,6 +3263,7 @@
     {
       "id": "elefantino_de_bernini",
       "name": "Elefantino de Bernini",
+      "por_que_recomendamos": "Es un pequeño elefante de piedra con un obelisco a la espalda, una de las esculturas más simpáticas de Roma.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -3262,6 +3302,7 @@
     {
       "id": "fuente_de_las_tortugas",
       "name": "Fuente de las Tortugas",
+      "por_que_recomendamos": "Es una pequeña fuente del Renacimiento escondida en el Barrio Judío, con cuatro chicos y sus tortugas. Una joya poco conocida.",
       "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
@@ -3294,6 +3335,7 @@
     {
       "id": "fuente_del_triton",
       "name": "Fuente del Tritón",
+      "por_que_recomendamos": "Es una de las fuentes más bonitas de Bernini: un tritón que sopla agua desde una caracola.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -3324,39 +3366,9 @@
       ]
     },
     {
-      "id": "plaza_colonna",
-      "name": "Plaza Colonna",
-      "megusta_inicial": 0,
-      "duration_minutes": 15,
-      "min_max": 20,
-      "zone": "centro_historico",
-      "grupo_dia": "Centro histórico",
-      "coordinates": [
-        41.9011,
-        12.4799
-      ],
-      "level": 3,
-      "type": "exterior",
-      "tags": [
-        "monumento",
-        "plaza"
-      ],
-      "filter_category": "monumentos",
-      "description": "La Columna de Marco Aurelio se alza 30 metros con relieves en espiral de las guerras contra los bárbaros — menos turistas que en Navona",
-      "tip": "Parada rápida en Via del Corso. El edificio del fondo es el Palazzo Chigi, sede del gobierno italiano",
-      "search_aliases": [
-        "columna de marco aurelio",
-        "piazza colonna"
-      ],
-      "search_en": "Piazza Colonna Rome",
-      "search_en_keywords": [
-        "colonna"
-      ],
-      "coordinates_checked": true
-    },
-    {
       "id": "plaza_del_quirinal",
       "name": "Plaza del Quirinal",
+      "por_que_recomendamos": "Es la plaza del palacio del presidente de la República, en lo alto de una colina, con una de las vistas más bonitas al atardecer.",
       "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
@@ -3395,6 +3407,7 @@
     {
       "id": "via_dei_coronari",
       "name": "Via dei Coronari",
+      "por_que_recomendamos": "Es una de las calles más bonitas del centro, llena de tiendas de antigüedades.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -3430,6 +3443,7 @@
     {
       "id": "via_condotti",
       "name": "Via Condotti",
+      "por_que_recomendamos": "Es la calle de las grandes marcas, que llega hasta la Plaza de España. Aunque no compres, merece un paseo.",
       "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
@@ -3464,6 +3478,7 @@
     {
       "id": "templo_de_adriano",
       "name": "Templo de Adriano",
+      "por_que_recomendamos": "Son once columnas de un templo romano metidas en la fachada de un edificio actual. Roma antigua y moderna, juntas.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 10,
@@ -3503,6 +3518,7 @@
     {
       "id": "piazza_colonna",
       "name": "Piazza Colonna",
+      "por_que_recomendamos": "Es la plaza de la columna de Marco Aurelio, con sus relieves de las guerras del emperador. Junto a ella está el palacio del Gobierno italiano.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 10,
@@ -3543,6 +3559,7 @@
     {
       "id": "plaza_farnese",
       "name": "Plaza Farnese",
+      "por_que_recomendamos": "Es una plaza elegante y tranquila, con el palacio Farnese, uno de los más bonitos del Renacimiento, y dos fuentes con bañeras romanas.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 20,
@@ -3576,6 +3593,7 @@
     {
       "id": "plaza_del_campidoglio",
       "name": "Plaza del Campidoglio",
+      "por_que_recomendamos": "Es la plaza que diseñó Miguel Ángel en lo alto de la colina más sagrada de la antigua Roma. Desde aquí se gobierna la ciudad desde hace siglos.",
       "megusta_inicial": 92,
       "duration_minutes": 20,
       "min_max": 45,
@@ -3619,6 +3637,7 @@
     {
       "id": "museos_capitolinos",
       "name": "Museos Capitolinos",
+      "por_que_recomendamos": "Es el museo público más antiguo del mundo. Aquí están la Loba Capitolina y la estatua de Marco Aurelio, y desde su terraza se ven los Foros enteros.",
       "megusta_inicial": 93,
       "duration_minutes": 120,
       "minimo_dentro": 60,
@@ -3717,6 +3736,7 @@
     {
       "id": "basilica_de_san_clemente",
       "name": "Basílica de San Clemente",
+      "por_que_recomendamos": "Es como bajar por la historia: una iglesia medieval sobre otra iglesia más antigua, y debajo, un templo romano. Tres Romas, una encima de otra.",
       "megusta_inicial": 74,
       "festivos_domingo": [
         "06-29"
@@ -3800,6 +3820,7 @@
     {
       "id": "iglesia_de_san_pietro_in_vincoli",
       "name": "Iglesia de San Pietro in Vincoli",
+      "por_que_recomendamos": "Aquí está el Moisés de Miguel Ángel, una de sus esculturas más famosas. Y se guardan las cadenas que, según la tradición, llevó San Pedro.",
       "megusta_inicial": 69,
       "duration_minutes": 20,
       "min_max": 30,
@@ -3878,6 +3899,7 @@
     {
       "id": "domus_aurea",
       "name": "Domus Aurea",
+      "por_que_recomendamos": "Es lo que queda del palacio de Nerón, el más lujoso que tuvo nunca un emperador. Se visita bajo tierra, con sus pinturas de hace casi 2.000 años.",
       "megusta_inicial": 73,
       "duration_minutes": 75,
       "min_max": 90,
@@ -3936,6 +3958,7 @@
     {
       "id": "termas_de_caracalla",
       "name": "Termas de Caracalla",
+      "por_que_recomendamos": "Fueron los baños públicos más grandes de la antigua Roma, y sus muros todavía impresionan. Aquí se ve cómo los romanos se bañaban, hacían deporte y charlaban.",
       "megusta_inicial": 87,
       "duration_minutes": 60,
       "min_max": 90,
@@ -4072,6 +4095,7 @@
     {
       "id": "jardin_de_los_naranjos",
       "name": "Jardín de los Naranjos",
+      "por_que_recomendamos": "Es un pequeño jardín en lo alto del Aventino con una de las vistas más bonitas de Roma, con San Pedro al fondo. Un sitio tranquilo y poco conocido.",
       "megusta_inicial": 53,
       "duration_minutes": 20,
       "min_max": 30,
@@ -4163,6 +4187,7 @@
     {
       "id": "basilica_de_santa_maria_la_mayor",
       "name": "Basílica de Santa María la Mayor",
+      "por_que_recomendamos": "Es una de las cuatro basílicas mayores de Roma y una de las iglesias más antiguas dedicadas a la Virgen. Sus mosaicos de oro tienen más de 1.500 años.",
       "megusta_inicial": 88,
       "duration_minutes": 30,
       "min_max": 40,
@@ -4214,6 +4239,7 @@
     {
       "id": "columna_de_trajano",
       "name": "Columna de Trajano",
+      "por_que_recomendamos": "Es una columna de casi 2.000 años con las guerras del emperador Trajano contadas en un relieve que sube en espiral. Un cómic de piedra.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -4247,6 +4273,7 @@
     {
       "id": "teatro_de_marcelo",
       "name": "Teatro de Marcelo",
+      "por_que_recomendamos": "Es un teatro romano más antiguo que el Coliseo, con casas construidas encima. En verano, a veces hay conciertos.",
       "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
@@ -4282,6 +4309,7 @@
     {
       "id": "ojo_de_la_cerradura_del_aventino",
       "name": "Ojo de la Cerradura del Aventino",
+      "por_que_recomendamos": "Es uno de los secretos más bonitos de Roma: por el ojo de una cerradura ves la cúpula de San Pedro, perfectamente enmarcada.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -4323,6 +4351,7 @@
     {
       "id": "piramide_cestia",
       "name": "Pirámide Cestia",
+      "por_que_recomendamos": "Es una pirámide de verdad, la tumba de un romano rico, en mitad de Roma. Una sorpresa que poca gente espera.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -4359,6 +4388,7 @@
     {
       "id": "iglesia_de_santa_maria_della_vittoria",
       "name": "Iglesia de Santa Maria della Vittoria",
+      "por_que_recomendamos": "Guarda el Éxtasis de Santa Teresa, una de las esculturas más famosas de Bernini. Una iglesia pequeña con una obra enorme.",
       "megusta_inicial": 0,
       "festivos_domingo": [
         "06-29"
@@ -4417,6 +4447,7 @@
     {
       "id": "iglesia_de_santa_maria_in_trastevere",
       "name": "Iglesia de Santa Maria in Trastevere",
+      "por_que_recomendamos": "Es una de las iglesias más antiguas de Roma, con unos mosaicos de oro que brillan sobre la plaza. El corazón del barrio de Trastevere.",
       "megusta_inicial": 66,
       "hours_audit": {
         "confianza": "media",
@@ -4497,6 +4528,7 @@
     {
       "id": "villa_farnesina",
       "name": "Villa Farnesina",
+      "por_que_recomendamos": "Es una villa del Renacimiento decorada por Rafael y sus alumnos. Sus frescos, llenos de dioses y color, son una sorpresa poco conocida.",
       "megusta_inicial": 55,
       "closed_dates": [
         "06-29"
@@ -4551,6 +4583,7 @@
     {
       "id": "ponte_sisto",
       "name": "Ponte Sisto",
+      "por_que_recomendamos": "Es un puente peatonal del Renacimiento que une el centro con Trastevere. Las vistas del río y de San Pedro son preciosas.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "centro_historico",
@@ -4586,6 +4619,7 @@
     {
       "id": "plaza_trilussa",
       "name": "Plaza Trilussa",
+      "por_que_recomendamos": "Es la puerta de entrada a Trastevere, con su fuente y su escalinata. De noche está llena de gente.",
       "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
@@ -4622,6 +4656,7 @@
     {
       "id": "terraza_del_pincio",
       "name": "Terraza del Pincio",
+      "por_que_recomendamos": "Es el balcón de Roma sobre la Piazza del Popolo, con San Pedro al fondo. Uno de los sitios más bonitos para ver la puesta de sol.",
       "megusta_inicial": 78,
       "duration_minutes": 20,
       "min_max": 50,
@@ -4675,6 +4710,7 @@
     {
       "id": "basilica_de_san_juan_de_letran",
       "name": "Basílica de San Juan de Letrán",
+      "por_que_recomendamos": "Es la catedral de Roma y la más antigua de las cuatro basílicas mayores. Fue la casa de los papas durante mil años, antes que el Vaticano.",
       "megusta_inicial": 89,
       "level": 2,
       "zone": "san_giovanni",
@@ -4724,6 +4760,7 @@
     {
       "id": "quartiere_coppede",
       "name": "Quartiere Coppedè",
+      "por_que_recomendamos": "Es un barrio pequeño y fantástico, con edificios que parecen de un cuento. Uno de los secretos mejor guardados de Roma.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "nomentano",
@@ -4758,6 +4795,7 @@
     {
       "id": "mercado_de_testaccio",
       "name": "Mercado de Testaccio",
+      "por_que_recomendamos": "Es el mercado de abastos del barrio más romano, con puestos de comida para probar lo de aquí. Ideal para comer barato y bien.",
       "megusta_inicial": 0,
       "closed_dates": [
         "06-29"
@@ -4810,6 +4848,7 @@
     {
       "id": "palazzo_doria_pamphilj",
       "name": "Palazzo Doria Pamphilj",
+      "por_que_recomendamos": "Es un palacio en pleno centro que todavía pertenece a la misma familia, con una colección de arte privada impresionante.",
       "megusta_inicial": 0,
       "festivos_domingo": [
         "06-29"
@@ -4886,6 +4925,7 @@
     {
       "id": "via_appia_antica",
       "name": "Via Appia Antica",
+      "por_que_recomendamos": "Es la carretera más famosa de la antigua Roma, todavía con sus piedras de hace más de 2.000 años. Se recorre a pie o en bici entre pinos y tumbas.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "appia",
@@ -4923,6 +4963,7 @@
     {
       "id": "catacumbas_de_san_calixto",
       "name": "Catacumbas de San Calixto",
+      "por_que_recomendamos": "Son las galerías bajo tierra donde los primeros cristianos enterraban a sus muertos. Un sitio muy especial que se visita con guía.",
       "megusta_inicial": 0,
       "level": 3,
       "zone": "appia",
@@ -4994,6 +5035,7 @@
     {
       "id": "cementerio_protestante",
       "name": "Cementerio Protestante",
+      "por_que_recomendamos": "Es uno de los rincones más tranquilos y bonitos de Roma, junto a la pirámide, donde están enterrados los poetas Keats y Shelley.",
       "megusta_inicial": 0,
       "festivos_domingo": [
         "06-29"
@@ -5138,6 +5180,7 @@
       "visible_desde_calle": false,
       "camino_alternativa": "El mirador de San Pietro in Montorio",
       "name": "San Pietro in Montorio y Tempietto de Bramante",
+      "por_que_recomendamos": "En su patio está el Tempietto de Bramante, un pequeño templo redondo que es una obra maestra del Renacimiento. Según la tradición, aquí murió San Pedro.",
       "megusta_inicial": 52,
       "duration_minutes": 20,
       "min_max": 30,
@@ -5194,6 +5237,7 @@
     {
       "id": "fontana_dellacqua_paola",
       "name": "Fontana dell'Acqua Paola",
+      "por_que_recomendamos": "Es una gran fuente en lo alto del Janículo, con una vista muy bonita de Roma. Los romanos la llaman «el Fontanone».",
       "megusta_inicial": 0,
       "duration_minutes": 15,
       "min_max": 20,
@@ -5235,6 +5279,7 @@
     {
       "id": "basilica_de_santa_cecilia_in_trastevere",
       "name": "Basílica de Santa Cecilia in Trastevere",
+      "por_que_recomendamos": "Es una iglesia tranquila de Trastevere con una escultura conmovedora de la santa, tal como dicen que la encontraron.",
       "megusta_inicial": 0,
       "por_fuera": "Hoy la ves por fuera: desde la verja se ve el patio con su jardín y, detrás, el campanario románico. Es uno de los rincones más tranquilos de Trastevere.",
       "festivos_domingo": [
@@ -5301,6 +5346,7 @@
     {
       "id": "trastevere",
       "name": "Trastevere",
+      "por_que_recomendamos": "Es el barrio con más encanto de Roma: calles empedradas, ropa tendida, hiedra en las fachadas y muchas trattorias. Perfecto para perderse y para cenar.",
       "megusta_inicial": 96,
       "duration_minutes": 45,
       "min_max": 60,
@@ -5335,6 +5381,7 @@
     {
       "id": "monti",
       "name": "Monti",
+      "por_que_recomendamos": "Es el barrio más antiguo de Roma, hoy lleno de tiendas pequeñas, bares y vida de barrio. Muy cerca del Coliseo, pero sin turistas.",
       "megusta_inicial": 59,
       "duration_minutes": 40,
       "min_max": 60,
@@ -5371,6 +5418,7 @@
     {
       "id": "santa_maria_del_popolo",
       "name": "Santa Maria del Popolo",
+      "por_que_recomendamos": "Es una pequeña iglesia llena de tesoros: dos Caravaggio, una capilla de Rafael y obras de Bernini. Mucho arte en muy poco espacio.",
       "megusta_inicial": 65,
       "festivos_domingo": [
         "06-29"
@@ -5442,6 +5490,7 @@
     {
       "id": "testaccio",
       "name": "Testaccio",
+      "por_que_recomendamos": "Es el barrio más auténtico de Roma, donde nació buena parte de su cocina tradicional. Aquí se come como un romano de verdad.",
       "megusta_inicial": 58,
       "duration_minutes": 40,
       "min_max": 60,
@@ -5477,6 +5526,7 @@
     {
       "id": "trinita_dei_monti",
       "name": "Trinità dei Monti",
+      "por_que_recomendamos": "Es la iglesia de las dos torres en lo alto de la escalinata de la Plaza de España. Desde su puerta tienes una de las vistas más famosas de Roma.",
       "megusta_inicial": 70,
       "festivos_domingo": [
         "06-29"
@@ -5543,6 +5593,7 @@
     {
       "id": "cripta_de_los_capuchinos",
       "name": "Cripta de los Capuchinos",
+      "por_que_recomendamos": "Es uno de los sitios más sorprendentes de Roma: capillas decoradas con los huesos de miles de frailes. Diferente a todo lo demás.",
       "megusta_inicial": 76,
       "duration_minutes": 45,
       "min_max": 45,
@@ -5593,6 +5644,7 @@
     {
       "id": "terraza_largo_gaetana_agnesi",
       "name": "Terraza de Largo Gaetana Agnesi",
+      "por_que_recomendamos": "Es un mirador sobre los Foros Imperiales y el Coliseo, poco conocido y muy bonito, sobre todo de noche.",
       "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
@@ -5629,6 +5681,7 @@
     {
       "id": "mirador_de_san_pietro_in_montorio",
       "name": "Mirador de San Pietro in Montorio",
+      "por_que_recomendamos": "Desde aquí se ve Roma entera, desde el Janículo. Un mirador tranquilo, sin aglomeraciones.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 20,
@@ -5666,6 +5719,7 @@
     {
       "id": "colle_oppio",
       "name": "Colle Oppio",
+      "por_que_recomendamos": "Es un parque junto al Coliseo, sobre los restos del palacio de Nerón. Un buen sitio para descansar con vistas.",
       "megusta_inicial": 0,
       "windows": ["07:00-19:00"],
       "schedule": "07:00-19:00",
@@ -5704,6 +5758,7 @@
     {
       "id": "via_veneto",
       "name": "Via Veneto",
+      "por_que_recomendamos": "Es la calle de la Dolce Vita, la de las estrellas de cine de los años 60, con sus hoteles y cafés elegantes.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 20,
@@ -5738,6 +5793,7 @@
     {
       "id": "via_del_babuino",
       "name": "Via del Babuino",
+      "por_que_recomendamos": "Es una calle elegante del Tridente, entre la Piazza del Popolo y la Plaza de España, con anticuarios y tiendas.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -5773,6 +5829,7 @@
     {
       "id": "via_margutta",
       "name": "Via Margutta",
+      "por_que_recomendamos": "Es la calle de los artistas, tranquila y llena de hiedra, donde vivió Fellini y se rodó «Vacaciones en Roma».",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -5807,6 +5864,7 @@
     {
       "id": "porta_pinciana",
       "name": "Porta Pinciana",
+      "por_que_recomendamos": "Es una de las puertas de la muralla de Roma, junto a Villa Borghese, con casi 2.000 años.",
       "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
@@ -5838,6 +5896,7 @@
     {
       "id": "jardines_del_pincio",
       "name": "Jardines del Pincio",
+      "por_que_recomendamos": "Son los jardines entre Villa Borghese y la terraza del Pincio, con sus bustos de mármol y sus paseos a la sombra.",
       "megusta_inicial": 0,
       "duration_minutes": 30,
       "min_max": 60,
@@ -5873,6 +5932,7 @@
     {
       "id": "mercadillo_de_navidad_de_piazza_navona",
       "name": "Mercadillo de Navidad de Piazza Navona",
+      "por_que_recomendamos": "En Navidad, la plaza se llena de puestos de dulces, belenes y juguetes. Una tradición romana de toda la vida.",
       "megusta_inicial": 0,
       "capa_de": "Piazza Navona",
       "_nota": "Una capa, no una parada más (PROMPT_ROMA_NAVIDAD 2): con la experiencia de mercadillos elegida y en sus fechas, la parada de Piazza Navona pasa a llevar este título, este tiempo y este texto. Nunca salen dos paradas en el mismo sitio.",
@@ -5913,6 +5973,7 @@
     {
       "id": "100_presepi_in_vaticano",
       "name": "100 Presepi in Vaticano",
+      "por_que_recomendamos": "Es una exposición de belenes de todo el mundo junto a la Plaza de San Pedro. Uno de los planes más bonitos de la Navidad en Roma.",
       "megusta_inicial": 0,
       "duration_minutes": 20,
       "min_max": 30,
@@ -5948,6 +6009,7 @@
     {
       "id": "santo_bambino_de_aracoeli",
       "name": "Santo Bambino de Aracoeli",
+      "por_que_recomendamos": "Es la figura del Niño Jesús más querida por los romanos, en lo alto de la escalinata del Aracoeli. En Navidad, los niños le recitan poemas.",
       "megusta_inicial": 0,
       "duration_minutes": 10,
       "min_max": 15,
@@ -5983,6 +6045,7 @@
     {
       "id": "luces_de_navidad_del_tridente",
       "name": "Luces de Navidad del Tridente",
+      "por_que_recomendamos": "En Navidad, Via del Corso, Via Condotti y las calles del Tridente se iluminan. Pasear por ellas de noche es todo un espectáculo.",
       "megusta_inicial": 0,
       "titulo_parada": "Via del Corso, Condotti, Babuino y Margutta, con sus luces de Navidad",
       "duration_minutes": 40,
@@ -9598,7 +9661,7 @@
         "Fuente del Tritón",
         "Iglesia de San Ignacio de Loyola",
         "Iglesia de Santa Maria sopra Minerva",
-        "Plaza Colonna",
+        "Piazza Colonna",
         "Plaza Farnese",
         "Ponte Sisto"
       ],
@@ -12231,7 +12294,7 @@
           }
         },
         {
-          "lugar": "Plaza Colonna",
+          "lugar": "Piazza Colonna",
           "rol": "de_paso",
           "por_que": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano."
         },
@@ -12382,7 +12445,7 @@
               "si_da_tiempo": true
             },
             {
-              "lugar": "Plaza Colonna",
+              "lugar": "Piazza Colonna",
               "rol": "de_paso",
               "por_que": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano."
             },
@@ -12806,7 +12869,7 @@
           }
         },
         {
-          "lugar": "Plaza Colonna",
+          "lugar": "Piazza Colonna",
           "rol": "de_paso",
           "por_que": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano."
         },
@@ -14707,7 +14770,7 @@
       "cifra_ok": true,
       "comprobado": "2026-09-28"
     },
-    "Plaza Colonna": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano.",
+    "Piazza Colonna": "La columna del centro cuenta en espiral las guerras de Marco Aurelio, el emperador de «Gladiator». El palacio de al lado es la sede del Gobierno italiano.",
     "Plaza del Quirinal": "La plaza más alta de Roma: los Dioscuros con sus caballos, el obelisco y el palacio donde vive el Presidente de la República. Desde la barandilla, San Pedro se ve al fondo, entre los tejados.",
     "Via dei Coronari": "La calle de los anticuarios del Renacimiento, entre el Puente Sant'Angelo y Navona. Se llama así por los vendedores de rosarios (coronari) que atendían a los peregrinos camino de San Pedro.",
     "Via Condotti": "La calle de las grandes marcas, que desemboca justo en la escalinata. Su nombre viene de los conductos del acueducto que pasaban por debajo y que aún alimentan la Fontana de Trevi.",

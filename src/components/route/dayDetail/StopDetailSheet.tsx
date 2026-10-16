@@ -11,6 +11,7 @@ import { fetchAnchorTips, type StopTip } from '../../../lib/anchorTipsApi'
 import { fetchPlaceDetail, fichaEnMemoria, toNearbyTransit, toStopDescription, toStopTips, type PlaceDetail } from '../../../lib/placeDetailApi'
 import { fetchNearbyTransit, type NearbyTransit } from '../../../lib/nearbyTransitApi'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
+import { catalogoEnMemoria, fetchDestinationPlaces, porQueRecomendamosDe } from '../../../lib/destinationPlacesApi'
 import { StopsMapView, type StopsMapMarker } from '../../map/StopsMapView'
 import { HowToGetThereSheet } from '../today/HowToGetThereSheet'
 import { Spinner } from '../../ui/Spinner'
@@ -152,7 +153,20 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
   // AddStopScreen) → lo que devuelva Claude bajo demanda. La ficha ampliada va PRIMERA a propósito:
   // es el mismo lugar contado en profundidad (qué ver, horarios por temporada, transporte, secretos)
   // frente a las dos líneas que trae la parada.
-  const description = curated ? toStopDescription(curated) : externalContent ? externalContent.description : internalDescription
+  const descripcionDeBase = curated ? toStopDescription(curated) : externalContent ? externalContent.description : internalDescription
+  // «Por qué te lo recomendamos»: si el sitio tiene texto NUESTRO en los datos del destino (Roma), sale ese, tal cual y sin IA; si no, el de la IA (que dice por qué vale la pena el sitio, nunca la logística de la ruta).
+  const [porQueNuestro, setPorQueNuestro] = useState<string | null>(() => (stop ? porQueRecomendamosDe(catalogoEnMemoria(city), stop.name) : null))
+  useEffect(() => {
+    if (!stop?.name) return undefined
+    let cancelado = false
+    fetchDestinationPlaces(city).then((catalogo) => {
+      if (!cancelado) setPorQueNuestro(porQueRecomendamosDe(catalogo, stop.name))
+    })
+    return () => {
+      cancelado = true
+    }
+  }, [stop?.name, city])
+  const description = descripcionDeBase && porQueNuestro ? { ...descripcionDeBase, whyRecommended: porQueNuestro } : descripcionDeBase
   const descLoading = stop?.noAiText || stop?.isFreeWalk ? false : !curatedResolved ? true : curated ? false : externalContent ? externalContent.loading : internalDescLoading
   /** Lista de puntos concretos de la ficha curada — la versión de Claude es un párrafo suelto (`whatYoullSee`). */
   const whatToSee = curated?.what_to_see ?? []
