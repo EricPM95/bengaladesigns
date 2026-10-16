@@ -1,0 +1,97 @@
+{
+  "_nota": "Los logros de viajero (Tanda 8A): los mismos para todos los destinos. Nombres y líneas de docs/dias/NOMBRES_LOGROS.md, apartado 4. 'tipo' dice qué regla los da (están en server/logros/motor.js). Solo se enseñan los escalones que se pueden conseguir con los destinos curados (se calcula desde los datos).",
+
+  "paises": {
+    "Italia": { "continente": "Europa", "microestado": false },
+    "Ciudad del Vaticano": { "continente": "Europa", "microestado": true },
+    "San Marino": { "continente": "Europa", "microestado": true },
+    "Mónaco": { "continente": "Europa", "microestado": true },
+    "Liechtenstein": { "continente": "Europa", "microestado": true },
+    "Andorra": { "continente": "Europa", "microestado": true },
+    "Malta": { "continente": "Europa", "microestado": true }
+  },
+
+  "microestados": ["Ciudad del Vaticano", "San Marino", "Mónaco", "Liechtenstein", "Andorra", "Malta"],
+
+  "maravillas": {
+    "coliseo": { "nombre": "El Coliseo", "linea": "El mayor anfiteatro de la Antigüedad." },
+    "gran_muralla": { "nombre": "La Gran Muralla", "linea": "Más de 20.000 km de muralla, levantada durante siglos." },
+    "petra": { "nombre": "Petra", "linea": "La ciudad tallada en la roca." },
+    "cristo_redentor": { "nombre": "El Cristo Redentor", "linea": "30 metros de brazos abiertos sobre Río." },
+    "machu_picchu": { "nombre": "Machu Picchu", "linea": "La ciudad de los incas, a 2.430 metros de altura." },
+    "chichen_itza": { "nombre": "Chichén Itzá", "linea": "La pirámide maya por la que baja una serpiente de luz." },
+    "taj_mahal": { "nombre": "El Taj Mahal", "linea": "Un mausoleo de mármol blanco levantado por amor." }
+  },
+
+  "logros": [
+    { "id": "paises", "grupo": "mundo", "tipo": "contar", "que": "paises", "linea": "Países distintos que has visitado con la app.",
+      "escalones": [
+        { "n": 1, "nombre": "Primer sello" }, { "n": 3, "nombre": "Trotamundos" }, { "n": 5, "nombre": "Alma viajera" }, { "n": 8, "nombre": "Pasaporte en marcha" },
+        { "n": 10, "nombre": "Ciudadano del mundo" }, { "n": 15, "nombre": "Horizonte sin fin" }, { "n": 20, "nombre": "Veinte banderas" }, { "n": 25, "nombre": "Medio mundo en la maleta" }, { "n": 30, "nombre": "El mundo es tu casa" }
+      ] },
+    { "id": "destinos", "grupo": "mundo", "tipo": "contar", "que": "destinos", "linea": "Destinos distintos que has visitado con la app.",
+      "escalones": [
+        { "n": 1, "nombre": "Primera parada" }, { "n": 3, "nombre": "Ciudad tras ciudad" }, { "n": 5, "nombre": "Mapa en marcha" }, { "n": 10, "nombre": "Diez ciudades, diez historias" },
+        { "n": 15, "nombre": "Brújula incansable" }, { "n": 20, "nombre": "Sin fronteras" }
+      ] },
+    { "id": "capitales", "grupo": "mundo", "tipo": "contar", "que": "capitales", "linea": "Capitales que has visitado con la app.",
+      "escalones": [ { "n": 5, "nombre": "Ruta de capitales" }, { "n": 10, "nombre": "Corazón de naciones" }, { "n": 15, "nombre": "Capital de capitales" }, { "n": 25, "nombre": "Embajada del mundo" } ] },
+    { "id": "continentes", "grupo": "mundo", "tipo": "continentes", "nombre": "Nuevo continente: {continente}", "linea": "Un logro por cada continente nuevo." },
+    { "id": "maravillas", "grupo": "mundo", "tipo": "contar", "que": "maravillas", "linea": "Maravillas del mundo que has visto.",
+      "escalones": [
+        { "n": 1, "nombre": "Tu primera maravilla" }, { "n": 2, "nombre": "Maravilla tras maravilla" }, { "n": 3, "nombre": "El mundo te deslumbra" }, { "n": 4, "nombre": "Cuatro maravillas en la maleta" },
+        { "n": 5, "nombre": "Mirada de leyenda" }, { "n": 6, "nombre": "A una del sueño" }, { "n": 7, "nombre": "Las siete maravillas" }
+      ] },
+    { "id": "dos_paises_en_un_dia", "grupo": "mundo", "tipo": "dos_paises_en_un_dia", "nombre": "Dos países en un día", "linea": "Italia y el Vaticano, el mismo día." },
+    { "id": "pequenos_gigantes", "grupo": "mundo", "tipo": "microestados", "nombre": "Los pequeños gigantes", "linea": "{n} de 6 microestados." },
+    { "id": "otro_lado_ecuador", "grupo": "mundo", "tipo": "hemisferio_sur", "nombre": "Al otro lado del ecuador", "linea": "Has viajado al hemisferio sur." },
+    { "id": "viajero_nacional", "grupo": "mundo", "tipo": "viajero_nacional", "nombre": "Viajero nacional", "linea": "También se viaja cerca: 3 destinos de tu país.", "n": 3 },
+    { "id": "patrimonios", "grupo": "mundo", "tipo": "contar", "que": "patrimonios", "linea": "Patrimonios de la Humanidad que has visitado.",
+      "escalones": [ { "n": 1, "nombre": "Testigo de la historia" }, { "n": 10, "nombre": "Guardián del patrimonio" }, { "n": 15, "nombre": "Memoria del mundo" } ] },
+
+    { "id": "cuatro_estaciones", "grupo": "tiempo", "tipo": "estaciones", "nombre": "Las cuatro estaciones", "linea": "Has viajado en primavera, verano, otoño e invierno." },
+    { "id": "destino_cuatro_estaciones", "grupo": "tiempo", "tipo": "destino_estaciones", "nombre": "Un destino, cuatro estaciones", "linea": "Has viajado a {ciudad} en las cuatro estaciones." },
+    { "id": "doce_meses", "grupo": "tiempo", "tipo": "meses", "nombre": "Los 12 meses", "linea": "Has viajado en cada mes del año." },
+    { "id": "navidad_fuera", "grupo": "tiempo", "tipo": "fecha_concreta", "dias": ["12-24", "12-25"], "nombre": "Navidad fuera de casa", "linea": "Has viajado el 24 o el 25 de diciembre." },
+    { "id": "nochevieja_fuera", "grupo": "tiempo", "tipo": "fecha_concreta", "dias": ["12-31"], "nombre": "Nochevieja fuera de casa", "linea": "Has viajado el 31 de diciembre." },
+    { "id": "tres_viajes_ano", "grupo": "tiempo", "tipo": "viajes_en_un_ano", "n": 3, "nombre": "Tres viajes en un año", "linea": "Tres viajes hechos con la app que empiezan el mismo año." },
+    { "id": "de_sol_a_sol", "grupo": "tiempo", "tipo": "sol_a_sol", "nombre": "De sol a sol", "linea": "Madrugador y Nocturno, el mismo día." },
+    { "id": "alondra", "grupo": "tiempo", "tipo": "veces_momento", "momento": "madrugador", "n": 10, "nombre": "Alondra", "linea": "10 días Madrugador." },
+    { "id": "buho", "grupo": "tiempo", "tipo": "veces_momento", "momento": "nocturno", "n": 10, "nombre": "Búho", "linea": "10 días Nocturno." },
+
+    { "id": "viajes", "grupo": "como_viajas", "tipo": "contar", "que": "viajes", "linea": "Viajes hechos con la app.",
+      "escalones": [ { "n": 1, "nombre": "El primer viaje" }, { "n": 5, "nombre": "Cinco maletas" }, { "n": 10, "nombre": "Maleta siempre lista" } ] },
+    { "id": "con_quien_solo", "grupo": "como_viajas", "tipo": "con_quien", "valor": "solo", "linea": "{n} viajes a tu aire.",
+      "escalones": [ { "n": 1, "nombre": "Mi propio rumbo", "linea": "Tu primer viaje a tu aire." }, { "n": 3, "nombre": "Alma libre" }, { "n": 5, "nombre": "A solas con el mundo" }, { "n": 10, "nombre": "El mundo, a tu ritmo" } ] },
+    { "id": "con_quien_pareja", "grupo": "como_viajas", "tipo": "con_quien", "valor": "pareja", "linea": "{n} viajes en pareja.",
+      "escalones": [ { "n": 1, "nombre": "Dos billetes", "linea": "Tu primer viaje en pareja." }, { "n": 3, "nombre": "Mapa para dos" }, { "n": 5, "nombre": "Cómplices de viaje" }, { "n": 10, "nombre": "Contigo, a cualquier parte" } ] },
+    { "id": "con_quien_amigos", "grupo": "como_viajas", "tipo": "con_quien", "valor": "amigos", "linea": "{n} viajes con amigos.",
+      "escalones": [ { "n": 1, "nombre": "La pandilla viaja", "linea": "Tu primer viaje con amigos." }, { "n": 3, "nombre": "Risas en ruta" }, { "n": 5, "nombre": "Equipo viajero" }, { "n": 10, "nombre": "Amigos para todos los viajes" } ] },
+    { "id": "con_quien_familia", "grupo": "como_viajas", "tipo": "con_quien", "valor": "familia", "linea": "{n} viajes en familia.",
+      "escalones": [ { "n": 1, "nombre": "Todos a bordo", "linea": "Tu primer viaje en familia." }, { "n": 3, "nombre": "Maletas para todos" }, { "n": 5, "nombre": "Álbum de familia" }, { "n": 10, "nombre": "Una familia viajera" } ] },
+    { "id": "dia_perfecto", "grupo": "como_viajas", "tipo": "dia_perfecto", "nombre": "Día perfecto", "linea": "Todas las paradas de un día, vistas." },
+    { "id": "viaje_perfecto", "grupo": "como_viajas", "tipo": "viaje_perfecto", "nombre": "Viaje perfecto", "linea": "Todos los días de un viaje, perfectos." },
+    { "id": "imparable", "grupo": "como_viajas", "tipo": "imparable", "n": 3, "nombre": "Imparable", "linea": "3 días seguidos completados." },
+    { "id": "escapada", "grupo": "como_viajas", "tipo": "noches", "min": 1, "max": 2, "nombre": "Escapada", "linea": "Un viaje de 1 o 2 noches." },
+    { "id": "gran_viaje", "grupo": "como_viajas", "tipo": "noches", "min": 10, "max": 9999, "nombre": "Gran viaje", "linea": "Un viaje de 10 noches o más." },
+    { "id": "nunca_ultima_vez", "grupo": "como_viajas", "tipo": "volver", "nombre": "Nunca es la última vez", "linea": "Has vuelto a {ciudad}." },
+    { "id": "el_fotografo", "grupo": "como_viajas", "tipo": "fotografo", "minimo_paradas": 3, "nombre": "El fotógrafo", "linea": "Una foto en todas las paradas vistas de un viaje." },
+    { "id": "conocedor", "grupo": "como_viajas", "tipo": "conocedor", "linea": "Sitios distintos vistos en la misma ciudad, sumando viajes.",
+      "escalones": [ { "n": 25, "nombre": "Conocedor de {ciudad}" }, { "n": 50, "nombre": "Como en casa en {ciudad}" } ] },
+
+    { "id": "cazador_emblemas", "grupo": "coleccionista", "tipo": "contar", "que": "emblemas", "linea": "Emblemas ocultos encontrados.",
+      "escalones": [ { "n": 5, "nombre": "Cazador de emblemas" }, { "n": 10, "nombre": "Ojo de lince" }, { "n": 15, "nombre": "Nada se te escapa" } ] },
+    { "id": "coleccionista", "grupo": "coleccionista", "tipo": "contar", "que": "colecciones", "linea": "Colecciones completas.",
+      "escalones": [ { "n": 5, "nombre": "Coleccionista" }, { "n": 10, "nombre": "Álbum lleno" }, { "n": 15, "nombre": "Gran coleccionista" } ] },
+    { "id": "ciudad_completa", "grupo": "coleccionista", "tipo": "ciudad_completa", "nombre": "{ciudad} al completo", "linea": "Todas las colecciones de {ciudad}." },
+    { "id": "todos_secretos", "grupo": "coleccionista", "tipo": "todos_secretos", "nombre": "Todos los secretos de {ciudad}", "linea": "Sus {total} emblemas ocultos." },
+    { "id": "diamante_primera", "grupo": "coleccionista", "tipo": "diamante_primera", "nombre": "Diamante a la primera", "linea": "El sello de diamante de una ciudad en tu primer viaje." },
+    { "id": "tres_oro", "grupo": "coleccionista", "tipo": "ciudades_sello", "grado": "oro", "n": 3, "nombre": "Tres ciudades de oro", "linea": "Tres ciudades con su sello en oro o más." },
+    { "id": "tres_diamante", "grupo": "coleccionista", "tipo": "ciudades_sello", "grado": "diamante", "n": 3, "nombre": "Tres ciudades de diamante", "linea": "Tres ciudades con su sello en diamante." },
+
+    { "id": "fundador", "grupo": "exclusivos", "tipo": "fundador", "nombre": "Viajero fundador", "linea": "Un viaje con la app durante su primer año." },
+    { "id": "pionero", "grupo": "exclusivos", "tipo": "pionero", "nombre": "Pionero", "linea": "Entre los primeros {limite} viajeros de {ciudad}." },
+    { "id": "edicion_anio", "grupo": "exclusivos", "tipo": "edicion", "nombre": "{ciudad} {anio}", "linea": "La edición de {anio}." },
+    { "id": "probador", "grupo": "exclusivos", "tipo": "manual", "nombre": "Probador", "linea": "Probó la app antes de que saliera." }
+  ]
+}

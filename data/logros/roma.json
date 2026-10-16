@@ -1,0 +1,128 @@
+{
+  "_nota": "Los logros de Roma (Tanda 8A). Todo lo que cambia de un destino a otro va en un archivo así (data/logros/<destino>.json). Cada sitio es un id de data/pipeline_v2/roma.json: si un id no existe, /admin/logros y la prueba lo avisan. Nombres y líneas de docs/dias/NOMBRES_LOGROS.md.",
+  "destino": "Roma",
+  "clave": "roma",
+  "ciudad": "Roma",
+  "timezone": "Europe/Rome",
+  "anadido": "2026-11-04",
+  "sello_principal": "roma",
+  "pionero": { "activo": true, "limite": 100 },
+
+  "sitios": {
+    "coliseo": { "pais": "Italia", "capital": true, "radio_m": 250, "motivo_radio": "Anfiteatro grande, con la plaza y la cola de la entrada alrededor.", "foto_dentro": null, "patrimonio_por_comprobar": "centro_historico_de_roma", "maravilla": "coliseo" },
+    "foro_romano_y_palatino": { "pais": "Italia", "capital": true, "radio_m": 350, "motivo_radio": "Recinto muy grande (Foro y colina del Palatino); se entra por tres sitios distintos.", "foto_dentro": null, "patrimonio": "centro_historico_de_roma" },
+    "fontana_de_trevi": { "pais": "Italia", "capital": true, "radio_m": 120, "motivo_radio": "Plaza pequeña; la gente se amontona en unos 60 metros.", "foto_dentro": null, "patrimonio_por_comprobar": "centro_historico_de_roma" },
+    "panteon": { "pais": "Italia", "capital": true, "radio_m": 120, "motivo_radio": "Un edificio y su plaza.", "foto_dentro": null, "patrimonio": "centro_historico_de_roma" },
+    "piazza_navona": { "pais": "Italia", "capital": true, "radio_m": 200, "motivo_radio": "Plaza alargada, de unos 240 metros.", "foto_dentro": null, "patrimonio_por_comprobar": "centro_historico_de_roma" },
+    "plaza_de_espana": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "La plaza y la escalinata.", "foto_dentro": null, "patrimonio_por_comprobar": "centro_historico_de_roma" },
+    "castillo_de_santangelo": { "pais": "Italia", "capital": true, "radio_m": 200, "motivo_radio": "Castillo, puente y parque que lo rodea.", "foto_dentro": null, "patrimonio": "centro_historico_de_roma" },
+    "trastevere": { "pais": "Italia", "capital": true, "radio_m": 900, "motivo_radio": "Es un barrio entero (más de un kilómetro de largo): el radio cubre todo el barrio.", "foto_dentro": null, "patrimonio_por_comprobar": "centro_historico_de_roma" },
+
+    "museos_vaticanos_y_capilla_sixtina": { "pais": "Ciudad del Vaticano", "capital": false, "radio_m": 400, "motivo_radio": "Complejo enorme y con cola larga en la calle: vale desde la cola hasta la salida.", "foto_dentro": "En la Capilla Sixtina no se pueden hacer fotos: hazla en cualquier otra sala o en la salida.", "patrimonio": "ciudad_del_vaticano" },
+    "basilica_de_san_pedro": { "pais": "Ciudad del Vaticano", "capital": false, "radio_m": 250, "motivo_radio": "La basílica y su atrio, pegada a la plaza.", "foto_dentro": null, "patrimonio": "ciudad_del_vaticano" },
+    "plaza_de_san_pedro": { "pais": "Ciudad del Vaticano", "capital": false, "radio_m": 250, "motivo_radio": "Plaza de unos 240 metros de ancho.", "foto_dentro": null, "patrimonio": "ciudad_del_vaticano" },
+
+    "isla_tiberina": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "Isla de unos 270 metros de largo.", "foto_dentro": null },
+    "iglesia_de_santa_maria_in_trastevere": { "pais": "Italia", "capital": true, "radio_m": 120, "motivo_radio": "Iglesia y su plaza.", "foto_dentro": null },
+    "san_pietro_in_montorio_y_tempietto_de_bramante": { "pais": "Italia", "capital": true, "radio_m": 120, "motivo_radio": "Iglesia y el patio del Tempietto.", "foto_dentro": null },
+    "plaza_del_campidoglio": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "Plaza de Miguel Ángel y sus escaleras.", "foto_dentro": null },
+    "iglesia_de_santa_maria_sopra_minerva": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Iglesia y su plazuela.", "foto_dentro": null },
+    "elefantino_de_bernini": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Plazuela pequeña.", "foto_dentro": null },
+    "puente_santangelo": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "Puente de unos 130 metros con sus orillas.", "foto_dentro": null },
+    "iglesia_de_san_luigi_dei_francesi": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Iglesia en una calle estrecha.", "foto_dentro": null },
+    "santa_maria_del_popolo": { "pais": "Italia", "capital": true, "radio_m": 120, "motivo_radio": "Iglesia en la esquina de la Piazza del Popolo.", "foto_dentro": null },
+    "galeria_borghese": { "pais": "Italia", "capital": true, "radio_m": 200, "motivo_radio": "Villa dentro de un parque; la entrada queda a un lado.", "foto_dentro": "Sin flash." },
+    "largo_di_torre_argentina": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "Yacimiento abierto que se ve desde la calle.", "foto_dentro": null },
+    "circo_maximo": { "pais": "Italia", "capital": true, "radio_m": 500, "motivo_radio": "Antiguo circo de unos 600 metros de largo.", "foto_dentro": null },
+    "termas_de_caracalla": { "pais": "Italia", "capital": true, "radio_m": 350, "motivo_radio": "Recinto grande con jardines.", "foto_dentro": null },
+    "mirador_del_janiculo": { "pais": "Italia", "capital": true, "radio_m": 200, "motivo_radio": "Terraza larga con el parque del Janículo detrás.", "foto_dentro": null },
+    "terraza_del_pincio": { "pais": "Italia", "capital": true, "radio_m": 200, "motivo_radio": "Terraza y jardines.", "foto_dentro": null },
+    "jardin_de_los_naranjos": { "pais": "Italia", "capital": true, "radio_m": 120, "motivo_radio": "Jardín pequeño.", "foto_dentro": null },
+    "piazza_del_popolo": { "pais": "Italia", "capital": true, "radio_m": 200, "motivo_radio": "Plaza grande y abierta.", "foto_dentro": null },
+    "plaza_venecia": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "Plaza con el Altar de la Patria al fondo.", "foto_dentro": null },
+    "fontana_dellacqua_paola": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Fuente con una pequeña explanada.", "foto_dentro": null },
+    "fuente_del_triton": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Fuente en una plaza pequeña.", "foto_dentro": null },
+    "ojo_de_la_cerradura_del_aventino": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Una puerta en una plaza pequeña.", "foto_dentro": null },
+    "piramide_cestia": { "pais": "Italia", "capital": true, "radio_m": 150, "motivo_radio": "Pirámide y su glorieta.", "foto_dentro": null },
+    "basilica_de_san_clemente": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Iglesia en una calle estrecha.", "foto_dentro": null },
+    "fuente_de_las_tortugas": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Fuente en una plazuela.", "foto_dentro": null },
+    "boca_de_la_verdad": { "pais": "Italia", "capital": true, "radio_m": 100, "motivo_radio": "Pórtico de una iglesia con cola.", "foto_dentro": null },
+    "catacumbas_de_san_calixto": { "pais": "Italia", "capital": true, "radio_m": 300, "motivo_radio": "Complejo grande en la Vía Apia; la entrada queda dentro de una finca.", "foto_dentro": "Dentro no se pueden hacer fotos: hazla en la entrada.", "patrimonio_por_comprobar": "via_appia" }
+  },
+
+  "patrimonios": {
+    "centro_historico_de_roma": { "nombre": "Centro histórico de Roma", "unesco": 91, "fuente": "UNESCO, ficha 91 (inscrito en 1980 y ampliado en 1990). Sus documentos del Comité nombran el Foro, el Panteón y el Mausoleo de Adriano (Castillo de Sant'Angelo). El resto de sitios de Roma están dentro de las murallas aurelianas pero no he podido abrir el mapa oficial: quedan en `patrimonio_por_comprobar` y NO cuentan todavía." },
+    "ciudad_del_vaticano": { "nombre": "Ciudad del Vaticano", "unesco": 286, "fuente": "UNESCO, ficha 286 (inscrita en 1984). Un informe de la Santa Sede a la UNESCO dice que está inscrito todo el territorio del Estado." },
+    "via_appia": { "nombre": "Vía Apia. Regina Viarum", "unesco": 1708, "fuente": "UNESCO, ficha 1708 (inscrita en 2024). No he podido comprobar que las Catacumbas de San Calixto sean uno de sus componentes: queda en `patrimonio_por_comprobar` y NO cuenta todavía." }
+  },
+
+  "sellos": [
+    {
+      "id": "roma",
+      "nombre": "Roma",
+      "coleccion": "imprescindibles",
+      "grados": [
+        { "grado": "bronce", "desde": 1, "nombre": "Primeros pasos en Roma", "linea": "Has visto tu primer imprescindible." },
+        { "grado": "plata", "desde": 4, "nombre": "Roma te atrapa", "linea": "{n} de {total} imprescindibles." },
+        { "grado": "oro", "desde": 6, "nombre": "Roma en el corazón", "linea": "{n} de {total} imprescindibles." },
+        { "grado": "diamante", "desde": 8, "nombre": "Roma es tuya", "linea": "Todos los imprescindibles de Roma." }
+      ]
+    },
+    {
+      "id": "vaticano",
+      "nombre": "El Vaticano",
+      "coleccion": "pais_mas_pequeno",
+      "grados": [
+        { "grado": "plata", "desde": 1, "nombre": "Has cruzado la frontera", "linea": "Has visto tu primer sitio del Vaticano." },
+        { "grado": "oro", "desde": 2, "nombre": "El Vaticano en el corazón", "linea": "{n} de {total} sitios del Vaticano." },
+        { "grado": "diamante", "desde": 3, "nombre": "El Vaticano es tuyo", "linea": "Los tres sitios del Vaticano." }
+      ]
+    }
+  ],
+
+  "colecciones": [
+    { "id": "imprescindibles", "grupo": "principales", "orden": 1, "nombre": "Los imprescindibles de Roma", "al_completar": "Lo esencial, visto", "sitios": ["coliseo", "foro_romano_y_palatino", "fontana_de_trevi", "panteon", "piazza_navona", "plaza_de_espana", "castillo_de_santangelo", "trastevere"] },
+    { "id": "pais_mas_pequeno", "grupo": "principales", "orden": 2, "nombre": "El país más pequeño del mundo", "al_completar": "El país entero", "sitios": ["museos_vaticanos_y_capilla_sixtina", "basilica_de_san_pedro", "plaza_de_san_pedro"] },
+    { "id": "cuatro_joyas", "grupo": "de_empezar", "orden": 3, "nombre": "Las 4 joyas de Roma", "al_completar": "Las cuatro joyas, en tu mano", "sitios": ["coliseo", "fontana_de_trevi", "panteon", "museos_vaticanos_y_capilla_sixtina"] },
+    { "id": "alma_trastevere", "grupo": "de_empezar", "orden": 4, "nombre": "El alma de Trastevere", "al_completar": "Corazón trasteverino", "sitios": ["isla_tiberina", "iglesia_de_santa_maria_in_trastevere", "san_pietro_in_montorio_y_tempietto_de_bramante", "trastevere"] },
+    { "id": "miguel_angel", "grupo": "de_artistas", "orden": 5, "nombre": "La Roma de Miguel Ángel", "al_completar": "Tras la huella del genio", "sitios": ["museos_vaticanos_y_capilla_sixtina", "basilica_de_san_pedro", "plaza_del_campidoglio", "iglesia_de_santa_maria_sopra_minerva"] },
+    { "id": "bernini", "grupo": "de_artistas", "orden": 6, "nombre": "La Roma de Bernini", "al_completar": "La Roma que esculpió Bernini", "sitios": ["piazza_navona", "elefantino_de_bernini", "plaza_de_san_pedro", "basilica_de_san_pedro", "puente_santangelo"] },
+    { "id": "caravaggio", "grupo": "de_artistas", "orden": 7, "nombre": "Tras los pasos de Caravaggio", "al_completar": "Luz y sombra", "sitios": ["iglesia_de_san_luigi_dei_francesi", "santa_maria_del_popolo", "galeria_borghese"] },
+    { "id": "roma_antigua", "grupo": "de_explorar", "orden": 8, "nombre": "La Roma antigua", "al_completar": "2.000 años de historia", "sitios": ["coliseo", "foro_romano_y_palatino", "largo_di_torre_argentina", "castillo_de_santangelo", "circo_maximo", "termas_de_caracalla"] },
+    { "id": "miradores", "grupo": "de_explorar", "orden": 9, "nombre": "Los miradores", "al_completar": "Roma a tus pies", "sitios": ["mirador_del_janiculo", "terraza_del_pincio", "jardin_de_los_naranjos"] },
+    { "id": "plazas_y_fuentes", "grupo": "de_explorar", "orden": 10, "nombre": "Plazas y fuentes de Roma", "al_completar": "Agua y piedra", "sitios": ["piazza_navona", "piazza_del_popolo", "plaza_de_espana", "plaza_venecia", "fontana_de_trevi", "fontana_dellacqua_paola", "fuente_del_triton"] },
+    { "id": "roma_secreta", "grupo": "de_explorar", "orden": 11, "nombre": "La Roma secreta", "al_completar": "Lo que pocos ven", "sitios": ["ojo_de_la_cerradura_del_aventino", "piramide_cestia", "basilica_de_san_clemente", "san_pietro_in_montorio_y_tempietto_de_bramante", "fuente_de_las_tortugas"] }
+  ],
+
+  "grupos_colecciones": {
+    "principales": "Las principales",
+    "de_empezar": "Las de empezar",
+    "de_artistas": "Las de artistas",
+    "de_explorar": "Las de explorar"
+  },
+
+  "emblemas": [
+    { "id": "coliseo", "tipo": "sitio", "sitio": "coliseo", "nombre": "Una maravilla del mundo", "linea": "El mayor anfiteatro de la Antigüedad." },
+    { "id": "foro_romano", "tipo": "sitio", "sitio": "foro_romano_y_palatino", "nombre": "Donde empezó todo", "linea": "Aquí latía la antigua Roma: se votaba, se juzgaba y se comerciaba." },
+    { "id": "museos_vaticanos", "tipo": "sitio", "sitio": "museos_vaticanos_y_capilla_sixtina", "nombre": "Bajo el techo de Miguel Ángel", "linea": "Miguel Ángel pintó la bóveda de la Sixtina en cuatro años, de 1508 a 1512." },
+    { "id": "plaza_san_pedro", "tipo": "sitio", "sitio": "plaza_de_san_pedro", "nombre": "La frontera que no se ve", "linea": "Acabas de cruzar una frontera sin darte cuenta." },
+    { "id": "basilica_san_pedro", "tipo": "sitio", "sitio": "basilica_de_san_pedro", "nombre": "Sobre la tumba de San Pedro", "linea": "Bajo el altar mayor está, según la tradición, la tumba del apóstol." },
+    { "id": "panteon", "tipo": "sitio", "sitio": "panteon", "nombre": "Bajo una cúpula de casi 2.000 años", "linea": "La mayor cúpula de hormigón sin armar del mundo." },
+    { "id": "fontana_de_trevi", "tipo": "sitio", "sitio": "fontana_de_trevi", "nombre": "Volverás a Roma", "linea": "Dice la leyenda que quien lanza una moneda de espaldas, vuelve." },
+    { "id": "boca_de_la_verdad", "tipo": "sitio", "sitio": "boca_de_la_verdad", "nombre": "Has dicho la verdad", "linea": "Cuenta la leyenda que muerde la mano de quien miente." },
+    { "id": "ojo_cerradura", "tipo": "sitio", "sitio": "ojo_de_la_cerradura_del_aventino", "nombre": "Has mirado por la cerradura", "linea": "Por este agujero se ve la cúpula de San Pedro, enmarcada." },
+    { "id": "catacumbas", "tipo": "sitio", "sitio": "catacumbas_de_san_calixto", "nombre": "La Roma de debajo", "linea": "Kilómetros de galerías donde se enterraron los primeros cristianos." },
+    { "id": "madrugador", "tipo": "momento", "momento": "madrugador", "nombre": "Madrugador", "linea": "Roma antes que nadie." },
+    { "id": "nocturno", "tipo": "momento", "momento": "nocturno", "nombre": "Nocturno", "linea": "Roma con las luces encendidas." }
+  ],
+
+  "textos": {
+    "secretos": { "total": "Roma esconde {total} secretos", "encontrados": "{n} de {total} secretos encontrados" },
+    "resumen_viaje": {
+      "wow": "¡Wow! Tu viaje a Roma fue increíble…",
+      "con_ganas": "Roma se ha quedado con ganas de verte otra vez: aún esconde {n} secretos…",
+      "minimo_colecciones": 3,
+      "minimo_secretos": 2
+    }
+  }
+}

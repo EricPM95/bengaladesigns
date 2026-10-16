@@ -1,0 +1,16 @@
+{
+  "_nota": "Qué archivo suena en cada momento (de 1 a 3 segundos, ligeros). Los de ahora son provisionales: para poner los de verdad, cambia los archivos o esta lista, sin tocar el código.",
+  "maximo_segundos": 3,
+  "sonidos": {
+    "visto": "/sonidos/visto.wav",
+    "pedazo": "/sonidos/pedazo.wav",
+    "coleccion": "/sonidos/coleccion.wav",
+    "emblema": "/sonidos/emblema.wav",
+    "sello": "/sonidos/sello.wav",
+    "pais": "/sonidos/pais.wav",
+    "maravilla": "/sonidos/maravilla.wav",
+    "patrimonio": "/sonidos/patrimonio.wav",
+    "viajero": "/sonidos/viajero.wav",
+    "dia_completo": "/sonidos/dia_completo.wav"
+  }
+}

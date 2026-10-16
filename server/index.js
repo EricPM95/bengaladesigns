@@ -47,6 +47,11 @@ import { crearClienteCivitatis, civitatisActiva } from './civitatis/cliente.js'
 import { crearCache as crearCacheCivitatis } from './civitatis/cache.js'
 import { crearServicioCivitatis, AJUSTES as AJUSTES_CIVITATIS } from './civitatis/servicio.js'
 import { registrarRutasCivitatis } from './civitatis/rutas.js'
+import { cargarDatos as cargarDatosLogros, cargarCatalogo as cargarCatalogoLogros } from './logros/datos.js'
+import { crearServicioLogros } from './logros/servicio.js'
+import { repoSupabase } from './logros/repo.js'
+import { registrarRutasLogros, logrosActivos } from './logros/rutas.js'
+import { cobroActivo } from './logros/pase.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
@@ -4559,6 +4564,18 @@ const civitatis = crearServicioCivitatis({
   cache: crearCacheCivitatis({ admin: salesAdmin }),
 })
 registrarRutasCivitatis(app, civitatis)
+// El manifiesto para instalar la web en el móvil (Tanda 8A): sale de data/marca.json (el nombre y los colores, en un solo sitio). Solo lo pide la app con el interruptor de los logros encendido.
+app.get('/api/manifest.webmanifest', (_req, res) => {
+  const marca = JSON.parse(readFileSync(join(__dirname, '../data/marca.json'), 'utf8'))
+  res.type('application/manifest+json').json({ name: marca.nombre, short_name: marca.nombre_corto, description: marca.descripcion, start_url: '/', scope: '/', display: 'standalone', orientation: 'portrait', lang: 'es', background_color: marca.color_fondo, theme_color: marca.color_tema, icons: marca.iconos })
+})
+// Los logros (Tanda 8A): apagados salvo LOGROS_ACTIVOS=true Y las cuentas encendidas. Apagados, estas rutas ni existen. Todo lo decide el servidor (server/logros/).
+if (logrosActivos() && salesAdmin) {
+  const datosLogros = cargarDatosLogros()
+  const catalogosLogros = Object.fromEntries(Object.keys(datosLogros.destinos).map((clave) => [clave, cargarCatalogoLogros(clave)]))
+  const repoLogros = repoSupabase(salesAdmin, { destinosConPionero: Object.values(datosLogros.destinos).filter((d) => d.pionero?.activo).map((d) => d.clave) })
+  registrarRutasLogros(app, { admin: salesAdmin, repo: repoLogros, servicio: crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroActivo() }) })
+}
 
 app.post('/api/destination-excursions', async (req, res) => {
   const destination = req.body?.destination

@@ -703,3 +703,20 @@ Todo está en `NOMBRES_LOGROS.md`. Decidido:
 - Los 95 textos de POR_QUE_RECOMENDAMOS_ROMA.md, aprobados todos, con sus datos (los 50.000 del Coliseo, Van Gogh, Klimt y Monet en la GNAM, Fellini en Via Margutta).
 - «Plaza Colonna» y «Piazza Colonna»: si en los datos son el mismo sitio dos veces, se queda uno solo (el que sale en las rutas) con el texto de «Plaza Colonna», y el otro nombre pasa a alias.
 - Va como tanda pequeña aparte, sin esperar a la Tanda 8.
+
+## 31. Los países de antes de la app (Eric, 16-oct, 23:45)
+- De momento, opción B: los países marcados en «¿Dónde has estado ya?» o los viajes añadidos a mano solo pintan el globo y los números («12 países · 41 días viajando»). No dan logros de viajero (países, continentes, capitales, «Ciudadano del mundo»…), ni sellos, ni colecciones. Los logros se ganan solo viajando con la app.
+
+## 32. La Tanda 8 se parte en tres (16-oct, noche)
+- **8a, el cerebro de los logros:** reglas, datos, servidor, /admin/logros, instalar la web, sonidos preparados y el peso. Sin pantallas. Prompt: PROMPT_TANDA8A.md.
+- **8b:** HOY v2 y los momentos, cuando Design acabe los pasos 3 y 4.
+- **8c:** las pantallas de los logros (botón flotante, Logros, vitrina, pasaporte, Perfil).
+- Lo que Claude ha decidido en la 8a (Eric puede cambiarlo):
+  - las estaciones, por meses (primavera de marzo a mayo, verano de junio a agosto, otoño de septiembre a noviembre, invierno de diciembre a febrero);
+  - Navidad fuera de casa, el 24 o el 25 de diciembre; Nochevieja, el 31;
+  - Día perfecto, todas las paradas del día vistas; Viaje perfecto, todos los días perfectos;
+  - Madrugador y Nocturno, una vez por ciudad; Alondra y Búho cuentan días distintos;
+  - Ciudad al completo, todas sus colecciones; Todos sus secretos, sus 12 emblemas;
+  - el sello del Vaticano no cuenta como otra ciudad en Tres ciudades de oro, Tres ciudades de diamante, Diamante a la primera y Conocedor;
+  - Pionero, encendido también en Roma.
+- Con solo Roma, muchos escalones no se verán todavía (por ejemplo, Capitales empieza en 5): solo se ven los que se pueden conseguir con los destinos curados.

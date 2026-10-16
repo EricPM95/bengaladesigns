@@ -87,6 +87,13 @@ export async function reclamarCuenta(admin, tokenNuevo, tokenViejo) {
     return { estado: 500, cuerpo: { error: 'No se pudieron pasar tus fotos. No se ha movido nada; vuelve a probar.', detalle: String(error?.message ?? error) } }
   }
 
+  // 1b. Los hechos de los logros (Tanda 8A, migración 0023) pasan antes, porque borrar la sesión anónima se los llevaría. Sin la 0023 aplicada, no pasa nada.
+  const { error: errorLogros } = await admin.rpc('reclamar_anonimo_logros', { p_viejo: viejo.id, p_nuevo: nuevo.id })
+  if (errorLogros && !/reclamar_anonimo_logros|PGRST202|42883/.test(`${errorLogros.code ?? ''} ${errorLogros.message ?? ''}`)) {
+    for (const [origen, destino] of movidos) await almacen.move(destino, origen)
+    return { estado: 500, cuerpo: { error: 'No se pudieron pasar tus logros. No se ha movido nada; vuelve a probar.', detalle: errorLogros.message } }
+  }
+
   // 2. Las filas, a la cuenta nueva (y fuera la sesión anónima, ya vacía).
   const { data, error } = await admin.rpc('reclamar_anonimo', { p_viejo: viejo.id, p_nuevo: nuevo.id })
   if (error) {

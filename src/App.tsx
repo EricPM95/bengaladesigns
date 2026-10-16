@@ -11,6 +11,8 @@ import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
+import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
+import { AvisoInstalar } from './components/logros/AvisoInstalar'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
 import { AvisoSolape } from './components/route/reservas/AvisoSolape'
@@ -98,6 +100,8 @@ function App() {
       <TripSync />
       <PuertaDeCuenta />
       <VistosPorPersona />
+      <LogrosPorVisto />
+      <AvisoInstalar />
       <PrecioVuela />
       <FotoVuela />
       <CampaignLinks />

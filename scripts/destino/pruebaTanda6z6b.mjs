@@ -211,7 +211,22 @@ function pintaPerfil({ version, albumDe = null, rutaAbierta = null }) {
   useSyncStore.setState({ savedTrips: GUARDADOS, activeTripId: null })
   useRouteStore.setState({ ...estadoBase, route: rutaAbierta, dev_simulated_today_iso: HOY })
   usePerfilUi.setState({ abierto: true, albumDe })
-  return aTexto(renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} })))
+  // El Perfil ordena los viajes con el reloj de verdad (todayIso()): sin parar el reloj en HOY, esta prueba dejaba de valer en cuanto pasaba el 16 de octubre de 2026.
+  const RelojReal = Date
+  globalThis.Date = class extends RelojReal {
+    constructor(...args) {
+      if (args.length === 0) super(`${HOY}T12:00:00`)
+      else super(...args)
+    }
+    static now() {
+      return new RelojReal(`${HOY}T12:00:00`).getTime()
+    }
+  }
+  try {
+    return aTexto(renderToStaticMarkup(createElement(PerfilSheet, { open: true, onClose() {} })))
+  } finally {
+    globalThis.Date = RelojReal
+  }
 }
 const hoy = HOY
 const lista = viajesDelPerfil(GUARDADOS, null, hoy)

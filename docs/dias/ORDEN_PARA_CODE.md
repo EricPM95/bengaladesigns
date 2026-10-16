@@ -24,6 +24,12 @@ Todo lo de la Tanda 8 está en `APUNTES_TRAS_TANDA7.md` y `BRIEF_DISENO_LOGROS.m
 4. **Tanda de las cuentas (la última antes de la salida).** Inicio de sesión con email y enlace mágico o con Google; la cuenta se pide al empezar; logros y fotos se guardan en la cuenta. Las fotos van a la nube, comprimidas (unos 300 KB), sin la ubicación escondida, privadas, borrables al borrar la cuenta y con [Guardar en mi galería]. Además: política de privacidad (RGPD) y [Borrar mi cuenta]. Viajero fundador y Probador se conectan aquí. Detalle en el apartado 24 de los apuntes.
    - **El cobro, «el pase del viaje»:** un pago por viaje que abre lo de antes (llegada, vuelta, alojamiento) y lo de durante (HOY y logros), con un día de prueba gratis cuando empieza el viaje. Va en esta tanda; si no llega a tiempo, sale en 2027 y hasta entonces todo queda abierto. Detalle en el apartado 25 de los apuntes (17:18–17:33).
 
+## La Tanda 8, partida en tres (16-oct, noche)
+- **8a · el cerebro de los logros** (PROMPT_TANDA8A.md): sin pantallas, detrás de un interruptor. Batería rápida.
+- **8b · HOY v2 y los momentos:** cuando Design acabe los pasos 3 y 4.
+- **8c · las pantallas de los logros.**
+- Después: cuentas, parte 3 (pantallas reales y el cobro del pase).
+
 ## Además, cuando toque
 - Volver a sacar VIAJES_REVISION con el motor nuevo (después de la 7b).
 - Copiar al PC: PENDIENTES_RECOMPENSAS, PENDIENTES_ESCUCHAR, PENDIENTES_6K, APUNTES_TRAS_TANDA7, BRIEF_DISENO_LOGROS, PROMPT_TANDA7b y este archivo. Nunca mientras Code está en mitad de una tanda.

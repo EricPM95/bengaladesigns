@@ -1,0 +1,36 @@
+{
+  "_nota": "Los números y listas que se pueden cambiar sin tocar el código (Tanda 8A).",
+  "plazo_reclamar_dias": 30,
+  "madrugador_antes_de": "08:00",
+  "nocturno_desde": "22:00",
+  "nocturno_desde_invierno": "19:00",
+  "meses_invierno": [12, 1, 2],
+  "estaciones": { "primavera": [3, 4, 5], "verano": [6, 7, 8], "otono": [9, 10, 11], "invierno": [12, 1, 2] },
+  "dias_escalon_nuevo": 30,
+  "dias_destino_nuevo": 60,
+  "orden_momentos": ["emblema", "pedazo", "coleccion", "sello", "pais", "destino_nuevo", "continente", "maravilla", "patrimonio", "viajero"],
+  "frases_suspense": [
+    "¡Eh! Aquí hay algo…",
+    "Pero… ¿qué es esto?",
+    "Espera… algo brilla por aquí",
+    "Esto no lo encuentra cualquiera…",
+    "Mira bien… ¿lo ves?",
+    "Shhh… has descubierto un secreto",
+    "¿Y esto quién lo ha escondido aquí?"
+  ],
+  "mensajes": {
+    "sin_ubicacion": "Activa tu ubicación o haz una foto para ganar tu pedazo.",
+    "lejos": "Parece que no estás en {sitio}. Tu pedazo te espera allí.",
+    "foto_no_camara": "Esta foto no está hecha con una cámara.",
+    "foto_otra_fecha": "Esta foto es del {fecha}. Elige una del {desde} al {hasta}.",
+    "foto_otro_sitio": "Esta foto no es de {sitio}.",
+    "fuera_de_plazo": "Ya ha pasado el plazo para reclamar las fotos de este viaje.",
+    "foto_sin_datos": "No hemos podido leer esta foto. Haz una con la cámara de la app.",
+    "foto_sin_fecha": "No podemos leer la fecha de esta foto. Haz una con la cámara de la app.",
+    "desde_casa": "Desde casa, solo con fotos de la galería de esas fechas.",
+    "fuera_de_fechas": "Fuera de las fechas del viaje, el Visto se marca para la ruta pero no da logros."
+  },
+  "pionero": { "dias_para_decidir": 0 },
+  "avisos": { "resumen_viaje_dias_despues": 1, "quedan_dias_antes": 3 },
+  "cobro": { "descripcion": "Con el cobro apagado todo está abierto. Se enciende con PASES_COBRO_ACTIVO=true en el servidor, cuando exista el cobro (cuentas, parte 3)." }
+}
