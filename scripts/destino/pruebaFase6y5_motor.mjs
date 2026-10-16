@@ -1,5 +1,8 @@
 // La prueba de la Tanda 6y5, parte del MOTOR.
-//   API_URL=http://localhost:8821 node scripts/destino/pruebaFase6y5_motor.mjs [parte=p1,p2,p4,tope] [fechas=2026-10-20,…]
+//   API_URL=http://localhost:8821 node scripts/destino/pruebaFase6y5_motor.mjs [parte=p1,p2,p4,tope] [fechas=2026-10-20,…] [tramo=i/n] [inicio1=fecha|sin]
+//   tramo=i/n (Cuentas parte 2): solo reparte el trabajo, no cambia lo que se comprueba. De las 365 fechas del año (p2 y p4) hace una de cada n empezando por la i (las demás salen en los
+//   otros tramos); lo que no depende de las fechas del año (p1, p18 y tope) solo sale en el tramo 0. Con todos los tramos, las comprobaciones suman exactamente las de la prueba entera.
+//   El lanzador es scripts/destino/_correr6y5.mjs (procesos=16).
 // Usa el almacén de la ruta de verdad (react-dom/server + esbuild, ver _ssr.mjs) y el servidor de verdad: hace lo que hace el viajero, paso a paso.
 //   p1   Dos reservas a la vez (el Altar de la Patria y el Ara Pacis, punto P1): en el mismo día y en días distintos, varias horas, con fechas y sin fechas, poniéndolas en los dos órdenes y
 //        quitándolas en los dos órdenes: el viaje lleva siempre las mismas paradas, cada reserva sale en su día y a su hora, el sitio sale una sola vez, y los días van por orden de hora.
@@ -13,6 +16,8 @@ import { avisoPagoEntrada } from '../../shared/routeEngine/pagoEntrada.js'
 
 const args = Object.fromEntries(process.argv.slice(2).map((x) => x.split(/=(.*)/s).slice(0, 2)))
 const PARTES = new Set((args.parte ?? 'p1,p2,p4,p18,tope').split(','))
+// (Lo que no depende de las fechas del año solo sale en el tramo 0, para no repetirlo.)
+if (args.tramo && Number(args.tramo.split('/')[0]) !== 0) for (const parte of ['p1', 'p18', 'tope']) PARTES.delete(parte)
 const API = process.env.API_URL ?? 'http://localhost:8821'
 const fallos = []
 let comprobaciones = 0
@@ -112,7 +117,8 @@ const FECHAS = (args.fechas ?? '2026-10-20,2027-03-10,2027-06-15').split(',')
 if (PARTES.has('p1')) {
   const N = 3
   const HORAS = [['10:00', '10:00'], ['10:00', '16:00'], ['16:00', '10:00'], ['16:00', '11:00'], ['11:00', '11:00']]
-  for (const inicio of [...FECHAS, null]) {
+  // (`inicio1=2026-10-20` o `inicio1=sin`: solo esa fecha de p1, para repartir p1 en varios procesos; el lanzador _correr6y5.mjs lo usa.)
+  for (const inicio of [...FECHAS, null].filter((fecha) => !args.inicio1 || (args.inicio1 === 'sin' ? fecha === null : fecha === args.inicio1))) {
     await construirRuta(inicio, N)
     const guardada = JSON.stringify(st().route)
     const antes = paradas()
@@ -160,6 +166,10 @@ const FORMAS = [
 const PASO = Number(args.paso ?? 1)
 const fechasAnio = []
 for (let d = 0; d < 365; d += PASO) fechasAnio.push(add('2027-01-01', d))
+// El reparto en tramos (una de cada n fechas, empezando por la i): no cambia lo que se comprueba, solo quién lo comprueba.
+const [TRAMO_I, TRAMO_N] = args.tramo ? args.tramo.split('/').map(Number) : [0, 1]
+if (!Number.isInteger(TRAMO_I) || !Number.isInteger(TRAMO_N) || TRAMO_N < 1 || TRAMO_I < 0 || TRAMO_I >= TRAMO_N) throw new Error('tramo=i/n: i tiene que ir de 0 a n-1')
+const fechasDelTramo = fechasAnio.filter((_, posicion) => posicion % TRAMO_N === TRAMO_I)
 const comunDe = (forma, inicio, extra = {}) => ({ destData: D, written, totalDays: forma.dias + 1, hasFreeTour: Boolean(forma.ft), poolNames: [], experiencesPositive: forma.ft ? ['imprescindibles', 'free_tour'] : [], dateRangeStartIso: inicio, travel, diaCuatro: forma.diaCuatro ?? null, ...extra })
 const GRANDES = [
   { name: 'Coliseo', hora: '10:00' }, { name: 'Coliseo', hora: '14:16' }, { name: 'Coliseo', hora: '16:00' }, { name: MUSEOS, hora: '10:00' }, { name: GALERIA, hora: '11:00' },
@@ -172,7 +182,7 @@ const reservaGrande = (R, inicio, k) => ({ entradas: { [R.name]: R.hora, ...(R.n
 // con cada otro día del viaje que la reserva no fija, y ninguno puede dejar a los dos días en fechas buenas. Y en ese caso el sitio sigue en su día, con el aviso de que cierra.
 if (PARTES.has('p2')) {
   const contador = { planes: 0, cierresSinOtroDia: 0, miercoles: 0 }
-  for (const forma of FORMAS) for (const inicio of fechasAnio) {
+  for (const forma of FORMAS) for (const inicio of fechasDelTramo) {
     const comun = comunDe(forma, inicio)
     const base = planListasTrip({ ...comun, entradas: {} })
     if (!base) continue
@@ -229,7 +239,7 @@ if (PARTES.has('p2')) {
 // El Coliseo desde las 14:16 trae la tarde de otra fila de su tabla (sin la Fuente de las Tortugas, el Elefantino…): el Coliseo se queda y esas paradas salen en «Si te sobra tiempo» de ese día.
 if (PARTES.has('p4')) {
   let casos = 0
-  for (const forma of FORMAS.filter((f) => f.dias >= 2 && !f.ft)) for (const inicio of fechasAnio) {
+  for (const forma of FORMAS.filter((f) => f.dias >= 2 && !f.ft)) for (const inicio of fechasDelTramo) {
     const comun = comunDe(forma, inicio)
     const base = planListasTrip({ ...comun, entradas: {} })
     if (!base) continue

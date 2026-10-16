@@ -1122,7 +1122,8 @@ ${text.slice(0, 20000)}` : intro })
 // Sin clave de servicio de Supabase (SUPABASE_SERVICE_ROLE_KEY), las ventas viven en memoria (desarrollo y pruebas); la tabla es
 // supabase/migrations/0017_affiliate_sales.sql (sin aplicar). Fuera de producción y sin secreto puesto, se puede ingerir sin cabecera (pruebas).
 const salesStore = new Map()
-const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY) : null
+// (Sirve también a las cuentas. La clave puede ser la antigua `service_role` o una nueva `sb_secret_…`: supabase-js 2.114 reconoce las dos y manda la nueva solo en la cabecera `apikey`.)
+const salesAdmin = supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } }) : null
 const CAMPAIGN_PATTERN = /^(app|v)-[A-Z0-9]{5}$/
 
 app.post('/api/sales/ingest', async (req, res) => {

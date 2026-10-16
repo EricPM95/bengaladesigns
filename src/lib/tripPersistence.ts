@@ -7,6 +7,7 @@ import { mapGeneratedRouteToRoute } from './mapGeneratedRoute'
 import type { GenerationResumeState } from './routeGenerationOrchestrator'
 import { supabase } from './supabaseClient'
 import { CENTRAL_MONTH } from './season'
+import { cuentasActivas } from './cuentas'
 
 /**
  * Viajes guardados antes de pedir el mes (Estaciones, Parte 1): solo traen temporada. Se les asigna
@@ -65,6 +66,8 @@ export interface TripPayload {
 /** Un viaje guardado ya identificado por su fila — lo que devuelve loadAllTrips, y lo que hay que pasar de vuelta a saveTrip/deleteTrip para operar sobre ESA fila en concreto. */
 export interface SavedTrip extends TripPayload {
   id: string
+  /** Cuentas, parte 2: el viaje es de otra persona y esta está invitada (solo lo ve; no lo cambia). Solo con las cuentas encendidas. */
+  esInvitado?: boolean
 }
 
 /**
@@ -125,12 +128,13 @@ export function bootstrapTraveler(): Promise<string> {
 export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
   if (!supabase) return []
 
-  const { data, error } = await supabase
-    .from('trips')
-    .select('id, route, bookings, wishlist, ui_state, generation_state')
-    .eq('traveler_id', travelerId)
-    .order('updated_at', { ascending: false })
+  // Con las cuentas encendidas se piden también los viajes donde esta persona es invitada (la base de datos solo deja ver los suyos y esos); si no, solo los suyos, como siempre.
+  const conInvitados = cuentasActivas()
+  let consulta = supabase.from('trips').select(conInvitados ? 'id, traveler_id, route, bookings, wishlist, ui_state, generation_state' : 'id, route, bookings, wishlist, ui_state, generation_state')
+  if (!conInvitados) consulta = consulta.eq('traveler_id', travelerId)
+  const { data: filas, error } = await consulta.order('updated_at', { ascending: false })
   if (error) throw error
+  const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
 
   return (data ?? []).map((row) => {
     const generationState = row.generation_state as GenerationResumeState | null
@@ -141,6 +145,7 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
       wishlist: (row.wishlist ?? []) as WishlistItem[],
       uiState: row.ui_state as TripUiState,
       generationState: generationState && generationState.phase !== 'done' ? generationState : null,
+      ...(conInvitados && row.traveler_id && row.traveler_id !== travelerId ? { esInvitado: true } : {}),
     }
   })
 }
@@ -164,6 +169,12 @@ export async function saveTrip(travelerId: string, tripId: string | null, payloa
   }
 
   if (tripId) {
+    if (cuentasActivas()) {
+      // Solo el administrador cambia el viaje: si es de otra persona (esta está invitada), la base de datos no toca nada y aquí tampoco se avisa de un fallo.
+      const { error } = await supabase.from('trips').update(row).eq('id', tripId).eq('traveler_id', travelerId).select('id')
+      if (error) throw error
+      return tripId
+    }
     const { error } = await supabase.from('trips').update(row).eq('id', tripId)
     if (error) throw error
     return tripId

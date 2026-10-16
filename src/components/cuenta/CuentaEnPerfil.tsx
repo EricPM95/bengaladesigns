@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { borrarMiCuenta, cerrarSesion, cuentasActivas } from '../../lib/cuentas'
+import { InvitarProvisional } from './InvitarProvisional'
 import { PrivacidadScreen } from './PrivacidadScreen'
 import { useCuenta } from './useCuenta'
 
@@ -72,6 +73,7 @@ function CuentaEncendida() {
           </p>
         )}
       </div>
+      {estado.tipo === 'cuenta' && <InvitarProvisional />}
       {privacidad && <PrivacidadScreen onVolver={() => setPrivacidad(false)} />}
     </div>
   )

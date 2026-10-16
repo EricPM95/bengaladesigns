@@ -674,3 +674,27 @@ Todo está en `NOMBRES_LOGROS.md`. Decidido:
   - si acepta y luego se arrepiente, la varita («Recuperar este día» / «Recuperar mi ruta») sigue funcionando;
   - cada uno marca su propio Visto y gana sus propios logros, aunque la ruta sea la misma.
 - Va en la **primera versión** (Eric, 12:18). Necesita las cuentas: se programa con ellas o justo después.
+
+## 28. El pasaporte enseña también lo que se puede conseguir (Eric, 16-oct, 17:01)
+
+- **Cambia la regla del repaso del 16-oct (punto 4: «solo salen los sellos conseguidos»).**
+- En la lista de países del pasaporte salen **todos los países donde la app tiene un sello que conseguir**, aunque el viajero no haya ido nunca. Ejemplo: si metemos Cancún, a todos les sale México, con el sello de Cancún en gris, «Por conseguir».
+- Propuesta de Claude, para Design:
+  - la lista, en dos partes: primero «Tus países» (los visitados) y debajo «Por descubrir» (los que solo tienen sellos por conseguir);
+  - en el mapa, esos países sin pintar, con su marcador en gris;
+  - «6 países · 9 ciudades · 41 días viajando» cuenta solo lo visitado;
+  - al tocar un sello en gris: «Cancún ya está en la app» y [Crear viaje];
+  - la etiqueta «Nuevo» se queda solo para los destinos que acabamos de añadir.
+
+## 29. Cómo se gana cada cosa al tocar Visto (Eric, 16-oct, 17:28)
+
+- **Cambia lo del 15-oct** («el pedazo o el emblema salen al subir la foto»): ahora el pedazo de colección no siempre pide foto.
+- **Pedazo de colección (ej. Plaza Navona en «Los imprescindibles»):**
+  - con ubicación y cerca del sitio: se gana al tocar Visto, sin foto. La foto es opcional, solo para el álbum;
+  - sin ubicación (no dio permiso o no hay señal): se le dice claro «Activa tu ubicación o haz una foto para ganar tu pedazo», con [Activar ubicación] y [Hacer foto]. Con la foto del día, gana el pedazo;
+  - si la ubicación dice que está lejos: Visto se marca para su ruta, pero el pedazo no: «Parece que no estás en Plaza Navona. Tu pedazo te espera allí.»
+- **Emblema Oculto:** siempre con foto. Tarjeta oscura «¡Aquí se esconde un Emblema Oculto!» · «Sube una foto en la Basílica de San Pedro y descúbrelo».
+- Visto solo da logros en los días del viaje.
+- Sorpresas seguidas: sin límite de pantallas; tocar = siguiente; [Saltar todo] = al final. Al final, siempre el resumen del día (el mismo que al acabar la ruta).
+- Foto de otro sitio: «Esta foto no es de la Fontana de Trevi.» + [Elegir otra foto].
+- **Plazo para reclamar (Eric, 17:34; regla nueva):** 30 días desde el último día del viaje para subir las fotos que faltan; después se pierde. Lo pendiente sale en la parada, el resumen del día, el resumen del viaje y Mis viajes (con cuenta atrás: «Te quedan 10 días para reclamar tu premio»). Aviso en el móvil 3 días antes (o email). Desde casa, solo con foto de la galería de esas fechas y ese sitio.

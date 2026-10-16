@@ -43,10 +43,15 @@ export async function archivosDe(admin, uid) {
   return rutas
 }
 
-/** Borra la cuenta: primero los archivos (no caen en cascada), después el usuario (y con él, todo lo demás). */
+/**
+ * Borra la cuenta sin que pierdan nada los demás (parte 2): primero `preparar_borrado` (un viaje con invitados pasa a administrarlo el invitado que entró primero; un pase con otras
+ * personas se queda con ellas), después los archivos de las fotos (no caen en cascada) y por último el usuario, que se lleva en cascada lo que quede suyo.
+ */
 export async function borrarCuenta(admin, token) {
   const usuario = await quienEs(admin, token)
   if (!usuario) return { estado: 401, cuerpo: { error: 'Tu sesión no es válida. Entra otra vez y vuelve a probar.' } }
+  const { data: preparado, error: errorPreparar } = await admin.rpc('preparar_borrado', { p_uid: usuario.id })
+  if (errorPreparar) return { estado: 500, cuerpo: { error: 'No se pudo preparar el borrado. No se ha borrado nada; vuelve a probar.' } }
   const archivos = await archivosDe(admin, usuario.id)
   for (let i = 0; i < archivos.length; i += 100) {
     const { error } = await admin.storage.from(BUCKET_FOTOS).remove(archivos.slice(i, i + 100))
@@ -54,7 +59,7 @@ export async function borrarCuenta(admin, token) {
   }
   const { error } = await admin.auth.admin.deleteUser(usuario.id)
   if (error) return { estado: 500, cuerpo: { error: 'Tus fotos se han borrado, pero no se pudo borrar la cuenta. Vuelve a probar.' } }
-  return { estado: 200, cuerpo: { ok: true, archivosBorrados: archivos.length } }
+  return { estado: 200, cuerpo: { ok: true, archivosBorrados: archivos.length, traspasado: preparado ?? null } }
 }
 
 /** Pasa a la cuenta (token nuevo) lo de la sesión anónima (token viejo). */

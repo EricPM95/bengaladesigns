@@ -61,6 +61,7 @@ import {
 import { withManualDayNames } from '../lib/manualRoute'
 import { bookingsAfterRemovingDays, planManualResize, resizeManualRoute, reservationsOfDays } from '../lib/manualDuration'
 import { recuperarDestino } from '../lib/recuperarDestino'
+import { comprobarEncaje, indiceTrasParada, ordenTrasMover, type Recomendacion } from '../lib/aplicarRecomendacion'
 import { CERRADO_ESTE_DIA } from '../lib/placeHoursOnDate'
 import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
 
@@ -485,6 +486,10 @@ interface RouteStoreState {
   replaceStop: (dayId: string, stopId: string, updates: Partial<Stop>) => void
   /** Inserta `stop` en la posición `index` exacta de `day.stops` (a diferencia de `addStop`, que siempre añade al final) — para el "+" entre paradas de DIAS. */
   insertStopAt: (dayId: string, index: number, stop: Stop) => void
+  /** Cuentas, parte 2: el administrador acepta una recomendación y la ruta cambia de verdad (usa las acciones de siempre, así «Recuperar este día» y «Recuperar mi ruta» siguen funcionando). Si ya no encaja, no cambia nada y devuelve el motivo. */
+  aplicarRecomendacion: (recomendacion: Pick<Recomendacion, 'tipo' | 'payload'>) => { ok: boolean; motivo?: string }
+  /** Cuentas, parte 2: la ruta entera recomendada. Los días que ya existían guardan su copia de antes (la varita los recupera); los nuevos son del viajero. */
+  aplicarRutaRecomendada: (days: DayPlan[]) => void
   /** "Cristaliza" el pool de plantilla mock de un día en `Stop[]` reales, solo si el día aún no tiene ninguna parada real — ver seedStopsFromTemplate en mockDayDetail.ts. No hace nada si el día ya tiene paradas (nunca pisa ediciones existentes). */
   seedDayStops: (dayId: string, seedStops: Stop[]) => void
   /** "Regenerar este día" (DayMenu.tsx) — SUSTITUYE `day.stops` entero por `orderedStops` (ya ordenadas geográficamente por el llamador, ver geographicStopOrder.ts) y reconstruye sus horas desde la primera, igual que reorderStops. A diferencia de seedDayStops (solo si el día está vacío) esto SIEMPRE pisa lo que hubiera antes — es justo lo que "regenerar" pide. */
@@ -1479,6 +1484,52 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       }
     }),
 
+  aplicarRecomendacion: (recomendacion) => {
+    const route = get().route
+    const encaje = comprobarEncaje(route, recomendacion)
+    if (encaje.encaja === false) return { ok: false, motivo: encaje.motivo }
+    if (!route) return { ok: false, motivo: 'No hay ninguna ruta abierta.' }
+    const p = recomendacion.payload as Record<string, unknown>
+    if (recomendacion.tipo === 'cambio') {
+      const dayId = p.dayId as string
+      const day = route.days.find((d) => d.id === dayId)
+      if (!day) return { ok: false, motivo: 'Ese día ya no existe en tu ruta.' }
+      if (p.accion === 'quitar') get().removeStop(dayId, p.stopId as string)
+      else if (p.accion === 'mover') get().reorderStops(dayId, ordenTrasMover(day.stops, p.stopId as string, Number(p.haciaIndice)))
+      else if (p.accion === 'anadir') get().insertStopAt(dayId, indiceTrasParada(day.stops, (p.despuesDe as string | null | undefined) ?? null), { ...(p.stop as Stop), addedByUser: true })
+      return { ok: true }
+    }
+    if (recomendacion.tipo === 'dia') {
+      const day = p.day as DayPlan
+      if (p.accion === 'sustituir') {
+        get().replaceDayExact(p.dayId as string, day)
+        return { ok: true }
+      }
+      const nuevoId = get().addFreeDay(day.title ?? 'Día nuevo')
+      if (!nuevoId) return { ok: false, motivo: 'Tu viaje ya no admite otro día.' }
+      get().replaceDayExact(nuevoId, { ...day, userAdded: true })
+      // (Sin «después de»: se queda al final de los días de ruta, que es donde lo pone «+ Añadir día».)
+      if (p.despuesDeDayId != null) {
+        const destino = get().route?.days.findIndex((d) => d.id === p.despuesDeDayId) ?? -1
+        for (let i = 0; i < 60; i++) {
+          const actual = get().route?.days.findIndex((d) => d.id === nuevoId) ?? -1
+          if (actual < 0 || destino < 0 || actual <= destino + 1) break
+          get().moveFreeDay(nuevoId, -1)
+          if ((get().route?.days.findIndex((d) => d.id === nuevoId) ?? -1) === actual) break
+        }
+      }
+      return { ok: true }
+    }
+    get().aplicarRutaRecomendada(p.days as DayPlan[])
+    return { ok: true }
+  },
+  aplicarRutaRecomendada: (days) =>
+    set((state) => {
+      if (!state.route) return state
+      const existentes = new Set(state.route.days.map((d) => d.id))
+      const nuevos = days.map((d, i) => ({ ...d, dayNumber: i + 1, originalSnapshot: d.originalSnapshot ?? null, ...(existentes.has(d.id) ? {} : { userAdded: true }) }))
+      return { route: reapplyReservations(withDayColors({ ...state.route, days: nuevos }), state.reservations) }
+    }),
   seedDayStops: (dayId, seedStops) =>
     set((state) => {
       if (!state.route) return state
@@ -1785,7 +1836,7 @@ const MANUAL_EDIT_ACTIONS = [
   'convertDayType', 'selectDayExcursion', 'declineHalfDayExcursion', 'addBlankDayExcursion', 'placeExcursion', 'replaceDayExact', 'removeStop', 'reorderStops', 'reorderDays', 'deleteDay',
   'addFreeDay', 'removeFreeDay', 'renameDay', 'moveFreeDay',
   'moveStopToDay', 'updateStopTime', 'addStop', 'replaceStop', 'insertStopAt', 'seedDayStops',
-  'addSuggestedStop', 'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant',
+  'addSuggestedStop', 'markDidntMakeCutAdded', 'addPlaceToDay', 'setMealRestaurant', 'aplicarRutaRecomendada',
 ] as const
 for (const name of MANUAL_EDIT_ACTIONS) {
   const original = useRouteStore.getState()[name] as (...args: unknown[]) => unknown

@@ -39,6 +39,19 @@ Todo lo de la Tanda 8 está en `APUNTES_TRAS_TANDA7.md` y `BRIEF_DISENO_LOGROS.m
 - Eric comprueba en su panel de Civitatis que llegan los clics con la campaña «app».
 - Regla de siempre: en la app nunca se nombra a la empresa.
 
+## Lo que ya hizo Eric fuera del código (16-oct, 18:39)
+- Supabase: «Allow manual linking» activado; «Allow anonymous sign-ins» sigue activado.
+- Vercel: `SUPABASE_SERVICE_ROLE_KEY` puesta como Secret (clave `sb_secret_`).
+- Google: proyecto «App rutas» en Google Cloud, en modo Prueba (solo entra Eric como usuario de prueba), con el permiso openid. Cliente web con origen `https://bengaladesigns.vercel.app` y la dirección de vuelta de Supabase. El ID y el secreto, puestos en Supabase → Providers → Google (activado). El secreto viejo está borrado.
+- Supabase → URL Configuration: Site URL `https://bengaladesigns.vercel.app` y Redirect URL `https://bengaladesigns.vercel.app/**`.
+- Falta: el servicio de correos (necesita dominio propio, cuando se decida el nombre); aplicar la migración 0020 (cuando estén las pantallas de Design); al salir, pasar Google de Prueba a Publicado y poner el nombre definitivo en Branding.
+
+## Para la próxima tanda de Code (cuentas, parte 2)
+- Eric puso en Vercel `SUPABASE_SERVICE_ROLE_KEY` (16-oct, 18:11) como Secret, con una clave nueva de Supabase de las que empiezan por `sb_secret_` (no la antigua `service_role`). Code tiene que comprobar que su versión de supabase-js la acepta en el servidor; si no, decírselo a Eric.
+- Cambiar el borrado de cuenta: el pase que es para otra persona se queda con esa persona; un viaje compartido no se borra, pasa a administrarlo el invitado que entró primero.
+- La lógica del enlace o código para invitar.
+- Partir la prueba larga por fechas (`tramo=i/n`) para que tarde unos 5 minutos.
+
 ## La fecha de salida (Eric, 16-oct, 9:47)
 - «No te sofoques con los días, si hace falta sale el año que viene, pero vamos a acabar todo esto bien.» El 4-nov ya no es fijo: primero, todo terminado y bien hecho.
 - Orden: Design termina todas las pantallas → Code programa por tandas (HOY v2, logros, pantallas de logros, cuentas y pase) → se prueba todo → sale.

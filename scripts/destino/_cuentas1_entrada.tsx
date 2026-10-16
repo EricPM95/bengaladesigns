@@ -10,6 +10,11 @@ import { PuertaDeCuenta } from '../../src/components/cuenta/PuertaDeCuenta'
 import { CuentaEnPerfil } from '../../src/components/cuenta/CuentaEnPerfil'
 import { PrivacidadScreen } from '../../src/components/cuenta/PrivacidadScreen'
 import { EntrarProvisional } from '../../src/components/cuenta/EntrarProvisional'
+import { VistosPorPersona } from '../../src/components/cuenta/VistosPorPersona'
+import { comprobarEncaje, ordenTrasMover, indiceTrasParada, textoDeRecomendacion } from '../../src/lib/aplicarRecomendacion'
+import { conVistosDe, cambiosDeVistos } from '../../src/lib/vistosPorPersona'
+import { normalizarCodigo, enlaceDeInvitacion, codigoDeLaDireccion, textoDeInvitacionNoValida } from '../../src/lib/invitaciones'
+import { useRouteStore } from '../../src/store/useRouteStore'
 
 export const M = {
   calcularCuentasActivas,
@@ -31,5 +36,17 @@ export const M = {
   pintaPuerta: () => renderToStaticMarkup(createElement(PuertaDeCuenta)),
   pintaCuentaEnPerfil: () => renderToStaticMarkup(createElement(CuentaEnPerfil)),
   pintaPrivacidad: () => renderToStaticMarkup(createElement(PrivacidadScreen, { onVolver: () => undefined })),
+  comprobarEncaje,
+  ordenTrasMover,
+  indiceTrasParada,
+  textoDeRecomendacion,
+  conVistosDe,
+  cambiosDeVistos,
+  normalizarCodigo,
+  enlaceDeInvitacion,
+  codigoDeLaDireccion,
+  textoDeInvitacionNoValida,
+  useRouteStore,
+  pintaVistos: () => renderToStaticMarkup(createElement(VistosPorPersona)),
   pintaEntrar: () => renderToStaticMarkup(createElement(EntrarProvisional, { onSaltar: () => undefined })),
 }

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabaseClient'
+import { canjearInvitacion, codigoDeLaDireccion, guardarInvitacionPendiente, invitacionPendiente, olvidarInvitacionPendiente } from './invitaciones'
 
 /**
  * LAS CUENTAS, PARTE 1 (docs/dias/PLAN_CUENTAS.md). Entrar con el email (enlace mágico) o con Google, pasar a la cuenta lo que el móvil tenía, cerrar sesión y
@@ -206,6 +207,43 @@ function recargarLimpio(ruta: string): void {
   window.location.reload()
 }
 
+const CLAVE_AVISO_INVITACION = 'trazo:invitacion:aviso'
+/** Lo que le pasó a la última invitación que abrió (para enseñarlo después de la recarga). */
+export function guardarAvisoDeInvitacion(texto: string): void {
+  try {
+    window.sessionStorage.setItem(CLAVE_AVISO_INVITACION, texto)
+  } catch {
+    /* sin almacenamiento: no se enseña */
+  }
+}
+export function leerAvisoDeInvitacion(): string | null {
+  try {
+    return window.sessionStorage.getItem(CLAVE_AVISO_INVITACION)
+  } catch {
+    return null
+  }
+}
+export function olvidarAvisoDeInvitacion(): void {
+  try {
+    window.sessionStorage.removeItem(CLAVE_AVISO_INVITACION)
+  } catch {
+    /* nada que quitar */
+  }
+}
+
+/** Si la dirección trae `?invitacion=CÓDIGO`, se guarda para canjearla después de entrar y se limpia la dirección. */
+export function recogerInvitacionDeLaDireccion(): string | null {
+  try {
+    const codigo = codigoDeLaDireccion(window.location.search)
+    if (!codigo) return null
+    guardarInvitacionPendiente(codigo)
+    window.history.replaceState(null, '', window.location.pathname)
+    return codigo
+  } catch {
+    return null
+  }
+}
+
 let entradaEnCurso: Promise<void> | null = null
 
 /** Lo que se hace cada vez que hay una cuenta de verdad: pasar lo del móvil, guardar la fecha de alta y copiar los vistos del viaje a los de la persona. */
@@ -220,8 +258,20 @@ export function completarEntrada(sesion: Session): Promise<void> {
       if (sesion.user.email) await supabase!.from('travelers').update({ email: sesion.user.email }).eq('id', sesion.user.id)
       const { copiarVistosDeLosViajes } = await import('./vistosApi')
       await copiarVistosDeLosViajes(sesion.user.id).catch(() => undefined)
-      // Con el `uid` cambiado, todo lo que la app cargó con el anterior está viejo: se recarga una vez, con la dirección limpia.
-      if (pasado) recargarLimpio(window.location.pathname)
+      // Una invitación a un viaje abierta antes de tener cuenta (o ahora): se canjea y la persona entra en el viaje como invitada.
+      let entroEnUnViaje = false
+      const codigo = invitacionPendiente()
+      if (codigo) {
+        const resultado = await canjearInvitacion(codigo)
+        olvidarInvitacionPendiente()
+        if (resultado.error) guardarAvisoDeInvitacion(resultado.error)
+        else if (!resultado.yaEstaba) {
+          guardarAvisoDeInvitacion('Has entrado en el viaje como invitado.')
+          entroEnUnViaje = true
+        }
+      }
+      // Con el `uid` cambiado, o con un viaje nuevo, todo lo que la app cargó está viejo: se recarga una vez, con la dirección limpia.
+      if (pasado || entroEnUnViaje) recargarLimpio(window.location.pathname)
     })().finally(() => {
       entradaEnCurso = null
     })
@@ -235,6 +285,7 @@ export function vigilarSesion(alCambiar: (estado: EstadoDeCuenta) => void): () =
     alCambiar({ tipo: 'sin_sesion' })
     return () => undefined
   }
+  recogerInvitacionDeLaDireccion()
   void alVolverDelEnlace()
   void supabase.auth.getSession().then(({ data }) => {
     alCambiar(estadoDeSesion(data.session))

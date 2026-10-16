@@ -10,6 +10,7 @@ import { decodeTripFromUrl } from './lib/shareUrl'
 import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
+import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
 import { AvisoSolape } from './components/route/reservas/AvisoSolape'
@@ -96,6 +97,7 @@ function App() {
     <Layout>
       <TripSync />
       <PuertaDeCuenta />
+      <VistosPorPersona />
       <PrecioVuela />
       <FotoVuela />
       <CampaignLinks />

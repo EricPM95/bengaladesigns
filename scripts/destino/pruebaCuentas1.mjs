@@ -41,12 +41,7 @@ async function empaquetar(nombre, entorno) {
     format: 'cjs',
     jsx: 'automatic',
     logLevel: 'error',
-    define: {
-      'import.meta.env.DEV': 'false',
-      'import.meta.env.VITE_CUENTAS_ACTIVAS': entorno === undefined ? 'undefined' : JSON.stringify(entorno),
-      'import.meta.env.VITE_SUPABASE_URL': 'undefined',
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': 'undefined',
-    },
+    define: { 'import.meta.env': JSON.stringify({ DEV: false, MODE: 'test', VITE_CUENTAS_ACTIVAS: entorno }) },
     plugins: [
       {
         name: 'portales-en-su-sitio',
@@ -65,7 +60,9 @@ const almacen = () => {
   return { getItem: (k) => mapa.get(k) ?? null, setItem: (k, v) => mapa.set(k, String(v)), removeItem: (k) => mapa.delete(k), key: (i) => [...mapa.keys()][i] ?? null, get length() { return mapa.size } }
 }
 globalThis.window = { location: { search: '', hash: '', pathname: '/', origin: 'http://localhost', href: 'http://localhost/' }, sessionStorage: almacen(), localStorage: almacen(), addEventListener() {}, removeEventListener() {} }
-globalThis.document = { body: {}, createElement: () => ({}) }
+globalThis.document = { body: {}, createElement: () => ({}), documentElement: { style: {}, classList: { toggle() {}, add() {}, remove() {} } }, addEventListener() {}, removeEventListener() {} }
+globalThis.localStorage = globalThis.window.localStorage
+globalThis.sessionStorage = globalThis.window.sessionStorage
 
 const apagado = await empaquetar('apagado', undefined)
 const encendido = await empaquetar('encendido', 'true')
@@ -183,6 +180,132 @@ function crearJpegConExif({ little = true, make = 'Apple', model = 'iPhone 15', 
 }
 
 /* ─────────────────────────── 4. El Postgres de prueba ─────────────────────────── */
+/* ─────────────────────────── 3b. Vistos de cada persona, invitaciones y recomendaciones aplicadas (parte 2) ─────────────────────────── */
+console.log('3b. Vistos de cada persona, invitaciones y recomendaciones aplicadas')
+{
+  const M = encendido
+  const stop = (id, name, time, lat, lng, extra = {}) => ({ id, name, time, description: '', durationMinutes: 45, coordinates: { lat, lng }, photoUrl: '', ...extra })
+  const dia = (id, n, stops, extra = {}) => ({ id, dayNumber: n, city: 'Roma', title: `Día ${n}`, stops, meals: [], dayType: 'normal', ...extra })
+  const nuevaRuta = () => ({
+    id: 'ruta-1',
+    destination: 'Roma',
+    country: 'Italia',
+    origin: 'Madrid',
+    days: [
+      dia('d1', 1, [stop('s1', 'Coliseo', '09:00', 41.89, 12.492), stop('s2', 'Arco de Constantino', '10:00', 41.8898, 12.4906), stop('s3', 'Foro Romano', '10:45', 41.8925, 12.4853)]),
+      dia('d2', 2, [stop('s4', 'Plaza de San Pedro', '09:00', 41.9022, 12.4539), stop('s5', 'Basílica de San Pedro', '10:00', 41.9022, 12.4534)]),
+    ],
+    answers: {},
+    transportContext: {},
+    intensity: 50,
+    createdAt: '2026-10-01T10:00:00Z',
+  })
+  const nombres = (route, dayId) => route.days.find((d) => d.id === dayId)?.stops.map((s) => s.name)
+
+  // Los vistos de cada persona sobre la ruta
+  {
+    const ruta = nuevaRuta()
+    ruta.days[0].stops[0].checkedInAt = '2026-10-11T09:00:00Z' // (el del administrador, dentro de la ruta)
+    const deEllos = M.conVistosDe(ruta, [{ stopId: 's2', vistoEn: '2026-10-11T10:00:00Z' }])
+    debe(deEllos.days[0].stops[0].checkedInAt === null && deEllos.days[0].stops[1].checkedInAt === '2026-10-11T10:00:00Z', 'vistos2', 'se pintan los vistos de ESTA persona (los del administrador, que van en la ruta, no)')
+    debe(M.conVistosDe(deEllos, [{ stopId: 's2', vistoEn: '2026-10-11T10:00:00Z' }]) === deEllos, 'vistos2', 'si no cambia nada, devuelve la misma ruta (no repinta)')
+    debe(ruta.days[0].stops[0].checkedInAt === '2026-10-11T09:00:00Z', 'vistos2', 'no cambia la ruta original')
+    const cambios = M.cambiosDeVistos(ruta, deEllos)
+    debe(cambios.length === 2 && cambios.some((c) => c.stopId === 's1' && c.visto === false) && cambios.some((c) => c.stopId === 's2' && c.visto === true), 'vistos2', 'se detecta qué vistos se han puesto y quitar entre dos rutas')
+    debe(M.cambiosDeVistos(ruta, { ...ruta, id: 'otra' }).length === 0, 'vistos2', 'entre viajes distintos no se compara nada')
+    debe(M.pintaVistos() === '', 'vistos2', 'el enganche de los vistos no pinta nada')
+  }
+
+  // Los códigos y los enlaces
+  {
+    debe(M.normalizarCodigo(' ab-cd 23 45 ') === 'ABCD2345', 'invitar_texto', 'el código se escribe como sea y se normaliza')
+    debe(M.enlaceDeInvitacion('https://bengaladesigns.vercel.app/', 'abcd2345') === 'https://bengaladesigns.vercel.app/?invitacion=ABCD2345', 'invitar_texto', 'el enlace lleva el código')
+    debe(M.codigoDeLaDireccion('?invitacion=abcd2345&x=1') === 'ABCD2345' && M.codigoDeLaDireccion('?otra=1') === null && M.codigoDeLaDireccion('?invitacion=ab') === null, 'invitar_texto', 'el código sale de la dirección y un código absurdo no vale')
+    debe(/anulado/.test(M.textoDeInvitacionNoValida('anulada')) && /plazas/.test(M.textoDeInvitacionNoValida('sin_usos')) && /Revisa/.test(M.textoDeInvitacionNoValida('no_existe')), 'invitar_texto', 'cada motivo se explica en palabras sencillas')
+  }
+
+  // Lo que encaja y lo que no
+  {
+    const ruta = nuevaRuta()
+    const enc = (tipo, payload, r = ruta) => M.comprobarEncaje(r, { tipo, payload })
+    debe(enc('cambio', { dayId: 'd1', accion: 'quitar', stopId: 's2' }).encaja === true, 'encaje', 'quitar una parada que está encaja')
+    debe(enc('cambio', { dayId: 'd9', accion: 'quitar', stopId: 's2' }).encaja === false, 'encaje', 'si el día ya no existe, no encaja')
+    debe(enc('cambio', { dayId: 'd1', accion: 'quitar', stopId: 'sXX' }).encaja === false, 'encaje', 'si la parada ya no está, no encaja')
+    debe(enc('cambio', { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 2 }).encaja === true && enc('cambio', { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 7 }).encaja === false, 'encaje', 'mover encaja si el sitio existe')
+    debe(enc('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47), despuesDe: 's1' }).encaja === true, 'encaje', 'añadir una parada nueva encaja')
+    debe(enc('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Coliseo', '', 41.89, 12.47) }).encaja === false, 'encaje', 'añadir una parada que ya está no encaja')
+    debe(enc('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47), despuesDe: 'sXX' }).encaja === false, 'encaje', 'si la parada de «después de» ya no está, no encaja')
+    debe(enc('dia', { accion: 'sustituir', dayId: 'd2', day: dia('d2', 2, []) }).encaja === true && enc('dia', { accion: 'sustituir', dayId: 'd9', day: dia('d9', 2, []) }).encaja === false, 'encaje', 'sustituir un día encaja si el día existe')
+    debe(enc('dia', { accion: 'anadir', despuesDeDayId: 'd1', day: dia('dN', 3, []) }).encaja === true && enc('dia', { accion: 'anadir', despuesDeDayId: 'd9', day: dia('dN', 3, []) }).encaja === false, 'encaje', 'añadir un día encaja si el día de antes existe')
+    debe(enc('ruta', { days: [dia('a', 1, []), dia('b', 2, [])] }).encaja === true && enc('ruta', { days: [] }).encaja === false, 'encaje', 'la ruta entera necesita días')
+    debe(enc('ruta', { days: [dia('a', 1, [])], baseRouteId: 'ruta-1' }).encaja === true && enc('ruta', { days: [dia('a', 1, [])], baseRouteId: 'otra' }).encaja === false, 'encaje', 'la ruta entera ya no encaja si la ruta de ahora no es sobre la que se recomendó')
+    debe(enc('inventada', {}).encaja === false && M.comprobarEncaje(null, { tipo: 'cambio', payload: {} }).encaja === false, 'encaje', 'un tipo raro o sin ruta no encaja')
+    debe(M.ordenTrasMover([{ id: 'a' }, { id: 'b' }, { id: 'c' }], 'a', 2).join() === 'b,c,a' && M.indiceTrasParada([{ id: 'a' }, { id: 'b' }], 'a') === 1 && M.indiceTrasParada([{ id: 'a' }], null) === 0, 'encaje', 'el orden tras mover y el sitio donde se añade salen bien')
+    debe(/Quitar Arco de Constantino en «Día 1»/.test(M.textoDeRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'quitar', stopId: 's2' } }, ruta)), 'encaje', 'el texto de la lista dice qué recomienda')
+  }
+
+  // Aceptar una recomendación cambia la ruta de verdad, y la varita lo deja como estaba
+  {
+    const almacen = M.useRouteStore
+    const abrir = () => {
+      almacen.getState().setRoute(nuevaRuta())
+      return almacen.getState().route
+    }
+    const ruta0 = abrir()
+    debe(Boolean(ruta0) && ruta0.originalRoute != null, 'aplicar', 'al abrir una ruta se guarda la original (la que recupera la varita)')
+
+    let r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'quitar', stopId: 's2' } })
+    debe(r.ok === true && nombres(almacen.getState().route, 'd1').join() === 'Coliseo,Foro Romano', 'aplicar', `quitar una parada: ${JSON.stringify(nombres(almacen.getState().route, 'd1'))}`)
+    debe(almacen.getState().route.days[0].originalSnapshot != null, 'aplicar', 'antes de cambiar el día se guardó cómo estaba (copia del día)')
+    almacen.getState().restoreOriginalDay('d1')
+    debe(nombres(almacen.getState().route, 'd1').join() === 'Coliseo,Arco de Constantino,Foro Romano', 'aplicar', '«Recuperar este día» deja el día como estaba antes de la recomendación')
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 2 } })
+    debe(r.ok === true && nombres(almacen.getState().route, 'd1').join() === 'Arco de Constantino,Foro Romano,Coliseo', 'aplicar', `mover una parada: ${JSON.stringify(nombres(almacen.getState().route, 'd1'))}`)
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.8986, 12.4769), despuesDe: 's1' } })
+    debe(r.ok === true && nombres(almacen.getState().route, 'd1').join() === 'Coliseo,Panteón,Arco de Constantino,Foro Romano', 'aplicar', `añadir una parada: ${JSON.stringify(nombres(almacen.getState().route, 'd1'))}`)
+    debe(almacen.getState().route.days[0].stops[1].addedByUser === true, 'aplicar', 'lo añadido queda como del viajero')
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'dia', payload: { accion: 'sustituir', dayId: 'd2', day: dia('otro', 2, [stop('v1', 'Museos Vaticanos', '09:00', 41.9065, 12.4536)]) } })
+    debe(r.ok === true && nombres(almacen.getState().route, 'd2').join() === 'Museos Vaticanos' && almacen.getState().route.days[1].id === 'd2', 'aplicar', 'sustituir un día entero (el día conserva su sitio)')
+    almacen.getState().restoreOriginalDay('d2')
+    debe(nombres(almacen.getState().route, 'd2').join() === 'Plaza de San Pedro,Basílica de San Pedro', 'aplicar', '«Recuperar este día» también recupera un día sustituido')
+
+    abrir()
+    const antesDias = almacen.getState().route.days.length
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'dia', payload: { accion: 'anadir', despuesDeDayId: 'd1', day: dia('nuevo', 3, [stop('t1', 'Trastevere', '10:00', 41.8893, 12.4698)], { title: 'Trastevere' }) } })
+    const rutaMas = almacen.getState().route
+    debe(r.ok === true && rutaMas.days.length === antesDias + 1, 'aplicar', `añadir un día: ${JSON.stringify(r)} · días ${rutaMas.days.length}`)
+    debe(rutaMas.days.some((d) => d.stops.some((s) => s.name === 'Trastevere') && d.userAdded === true), 'aplicar', 'el día nuevo lleva sus paradas y es del viajero')
+    almacen.getState().restoreOriginalRoute()
+    debe(almacen.getState().route.days.length === antesDias && !almacen.getState().route.days.some((d) => d.stops.some((s) => s.name === 'Trastevere')), 'aplicar', '«Recuperar mi ruta» quita el día que se añadió y deja la ruta original')
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'ruta', payload: { baseRouteId: 'ruta-1', days: [dia('d1', 1, [stop('s1', 'Coliseo', '09:00', 41.89, 12.492)]), dia('d7', 2, [stop('z1', 'Villa Borghese', '10:00', 41.9142, 12.4923)])] } })
+    const nueva = almacen.getState().route
+    debe(r.ok === true && nueva.days.length === 2 && nombres(nueva, 'd7').join() === 'Villa Borghese' && nueva.days[1].userAdded === true, 'aplicar', 'la ruta entera cambia (los días nuevos son del viajero)')
+    debe(nueva.days[0].originalSnapshot != null && nombres(nueva, 'd1').join() === 'Coliseo', 'aplicar', 'el día que ya existía guarda su copia de antes')
+    almacen.getState().restoreOriginalRoute()
+    const recuperada = almacen.getState().route
+    debe(recuperada.days.map((d) => d.id).join() === 'd1,d2' && nombres(recuperada, 'd1').join() === 'Coliseo,Arco de Constantino,Foro Romano', 'aplicar', '«Recuperar mi ruta» deja la ruta como la prepararon, no la recomendada')
+
+    // Ya no encaja: no se aplica a ciegas
+    abrir()
+    almacen.getState().removeStop('d1', 's2')
+    const antes = JSON.stringify(almacen.getState().route.days)
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'quitar', stopId: 's2' } })
+    debe(r.ok === false && /ya no está/.test(r.motivo ?? ''), 'aplicar', `la parada ya no está: no se aplica y dice por qué (${r.motivo})`)
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'dia', payload: { accion: 'sustituir', dayId: 'd9', day: dia('d9', 9, []) } })
+    debe(r.ok === false && JSON.stringify(almacen.getState().route.days) === antes, 'aplicar', 'si el día ya no existe, no cambia nada')
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'ruta', payload: { baseRouteId: 'otra', days: [dia('x', 1, [])] } })
+    debe(r.ok === false && JSON.stringify(almacen.getState().route.days) === antes, 'aplicar', 'una ruta entera sobre otra base no se aplica')
+  }
+}
+
 // (PGlite se cree en un navegador si ve una ventana: se quita la de mentira, que ya no hace falta.)
 delete globalThis.window
 delete globalThis.document
@@ -200,7 +323,7 @@ await db.exec(`
   alter table storage.objects enable row level security;
   create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
 `)
-const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020)_/.test(f)).sort()
+const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021)_/.test(f)).sort()
 for (const archivo of migraciones) {
   try {
     await db.exec(fs.readFileSync(path.join('supabase/migrations', archivo), 'utf8'))
@@ -221,6 +344,7 @@ await db.exec(`
 `)
 // (las funciones que la migración reservó al servidor)
 await db.exec('revoke execute on function public.reclamar_anonimo(uuid, uuid) from authenticated')
+await db.exec('revoke execute on function public.preparar_borrado(uuid) from authenticated')
 
 const claims = (uid, anonimo = false) => JSON.stringify({ sub: uid, role: 'authenticated', is_anonymous: anonimo })
 async function como(uid, fn, { anonimo = false, rol = 'authenticated' } = {}) {
@@ -558,16 +682,20 @@ fichas.set('tok-beto', beto)
     if (n > 0) restos.push(`${esquema}.${tabla} (${n})`)
   }
   debe(restos.length === 0, 'borrar', `quedan cosas de Ana en: ${restos.join(', ')}`)
-  const viajeEnTexto = await q(`select count(*)::int as n from public.trips where id = $1`, [viajeAna])
-  debe(viajeEnTexto[0].n === 0, 'borrar', 'su viaje se borró con ella')
+  // (Parte 2) El viaje tenía un invitado: NO se borra, pasa a administrarlo ese invitado.
+  const viajeSigue = await q('select traveler_id from public.trips where id = $1', [viajeAna])
+  debe(viajeSigue.length === 1 && viajeSigue[0].traveler_id === beto, 'borrar', 'el viaje compartido no se borra: pasa a administrarlo el invitado (Beto)')
+  debe(r.cuerpo.traspasado?.viajes_traspasados === 1, 'borrar', `el servidor cuenta el viaje traspasado: ${JSON.stringify(r.cuerpo.traspasado)}`)
   // Lo de Beto (invitado) sigue, salvo lo que colgaba del viaje de Ana.
   debe((await q('select 1 from auth.users where id = $1', [beto])).length === 1, 'borrar', 'Beto sigue existiendo')
   debe((await q('select 1 from public.trip_photos where id = $1', [fotoBeto])).length === 1 && (await archivosDe(admin, beto)).length === 2, 'borrar', 'las fotos de Beto siguen (eran suyas)')
   debe((await q('select 1 from public.place_likes where user_id = $1', [beto])).length === 1, 'borrar', 'el «me gusta» de Beto sigue')
   debe((await q('select 1 from public.achievements where user_id = $1', [beto])).length === 1, 'borrar', 'los logros de Beto siguen (son de su cuenta, no del viaje de Ana)')
   debe((await q('select 1 from public.trip_members where user_id = $1', [beto])).length === 0 && (await q('select 1 from public.trip_recommendations where author_id = $1', [beto])).length === 0, 'borrar', 'las invitaciones y recomendaciones de ese viaje se fueron con él')
-  debe((await q('select 1 from public.passes where comprador_id = $1', [ana])).length === 0, 'borrar', 'el pase que compró Ana se borró')
-  debe((await q('select 1 from public.pass_members where user_id = $1', [beto])).length === 0, 'borrar', 'Beto deja de figurar en un pase que ya no existe')
+  // (Parte 2) El pase Dúo que compró Ana lo usaba Beto: se queda con Beto.
+  const pase = await q('select comprador_id, usos_max, usos_usados from public.passes where codigo = $1', ['ROMA-DUO-1'])
+  debe(pase.length === 1 && pase[0].comprador_id === beto && pase[0].usos_max === 2, 'borrar', 'el pase Dúo de Ana no se borra: se queda con Beto')
+  debe((await q('select 1 from public.pass_members where user_id = $1', [beto])).length === 1, 'borrar', 'Beto sigue figurando en su pase')
 }
 // Borrar a un invitado: solo sale él.
 {
@@ -590,6 +718,235 @@ fichas.set('tok-beto', beto)
     if (n > 0) restos.push(`${esquema}.${tabla} (${n})`)
   }
   debe(restos.length === 0 && yaraViajes === 2, 'borrar_invitado', `quedan cosas de Yara en: ${restos.join(', ')}`)
+}
+
+/* ─────────────────────────── 5b. Invitar a alguien (parte 2) ─────────────────────────── */
+console.log('5b. Invitar a alguien')
+const rutaDe = (destino) => JSON.stringify({ id: `ruta-${destino}`, destination: destino, days: [] })
+const cuenta = async (nombre) => {
+  const id = await nuevoUsuario(`${nombre}@correo.es`, false)
+  await como(id, () => q('insert into public.travelers (id, is_anonymous) values ($1, false)', [id]))
+  fichas.set(`tok-${nombre}`, id)
+  return id
+}
+const ALFABETO = /^[2-9A-DFWY]{8}$/
+{
+  const olga = await cuenta('olga')
+  const pablo = await cuenta('pablo')
+  const quique = await cuenta('quique')
+  const rita = await nuevoUsuario(null, true)
+  const viajeOlga = await insertaViaje(olga, rutaDe('Roma'))
+
+  const inv = await como(olga, async () => (await q('select public.crear_invitacion($1) as r', [viajeOlga]))[0].r)
+  debe(typeof inv.codigo === 'string' && /^[2-9A-Z]{8}$/.test(inv.codigo) && !/[01OIL]/.test(inv.codigo), 'invitar', `el código es corto y sin letras confusas: ${inv.codigo}`)
+  debe(inv.usos_max === 1 && inv.trip_id === viajeOlga, 'invitar', 'una invitación sin pase vale para 1 persona por defecto')
+  debe((await lanza(() => como(pablo, () => q('select public.crear_invitacion($1)', [viajeOlga])))) !== null, 'invitar', 'solo el administrador crea invitaciones (Pablo no puede)')
+  debe((await lanza(() => como(rita, () => q('select public.crear_invitacion($1)', [viajeOlga]), { anonimo: true }))) !== null, 'invitar', 'con la sesión anónima no se crean invitaciones')
+  debe((await lanza(() => como(null, () => q('select public.crear_invitacion($1)', [viajeOlga]), { rol: 'anon' }))) !== null, 'invitar', 'sin sesión no se puede llamar a crear_invitacion')
+  debe((await lanza(() => como(olga, () => q("insert into public.trip_invitations (trip_id, codigo) values ($1, 'FALSA123')", [viajeOlga])))) !== null, 'invitar', 'nadie escribe una invitación a mano: solo las funciones')
+  const dosUsos = await como(olga, async () => (await q('select public.crear_invitacion($1, null, 3) as r', [viajeOlga]))[0].r)
+  debe(dosUsos.usos_max === 3 && dosUsos.codigo !== inv.codigo, 'invitar', 'se puede invitar a varias personas con una sola invitación y cada código es distinto')
+  debe((await lanza(() => como(olga, () => q('select public.crear_invitacion($1, null, 51)', [viajeOlga])))) !== null, 'invitar', 'no se invita a más de 50 personas a la vez')
+
+  // Ver, antes de entrar (también con la sesión anónima)
+  const ver = await como(rita, async () => (await q('select public.ver_invitacion($1) as r', [inv.codigo.toLowerCase()]))[0].r, { anonimo: true })
+  debe(ver.valida === true && ver.destino === 'Roma' && !('trip_id' in ver), 'invitar_ver', 'se puede ver a qué destino te invitan (con el código en minúsculas también) y no sale nada más del viaje')
+  const verMal = await como(pablo, async () => (await q("select public.ver_invitacion('NOEXISTE') as r"))[0].r)
+  debe(verMal.valida === false && verMal.motivo === 'no_existe', 'invitar_ver', 'un código que no existe no vale')
+
+  // Canjear
+  debe((await lanza(() => como(rita, () => q('select public.canjear_invitacion($1)', [inv.codigo]), { anonimo: true }))) !== null, 'invitar_canjear', 'con la sesión anónima no se canjea: primero hay que crear la cuenta')
+  const entra = await como(pablo, async () => (await q('select public.canjear_invitacion($1) as r', [inv.codigo]))[0].r)
+  debe(entra.trip_id === viajeOlga && entra.ya_estaba === false, 'invitar_canjear', 'Pablo entra en el viaje')
+  debe((await como(pablo, () => q('select id from public.trips'))).length === 1, 'invitar_canjear', 'Pablo ve el viaje de Olga')
+  debe((await q('select user_id, rol, invited_by from public.trip_members where trip_id = $1', [viajeOlga]))[0].rol === 'invitado', 'invitar_canjear', 'entra como invitado')
+  await como(pablo, () => q(`update public.trips set route = '{"id":"cambiada"}'::jsonb where id = $1`, [viajeOlga]))
+  debe((await q('select route from public.trips where id = $1', [viajeOlga]))[0].route.id === 'ruta-Roma', 'invitar_canjear', 'el invitado no puede cambiar la ruta')
+  const otraVez = await como(pablo, async () => (await q('select public.canjear_invitacion($1) as r', [inv.codigo]))[0].r)
+  debe(otraVez.ya_estaba === true, 'invitar_canjear', 'canjear dos veces no gasta otro uso')
+  const suya = await como(olga, async () => (await q('select public.canjear_invitacion($1) as r', [inv.codigo]))[0].r)
+  debe(suya.ya_estaba === true, 'invitar_canjear', 'el administrador abriendo su propia invitación no gasta ningún uso')
+  debe((await q('select usos_usados from public.trip_invitations where id = $1', [inv.id]))[0].usos_usados === 1, 'invitar_canjear', 'solo se ha gastado 1 uso')
+  const sinUsos = await lanza(() => como(quique, () => q('select public.canjear_invitacion($1)', [inv.codigo])))
+  debe(sinUsos !== null && /Ya no quedan/.test(sinUsos), 'invitar_canjear', `con 1 plaza ya usada, nadie más entra: ${sinUsos}`)
+  const verAgotada = await como(quique, async () => (await q('select public.ver_invitacion($1) as r', [inv.codigo]))[0].r)
+  debe(verAgotada.valida === false && verAgotada.motivo === 'sin_usos', 'invitar_canjear', 'cuando ya no quedan usos, deja de valer')
+  debe((await como(quique, () => q('select id from public.trips'))).length === 0, 'invitar_canjear', 'el que no entró no ve el viaje')
+
+  // Varias plazas
+  await como(quique, () => q('select public.canjear_invitacion($1)', [dosUsos.codigo]))
+  const otro = await cuenta('otro')
+  await como(otro, () => q('select public.canjear_invitacion($1)', [dosUsos.codigo]))
+  debe((await q('select count(*)::int as n from public.trip_members where trip_id = $1', [viajeOlga]))[0].n === 3, 'invitar_canjear', 'una invitación de 3 plazas deja entrar a 3 personas distintas (Pablo ya estaba por la otra)')
+
+  // Anular
+  const paraAnular = await como(olga, async () => (await q('select public.crear_invitacion($1, null, 2) as r', [viajeOlga]))[0].r)
+  debe((await lanza(() => como(pablo, () => q('select public.anular_invitacion($1)', [paraAnular.id])))) !== null, 'invitar_anular', 'solo el administrador anula')
+  await como(olga, () => q('select public.anular_invitacion($1)', [paraAnular.id]))
+  const nuevoMas = await cuenta('nuevo')
+  const anulada = await lanza(() => como(nuevoMas, () => q('select public.canjear_invitacion($1)', [paraAnular.codigo])))
+  debe(anulada !== null && /anulado/.test(anulada), 'invitar_anular', `una invitación anulada no se puede canjear: ${anulada}`)
+  const verAnulada = await como(nuevoMas, async () => (await q('select public.ver_invitacion($1) as r', [paraAnular.codigo]))[0].r)
+  debe(verAnulada.valida === false && verAnulada.motivo === 'anulada', 'invitar_anular', 'ver dice que está anulada')
+
+  // Quién ve las invitaciones
+  debe((await como(olga, () => q('select id from public.trip_invitations'))).length === 3, 'invitar_ver', 'el administrador ve todas sus invitaciones')
+  debe((await como(pablo, () => q('select id from public.trip_invitations'))).length === 0, 'invitar_ver', 'un invitado no ve las invitaciones')
+
+  // Con un Pase Dúo
+  const duo = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'duo', 2, 1, 'DUO-OLGA') returning id", [olga])))[0].id
+  await servidor(() => q('insert into public.pass_members (pass_id, user_id) values ($1, $2)', [duo, olga]))
+  const viajeOlga2 = await insertaViaje(olga, rutaDe('Roma'))
+  debe((await lanza(() => como(pablo, () => q('select public.crear_invitacion($1, $2)', [viajeOlga2, duo])))) !== null, 'invitar_pase', 'solo el administrador crea invitaciones')
+  const ajeno = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, codigo) values ('Roma', $1, 'uno', 1, 'AJENO') returning id", [pablo])))[0].id
+  debe((await lanza(() => como(olga, () => q('select public.crear_invitacion($1, $2)', [viajeOlga2, ajeno])))) !== null, 'invitar_pase', 'no se invita con el pase de otra persona')
+  const invDuo = await como(olga, async () => (await q('select public.crear_invitacion($1, $2) as r', [viajeOlga2, duo]))[0].r)
+  debe(invDuo.usos_max === 1 && invDuo.pass_id === duo, 'invitar_pase', 'un Dúo con su dueña dentro deja 1 plaza para invitar')
+  const q1 = await como(quique, async () => (await q('select public.canjear_invitacion($1) as r', [invDuo.codigo]))[0].r)
+  debe(q1.trip_id === viajeOlga2 && q1.con_pase === true, 'invitar_pase', 'Quique entra con el pase')
+  const pDuo = (await q('select usos_usados, usos_max from public.passes where id = $1', [duo]))[0]
+  debe(pDuo.usos_usados === 2 && pDuo.usos_max === 2, 'invitar_pase', 'al entrar recibe su uso del pase (2 de 2)')
+  debe((await q('select 1 from public.pass_members where pass_id = $1 and user_id = $2', [duo, quique])).length === 1, 'invitar_pase', 'Quique figura como usuario del pase')
+  debe((await como(quique, () => q('select id from public.passes'))).length === 1, 'invitar_pase', 'Quique ve su pase')
+  const terceroDuo = await lanza(() => como(pablo, () => q('select public.canjear_invitacion($1)', [invDuo.codigo])))
+  debe(terceroDuo !== null && /Ya no quedan/.test(terceroDuo), 'invitar_pase', 'un Dúo es 1 invitado: el segundo ya no entra')
+  const verDuo = await como(pablo, async () => (await q('select public.ver_invitacion($1) as r', [invDuo.codigo]))[0].r)
+  debe(verDuo.valida === false && verDuo.motivo === 'sin_usos', 'invitar_pase', 'con el pase sin usos, la invitación deja de valer')
+
+  // Con un pase de grupo
+  const grupo = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'grupo', 4, 1, 'GRUPO-OLGA') returning id", [olga])))[0].id
+  await servidor(() => q('insert into public.pass_members (pass_id, user_id) values ($1, $2)', [grupo, olga]))
+  const invGrupo = await como(olga, async () => (await q('select public.crear_invitacion($1, $2) as r', [viajeOlga2, grupo]))[0].r)
+  debe(invGrupo.usos_max === 3, 'invitar_pase', 'un grupo de 4 usos con su dueña dentro deja 3 plazas')
+  const invitados = []
+  for (const n of ['g1', 'g2', 'g3']) {
+    const id = await cuenta(n)
+    invitados.push(id)
+    await como(id, () => q('select public.canjear_invitacion($1)', [invGrupo.codigo]))
+  }
+  debe((await q('select usos_usados from public.passes where id = $1', [grupo]))[0].usos_usados === 4, 'invitar_pase', 'tantos invitados como usos: 3 entran y el pase queda en 4 de 4')
+  const g4 = await cuenta('g4')
+  debe((await lanza(() => como(g4, () => q('select public.canjear_invitacion($1)', [invGrupo.codigo])))) !== null, 'invitar_pase', 'el cuarto invitado del grupo ya no entra')
+  const alMismoViaje = await q('select count(*)::int as n from public.trip_members where trip_id = $1', [viajeOlga2])
+  debe(alMismoViaje[0].n === 4, 'invitar_pase', 'en el viaje hay 4 invitados (1 del Dúo y 3 del grupo)')
+  void invitados
+}
+
+/* ─────────────────────────── 5c. Borrar la cuenta: que no pierdan nada los demás (parte 2) ─────────────────────────── */
+console.log('5c. Borrar la cuenta sin perjudicar a los demás')
+const restosDe = async (uid) => {
+  const restos = []
+  for (const { table_schema: esquema, table_name: tabla } of await q("select table_schema, table_name from information_schema.tables where table_type = 'BASE TABLE' and table_schema in ('public', 'auth', 'storage')")) {
+    const n = (await q(`select count(*)::int as n from ${esquema}.${tabla} t where t::text like $1`, [`%${uid}%`]))[0].n
+    if (n > 0) restos.push(`${esquema}.${tabla} (${n})`)
+  }
+  return restos
+}
+{
+  const ada = await cuenta('ada')
+  const m1 = await cuenta('m1')
+  const m2 = await cuenta('m2')
+  const bob = await cuenta('bob')
+  const cris = await cuenta('cris')
+  const dora = await cuenta('dora')
+  const viajeAda = await insertaViaje(ada, rutaDe('Roma'))
+  const viajeSolo = await insertaViaje(ada, rutaDe('Lisboa'))
+  // M2 entró DESPUÉS de M1 (se fija la hora para que no dependa del reloj).
+  await servidor(() => q("insert into public.trip_members (trip_id, user_id, invited_by, created_at) values ($1, $2, $3, '2026-10-10T10:00:00Z'), ($1, $4, $3, '2026-10-12T10:00:00Z')", [viajeAda, m1, ada, m2]))
+  await como(m1, () => q("insert into public.stop_visits (trip_id, day_id, stop_id) values ($1, 'd1', 's1')", [viajeAda]))
+  await como(m2, () => q("insert into public.stop_visits (trip_id, day_id, stop_id) values ($1, 'd1', 's1')", [viajeAda]))
+  await como(ada, () => q("insert into public.stop_visits (trip_id, day_id, stop_id) values ($1, 'd1', 's1'), ($2, 'd1', 's1')", [viajeAda, viajeSolo]))
+  await como(m1, () => q(`insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', '{"x":1}'::jsonb)`, [viajeAda]))
+  await como(m2, () => q(`insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', '{"x":2}'::jsonb)`, [viajeAda]))
+  await como(ada, () => q('select public.crear_invitacion($1)', [viajeAda]))
+  await servidor(() => q("insert into public.achievements (user_id, logro, escalon, destino) values ($1, 'X', 'oro', 'Roma')", [ada]))
+  await subeFoto(ada, viajeAda, 'ada1')
+  await subeFoto(m1, viajeAda, 'm1foto')
+  // Pases: un Dúo de Ada con Bob dentro; uno de grupo que Ada compró PARA otros (ella no lo usa); uno de Bob que Ada usaba; uno solo suyo; uno que le regaló Bob.
+  const pDuo = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'duo', 2, 2, 'ADA-DUO') returning id", [ada])))[0].id
+  await servidor(() => q('insert into public.pass_members (pass_id, user_id, unido_en) values ($1, $2, now()), ($1, $3, now() + interval \'1 minute\')', [pDuo, ada, bob]))
+  const pGrupo = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'grupo', 3, 2, 'ADA-GRUPO') returning id", [ada])))[0].id
+  await servidor(() => q("insert into public.pass_members (pass_id, user_id, unido_en) values ($1, $2, '2026-10-01T10:00:00Z'), ($1, $3, '2026-10-02T10:00:00Z')", [pGrupo, cris, dora]))
+  const pDeBob = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'duo', 2, 2, 'BOB-DUO') returning id", [bob])))[0].id
+  await servidor(() => q('insert into public.pass_members (pass_id, user_id) values ($1, $2), ($1, $3)', [pDeBob, bob, ada]))
+  const pSolo = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'uno', 1, 1, 'ADA-SOLA') returning id", [ada])))[0].id
+  await servidor(() => q('insert into public.pass_members (pass_id, user_id) values ($1, $2)', [pSolo, ada]))
+  const pRegalo = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, para_id, usos_max, usos_usados, codigo) values ('Roma', $1, 'uno', $2, 1, 0, 'REGALO-ADA') returning id", [bob, ada])))[0].id
+
+  const r = await borrarCuenta(admin, 'tok-ada')
+  debe(r.estado === 200 && r.cuerpo.ok === true, 'borrar2', `borrar a Ada: ${JSON.stringify(r)}`)
+  debe((await restosDe(ada)).length === 0, 'borrar2', `quedan cosas de Ada en: ${(await restosDe(ada)).join(', ')}`)
+  debe((await archivosDe(admin, ada)).length === 0, 'borrar2', 'las fotos de Ada se borraron del almacenamiento')
+
+  // El viaje compartido
+  const t = await q('select traveler_id from public.trips where id = $1', [viajeAda])
+  debe(t.length === 1 && t[0].traveler_id === m1, 'borrar2_viaje', 'el viaje con invitados pasa al que entró primero (M1), no al segundo')
+  debe((await q('select 1 from public.trip_members where trip_id = $1 and user_id = $2', [viajeAda, m1])).length === 0, 'borrar2_viaje', 'M1 deja de ser invitado: ahora administra')
+  debe((await q('select 1 from public.trip_members where trip_id = $1 and user_id = $2', [viajeAda, m2])).length === 1, 'borrar2_viaje', 'M2 sigue siendo invitado')
+  debe((await q('select 1 from public.stop_visits where trip_id = $1 and user_id = $2', [viajeAda, m1])).length === 1 && (await q('select 1 from public.stop_visits where trip_id = $1 and user_id = $2', [viajeAda, m2])).length === 1, 'borrar2_viaje', 'los vistos de M1 y M2 siguen')
+  debe((await q('select 1 from public.trip_recommendations where author_id = $1', [m1])).length === 0 && (await q('select 1 from public.trip_recommendations where author_id = $1', [m2])).length === 1, 'borrar2_viaje', 'la recomendación de M1 (ahora administrador) se fue; la de M2 sigue')
+  debe((await q('select 1 from public.trip_invitations where trip_id = $1', [viajeAda])).length === 0, 'borrar2_viaje', 'las invitaciones que mandó Ada dejan de valer')
+  debe((await como(m1, () => q('update public.trips set route = route where id = $1 returning id', [viajeAda]))).length === 1, 'borrar2_viaje', 'M1 ya es administrador: puede cambiar la ruta')
+  debe((await como(m2, () => q('update public.trips set route = route where id = $1 returning id', [viajeAda]))).length === 0, 'borrar2_viaje', 'M2 sigue sin poder cambiarla')
+  debe((await q('select 1 from public.trip_photos where user_id = $1', [m1])).length === 1, 'borrar2_viaje', 'la foto de M1 sigue (era suya)')
+  debe((await q('select 1 from public.trips where id = $1', [viajeSolo])).length === 0, 'borrar2_viaje', 'el viaje de Ada SIN invitados se borró con ella')
+  debe((await q('select 1 from public.achievements where user_id = $1', [ada])).length === 0, 'borrar2_viaje', 'sus logros se borraron')
+
+  // Los pases
+  const duo = (await q('select comprador_id, usos_max, usos_usados from public.passes where id = $1', [pDuo]))[0]
+  debe(duo && duo.comprador_id === bob && duo.usos_max === 1 && duo.usos_usados === 1, 'borrar2_pases', 'el Dúo de Ada se queda con Bob; se va solo el uso de Ada (1 de 1)')
+  debe((await q('select 1 from public.pass_members where pass_id = $1 and user_id = $2', [pDuo, bob])).length === 1, 'borrar2_pases', 'Bob sigue usando su pase')
+  const grupo = (await q('select comprador_id, usos_max, usos_usados from public.passes where id = $1', [pGrupo]))[0]
+  debe(grupo && grupo.comprador_id === cris && grupo.usos_max === 3 && grupo.usos_usados === 2, 'borrar2_pases', 'el grupo que Ada compró para otros se queda con ellos, sin tocar los usos (3, 2 usados); lo lleva la primera que lo usó (Cris)')
+  debe((await q('select count(*)::int as n from public.pass_members where pass_id = $1', [pGrupo]))[0].n === 2, 'borrar2_pases', 'Cris y Dora siguen en el grupo')
+  const deBob = (await q('select comprador_id, usos_max, usos_usados from public.passes where id = $1', [pDeBob]))[0]
+  debe(deBob && deBob.comprador_id === bob && deBob.usos_max === 1 && deBob.usos_usados === 1, 'borrar2_pases', 'en el pase de Bob que Ada usaba se va solo el uso de Ada')
+  debe((await q('select 1 from public.pass_members where pass_id = $1 and user_id = $2', [pDeBob, bob])).length === 1, 'borrar2_pases', 'Bob sigue en su pase')
+  debe((await q('select 1 from public.passes where id = $1', [pSolo])).length === 0, 'borrar2_pases', 'el pase que solo usaba Ada se borró')
+  const regalo = (await q('select comprador_id, para_id from public.passes where id = $1', [pRegalo]))[0]
+  debe(regalo && regalo.comprador_id === bob && regalo.para_id === null, 'borrar2_pases', 'el pase que Bob le regaló a Ada sigue siendo de Bob, ya sin destinataria')
+  debe((await q('select 1 from public.passes where destino = $1', ['Roma'])).length >= 4, 'borrar2_pases', 'no se perdió ningún pase de los demás')
+}
+{
+  // Un administrador sin invitados que SÍ tiene un pase que otros usan.
+  const eva = await cuenta('eva')
+  const fran = await cuenta('fran')
+  const viajeEva = await insertaViaje(eva, rutaDe('Roma'))
+  const pase = (await servidor(() => q("insert into public.passes (destino, comprador_id, tipo, usos_max, usos_usados, codigo) values ('Roma', $1, 'duo', 2, 1, 'EVA-DUO') returning id", [eva])))[0].id
+  await servidor(() => q('insert into public.pass_members (pass_id, user_id) values ($1, $2)', [pase, fran]))
+  const r = await borrarCuenta(admin, 'tok-eva')
+  debe(r.estado === 200, 'borrar2', 'borrar a Eva')
+  debe((await q('select 1 from public.trips where id = $1', [viajeEva])).length === 0, 'borrar2', 'su viaje sin invitados se borra')
+  const p = (await q('select comprador_id, usos_max, usos_usados from public.passes where id = $1', [pase]))[0]
+  debe(p && p.comprador_id === fran && p.usos_max === 2 && p.usos_usados === 1, 'borrar2', 'el pase que compró para Fran (que no usaba) se queda con él, sin tocar los usos')
+  debe((await restosDe(eva)).length === 0, 'borrar2', `quedan cosas de Eva en: ${(await restosDe(eva)).join(', ')}`)
+}
+{
+  // Si preparar_borrado falla, no se borra nada (ni archivos ni usuario).
+  const gus = await cuenta('gus')
+  const viajeGus = await insertaViaje(gus, rutaDe('Roma'))
+  await subeFoto(gus, viajeGus, 'gus1')
+  const adminRoto = { ...admin, rpc: async () => ({ data: null, error: { message: 'boom' } }) }
+  const r = await borrarCuenta(adminRoto, 'tok-gus')
+  debe(r.estado === 500 && (await q('select 1 from auth.users where id = $1', [gus])).length === 1 && (await archivosDe(admin, gus)).length === 2, 'borrar2', 'si falla la preparación del borrado no se borra nada (ni el usuario ni las fotos)')
+  debe((await lanza(() => como(gus, () => q('select public.preparar_borrado($1)', [gus])))) !== null, 'borrar2', 'desde el móvil nadie puede llamar a preparar_borrado')
+}
+
+/* ─────────────────────────── 5d. Recomendaciones: estados y reglas (parte 2) ─────────────────────────── */
+console.log('5d. Recomendaciones')
+{
+  const hugo = await cuenta('hugo')
+  const ines = await cuenta('ines')
+  const viajeHugo = await insertaViaje(hugo, rutaDe('Roma'))
+  await como(hugo, () => q('insert into public.trip_members (trip_id, user_id) values ($1, $2)', [viajeHugo, ines]))
+  const rec = await como(ines, async () => (await q(`insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', '{"dayId":"d1","accion":"quitar","stopId":"s2"}'::jsonb) returning id`, [viajeHugo]))[0])
+  await como(hugo, () => q("update public.trip_recommendations set estado = 'ya_no_encaja' where id = $1", [rec.id]))
+  const f = (await q('select estado, decidida_por, decidida_en from public.trip_recommendations where id = $1', [rec.id]))[0]
+  debe(f.estado === 'ya_no_encaja' && f.decidida_por === hugo && f.decidida_en !== null, 'recomendaciones2', 'el administrador puede marcar una recomendación como «ya no encaja», y queda apuntado')
+  const rec2 = await como(ines, async () => (await q(`insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'dia', '{}'::jsonb) returning id`, [viajeHugo]))[0])
+  await como(ines, () => q("update public.trip_recommendations set estado = 'ya_no_encaja' where id = $1", [rec2.id]))
+  debe((await q('select estado from public.trip_recommendations where id = $1', [rec2.id]))[0].estado === 'pendiente', 'recomendaciones2', 'la invitada no puede marcar «ya no encaja» en la suya')
+  debe((await lanza(() => como(hugo, () => q("update public.trip_recommendations set estado = 'inventado' where id = $1", [rec2.id])))) !== null, 'recomendaciones2', 'no existen más estados que los cuatro')
 }
 
 /* ─────────────────────────── 6. Las rutas del servidor ─────────────────────────── */
@@ -634,7 +991,7 @@ console.log('7. Con el interruptor apagado, todo igual')
   debe(/conCuentas \? pasosDeCompresion\(.*\) : \[\{ lado: LADO_MAXIMO_PX, calidad: CALIDAD_JPEG \}\]/.test(fotos), 'apagado', 'sin cuentas, la foto se prepara con el único intento de siempre (1.600 px, 0,82)')
   debe(/if \(preparada\.datos && cuentasActivas\(\)\)/.test(fotos), 'apagado', 'sin cuentas no se escribe en trip_photo_meta')
   const trip = fs.readFileSync('src/lib/tripPersistence.ts', 'utf8')
-  debe(!/cuentas/.test(trip), 'apagado', 'tripPersistence.ts no cambia')
+  debe(trip.includes("if (!conInvitados) consulta = consulta.eq('traveler_id', travelerId)") && trip.includes('if (cuentasActivas()) {'), 'apagado', 'tripPersistence.ts: con las cuentas apagadas se piden solo los viajes propios y se guarda como siempre')
   const motor = ['shared/routeEngine', 'server/engine']
   const tocadosMotor = []
   for (const carpetaMotor of motor) for (const f of fs.readdirSync(carpetaMotor)) if (/cuenta/i.test(f)) tocadosMotor.push(f)
@@ -642,7 +999,7 @@ console.log('7. Con el interruptor apagado, todo igual')
 }
 
 fs.rmSync(carpeta, { recursive: true, force: true })
-console.log(`\nPrueba de las cuentas, parte 1: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
+console.log(`\nPrueba de las cuentas (partes 1 y 2): ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 if (fallos.length > 0) {
   for (const f of fallos.slice(0, 60)) console.log(`  FALLO [${f.regla}] ${f.texto}`)
   process.exitCode = 1
