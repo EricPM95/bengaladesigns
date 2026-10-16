@@ -239,7 +239,7 @@ export interface DatosDeActividad {
   /** El precio de antes (se tacha), solo si es más alto que el de ahora. */
   original: number | null
   moneda: string | null
-  /** De 0 a 5. */
+  /** De 0 a 10, como en la web («9,6/10»). */
   valoracion: number | null
   opiniones: number | null
   fotos: { principal: { url: string; grande: string | null; pie: string | null } | null; galeria: { url: string; grande: string | null; pie: string | null }[] }
@@ -625,6 +625,8 @@ export interface Excursion {
   /** Cómo llegar/volver sugerido por la IA (tren/bus/tour organizado), ver A5 en server/index.js — nunca una integración real de compra, solo texto informativo. */
   transportSuggestion?: string
   rating?: number
+  /** La escala de `rating`: 5 (las de siempre) o 10 (las de la API de consulta: «9,6/10»). */
+  ratingMax?: 5 | 10
   reviewCount?: number
   bookUrl?: string
   /** Emoji del JSON del destino. Ya no se pinta: la excursión lleva siempre la mochila de la familia de iconos. */

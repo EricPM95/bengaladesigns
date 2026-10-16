@@ -51,8 +51,14 @@ function RatingLabel({ excursion }: { excursion: Excursion }) {
   if (!excursion.rating) return null
   return (
     <span className="flex shrink-0 items-center gap-1 whitespace-nowrap text-caption text-text-soft">
-      <Icono nombre="estrella" size={13} className="shrink-0" />
-      {excursion.rating.toFixed(1)}
+      {excursion.ratingMax === 10 ? (
+        <span data-nota-sobre-10>{excursion.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10</span>
+      ) : (
+        <>
+          <Icono nombre="estrella" size={13} className="shrink-0" />
+          {excursion.rating.toFixed(1)}
+        </>
+      )}
       {excursion.reviewCount ? <span className="text-text-muted">({excursion.reviewCount.toLocaleString('es')})</span> : null}
     </span>
   )

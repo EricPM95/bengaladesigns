@@ -88,7 +88,7 @@ console.log('2. El aviso de debajo de la rueda')
   const iAviso = hoja.indexOf('{AVISO_DISPONIBILIDAD}')
   const iPrecio = hoja.indexOf('<CampoPrecio')
   debe(iRueda > 0 && iAviso > iRueda && iAviso < iPrecio, '2 sitio', 'el aviso no va entre la rueda y el precio, en la hoja de la hora')
-  debe(/!isExcursion && \(\s*<p[^>]*>\s*\{AVISO_DISPONIBILIDAD\}/.test(hoja), '2 sitio', 'el aviso no sale en las entradas y el Free Tour (y solo ahí)')
+  debe(/!isExcursion && !\(civitatisActiva\(\) && horasApi\.estado === 'ok'\) && \(\s*<p[^>]*>\s*\{AVISO_DISPONIBILIDAD\}/.test(hoja), '2 sitio', 'el aviso no sale en las entradas y el Free Tour (y solo ahí)')
   // La rueda toma las horas de UNA pieza compartida, sin su propia cuenta.
   debe(/horasDeLaRueda\(entryHours/.test(hoja) && /useHorarioDeEntrada\(/.test(hoja) && !/m \+= 15/.test(hoja), '2 una pieza', 'la rueda de la hoja de reserva vuelve a calcular las horas por su cuenta')
 

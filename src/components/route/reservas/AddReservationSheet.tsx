@@ -19,7 +19,7 @@ import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { AVISO_DISPONIBILIDAD, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
 import { FREE_TOUR_HOURS } from '../../../lib/freeTourHoras'
-import { avisoDeLaHora, civitatisActiva, horaFueraDelCalendario, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
+import { avisoDeLaHora, civitatisActiva, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
 
 /** Lo que se está reservando: una entrada (con las paradas de la ruta que cubre) o una excursión. */
@@ -35,6 +35,8 @@ export interface ReservationTarget {
   existing?: Reservation | null
   /** «Añadir una excursión · 2 de 2»: viene de elegir la excursión en la hoja de «¿Qué excursión tienes?». */
   paso2?: boolean
+  /** Cómo se abre el selector de hora. 'tengo' (por defecto: «¿Ya la tienes? Añádela», «Cambiar»): cualquier hora, sin filtros ni avisos. 'reservar': solo las horas libres del calendario, con sus plazas (solo con la API de consulta encendida). */
+  modo?: 'tengo' | 'reservar'
 }
 
 /** Qué se mueve al meter una reserva grande (/api/reservation-plan). */
@@ -238,17 +240,17 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const window0 = entryHours && !entryHours.cerrado && entryHours.ventanas.length > 0 ? { min: entryHours.ventanas[0].desde, max: entryHours.ventanas[entryHours.ventanas.length - 1].hasta } : null
   /** Las horas de la rueda (Tanda 6y9: de la apertura a la ÚLTIMA ENTRADA oficial de esa fecha, o los turnos reales del sitio). La hora de la reserva que ya hay siempre está. */
   // La API de consulta (parte 1, con el interruptor encendido): las horas LIBRES de ese día según el calendario, con las plazas si quedan pocas. Se pide de nuevo cada vez que se abre el selector
-  // (sin la caché de una hora) para que las plazas estén al día. Sin datos o con el interruptor apagado, la rueda de siempre. «Ya tengo mi entrada»: cualquier hora, con aviso (avisa, no prohíbe).
+  // (sin la caché de una hora) para que las plazas estén al día. Sin datos o con el interruptor apagado, la rueda de siempre. Desde «Añádela»/«Cambiar» (modo por defecto): cualquier hora, sin filtros ni avisos.
   const [aperturas, setAperturas] = useState(0)
   useEffect(() => {
     if (view === 'hora') setAperturas((n) => n + 1)
   }, [view])
-  const [yaTengo, setYaTengo] = useState(false)
+  const modoReservar = target.modo === 'reservar'
   const lugarDeLasHoras = isExcursion ? null : isFreeTour ? 'Free Tour' : (bigPlace ?? target.placeNames[0] ?? null)
   const claveDeLasHoras = view === 'hora' && hasDates && fields.dateIso && resolvedDay && aperturas > 0 ? `${lugarDeLasHoras}|${fields.dateIso}|${aperturas}` : null
   const horasApi = useHorasLibres(lugarDeLasHoras, hasDates ? fields.dateIso : null, route.destination, claveDeLasHoras)
   const horasDelDia = horasApi.estado === 'ok' ? horasApi.datos : null
-  const filtrando = horasDelDia != null && horasDelDia.horas.length > 0 && !yaTengo
+  const filtrando = horasDelDia != null && horasDelDia.horas.length > 0 && modoReservar
   const wheelItems = useMemo(() => {
     const propia = existing && /^\d{1,2}:\d{2}$/.test(existing.time) ? (existing.time.length === 4 ? `0${existing.time}` : existing.time) : null
     const base = horasDeLaRueda(entryHours, propia)
@@ -533,7 +535,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 )}
               </div>
 
-              {civitatisActiva() && !isExcursion && horasApi.estado !== 'apagado' && (
+              {civitatisActiva() && modoReservar && !isExcursion && horasApi.estado !== 'apagado' && (
                 <div className="mt-3 space-y-1.5" data-civitatis-horas>
                   {horasApi.estado === 'cargando' && <p className="text-center text-[12.5px] text-text-soft">Mirando las horas libres…</p>}
                   {horasDelDia?.sinPlazas && (
@@ -550,18 +552,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       ))}
                     </ul>
                   )}
-                  {horasDelDia && horasDelDia.horas.length > 0 && (
-                    <label className="flex items-center justify-center gap-2 text-[12.5px] text-text-soft">
-                      <input type="checkbox" checked={yaTengo} onChange={(event) => setYaTengo(event.target.checked)} />
-                      Ya tengo mi entrada
-                    </label>
-                  )}
-                  {yaTengo && horaFueraDelCalendario(horasDelDia, validTime ? fields.time : null) && (
-                    <p className="text-center text-[12.5px] leading-snug text-text-soft" data-aviso="fuera-del-calendario">
-                      Esa hora no sale libre en el calendario. Como ya tienes tu entrada, la dejamos.
-                    </p>
-                  )}
-                  {!yaTengo && avisoDeLaHora(horasDelDia, validTime ? fields.time : null) && (
+                  {avisoDeLaHora(horasDelDia, validTime ? fields.time : null) && (
                     <p className="text-center text-[12.5px] font-medium leading-snug text-text" data-aviso="plazas-de-esta-hora">
                       {avisoDeLaHora(horasDelDia, validTime ? fields.time : null)}
                     </p>
@@ -569,7 +560,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </div>
               )}
 
-              {!isExcursion && (
+              {!isExcursion && !(civitatisActiva() && horasApi.estado === 'ok') && (
                 <p className="mt-3 text-center text-[12.5px] leading-snug text-text-soft" data-aviso="disponibilidad">
                   {AVISO_DISPONIBILIDAD}
                 </p>

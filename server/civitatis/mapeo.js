@@ -35,10 +35,10 @@ export function sinMarca(texto) {
 
 const listaSinMarca = (lista) => (Array.isArray(lista) ? lista.map(sinMarca).filter(Boolean) : [])
 
-/** Civitatis puntúa de 0 a 10 (se han visto 9.3, 10 y 5); la app, de 0 a 5 con un decimal. */
-export function valoracionSobre5(score) {
+/** La nota de la actividad, TAL COMO LA DA la web (de 0 a 10, con un decimal): «9,6/10». No se divide ni se cambia de escala. Sin nota válida, null. */
+export function valoracionSobre10(score) {
   const n = Number(score)
-  return Number.isFinite(n) && n > 0 ? Math.round((n / 2) * 10) / 10 : null
+  return Number.isFinite(n) && n > 0 && n <= 10 ? Math.round(n * 10) / 10 : null
 }
 
 /**
@@ -135,7 +135,7 @@ export function fichaDeActividad(a, opciones = {}) {
     original: Number.isFinite(original) && precio != null && original > precio && original <= (opciones.maximoCreible ?? 2000) ? original : null,
     moneda: typeof a.currency === 'string' ? a.currency : null,
     precioReal: a.amountType === 'PVP',
-    valoracion: valoracionSobre5(a.score),
+    valoracion: valoracionSobre10(a.score),
     opiniones: Number.isFinite(Number(a.reviews)) && Number(a.reviews) > 0 ? Number(a.reviews) : null,
     fotos: fotosDe(a.photos),
     incluye: listaSinMarca(a.included),

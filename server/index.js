@@ -4610,7 +4610,9 @@ app.post('/api/destination-excursions', async (req, res) => {
     return
   }
   const rated = options.filter((option) => option.provisional_pricing === false && Number.isFinite(option.rating) && Number.isFinite(option.review_count))
-  const average = rated.length > 0 ? rated.reduce((sum, option) => sum + option.rating, 0) / rated.length : null
+  // (Cada nota va con su escala: las nuestras de siempre son de 0 a 5 y las de la API de consulta, de 0 a 10 como en la web. La media se calcula sobre 10 y se enseña en %: 9,0 de 10 = 90 %.)
+  const sobre10 = (option) => option.rating * (10 / (option.rating_max === 10 ? 10 : 5))
+  const average = rated.length > 0 ? rated.reduce((sum, option) => sum + sobre10(option), 0) / rated.length : null
   res.json({
     found: true,
     from_days: options.length > 0 ? (data.excursions?.excursiones_desde_dias ?? null) : null,
@@ -4620,7 +4622,7 @@ app.post('/api/destination-excursions', async (req, res) => {
     examples: data.excursions?.ejemplos_linea ?? null,
     day_name_example: dayNameExample,
     excursions: excursionsAvailablePayload(data, null, options).map((entry, index) => ({ ...entry, best_seller: options[index].mas_reservada === true })),
-    rating: average == null ? null : { percent: Math.round(average * 20), excursions: rated.length, reviews: rated.reduce((sum, option) => sum + option.review_count, 0) },
+    rating: average == null ? null : { percent: Math.round(average * 10), excursions: rated.length, reviews: rated.reduce((sum, option) => sum + option.review_count, 0) },
   })
 })
 
@@ -5140,6 +5142,8 @@ function excursionsAvailablePayload(destData, dayNumber, options, totalDays) {
     // (`price_from_eur`: el dato del destino va en euros por su propio nombre.)
     estimated_price: typeof option.price_from_eur === 'number' ? precioTienda(option.price_from_eur, 'EUR') : '',
     rating: option.rating ?? null,
+    // La escala de la nota: 5 las de siempre; 10 las de la API de consulta (se enseñan «9,6/10», como en la web).
+    rating_max: option.rating_max === 10 ? 10 : 5,
     review_count: option.review_count ?? null,
     provisional_pricing: option.provisional_pricing !== false,
     /** Dónde arranca la excursión, tal cual lo publica el operador. */

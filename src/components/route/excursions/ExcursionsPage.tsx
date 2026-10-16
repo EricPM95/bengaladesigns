@@ -138,7 +138,7 @@ export function ExcursionsPage({ route }: { route: Route }) {
                   <h2 className="mt-0.5 font-display text-[21px] leading-[1.15] text-text">{excursion.title}</h2>
                   <p className="mt-1 text-[13px] leading-snug text-text-soft">{detailLine(excursion)}</p>
                   <div className="mt-2 flex items-baseline justify-between gap-3">
-                    <p className="text-[13px] text-text-soft">{excursion.rating ? `★ ${String(excursion.rating).replace('.', ',')} · ${formatReviewCount(excursion.reviewCount ?? 0)}` : ''}</p>
+                    <p className="text-[13px] text-text-soft">{excursion.rating ? `${excursion.ratingMax === 10 ? `${excursion.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10` : `★ ${String(excursion.rating).replace('.', ',')}`} · ${formatReviewCount(excursion.reviewCount ?? 0)}` : ''}</p>
                     {price && <p className="font-display text-[19px] text-text">{price}</p>}
                   </div>
                   <div className="mt-3 flex gap-2">

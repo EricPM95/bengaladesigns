@@ -19,7 +19,7 @@ export function ActividadesDelSitio({ lista }: { lista: ActividadCerca[] }) {
           </div>
           {(actividad.valoracion != null || actividad.opiniones != null) && (
             <p className="mt-1.5 text-[13px] text-text/72">
-              {actividad.valoracion != null && <span className="font-semibold text-text">★ {actividad.valoracion.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>}
+              {actividad.valoracion != null && <span className="font-semibold text-text">{actividad.valoracion.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10</span>}
               {actividad.opiniones != null && <span>{actividad.valoracion != null ? ' · ' : ''}{actividad.opiniones.toLocaleString('es-ES')} opiniones</span>}
             </p>
           )}

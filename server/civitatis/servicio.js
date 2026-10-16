@@ -145,7 +145,7 @@ export function crearServicioCivitatis(opciones = {}) {
   }
 
   /**
-   * Las excursiones con precio y valoración reales: para las de `data/civitatis/<destino>.json › excursiones`, `price_from_eur`, `rating` (de 0 a 5) y `review_count` salen de la API y
+   * Las excursiones con precio y valoración reales: para las de `data/civitatis/<destino>.json › excursiones`, `price_from_eur`, `rating` (de 0 a 10, como en la web; `rating_max: 10`) y `review_count` salen de la API y
    * `provisional_pricing` pasa a false; el punto de encuentro, si la API lo da. Las demás se quedan como estaban.
    */
   async function enriquecerExcursiones(destino, opcionesDelDestino) {
@@ -161,7 +161,7 @@ export function crearServicioCivitatis(opciones = {}) {
         const f = r.datos
         if (f.desde == null || f.valoracion == null || f.opiniones == null) return opcion // (sin los tres datos, sigue provisional: nunca media nota real)
         enriquecidas++
-        return { ...opcion, price_from_eur: f.desde, rating: f.valoracion, review_count: f.opiniones, provisional_pricing: false, meeting_point: f.puntoDeEncuentro?.texto ?? opcion.meeting_point ?? null, civitatis: f }
+        return { ...opcion, price_from_eur: f.desde, rating: f.valoracion, rating_max: 10, review_count: f.opiniones, provisional_pricing: false, meeting_point: f.puntoDeEncuentro?.texto ?? opcion.meeting_point ?? null, civitatis: f }
       }),
     )
     return { opciones: opciones2, enriquecidas }

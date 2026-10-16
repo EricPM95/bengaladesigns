@@ -361,6 +361,8 @@ export interface GeneratedExcursion {
   civitatis_search?: string | null
   /** La página de la actividad de verdad (solo con la API de consulta encendida y la excursión resuelta); sin ella, la búsqueda de siempre. */
   civitatis_url?: string | null
+  /** La escala de la nota: 5 (las de siempre) o 10 (las de la API de consulta: «9,6/10», como en la web). */
+  rating_max?: number | null
   /** Dónde arranca la excursión, tal cual lo publica el operador — solo las curadas. */
   meeting_point?: string | null
   /** El precio y la nota están puestos a mano hasta que se integre la API de afiliados. */
@@ -711,6 +713,7 @@ function mapExcursionsByDay(excursions?: GeneratedExcursion[]): Map<number, Excu
       // por descuido, ni esta ni la que se escriba mañana.
       rating: excursion.provisional_pricing ? undefined : (excursion.rating ?? undefined),
       reviewCount: excursion.provisional_pricing ? undefined : (excursion.review_count ?? undefined),
+      ratingMax: excursion.rating_max === 10 ? 10 : 5,
       destinationCoords: excursion.destination_coords ?? null,
       meetingPoint: excursion.meeting_point ?? null,
       provisionalPricing: excursion.provisional_pricing ?? false,

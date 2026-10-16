@@ -23,7 +23,7 @@ export function DatosDeLaActividad({ datos }: { datos: DatosDeActividad }) {
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[13px] text-text/75">
         {datos.valoracion != null && (
           <span data-valoracion className="font-semibold text-text">
-            ★ {datos.valoracion.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            {datos.valoracion.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10
           </span>
         )}
         {datos.opiniones != null && <span data-opiniones>{datos.opiniones.toLocaleString('es-ES')} opiniones</span>}

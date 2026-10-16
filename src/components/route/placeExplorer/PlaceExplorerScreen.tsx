@@ -274,7 +274,7 @@ function ExcursionResultCard({ excursion, open, onToggle, onAdd }: { excursion: 
               <>
                 <span>·</span>
                 <span className="shrink-0">
-                  ★ {excursion.rating.toFixed(1)}
+                  {excursion.ratingMax === 10 ? `${excursion.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}/10` : `★ ${excursion.rating.toFixed(1)}`}
                   {excursion.reviewCount ? ` (${excursion.reviewCount.toLocaleString('es-ES')})` : ''}
                 </span>
               </>
