@@ -7,8 +7,8 @@
  *
  * El envío de verdad (aviso en el móvil o email) se enciende cuando estén la pantalla del permiso (paso 3 de Design) y el servicio de correo (falta el dominio).
  * Aviso en el móvil (web push): está preparado detrás de su interruptor `PUSH_ACTIVO=true`. Para que mande de verdad falta:
- *   1. instalar el paquete `web-push` (npm i web-push) — no está en el proyecto, para no cargar la web con algo que hoy no se usa;
- *   2. unas claves VAPID (npx web-push generate-vapid-keys) en las variables del servidor VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY y VAPID_CONTACTO (mailto:);
+ *   1. (hecho en la 8A2) el paquete `web-push`, que solo se carga cuando el envío está encendido;
+ *   2. las claves VAPID: `node scripts/generarClavesVapid.mjs` las crea y las escribe en .env.local (nunca las enseña); en Vercel van con los mismos valores como VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY y VAPID_CONTACTO (mailto:);
  *   3. la pantalla del permiso, que pide Design, para que la persona acepte los avisos y se guarde su suscripción (`push_suscripciones`);
  *   4. en iPhone, solo funciona con la web instalada en la pantalla de inicio (iOS 16.4 o más).
  */

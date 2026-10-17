@@ -224,24 +224,48 @@ console.log('3b. Vistos de cada persona, invitaciones y recomendaciones aplicada
     debe(/anulado/.test(M.textoDeInvitacionNoValida('anulada')) && /plazas/.test(M.textoDeInvitacionNoValida('sin_usos')) && /Revisa/.test(M.textoDeInvitacionNoValida('no_existe')), 'invitar_texto', 'cada motivo se explica en palabras sencillas')
   }
 
-  // Lo que encaja y lo que no
+  // Siempre se puede aceptar (Tanda 8A2: fuera «ya no encaja»): sustituye a lo que hay ahora; si el día ya no existe, hay que elegir otro
   {
     const ruta = nuevaRuta()
-    const enc = (tipo, payload, r = ruta) => M.comprobarEncaje(r, { tipo, payload })
-    debe(enc('cambio', { dayId: 'd1', accion: 'quitar', stopId: 's2' }).encaja === true, 'encaje', 'quitar una parada que está encaja')
-    debe(enc('cambio', { dayId: 'd9', accion: 'quitar', stopId: 's2' }).encaja === false, 'encaje', 'si el día ya no existe, no encaja')
-    debe(enc('cambio', { dayId: 'd1', accion: 'quitar', stopId: 'sXX' }).encaja === false, 'encaje', 'si la parada ya no está, no encaja')
-    debe(enc('cambio', { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 2 }).encaja === true && enc('cambio', { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 7 }).encaja === false, 'encaje', 'mover encaja si el sitio existe')
-    debe(enc('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47), despuesDe: 's1' }).encaja === true, 'encaje', 'añadir una parada nueva encaja')
-    debe(enc('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Coliseo', '', 41.89, 12.47) }).encaja === false, 'encaje', 'añadir una parada que ya está no encaja')
-    debe(enc('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47), despuesDe: 'sXX' }).encaja === false, 'encaje', 'si la parada de «después de» ya no está, no encaja')
-    debe(enc('dia', { accion: 'sustituir', dayId: 'd2', day: dia('d2', 2, []) }).encaja === true && enc('dia', { accion: 'sustituir', dayId: 'd9', day: dia('d9', 2, []) }).encaja === false, 'encaje', 'sustituir un día encaja si el día existe')
-    debe(enc('dia', { accion: 'anadir', despuesDeDayId: 'd1', day: dia('dN', 3, []) }).encaja === true && enc('dia', { accion: 'anadir', despuesDeDayId: 'd9', day: dia('dN', 3, []) }).encaja === false, 'encaje', 'añadir un día encaja si el día de antes existe')
-    debe(enc('ruta', { days: [dia('a', 1, []), dia('b', 2, [])] }).encaja === true && enc('ruta', { days: [] }).encaja === false, 'encaje', 'la ruta entera necesita días')
-    debe(enc('ruta', { days: [dia('a', 1, [])], baseRouteId: 'ruta-1' }).encaja === true && enc('ruta', { days: [dia('a', 1, [])], baseRouteId: 'otra' }).encaja === false, 'encaje', 'la ruta entera ya no encaja si la ruta de ahora no es sobre la que se recomendó')
-    debe(enc('inventada', {}).encaja === false && M.comprobarEncaje(null, { tipo: 'cambio', payload: {} }).encaja === false, 'encaje', 'un tipo raro o sin ruta no encaja')
-    debe(M.ordenTrasMover([{ id: 'a' }, { id: 'b' }, { id: 'c' }], 'a', 2).join() === 'b,c,a' && M.indiceTrasParada([{ id: 'a' }, { id: 'b' }], 'a') === 1 && M.indiceTrasParada([{ id: 'a' }], null) === 0, 'encaje', 'el orden tras mover y el sitio donde se añade salen bien')
-    debe(/Quitar Arco de Constantino en «Día 1»/.test(M.textoDeRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'quitar', stopId: 's2' } }, ruta)), 'encaje', 'el texto de la lista dice qué recomienda')
+    const res = (tipo, payload, dia2 = null, r = ruta) => M.resolverRecomendacion(r, { tipo, payload }, dia2)
+    debe(res('cambio', { dayId: 'd1', accion: 'quitar', stopId: 's2' }).accion?.kind === 'quitar', 'aceptar', 'quitar una parada que está: se quita')
+    debe(res('cambio', { dayId: 'd1', accion: 'quitar', stopId: 'sXX' }).accion?.kind === 'nada' && res('cambio', { dayId: 'd1', accion: 'quitar', stopId: 'sXX' }).ok === true, 'aceptar', 'quitar una parada que ya no está: se acepta y no hace nada, sin «ya no encaja»')
+    debe(res('cambio', { dayId: 'd9', accion: 'quitar', stopId: 's2' }).accion?.dayId === 'd1', 'aceptar', 'quitar una parada cuyo día ya no existe: se quita de donde esté ahora')
+    debe(res('cambio', { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 2 }).accion?.kind === 'mover' && res('cambio', { dayId: 'd1', accion: 'mover', stopId: 's1', haciaIndice: 7 }).accion?.haciaIndice === 2, 'aceptar', 'mover: si el sitio ya no existe, se pone al final del día')
+    debe(res('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47), despuesDe: 's1' }).accion?.kind === 'anadir', 'aceptar', 'añadir una parada nueva')
+    debe(res('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Coliseo', '', 41.89, 12.47) }).accion?.kind === 'nada', 'aceptar', 'añadir una parada que ya está: se acepta y no hace nada')
+    const sinDespues = res('cambio', { dayId: 'd1', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47), despuesDe: 'sXX' })
+    debe(sinDespues.ok === true && sinDespues.accion.despuesDe === 's3', 'aceptar', 'si la parada de «después de» ya no está, la nueva va al final del día')
+    const cambiar = res('cambio', { dayId: 'd1', accion: 'cambiar', stopId: 's2', stop: stop('n2', 'Panteón', '', 41.89, 12.47) })
+    debe(cambiar.accion?.kind === 'cambiar' && cambiar.accion.stopId === 's2', 'aceptar', 'cambiar una parada por otra')
+    debe(res('cambio', { dayId: 'd1', accion: 'cambiar', stopId: 'sXX', stop: stop('n2', 'Panteón', '', 41.89, 12.47) }).accion?.kind === 'anadir', 'aceptar', 'cambiar una parada que ya no está: la nueva entra al final del día')
+    // El día de la recomendación ya no existe: hay que elegir en qué día se pone
+    const sinDia = res('cambio', { dayId: 'd9', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47) })
+    debe(sinDia.ok === false && sinDia.necesitaDia === true && sinDia.diasPosibles.length === ruta.days.length, 'aceptar', 'si el día ya no existe, pide elegir día y dice entre cuáles')
+    debe(res('cambio', { dayId: 'd9', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47) }, 'd2').accion?.dayId === 'd2', 'aceptar', 'con el día elegido, se pone ahí')
+    debe(res('cambio', { dayId: 'd9', accion: 'anadir', stop: stop('n1', 'Panteón', '', 41.89, 12.47) }, 'dXX').ok === false, 'aceptar', 'un día elegido que no es de su viaje no vale')
+    debe(res('dia', { accion: 'sustituir', dayId: 'd2', day: dia('d2', 2, []) }).accion?.kind === 'sustituir_dia', 'aceptar', 'sustituir un día existente')
+    const sinDia2 = res('dia', { accion: 'sustituir', dayId: 'd9', day: dia('d9', 2, []) })
+    debe(sinDia2.necesitaDia === true && res('dia', { accion: 'sustituir', dayId: 'd9', day: dia('d9', 2, []) }, 'd1').accion?.dayId === 'd1', 'aceptar', 'sustituir un día que ya no existe: elige qué día sustituye')
+    debe(res('dia', { accion: 'anadir', despuesDeDayId: 'd9', day: dia('dN', 3, []) }).accion?.despuesDeDayId === null, 'aceptar', 'añadir un día cuyo «después de» ya no existe: al final')
+    debe(res('ruta', { days: [dia('a', 1, []), dia('b', 2, [])] }).accion?.kind === 'ruta' && res('ruta', { days: [] }).ok === false, 'aceptar', 'la ruta entera necesita días')
+    debe(res('ruta', { days: [dia('a', 1, [])], baseRouteId: 'otra' }).accion?.kind === 'ruta', 'aceptar', 'la ruta entera sobre otra base también se acepta: sustituye a la de ahora')
+    debe(res('inventada', {}).ok === false && M.resolverRecomendacion(null, { tipo: 'cambio', payload: {} }).ok === false, 'aceptar', 'un tipo raro o sin ruta no se puede')
+    debe(M.ordenTrasMover([{ id: 'a' }, { id: 'b' }, { id: 'c' }], 'a', 2).join() === 'b,c,a' && M.indiceTrasParada([{ id: 'a' }, { id: 'b' }], 'a') === 1 && M.indiceTrasParada([{ id: 'a' }], null) === 0, 'aceptar', 'el orden tras mover y el sitio donde se añade salen bien')
+    debe(/Quitar Arco de Constantino en «Día 1»/.test(M.textoDeRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'quitar', stopId: 's2' } }, ruta)) && /Cambiar Arco de Constantino por Panteón/.test(M.textoDeRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'cambiar', stopId: 's2', stop: stop('n2', 'Panteón', '', 41.89, 12.47) } }, ruta)), 'aceptar', 'el texto de la lista dice qué recomienda')
+    debe(!/ya_no_encaja|ya no encaja/i.test(fs.readFileSync('src/lib/aplicarRecomendacion.ts', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')) && !/ya_no_encaja/.test(fs.readFileSync('src/lib/recomendacionesViaje.ts', 'utf8')), 'aceptar', 'ya no existe el estado «ya no encaja» en el código')
+    // El antes y el después: con la ruta de AHORA, por días, solo los que cambian
+    const rutaDeAhora = nuevaRuta()
+    const vp = M.vistaPrevia(rutaDeAhora, res('cambio', { dayId: 'd1', accion: 'quitar', stopId: 's2' }, null, rutaDeAhora).accion)
+    debe(vp.length === 1 && vp[0].dayId === 'd1' && vp[0].sale.join() === 'Arco de Constantino' && vp[0].entra.length === 0 && vp[0].antes.length === 3, 'antes_despues', 'el antes y el después de quitar una parada: solo ese día, con lo que sale')
+    const vp2 = M.vistaPrevia(rutaDeAhora, res('dia', { accion: 'sustituir', dayId: 'd2', day: dia('d2', 2, [stop('v1', 'Museos Vaticanos', '09:00', 41.9065, 12.4536)]) }).accion)
+    debe(vp2.length === 1 && vp2[0].entra.join() === 'Museos Vaticanos' && vp2[0].sale.length === 2, 'antes_despues', 'un día entero: lo que sale y lo que entra')
+    const vp3 = M.vistaPrevia(rutaDeAhora, res('ruta', { days: [dia('d1', 1, rutaDeAhora.days[0].stops), dia('d7', 2, [stop('z1', 'Villa Borghese', '10:00', 41.9142, 12.4923)])] }).accion)
+    debe(vp3.some((c) => c.dayId === 'd7' && c.nuevo) && vp3.some((c) => c.dayId === 'd2' && c.sale.length > 0) && !vp3.some((c) => c.dayId === 'd1'), 'antes_despues', 'la ruta entera: solo los días que cambian (el día igual no sale, el nuevo sí, el que desaparece sale entero)')
+    const r2 = nuevaRuta()
+    r2.days[0].stops = r2.days[0].stops.filter((s) => s.id !== 's2')
+    const vp4 = M.vistaPrevia(r2, res('cambio', { dayId: 'd1', accion: 'quitar', stopId: 's3' }, null, r2).accion)
+    debe(vp4[0].antes.join() === 'Coliseo,Foro Romano', 'antes_despues', 'el «antes» es cómo está la ruta ahora, no cuando se mandó la recomendación')
   }
 
   // Aceptar una recomendación cambia la ruta de verdad, y la varita lo deja como estaba
@@ -293,16 +317,38 @@ console.log('3b. Vistos de cada persona, invitaciones y recomendaciones aplicada
     const recuperada = almacen.getState().route
     debe(recuperada.days.map((d) => d.id).join() === 'd1,d2' && nombres(recuperada, 'd1').join() === 'Coliseo,Arco de Constantino,Foro Romano', 'aplicar', '«Recuperar mi ruta» deja la ruta como la prepararon, no la recomendada')
 
-    // Ya no encaja: no se aplica a ciegas
+    // Aunque la ruta haya cambiado después, el administrador siempre puede aceptar: sustituye a lo que tiene ahora
     abrir()
     almacen.getState().removeStop('d1', 's2')
-    const antes = JSON.stringify(almacen.getState().route.days)
     r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'quitar', stopId: 's2' } })
-    debe(r.ok === false && /ya no está/.test(r.motivo ?? ''), 'aplicar', `la parada ya no está: no se aplica y dice por qué (${r.motivo})`)
-    r = almacen.getState().aplicarRecomendacion({ tipo: 'dia', payload: { accion: 'sustituir', dayId: 'd9', day: dia('d9', 9, []) } })
-    debe(r.ok === false && JSON.stringify(almacen.getState().route.days) === antes, 'aplicar', 'si el día ya no existe, no cambia nada')
-    r = almacen.getState().aplicarRecomendacion({ tipo: 'ruta', payload: { baseRouteId: 'otra', days: [dia('x', 1, [])] } })
-    debe(r.ok === false && JSON.stringify(almacen.getState().route.days) === antes, 'aplicar', 'una ruta entera sobre otra base no se aplica')
+    debe(r.ok === true && /ya no está/.test(r.nota ?? ''), 'aplicar', `quitar algo que ya no está: se acepta y lo dice (${r.nota})`)
+    const antes = JSON.stringify(almacen.getState().route.days)
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd9', accion: 'anadir', stop: stop('n9', 'Panteón', '', 41.8986, 12.4769) } })
+    debe(r.ok === false && r.necesitaDia === true && r.diasPosibles.length === 2 && JSON.stringify(almacen.getState().route.days) === antes, 'aplicar', 'el día ya no existe: pide elegir día y no cambia nada hasta que lo elija')
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd9', accion: 'anadir', stop: stop('n9', 'Panteón', '', 41.8986, 12.4769) } }, 'd2')
+    debe(r.ok === true && nombres(almacen.getState().route, 'd2').includes('Panteón'), 'aplicar', 'con el día elegido, la parada entra en ese día')
+    almacen.getState().restoreOriginalDay('d2')
+    debe(!nombres(almacen.getState().route, 'd2').includes('Panteón'), 'aplicar', 'y la varita lo deja como estaba')
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'cambio', payload: { dayId: 'd1', accion: 'cambiar', stopId: 's2', stop: stop('n2', 'Panteón', '', 41.8986, 12.4769) } })
+    debe(r.ok === true && nombres(almacen.getState().route, 'd1').join() === 'Coliseo,Panteón,Foro Romano', 'aplicar', `cambiar una parada por otra en su mismo sitio: ${JSON.stringify(nombres(almacen.getState().route, 'd1'))}`)
+    almacen.getState().restoreOriginalDay('d1')
+    debe(nombres(almacen.getState().route, 'd1').join() === 'Coliseo,Arco de Constantino,Foro Romano', 'aplicar', '«Recuperar este día» deshace el cambio de parada')
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'dia', payload: { accion: 'sustituir', dayId: 'd9', day: dia('otro', 2, [stop('v1', 'Museos Vaticanos', '09:00', 41.9065, 12.4536)]) } })
+    debe(r.ok === false && r.necesitaDia === true, 'aplicar', 'sustituir un día que ya no existe: hay que elegir cuál')
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'dia', payload: { accion: 'sustituir', dayId: 'd9', day: dia('otro', 2, [stop('v1', 'Museos Vaticanos', '09:00', 41.9065, 12.4536)]) } }, 'd1')
+    debe(r.ok === true && nombres(almacen.getState().route, 'd1').join() === 'Museos Vaticanos' && almacen.getState().route.days[0].id === 'd1', 'aplicar', 'con el día elegido lo sustituye (el día conserva su sitio)')
+    almacen.getState().restoreOriginalDay('d1')
+    debe(nombres(almacen.getState().route, 'd1').join() === 'Coliseo,Arco de Constantino,Foro Romano', 'aplicar', 'y la varita lo recupera')
+
+    abrir()
+    r = almacen.getState().aplicarRecomendacion({ tipo: 'ruta', payload: { baseRouteId: 'otra', days: [dia('x', 1, [stop('z1', 'Villa Borghese', '10:00', 41.9142, 12.4923)])] } })
+    debe(r.ok === true && almacen.getState().route.days.length === 1, 'aplicar', 'una ruta entera sobre otra base también se acepta: sustituye a la de ahora')
+    almacen.getState().restoreOriginalRoute()
+    debe(almacen.getState().route.days.map((d) => d.id).join() === 'd1,d2', 'aplicar', 'y «Recuperar mi ruta» vuelve a la que prepararon')
   }
 }
 
@@ -323,7 +369,7 @@ await db.exec(`
   alter table storage.objects enable row level security;
   create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
 `)
-const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021)_/.test(f)).sort()
+const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023|0024)_/.test(f)).sort()
 for (const archivo of migraciones) {
   try {
     await db.exec(fs.readFileSync(path.join('supabase/migrations', archivo), 'utf8'))
@@ -940,13 +986,14 @@ console.log('5d. Recomendaciones')
   const viajeHugo = await insertaViaje(hugo, rutaDe('Roma'))
   await como(hugo, () => q('insert into public.trip_members (trip_id, user_id) values ($1, $2)', [viajeHugo, ines]))
   const rec = await como(ines, async () => (await q(`insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', '{"dayId":"d1","accion":"quitar","stopId":"s2"}'::jsonb) returning id`, [viajeHugo]))[0])
-  await como(hugo, () => q("update public.trip_recommendations set estado = 'ya_no_encaja' where id = $1", [rec.id]))
+  debe((await lanza(() => como(hugo, () => q("update public.trip_recommendations set estado = 'ya_no_encaja' where id = $1", [rec.id])))) !== null, 'recomendaciones2', 'el estado «ya no encaja» ya no existe en la base de datos')
+  await como(hugo, () => q("update public.trip_recommendations set estado = 'aceptada' where id = $1", [rec.id]))
   const f = (await q('select estado, decidida_por, decidida_en from public.trip_recommendations where id = $1', [rec.id]))[0]
-  debe(f.estado === 'ya_no_encaja' && f.decidida_por === hugo && f.decidida_en !== null, 'recomendaciones2', 'el administrador puede marcar una recomendación como «ya no encaja», y queda apuntado')
+  debe(f.estado === 'aceptada' && f.decidida_por === hugo && f.decidida_en !== null, 'recomendaciones2', 'el administrador siempre puede aceptar una recomendación, y queda apuntado')
   const rec2 = await como(ines, async () => (await q(`insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'dia', '{}'::jsonb) returning id`, [viajeHugo]))[0])
-  await como(ines, () => q("update public.trip_recommendations set estado = 'ya_no_encaja' where id = $1", [rec2.id]))
-  debe((await q('select estado from public.trip_recommendations where id = $1', [rec2.id]))[0].estado === 'pendiente', 'recomendaciones2', 'la invitada no puede marcar «ya no encaja» en la suya')
-  debe((await lanza(() => como(hugo, () => q("update public.trip_recommendations set estado = 'inventado' where id = $1", [rec2.id])))) !== null, 'recomendaciones2', 'no existen más estados que los cuatro')
+  await como(ines, () => q("update public.trip_recommendations set estado = 'aceptada' where id = $1", [rec2.id]))
+  debe((await q('select estado from public.trip_recommendations where id = $1', [rec2.id]))[0].estado === 'pendiente', 'recomendaciones2', 'la invitada no puede aceptar la suya')
+  debe((await lanza(() => como(hugo, () => q("update public.trip_recommendations set estado = 'inventado' where id = $1", [rec2.id])))) !== null, 'recomendaciones2', 'no existen más estados que los tres')
 }
 
 /* ─────────────────────────── 6. Las rutas del servidor ─────────────────────────── */

@@ -16,11 +16,10 @@ El pase es por destino: «el pase de Roma», sin caducidad. 6,99 € por persona
 - El presupuesto.
 - La tarjeta de temporada (o la de Navidad) y los avisos de fechas.
 - La historia del Coliseo, como muestra.
-- La demostración de HOY («Así será tu día en Roma»), para mirar. (propuesta)
 
 **Durante el viaje**
 - DÍAS, el mapa y las fichas: su ruta siempre se ve.
-- **El día de prueba:** el primer día entero del primer viaje a Roma, con HOY y los logros completos. ✅
+- **El día de prueba:** uno por cuenta, para siempre, con HOY y los logros completos. El día de llegada si está libre antes de las 10:00; si no, el día siguiente (detalle en APUNTES §33). ✅
 
 **La cuenta**
 - Crear la cuenta e iniciar sesión.
@@ -79,7 +78,7 @@ El pase es por destino: «el pase de Roma», sin caducidad. 6,99 € por persona
 - Los EXP: qué son y cómo se ganan, por definir. 🟡
 
 **Descuentos**
-- Varios pases con usos y un código o enlace para compartir: 1 persona 6,99 €; Pase Dúo 10,99 €; de 3 a 4, 4,99 € cada uno; de 5 en adelante, 3,99 € cada uno (con un máximo de usos). Se puede pagar por separado con el precio del grupo. ✅
+- Varios pases con un código o enlace para compartir: 1 persona 6,99 €; Pase Dúo 10,99 € (5,50 € cada uno); Pase Grupo, 3 o más, 4,99 € cada uno (con un máximo de usos). Paga todo el que compra; el invitado entra sin pagar (17-oct). ✅
 - Viajero fundador: 4,99 € el primer año. 🟡
 
 **Cuándo se cobra**

@@ -68,6 +68,8 @@ export interface SavedTrip extends TripPayload {
   id: string
   /** Cuentas, parte 2: el viaje es de otra persona y esta está invitada (solo lo ve; no lo cambia). Solo con las cuentas encendidas. */
   esInvitado?: boolean
+  /** «Sustituir el anterior» no borra (Tanda 8A2): el viaje de antes pasa a «Viajes guardados» y aquí lleva la fecha en que pasó. null/ausente = un viaje de siempre. Solo con las cuentas encendidas (migración 0024). */
+  guardadoEn?: string | null
 }
 
 /**
@@ -130,11 +132,11 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
 
   // Con las cuentas encendidas se piden también los viajes donde esta persona es invitada (la base de datos solo deja ver los suyos y esos); si no, solo los suyos, como siempre.
   const conInvitados = cuentasActivas()
-  let consulta = supabase.from('trips').select(conInvitados ? 'id, traveler_id, route, bookings, wishlist, ui_state, generation_state' : 'id, route, bookings, wishlist, ui_state, generation_state')
+  let consulta = supabase.from('trips').select(conInvitados ? 'id, traveler_id, guardado_en, route, bookings, wishlist, ui_state, generation_state' : 'id, route, bookings, wishlist, ui_state, generation_state')
   if (!conInvitados) consulta = consulta.eq('traveler_id', travelerId)
   const { data: filas, error } = await consulta.order('updated_at', { ascending: false })
   if (error) throw error
-  const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
+  const data = (filas ?? []) as unknown as { id: string; traveler_id?: string; guardado_en?: string | null; route: unknown; bookings: unknown; wishlist: unknown; ui_state: unknown; generation_state: unknown }[]
 
   return (data ?? []).map((row) => {
     const generationState = row.generation_state as GenerationResumeState | null
@@ -146,6 +148,7 @@ export async function loadAllTrips(travelerId: string): Promise<SavedTrip[]> {
       uiState: row.ui_state as TripUiState,
       generationState: generationState && generationState.phase !== 'done' ? generationState : null,
       ...(conInvitados && row.traveler_id && row.traveler_id !== travelerId ? { esInvitado: true } : {}),
+      ...(conInvitados && row.guardado_en ? { guardadoEn: row.guardado_en } : {}),
     }
   })
 }
@@ -215,6 +218,16 @@ export async function saveGenerationCheckpoint(travelerId: string, tripId: strin
   const { data, error } = await supabase.from('trips').insert({ traveler_id: travelerId, ...row }).select('id').single()
   if (error) throw error
   return data.id as string
+}
+
+/**
+ * «Sustituir el anterior» (Tanda 8A2): el viaje de antes NO se borra; pasa a «Viajes guardados» (`guardado_en`), igual que en la pregunta del primer día («¿Cuál haces?»).
+ * `restaurar: true` lo devuelve a «Mis viajes». Necesita la migración 0024; sin ella devuelve un aviso y no cambia nada.
+ */
+export async function guardarViajeAparte(tripId: string, restaurar = false): Promise<string | null> {
+  if (!supabase) return 'Necesita conexión con el servidor.'
+  const { error } = await supabase.from('trips').update({ guardado_en: restaurar ? null : new Date().toISOString() }).eq('id', tripId)
+  return error ? 'No se ha podido guardar el viaje aparte. Inténtalo de nuevo.' : null
 }
 
 /** Borra la fila de un viaje guardado — pantalla "Mis viajes" (papelera + confirmación). */

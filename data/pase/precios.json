@@ -1,0 +1,12 @@
+{
+  "_nota": "Los precios del pase, en UN solo sitio (Tanda 8A2; GRATIS_Y_PASE.md y APUNTES §33). Se cambian aquí. El pase es por destino, se paga una vez y no caduca. PAGA TODO EL QUE COMPRA y lo comparte: quien entra con una plaza del pase no paga nada (si quieren repartirlo, entre ellos). El cobro todavía no existe (va con las pantallas de las cuentas).",
+  "moneda": "EUR",
+  "planes": [
+    { "id": "uno", "nombre": "1 persona", "personas": 1, "precio_total": 6.99 },
+    { "id": "duo", "nombre": "Pase Dúo", "personas": 2, "precio_total": 10.99, "precio_por_persona": 5.5, "precio_tachado": 13.98 },
+    { "id": "grupo", "nombre": "Pase Grupo", "personas_desde": 3, "personas_hasta": 50, "precio_por_persona": 4.99 }
+  ],
+  "paga": "el_que_compra",
+  "se_paga_una_vez": true,
+  "caduca": false
+}

@@ -1,12 +1,12 @@
 import { supabase } from './supabaseClient'
 import { useRouteStore } from '../store/useRouteStore'
 import { useSyncStore } from '../store/useSyncStore'
-import { comprobarEncaje, type EstadoDeRecomendacion, type Recomendacion, type TipoDeRecomendacion } from './aplicarRecomendacion'
+import { resolverRecomendacion, vistaPrevia, type CambioDeUnDia, type DiaPosible, type EstadoDeRecomendacion, type Recomendacion, type TipoDeRecomendacion } from './aplicarRecomendacion'
 
 /**
  * Las recomendaciones de un viaje compartido (cuentas, parte 2, punto 5), contra la base de datos. El invitado recomienda (un cambio suelto, un día nuevo o la ruta
- * entera); el administrador acepta o no. Al aceptar, la ruta cambia de verdad. Si la ruta cambió desde que se mandó y la recomendación ya no encaja, no se aplica a
- * ciegas: se marca «ya no encaja» y se le dice. La parte pura (qué encaja, qué lleva cada tipo) está en aplicarRecomendacion.ts.
+ * entera); el administrador acepta o no. Al aceptar, la ruta cambia de verdad y lo recomendado SUSTITUYE a lo que tiene ahora, aunque su ruta haya cambiado después (ya no hay
+ * «ya no encaja»). Si el día de la recomendación ya no existe, tiene que elegir en qué día la pone. La parte pura está en aplicarRecomendacion.ts.
  */
 
 const SIN_NUBE = 'Las recomendaciones necesitan conexión con el servidor; ahora mismo no está disponible.'
@@ -44,26 +44,34 @@ export async function rechazarRecomendacion(id: string): Promise<string | null> 
   return marcar(id, 'rechazada')
 }
 
-export type ResultadoDeAceptar = { estado: 'aceptada' | 'ya_no_encaja' | 'error'; mensaje: string | null }
+export type ResultadoDeAceptar =
+  | { estado: 'aceptada'; mensaje: string | null }
+  | { estado: 'necesita_dia'; mensaje: string; diasPosibles: DiaPosible[] }
+  | { estado: 'error'; mensaje: string | null }
 
 /**
- * El administrador acepta. Solo vale si el viaje abierto es el de la recomendación. Si encaja, cambia la ruta (con la copia de antes para la varita) y se marca
- * «aceptada»; si no, se marca «ya no encaja» y se le dice por qué. La ruta cambiada se guarda sola, como cualquier cambio.
+ * El antes y el después de aceptar (R2), con la ruta de AHORA, por días: solo los que cambian, con lo que sale y lo que entra. null si hay que elegir un día primero
+ * (usa `diaElegido`) o no se puede.
  */
-export async function aceptarRecomendacion(rec: Recomendacion): Promise<ResultadoDeAceptar> {
+export function vistaPreviaDeAceptar(rec: Pick<Recomendacion, 'tipo' | 'payload'>, diaElegido?: string | null): CambioDeUnDia[] | null {
+  const route = useRouteStore.getState().route
+  if (!route) return null
+  const r = resolverRecomendacion(route, rec, diaElegido)
+  return r.ok ? vistaPrevia(route, r.accion) : null
+}
+
+/**
+ * El administrador acepta. Solo vale si el viaje abierto es el de la recomendación. Siempre se puede: cambia la ruta de ahora (con la copia de antes para la varita) y se marca
+ * «aceptada». Si el día de la recomendación ya no existe, devuelve `necesita_dia` con los días entre los que elegir y no aplica nada hasta que llegue `diaElegido`.
+ */
+export async function aceptarRecomendacion(rec: Recomendacion, diaElegido?: string | null): Promise<ResultadoDeAceptar> {
   const abierto = useSyncStore.getState().activeTripId
   if (!abierto || abierto !== rec.tripId) return { estado: 'error', mensaje: 'Abre primero ese viaje para aceptar la recomendación.' }
-  const route = useRouteStore.getState().route
-  const encaje = comprobarEncaje(route, rec)
-  if (encaje.encaja === false) {
-    const error = await marcar(rec.id, 'ya_no_encaja')
-    return { estado: 'ya_no_encaja', mensaje: error ?? `Esta recomendación ya no encaja: ${encaje.motivo}` }
-  }
-  const aplicada = useRouteStore.getState().aplicarRecomendacion(rec)
+  const aplicada = useRouteStore.getState().aplicarRecomendacion(rec, diaElegido)
   if (!aplicada.ok) {
-    const error = await marcar(rec.id, 'ya_no_encaja')
-    return { estado: 'ya_no_encaja', mensaje: error ?? `Esta recomendación ya no encaja: ${aplicada.motivo ?? 'la ruta ha cambiado'}` }
+    if (aplicada.necesitaDia) return { estado: 'necesita_dia', mensaje: aplicada.motivo ?? 'Elige en qué día la pones.', diasPosibles: aplicada.diasPosibles ?? [] }
+    return { estado: 'error', mensaje: aplicada.motivo ?? 'No se ha podido aplicar la recomendación.' }
   }
   const error = await marcar(rec.id, 'aceptada')
-  return { estado: 'aceptada', mensaje: error }
+  return { estado: 'aceptada', mensaje: error ?? aplicada.nota ?? null }
 }

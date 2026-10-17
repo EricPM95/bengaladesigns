@@ -13,7 +13,7 @@ import { GLOBAL, calcular, clave, diferencia, diasEntre, parteLocal, sumarDias }
 import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
-import { diaDePrueba, puedeGanarLogros } from './pase.js'
+import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
 import { coleccionesDeSitio, construirVitrina, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen } from './vistas.js'
 
 const CON_QUIEN = { solo: 'solo', couple: 'pareja', group: 'amigos', family: 'familia' }
@@ -50,6 +50,9 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
     fin: rango.end,
     // Con el Pase Dúo, el viaje es «en pareja» para los dos.
     con_quien: esDuo ? 'pareja' : (CON_QUIEN[route?.answers?.companion] ?? null),
+    // Las horas del vuelo (si las puso): de ellas sale el día de prueba de HOY.
+    llegada: /^\d{1,2}:\d{2}$/.test(String(route?.answers?.arrivalFlightTime ?? '')) ? route.answers.arrivalFlightTime : null,
+    vuelta: /^\d{1,2}:\d{2}$/.test(String(route?.answers?.departureFlightTime ?? '')) ? route.answers.departureFlightTime : null,
     origen_pais: null,
     dias,
   }
@@ -103,11 +106,36 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return mostrados.map(({ cat: _cat, ...m }) => m)
   }
 
-  async function puedeGanar(userId, c, viaje, fecha) {
+  /** La hora local de un instante (o de ahora) en el destino. */
+  const horaLocalDe = (destino, instante = ahora()) => parteLocal(instante, datos.destinos[destino].timezone)
+
+  /** En qué punto está la prueba de HOY de esta cuenta: UNA por cuenta, para siempre. */
+  async function pruebaDeLaCuenta(userId, c) {
+    const fila = await repo.pruebaDe(userId)
+    const viajes = Object.values(c.viajes)
+    const hoy = viajes.length > 0 ? horaLocalDe(viajes[0].destino).fecha : ahora().toISOString().slice(0, 10)
+    return { fila, prueba: estadoDePrueba({ fila, viajes, hoy, ajustes: datos.pase.ajustes }), hoy }
+  }
+
+  const gastarPrueba = (userId, viaje, fecha, prueba) =>
+    repo.guardarPrueba(userId, { trip_id: viaje.id, fecha, gastada_en: ahora().toISOString(), pospuesta: false, pregunta_hecha: prueba.pregunta_hecha })
+
+  /**
+   * ¿Puede esta cuenta ganar logros ese día en ese viaje? Con `usar` (un Visto o «Cómo llegar»: usar HOY de verdad) la prueba se GASTA aquí, salvo que toque la pregunta de las 12:00.
+   * `usar.minutosLocales`: la hora local del uso; `usar.enLinea`: false si el Visto llega tarde (sin cobertura): entonces no se pregunta, se gasta.
+   */
+  async function puedeGanar(userId, c, viaje, fecha, usar = null) {
     if (!cobro) return { puede: true, motivo: 'cobro_apagado' }
     const pases = await repo.pasesDe(userId)
-    const delDestino = Object.values(c.viajes).filter((v) => v.destino === viaje.destino)
-    return puedeGanarLogros({ cobro, destino: viaje.destino, tripId: viaje.id, fecha, pases, prueba: diaDePrueba(delDestino) })
+    const { prueba } = await pruebaDeLaCuenta(userId, c)
+    const r = puedeGanarLogros({ cobro, destino: viaje.destino, tripId: viaje.id, fecha, pases, prueba })
+    if (!r.puede || !usar || r.motivo !== 'dia_de_prueba' || r.gastada) return r
+    const hayManana = diaSiguienteDePrueba(viaje, fecha) != null
+    if (usar.enLinea !== false && hayManana && tocaPreguntar({ prueba, hoy: fecha, minutosLocales: usar.minutosLocales, ajustes: datos.pase.ajustes })) {
+      return { puede: false, motivo: 'pregunta_medio_dia', pregunta: datos.pase.ajustes.pregunta }
+    }
+    await gastarPrueba(userId, viaje, fecha, prueba)
+    return { puede: true, motivo: 'dia_de_prueba', gastada: true, recien_gastada: true }
   }
 
   /* ── Un Visto ── */
@@ -123,10 +151,14 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const e = evaluarVisto({ instante, recibidoEn: recibido, ubicacion, sitio: info, viaje, destino: datos.destinos[viaje.destino], nombreSitio: info.nombre, ajustes: datos.ajustes })
     if (!e.cuenta) return { ok: true, cuenta: false, motivo: e.motivo, mensaje: e.mensaje, ubic: e.ubic, nuevos: [] }
     const fecha = parteLocal(instante, datos.destinos[viaje.destino].timezone).fecha
-    const pase = await puedeGanar(userId, c, viaje, fecha)
-    if (!pase.puede) return { ok: true, cuenta: false, motivo: 'sin_pase', mensaje: null, ubic: e.ubic, nuevos: [] }
     const ya = c.hechos.find((h) => h.tipo === 'visto' && !h.deshecho_en && h.trip_id === trip_id && (stop_id ? h.stop_id === stop_id : h.sitio === sitio))
     if (ya) return { ok: true, cuenta: true, repetido: true, ubic: ya.ubic, nuevos: [] }
+    // Usar HOY de verdad (tocar [Visto]) es lo que gasta el día de prueba.
+    const loc = horaLocalDe(viaje.destino, instante)
+    const enLinea = Math.abs(new Date(recibido) - new Date(instante)) < 15 * 60 * 1000
+    const pase = await puedeGanar(userId, c, viaje, fecha, { minutosLocales: loc.minutos, enLinea })
+    if (pase.motivo === 'pregunta_medio_dia') return { ok: true, cuenta: false, motivo: 'pregunta_medio_dia', pregunta: pase.pregunta, ubic: e.ubic, nuevos: [] }
+    if (!pase.puede) return { ok: true, cuenta: false, motivo: pase.motivo, mensaje: null, ubic: e.ubic, nuevos: [] }
     const antes = calcularCon(c)
     const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'visto', sitio, stop_id, instante, recibido_en: recibido, ubic: e.ubic, valido: true, motivo: e.motivo, inicio: viaje.inicio, fin: viaje.fin })
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
@@ -146,14 +178,74 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const e = evaluarFoto({ origen, tomadaEn: tomada_en, conCamara: origen === 'app' ? true : Boolean(con_camara), ubicacion, sitio: info, viaje, destino: datos.destinos[viaje.destino], nombreSitio: info.nombre, recibidoEn: recibido, ajustes: datos.ajustes })
     void de_amigo // (la foto de un amigo del grupo vale igual: no se mira quién la hizo)
     if (!e.valida) return { ok: true, valida: false, motivo: e.motivo, mensaje: e.mensaje, nuevos: [] }
-    const fecha = parteLocal(e.instante, datos.destinos[viaje.destino].timezone).fecha
+    // Una foto de la galería se sube cuando se tiene acceso (el día de prueba o con el pase): la fecha que cuenta es la del día en que se sube («Lo de ayer también cuenta»).
+    const fecha = origen === 'galeria' ? horaLocalDe(viaje.destino, recibido).fecha : parteLocal(e.instante, datos.destinos[viaje.destino].timezone).fecha
     const pase = await puedeGanar(userId, c, viaje, fecha)
-    if (!pase.puede) return { ok: true, valida: true, cuenta: false, motivo: 'sin_pase', nuevos: [] }
+    if (!pase.puede) return { ok: true, valida: true, cuenta: false, motivo: pase.motivo, nuevos: [] }
     const antes = calcularCon(c)
     const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'foto', sitio, stop_id, instante: e.instante, recibido_en: recibido, ubic: e.ubic, valido: true, origen, foto_id, inicio: viaje.inicio, fin: viaje.fin })
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
     const nuevos = await respuestaDeNuevos(userId, antes, despues, c)
     return { ok: true, valida: true, cuenta: true, nuevos, id: fila.id }
+  }
+
+  /* ── El pase y la prueba de HOY ── */
+
+  /** Lo que necesita HOY para saber qué enseñar: si puede usarse, y si no, la tarjeta del pase (la pantalla 12 de Design, sin alertas). */
+  async function estadoDelPase(userId, tripId = null) {
+    const c = await cargar(userId)
+    const viaje = tripId ? c.viajes[tripId] : null
+    const pases = await repo.pasesDe(userId)
+    const { prueba } = await pruebaDeLaCuenta(userId, c)
+    const hoy = viaje ? horaLocalDe(viaje.destino).fecha : null
+    const acceso = viaje ? puedeGanarLogros({ cobro, destino: viaje.destino, tripId: viaje.id, fecha: hoy, pases, prueba }) : { puede: !cobro, motivo: cobro ? 'sin_viaje' : 'cobro_apagado' }
+    return {
+      ok: true,
+      cobro,
+      pases: pases.map((p) => ({ id: p.id, destino: p.destino, tipo: p.tipo })),
+      prueba: { estado: prueba.estado, trip_id: prueba.trip_id ?? null, fecha: prueba.fecha ?? null, motivo: prueba.motivo ?? null, ya_usada: prueba.estado === 'gastada' },
+      hoy: { puede: acceso.puede, motivo: acceso.motivo, tarjeta: acceso.puede ? null : 'pase' },
+      precios: datos.pase.precios,
+    }
+  }
+
+  /** Usar HOY de verdad sin tocar [Visto]: «Cómo llegar». Gasta la prueba (o pregunta lo de las 12:00). */
+  async function usarHoy(userId, { trip_id, motivo = 'como_llegar' }) {
+    const c = await cargar(userId)
+    const viaje = c.viajes[trip_id]
+    if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas' }
+    const loc = horaLocalDe(viaje.destino)
+    const r = await puedeGanar(userId, c, viaje, loc.fecha, { minutosLocales: loc.minutos })
+    if (r.motivo === 'pregunta_medio_dia') return { ok: true, acceso: false, motivo: r.motivo, pregunta: r.pregunta }
+    return { ok: true, acceso: r.puede, motivo: r.motivo, uso: motivo, tarjeta: r.puede ? null : 'pase' }
+  }
+
+  /** La respuesta a «Te queda medio día…»: [Hoy] gasta la prueba hoy; [Mañana] la pasa al día siguiente (si queda alguno). Se pregunta una sola vez. */
+  async function responderPrueba(userId, { trip_id, respuesta }) {
+    const c = await cargar(userId)
+    const viaje = c.viajes[trip_id]
+    if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas' }
+    const { prueba } = await pruebaDeLaCuenta(userId, c)
+    const hoy = horaLocalDe(viaje.destino).fecha
+    if (prueba.estado !== 'pendiente' || prueba.trip_id !== trip_id || prueba.fecha !== hoy) return { ok: false, motivo: 'no_hay_pregunta' }
+    if (prueba.pregunta_hecha) return { ok: false, motivo: 'ya_respondida' }
+    if (respuesta === 'hoy') {
+      await repo.guardarPrueba(userId, { trip_id, fecha: hoy, gastada_en: ahora().toISOString(), pospuesta: false, pregunta_hecha: true })
+      return { ok: true, respuesta, prueba: { estado: 'gastada', fecha: hoy }, reenviar_vistos: true }
+    }
+    if (respuesta === 'manana') {
+      const siguiente = diaSiguienteDePrueba(viaje, hoy)
+      if (!siguiente) return { ok: false, motivo: 'no_hay_manana' }
+      await repo.guardarPrueba(userId, { trip_id, fecha: siguiente, gastada_en: null, pospuesta: true, pregunta_hecha: true })
+      return { ok: true, respuesta, prueba: { estado: 'pendiente', fecha: siguiente }, lo_de_hoy: 'Lo de hoy se gana mañana con «Lo de ayer también cuenta», con las fotos de la galería.' }
+    }
+    return { ok: false, motivo: 'respuesta_rara' }
+  }
+
+  /** El precio de un pase y quién lo paga (todo el que compra). */
+  function precioDe(plan, personas) {
+    const p = precioDelPase(datos.pase.precios, plan, personas)
+    return p ? { ok: true, ...p, paga: 'el_que_compra' } : { ok: false, motivo: 'plan_raro' }
   }
 
   /* ── Deshacer ── */
@@ -282,7 +374,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { cargar, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, datos, catalogos }
+  return { cargar, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

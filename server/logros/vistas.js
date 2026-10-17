@@ -4,6 +4,7 @@
  */
 
 import { GLOBAL, categoriaDe, clave, diasEntre, parteLocal, sumarDias } from './motor.js'
+import { paisesDelDestino } from './sitios.js'
 
 const rellenar = (texto, valores) => String(texto).replace(/\{(\w+)\}/g, (_, k) => (valores[k] ?? `{${k}}`))
 const porEn = (a, b) => new Date(a.en) - new Date(b.en)
@@ -16,7 +17,7 @@ const porEn = (a, b) => new Date(a.en) - new Date(b.en)
 export function capacidad(datos, claves) {
   const ds = claves.map((c) => datos.destinos[c])
   const sitios = ds.flatMap((d) => Object.values(d.sitios))
-  const paises = new Set(sitios.map((s) => s.pais).filter(Boolean))
+  const paises = new Set(ds.flatMap((d) => [...paisesDelDestino(d)]))
   const porPais = new Map()
   for (const d of ds) {
     const p = Object.values(d.sitios)[0]?.pais
@@ -25,16 +26,16 @@ export function capacidad(datos, claves) {
   return {
     paises: paises.size,
     destinos: ds.length,
-    capitales: new Set(ds.flatMap((d) => Object.values(d.sitios).filter((s) => s.capital).map((s) => `${s.pais}|${d.ciudad}`))).size,
+    capitales: new Set(ds.flatMap((d) => [...paisesDelDestino(d)].filter((p) => (p === d.pais_defecto ? d.capital_defecto : (d.excepciones_pais?.[p]?.capital ?? Object.values(d.sitios).some((s) => s.pais === p && s.capital)))).map((p) => `${p}|${d.ciudad}`))).size,
     maravillas: new Set(sitios.map((s) => s.maravilla).filter(Boolean)).size,
-    patrimonios: new Set(sitios.map((s) => s.patrimonio).filter(Boolean)).size,
+    patrimonios: ds.reduce((n, d) => n + Object.values(d.patrimonios ?? {}).filter((p) => p.sitios?.length > 0).length, 0),
     emblemas: ds.reduce((n, d) => n + d.emblemas.length, 0),
     colecciones: ds.reduce((n, d) => n + d.colecciones.length, 0),
     sitiosPorCiudad: Math.max(0, ...ds.map((d) => (d.sitios_catalogo ?? Object.keys(d.sitios)).length)),
     microestados: [...paises].filter((p) => datos.viajero.microestados.includes(p)).length,
     hemisferioSur: sitios.some((s) => s.hemisferio === 'sur'),
     mismoPais: Math.max(0, ...porPais.values()),
-    dosPaisesEnUnaCiudad: ds.some((d) => new Set(Object.values(d.sitios).map((s) => s.pais)).size >= 2),
+    dosPaisesEnUnaCiudad: ds.some((d) => paisesDelDestino(d).size >= 2),
     continentes: [...new Set([...paises].map((p) => datos.viajero.paises[p]?.continente).filter(Boolean))],
     ciudadesConSello: ds.filter((d) => d.sellos.length > 0).length,
     pionero: ds.some((d) => d.pionero?.activo),
@@ -295,7 +296,7 @@ export function pasaporte({ datos, items, previos = { paises: [], dias: 0 }, aho
   const hoy = (ahora instanceof Date ? ahora : new Date(ahora ?? Date.now())).toISOString().slice(0, 10)
   const porPais = new Map()
   for (const d of Object.values(datos.destinos)) {
-    const paises = new Set(Object.values(d.sitios).map((s) => s.pais).filter(Boolean))
+    const paises = paisesDelDestino(d)
     for (const pais of paises) {
       if (!porPais.has(pais)) porPais.set(pais, { pais, continente: datos.viajero.paises[pais]?.continente ?? null, destinos: [] })
       const sellos = d.sellos.filter((s) => {

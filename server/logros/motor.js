@@ -14,6 +14,8 @@
  * No tiene nada que ver con el motor de rutas.
  */
 
+import { datosDeSitio } from './sitios.js'
+
 /* ------------------------------------------------------------------ */
 /* Fechas y horas (siempre en la hora del destino)                     */
 /* ------------------------------------------------------------------ */
@@ -221,7 +223,7 @@ export function calcular(e) {
 
 function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoDestino, ahora }) {
   const V = datos.viajero
-  const sitioDe = (h) => datos.destinos[h.destino]?.sitios?.[h.sitio] ?? null
+  const sitioDe = (h) => datosDeSitio(datos.destinos[h.destino], h.sitio)
   const primeras = (agrupar) => {
     const mapa = new Map()
     for (const h of cuentan) {
@@ -357,7 +359,7 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
         for (const v of listaViajes) {
           if (!v.origen_pais) continue
           const d = datos.destinos[v.destino]
-          const sitioPais = Object.values(d.sitios)[0]?.pais
+          const sitioPais = d.pais_defecto ?? Object.values(d.sitios)[0]?.pais
           if (sitioPais !== v.origen_pais) continue
           if (!porPaisOrigen.has(v.destino)) porPaisOrigen.set(v.destino, v)
         }

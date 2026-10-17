@@ -15,8 +15,8 @@ interface Emblema { id: string; tipo: string; sitio?: string; nombre: string; li
 interface DatosDestino {
   clave: string
   ciudad: string
-  sitios: Record<string, { pais: string; capital: boolean; radio_m: number; motivo_radio: string; foto_dentro: string | null; patrimonio?: string; patrimonio_por_comprobar?: string }>
-  patrimonios: Record<string, { nombre: string; unesco: number; fuente: string }>
+  sitios: Record<string, { pais: string; capital: boolean; radio_m: number; motivo_radio: string; foto_dentro: string | null }>
+  patrimonios: Record<string, { nombre: string; unesco: number; fuente: string; sitios?: string[]; por_comprobar?: string[]; motivos?: Record<string, string> }>
   sellos: Sello[]
   colecciones: Coleccion[]
   emblemas: Emblema[]
@@ -102,7 +102,7 @@ export function AdminLogros() {
           <section className="space-y-3">
             {Object.entries(destino.patrimonios).map(([id, p]) => (
               <div key={id}><h3 className="font-semibold">{p.nombre} (UNESCO {p.unesco})</h3><p className="text-text/70">{p.fuente}</p>
-                <p className="text-[13px]">Cuentan: {Object.entries(destino.sitios).filter(([, s]) => s.patrimonio === id).map(([k]) => k).join(', ') || 'ninguno'}<br />Por comprobar (no cuentan): {Object.entries(destino.sitios).filter(([, s]) => s.patrimonio_por_comprobar === id).map(([k]) => k).join(', ') || 'ninguno'}</p></div>
+                <p className="text-[13px]">Cuentan ({p.sitios?.length ?? 0}): {p.sitios?.join(', ') || 'ninguno'}<br />Por comprobar (no cuentan): {p.por_comprobar?.join(', ') || 'ninguno'}</p></div>
             ))}
           </section>
         )}

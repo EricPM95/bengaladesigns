@@ -1,0 +1,16 @@
+{
+  "_nota": "Cómo se elige el día de prueba de HOY (Tanda 8A2; APUNTES §33). Una prueba por cuenta, para siempre. Las horas son de la hora del destino.",
+  "inicio_del_dia": "08:00",
+  "libre_antes_de": "10:00",
+  "libre_tras_llegada_min": 90,
+  "salida_antes_de_vuelo_min": 180,
+  "horas_utiles_min": 120,
+  "pregunta_desde": "12:00",
+  "pregunta": {
+    "texto": "Te queda medio día. ¿Usas hoy tu día de prueba o lo guardas para mañana?",
+    "opciones": [
+      { "id": "hoy", "texto": "Hoy" },
+      { "id": "manana", "texto": "Mañana" }
+    ]
+  }
+}

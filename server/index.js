@@ -5449,7 +5449,10 @@ function ownPhotoFor(name, city, dateIso) {
   // (La versión pequeña es opcional en los huecos: sin ella, la grande.)
   const smallPath = base.replace(/\.jpg$/, '_p.jpg')
   const small = foto.hueco && !existsSync(join(__dirname, '../public', smallPath)) ? base : smallPath
-  return { photo_source: 'propia', photo_url: versionedPhotoUrl(base), photo_small: versionedPhotoUrl(small), photo_credit: credit, photo_night: foto.cuando === 'noche' }
+  // La miniatura WebP (Tanda 8A2, `node scripts/generarMiniaturas.mjs`): la foto pequeña de las listas de paradas. Solo si existe.
+  const miniPath = base.replace(/^(.*)\/([^/]+)\.jpg$/, '$1/mini/$2.webp')
+  const photo_mini = existsSync(join(__dirname, '../public', miniPath)) ? versionedPhotoUrl(miniPath) : null
+  return { photo_source: 'propia', photo_url: versionedPhotoUrl(base), photo_small: versionedPhotoUrl(small), photo_mini, photo_credit: credit, photo_night: foto.cuando === 'noche' }
 }
 
 /**

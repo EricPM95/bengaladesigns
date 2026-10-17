@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { leerAvisoDeInvitacion, olvidarAvisoDeInvitacion, guardarAvisoDeInvitacion } from '../../lib/cuentas'
 import { anularInvitacion, canjearInvitacion, crearInvitacion, enlaceDeInvitacion, listarInvitaciones, normalizarCodigo, type Invitacion } from '../../lib/invitaciones'
 import { textoDeRecomendacion, type Recomendacion } from '../../lib/aplicarRecomendacion'
-import { aceptarRecomendacion, listarRecomendaciones, rechazarRecomendacion } from '../../lib/recomendacionesViaje'
+import { aceptarRecomendacion, listarRecomendaciones, rechazarRecomendacion, vistaPreviaDeAceptar } from '../../lib/recomendacionesViaje'
+import type { DiaPosible } from '../../lib/aplicarRecomendacion'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 
@@ -63,10 +64,18 @@ export function InvitarProvisional() {
     setMensaje(await anularInvitacion(id))
     await recargar()
   }
-  const aceptar = async (rec: Recomendacion) => {
+  // Si el día de la recomendación ya no existe, se elige en qué día se pone (sin ese día no se aplica).
+  const [eligiendoDia, setEligiendoDia] = useState<{ rec: Recomendacion; dias: DiaPosible[] } | null>(null)
+  const aceptar = async (rec: Recomendacion, diaElegido?: string) => {
     setOcupado(true)
-    const r = await aceptarRecomendacion(rec)
+    const r = await aceptarRecomendacion(rec, diaElegido)
     setOcupado(false)
+    if (r.estado === 'necesita_dia') {
+      setEligiendoDia({ rec, dias: r.diasPosibles })
+      setMensaje(r.mensaje)
+      return
+    }
+    setEligiendoDia(null)
     setMensaje(r.estado === 'aceptada' ? (r.mensaje ?? 'Hecho: la ruta ha cambiado. Si te arrepientes, la varita lo deja como estaba.') : (r.mensaje ?? 'No se ha podido aceptar.'))
     await recargar()
   }
@@ -130,6 +139,21 @@ export function InvitarProvisional() {
               {recomendaciones.map((rec) => (
                 <div key={rec.id} data-recomendacion={rec.id} className="flex flex-col gap-2 rounded-xl bg-text/5 px-3 py-2">
                   <span className="text-[14px]">{textoDeRecomendacion(rec, route)}</span>
+                  {/* El antes y el después, con la ruta de AHORA, solo de los días que cambian (lo que sale, tachado; lo que entra, en verde). */}
+                  {(vistaPreviaDeAceptar(rec) ?? []).map((c) => (
+                    <div key={c.dayId} data-antes-despues={c.dayId} className="text-[12.5px] leading-snug text-text/75">
+                      <b>{c.title}</b>: {c.sale.map((n) => <s key={`s-${n}`} className="mr-1 text-[#b3261e]">{n}</s>)}{c.entra.map((n) => <span key={`e-${n}`} className="mr-1 text-[#2f7d4f]">{n}</span>)}
+                    </div>
+                  ))}
+                  {eligiendoDia?.rec.id === rec.id && (
+                    <div data-elegir-dia className="flex flex-wrap gap-1.5">
+                      {eligiendoDia.dias.map((d) => (
+                        <button key={d.id} type="button" disabled={ocupado} onClick={() => void aceptar(rec, d.id)} className="h-9 rounded-full border border-text/20 px-3 text-[13px]">
+                          {d.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex gap-2">
                     <button type="button" disabled={ocupado} onClick={() => void aceptar(rec)} className={boton}>
                       Aceptar

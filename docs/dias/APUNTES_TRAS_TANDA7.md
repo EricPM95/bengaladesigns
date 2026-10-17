@@ -720,3 +720,15 @@ Todo está en `NOMBRES_LOGROS.md`. Decidido:
   - el sello del Vaticano no cuenta como otra ciudad en Tres ciudades de oro, Tres ciudades de diamante, Diamante a la primera y Conocedor;
   - Pionero, encendido también en Roma.
 - Con solo Roma, muchos escalones no se verán todavía (por ejemplo, Capitales empieza en 5): solo se ven los que se pueden conseguir con los destinos curados.
+
+## 33. Revisión del paso 3 de Design (Eric, 17-oct, 00:04–02:12)
+Detalle en REVISION_DESIGN_PASO3.md. Lo que cambia reglas:
+- **Precios del pase:** 1 persona 6,99 €; Pase Dúo 10,99 € (5,50 € cada uno); Pase Grupo, 3 o más, 4,99 € cada uno. Fuera el escalón de 5 o más.
+- **Paga todo el que compra** y lo comparte; el invitado entra sin pagar. Fuera lo de pagar cada uno su parte (tenía trampa).
+- **Una prueba de HOY por cuenta, para siempre** (antes, una por destino). Si ya la usó, sin alertas: HOY enseña la tarjeta de la pantalla 12.
+- **El día de prueba:** si el día de llegada está libre antes de las 10:00, la prueba es ese día; si no, el día siguiente. Sin vuelo, el día 1. Si no hay ningún día libre antes de las 10:00, el día con más horas libres. Se gasta solo al usar HOY (Visto o Cómo llegar). Si la primera vez que usa HOY ese día es a partir de las 12:00: «Te queda medio día. ¿Usas hoy tu día de prueba o lo guardas para mañana?» [Hoy] [Mañana].
+- Fuera la demostración de HOY antes del viaje.
+- **Recomendar cambios:** una parada, un día o la ruta entera, en «modo recomendación» con [Enviar a Elena]. El admin siempre puede aceptar, aunque su ruta haya cambiado: sustituye a lo de ahora; si el día ya no existe, elige día. Fuera «ya no encaja» (cambiarlo en las cuentas, parte 3).
+- [Compartir viaje] en RUTA.
+- En las listas de paradas, la foto pequeña del sitio en vez del círculo con ✓ (Code: miniaturas de cada foto).
+- Regla de textos: fuera los que explican lo que ya se ve.

@@ -12,7 +12,7 @@ import { PGlite } from '@electric-sql/pglite'
 import { cargarDatos, cargarCatalogo, validarDatos, coordenadasDeSitio } from '../../server/logros/datos.js'
 import { calcular, clave, momentoDeLaHora, parteLocal } from '../../server/logros/motor.js'
 import { evaluarFoto, evaluarVisto, instanteDeToma, rangoLargo, metros, diasParaReclamar } from '../../server/logros/fotos.js'
-import { cobroActivo, diaDePrueba, puedeGanarLogros } from '../../server/logros/pase.js'
+import { cobroActivo, diasLibres, elegirDiaDePrueba, estadoDePrueba, planParaPersonas, precioDelPase, puedeGanarLogros, repartoDelPago, tocaPreguntar, viajeDePrueba } from '../../server/logros/pase.js'
 import { crearServicioLogros, simular, contextoDeViaje } from '../../server/logros/servicio.js'
 import { capacidad, logrosVisibles, logrosYVisibilidad, llevarAVitrina } from '../../server/logros/vistas.js'
 import { enviarAvisosPendientes, pushActivo, textoDeAviso } from '../../server/logros/avisos.js'
@@ -60,7 +60,19 @@ console.log('1. Los datos de los logros')
   debe(R.sitios.trastevere.radio_m >= 800 && R.sitios.museos_vaticanos_y_capilla_sixtina.radio_m > R.sitios.fontana_de_trevi.radio_m && R.sitios.circo_maximo.radio_m > R.sitios.piazza_navona.radio_m, 'datos', 'los radios: Trastevere cubre el barrio y los sitios grandes tienen más radio')
   debe(Object.values(R.sitios).every((s) => s.radio_m > 0 && s.motivo_radio && s.pais), 'datos', 'cada sitio lleva radio, su motivo y su país')
   debe(R.sitios.basilica_de_san_pedro.pais === 'Ciudad del Vaticano' && R.sitios.coliseo.pais === 'Italia' && R.sitios.coliseo.capital === true, 'datos', 'país y capital de los sitios')
-  debe(R.sitios.coliseo.patrimonio == null && R.sitios.coliseo.patrimonio_por_comprobar === 'centro_historico_de_roma' && R.sitios.foro_romano_y_palatino.patrimonio === 'centro_historico_de_roma', 'datos', 'el Patrimonio: solo lo comprobado cuenta; el resto queda «por comprobar» sin contar')
+  debe(['museos_vaticanos_y_capilla_sixtina', 'basilica_de_san_pedro', 'plaza_de_san_pedro'].every((id) => R.sitios[id].capital === true), 'vaticano', 'el Vaticano es capital: capital:true en sus tres sitios (Eric, 17-oct)')
+  // Los Patrimonios (Tanda 8A2): todo lo que está dentro de las murallas
+  const CH = R.patrimonios.centro_historico_de_roma
+  const idsCatalogo = new Set(catalogo.places.map((p) => p.id))
+  for (const id of ['coliseo', 'fontana_de_trevi', 'piazza_navona', 'plaza_de_espana', 'trastevere', 'foro_romano_y_palatino', 'panteon', 'castillo_de_santangelo']) debe(CH.sitios.includes(id), 'patrimonio', `${id} cuenta para el Centro histórico`)
+  debe(CH.sitios.every((id) => idsCatalogo.has(id)), 'patrimonio', 'todos los sitios del Centro histórico existen en los datos de Roma')
+  debe(['mirador_del_janiculo', 'piramide_cestia', 'terraza_del_pincio', 'santa_maria_del_popolo', 'borgo_pio', 'via_della_conciliazione', 'testaccio', 'basilica_de_san_juan_de_letran', 'basilica_de_santa_maria_la_mayor'].every((id) => CH.sitios.includes(id)), 'patrimonio', 'también los que no están en ninguna colección y quedan dentro de las murallas (Janículo, Pincio, Borgo, Testaccio, San Juan de Letrán…)')
+  debe(['galeria_borghese', 'parque_de_villa_borghese', 'bioparque_de_roma', 'galeria_nacional_de_arte_moderno', 'quartiere_coppede'].every((id) => !CH.sitios.includes(id)), 'patrimonio', 'lo que está fuera de las murallas no cuenta (Galería Borghese, Villa Borghese…)')
+  debe(R.patrimonios.via_appia.sitios.length === 0 && R.patrimonios.via_appia.por_comprobar.includes('catacumbas_de_san_calixto'), 'patrimonio', 'las Catacumbas de San Calixto siguen «por comprobar» y no cuentan')
+  const sitiosVat = R.patrimonios.ciudad_del_vaticano.sitios
+  debe(['museos_vaticanos_y_capilla_sixtina', 'basilica_de_san_pedro', 'plaza_de_san_pedro'].every((id) => sitiosVat.includes(id) && !CH.sitios.includes(id)), 'patrimonio', 'el Vaticano es otro Patrimonio, sin repetirse en el del Centro histórico')
+  debe(!idsCatalogo.has('basilica_de_san_pablo_extramuros') && !JSON.stringify(R).includes('san_pablo_extramuros'), 'patrimonio', 'la Basílica de San Pablo Extramuros no está en nuestros datos (cuenta si algún día se añade)')
+  debe(R.pais_defecto === 'Italia' && R.excepciones_pais['Ciudad del Vaticano'].capital === true, 'datos', 'cualquier sitio del catálogo cuenta como Italia salvo los del Vaticano')
   debe(R.pionero.activo === true && R.pionero.limite === 100, 'datos', 'Pionero encendido en Roma, los 100 primeros')
   const V = datos.viajero
   debe(V.logros.find((l) => l.id === 'paises').escalones.map((e) => e.n).join() === '1,3,5,8,10,15,20,25,30', 'datos', 'escalones de Países')
@@ -120,13 +132,66 @@ const enMadrid = { lat: 40.4168, lng: -3.7038 }
   // El pase
   debe(cobroActivo({}) === false && cobroActivo({ PASES_COBRO_ACTIVO: 'true' }) === true, 'pase', 'el cobro está apagado salvo PASES_COBRO_ACTIVO=true')
   debe(puedeGanarLogros({ cobro: false, destino: 'roma', tripId: 'a', fecha: '2026-10-11', pases: [] }).puede === true, 'pase', 'con el cobro apagado, siempre sí')
-  const prueba = diaDePrueba([{ id: 'a', destino: 'roma', inicio: '2026-10-10', fin: '2026-10-14', dias: [10, 11, 12, 13, 14].map((d) => ({ fecha: `2026-10-${d}` })) }])
-  debe(prueba.trip_id === 'a' && prueba.fecha === '2026-10-11', 'pase', 'el día de prueba es el primer día entero (no el de llegada)')
+  const prueba = { estado: 'pendiente', trip_id: 'a', fecha: '2026-10-11' }
   debe(puedeGanarLogros({ cobro: true, destino: 'roma', tripId: 'a', fecha: '2026-10-11', pases: [], prueba }).motivo === 'dia_de_prueba', 'pase', 'con el cobro encendido, el día de prueba vale')
   debe(puedeGanarLogros({ cobro: true, destino: 'roma', tripId: 'a', fecha: '2026-10-12', pases: [], prueba }).puede === false, 'pase', 'con el cobro encendido, otro día sin pase no')
   debe(puedeGanarLogros({ cobro: true, destino: 'roma', tripId: 'a', fecha: '2026-10-12', pases: [{ destino: 'Roma' }], prueba }).motivo === 'con_pase', 'pase', 'con el cobro encendido, con el pase de ese destino sí')
   debe(puedeGanarLogros({ cobro: true, destino: 'roma', tripId: 'b', fecha: '2026-10-11', pases: [{ destino: 'florencia' }], prueba }).puede === false, 'pase', 'el pase de otro destino no vale')
+  debe(puedeGanarLogros({ cobro: true, destino: 'roma', tripId: 'a', fecha: '2026-10-12', pases: [], prueba: { estado: 'gastada', trip_id: 'a', fecha: '2026-10-11' } }).motivo === 'prueba_ya_usada', 'pase', 'con la prueba ya gastada y sin pase, otro día: la prueba ya está usada')
 }
+
+console.log('2b. El día de prueba de HOY')
+{
+  const aj = datos.pase.ajustes
+  const dias = (n, desde = 10) => Array.from({ length: n }, (_, i) => ({ numero: i + 1, fecha: `2026-10-${String(desde + i).padStart(2, '0')}` }))
+  const dia = (viaje) => elegirDiaDePrueba(viaje, aj)
+  debe(dia({ dias: dias(5), llegada: '07:00' }).numero === 1, 'prueba', 'llegada a las 7:00: el día de llegada está libre antes de las 10:00 → la prueba es ese día')
+  debe(dia({ dias: dias(5), llegada: '14:00' }).numero === 2, 'prueba', 'llegada a las 14:00: el día de llegada no está libre antes de las 10:00 → el día siguiente')
+  debe(dia({ dias: dias(5), llegada: null }).numero === 1 && dia({ dias: dias(5), llegada: null }).motivo === 'sin_vuelo', 'prueba', 'sin vuelo puesto: el día 1')
+  debe(dia({ dias: dias(5), llegada: null, vuelta: '20:00' }).numero === 1, 'prueba', 'solo con la vuelta puesta (sin llegada): el día 1')
+  const dos = dia({ dias: dias(2), llegada: '22:00', vuelta: '07:00' })
+  debe(dos.numero === 1 && dos.motivo === 'mas_horas_libres', 'prueba', 'viaje de 2 días con llegada tarde y vuelo de madrugada: ningún día libre antes de las 10:00 → el día con más horas libres')
+  const dos2 = dia({ dias: dias(2), llegada: '13:00', vuelta: '09:00' })
+  debe(dos2.motivo === 'mas_horas_libres' && dos2.numero === 1, 'prueba', 'otro viaje de 2 días: el día 2 sale antes de poder usarse, gana el día 1 (más horas libres)')
+  debe(dia({ dias: dias(2), llegada: '14:00', vuelta: '20:00' }).numero === 2 && dia({ dias: dias(2), llegada: '14:00', vuelta: '20:00' }).motivo === 'dia_siguiente', 'prueba', 'si el día siguiente está libre por la mañana, se usa ese')
+  debe(diasLibres({ dias: dias(3), llegada: '08:00', vuelta: '15:00' }, aj)[2].hasta === 15 * 60 - aj.salida_antes_de_vuelo_min && diasLibres({ dias: dias(3), llegada: '08:00' }, aj)[0].desde === 8 * 60 + aj.libre_tras_llegada_min, 'prueba', 'el último día se acaba 3 horas antes del vuelo y el primero empieza al llegar más el traslado')
+  // Si pone o cambia el vuelo antes de gastarla, se vuelve a calcular (mientras no se gasta, no se guarda)
+  const v = { id: 'a', inicio: '2026-10-10', fin: '2026-10-14', dias: dias(5), llegada: null }
+  const e1 = estadoDePrueba({ fila: null, viajes: [v], hoy: '2026-10-01', ajustes: aj })
+  const e2 = estadoDePrueba({ fila: null, viajes: [{ ...v, llegada: '15:00' }], hoy: '2026-10-01', ajustes: aj })
+  debe(e1.fecha === '2026-10-10' && e2.fecha === '2026-10-11' && e1.estado === 'pendiente', 'prueba', 'sin vuelo, el 10; al poner la llegada a las 15:00, se recalcula al 11')
+  const gastada = { trip_id: 'a', fecha: '2026-10-10', gastada_en: '2026-10-10T09:00:00Z', pospuesta: false, pregunta_hecha: false }
+  const e3 = estadoDePrueba({ fila: gastada, viajes: [{ ...v, llegada: '15:00' }], hoy: '2026-10-11', ajustes: aj })
+  debe(e3.estado === 'gastada' && e3.fecha === '2026-10-10', 'prueba', 'una vez gastada, ya no se recalcula aunque cambie el vuelo')
+  const e4 = estadoDePrueba({ fila: gastada, viajes: [v, { ...v, id: 'b', inicio: '2027-03-10', fin: '2027-03-12', dias: dias(3, 10) }], hoy: '2027-03-01', ajustes: aj })
+  debe(e4.estado === 'gastada' && e4.trip_id === 'a', 'prueba', 'UNA prueba por cuenta, para siempre: con otro viaje después, no hay otra')
+  debe(viajeDePrueba([{ id: 'x', inicio: '2026-05-01', fin: '2026-05-03' }, { id: 'y', inicio: '2026-10-10', fin: '2026-10-12' }], '2026-10-01').id === 'y', 'prueba', 'la prueba es del primer viaje al que todavía no le ha pasado el último día')
+  // La pregunta de las 12:00
+  const pend = { estado: 'pendiente', trip_id: 'a', fecha: '2026-10-11', pregunta_hecha: false }
+  debe(tocaPreguntar({ prueba: pend, hoy: '2026-10-11', minutosLocales: 11 * 60 + 59, ajustes: aj }) === false && tocaPreguntar({ prueba: pend, hoy: '2026-10-11', minutosLocales: 12 * 60, ajustes: aj }) === true, 'prueba', 'la pregunta sale a partir de las 12:00, no antes')
+  debe(tocaPreguntar({ prueba: { ...pend, pregunta_hecha: true }, hoy: '2026-10-11', minutosLocales: 15 * 60, ajustes: aj }) === false && tocaPreguntar({ prueba: pend, hoy: '2026-10-12', minutosLocales: 15 * 60, ajustes: aj }) === false, 'prueba', 'se pregunta una sola vez, y solo el día de la prueba')
+  debe(aj.pregunta.texto === 'Te queda medio día. ¿Usas hoy tu día de prueba o lo guardas para mañana?' && aj.pregunta.opciones.map((o) => o.texto).join() === 'Hoy,Mañana', 'prueba', 'el texto de la pregunta y sus botones son los del encargo')
+}
+
+console.log('2c. Los precios del pase y quién paga')
+{
+  const pr = datos.pase.precios
+  debe(precioDelPase(pr, 'uno').total === 6.99, 'precios', '1 persona: 6,99 €')
+  const duo = precioDelPase(pr, 'duo')
+  debe(duo.total === 10.99 && duo.por_persona === 5.5 && duo.tachado === 13.98, 'precios', 'Pase Dúo: 10,99 € (13,98 € tachado, 5,50 € cada uno)')
+  debe(precioDelPase(pr, 'grupo', 3).total === 14.97 && precioDelPase(pr, 'grupo', 4).total === 19.96 && precioDelPase(pr, 'grupo', 3).por_persona === 4.99, 'precios', 'Pase Grupo, 3 o más: 4,99 € cada uno')
+  debe(precioDelPase(pr, 'grupo', 5).por_persona === 4.99 && precioDelPase(pr, 'grupo', 10).total === 49.9, 'precios', 'de 5 en adelante sigue siendo 4,99 € (fuera el escalón de 3,99 €)')
+  debe(!JSON.stringify(pr).includes('3.99') && !JSON.stringify(pr).includes('3,99'), 'precios', 'el escalón de 3,99 € ya no existe en los datos')
+  debe(precioDelPase(pr, 'grupo', 2) === null && precioDelPase(pr, 'grupo', 51) === null && precioDelPase(pr, 'raro') === null, 'precios', 'un grupo de 2 o de más del máximo no vale')
+  debe(planParaPersonas(pr, 1) === 'uno' && planParaPersonas(pr, 2) === 'duo' && planParaPersonas(pr, 7) === 'grupo' && planParaPersonas(pr, 0) === null, 'precios', 'el plan que toca según las personas')
+  const reparto = repartoDelPago(pr, { plan: 'duo', personas: 2, comprador: 'laura', invitados: ['elena'] })
+  debe(reparto.length === 2 && reparto[0].usuario === 'laura' && reparto[0].paga === 10.99 && reparto[1].usuario === 'elena' && reparto[1].paga === 0, 'precios', 'paga todo el que compra: el invitado entra con su plaza sin pagar nada')
+  const grupo = repartoDelPago(pr, { plan: 'grupo', personas: 4, comprador: 'laura', invitados: ['a', 'b', 'c'] })
+  debe(grupo[0].paga === 19.96 && grupo.slice(1).every((x) => x.paga === 0), 'precios', 'igual en el Pase Grupo: paga todo la que compra')
+  const codigoPase = ['pase.js'].map((f) => fs.readFileSync('server/logros/' + f, 'utf8')).join('\n') + fs.readFileSync('data/pase/precios.json', 'utf8')
+  debe(!/cada_uno_paga|pagar_cada|pago_por_separado|por separado/i.test(codigoPase.replace(/PAGA TODO|Paga todo/g, '')) || /paga.*el_que_compra/.test(codigoPase), 'precios', 'no hay nada para que cada uno pague su parte')
+}
+
 
 /* ─────────────────────────── 3. El servicio sobre Postgres de verdad ─────────────────────────── */
 console.log('3. El servicio: los hechos, lo ganado y el recálculo (PGlite)')
@@ -145,7 +210,7 @@ await db.exec(`
   alter table storage.objects enable row level security;
   create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
 `)
-const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023)_/.test(f)).sort()
+const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023|0024)_/.test(f)).sort()
 for (const archivo of migraciones) {
   try {
     await db.exec(fs.readFileSync(path.join('supabase/migrations', archivo), 'utf8'))
@@ -243,6 +308,16 @@ const repoPG = {
   probadorDe: async (u) => (await S("select ganado_en from public.achievements where user_id = $1 and logro = 'viajero:probador'", [u]))[0]?.ganado_en?.toISOString?.() ?? null,
   ultimaFrase: async (u) => (await S('select frase from public.achievements where user_id = $1 and frase is not null order by ganado_en desc limit 1', [u]))[0]?.frase ?? null,
   pasesDe: (u) => S('select id, destino, tipo from public.passes where comprador_id = $1 or para_id = $1 or id in (select pass_id from public.pass_members where user_id = $1)', [u]),
+  pruebaDe: async (u) => {
+    const f = (await S('select * from public.hoy_prueba where user_id = $1', [u]))[0]
+    return f ? { ...f, fecha: new Date(f.fecha).toISOString().slice(0, 10), gastada_en: f.gastada_en ? new Date(f.gastada_en).toISOString() : null } : null
+  },
+  guardarPrueba: (u, f) =>
+    S(
+      `insert into public.hoy_prueba (user_id, trip_id, fecha, gastada_en, pospuesta, pregunta_hecha) values ($1,$2,$3,$4,$5,$6)
+       on conflict (user_id) do update set trip_id = excluded.trip_id, fecha = excluded.fecha, gastada_en = excluded.gastada_en, pospuesta = excluded.pospuesta, pregunta_hecha = excluded.pregunta_hecha, updated_at = now()`,
+      [u, f.trip_id, f.fecha, f.gastada_en, f.pospuesta, f.pregunta_hecha],
+    ),
   perfilDe: async (u) => {
     const f = (await S('select previos, vitrina from public.logro_perfil where user_id = $1', [u]))[0]
     return { previos: f?.previos ?? { paises: [], dias: 0 }, vitrina: f?.vitrina ?? { baldas: {}, titulo: null } }
@@ -730,6 +805,142 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   debe(v2.baldas.emblemas.huecos.length === 1 && v2.baldas.emblemas.elegida === true && v2.titulo === '*|maravilla|coliseo', 'vitrina', '[Llevar a mi vitrina] y [Usar como mi título] se guardan en la cuenta')
 }
 
+// ── La prueba de HOY con el cobro encendido (una por cuenta, para siempre) ──
+{
+  const conCobro = crearServicioLogros({ repo: repoPG, datos, catalogos, ahora: () => reloj, cobro: true, azar: () => 0 })
+  const rutaVuelo = (llegada, vuelta = null) => ({ ...RUTA_BASE, answers: { ...RUTA_BASE.answers, arrivalFlightTime: llegada, departureFlightTime: vuelta } })
+  const VV = (svc, p, sitio, instante, extra = {}) => svc.visto(p.uid, { trip_id: p.trip, sitio, instante, recibido_en: instante, ubicacion: coords(sitio), ...extra })
+  const filaDe = async (p) => (await S('select * from public.hoy_prueba where user_id = $1', [p.uid]))[0] ?? null
+
+  // Sin vuelo: la prueba es el día 1. Abrir HOY y cerrarlo no la gasta; el [Visto] sí.
+  {
+    const p = await persona('prueba1@correo.es')
+    reloj = new Date('2026-10-10T08:00:00Z')
+    const est = await conCobro.estadoDelPase(p.uid, p.trip)
+    debe(est.cobro === true && est.prueba.estado === 'pendiente' && est.prueba.fecha === '2026-10-10' && est.hoy.puede === true && est.hoy.tarjeta === null, 'prueba_servicio', 'sin vuelo, la prueba es el día 1 y HOY se puede usar')
+    debe((await filaDe(p)) === null, 'prueba_servicio', 'abrir HOY y cerrarlo no gasta la prueba (no se guarda nada)')
+    const v1 = await VV(conCobro, p, 'coliseo', '2026-10-10T08:00:00Z')
+    debe(v1.cuenta === true && v1.nuevos.length > 0 && (await filaDe(p))?.gastada_en != null, 'prueba_servicio', 'tocar [Visto] gasta la prueba y da los logros')
+    const v2 = await VV(conCobro, p, 'panteon', '2026-10-11T08:00:00Z')
+    debe(v2.cuenta === false && v2.motivo === 'prueba_ya_usada', 'prueba_servicio', 'otro día, sin pase y con la prueba ya usada: no da logros')
+    reloj = new Date('2026-10-11T08:00:00Z')
+    const est2 = await conCobro.estadoDelPase(p.uid, p.trip)
+    debe(est2.hoy.puede === false && est2.hoy.tarjeta === 'pase' && est2.prueba.ya_usada === true, 'prueba_servicio', 'abre HOY sin pase y ya usó la prueba: ninguna alerta, la tarjeta del pase (pantalla 12)')
+  }
+
+  // Llegada a las 7:00 → día 1; llegada a las 14:00 → día 2; el vuelo se pone después → se recalcula
+  {
+    const a = await persona('prueba2@correo.es', rutaVuelo('07:00'))
+    const b = await persona('prueba3@correo.es', rutaVuelo('14:00'))
+    reloj = new Date('2026-10-01T08:00:00Z')
+    debe((await conCobro.estadoDelPase(a.uid, a.trip)).prueba.fecha === '2026-10-10', 'prueba_servicio', 'llegada a las 7:00: la prueba es el día de llegada')
+    debe((await conCobro.estadoDelPase(b.uid, b.trip)).prueba.fecha === '2026-10-11', 'prueba_servicio', 'llegada a las 14:00: la prueba es el día siguiente')
+    await S("update public.trips set route = $2::jsonb where id = $1", [b.trip, JSON.stringify(rutaVuelo('06:30'))])
+    debe((await conCobro.estadoDelPase(b.uid, b.trip)).prueba.fecha === '2026-10-10', 'prueba_servicio', 'cambia el vuelo antes de gastarla: el día de prueba se vuelve a calcular')
+    const dentro = await VV(conCobro, b, 'coliseo', '2026-10-11T08:00:00Z')
+    debe(dentro.cuenta === false && dentro.motivo === 'sin_pase', 'prueba_servicio', 'un Visto en un día que no es el de prueba (y sin pase) no da logros')
+  }
+
+  // Viaje de 2 días con llegada tarde
+  {
+    const ruta2 = { ...rutaRoma('2026-10-10', '2026-10-11', [['coliseo'], ['panteon']]), answers: { dateRange: { start: '2026-10-10', end: '2026-10-11' }, companion: 'couple', arrivalFlightTime: '22:00', departureFlightTime: '07:00' } }
+    const p = await persona('prueba4@correo.es', ruta2)
+    reloj = new Date('2026-10-01T08:00:00Z')
+    debe((await conCobro.estadoDelPase(p.uid, p.trip)).prueba.fecha === '2026-10-10', 'prueba_servicio', '2 días con llegada tarde: el día con más horas libres')
+  }
+
+  // La pregunta de las 12:00 con [Hoy] y con [Mañana]
+  {
+    const p = await persona('prueba5@correo.es')
+    reloj = new Date('2026-10-10T10:30:00Z') // 12:30 en Roma
+    const q1 = await VV(conCobro, p, 'coliseo', '2026-10-10T10:30:00Z')
+    debe(q1.cuenta === false && q1.motivo === 'pregunta_medio_dia' && q1.pregunta.texto.startsWith('Te queda medio día') && q1.pregunta.opciones.length === 2, 'prueba_servicio', 'la primera vez que usa HOY en su día de prueba a partir de las 12:00: se le pregunta, sin gastar')
+    debe((await filaDe(p)) === null && (await repoPG.hechosDe(p.uid)).length === 0, 'prueba_servicio', 'mientras no contesta no se gasta nada ni se guarda el Visto')
+    const hoy = await conCobro.responderPrueba(p.uid, { trip_id: p.trip, respuesta: 'hoy' })
+    debe(hoy.ok === true && (await filaDe(p)).gastada_en != null && (await filaDe(p)).pregunta_hecha === true, 'prueba_servicio', '[Hoy]: se gasta hoy')
+    const q2 = await VV(conCobro, p, 'coliseo', '2026-10-10T10:35:00Z')
+    debe(q2.cuenta === true && q2.nuevos.length > 0, 'prueba_servicio', 'y su Visto (el móvil lo vuelve a mandar) ya da logros')
+    debe((await conCobro.responderPrueba(p.uid, { trip_id: p.trip, respuesta: 'hoy' })).motivo === 'ya_respondida' || (await conCobro.responderPrueba(p.uid, { trip_id: p.trip, respuesta: 'hoy' })).motivo === 'no_hay_pregunta', 'prueba_servicio', 'no se pregunta dos veces')
+
+    const m = await persona('prueba6@correo.es')
+    reloj = new Date('2026-10-10T10:30:00Z')
+    await VV(conCobro, m, 'coliseo', '2026-10-10T10:30:00Z')
+    const man = await conCobro.responderPrueba(m.uid, { trip_id: m.trip, respuesta: 'manana' })
+    debe(man.ok === true && man.prueba.fecha === '2026-10-11' && /Lo de ayer también cuenta/.test(man.lo_de_hoy), 'prueba_servicio', '[Mañana]: la prueba pasa al día siguiente y lo de hoy se gana mañana con «Lo de ayer también cuenta»')
+    const fm = await filaDe(m)
+    debe(fm.gastada_en == null && fm.pospuesta === true && String(fm.fecha.toISOString?.() ?? fm.fecha).slice(0, 10) === '2026-10-11', 'prueba_servicio', 'queda sin gastar y apuntada para mañana')
+    const hoy2 = await VV(conCobro, m, 'panteon', '2026-10-10T11:00:00Z')
+    debe(hoy2.cuenta === false && hoy2.motivo === 'sin_pase', 'prueba_servicio', 'hoy ya no es su día de prueba: sin logros')
+    reloj = new Date('2026-10-11T09:00:00Z')
+    const foto = await conCobro.foto(m.uid, { trip_id: m.trip, sitio: 'coliseo', origen: 'galeria', tomada_en: '2026-10-10T11:00:00', con_camara: true, ubicacion: null, recibido_en: '2026-10-11T09:00:00Z' })
+    debe(foto.valida === true && foto.cuenta === true && foto.nuevos.some((x) => x.tipo === 'emblema'), 'prueba_servicio', 'mañana, con las fotos de la galería de hoy se gana lo de hoy («Lo de ayer también cuenta»)')
+    const vm = await VV(conCobro, m, 'fontana_de_trevi', '2026-10-11T09:30:00Z')
+    debe(vm.cuenta === true && (await filaDe(m)).gastada_en != null, 'prueba_servicio', 'el Visto de mañana ya usa la prueba (sin volver a preguntar)')
+  }
+
+  // [Cómo llegar] también gasta; y a partir de las 12:00 hace la pregunta
+  {
+    const p = await persona('prueba7@correo.es')
+    reloj = new Date('2026-10-10T07:00:00Z')
+    const u = await conCobro.usarHoy(p.uid, { trip_id: p.trip, motivo: 'como_llegar' })
+    debe(u.ok === true && u.acceso === true && (await filaDe(p))?.gastada_en != null, 'prueba_servicio', '[Cómo llegar] por la mañana gasta la prueba')
+    const q = await persona('prueba8@correo.es')
+    reloj = new Date('2026-10-10T13:00:00Z')
+    const u2 = await conCobro.usarHoy(q.uid, { trip_id: q.trip })
+    debe(u2.motivo === 'pregunta_medio_dia' && (await filaDe(q)) === null, 'prueba_servicio', '[Cómo llegar] a partir de las 12:00 hace la pregunta y no gasta')
+  }
+
+  // Una segunda prueba en otro destino no se da
+  {
+    const datos2 = { ...datos, destinos: { ...datos.destinos, florencia: { ...R, clave: 'florencia', destino: 'Florencia', ciudad: 'Florencia' } } }
+    Object.defineProperty(datos2.destinos.florencia, 'sitios_catalogo', { value: R.sitios_catalogo ?? Object.keys(R.sitios), enumerable: false })
+    const svc2 = crearServicioLogros({ repo: repoPG, datos: datos2, catalogos: { roma: catalogo, florencia: catalogo }, ahora: () => reloj, cobro: true, azar: () => 0 })
+    const uid = await nuevoUsuario('prueba9@correo.es')
+    const tRoma = await nuevoViaje(uid, rutaRoma('2026-10-10', '2026-10-12', [['coliseo'], ['panteon'], ['fontana_de_trevi']]))
+    const rutaFlorencia = { ...rutaRoma('2026-11-10', '2026-11-12', [['coliseo'], ['panteon'], ['fontana_de_trevi']]), destination: 'Florencia' }
+    const tFlor = await nuevoViaje(uid, rutaFlorencia)
+    reloj = new Date('2026-10-10T08:00:00Z')
+    const r1 = await svc2.visto(uid, { trip_id: tRoma, sitio: 'coliseo', instante: '2026-10-10T08:00:00Z', recibido_en: '2026-10-10T08:00:00Z', ubicacion: coords('coliseo') })
+    reloj = new Date('2026-11-10T08:00:00Z')
+    const r2 = await svc2.visto(uid, { trip_id: tFlor, sitio: 'coliseo', instante: '2026-11-10T08:00:00Z', recibido_en: '2026-11-10T08:00:00Z', ubicacion: coords('coliseo') })
+    debe(r1.cuenta === true && r2.cuenta === false && r2.motivo === 'prueba_ya_usada', 'prueba_servicio', 'una segunda prueba en otro destino no se da: la cuenta ya gastó la suya')
+  }
+
+  // Con pase, siempre
+  {
+    const p = await persona('prueba10@correo.es')
+    await S("insert into public.passes (destino, comprador_id, tipo, usos_max, codigo) values ('Roma', $1, 'uno', 1, 'PASE-PRUEBA-10')", [p.uid])
+    reloj = new Date('2026-10-12T08:00:00Z')
+    const r = await VV(conCobro, p, 'coliseo', '2026-10-12T08:00:00Z')
+    debe(r.cuenta === true && (await filaDe(p)) === null, 'prueba_servicio', 'con el pase de ese destino se gana en cualquier día, sin gastar la prueba')
+    const e = await conCobro.estadoDelPase(p.uid, p.trip)
+    debe(e.pases.length === 1 && e.hoy.puede === true, 'prueba_servicio', 'el estado del pase dice que HOY se puede usar')
+  }
+  debe(conCobro.precioDe('duo').total === 10.99 && conCobro.precioDe('grupo', 4).total === 19.96 && conCobro.precioDe('raro').ok === false, 'precios', 'el servicio da el precio de cada plan')
+  reloj = new Date('2026-10-12T12:00:00Z')
+
+  // Las reglas de seguridad de la tabla nueva
+  const a = await persona('prueba-seg-a@correo.es')
+  reloj = new Date('2026-10-10T08:00:00Z')
+  await VV(conCobro, a, 'coliseo', '2026-10-10T08:00:00Z')
+  debe((await como(a.uid, () => q('select * from public.hoy_prueba'))).length === 1, 'prueba_servicio', 'cada persona ve su prueba')
+  debe((await lanza(() => como(a.uid, () => q("update public.hoy_prueba set gastada_en = null where user_id = $1", [a.uid])))) === null && (await filaDe(a)).gastada_en != null, 'prueba_servicio', 'nadie se devuelve la prueba desde el móvil')
+  const b = await persona('prueba-seg-b@correo.es')
+  debe((await como(b.uid, () => q('select * from public.hoy_prueba'))).length === 0, 'prueba_servicio', 'y nadie ve la de otra persona')
+  reloj = new Date('2026-10-12T12:00:00Z')
+}
+
+// ── Entrar con una cuenta que ya existía: la prueba gastada pasa con ella ──
+{
+  const real = await nuevoUsuario('real-prueba@correo.es')
+  const anonimo = (await q('insert into auth.users (email, is_anonymous) values (null, true) returning id'))[0].id
+  await S('insert into public.travelers (id, is_anonymous) values ($1, true)', [anonimo])
+  await S("insert into public.hoy_prueba (user_id, fecha, gastada_en) values ($1, '2026-10-10', now())", [anonimo])
+  await S('select public.reclamar_anonimo_logros($1, $2)', [anonimo, real])
+  const f = (await S('select gastada_en from public.hoy_prueba where user_id = $1', [real]))[0]
+  debe(f?.gastada_en != null, 'prueba_servicio', 'si gastó la prueba con la sesión anónima, la cuenta no recupera otra')
+}
+
 // ── Los logros de viajero que se ven hoy ──
 {
   const vis = logrosVisibles(datos, new Date('2026-11-10T00:00:00Z'))
@@ -824,7 +1035,7 @@ console.log('4. Las rutas y el panel de Eric')
   const app = { get: (r) => montadas.push(`GET ${r}`), post: (r) => montadas.push(`POST ${r}`), put: (r) => montadas.push(`PUT ${r}`) }
   debe(registrarRutasLogros(app, { admin: {}, servicio, repo: repoPG, env: {} }) === false && montadas.length === 0, 'interruptor', 'apagado, no se monta ninguna ruta (la app es la de hoy)')
   registrarRutasLogros(app, { admin: {}, servicio, repo: repoPG, env: { LOGROS_ACTIVOS: 'true', CUENTAS_ACTIVAS: 'true' } })
-  debe(['POST /api/logros/visto', 'POST /api/logros/foto', 'POST /api/logros/deshacer', 'GET /api/logros/estado', 'GET /api/logros/ficha', 'GET /api/logros/lo-de-ayer', 'GET /api/logros/pasaporte', 'GET /api/logros/vitrina', 'PUT /api/logros/vitrina', 'PUT /api/logros/previos', 'POST /api/logros/recalcular', 'GET /api/admin/logros/datos', 'POST /api/admin/logros/simular', 'POST /api/admin/logros/probador'].every((r) => montadas.includes(r)), 'rutas', 'encendido, están todas las rutas')
+  debe(['POST /api/logros/visto', 'POST /api/logros/foto', 'POST /api/logros/deshacer', 'GET /api/logros/estado', 'GET /api/logros/ficha', 'GET /api/logros/lo-de-ayer', 'GET /api/logros/pasaporte', 'GET /api/logros/vitrina', 'PUT /api/logros/vitrina', 'PUT /api/logros/previos', 'POST /api/logros/recalcular', 'GET /api/admin/logros/datos', 'POST /api/admin/logros/simular', 'POST /api/admin/logros/probador', 'GET /api/pase/estado', 'POST /api/pase/prueba/usar', 'POST /api/pase/prueba/responder', 'GET /api/pase/precios', 'POST /api/pase/precio', 'GET /api/logros/push/clave'].every((r) => montadas.includes(r)), 'rutas', 'encendido, están todas las rutas')
   // Las rutas de verdad, con una app y una cuenta de mentira: sin sesión, con sesión anónima, con cuenta y con la cuenta de administrador.
   {
     const manejadores = {}
@@ -848,6 +1059,12 @@ console.log('4. Las rutas y el panel de Eric')
     debe(v.estado === 200 && v.cuerpo.cuenta === true && v.cuerpo.nuevos.length > 0, 'rutas', 'con cuenta: el Visto da lo suyo')
     const e = await llamar('GET /api/logros/estado', { token: 'ok', query: { trip_id: ana.trip } })
     debe(e.estado === 200 && e.cuerpo.sellos.length === 2 && e.cuerpo.colecciones.length === 11 && e.cuerpo.secretos.total === 12, 'rutas', 'el estado trae los sellos, las 11 colecciones y los secretos contados')
+    const pe = await llamar('GET /api/pase/estado', { token: 'ok', query: { trip_id: ana.trip } })
+    debe(pe.estado === 200 && pe.cuerpo.cobro === false && pe.cuerpo.hoy.puede === true && pe.cuerpo.precios.planes.length === 3, 'rutas', 'el estado del pase: con el cobro apagado HOY se puede usar y trae los precios')
+    const pp = await llamar('POST /api/pase/precio', { body: { plan: 'duo' } })
+    debe(pp.cuerpo.total === 10.99 && pp.cuerpo.paga === 'el_que_compra' && (await llamar('GET /api/pase/precios')).cuerpo.moneda === 'EUR', 'rutas', 'los precios por la ruta: paga el que compra')
+    const clave = await llamar('GET /api/logros/push/clave')
+    debe(clave.cuerpo.ok === false && clave.cuerpo.clave === null, 'rutas', 'con los avisos al móvil apagados no sale ninguna clave')
     debe((await llamar('GET /api/admin/logros/datos', { token: 'ok' })).estado === 403, 'rutas', 'el panel de Eric: una cuenta normal no entra (403)')
     const panel = await llamar('GET /api/admin/logros/datos', { token: 'admin' })
     debe(panel.estado === 200 && panel.cuerpo.destinos.roma && Array.isArray(panel.cuerpo.avisos) && panel.cuerpo.viajero.length === datos.viajero.logros.length && panel.cuerpo.personas.length > 0, 'rutas', 'la cuenta de administrador ve los datos, los avisos, los logros de viajero y los números')

@@ -80,6 +80,12 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       if (unidos.length > 0) ajenos = ok(await admin.from('passes').select('id, destino, tipo').in('id', unidos.map((u) => u.pass_id)), 'pasesDe(ajenos)')
       return [...propios, ...ajenos]
     },
+    async pruebaDe(userId) {
+      return ok(await admin.from('hoy_prueba').select('*').eq('user_id', userId).maybeSingle(), 'pruebaDe')
+    },
+    async guardarPrueba(userId, fila) {
+      ok(await admin.from('hoy_prueba').upsert({ user_id: userId, ...fila, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }), 'guardarPrueba')
+    },
     async perfilDe(userId) {
       const fila = ok(await admin.from('logro_perfil').select('previos, vitrina').eq('user_id', userId).maybeSingle(), 'perfilDe')
       return { previos: fila?.previos ?? { paises: [], dias: 0 }, vitrina: fila?.vitrina ?? { baldas: {}, titulo: null } }

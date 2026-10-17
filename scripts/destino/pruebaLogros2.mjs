@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { createRequire } from 'node:module'
+import { spawnSync } from 'node:child_process'
 import { build } from 'esbuild'
 
 const fallos = []
@@ -24,7 +25,9 @@ console.log('1. El interruptor, instalar la web y los sonidos')
     path.join(carpeta, 'entrada.ts'),
     `export { calcularLogrosActivos } from '${abs('src/lib/logros.ts')}'\n` +
       `export { plataformaDe, debeEnseñarAvisoDeInstalar, pasosParaInstalar } from '${abs('src/lib/instalar.ts')}'\n` +
-      `export { sonidoDeMomentos } from '${abs('src/lib/sonidos.ts')}'\n`,
+      `export { sonidoDeMomentos } from '${abs('src/lib/sonidos.ts')}'\n` +
+      `export { viajesQueSePisan, separarViajes, estaGuardadoAparte } from '${abs('src/lib/viajesQueSePisan.ts')}'\n` +
+      `export { urlMiniatura } from '${abs('src/lib/miniatura.ts')}'\n`,
   )
   await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', define: { 'import.meta.env': '{"DEV":false}' } })
   const A = createRequire(import.meta.url)(salida)
@@ -61,6 +64,83 @@ console.log('1. El interruptor, instalar la web y los sonidos')
   const sonidos = leer('src/lib/sonidos.ts')
   debe(/ponerSonido/.test(sonidos) && /audioSession/.test(sonidos) && /navigator\.vibrate/.test(sonidos), 'sonidos', 'hay un ajuste para quitar el sonido, respeta el modo silencio donde se puede y vibra donde el móvil lo deja')
   debe(!/import .*sonidos|new Audio\(/.test(leer('src/main.tsx')) && /fetch\(url\)/.test(sonidos), 'peso', 'los sonidos no se cargan al abrir la app, sino al hacer falta')
+}
+
+console.log('1b. «Sustituir el anterior» no borra')
+{
+  const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-logros2b-'))
+  const abs = (f) => path.resolve(f).split(path.sep).join('/')
+  fs.writeFileSync(path.join(carpeta, 'entrada.ts'), `export { viajesQueSePisan, separarViajes, estaGuardadoAparte } from '${abs('src/lib/viajesQueSePisan.ts')}'\nexport { urlMiniatura } from '${abs('src/lib/miniatura.ts')}'\n`)
+  const salida = path.join(carpeta, 'b.cjs')
+  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', define: { 'import.meta.env': '{"DEV":false}' } })
+  const B = createRequire(import.meta.url)(salida)
+  const viaje = (id, destination, start, end, extra = {}) => ({ id, route: { destination, answers: { dateRange: { start, end } } }, ...extra })
+  const existentes = [
+    viaje('a', 'Roma', '2026-10-10', '2026-10-14'),
+    viaje('b', 'Roma', '2026-12-01', '2026-12-03'),
+    viaje('c', 'Florencia', '2026-10-12', '2026-10-13'),
+    viaje('d', 'roma', '2026-10-14', '2026-10-16', { guardadoEn: '2026-10-01T00:00:00Z' }),
+    viaje('e', 'Roma', '2026-10-11', '2026-10-12', { esInvitado: true }),
+  ]
+  const pisan = B.viajesQueSePisan({ destino: 'Roma', inicio: '2026-10-14', fin: '2026-10-18' }, existentes).map((v) => v.id)
+  debe(pisan.join() === 'a', 'sustituir', `se pisan los del mismo destino con fechas que se tocan (también el último día): ${pisan.join()}`)
+  debe(B.viajesQueSePisan({ destino: 'Roma', inicio: '2026-11-01', fin: '2026-11-05' }, existentes).length === 0, 'sustituir', 'fechas que no se tocan: no se pisan')
+  debe(!pisan.includes('c') && !pisan.includes('d') && !pisan.includes('e'), 'sustituir', 'otro destino, uno ya guardado aparte y uno de otra persona no cuentan')
+  const sep = B.separarViajes([viaje('a', 'Roma', '2026-10-10', '2026-10-14'), viaje('d', 'Roma', '2026-10-14', '2026-10-16', { guardadoEn: '2026-10-01T00:00:00Z' })])
+  debe(sep.activos.map((v) => v.id).join() === 'a' && sep.guardados.map((v) => v.id).join() === 'd', 'sustituir', '«Mis viajes» y «Viajes guardados» se separan por la fecha de guardado')
+  const persistencia = fs.readFileSync('src/lib/tripPersistence.ts', 'utf8')
+  debe(/guardarViajeAparte/.test(persistencia) && /update\(\{ guardado_en:/.test(persistencia) && !/guardarViajeAparte[\s\S]{0,400}\.delete\(\)/.test(persistencia), 'sustituir', '«Sustituir el anterior» guarda aparte (fecha de guardado): el viaje de antes no se borra')
+  debe(/guardado_en/.test(persistencia) && /conInvitados \? 'id, traveler_id, guardado_en/.test(persistencia), 'sustituir', 'la lista de viajes lee la fecha de guardado solo con las cuentas encendidas (apagadas, la consulta es la de siempre)')
+  debe(/alter table public\.trips add column if not exists guardado_en/.test(fs.readFileSync('supabase/migrations/0024_prueba_pase_y_guardados.sql', 'utf8')), 'sustituir', 'el dato nuevo va en la migración 0024')
+
+  // Las miniaturas
+  debe(B.urlMiniatura('/fotos/roma/dia_ara_pacis.jpg') === '/fotos/roma/mini/dia_ara_pacis.webp' && B.urlMiniatura('/fotos/roma/dia_ara_pacis_p.jpg?v=abc') === '/fotos/roma/mini/dia_ara_pacis.webp?v=abc' && B.urlMiniatura('https://images.unsplash.com/x.jpg') === null && B.urlMiniatura(null) === null, 'miniaturas', 'la dirección de la miniatura sale de la de la foto grande o pequeña')
+  const grandes = fs.readdirSync('public/fotos/roma').filter((f) => f.endsWith('.jpg') && !f.endsWith('_p.jpg'))
+  const minis = fs.readdirSync('public/fotos/roma/mini').filter((f) => f.endsWith('.webp'))
+  debe(minis.length === grandes.length && grandes.every((f) => minis.includes(f.replace(/\.jpg$/, '.webp'))), 'miniaturas', `cada foto propia tiene su miniatura (${minis.length} de ${grandes.length})`)
+  const pesos = minis.map((f) => fs.statSync('public/fotos/roma/mini/' + f).size)
+  debe(Math.max(...pesos) < 12 * 1024 && pesos.reduce((a, b) => a + b, 0) / pesos.length < 6 * 1024, 'miniaturas', `pesan pocos KB (media ${(pesos.reduce((a, b) => a + b, 0) / pesos.length / 1024).toFixed(1)} KB, la mayor ${(Math.max(...pesos) / 1024).toFixed(1)} KB)`)
+  const cab = fs.readFileSync('public/fotos/roma/mini/' + minis[0]).subarray(0, 12).toString('latin1')
+  debe(cab.startsWith('RIFF') && cab.endsWith('WEBP') || cab.slice(8, 12) === 'WEBP', 'miniaturas', 'son WebP de verdad')
+  debe(/photo_mini/.test(fs.readFileSync('server/index.js', 'utf8')) && fs.existsSync('scripts/generarMiniaturas.mjs'), 'miniaturas', 'el servidor manda la miniatura y el script que las genera está en el repositorio')
+  fs.rmSync(carpeta, { recursive: true, force: true })
+}
+
+console.log('1c. Vercel y los avisos al móvil')
+{
+  const vercel = JSON.parse(leer('vercel.json'))
+  debe(vercel.rewrites.some((r) => r.source === '/admin/logros' && r.destination === '/index.html') && vercel.rewrites.some((r) => r.source === '/api/:path*'), 'vercel', '/admin/logros funciona en Vercel (regla de reescritura en vercel.json, que es un archivo del repositorio)')
+  const paquete = JSON.parse(leer('package.json'))
+  debe(Boolean(paquete.dependencies['web-push']), 'push', 'el paquete web-push está añadido')
+  debe(/import\('web-push'\)/.test(leer('server/logros/avisos.js')) && /pushActivo\(env\)\) return/.test(leer('server/logros/avisos.js')), 'push', 'el paquete solo se carga cuando el envío está encendido (PUSH_ACTIVO)')
+  // El script de las claves VAPID: las escribe en .env.local y no las enseña
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-vapid-'))
+  const script = path.resolve('scripts/generarClavesVapid.mjs')
+  const correr = (...args) => spawnSync(process.execPath, [script, ...args], { cwd: tmp, encoding: 'utf8' })
+  fs.writeFileSync(path.join(tmp, '.env.local'), 'ALGO=1\n')
+  const r1 = correr('--contacto=mailto:prueba@ejemplo.es')
+  const env1 = fs.readFileSync(path.join(tmp, '.env.local'), 'utf8')
+  const valor = (nombre, t = env1) => new RegExp('^' + nombre + '=(.+)$', 'm').exec(t)?.[1] ?? ''
+  const pub = valor('VAPID_PUBLIC_KEY')
+  const priv = valor('VAPID_PRIVATE_KEY')
+  debe(r1.status === 0 && pub.length > 40 && priv.length > 30 && valor('VAPID_CONTACTO') === 'mailto:prueba@ejemplo.es' && /^ALGO=1$/m.test(env1), 'push', 'el script crea las claves y las escribe en .env.local sin tocar lo que había')
+  debe(!(r1.stdout + r1.stderr).includes(pub) && !(r1.stdout + r1.stderr).includes(priv), 'push', 'no enseña las claves en la consola')
+  const r2 = correr()
+  debe(valor('VAPID_PRIVATE_KEY', fs.readFileSync(path.join(tmp, '.env.local'), 'utf8')) === priv && /no se ha cambiado nada/.test(r2.stdout), 'push', 'si ya hay claves, no las pisa')
+  const r3 = correr('--forzar')
+  const priv3 = valor('VAPID_PRIVATE_KEY', fs.readFileSync(path.join(tmp, '.env.local'), 'utf8'))
+  debe(priv3 !== priv && !(r3.stdout + r3.stderr).includes(priv3), 'push', 'con --forzar las cambia, y tampoco las enseña')
+  fs.rmSync(tmp, { recursive: true, force: true })
+  // Ni .env.local ni las claves van a git
+  const ignorado = spawnSync('git', ['check-ignore', '.env.local'], { encoding: 'utf8' })
+  debe(ignorado.status === 0, 'push', '.env.local está ignorado por git')
+  const real = fs.existsSync('.env.local') ? leer('.env.local') : ''
+  const claveReal = /^VAPID_PRIVATE_KEY=(.+)$/m.exec(real)?.[1]
+  if (claveReal) {
+    const enGit = spawnSync('git', ['grep', '-F', '-q', '--', claveReal], { encoding: 'utf8' })
+    debe(enGit.status === 1, 'push', 'la clave privada de verdad no está en ningún archivo del repositorio')
+  } else debe(true, 'push', '(sin clave de verdad en este equipo)')
+  debe(!/BEGIN (EC )?PRIVATE KEY/.test(leer('server/logros/avisos.js')) && !/VAPID_PRIVATE_KEY=\w{20,}/.test(leer('docs/dias/INFORME_TANDA8A.md')), 'push', 'ninguna clave en el código ni en los informes')
 }
 
 console.log('2. Que apagado no cambia nada')

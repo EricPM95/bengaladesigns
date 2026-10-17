@@ -22,7 +22,13 @@ export function cargarDatos() {
     // Los sitios del catálogo (para «Conocedor de la ciudad»: cuentan todos, no solo los que tienen logro).
     Object.defineProperty(destinos[clave], 'sitios_catalogo', { value: (cargarCatalogo(clave).places ?? []).map((x) => x.id), enumerable: false })
   }
-  return { destinos, viajero: leer('../../data/logros/viajero.json'), ajustes: leer('../../data/logros/ajustes.json') }
+  return {
+    destinos,
+    viajero: leer('../../data/logros/viajero.json'),
+    ajustes: leer('../../data/logros/ajustes.json'),
+    // El pase: los precios y cómo se elige el día de prueba (data/pase/).
+    pase: { precios: leer('../../data/pase/precios.json'), ajustes: leer('../../data/pase/ajustes.json') },
+  }
 }
 
 export function cargarCatalogo(clave) {
@@ -55,6 +61,8 @@ export function validarDatos(datos, catalogos) {
     for (const c of d.colecciones) for (const s of c.sitios) usados.add(s)
     for (const e of d.emblemas) if (e.sitio) usados.add(e.sitio)
     for (const id of Object.keys(d.sitios)) usados.add(id)
+    for (const p of Object.values(d.patrimonios ?? {})) for (const id of [...(p.sitios ?? []), ...(p.por_comprobar ?? [])]) usados.add(id)
+    for (const v of Object.values(d.excepciones_pais ?? {})) for (const id of v.sitios ?? []) usados.add(id)
     for (const id of usados) {
       if (!ids.has(id)) error(`${clave}/${id}`, 'Este sitio no existe en los datos del destino (no lo añado yo: hay que decidir qué hacer).')
     }
@@ -65,13 +73,22 @@ export function validarDatos(datos, catalogos) {
     for (const [id, s] of Object.entries(d.sitios)) {
       if (!Number.isFinite(s.radio_m) || s.radio_m <= 0) aviso(`${clave}/${id}`, 'Sitio sin radio de ubicación.')
       if (!s.pais) aviso(`${clave}/${id}`, 'Sitio sin país.')
-      if (s.patrimonio && !d.patrimonios[s.patrimonio]) error(`${clave}/${id}`, `Patrimonio ${s.patrimonio} sin definir.`)
-      if (s.patrimonio_por_comprobar) aviso(`${clave}/${id}`, `Patrimonio ${s.patrimonio_por_comprobar} por comprobar con la UNESCO: no cuenta todavía.`)
       if (catalogo.places && ids.has(id)) {
         const p = catalogo.places.find((x) => x.id === id)
         if (!Array.isArray(p.coordinates) || p.coordinates.length !== 2) error(`${clave}/${id}`, 'El sitio no tiene coordenadas en los datos.')
       }
     }
+    for (const [pid, p] of Object.entries(d.patrimonios ?? {})) {
+      if (!p.unesco) aviso(`${clave}/${pid}`, 'Patrimonio sin número de la UNESCO.')
+      for (const id of p.por_comprobar ?? []) aviso(`${clave}/${pid}`, `${id} está por comprobar con la UNESCO: no cuenta todavía.`)
+    }
+    // Un sitio no puede estar en dos Patrimonios a la vez.
+    const vistosEnPatrimonio = new Map()
+    for (const [pid, p] of Object.entries(d.patrimonios ?? {})) for (const id of p.sitios ?? []) {
+      if (vistosEnPatrimonio.has(id)) error(`${clave}/${id}`, `Está en dos Patrimonios (${vistosEnPatrimonio.get(id)} y ${pid}).`)
+      vistosEnPatrimonio.set(id, pid)
+    }
+    if (!d.pais_defecto) aviso(clave, 'Sin país por defecto: los sitios sin país no cuentan para ningún país.')
     for (const sello of d.sellos) {
       const col = d.colecciones.find((c) => c.id === sello.coleccion)
       if (!col) error(`${clave}/${sello.id}`, `El sello apunta a una colección que no existe (${sello.coleccion}).`)

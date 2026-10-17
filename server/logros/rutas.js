@@ -16,6 +16,10 @@
  *   POST /api/logros/animacion-vista { claves:[{destino,logro,escalon}] }  (el puntito del botón)
  *   POST /api/logros/recalcular   vuelve a calcular todo desde los hechos y pone lo que falte
  *   POST /api/logros/avisos/preparar · POST /api/logros/push/suscribir { endpoint, keys }
+ *   GET  /api/pase/estado?trip_id           si HOY se puede usar, el pase y la prueba (una por cuenta, para siempre); si no, la tarjeta del pase
+ *   POST /api/pase/prueba/usar   { trip_id }          usar HOY de verdad sin [Visto] («Cómo llegar»): gasta la prueba o hace la pregunta de las 12:00
+ *   POST /api/pase/prueba/responder { trip_id, respuesta: 'hoy'|'manana' }   la respuesta a «Te queda medio día…»
+ *   GET  /api/pase/precios · POST /api/pase/precio { plan, personas }   los precios (data/pase/precios.json); paga todo el que compra
  *   /api/admin/logros/*           solo para la cuenta de administrador (LOGROS_ADMIN_EMAILS en el servidor)
  */
 
@@ -65,6 +69,8 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
     })
 
   app.get('/api/logros/interruptor', (_req, res) => res.json({ activos: true }))
+  // La clave PÚBLICA de los avisos al móvil (la pública es pública por diseño: la necesita el móvil para suscribirse). La privada no sale nunca del servidor.
+  app.get('/api/logros/push/clave', (_req, res) => res.json({ ok: pushActivo(env) && Boolean(env.VAPID_PUBLIC_KEY), clave: pushActivo(env) ? (env.VAPID_PUBLIC_KEY ?? null) : null }))
 
   app.post('/api/logros/visto', conUsuario(async (req, res, u) => res.json(await servicio.visto(u.id, req.body ?? {}))))
   app.post('/api/logros/foto', conUsuario(async (req, res, u) => res.json(await servicio.foto(u.id, req.body ?? {}))))
@@ -114,6 +120,13 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
     await repo.guardarSuscripcion(u.id, String(endpoint), keys)
     return res.json({ ok: true })
   }))
+
+  /* ── El pase y la prueba de HOY ── */
+  app.get('/api/pase/estado', conUsuario(async (req, res, u) => res.json(await servicio.estadoDelPase(u.id, req.query.trip_id ? String(req.query.trip_id) : null))))
+  app.post('/api/pase/prueba/usar', conUsuario(async (req, res, u) => res.json(await servicio.usarHoy(u.id, req.body ?? {}))))
+  app.post('/api/pase/prueba/responder', conUsuario(async (req, res, u) => res.json(await servicio.responderPrueba(u.id, req.body ?? {}))))
+  app.get('/api/pase/precios', (_req, res) => res.json({ ok: true, ...datos.pase.precios }))
+  app.post('/api/pase/precio', (req, res) => res.json(servicio.precioDe(String(req.body?.plan ?? ''), req.body?.personas ?? null)))
 
   /* ── El panel de Eric ── */
   app.get('/api/admin/logros/datos', conAdmin(async (_req, res) => {
