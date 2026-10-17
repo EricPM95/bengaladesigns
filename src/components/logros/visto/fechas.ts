@@ -1,4 +1,5 @@
 import type { Route } from '../../../lib/types'
+import { useRouteStore } from '../../../store/useRouteStore'
 
 /**
  * Las fechas del viaje para las pantallas del Visto y las fotos (Tanda 8b). Todo sale de las fechas REALES del viaje (`route.answers.dateRange`); nada inventado.
@@ -27,8 +28,11 @@ export function lineaDeGaleria(route: Route | null | undefined): string | null {
 }
 
 const aDias = (iso: string) => Math.round(Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))) / 86400000)
-/** (Solo desarrollo: `__demo.hoy('2026-11-04')` finge otro día para ver el plazo.) */
-const diaFingido = (): string | null => (import.meta.env.DEV ? ((window as unknown as { __demoHoy?: string }).__demoHoy ?? null) : null)
+/**
+ * (Solo desarrollo.) `__demo.hoy('2026-11-04')` finge otro día para ver el plazo; si no, vale el «hoy» simulado de la app (`dev_simulated_today_iso`, el que fija el viaje de pruebas y el panel):
+ * así durante el viaje de pruebas NO sale la cuenta atrás por culpa de la fecha real del aparato (8B4).
+ */
+const diaFingido = (): string | null => (import.meta.env.DEV ? ((window as unknown as { __demoHoy?: string }).__demoHoy ?? useRouteStore.getState().dev_simulated_today_iso ?? null) : null)
 export const hoyLocal = (ahora = new Date()) => diaFingido() ?? `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`
 
 /** Los días que quedan para reclamar, o null si el viaje no ha acabado (sin cuenta atrás) o ya pasó el plazo. */

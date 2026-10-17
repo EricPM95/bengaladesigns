@@ -15,6 +15,7 @@ const PLURALES: Record<string, [string, string]> = {
   pedazo: ['pedazo de colección', 'pedazos de colecciones'],
   coleccion: ['colección completada', 'colecciones completadas'],
   sello: ['sello subido de grado', 'sellos subidos de grado'],
+  sello_nuevo: ['sello nuevo', 'sellos nuevos'],
   emblema: ['emblema oculto', 'emblemas ocultos'],
   pais: ['país nuevo', 'países nuevos'],
   destino_nuevo: ['destino nuevo', 'destinos nuevos'],
@@ -23,7 +24,18 @@ const PLURALES: Record<string, [string, string]> = {
   patrimonio: ['Patrimonio de la Humanidad', 'Patrimonios de la Humanidad'],
   viajero: ['logro de viajero', 'logros de viajero'],
 }
-const ORDEN = ['sello', 'pedazo', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero']
+const ORDEN = ['sello_nuevo', 'sello', 'pedazo', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'patrimonio', 'viajero']
+
+/**
+ * Pura (8B4): de los sellos que salieron ese día (`sello` e `id:grado`), cuántos son NUEVOS (nacen ese día: su primer grado, el bronce; el Vaticano no tiene bronce y nace en plata)
+ * y cuántos solo SUBEN de grado. Un sello cuenta una vez aunque ese día haya ganado varios grados; si nació ese día, es nuevo.
+ */
+export function contarSellos(sellos: { sello: string; grado: string }[]): { nuevos: number; subidos: number } {
+  const por = new Map<string, boolean>()
+  for (const x of sellos) por.set(x.sello, (por.get(x.sello) ?? false) || x.grado === 'bronce' || (x.sello === 'vaticano' && x.grado === 'plata'))
+  const nuevos = [...por.values()].filter(Boolean).length
+  return { nuevos, subidos: por.size - nuevos }
+}
 
 /** Pura: de los momentos de una ronda, cuántas cosas de cada tipo (los pedazos se cuentan por sitio). */
 export function contarMomentos(ganado: Momento[]): Record<string, number> {
@@ -31,7 +43,11 @@ export function contarMomentos(ganado: Momento[]): Record<string, number> {
   for (const m of ganado) {
     if (m.tipo === 'suma') c.pedazo = (c.pedazo ?? 0) + (((m.sitios as string[] | undefined)?.length) ?? 1)
     else if (m.tipo === 'suma_sello') continue
-    else c[m.tipo] = (c[m.tipo] ?? 0) + 1
+    else if (m.tipo === 'sello') {
+      const { nuevos } = contarSellos([{ sello: String(m.sello ?? ''), grado: String(m.grado ?? '') }])
+      const k = nuevos ? 'sello_nuevo' : 'sello'
+      c[k] = (c[k] ?? 0) + 1
+    } else c[m.tipo] = (c[m.tipo] ?? 0) + 1
   }
   return c
 }
@@ -56,6 +72,13 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
 
   // Solo lo que ha salido ese día: lo que cuenta el servidor y, si aún no ha contestado, lo que se acaba de enseñar. Nunca se mezclan.
   const cuentas: Record<string, number> = resumen ? { ...resumen.por_categoria } : contarMomentos(ganado)
+  if (resumen && (cuentas.sello ?? 0) > 0) {
+    // El servidor cuenta «sello»; aquí se separa el que nace ese día del que solo sube de grado (8B4).
+    const sellos = resumen.ganado.filter((g) => g.logro === 'sello').map((g) => ({ sello: g.escalon.split(':')[0], grado: g.escalon.split(':')[1] }))
+    const { nuevos, subidos } = contarSellos(sellos)
+    cuentas.sello_nuevo = nuevos
+    cuentas.sello = subidos
+  }
   const lineas = ORDEN.filter((k) => (cuentas[k] ?? 0) > 0)
   const ciudad = estado?.ciudad ?? ''
   const sello = estado?.sellos[0]

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { displayStopName } from '../../../lib/format'
 import { Insignia } from '../dibujos/InsigniaPerezosa'
 import { Trazo, TRAZO } from './trazos'
+import { deSitio, enSitio } from '../../../lib/articulos'
 import type { DestinoDeFoto, Hoja } from './vistoStore'
 
 /**
@@ -108,7 +109,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
   let iconoColor = TINTA
   let botones: ReactNode = null
   if (tipo === 'ganado') {
-    titulo = `Guarda un recuerdo de ${nombre}`
+    titulo = `Guarda un recuerdo ${deSitio(nombre)}`
     subtitulo = 'Tu pedazo ya es tuyo. La foto es para tu álbum.'
     botones = (
       <>
@@ -118,7 +119,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
     )
   } else if (tipo === 'sin_ubicacion') {
     titulo = 'Activa tu ubicación o haz una foto para ganar tu pedazo'
-    subtitulo = acciones.errorUbicacion ?? `Con la foto de hoy en ${nombre}, el pedazo es tuyo.`
+    subtitulo = acciones.errorUbicacion ?? `Con la foto de hoy ${enSitio(nombre)}, el pedazo es tuyo.`
     icono = TRAZO.loc
     iconoFondo = 'oklch(0.8 0.14 70 / .2)'
     botones = (
@@ -128,14 +129,14 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
       </>
     )
   } else if (tipo === 'lejos') {
-    titulo = `Parece que no estás en ${nombre}. Tu pedazo te espera allí.`
+    titulo = `Parece que no estás ${enSitio(nombre)}. Tu pedazo te espera allí.`
     subtitulo = 'La parada queda como vista.'
     icono = TRAZO.lejos
     iconoFondo = 'oklch(0.55 0.17 5 / .1)'
     iconoColor = FRAMBUESA
   } else if (tipo === 'oculto') {
     titulo = '¡Aquí se esconde un Emblema Oculto!'
-    subtitulo = `Sube una foto en ${nombre} y descúbrelo.`
+    subtitulo = `Sube una foto ${enSitio(nombre)} y descúbrelo.`
     botones = (
       <>
         <Boton icono={TRAZO.cam} texto="Hacer la foto" onClick={acciones.onCamara} estilo={BTN_CAM_ORO} />
@@ -143,7 +144,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
       </>
     )
   } else {
-    titulo = `Guarda un recuerdo de ${nombre}`
+    titulo = `Guarda un recuerdo ${deSitio(nombre)}`
     subtitulo = 'Una foto para tu álbum.'
     botones = (
       <>
@@ -355,7 +356,7 @@ export function HojaLoDeAyer({ paradas, plazo, miniaturas, onElegir, onCerrar }:
               {paradas.map((p) => (
                 <div key={p.stopId} className="flex items-center gap-2.5 rounded-2xl py-2 pl-3.5 pr-2" style={{ background: 'rgba(255,253,248,.08)' }}>
                   <span className="min-w-0 flex-1" style={{ font: "500 14px/1.3 'Geist'" }}>{displayStopName(p.nombre)}</span>
-                  <button type="button" onClick={() => onElegir(p)} aria-label={`Elegir foto de ${displayStopName(p.nombre)}`} className="flex h-11 w-11 flex-none items-center justify-center rounded-full border-0" style={BTN_CAM_ORO}>
+                  <button type="button" onClick={() => onElegir(p)} aria-label={`Elegir foto ${deSitio(displayStopName(p.nombre))}`} className="flex h-11 w-11 flex-none items-center justify-center rounded-full border-0" style={BTN_CAM_ORO}>
                     <Trazo d={TRAZO.gal} tam={17} />
                   </button>
                 </div>

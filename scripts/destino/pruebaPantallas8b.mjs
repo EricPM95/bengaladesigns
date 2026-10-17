@@ -147,7 +147,7 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
   const ajustes = JSON.parse(leer('data/logros/ajustes.json'))
   debe(ajustes.orden_momentos.join() === 'pedazo,coleccion,emblema,sello,pais,destino_nuevo,continente,maravilla,patrimonio,viajero', 'orden', 'el orden de las sorpresas, en un solo sitio (el servidor): pedazos, colecciones, emblema, sello, «Y además…»')
   const servidor = sinComentarios(leer('server/logros/momentos.js'))
-  debe(/m\.tipo === 'emblema' && m\.maravilla === maravilla\.id/.test(servidor), 'orden', 'el servidor pega la maravilla a su emblema')
+  debe(!/maravilla\.id/.test(servidor) && !/splice/.test(servidor), 'orden', '(8B4) el servidor ya no pega la maravilla a su emblema: va en «Y además…», en su sitio de orden_momentos')
   const plan = sinComentarios(leer('src/components/logros/momentos/plan.ts'))
   debe(!/\[\s*'(pedazo|emblema|coleccion)'/.test(plan) && /ajustes\.json/.test(plan), 'orden', 'el móvil no lleva su propio orden escrito: solo agrupa lo que manda el servidor (y, para juntar el Visto y la foto en una ronda, lee la MISMA lista de ajustes.json)')
   const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-pantallas8b2-'))
@@ -158,20 +158,20 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
   const lista = [
     m('suma', { coleccion: 'imprescindibles' }), m('suma', { coleccion: 'cuatro_joyas' }), m('suma_sello', { sello: 'roma' }),
     m('coleccion', { id: 'roma_antigua' }), m('coleccion', { id: 'miradores' }),
-    m('emblema', { id: 'coliseo', maravilla: 'coliseo' }), m('maravilla', { id: 'coliseo' }),
+    m('emblema', { id: 'coliseo', maravilla: 'coliseo' }),
     m('sello', { sello: 'roma', grado: 'plata' }),
-    m('pais'), m('patrimonio'), m('viajero'),
+    m('pais'), m('maravilla', { id: 'coliseo', n: 1 }), m('patrimonio'), m('viajero'),
   ]
   const pantallas = P.planificar(lista)
-  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,coleccion,coleccion,emblema,maravilla,sello,ademas', 'orden', `las pantallas, en este orden: pedazos (todos juntos), una por colección completada, emblema, medalla de la maravilla, sello, «Y además…» (salió: ${pantallas.map((p) => p.tipo).join()})`)
-  debe(pantallas[0].momentos.length === 2 && pantallas[6].momentos.length === 3, 'orden', 'todos los pedazos nuevos en una sola pantalla y «Y además…» con país, Patrimonio y logro de viajero')
-  debe(!pantallas.some((p) => p.tipo === 'ademas' && p.momentos.some((x) => x.tipo === 'maravilla')), 'orden', 'la maravilla no va como tarjetita dentro de «Y además…»')
-  debe(P.planificar([m('maravilla', { id: 'gran_muralla' })]).map((p) => p.tipo).join() === 'maravilla', 'orden', 'una maravilla sola tiene su pantalla entera')
+  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,coleccion,coleccion,emblema,sello,ademas', 'orden', `(8B4) las pantallas, en este orden: pedazos (todos juntos), una por colección completada, emblema, sello, «Y además…» (con la maravilla dentro), sin pantalla de la medalla: ${pantallas.map((p) => p.tipo).join()}`)
+  debe(pantallas[0].momentos.length === 2 && pantallas[5].momentos.length === 4, 'orden', 'todos los pedazos nuevos en una sola pantalla y «Y además…» con país, maravilla, Patrimonio y logro de viajero')
+  debe(pantallas[5].momentos.some((x) => x.tipo === 'maravilla'), 'orden', 'la maravilla va como tarjetita dentro de «Y además…»')
+  debe(P.planificar([m('maravilla', { id: 'gran_muralla', n: 2 })]).map((p) => p.tipo).join() === 'ademas' && P.planificar([m('maravilla', { id: 'taj_mahal', n: 7 })]).map((p) => p.tipo).join() === 'final7', 'orden', 'una maravilla sola sigue siendo la tarjetita; solo la séptima tiene su pantalla: «El final de las 7 maravillas»')
   const momentos = archivos('src/components/logros/momentos').map((f) => sinComentarios(leer(f))).join('\n')
   debe(!/Una foto, \$\{/.test(momentos) && !/Una foto, \d/.test(momentos) && !/Una foto,/.test(momentos), 'texto', 'fuera «Una foto, 3 colecciones»')
   const pant = leer('src/components/logros/momentos/pantallas.tsx')
   debe(/<Insignia /.test(pant) && /<MedallaMaravillas/.test(pant), 'dibujos', 'el pedazo lleva su insignia y la maravilla su medalla (nunca un icono genérico)')
-  debe(/Tu primera maravilla/.test(pant) || /primera maravilla/i.test(pant), 'maravilla', '«Tu primera maravilla · 1 de 7» en su pantalla entera')
+  debe(/Tu primera maravilla/.test(pant) || /primera maravilla/i.test(pant), 'maravilla', '«Tu primera maravilla · 1 de 7» en la tarjetita de «Y además…»')
   const coliseo = leer('src/components/logros/momentos/escenas/coliseo.tsx')
   debe(!/Tu primera maravilla/.test(sinComentarios(coliseo)), 'maravilla', 'la película del Coliseo ya no lleva dentro la tarjetita «Tu primera maravilla»')
   const hojas = leer('src/components/logros/visto/Hojas.tsx')
@@ -208,6 +208,73 @@ console.log('6. Tanda 8B3: ni dos capturas iguales, ni números que no cuadran')
   debe(!/Tu país número 2: Vaticano/.test(demo), 'demo', 'el modo de pruebas no dice «Tu país número 2: Vaticano» al marcar el Coliseo (el servidor da «Tu país número 1: Italia»)')
   const hojas = archivos('src/components/logros/visto').map((f) => sinComentarios(leer(f))).join('\n')
   debe(!/Con la foto de hoy en Plaza Navona/.test(hojas), 'textos', 'ningún texto de las hojas lleva un sitio fijo')
+}
+
+console.log('7. Tanda 8B4: Patrimonio del Coliseo, artículos, sin cuenta atrás en el viaje, sello nuevo, sin medalla por maravilla, el final de las 7')
+{
+  const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-pantallas8b4-'))
+  const salida = path.join(carpeta, 'b4.cjs')
+  const abs = (f) => path.resolve(f).split(path.sep).join('/')
+  fs.writeFileSync(
+    path.join(carpeta, 'entrada.ts'),
+    `export { planificar } from '${abs('src/components/logros/momentos/plan.ts')}'\n` +
+      `export { contarSellos, contarMomentos } from '${abs('src/components/logros/momentos/ResumenDia.tsx')}'\n` +
+      `export { enSitio, deSitio } from '${abs('src/lib/articulos.ts')}'\n` +
+      `export { diasParaReclamar, textoDelPlazo } from '${abs('src/components/logros/visto/fechas.ts')}'\n`,
+  )
+  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', jsx: 'automatic', define: { 'import.meta.env': '{"DEV":false}' } })
+  const B = createRequire(import.meta.url)(salida)
+  // El sello
+  debe(JSON.stringify(B.contarSellos([{ sello: 'roma', grado: 'bronce' }])) === '{"nuevos":1,"subidos":0}', 'sello', 'el primer sello (bronce) es «sello nuevo», no «subido de grado»')
+  debe(JSON.stringify(B.contarSellos([{ sello: 'roma', grado: 'plata' }])) === '{"nuevos":0,"subidos":1}', 'sello', 'el que sube a plata es «subido de grado»')
+  debe(JSON.stringify(B.contarSellos([{ sello: 'vaticano', grado: 'plata' }])) === '{"nuevos":1,"subidos":0}', 'sello', 'el Vaticano nace en plata (no tiene bronce): es nuevo')
+  debe(JSON.stringify(B.contarSellos([{ sello: 'roma', grado: 'bronce' }, { sello: 'roma', grado: 'plata' }])) === '{"nuevos":1,"subidos":0}', 'sello', 'un sello que nace y sube el mismo día cuenta una vez, como nuevo')
+  const c1 = B.contarMomentos([{ tipo: 'sello', sello: 'roma', grado: 'bronce' }])
+  debe(c1.sello_nuevo === 1 && !c1.sello, 'sello', 'el resumen del Coliseo (sello en bronce) lleva «sello nuevo»')
+  const rd = leer('src/components/logros/momentos/ResumenDia.tsx')
+  debe(rd.includes("sello_nuevo: ['sello nuevo', 'sellos nuevos']") && rd.includes('sello subido de grado'), 'sello', 'los dos textos están: «sello nuevo» y «sello subido de grado»')
+  // Los artículos
+  debe(B.enSitio('Coliseo') === 'en el Coliseo' && B.deSitio('Coliseo') === 'del Coliseo', 'articulos', '«en el Coliseo» y «del Coliseo»')
+  debe(B.enSitio('Panteón') === 'en el Panteón' && B.enSitio('Basílica de San Pedro') === 'en la Basílica de San Pedro' && B.deSitio('Basílica de San Pedro') === 'de la Basílica de San Pedro', 'articulos', '«en el Panteón», «en la Basílica de San Pedro»')
+  debe(B.enSitio('Trastevere') === 'en Trastevere' && B.enSitio('Piazza Navona') === 'en Piazza Navona' && B.enSitio('Fontana de Trevi (noche)') === 'en la Fontana de Trevi', 'articulos', 'sin artículo donde no va: «en Trastevere», «en Piazza Navona»; y sin el «(noche)»')
+  debe(B.enSitio('Museos Vaticanos y Capilla Sixtina') === 'en los Museos Vaticanos y Capilla Sixtina' && B.enSitio('Termas de Caracalla') === 'en las Termas de Caracalla', 'articulos', 'plurales: «en los Museos…», «en las Termas…»')
+  debe(B.enSitio('Sitio que no existe') === 'en Sitio que no existe', 'articulos', 'un nombre que no está en los datos sale sin artículo')
+  const cat = JSON.parse(leer('data/pipeline_v2/roma.json'))
+  const tabla = JSON.parse(leer('data/logros/articulos.json')).roma
+  const sin = cat.places.filter((p) => !(p.name in tabla)).map((p) => p.name)
+  debe(sin.length === 0 && Object.values(tabla).every((a) => ['el', 'la', 'los', 'las', ''].includes(a)), 'articulos', `todos los sitios de Roma llevan su artículo en los datos (faltan: ${sin.join(', ')})`)
+  const textos = archivos('src/components/logros/visto').map((f) => sinComentarios(leer(f))).join('\n') + sinComentarios(leer('src/lib/logrosDemo.ts'))
+  debe(!/(estás|foto|recuerdo) (en|de) \$\{(nombre|nombreSitio|parada\.name|displayStopName\([^)]*\))\}/.test(textos), 'articulos', 'ningún texto de las hojas pega «en»/«de» delante del nombre del sitio sin pasar por el artículo')
+  const ajustes = JSON.parse(leer('data/logros/ajustes.json'))
+  debe(ajustes.mensajes.lejos.includes('{en_sitio}') && ajustes.mensajes.foto_otro_sitio.includes('{de_sitio}'), 'articulos', 'los mensajes del servidor también llevan el artículo')
+  // La cuenta atrás
+  const ruta = { answers: { dateRange: { start: '2026-10-17', end: '2026-10-20' } } }
+  debe(B.diasParaReclamar(ruta, '2026-10-17') == null && B.textoDelPlazo(ruta, '2026-10-20') == null, 'plazo', 'durante el viaje no hay cuenta atrás (ni el primer día ni el último)')
+  debe(B.textoDelPlazo(ruta, '2026-11-10') === 'Te quedan 9 días para reclamar tu premio' && B.textoDelPlazo(ruta, '2026-10-21') === 'Te quedan 29 días para reclamar tu premio', 'plazo', 'después del viaje sí: «Te quedan 9 días…»')
+  const fe = leer('src/components/logros/visto/fechas.ts')
+  debe(fe.includes('dev_simulated_today_iso'), 'plazo', 'el «hoy» del plazo es el simulado de la app (no la fecha real del aparato) cuando se está en pruebas')
+  const rp = leer('src/dev/rutaDePrueba.ts')
+  debe(rp.includes('runGeneration') && !rp.includes("parada('p1'") && rp.includes('__demoHoy'), 'ruta', 'el viaje de pruebas lo genera el motor (runGeneration), no lleva paradas puestas a mano y limpia el «hoy» fingido')
+  // Maravillas
+  const pl = B.planificar
+  const m = (tipo, extra = {}) => ({ tipo, nombre: tipo, primera_vez: true, ...extra })
+  const col = pl([m('suma', { coleccion: 'imprescindibles', sitios: ['coliseo'] }), m('emblema', { id: 'coliseo', maravilla: 'coliseo' }), m('sello', { sello: 'roma', grado: 'bronce' }), m('pais'), m('destino_nuevo'), m('maravilla', { id: 'coliseo', n: 1 }), m('patrimonio')])
+  debe(col.map((p) => p.tipo).join() === 'pedazos,emblema,sello,ademas', 'maravilla', `el Coliseo: pedazos, película, sello y «Y además…», SIN pantalla de la medalla (${col.map((p) => p.tipo).join()})`)
+  debe(col[3].momentos.map((x) => x.tipo).join() === 'pais,destino_nuevo,maravilla,patrimonio', 'maravilla', 'y «Y además…» lleva el país, el destino, la maravilla y el Patrimonio de Roma')
+  const f7 = pl([m('emblema', { id: 'taj', maravilla: 'taj_mahal' }), m('maravilla', { id: 'taj_mahal', n: 7 }), m('pais')])
+  debe(f7.map((p) => p.tipo).join() === 'emblema,final7,pais', 'maravilla', `la séptima: su película, «El final de las 7 maravillas» y lo demás (${f7.map((p) => p.tipo).join()})`)
+  const pant = leer('src/components/logros/momentos/pantallas.tsx')
+  debe(!pant.includes('function PantallaMaravilla') && pant.includes('PantallaFinal7') && pant.includes('Tu primera maravilla'), 'maravilla', 'ya no existe la pantalla de la medalla por maravilla; la tarjetita lleva «Tu primera maravilla»')
+  debe(pant.includes('animada={false}'), 'maravilla', 'la medalla de la tarjetita va quieta')
+  const fin7 = leer('src/components/logros/momentos/FinalSieteMaravillas.tsx')
+  debe(fin7.includes('m7Gather') && fin7.includes('m7SpinIn') && fin7.includes('m7Sweep') && fin7.includes('prefers-reduced-motion'), 'maravilla', 'el final de las 7 lleva las monedas que se juntan, la medalla que gira, el barrido de luz y la versión sin movimiento')
+  const dm = leer('src/components/logros/momentos/demoMomentos.ts')
+  debe(dm.includes('serieFinal7'), 'maravilla', 'el modo de pruebas tiene una forma de ver el final de las 7 (serieFinal7)')
+  // El servidor: el Coliseo da el Patrimonio
+  const prueba1 = leer('scripts/destino/pruebaLogros1.mjs')
+  debe(prueba1.includes('Centro histórico de Roma» (Tanda 8B4)'), 'patrimonio', 'pruebaLogros1 comprueba que el primer Visto en el Coliseo da el Patrimonio «Centro histórico de Roma»')
+  debe(dm.includes('MOMENTOS.patrimonio()'), 'patrimonio', 'la serie del Coliseo del modo de pruebas lleva el Patrimonio (se había caído en la 8B3)')
+  debe(leer('src/lib/logrosDemo.ts').includes('centro_historico_de_roma'), 'patrimonio', 'y el primer Visto en el Coliseo del modo demo también da el Patrimonio y la maravilla, como el servidor')
 }
 
 const ok = fallos.length === 0

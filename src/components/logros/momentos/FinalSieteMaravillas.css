@@ -1,0 +1,23 @@
+/* «El final de las 7 maravillas» (Tanda 8B4): las claves de animación de Piezas/Medalla Siete del diseño, tal cual. */
+@keyframes m7Rays{to{transform:rotate(360deg)}}
+@keyframes m7Flash{0%{opacity:0;transform:scale(.4)}25%{opacity:1}100%{opacity:0;transform:scale(1.9)}}
+@keyframes m7Glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes m7Sheen{0%{transform:translateX(-160%) skewX(-18deg)}40%,100%{transform:translateX(360%) skewX(-18deg)}}
+@keyframes m7Gather{0%{transform:none}35%{transform:scale(1.12);filter:brightness(1.6)}100%{transform:translate(var(--dx),var(--dy)) scale(.15);filter:brightness(3);opacity:0}}
+@keyframes m7Base{0%,40%{opacity:1;filter:none}80%{opacity:1;filter:brightness(2.4)}100%{opacity:0;filter:brightness(4)}}
+@keyframes m7Core{0%{opacity:0;transform:scale(.1)}20%{opacity:1;transform:scale(.5)}32%{transform:scale(.38)}44%{transform:scale(.8)}54%{transform:scale(.6)}66%{transform:scale(1.1)}74%{transform:scale(.8)}86%{transform:scale(1.5)}100%{opacity:1;transform:scale(.15)}}
+@keyframes m7Beat{0%{opacity:0;transform:scale(.3)}10%{opacity:.95}100%{opacity:0;transform:scale(2.6)}}
+@keyframes m7Big{0%{opacity:0;transform:scale(4)}100%{opacity:0;transform:scale(5)}}
+@keyframes m7White{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+@keyframes m7Rise{0%{opacity:0;transform:scale(.55);filter:brightness(3) blur(6px)}45%{opacity:1;filter:brightness(1.7) blur(0)}75%{transform:scale(1.04)}100%{opacity:1;transform:none;filter:none}}
+@keyframes m7GodR{0%{opacity:0;transform:rotate(0) scale(.6)}30%{opacity:1}100%{opacity:.85;transform:rotate(40deg) scale(1)}}
+@keyframes m7Halo{0%,100%{opacity:.55;transform:scale(.95)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes m7Fw{0%{opacity:0;transform:translate(0,0) scale(.3)}8%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 30px)) scale(1)}}
+@keyframes m7FwC{0%{opacity:0;transform:scale(.2)}20%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+@keyframes m7Glit{0%{opacity:0;transform:translate(0,0) rotate(0)}12%{opacity:1}85%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(200deg)}}
+@keyframes m7Ring{to{transform:rotate(360deg)}}
+@keyframes m7Shock{0%{opacity:0;transform:scale(.6)}6%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+@keyframes m7Chase{0%,100%{filter:none}40%{filter:brightness(2.2) drop-shadow(0 0 10px #FFE7A8)}}
+@keyframes m7Pull{0%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.4)}}
+@keyframes m7SpinIn{0%{opacity:0;transform:perspective(900px) rotateY(-540deg) scale(.35);filter:brightness(4) blur(4px)}55%{opacity:1;filter:brightness(1.8) blur(0)}78%{transform:perspective(900px) rotateY(12deg) scale(1.07);filter:brightness(1.3)}100%{opacity:1;transform:perspective(900px) rotateY(0) scale(1);filter:none}}
+@keyframes m7Sweep{0%{transform:translateX(-200px) skewX(-20deg)}100%{transform:translateX(520px) skewX(-20deg)}}

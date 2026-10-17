@@ -10,6 +10,7 @@ import { CamaraApp } from './CamaraApp'
 import { fechasDelViaje, hoyLocal, lineaDeGaleria, textoDelPlazo } from './fechas'
 import { AvisoDeVisto, EstilosDelVisto, FranjaSinConexion, HojaDePermisos, HojaDelVisto, HojaFotoDentro, HojaGaleria, HojaLoDeAyer, NotaCorta, type ParadaDeAyer } from './Hojas'
 import { faltaDe, hojaSegunRespuesta as decidirHoja } from './decidir'
+import { deSitio, enSitio } from '../../../lib/articulos'
 import { abrirHoja, cerrarHoja, useVistoStore, type DestinoDeFoto, type Hoja, type ParadaVista, type QueFalta } from './vistoStore'
 
 /**
@@ -198,7 +199,7 @@ async function resolverFoto(destino: DestinoDeFoto, archivo: File, origen: 'app'
   const r = origen === 'app' ? await enviarFotoDeLaCamara(datos) : await enviarFotoDeGaleria({ ...datos, archivo })
   if (r && r.valida === false) {
     // Con el nombre de la parada de esta foto (nunca el de otra).
-    const mensaje = r.motivo === 'otro_sitio' ? `Esta foto no es de ${destino.nombreSitio}.` : (r.mensaje ?? 'Esta foto no vale. Elige otra.')
+    const mensaje = r.motivo === 'otro_sitio' ? `Esta foto no es ${deSitio(destino.nombreSitio)}.` : (r.mensaje ?? 'Esta foto no vale. Elige otra.')
     poner({ galeria: { ...destino, error: mensaje, subiendo: false } })
     return
   }
@@ -434,7 +435,7 @@ if (import.meta.env.DEV && demoActivo()) {
       const stop = dia?.stops[stopIndex]
       if (!route || !dia || !stop) return false
       const parada: ParadaVista = { tripId: route.id, dayId: dia.id, dayNumber: dia.dayNumber, stopId: stop.id, nombre: stop.name }
-      abrirHoja({ tipo, parada, nombreSitio: displayStopName(stop.name), fotoDentro, pedazo: tipo === 'ganado' ? ({ tipo: 'suma', nombre: 'Los imprescindibles de Roma', linea: '3 de 8', primera_vez: true } as never) : null, mensaje: tipo === 'lejos' ? `Parece que no estás en ${displayStopName(stop.name)}. Tu pedazo te espera allí.` : null })
+      abrirHoja({ tipo, parada, nombreSitio: displayStopName(stop.name), fotoDentro, pedazo: tipo === 'ganado' ? ({ tipo: 'suma', nombre: 'Los imprescindibles de Roma', linea: '3 de 8', primera_vez: true } as never) : null, mensaje: tipo === 'lejos' ? `Parece que no estás ${enSitio(displayStopName(stop.name))}. Tu pedazo te espera allí.` : null })
       return true
     }
   })

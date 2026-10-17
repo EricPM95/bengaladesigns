@@ -2,7 +2,7 @@
  * LOS MOMENTOS (Tanda 8A): de lo nuevo que ha ganado alguien tras un Visto o una foto, la lista en el orden en que se enseña. Las pantallas llegan en la 8b.
  *
  * El orden sale de `data/logros/ajustes.json › orden_momentos` (lo que suma, colecciones completadas, emblema, sello, país y destino nuevos, maravilla y Patrimonio,
- * logros de viajero), el ÚNICO sitio donde se decide (Tanda 8B2); la maravilla de un emblema de maravilla va pegada a él. Si Design pone otro orden en «Logros · Momentos», se cambia ahí, sin tocar el código.
+ * logros de viajero), el ÚNICO sitio donde se decide (Tanda 8B2). Si Design pone otro orden en «Logros · Momentos», se cambia ahí, sin tocar el código.
  * Cada momento lleva `primera_vez`. La frase de suspense de antes del emblema sale SOLO la primera vez, al azar y sin repetir la última que vio esa persona;
  * al volver a verlo guardado, sin frase.
  */
@@ -111,12 +111,6 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
     .map((m, i) => ({ m, i }))
     .sort((a, b) => pos(a.m) - pos(b.m) || (a.m.en && b.m.en ? new Date(a.m.en) - new Date(b.m.en) : 0) || a.i - b.i)
     .map(({ m }) => m)
-  // Excepción, las maravillas del mundo (Tanda 8B2): su momento va justo después del emblema de ese sitio («Tu primera maravilla · 1 de 7»), no con el «Y además…».
-  for (const maravilla of ordenados.filter((m) => m.tipo === 'maravilla')) {
-    const emblema = ordenados.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id)
-    if (emblema < 0) continue
-    ordenados.splice(ordenados.indexOf(maravilla), 1)
-    ordenados.splice(ordenados.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id) + 1, 0, maravilla)
-  }
+  // (8B4) Las maravillas ya no van pegadas a su emblema: el emblema sale con su película y la maravilla va en «Y además…», en su sitio de `orden_momentos`.
   return ordenados
 }

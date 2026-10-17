@@ -28,7 +28,7 @@ for (const [r, tipo, falta] of [
 }
 
 // 4. Los textos llevan el nombre de LA parada marcada.
-debe(hojaSegunRespuesta({ cuenta: false, motivo: 'lejos', hay_pedazo: true }, 'Panteón').mensaje === 'Parece que no estás en Panteón. Tu pedazo te espera allí.', 'lejos: «Parece que no estás en Panteón…»')
+debe(hojaSegunRespuesta({ cuenta: false, motivo: 'lejos', hay_pedazo: true }, 'Panteón').mensaje === 'Parece que no estás en el Panteón. Tu pedazo te espera allí.', 'lejos: «Parece que no estás en Panteón…»')
 debe(hojaSegunRespuesta({ cuenta: true, ubic: 'cerca' }, 'Coliseo (noche)').nombreSitio === 'Coliseo', 'el «(noche)» no sale en el nombre')
 
 // 5. Si el servidor repite lo suyo, manda el servidor; el móvil no inventa.

@@ -20,10 +20,10 @@
   ],
   "mensajes": {
     "sin_ubicacion": "Activa tu ubicación o haz una foto para ganar tu pedazo.",
-    "lejos": "Parece que no estás en {sitio}. Tu pedazo te espera allí.",
+    "lejos": "Parece que no estás {en_sitio}. Tu pedazo te espera allí.",
     "foto_no_camara": "Esta foto no está hecha con una cámara.",
     "foto_otra_fecha": "Esta foto es del {fecha}. Elige una del {desde} al {hasta}.",
-    "foto_otro_sitio": "Esta foto no es de {sitio}.",
+    "foto_otro_sitio": "Esta foto no es {de_sitio}.",
     "fuera_de_plazo": "Ya ha pasado el plazo para reclamar las fotos de este viaje.",
     "foto_sin_datos": "No hemos podido leer esta foto. Haz una con la cámara de la app.",
     "foto_sin_fecha": "No podemos leer la fecha de esta foto. Haz una con la cámara de la app.",

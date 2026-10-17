@@ -8,6 +8,11 @@
  *     manda el servidor, que es la misma fuente.
  */
 
+import { conArticulo } from '../../../../shared/logros/articulos.js'
+import tablas from '../../../../data/logros/articulos.json' with { type: 'json' }
+
+const enSitio = (nombre: string): string => conArticulo((tablas as unknown as Record<string, Record<string, string>>).roma, nombre, 'en')
+
 export type TipoDeHoja = 'ganado' | 'sin_ubicacion' | 'lejos' | 'oculto' | 'recuerdo'
 export type QueFalta = 'sorpresa' | 'pedazo' | 'recuerdo'
 
@@ -42,7 +47,7 @@ export function hojaSegunRespuesta(r: RespuestaParaDecidir | null, nombreParada:
   const nombreSitio = nombreDeParada(nombreParada)
   const base = { nombreSitio, fotoDentro: r.foto_dentro ?? null, pedazo: null, mensaje: null }
   if (r.motivo === 'pregunta_medio_dia' || r.repetido) return null
-  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `Parece que no estás en ${nombreSitio}. Tu pedazo te espera allí.` }
+  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `Parece que no estás ${enSitio(nombreSitio)}. Tu pedazo te espera allí.` }
   if (r.motivo === 'lejos') return { ...base, tipo: 'recuerdo' }
   if (r.cuenta === false) return { ...base, tipo: 'recuerdo' }
   if (r.hay_emblema) return { ...base, tipo: 'oculto' }

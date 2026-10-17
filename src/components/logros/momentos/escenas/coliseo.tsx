@@ -7,7 +7,7 @@ import '../momentos.css'
 /**
  * LA PELÍCULA DEL COLISEO (Tanda 8B), «Emblema Maravilla C» del diseño. ~28 s: «Casi 2.000 años esperándote…», un segundo frase, y desde la oscuridad cientos de
  * partículas de oro vuelan y forman el Coliseo, que se vuelve sólido, se enciende y recibe un destello; el oro se junta en un punto, late y estalla en el
- * emblema con fuegos artificiales; al final sale «Tu primera maravilla». SIEMPRE se ve entera (también al volver a verla). Se salta tocando (va al emblema).
+ * emblema con fuegos artificiales. SIEMPRE se ve entera (también al volver a verla). Se salta tocando (va al emblema).
  * Todo en SVG y CSS; los tiempos son los del diseño (`T`, `T0`, `TL`) restando `--off`, que es lo que se salta.
  */
 const FRASE = 'Casi 2.000 años esperándote…'
@@ -155,7 +155,7 @@ export default function PeliculaColiseo({ nombre, linea, onSeguir, onSaltarTodo 
   }
   const tEmb = 23.6
   const tTextos = 24
-  const tFuera = 999 // (8B2) los textos se quedan: «Tu primera maravilla» ya no va en la película, sale en su propia pantalla
+  const tFuera = 999 // los textos se quedan; «Tu primera maravilla» va en «Y además…» como tarjeta pequeña (8B4)
   const tBoton = 25.6
   const [verBoton, setVerBoton] = useState(reducido)
   useEffect(() => {

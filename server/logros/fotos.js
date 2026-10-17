@@ -12,6 +12,7 @@
  *     (el día 30 vale, el 31 no).
  */
 
+import { conArticulo } from './articulos.js'
 import { diasEntre, parteLocal, sumarDias } from './motor.js'
 
 /** Distancia en metros entre dos puntos. */
@@ -83,7 +84,7 @@ export function evaluarVisto({ instante, recibidoEn, ubicacion, sitio, viaje, de
   if (recibido && recibido.fecha > sumarDias(viaje.fin, ajustes.plazo_reclamar_dias)) {
     return { cuenta: false, ubic, motivo: 'fuera_de_plazo', mensaje: ajustes.mensajes.fuera_de_plazo }
   }
-  if (ubic === 'lejos') return { cuenta: false, ubic, motivo: 'lejos', mensaje: rellenar(ajustes.mensajes.lejos, { sitio: nombreSitio }) }
+  if (ubic === 'lejos') return { cuenta: false, ubic, motivo: 'lejos', mensaje: rellenar(ajustes.mensajes.lejos, { sitio: nombreSitio, en_sitio: conArticulo(destino.clave ?? 'roma', nombreSitio, 'en') }) }
   // Sin ubicación se guarda el Visto igualmente: el pedazo espera una foto («Activa tu ubicación o haz una foto para ganar tu pedazo»).
   return { cuenta: true, ubic, motivo: ubic === 'sin' ? 'sin_ubicacion' : null, mensaje: ubic === 'sin' ? ajustes.mensajes.sin_ubicacion : null }
 }
@@ -124,7 +125,7 @@ export function evaluarFoto({ origen, tomadaEn, conCamara, ubicacion, sitio, via
     return no('otra_fecha', rellenar(M.foto_otra_fecha, { fecha: fechaLarga(loc.fecha), ...desdeHasta(viaje) }), 'sin', instante)
   }
   const ubic = dondeEstoy(ubicacion, sitio.coords, sitio.radio_m)
-  if (ubic === 'lejos') return no('otro_sitio', rellenar(M.foto_otro_sitio, { sitio: nombreSitio }), 'lejos', instante)
+  if (ubic === 'lejos') return no('otro_sitio', rellenar(M.foto_otro_sitio, { sitio: nombreSitio, de_sitio: conArticulo(destino.clave ?? 'roma', nombreSitio, 'de') }), 'lejos', instante)
   return { valida: true, ubic, instante, motivo: null, mensaje: null }
 }
 

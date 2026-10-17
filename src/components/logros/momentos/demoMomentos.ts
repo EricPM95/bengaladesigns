@@ -12,6 +12,7 @@ import { useMomentosUI } from './useMomentosUI'
  *                                                fontana_de_trevi, boca_de_la_verdad, ojo_cerradura, catacumbas, madrugador, nocturno)
  *   window.__momentos.repetir('panteon')         la escena de un emblema ya guardado (sin frase ni suspense)
  *   window.__momentos.serieCompleta()            un Visto que lo da todo: sello, colecciones, el Coliseo, y «Y además…»
+ *   window.__momentos.serieFinal7()              la séptima maravilla: «El final de las 7 maravillas» (8B4)
  *   window.__momentos.resumenDia() · resumenViaje('wow'|'con_ganas') · compartirLogro() · compartirViaje() · hoja() · primerDia()
  *
  * Los datos del servidor (estado y resumen) se sustituyen por unos de ejemplo; todo lo que sale es de Roma y sale de la forma real de `server/logros/momentos.js`.
@@ -94,6 +95,7 @@ const MOMENTOS: Record<string, () => Momento[]> = {
   pais: () => [m({ tipo: 'pais', cat: 'pais', clave: '*|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', en })],
   destino: () => [m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en })],
   medalla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
+  final7: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|taj_mahal', id: 'taj_mahal', n: 7, nombre: 'El Taj Mahal', linea: 'La séptima maravilla del mundo.', en })],
   maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|gran_muralla', id: 'gran_muralla', n: 2, nombre: 'La Gran Muralla', linea: 'Más de 20.000 km de muralla, levantada durante siglos.', en })],
   patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', en })],
   viajero: () => [m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|3', logro: 'paises', escalon: '3', destino: '*', nombre: 'Trotamundos', linea: 'Países distintos que has visitado con la app.', en })],
@@ -138,7 +140,17 @@ const api = {
     ponerDatos(false, 'wow', 'coliseo')
     datosDePrueba.resumen = null // el resumen del día cuenta solo lo que sale en la serie
     const sumas = MOMENTOS.suma_varias()
-    const todo = [...sumas, ...MOMENTOS.coliseo().slice(0, 2), ...MOMENTOS.sello(), ...MOMENTOS.pais(), ...MOMENTOS.destino()]
+    // El orden del servidor (ajustes.json › orden_momentos): pedazos, emblema, sello, país, destino y, juntas en «Y además…», la maravilla y el Patrimonio (8B4: sin pantalla de la medalla).
+    const [emblema, maravilla] = MOMENTOS.coliseo()
+    const todo = [...sumas, emblema, ...MOMENTOS.sello(), ...MOMENTOS.pais(), ...MOMENTOS.destino(), maravilla, ...MOMENTOS.patrimonio()]
+    useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
+    return todo.length
+  },
+  /** F7: la séptima maravilla, con «El final de las 7 maravillas» (la única animación de la medalla). */
+  serieFinal7: () => {
+    ponerDatos(false, 'wow', 'viaje')
+    datosDePrueba.resumen = null
+    const todo = MOMENTOS.final7()
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
     return todo.length
   },

@@ -4,6 +4,7 @@ import { textoDelPlazo } from './fechas'
 import { Trazo, TRAZO } from './trazos'
 import { fotoDeParada } from './VistoFlujo'
 import { TEXTO_DE_FALTA, tiraDeParada } from './decidir'
+import { deSitio, enSitio } from '../../../lib/articulos'
 import { useVistoStore } from './vistoStore'
 
 /**
@@ -43,7 +44,7 @@ function Tira({ dayId, stopId, visto }: { dayId: string; stopId: string; visto: 
       <button
         type="button"
         onClick={() => fotoDeParada({ tripId: route.id, dayId, dayNumber: dia.dayNumber, stopId, nombre: parada.name }, falta, pendiente.fotoDentro)}
-        aria-label={sorpresa ? `Subir la foto de ${parada.name}` : `Hacer una foto en ${parada.name}`}
+        aria-label={sorpresa ? `Subir la foto ${deSitio(parada.name)}` : `Hacer una foto ${enSitio(parada.name)}`}
         className="flex h-11 w-11 flex-none items-center justify-center rounded-full border-0"
         style={{ background: sorpresa ? 'linear-gradient(110deg,#E4C58A,#F7E6BE)' : recuerdo ? '#FFFFFF' : '#1C2230', color: sorpresa ? '#2A1D10' : recuerdo ? '#1C2230' : '#FFFDF8', boxShadow: recuerdo ? 'inset 0 0 0 1px rgba(28,34,48,.12)' : undefined }}
       >

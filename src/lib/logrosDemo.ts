@@ -19,6 +19,7 @@
  */
 import { useLogrosStore } from '../store/useLogrosStore'
 import { useRouteStore } from '../store/useRouteStore'
+import { deSitio, enSitio } from './articulos'
 import type { Momento, RespuestaDeHecho } from './logros'
 
 const quitarTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim()
@@ -64,7 +65,7 @@ const sumaSello = (nombre: string, n: number, total: number, sello: string): Mom
 const emblema = (id: string, nombre: string, linea: string, maravilla: string | null = null): Momento =>
   ({ tipo: 'emblema', cat: 'emblema', clave: `roma|emblema|${id}`, id, destino: 'roma', nombre, linea, momento: false, maravilla, primera_vez: true, frase: '¡Eh! Aquí hay algo…', en: new Date().toISOString() }) as Momento
 
-/** Lo que da el Coliseo como PRIMER sitio del viaje (8B3, igual que el servidor): 1 pedazo en cada una de sus 3 colecciones, el sello de Roma que nace en bronce («1 de 8»), país nuevo Italia (el 1.º) y destino nuevo Roma (el 1.º). La Basílica después sería el país 2, Ciudad del Vaticano. */
+/** Lo que da el Coliseo como PRIMER sitio del viaje (8B3, igual que el servidor): 1 pedazo en cada una de sus 3 colecciones, el sello de Roma que nace en bronce («1 de 8»), país nuevo Italia (el 1.º), destino nuevo Roma (el 1.º), la maravilla (1 de 7) y el Patrimonio «Centro histórico de Roma». La Basílica después sería el país 2, Ciudad del Vaticano. */
 function primeraVezEnRoma(): Momento[] {
   const en = new Date().toISOString()
   return [
@@ -75,6 +76,9 @@ function primeraVezEnRoma(): Momento[] {
     { tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:bronce', sello: 'roma', destino: 'roma', grado: 'bronce', nombre: 'Primeros pasos en Roma', linea: 'Has visto tu primer imprescindible.', primera_vez: true, en } as Momento,
     { tipo: 'pais', cat: 'pais', clave: 'global|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', primera_vez: true, en } as Momento,
     { tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: 'global|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', primera_vez: true, en } as Momento,
+    // (8B4) Igual que el servidor: con el primer Visto en el Coliseo también llegan su maravilla (la 1 de 7) y el Patrimonio «Centro histórico de Roma».
+    { tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', primera_vez: true, en } as Momento,
+    { tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', primera_vez: true, en } as Momento,
   ]
 }
 
@@ -83,7 +87,7 @@ const GUIONES: [RegExp, Guion][] = [
   [/plaza navona|piazza navona|navona/, { sitio: 'piazza_navona', nombre: 'Plaza Navona', ubic: 'sin', hay_pedazo: true, hay_emblema: false }],
   [/panteon/, { sitio: 'panteon', nombre: 'Panteón', ubic: 'lejos', hay_pedazo: true, hay_emblema: false }],
   [/basilica de san pedro|san pedro/, { sitio: 'basilica_de_san_pedro', nombre: 'Basílica de San Pedro', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosFoto: () => [emblema('basilica_san_pedro', 'Sobre la tumba de San Pedro', 'Bajo el altar mayor está, según la tradición, la tumba del apóstol.')] }],
-  [/coliseo|colosseo|colosseum/, { sitio: 'coliseo', nombre: 'Coliseo', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosVisto: () => primeraVezEnRoma(), nuevosFoto: () => [emblema('coliseo', 'Una maravilla del mundo', 'El mayor anfiteatro de la Antigüedad.', 'coliseo'), { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en: new Date().toISOString() } as Momento] }],
+  [/coliseo|colosseo|colosseum/, { sitio: 'coliseo', nombre: 'Coliseo', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosVisto: () => primeraVezEnRoma(), nuevosFoto: () => [emblema('coliseo', 'Una maravilla del mundo', 'El mayor anfiteatro de la Antigüedad.', 'coliseo')] }],
   [/foro romano|foro/, { sitio: 'foro_romano_y_palatino', nombre: 'Foro Romano', ubic: 'cerca', hay_pedazo: false, hay_emblema: false, nuevosVisto: () => [
     suma('La Roma antigua', 6, 6, ['foro_romano_y_palatino'], 'roma_antigua'),
     sumaSello('Roma', 4, 8, 'roma'),
@@ -108,7 +112,7 @@ function visto(c: Record<string, unknown>): RespuestaDeHecho {
   if (demo.pase === 'prueba' && !demo.preguntaHecha && (demo.hora ?? '') >= '12:00') return { ok: true, cuenta: false, motivo: 'pregunta_medio_dia', pregunta: PREGUNTA, ubic: 'cerca', ...base, nuevos: [] }
   const clave = String(c.stop_id ?? c.nombre)
   if (demo.vistos.has(clave)) return { ok: true, cuenta: true, repetido: true, ubic: g?.ubic ?? 'cerca', ...base, nuevos: [] }
-  if (g?.ubic === 'lejos') return { ok: true, cuenta: false, motivo: 'lejos', mensaje: `Parece que no estás en ${nombre}. Tu pedazo te espera allí.`, ubic: 'lejos', ...base, nuevos: [] }
+  if (g?.ubic === 'lejos') return { ok: true, cuenta: false, motivo: 'lejos', mensaje: `Parece que no estás ${enSitio(nombre)}. Tu pedazo te espera allí.`, ubic: 'lejos', ...base, nuevos: [] }
   demo.vistos.add(clave)
   const ubic = g?.ubic ?? 'cerca'
   // Un pedazo ganado al tocar Visto (con ubicación cerca) ya no queda pendiente: «Lo de ayer» y la tira de la parada tienen que decir lo mismo que la hoja.
@@ -128,7 +132,7 @@ function foto(c: Record<string, unknown>): RespuestaDeHecho {
   }
   const rango = rangoLargo(inicio, fin)
   if (motivo === 'no_camara') return { ok: true, valida: false, motivo: 'no_camara', mensaje: 'Esta foto no está hecha con una cámara.', nuevos: [] }
-  if (motivo === 'otro_sitio') return { ok: true, valida: false, motivo: 'otro_sitio', mensaje: `Esta foto no es de ${nombre}.`, nuevos: [] }
+  if (motivo === 'otro_sitio') return { ok: true, valida: false, motivo: 'otro_sitio', mensaje: `Esta foto no es ${deSitio(nombre)}.`, nuevos: [] }
   if (motivo === 'otra_fecha') {
     const [d, h] = rango.includes(' al ') ? rango.split(' al ') : [rango, rango]
     return { ok: true, valida: false, motivo: 'otra_fecha', mensaje: `Esta foto es del 2 de septiembre. Elige una del ${d} al ${h}.`, nuevos: [] }
@@ -188,7 +192,7 @@ export async function responder(ruta: string, opciones: { metodo?: string; cuerp
   if (p === '/api/logros/lo-de-ayer') return loDeAyer()
   if (p === '/api/logros/estado') return { ok: true, sellos: [], colecciones: [], secretos: { encontrados: 0, total: 12 }, pendiente: loDeAyer(), puntito: false, viaje: { id: String(url.searchParams.get('trip_id')), ...viajeActual() } }
   if (p === '/api/logros/ficha') return { ok: true, colecciones: [] }
-  if (p === '/api/logros/resumen') return { ok: true, ganado: demo.entregados.map((m) => ({ clave: m.clave ?? `${m.tipo}|${m.nombre}`, logro: m.tipo, escalon: m.id ?? m.coleccion ?? m.sello ?? null, destino: 'roma', en: m.en ?? new Date().toISOString() })), por_categoria: porCategoria(), pendiente: loDeAyer(), texto_viaje: '¡Wow! Tu viaje a Roma fue increíble. Echa un vistazo a todo lo que conseguiste.', texto_viaje_tipo: 'wow' }
+  if (p === '/api/logros/resumen') return { ok: true, ganado: demo.entregados.map((m) => ({ clave: m.clave ?? `${m.tipo}|${m.nombre}`, logro: m.tipo, escalon: m.tipo === 'sello' ? `${m.sello}:${m.grado}` : (m.id ?? m.coleccion ?? m.sello ?? null), destino: 'roma', en: m.en ?? new Date().toISOString() })), por_categoria: porCategoria(), pendiente: loDeAyer(), texto_viaje: '¡Wow! Tu viaje a Roma fue increíble. Echa un vistazo a todo lo que conseguiste.', texto_viaje_tipo: 'wow' }
   if (p === '/api/pase/estado') return { ok: true, cobro: true, pases: demo.pase === 'con' ? [{ id: 'demo', destino: 'roma', tipo: 'individual' }] : [], prueba: { estado: demo.pase === 'sin' ? 'gastada' : 'pendiente', trip_id: null, fecha: null, motivo: null, ya_usada: demo.pase === 'sin' }, hoy: { puede: demo.pase !== 'sin', motivo: demo.pase === 'con' ? 'con_pase' : demo.pase === 'prueba' ? 'dia_de_prueba' : 'prueba_ya_usada', tarjeta: demo.pase === 'sin' ? 'pase' : null }, precios: {} }
   if (p === '/api/pase/prueba/usar') return { ok: true, acceso: demo.pase !== 'sin', motivo: 'dia_de_prueba', uso: 'como_llegar', tarjeta: demo.pase === 'sin' ? 'pase' : null }
   if (p === '/api/pase/prueba/responder') {
@@ -216,17 +220,17 @@ const AYUDA = `window.__demo (solo desarrollo):
 
 export function momentosDeSerie(): Momento[] {
   const en = new Date().toISOString()
-  // El orden del servidor (ajustes.json › orden_momentos): pedazos, colecciones, emblema (con su maravilla pegada), sello, país, destino, continente, Patrimonio, viajero.
+  // El orden del servidor (ajustes.json › orden_momentos): pedazos, colecciones, emblema, sello, país, destino, continente, maravilla (en «Y además…», 8B4), Patrimonio, viajero.
   return [
     suma('Los imprescindibles de Roma', 3, 8, ['coliseo'], 'imprescindibles'),
     sumaSello('Roma', 3, 8, 'roma'),
     { tipo: 'coleccion', cat: 'coleccion', clave: 'roma|coleccion|roma_antigua', id: 'roma_antigua', destino: 'roma', nombre: 'La Roma antigua', linea: 'Seis piedras que lo empezaron todo', primera_vez: true, en } as Momento,
     emblema('coliseo', 'Una maravilla del mundo', 'El mayor anfiteatro de la Antigüedad.', 'coliseo'),
-    { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en } as Momento,
     { tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:plata', sello: 'roma', destino: 'roma', grado: 'plata', nombre: 'Roma te atrapa', linea: 'Cuatro imprescindibles vistos: ya eres de aquí.', primera_vez: true, en } as Momento,
     { tipo: 'pais', cat: 'pais', clave: 'global|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', primera_vez: true, en } as Momento,
     { tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: 'global|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', primera_vez: true, en } as Momento,
     { tipo: 'continente', cat: 'continente', clave: 'global|continente|Europa', continente: 'Europa', nombre: 'Nuevo continente: Europa', primera_vez: true, en } as Momento,
+    { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en } as Momento,
     { tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|roma_historica', id: 'roma_historica', nombre: 'Centro histórico de Roma', primera_vez: true, en } as Momento,
     { tipo: 'viajero', cat: 'viajero', clave: 'global|viajero|trotamundos:1', logro: 'trotamundos', escalon: '1', destino: 'roma', nombre: 'Primera parada', linea: 'Tu primer destino con la app.', primera_vez: true, en } as Momento,
   ]

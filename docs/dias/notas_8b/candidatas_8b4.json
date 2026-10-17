@@ -1,0 +1,340 @@
+{
+ "fecha": "2026-10-17",
+ "fuente": "Unsplash (API oficial, 3 candidatas por sitio; nada se ha puesto en la app)",
+ "sitios": [
+  {
+   "id": "foro_romano_y_palatino",
+   "nombre": "Foro Romano y Palatino",
+   "hoy": "sin foto propia (sale una de Unsplash que no hemos elegido nosotros)",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id_unsplash": "nJnhlZQzkwk",
+     "nota": "El Templo de Saturno con el Arco de Septimio Severo detrás, con cielo azul. De día y sin gente.",
+     "descripcion_unsplash": "A view on Foro Romano in Rome, Italy",
+     "autor": "Blaz Erzetic",
+     "enlace_autor": "https://unsplash.com/@www_erzetich_com?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/white-pillar-ruins-during-daytime-nJnhlZQzkwk?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 3000,
+     "alto": 2000,
+     "grande": "https://images.unsplash.com/photo-1575379972263-2f15a5c78236?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OXx8Um9tYW4lMjBGb3J1bSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3MXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1575379972263-2f15a5c78236?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OXx8Um9tYW4lMjBGb3J1bSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3MXww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1575379972263-2f15a5c78236?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8OXx8Um9tYW4lMjBGb3J1bSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3MXww&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 2,
+     "id_unsplash": "wkQyVJwHAzM",
+     "nota": "El Foro desde arriba: las columnas del Templo de Vespasiano, el Arco de Septimio Severo y la cúpula de Santi Luca e Martina. De día.",
+     "descripcion_unsplash": "Ancient Roman Ruins viewed from the Palatine Hill in Rome.",
+     "autor": "Himmel S",
+     "enlace_autor": "https://unsplash.com/@skyhung1228?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-view-of-a-cemetery-in-a-city-wkQyVJwHAzM?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 9504,
+     "alto": 6336,
+     "grande": "https://images.unsplash.com/photo-1734132046083-413c154b8d85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTF8fFJvbWFuJTIwRm9ydW0lMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwNzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1734132046083-413c154b8d85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTF8fFJvbWFuJTIwRm9ydW0lMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwNzF8MA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1734132046083-413c154b8d85?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTF8fFJvbWFuJTIwRm9ydW0lMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwNzF8MA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 3,
+     "id_unsplash": "HuCmvopUDdI",
+     "nota": "El Templo de Saturno y el Foro con luz cálida de tarde. De día y sin gente.",
+     "descripcion_unsplash": "A view over Forum Romanum in Rome",
+     "autor": "Embla Munk Rynkebjerg",
+     "enlace_autor": "https://unsplash.com/@emblarynke?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/the-ruins-of-the-ancient-city-of-rome-HuCmvopUDdI?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5756,
+     "alto": 3837,
+     "grande": "https://images.unsplash.com/photo-1649754242327-2d7a73668fb5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8N3x8Um9tYW4lMjBGb3J1bSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3MXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1649754242327-2d7a73668fb5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8N3x8Um9tYW4lMjBGb3J1bSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3MXww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1649754242327-2d7a73668fb5?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8N3x8Um9tYW4lMjBGb3J1bSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3MXww&ixlib=rb-4.1.0"
+    }
+   ]
+  },
+  {
+   "id": "arco_de_constantino",
+   "nombre": "Arco de Constantino",
+   "hoy": "sin foto propia (sale una de Unsplash que no hemos elegido nosotros)",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id_unsplash": "6a3gS1A8GqI",
+     "nota": "El Arco de Constantino de frente, con los árboles del Palatino detrás y sol. Sin gente.",
+     "descripcion_unsplash": "The historic Arch of Constantine in Rome, basked in the warm light of the sun. The arch, a triumphal structure erected to commemorate Constantine I's victory at the Battle of Milvian Bridge, stands resolute against a backdrop of Rome's Palatine Hill, adorned with its characteristic stone pines",
+     "autor": "Anton Volnuhin",
+     "enlace_autor": "https://unsplash.com/@antonme?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-large-stone-structure-in-the-middle-of-a-park-6a3gS1A8GqI?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 3750,
+     "alto": 2500,
+     "grande": "https://images.unsplash.com/photo-1704210976846-0f309074866c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8QXJjaCUyMG9mJTIwQ29uc3RhbnRpbmUlMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwNzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1704210976846-0f309074866c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8QXJjaCUyMG9mJTIwQ29uc3RhbnRpbmUlMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwNzN8MA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1704210976846-0f309074866c?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MXx8QXJjaCUyMG9mJTIwQ29uc3RhbnRpbmUlMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwNzN8MA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 2,
+     "id_unsplash": "qk1EgwVeO-o",
+     "nota": "El Arco de Constantino de cerca, con sus relieves y los pinos detrás. Sin gente.",
+     "descripcion_unsplash": "Arco de Constantino, visto do Coliseu de Roma.",
+     "autor": "Ruben Marques",
+     "enlace_autor": "https://unsplash.com/@rubenmarques1?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/ancient-roman-arch-with-detailed-carvings-and-intricate-carvings-qk1EgwVeO-o?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5220,
+     "alto": 3376,
+     "grande": "https://images.unsplash.com/photo-1776079429338-ac6770cf74ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Mjh8fEFyY2glMjBvZiUyMENvbnN0YW50aW5lJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1776079429338-ac6770cf74ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Mjh8fEFyY2glMjBvZiUyMENvbnN0YW50aW5lJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDczfDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1776079429338-ac6770cf74ce?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Mjh8fEFyY2glMjBvZiUyMENvbnN0YW50aW5lJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDczfDA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 3,
+     "id_unsplash": "BcZ_2LLOOx8",
+     "nota": "Un lado del arco con el Coliseo detrás y cielo azul. El arco sale a medias en el recorte.",
+     "descripcion_unsplash": "A shot of Arco di Costantino (Arch of Constantine) and the Colosseo (Colosseum) with a bright blue sky.\n\nThe arch was commissioned by the Roman Senate to commemorate Constantine's victory over Maxentius at the Battle of Milvian Bridge in AD 312.\n\nThe Colosseo is the largest ancient amphitheatre ever built, and is still the largest standing amphitheatre in the world today, despite its age.",
+     "autor": "Zul Ahadi",
+     "enlace_autor": "https://unsplash.com/@zulahadi?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-large-stone-building-with-a-clock-on-it-BcZ_2LLOOx8?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 3471,
+     "alto": 2314,
+     "grande": "https://images.unsplash.com/photo-1651656859015-bbb71a81fb8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTd8fEFyY2glMjBvZiUyMENvbnN0YW50aW5lJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1651656859015-bbb71a81fb8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTd8fEFyY2glMjBvZiUyMENvbnN0YW50aW5lJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDczfDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1651656859015-bbb71a81fb8f?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTd8fEFyY2glMjBvZiUyMENvbnN0YW50aW5lJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDczfDA&ixlib=rb-4.1.0"
+    }
+   ]
+  },
+  {
+   "id": "panteon",
+   "nombre": "Panteón",
+   "hoy": "sin foto propia (sale una de Unsplash que no hemos elegido nosotros)",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id_unsplash": "IpmFVXls4sE",
+     "nota": "La fachada del Panteón de frente, con la inscripción de Agripa. Sin gente.",
+     "descripcion_unsplash": "Pantheon",
+     "autor": "Harold Wainwright",
+     "enlace_autor": "https://unsplash.com/@haroldwainwright?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/pantheon-rome-with-columns-IpmFVXls4sE?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 6000,
+     "alto": 4000,
+     "grande": "https://images.unsplash.com/photo-1654874324486-4acfae9228e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTR8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1654874324486-4acfae9228e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTR8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1654874324486-4acfae9228e4?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTR8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 2,
+     "id_unsplash": "riwK6iSwcRk",
+     "nota": "El Panteón con el obelisco de la fuente al lado. Sin gente en primer plano.",
+     "descripcion_unsplash": "The Pantheon in Rome – a unique building in Roman architecture – has been continuously in use throughout its 2,000 year history. Its dome is still the world's largest unreinforced concrete dome. ",
+     "autor": "Gabriella Clare Marino",
+     "enlace_autor": "https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/white-concrete-building-under-blue-sky-during-daytime-riwK6iSwcRk?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 6000,
+     "alto": 4000,
+     "grande": "https://images.unsplash.com/photo-1605256526285-c0980b8c7805?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTZ8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1605256526285-c0980b8c7805?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTZ8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1605256526285-c0980b8c7805?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTZ8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 3,
+     "id_unsplash": "TjCLNrzuyUQ",
+     "nota": "El Panteón y su plaza con la fuente, de día. Hay gente, pero lejos.",
+     "descripcion_unsplash": "Tourists and locals strolling past an unusually uncrowded Pantheon in Rome, Italy, during the Covid-19 pandemic",
+     "autor": "Gabriella Clare Marino",
+     "enlace_autor": "https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/people-walking-near-white-concrete-building-during-daytime-TjCLNrzuyUQ?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 6000,
+     "alto": 4000,
+     "grande": "https://images.unsplash.com/photo-1605200723310-5df264c13e22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1605200723310-5df264c13e22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1605200723310-5df264c13e22?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTJ8fFBhbnRoZW9uJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc1fDA&ixlib=rb-4.1.0"
+    }
+   ]
+  },
+  {
+   "id": "piazza_navona",
+   "nombre": "Piazza Navona (de día)",
+   "hoy": "sin foto de día (solo tiene la de Navidad de noche, que sale del 1 de diciembre al 5 de enero y se queda como está)",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id_unsplash": "iiFF48B50VY",
+     "nota": "La plaza con el palacio y la iglesia de Sant’Agnese in Agone; el obelisco al fondo. Gente lejos.",
+     "descripcion_unsplash": "a large building with a dome and many windows with Piazza Navona in the background",
+     "autor": "Tamal Mukhopadhyay",
+     "enlace_autor": "https://unsplash.com/@tamal_mukherjee?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-large-building-with-a-dome-and-many-windows-with-piazza-navona-in-the-background-iiFF48B50VY?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5299,
+     "alto": 3644,
+     "grande": "https://images.unsplash.com/photo-1663875660398-97f5a215df62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTl8fFBpYXp6YSUyME5hdm9uYSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1663875660398-97f5a215df62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTl8fFBpYXp6YSUyME5hdm9uYSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3N3ww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1663875660398-97f5a215df62?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTl8fFBpYXp6YSUyME5hdm9uYSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3N3ww&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 2,
+     "id_unsplash": "ra2ZVOtZIoQ",
+     "nota": "La Fuente de los Cuatro Ríos de cerca, con el obelisco. Gente al fondo.",
+     "descripcion_unsplash": "The Fountain of The Four Rivers by Bernini ",
+     "autor": "Georgi Guruli",
+     "enlace_autor": "https://unsplash.com/@ananuri?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-fountain-in-a-city-square-surrounded-by-buildings-ra2ZVOtZIoQ?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5472,
+     "alto": 3648,
+     "grande": "https://images.unsplash.com/photo-1646287703453-03edccb6a020?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8UGlhenphJTIwTmF2b25hJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1646287703453-03edccb6a020?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8UGlhenphJTIwTmF2b25hJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc3fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1646287703453-03edccb6a020?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8NXx8UGlhenphJTIwTmF2b25hJTIwUm9tZXxlbnwxfDB8fHwxNzkyMjc0MDc3fDA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 3,
+     "id_unsplash": "ibZR8WQA26o",
+     "nota": "La Fuente del Neptuno con la iglesia y el obelisco detrás. Hay gente a media distancia.",
+     "descripcion_unsplash": "Winter view of Piazza Navona in Rome, Italy and the newly cleaned and restored fountain",
+     "autor": "Gabriella Clare Marino",
+     "enlace_autor": "https://unsplash.com/@gabiontheroad?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-city-square-with-a-fountain-in-the-middle-of-it-ibZR8WQA26o?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5885,
+     "alto": 3923,
+     "grande": "https://images.unsplash.com/photo-1740004000873-745230b8bdbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTh8fFBpYXp6YSUyME5hdm9uYSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1740004000873-745230b8bdbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTh8fFBpYXp6YSUyME5hdm9uYSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3N3ww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1740004000873-745230b8bdbc?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTh8fFBpYXp6YSUyME5hdm9uYSUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA3N3ww&ixlib=rb-4.1.0"
+    }
+   ]
+  },
+  {
+   "id": "museos_vaticanos_y_capilla_sixtina",
+   "nombre": "Museos Vaticanos (fachada o patios)",
+   "hoy": "sin foto (se quitó la del interior de la Capilla Sixtina)",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id_unsplash": "i6ileCxBhVk",
+     "nota": "La puerta de entrada de los Museos Vaticanos, con su cartel «Musei Vaticani» en la muralla. Gente pequeña y un puesto de comida.",
+     "descripcion_unsplash": "Outside the Vatican on a busy summer day",
+     "autor": "Manuela Martinez",
+     "enlace_autor": "https://unsplash.com/@manuelasofia?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-bus-parked-in-front-of-a-building-with-a-statue-on-top-i6ileCxBhVk?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 6000,
+     "alto": 4000,
+     "grande": "https://images.unsplash.com/photo-1662736409738-4d67bb14f481?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8N3x8VmF0aWNhbiUyME11c2V1bXMlMjBlbnRyYW5jZXxlbnwxfDB8fHwxNzkyMjc0MDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1662736409738-4d67bb14f481?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8N3x8VmF0aWNhbiUyME11c2V1bXMlMjBlbnRyYW5jZXxlbnwxfDB8fHwxNzkyMjc0MDc5fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1662736409738-4d67bb14f481?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8N3x8VmF0aWNhbiUyME11c2V1bXMlMjBlbnRyYW5jZXxlbnwxfDB8fHwxNzkyMjc0MDc5fDA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 2,
+     "id_unsplash": "QhRg2GNCDtg",
+     "nota": "El cartel «Musei Vaticani» con las estatuas encima, de día. Es un detalle de la entrada.",
+     "descripcion_unsplash": "Photographed on October 2, 2018.",
+     "autor": "Sui Xu",
+     "enlace_autor": "https://unsplash.com/@sui_xu?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/vatican-museums-entrance-with-stone-sculptures-and-sky-QhRg2GNCDtg?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5184,
+     "alto": 3456,
+     "grande": "https://images.unsplash.com/photo-1764507484379-927133f619b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VmF0aWNhbiUyME11c2V1bXMlMjBlbnRyYW5jZXxlbnwxfDB8fHwxNzkyMjc0MDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1764507484379-927133f619b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VmF0aWNhbiUyME11c2V1bXMlMjBlbnRyYW5jZXxlbnwxfDB8fHwxNzkyMjc0MDc5fDA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1764507484379-927133f619b9?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VmF0aWNhbiUyME11c2V1bXMlMjBlbnRyYW5jZXxlbnwxfDB8fHwxNzkyMjc0MDc5fDA&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 3,
+     "id_unsplash": "GBA8HgLfj1Y",
+     "nota": "El patio de la Piña (Cortile della Pigna), con la gran piña de bronce. De día.",
+     "descripcion_unsplash": "Modern building with a large dome and pinecone sculpture",
+     "autor": "JP Sheard",
+     "enlace_autor": "https://unsplash.com/@jpsheard?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/modern-building-with-a-large-dome-and-pinecone-sculpture-GBA8HgLfj1Y?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 4896,
+     "alto": 3264,
+     "grande": "https://images.unsplash.com/photo-1762086091605-dfbc9cefdcb3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Nnx8VmF0aWNhbiUyME11c2V1bXMlMjBjb3VydHlhcmR8ZW58MXwwfHx8MTc5MjI3NDA3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1762086091605-dfbc9cefdcb3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Nnx8VmF0aWNhbiUyME11c2V1bXMlMjBjb3VydHlhcmR8ZW58MXwwfHx8MTc5MjI3NDA3OXww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1762086091605-dfbc9cefdcb3?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Nnx8VmF0aWNhbiUyME11c2V1bXMlMjBjb3VydHlhcmR8ZW58MXwwfHx8MTc5MjI3NDA3OXww&ixlib=rb-4.1.0"
+    }
+   ]
+  },
+  {
+   "id": "columna_de_trajano",
+   "nombre": "Columna de Trajano",
+   "hoy": "sin foto (compartía la de los Foros de Trajano y se quitó)",
+   "candidatas": [
+    {
+     "opcion": 1,
+     "id_unsplash": "MJB-2hNhkI4",
+     "nota": "El Foro de Trajano con la Columna y las cúpulas de las dos iglesias, de día.",
+     "descripcion_unsplash": "Trajan's Column in Rome",
+     "autor": "Briana Tozour",
+     "enlace_autor": "https://unsplash.com/@britozour?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/white-concrete-building-under-white-clouds-during-daytime-MJB-2hNhkI4?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5877,
+     "alto": 3918,
+     "grande": "https://images.unsplash.com/photo-1603683072984-50fcbfbbe3a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VHJhamFuJTI3cyUyMENvbHVtbiUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA4MXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1603683072984-50fcbfbbe3a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VHJhamFuJTI3cyUyMENvbHVtbiUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA4MXww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1603683072984-50fcbfbbe3a0?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8M3x8VHJhamFuJTI3cyUyMENvbHVtbiUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA4MXww&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 2,
+     "id_unsplash": "RBYZloqbUl4",
+     "nota": "La Columna de Trajano desde abajo, con la cúpula de Santa Maria di Loreto.",
+     "descripcion_unsplash": "a tall tower with a clock on the top of it",
+     "autor": "Gertrud",
+     "enlace_autor": "https://unsplash.com/@gertrudl?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-tall-tower-with-a-clock-on-the-top-of-it-RBYZloqbUl4?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 5290,
+     "alto": 3458,
+     "grande": "https://images.unsplash.com/photo-1648739614333-aad31a644d90?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Nnx8VHJhamFuJTI3cyUyMENvbHVtbiUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA4MXww&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1648739614333-aad31a644d90?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Nnx8VHJhamFuJTI3cyUyMENvbHVtbiUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA4MXww&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1648739614333-aad31a644d90?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8Nnx8VHJhamFuJTI3cyUyMENvbHVtbiUyMFJvbWV8ZW58MXwwfHx8MTc5MjI3NDA4MXww&ixlib=rb-4.1.0"
+    },
+    {
+     "opcion": 3,
+     "id_unsplash": "ywYZZ4ejTFA",
+     "nota": "Un tramo de la Columna de Trajano de cerca (los relieves). En el recorte horizontal la columna queda a un lado.",
+     "descripcion_unsplash": "Trajan's Column",
+     "autor": "Caio Fernandes",
+     "enlace_autor": "https://unsplash.com/@caiovxf?utm_source=viajes_bengala&utm_medium=referral",
+     "enlace": "https://unsplash.com/photos/a-close-up-of-a-pillar-with-writing-on-it-ywYZZ4ejTFA?utm_source=viajes_bengala&utm_medium=referral",
+     "licencia": "Licencia de Unsplash (uso libre, también en una app de pago; se apunta siempre el autor)",
+     "ancho": 3985,
+     "alto": 2989,
+     "grande": "https://images.unsplash.com/photo-1730146446634-d5185bf18cc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTN8fFRyYWphbiUyN3MlMjBDb2x1bW4lMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwODF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+     "pequena": "https://images.unsplash.com/photo-1730146446634-d5185bf18cc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTN8fFRyYWphbiUyN3MlMjBDb2x1bW4lMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwODF8MA&ixlib=rb-4.1.0&q=80&w=400",
+     "raw": "https://images.unsplash.com/photo-1730146446634-d5185bf18cc7?ixid=M3wxMDc3NDk5fDB8MXxzZWFyY2h8MTN8fFRyYWphbiUyN3MlMjBDb2x1bW4lMjBSb21lfGVufDF8MHx8fDE3OTIyNzQwODF8MA&ixlib=rb-4.1.0"
+    }
+   ]
+  }
+ ],
+ "sin_candidatas": [
+  {
+   "id": "via_del_babuino",
+   "nombre": "Via del Babuino",
+   "motivo": "Ninguna foto de Unsplash dice «Via del Babuino» en su descripción ni en sus etiquetas. Las que salen son otras calles o iglesias de Roma, y no puedo asegurar que sean esa calle."
+  },
+  {
+   "id": "terraza_de_largo_gaetana_agnesi",
+   "nombre": "Terraza de Largo Gaetana Agnesi",
+   "motivo": "Ninguna foto de Unsplash dice «Largo Gaetana Agnesi». Hay vistas del Foro de Trajano con las dos cúpulas, pero ninguna dice que sea desde esa terraza, así que no puedo asegurar que sea el sitio."
+  },
+  {
+   "id": "colle_oppio",
+   "nombre": "Colle Oppio",
+   "motivo": "Ninguna foto de Unsplash dice «Colle Oppio». Las que salen al buscarlo son del Coliseo, no del parque."
+  },
+  {
+   "id": "mirador_de_san_pietro_in_montorio",
+   "nombre": "Mirador de San Pietro in Montorio",
+   "motivo": "Ninguna foto de Unsplash dice «San Pietro in Montorio». Hay vistas de Roma al atardecer desde las colinas, pero ninguna dice que sea desde esa terraza."
+  }
+ ]
+}

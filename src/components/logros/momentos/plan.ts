@@ -6,11 +6,12 @@ import ajustes from '../../../../data/logros/ajustes.json'
  * sitio donde se decide) y aquí solo se AGRUPA lo que llega, en ese mismo orden:
  *   1) los pedazos nuevos, todos en una sola pantalla (en el sitio del primero);
  *   2) cada colección completada, una pantalla por colección;
- *   3) el Emblema Oculto y, si es de una maravilla, justo detrás su pantalla de la medalla («Tu primera maravilla · 1 de 7»);
+ *   3) el Emblema Oculto (si es de una maravilla, su película; la maravilla va en «Y además…» como una tarjeta pequeña, 8B4);
  *   4) el sello, si sube;
- *   5) «Y además…» (país, destino, continente, Patrimonio, logros de viajero), en el sitio del primero.
+ *   5) «Y además…» (país, destino, continente, maravilla, Patrimonio, logros de viajero), en el sitio del primero;
+ *   6) la SÉPTIMA maravilla tiene su propia pantalla: «El final de las 7 maravillas» (la única animación de la medalla).
  */
-export type TipoPantalla = 'sello' | 'pedazos' | 'coleccion' | 'emblema' | 'ademas' | 'pais' | 'destino_nuevo' | 'continente' | 'maravilla' | 'patrimonio' | 'viajero'
+export type TipoPantalla = 'sello' | 'pedazos' | 'coleccion' | 'emblema' | 'ademas' | 'pais' | 'destino_nuevo' | 'continente' | 'maravilla' | 'final7' | 'patrimonio' | 'viajero'
 
 export interface Pantalla {
   id: string
@@ -18,7 +19,7 @@ export interface Pantalla {
   momentos: Momento[]
 }
 
-const FAMILIA_ADEMAS = new Set(['patrimonio', 'viajero', 'destino_nuevo', 'pais', 'continente'])
+const FAMILIA_ADEMAS = new Set(['patrimonio', 'viajero', 'destino_nuevo', 'pais', 'continente', 'maravilla'])
 export const GRADOS = ['bronce', 'plata', 'oro', 'diamante'] as const
 
 const texto = (m: Momento, k: string): string => String(m[k] ?? '')
@@ -34,13 +35,6 @@ export function ordenarComoElServidor(momentos: Momento[]): Momento[] {
     return i < 0 ? orden.length : i
   }
   const lista = momentos.map((m, i) => ({ m, i })).sort((a, b) => rango(a.m) - rango(b.m) || a.i - b.i).map(({ m }) => m)
-  // La excepción de las maravillas (igual que el servidor): su momento va pegado justo después del emblema de esa maravilla.
-  for (const maravilla of lista.filter((m) => m.tipo === 'maravilla')) {
-    const e = lista.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id)
-    if (e < 0) continue
-    lista.splice(lista.indexOf(maravilla), 1)
-    lista.splice(lista.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id) + 1, 0, maravilla)
-  }
   return lista
 }
 
@@ -54,13 +48,15 @@ export function planificar(momentos: Momento[]): Pantalla[] {
       pedazos.momentos.push(m)
     } else if (m.tipo === 'suma_sello') {
       // El avance del sello ya se ve en las insignias y en el propio sello: sin pantalla.
+    } else if (m.tipo === 'maravilla' && Number(m.n ?? 0) >= 7) {
+      salida.push({ id: 'final7', tipo: 'final7', momentos: [m] })
     } else if (FAMILIA_ADEMAS.has(m.tipo)) {
       if (!ademas) salida.push((ademas = { id: 'ademas', tipo: 'ademas', momentos: [] }))
       ademas.momentos.push(m)
     } else salida.push({ id: `${m.tipo}${i}`, tipo: m.tipo as TipoPantalla, momentos: [m] })
   })
   // «Y además…» con uno solo es la pantalla de ese logro.
-  if (ademas && ademas.momentos.length === 1) {
+  if (ademas && ademas.momentos.length === 1 && ademas.momentos[0].tipo !== 'maravilla') {
     ademas.tipo = ademas.momentos[0].tipo as TipoPantalla
     ademas.id = 'uno'
   }
@@ -83,7 +79,7 @@ export function clavesDe(p: Pantalla): { destino: string; logro: string; escalon
 
 /** El sonido de la pantalla (los nombres de `sonidos.json`). */
 export function sonidoDePantalla(t: TipoPantalla): string {
-  const mapa: Record<TipoPantalla, string> = { sello: 'sello', pedazos: 'pedazo', coleccion: 'coleccion', emblema: 'emblema', pais: 'pais', destino_nuevo: 'pais', continente: 'pais', maravilla: 'maravilla', patrimonio: 'patrimonio', viajero: 'viajero', ademas: 'viajero' }
+  const mapa: Record<TipoPantalla, string> = { sello: 'sello', pedazos: 'pedazo', coleccion: 'coleccion', emblema: 'emblema', pais: 'pais', destino_nuevo: 'pais', continente: 'pais', maravilla: 'maravilla', final7: 'maravilla', patrimonio: 'patrimonio', viajero: 'viajero', ademas: 'viajero' }
   return mapa[t]
 }
 

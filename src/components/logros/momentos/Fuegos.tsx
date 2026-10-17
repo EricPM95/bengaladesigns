@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 
 /**
- * Los fuegos artificiales de las maravillas del mundo (Tanda 8B). SOLO se usan en ellas: la película del Coliseo, «Tu primera maravilla» y la medalla de las 7.
+ * Los fuegos artificiales de las maravillas del mundo (Tanda 8B). SOLO se usan en las maravillas: la película del Coliseo y «El final de las 7 maravillas» (esta tiene los suyos en FinalSieteMaravillas.tsx).
  * Puro CSS: cada estallido es una estela, un fogonazo y unas chispas que salen en círculo (las claves de animación están en `momentos.css`).
  * Posiciones en % de la pantalla; `desde` es el segundo en que empieza el primero.
  */

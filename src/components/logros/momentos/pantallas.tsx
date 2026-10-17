@@ -3,7 +3,7 @@ import type { Momento } from '../../../lib/logros'
 import { Chapa, Insignia, MedallaMaravillas, Sello, type GradoDeSello } from '../dibujos'
 import type { EstadoLogros } from './api'
 import { Centro, FONDO_CALIDO, FONDO_NOCHE, Ojo, ORO, PantallaOscura, Rayos, Estrellas, Sub, Titulo, Vuelo } from './base'
-import { Fuegos } from './Fuegos'
+import { FinalSieteMaravillas } from './FinalSieteMaravillas'
 import { gradoAnterior, type Pantalla } from './plan'
 
 const EscenaDeEmblema = lazy(() => import('./EscenaDeEmblema'))
@@ -211,31 +211,17 @@ function PantallaSellado({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePant
   )
 }
 
-/* ── Maravilla del mundo: una pantalla entera con la medalla de las 7 encendiendo su pedazo (va justo después del emblema de la maravilla) ── */
-function PantallaMaravilla({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
-  const m = pantalla.momentos[0]
-  const n = Number(m.n ?? 1)
-  const [encendida, setEncendida] = useState(false)
-  useEffect(() => {
-    // (solo desarrollo) `window.__retrasoMedalla = 99` deja la medalla apagada para capturar el principio.
-    const espera = import.meta.env.DEV ? ((window as unknown as { __retrasoMedalla?: number }).__retrasoMedalla ?? 1.3) : 1.3
-    const h = window.setTimeout(() => setEncendida(true), espera * 1000)
-    return () => window.clearTimeout(h)
-  }, [])
+/* ── «El final de las 7 maravillas» (8B4): la ÚNICA animación de la medalla; sale solo con la séptima ── */
+function PantallaFinal7({ onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
   return (
-    <PantallaOscura etiqueta={n === 1 ? 'Tu primera maravilla, 1 de 7' : `${m.nombre}, ${n} de 7`} fondo={FONDO_NOCHE} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn="3.6s">
+    <PantallaOscura etiqueta="El final de las 7 maravillas" fondo={FONDO_NOCHE} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn="9s">
       <Estrellas n={30} />
-      <Rayos />
-      <Fuegos desde={1.4} />
-      <Centro>
+      <Centro estilo={{ gap: 6 }}>
         <Vuelo estilo={{ marginBottom: 6 }}>
-          <div style={{ opacity: 0, animation: 'moIn 1s .2s both' }}>
-            <MedallaMaravillas encendidas={encendida ? [s(m, 'id')] : []} tam={250} destello={encendida ? s(m, 'id') : null} />
-          </div>
+          <FinalSieteMaravillas tam={300} />
         </Vuelo>
-        <Ojo en="2.4s">Maravilla del mundo</Ojo>
-        <Titulo en="2.6s">{n === 1 ? 'Tu primera maravilla' : m.nombre}</Titulo>
-        <Sub en="2.8s">{`${n} de 7`}</Sub>
+        <Ojo en="9.4s">Las 7 maravillas del mundo</Ojo>
+        <Titulo en="9.6s">¡Las has visto todas!</Titulo>
       </Centro>
     </PantallaOscura>
   )
@@ -286,8 +272,8 @@ function PantallaAdemas({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePanta
                 {m.tipo === 'maravilla' ? <MedallaMaravillas encendidas={[s(m, 'id')]} tam={78} animada={false} /> : <Chapa logro={ch.logro} escalon={ch.escalon} tam={78} />}
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                   <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: ORO }}>{TITULO_CHAPA[m.tipo] ?? 'Logro'}</span>
-                  <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{m.nombre}</span>
-                  {m.linea && <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{m.linea}</span>}
+                  <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{m.tipo === 'maravilla' && Number(m.n ?? 1) === 1 ? 'Tu primera maravilla' : m.nombre}</span>
+                  {m.tipo === 'maravilla' ? <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{Number(m.n ?? 1) === 1 ? `${m.nombre} · 1 de 7` : `${Number(m.n)} de 7`}</span> : m.linea && <span style={{ font: "400 12px 'Geist'", color: 'rgba(255,253,248,.65)' }}>{m.linea}</span>}
                 </span>
               </div>
             )
@@ -312,8 +298,8 @@ export function PantallaDeMomento(p: PropsDePantalla): ReactNode {
     case 'destino_nuevo':
     case 'continente':
       return <PantallaSellado {...p} />
-    case 'maravilla':
-      return <PantallaMaravilla {...p} />
+    case 'final7':
+      return <PantallaFinal7 {...p} />
     case 'ademas':
       return <PantallaAdemas {...p} />
     default:

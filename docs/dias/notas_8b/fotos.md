@@ -52,3 +52,11 @@ Con foto propia: Coliseo, Fontana de Trevi, Plaza de España, Basílica de San P
 
 ## La auditoría ahora falla si algo vuelve
 `node scripts/destino/auditoriaFotos.mjs roma --servidor http://localhost:8787` sale con código 1 si: un sitio importante lleva Wikipedia o foto de otro sitio; hay fotos repetidas en sitios distintos; una foto de unas fechas se sirve fuera de ellas (se prueba con 6 fechas del año, también sin servidor); o un sitio lleva la foto de otro de su zona. Resultado hoy: 0 repetidas, 0 de Navidad fuera de fechas, 0 importantes con Wikipedia. Sin `--servidor` solo comprueba lo que no depende de Unsplash o Wikipedia.
+
+---
+
+# 8B4 (fotos de Unsplash para elegir)
+Ninguna foto puesta en la app. Página para elegir: `docs/dias/FOTOS_CANDIDATAS_8B4.html` (generada con `scripts/destino/paginaCandidatas8b4.mjs` desde `docs/dias/notas_8b/candidatas_8b4.json`, que guarda autor, enlace y licencia de cada una). Búsqueda: `scripts/destino/candidatasFotos8b4.mjs` (API de Unsplash, apaisadas, `content_filter=high`, mínimo 1.800 px de ancho).
+- 3 candidatas: Foro Romano y Palatino, Arco de Constantino, Panteón, Piazza Navona (de día), Museos Vaticanos (fachada/patios), Columna de Trajano.
+- Sin ninguna buena (ninguna foto nombra el sitio): Via del Babuino, Terraza de Largo Gaetana Agnesi, Colle Oppio, Mirador de San Pietro in Montorio. Quedan sin foto.
+- Cuando Eric elija: bajar la `raw` de Unsplash, sacar `dia_<sitio>.jpg` (1600 px) y `dia_<sitio>_p.jpg` (640 px), añadir a `_fotos.json` con `fuente: "Unsplash"`, `autor` y `enlace`, quitar el sitio de `sin_foto` / `fotos_rechazadas` si hace falta, `node scripts/generarMiniaturas.mjs` y reiniciar el api-server. Piazza Navona: su foto de día vale todo el año; la de Navidad se queda con sus fechas.
