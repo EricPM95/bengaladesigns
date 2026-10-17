@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:{{ sz }};height:{{ sz }};flex:none">
+  <span style="position:absolute;inset:0;border-radius:{{ rad }};background:{{ ph }};filter:{{ flt }};opacity:{{ op }};box-shadow:inset 0 0 0 1px rgba(28,34,48,.08)"></span>
+  <sc-if value="{{ seen }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-4px;bottom:-4px;width:{{ ck }};height:{{ ck }};border-radius:50%;background:oklch(0.55 0.11 150);box-shadow:0 0 0 2px #FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:80,&quot;height&quot;:80},&quot;n&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Coliseo&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;seen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:56,&quot;tsType&quot;:&quot;number&quot;}}">
+const PH={'Plaza de San Pedro':'linear-gradient(150deg,#E9D7B4,#B8925E 60%,#7A5A36)','Museos Vaticanos':'linear-gradient(150deg,#D8C6E0,#8E74A8 60%,#4E3A66)','Basílica de San Pedro':'linear-gradient(150deg,#F0DDB8,#C49A5A 60%,#7A5A2E)','Castillo de Sant’Angelo':'linear-gradient(150deg,#E2C8A8,#A8784E 60%,#5E3E26)','Trastevere':'linear-gradient(150deg,#F2C9A0,#C97A4E 60%,#7A3E2A)','Fontana de Trevi':'linear-gradient(150deg,#B8D4D8,#4E8A94 60%,#2E5660)','Panteón':'linear-gradient(150deg,#D9C9A4,#8E7450 60%,#4E3E28)','Piazza Navona':'linear-gradient(150deg,#E7B98A,#9C5E3A 60%,#5E3420)','Coliseo':'linear-gradient(150deg,#E8C29A,#B07A4C 60%,#6A4428)'};
+const H=['30','60','150','200','250','320'];
+class Component extends DCLogic {
+  renderVals(){const p=this.props;const n=p.n||'';let s=p.seen;const seen=s===true||s==='true'||(typeof s==='string'&&/150/.test(s));
+    let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%997;const hu=H[h%H.length];
+    const sz=Number(p.size)||40;
+    return{sz:sz+'px',rad:Math.round(sz*.28)+'px',ck:Math.round(sz*.42)+'px',ph:PH[n]||`linear-gradient(150deg,oklch(0.86 0.06 ${hu}),oklch(0.6 0.08 ${hu}) 60%,oklch(0.38 0.06 ${hu}))`,
+      seen,flt:seen?'none':'grayscale(.75)',op:seen?'1':'.5'};}
+}
+</script>
+</body>
+</html>

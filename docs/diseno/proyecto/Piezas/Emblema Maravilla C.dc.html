@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+@keyframes mcIn{from{opacity:0}to{opacity:1}}
+@keyframes mcOut{from{opacity:1}to{opacity:0}}
+@keyframes mcLetter{0%{opacity:0;transform:translateY(12px);filter:blur(7px)}100%{opacity:1;transform:none;filter:none}}
+@keyframes mcGather{0%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(.3)}25%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes mcCollapse{0%{transform:none;opacity:1}85%{opacity:1}100%{transform:translate(var(--cx),var(--cy)) scale(.4);opacity:0}}
+@keyframes mcTw{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes mcDraw{to{stroke-dashoffset:0}}
+@keyframes mcLit{0%{fill-opacity:0}55%{fill-opacity:1}100%{fill-opacity:.85}}
+@keyframes mcSheen{0%{transform:translateX(-260px) skewX(-20deg)}100%{transform:translateX(420px) skewX(-20deg)}}
+@keyframes mcPush{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes mcFade{to{opacity:0}}
+@keyframes mcCore{0%{opacity:0;transform:scale(.2)}20%{opacity:1;transform:scale(.6)}40%{transform:scale(.45)}60%{transform:scale(.9)}75%{transform:scale(.7)}100%{opacity:1;transform:scale(1.4)}}
+@keyframes mcFlash{0%{opacity:0;transform:scale(.2)}18%{opacity:1}100%{opacity:0;transform:scale(4.6)}}
+@keyframes mcShock{0%{opacity:0;transform:scale(.4)}4%{opacity:.9}100%{opacity:0;transform:scale(3.8)}}
+@keyframes mcEmb{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes mcRing{to{transform:rotate(360deg)}}
+@keyframes mcUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes mcFw{0%{opacity:0;transform:translate(0,0) scale(.3)}8%{opacity:1}72%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 34px)) scale(1)}}
+@keyframes mcTrail{0%{opacity:0;transform:translateY(0) scaleY(.2)}30%{opacity:1;transform:translateY(-40%) scaleY(1)}100%{opacity:0;transform:translateY(-100%) scaleY(.3)}}
+@keyframes mcFwCore{0%{opacity:0;transform:scale(.2)}20%{opacity:1}100%{opacity:0;transform:scale(2.6)}}
+@keyframes mcGlit{0%{opacity:0;transform:translate(0,0) rotate(0)}12%{opacity:1}85%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(220deg)}}
+@keyframes mcPop{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes mcFlyP{0%{transform:none;opacity:1}100%{transform:translate(158px,-560px) scale(.18);opacity:.2}}
+@keyframes mcFlyB{0%{transform:none;opacity:1}100%{transform:translate(152px,486px) scale(.2);opacity:.25}}
+@keyframes mcBeat{0%,100%{transform:scale(1)}40%{transform:scale(1.3)}}
+@keyframes mcHalo{0%,100%{opacity:.5;transform:scale(.94)}50%{opacity:.95;transform:scale(1.06)}}
+@keyframes mcDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--mx),var(--my))}}
+[data-freeze="1"] *{animation-play-state:paused!important}
+[data-rm="show"]{display:none}
+@media (prefers-reduced-motion: reduce){[data-rm="hide"]{display:none!important}[data-rm="show"]{display:block!important}}
+</style>
+</helmet>
+<div data-freeze="{{ frz }}" onClick="{{ skip }}" style="position:relative;width:390px;height:844px;overflow:hidden;background:radial-gradient(circle at 50% 48%,#141826 0%,#06070C 72%);font-family:'Geist',system-ui,sans-serif;color:#FFFDF8;text-align:center;cursor:pointer;--off:{{ off }}">
+ <div data-rm="hide" style="position:absolute;inset:0">
+  <sc-for list="{{ motes }}" as="d" hint-placeholder-count="0"><span style="position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:50%;background:#F3D59A;box-shadow:0 0 6px rgba(243,213,154,.8);--mx:{{ d.mx }};--my:{{ d.my }};opacity:0;animation:mcIn 1.6s {{ d.a }} ease both,mcDrift {{ d.l }} {{ d.dd }} ease-in-out infinite"></span></sc-for>
+
+  <div style="position:absolute;inset:0;transform-origin:195px 480px;animation:mcPush 4s calc(20.2s - var(--off)) ease-out both">
+   <div style="position:absolute;inset:0;animation:mcFade .9s calc(22.3s - var(--off)) ease forwards">
+    <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;overflow:visible;filter:drop-shadow(0 0 9px rgba(255,214,140,.45))" fill="none" stroke-linecap="round" stroke-linejoin="round">
+     <defs><linearGradient id="{{ u }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF4D6"></stop><stop offset=".45" stop-color="#D9B26A"></stop><stop offset="1" stop-color="#FFE6A6"></stop></linearGradient></defs>
+     <sc-for list="{{ arches }}" as="a" hint-placeholder-count="0"><path d="{{ a.p }}" stroke="none" style="fill:#FFD98C;fill-opacity:0;animation:mcLit .9s {{ a.d }} ease both"></path></sc-for>
+     <sc-for list="{{ draw }}" as="p" hint-placeholder-count="0"><path d="{{ p.d }}" pathLength="100" stroke="url(#{{ u }}g)" stroke-width="{{ p.w }}" style="stroke-dasharray:100;stroke-dashoffset:100;animation:mcDraw {{ p.l }} {{ p.dl }} cubic-bezier(.4,0,.2,1) both"></path></sc-for>
+    </svg>
+    <div style="position:absolute;left:18px;top:336px;width:356px;height:290px;overflow:hidden;pointer-events:none;mix-blend-mode:screen"><span style="position:absolute;top:-40px;bottom:-40px;left:0;width:90px;background:linear-gradient(90deg,transparent,rgba(255,250,235,.9),transparent);filter:blur(6px);opacity:.9;animation:mcSheen 1.4s calc(21.1s - var(--off)) cubic-bezier(.5,0,.4,1) both"></span></div>
+   </div>
+   <sc-for list="{{ parts }}" as="p" hint-placeholder-count="0"><span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.s }};height:{{ p.s }};margin:{{ p.m }};border-radius:50%;background:{{ p.c }};box-shadow:0 0 6px {{ p.c }};--sx:{{ p.sx }};--sy:{{ p.sy }};--cx:{{ p.cx }};--cy:{{ p.cy }};opacity:0;animation:mcGather {{ p.l }} {{ p.d }} cubic-bezier(.16,.8,.24,1) both,mcCollapse 1s {{ p.cd }} cubic-bezier(.6,0,.9,.5) forwards"><span style="position:absolute;inset:0;border-radius:50%;background:inherit;animation:mcTw {{ p.tl }} {{ p.td }} ease-in-out infinite"></span></span></sc-for>
+  </div>
+
+  <span style="position:absolute;left:135px;top:240px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#FFFFFF 0%,#FFE7A8 30%,rgba(255,200,120,.3) 55%,transparent 72%);opacity:0;animation:mcCore 1.1s calc(22.5s - var(--off)) ease-in both,mcFade .3s calc(23.6s - var(--off)) ease forwards"></span>
+  <span style="position:absolute;left:105px;top:210px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,#FFFFFF,rgba(255,236,190,.7) 30%,transparent 70%);opacity:0;animation:mcFlash 1.3s calc(23.55s - var(--off)) ease-out both"></span>
+  <span style="position:absolute;left:120px;top:225px;width:150px;height:150px;border-radius:50%;border:2.5px solid #F3D59A;opacity:0;animation:mcShock 1.6s calc(23.6s - var(--off)) ease-out both"></span>
+  <span style="position:absolute;left:120px;top:225px;width:150px;height:150px;border-radius:50%;border:1.5px solid #FFFFFF;opacity:0;animation:mcShock 2s calc(23.8s - var(--off)) ease-out both"></span>
+
+  <sc-for list="{{ bursts }}" as="b" hint-placeholder-count="0">
+   <span style="position:absolute;left:{{ b.x }};top:{{ b.y }};width:0;height:0">
+    <span style="position:absolute;left:-1.5px;top:0;width:3px;height:{{ b.th }};background:linear-gradient(180deg,#FFF3D0,transparent);transform-origin:50% 0;opacity:0;animation:mcTrail .6s {{ b.td }} ease-out both"></span>
+    <span style="position:absolute;left:{{ b.cm }};top:{{ b.cm }};width:{{ b.cs }};height:{{ b.cs }};border-radius:50%;background:radial-gradient(circle,#FFFFFF,rgba(255,226,160,.6) 35%,transparent 70%);opacity:0;animation:mcFwCore .9s {{ b.d }} ease-out both"></span>
+    <sc-for list="{{ b.p }}" as="q" hint-placeholder-count="0"><span style="position:absolute;left:{{ q.m }};top:{{ q.m }};width:{{ q.s }};height:{{ q.s }};border-radius:50%;background:{{ q.c }};box-shadow:0 0 8px {{ q.c }};--dx:{{ q.dx }};--dy:{{ q.dy }};opacity:0;animation:mcFw {{ q.l }} {{ b.d }} cubic-bezier(.15,.7,.3,1) both"></span></sc-for>
+   </span>
+  </sc-for>
+
+  <div style="position:absolute;left:0;top:0;width:390px;height:844px;animation:mcFlyB .8s calc(30.2s - var(--off)) cubic-bezier(.5,0,.7,.4) both">
+   <div style="position:absolute;inset:0;opacity:0;animation:mcEmb 1.1s calc(23.6s - var(--off)) cubic-bezier(.2,.8,.2,1) both">
+    <span style="position:absolute;left:45px;top:150px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,140,.5),transparent 68%);animation:mcHalo 3.4s calc(24.6s - var(--off)) ease-in-out infinite"></span>
+    <span style="position:absolute;left:61px;top:166px;width:268px;height:268px;border-radius:50%;animation:mcRing 14s calc(23.6s - var(--off)) linear infinite">
+     <span style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 8%,#F3D59A 18%,transparent 30%,transparent 50%,#FFF3D0 62%,transparent 74%);-webkit-mask:radial-gradient(circle,transparent 63%,#000 64%,#000 66.5%,transparent 67.5%);mask:radial-gradient(circle,transparent 63%,#000 64%,#000 66.5%,transparent 67.5%)"></span>
+     <span style="position:absolute;inset:7px;border-radius:50%;border:1.5px dashed rgba(243,213,154,.55)"></span>
+    </span>
+    <div style="position:absolute;left:95px;top:147px;width:200px;height:250px;filter:drop-shadow(0 0 26px rgba(255,214,140,.6))"><dc-import name="Piezas/Emblema Oro" won="{{ true }}" size="200" interactive="{{ false }}" tilt="{{ false }}" hint-size="200px,250px"></dc-import></div>
+   </div>
+  </div>
+
+  <div style="position:absolute;left:44px;right:44px;top:600px;display:flex;flex-direction:column;align-items:center;gap:8px;animation:mcOut .5s calc(27.8s - var(--off)) ease both">
+   <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A;opacity:0;animation:mcUp .7s calc(24s - var(--off)) ease both">¡Has descubierto un Emblema Oculto!</span>
+   <span style="font:400 36px/1.05 'Instrument Serif',serif;text-wrap:balance;opacity:0;animation:mcUp .7s calc(24.15s - var(--off)) ease both">Una maravilla del mundo</span>
+   <span style="max-width:290px;font:italic 400 18px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.82);text-wrap:balance;opacity:0;animation:mcUp .7s calc(24.3s - var(--off)) ease both">El mayor anfiteatro de la Antigüedad.</span>
+  </div>
+
+  <sc-for list="{{ glit }}" as="g" hint-placeholder-count="0"><span style="position:absolute;left:{{ g.x }};top:{{ g.y }};width:{{ g.s }};height:{{ g.s }};background:{{ g.c }};clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);--dx:{{ g.dx }};--dy:{{ g.dy }};opacity:0;animation:mcGlit {{ g.l }} {{ g.d }} cubic-bezier(.3,.1,.6,1) both"></span></sc-for>
+
+  <div style="position:absolute;left:50px;right:50px;top:604px;height:84px;border-radius:22px;background:rgba(255,253,248,.1);border:1px solid rgba(243,213,154,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;gap:14px;padding:0 16px 0 12px;text-align:left;opacity:0;animation:mcPop .7s calc(28.1s - var(--off)) cubic-bezier(.2,.8,.2,1) both,mcFlyP .75s calc(29.4s - var(--off)) cubic-bezier(.5,0,.7,.4) forwards">
+   <span style="position:relative;width:60px;height:60px;flex:none;border-radius:50%;background:radial-gradient(circle at 35% 28%,#FFF6DC,#D9B86A 55%,#9C7634);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),0 6px 14px -6px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:#5A4012">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V11M12 11c-3 0-5-2-5-5 3 0 5 2 5 5zM12 11c3 0 5-2 5-5-3 0-5 2-5 5zM12 15.5c-3 0-5-2-5-4.5 3 0 5 2 5 4.5zM12 15.5c3 0 5-2 5-4.5-3 0-5 2-5 4.5z"></path></svg>
+    <span style="position:absolute;bottom:-6px;height:16px;padding:0 6px;border-radius:999px;background:#2A1D10;color:#F3D59A;font:700 9px/16px 'Geist Mono',monospace">1/7</span>
+   </span>
+   <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#F3D59A">Y además…</span><span style="font:400 22px/1.05 'Instrument Serif',serif">Tu primera maravilla</span><span style="font:400 11.5px 'Geist';color:rgba(255,253,248,.65)">Las 7 maravillas del mundo · 1 de 7</span></span>
+  </div>
+
+  <div style="position:absolute;inset:0;background:#000000;animation:mcOut .9s calc(10.9s - var(--off)) ease both;pointer-events:none"></div>
+  <div style="position:absolute;left:24px;right:24px;top:330px;font:italic 400 42px/1.15 'Instrument Serif',serif;color:#F3E3B8;text-wrap:balance;animation:mcOut .6s calc(4.7s - var(--off)) ease both">
+   <sc-for list="{{ words }}" as="w" hint-placeholder-count="3"><span style="display:inline-block;white-space:nowrap;margin:0 .14em"><sc-for list="{{ w.c }}" as="c" hint-placeholder-count="6"><span style="display:inline-block;opacity:0;animation:mcLetter 1s {{ c.d }} ease both">{{ c.ch }}</span></sc-for></span></sc-for>
+  </div>
+  <div style="position:absolute;left:28px;right:28px;top:312px;font:italic 400 36px/1.2 'Instrument Serif',serif;color:#F3E3B8;text-wrap:balance;animation:mcOut .6s calc(10.3s - var(--off)) ease forwards">
+   <sc-for list="{{ words2 }}" as="w" hint-placeholder-count="5"><span style="display:inline-block;white-space:nowrap;margin:0 .13em"><sc-for list="{{ w.c }}" as="c" hint-placeholder-count="6"><span style="display:inline-block;opacity:0;animation:mcLetter 1s {{ c.d }} ease both">{{ c.ch }}</span></sc-for></span></sc-for>
+  </div>
+ </div>
+
+ <div data-rm="show" style="position:absolute;inset:0">
+  <div style="position:absolute;left:95px;top:147px;width:200px;height:250px;animation:mcIn 1.4s .3s ease both"><dc-import name="Piezas/Emblema Oro" won="{{ true }}" size="200" interactive="{{ false }}" tilt="{{ false }}" hint-size="200px,250px"></dc-import></div>
+  <sc-for list="{{ still }}" as="g" hint-placeholder-count="0"><span style="position:absolute;left:{{ g.x }};top:{{ g.y }};width:{{ g.s }};height:{{ g.s }};background:#F3D59A;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)"></span></sc-for>
+  <div style="position:absolute;left:44px;right:44px;top:600px;display:flex;flex-direction:column;align-items:center;gap:8px">
+   <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A">¡Has descubierto un Emblema Oculto!</span>
+   <span style="font:400 36px/1.05 'Instrument Serif',serif">Una maravilla del mundo</span>
+   <span style="max-width:290px;font:italic 400 18px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.82)">El mayor anfiteatro de la Antigüedad.</span>
+  </div>
+ </div>
+
+ <span style="position:absolute;right:16px;top:58px;width:36px;height:36px;border-radius:50%;background:#1C2230;border:1.5px solid rgba(243,213,154,.6);display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif;color:#FFFDF8;opacity:0;animation:mcIn .4s calc(29s - var(--off)) ease both,mcBeat .5s calc(30.15s - var(--off)) ease-in-out both">E</span>
+ <span style="position:absolute;right:14px;bottom:88px;width:58px;height:58px;border-radius:50%;background:#FFFDF8;box-shadow:0 10px 22px -10px rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;animation:mcIn .4s calc(30s - var(--off)) ease both,mcBeat .5s calc(31s - var(--off)) ease-in-out both">
+  <dc-import name="Piezas/Sello Logro" grade="bronce" icon="coliseo" size="38" label="" hint-size="38px,38px"></dc-import>
+ </span>
+ <sc-if value="{{ hint }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:30px;font:400 11.5px 'Geist';color:rgba(255,253,248,.4);pointer-events:none">Toca para saltar</span></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;stage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;full&quot;,&quot;c1&quot;,&quot;c2&quot;,&quot;c3&quot;,&quot;c4&quot;,&quot;c5&quot;,&quot;c6&quot;,&quot;c7&quot;],&quot;default&quot;:&quot;full&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+let UID=0;
+const PH='Casi 2.000 años esperándote…';
+const ST={full:0,p2:8.2,c1:13.3,c2:15.5,c3:18.8,c4:21.5,c5:23,c6:25,c7:26.35};
+const rnd=k=>{const x=Math.sin(k*12.9898+78.233)*43758.5453;return x-Math.floor(x);};
+class Component extends DCLogic {
+  constructor(p){super(p);this.state={off:0};this.t0=0;this.tm=[];this.u='mc'+(++UID);}
+  componentDidMount(){this.t0=performance.now();if(this.stage()==='full')this.haptics(0);}
+  componentWillUnmount(){this.tm.forEach(clearTimeout);}
+  haptics(from){const v=ms=>{try{navigator.vibrate&&navigator.vibrate(ms);}catch(e){}};
+    [[5.6,10],[8.4,24],[10.2,10],[10.55,14],[10.95,50],[12.2,16],[12.8,20],[13.4,26],[13.75,60]].forEach(([t,ms])=>{const t1=t>=6.2?t+1.6:t;const tt=t1+(t1>=3?7.9:0)+(t1>=9?3.1:0);if(tt>=from)this.tm.push(setTimeout(()=>v(ms),(tt-from)*1000));});}
+  stage(){return this.props.stage||'full';}
+  renderVals(){const sg=this.stage();const st=sg!=='full';const off=st?ST[sg]:this.state.off;const S=v=>v>=6.2?v+1.6:v;const F=t=>t+(t>=3?7.9:0)+(t>=9?3.1:0);const T=t=>'calc('+F(S(+t)).toFixed(3)+'s - var(--off))';const T0=t=>'calc('+F(+t).toFixed(3)+'s - var(--off))';const TL=t=>'calc('+(+t).toFixed(3)+'s - var(--off))';
+    let li=0;const words=PH.split(' ').map(w=>{const c=[...w].map(ch=>({ch,d:TL(0.3+(li++)*0.088)}));li++;return{c};});
+    let lj=0;const words2='El anfiteatro más grande jamás construido.'.split(' ').map(w=>{const c=[...w].map(ch=>({ch,d:TL(5.4+(lj++)*0.068)}));lj++;return{c};});
+    const draw=[],arches=[],pts=[];
+    const D=(d,dl,l,w)=>draw.push({d,dl:T(dl),l:(l||.9).toFixed(2)+'s',w:String(w||1.6)});
+    const line=(P,step)=>{for(let i=1;i<P.length;i++){const[x1,y1]=P[i-1],[x2,y2]=P[i];const L=Math.hypot(x2-x1,y2-y1),m=Math.max(1,Math.round(L/step));for(let k=0;k<m;k++)pts.push([x1+(x2-x1)*k/m,y1+(y2-y1)*k/m]);}};
+    D('M8 620H382',6.3,1,2.4);D('M25 620V360Q160 344 300 352',6.4,1.3,2.6);D('M300 352V380L318 384V420L334 424V470L350 474V520L365 524V620',6.55,1.1,2.2);
+    line([[8,620],[382,620]],9);line([[25,620],[25,360]],9);for(let x=25;x<=300;x+=9){const t=(x-25)/275;pts.push([x,(1-t)*(1-t)*360+2*(1-t)*t*344+t*t*352]);}
+    line([[300,352],[300,380],[318,384],[318,420],[334,424],[334,470],[350,474],[350,520],[365,524],[365,620]],9);
+    [[560,365],[500,350],[440,334],[380,300]].forEach(([y,xr],i)=>{D('M25 '+y+'H'+xr,6.7+i*.12,.8,1.4);line([[25,y],[xr,y]],12);});
+    const TIERS=[[566,616,25,365,8,'a'],[506,556,25,350,8,'a'],[446,496,25,334,7,'a'],[386,432,25,300,6,'w']];
+    let ai=0;TIERS.forEach(([yt,yb,x0,x1,nn,kind],r)=>{const w=(x1-x0)/nn;for(let i=0;i<nn;i++){const x=x0+i*w,px=x+w*.16,pw=w*.68,rr=pw/2;
+      const p=kind==='a'?`M${px.toFixed(1)} ${yb}V${(yt+rr).toFixed(1)}A${rr.toFixed(1)} ${rr.toFixed(1)} 0 0 1 ${(px+pw).toFixed(1)} ${(yt+rr).toFixed(1)}V${yb}Z`:`M${(px+3).toFixed(1)} ${yb-8}V${yt+10}H${(px+pw-3).toFixed(1)}V${yb-8}Z`;
+      D(p,6.8+r*.14+i*.03,.7,1.2);if(i>0)D('M'+x.toFixed(1)+' '+(yt-4)+'V'+yb,6.7+r*.14+i*.03,.5,.9);
+      arches.push({p,d:TL(16.8+(ai++)*.14)});
+      if(kind==='a'){for(let k=0;k<=6;k++){const an=Math.PI+k/6*Math.PI;pts.push([px+rr+rr*Math.cos(an),yt+rr+rr*Math.sin(an)]);}pts.push([px,yb-6],[px+pw,yb-6]);}
+      else pts.push([px+3,yt+10],[px+pw-3,yt+10],[px+3,yb-8],[px+pw-3,yb-8]);}});
+    const COLS=['#FFE7B0','#F3D59A','#FFFFFF','#E9C77A'];
+    const parts=pts.map(([x,y],k)=>{const a=rnd(k+1)*Math.PI*2,r=260+rnd(k+2)*320;const s=1.6+rnd(k+3)*2.2;
+      return{x:x.toFixed(1)+'px',y:y.toFixed(1)+'px',s:s.toFixed(1)+'px',m:(-s/2).toFixed(1)+'px',c:COLS[k%4],sx:(Math.cos(a)*r).toFixed(0)+'px',sy:(Math.sin(a)*r).toFixed(0)+'px',
+        cx:(195-x).toFixed(0)+'px',cy:(300-y).toFixed(0)+'px',l:(1.9+rnd(k+4)*.9).toFixed(2)+'s',d:T0(3.4+((620-y)/276)*3.3+((x-8)/374)*.5+rnd(k+5)*.35),cd:T(9.75+rnd(k+6)*.35),tl:(1.2+rnd(k+7)*1.6).toFixed(1)+'s',td:(rnd(k+8)*2).toFixed(1)+'s'};});
+    const motes=Array.from({length:30},(_,i)=>({x:(rnd(i+600)*390).toFixed(0)+'px',y:(rnd(i+601)*844).toFixed(0)+'px',s:(1+rnd(i+602)*2).toFixed(1)+'px',mx:((rnd(i+603)-.5)*40).toFixed(0)+'px',my:(-10-rnd(i+604)*30).toFixed(0)+'px',a:T(3.1+rnd(i+605)*1.5),l:(5+rnd(i+606)*4).toFixed(1)+'s',dd:(rnd(i+607)*3).toFixed(1)+'s'}));
+    const COL=['#F3D59A','#FFFFFF','oklch(0.8 0.14 70)'];
+    const bursts=[[100,190,80,16,12.2],[290,160,100,18,12.8],[70,110,120,22,13.2],[310,100,130,22,13.45],[195,250,440,46,13.75]].map(([x,y,Rr,n,t],b0)=>{const big=b0===4;const bi=big?3:b0%3;const cs=big?230:110;return{x:x+'px',y:y+'px',d:T(t),td:T(t-.55),th:(560-y)+'px',cs:cs+'px',cm:(-cs/2)+'px',
+      p:Array.from({length:n},(_,j)=>{const a=j/n*Math.PI*2+rnd(b0*50+j)*.2,dist=Rr*(0.7+rnd(b0*90+j)*.35),s=big?6:4+(j%2);return{dx:(Math.cos(a)*dist).toFixed(0)+'px',dy:(Math.sin(a)*dist).toFixed(0)+'px',c:COL[(j+bi)%3],s:s+'px',m:(-s/2)+'px',l:((big?1.9:1.4)+rnd(j+bi)*.3).toFixed(2)+'s'};})};});
+    const glit=Array.from({length:44},(_,i)=>({x:(20+rnd(i*3+1)*350).toFixed(0)+'px',y:(90+rnd(i*7+2)*320).toFixed(0)+'px',s:(5+Math.round(rnd(i)*5))+'px',c:i%3?'#F3D59A':'#FFF3D0',dx:((rnd(i+9)-.5)*70).toFixed(0)+'px',dy:(380+rnd(i+4)*300).toFixed(0)+'px',l:(3+rnd(i+5)*1.5).toFixed(2)+'s',d:T(13.85+rnd(i+11)*.9)}));
+    const still=Array.from({length:12},(_,i)=>{const a=i/12*Math.PI*2;return{x:(195+Math.cos(a)*150-4).toFixed(0)+'px',y:(300+Math.sin(a)*150-4).toFixed(0)+'px',s:(6+(i%3)*3)+'px'};});
+    return{u:this.u,frz:st?'1':'0',off:off.toFixed(2)+'s',words,words2,draw,arches,parts,motes,bursts,glit,still,eDel:(23.6-off).toFixed(2),hint:!st,
+      skip:()=>{if(st)return;const el=(performance.now()-this.t0)/1000;const tgt=23.4;if(el+this.state.off<tgt){this.tm.forEach(clearTimeout);this.tm=[];this.setState({off:tgt-el});this.haptics(tgt);}}};}
+}
+</script>
+</body>
+</html>

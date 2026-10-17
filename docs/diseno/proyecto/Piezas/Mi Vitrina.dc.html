@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="Piezas/iconos-sitios.js"></script>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}button{font-family:inherit;-webkit-tap-highlight-color:transparent}a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes vtFade{from{opacity:0}to{opacity:1}}
+@keyframes vtUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes vtSheet{from{transform:translateY(100%)}to{transform:none}}
+@keyframes vtPop{0%{opacity:0;transform:scale(.4)}65%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes vtRays{to{transform:rotate(360deg)}}
+@keyframes vtBurst{0%{opacity:0;transform:scale(.3)}25%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+@keyframes vtSpot{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes vtToast{0%{opacity:0;transform:translate(-50%,10px)}12%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 10%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 90px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:760px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Logros · una pantalla, dos pestañas</span>
+    <span style="font:400 46px/1 'Instrument Serif',serif">Mi vitrina y <em style="color:oklch(0.55 0.17 5)">Todos mis logros</em></span>
+    <span style="font:400 14px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">La vitrina enseña lo que el viajero elige; «Todos mis logros» guarda todo lo que tiene y lo que le falta. Las pestañas de arriba funcionan, y en la vitrina llena puedes tocar las piezas.</span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px 40px;align-items:flex-start">
+  <sc-for list="{{ phones }}" as="b" hint-placeholder-count="7">
+    <div id="{{ b.id }}" style="width:390px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span></div>
+      <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;margin-top:4px;border-radius:50px;overflow:hidden;background:{{ b.bg }};box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column;color:{{ b.fg }}">
+        <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:60"></div>
+        <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.6;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+
+        <sc-if value="{{ b.hasTabs }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:none;display:flex;align-items:center;gap:10px;padding:2px 16px 12px">
+            <span style="width:40px;height:40px;flex:none;border-radius:50%;border:1px solid {{ b.lineC }};display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></span>
+            <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:4px;border-radius:999px;background:{{ b.segBg }}">
+              <sc-for list="{{ b.tabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.pick }}" style="height:38px;border:none;border-radius:999px;background:{{ t.bg }};color:{{ t.fg }};font:600 13px 'Geist';cursor:pointer;transition:background .25s,color .25s">{{ t.n }}</button></sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isV }}" hint-placeholder-val="{{ true }}">
+          <main style="position:relative;flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 16px 40px;display:flex;flex-direction:column;gap:6px">
+            <sc-if value="{{ b.ped }}" hint-placeholder-val="{{ true }}">
+              <div style="position:relative;flex:none;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
+                <span style="position:absolute;left:50%;top:-30px;width:300px;height:330px;margin-left:-150px;background:radial-gradient(ellipse 50% 80% at 50% 0%,rgba(255,226,170,.42),rgba(255,226,170,.08) 60%,transparent 75%);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);animation:vtSpot 5s ease-in-out infinite"></span>
+                <span style="position:absolute;left:50%;top:18px;width:230px;height:230px;margin-left:-115px;border-radius:50%;background:repeating-conic-gradient(rgba(243,213,154,.14) 0 2deg,transparent 2deg 15deg);-webkit-mask:radial-gradient(circle,#000 20%,transparent 66%);mask:radial-gradient(circle,#000 20%,transparent 66%);animation:vtRays 40s linear infinite"></span>
+                <button onClick="{{ b.openPed }}" style="position:relative;border:none;background:transparent;padding:0;cursor:pointer"><dc-import name="Piezas/Medalla Siete" n="{{ b.pedN }}" size="190" hint-size="190px,238px"></dc-import></button>
+                <span style="position:relative;margin-top:-6px;width:170px;height:18px;border-radius:50%;background:linear-gradient(180deg,#3A3424,#15120C);box-shadow:0 0 0 1px rgba(243,213,154,.35),0 10px 20px -6px rgba(0,0,0,.8)"></span>
+              </div>
+            </sc-if>
+
+            <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding-top:8px">
+              <span style="display:flex;justify-content:space-between;padding:0 4px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,213,154,.85)"><span>Exclusivos</span><span style="color:rgba(255,253,248,.5)">{{ b.exN }}</span></span>
+              <div style="position:relative;border-radius:18px;background:linear-gradient(180deg,rgba(200,210,255,.06),rgba(255,255,255,.02));padding:14px 6px 10px">
+                <div style="display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;padding:0 8px">
+                  <sc-for list="{{ b.ex }}" as="x" hint-placeholder-count="3"><button onClick="{{ x.open }}" style="flex:none;border:none;background:transparent;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center"><dc-import name="Piezas/Exclusivo Holo" kind="{{ x.k }}" size="86" delay="{{ x.d }}" hint-size="86px,86px"></dc-import><span style="margin-top:2px;width:62px;height:8px;border-radius:50%;background:rgba(0,0,0,.45)"></span></button></sc-for>
+                </div>
+                <span style="position:absolute;left:8px;right:8px;bottom:6px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(220,230,255,.5),transparent)"></span>
+              </div>
+            </div>
+
+            <sc-for list="{{ b.shelves }}" as="s" hint-placeholder-count="4">
+              <div style="flex:none;display:flex;flex-direction:column;gap:6px;padding-top:12px">
+                <span style="display:flex;justify-content:space-between;padding:0 4px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,213,154,.85)"><span>{{ s.t }}</span><span style="color:rgba(255,253,248,.5)">{{ s.c }}</span></span>
+                <div style="position:relative;height:122px;border-radius:16px;background:linear-gradient(180deg,rgba(255,253,248,.035),rgba(255,253,248,.015))">
+                  <div style="position:absolute;inset:0 6px 14px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+                    <sc-for list="{{ s.slots }}" as="it" hint-placeholder-count="4">
+                      <div style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
+                        <span style="position:absolute;left:50%;top:-6px;width:84px;height:118px;margin-left:-42px;background:radial-gradient(ellipse 50% 90% at 50% 0%,rgba(255,226,170,{{ it.lo }}),transparent 72%);clip-path:polygon(36% 0,64% 0,100% 100%,0 100%);pointer-events:none"></span>
+                        <sc-if value="{{ it.empty }}" hint-placeholder-val="{{ true }}"><span style="width:62px;height:62px;margin-bottom:10px;border-radius:{{ it.er }};border:1.5px dashed rgba(243,213,154,.3)"></span></sc-if>
+                        <sc-if value="{{ it.full }}" hint-placeholder-val="{{ false }}">
+                          <button onClick="{{ it.open }}" style="position:relative;border:none;background:transparent;padding:0;margin-bottom:4px;cursor:pointer;width:72px;height:72px;display:flex;align-items:center;justify-content:center">
+                            <sc-if value="{{ it.isL }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Logro Viajero" tier="{{ it.t }}" grow="{{ it.t }}" hue="{{ it.h }}" size="68" num="{{ it.num }}" icon="{{ it.i }}" delay="0" hint-size="68px,68px"></dc-import></sc-if>
+                            <sc-if value="{{ it.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="{{ it.g }}" icon="{{ it.i }}" shape="{{ it.sh }}" size="66" label="{{ it.l }}" hint-size="66px,66px"></dc-import></sc-if>
+                            <sc-if value="{{ it.isC }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Coleccion" col="{{ it.k }}" set="{{ it.set }}" sites="{{ it.sn }}" size="66" hint-size="66px,66px"></dc-import></sc-if>
+                            <sc-if value="{{ it.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="{{ it.k }}" scale="0.44" delay="0" hint-size="66px,66px"></dc-import></sc-if>
+                          </button>
+                          <span style="width:52px;height:7px;border-radius:50%;background:rgba(0,0,0,.5)"></span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ s.none }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:12px;right:12px;top:42px;font:italic 400 16px/1.25 'Instrument Serif',serif;color:rgba(255,253,248,.72);text-align:center;text-wrap:balance">{{ s.ph }}</span></sc-if>
+                  <span style="position:absolute;left:4px;right:4px;bottom:8px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(220,230,255,.55),transparent);box-shadow:0 2px 10px rgba(220,230,255,.18)"></span>
+                </div>
+              </div>
+            </sc-for>
+          </main>
+          <sc-if value="{{ b.hasOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;padding:70px 24px 30px;background:rgba(6,8,16,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:vtFade .3s ease both">
+              <button onClick="{{ b.close }}" aria-label="Cerrar" style="position:absolute;right:18px;top:58px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,253,248,.1);color:#FFFDF8;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+              <div style="position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;animation:vtPop .6s cubic-bezier(.2,.8,.2,1) both">
+                <sc-if value="{{ b.op.isC }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:-40px;border-radius:50%;background:repeating-conic-gradient(rgba(243,213,154,.22) 0 3deg,transparent 3deg 14deg);-webkit-mask:radial-gradient(circle,#000 25%,transparent 66%);mask:radial-gradient(circle,#000 25%,transparent 66%);animation:vtRays 20s linear infinite,vtFade 1s ease both"></span><span style="position:absolute;inset:10px;border-radius:50%;border:2px solid #F3D59A;opacity:0;animation:vtBurst 1.4s .3s ease-out both"></span><span style="position:absolute;inset:10px;border-radius:50%;border:2px solid #FFFFFF;opacity:0;animation:vtBurst 1.6s .55s ease-out both"></span></sc-if>
+                <sc-if value="{{ b.op.isL }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Logro Viajero" tier="{{ b.op.t }}" grow="{{ b.op.t }}" hue="{{ b.op.h }}" size="180" num="{{ b.op.num }}" icon="{{ b.op.i }}" delay="0" hint-size="180px,180px"></dc-import></sc-if>
+                <sc-if value="{{ b.op.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="{{ b.op.g }}" icon="{{ b.op.i }}" shape="{{ b.op.sh }}" size="180" label="{{ b.op.l }}" hint-size="180px,180px"></dc-import></sc-if>
+                <sc-if value="{{ b.op.isC }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Coleccion" col="{{ b.op.k }}" set="{{ b.op.set }}" sites="{{ b.op.sn }}" size="180" hint-size="180px,180px"></dc-import></sc-if>
+                <sc-if value="{{ b.op.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="{{ b.op.k }}" scale="1.2" delay="0" hint-size="180px,180px"></dc-import></sc-if>
+                <sc-if value="{{ b.op.isX }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Exclusivo Holo" kind="{{ b.op.k }}" size="180" delay="0" hint-size="180px,180px"></dc-import></sc-if>
+                <sc-if value="{{ b.op.isM }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Siete" n="{{ b.pedN }}" size="190" hint-size="190px,238px"></dc-import></sc-if>
+              </div>
+              <span style="margin-top:14px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#F3D59A;animation:vtUp .5s .2s ease both">{{ b.op.eye }}</span>
+              <span style="margin-top:6px;font:400 30px/1.05 'Instrument Serif',serif;color:#FFFDF8;text-align:center;text-wrap:balance;animation:vtUp .5s .3s ease both">{{ b.op.n }}</span>
+              <span style="margin-top:6px;font:italic 400 16px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.75);text-align:center;text-wrap:balance;animation:vtUp .5s .35s ease both">{{ b.op.line }}</span>
+              <span style="margin-top:6px;font:500 11.5px 'Geist Mono',monospace;color:rgba(255,253,248,.55);animation:vtUp .5s .4s ease both">{{ b.op.when }}</span>
+              <div style="margin-top:18px;width:250px;padding:10px 10px 30px;background:#FBF7EE;border-radius:4px;transform:rotate(-3deg);box-shadow:0 18px 30px -12px rgba(0,0,0,.7);animation:vtUp .6s .45s ease both">
+                <span style="display:block;height:150px;border-radius:2px;background:repeating-linear-gradient(135deg,#E9DFCB 0 9px,#E3D8C2 9px 18px);position:relative"><span style="position:absolute;left:10px;bottom:8px;font:600 9px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.45)">TU FOTO</span></span>
+                <span style="display:block;margin-top:8px;font:italic 400 15px 'Instrument Serif',serif;color:#4A3C28">{{ b.op.place }}</span>
+              </div>
+              <div style="flex:1"></div>
+              <div style="width:100%;display:flex;flex-direction:column;gap:8px;animation:vtUp .5s .55s ease both">
+                <button style="height:52px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;justify-content:center;gap:8px;font:700 15px 'Geist';cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg>Compartir</button>
+                <sc-if value="{{ b.op.canQuit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ b.quit }}" style="height:44px;border:1px solid rgba(255,253,248,.22);border-radius:999px;background:transparent;color:#FFFDF8;font:600 13.5px 'Geist';cursor:pointer">Quitar de mi vitrina</button></sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ b.isT }}" hint-placeholder-val="{{ false }}">
+          <main data-autoscroll="{{ b.scroll }}" style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 0 40px;display:flex;flex-direction:column;gap:12px">
+            <div style="margin:0 16px;flex:none;border-radius:24px;background:#1C2230;color:#FFFDF8;padding:16px 18px;display:flex;align-items:center;gap:14px">
+              <span style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:400 30px/1 'Instrument Serif',serif">38 <span style="font-size:18px;color:rgba(255,253,248,.7)">logros conseguidos</span></span><span style="font:500 13px 'Geist';color:#F3D59A">Ciudadano del mundo</span></span>
+              <dc-import name="Piezas/Logro Viajero" tier="4" grow="4" hue="40" size="58" num="10" icon="{{ ic.globo }}" delay="0" hint-size="58px,58px"></dc-import>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px 0"><span style="font:400 26px/1 'Instrument Serif',serif">Por destino</span>
+              <span style="display:flex;align-items:center;gap:2px"><sc-for list="{{ b.dpT }}" as="o" hint-placeholder-count="2"><span style="display:flex;align-items:center"><sc-if value="{{ o.dot }}" hint-placeholder-val="{{ false }}"><span style="padding:0 4px;font:500 13px 'Geist';color:rgba(28,34,48,.35)">·</span></sc-if><button onClick="{{ o.pick }}" style="min-height:36px;padding:0 4px;border:none;background:transparent;font:{{ o.fw }} 13px 'Geist';color:{{ o.fg }};text-decoration:{{ o.td }};text-decoration-color:oklch(0.8 0.14 70);text-decoration-thickness:2.5px;text-underline-offset:6px;cursor:pointer">{{ o.n }}</button></span></sc-for></span></div>
+            <sc-if value="{{ b.dpP }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px">
+                <sc-for list="{{ b.countries }}" as="c" hint-placeholder-count="2"><div style="border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:12px;display:flex;flex-direction:column;gap:8px">
+                  <span style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:16px;border-radius:3px;background:{{ c.fl }};box-shadow:inset 0 0 0 1px rgba(28,34,48,.12)"></span><span style="font:400 20px/1 'Instrument Serif',serif">{{ c.n }}</span></span>
+                  <span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ c.s }}</span>
+                  <div style="display:flex;gap:4px;flex-wrap:wrap"><sc-for list="{{ c.d }}" as="d" hint-placeholder-count="3"><span onClick="{{ d.go }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px;border-radius:12px;background:{{ d.bg }}"><dc-import name="Piezas/Sello Logro" grade="{{ d.g }}" icon="{{ d.i }}" size="40" label="" hint-size="40px,40px"></dc-import><span style="font:500 10px 'Geist'">{{ d.n }}</span></span></sc-for></div>
+                </div></sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ b.dpD }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:none;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 20px;scrollbar-width:none;padding:0 20px 6px">
+              <sc-for list="{{ b.dests }}" as="d" hint-placeholder-count="3">
+                <div onClick="{{ d.go }}" style="cursor:pointer;flex:none;width:286px;scroll-snap-align:start;position:relative;border-radius:24px;overflow:hidden;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 14px 28px -22px rgba(28,34,48,.5)">
+                  <span style="display:block;height:110px;background:{{ d.ph }}"></span>
+                  <span style="position:absolute;left:14px;top:70px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))"><dc-import name="Piezas/Sello Logro" grade="{{ d.g }}" icon="{{ d.i }}" size="70" label="" hint-size="70px,70px"></dc-import></span>
+                  <div style="padding:10px 14px 14px 94px;display:flex;align-items:center;gap:10px">
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 24px/1 'Instrument Serif',serif">{{ d.n }}</span><span style="font:600 10.5px 'Geist Mono',monospace;color:{{ d.gc }}">Sello de {{ d.gn }}</span><span style="font:500 11.5px/1.3 'Geist';color:rgba(28,34,48,.62)">{{ d.sum }}</span></span>
+                    <span style="position:relative;width:44px;height:44px;flex:none"><svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg)"><circle cx="22" cy="22" r="18" fill="none" stroke="rgba(28,34,48,.1)" stroke-width="4"></circle><circle cx="22" cy="22" r="18" fill="none" stroke="{{ d.gc }}" stroke-width="4" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="{{ d.off }}"></circle></svg><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 10.5px 'Geist Mono',monospace">{{ d.pct }}</span></span>
+                  </div>
+                </div>
+              </sc-for><span style="flex:none;width:10px"></span>
+            </div>
+            </sc-if>
+            <span style="padding:8px 20px 0;font:400 26px/1 'Instrument Serif',serif">Logros de viajero</span>
+            <sc-for list="{{ vgroups }}" as="g" hint-placeholder-count="4">
+              <div style="flex:none;display:flex;flex-direction:column;gap:6px">
+                <span onClick="{{ g.all }}" style="cursor:pointer;margin:0 20px;display:flex;align-items:center;gap:7px;padding:4px 0 0;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:{{ g.c }}"><span style="width:8px;height:8px;border-radius:50%;background:{{ g.c }}"></span>{{ g.n }}<span style="margin-left:auto;letter-spacing:0;text-transform:none"><button style="flex:none;height:30px;padding:0 8px 0 12px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;color:#1C2230;display:flex;align-items:center;gap:4px;font:600 12px 'Geist';cursor:pointer;white-space:nowrap">Ver todo<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></span></span>
+                <div style="display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 20px;scrollbar-width:none;padding:2px 20px 6px">
+                  <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                    <button onClick="{{ r.open }}" style="flex:none;width:108px;scroll-snap-align:start;position:relative;border:none;border-radius:20px;background:#FFFDF8;box-shadow:0 0 0 1px rgba(28,34,48,.07);padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:#1C2230">
+                      <sc-if value="{{ r.pin }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:{{ r.pBg }};color:{{ r.pFg }};box-shadow:0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:3"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.pI }}"></path></svg></span></sc-if>
+                      <span style="position:relative;width:84px;height:84px;display:flex;align-items:center;justify-content:center">
+                        <svg width="84" height="84" viewBox="0 0 84 84" style="position:absolute;inset:0;transform:rotate(-90deg)"><circle cx="42" cy="42" r="39" fill="none" stroke="rgba(28,34,48,.09)" stroke-width="3.5"></circle><circle cx="42" cy="42" r="39" fill="none" stroke="{{ r.rc }}" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="{{ r.off }}"></circle></svg>
+                        <span style="filter:{{ r.flt }};opacity:{{ r.op }}"><dc-import name="Piezas/Logro Viajero" tier="{{ r.t }}" grow="{{ r.t }}" hue="{{ g.h }}" size="64" num="{{ r.num }}" icon="{{ r.i }}" delay="0" hint-size="64px,64px"></dc-import></span>
+                      </span>
+                      <span style="margin-top:4px;font:500 11.5px/1.2 'Geist';color:{{ r.nc }};text-wrap:balance;text-align:center">{{ r.n }}</span>
+                    </button>
+                  </sc-for><span style="flex:none;width:12px"></span>
+                  <button onClick="{{ g.all }}" style="flex:none;width:96px;border:1.5px dashed rgba(28,34,48,.2);border-radius:20px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:#1C2230"><span style="width:40px;height:40px;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font-size:18px">›</span><span style="font:600 12px 'Geist'">Ver todo</span></button>
+                </div>
+              </div>
+            </sc-for>
+            <span style="padding:12px 20px 0;font:400 26px/1 'Instrument Serif',serif">Las 7 maravillas</span>
+            <div style="margin:0 16px;flex:none;position:relative;border-radius:24px;background:radial-gradient(circle at 30% 30%,#2A3150 0%,#121626 75%);color:#FFFDF8;padding:14px;display:flex;align-items:center;gap:12px">
+              <span style="position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;box-shadow:0 0 0 2px #1C2230;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+              <dc-import name="Piezas/Medalla Siete" n="1" size="128" hint-size="128px,160px"></dc-import>
+              <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+                <sc-for list="{{ wonders }}" as="w" hint-placeholder-count="7"><span style="display:flex;align-items:center;gap:7px;font:500 12px 'Geist';color:{{ w.c }}"><span style="width:16px;height:16px;flex:none;border-radius:50%;background:{{ w.dBg }};border:{{ w.dBd }};color:#17120a;display:flex;align-items:center;justify-content:center;font:700 9px 'Geist'">{{ w.mk }}</span>{{ w.n }}</span></sc-for>
+              </div>
+            </div>
+            <span style="padding:12px 20px 0;font:400 26px/1 'Instrument Serif',serif">Exclusivos</span>
+            <div style="flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px">
+              <sc-for list="{{ exAll }}" as="x" hint-placeholder-count="2"><div style="position:relative;border-radius:20px;background:#1C2230;color:#FFFDF8;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><span style="position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><dc-import name="Piezas/Exclusivo Holo" kind="{{ x.k }}" size="84" delay="0" hint-size="84px,84px"></dc-import><span style="font:400 16px/1.1 'Instrument Serif',serif">{{ x.n }}</span></div></sc-for>
+            </div>
+          </main>
+          <sc-if value="{{ b.fOn }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ b.fClose }}" style="position:absolute;inset:0;z-index:40;background:rgba(28,34,48,.45);animation:vtFade .3s ease both"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;z-index:41;border-radius:28px 28px 0 0;background:#FFFDF8;padding:12px 18px 30px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;animation:vtSheet .45s cubic-bezier(.2,.8,.2,1) both">
+              <span style="width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+              <span style="margin-top:8px;filter:{{ b.f.flt }};opacity:{{ b.f.op }}"><dc-import name="Piezas/Logro Viajero" tier="{{ b.f.t }}" grow="{{ b.f.t }}" hue="{{ b.f.h }}" size="140" num="{{ b.f.num }}" icon="{{ b.f.i }}" delay="0" hint-size="140px,140px"></dc-import></span>
+              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:{{ b.f.c }}">{{ b.f.eye }}</span>
+              <span style="font:400 28px/1.05 'Instrument Serif',serif">{{ b.f.n }}</span>
+              <sc-if value="{{ b.f.got }}" hint-placeholder-val="{{ true }}"><span style="font:600 14px 'Geist';color:#1C2230">{{ b.f.mk }}</span><span style="font:500 12px 'Geist';color:rgba(28,34,48,.6)">{{ b.f.when }}</span></sc-if>
+              <sc-if value="{{ b.f.notGot }}" hint-placeholder-val="{{ false }}"><span style="font:500 13px 'Geist';color:rgba(28,34,48,.65)">{{ b.f.next }}</span></sc-if>
+              <sc-if value="{{ b.f.got }}" hint-placeholder-val="{{ true }}">
+                <span style="position:absolute;top:14px;right:16px;width:40px;height:40px;border-radius:50%;background:{{ b.f.vBg }};color:{{ b.f.vFg }};box-shadow:0 4px 12px -4px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center" aria-label="{{ b.f.carry }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.f.vI }}"></path></svg></span>
+                <div style="margin-top:8px;width:100%;display:flex;flex-direction:column;gap:8px">
+                  <button style="height:52px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;justify-content:center;gap:8px;font:700 15px 'Geist';cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg>Compartir</button>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button style="height:44px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;font:600 13px 'Geist';cursor:pointer">Volver a ver</button><button style="height:44px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;font:600 13px 'Geist';cursor:pointer">{{ b.f.title }}</button></div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ b.isD }}" hint-placeholder-val="{{ false }}">
+          <main style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 0 40px;display:flex;flex-direction:column;gap:12px">
+            <div style="position:relative;flex:none;height:170px;background:{{ b.dd.ph }}"><span style="position:absolute;left:16px;bottom:12px;font:600 9px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(255,253,248,.7)">{{ b.dd.phT }}</span><button onClick="{{ b.back }}" style="position:absolute;left:16px;top:6px;height:32px;padding:0 12px;border:none;border-radius:999px;background:rgba(28,34,48,.55);color:#FFFDF8;display:flex;align-items:center;gap:6px;font:600 12px 'Geist';cursor:pointer">← Todos mis logros</button></div>
+            <div style="margin:-56px 16px 0;position:relative;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:12px 14px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 18px 30px -22px rgba(28,34,48,.6)">
+              <dc-import name="Piezas/Sello Logro" grade="{{ b.dd.g }}" icon="{{ b.dd.i }}" size="84" label="{{ b.dd.l }}" hint-size="84px,84px"></dc-import>
+              <span style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:400 30px/1 'Instrument Serif',serif">{{ b.dd.n }}</span><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.08em;color:{{ b.dd.c }}">{{ b.dd.gt }}</span><span style="font:500 12px 'Geist';color:rgba(28,34,48,.62)">{{ b.dd.sum }}</span><div style="height:5px;border-radius:5px;background:rgba(28,34,48,.08);overflow:hidden"><div style="height:100%;width:{{ b.dd.w }};border-radius:5px;background:{{ b.dd.c }}"></div></div></span>
+            </div>
+            <div style="padding:0 16px;display:flex;flex-direction:column;gap:12px">
+              <span style="padding:6px 4px 0;font:400 24px/1 'Instrument Serif',serif">Sellos de ciudad</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <sc-for list="{{ b.dSeals }}" as="s" hint-placeholder-count="2"><div style="position:relative;border-radius:20px;background:#FFFDF8;border:1px solid {{ s.bd }};box-shadow:{{ s.sh2 }};padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><dc-import name="Piezas/Sello Logro" grade="{{ s.g }}" icon="{{ s.i }}" shape="{{ s.sh }}" size="72" label="{{ s.l }}" hint-size="72px,72px"></dc-import><span style="font:400 15px/1.1 'Instrument Serif',serif">{{ s.n }}</span><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.08em;color:{{ s.c }}">{{ s.gn }}</span><sc-if value="{{ s.hl }}" hint-placeholder-val="{{ false }}"><span style="height:22px;padding:0 9px;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:700 10.5px/22px 'Geist'">Estás aquí</span></sc-if><sc-if value="{{ s.pin }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:{{ s.pBg }};color:{{ s.pFg }};box-shadow:0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:3"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="{{ s.pI }}"></path></svg></span></sc-if></div></sc-for>
+              </div>
+              <sc-if value="{{ b.dFull }}" hint-placeholder-val="{{ true }}"><span style="padding:6px 4px 0;font:400 24px/1 'Instrument Serif',serif">Colecciones <span style="font:500 13px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ b.dColN }}</span></span>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+                <sc-for list="{{ b.dColsB }}" as="c" hint-placeholder-count="11"><div style="position:relative;border-radius:18px;background:{{ c.bg }};border:1px solid rgba(28,34,48,.07);padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center"><span style="filter:{{ c.flt }};opacity:{{ c.op }}"><dc-import name="Piezas/Insignia Coleccion" col="{{ c.k }}" set="{{ c.set }}" sites="{{ c.sn }}" size="72" hint-size="72px,72px"></dc-import></span><span style="font:500 11px/1.2 'Geist';text-wrap:balance">{{ c.n }}</span><span style="font:600 10px 'Geist Mono',monospace;color:{{ c.cc }}">{{ c.st }}</span><sc-if value="{{ c.pin }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:{{ c.pBg }};color:{{ c.pFg }};box-shadow:0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:3"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.pI }}"></path></svg></span></sc-if></div></sc-for>
+              </div>
+              <span style="padding:6px 4px 0;font:400 24px/1 'Instrument Serif',serif">Emblemas secretos <span style="font:500 13px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ b.dEmbN }}</span></span>
+              <div style="border-radius:24px;background:#1C2230;color:#FFFDF8;padding:14px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;justify-items:center">
+                  <sc-for list="{{ b.dEmbsB }}" as="e" hint-placeholder-count="12"><span style="position:relative;width:66px;height:66px;display:flex;align-items:center;justify-content:center"><sc-if value="{{ e.gotM }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Oro" won="{{ true }}" size="58" interactive="{{ false }}" flippable="{{ false }}" hint-size="58px,73px"></dc-import></sc-if><sc-if value="{{ e.gotN }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="{{ e.k }}" scale="0.44" delay="0" hint-size="66px,66px"></dc-import></sc-if><sc-if value="{{ e.lock }}" hint-placeholder-val="{{ true }}"><span style="width:50px;height:50px;border-radius:50%;background:rgba(255,253,248,.06);border:1.5px dashed rgba(243,213,154,.38);display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif;color:rgba(243,213,154,.6)">?</span></sc-if><sc-if value="{{ e.pin }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-4px;right:-4px;width:26px;height:26px;border-radius:50%;background:{{ e.pBg }};color:{{ e.pFg }};box-shadow:0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:3"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="{{ e.pI }}"></path></svg></span></sc-if></span></sc-for>
+                </div>
+                <span style="font:italic 400 16px 'Instrument Serif',serif;color:rgba(255,253,248,.72);text-align:center">{{ b.dEmbMore }}</span>
+              </div></sc-if>
+              <sc-if value="{{ b.dShort }}" hint-placeholder-val="{{ false }}"><div style="border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:14px;display:flex;flex-direction:column;gap:6px"><span style="font:400 22px/1 'Instrument Serif',serif">Colecciones y secretos</span><span style="font:500 12.5px 'Geist';color:rgba(28,34,48,.62)">{{ b.dd.sum }}</span></div></sc-if>
+            </div>
+          </main>
+          <sc-if value="{{ b.sheet }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;z-index:40;background:rgba(28,34,48,.45);animation:vtFade .3s ease both"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;z-index:41;border-radius:28px 28px 0 0;background:#FFFDF8;padding:12px 18px 30px;display:flex;flex-direction:column;gap:14px;animation:vtSheet .45s cubic-bezier(.2,.8,.2,1) both">
+              <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+              <div style="display:flex;align-items:center;gap:12px"><dc-import name="Piezas/Sello Logro" grade="plata" icon="cupula" shape="oval" size="56" label="" hint-size="56px,56px"></dc-import><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Llevar a mi vitrina</span><span style="font:400 24px/1.05 'Instrument Serif',serif">Sello del Vaticano</span></span></div>
+              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Sellos de ciudad · elige un hueco</span>
+              <div style="position:relative;border-radius:20px;background:radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 80%);padding:16px 8px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+                <sc-for list="{{ pick }}" as="h" hint-placeholder-count="4">
+                  <button onClick="{{ h.sel }}" style="position:relative;height:92px;border-radius:16px;border:2px solid {{ h.bd }};background:{{ h.bg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:border-color .2s,background .2s">
+                    <sc-if value="{{ h.full }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Sello Logro" grade="{{ h.g }}" icon="{{ h.i }}" shape="{{ h.sh }}" size="52" label="" hint-size="52px,52px"></dc-import></sc-if>
+                    <sc-if value="{{ h.empty }}" hint-placeholder-val="{{ false }}"><span style="width:46px;height:46px;border-radius:50%;border:1.5px dashed rgba(243,213,154,.45)"></span></sc-if>
+                    <span style="font:600 9.5px 'Geist Mono',monospace;color:rgba(255,253,248,.6)">{{ h.n }}</span>
+                  </button>
+                </sc-for>
+                <span style="position:absolute;left:10px;right:10px;bottom:8px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(220,230,255,.5),transparent)"></span>
+              </div>
+              <sc-if value="{{ pickWarn }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:#F5EFE4;font:500 12.5px/1.35 'Geist';animation:vtFade .3s ease both"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg>{{ pickTxt }}</span></sc-if>
+              <button style="height:52px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:700 15px 'Geist';cursor:pointer">Colocar aquí</button>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ b.isMC }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:none;display:flex;align-items:center;gap:12px;padding:4px 16px 10px">
+            <span style="width:36px;height:36px;flex:none;border-radius:50%;background:#EDE4D3;display:flex;align-items:center;justify-content:center;font-size:16px">←</span>
+            <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 28px/1 'Instrument Serif',serif">Mi colección</span><span style="font:500 12px 'Geist';color:rgba(28,34,48,.6)">{{ b.mcPage }}</span></span>
+            <span style="position:relative;width:46px;height:46px;flex:none"><svg width="46" height="46" viewBox="0 0 46 46" style="transform:rotate(-90deg)"><circle cx="23" cy="23" r="19" fill="none" stroke="rgba(28,34,48,.1)" stroke-width="4.5"></circle><circle cx="23" cy="23" r="19" fill="none" stroke="#B8964F" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="{{ b.mcOff }}"></circle></svg></span>
+          </div>
+          <div data-mcstart="{{ b.mcStart }}" style="flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none">
+            <sc-for list="{{ b.mcPages }}" as="pg" hint-placeholder-count="4">
+              <div style="flex:none;width:100%;scroll-snap-align:start;padding:4px 16px 24px;display:flex">
+                <div style="flex:1;border-radius:24px;background:linear-gradient(160deg,#5A2230,#3A121C);box-shadow:inset 0 0 0 1.5px rgba(243,213,154,.25),0 20px 40px -24px rgba(0,0,0,.6);padding:16px 14px 18px;display:flex;flex-direction:column;gap:12px">
+                  <span style="display:flex;align-items:center;gap:8px;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#F3D59A"><span style="width:8px;height:8px;border-radius:50%;background:{{ pg.c }}"></span>{{ pg.n }}<span style="margin-left:auto;font:500 10px 'Geist Mono',monospace;color:rgba(243,213,154,.6)">{{ pg.num }}</span></span>
+                  <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);align-content:start;gap:14px 8px;padding:6px 2px;border-radius:18px;background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 2px,transparent 2px 5px),#2E0E16">
+                    <sc-for list="{{ pg.slots }}" as="x" hint-placeholder-count="9">
+                      <button onClick="{{ x.open }}" style="border:none;background:transparent;padding:6px 0 0;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+                        <span style="position:relative;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 50% 60%,#1E070C,#2A0C14 70%);box-shadow:inset 0 5px 10px rgba(0,0,0,.75),inset 0 -2px 3px rgba(243,213,154,.12),0 1px 0 rgba(243,213,154,.18);display:flex;align-items:center;justify-content:center">
+                          <sc-if value="{{ x.got }}" hint-placeholder-val="{{ false }}"><span style="filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))"><dc-import name="Piezas/Logro Viajero" tier="{{ x.t }}" grow="{{ x.t }}" hue="{{ pg.h }}" size="66" num="{{ x.num }}" icon="{{ x.i }}" delay="0" hint-size="66px,66px"></dc-import></span></sc-if>
+                          <sc-if value="{{ x.empty }}" hint-placeholder-val="{{ true }}"><span style="width:58px;height:58px;border-radius:50%;border:1.5px dashed rgba(243,213,154,.28);box-shadow:inset 0 2px 4px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;color:rgba(243,213,154,.32)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ x.i }}"></path></svg></span></sc-if>
+                        </span>
+                        <sc-if value="{{ x.hasDots }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:3px"><sc-for list="{{ x.dots }}" as="d" hint-placeholder-count="6"><span style="width:5px;height:5px;border-radius:50%;background:{{ d }}"></span></sc-for></span></sc-if>
+                        <span style="font:500 11px/1.2 'Geist';color:{{ x.nc }};text-wrap:balance;text-align:center">{{ x.n }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ b.mcOn }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ b.mcClose }}" style="position:absolute;inset:0;z-index:40;background:rgba(28,34,48,.45)"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;z-index:41;border-radius:28px 28px 0 0;background:#FFFDF8;padding:12px 18px 34px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;animation:vtSheet .45s cubic-bezier(.2,.8,.2,1) both">
+              <span style="width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+              <span style="margin-top:8px;filter:{{ b.mc.flt }};opacity:{{ b.mc.op }}"><dc-import name="Piezas/Logro Viajero" tier="{{ b.mc.t }}" grow="{{ b.mc.t }}" hue="{{ b.mc.h }}" size="130" num="{{ b.mc.num }}" icon="{{ b.mc.i }}" delay="0" hint-size="130px,130px"></dc-import></span>
+              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:{{ b.mc.c }}">{{ b.mc.eye }}</span>
+              <span style="font:400 28px/1.05 'Instrument Serif',serif">{{ b.mc.n }}</span>
+              <span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.68)">{{ b.mc.how }}</span>
+              <sc-if value="{{ b.mc.got }}" hint-placeholder-val="{{ false }}"><span style="font:500 12px 'Geist';color:rgba(28,34,48,.55)">Conseguido el 11 oct 2026 · Roma, Italia</span><div style="margin-top:6px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button style="height:46px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;font:600 13px 'Geist'">Volver a ver</button><button style="height:46px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;font:600 13px 'Geist'">Compartir</button></div></sc-if>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ b.isA }}" hint-placeholder-val="{{ false }}">
+          <main style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:6px 16px 40px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 4px;text-align:center"><dc-import name="Piezas/Insignia Pieza" kind="impr" have="5" neu="-1" dark="false" delay="0" scale="1" n="8" hint-size="150px,150px"></dc-import><span style="font:400 28px/1.05 'Instrument Serif',serif">Los imprescindibles de Roma</span><span style="font:600 11px 'Geist Mono',monospace;color:oklch(0.48 0.17 5)">5 DE 8</span></div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+              <sc-for list="{{ album }}" as="x" hint-placeholder-count="8"><div style="border-radius:18px;background:{{ x.bg }};border:1px solid {{ x.bd }};padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+                <span style="width:58px;height:58px;border-radius:16px;background:{{ x.ib }};color:{{ x.ic }};display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ x.i }}"></path></svg></span>
+                <span style="font:500 13px/1.2 'Geist';color:{{ x.fc }}">{{ x.n }}</span><sc-if value="{{ x.got }}" hint-placeholder-val="{{ false }}"><span style="font:500 10.5px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ x.d }}</span></sc-if><sc-if value="{{ x.inR }}" hint-placeholder-val="{{ false }}"><span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.48 0.17 5)">{{ x.day }}</span><span style="height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;display:flex;align-items:center;font:600 11px 'Geist'">Cómo llegar</span></sc-if>
+              </div></sc-for>
+            </div>
+          </main>
+        </sc-if>
+        <sc-if value="{{ b.isTr }}" hint-placeholder-val="{{ false }}">
+          <main style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 0 40px;display:flex;flex-direction:column;gap:12px">
+            <div style="position:relative;flex:none;height:180px;background:linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A);color:#FFFDF8"><span style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,12,20,.65))"></span><span style="position:absolute;left:18px;bottom:14px;display:flex;flex-direction:column;gap:3px"><span style="font:400 34px/1 'Instrument Serif',serif">Roma</span><span style="font:500 12px 'Geist Mono',monospace">10 – 14 oct 2026 · 5 días</span></span></div>
+            <span style="padding:0 18px;font:400 22px/1 'Instrument Serif',serif">Sus días</span>
+            <div style="display:flex;gap:8px;overflow-x:auto;scroll-padding:0 20px;scrollbar-width:none;padding:0 20px"><sc-for list="{{ tdays }}" as="d" hint-placeholder-count="5"><span style="flex:none;width:118px;padding:10px 12px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;gap:3px"><span style="font:600 10px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ d.k }}</span><span style="font:400 16px/1.15 'Instrument Serif',serif">{{ d.n }}</span></span></sc-for><span style="flex:none;width:12px"></span></div>
+            <span style="padding:0 18px;font:400 22px/1 'Instrument Serif',serif">Sus fotos</span>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 16px"><sc-for list="{{ tphotos }}" as="p" hint-placeholder-count="6"><span style="aspect-ratio:1;border-radius:10px;background:{{ p }}"></span></sc-for></div>
+            <span style="padding:0 18px;font:400 22px/1 'Instrument Serif',serif">Lo que ganaste en este viaje</span>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;padding:0 16px;align-items:flex-end"><dc-import name="Piezas/Sello Logro" grade="oro" icon="coliseo" size="64" label="" hint-size="64px,64px"></dc-import><dc-import name="Piezas/Emblema Secreto" kind="ocu" scale="0.44" delay="0" hint-size="66px,66px"></dc-import><dc-import name="Piezas/Emblema Secreto" kind="mon" scale="0.44" delay="0" hint-size="66px,66px"></dc-import><dc-import name="Piezas/Logro Viajero" tier="2" grow="2" hue="118" size="62" num="3" icon="{{ ic.pareja }}" delay="0" hint-size="62px,62px"></dc-import></div>
+            <button style="margin:6px 16px 0;height:52px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;font:600 14.5px 'Geist';cursor:pointer">Ver todo Roma</button>
+          </main>
+        </sc-if>
+        <sc-if value="{{ b.isP }}" hint-placeholder-val="{{ false }}">
+          <main style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:6px 16px 40px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:14px;padding:6px 4px 10px">
+              <span style="width:68px;height:68px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 34px/1 'Instrument Serif',serif;box-shadow:0 0 0 3px #F5EFE4,0 0 0 5px oklch(0.8 0.14 70)">E</span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:5px"><span style="font:400 34px/1 'Instrument Serif',serif">Elena</span><span style="align-self:flex-start;height:28px;padding:0 10px 0 4px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;gap:6px;font:500 13px 'Geist'"><dc-import name="Piezas/Logro Viajero" tier="4" grow="4" hue="40" size="22" num="" icon="{{ ic.globo }}" delay="0" hint-size="22px,22px"></dc-import>Ciudadano del mundo</span></span>
+            </div>
+            <div style="position:relative;flex:none;height:206px;border-radius:26px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 70%);color:#FFFDF8;padding:14px 18px;display:flex;flex-direction:column">
+              <span style="display:flex;align-items:baseline;justify-content:space-between"><span style="font:400 26px/1 'Instrument Serif',serif">Mi vitrina</span><button style="flex:none;height:30px;padding:0 8px 0 12px;border-radius:999px;border:1px solid rgba(243,213,154,.45);background:rgba(243,213,154,.12);color:#F3D59A;display:flex;align-items:center;gap:4px;font:600 12px 'Geist';cursor:pointer;white-space:nowrap">38 logros<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></span>
+              <div style="position:relative;flex:1;display:grid;grid-template-columns:repeat(3,1fr);align-items:end;padding:0 4px 12px">
+                <sc-for list="{{ pfPieces }}" as="it" hint-placeholder-count="3">
+                  <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                    <span style="position:absolute;left:50%;top:-22px;width:96px;height:132px;margin-left:-48px;background:radial-gradient(ellipse 50% 90% at 50% 0%,rgba(255,226,170,.36),transparent 72%);clip-path:polygon(36% 0,64% 0,100% 100%,0 100%);animation:vtSpot 5s {{ it.d }} ease-in-out infinite"></span>
+                    <span style="position:relative;height:96px;display:flex;align-items:flex-end">
+                      <sc-if value="{{ it.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="oro" icon="coliseo" size="76" label="ROMA" hint-size="76px,76px"></dc-import></sc-if>
+                      <sc-if value="{{ it.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Oro" won="{{ true }}" size="70" interactive="{{ false }}" flippable="{{ false }}" hint-size="70px,88px"></dc-import></sc-if>
+                      <sc-if value="{{ it.isL }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Logro Viajero" tier="4" grow="4" hue="40" size="78" num="10" icon="{{ ic.globo }}" delay="0" hint-size="78px,78px"></dc-import></sc-if>
+                    </span>
+                    <span style="margin-top:3px;width:58px;height:8px;border-radius:50%;background:rgba(0,0,0,.5)"></span>
+                  </div>
+                </sc-for>
+                <span style="position:absolute;left:0;right:0;bottom:6px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(220,230,255,.55),transparent)"></span>
+              </div>
+            </div>
+            <div style="flex:none;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:linear-gradient(150deg,#6E1C2E,#3E0E18);color:#F3D59A;box-shadow:inset 0 0 0 1.5px rgba(243,213,154,.3)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"></path></svg><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 20px/1 'Instrument Serif',serif">Mi pasaporte</span><span style="font:500 11px 'Geist Mono',monospace;color:rgba(243,213,154,.7)">3 países · 4 sellos</span></span><button style="flex:none;height:30px;padding:0 8px 0 12px;border-radius:999px;border:1px solid rgba(243,213,154,.45);background:rgba(243,213,154,.12);color:#F3D59A;display:flex;align-items:center;gap:4px;font:600 12px 'Geist';cursor:pointer;white-space:nowrap">Abrir<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></div>
+            <span style="padding:8px 4px 0;font:400 24px/1 'Instrument Serif',serif">Mis viajes</span>
+            <sc-for list="{{ trips }}" as="t" hint-placeholder-count="3">
+              <div style="position:relative;flex:none;height:132px;border-radius:22px;overflow:hidden;background:{{ t.ph }};color:#FFFDF8">
+                <span style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(10,12,20,.7))"></span>
+                <span style="position:absolute;left:14px;top:10px;font:600 9px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(255,253,248,.75)">{{ t.src }}</span>
+                <span style="position:absolute;left:14px;bottom:12px;display:flex;flex-direction:column;gap:2px"><span style="font:400 24px/1 'Instrument Serif',serif">{{ t.n }}</span><span style="font:500 11px 'Geist Mono',monospace;color:rgba(255,253,248,.8)">{{ t.d }}</span></span>
+                <sc-if value="{{ t.edit }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;inset:0;background:rgba(10,12,20,.35)"></span>
+                  <div style="position:absolute;right:12px;top:12px;display:flex;gap:6px;padding:5px;border-radius:999px;background:#FFFDF8;box-shadow:0 10px 22px -10px rgba(0,0,0,.6);animation:vtUp .3s ease both">
+                    <span aria-label="Sus fotos del viaje" style="width:36px;height:36px;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg></span>
+                    <span aria-label="Galería del móvil" style="width:36px;height:36px;border-radius:50%;background:#F1EADC;color:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15.5 9.5h.01"></path></svg></span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ t.btn }}" hint-placeholder-val="{{ true }}"><span aria-label="Cambiar portada" style="position:absolute;right:12px;bottom:12px;width:32px;height:32px;border-radius:50%;background:rgba(255,253,248,.92);color:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg></span></sc-if>
+              </div>
+            </sc-for>
+          </main>
+        </sc-if>
+        <sc-if value="{{ b.toastOn }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:40px;z-index:70;height:42px;padding:0 16px;border-radius:999px;background:#FFFDF8;color:#1C2230;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);animation:vtToast 2.4s ease both">{{ toastTxt }}</div></sc-if>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC={globo:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z',
+pin:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+capital:'M3 20h18M5 20v-8M9.5 20v-8M14.5 20v-8M19 20v-8M3 12l9-7 9 7z',
+maleta:'M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5',
+estacion:'M12 3v18M3 12h18M6 6l12 12M18 6L6 18',
+pareja:'M2.5 9.5L13 6.5l.9 3a1.5 1.5 0 0 0 0 2.9l.9 3L4.3 18.4l-.9-3a1.5 1.5 0 0 0 0-2.9zM8.6 7.8l2.6 8.8',
+brujula:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z',
+lupa:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4M8.5 11h5M11 8.5v5',
+grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'};
+const P={
+ lCiu:{isL:true,t:'4',h:40,num:'10',i:IC.globo,n:'Ciudadano del mundo',eye:'Logro de viajero · El mundo',line:'10 países visitados.',when:'Conseguido el 11 oct 2026',place:'Roma, Italia'},
+ lTro:{isL:true,t:'2',h:118,num:'3',i:IC.pareja,n:'Mapa para dos',eye:'Logro de viajero · Cómo viajas',line:'3 viajes en pareja.',when:'Conseguido el 11 oct 2026',place:'Roma, Italia'},
+ lCaz:{isL:true,t:'1',h:330,num:'5',i:IC.lupa,n:'Cazador de emblemas',eye:'Logro de viajero · Coleccionista',line:'5 emblemas secretos encontrados.',when:'Conseguido el 12 oct 2026',place:'Fontana de Trevi · Roma'},
+ lVia:{isL:true,t:'1',h:80,num:'1',i:IC.maleta,n:'El primer viaje',eye:'Logro de viajero · El tiempo',line:'Tu primer viaje con la app.',when:'Conseguido el 10 oct 2026',place:'Roma, Italia'},
+ sRoma:{isS:true,g:'oro',i:'coliseo',sh:'round',l:'ROMA',n:'Sello de Roma',eye:'Sello de ciudad · Oro',line:'Roma en el corazón.',when:'Oro desde el 13 oct 2026',place:'Roma, Italia'},
+ sVat:{isS:true,g:'plata',i:'cupula',sh:'oval',l:'VATICANO',n:'Sello del Vaticano',eye:'Sello de ciudad · Plata',line:'Has cruzado la frontera.',when:'Plata desde el 12 oct 2026',place:'Ciudad del Vaticano'},
+ sFlo:{isS:true,g:'bronce',i:'cupula',sh:'round',l:'FLORENCIA',n:'Sello de Florencia',eye:'Sello de ciudad · Bronce',line:'Primeros pasos en Florencia.',when:'Bronce desde el 3 may 2026',place:'Florencia, Italia'},
+ sPisa:{isS:true,g:'diamante',i:'cupula',sh:'round',l:'PISA',n:'Sello de Pisa',eye:'Sello de ciudad · Diamante',line:'Pisa es tuya.',when:'Diamante desde el 5 may 2026',place:'Pisa, Italia'},
+ cJoy:{isC:true,k:'joyas',set:'0,1,2,3',sn:'Coliseo|Fontana de Trevi|Panteón|Museos Vaticanos',n:'Las 4 joyas de Roma',eye:'Colección completada',line:'Las cuatro joyas, en tu mano.',when:'Completada el 12 oct 2026',place:'Museos Vaticanos · Roma'},
+ cVat:{isC:true,k:'vati',set:'0,1,2',sn:'Plaza de San Pedro|Basílica de San Pedro|Museos Vaticanos',n:'El país más pequeño del mundo',eye:'Colección completada',line:'El país entero.',when:'Completada el 12 oct 2026',place:'Basílica de San Pedro · Vaticano'},
+ cImp:{isC:true,k:'impr',set:'0,1,2,3,4,5,6,7',sn:'Coliseo|Foro Romano y Palatino|Fontana de Trevi|Panteón|Piazza Navona|Plaza de España|Castillo de Sant’Angelo|Trastevere',n:'Los imprescindibles de Roma',eye:'Colección completada',line:'Lo esencial, visto.',when:'Completada el 13 oct 2026',place:'Trastevere · Roma'},
+ cAnt:{isC:true,k:'ant',set:'0,1,2,3,4,5',sn:'Coliseo|Foro Romano y Palatino|Largo di Torre Argentina|Castillo de Sant’Angelo|Circo Máximo|Termas de Caracalla',n:'La Roma antigua',eye:'Colección completada',line:'2.000 años de historia.',when:'Completada el 13 oct 2026',place:'Termas de Caracalla · Roma'},
+ eOcu:{isE:true,k:'ocu',n:'Bajo una cúpula de casi 2.000 años',eye:'Emblema secreto',line:'La mayor cúpula de hormigón sin armar del mundo.',when:'Encontrado el 11 oct 2026',place:'Panteón · Roma'},
+ eMon:{isE:true,k:'mon',n:'Volverás a Roma',eye:'Emblema secreto',line:'Quien lanza una moneda de espaldas, vuelve.',when:'Encontrado el 11 oct 2026',place:'Fontana de Trevi · Roma'},
+ eForo:{isE:true,k:'foro',n:'Donde empezó todo',eye:'Emblema secreto',line:'De aquí partían los caminos del Imperio.',when:'Encontrado el 10 oct 2026',place:'Foro Romano · Roma'},
+ eMar:{isE:true,k:'mar',n:'Una maravilla del mundo',eye:'Emblema secreto',line:'El mayor anfiteatro de la Antigüedad.',when:'Encontrado el 10 oct 2026',place:'Coliseo · Roma'}};
+const SH=['Logros de viajero','Sellos de ciudad','Colecciones completadas','Emblemas secretos'];
+const PH=['Tu primer logro de viajero irá aquí','Tu primer sello de ciudad irá aquí','Tu primera colección completada irá aquí','Tu primer emblema secreto irá aquí'];
+const ER=['50%','50%','18px','50%'];
+const EXS=[['fundador','Viajero fundador','El primer año de la app'],['pionero','Pionero','Los primeros 100 de un destino'],['roma','Roma 2027','Solo existe ese año'],['probador','Probador','Antes que nadie']];
+const COLS=[['impr','Los imprescindibles de Roma',8,8],['vati','El país más pequeño del mundo',3,3],['joyas','Las 4 joyas de Roma',4,4],['ant','La Roma antigua',6,6],['tras','El alma de Trastevere',4,4],['mig','La Roma de Miguel Ángel',4,4],['mir','Los miradores',3,3],['ber','La Roma de Bernini',5,3],['pyf','Plazas y fuentes de Roma',7,4],['car','Tras los pasos de Caravaggio',3,0],['sec','La Roma secreta',5,0]];
+class Component extends DCLogic {
+  state={tab:{},sel:null,quit:{},pk:1,toast:null,fs:{T4:'0-0'},dp:{G1:'p',G2:'p'},go:{G1:'pisa',G2:'vat'},mcs:{M2:'1-3'}};
+  componentDidUpdate(){this.mcScroll();}
+  componentDidMount(){this.mcScroll();}
+  mcScroll(){setTimeout(()=>{document.querySelectorAll('[data-mcstart]').forEach(el=>{const v=+el.dataset.mcstart;if(v&&!el.dataset.done){el.scrollLeft=el.clientWidth*v;el.dataset.done='1';}});},300);}
+  componentDidMount(){setTimeout(()=>document.querySelectorAll('[data-autoscroll]').forEach(el=>{const v=+el.getAttribute('data-autoscroll');if(v)el.scrollTop=v;}),900);}
+  componentWillUnmount(){clearTimeout(this.tt);}
+  toast(id,t){this.setState({toast:{id,t}});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2400);}
+  vit(id,cap,o){const s=this.state;const q=s.quit[id]||{};
+    const shelves=o.lay.map((row,r)=>{const items=row.map((k,c)=>q[r+'-'+c]?null:k);const n=items.filter(Boolean).length;
+      return{t:SH[r],c:n+' de 4',none:n===0,ph:PH[r],slots:items.map((k,c)=>{const p=k?P[k]:null;
+        return{empty:!p,full:!!p,er:ER[r],lo:p?'.34':'.12',isL:!!(p&&p.isL),isS:!!(p&&p.isS),isC:!!(p&&p.isC),isE:!!(p&&p.isE),t:p&&p.t||'1',h:String(p&&p.h||40),num:p&&p.num||'',i:p&&p.i||'',g:p&&p.g||'',sh:p&&p.sh||'',l:p&&p.l||'',k:p&&p.k||'',set:p&&p.set||'',sn:p&&p.sn||'',
+          open:()=>{if(o.inter)this.setState({sel:{id,k,r,c}});}};})};});
+    const sel=s.sel&&s.sel.id===id?s.sel:null;let op={};
+    if(sel){if(sel.k==='__ped')op={isM:true,eye:'Las 7 maravillas',n:'Tu primera maravilla',line:'1 de 7 maravillas.',when:'Conseguida el 10 oct 2026',place:'Coliseo · Roma',canQuit:false};
+      else if(sel.k.startsWith('__x')){const x=EXS[+sel.k.slice(3)];op={isX:true,k:x[0],eye:'Exclusivo',n:x[1],line:x[2]+'.',when:'Conseguido el 1 oct 2026',place:'Roma, Italia',canQuit:false};}
+      else op={...P[sel.k],canQuit:true};}
+    const opF={isL:false,isS:false,isC:false,isE:false,isX:false,isM:false,t:'1',h:'40',num:'',i:'',g:'',sh:'',l:'',k:'',set:'',sn:'',eye:'',n:'',line:'',when:'',place:'',canQuit:false,...op,h:String(op.h||40)};
+    return{id,cap,isV:true,isT:false,isD:false,isP:false,hasTabs:true,bg:'radial-gradient(circle at 50% 0%,#1E2648 0%,#0B0E1C 62%)',fg:'#FFFDF8',segBg:'rgba(255,253,248,.08)',lineC:'rgba(255,253,248,.2)',
+      ped:!!o.ped,pedN:'1',openPed:()=>{if(o.inter)this.setState({sel:{id,k:'__ped'}});},
+      exN:o.ex.length+(o.ex.length===1?' exclusivo':' exclusivos'),ex:o.ex.map((i,j)=>({k:EXS[i][0],d:(j*.5).toFixed(1),open:()=>{if(o.inter)this.setState({sel:{id,k:'__x'+i}});}})),
+      shelves,hasOpen:!!sel,op:opF,close:()=>this.setState({sel:null}),
+      quit:()=>{const n=P[sel.k]?P[sel.k].n:'';this.setState(st=>({sel:null,quit:{...st.quit,[id]:{...(st.quit[id]||{}),[sel.r+'-'+sel.c]:true}}}));this.toast(id,'«'+n+'» vuelve a Todos mis logros');}};}
+  tPhone(id,cap,scroll){const go=k=>e=>{if(e)e.stopPropagation();this.setState(st=>({go:{...st.go,[id]:k}}));};
+    const DS=[['Roma','oro','coliseo','#B8964F','oro','7 de 11 colecciones · 5 de 12 secretos',.62,'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)','roma'],['Pisa','diamante','cupula','#7F93C9','diamante','3 de 3 colecciones · 2 de 2 secretos',1,'linear-gradient(160deg,#B8CDE6,#5E7FA8 55%,#2E3E5E)','pisa'],['Florencia','bronce','cupula','#A8734A','bronce','1 de 6 colecciones · 1 de 8 secretos',.14,'linear-gradient(160deg,#C9D8A0,#6E8E4A 55%,#3A4A26)','flo']];
+    const dests=DS.map(([n,g,i,gc,gn,sum,p,ph,k])=>({n,g,i,gc,gn,sum,ph,pct:Math.round(p*100)+'%',off:String(Math.round(113*(1-p))),go:go(k)}));
+    const countries=[['Italia','linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)','3 destinos',[['Roma','oro','coliseo','roma'],['Florencia','bronce','cupula','flo'],['Pisa','diamante','cupula','pisa']]],['Vaticano','linear-gradient(90deg,#F2C230 0 50%,#F4F1EA 50%)','dentro del viaje a Roma',[['Vaticano','plata','cupula','vat']]]].map(([n,fl,s2,d])=>({n,fl,s:s2,d:d.map(([n2,g,i,k])=>({n:n2,g,i,go:go(k),bg:'transparent'}))}));
+    const dp=this.state.dp[id]||(id==='T2'?'p':'d');return{dests,countries,dpD:dp==='d',dpP:dp==='p',dpT:[['d','Destinos'],['p','Países']].map(([k,n],j)=>({n,dot:j>0,fw:dp===k?'600':'500',td:dp===k?'underline':'none',fg:dp===k?'#1C2230':'rgba(28,34,48,.55)',pick:()=>this.setState(st=>({dp:{...st.dp,[id]:k}}))})),fOn:false,f:{},id,cap,isV:false,isT:true,isD:false,isP:false,hasTabs:true,bg:'#F5EFE4',fg:'#1C2230',segBg:'#EDE4D3',lineC:'rgba(28,34,48,.16)',scroll:String(scroll||0),
+    ped:false,ex:[],shelves:[],hasOpen:false,op:{}};}
+  renderVals(){const R0=this.renderVals0();if(R0.phones)R0.phones=R0.phones.map(p=>({dColsB:R0.dCols,dColN:'7 de 11',dEmbsB:R0.dEmbs,dEmbN:'5 de 12',dEmbMore:'Roma esconde 7 secretos más',...p}));return R0;}
+  renderVals0(){if(window.TRAZO_SITIOS){const S=window.TRAZO_SITIOS,K=window.TRAZO_SITIO_CLAVE;for(const n in K)if(typeof IC!=='undefined'&&S[n])IC[K[n]]=S[n];}else if(!this.__sw){this.__sw=1;setTimeout(()=>{this.__sw=0;this.forceUpdate();},150);}
+    const s=this.state;
+    const tabs=(id,cur)=>[['v','Mi vitrina'],['t','Todos mis logros']].map(([k,n])=>{const on=cur===k;const dark=cur==='v';return{n,pick:()=>this.setState(st=>({tab:{...st.tab,[id]:k}})),bg:on?(dark?'#F3D59A':'#1C2230'):'transparent',fg:on?(dark?'#17120a':'#FFFDF8'):(dark?'rgba(255,253,248,.7)':'rgba(28,34,48,.65)')};});
+    const withTab=(ph,def)=>{const cur=s.tab[ph.id]||def;let out=ph;
+      if(cur!==def){out=cur==='t'?{...this.tPhone(ph.id,ph.cap),...fic(ph.id),id:ph.id}:this.vit(ph.id,ph.cap,{ped:true,ex:[0,2],lay:[['lCiu','lTro','lCaz','lVia'],['sRoma','sVat','sFlo','sPisa'],['cImp','cVat','cJoy','cAnt'],['eMar','eOcu','eMon','eForo']]});out.cap=ph.cap;}
+      return{...out,tabs:tabs(ph.id,cur),toastOn:!!(s.toast&&s.toast.id===ph.id)};};
+    const V1=this.vit('V1','La vitrina llena · toca una pieza',{ped:true,inter:true,ex:[0,1,2,3],lay:[['lCiu','lTro','lCaz','lVia'],['sRoma','sVat','sFlo','sPisa'],['cImp','cVat','cJoy','cAnt'],['eMar','eOcu','eMon','eForo']]});
+    const V2=this.vit('V2','Sin maravilla y con baldas vacías',{ped:false,ex:[2],lay:[['lVia',null,null,null],['sRoma',null,null,null],[null,null,null,null],[null,null,null,null]]});
+    const occ=[['sRoma','oro','coliseo','round','Roma'],['sFlo','bronce','cupula','round','Florencia'],['sPisa','diamante','cupula','round','Pisa'],[null]];
+    const pk=s.pk;const pick=occ.map(([k,g,i,sh,n],j)=>{const on=pk===j;return{full:!!k,empty:!k,g:g||'',i:i||'',sh:sh||'',n:k?n:'Libre',bd:on?'oklch(0.8 0.14 70)':'rgba(255,253,248,.08)',bg:on?'rgba(243,213,154,.12)':'rgba(255,253,248,.03)',sel:()=>this.setState({pk:j})};});
+    const D3={dd:{n:'Roma',g:'oro',i:'coliseo',l:'ROMA',c:'#B8964F',gt:'ORO · ROMA EN EL CORAZÓN',sum:'7 de 11 colecciones · 5 de 12 secretos',w:'62%',ph:'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)',phT:'FOTO DE ROMA'},dFull:true,dShort:false,back:()=>{},id:'V3',cap:'Elegir hueco para un sello',isV:false,isT:false,isD:true,isP:false,hasTabs:false,bg:'#F5EFE4',fg:'#1C2230',sheet:true,ped:false,ex:[],shelves:[],hasOpen:false,op:{}};
+    const AA={id:'A',cap:'Una colección por dentro · álbum de cromos',isV:false,isT:false,isD:false,isP:false,isA:true,hasTabs:false,bg:'#F5EFE4',fg:'#1C2230',ped:false,ex:[],shelves:[],hasOpen:false,op:{}};
+    const TR={id:'TR',cap:'Mis viajes → Roma, octubre 2026',isV:false,isT:false,isD:false,isP:false,isTr:true,hasTabs:false,bg:'#F5EFE4',fg:'#1C2230',ped:false,ex:[],shelves:[],hasOpen:false,op:{}};
+    const D5={dd:{n:'Roma',g:'oro',i:'coliseo',l:'ROMA',c:'#B8964F',gt:'ORO · ROMA EN EL CORAZÓN',sum:'7 de 11 colecciones · 5 de 12 secretos',w:'62%',ph:'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)',phT:'FOTO DE ROMA'},dFull:true,dShort:false,back:()=>{},id:'T3',cap:'Por destino → Roma · todos sus viajes',isV:false,isT:false,isD:true,isP:false,hasTabs:false,bg:'#F5EFE4',fg:'#1C2230',sheet:false,ped:false,ex:[],shelves:[],hasOpen:false,op:{}};
+    const PP={id:'P',cap:'El Perfil · su título y tres accesos',isV:false,isT:false,isD:false,isP:true,hasTabs:false,bg:'#F5EFE4',fg:'#1C2230',ped:false,ex:[],shelves:[],hasOpen:false,op:{}};
+    const SEALS=[['oro','coliseo','round','ROMA','Sello de Roma','ORO','#B8964F'],['plata','cupula','oval','VATICANO','Sello del Vaticano','PLATA','#8F969E']];
+    const SEALD=()=>SEALS.map(([g,i,sh,l,n,gn,c],j)=>({g,i,sh,l,n,gn,c,pin:true,pBg:j===0?'oklch(0.55 0.11 150)':'oklch(0.8 0.14 70)',pFg:j===0?'#FFFFFF':'#17120a',pI:j===0?'M5 12.5l4.5 4.5L19 7.5':'M12 5v14M5 12h14',hl:false,bd:'rgba(28,34,48,.07)',sh2:'none'}));
+    const nt=p=>({...p,dSeals:(p.dSeals&&p.dSeals.length)?p.dSeals:(p.isD?SEALD():[]),tabs:[],toastOn:!!(s.toast&&s.toast.id===p.id)});
+    const DD={roma:{n:'Roma',g:'oro',i:'coliseo',l:'ROMA',c:'#B8964F',gt:'ORO · ROMA EN EL CORAZÓN',sum:'7 de 11 colecciones · 5 de 12 secretos',w:'62%',ph:'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)',phT:'FOTO DE ROMA'},
+      pisa:{n:'Pisa',g:'diamante',i:'cupula',l:'PISA',c:'#7F93C9',gt:'DIAMANTE · PISA ES TUYA',sum:'3 de 3 colecciones · 2 de 2 secretos',w:'100%',ph:'linear-gradient(160deg,#B8CDE6,#5E7FA8 55%,#2E3E5E)',phT:'FOTO DE PISA'},
+      flo:{n:'Florencia',g:'bronce',i:'cupula',l:'FLORENCIA',c:'#A8734A',gt:'BRONCE · PRIMEROS PASOS EN FLORENCIA',sum:'1 de 6 colecciones · 1 de 8 secretos',w:'14%',ph:'linear-gradient(160deg,#C9D8A0,#6E8E4A 55%,#3A4A26)',phT:'FOTO DE FLORENCIA'}};
+    const destPage=(id,cap,k)=>{const key=k==='vat'?'roma':k;const hlV=k==='vat';const isR=key==='roma';
+      const seals=isR?SEALS.map(([g,i,sh,l,n,gn,c],j)=>({g,i,sh,l,n,gn,c,...pin(1,j===0),hl:hlV&&j===1,bd:hlV&&j===1?'oklch(0.8 0.14 70)':'rgba(28,34,48,.07)',sh2:hlV&&j===1?'0 0 0 3px oklch(0.8 0.14 70 / .35)':'none'})):[{g:DD[key].g,i:DD[key].i,sh:'round',l:DD[key].l,n:'Sello de '+DD[key].n,gn:DD[key].g.toUpperCase(),c:DD[key].c,...pin(1,false),hl:false,bd:'rgba(28,34,48,.07)',sh2:'none'}];
+      const PC=key==='roma'?null:[['mir','La Plaza de los Milagros'],['sec','Pisa junto al Arno'],['pyf','Las torres de Pisa']].map(([k2,n2])=>({k:k2,n:n2,...pin(1,false),set:'0,1,2,3,4,5,6',sn:'',done:true,st:'✓ Completa',cc:'oklch(0.42 0.09 150)',bg:'#FFFDF8',flt:'none',op:'1'})).map((c,ix)=>key==='pisa'||ix===0?c:{...c,...pin(0,false),set:'0',done:false,st:'1 de 3',cc:'oklch(0.48 0.17 5)',bg:'#F8F3EA'});
+      return{...nt({...D5}),id,cap,dd:DD[key],dSeals:seals,dFull:true,dShort:false,...(PC?{dColsB:PC,dColN:key==='pisa'?'3 de 3':'1 de 3',dEmbsB:['key','lamp'].map((k2,ix)=>{const g=key==='pisa'||ix===0;return{got:g,gotM:false,gotN:g,lock:!g,k:g?k2:'',...pin(g,false)};}),dEmbN:key==='pisa'?'2 de 2':'1 de 2',dEmbMore:key==='pisa'?'Los has encontrado todos':'Florencia esconde 1 secreto más'}:{}),back:()=>this.setState(st=>({go:{...st.go,[id]:null}}))};};
+    const VG=[['El mundo','oklch(0.58 0.14 38)',40,[['Países','Ciudadano del mundo','4','10',IC.globo,1,10,15,'te faltan 5 para Horizonte sin fin',1,1],['Destinos','Ciudad tras ciudad','2','3',IC.pin,1,3,5,'te faltan 2 para Mapa en marcha',0,0],['Capitales','Capitales','1','',IC.capital,0,3,5,'te faltan 2 para conseguirlo',0,0]]],
+      ['El tiempo','oklch(0.62 0.13 75)',80,[['Viajes','El primer viaje','1','1',IC.maleta,1,1,5,'te faltan 4 para Cinco maletas',0,1],['Las cuatro estaciones','Las cuatro estaciones','1','',IC.estacion,0,1,4,'te faltan 3 para conseguirlo',0,0],['Los 12 meses','Los 12 meses','1','',IC.grid,0,2,12,'te faltan 10 para conseguirlo',0,0]]],
+      ['Cómo viajas','oklch(0.55 0.1 118)',118,[['En pareja','Mapa para dos','2','3',IC.pareja,1,3,5,'te faltan 2 para Cómplices de viaje',0,1],['A mi aire','A mi aire','1','',IC.brujula,0,0,1,'te falta 1 para conseguirlo',0,0],['Con amigos','La pandilla viaja','1','1',IC.pareja,1,1,3,'te faltan 2 para Risas en ruta',0,0]]],
+      ['Coleccionista','oklch(0.5 0.12 330)',330,[['Cazador de emblemas','Cazador de emblemas','1','5',IC.lupa,1,5,10,'te faltan 5 para Ojo de lince',0,1],['Coleccionista','Coleccionista','1','',IC.grid,0,3,5,'te faltan 2 para conseguirlo',0,0],['Conocedor de Roma','Conocedor de Roma','1','',IC.pin,0,18,25,'te faltan 7 para conseguirlo',0,0]]]];
+    const PINI={p:'M12 5v14M5 12h14',c:'M5 12.5l4.5 4.5L19 7.5'};
+    const pin=(got,inV)=>({pin:!!got,pBg:inV?'oklch(0.55 0.11 150)':'oklch(0.8 0.14 70)',pFg:inV?'#FFFFFF':'#17120a',pI:inV?PINI.c:PINI.p});
+    const vRow=(gi,ri,id)=>{const[k,nm,t,num,i,got,cur,nx,next,isTitle,inV]=VG[gi][3][ri];return{k,n:nm,t,num,i,got:!!got,cnt:cur+'/'+nx,next,isTitle,inV,c:VG[gi][1],h:String(VG[gi][2]),eye:VG[gi][0]+' · '+k};};
+    const vgroups=(id)=>VG.map(([n,c,h,rows],gi)=>({n,c,h:String(h),all:()=>this.setState({toast:{id,t:'Abriendo Mi colección · '+n}}),rows:rows.map((rw,ri)=>{const r=vRow(gi,ri);return{...r,...pin(r.got,r.inV),rc:r.got?c:'rgba(28,34,48,.25)',off:String(Math.round(245*(1-Math.min(1,rw[6]/rw[7])))),
+      flt:r.got?'none':'grayscale(1)',op:r.got?'1':'.45',nc:r.got?'#1C2230':'rgba(28,34,48,.5)',open:()=>this.setState(st=>({fs:{...st.fs,[id]:gi+'-'+ri}}))};})}));
+    const MCD=[['El mundo','oklch(0.58 0.14 38)',40,[['Países',IC.globo,4,6,'Visita más países'],['Destinos',IC.pin,2,6,'Visita más destinos'],['Capitales',IC.capital,0,4,'Visita 5 capitales'],['Patrimonios',IC.grid,1,3,'Visita sitios Patrimonio de la Humanidad'],['Continentes',IC.globo,0,1,'Visita un continente nuevo'],['Viajero nacional',IC.pin,1,1,'Visita 3 destinos de tu país'],['Dos países en un día',IC.globo,1,1,'Visita dos países el mismo día'],['Al otro lado del ecuador',IC.globo,0,1,'Viaja al hemisferio sur'],['Los pequeños gigantes',IC.capital,0,1,'Visita los microestados de Europa']]],
+      ['El tiempo','oklch(0.62 0.13 75)',80,[['Viajes',IC.maleta,1,3,'Haz más viajes'],['Las cuatro estaciones',IC.estacion,0,1,'Viaja en primavera, verano, otoño e invierno'],['Los 12 meses',IC.grid,0,1,'Viaja en cada mes del año'],['Navidad fuera de casa',IC.estacion,0,1,'Pasa la Navidad de viaje'],['Nochevieja fuera de casa',IC.estacion,0,1,'Pasa la Nochevieja de viaje'],['Nunca es la última vez',IC.pin,1,1,'Vuelve a una ciudad'],['De sol a sol',IC.estacion,0,1,'Madrugador y Nocturno el mismo día'],['Tres viajes en un año',IC.maleta,0,1,'Haz 3 viajes en un año'],['Un destino, cuatro estaciones',IC.estacion,0,1,'Visita la misma ciudad en las 4 estaciones']]],
+      ['Cómo viajas','oklch(0.55 0.1 118)',118,[['A mi aire',IC.brujula,0,4,'Haz un viaje a tu aire'],['En pareja',IC.pareja,2,4,'Haz más viajes en pareja'],['Con amigos',IC.pareja,1,4,'Haz más viajes con amigos'],['En familia',IC.maleta,0,4,'Haz un viaje en familia'],['Día perfecto',IC.estacion,1,1,'Completa todas las paradas de un día'],['Viaje perfecto',IC.maleta,0,1,'Completa todos los días de un viaje'],['Imparable',IC.estacion,1,1,'Completa 3 días seguidos'],['Escapada',IC.maleta,0,1,'Haz un viaje de 1 o 2 noches'],['El fotógrafo',IC.lupa,0,1,'Haz foto en todas las paradas vistas']]],
+      ['Coleccionista','oklch(0.5 0.12 330)',330,[['Cazador de emblemas',IC.lupa,1,3,'Encuentra más emblemas secretos'],['Coleccionista',IC.grid,0,3,'Completa 5 colecciones'],['Conocedor',IC.pin,0,2,'Ve 25 sitios de una misma ciudad'],['Ciudad al completo',IC.grid,0,1,'Completa todas las colecciones de una ciudad'],['Todos sus secretos',IC.lupa,0,1,'Encuentra todos los emblemas de una ciudad'],['Tres ciudades de oro',IC.capital,0,1,'Consigue el sello de oro en 3 ciudades'],['Tres ciudades de diamante',IC.capital,0,1,'Consigue el sello de diamante en 3 ciudades'],['Diamante a la primera',IC.capital,1,1,'Consigue un diamante en tu primer viaje a una ciudad']]]];
+    const mcPhone=(id,cap,start)=>{const sel=s.mcs[id];let tot=0,got=0;
+      const pages=MCD.map(([n,c,h,L],gi)=>({n,c,h:String(h),num:(gi+1)+' / 4',slots:L.map(([sn,i,lv,mx,how],si)=>{tot+=mx;got+=lv;const g=lv>0;return{n:g?sn:'Por conseguir',i,t:String(Math.max(1,Math.min(6,lv*(mx>4?1:2)))),num:'',got:g,empty:!g,hasDots:mx>1,dots:Array.from({length:mx},(_,k)=>k<lv?'#F3D59A':'rgba(243,213,154,.22)'),nc:g?'#FFF3D6':'rgba(243,213,154,.45)',
+        open:()=>this.setState(st=>({mcs:{...st.mcs,[id]:gi+'-'+si}}))};})}));
+      let mc={},mcOn=false;if(sel){const[gi,si]=sel.split('-').map(Number);const[sn,i,lv,mx,how]=MCD[gi][3][si];const g=lv>0;mcOn=true;mc={n:sn,i,t:String(Math.max(1,Math.min(6,lv*(mx>4?1:2)))),num:'',h:String(MCD[gi][2]),c:MCD[gi][1],eye:MCD[gi][0],got:g,how:g?(lv<mx?'Escalón '+lv+' de '+mx:'Conseguido'):how,flt:g?'none':'grayscale(1)',op:g?'1':'.45'};}
+      return{...nt({id,cap,isV:false,isT:false,isD:false,isP:false,isMC:true,hasTabs:false,bg:'#F5EFE4',fg:'#1C2230',ped:false,ex:[],shelves:[],hasOpen:false,op:{}}),mcPages:pages,mcStart:String(start||0),mcPage:'Desliza para pasar de página',mcOff:String((119.4*(1-got/tot)).toFixed(1)),mcOn,mc,mcClose:()=>this.setState(st=>({mcs:{...st.mcs,[id]:null}}))};};
+    const fic=id=>{const k=s.fs[id];if(!k)return{fOn:false,f:{}};const[gi,ri]=k.split('-').map(Number);const r=vRow(gi,ri);
+      const U={'Países':'países visitados','Destinos':'destinos','Capitales':'capitales','Viajes':'viajes','En pareja':'viajes en pareja','Con amigos':'viaje con amigos','Cazador de emblemas':'emblemas encontrados'};const cur=VG[gi][3][ri][6];
+      return{fOn:true,fClose:()=>this.setState(st=>({fs:{...st.fs,[id]:null}})),f:{...r,vBg:r.inV?'oklch(0.55 0.11 150)':'oklch(0.8 0.14 70)',vFg:r.inV?'#FFFFFF':'#17120a',vI:r.inV?'M5 12.5l4.5 4.5L19 7.5':'M12 5v14M5 12h14',title:r.isTitle?'✓ Es tu título':'Usar como mi título',notGot:!r.got,mk:cur+' '+(U[r.k]||''),when:'Conseguido el 11 oct 2026 · Roma, Italia',next:r.next.charAt(0).toUpperCase()+r.next.slice(1),flt:r.got?'none':'grayscale(1)',op:r.got?'1':'.5',carry:r.inV?'Quitar de mi vitrina':'Llevar a mi vitrina'}};};
+    const W7=['Coliseo','Gran Muralla China','Petra','Cristo Redentor','Machu Picchu','Chichén Itzá','Taj Mahal'];
+    const T1={...this.tPhone('T1','Todos mis logros · arriba · toca un logro',0),...fic('T1')},T2={...this.tPhone('T2','Todos mis logros · bajando',760),...fic('T2')},T4={...this.tPhone('T4','La ficha de un logro',0),...fic('T4')};
+    return{ic:IC,toastTxt:s.toast?s.toast.t:'',
+      phones:(()=>{const G1=s.go.G1?destPage('G1','Países → toca Pisa → su página',s.go.G1):{...withTab({...this.tPhone('G1','Países → toca Pisa → su página',760)},'t')};
+        const G2=s.go.G2?destPage('G2','Países → toca el Vaticano → Roma, en el Vaticano',s.go.G2):{...withTab({...this.tPhone('G2','Países → toca el Vaticano → Roma, en el Vaticano',760)},'t')};
+        const goW=ph=>s.go[ph.id]?destPage(ph.id,ph.cap,s.go[ph.id]):ph;
+        const L=[goW(withTab(T1,'t')),goW(withTab(T2,'t')),G1,G2,mcPhone('M1','Mi colección · El mundo',0),mcPhone('M2','Mi colección · un hueco por conseguir',1),withTab(T4,'t'),nt(D5),nt(AA),nt(TR),withTab(V1,'v'),withTab(V2,'v'),nt(D3)];const o=this.props.only;return o?L.filter(x=>o.split(",").includes(x.id)):L;})(),
+      vgroups:vgroups('T1'),
+      wonders:W7.map((n,i)=>({n:i===0?n+' · 10 oct 2026':n,mk:i===0?'✓':'',c:i===0?'#FFFDF8':'rgba(255,253,248,.5)',dBg:i===0?'#F3D59A':'transparent',dBd:i===0?'none':'1.5px solid rgba(255,253,248,.25)'})),
+      exAll:[EXS[0],EXS[2]].map(([k,n,t])=>({k,n,t})),
+      dests:[['Roma','oro','coliseo','#B8964F','oro','7 de 11 colecciones · 5 de 12 secretos',.62,'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)'],['Pisa','diamante','cupula','#7F93C9','diamante','3 de 3 colecciones · 2 de 2 secretos',1,'linear-gradient(160deg,#B8CDE6,#5E7FA8 55%,#2E3E5E)'],['Florencia','bronce','cupula','#A8734A','bronce','1 de 6 colecciones · 1 de 8 secretos',.14,'linear-gradient(160deg,#C9D8A0,#6E8E4A 55%,#3A4A26)']]
+        .map(([n,g,i,gc,gn,sum,p,ph])=>({n,g,i,gc,gn,sum,ph,pct:Math.round(p*100)+'%',off:String(Math.round(113*(1-p)))})),
+      dSeals:[['oro','coliseo','round','ROMA','Sello de Roma','ORO','#B8964F'],['plata','cupula','oval','VATICANO','Sello del Vaticano','PLATA','#8F969E']].map(([g,i,sh,l,n,gn,c],j)=>({g,i,sh,l,n,gn,c,...pin(1,j===0)})),
+      dCols:COLS.map(([k,n,tot,h])=>{const done=h===tot;return{k,n,...pin(done,['impr','vati','joyas','ant'].includes(k)),set:Array.from({length:h},(_,j)=>j).join(','),sn:'',done,st:done?'✓ Completa':h?h+' de '+tot:'Sin empezar',cc:done?'oklch(0.42 0.09 150)':h?'oklch(0.48 0.17 5)':'rgba(28,34,48,.45)',bg:done?'#FFFDF8':'#F8F3EA',flt:h?'none':'grayscale(1)',op:h?'1':'.45'};}),
+      dEmbs:['mar','foro','ocu','mon','plaza',0,0,0,0,0,0,0].map(k=>({got:!!k,gotM:k==='mar',gotN:!!k&&k!=='mar',lock:!k,k:k||'',...pin(!!k,k&&k!=='plaza')})),
+      countries:[['Italia','linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)','3 destinos',[['Roma','oro','coliseo'],['Florencia','bronce','cupula'],['Pisa','diamante','cupula']]],['Vaticano','linear-gradient(90deg,#F2C230 0 50%,#F4F1EA 50%)','1 destino',[['Vaticano','plata','cupula']]]].map(([n,fl,s,d])=>({n,fl,s,d:d.map(([n2,g,i])=>({n:n2,g,i}))})),
+      album:[['Coliseo','M3 20h18M4 20v-9c4-5 12-5 16 0v9M4 14h16M7 11v9M10 9.5V20M14 9.5V20M17 11v9','10 oct 2026'],['Foro Romano y Palatino','M4 20h16M6 20V9M10 20V9M14 20V9M18 20V9M5 9h14','10 oct 2026'],['Fontana de Trevi','M4 20h16M6 20v-3h12v3M12 17V9M12 9c-2 0-4-1.5-4-4M12 9c2 0 4-1.5 4-4','11 oct 2026'],['Panteón','M3 20h18M5 20V12M9 20V12M15 20V12M19 20V12M4 12h16L12 6zM8 8a4 4 0 0 1 8 0','11 oct 2026'],['Piazza Navona','M10 21h4M10.5 21V7L12 3l1.5 4v14',''],['Plaza de España','M3 20h18M4 20v-3h4v-3h4v-3h4V8h4v12','12 oct 2026'],['Castillo de Sant’Angelo','M4 21V11h16v10M4 11a8 3 0 0 1 16 0M12 8V4',''],['Trastevere','M12 21V9M8 9h8l-1-3H9z','']].map(([n,i0,d])=>{const got=!!d;const i=(window.TRAZO_SITIOS||{})[n]||i0;return{n,i,d,got,inR:!got&&!!({'Piazza Navona':'Día 3 · mié 12','Castillo de Sant’Angelo':'Día 4 · jue 13','Trastevere':'Día 2 · mar 11'})[n],day:({'Piazza Navona':'Día 3 · mié 12','Castillo de Sant’Angelo':'Día 4 · jue 13','Trastevere':'Día 2 · mar 11'})[n]||'',bg:got?'#FFFDF8':'transparent',bd:got?'rgba(28,34,48,.07)':'rgba(28,34,48,.14)',ib:got?'oklch(0.55 0.17 5)':'#ECE5D7',ic:got?'#FFFDF8':'rgba(28,34,48,.28)',fc:got?'#1C2230':'rgba(28,34,48,.45)'};}),
+      tdays:[['MAR 10','Llegada y Monti'],['MIÉ 11','Roma antigua'],['JUE 12','Vaticano'],['VIE 13','Centro histórico'],['SÁB 14','Trastevere y vuelta']].map(([k,n])=>({k,n})),
+      tphotos:['#C9A27A','#8EA3B0','#D9B88A','#A9785A','#B9C4B4','#D2A77C'].map(c=>'linear-gradient(150deg,'+c+',rgba(28,34,48,.35))'),
+      pfPieces:[['isS','0s'],['isE','1.2s'],['isL','2.4s']].map(([t,d])=>({isS:t==='isS',isE:t==='isE',isL:t==='isL',d})),
+      trips:[['Roma','10 – 14 oct 2026','linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)','FOTO DEL VIAJE',1,0],['Pisa','4 – 6 may 2026','linear-gradient(160deg,#B8CDE6,#5E7FA8 55%,#2E3E5E)','DE TU GALERÍA',0,1],['Florencia','1 – 4 may 2026','linear-gradient(160deg,#C9D8A0,#6E8E4A 55%,#3A4A26)','FOTO DEL VIAJE',0,1]].map(([n,d,ph,src,edit,btn])=>({n,d,ph,src,edit:!!edit,btn:!!btn})),
+      pick,pickWarn:!!occ[pk][0],pickTxt:occ[pk][0]?'«'+P[occ[pk][0]].n+'» vuelve a Todos mis logros':''};}
+}
+</script>
+</body>
+</html>

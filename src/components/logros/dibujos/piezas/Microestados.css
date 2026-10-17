@@ -1,0 +1,10 @@
+@keyframes meIn{0%{opacity:0;transform:scale(.3) rotate(-25deg)}60%{opacity:1;transform:scale(1.06) rotate(3deg)}100%{opacity:1;transform:none}}
+@keyframes meLens{0%{opacity:0;offset-distance:0%}10%{opacity:1}85%{opacity:1;offset-distance:100%}100%{opacity:0;offset-distance:100%}}
+@keyframes mePop{0%{opacity:0;transform:scale(.15)}60%{opacity:1;transform:scale(1.35)}100%{opacity:1;transform:scale(1)}}
+@keyframes meDraw{to{stroke-dashoffset:0}}
+@keyframes meCrown{0%{opacity:0;transform:translateY(-14px) scale(.4)}70%{opacity:1;transform:translateY(2px) scale(1.1)}100%{opacity:1;transform:none}}
+@keyframes meTw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes meSweep{0%{transform:translateX(-180%) rotate(20deg)}55%,100%{transform:translateX(340%) rotate(20deg)}}
+[data-st="1"] *{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+[data-st="1"] .meL{display:none}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

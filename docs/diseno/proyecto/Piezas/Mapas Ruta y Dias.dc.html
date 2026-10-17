@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 80px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:760px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Ruta y Días · los mapas</span>
+    <span style="font:400 44px/1 'Instrument Serif',serif">Cada línea, un <em style="color:oklch(0.55 0.17 5)">trazo</em></span>
+    <span style="font:400 14px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">El mapa es el de siempre; aquí va dibujado solo como referencia. Cambian las líneas: un trazo con halo claro que se lee sobre cualquier calle. Azul para llegar y volver, tinta para excursiones y trenes entre ciudades, y el color de cada día en Días.</span>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:48px 44px;align-items:flex-start">
+  <sc-for list="{{ phones }}" as="p" hint-placeholder-count="3">
+    <div id="{{ p.id }}" style="display:flex;flex-direction:column;gap:12px">
+      <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ p.badge }}</span>
+      <div data-screen-label="{{ p.badge }}" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+        <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+        <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+        <header style="flex:none;display:flex;align-items:center;gap:4px;padding:4px 10px 10px 20px">
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font:400 30px/1 'Instrument Serif',serif;white-space:nowrap">{{ p.title }}</span><span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(28,34,48,.55)">{{ p.sub }}</span></span>
+          <button aria-label="Presupuesto" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:transparent;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.presupuesto }}"></path></svg></button>
+          <button aria-label="Avisos" style="position:relative;width:44px;height:44px;flex:none;border:none;border-radius:50%;background:transparent;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.avisos }}"></path></svg><span style="position:absolute;top:10px;right:11px;width:9px;height:9px;border-radius:50%;background:oklch(0.55 0.17 5);box-shadow:0 0 0 2px #F5EFE4"></span></button>
+          <button aria-label="Perfil" style="width:44px;height:44px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="width:34px;height:34px;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif;box-shadow:0 0 0 2px #F5EFE4,0 0 0 3.5px oklch(0.55 0.17 5)">E</span></button>
+        </header>
+
+        <div style="position:relative;height:440px;flex:none;overflow:hidden;background:#EFEBE1">
+          <svg width="390" height="440" viewBox="0 0 390 440" style="position:absolute;inset:0">
+            <path d="M300 -10 C360 30 400 60 400 120 V-10Z" fill="#DCE5CB"></path>
+            <path d="M-10 380 C40 360 70 400 60 450 H-10Z" fill="#DCE5CB"></path>
+            <g stroke="#E3DBCB" stroke-width="3" fill="none" stroke-linecap="round">
+              <path d="M-10 70 L400 150"></path><path d="M-10 250 L400 190"></path><path d="M60 -10 L130 450"></path><path d="M250 -10 L330 450"></path><path d="M-10 410 L400 330"></path><path d="M200 -10 L230 450"></path>
+            </g>
+            <g stroke="#E8E1D3" stroke-width="1.5" fill="none"><path d="M-10 160 L400 110"></path><path d="M-10 330 L400 270"></path><path d="M120 -10 L60 450"></path><path d="M330 -10 L370 450"></path></g>
+            <sc-if value="{{ p.multi }}" hint-placeholder-val="{{ false }}">
+              <path d="M-10 -10 H70 C60 110 110 210 175 290 S275 410 300 450 H-10Z" fill="#D3E3E8" stroke="#BCD5DE" stroke-width="2"></path>
+            </sc-if>
+            <sc-if value="{{ p.city }}" hint-placeholder-val="{{ true }}">
+              <path d="M175 -10 C192 50 150 92 168 152 S216 232 190 292 S140 380 166 450" fill="none" stroke="#BCD5DE" stroke-width="10" stroke-linecap="round"></path>
+            </sc-if>
+          </svg>
+
+          <sc-if value="{{ p.ruta }}" hint-placeholder-val="{{ true }}">
+            <svg width="390" height="440" viewBox="0 0 390 440" style="position:absolute;inset:0">
+              <defs><linearGradient id="fade" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1C2230"></stop><stop offset="1" stop-color="#1C2230" stop-opacity="0"></stop></linearGradient></defs>
+              <circle cx="215" cy="205" r="112" fill="oklch(0.55 0.17 5 / .06)"></circle>
+              <circle cx="215" cy="205" r="94" fill="oklch(0.55 0.17 5 / .13)" stroke="oklch(0.55 0.17 5 / .55)" stroke-width="1.5"></circle>
+              <g fill="none" stroke-linecap="round">
+                <path d="M70 350 Q86 272 158 262" stroke="#FFFDF8" stroke-width="8"></path>
+                <path d="M70 350 Q86 272 158 262" stroke="oklch(0.56 0.1 230)" stroke-width="2.6"></path>
+                <path d="M274 140 Q300 92 326 98" stroke="#FFFDF8" stroke-width="8"></path>
+                <path d="M274 140 Q300 92 326 98" stroke="#1C2230" stroke-width="2.4"></path>
+                <path d="M262 292 Q300 330 352 378" stroke="#FFFDF8" stroke-width="8"></path>
+                <path d="M262 292 Q300 330 352 378" stroke="url(#fade)" stroke-width="2.4"></path>
+              </g>
+              <circle cx="158" cy="262" r="4.5" fill="oklch(0.56 0.1 230)" stroke="#FFFDF8" stroke-width="2"></circle>
+              <circle cx="274" cy="140" r="4.5" fill="#1C2230" stroke="#FFFDF8" stroke-width="2"></circle>
+              <circle cx="262" cy="292" r="4.5" fill="#1C2230" stroke="#FFFDF8" stroke-width="2"></circle>
+            </svg>
+            <div style="position:absolute;left:115px;top:166px;width:200px;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none">
+              <span style="font:400 48px/1 'Instrument Serif',serif">Roma</span>
+              <span style="font:600 12px 'Geist';color:oklch(0.48 0.17 5)">6 días · 13 – 18 oct</span>
+            </div>
+            <div style="position:absolute;left:198px;top:232px;display:flex;align-items:center;gap:6px">
+              <span style="width:34px;height:34px;border-radius:50%;background:#FFFDF8;border:1.5px solid #1C2230;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px -4px rgba(28,34,48,.4)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.casa }}"></path></svg></span>
+              <span style="height:28px;padding:0 10px;border-radius:999px;background:#FFFDF8;box-shadow:0 4px 12px -6px rgba(28,34,48,.35);display:flex;align-items:center;font:500 12.5px 'Geist';white-space:nowrap">Tu zona · <b style="font-weight:600;margin-left:3px">Monti</b></span>
+            </div>
+            <div style="position:absolute;left:22px;top:330px;display:flex;align-items:center;gap:8px">
+              <span style="width:44px;height:44px;border-radius:50%;background:oklch(0.56 0.1 230);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #FFFDF8,0 8px 16px -8px rgba(28,34,48,.5)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.avion }}"></path></svg></span>
+              <span style="padding:6px 11px;border-radius:14px;background:#FFFDF8;box-shadow:0 4px 12px -6px rgba(28,34,48,.35);display:flex;flex-direction:column;gap:1px"><span style="font:600 12.5px 'Geist'">Fiumicino</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.6)">llegas el lun 13</span></span>
+            </div>
+            <div style="position:absolute;left:256px;top:62px;display:flex;align-items:center;gap:8px">
+              <span style="padding:6px 11px;border-radius:14px;background:#FFFDF8;box-shadow:0 4px 12px -6px rgba(28,34,48,.35);display:flex;flex-direction:column;gap:1px;text-align:right"><span style="font:600 12.5px 'Geist'">Tívoli</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.6)">jue 16</span></span>
+              <span style="width:40px;height:40px;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #FFFDF8"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.bus }}"></path></svg></span>
+            </div>
+            <button style="position:absolute;right:12px;top:368px;height:36px;padding:0 12px 0 10px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:7px;font:600 12.5px 'Geist';cursor:pointer;box-shadow:0 8px 18px -8px rgba(28,34,48,.6)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.bus }}"></path></svg>Pompeya · vie 17<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 9v8H9"></path></svg></button>
+          </sc-if>
+
+          <sc-if value="{{ p.dias }}" hint-placeholder-val="{{ false }}">
+            <svg width="390" height="440" viewBox="0 0 390 440" style="position:absolute;inset:0">
+              <sc-for list="{{ zones }}" as="z" hint-placeholder-count="3">
+                <ellipse cx="{{ z.cx }}" cy="{{ z.cy }}" rx="{{ z.rx }}" ry="{{ z.ry }}" transform="{{ z.tr }}" fill="{{ z.fill }}" stroke="{{ z.c }}" stroke-width="1.5" stroke-opacity=".55" opacity="{{ z.op }}" onClick="{{ z.pick }}" style="cursor:pointer;transition:opacity .35s"></ellipse>
+              </sc-for>
+              <sc-if value="{{ hasPath }}" hint-placeholder-val="{{ true }}">
+                <path d="{{ selPath }}" fill="none" stroke="#FFFDF8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="{{ selPath }}" fill="none" stroke="{{ selColor }}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </sc-if>
+            </svg>
+            <sc-for list="{{ dots }}" as="d" hint-placeholder-count="15">
+              <span onClick="{{ d.pick }}" style="position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};margin:{{ d.m }};border-radius:50%;background:{{ d.c }};box-shadow:0 0 0 2px #FFFDF8;opacity:{{ d.op }};color:#fff;display:flex;align-items:center;justify-content:center;font:600 11px 'Geist';cursor:pointer;transition:all .35s cubic-bezier(.2,.8,.2,1)">{{ d.n }}</span>
+            </sc-for>
+            <sc-for list="{{ dayLabels }}" as="l" hint-placeholder-count="3">
+              <button onClick="{{ l.pick }}" style="position:absolute;left:{{ l.x }};top:{{ l.y }};height:32px;padding:0 12px 0 10px;border:none;border-radius:999px;background:#FFFDF8;box-shadow:{{ l.sh }};opacity:{{ l.op }};display:flex;align-items:center;gap:7px;font:500 12.5px 'Geist';color:#1C2230;white-space:nowrap;cursor:pointer;transition:opacity .35s,box-shadow .35s"><span style="width:10px;height:10px;border-radius:50%;background:{{ l.c }}"></span><b style="font-weight:600">{{ l.d }}</b> · {{ l.n }}</button>
+            </sc-for>
+            <sc-for list="{{ edge }}" as="e" hint-placeholder-count="2">
+              <button onClick="{{ e.pick }}" style="position:absolute;left:{{ e.x }};right:{{ e.r }};top:{{ e.y }};height:36px;padding:0 12px 0 10px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:7px;font:600 12.5px 'Geist';white-space:nowrap;cursor:pointer;box-shadow:{{ e.sh }};transition:box-shadow .35s"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.bus }}"></path></svg>{{ e.n }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ e.arrow }}"></path></svg></button>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ p.multi }}" hint-placeholder-val="{{ false }}">
+            <svg width="390" height="440" viewBox="0 0 390 440" style="position:absolute;inset:0">
+              <g fill="none" stroke-linecap="round">
+                <path d="M398 18 Q330 22 290 66" stroke="#FFFDF8" stroke-width="8"></path><path d="M398 18 Q330 22 290 66" stroke="oklch(0.56 0.1 230)" stroke-width="2.6"></path>
+                <path d="M192 100 Q180 82 166 122" stroke="#FFFDF8" stroke-width="8"></path><path d="M192 100 Q180 82 166 122" stroke="#1C2230" stroke-width="2.4"></path>
+                <path d="M146 178 Q160 280 232 302" stroke="#FFFDF8" stroke-width="8"></path><path d="M146 178 Q160 280 232 302" stroke="#1C2230" stroke-width="2.4"></path>
+                <path d="M352 300 Q380 280 398 236" stroke="#FFFDF8" stroke-width="8"></path><path d="M352 300 Q380 280 398 236" stroke="oklch(0.56 0.1 230)" stroke-width="2.6"></path>
+              </g>
+              <sc-for list="{{ cities }}" as="c" hint-placeholder-count="3">
+                <circle cx="{{ c.cx }}" cy="{{ c.cy }}" r="{{ c.halo }}" fill="oklch(0.55 0.17 5 / .06)"></circle>
+                <circle cx="{{ c.cx }}" cy="{{ c.cy }}" r="{{ c.r }}" fill="oklch(0.55 0.17 5 / .14)" stroke="oklch(0.55 0.17 5 / .55)" stroke-width="1.5"></circle>
+              </sc-for>
+            </svg>
+            <sc-for list="{{ cities }}" as="c" hint-placeholder-count="3">
+              <div style="position:absolute;left:{{ c.lx }};top:{{ c.ly }};width:140px;margin-left:-70px;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:none">
+                <span style="position:relative;font:400 {{ c.fs }}/1 'Instrument Serif',serif">{{ c.n }}<span style="position:absolute;top:-6px;right:-20px;width:18px;height:18px;border-radius:50%;background:#1C2230;color:#FFFDF8;font:600 10px/18px 'Geist';text-align:center">{{ c.k }}</span></span>
+                <span style="font:600 11.5px 'Geist';color:oklch(0.48 0.17 5)">{{ c.days }}</span>
+              </div>
+            </sc-for>
+            <sc-for list="{{ legChips }}" as="l" hint-placeholder-count="4">
+              <span style="position:absolute;left:{{ l.x }};top:{{ l.y }};height:30px;padding:0 11px 0 6px;border-radius:999px;background:#FFFDF8;box-shadow:0 4px 12px -6px rgba(28,34,48,.4);display:flex;align-items:center;gap:6px;font:500 12px 'Geist';white-space:nowrap"><span style="width:20px;height:20px;border-radius:50%;background:{{ l.c }};color:#fff;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ l.icon }}"></path></svg></span>{{ l.n }}</span>
+            </sc-for>
+          </sc-if>
+        </div>
+
+        <div style="position:relative;flex:1;min-height:0;margin-top:-26px;border-radius:28px 28px 0 0;background:#F5EFE4;box-shadow:0 -10px 24px -16px rgba(28,34,48,.35);display:flex;flex-direction:column">
+          <span style="align-self:center;margin:10px 0 6px;width:42px;height:4px;flex:none;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+          <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:4px 16px 18px;display:flex;flex-direction:column;gap:10px">
+
+            <sc-if value="{{ p.ruta }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:none;display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 12px 30px -22px rgba(28,34,48,.45)">
+                <span style="width:44px;height:44px;flex:none;border-radius:13px;background:linear-gradient(112deg,#2E8B57 0 34%,#F4F1EA 34% 66%,#CE3B3B 66%);box-shadow:inset 0 0 0 1px rgba(28,34,48,.08)"></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 24px/1 'Instrument Serif',serif">Roma</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">6 días · 13 – 18 oct</span></span>
+                <button aria-label="Tips" style="width:40px;height:40px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.tips }}"></path></svg></button>
+                <button aria-label="Recuperar mi ruta" style="width:40px;height:40px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.recuperar }}"></path></svg></button>
+              </div>
+              <span style="padding:6px 4px 0;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.5)">En el mapa</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+                <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3">
+                  <span style="min-height:62px;padding:10px;border-radius:16px;background:#FFFFFF;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;justify-content:space-between;gap:8px">
+                    <svg width="44" height="10" viewBox="0 0 44 10"><path d="M3 5 H41" stroke="#F5EFE4" stroke-width="7" stroke-linecap="round"></path><path d="M3 5 H41" stroke="{{ l.c }}" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="{{ l.dash }}"></path><circle cx="41" cy="5" r="3.5" fill="{{ l.c }}"></circle></svg>
+                    <span style="font:500 11.5px/1.25 'Geist'">{{ l.n }}</span>
+                  </span>
+                </sc-for>
+              </div>
+              <span style="padding:2px 4px;font:400 12.5px/1.45 'Geist';color:rgba(28,34,48,.62)">Las paradas de cada día, en <b style="color:#1C2230;font-weight:600">Días</b>.</span>
+            </sc-if>
+
+            <sc-if value="{{ p.dias }}" hint-placeholder-val="{{ false }}">
+              <span style="padding:0 4px 2px;font:400 12.5px 'Geist';color:rgba(28,34,48,.6)">Toca un día en el mapa o en la lista para verlo en orden.</span>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+                <div style="flex:none;border-radius:20px;background:#FFFDF8;border:1px solid {{ r.bd }};box-shadow:0 10px 24px -20px rgba(28,34,48,.5);overflow:hidden;transition:border-color .3s">
+                  <button onClick="{{ r.pick }}" style="width:100%;min-height:54px;border:none;background:transparent;display:flex;align-items:center;gap:12px;padding:0 14px;cursor:pointer;color:#1C2230;text-align:left">
+                    <span style="width:12px;height:12px;flex:none;border-radius:50%;background:{{ r.c }}"></span>
+                    <span style="flex:1;min-width:0;font:400 14px 'Geist'"><b style="font-weight:600">{{ r.d }}</b> · {{ r.n }}</span>
+                    <span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.5)">{{ r.cnt }}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ r.rot }};transition:transform .3s"><path d="M6 9l6 6 6-6"></path></svg>
+                  </button>
+                  <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:0 14px 12px 38px;display:flex;flex-direction:column;gap:2px;animation:pop .3s ease both">
+                      <sc-for list="{{ r.stops }}" as="s" hint-placeholder-count="4">
+                        <span style="display:flex;align-items:center;gap:10px;min-height:30px;font:400 13px 'Geist'"><span style="width:20px;height:20px;flex:none;border-radius:50%;background:{{ r.c }};color:#fff;font:600 10.5px/20px 'Geist';text-align:center">{{ s.n }}</span>{{ s.name }}</span>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </sc-if>
+
+            <sc-if value="{{ p.multi }}" hint-placeholder-val="{{ false }}">
+              <span style="display:flex;align-items:center;gap:8px;padding:0 6px;font:400 12.5px 'Geist';color:rgba(28,34,48,.62)"><span style="width:22px;height:22px;border-radius:50%;background:oklch(0.56 0.1 230);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.avion }}"></path></svg></span>Llegas a Florencia · lun 13 · avión</span>
+              <sc-for list="{{ stages }}" as="c" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="flex:none;display:flex;align-items:center;gap:12px;padding:11px 14px 11px 12px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 10px 24px -20px rgba(28,34,48,.5)">
+                    <span style="width:40px;height:40px;flex:none;border-radius:12px;background:linear-gradient(112deg,#2E8B57 0 34%,#F4F1EA 34% 66%,#CE3B3B 66%);box-shadow:inset 0 0 0 1px rgba(28,34,48,.08)"></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:400 22px/1 'Instrument Serif',serif">{{ c.n }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ c.meta }}</span></span>
+                    <span style="width:22px;height:22px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;font:600 11px/22px 'Geist';text-align:center">{{ c.k }}</span>
+                  </div>
+                  <sc-if value="{{ c.hasLeg }}" hint-placeholder-val="{{ true }}">
+                    <span style="display:flex;align-items:center;gap:8px;padding:0 6px 0 22px;font:400 12.5px 'Geist';color:rgba(28,34,48,.7)"><span style="width:22px;height:22px;border-radius:50%;background:#1C2230;color:#fff;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.tren }}"></path></svg></span><b style="font-weight:600;color:#1C2230">{{ c.leg }}</b>{{ c.legMeta }}</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <span style="display:flex;align-items:center;gap:8px;padding:0 6px;font:400 12.5px 'Geist';color:rgba(28,34,48,.62)"><span style="width:22px;height:22px;border-radius:50%;background:oklch(0.56 0.1 230);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.avion }}"></path></svg></span>Vuelves desde Roma · lun 20 · avión</span>
+            </sc-if>
+          </div>
+        </div>
+
+        <nav style="flex:none;background:#1C2230;padding:8px 6px 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))">
+          <sc-for list="{{ p.tabs }}" as="t" hint-placeholder-count="5">
+            <button style="position:relative;height:56px;border:none;background:transparent;color:{{ t.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer">
+              <span style="width:52px;height:30px;border-radius:999px;background:{{ t.pill }};color:{{ t.ic }};display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg></span>
+              <span style="font:{{ t.fw }} 11px 'Geist'">{{ t.n }}</span>
+              <sc-if value="{{ t.alert }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:2px;right:calc(50% - 26px);width:16px;height:16px;border-radius:50%;background:oklch(0.8 0.14 75);color:#1C2230;box-shadow:0 0 0 2px #1C2230;font:700 10px/16px 'Geist';text-align:center">!</span></sc-if>
+            </button>
+          </sc-for>
+        </nav>
+        <span style="position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:5px;background:rgba(255,253,248,.55)"></span>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INK='#1C2230',BLUE='oklch(0.56 0.1 230)';
+const IC={
+hoy:'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
+ruta:'M6 20.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 7.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 18.5h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8',
+dias:'M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5zM3.5 10h17M8 3v4M16 3v4M8 14h.01M12 14h.01M16 14h.01',
+explorar:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.8 8.2l-2.3 5.3-5.3 2.3 2.3-5.3z',
+reservas:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v1.5M10 10.5v3M10 16.5v1.5',
+presupuesto:'M3.5 7.5v10a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-13a2 2 0 0 1 0-4h10.5v4M20.5 11.5H17a2 2 0 0 0 0 4h3.5',
+avisos:'M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 21h4',
+avion:'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
+tren:'M7 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 11h14M9 15h.01M15 15h.01M8 18l-2 3M16 18l2 3',
+bus:'M6 3.5h12a2 2 0 0 1 2 2V17H4V5.5a2 2 0 0 1 2-2zM4 11h16M7.5 20.5V17M16.5 20.5V17M8 14h.01M16 14h.01M9 7h6',
+casa:'M4 11l8-7 8 7M6 9.5V20h12V9.5M10 20v-5h4v5',
+tips:'M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2v2h5v-2c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z',
+recuperar:'M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11'};
+const TABS=[['hoy','Hoy'],['ruta','Ruta'],['dias','Días'],['explorar','Explorar'],['reservas','Reservas']];
+const tabsOf=act=>TABS.map(([id,n])=>{const on=act===id;return{n,icon:IC[id],pill:on?'#FFFDF8':'transparent',ic:on?INK:'rgba(255,253,248,.62)',fg:on?'#FFFDF8':'rgba(255,253,248,.62)',fw:on?'600':'500',alert:id==='reservas'};});
+const DAYS=[
+{id:'d1',d:'lun 13',n:'El centro',c:'oklch(0.55 0.09 195)',z:[283,135,76,55,-10],lab:[200,52],
+ s:[['Plaza de España',330,98],['Fontana di Trevi',305,120],['Panteón',268,130],['Plaza Navona',236,144],["Campo de' Fiori",256,172]]},
+{id:'d2',d:'mar 14',n:'Vaticano y Trastevere',c:'oklch(0.62 0.13 55)',z:[94,240,58,108,8],lab:[14,96],
+ s:[['Museos Vaticanos',62,160],['Plaza de San Pedro',92,186],["Castillo de Sant'Angelo",128,212],['Gianicolo',74,282],['Santa María in Trastevere',110,318]]},
+{id:'d3',d:'mié 15',n:'Roma antigua',c:'oklch(0.5 0.11 300)',z:[286,300,72,55,8],lab:[206,362],
+ s:[['Coliseo',322,298],['Palatino',302,326],['Foro Romano',276,288],['Capitolio',246,296],['Circo Máximo',278,344]]},
+{id:'d4',d:'jue 16',n:'Excursión a Tívoli',c:INK,ex:1,s:[["Villa d'Este"],['Villa Adriana']]},
+{id:'d5',d:'vie 17',n:'Excursión a Pompeya',c:INK,ex:1,s:[['Pompeya'],['Vuelta a Roma']]}];
+
+class Component extends DCLogic {
+  state={sel:'d1'};
+  renderVals(){
+    const sel=this.state.sel;const pick=id=>()=>this.setState(st=>({sel:st.sel===id?null:id}));
+    const S=DAYS.find(d=>d.id===sel);const any=!!sel;
+    const zoneDays=DAYS.filter(d=>!d.ex);
+    const dots=[];zoneDays.forEach(d=>d.s.forEach(([name,x,y],i)=>{const on=sel===d.id;
+      dots.push({x:x+'px',y:y+'px',s:on?'22px':'9px',m:on?'-11px 0 0 -11px':'-4.5px 0 0 -4.5px',c:d.c,n:on?String(i+1):'',op:!any||on?'1':(S&&S.ex?'.35':'.3'),pick:pick(d.id)});}));
+    const card=(id,badge,title,sub,k,tab)=>({id,badge,title,sub,ruta:k==='ruta',dias:k==='dias',multi:k==='multi',city:k!=='multi',tabs:tabsOf(tab)});
+    return{ic:IC,
+      phones:[card('1a','Ruta · el viaje','Roma','13 – 18 oct · 2 personas','ruta','ruta'),
+              card('1b','Días · el día a día','Roma','13 – 18 oct · 2 personas','dias','dias'),
+              card('1c','Futuro · Ruta con varios destinos','Florencia → Roma','13 – 20 oct · 2 personas','multi','ruta')],
+      legend:[{n:'Por dónde llegas',c:BLUE,dash:'none'},{n:'Excursiones',c:INK,dash:'none'},{n:'Fuera del mapa',c:'rgba(28,34,48,.45)',dash:'5 4'}],
+      zones:zoneDays.map(d=>{const[cx,cy,rx,ry,r]=d.z;const on=sel===d.id;return{cx,cy,rx,ry,tr:`rotate(${r} ${cx} ${cy})`,c:d.c,fill:d.c.replace(')',on?' / .2)':' / .14)'),op:!any||on?'1':'.4',pick:pick(d.id)};}),
+      hasPath:!!(S&&!S.ex),selColor:S?S.c:INK,
+      selPath:S&&!S.ex?S.s.map(([,x,y],i)=>(i?'L':'M')+x+' '+y).join(' '):'M0 0',
+      dots,
+      dayLabels:zoneDays.map(d=>{const on=sel===d.id;return{x:d.lab[0]+'px',y:d.lab[1]+'px',c:d.c,d:d.d,n:d.id==='d2'?'Vaticano':d.n,op:!any||on?'1':'.55',sh:on?`0 0 0 2px ${d.c},0 8px 18px -8px rgba(28,34,48,.45)`:'0 4px 12px -6px rgba(28,34,48,.35)',pick:pick(d.id)};}),
+      edge:[{n:'Tívoli · jue 16',x:'auto',r:'10px',y:'196px',arrow:'M7 17L17 7M9 7h8v8',id:'d4'},{n:'Pompeya · vie 17',x:'12px',r:'auto',y:'374px',arrow:'M17 7L7 17M7 9v8h8',id:'d5'}]
+        .map(e=>({...e,pick:pick(e.id),sh:sel===e.id?'0 0 0 3px #FFFDF8,0 0 0 5px oklch(0.55 0.17 5)':'0 8px 18px -8px rgba(28,34,48,.6)'})),
+      rows:DAYS.map(d=>{const on=sel===d.id;return{d:d.d,n:d.n,c:d.c,cnt:d.s.length+' paradas',open:on,rot:on?'rotate(180deg)':'none',bd:on?d.c:'rgba(28,34,48,.07)',stops:d.s.map(([name],i)=>({n:String(i+1),name})),pick:pick(d.id)};}),
+      cities:[{n:'Florencia',k:'1',cx:245,cy:110,r:56,halo:68,lx:'245px',ly:'92px',fs:'30px',days:'4 días'},
+              {n:'Pisa',k:'2',cx:122,cy:146,r:40,halo:50,lx:'122px',ly:'130px',fs:'24px',days:'2 días'},
+              {n:'Roma',k:'3',cx:292,cy:322,r:64,halo:78,lx:'292px',ly:'302px',fs:'34px',days:'4 días'}],
+      legChips:[{n:'Llegas · lun 13',x:'250px',y:'26px',c:BLUE,icon:IC.avion},{n:'Tren · jue 16',x:'110px',y:'56px',c:INK,icon:IC.tren},
+                {n:'Tren · vie 17',x:'112px',y:'244px',c:INK,icon:IC.tren},{n:'Vuelves · lun 20',x:'240px',y:'214px',c:BLUE,icon:IC.avion}],
+      stages:[{n:'Florencia',k:'1',meta:'4 días · 13 – 16 oct',hasLeg:true,leg:'Florencia → Pisa',legMeta:' · jue 16 · tren'},
+              {n:'Pisa',k:'2',meta:'2 días · 16 – 17 oct',hasLeg:true,leg:'Pisa → Roma',legMeta:' · vie 17 · tren'},
+              {n:'Roma',k:'3',meta:'4 días · 17 – 20 oct',hasLeg:false,leg:'',legMeta:''}]};
+  }
+}
+</script>
+</body>
+</html>

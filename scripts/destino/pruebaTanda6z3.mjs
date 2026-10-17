@@ -139,6 +139,8 @@ function archivos(dir) {
 }
 for (const archivo of archivos('src')) {
   if (/lib[\\/]iconos\.ts$/.test(archivo)) continue
+  // Los dibujos de los logros (Tanda 8B) son ilustraciones de Design, no iconos de la interfaz: llevan sus propios trazos.
+  if (/components[\\/]logros[\\/]dibujos[\\/]/.test(archivo)) continue
   const texto = fs.readFileSync(archivo, 'utf8')
   for (const trazo of trazos) {
     comprobaciones++
@@ -165,6 +167,8 @@ const terracota = []
 const COLORES_DE_ADORNO = [/DateNoticesModal\.tsx$/, /TrazoCards\.tsx$/, /trazoUi\.tsx$/, /ExcursionesReservas\.tsx$/, /LoadingScreen\.tsx$/, /exploreStyle\.ts$/]
 for (const archivo of archivos('src')) {
   if (COLORES_DE_ADORNO.some((re) => re.test(archivo))) continue
+  // Los logros y HOY v2 (Tanda 8B) llevan los dorados y ocres de Design (el Pase, los emblemas, la cámara): no son «falta» ni «reservar».
+  if (/components[\\/]logros[\\/]/.test(archivo) || /route[\\/]hoy[\\/]v2[\\/]/.test(archivo)) continue
   const texto = fs.readFileSync(archivo, 'utf8')
   for (const m of texto.matchAll(/oklch\(\s*0?\.[4-7]\d*\s+0?\.1[0-9]*\s+(4\d|5\d|6\d)\s*[\s/)]/g)) terracota.push(`${archivo.replace(/\\/g, '/')}: ${m[0]}`)
 }

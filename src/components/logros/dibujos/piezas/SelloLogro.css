@@ -1,0 +1,6 @@
+@keyframes slShine{0%{transform:translateX(-180%) rotate(20deg)}50%,100%{transform:translateX(460%) rotate(20deg)}}
+@keyframes slTw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}45%{opacity:1;transform:scale(1) rotate(45deg)}70%{opacity:.4;transform:scale(.6) rotate(90deg)}}
+@keyframes slSpin{to{transform:rotate(360deg)}}
+@keyframes slHue{to{filter:hue-rotate(360deg)}}
+@keyframes slAura{0%,100%{opacity:.45;transform:scale(.96) rotate(0)}50%{opacity:.85;transform:scale(1.06) rotate(180deg)}}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

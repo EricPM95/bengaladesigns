@@ -26,7 +26,24 @@ export function calcularLogrosActivos(datos: { entorno?: string | undefined; des
   return datos.entorno === 'true'
 }
 
+/** Solo en desarrollo: `?logrosDemo=1` enciende un servidor de mentira (src/lib/logrosDemo.ts) para probar las pantallas sin Supabase. En producción es siempre false y el módulo del demo no se incluye. */
+export function demoActivo(): boolean {
+  if (!import.meta.env.DEV) return false
+  try {
+    const p = new URLSearchParams(window.location.search).get('logrosDemo')
+    if (p === '1') window.sessionStorage.setItem('trazo:logrosDemo', '1')
+    if (p === '0') window.sessionStorage.removeItem('trazo:logrosDemo')
+    return window.sessionStorage.getItem('trazo:logrosDemo') === '1'
+  } catch {
+    return false
+  }
+}
+
+// Solo desarrollo: carga el servidor de mentira nada más empezar, para que `window.__demo` exista.
+if (import.meta.env.DEV && demoActivo()) void import('./logrosDemo')
+
 export function logrosActivos(): boolean {
+  if (demoActivo()) return true
   let parametro: string | null = null
   let guardado: string | null = null
   try {
@@ -65,6 +82,14 @@ export interface RespuestaDeHecho {
   /** Solo con `motivo: 'pregunta_medio_dia'`. */
   pregunta?: { texto: string; opciones: { id: string; texto: string }[] }
   ubic?: 'cerca' | 'lejos' | 'sin'
+  /** Del Visto (8b): el nombre del sitio y qué le queda por ganar, para elegir la tarjeta. No dicen qué emblema es. */
+  sitio_nombre?: string | null
+  hay_pedazo?: boolean
+  hay_emblema?: boolean
+  /** La línea de «Dentro no se pueden hacer fotos…», si el sitio la tiene. */
+  foto_dentro?: string | null
+  repetido?: boolean
+  sitio?: string | null
   nuevos: Momento[]
 }
 
@@ -75,6 +100,10 @@ async function cabeceras(): Promise<Record<string, string> | null> {
 }
 
 export async function llamar<T = unknown>(ruta: string, opciones: { metodo?: string; cuerpo?: unknown } = {}): Promise<T | null> {
+  if (import.meta.env.DEV && demoActivo()) {
+    const demo = await import('./logrosDemo')
+    return (await demo.responder(ruta, opciones)) as T | null
+  }
   try {
     const cab = await cabeceras()
     if (!cab) return null

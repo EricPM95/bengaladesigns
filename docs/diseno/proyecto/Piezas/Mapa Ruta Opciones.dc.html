@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 80px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:34px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:760px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Pestaña Ruta · el mapa · Días no cambia</span>
+    <span style="font:400 44px/1 'Instrument Serif',serif">Tres formas de ver <em style="color:oklch(0.55 0.17 5)">tu ruta</em></span>
+    <span style="font:400 14px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Mismo mapa de siempre, aquí dibujado como referencia. Cada opción, con un destino y con varios.</span>
+  </div>
+
+  <section style="display:flex;flex-wrap:wrap;gap:56px 64px;align-items:flex-start">
+  <sc-for list="{{ options }}" as="o" hint-placeholder-count="3">
+    <div id="{{ o.id }}" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px;max-width:820px">
+        <span style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ o.id }}</span><span style="font:400 28px/1 'Instrument Serif',serif">{{ o.name }}</span></span>
+        <span style="font:400 13px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">{{ o.desc }}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:36px">
+      <sc-for list="{{ o.phones }}" as="p" hint-placeholder-count="2">
+        <div data-screen-label="{{ p.label }}" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+          <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+          <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+          <header style="flex:none;display:flex;align-items:center;gap:4px;padding:4px 10px 10px 20px">
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font:400 30px/1 'Instrument Serif',serif;white-space:nowrap">{{ p.title }}</span><span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(28,34,48,.55)">{{ p.sub }}</span></span>
+            <button aria-label="Presupuesto" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:transparent;color:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.presupuesto }}"></path></svg></button>
+            <button aria-label="Avisos" style="position:relative;width:44px;height:44px;flex:none;border:none;border-radius:50%;background:transparent;color:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.avisos }}"></path></svg><span style="position:absolute;top:10px;right:11px;width:9px;height:9px;border-radius:50%;background:oklch(0.55 0.17 5);box-shadow:0 0 0 2px #F5EFE4"></span></button>
+            <button aria-label="Perfil" style="width:44px;height:44px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:34px;height:34px;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif;box-shadow:0 0 0 2px #F5EFE4,0 0 0 3.5px oklch(0.55 0.17 5)">E</span></button>
+          </header>
+
+          <div style="position:relative;height:440px;flex:none;overflow:hidden;background:#F1EEE6">
+            <svg width="390" height="440" viewBox="0 0 390 440" style="position:absolute;inset:0">
+              <sc-if value="{{ p.city }}" hint-placeholder-val="{{ true }}">
+                <path d="M250 40 C300 30 350 50 360 100 C365 140 320 150 290 140 C255 130 235 80 250 40Z" fill="#D6E8C9"></path>
+                <path d="M30 120 C60 110 110 130 120 165 C125 195 80 210 50 200 C20 190 10 140 30 120Z" fill="#DDEBD2"></path>
+                <path d="M40 260 C70 250 95 270 92 310 C88 340 50 345 36 320 C25 300 26 270 40 260Z" fill="#D6E8C9"></path>
+                <g stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round"><path d="M-10 70 L400 150"></path><path d="M-10 250 L400 190"></path><path d="M60 -10 L130 450"></path><path d="M250 -10 L330 450"></path><path d="M-10 410 L400 330"></path><path d="M215 -10 L235 450"></path></g>
+                <g stroke="#FFFFFF" stroke-width="2" fill="none"><path d="M-10 160 L400 110"></path><path d="M-10 330 L400 270"></path><path d="M120 -10 L60 450"></path><path d="M330 -10 L370 450"></path><path d="M-10 30 L400 60"></path></g>
+                <path d="M190 -10 C205 40 160 80 172 130 S230 200 200 250 S150 330 170 450" fill="none" stroke="#B8D8E6" stroke-width="10" stroke-linecap="round"></path>
+              </sc-if>
+              <sc-if value="{{ p.italy }}" hint-placeholder-val="{{ false }}">
+                <path d="M250 -10 C280 80 320 160 400 260" fill="none" stroke="#E2E9D6" stroke-width="46" stroke-linecap="round"></path>
+                <g stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M120 110 L230 90 L285 330"></path><path d="M230 90 L330 -10"></path><path d="M285 330 L400 380"></path></g>
+                <path d="M-10 -10 H60 C55 100 100 190 170 270 S270 400 300 450 H-10Z" fill="#CFE3EA" stroke="#B8D8E6" stroke-width="2"></path>
+                <path d="M30 330 C45 320 60 330 55 345 C50 358 32 356 28 345Z" fill="#E9E4D8"></path>
+              </sc-if>
+              <rect width="390" height="440" fill="#F5EFE4" opacity="{{ p.mute }}"></rect>
+              <sc-for list="{{ p.paths }}" as="l" hint-placeholder-count="6">
+                <path d="{{ l.d }}" fill="none" stroke="{{ l.s }}" stroke-width="{{ l.w }}" stroke-dasharray="{{ l.dash }}" opacity="{{ l.op }}" stroke-linecap="round" stroke-linejoin="round"></path>
+              </sc-for>
+              <sc-for list="{{ p.dots }}" as="d" hint-placeholder-count="12">
+                <circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="{{ d.f }}" stroke="{{ d.s }}" stroke-width="{{ d.sw }}"></circle>
+              </sc-for>
+            </svg>
+
+            <sc-for list="{{ p.stamps }}" as="s" hint-placeholder-count="1">
+              <div style="position:absolute;left:{{ s.x }};top:{{ s.y }};width:{{ s.w }};height:{{ s.h }};transform:rotate({{ s.rot }});filter:drop-shadow(0 10px 14px rgba(60,40,10,.22))">
+                <span style="position:absolute;inset:0;background:#FFFDF8;-webkit-mask:radial-gradient(circle 3px at 5px 5px,transparent 2.6px,#000 3.2px) 0 0/10px 10px;mask:radial-gradient(circle 3px at 5px 5px,transparent 2.6px,#000 3.2px) 0 0/10px 10px"></span>
+                <span style="position:absolute;inset:5px;background:#FFFDF8"></span>
+                <div style="position:absolute;inset:9px;border-radius:3px;background:linear-gradient(160deg,oklch(0.96 0.03 15),oklch(0.92 0.05 15));overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:8px 10px">
+                  <span style="position:absolute;left:0;top:0;right:0;height:5px;background:linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)"></span>
+                  <span style="font:400 {{ s.fs }}/0.95 'Instrument Serif',serif;color:#1C2230">{{ s.n }}</span>
+                  <span style="margin-top:6px;font:600 10.5px/1.2 'Geist';color:oklch(0.45 0.17 5)">{{ s.days }}</span>
+                </div>
+                <span style="position:absolute;right:-16px;top:-16px;width:{{ s.pm }};height:{{ s.pm }};border-radius:50%;border:1.5px solid oklch(0.5 0.17 5 / .7);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(14deg);color:oklch(0.45 0.17 5);background:oklch(0.55 0.17 5 / .05)"><span style="font:600 8.5px 'Geist Mono',monospace;letter-spacing:.08em">{{ s.pm1 }}</span><span style="width:70%;height:1px;margin:2px 0;background:currentColor;opacity:.5"></span><span style="font:600 8.5px 'Geist Mono',monospace;letter-spacing:.08em">{{ s.pm2 }}</span></span>
+              </div>
+            </sc-for>
+
+            <sc-for list="{{ p.labels }}" as="t" hint-placeholder-count="3">
+              <span style="position:absolute;left:{{ t.x }};top:{{ t.y }};width:{{ t.w }};margin-left:{{ t.ml }};display:flex;flex-direction:column;align-items:{{ t.al }};text-align:{{ t.ta }};gap:2px;pointer-events:none;text-shadow:0 0 6px #F5EFE4,0 0 2px #F5EFE4">
+                <span style="font:{{ t.f }};color:#1C2230;text-wrap:balance">{{ t.n }}</span>
+                <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.04em;color:{{ t.sc }}">{{ t.sub }}</span>
+              </span>
+            </sc-for>
+
+            <sc-for list="{{ p.chips }}" as="c" hint-placeholder-count="4">
+              <span style="position:absolute;left:{{ c.x }};right:{{ c.r }};top:{{ c.y }};height:{{ c.h }};padding:{{ c.pad }};border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};box-shadow:0 6px 14px -8px rgba(28,34,48,.55);display:flex;align-items:center;gap:6px;font:{{ c.f }};white-space:nowrap">
+                <sc-if value="{{ c.hasIcon }}" hint-placeholder-val="{{ true }}"><span style="width:{{ c.is }};height:{{ c.is }};flex:none;border-radius:50%;background:{{ c.ib }};border:1.5px solid {{ c.ibd }};color:{{ c.icc }};display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.icon }}"></path></svg></span></sc-if>
+                <sc-if value="{{ c.hasDot }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;flex:none;border-radius:50%;background:{{ c.dot }}"></span></sc-if>
+                {{ c.n }}
+                <sc-if value="{{ c.hasArrow }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.arrow }}"></path></svg></sc-if>
+              </span>
+            </sc-for>
+          </div>
+
+          <div style="position:relative;flex:1;min-height:0;margin-top:-26px;border-radius:28px 28px 0 0;background:#F5EFE4;box-shadow:0 -10px 24px -16px rgba(28,34,48,.35);display:flex;flex-direction:column">
+            <span style="align-self:center;margin:10px 0 8px;width:42px;height:4px;flex:none;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+            <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:2px 16px 16px;display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ p.cards }}" as="c" hint-placeholder-count="1">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="flex:none;display:flex;align-items:center;gap:12px;padding:{{ c.pad }};border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 12px 30px -22px rgba(28,34,48,.45)">
+                    <span style="width:{{ c.fl }};height:{{ c.fl }};flex:none;border-radius:12px;background:linear-gradient(112deg,#2E8B57 0 34%,#F4F1EA 34% 66%,#CE3B3B 66%);box-shadow:inset 0 0 0 1px rgba(28,34,48,.08)"></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 {{ c.fs }}/1 'Instrument Serif',serif">{{ c.n }}</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.6)">{{ c.meta }}</span></span>
+                    <sc-if value="{{ c.tools }}" hint-placeholder-val="{{ true }}">
+                      <button aria-label="Tips" style="width:40px;height:40px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:transparent;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.tips }}"></path></svg></button>
+                      <button aria-label="Recuperar mi ruta" style="width:40px;height:40px;flex:none;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:transparent;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.recuperar }}"></path></svg></button>
+                    </sc-if>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+                  </div>
+                  <sc-if value="{{ c.hasLeg }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:flex;align-items:center;gap:8px;padding:0 6px 0 22px;font:400 12.5px 'Geist';color:rgba(28,34,48,.7)"><span style="width:22px;height:22px;border-radius:50%;background:#1C2230;color:#fff;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.tren }}"></path></svg></span><b style="font-weight:600;color:#1C2230">{{ c.leg }}</b>{{ c.legMeta }}</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <nav style="flex:none;background:#1C2230;padding:8px 6px 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+              <button style="position:relative;height:56px;border:none;background:transparent;color:{{ t.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+                <span style="width:52px;height:30px;border-radius:999px;background:{{ t.pill }};color:{{ t.ic }};display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg></span>
+                <span style="font:{{ t.fw }} 11px 'Geist'">{{ t.n }}</span>
+                <sc-if value="{{ t.alert }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:2px;right:calc(50% - 26px);width:16px;height:16px;border-radius:50%;background:oklch(0.8 0.14 75);color:#1C2230;box-shadow:0 0 0 2px #1C2230;font:700 10px/16px 'Geist';text-align:center">!</span></sc-if>
+              </button>
+            </sc-for>
+          </nav>
+          <span style="position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:5px;background:rgba(255,253,248,.55)"></span>
+        </div>
+      </sc-for>
+      </div>
+    </div>
+  </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INK='#1C2230',BLUE='oklch(0.56 0.1 230)',ROSE='oklch(0.55 0.17 5)',W='#FFFDF8';
+const IC={
+hoy:'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
+ruta:'M6 20.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 7.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 18.5h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8',
+dias:'M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5zM3.5 10h17M8 3v4M16 3v4M8 14h.01M12 14h.01M16 14h.01',
+explorar:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.8 8.2l-2.3 5.3-5.3 2.3 2.3-5.3z',
+reservas:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v1.5M10 10.5v3M10 16.5v1.5',
+presupuesto:'M3.5 7.5v10a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-13a2 2 0 0 1 0-4h10.5v4M20.5 11.5H17a2 2 0 0 0 0 4h3.5',
+avisos:'M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 21h4',
+avion:'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
+tren:'M7 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 11h14M9 15h.01M15 15h.01M8 18l-2 3M16 18l2 3',
+bus:'M6 3.5h12a2 2 0 0 1 2 2V17H4V5.5a2 2 0 0 1 2-2zM4 11h16M7.5 20.5V17M16.5 20.5V17M8 14h.01M16 14h.01M9 7h6',
+casa:'M4 11l8-7 8 7M6 9.5V20h12V9.5M10 20v-5h4v5',
+tips:'M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2v2h5v-2c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z',
+recuperar:'M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11'};
+const TABS=[['hoy','Hoy'],['ruta','Ruta'],['dias','Días'],['explorar','Explorar'],['reservas','Reservas']];
+const DAYS=[
+{d:'jue 29',n:'El centro',c:'oklch(0.58 0.12 245)',s:[[232,178],[252,196],[228,214],[262,224],[242,244]],tag:[150,196],lab:[214,256,'center',130]},
+{d:'vie 30',n:'Vaticano y Trastevere',c:'oklch(0.68 0.13 65)',s:[[70,160],[96,176],[122,186],[140,300],[116,322],[150,330]],tag:[18,128],lab:[16,214,'left',120]},
+{d:'sáb 31',n:'Borghese y Roma antigua',c:'oklch(0.58 0.12 150)',s:[[282,88],[318,98],[300,128],[270,150],[300,268],[324,292]],tag:[196,70],lab:[306,150,'left',84]}];
+const HOME=[288,236];
+const f=n=>Math.round(n*10)/10;
+const cat=p=>{let d=`M${p[0][0]} ${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
+  d+=` C${f(p1[0]+(p2[0]-p0[0])/6)} ${f(p1[1]+(p2[1]-p0[1])/6)} ${f(p2[0]-(p3[0]-p1[0])/6)} ${f(p2[1]-(p3[1]-p1[1])/6)} ${p2[0]} ${p2[1]}`;}return d;};
+const qc=(a,b,k)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1];return[f(mx-dy*k),f(my+dx*k)];};
+const q=(a,b,k)=>{const c=qc(a,b,k);return`M${a[0]} ${a[1]} Q${c[0]} ${c[1]} ${b[0]} ${b[1]}`;};
+const qpts=(a,b,k,n=18)=>{const c=qc(a,b,k),o=[];for(let i=1;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*a[0]+2*u*t*c[0]+t*t*b[0],u*u*a[1]+2*u*t*c[1]+t*t*b[1]]);}return o;};
+const curls=(cx,cy,n,r=13,dx=8)=>{const o=[],x0=cx-(n-1)*dx/2;for(let i=0;i<n;i++){const c=x0+i*dx;for(let k=0;k<=28;k++){const t=Math.PI/2+k/28*Math.PI*2;o.push([c+r*Math.cos(t),cy+r*Math.sin(t)]);}}return o;};
+const poly=p=>'M'+p.map(([x,y])=>f(x)+' '+f(y)).join(' L');
+const L=(d,s,w,o={})=>({d,s,w,dash:o.dash||'none',op:o.op??1});
+const halo=(d,s,w,o)=>[L(d,W,w+5.5,{op:.95}),L(d,s,w,o)];
+const chip=(x,y,n,o={})=>({x:x==null?'auto':x+'px',r:o.r==null?'auto':o.r+'px',y:y+'px',n,h:o.h||'30px',pad:o.icon?'0 11px 0 5px':'0 11px 0 9px',bg:o.dark?INK:W,fg:o.dark?W:INK,f:o.dark?"600 12px 'Geist'":"500 12px 'Geist'",
+  hasIcon:!!o.icon,icon:o.icon||'',is:'21px',ib:o.ib||INK,ibd:o.ibd||'transparent',icc:o.icc||'#fff',hasDot:!!o.dot,dot:o.dot||'',hasArrow:!!o.arrow,arrow:o.arrow||''});
+const NE='M7 17L17 7M9 7h8v8',SW='M17 7L7 17M7 9v8h8';
+const AIR=[30,398],TIV=[380,30];
+const cityCommon=()=>[chip(10,374,'Fiumicino · jue 29',{icon:IC.avion,ib:BLUE}),chip(null,14,'Tívoli · dom 1',{r:10,dark:true,icon:IC.bus,ib:'rgba(255,253,248,.16)',arrow:NE}),chip(270,222,'Monti',{icon:IC.casa,ib:W,ibd:INK,icc:INK})];
+const CITIES={F:[230,92],P:[118,150],R:[285,328]};
+const multiChips=()=>[chip(246,14,'Llegas · jue 29',{icon:IC.avion,ib:BLUE}),chip(118,52,'Tren · dom 1',{icon:IC.tren}),chip(132,244,'Tren · lun 2',{icon:IC.tren}),chip(236,222,'Vuelves · jue 5',{icon:IC.avion,ib:BLUE})];
+const cityCards=[{n:'Roma',meta:'5 días · 29 oct – 2 nov',tools:true,pad:'12px 12px 12px 14px',fl:'44px',fs:'24px',hasLeg:false}];
+const multiCards=[
+{n:'Florencia',meta:'3 días · 29 – 31 oct',hasLeg:true,leg:'Florencia → Pisa',legMeta:' · dom 1 · tren'},
+{n:'Pisa',meta:'1 día · 1 nov',hasLeg:true,leg:'Pisa → Roma',legMeta:' · lun 2 · tren'},
+{n:'Roma',meta:'4 días · 2 – 5 nov',hasLeg:false}].map(c=>({...c,tools:false,pad:'10px 12px 10px 12px',fl:'38px',fs:'21px',leg:c.leg||'',legMeta:c.legMeta||''}));
+const lab=(x,y,n,sub,o={})=>({x:x+'px',y:y+'px',w:(o.w||140)+'px',ml:o.al==='center'?-(o.w||140)/2+'px':'0',al:o.al==='center'?'center':o.al==='right'?'flex-end':'flex-start',ta:o.al||'left',n,sub,sc:o.sc||ROSE,f:o.f||"400 26px/1 'Instrument Serif',serif"});
+const allStops=()=>DAYS.flatMap(d=>d.s);
+const homeDot=()=>({x:HOME[0],y:HOME[1],r:4,f:INK,s:W,sw:2});
+
+function optA(){
+  const p=[];p.push(...halo(q(AIR,HOME,-.22),BLUE,2.4,{dash:'1 6'}));
+  let prev=HOME;
+  DAYS.forEach(d=>{p.push(L(q(prev,d.s[0],.18),INK,1.4,{dash:'2 5',op:.6}));p.push(...halo(cat(d.s),d.c,3.2));prev=d.s[d.s.length-1];});
+  p.push(L(q(prev,HOME,.2),INK,1.4,{dash:'2 5',op:.6}));
+  p.push(...halo(q(HOME,TIV,.15),INK,2,{dash:'1 6'}));
+  const dots=DAYS.flatMap(d=>d.s.map(([x,y])=>({x,y,r:3.6,f:d.c,s:W,sw:1.8})));
+  const roma={title:'Roma',sub:'29 oct – 2 nov · 2 personas',city:true,italy:false,mute:'0',paths:p,dots,stamps:[],labels:[],
+    chips:[...cityCommon(),...DAYS.map(d=>chip(d.tag[0],d.tag[1],d.d,{dot:d.c}))],cards:cityCards,label:'2a · Hilo · Roma'};
+  let pts=[[398,22],...qpts([398,22],[230,105],-.15)];
+  const seq=[['F',3],['P',1],['R',4]];
+  seq.forEach(([k,n],i)=>{const [cx,cy]=CITIES[k];const c=curls(cx,cy,n);const last=pts[pts.length-1];pts.push(...qpts(last,c[0],i?.2:0,14));pts.push(...c);});
+  pts.push(...qpts(pts[pts.length-1],[398,250],-.2));
+  const tp=poly(pts);
+  const multi={title:'Florencia → Roma',sub:'29 oct – 5 nov · 2 personas',city:false,italy:true,mute:'0',paths:[L(tp,W,8,{op:.95}),L(tp,ROSE,2.6)],dots:[],stamps:[],
+    labels:[lab(230,112,'Florencia','3 días',{al:'center',w:140,f:"400 24px/1 'Instrument Serif',serif"}),lab(118,170,'Pisa','1 día',{al:'center',w:100,f:"400 22px/1 'Instrument Serif',serif"}),lab(285,350,'Roma','4 días',{al:'center',w:140,f:"400 30px/1 'Instrument Serif',serif"})],
+    chips:multiChips(),cards:multiCards,label:'2a · Hilo · varios'};
+  return{id:'2a',name:'Hilo del viaje',desc:'Un solo hilo cuenta todo el viaje en orden, sin números: el trazo de cada día en su color y puntos suaves entre días. Con varios destinos, el hilo da una vuelta en cada ciudad por cada día que pasas allí.',phones:[roma,multi]};
+}
+function optB(){
+  const roma={title:'Roma',sub:'29 oct – 2 nov · 2 personas',city:true,italy:false,mute:'.35',
+    paths:[...halo(q(AIR,[120,262],-.2),BLUE,2.2,{dash:'1 6'}),...halo(q([284,170],TIV,.1),INK,2,{dash:'1 6'})],
+    dots:allStops().map(([x,y])=>({x,y,r:2.6,f:ROSE,s:W,sw:1.2})).concat([homeDot()]),
+    stamps:[{x:'112px',y:'150px',w:'172px',h:'118px',rot:'-4deg',n:'Roma',days:'5 días · 29 oct – 2 nov',fs:'40px',pm:'58px',pm1:'29 OCT',pm2:'FCO'}],
+    labels:[],chips:cityCommon(),cards:cityCards,label:'2b · Sellos · Roma'};
+  const PB={F:[244,88],P:[92,184],R:[285,328]};
+  const st=(k,w,h,rot,n,days,fs,pm1)=>{const[cx,cy]=PB[k];return{x:cx-w/2+'px',y:cy-h/2+'px',w:w+'px',h:h+'px',rot,n,days,fs,pm:'46px',pm1,pm2:''};};
+  const multi={title:'Florencia → Roma',sub:'29 oct – 5 nov · 2 personas',city:false,italy:true,mute:'.15',
+    paths:[...halo(q([398,24],[292,62],-.15),BLUE,2.2,{dash:'1 6'}),...halo(q([180,124],[132,150],.3),INK,2,{dash:'1 6'}),...halo(q([120,222],[222,290],.25),INK,2,{dash:'1 6'}),...halo(q([352,300],[398,252],-.2),BLUE,2.2,{dash:'1 6'})],
+    dots:[],stamps:[st('F',128,88,'3deg','Florencia','3 días','26px','29 OCT'),st('P',96,74,'-5deg','Pisa','1 día','22px','1 NOV'),st('R',140,96,'-3deg','Roma','4 días','32px','2 NOV')],
+    labels:[],chips:multiChips().map((c,i)=>i===1?{...c,x:'140px',y:'144px'}:i===2?{...c,x:'140px',y:'262px'}:c),cards:multiCards,label:'2b · Sellos · varios'};
+  return{id:'2b',name:'Sellos',desc:'Cada destino es un sello de postal con su matasellos de llegada. Las paradas se quedan como puntitos de fondo; el detalle está en Días. Con varios destinos, el mapa se convierte en una colección de sellos unidos por el camino.',phones:[roma,multi]};
+}
+function optC(){
+  const p=[...halo(q(AIR,HOME,-.22),BLUE,2.2,{dash:'1 6'}),...halo(q(HOME,TIV,.15),INK,2,{dash:'1 6'})];
+  DAYS.forEach(d=>p.push(L(poly(d.s),INK,1.1,{op:.5})));
+  const dots=DAYS.flatMap(d=>d.s.map(([x,y])=>[{x,y,r:7,f:'oklch(0.55 0.17 5 / .14)',s:'none',sw:0},{x,y,r:3,f:INK,s:W,sw:1.4}]).flat()).concat([homeDot()]);
+  const roma={title:'Roma',sub:'29 oct – 2 nov · 2 personas',city:true,italy:false,mute:'.4',paths:p,dots,stamps:[],
+    labels:DAYS.map(d=>lab(d.lab[0],d.lab[1],d.n,d.d.toUpperCase(),{al:d.lab[2],w:d.lab[3],sc:'rgba(28,34,48,.55)',f:"italic 400 17px/1.05 'Instrument Serif',serif"})),
+    chips:cityCommon(),cards:cityCards,label:'2c · Constelación · Roma'};
+  const off=[[-16,-6],[-4,-16],[12,-10],[16,6],[2,14],[-12,10]];
+  const mp=[],md=[];
+  [['F',4],['P',3],['R',6]].forEach(([k,n])=>{const[cx,cy]=CITIES[k];const s=off.slice(0,n).map(([x,y])=>[cx+x,cy+y]);mp.push(L(poly(s),INK,1,{op:.5}));s.forEach(([x,y])=>{md.push({x,y,r:6,f:'oklch(0.55 0.17 5 / .16)',s:'none',sw:0},{x,y,r:2.6,f:INK,s:W,sw:1.2});});});
+  const multi={title:'Florencia → Roma',sub:'29 oct – 5 nov · 2 personas',city:false,italy:true,mute:'.2',
+    paths:[...halo(q([398,24],[248,80],-.15),BLUE,2.2,{dash:'1 6'}),...halo(q([212,92],[136,146],.25),INK,2,{dash:'1 6'}),...halo(q([124,168],[268,320],.25),INK,2,{dash:'1 6'}),...halo(q([302,322],[398,252],-.2),BLUE,2.2,{dash:'1 6'}),...mp],
+    dots:md,stamps:[],
+    labels:[lab(230,112,'Florencia','3 DÍAS',{al:'center',w:140,sc:'rgba(28,34,48,.55)',f:"italic 400 24px/1 'Instrument Serif',serif"}),lab(118,168,'Pisa','1 DÍA',{al:'center',w:100,sc:'rgba(28,34,48,.55)',f:"italic 400 21px/1 'Instrument Serif',serif"}),lab(285,346,'Roma','4 DÍAS',{al:'center',w:140,sc:'rgba(28,34,48,.55)',f:"italic 400 30px/1 'Instrument Serif',serif"})],
+    chips:multiChips(),cards:multiCards,label:'2c · Constelación · varios'};
+  return{id:'2c',name:'Constelación',desc:'El mapa se aclara y tus paradas brillan como estrellas, unidas por día y con el nombre de cada día en cursiva. Una lectura tranquila de todo el viaje; los colores y los números se quedan para Días.',phones:[roma,multi]};
+}
+
+class Component extends DCLogic {
+  renderVals(){
+    return{ic:IC,options:[optA(),optB(),optC()],
+      tabs:TABS.map(([id,n])=>{const on=id==='ruta';return{n,icon:IC[id],pill:on?W:'transparent',ic:on?INK:'rgba(255,253,248,.62)',fg:on?W:'rgba(255,253,248,.62)',fw:on?'600':'500',alert:id==='reservas'};})};
+  }
+}
+</script>
+</body>
+</html>

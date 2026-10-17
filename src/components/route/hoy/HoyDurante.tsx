@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
+import { logrosActivos } from '../../../lib/logros'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { moverParadaAOtroDia } from '../../../lib/cambiarParada'
@@ -315,7 +317,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {saltadaAviso && <AvisoSaltada nombre={displayStopName(saltadaAviso.name)} onDeshacer={deshacerSaltada} onOtroDia={saltadaEsReservada || otrosDias.length === 0 ? null : () => setHojaOtroDia(true)} />}
       {hojaOtroDia && <HojaPasarAOtroDia dias={otrosDias} ahora={day.dayNumber} onElegir={pasarAOtroDia} onCerrar={() => setHojaOtroDia(false)} />}
 
-      {ofrecerFoto && (
+      {ofrecerFoto && !logrosActivos() && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
           <span className="min-w-0 flex-1 truncate text-[13px] text-text/70">Visto: {displayStopName(ofrecerFoto.name)}</span>
           <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-10 flex-none items-center gap-1.5 rounded-full bg-accent px-3.5 text-[13px] font-semibold text-white">
@@ -380,6 +382,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
                   </span>
                   {saltada ? <span className="text-[11px] leading-[1.3] text-text/40">Saltada</span> : <LineaDeHorario horario={horarioDe(stop)} cerradoEsteDia={Boolean(stop.closedThisDay)} />}
                   {!saltada && <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />}
+                  {/* 8b, V6: lo que le falta a la parada ya vista (foto, sorpresa o recuerdo). Con los logros apagados no pinta nada. */}
+                  {!saltada && <PendienteDeParada dayId={day.id} stopId={stop.id} visto={vista} />}
                 </span>
                 {saltada && (
                   <button type="button" onClick={() => devolverALaRuta(stop)} className="flex h-8 flex-none items-center gap-1 rounded-full border border-text/15 px-2.5 text-[11.5px] font-semibold text-text/70">

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes eoRays{to{transform:rotate(360deg)}}
+@keyframes eoSpin{0%,12%{transform:rotateY(0)}45%,62%{transform:rotateY(180deg)}95%,100%{transform:rotateY(360deg)}}
+@keyframes eoSheen{0%{transform:translateX(-160%) skewX(-18deg)}38%,100%{transform:translateX(320%) skewX(-18deg)}}
+@keyframes eoStar{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div ref="{{ root }}" onPointerDown="{{ down }}" onPointerMove="{{ move }}" onPointerUp="{{ up }}" onPointerCancel="{{ up }}" onPointerLeave="{{ leave }}" onClick="{{ tap }}" style="position:relative;width:{{ w }};height:{{ h }};flex:none;perspective:700px;cursor:{{ cur }};touch-action:{{ ta }}">
+ <div style="position:absolute;left:0;top:0;width:200px;height:250px;transform:scale({{ k }});transform-origin:0 0">
+  <sc-if value="{{ won }}" hint-placeholder-val="{{ true }}">
+   <span style="position:absolute;left:-30px;top:-10px;width:260px;height:260px;border-radius:50%;background:repeating-conic-gradient(rgba(255,220,150,{{ rayA }}) 0 {{ rayW }}deg,transparent {{ rayW }}deg {{ rayG }}deg);-webkit-mask:radial-gradient(circle,#000 22%,transparent {{ rayR }}%);mask:radial-gradient(circle,#000 22%,transparent {{ rayR }}%);transform:scale({{ rayS }});animation:eoRays 40s linear infinite"></span>
+   <span style="position:absolute;left:-10px;top:12px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,140,{{ glowA }}),transparent 66%)"></span>
+   <sc-if value="{{ ring }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:4px;top:26px;width:192px;height:192px;border-radius:50%;animation:eoRays 14s linear infinite"><span style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 8%,#F3D59A 18%,transparent 30%,transparent 50%,#FFF3D0 62%,transparent 74%);-webkit-mask:radial-gradient(circle,transparent 63%,#000 64%,#000 66.5%,transparent 67.5%);mask:radial-gradient(circle,transparent 63%,#000 64%,#000 66.5%,transparent 67.5%)"></span><span style="position:absolute;inset:6px;border-radius:50%;border:1.5px dashed rgba(243,213,154,.5)"></span></span></sc-if>
+   <div style="position:absolute;inset:0;transform-style:preserve-3d;animation:{{ spin }}">
+   <div style="position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX({{ rx }}deg) rotateY({{ ry }}deg);transition:transform {{ tt }} cubic-bezier(.2,.8,.2,1)">
+    <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden">
+     <svg width="200" height="250" viewBox="0 0 200 250" style="position:absolute;inset:0;overflow:visible">
+      <defs>
+       <radialGradient id="{{ u }}gd" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#FFF6D8"></stop><stop offset=".45" stop-color="#E4BF6E"></stop><stop offset=".8" stop-color="#B48A3E"></stop><stop offset="1" stop-color="#8A6424"></stop></radialGradient>
+       <linearGradient id="{{ u }}rm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1C6"></stop><stop offset=".5" stop-color="#A97E34"></stop><stop offset="1" stop-color="#F3D58E"></stop></linearGradient>
+       <linearGradient id="{{ u }}rb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3D58E"></stop><stop offset="1" stop-color="#B48A3E"></stop></linearGradient>
+       <clipPath id="{{ u }}cl"><circle cx="100" cy="122" r="70"></circle></clipPath>
+       <sc-for list="{{ tg }}" as="g" hint-placeholder-count="4"><linearGradient id="{{ g.id }}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{{ g.a }}"></stop><stop offset=".32" stop-color="{{ g.b }}"></stop><stop offset=".62" stop-color="{{ g.c }}"></stop><stop offset="1" stop-color="{{ g.d }}"></stop></linearGradient></sc-for>
+       <linearGradient id="{{ u }}hl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A2608"></stop><stop offset=".6" stop-color="#5A3E14"></stop><stop offset="1" stop-color="#755420"></stop></linearGradient>
+       <filter id="{{ u }}br" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.95" numOctaves="2" seed="7"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 .32  0 0 0 0 .22  0 0 0 0 .06  0 0 0 1.3 -.55"></feColorMatrix></filter>
+       <filter id="{{ u }}br2" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.01 1.3" numOctaves="1" seed="21"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 .97  0 0 0 0 .86  0 0 0 1.4 -.75"></feColorMatrix></filter>
+       <filter id="{{ u }}rf" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+        <feOffset in="SourceAlpha" dx="{{ hdx }}" dy="{{ hdy }}" result="o1"></feOffset>
+        <feComposite in="SourceAlpha" in2="o1" operator="out" result="hiE"></feComposite>
+        <feGaussianBlur in="hiE" stdDeviation=".3" result="hiB"></feGaussianBlur>
+        <feFlood flood-color="#FFF8E2" flood-opacity=".95" result="hiC"></feFlood>
+        <feComposite in="hiC" in2="hiB" operator="in" result="hi"></feComposite>
+        <feOffset in="SourceAlpha" dx="{{ ndx }}" dy="{{ ndy }}" result="o2"></feOffset>
+        <feComposite in="SourceAlpha" in2="o2" operator="out" result="shE"></feComposite>
+        <feGaussianBlur in="shE" stdDeviation=".4" result="shB"></feGaussianBlur>
+        <feFlood flood-color="#4E330C" flood-opacity=".95" result="shC"></feFlood>
+        <feComposite in="shC" in2="shB" operator="in" result="sh"></feComposite>
+        <feOffset in="SourceAlpha" dx="{{ sdx }}" dy="{{ sdy }}" result="o3"></feOffset>
+        <feGaussianBlur in="o3" stdDeviation="1.3" result="dsB"></feGaussianBlur>
+        <feComposite in="dsB" in2="SourceAlpha" operator="out" result="dsO"></feComposite>
+        <feFlood flood-color="#2E1E06" flood-opacity=".85" result="dsC"></feFlood>
+        <feComposite in="dsC" in2="dsO" operator="in" result="ds"></feComposite>
+        <feGaussianBlur in="SourceAlpha" stdDeviation="1.3" result="bump"></feGaussianBlur>
+        <feSpecularLighting in="bump" surfaceScale="2.6" specularConstant=".75" specularExponent="24" lighting-color="#FFF4D4" result="sp"><feDistantLight azimuth="{{ az }}" elevation="50"></feDistantLight></feSpecularLighting>
+        <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"></feComposite>
+        <feMerge><feMergeNode in="ds"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode><feMergeNode in="sh"></feMergeNode><feMergeNode in="hi"></feMergeNode><feMergeNode in="sp2"></feMergeNode></feMerge>
+       </filter>
+      </defs>
+      <g><sc-for list="{{ wreath }}" as="l" hint-placeholder-count="0"><ellipse cx="{{ l.x }}" cy="{{ l.y }}" rx="{{ l.rx }}" ry="{{ l.ry }}" transform="{{ l.t }}" fill="{{ l.f }}" stroke="#7A5420" stroke-width=".6"></ellipse></sc-for><sc-for list="{{ berries }}" as="b" hint-placeholder-count="0"><circle cx="{{ b.x }}" cy="{{ b.y }}" r="2.1" fill="#FFF0C0" stroke="#9C7430" stroke-width=".6"></circle></sc-for></g>
+       <g><sc-for list="{{ spark }}" as="s" hint-placeholder-count="0"><path d="{{ s.d }}" fill="#FFFFFF" style="transform-box:fill-box;transform-origin:center;animation:eoStar 1.8s {{ s.dl }} ease-in-out infinite"></path></sc-for></g>
+       <g><sc-for list="{{ stars }}" as="s" hint-placeholder-count="7"><path d="{{ s.d }}" fill="{{ s.f }}" stroke="{{ s.st }}" stroke-width="1" style="transform-box:fill-box;transform-origin:center;animation:{{ s.a }}"></path></sc-for></g>
+      <circle cx="100" cy="122" r="86" fill="url(#{{ u }}rm)"></circle>
+      <sc-for list="{{ ridges }}" as="r" hint-placeholder-count="60"><path d="{{ r }}" stroke="rgba(110,78,26,.5)" stroke-width="1.2"></path></sc-for>
+      <circle cx="100" cy="122" r="76" fill="url(#{{ u }}gd)" stroke="#8A6424" stroke-width="1.5"></circle>
+      <circle cx="100" cy="122" r="70" fill="none" stroke="rgba(255,246,216,.55)" stroke-width="1"></circle>
+      <sc-if value="{{ isCol }}" hint-placeholder-val="{{ true }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <sc-for list="{{ holes }}" as="h" hint-placeholder-count="30"><path d="{{ h }}" fill="url(#{{ u }}hl)"></path></sc-for>
+       <g filter="url(#{{ u }}rf)"><sc-for list="{{ tiers }}" as="t" hint-placeholder-count="4"><path d="{{ t.d }}" fill-rule="evenodd" fill="{{ t.f }}"></path></sc-for></g>
+       <g filter="url(#{{ u }}rf)" fill="#E8C677"><sc-for list="{{ pils }}" as="p" hint-placeholder-count="20"><path d="{{ p }}"></path></sc-for></g>
+       <g fill="#3A2608" opacity=".42"><sc-for list="{{ lsh }}" as="l" hint-placeholder-count="3"><path d="{{ l }}" style="filter:blur(.8px)"></path></sc-for></g>
+       <g filter="url(#{{ u }}rf)" fill="#EDCB7E"><sc-for list="{{ ledges }}" as="l" hint-placeholder-count="3"><path d="{{ l }}"></path></sc-for></g>
+       <g filter="url(#{{ u }}rf)"><path d="M38 160H162V165.5H38Z" fill="#E4C070"></path><path d="M31 165.5H169V171H31Z" fill="#D9B464"></path></g>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isMur }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg3)" d="M24 132Q48 104 70 112Q92 94 112 100Q138 80 158 90Q170 96 176 94V198H24Z"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg2)" d="M24 162Q52 140 78 146Q104 128 128 122Q152 112 176 118V198H24Z"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg1)" d="M24 198V178Q60 164 96 170Q140 176 176 166V198Z"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg0)" d="M24 176L48 160L48 172L24 190Z"></path><path fill="url(#{{ u }}tg0)" d="M76 152Q98 140 112 122Q128 104 150 94L150 101Q130 112 116 130Q100 150 76 164Z"></path></g>
+       <g filter="url(#{{ u }}rf)" fill="none" stroke="#EDCB7E" stroke-width="3.2" stroke-dasharray="2.6 2.4"><path d="M24 174.5L48 158.5"></path><path d="M76 150.5Q98 138.5 112 120.5Q128 102.5 150 92.5"></path></g>
+       <g filter="url(#{{ u }}rf)">
+        <path fill="url(#{{ u }}tg0)" d="M46 176V128H78V176Z"></path><path fill="#EDCB7E" d="M44 128V122H48V125H52V122H56V125H60V122H64V125H68V122H72V125H76V122H80V128Z"></path>
+        <path fill="url(#{{ u }}tg0)" d="M106 128V104H122V124Z"></path><path fill="#EDCB7E" d="M105 104V100H108V102H111V100H114V102H117V100H120V102H123V104Z"></path>
+        <path fill="url(#{{ u }}tg0)" d="M146 100V86H156V97Z"></path><path fill="#EDCB7E" d="M145.5 86V83.5H147.5V85H149.5V83.5H151.5V85H153.5V83.5H156.5V86Z"></path>
+       </g>
+       <path fill="url(#{{ u }}hl)" d="M57 176V160A5 5 0 0 1 67 160V176ZM53 144V138A2.5 2.5 0 0 1 58 138V144ZM66 144V138A2.5 2.5 0 0 1 71 138V144ZM112 120V114A2 2 0 0 1 116 114V120ZM149.5 95V91A1.2 1.2 0 0 1 152 91V95Z"></path>
+       <g fill="none" stroke="#FFF3D0" stroke-width=".7" opacity=".55"><path d="M46 128V176M106 104V128M146 86V100"></path></g>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isPet }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg3)" d="M24 46H70Q60 80 66 112Q58 150 64 198H24Z"></path><path fill="url(#{{ u }}tg3)" d="M176 46H130Q140 80 134 112Q142 150 136 198H176Z"></path></g>
+       <g filter="url(#{{ u }}rf)">
+        <path fill="url(#{{ u }}tg0)" d="M74 180V130H126V180Z"></path>
+        <path fill="#EDCB7E" d="M70 130L100 112L130 130Z"></path>
+        <path fill="#EDCB7E" d="M70 184H130V180H70Z"></path>
+        <path fill="url(#{{ u }}tg1)" d="M76 112V80H90V112ZM110 112V80H124V112Z"></path>
+        <path fill="#EDCB7E" d="M74 80L83 72L92 80ZM108 80L117 72L126 80Z"></path>
+        <path fill="url(#{{ u }}tg0)" d="M92 112V78H108V112Z"></path>
+        <path fill="#EDCB7E" d="M90 78Q100 62 110 78Z"></path>
+        <path fill="#EDCB7E" d="M99 64V56H101V64Z"></path>
+       </g>
+       <g filter="url(#{{ u }}rf)" fill="#F1D28A"><path d="M78 178V134H82V178ZM88 178V134H92V178ZM108 178V134H112V178ZM118 178V134H122V178Z"></path><path d="M79 110V84H82V110ZM118 110V84H121V110ZM95 110V84H98V110ZM102 110V84H105V110Z"></path></g>
+       <path fill="url(#{{ u }}hl)" d="M95 180V152H105V180Z"></path>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isCri }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g fill="none" stroke="#F3D59A" stroke-width=".8" opacity=".35"><path d="M100 70L60 46M100 70L80 46M100 70L100 46M100 70L120 46M100 70L140 46M100 70L170 60M100 70L30 60"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg3)" d="M128 198V170Q140 140 152 142Q162 146 168 162L176 168V198Z"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg2)" d="M24 198V178Q56 170 78 160Q92 154 100 156Q108 154 122 160Q142 170 176 186V198Z"></path></g>
+       <g fill="none" stroke="#FFF3D0" stroke-width=".8" opacity=".5"><path d="M30 190Q60 186 90 190M112 192Q140 188 170 192"></path></g>
+       <g filter="url(#{{ u }}rf)">
+        <path fill="url(#{{ u }}tg0)" d="M90 160V152H110V160Z"></path><path fill="#E4C070" d="M87 162V159H113V162Z"></path>
+        <path fill="url(#{{ u }}tg0)" d="M93 104L90 152H110L107 104Z"></path>
+        <path fill="#EDCB7E" d="M52 86Q56 83 64 83.5L94 84.5Q100 82 106 84.5L136 83.5Q144 83 148 86Q144 89.5 136 89.5L118 90Q110 96 108 108H92Q90 96 82 90L64 89.5Q56 89.5 52 86Z"></path>
+        <path fill="url(#{{ u }}tg1)" d="M64 89.5Q76 92 84 104L90 108L94 92Z" opacity=".8"></path><path fill="url(#{{ u }}tg1)" d="M136 89.5Q124 92 116 104L110 108L106 92Z" opacity=".8"></path>
+        <circle cx="100" cy="76" r="6.2" fill="#EDCB7E"></circle><path fill="#EDCB7E" d="M97 81H103L104 84.5H96Z"></path>
+       </g>
+       <g fill="none" stroke="#7A5A22" stroke-width=".8" opacity=".5"><path d="M97 110L96 150M103 110L104 150M100 112V148"></path></g>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isMac }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg3)" d="M24 150Q38 122 52 124Q62 126 72 144L84 160V198H24Z"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg2)" d="M76 198L100 134Q110 84 124 66Q132 60 138 70Q146 92 150 118L166 144L176 152V198Z"></path></g>
+       <g fill="none" stroke="#FFF3D0" stroke-width=".9" opacity=".55"><path d="M124 66Q118 96 112 126M138 70Q142 100 150 120"></path></g>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg1)" d="M24 198V160Q64 146 104 152Q138 156 176 170V198Z"></path></g>
+       <g filter="url(#{{ u }}rf)" fill="none" stroke="#EDCB7E" stroke-width="2.6" stroke-linecap="round"><path d="M28 168Q66 156 104 161Q136 165 172 178"></path><path d="M26 177Q66 166 104 171Q136 175 172 187"></path><path d="M26 186Q66 176 104 181Q136 185 170 195"></path></g>
+       <g fill="none" stroke="#7A5A22" stroke-width=".8" opacity=".55"><path d="M28 171Q66 159 104 164Q136 168 172 181M26 180Q66 169 104 174Q136 178 172 190"></path></g>
+       <g filter="url(#{{ u }}rf)" fill="url(#{{ u }}tg0)">
+        <path d="M54 156V148L60 143L66 148V156Z"></path><path d="M70 154V145L77 139L84 145V154Z"></path><path d="M88 153V146L94 141L100 146V153Z"></path><path d="M104 154V148L109 144L114 148V154Z"></path>
+       </g>
+       <g fill="#EDCB7E" filter="url(#{{ u }}rf)"><path d="M53 148.5L60 142.5L67 148.5H64L60 145L56 148.5Z"></path><path d="M69 145.5L77 138.5L85 145.5H82L77 141.5L72 145.5Z"></path><path d="M87 146.5L94 140.5L101 146.5H98L94 143.5L90 146.5Z"></path></g>
+       <path fill="url(#{{ u }}hl)" d="M58.5 156V151H61.5V156ZM75 154V149H79V154ZM92.5 153V148.5H95.5V153Z"></path>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isChi }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g filter="url(#{{ u }}rf)"><path fill="url(#{{ u }}tg0)" d="M38.0 176H162.0V167H38.0ZM43.5 166H156.5V157H43.5ZM49.0 156H151.0V147H49.0ZM54.5 146H145.5V137H54.5ZM60.0 136H140.0V127H60.0ZM65.5 126H134.5V117H65.5ZM71.0 116H129.0V107H71.0ZM76.5 106H123.5V97H76.5Z"></path></g>
+       <g fill="none" stroke="#FFF3D0" stroke-width=".8" opacity=".55"><path d="M38.0 167H162.0M43.5 157H156.5M49.0 147H151.0M54.5 137H145.5M60.0 127H140.0M65.5 117H134.5M71.0 107H129.0M76.5 97H123.5"></path></g>
+       <g filter="url(#{{ u }}rf)">
+        <path fill="#F1D28A" d="M90 176V96H110V176Z"></path>
+        <path fill="url(#{{ u }}tg1)" d="M80 96V76H120V96Z"></path>
+        <path fill="#EDCB7E" d="M76 76H124V71H76Z"></path>
+        <path fill="#EDCB7E" d="M30 180H170V176H30Z"></path>
+       </g>
+       <g fill="none" stroke="#7A5A22" stroke-width=".8" opacity=".6"><path d="M90 104H110M90 114H110M90 124H110M90 134H110M90 144H110M90 154H110M90 164H110"></path></g>
+       <path fill="url(#{{ u }}hl)" d="M95 96V84H105V96Z"></path>
+       <g filter="url(#{{ u }}rf)" fill="#E4C070"><path d="M84 180Q84 172 90 172V180ZM116 180Q116 172 110 172V180Z"></path></g>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isTaj }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g filter="url(#{{ u }}rf)"><path fill="#EDCB7E" d="M34 182H166V174H34Z"></path></g>
+       <g filter="url(#{{ u }}rf)">
+        <path fill="url(#{{ u }}tg1)" d="M44 174V100H50V174ZM150 174V100H156V174Z"></path>
+        <path fill="#EDCB7E" d="M42 100Q47 90 52 100ZM148 100Q153 90 158 100Z"></path>
+        <path fill="#EDCB7E" d="M46.5 92V86H47.5V92ZM152.5 92V86H153.5V92Z"></path>
+       </g>
+       <g filter="url(#{{ u }}rf)">
+        <path fill="url(#{{ u }}tg0)" fill-rule="evenodd" d="M64 174V120H136V174ZM89 174V146Q89 132 100 126Q111 132 111 146V174Z"></path>
+        <path fill="#EDCB7E" d="M62 120H138V116H62Z"></path>
+        <path fill="url(#{{ u }}tg1)" d="M78 116C74 96 88 86 100 70C112 86 126 96 122 116Z"></path>
+        <path fill="#EDCB7E" d="M99.2 70V58H100.8V70Z"></path>
+        <circle cx="100" cy="56" r="2.2" fill="#EDCB7E"></circle>
+        <path fill="#EDCB7E" d="M68 116Q72 106 76 116ZM124 116Q128 106 132 116Z"></path>
+       </g>
+       <path fill="url(#{{ u }}hl)" d="M91 174V147Q91 135 100 129.5Q109 135 109 147V174Z"></path>
+       <path fill="url(#{{ u }}hl)" d="M70 166V154Q70 148 75 145Q80 148 80 154V166ZM120 166V154Q120 148 125 145Q130 148 130 154V166ZM70 140V132Q70 128 75 126Q80 128 80 132V140ZM120 140V132Q120 128 125 126Q130 128 130 132V140Z"></path>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isFoto }}" hint-placeholder-val="{{ false }}">
+      <filter id="{{ u }}ph" filterUnits="userSpaceOnUse" x="28" y="50" width="144" height="144" color-interpolation-filters="sRGB">
+       <feColorMatrix in="SourceGraphic" type="saturate" values="0" result="g0"></feColorMatrix>
+       <feComponentTransfer in="g0" result="g1"><feFuncR type="gamma" amplitude="1" exponent=".8" offset="0"></feFuncR><feFuncG type="gamma" amplitude="1" exponent=".8" offset="0"></feFuncG><feFuncB type="gamma" amplitude="1" exponent=".8" offset="0"></feFuncB></feComponentTransfer>
+       <feComponentTransfer in="g1" result="gold"><feFuncR type="table" tableValues=".52 .70 .88 1"></feFuncR><feFuncG type="table" tableValues=".36 .52 .72 .93"></feFuncG><feFuncB type="table" tableValues=".14 .22 .40 .68"></feFuncB></feComponentTransfer>
+       <feColorMatrix in="g1" type="luminanceToAlpha" result="la"></feColorMatrix>
+       <feGaussianBlur in="la" stdDeviation=".55" result="bump"></feGaussianBlur>
+       <feDiffuseLighting in="bump" surfaceScale="5" diffuseConstant="1.25" lighting-color="#FFFFFF" result="dl"><feDistantLight azimuth="{{ az }}" elevation="42"></feDistantLight></feDiffuseLighting>
+       <feComposite in="gold" in2="dl" operator="arithmetic" k1="1.08" k2="0" k3="0" k4="0" result="lit"></feComposite>
+       <feSpecularLighting in="bump" surfaceScale="5" specularConstant=".55" specularExponent="26" lighting-color="#FFF4D4" result="sp"><feDistantLight azimuth="{{ az }}" elevation="46"></feDistantLight></feSpecularLighting>
+       <feComposite in="lit" in2="sp" operator="arithmetic" k1="0" k2="1" k3=".7" k4="0"></feComposite>
+      </filter>
+      <g clip-path="url(#{{ u }}cl)">
+       <clipPath id="{{ u }}phc"><rect x="14" y="30" width="172" height="150"></rect></clipPath>
+       <g clip-path="url(#{{ u }}phc)"><image href="assets/siete-maravillas.png" x="-13.4" y="-35" width="481.5" height="321" preserveAspectRatio="none" filter="url(#{{ u }}ph)"></image></g>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".18"></rect>
+       <circle cx="100" cy="122" r="70" fill="none" stroke="rgba(70,46,12,.55)" stroke-width="5" style="filter:blur(2px)"></circle>
+      </g>
+      </sc-if>
+      <sc-if value="{{ isMun }}" hint-placeholder-val="{{ false }}">
+      <g clip-path="url(#{{ u }}cl)">
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br)" opacity=".55"></rect>
+       <rect x="24" y="46" width="152" height="152" filter="url(#{{ u }}br2)" opacity=".35"></rect>
+       <g filter="url(#{{ u }}rf)"><circle cx="100" cy="114" r="63" fill="none" stroke="#E4C070" stroke-width="2.2"></circle></g>
+       <path d="M156.0 114.0L161.0 114.0M158.1 120.5L160.6 120.8M157.0 127.0L159.5 127.6M155.2 133.3L157.6 134.1M152.7 139.4L155.0 140.5M149.5 145.1L151.7 146.5M145.7 150.5L147.7 152.0M141.4 155.4L143.1 157.1M134.9 157.8L138.0 161.7M131.1 163.5L132.5 165.7M125.4 166.7L126.5 169.0M119.3 169.2L120.1 171.6M113.0 171.0L113.6 173.5M106.5 172.1L106.8 174.6M100.0 172.5L100.0 175.0M93.5 172.1L93.2 174.6M87.5 168.6L86.4 173.5M80.7 169.2L79.9 171.6M74.6 166.7L73.5 169.0M68.9 163.5L67.5 165.7M63.5 159.7L62.0 161.7M58.6 155.4L56.9 157.1M54.3 150.5L52.3 152.0M50.5 145.1L48.3 146.5M49.5 138.3L45.0 140.5M44.8 133.3L42.4 134.1M43.0 127.0L40.5 127.6M41.9 120.5L39.4 120.8M41.5 114.0L39.0 114.0M41.9 107.5L39.4 107.2M43.0 101.0L40.5 100.4M44.8 94.7L42.4 93.9M49.5 89.7L45.0 87.5M50.5 82.9L48.3 81.5M54.3 77.5L52.3 76.0M58.6 72.6L56.9 70.9M63.5 68.3L62.0 66.3M68.9 64.5L67.5 62.3M74.6 61.3L73.5 59.0M80.7 58.8L79.9 56.4M87.5 59.4L86.4 54.5M93.5 55.9L93.2 53.4M100.0 55.5L100.0 53.0M106.5 55.9L106.8 53.4M113.0 57.0L113.6 54.5M119.3 58.8L120.1 56.4M125.4 61.3L126.5 59.0M131.1 64.5L132.5 62.3M134.9 70.2L138.0 66.3M141.4 72.6L143.1 70.9M145.7 77.5L147.7 76.0M149.5 82.9L151.7 81.5M152.7 88.6L155.0 87.5M155.2 94.7L157.6 93.9M157.0 101.0L159.5 100.4M158.1 107.5L160.6 107.2" stroke="#7A5A22" stroke-width="1" opacity=".7"></path>
+       <g filter="url(#{{ u }}rf)"><path d="M102.0 104.2L113.0 87.0L106.4 106.3ZM108.9 109.5L129.2 107.3L110.0 114.2ZM109.1 118.1L123.5 132.7L106.1 122.0ZM102.4 123.7L100.0 144.0L97.6 123.7ZM93.9 122.0L76.5 132.7L90.9 118.1ZM90.0 114.2L70.8 107.3L91.1 109.5ZM93.6 106.3L87.0 87.0L98.0 104.2Z" fill="url(#{{ u }}tg2)"></path></g>
+       <g filter="url(#{{ u }}rf)"><path d="M100 114L93.5 100.5L100.0 64.0ZM100 114L106.5 100.5L139.1 82.8ZM100 114L114.6 110.7L148.7 125.1ZM100 114L111.7 123.4L121.7 159.0ZM100 114L100.0 129.0L78.3 159.0ZM100 114L88.3 123.4L51.3 125.1ZM100 114L85.4 110.7L60.9 82.8Z" fill="#F7E2A6"></path><path d="M100 114L100.0 64.0L106.5 100.5ZM100 114L139.1 82.8L114.6 110.7ZM100 114L148.7 125.1L111.7 123.4ZM100 114L121.7 159.0L100.0 129.0ZM100 114L78.3 159.0L88.3 123.4ZM100 114L51.3 125.1L85.4 110.7ZM100 114L60.9 82.8L93.5 100.5Z" fill="#B88E44"></path></g>
+       <g filter="url(#{{ u }}rf)"><circle cx="100" cy="114" r="9" fill="url(#{{ u }}tg0)"></circle></g>
+       <circle cx="100" cy="114" r="3.4" fill="#FFF3D0"></circle>
+      </g>
+      </sc-if>
+      <path d="M22 196L8 218L34 212L42 226L52 204Z" fill="#9E7430"></path><path d="M178 196L192 218L166 212L158 226L148 204Z" fill="#9E7430"></path>
+      <path d="M28 190H172L180 214H20Z" fill="url(#{{ u }}rb)" stroke="#8A6424" stroke-width="1"></path>
+      {{ ribEl }}
+     </svg>
+     <div style="position:absolute;left:24px;top:46px;width:152px;height:152px;border-radius:50%;overflow:hidden;pointer-events:none;mix-blend-mode:screen">
+      <span style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at {{ hx }}% {{ hy }}%,rgba(255,255,255,.75),transparent 45%);transition:background {{ tt }}"></span>
+      <span style="position:absolute;top:-30%;bottom:-30%;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:eoSheen 3.8s 1s ease-in-out infinite"></span>
+     </div>
+    </div>
+    <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg)">
+     <svg width="200" height="250" viewBox="0 0 200 250" style="position:absolute;inset:0;overflow:visible">
+      <circle cx="100" cy="122" r="86" fill="url(#{{ u }}rm)"></circle>
+      <circle cx="100" cy="122" r="76" fill="url(#{{ u }}gd)" stroke="#8A6424" stroke-width="1.5"></circle>
+      <circle cx="100" cy="122" r="66" fill="none" stroke="#7A5A22" stroke-width="1" stroke-dasharray="2 3"></circle>
+      <sc-if value="{{ notMun }}" hint-placeholder-val="{{ true }}">
+      <g fill="none" stroke="#7A5A22" stroke-width="1.4" stroke-linecap="round"><path d="M54 154Q40 122 54 90M146 154Q160 122 146 90"></path><sc-for list="{{ laurel }}" as="l" hint-placeholder-count="10"><path d="{{ l }}"></path></sc-for></g>
+      <text x="100" y="106" text-anchor="middle" font-family="Geist Mono" font-weight="600" font-size="7" letter-spacing="1.6" fill="#3A2A10">ENCONTRADO EL</text>
+      <text x="100" y="128" text-anchor="middle" font-family="Instrument Serif" font-size="19" fill="#2A1D08">{{ date1 }}</text>
+      <text x="100" y="142" text-anchor="middle" font-family="Instrument Serif" font-size="13" fill="#2A1D08">{{ date2 }}</text>
+      <text x="100" y="158" text-anchor="middle" font-family="Geist Mono" font-weight="700" font-size="7.4" letter-spacing="2" fill="#3A2A10">{{ siteU }}</text>
+      </sc-if>
+      <sc-if value="{{ isMun }}" hint-placeholder-val="{{ false }}">
+       <text x="100" y="82" text-anchor="middle" font-family="Geist Mono" font-weight="700" font-size="7" letter-spacing="1.8" fill="#3A2A10">TUS MARAVILLAS</text>
+       <path d="M78 87H122" stroke="#7A5A22" stroke-width=".8"></path>
+       <sc-for list="{{ wl }}" as="w" hint-placeholder-count="7"><text x="100" y="{{ w.y }}" text-anchor="middle" font-family="{{ w.ff }}" font-size="{{ w.fs }}" fill="{{ w.c }}">{{ w.t }}</text></sc-for>
+      </sc-if>
+     </svg>
+    </div>
+   </div>
+   </div>
+  </sc-if>
+  <sc-if value="{{ lock }}" hint-placeholder-val="{{ false }}">
+   <span style="position:absolute;left:30px;top:52px;width:140px;height:140px;border-radius:50%;background:rgba(255,253,248,.06);border:1.5px dashed rgba(243,213,154,.4);display:flex;align-items:center;justify-content:center;font:400 48px/1 'Instrument Serif',serif;color:rgba(243,213,154,.6)">?</span>
+  </sc-if>
+ </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:260,&quot;height&quot;:320},&quot;won&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:240,&quot;tsType&quot;:&quot;number&quot;},&quot;back&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+let UID=0;
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='eo'+(++UID);this.state={rx:0,ry:0,hx:38,hy:30,flip:false,drag:false,spin:0,pd:null};this.root=React.createRef();this.ori=this.ori.bind(this);}
+  componentDidMount(){if(this.props.demo==='sway'){this.t0=performance.now();this.iv=setInterval(()=>{const t=(performance.now()-this.t0)/1000;const ry=Math.sin(t*1.1)*17,rx=Math.sin(t*.7)*-6;this.setState({rx:+rx.toFixed(1),ry:+ry.toFixed(1),hx:38+ry*1.4,hy:30-rx*1.4,drag:true});},60);}
+    if(this.props.tilt!==false&&this.props.tilt!=='false'&&window.DeviceOrientationEvent)window.addEventListener('deviceorientation',this.ori);}
+  componentWillUnmount(){clearInterval(this.iv);window.removeEventListener('deviceorientation',this.ori);}
+  ori(e){if(this.state.drag||e.beta==null)return;const rx=Math.max(-18,Math.min(18,(e.beta-45)*.5)),ry=Math.max(-18,Math.min(18,e.gamma*.6));this.setState({rx:-rx,ry,hx:38+ry*1.4,hy:30-rx*1.4});}
+  renderVals(){const p=this.props;const s=this.state;const won=!(p.won===false||p.won==='false');const S=Number(p.size)||200;const k=S/200;const back=p.back===true||p.back==='true';const flip=back||s.flip;
+    const star=(cx,cy,r)=>{let d='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;d+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1);}return d+'Z';};
+    const FOTO=p.kind==='foto';const MUN=p.kind==='mundo'||FOTO;const KS=['coliseo','muralla','petra','cristo','machu','chichen','taj'];const KK=KS.includes(p.kind)?p.kind:'coliseo';const SI=KK==='coliseo'?3:KS.indexOf(KK);
+    const SITE={coliseo:'Coliseo',muralla:'Gran Muralla China',petra:'Petra',cristo:'Cristo Redentor',machu:'Machu Picchu',chichen:'Chichén Itzá',taj:'Taj Mahal'}[KK];
+    const DFT={coliseo:['11 de octubre','de 2026'],muralla:['4 de abril','de 2028'],petra:['9 de marzo','de 2027'],cristo:['20 de enero','de 2028'],machu:['14 de agosto','de 2027'],chichen:['2 de diciembre','de 2027'],taj:['18 de abril','de 2028']}[KK];const NW=Math.max(1,Math.min(7,Number(p.n)||1));const LIT=[3,2,4,1,5,0,6].slice(0,NW);
+    const stars=Array.from({length:7},(_,i)=>{const a=Math.PI+(i+1)/8*Math.PI;const on=MUN?LIT.includes(i):i===SI;return{x:100+96*Math.cos(a),y:122+96*Math.sin(a)*.98,on,d:star(100+96*Math.cos(a),122+96*Math.sin(a)*.98,on?8.4:6.4),f:on?'#FFE6A0':'#141A30',st:on?'#FFF8E0':'rgba(200,170,105,.55)',a:on?'eoStar 2.4s '+(i*.2).toFixed(1)+'s ease-in-out infinite':'none'};});
+    const spark=stars.filter(s=>s.on).map((s,i)=>{const x=s.x+6,y=s.y-6;return{d:'M'+x.toFixed(1)+' '+(y-4).toFixed(1)+'L'+(x+.9).toFixed(1)+' '+(y-.9).toFixed(1)+'L'+(x+4).toFixed(1)+' '+y.toFixed(1)+'L'+(x+.9).toFixed(1)+' '+(y+.9).toFixed(1)+'L'+x.toFixed(1)+' '+(y+4).toFixed(1)+'L'+(x-.9).toFixed(1)+' '+(y+.9).toFixed(1)+'L'+(x-4).toFixed(1)+' '+y.toFixed(1)+'L'+(x-.9).toFixed(1)+' '+(y-.9).toFixed(1)+'Z',dl:(i*.27).toFixed(2)+'s'};});
+    const WN=[['Coliseo','oct 2026'],['Petra','mar 2027'],['Machu Picchu','ago 2027'],['Chichén Itzá','dic 2027'],['Cristo Redentor','ene 2028'],['Taj Mahal','abr 2028'],['Gran Muralla','sep 2028']];
+    const wl=[];WN.forEach((w,i)=>{const got=i<NW;wl.push({y:String(98+i*10.2),t:got?w[0]+' · '+w[1]:'· · ·',ff:got?'Instrument Serif':'Geist Mono',fs:got?'9.5':'6.5',c:got?'#2A1D08':'rgba(58,42,16,.45)'});});
+    const TIER=NW<=2?0:NW<=4?1:NW<=6?2:3;
+    const rv=MUN?[{rayA:'0',rayW:'2',rayG:'20',rayR:'40',rayS:'.8',glowA:'.12',ring:false},{rayA:'.16',rayW:'2.6',rayG:'20',rayR:'50',rayS:'.92',glowA:'.2',ring:false},{rayA:'.3',rayW:'3.4',rayG:'16',rayR:'64',rayS:'1.12',glowA:'.34',ring:false},{rayA:'.55',rayW:'4.6',rayG:'11',rayR:'74',rayS:'1.32',glowA:'.75',ring:true}][TIER]:{rayA:'.28',rayW:'4',rayG:'18',rayR:'66',rayS:'1',glowA:'0',ring:false};
+    const ridges=(MUN&&NW<=2)?[]:Array.from({length:60},(_,i)=>{const a=i/60*Math.PI*2;return'M'+(100+77*Math.cos(a)).toFixed(1)+' '+(122+77*Math.sin(a)).toFixed(1)+'L'+(100+85*Math.cos(a)).toFixed(1)+' '+(122+85*Math.sin(a)).toFixed(1);});
+    const n1=v=>v.toFixed(1);const BRK=118;const CX=100,BOW=4.2;
+    const bow=x=>{const u=(x-CX)/58;return -BOW*Math.max(0,1-u*u);};
+    const curve=(x0,x1,y)=>{const pts=[];for(let k=0;k<=12;k++){const x=x0+(x1-x0)*k/12;pts.push(n1(x)+' '+n1(y+bow(x)));}return pts;};
+    const TT=[[144,160,0,['#F1D28A','#E6C374','#CFA75A','#9C7834'],'a'],[128,144,1.8,['#E6C37A','#D9B565','#C29A4E','#8E6C2C'],'a'],[112,128,3.6,['#DAB56C','#CCA758','#B48E44','#82622A'],'a'],[96,112,5.4,['#CDA862','#BF9A4E','#A8843E','#765826'],'w']];
+    const holes=[],tiers=[],pils=[],ledges=[],lsh=[],tg=[];
+    TT.forEach(([yt,yb,ins,G,kd],r)=>{const x0=44+ins,x1=156-ins,n=8,th0=Math.asin((x0-CX)/58),th1=Math.asin((x1-CX)/58);let hp='';
+      const gid=this.u+'tg'+r;tg.push({id:gid,a:G[0],b:G[1],c:G[2],d:G[3]});
+      const X=t=>CX+58*Math.sin(th0+(th1-th0)*t);
+      for(let i=0;i<n;i++){const xa=X(i/n),xb=X((i+1)/n),w=xb-xa,px=xa+w*.2,pw=w*.6,rr=pw/2,mx=px+rr,dy=bow(mx);if(kd==='w'&&px+pw>BRK-2)continue;
+        const h=kd==='a'?`M${n1(px)} ${n1(yb-1.4+dy)}V${n1(yt+2.4+rr+dy)}A${n1(rr)} ${n1(rr)} 0 0 1 ${n1(px+pw)} ${n1(yt+2.4+rr+dy)}V${n1(yb-1.4+dy)}Z`:`M${n1(px+1)} ${n1(yb-4.5+dy)}V${n1(yt+4.5+dy)}H${n1(px+pw-1)}V${n1(yb-4.5+dy)}Z`;
+        holes.push(h);hp+=h;if(i&&!(kd==='w'&&xa>BRK-4)){const pw2=Math.max(.9,1.9*w/14);pils.push(`M${n1(xa-pw2/2)} ${n1(yb+bow(xa))}V${n1(yt+2+bow(xa))}H${n1(xa+pw2/2)}V${n1(yb+bow(xa))}Z`);}}
+      const top=curve(x0,kd==='w'?BRK:x1,yt),bot=curve(x0,kd==='w'?143:x1,yb).reverse();
+      const outer=kd==='w'?'M'+top.join('L')+'L121 '+n1(99+bow(121))+'L124 '+n1(97.6+bow(124))+'L127.5 '+n1(103+bow(127.5))+'L131 '+n1(101.6+bow(131))+'L134.5 '+n1(106.6+bow(134.5))+'L139 '+n1(108.4+bow(139))+'L'+bot.join('L')+'Z'
+        :'M'+top.join('L')+'L'+bot.join('L')+'Z';
+      tiers.push({d:outer+hp,f:'url(#'+gid+')'});
+      if(r<3){const up=curve(x0-1.4,x1+1.4,yt-1.6),dn=curve(x0-1.4,x1+1.4,yt+1.3).reverse();ledges.push('M'+up.join('L')+'L'+dn.join('L')+'Z');
+        const s1=curve(x0+.5,x1+2.4,yt+1.4),s2=curve(x0+.5,x1+2.4,yt+4.6).reverse();lsh.push('M'+s1.join('L')+'L'+s2.join('L')+'Z');}});
+    const DR=p.drag===true||p.drag==='true';const fx=p.tiltY!=null&&p.tiltY!=='';const ry0=DR?s.spin:(fx?Number(p.tiltY):s.ry),rx0=DR?s.rx:(fx?Number(p.tiltX||0):s.rx);
+    let Lx=-1+(ry0/18)*1.5,Ly=-1+(-rx0/18)*.8;const Ln=Math.hypot(Lx,Ly)||1;Lx/=Ln;Ly/=Ln;
+    const lit={hdx:n1(-Lx*.9),hdy:n1(-Ly*.9),ndx:n1(Lx*.95),ndy:n1(Ly*.95),sdx:n1(-Lx*2.9),sdy:n1(-Ly*2.9),az:String(Math.round((Math.atan2(Ly,Lx)*180/Math.PI+360)%360))};
+    const wreath=[],berries=[];if(MUN&&TIER>=1){const rich=TIER>=2,n=rich?10:7,R0=rich?95:93;[-1,1].forEach(sg=>{for(let i=0;i<n;i++){const ang=(sg<0?180-12:12)+sg*(-1)*0+(sg<0?-1:1)*(i*(rich?7:9.5));const a=(sg<0?(168-i*(rich?7.4:10)):(12+i*(rich?7.4:10)))*Math.PI/180;
+      const cxp=100+R0*Math.cos(a),cyp=122+R0*Math.sin(a)*.98;const rot=(a*180/Math.PI)+(sg<0?-62:62);
+      [0,1].forEach(o=>{const off=o?-5:5;wreath.push({x:(cxp+off*Math.cos(a)*.0).toFixed(1),y:cyp.toFixed(1),rx:(rich?6.4:5.4).toFixed(1),ry:(rich?2.7:2.3).toFixed(1),t:'rotate('+(rot+(o?40:-40)*sg).toFixed(0)+' '+cxp.toFixed(1)+' '+cyp.toFixed(1)+') translate('+(o?-3.6:3.6)+' 0)',f:TIER>=3?(o?'#FFE7A6':'#F3D088'):(o?'#E6C37A':'#D3AE62')});});
+      if(rich&&i%3===1)berries.push({x:(100+(R0+6)*Math.cos(a)).toFixed(1),y:(122+(R0+6)*Math.sin(a)*.98).toFixed(1)});}});}
+    const ribEl=React.createElement('text',{x:100,y:206.5,textAnchor:'middle',fontFamily:'Geist Mono',fontWeight:700,fontSize:MUN?8.2:8.6,letterSpacing:1.6,fill:'#141A33'},MUN?'LAS 7 MARAVILLAS':'MARAVILLA DEL MUNDO');
+    const laurel=[];[-1,1].forEach(sg=>{for(let i=0;i<5;i++){const y=146-i*12,x=100+sg*(47+Math.sin(i/4*Math.PI)*7);laurel.push(`M${x.toFixed(1)} ${y}q${sg*7} -4 ${sg*5} -10`);}});
+    const D=p.date||DFT.join('|');const[d1,d2]=D.split('|');
+    const inter=!(p.interactive===false||p.interactive==='false');
+    return{...rv,isCol:!MUN&&KK==='coliseo',isMur:!MUN&&KK==='muralla',isPet:!MUN&&KK==='petra',isCri:!MUN&&KK==='cristo',isMac:!MUN&&KK==='machu',isChi:!MUN&&KK==='chichen',isTaj:!MUN&&KK==='taj',notMun:!MUN,isMun:MUN&&!FOTO,isFoto:FOTO,siteU:SITE.toUpperCase(),site:SITE,wl,ribbon:MUN?'LAS 7 MARAVILLAS':'MARAVILLA DEL MUNDO',u:this.u,root:this.root,won,lock:!won,w:S+'px',h:(S*1.25)+'px',k,stars,ridges,holes,tiers,pils,ledges,lsh,tg,...lit,laurel,wreath,berries,spark,ribEl,date1:d1,date2:d2||'',
+      rx:String(rx0),ry:String(ry0+(flip&&!DR?180:0)),hx:String((DR?38+Math.sin(ry0*Math.PI/180)*40:fx?38+ry0*1.4:s.hx).toFixed(0)),hy:String((fx?30-rx0*1.4:s.hy).toFixed(0)),tt:s.drag?'.06s':'.8s',ta:DR?'none':'auto',spin:p.demo==='spin'?'eoSpin 7s 1s cubic-bezier(.6,0,.3,1) infinite':'none',cur:inter&&won?'pointer':'default',
+      down:e=>{if(!DR)return;e.currentTarget.setPointerCapture&&e.currentTarget.setPointerCapture(e.pointerId);this.setState({pd:{x:e.clientX,y:e.clientY,b:s.spin},drag:true});},
+      up:()=>{if(!DR||!this.state.pd)return;this.setState(st=>({pd:null,drag:false,rx:0,spin:Math.round(st.spin/180)*180}));},
+      move:e=>{if(DR){const pd=this.state.pd;if(!pd)return;const dx=e.clientX-pd.x,dy=e.clientY-pd.y;this.setState({spin:pd.b+dx*.9,rx:Math.max(-20,Math.min(20,-dy*.25))});return;}if(!inter||!won)return;const r=e.currentTarget.getBoundingClientRect();const nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;this.setState({drag:true,rx:+(-ny*30).toFixed(1),ry:+(nx*34).toFixed(1),hx:38+nx*60,hy:30+ny*60});},
+      leave:()=>{if(DR)return;this.setState({drag:false,rx:0,ry:0,hx:38,hy:30});},
+      tap:()=>{if(DR)return;if(inter&&won&&p.flippable!==false&&p.flippable!=='false')this.setState(st=>({flip:!st.flip,drag:false}));}};}
+}
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { RouteView } from './RouteView'
 import { AvisoSolape } from './reservas/AvisoSolape'
 import { AlojamientoHost } from './alojamiento/AlojamientoHost'
+import { BotonFlotanteLogros } from '../logros/momentos/BotonFlotanteLogros'
 import { PantallaPresupuesto } from './presupuesto/PantallaPresupuesto'
 
 /**
@@ -15,6 +16,7 @@ export default function RouteScreen() {
       <AvisoSolape />
       <AlojamientoHost />
       <PantallaPresupuesto />
+      <BotonFlotanteLogros />
     </motion.div>
   )
 }

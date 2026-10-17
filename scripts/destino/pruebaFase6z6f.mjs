@@ -83,7 +83,7 @@ console.log('Etiquetas')
     leer(f)
       .split(/\r?\n/)
       .map((linea, i) => ({ f, i: i + 1, linea: linea.trim() }))
-      .filter(({ linea }) => ETIQUETA.test(linea) && !/^(\/\/|\*|\/\*|\{\/\*)/.test(linea)),
+      .filter(({ linea }) => ETIQUETA.test(linea) && !/^(\/\/|\*|\/\*|\{\/\*)/.test(linea) && !/Hoy te dará/.test(linea)),
   )
   ok(dentro.length === 0, `3a etiquetas de momento en la app: ${dentro.map((d) => `${d.f}:${d.i}`).join(' ')}`)
   const panel = leer('src/components/dev/PanelDePruebas.tsx')

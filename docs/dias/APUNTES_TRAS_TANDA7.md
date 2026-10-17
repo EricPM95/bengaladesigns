@@ -739,3 +739,22 @@ Detalle en REVISION_DESIGN_PASO3.md. Lo que cambia reglas:
 - Va a la 8a3: la hora libre del día de llegada sale de la ruta (no 90 minutos fijos), la pregunta de las 12:00 también con los Vistos que llegan tarde, y partir el código de la app para que abra antes.
 - **La campanita (Eric, 12:06–12:09):** todos los avisos llegan a nuestro botón de Avisos (la campana que ya está en la cabecera) y al móvil. Fuera las tarjetas que preguntan por los avisos. La ventana de permiso del móvil sale una vez: tras [Compartir viaje], tras [Enviar a Elena] o al acabar el primer día. Para las cuentas, parte 3: la lista de avisos con leídos y sin leer, el aviso de nueva recomendación y el de la respuesta.
 - La recomendación «cambiar X por Y» se guarda como pareja (Code ya lo añadió en la 8a2); Design la enseña en un recuadro.
+
+## 35. Las tiendas de apps, al final (Eric, 17-oct, 12:38–12:41)
+- La app saldrá en App Store y Google Play (la gente no instala apps desde una web). Se hace con la misma app, metida dentro de una app de verdad.
+- **Orden:** primero se acaba la app y Eric revisa todas las pantallas con calma; después, la tanda de las tiendas (cámara, avisos y compra del pase dentro de la app) y la prueba con unas 100 personas.
+- Cuentas personales, con el DNI de Eric (ni empresa ni autónomo de momento). En Google, una cuenta personal pide probar con 12 personas durante 14 días: lo cubren las 100. Esas personas se llevan el logro «Probador».
+- Comisiones (UE, desde el 1-oct-2026, empresa pequeña): Apple, 15 % dentro de la app o 10 % si se compra en nuestra web; Google, alrededor del 15 %. Cuotas: Apple, unos 99 $ al año; Google, 25 $ una vez.
+- El aviso «Añádela a tu pantalla de inicio» sale del paso 4 de Design. Se quedan el icono y la pantalla al abrir. Lo que Code ya hizo para instalar la web no molesta.
+- Aviso de Claude: antes de cobrar el pase, preguntar a un gestor (cobrar con regularidad suele pedir darse de alta).
+
+## 36. Hoteles, eSIM y seguro: darles más sitio (Eric, 17-oct, 15:14; PARA DESPUÉS, cuando esté todo acabado)
+- Idea de Eric: el alojamiento importa más que las entradas (todos duermen en algún sitio). También la eSIM y el seguro.
+- Propuestas de Claude (Eric: «vamos a acabar todo y luego miramos»):
+  1. «¿Dónde dormir?»: la mejor zona según su ruta («Monti: a menos de 15 minutos de 3 de tus 4 días»), con [Ver alojamientos en Monti] y sus fechas puestas. En el formulario («¿Ya tienes alojamiento?»), en el mapa de RUTA y una vez en DÍAS. Desaparece al poner la dirección. (La más fuerte.)
+  2. «Tu viaje, listo»: lista de antes de salir en la cuenta atrás (vuelos, alojamiento, entradas, internet, seguro), con «Ya lo tengo». Nunca un logro ni un premio.
+  3. Avisos de la campanita antes del viaje, solo con lo que falta, sin urgencias inventadas.
+  4. eSIM en la ficha de llegada y en la lista. Ojo: dentro de la UE el roaming es gratis; solo para quien viene de fuera de la UE o va fuera de la UE.
+  5. Seguro justo después de guardar el vuelo. Texto honesto (la tarjeta sanitaria europea cubre la sanidad pública, no la cancelación, el equipaje ni la repatriación). Preguntar al gestor o al programa si recomendar seguros tiene reglas propias en España.
+- Reglas: sin nombres de empresas, se puede cerrar, como mucho uno por pantalla, con su código de afiliado. Falta el código de Booking.
+- (15:18, Eric) **Los dibujos de todos los logros salen de Logros · Modelos.** Si otra página no coincide, manda Modelos. Y las pantallas de los momentos, de Logros · Momentos (Modelos: cómo es cada dibujo; Momentos: cómo aparece). Va en el prompt de la 8b y en el de la 8c.

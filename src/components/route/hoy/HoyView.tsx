@@ -5,6 +5,8 @@ import { pagoActivo } from '../../../lib/pago'
 import { HoyAntes } from './HoyAntes'
 import { HoyDurante } from './HoyDurante'
 import { HoyDespues } from './HoyDespues'
+import { hoyV2Activo } from '../../../lib/hoyV2'
+import { HoyV2 } from './v2/HoyV2'
 
 /**
  * La pestaña HOY (Tanda 6z3 y 6z6): SOLO de pago (en la gratis la pestaña no está; ver src/lib/barra.ts). Lo de dentro cambia según el momento del viaje —antes, durante o después (el día siguiente al último)— y la barra no cambia.
@@ -14,6 +16,7 @@ export function HoyView({ route, onPonFechas }: { route: Route; onPonFechas: () 
   const simulada = useRouteStore((state) => state.dev_simulated_today_iso)
   const estado = getTodayTripStatus(route, simulada ?? undefined)
   if (!pagoActivo()) return null
+  if (hoyV2Activo()) return <HoyV2 route={route} onPonFechas={onPonFechas} />
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-7 pt-1" data-hoy={estado?.phase ?? 'antes-sin-fechas'}>

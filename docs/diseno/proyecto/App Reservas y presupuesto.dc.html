@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 50% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column">
+  <div style="padding:44px 48px 10px;display:flex;flex-direction:column;gap:10px;max-width:900px">
+    <a href="Indice.dc.html" style="align-self:flex-start;font:600 12px 'Geist';text-decoration:none;color:rgba(28,34,48,.6)">← Índice</a>
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">App · Reservas y presupuesto</span>
+    <span style="font:400 46px/1 'Instrument Serif',serif">Reservas y presupuesto</span>
+    <nav style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"><a href="#s1" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';text-decoration:none">01 · Reservas</a><a href="#s2" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';text-decoration:none">02 · Reservas con varios destinos</a><a href="#s3" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';text-decoration:none">03 · El presupuesto</a></nav>
+  </div>
+  <section id="s1" style="display:flex;flex-direction:column"><span style="padding:30px 48px 0;font:400 34px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">01 · </span>Reservas</span><dc-import name="Piezas/Reservas v4" hint-size="100%,2600px"></dc-import></section>
+  <section id="s2" style="display:flex;flex-direction:column"><span style="padding:30px 48px 0;font:400 34px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">02 · </span>Reservas con varios destinos</span><dc-import name="Piezas/Reservas Multidestino" hint-size="100%,2600px"></dc-import></section>
+  <section id="s3" style="display:flex;flex-direction:column"><span style="padding:30px 48px 0;font:400 34px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">03 · </span>El presupuesto</span><dc-import name="Piezas/Presupuesto" hint-size="100%,2200px"></dc-import></section>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
+import { Cargando, pantallaPerezosa } from './components/layout/PantallaPerezosa'
 import { AnimatePresence } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { TrazoFlow } from './components/trazo/TrazoFlow'
@@ -9,6 +10,7 @@ import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
+import { MomentosHost } from './components/logros/momentos/MomentosHost'
 import { AvisoInstalar } from './components/logros/AvisoInstalar'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
@@ -19,13 +21,11 @@ import { AvisosDeVueloWatcher } from './components/route/AvisosDeVueloWatcher'
 
 // Lo que no es de la primera pantalla se carga cuando se abre (Tanda 8A3): la ruta con todas sus pestañas y mapas, Mis viajes, «Preparando tu viaje…» y la pantalla de desarrollo.
 const cargarRouteScreen = () => import('./components/route/RouteScreen')
-const RouteScreen = lazy(cargarRouteScreen)
-const MyTripsScreen = lazy(() => import('./components/myTrips/MyTripsScreen').then((m) => ({ default: m.MyTripsScreen })))
-const PreparandoViaje = lazy(() => import('./components/loading/PreparandoViaje').then((m) => ({ default: m.PreparandoViaje })))
-const DevQuickRouteScreen = lazy(() => import('./components/dev/DevQuickRouteScreen').then((m) => ({ default: m.DevQuickRouteScreen })))
+const RouteScreen = pantallaPerezosa(cargarRouteScreen)
+const MyTripsScreen = pantallaPerezosa(() => import('./components/myTrips/MyTripsScreen').then((m) => ({ default: m.MyTripsScreen })))
+const PreparandoViaje = pantallaPerezosa(() => import('./components/loading/PreparandoViaje').then((m) => ({ default: m.PreparandoViaje })))
+const DevQuickRouteScreen = pantallaPerezosa(() => import('./components/dev/DevQuickRouteScreen').then((m) => ({ default: m.DevQuickRouteScreen })))
 
-/** Mientras llega una parte: el mismo fondo de la app, de pantalla completa, sin saltos ni pantallas en blanco. */
-const Cargando = () => <div className="h-dvh" aria-hidden="true" />
 
 function PreparandoViajeContainer() {
   const destination = useRouteStore((state) => state.destination)
@@ -92,6 +92,7 @@ function App() {
       <PuertaDeCuenta />
       <VistosPorPersona />
       <LogrosPorVisto />
+      <MomentosHost />
       <AvisoInstalar />
       <PrecioVuela />
       <FotoVuela />

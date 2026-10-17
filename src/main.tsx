@@ -7,6 +7,10 @@ import { SeasonCardPreview } from './dev/SeasonCardPreview.tsx'
 import { AdminLogros } from './components/logros/AdminLogros.tsx'
 import { PruebaFotos } from './components/logros/PruebaFotos.tsx'
 import { logrosActivos } from './lib/logros.ts'
+import { lazy, Suspense } from 'react'
+
+// Solo en desarrollo: ?dibujos=1 enseña todos los dibujos de los logros (src/dev/DibujosPrueba.tsx), cargado a demanda.
+const DibujosPrueba = import.meta.env.DEV && new URLSearchParams(window.location.search).get('dibujos') ? lazy(() => import('./dev/DibujosPrueba.tsx').then((m) => ({ default: m.DibujosPrueba }))) : null
 
 // Solo en desarrollo: ?tarjeta=verano enseña la tarjeta de temporada sola (src/dev/SeasonCardPreview.tsx).
 const previewSeason = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('tarjeta') : null
@@ -18,7 +22,7 @@ const paginaDeLogros = logrosActivos() ? (window.location.pathname === '/admin/l
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      {previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
+      {DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'admin' ? <AdminLogros /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
     </ErrorBoundary>
   </StrictMode>,
 )

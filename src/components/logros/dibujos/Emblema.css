@@ -1,0 +1,28 @@
+@keyframes e_milDraw{0%{stroke-dashoffset:100;opacity:1}45%,80%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes e_sunIn{0%{transform:translate(-33px,4px)}25%{transform:translate(-16px,-1.5px)}50%{transform:translate(0,-3px)}75%{transform:translate(16px,-1.5px)}100%{transform:translate(33px,4px)}}
+@keyframes e_moonIn{0%{transform:translate(33px,4px)}25%{transform:translate(16px,-1.5px)}50%{transform:translate(0,-3px)}75%{transform:translate(-16px,-1.5px)}100%{transform:translate(-33px,4px)}}
+@keyframes e_monLit{0%,100%{opacity:.3;filter:none}50%{opacity:1;filter:drop-shadow(0 0 1.6px #FFE3B8)}}
+@keyframes e_monDark{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes e_nLights{0%,20%{opacity:0}45%,75%{opacity:1}100%{opacity:0}}
+@keyframes e_mouthOC{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.15)}}
+@keyframes e_bswing{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+@keyframes e_kZoom{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+@keyframes e_frMarch{to{stroke-dashoffset:-6}}
+@keyframes e_emGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(255,236,190,0))}50%{transform:scale(1.07);filter:drop-shadow(0 0 9px rgba(255,236,190,1))}}
+@keyframes e_mGlow{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:.85;transform:scale(1.08)}}
+@keyframes e_mShine{0%{transform:translateX(-200%) skewX(-18deg)}50%,100%{transform:translateX(560%) skewX(-18deg)}}
+@keyframes e_rip{0%,36%{opacity:0;transform:scale(.3)}40%{opacity:1}82%,100%{opacity:0;transform:scale(3.4)}}
+@keyframes e_coin{0%{opacity:0;transform:translateY(-10px) rotate(0)}10%{opacity:1}36%{opacity:1;transform:translateY(27px) rotate(200deg) scaleY(.5)}38%,100%{opacity:0;transform:translateY(27px)}}
+@keyframes e_flame{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes e_flick{from{transform:scaleY(1) skewX(0)}to{transform:scaleY(.82) skewX(5deg)}}
+@keyframes e_lglow{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
+@keyframes e_bpulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes e_beam{0%{opacity:0;transform:scaleY(0)}100%{opacity:1;transform:scaleY(1)}}
+@keyframes e_hL{0%{opacity:0;transform:translateX(-16px)}20%{opacity:1}100%{transform:none}}
+@keyframes e_hR{0%{opacity:0;transform:translateX(16px)}20%{opacity:1}100%{transform:none}}
+@keyframes e_spk{0%{opacity:0;transform:scale(.2)}12%{opacity:1;transform:scale(1.8)}100%{opacity:0;transform:scale(4.5)}}
+@keyframes e_domeIn{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:none}}
+@keyframes e_zoomK{0%{opacity:1;transform:scale(.32)}100%{opacity:0;transform:scale(5.5)}}
+@keyframes e_lit{0%{opacity:0}100%{opacity:1}}
+@keyframes e_mDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes e_aparece{0%{opacity:0;transform:scale(.3) rotate(-160deg)}65%{opacity:1;transform:scale(1.1) rotate(12deg)}100%{transform:none}}

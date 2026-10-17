@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+input::placeholder{color:rgba(28,34,48,.45)}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+.leaflet-container{font-family:'Geist',sans-serif;background:#E9E2D2}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 60% 40%,#F1E8D6 0%,#E0D3BA 70%);display:flex;align-items:center;justify-content:center;padding:{{ rootPad }};font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<div style="width:{{ sw }};height:{{ sh }};flex:none;position:relative">
+<div style="position:absolute;left:0;top:0;transform:{{ scaleT }};transform-origin:0 0">
+<div data-screen-label="11 Explorar" style="width:{{ pw }};height:{{ ph }};border-radius:{{ pr }};box-shadow:{{ psh }};position:relative;overflow:hidden;background:#F5EFE4;isolation:isolate;display:flex;flex-direction:column">
+
+  <sc-if value="{{ desk }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'">
+      <span>9:41</span>
+      <span style="display:flex;align-items:center;gap:6px">
+        <span style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:4px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:6px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:8px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:11px;background:#1C2230;border-radius:1px"></span></span>
+        <span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span>
+      </span>
+    </div>
+  </sc-if>
+
+  <header style="flex:none;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;padding:4px 16px 10px">
+    <button aria-label="Cerrar" style="width:42px;height:42px;border-radius:50%;border:1.5px solid oklch(0.55 0.15 45);background:#FFFDF8;color:oklch(0.52 0.15 45);display:flex;align-items:center;justify-content:center;cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+      <span style="font:400 28px/1 'Instrument Serif',serif">Explorar <em style="color:oklch(0.55 0.15 45)">Roma</em></span>
+      <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Entradas</span>
+    </div>
+    <span></span>
+  </header>
+
+  <div style="flex:none;display:flex;align-items:center;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none">
+    <sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
+      <button onClick="{{ c.pick }}" style="flex:none;height:38px;padding:0 14px 0 6px;border-radius:999px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};display:flex;align-items:center;gap:8px;font:500 14px 'Geist';cursor:pointer;transition:background .3s,color .3s,border-color .3s">
+        <span style="width:28px;height:28px;border-radius:50%;background:{{ c.ib }};color:{{ c.ic }};display:flex;align-items:center;justify-content:center;transition:background .3s">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.icon }}"></path></svg>
+        </span>{{ c.n }}<span style="font:500 11px 'Geist Mono',monospace;opacity:.6">{{ c.count }}</span>
+      </button>
+    </sc-for>
+    <button onClick="{{ clearCat }}" aria-label="Quitar filtro" style="flex:none;width:38px;height:38px;border-radius:50%;border:1px solid rgba(28,34,48,.12);background:#FFFDF8;color:rgba(28,34,48,.6);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:{{ clearO }};transition:opacity .3s">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+  </div>
+
+  <div style="position:relative;flex:none;height:{{ mapH }};transition:height .6s cubic-bezier(.2,.8,.2,1)">
+    <div ref="{{ mapRef }}" style="position:absolute;inset:0"></div>
+    <div style="position:absolute;left:0;right:0;top:0;height:22px;background:linear-gradient(180deg,rgba(245,239,228,.9),rgba(245,239,228,0));pointer-events:none;z-index:400"></div>
+    <button onClick="{{ locate }}" aria-label="Mi ubicación" style="position:absolute;right:14px;bottom:36px;z-index:500;width:42px;height:42px;border-radius:50%;border:none;background:#FFFDF8;color:#1C2230;box-shadow:0 8px 20px -8px rgba(28,34,48,.4);display:flex;align-items:center;justify-content:center;cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2" fill="currentColor"></circle></svg>
+    </button>
+    <div style="position:absolute;left:14px;bottom:36px;z-index:500;height:30px;padding:0 12px;border-radius:999px;background:rgba(255,253,248,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;gap:7px;font:500 12px 'Geist';box-shadow:0 6px 16px -8px rgba(28,34,48,.35)">
+      <span style="width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 2.5px oklch(0.74 0.16 65)"></span>En tu ruta · {{ routeCount }}
+    </div>
+  </div>
+
+  <div style="position:relative;z-index:10;flex:1;min-height:0;margin-top:-22px;background:#F5EFE4;border-radius:26px 26px 0 0;box-shadow:0 -10px 30px -18px rgba(28,34,48,.3);display:flex;flex-direction:column">
+    <button onClick="{{ toggleMap }}" aria-label="Arrastrar panel" style="height:22px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.2)"></span></button>
+    <div style="flex:none;padding:0 16px;display:flex;flex-direction:column;gap:10px">
+      <label style="height:48px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;gap:10px;padding:0 14px;cursor:text">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+        <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar en Roma…" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font:400 15px 'Geist';color:#1C2230">
+        <sc-if value="{{ hasQ }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ clearQ }}" aria-label="Borrar búsqueda" style="width:26px;height:26px;border-radius:50%;border:none;background:rgba(28,34,48,.08);color:#1C2230;cursor:pointer">×</button>
+        </sc-if>
+      </label>
+      <div style="position:relative;height:42px;border-radius:14px;background:#EDE4D3;padding:4px;display:grid;grid-template-columns:1fr 1fr">
+        <span style="position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:#FFFDF8;box-shadow:0 2px 6px -2px rgba(28,34,48,.2);transform:{{ segT }};transition:transform .4s cubic-bezier(.2,.8,.2,1)"></span>
+        <button onClick="{{ segRec }}" style="position:relative;border:none;background:transparent;font:{{ segRecW }} 14px 'Geist';color:{{ segRecC }};cursor:pointer">Recomendados</button>
+        <button onClick="{{ segNear }}" style="position:relative;border:none;background:transparent;font:{{ segNearW }} 14px 'Geist';color:{{ segNearC }};cursor:pointer">Cerca de ti</button>
+      </div>
+    </div>
+
+    <div ref="{{ listRef }}" style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:12px 16px 40px;display:flex;flex-direction:column;gap:10px">
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:40px 10px;text-align:center;font:400 22px/1.2 'Instrument Serif',serif;color:rgba(28,34,48,.55)">No hay lugares con ese nombre</div>
+      </sc-if>
+      <sc-for list="{{ items }}" as="p" hint-placeholder-count="5">
+        <div onClick="{{ p.focus }}" style="position:relative;flex:none;height:88px;display:flex;border-radius:18px;background:#FFFFFF;border:1px solid {{ p.bd }};box-shadow:{{ p.sh }};cursor:pointer;transition:border-color .3s,box-shadow .3s;animation:pop .4s cubic-bezier(.2,.8,.2,1) both">
+          <div style="position:relative;width:100px;flex:none;margin-right:-10px;border-radius:17px 0 0 17px;overflow:hidden">
+            <div style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%);background:{{ p.ph }};background-size:cover;background-position:center"></div>
+            <span style="position:absolute;left:8px;bottom:8px;width:26px;height:26px;border-radius:50%;background:{{ p.cbg }};color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.icon }}"></path></svg>
+            </span>
+          </div>
+          <div style="flex:1;min-width:0;padding:10px 0 10px 18px;display:flex;flex-direction:column;justify-content:center;gap:6px">
+            <span style="display:flex;align-items:center;gap:6px;min-width:0">
+              <span style="font:400 20px/1.1 'Instrument Serif',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ p.n }}</span>
+            </span>
+            <sc-if value="{{ p.inRoute }}" hint-placeholder-val="{{ false }}">
+              <span style="align-self:flex-start;height:19px;padding:0 8px;border-radius:999px;background:oklch(0.74 0.16 65 / .18);color:oklch(0.48 0.14 50);font:600 10.5px 'Geist';display:inline-flex;align-items:center;gap:4px"><span style="width:5px;height:5px;border-radius:50%;background:oklch(0.7 0.16 60)"></span>En tu ruta</span>
+            </sc-if>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;padding:6px 10px 9px 4px">
+            <button onClick="{{ p.add }}" aria-label="{{ p.aAria }}" style="width:36px;height:36px;flex:none;border-radius:50%;border:1.5px solid {{ p.abd }};background:{{ p.abg }};color:{{ p.afg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .3s,color .3s"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.aIcon }}"></path></svg></button>
+            <button onClick="{{ p.like }}" aria-pressed="{{ p.lkA }}" aria-label="Recomendar" style="min-height:30px;padding:2px 2px 0;border:none;background:transparent;display:flex;align-items:center;gap:4px;cursor:pointer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ p.hf }}" stroke="oklch(0.55 0.17 5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ p.htf }};transition:transform .35s cubic-bezier(.3,1.6,.5,1)"><path d="M12 20s-7.5-4.5-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.5 12 20 12 20z"></path></svg>
+              <span style="font:500 11px 'Geist';color:#1C2230;white-space:nowrap"><strong style="font-weight:700">{{ p.likes }}</strong> viajeros</span>
+            </button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC={
+temple:'M4 21V9h16v12M8 21v-6a4 4 0 0 1 8 0v6M3 9l9-5 9 5M3 21h18',
+park:'M12 22v-7M12 3c3.5 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6 2.5-6 6-6z',
+church:'M12 2v4M10 4h4M6 22V11l6-5 6 5v11M10 22v-5a2 2 0 0 1 4 0v5M3 22h18',
+museum:'M3 21h18M4 10h16M12 3l9 5H3zM6 10v9M10 10v9M14 10v9M18 10v9',
+fork:'M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12',
+sunset:'M3 18h18M6 21h12M12 3v4M4.6 8.6l2 2M19.4 8.6l-2 2M7 18a5 5 0 0 1 10 0'};
+const CAT={
+monumento:{c:'oklch(0.62 0.14 45)',i:'temple',g:'atr'},
+museo:{c:'oklch(0.54 0.11 245)',i:'museum',g:'atr'},
+iglesia:{c:'oklch(0.56 0.14 295)',i:'church',g:'atr'},
+parque:{c:'oklch(0.58 0.12 150)',i:'park',g:'atr'},
+mirador:{c:'linear-gradient(135deg,oklch(0.76 0.15 65),oklch(0.6 0.18 20))',i:'sunset',g:'mir'},
+comida:{c:'oklch(0.72 0.15 65)',i:'fork',g:'res'}};
+const GROUPS=[{k:'atr',n:'Atracciones',i:'museum'},{k:'mir',n:'Miradores',i:'sunset'},{k:'res',n:'Restaurantes',i:'fork'}];
+const P=(id,n,area,dur,cat,ll,w,o={})=>({id,n,area,dur,cat,ll,w,ticket:!!o.t,route:!!o.r,likes:o.l||0});
+const PLACES=[
+P('p1','Plaza de San Pedro','Vaticano','30min','iglesia',[41.9022,12.4568],"St._Peter's_Square",{r:1,l:1}),
+P('p2','Ara Pacis','Centro Histórico','45min','museo',[41.9061,12.4754],'Ara_Pacis',{r:1,l:1,t:1}),
+P('p3','Altar de la Patria','Roma Antigua','1h','monumento',[41.8946,12.4831],'Altare_della_Patria',{r:1}),
+P('p4','Arco de Constantino','Roma Antigua','15min','monumento',[41.8898,12.4906],'Arch_of_Constantine',{r:1}),
+P('p5','Coliseo','Roma Antigua','1h 30min','monumento',[41.8902,12.4922],'Colosseum',{r:1,l:3,t:1}),
+P('p6','Panteón','Centro Histórico','30min','monumento',[41.8986,12.4769],'Pantheon,_Rome',{l:2,t:1}),
+P('p7','Fontana di Trevi','Centro Histórico','20min','monumento',[41.9009,12.4833],'Trevi_Fountain',{l:4}),
+P('p8','Museos Vaticanos','Vaticano','3h','museo',[41.9065,12.4536],'Vatican_Museums',{r:1,l:2,t:1}),
+P('p9','Galería Borghese','Villa Borghese','2h','museo',[41.9142,12.4921],'Galleria_Borghese',{t:1}),
+P('p10','Parque Villa Borghese','Villa Borghese','1h 30min','parque',[41.9128,12.4852],'Villa_Borghese_gardens',{r:1}),
+P('p11','Circo Máximo','Roma Antigua','30min','monumento',[41.8861,12.4851],'Circus_Maximus'),
+P('p12','Termas de Caracalla','Aventino','1h','monumento',[41.8790,12.4924],'Baths_of_Caracalla',{t:1}),
+P('p13','Santa María la Mayor','Esquilino','40min','iglesia',[41.8976,12.4984],'Santa_Maria_Maggiore',{l:1}),
+P('p14',"Castel Sant'Angelo",'Vaticano','1h 30min','museo',[41.9031,12.4663],"Castel_Sant'Angelo",{t:1,l:1}),
+P('p15','Plaza Navona','Centro Histórico','30min','monumento',[41.8992,12.4731],'Piazza_Navona',{l:2}),
+P('p16','San Juan de Letrán','Laterano','45min','iglesia',[41.8859,12.5057],'Archbasilica_of_Saint_John_Lateran'),
+P('p17','Iglesia del Gesú','Centro Histórico','30min','iglesia',[41.8960,12.4799],'Church_of_the_Gesù',{r:1}),
+P('m1','Terraza del Pincio','Villa Borghese','40min','mirador',[41.9115,12.4786],'Pincio',{r:1,l:2}),
+P('m2','Mirador del Gianicolo','Trastevere','45min','mirador',[41.8913,12.4613],'Janiculum',{r:1,l:1}),
+P('m3','Jardín de los Naranjos','Aventino','30min','mirador',[41.8847,12.4796],'Giardino_degli_Aranci',{l:3}),
+P('m4','Cerradura de los Caballeros','Aventino','15min','mirador',[41.8829,12.4776],'Villa_del_Priorato_di_Malta'),
+P('m5','Terraza del Vittoriano','Roma Antigua','30min','mirador',[41.8950,12.4826],'Altare_della_Patria',{t:1}),
+P('r1','Roscioli','Centro Histórico','1h 15min','comida',[41.8939,12.4728],'Carbonara',{l:5}),
+P('r2','Da Enzo al 29','Trastevere','1h 15min','comida',[41.8887,12.4776],'Cacio_e_pepe',{l:3}),
+P('r3','Armando al Pantheon','Centro Histórico','1h 30min','comida',[41.8990,12.4767],'Amatriciana',{l:2}),
+P('r4','Supplì Roma','Trastevere','20min','comida',[41.8890,12.4700],'Supplì',{l:1}),
+P('r5','Pizzarium','Prati','30min','comida',[41.9073,12.4466],'Pizza_al_taglio',{l:2})];
+const ME=[41.9010,12.5010];
+const PHOTOS={};
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function km(a,b){const t=Math.PI/180,dl=(b[0]-a[0])*t,dn=(b[1]-a[1])*t;const h=Math.sin(dl/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dn/2)**2;return 12742*Math.asin(Math.sqrt(h));}
+const solid=c=>c.startsWith('linear')?'oklch(0.66 0.17 38)':c;
+
+class Component extends DCLogic {
+  constructor(p){super(p);
+    this.state={cat:'atr',q:'',seg:'rec',sel:null,route:Object.fromEntries(PLACES.map(x=>[x.id,x.route])),liked:{},mapBig:true,vw:window.innerWidth||390,vh:window.innerHeight||844};
+    this.mapRef=React.createRef();this.listRef=React.createRef();}
+  componentDidMount(){
+    this.onR=()=>{const w=window.innerWidth,h=window.innerHeight;if(w&&h&&(w!==this.state.vw||h!==this.state.vh))this.setState({vw:w,vh:h});};window.addEventListener('resize',this.onR);this._ps={...this.state};this.onR();requestAnimationFrame(this.onR);setTimeout(this.onR,300);setTimeout(this.onR,1000);
+    [...new Set(PLACES.map(x=>x.w))].forEach(t=>{fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)).then(r=>r.ok?r.json():{}).then(j=>{const u=(j.thumbnail&&j.thumbnail.source)||(j.originalimage&&j.originalimage.source);if(u){PHOTOS[t]=u.split('?')[0].replace('//thumb.wikimedia.org/','//upload.wikimedia.org/');this.forceUpdate();}}).catch(()=>{});});
+    const init=()=>{if(!window.L||!this.mapRef.current){this.it=setTimeout(init,120);return;}const L=window.L;
+      this.map=L.map(this.mapRef.current,{zoomControl:false,attributionControl:true,fadeAnimation:false,zoomAnimation:false,markerZoomAnimation:false,zoomSnap:.25}).setView([41.897,12.482],13);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri, OpenStreetMap',maxZoom:19}).addTo(this.map);
+      this.map.getPane('tilePane').style.filter='sepia(.28) saturate(.7) brightness(1.04) contrast(.95)';
+      this.layer=L.layerGroup().addTo(this.map);
+      L.marker(ME,{icon:L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],html:'<div style="position:relative;width:18px;height:18px"><span style="position:absolute;inset:0;border-radius:50%;background:oklch(0.6 0.15 240 / .5);animation:pulse 2s ease-out infinite"></span><span style="position:absolute;inset:3px;border-radius:50%;background:oklch(0.6 0.15 240);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></span></div>'}),interactive:false,zIndexOffset:2000}).addTo(this.map);
+      this.first=true;
+      const kick=()=>{if(!this.map)return;this.map.invalidateSize();if(this.first)this.draw(true);};
+      if(window.ResizeObserver){this.ro=new ResizeObserver(()=>kick());this.ro.observe(this.mapRef.current);}
+      requestAnimationFrame(kick);[250,700,1400].forEach(ms=>setTimeout(kick,ms));setTimeout(()=>{this.first=false;},1600);};
+    init();}
+  componentWillUnmount(){window.removeEventListener('resize',this.onR);clearTimeout(this.it);if(this.ro)this.ro.disconnect();if(this.map)this.map.remove();}
+  componentDidUpdate(pp){const s=this.state;const ps=this._ps||s;this._ps={...s};if(ps===s)return;
+    if(ps.cat!==s.cat||ps.q!==s.q)this.draw(true);
+    else if(ps.sel!==s.sel||ps.route!==s.route)this.draw(false);
+    if(ps.mapBig!==s.mapBig&&this.map)setTimeout(()=>this.map.invalidateSize(),620);}
+  visible(){const s=this.state;const q=norm(s.q.trim());
+    let L=PLACES.filter(x=>(!s.cat||CAT[x.cat].g===s.cat)&&(!q||norm(x.n).includes(q)||norm(x.area).includes(q)));
+    if(s.seg==='near')L=[...L].sort((a,b)=>km(ME,a.ll)-km(ME,b.ll));
+    else L=[...L].sort((a,b)=>(s.route[b.id]?1:0)-(s.route[a.id]?1:0)||b.likes-a.likes);
+    return L;}
+  draw(fit){if(!this.map)return;try{const L=window.L;const s=this.state;this.map.stop();this.layer.clearLayers();const vis=this.visible();
+    vis.forEach(x=>{const c=CAT[x.cat];const act=s.sel===x.id,inR=s.route[x.id];const sz=act?40:30;
+      const ring=inR?`0 0 0 2.5px oklch(0.74 0.16 65),`:'';
+      const label=act?`<div style="position:absolute;left:50%;top:${sz+6}px;transform:translateX(-50%);white-space:nowrap;padding:5px 10px;border-radius:999px;background:#1C2230;color:#FFFDF8;font:500 12px Geist,sans-serif;box-shadow:0 6px 14px -6px rgba(0,0,0,.5)">${x.n}</div>`:'';
+      const html=`<div style="position:relative;width:${sz}px;height:${sz}px"><div style="width:100%;height:100%;border-radius:50%;background:${c.c};color:#fff;border:2.5px solid #fff;box-shadow:${ring}0 6px 14px -4px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center"><svg width="${act?18:14}" height="${act?18:14}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[c.i]}"/></svg></div>${label}</div>`;
+      L.marker(x.ll,{icon:L.divIcon({html,className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]}),zIndexOffset:act?1000:inR?500:0}).on('click',()=>this.select(x.id,true)).addTo(this.layer);});
+    if(fit&&vis.length){const b=vis.map(x=>x.ll);this.map.fitBounds(b,{padding:[18,18],paddingBottomRight:[18,40],maxZoom:15,animate:false});}
+    else if(!fit&&s.sel){const x=PLACES.find(p=>p.id===s.sel);if(x)this.map.setView(x.ll,Math.max(this.map.getZoom(),15));}
+  }catch(err){console.warn('map draw',err&&err.message);}}
+  select(id,fromMap){this.setState({sel:id});if(fromMap){const i=this.visible().findIndex(x=>x.id===id);const el=this.listRef.current;if(el&&i>=0)el.scrollTo({top:i*98,behavior:'smooth'});}}
+  renderVals(){
+    const s=this.state;const vw=s.vw||390,vh=s.vh||844;const desk=vw>=520;const W=desk?390:vw,H=desk?844:vh;
+    const Z=desk?Math.max(.4,Math.min(1,(vh-40)/844)):1;const stop=e=>e.stopPropagation();const vis=this.visible();
+    const chips=GROUPS.map(g=>{const a=s.cat===g.k;return{n:g.n,icon:IC[g.i],count:String(PLACES.filter(x=>CAT[x.cat].g===g.k).length),bg:a?'#1C2230':'#FFFDF8',fg:a?'#FFFDF8':'#1C2230',bd:a?'#1C2230':'rgba(28,34,48,.12)',ib:a?'oklch(0.74 0.16 65)':'#EFE7D8',ic:a?'#1C2230':'rgba(28,34,48,.7)',pick:()=>this.setState({cat:a?null:g.k,sel:null})};});
+    const items=vis.map(x=>{const c=CAT[x.cat];const inR=!!s.route[x.id];const lk=!!s.liked[x.id];const act=s.sel===x.id;const t=x.w;
+      return{n:x.n,area:x.area,dur:x.dur,ticket:x.ticket,inRoute:inR,icon:IC[c.i],cbg:c.c,
+        ph:PHOTOS[t]?`url("${PHOTOS[t]}") center/cover, ${solid(c.c)}`:`linear-gradient(135deg,${solid(c.c)},#EFE7D8)`,
+        hasDist:s.seg==='near',dist:(()=>{const d=km(ME,x.ll);return d<1?`${Math.round(d*1000)} m`:`${d.toFixed(1).replace('.',',')} km`;})(),
+        bd:act?solid(c.c):'rgba(28,34,48,.08)',sh:act?`0 14px 28px -16px ${solid(c.c)}`:'0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35)',
+        likes:(x.likes+(lk?1:0)).toLocaleString('es-ES'),lkA:lk?'true':'false',hf:lk?'oklch(0.55 0.17 5)':'none',htf:lk?'scale(1.15)':'scale(1)',lbd:lk?'oklch(0.55 0.17 5 / .4)':'rgba(28,34,48,.14)',lbg:lk?'oklch(0.55 0.17 5 / .08)':'transparent',hc:lk?'oklch(0.55 0.17 5)':'rgba(28,34,48,.6)',hbg:lk?'oklch(0.55 0.17 5 / .1)':'#F5EFE4',
+        aAria:inR?'Quitar de la ruta':'Añadir a la ruta',aIcon:inR?'M5 12.5l4.5 4.5L19 7.5':'M12 5v14M5 12h14',abg:inR?'#1C2230':'transparent',afg:inR?'#FFFDF8':'oklch(0.5 0.17 5)',abd:inR?'#1C2230':'oklch(0.55 0.17 5)',
+        focus:()=>this.select(x.id,false),
+        like:e=>{stop(e);this.setState(st=>({liked:{...st.liked,[x.id]:!st.liked[x.id]}}));},
+        add:e=>{stop(e);this.setState(st=>({route:{...st.route,[x.id]:!st.route[x.id]}}));}};});
+    const near=s.seg==='near';
+    return{
+      rootPad:desk?'20px':'0',desk,scaleT:Z===1?'none':'scale('+Z+')',sw:(W*Z)+'px',sh:(H*Z)+'px',pw:W+'px',ph:H+'px',pr:desk?'52px':'0',
+      psh:desk?'0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)':'none',
+      chips,clearO:s.cat?1:.35,clearCat:()=>this.setState({cat:null,sel:null}),
+      mapRef:this.mapRef,listRef:this.listRef,mapH:s.mapBig?'330px':'170px',toggleMap:()=>this.setState(st=>({mapBig:!st.mapBig})),
+      locate:()=>this.map&&this.map.setView(ME,15),
+      routeCount:String(Object.values(s.route).filter(Boolean).length),
+      q:s.q,hasQ:!!s.q,onQ:e=>this.setState({q:e.target.value}),clearQ:()=>this.setState({q:''}),
+      segT:near?'translateX(100%)':'none',segRecW:near?'500':'600',segNearW:near?'600':'500',segRecC:near?'rgba(28,34,48,.55)':'oklch(0.5 0.15 45)',segNearC:near?'oklch(0.5 0.15 45)':'rgba(28,34,48,.55)',
+      segRec:()=>this.setState({seg:'rec'}),segNear:()=>{this.setState({seg:'near'});this.map&&this.map.setView(ME,14);},
+      items,empty:!items.length};
+  }
+}
+</script>
+</body>
+</html>

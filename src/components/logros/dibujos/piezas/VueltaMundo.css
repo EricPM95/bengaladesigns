@@ -1,0 +1,13 @@
+@keyframes vmIn{0%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+@keyframes vmSpin{from{transform:translateX(0)}to{transform:translateX(-400px)}}
+@keyframes vmTrail{from{stroke-dashoffset:var(--p)}to{stroke-dashoffset:0}}
+@keyframes vmFly{from{offset-distance:0%}to{offset-distance:var(--pp)}}
+@keyframes vmLoop{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes vmGem{0%{opacity:.25;transform:scale(1)}50%{opacity:1;transform:scale(1.9)}100%{opacity:1;transform:scale(1)}}
+@keyframes vmRays{to{transform:rotate(360deg)}}
+@keyframes vmPulse{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes vmBurst{0%{opacity:0;transform:scale(.1)}20%{opacity:1}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes vmRib{0%{opacity:0;transform:translateY(12px) scaleX(.3)}100%{opacity:1;transform:none}}
+@keyframes vmLaurel{0%{opacity:0;transform:scale(.2) rotate(-30deg)}100%{opacity:1;transform:none}}
+[data-st="1"] *{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

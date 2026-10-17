@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+@keyframes nudge{0%,82%,100%{transform:translateX(0)}88%{transform:translateX(4px)}94%{transform:translateX(-1px)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pulseR{0%{box-shadow:0 0 0 0 oklch(0.58 0.2 25 / .45)}100%{box-shadow:0 0 0 7px oklch(0.58 0.2 25 / 0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 40%,#F1E8D6 0%,#E0D3BA 75%);display:flex;align-items:center;justify-content:center;padding:32px 20px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+  <div data-screen-label="Reserva Coliseo" style="width:390px;height:844px;border-radius:52px;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);position:relative;overflow:hidden;background:#F5EFE4;display:flex;flex-direction:column">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:60"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+    <nav style="flex:none;display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(28,34,48,.09);padding:0 8px">
+      <span style="height:46px;display:flex;align-items:center;justify-content:center;font:400 15px 'Geist';color:rgba(28,34,48,.55)">Ruta</span>
+      <span style="position:relative;height:46px;display:flex;align-items:center;justify-content:center;font:600 15px 'Geist'">Días<span style="position:absolute;left:14%;right:14%;bottom:-1px;height:2.5px;border-radius:3px;background:oklch(0.55 0.15 45)"></span></span>
+      <span style="height:46px;display:flex;align-items:center;justify-content:center;font:400 15px 'Geist';color:rgba(28,34,48,.55)">Explorar</span>
+    </nav>
+
+    <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:18px 22px 40px 12px">
+      <div style="display:flex;align-items:center;gap:8px;padding:0 0 12px 0">
+        <span style="width:22px;height:22px;border-radius:50%;background:oklch(0.72 0.15 70 / .18);color:oklch(0.55 0.15 60);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg></span>
+        <span style="flex:1;font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.6)">Mañana · 09:00-14:00</span>
+        <span style="font:500 12.5px 'Geist';color:rgba(28,34,48,.5)">+ Añadir parada</span>
+      </div>
+      <div style="position:relative;padding-left:26px;display:flex;flex-direction:column">
+        <div style="position:absolute;left:11px;top:0;bottom:0;border-left:1.5px dashed rgba(28,34,48,.18)"></div>
+        <sc-for list="{{ stops }}" as="s" hint-placeholder-count="3">
+          <div style="position:relative;display:flex;flex-direction:column">
+            <sc-if value="{{ s.vMix }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;right:-6px;top:100px;width:112px;height:44px;padding:0;border:1px solid {{ s.stubBd }};border-radius:8px;background:{{ s.stub }};color:{{ s.stubFg }};cursor:pointer;transform:rotate(-5deg);transform-origin:100% 0;box-shadow:0 8px 14px -8px rgba(28,34,48,.45);transition:background .4s,color .4s">
+                <span style="position:absolute;left:28px;top:4px;bottom:4px;border-left:1px dashed {{ s.stubBd }}"></span>
+                <span style="position:absolute;left:-6px;top:50%;margin-top:-6px;width:12px;height:12px;border-radius:50%;background:#F5EFE4;border:1px solid {{ s.stubBd }}"></span>
+                <span style="position:absolute;left:0;right:0;bottom:6px;display:flex;align-items:center;justify-content:flex-end;gap:5px;padding-right:12px;font:600 10.5px 'Geist Mono',monospace;white-space:nowrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>{{ s.stubTxt }}</span>
+              </button>
+            </sc-if>
+            <sc-if value="{{ s.vS2 }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;left:150px;top:116px;height:30px;padding:4px 10px 0 12px;border:1px solid {{ s.stubBd }};border-top:none;border-radius:0 0 9px 9px;background:{{ s.stub }};color:{{ s.stubFg }};display:flex;align-items:center;gap:5px;font:600 10.5px 'Geist Mono',monospace;white-space:nowrap;cursor:pointer;transform:rotate(-3deg);transform-origin:50% 0;box-shadow:0 6px 12px -8px rgba(28,34,48,.45);transition:background .4s,color .4s">
+                <span style="position:absolute;left:4px;right:4px;top:3px;border-top:1px dashed {{ s.stubBd }}"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>{{ s.stubTxt }}
+              </button>
+            </sc-if>
+            <div style="position:relative;display:flex;height:120px;border-radius:18px;background:#FFFFFF;border:1px solid {{ s.bd }};box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35);transition:border-color .4s">
+              <span style="position:absolute;left:-26px;top:50%;margin-top:-8px;color:rgba(28,34,48,.35)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 9h14M5 12h14M5 15h14"></path></svg></span>
+              <span style="position:absolute;left:-9px;top:-9px;width:24px;height:24px;border-radius:50%;background:oklch(0.62 0.12 65);color:#fff;border:2.5px solid #FFFDF8;font:600 11px/19px 'Geist';text-align:center;z-index:2">{{ s.n }}</span>
+              <div style="position:relative;width:162px;flex:none;margin-right:-14px;border-radius:17px 0 0 17px;overflow:hidden">
+                <span style="position:absolute;inset:0;clip-path:polygon(0 0,62px 0,34px 100%,0 100%);background:oklch(0.62 0.12 65)"></span>
+                <span style="position:absolute;left:0;top:0;bottom:0;width:36px;display:flex;align-items:center;justify-content:center;color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9h16v12M8 21v-6a4 4 0 0 1 8 0v6M3 9l9-5 9 5M3 21h18"></path></svg></span>
+                <span style="position:absolute;left:32px;top:0;bottom:0;right:0;clip-path:polygon(28px 0,100% 0,calc(100% - 22px) 100%,0 100%);background:{{ s.ph }}"></span>
+              </div>
+              <div style="flex:1;min-width:0;padding:10px 38px 10px 18px;display:flex;flex-direction:column;justify-content:center;gap:4px">
+                <span style="font:400 18px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ s.name }}</span>
+                <sc-if value="{{ s.vA }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ s.open }}" style="align-self:flex-start;flex:none;white-space:nowrap;max-width:100%;height:22px;padding:0;border:none;background:transparent;color:{{ s.fg }};display:flex;align-items:center;gap:4px;font:500 11.5px 'Geist';cursor:pointer;text-decoration:underline;text-decoration-color:{{ s.ul }};text-underline-offset:3px;transition:color .4s">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>{{ s.label }}<span style="opacity:.8">›</span>
+                  </button>
+                </sc-if>
+                <span style="display:flex;align-items:center;gap:4px;font:400 11px 'Geist';color:rgba(28,34,48,.62)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>{{ s.hours }}</span>
+                <span style="display:flex;align-items:center;gap:4px;font:400 11px 'Geist';color:rgba(28,34,48,.62)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3h12M6 21h12M7 3v3l5 6-5 6v3M17 3v3l-5 6 5 6v3"></path></svg>{{ s.dur }}</span>
+                <span style="display:flex;gap:4px;flex-wrap:wrap"><sc-for list="{{ s.tags }}" as="t" hint-placeholder-count="2"><span style="height:19px;padding:0 8px;border-radius:999px;background:oklch(0.62 0.12 65 / .16);color:oklch(0.45 0.1 60);font:500 10.5px/19px 'Geist'">{{ t }}</span></sc-for></span>
+              </div>
+              <sc-if value="{{ s.vB }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;left:46px;bottom:8px;z-index:3;height:28px;padding:0 9px 0 6px;border-radius:999px;border:none;background:rgba(255,253,248,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 4px 12px -4px rgba(0,0,0,.35);color:{{ s.fg }};display:flex;align-items:center;gap:4px;font:600 11px 'Geist';white-space:nowrap;cursor:pointer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>{{ s.short }}
+                </button>
+              </sc-if>
+              <sc-if value="{{ s.vC }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;right:-1px;bottom:14px;width:22px;height:44px;border:1px solid {{ s.stubBd }};border-right:none;border-radius:8px 0 0 8px;background:{{ s.stub }};color:{{ s.stubFg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background .4s,color .4s">
+                  <span style="position:absolute;left:2px;top:5px;bottom:5px;border-left:1px dashed {{ s.stubBd }}"></span>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg>
+                  <span style="font:600 8.5px/1 'Geist Mono',monospace">{{ s.stubL }}</span>
+                </button>
+              </sc-if>
+              <sc-if value="{{ s.vT }}" hint-placeholder-val="{{ false }}">
+                <span style="position:absolute;right:-1px;bottom:-1px;width:90px;height:90px;overflow:hidden;border-radius:0 0 18px 0;z-index:4;pointer-events:none">
+                  <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;left:-6px;top:39px;width:116px;height:26px;padding:0;border:1px solid {{ s.stubBd }};border-left:none;border-right:none;background:{{ s.stub }};color:{{ s.stubFg }};display:flex;align-items:center;justify-content:center;gap:4px;font:600 10px 'Geist Mono',monospace;white-space:nowrap;cursor:pointer;pointer-events:auto;transform:rotate(-45deg);box-shadow:0 4px 10px -6px rgba(28,34,48,.45);transition:background .4s,color .4s">
+                    <span style="position:absolute;left:20px;top:3px;bottom:3px;border-left:1px dashed {{ s.stubBd }}"></span>
+                    <span style="position:absolute;right:20px;top:3px;bottom:3px;border-left:1px dashed {{ s.stubBd }}"></span>
+                    <span style="display:flex;align-items:center;gap:4px"><sc-if value="{{ s.notDone }}" hint-placeholder-val="{{ true }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg></sc-if><sc-if value="{{ s.isDone }}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>{{ s.ribbonTxt }}</span>
+                  </button>
+                </span>
+              </sc-if>
+              <sc-if value="{{ s.vS3 }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;right:0;bottom:0;width:46px;height:46px;border:none;padding:0;background:transparent;cursor:pointer;color:{{ s.stubFg }}">
+                  <span style="position:absolute;inset:0;border-radius:0 0 17px 0;clip-path:polygon(100% 0,100% 100%,0 100%);background:{{ s.stub }};transition:background .4s"></span>
+                  <span style="position:absolute;inset:0;clip-path:polygon(100% 0,0 100%,0 100%);"></span>
+                  <svg viewBox="0 0 46 46" width="46" height="46" style="position:absolute;inset:0"><path d="M46 0 L0 46" stroke="{{ s.stubBd }}" stroke-width="1" stroke-dasharray="3 3"></path></svg>
+                  <span style="position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;align-items:center;gap:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg><span style="font:600 8.5px/1 'Geist Mono',monospace">{{ s.stubL }}</span></span>
+                </button>
+              </sc-if>
+              <sc-if value="{{ s.v1b }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;right:-1px;top:44px;bottom:10px;width:22px;border:1px solid {{ s.stubBd }};border-right:none;border-radius:8px 0 0 8px;background:{{ s.stub }};color:{{ s.stubFg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;cursor:pointer;transition:background .4s,color .4s">
+                  <span style="position:absolute;left:3px;top:5px;bottom:5px;border-left:1px dashed {{ s.stubBd }}"></span>
+                  <sc-if value="{{ s.notDone }}" hint-placeholder-val="{{ true }}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg></sc-if><sc-if value="{{ s.isDone }}" hint-placeholder-val="{{ false }}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                  <span style="writing-mode:vertical-rl;transform:rotate(180deg);font:600 8.5px/1 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase">{{ s.vTxt }}</span>
+                </button>
+              </sc-if>
+              <sc-if value="{{ s.v1c }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.open }}" aria-label="Entradas" style="position:absolute;right:-14px;top:50%;margin-top:-17px;width:34px;height:34px;border:2px solid #FFFFFF;border-radius:10px;background:{{ s.sqBg }};color:#FFFFFF;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;box-shadow:0 6px 14px -6px {{ s.sqSh }};animation:{{ s.sqAnim }};transition:background .4s,transform .2s" style-hover="transform:scale(1.08)" style-active="transform:scale(.94)">
+                  <sc-if value="{{ s.notDone }}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12"></path></svg></sc-if><sc-if value="{{ s.isDone }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-direction:column;align-items:center;gap:1px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span style="font:600 8px/1 'Geist Mono',monospace;letter-spacing:-.02em">{{ s.sqTime }}</span></span></sc-if>
+                </button>
+              </sc-if>
+              <span style="position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:50%;border:1px solid rgba(28,34,48,.14);background:#fff;color:rgba(28,34,48,.6);font:700 12px/26px 'Geist';text-align:center;letter-spacing:1px">···</span>
+            </div>
+            <sc-if value="{{ s.walk }}" hint-placeholder-val="{{ true }}">
+              <div style="margin-top:{{ s.walkMt }};height:42px;display:flex;align-items:center;gap:6px;font:500 12px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">🚶 {{ s.w }} <a href="#" style="font:500 12.5px 'Geist';color:oklch(0.5 0.15 45)">Rutas</a><span style="flex:1"></span><span style="font:500 12.5px 'Geist';color:rgba(28,34,48,.5)">+ Añadir parada</span></div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;z-index:50;pointer-events:{{ shPe }}">
+      <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(28,34,48,.4);opacity:{{ shO }};transition:opacity .4s"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;border-radius:30px 30px 0 0;background:#FFFDF8;transform:{{ shT }};transition:transform .55s cubic-bezier(.2,.8,.2,1);overflow:hidden">
+        <div style="position:relative;height:120px;background:{{ colBg }}">
+          <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,8,.15),rgba(20,14,8,.65))"></span>
+          <span style="position:absolute;left:50%;top:10px;width:42px;height:4px;margin-left:-21px;border-radius:4px;background:rgba(255,255,255,.7)"></span>
+          <span style="position:absolute;left:20px;bottom:14px;display:flex;flex-direction:column;gap:3px;color:#FFFDF8">
+            <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Reserva obligatoria · Sáb 21 oct</span>
+            <span style="font:400 30px/1 'Instrument Serif',serif">Entradas · <em>{{ shName }}</em></span>
+          </span>
+        </div>
+        <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,34,48,.55)">Hora de entrada · encaja con tu ruta</span>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+              <sc-for list="{{ slots }}" as="o" hint-placeholder-count="4">
+                <button onClick="{{ o.pick }}" disabled="{{ o.dis }}" style="position:relative;height:54px;border-radius:14px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;opacity:{{ o.op }};transition:background .25s,border-color .25s">
+                  <span style="font:400 19px/1 'Instrument Serif',serif">{{ o.t }}</span>
+                  <span style="font:500 9.5px 'Geist';color:{{ o.lc }}">{{ o.l }}</span>
+                  <sc-if value="{{ o.rec }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;left:50%;transform:translateX(-50%);height:14px;padding:0 5px;border-radius:999px;background:oklch(0.52 0.15 45);color:#fff;font:600 8px/14px 'Geist Mono',monospace;letter-spacing:.06em;white-space:nowrap">TU RUTA</span></sc-if>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ types }}" as="ty" hint-placeholder-count="2">
+              <button onClick="{{ ty.pick }}" style="height:56px;border-radius:16px;border:1.5px solid {{ ty.bd }};background:{{ ty.bg }};display:flex;align-items:center;gap:12px;padding:0 14px;text-align:left;cursor:pointer;color:#1C2230;transition:background .25s,border-color .25s">
+                <span style="width:18px;height:18px;flex:none;border-radius:50%;border:1.5px solid {{ ty.rb }};background:{{ ty.dot }};box-shadow:inset 0 0 0 3px #FFFDF8"></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:500 14px 'Geist'">{{ ty.n }}</span><span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">{{ ty.d }}</span></span>
+                <span style="font:400 20px 'Instrument Serif',serif">{{ ty.p }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font:500 14px 'Geist'">Personas</span>
+            <span style="display:flex;align-items:center;gap:14px">
+              <button onClick="{{ minus }}" aria-label="Menos" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(28,34,48,.16);background:#fff;font:400 18px 'Geist';cursor:pointer;color:#1C2230">−</button>
+              <span style="font:400 24px 'Instrument Serif',serif;min-width:16px;text-align:center">{{ qty }}</span>
+              <button onClick="{{ plus }}" aria-label="Más" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(28,34,48,.16);background:#fff;font:400 18px 'Geist';cursor:pointer;color:#1C2230">+</button>
+            </span>
+          </div>
+          <button onClick="{{ book }}" style="height:56px;border:none;border-radius:999px;background:oklch(0.52 0.15 45);color:#FFFDF8;font:600 16px 'Geist';cursor:pointer;opacity:{{ ctaO }};box-shadow:0 12px 24px -12px oklch(0.52 0.15 45)">{{ ctaL }}</button>
+          <button onClick="{{ haveIt }}" style="align-self:center;border:none;background:transparent;padding:4px;font:italic 400 16px 'Instrument Serif',serif;color:rgba(28,34,48,.7);text-decoration:underline;text-underline-offset:3px;cursor:pointer">Ya tengo mi entrada</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const W_={col:'Colosseum',arco:'Arch_of_Constantine',foro:'Roman_Forum'};
+const PH={};
+const bg=(k,fb)=>PH[k]?`url("${PH[k]}") center/cover, ${fb}`:fb;
+const SL=[{t:'08:30',l:'4 libres',hot:1},{t:'09:00',l:'12 libres',rec:1},{t:'09:30',l:'Agotado',off:1},{t:'10:15',l:'2 libres',hot:1}];
+const TY=[{n:'Entrada general',d:'Acceso 24 h · el más elegido',p:18},{n:'Con acceso preferente',d:'Sin colas y zonas especiales',p:24}];
+const PL=[{k:'col',n:'Coliseo',v:'C',hours:'08:30-16:30',dur:'1h 15min',tags:['Monumento','Ruinas'],w:'4 min · 310 m'},{k:'foro',n:'Foro Romano y Palatino',v:'C',hours:'09:00-16:30',dur:'1h 30min',tags:['Ruinas']}];
+class Component extends DCLogic {
+  state={open:false,place:'col',slot:1,type:0,qty:2,booked:{foro:{t:'11:30',q:2}},own:{}};
+  componentDidMount(){Object.entries(W_).forEach(([k,t])=>fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)).then(r=>r.ok?r.json():{}).then(j=>{const u=j.thumbnail&&j.thumbnail.source;if(u){PH[k]=u.split('?')[0].replace('//thumb.wikimedia.org/','//upload.wikimedia.org/');this.forceUpdate();}}).catch(()=>{}));}
+  renderVals(){const s=this.state;const total=TY[s.type].p*s.qty;const cur=PL.find(p=>p.k===s.place);
+    return{
+      stops:PL.map((p,i)=>{const bk=s.booked[p.k],ow=s.own[p.k],done=!!(bk||ow);return{n:String(i+1),name:p.n,hours:p.hours,dur:p.dur,tags:p.tags,ph:bg(p.k,'#C9A26A'),walk:!!p.w,w:p.w||'',
+        vA:false,vB:false,vC:p.v==='A',vS2:false,vMix:false,walkMt:'0',v1b:p.v==='B',v1c:p.v==='C',sqTime:bk?bk.t:'✓',sqBg:done?'oklch(0.55 0.11 150)':'linear-gradient(150deg,oklch(0.68 0.13 60),oklch(0.56 0.15 42))',sqSh:done?'oklch(0.55 0.11 150 / .7)':'oklch(0.56 0.15 42 / .75)',sqAnim:done?'none':'nudge 4s ease-in-out 1.5s infinite',vTxt:done?'Reservada':'Entradas',vS3:false,vT:false,notDone:!done,isDone:done,ribbonTxt:done?'Reservada':'Entradas',stubTxt:done?'✓ Lista':'Entradas',
+        bd:done?'oklch(0.55 0.11 150 / .5)':'rgba(28,34,48,.08)',
+        fg:done?'oklch(0.42 0.11 150)':'oklch(0.52 0.2 25)',ul:done?'oklch(0.42 0.11 150 / .35)':'oklch(0.52 0.2 25 / .35)',
+        label:bk?`Entrada ${bk.t} · ${bk.q} pers.`:ow?'Entrada añadida':'Requiere entrada',
+        short:bk?`${bk.t} ✓`:ow?'Añadida ✓':'Entradas',
+        stub:done?'oklch(0.94 0.04 150)':'#F3ECDF',stubFg:done?'oklch(0.42 0.11 150)':'oklch(0.48 0.08 55)',stubBd:done?'oklch(0.55 0.11 150 / .35)':'rgba(120,90,50,.28)',stubL:done?'✓':'',
+        open:()=>this.setState({open:true,place:p.k})};}),
+      openSheet:()=>this.setState({open:true}),closeSheet:()=>this.setState({open:false}),
+      shPe:s.open?'auto':'none',shO:s.open?1:0,shT:s.open?'none':'translateY(105%)',colBg:bg(s.place,'#8A6A3E'),shName:cur.n,
+      slots:SL.map((o,i)=>{const a=s.slot===i;return{t:o.t,l:o.l,rec:!!o.rec,dis:!!o.off,op:o.off?.4:1,bd:a?'oklch(0.55 0.15 45)':'rgba(28,34,48,.1)',bg:a?'oklch(0.8 0.14 70 / .18)':'#fff',fg:'#1C2230',lc:o.hot?'oklch(0.55 0.2 25)':'rgba(28,34,48,.55)',pick:()=>!o.off&&this.setState({slot:i})};}),
+      types:TY.map((t,i)=>{const a=s.type===i;return{n:t.n,d:t.d,p:t.p+'€',bd:a?'oklch(0.55 0.15 45)':'rgba(28,34,48,.1)',bg:a?'oklch(0.8 0.14 70 / .12)':'#fff',rb:a?'oklch(0.55 0.15 45)':'rgba(28,34,48,.3)',dot:a?'oklch(0.55 0.15 45)':'transparent',pick:()=>this.setState({type:i})};}),
+      qty:String(s.qty),minus:()=>this.setState(st=>({qty:Math.max(1,st.qty-1)})),plus:()=>this.setState(st=>({qty:Math.min(9,st.qty+1)})),
+      ctaO:1,ctaL:`Reservar a las ${SL[s.slot].t} · ${total}€`,
+      book:()=>this.setState(st=>({booked:{...st.booked,[st.place]:{t:SL[st.slot].t,q:st.qty}},own:{...st.own,[st.place]:false},open:false})),
+      haveIt:()=>this.setState(st=>({own:{...st.own,[st.place]:true},booked:{...st.booked,[st.place]:null},open:false}))};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { enviarDeshacerVisto, enviarVisto, logrosActivos, vaciarCola } from '../../lib/logros'
+import { demoActivo, enviarDeshacerVisto, logrosActivos, vaciarCola } from '../../lib/logros'
 import { cambiosDeVistos } from '../../lib/vistosPorPersona'
-import { reproducirMomentos, sonar, vibrar } from '../../lib/sonidos'
+import { sonar, vibrar } from '../../lib/sonidos'
+import { alQuitarVisto, procesarVisto, VistoFlujo } from './visto/VistoFlujo'
 import { useLogrosStore } from '../../store/useLogrosStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
@@ -21,7 +22,10 @@ export function LogrosPorVisto() {
 
 function Encendido() {
   const cuenta = useCuenta()
-  const tripId = useSyncStore((s) => s.activeTripId)
+  const idSincronizado = useSyncStore((s) => s.activeTripId)
+  const idDeLaRuta = useRouteStore((s) => s.route?.id ?? null)
+  // (En el modo demo de desarrollo no hay Supabase: el viaje es el de la ruta abierta.)
+  const tripId = idSincronizado ?? (demoActivo() ? idDeLaRuta : null)
   const hayCuenta = cuenta.tipo === 'cuenta'
 
   useEffect(() => {
@@ -43,14 +47,15 @@ function Encendido() {
           // Suena en el propio toque (es cuando el móvil deja sonar); lo que se gane después suena al llegar la respuesta.
           void sonar('visto')
           vibrar('visto')
-          void enviarVisto(datos).then((r) => {
-            useLogrosStore.getState().recibir(r)
-            if (r?.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo))
-          })
-        } else void enviarDeshacerVisto(datos).then((r) => useLogrosStore.getState().recibir(r))
+          // 8b: el aviso de 5 segundos, la tarjeta que toque y el envío (src/components/logros/visto/VistoFlujo.tsx).
+          void procesarVisto({ ...datos, dayId: cambio.dayId })
+        } else {
+          alQuitarVisto(cambio.stopId)
+          void enviarDeshacerVisto(datos).then((r) => useLogrosStore.getState().recibir(r))
+        }
       }
     })
   }, [hayCuenta, tripId])
 
-  return null
+  return <VistoFlujo tripId={tripId} />
 }

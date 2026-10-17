@@ -29,7 +29,17 @@ export function calcularCuentasActivas(datos: { entorno?: string | undefined; de
   return datos.entorno === 'true'
 }
 
+/** Solo desarrollo: el modo demo de los logros (?logrosDemo=1) fuerza las cuentas. Se lee aquí a mano para no importar logros.ts (que importa este fichero). */
+function demoActivoRapido(): boolean {
+  try {
+    return new URLSearchParams(window.location.search).get('logrosDemo') === '1' || window.sessionStorage.getItem('trazo:logrosDemo') === '1'
+  } catch {
+    return false
+  }
+}
+
 export function cuentasActivas(): boolean {
+  if (import.meta.env.DEV && demoActivoRapido()) return true
   let parametro: string | null = null
   let guardado: string | null = null
   try {

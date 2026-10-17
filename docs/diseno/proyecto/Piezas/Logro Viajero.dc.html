@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes lvIn{0%{opacity:0;transform:scale(.3) rotate(-25deg)}60%{opacity:1;transform:scale(1.08) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes lvSweep{0%{transform:translateX(-170%) rotate(20deg)}55%,100%{transform:translateX(330%) rotate(20deg)}}
+@keyframes lvRays{to{transform:rotate(360deg)}}
+@keyframes lvGlow{0%,100%{opacity:.4;transform:scale(.94)}50%{opacity:.9;transform:scale(1.06)}}
+@keyframes lvTw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes lvFade{from{opacity:0}to{opacity:1}}
+@keyframes lvDash{to{stroke-dashoffset:-12}}
+@keyframes lvWorld{from{transform:translateX(0)}to{transform:translateX(-66px)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+<div style="position:relative;width:{{ sz }};height:{{ sz }};flex:none">
+  <sc-if value="{{ t7 }}" hint-placeholder-val="{{ false }}">
+    <span style="position:absolute;inset:-14%;border-radius:50%;background:repeating-conic-gradient({{ ray }} 0 5deg,transparent 5deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 70%);mask-image:radial-gradient(circle,#000 30%,transparent 70%);opacity:0;animation:lvFade 1s {{ dFx }} ease both,lvRays 40s {{ dFx }} linear infinite"></span>
+  </sc-if>
+  <sc-if value="{{ glow }}" hint-placeholder-val="{{ false }}">
+    <span style="position:absolute;inset:-8%;border-radius:50%;background:radial-gradient(circle,{{ gc }},transparent 66%);opacity:0;animation:lvFade .8s {{ dFx }} ease both,lvGlow 4s {{ dFx }} ease-in-out infinite"></span>
+  </sc-if>
+  <div style="position:absolute;inset:0;animation:lvIn {{ dur }} {{ d0 }} cubic-bezier(.2,.8,.2,1) both">
+    <svg width="100%" height="100%" viewBox="0 0 200 200" style="position:absolute;inset:0;overflow:visible;filter:drop-shadow(0 {{ shY }} {{ shB }} rgba(60,30,10,.4))">
+      <defs>
+        <filter id="{{ fTex }}" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="{{ bf }}" numOctaves="{{ oct }}" seed="7" result="n"></feTurbulence>
+          <feDiffuseLighting in="n" surfaceScale="{{ ss }}" lighting-color="#ffffff" result="l"><feDistantLight azimuth="235" elevation="{{ el }}"></feDistantLight></feDiffuseLighting>
+          <feComposite in="l" in2="SourceGraphic" operator="arithmetic" k1="{{ k1 }}" k2="{{ k2 }}" k3="0" k4="0" result="c"></feComposite>
+          <feComposite in="c" in2="SourceAlpha" operator="in"></feComposite>
+        </filter>
+        <filter id="{{ fBev }}" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="{{ bb }}" result="b"></feGaussianBlur>
+          <feSpecularLighting in="b" surfaceScale="{{ bs }}" specularConstant=".9" specularExponent="18" lighting-color="#ffffff" result="s"><feDistantLight azimuth="235" elevation="40"></feDistantLight></feSpecularLighting>
+          <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"></feComposite>
+          <feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3="{{ bk }}" k4="0"></feComposite>
+        </filter>
+        <filter id="{{ fMar }}" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="turbulence" baseFrequency=".012 .05" numOctaves="4" seed="3" result="t"></feTurbulence>
+          <feColorMatrix in="t" type="matrix" values="0 0 0 0 .58  0 0 0 0 .56  0 0 0 0 .55  -2.4 0 0 0 1.25" result="v"></feColorMatrix>
+          <feComposite in="v" in2="SourceGraphic" operator="over" result="m"></feComposite>
+          <feComposite in="m" in2="SourceAlpha" operator="in"></feComposite>
+        </filter>
+        <pattern id="{{ pMos }}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+          <rect width="7" height="7" fill="{{ grout }}"></rect>
+          <rect x=".6" y=".6" width="5.8" height="5.8" rx=".8" fill="{{ m1 }}"></rect>
+        </pattern>
+        <pattern id="{{ pMos2 }}" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+          <rect x="7.6" y=".6" width="5.8" height="5.8" rx=".8" fill="{{ m2 }}"></rect>
+          <rect x=".6" y="7.6" width="5.8" height="5.8" rx=".8" fill="{{ m3 }}"></rect>
+        </pattern>
+        <filter id="{{ fWood }}" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".012 .32" numOctaves="2" seed="11" result="t"></feTurbulence>
+          <feColorMatrix in="t" type="matrix" values="0 0 0 0 .2  0 0 0 0 .1  0 0 0 0 .04  0 0 0 -1.6 1.05" result="g"></feColorMatrix>
+          <feComposite in="g" in2="SourceGraphic" operator="atop" result="w"></feComposite>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="b"></feGaussianBlur>
+          <feSpecularLighting in="b" surfaceScale="2" specularConstant=".55" specularExponent="22" lighting-color="#FFF4DE" result="s"><feDistantLight azimuth="235" elevation="45"></feDistantLight></feSpecularLighting>
+          <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"></feComposite>
+          <feComposite in="w" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".8" k4="0"></feComposite>
+        </filter>
+        <radialGradient id="{{ gLit }}" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="rgba(255,255,255,.85)"></stop><stop offset="1" stop-color="rgba(255,240,200,0)"></stop></radialGradient>
+        <clipPath id="{{ cFace }}"><circle cx="100" cy="100" r="{{ fr }}"></circle></clipPath>
+      </defs>
+
+      <path d="{{ rim }}" fill="{{ rimF }}" filter="{{ rimFilt }}"></path>
+      <sc-if value="{{ t1 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="#E4D2B2" filter="url(#{{ fTex }})"></circle>
+        <circle cx="100" cy="100" r="66" fill="none" stroke="{{ ink }}" stroke-width="1.2" stroke-dasharray="2 3" opacity=".55"></circle>
+      </sc-if>
+      <sc-if value="{{ t2 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="{{ leather }}" filter="url(#{{ fTex }})"></circle>
+        <circle cx="100" cy="100" r="68" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="3.4"></circle>
+        <circle cx="100" cy="100" r="68" fill="none" stroke="#F3E6CC" stroke-width="1.8" stroke-dasharray="5 3.5" stroke-linecap="round"></circle>
+      </sc-if>
+      <sc-if value="{{ t3 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="{{ clay }}" filter="url(#{{ fTex }})"></circle>
+        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(60,20,5,.4)" stroke-width="1.6"></circle><circle cx="100.8" cy="100.8" r="70" fill="none" stroke="rgba(255,235,210,.35)" stroke-width="1"></circle>
+        <circle cx="100" cy="100" r="54" fill="none" stroke="rgba(60,20,5,.4)" stroke-width="1.6"></circle><circle cx="100.8" cy="100.8" r="54" fill="none" stroke="rgba(255,235,210,.35)" stroke-width="1"></circle>
+        <sc-for list="{{ dots }}" as="p" hint-placeholder-count="0"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="2.6" fill="rgba(60,20,5,.42)"></circle><circle cx="{{ p.x2 }}" cy="{{ p.y2 }}" r="1.4" fill="rgba(255,235,210,.35)"></circle></sc-for>
+      </sc-if>
+      <sc-if value="{{ t4 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="#F7F0E2"></circle>
+        <circle cx="100" cy="100" r="71" fill="none" stroke="{{ paint }}" stroke-width="5"></circle>
+        <circle cx="100" cy="100" r="64" fill="none" stroke="{{ paint2 }}" stroke-width="1.6"></circle>
+        <sc-for list="{{ petals }}" as="p" hint-placeholder-count="0"><g transform="{{ p.t }}"><path d="M0 -62c7 4 8 12 0 18-8-6-7-14 0-18z" fill="{{ p.c }}"></path><circle cx="0" cy="-52" r="1.6" fill="#F7F0E2"></circle></g></sc-for>
+        <circle cx="100" cy="100" r="40" fill="none" stroke="{{ paint2 }}" stroke-width="1.2" stroke-dasharray="1.5 3"></circle>
+      </sc-if>
+      <sc-if value="{{ t5 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="url(#{{ pMos }})"></circle>
+        <circle cx="100" cy="100" r="{{ fr }}" fill="url(#{{ pMos2 }})"></circle>
+        <circle cx="100" cy="100" r="44" fill="#F1E6D2"></circle>
+        <circle cx="100" cy="100" r="44" fill="none" stroke="{{ grout }}" stroke-width="1.2"></circle>
+        <circle cx="100" cy="100" r="66" fill="none" stroke="#F1E6D2" stroke-width="7" stroke-dasharray="5.4 1.6"></circle>
+        <circle cx="100" cy="100" r="66" fill="none" stroke="{{ m4 }}" stroke-width="7" stroke-dasharray="5.4 15.6"></circle>
+      </sc-if>
+      <sc-if value="{{ t6 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="#3B2414"></circle>
+        <g filter="url(#{{ fWood }})"><sc-for list="{{ wood }}" as="g" hint-placeholder-count="0"><path d="{{ g.d }}" fill="{{ g.c }}" stroke="#3B2414" stroke-width=".7"></path></sc-for></g>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#E9CF9C" stroke-width="1.4"></circle>
+        <circle cx="100" cy="100" r="77" fill="none" stroke="#3B2414" stroke-width="1"></circle>
+        <circle cx="100" cy="100" r="46" fill="none" stroke="#E9CF9C" stroke-width="2.4"></circle>
+        <circle cx="100" cy="100" r="46" fill="none" stroke="#3B2414" stroke-width=".8"></circle>
+        <sc-for list="{{ inlay6 }}" as="p" hint-placeholder-count="0"><g transform="{{ p.t }}"><path d="M0 -71l4.5 8-4.5 8-4.5-8z" fill="#F1DDB0" stroke="#3B2414" stroke-width=".8"></path><path d="M0 -71l4.5 8-4.5 8z" fill="#C99A62"></path></g></sc-for>
+        <ellipse cx="78" cy="62" rx="46" ry="20" transform="rotate(-32 78 62)" fill="rgba(255,248,232,.22)"></ellipse>
+      </sc-if>
+      <sc-if value="{{ t7 }}" hint-placeholder-val="{{ false }}">
+        <circle cx="100" cy="100" r="{{ fr }}" fill="#F4F1EC" filter="url(#{{ fMar }})"></circle>
+        <circle cx="100" cy="100" r="68" fill="none" stroke="{{ stone }}" stroke-width="8" filter="url(#{{ fBev }})"></circle>
+        <sc-for list="{{ inl }}" as="p" hint-placeholder-count="0"><g transform="{{ p.t }}"><path d="M0 -76l5 8-5 8-5-8z" fill="{{ p.c }}" stroke="rgba(255,255,255,.7)" stroke-width=".7" filter="url(#{{ fBev }})"></path></g></sc-for>
+        <circle cx="100" cy="100" r="46" fill="{{ stone }}" filter="url(#{{ fBev }})"></circle>
+        <circle cx="100" cy="100" r="46" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1"></circle>
+      </sc-if>
+
+      <sc-for list="{{ qArcs }}" as="q" hint-placeholder-count="0"><path d="{{ q.d }}" fill="none" stroke="{{ q.c }}" stroke-width="{{ q.w }}" stroke-linecap="round" opacity="{{ q.o }}" filter="{{ q.f }}"></path></sc-for>
+      <g clip-path="url(#{{ cFace }})">
+        <sc-if value="{{ glossy }}" hint-placeholder-val="{{ false }}"><ellipse cx="74" cy="62" rx="40" ry="20" transform="rotate(-30 74 62)" fill="rgba(255,255,255,.55)"></ellipse></sc-if>
+      </g>
+      <g transform="{{ it }}" fill="none" stroke="{{ ic }}" stroke-width="{{ isw }}" stroke-linecap="{{ icap }}" stroke-linejoin="round" stroke-dasharray="{{ ida }}" filter="{{ icF }}"><path d="{{ icon }}"></path></g>
+      <sc-if value="{{ hasNum }}" hint-placeholder-val="{{ false }}">
+        <rect x="76" y="{{ nY }}" width="48" height="18" rx="9" fill="{{ nBg }}" stroke="{{ nBd }}" stroke-width="1"></rect>
+        {{ numEl }}
+      </sc-if>
+    </svg>
+    <sc-if value="{{ sheen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:6%;border-radius:50%;overflow:hidden;pointer-events:none"><span style="position:absolute;top:-30%;bottom:-30%;left:0;width:22%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:lvSweep {{ swD }} {{ dFx }} ease-in-out infinite"></span></div>
+    </sc-if>
+  </div>
+  <sc-for list="{{ tw }}" as="p" hint-placeholder-count="0"><span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.s }};height:{{ p.s }};background:#FFFFFF;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);opacity:0;animation:lvTw 2.6s {{ p.d }} ease-in-out infinite"></span></sc-for>
+  <svg width="100%" height="100%" viewBox="0 0 200 200" style="position:absolute;inset:0;overflow:visible;pointer-events:none">
+    <defs><clipPath id="{{ cFl }}"><circle cx="0" cy="0" r="5.5"></circle></clipPath><clipPath id="{{ cW }}"><circle cx="100" cy="96" r="33"></circle></clipPath>
+      <radialGradient id="{{ gW }}" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#9FD4EA"></stop><stop offset=".7" stop-color="#3F8DB3"></stop><stop offset="1" stop-color="#265E80"></stop></radialGradient>
+      <radialGradient id="{{ gM }}" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".6" stop-color="{{ mdA }}"></stop><stop offset="1" stop-color="{{ mdB }}"></stop></radialGradient></defs>
+    <sc-if value="{{ g3 }}" hint-placeholder-val="{{ false }}">
+      <g style="transform-origin:100px 100px;animation:lvRays 22s linear infinite"><circle cx="100" cy="100" r="101" fill="none" stroke="rgba(255,236,190,.55)" stroke-width="1" stroke-dasharray="1 9"></circle></g>
+      <sc-for list="{{ leaves }}" as="l" hint-placeholder-count="0"><g transform="{{ l.t }}"><path d="M0 -9C1 -2 2 -1 9 0 2 1 1 2 0 9-1 2-2 1-9 0-2-1-1-2 0-9z" fill="#FFFFFF" style="filter:drop-shadow(0 0 3px rgba(255,225,150,.95));transform-box:fill-box;transform-origin:center;opacity:0;animation:lvTw {{ l.dur }} {{ l.d }} ease-in-out infinite"></path></g></sc-for>
+    </sc-if>
+    <sc-if value="{{ g4 }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ g5x }}" hint-placeholder-val="{{ false }}"><g style="transform-origin:100px 96px;animation:lvRays 16s linear infinite"><path d="{{ rays }}" stroke="{{ mdB }}" stroke-width="2" stroke-linecap="round" opacity=".5"></path></g></sc-if>
+      <circle cx="100" cy="96" r="37" fill="{{ mdRim }}" style="filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))"></circle>
+      <sc-if value="{{ isW }}" hint-placeholder-val="{{ true }}">
+        <circle cx="100" cy="96" r="33" fill="url(#{{ gW }})"></circle>
+        <g clip-path="url(#{{ cW }})"><g style="animation:{{ wSpin }}"><path d="{{ land }}" fill="#9CCB7E"></path></g>
+          <sc-for list="{{ wDots }}" as="d" hint-placeholder-count="0"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="2.2" fill="#FFD36B" stroke="#FFFFFF" stroke-width="1"></circle></sc-for>
+          <sc-if value="{{ g5 }}" hint-placeholder-val="{{ false }}"><path d="{{ wLines }}" fill="none" stroke="#FFF4C8" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="3 3" style="filter:drop-shadow(0 0 3px #FFE9A0);animation:lvDash 1.6s linear infinite"></path></sc-if>
+          <ellipse cx="88" cy="80" rx="16" ry="9" fill="rgba(255,255,255,.3)"></ellipse></g>
+      </sc-if>
+      <sc-if value="{{ notW }}" hint-placeholder-val="{{ false }}"><circle cx="100" cy="96" r="33" fill="url(#{{ gM }})"></circle><g transform="translate(78 74) scale(1.85)" fill="none" stroke="{{ mdB }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ icD }}"></path></g></sc-if>
+    </sc-if>
+    <sc-for list="{{ flags }}" as="fl" hint-placeholder-count="0"><g transform="{{ fl.t }}" style="opacity:0;animation:lvFade .3s {{ fl.d }} both"><g style="filter:drop-shadow(0 0 2px rgba(255,255,255,.7))"><path d="M0 0m-5.4 -1.89l2.16 -2.9700000000000006h6.48l2.16 2.9700000000000006l-5.4 6.75z" fill="{{ fl.a }}" stroke="#FFFDF8" stroke-width="1.19" stroke-linejoin="round"></path><path d="M0 0m-5.4 -1.89h10.8M0 0m-3.24 -4.86l3.24 9.72l3.24 -9.72" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="0.65" stroke-linejoin="round"></path></g></g></sc-for>
+    <sc-if value="{{ g2 }}" hint-placeholder-val="{{ false }}"><g style="transform-box:fill-box;transform-origin:center;animation:lvFade .5s {{ dRib }} both">
+      <path d="M28 168l12-9v-4h120v4l12 9-12 9v4H40v-4z" fill="{{ ribD }}"></path><path d="M40 155h120v26H40z" fill="{{ ribA }}" stroke="{{ ribD }}" stroke-width="1"></path><path d="M40 158h120" stroke="rgba(255,255,255,.35)" stroke-width="1"></path>
+      {{ ribEl }}</g></sc-if>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:200,&quot;height&quot;:200},&quot;tier&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;min&quot;:1,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;},&quot;hue&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:40,&quot;tsType&quot;:&quot;number&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:180,&quot;tsType&quot;:&quot;number&quot;},&quot;num&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;50&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;icon&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;delay&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;}}">
+let UID=0;
+const DEF='M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z';
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='lv'+(++UID);}
+  renderVals(){const p=this.props,u=this.u;const T=Math.max(1,Math.min(7,Number(p.tier)||1));const Q=!!p.quad&&p.quad!=='false';const QH=[140,85,40,230],QN=Q?(p.got==null||p.got===''?4:Number(p.got)):0;const qc=(i,l,ch)=>i<QN?`oklch(${l} ${ch} ${QH[i]})`:'rgba(28,34,48,.16)';const h=Number(p.hue);const H=isNaN(h)?40:h;const sz=Number(p.size)||150;const D=Number(p.delay)||0;
+    const N=[0,28,22,18,16,24,14,12][T],A=[0,2.6,3.4,4,4.6,3,4,5.4][T];let rim='';for(let i=0;i<=240;i++){const a=i/240*Math.PI*2,r=93-A+A*Math.cos(N*a);rim+=(i?'L':'M')+(100+r*Math.cos(a)).toFixed(2)+' '+(100+r*Math.sin(a)).toFixed(2);}rim+='Z';
+    const c=(l,ch,hh)=>`oklch(${l} ${ch} ${hh??H})`;
+    const RIM=[null,'#C9B08A',c(.36,.07,H+10),c(.48,.12),c(.5,.13),'#B9A688','#5A3620','#E9E3DA'][T];
+    const tex={1:[.9,3,1.2,60,1.05,0],2:[.06,4,2.2,50,1.15,0],3:[.45,2,1.4,55,1.1,0]}[T]||[.5,1,1,60,1,0];
+    const ic={1:c(.42,.08),2:c(.78,.06,H+20),3:c(.32,.09),4:c(.42,.13),5:c(.42,.12),6:'#3B2414',7:'#FFFFFF'}[T];
+    const tw=T===7?[[8,10,11,0],[80,14,8,.9],[74,78,10,1.6],[6,72,7,2.2],[46,-4,7,2.8]].map(([x,y,s,d])=>({x:x+'%',y:y+'%',s:(s/100*sz)+'px',d:(D+3.4+d).toFixed(2)+'s'})):[];
+    const f=x=>(D+x).toFixed(2)+'s';
+    const W=(r0,r1,n,cols,off)=>Array.from({length:n},(_,i)=>{const a0=(-90+off+i*360/n)*Math.PI/180,a1=a0+360/n*Math.PI/180;const P=(a,r)=>(100+r*Math.cos(a)).toFixed(1)+' '+(100+r*Math.sin(a)).toFixed(1);
+      return{d:r0?'M'+P(a0,r0)+'L'+P(a0,r1)+'A'+r1+' '+r1+' 0 0 1 '+P(a1,r1)+'L'+P(a1,r0)+'A'+r0+' '+r0+' 0 0 0 '+P(a0,r0)+'Z':'M100 100L'+P(a0,r1)+'A'+r1+' '+r1+' 0 0 1 '+P(a1,r1)+'Z',c:cols[i%cols.length]};});
+    const wood=[...W(46,80,16,['#A65A34','#6B4229'],0),...W(0,46,24,['#EBD3A2','#D9B37A'],0)];
+    const glass=Array.from({length:12},(_,i)=>{const a0=(-90+i*30)*Math.PI/180,a1=a0+30*Math.PI/180;const P=(a,r)=>(100+r*Math.cos(a)).toFixed(1)+' '+(100+r*Math.sin(a)).toFixed(1);const am=(a0+a1)/2;
+        const col=Q?qc(Math.floor(i/3),.62,.15).replace(')',' / .92)').replace('rgba(28,34,48,.16 / .92)','rgba(120,110,100,.55)'):[c(.6,.16),c(.74,.13,H+40),c(.52,.15,H-35),c(.68,.12,H+80)][i%4].replace(')',' / .92)');
+        return{d:'M'+P(a0,46)+'L'+P(a0,80)+'A80 80 0 0 1 '+P(a1,80)+'L'+P(a1,46)+'A46 46 0 0 0 '+P(a0,46)+'Z',h:'M'+P(a0+.06,52)+'L'+P(a0+.06,74)+'L'+P(am,74)+'Z',c:col};});
+    const qArcs=Q?QH.map((_,i)=>{const a0=(-90+i*90+5)*Math.PI/180,a1=(-90+(i+1)*90-5)*Math.PI/180,r=T===6?84:T===7?75:76;const P=a=>(100+r*Math.cos(a)).toFixed(1)+' '+(100+r*Math.sin(a)).toFixed(1);
+        return{d:'M'+P(a0)+'A'+r+' '+r+' 0 0 1 '+P(a1),c:qc(i,.62,.15),w:T<=2?4:5,o:T===1?'.8':'1',f:T>=5?'url(#'+u+'b)':'none'};}):[];
+    const GR=Math.max(0,Math.min(5,Number(p.grow)||0)),isW=p.world===true||p.world==='true',dd=x=>(D+x).toFixed(2)+'s';
+    const PAL=['#BFE3F2','#F3B6C8','#FFF6DC','#B7E4C7','#E8D1F7','#FFE39A','#A8D8F0','#F6C1A6','#D6F0F6','#F9D9E6'];const FL=PAL.map(c=>[c,c,c]);
+    const flags=GR===0?[]:GR<3?[0,1,2].map(i=>({t:'translate('+(86+i*14)+' 38)',a:FL[i][0],b:FL[i][1],c:FL[i][2],d:dd(1+i*.2)})):FL.map((x,i)=>{const a=(-90+i*36)*Math.PI/180;return{t:'translate('+(100+71*Math.cos(a)).toFixed(1)+' '+(100+71*Math.sin(a)).toFixed(1)+')',a:x[0],b:x[1],c:x[2],d:dd(1+i*.12)};});
+    const leaves=GR>=3?[[-62,104,1],[38,106,.7],[118,102,.9],[-150,103,.6],[170,100,.8],[-20,108,.55],[78,104,.65]].slice(0,GR>=5?7:GR>=4?5:3).map(([a,r,s],i)=>{const x=100+r*Math.cos(a*Math.PI/180),y=100+r*Math.sin(a*Math.PI/180);return{t:'translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+s+')',d:dd(1.2+i*0.45),dur:(2.4+(i%3)*0.5).toFixed(1)+'s'};}):[];
+    const land='M0 90c6-8 16-6 18 2s10 4 12 12-8 10-14 6-16-2-16-8zM34 78c8-4 18 0 18 8s-6 10-4 16-8 8-12 2-6-10-2-14 0-10 0-12zM50 106c6-2 12 2 12 8s-6 10-10 8-4-12-2-16z';
+    const landD=land+land.replace(/M(\d+)/g,(m,x)=>'M'+(Number(x)+66));
+    const wDots=[[90,86],[108,92],[96,104],[114,104],[100,80]].slice(0,GR>=4?5:0).map(([x,y])=>({x,y}));
+    const rays=Array.from({length:16},(_,i)=>{const a=i*Math.PI/8;return 'M'+(100+40*Math.cos(a)).toFixed(1)+' '+(96+40*Math.sin(a)).toFixed(1)+'L'+(100+50*Math.cos(a)).toFixed(1)+' '+(96+50*Math.sin(a)).toFixed(1);}).join('');
+    const ribEl=GR>=2?React.createElement('text',{x:100,y:172,textAnchor:'middle',fontFamily:'Geist Mono',fontWeight:700,fontSize:p.num&&String(p.num).length>3?10:12,letterSpacing:1.5,fill:'#FFF6EA'},String(p.label||p.num||'')):null;
+    const growV={cFl:u+'fl',cW:u+'cw',gW:u+'gw',gM:u+'gm',g2:GR>=2,g3:GR>=3,g4:GR>=4,g5:GR>=5&&isW,g5x:GR>=5&&!isW,isW,notW:!isW,flags,leaves,wDots,rays,ribEl,dRib:dd(1.4),
+      land:'translate(0 0)',wSpin:GR>=5?'lvWorld 9s linear infinite':'none',wLines:'M90 86Q100 76 108 92M108 92Q112 100 114 104M96 104Q104 112 114 104M90 86Q86 96 96 104',
+      mdA:c(.82,.06),mdB:c(.4,.12),mdRim:c(.55,.13),ribA:c(.48,.14),ribD:c(.34,.11),icD:p.icon||''};
+    growV.land=undefined;
+    return{...growV,land:landD.replace(/M(\d+) (\d+)/g,(m,x,y)=>'M'+(Number(x)+67)+' '+(Number(y)-12)),wood,fWood:u+'w',inlay6:Array.from({length:8},(_,i)=>({t:`translate(100 100) rotate(${i*45+22.5})`})),sz:sz+'px',t1:T===1,t2:T===2,t3:T===3,t4:T===4,t5:T===5,t6:T===6,t7:T===7,fr:T===1?84:T===7?82:80,glass,qArcs,gLit:u+'g',
+      fTex:u+'t',fBev:u+'b',fMar:u+'m',pMos:u+'p',pMos2:u+'q',cFace:u+'c',
+      bf:tex[0],oct:tex[1],ss:tex[2],el:tex[3],k1:tex[4],k2:tex[5],bb:T===6?1.4:1.1,bs:T===6?4:3,bk:T>=5?.9:.7,
+      rim,rimF:RIM,rimFilt:T<=3?'url(#'+u+'t)':'url(#'+u+'b)',
+      ink:c(.4,.07),leather:c(.5,.09,H+15),clay:c(.6,.13),paint:c(.5,.14),paint2:c(.62,.1),
+      grout:'#CFC2AB',m1:c(.56,.13),m2:c(.66,.11,H+25),m3:c(.46,.12,H-15),m4:c(.52,.14),stone:c(.46,.13),
+      dots:Array.from({length:24},(_,i)=>{const a=i/24*Math.PI*2;return{x:(100+62*Math.cos(a)).toFixed(1),y:(100+62*Math.sin(a)).toFixed(1),x2:(100.8+62*Math.cos(a)).toFixed(1),y2:(100.8+62*Math.sin(a)).toFixed(1)};}),
+      petals:Array.from({length:8},(_,i)=>({t:`translate(100 100) rotate(${i*45+22.5})`,c:Q?qc(Math.floor(i/2),.55,.15):c(.5,.14)})),
+      inl:Array.from({length:8},(_,i)=>({t:`translate(100 100) rotate(${i*45+22.5})`,c:Q?qc(Math.floor(i/2),.56,.15):i%2?c(.62,.12,H+40):c(.5,.13,H-30)})),
+      glossy:T===4,sheen:T>=4,swD:T===7?'3.4s':'5s',glow:T>=5,gc:T===6?'rgba(240,200,140,.7)':T===7?c(.88,.08,H+20)+' / .9)':c(.85,.08),ray:c(.9,.07,H+20),
+      icon:p.icon||DEF,it:'translate(66 '+(T>=3?60:66)+') scale(2.83)',ic,isw:T===5?2.2:T===6?1.8:1.5,icap:T===5?'butt':'round',ida:T===5?'1.4 .5':'none',
+      icF:T===2||T===7?'url(#'+u+'b)':'none',
+      hasNum:T>=3&&!!p.num&&GR<2,numEl:T>=3&&p.num&&GR<2?React.createElement('text',{x:100,y:140.5,textAnchor:'middle',fontFamily:'Geist Mono',fontWeight:600,fontSize:10,letterSpacing:1,fill:{3:'#FBEBD6',4:c(.42,.13),5:c(.42,.12),6:'#F1DDB0',7:'#FFFFFF'}[T]},String(p.num)):null,num:p.num||'',nY:T>=3?(T===6?130:128):0,nTy:T>=3?140.5:0,
+      nBg:{3:c(.42,.1),4:'#F7F0E2',5:'#F1E6D2',6:'#3B2414',7:c(.46,.13)}[T]||'#fff',nBd:{3:'rgba(255,235,210,.4)',4:c(.5,.14),5:'#CFC2AB',6:'#E9CF9C',7:'rgba(255,255,255,.8)'}[T]||'none',nFg:{3:'#FBEBD6',4:c(.42,.13),5:c(.42,.12),6:'#FFFFFF'}[T]||'#000',
+      dur:(0.9+T*0.28).toFixed(2)+'s',d0:f(0),dFx:f(0.9+T*0.28),shY:(4+T*1.6)+'px',shB:(6+T*2)+'px',tw};}
+}
+</script>
+</body>
+</html>

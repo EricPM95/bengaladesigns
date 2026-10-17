@@ -1,0 +1,6 @@
+/* Lo común de todos los dibujos de los logros. */
+/* Sin animación («quieto»): cada animación acaba en su estado final, como con «Reducir movimiento». */
+.dib-quieto *,.dib-quieto *::before,.dib-quieto *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+@media (prefers-reduced-motion: reduce){.dib-mov *,.dib-mov *::before,.dib-mov *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+@keyframes dibShine{0%{transform:translateX(-200%) skewX(-18deg)}50%,100%{transform:translateX(560%) skewX(-18deg)}}
+@keyframes dibGlow{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:.85;transform:scale(1.08)}}

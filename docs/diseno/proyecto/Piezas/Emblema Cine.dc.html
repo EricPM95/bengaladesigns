@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+@keyframes ecOrbit{to{transform:rotate(360deg)}}
+@keyframes ecFadeTo{to{opacity:.55}}
+@keyframes ecPush{from{transform:scale(1)}to{transform:scale(1.6)}}
+@keyframes ecBloom{0%{opacity:0;transform:scale(.3)}35%{opacity:1}100%{opacity:0;transform:scale(2.2)}}
+@keyframes ecFlickM{from{opacity:1}to{opacity:.86}}
+@keyframes ecSpark{0%{opacity:0;transform:none}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-110px)}}
+@keyframes ecKey{0%{transform:scale(1)}82%{opacity:1}100%{transform:scale(13);opacity:0}}
+@keyframes ecViewZ{from{transform:scale(1)}to{transform:scale(1.9)}}
+@keyframes ecIntroOut{to{opacity:0}}
+@keyframes ecIPhrase{0%{opacity:0;transform:translateY(14px);filter:blur(4px)}18%{opacity:1;transform:none;filter:none}86%{opacity:1;transform:scale(1.02);text-shadow:0 0 16px rgba(243,213,154,.6)}100%{opacity:0;transform:scale(1.06)}}
+@keyframes ecICore{0%{opacity:0;transform:scale(.3)}12%{opacity:1;transform:scale(.8)}24%{transform:scale(1.5)}30%{transform:scale(.9)}46%{transform:scale(1.7)}52%{transform:scale(1)}64%{transform:scale(2)}69%{transform:scale(1.15)}78%{transform:scale(2.3)}82%{transform:scale(1.3)}88%{transform:scale(2.6)}93%{transform:scale(.55)}100%{opacity:1;transform:scale(9)}}
+@keyframes ecIHalo{0%{opacity:0;transform:scale(.3)}24%{opacity:.5;transform:scale(.8)}46%{opacity:.6;transform:scale(.95)}64%{opacity:.75;transform:scale(1.1)}78%{opacity:.85;transform:scale(1.25)}88%{opacity:1;transform:scale(1.4)}93%{opacity:.5;transform:scale(.6)}100%{opacity:1;transform:scale(5)}}
+@keyframes ecIRing{0%{opacity:0;transform:scale(.2)}8%{opacity:.95}100%{opacity:0;transform:scale(3.6)}}
+@keyframes ecIConv{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.2)}}
+@keyframes ecIRays{0%{opacity:0}60%{opacity:.5}92%{opacity:.9}100%{opacity:1}}
+@keyframes ecFlyB{0%{transform:none;opacity:1}100%{transform:translate(152px,486px) scale(.2);opacity:.2}}
+@keyframes ecFade{from{opacity:0}to{opacity:1}}
+@keyframes ecOut{to{opacity:0}}
+@keyframes ecDraw{to{stroke-dashoffset:0}}
+@keyframes ecUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes ecRecede{to{opacity:.2;transform:scale(.92);filter:blur(2px)}}
+@keyframes ecFlash{0%{opacity:0;transform:scale(.2)}20%{opacity:1}100%{opacity:0;transform:scale(3.4)}}
+@keyframes ecShock{0%{opacity:0;transform:scale(.5)}2%{opacity:.9;transform:scale(.5)}100%{opacity:0;transform:scale(3.4)}}
+@keyframes ecPh{0%{opacity:0;transform:translateY(10px)}15%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+@keyframes ecTw{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes ecBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes ecOrb{0%{opacity:0;transform:translate(var(--x0),var(--y0)) scale(.4)}15%{opacity:1}100%{opacity:1;transform:translate(0,0) scale(1.5)}}
+@keyframes ecOrbOut{to{opacity:0;transform:scale(2.2)}}
+@keyframes ecGrow{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes ecGlowUp{0%{opacity:0;transform:scale(.3)}100%{opacity:.85;transform:scale(1)}}
+@keyframes ecGlowL{0%{opacity:0}40%{opacity:1}100%{opacity:.85}}
+@keyframes ecPulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes ecRip{0%{opacity:0;transform:scale(.08)}2%{opacity:.95;transform:scale(.08)}100%{opacity:0;transform:scale(1)}}
+@keyframes ecSpl{0%{opacity:0;transform:translate(0,0)}10%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+@keyframes ecToC{0%{opacity:0;transform:none}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}
+@keyframes ecFlip{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.15)}}
+@keyframes ecWave{0%,100%{transform:translateX(0)}50%{transform:translateX(14px)}}
+@keyframes ecRay{0%,100%{transform:rotate(-4deg);opacity:.7}50%{transform:rotate(4deg);opacity:1}}
+@keyframes ecBub{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-520px)}}
+@keyframes ecTrail{0%{opacity:0;transform:translateY(0) scale(.4)}20%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.2)}}
+@keyframes ecSink{0%{opacity:0;offset-distance:0%}5%{opacity:1}100%{opacity:1;offset-distance:100%}}
+@keyframes ecSwingB{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes ecDust{0%,100%{transform:translate(0,0);opacity:.25}50%{transform:translate(6px,-10px);opacity:1}}
+@keyframes ecHL{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
+@keyframes ecHR{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
+@keyframes ecFillTo{to{fill-opacity:.5}}
+@keyframes ecStep{0%{opacity:0;transform:scale(.4)}40%{opacity:1;transform:scale(1)}100%{opacity:.55;transform:scale(1)}}
+@keyframes ecMarch{to{stroke-dashoffset:-26}}
+@keyframes ecShake{0%,100%{transform:none}20%{transform:translate(-7px,2px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-1px)}}
+@keyframes ecHandIn{0%{opacity:0;transform:translate(60px,280px)}100%{opacity:1;transform:none}}
+@keyframes ecHandOut{to{opacity:0;transform:translate(60px,280px)}}
+@keyframes ecLipT{0%,100%{transform:none}25%,62%{transform:translateY(24px)}}
+@keyframes ecLipB{0%,100%{transform:none}25%,62%{transform:translateY(-24px)}}
+@keyframes ecMouth{0%,100%{transform:scaleY(1)}25%,62%{transform:scaleY(.12)}}
+@keyframes ecZoomD{0%{transform:scale(1)}85%{opacity:1}100%{transform:scale(16);opacity:0}}
+@keyframes ecViewIn{from{transform:scale(1.8)}to{transform:scale(1)}}
+@keyframes ecFlame{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes ecFlick{from{transform:scaleY(1) skewX(0)}to{transform:scaleY(.85) skewX(5deg)}}
+@keyframes ecReveal{from{transform:scale(.05)}to{transform:scale(1)}}
+@keyframes ecSunUp2{0%{opacity:0;transform:translateY(0)}12%{opacity:1}100%{opacity:1;transform:translateY(-310px)}}
+@keyframes ecMoon{0%{opacity:0;transform:translate(60px,120px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+<div style="position:relative;width:390px;height:844px;overflow:hidden;background:{{ bg }};font-family:'Geist',system-ui,sans-serif;color:#FFFDF8;text-align:center">
+  <sc-if value="{{ intro }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;overflow:hidden">
+      <span style="position:absolute;inset:0;background:radial-gradient(circle at 50% 56%,transparent 20%,rgba(0,0,0,.75) 75%);opacity:0;animation:ecFade 3s ease-in both"></span>
+      <span style="position:absolute;left:-60px;top:212px;width:510px;height:510px;border-radius:50%;background:repeating-conic-gradient(rgba(243,213,154,.16) 0 2deg,transparent 2deg 14deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 58%);mask-image:radial-gradient(circle,#000 8%,transparent 58%);opacity:0;animation:ecIRays 3.2s ease-in both,ecOrbit 18s linear infinite"></span>
+      <span style="position:absolute;left:28px;right:28px;top:300px;font:italic 400 34px/1.15 'Instrument Serif',serif;color:#F3E3B8;text-wrap:balance;opacity:0;animation:ecIPhrase 3.2s ease both">{{ phrase }}</span>
+      <div style="position:absolute;left:195px;top:467px;width:0;height:0">
+        <sc-for list="{{ iRings }}" as="r" hint-placeholder-count="4"><span style="position:absolute;left:-40px;top:-40px;width:80px;height:80px;border-radius:50%;border:{{ r.w }} solid #F3D59A;box-shadow:0 0 12px rgba(243,213,154,.6);opacity:0;animation:ecIRing {{ r.l }} {{ r.d }} cubic-bezier(.2,.7,.3,1) both"></span></sc-for>
+        <sc-for list="{{ iConv }}" as="p" hint-placeholder-count="16"><span style="position:absolute;left:-2px;top:-2px;width:{{ p.s }};height:{{ p.s }};border-radius:50%;background:#FFE7B0;box-shadow:0 0 8px #FFD58A;--dx:{{ p.dx }};--dy:{{ p.dy }};opacity:0;animation:ecIConv {{ p.l }} {{ p.d }} cubic-bezier(.5,0,.8,.6) both"></span></sc-for>
+        <span style="position:absolute;left:-90px;top:-90px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,160,.75),rgba(255,200,120,.2) 40%,transparent 70%);opacity:0;animation:ecIHalo 3.2s ease-in both"></span>
+        <span onAnimationEnd="{{ introEnd }}" style="position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle,#FFFFFF 30%,#FFE3A8 60%,#F3C46A);box-shadow:0 0 18px #FFD58A,0 0 40px rgba(255,200,120,.7);opacity:0;animation:ecICore 3.2s ease-in-out both"></span>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ go }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;animation:ecFade .4s ease both">
+  <div style="position:absolute;inset:0;animation:ecRecede 1.2s {{ dimD }} ease both">
+   <div style="position:absolute;inset:0;animation:{{ shake }}">
+
+    <sc-if value="{{ isP }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs>
+          <radialGradient id="{{ u }}pd" cx="195" cy="300" r="420" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7A5E38"></stop><stop offset=".3" stop-color="#3E2E1C"></stop><stop offset="1" stop-color="#110C07"></stop></radialGradient>
+          <linearGradient id="{{ u }}pb" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFF3D6" stop-opacity=".85"></stop><stop offset="1" stop-color="#FFF3D6" stop-opacity="0"></stop></linearGradient>
+          <filter id="{{ u }}pf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"></feGaussianBlur></filter>
+          <filter id="{{ u }}pf2" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="26"></feGaussianBlur></filter>
+        </defs>
+        <circle cx="195" cy="300" r="420" fill="url(#{{ u }}pd)" style="opacity:0;animation:ecFade 2.2s .3s ease both"></circle>
+        <sc-for list="{{ cells }}" as="c" hint-placeholder-count="0"><path d="{{ c.d }}" fill="#0E0905" style="opacity:0;animation:ecFadeTo 1s {{ c.dl }} ease both"></path></sc-for>
+        <g style="transform-origin:195px 300px;animation:ecOrbit 16s 2.6s linear infinite">
+          <g style="opacity:0;animation:ecFade 1.8s 2.6s ease both">
+            <polygon points="183,300 207,300 300,10 90,10" fill="url(#{{ u }}pb)"></polygon>
+            <ellipse cx="195" cy="64" rx="110" ry="54" fill="#FFE7B0" opacity=".55" filter="url(#{{ u }}pf2)"></ellipse>
+            <ellipse cx="195" cy="64" rx="56" ry="26" fill="#FFF6DE" opacity=".75" filter="url(#{{ u }}pf)"></ellipse>
+            <sc-for list="{{ dust }}" as="d" hint-placeholder-count="0"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="#FFF3D6" style="animation:ecDust {{ d.l }} {{ d.d }} ease-in-out infinite"></circle></sc-for>
+          </g>
+        </g>
+        <circle cx="195" cy="300" r="96" fill="#FFF3D6" filter="url(#{{ u }}pf2)" style="opacity:0;animation:ecFade 1s .4s ease both,ecPulse 2.6s 1.6s ease-in-out infinite"></circle>
+        <g style="transform-box:fill-box;transform-origin:center;animation:ecBeat .45s 5s ease-in-out 3"><circle cx="195" cy="300" r="44" fill="#FFFDF5" style="opacity:0;animation:ecFade .8s .4s ease both"></circle></g>
+      </svg>
+      <span style="position:absolute;left:-5px;top:100px;width:400px;height:400px;border-radius:50%;background:repeating-conic-gradient(rgba(255,240,200,.2) 0 3deg,transparent 3deg 12deg);-webkit-mask-image:radial-gradient(circle,#000 14%,transparent 60%);mask-image:radial-gradient(circle,#000 14%,transparent 60%);opacity:0;animation:ecFade 1.4s 1.4s ease both,ecOrbit 40s 1.4s linear infinite"></span>
+    </sc-if>
+
+    <sc-if value="{{ isT }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs>
+          <radialGradient id="{{ u }}sw" cx=".5" cy="0" r=".9"><stop offset="0" stop-color="#E8FFFB" stop-opacity=".95"></stop><stop offset=".45" stop-color="#9FE6E6" stop-opacity=".4"></stop><stop offset="1" stop-color="#9FE6E6" stop-opacity="0"></stop></radialGradient>
+          <linearGradient id="{{ u }}ry" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2FFFC" stop-opacity=".55"></stop><stop offset="1" stop-color="#F2FFFC" stop-opacity="0"></stop></linearGradient>
+          <filter id="{{ u }}bl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"></feGaussianBlur></filter>
+          <filter id="{{ u }}bs" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.5"></feGaussianBlur></filter>
+        </defs>
+        <ellipse cx="195" cy="20" rx="260" ry="190" fill="url(#{{ u }}sw)" style="animation:ecFade 1.6s .1s ease both"></ellipse>
+        <g fill="none" stroke="rgba(235,255,252,.55)" stroke-width="1.4" filter="url(#{{ u }}bs)" style="opacity:0;animation:ecFade 1.4s .3s ease both"><sc-for list="{{ caus }}" as="c" hint-placeholder-count="0"><path d="{{ c.p }}" style="animation:ecWave {{ c.l }} {{ c.d }} ease-in-out infinite"></path></sc-for></g>
+        <g filter="url(#{{ u }}bl)" style="opacity:0;animation:ecFade 2s .6s ease both"><sc-for list="{{ rays }}" as="r" hint-placeholder-count="0"><g style="transform-origin:{{ r.o }};animation:ecRay {{ r.l }} {{ r.d }} ease-in-out infinite"><polygon points="{{ r.p }}" fill="url(#{{ u }}ry)"></polygon></g></sc-for></g>
+        <path d="M-20 790c60-26 120-30 180-14s120 18 250-10V860H-20z" fill="#0A3442" style="opacity:0;animation:ecFade 1.6s .8s ease both"></path>
+        <path d="M-20 812c80-16 150-10 220 2s120 6 210-8V860H-20z" fill="#072A36" style="opacity:0;animation:ecFade 1.6s .9s ease both"></path>
+        <sc-for list="{{ floor }}" as="c" hint-placeholder-count="0"><ellipse cx="{{ c.x }}" cy="{{ c.y }}" rx="5" ry="1.8" fill="#E8C774" style="animation:ecTw {{ c.l }} {{ c.d }} ease-in-out infinite"></ellipse></sc-for>
+        <g fill="none" stroke="rgba(240,255,252,.9)" stroke-width="1.6"><sc-for list="{{ rip1 }}" as="r" hint-placeholder-count="0"><ellipse cx="200" cy="104" rx="70" ry="10" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecRip 1.5s {{ r.d }} ease-out both"></ellipse></sc-for></g>
+        <circle cx="195" cy="300" r="80" fill="#FFE7A8" filter="url(#{{ u }}bl)" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecGlowUp 1.5s 7s ease-in both"></circle>
+      </svg>
+      <sc-for list="{{ bub }}" as="b" hint-placeholder-count="0"><span style="position:absolute;left:{{ b.x }};top:{{ b.y }};width:{{ b.s }};height:{{ b.s }};border-radius:50%;border:1px solid rgba(235,255,252,.75);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.7),rgba(255,255,255,.05) 60%);opacity:0;animation:ecBub {{ b.l }} {{ b.d }} ease-in infinite"></span></sc-for>
+      <sc-for list="{{ trail }}" as="b" hint-placeholder-count="0"><span style="position:absolute;left:{{ b.x }};top:{{ b.y }};width:{{ b.s }};height:{{ b.s }};border-radius:50%;border:1px solid rgba(235,255,252,.85);opacity:0;animation:ecTrail 1.6s {{ b.d }} ease-out both"></span></sc-for>
+      <sc-for list="{{ spl }}" as="p" hint-placeholder-count="0"><span style="position:absolute;left:198px;top:104px;width:{{ p.s }};height:{{ p.s }};border-radius:50%;border:1px solid rgba(240,255,252,.9);--dx:{{ p.x }};--dy:{{ p.y }};opacity:0;animation:ecSpl 1s {{ p.d }} cubic-bezier(.2,.7,.4,1) both"></span></sc-for>
+      <span style="position:absolute;inset:0;animation:ecOut .5s 8.45s ease both;pointer-events:none">
+        <span style="position:absolute;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;offset-path:path('M200 104 C 140 160 250 200 175 240 S 200 285 195 300');offset-rotate:0deg;opacity:0;animation:ecSink 3.6s 3.4s cubic-bezier(.25,.6,.35,1) both">
+          <span style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF6D2,#E2B65A 55%,#8C6420);box-shadow:0 0 16px rgba(255,214,130,.9);animation:ecFlip .7s 3.4s linear 5,ecBeat .55s 7.1s ease-in-out 3"></span>
+        </span>
+      </span>
+    </sc-if>
+
+    <sc-if value="{{ isM }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs><filter id="{{ u }}mf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"></feGaussianBlur></filter></defs>
+        <sc-for list="{{ mpan }}" as="p" hint-placeholder-count="0"><rect x="{{ p.x }}" y="{{ p.y }}" width="86" height="140" rx="6" fill="{{ p.f }}" style="fill-opacity:0;animation:ecFillTo 1.2s {{ p.d }} ease both"></rect></sc-for>
+        <g transform="translate(75 216) scale(4)" fill="none" stroke="#F3D59A" stroke-linecap="round" stroke-linejoin="round">
+          <g style="animation:ecHL 2s 3.4s cubic-bezier(.4,0,.2,1) both"><path d="M-2 29h10c3 0 6-1 9-2.5L27 21M13 28c1 2.5 4 3.5 7 2.5M17 26.5l2.2 2.2" stroke-width="2.4" vector-effect="non-scaling-stroke"></path></g>
+          <g style="animation:ecHR 2s 3.4s cubic-bezier(.4,0,.2,1) both"><path d="M62 13H52c-3 0-6 1-9 2.5L33 21M47 14c-1-2.5-4-3.5-7-2.5M43 15.5l-2.2-2.2" stroke-width="2.4" vector-effect="non-scaling-stroke"></path></g>
+        </g>
+        <circle cx="195" cy="300" r="34" fill="#FFF4D6" filter="url(#{{ u }}mf)" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecGrow .6s 5.6s ease both,ecBeat .45s 6.3s ease-in-out 3"></circle>
+        <circle cx="195" cy="300" r="5" fill="#FFFFFF" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecGrow .4s 5.6s ease both"></circle>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{ isPl }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs><filter id="{{ u }}lf" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="4"></feGaussianBlur></filter></defs>
+        <circle cx="195" cy="300" r="7" fill="#E9C77A" style="opacity:0;animation:ecFade .6s 1.4s ease both"></circle>
+        <text x="262" y="446" text-anchor="start" font-family="Geist Mono" font-weight="600" font-size="11" letter-spacing="4" fill="rgba(255,253,248,.45)" style="opacity:0;animation:ecFade .8s 2.4s ease both">ITALIA</text>
+        <sc-for list="{{ steps }}" as="p" hint-placeholder-count="0"><ellipse cx="{{ p.x }}" cy="{{ p.y }}" rx="5" ry="8" fill="#F3D59A" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecStep .7s {{ p.d }} ease both"></ellipse></sc-for>
+        <path d="M123 407.2H267" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="7 6" style="opacity:0;animation:ecFade .8s 2.6s ease both"></path>
+        <path d="M123 407.2H267" stroke="#FFF3D6" stroke-width="7" filter="url(#{{ u }}lf)" style="opacity:0;animation:ecGlowL 1s 6.2s ease both"></path>
+        <path d="M123 407.2H267" stroke="#FFF3D6" stroke-width="3" stroke-dasharray="7 6" style="opacity:0;animation:ecGlowL 1s 6.2s ease both,ecMarch 1.2s 6.2s linear infinite"></path>
+        <text x="195" y="360" text-anchor="middle" font-family="Geist Mono" font-weight="700" font-size="13" letter-spacing="5" fill="#FFE7A8" style="opacity:0;animation:ecFade .8s 6.4s ease both">VATICANO</text>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs><linearGradient id="{{ u }}bb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3D6" stop-opacity=".7"></stop><stop offset="1" stop-color="#FFF3D6" stop-opacity=".05"></stop></linearGradient><filter id="{{ u }}bf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"></feGaussianBlur></filter></defs>
+        <g style="opacity:0;animation:ecFade 1.4s 3.4s ease both"><polygon points="184,186 206,186 226,688 164,688" fill="url(#{{ u }}bb)" style="animation:ecPulse 3s 4.8s ease-in-out infinite"></polygon></g>
+        <circle cx="195" cy="730" r="62" fill="#FFD58A" filter="url(#{{ u }}bf)" style="opacity:0;animation:ecGlowL 1.2s 5s ease both"></circle>
+        <rect x="160" y="712" width="70" height="36" rx="4" fill="#FFD58A" style="opacity:0;animation:ecGlowL 1.2s 5s ease both"></rect>
+        <path d="M168 722h54M168 738h54" stroke="#8C6420" stroke-width="1.4" style="opacity:0;animation:ecFade 1s 5.2s ease both"></path>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{ isBo }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs><filter id="{{ u }}of" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"></feGaussianBlur></filter></defs>
+        <circle cx="195" cy="330" r="150" fill="#2B231B" style="opacity:0;animation:ecFade 1s .2s ease both"></circle>
+        <g style="opacity:0;animation:ecGlowL .6s 4.4s ease both"><ellipse cx="152" cy="286" rx="18" ry="9" fill="#FFD58A" filter="url(#{{ u }}of)"></ellipse><ellipse cx="238" cy="286" rx="18" ry="9" fill="#FFD58A" filter="url(#{{ u }}of)"></ellipse><ellipse cx="152" cy="286" rx="10" ry="5" fill="#FFF0C8"></ellipse><ellipse cx="238" cy="286" rx="10" ry="5" fill="#FFF0C8"></ellipse></g>
+        <g style="animation:ecHandIn 1.5s 2.6s cubic-bezier(.2,.8,.2,1) both,ecHandOut 1.1s 6.5s ease-in forwards">
+          <path d="M179 420V458M191 410V458M203 410V458M215 420V458" stroke="#D9B98A" stroke-width="11" stroke-linecap="round"></path>
+          <path d="M172 450H222V500L234 860H158L170 500Z" fill="#D9B98A"></path>
+          <path d="M222 470q12-8 18 4l-8 22" fill="none" stroke="#D9B98A" stroke-width="10" stroke-linecap="round"></path>
+        </g>
+        <ellipse cx="195" cy="412" rx="44" ry="28" fill="#0A0806" style="transform-box:fill-box;transform-origin:center;animation:ecMouth 1.5s 5.2s ease-in-out both"></ellipse>
+        <g fill="none" stroke="#E9C77A" stroke-width="3" stroke-linecap="round">
+          <path d="M151 412Q195 380 239 412" style="animation:ecLipT 1.5s 5.2s ease-in-out both"></path>
+          <path d="M151 412Q195 444 239 412" style="animation:ecLipB 1.5s 5.2s ease-in-out both"></path>
+        </g>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;transform-origin:195px 330px;animation:ecViewIn 2.4s 3.6s cubic-bezier(.6,0,.3,1) both">
+        <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+          <defs><linearGradient id="{{ u }}cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6C9A0"></stop><stop offset=".55" stop-color="#E9B992"></stop><stop offset="1" stop-color="#9CB6C8"></stop></linearGradient><filter id="{{ u }}cf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"></feGaussianBlur></filter></defs>
+          <rect x="0" y="0" width="390" height="844" fill="url(#{{ u }}cs)"></rect>
+          <ellipse cx="195" cy="312" rx="46" ry="30" fill="#FFF3D6" filter="url(#{{ u }}cf)" style="opacity:0;animation:ecGlowL 1.2s 5.6s ease both"></ellipse>
+          <g transform="translate(195 330) scale(1.1) translate(-52 -47)" fill="none" stroke="#2B3A50" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M40 47h24M42 47v-5a10 10 0 0 1 20 0v5M52 32v-4M50 30h4M46 47v-4M58 47v-4" vector-effect="non-scaling-stroke"></path></g>
+          <polygon points="120,844 188,330 202,330 270,844" fill="#C9B48A" opacity=".55"></polygon>
+          <polygon points="0,844 0,520 182,330 188,330 120,844" fill="#1F3B26"></polygon>
+          <polygon points="390,844 390,520 208,330 202,330 270,844" fill="#1F3B26"></polygon>
+          <path d="M0 600L182 340M390 600L208 340" stroke="#2C5236" stroke-width="2"></path>
+        </svg>
+      </div>
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;transform-origin:195px 370px;animation:ecZoomD 2.4s 3.6s cubic-bezier(.7,0,.3,1) both">
+        <defs><filter id="{{ u }}kf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"></feGaussianBlur></filter></defs>
+        <path fill-rule="evenodd" d="M0 0H390V844H0Z M181 349.5A24 24 0 1 1 209 349.5L219 404H171Z" fill="#1E4A34"></path>
+        <path d="M40 120H350V700H40Z M58 140H160V330H58Z M230 140H332V330H230Z M58 360H160V540H58Z M230 360H332V540H230Z M58 570H332V680H58Z" fill="none" stroke="#123222" stroke-width="3"></path>
+        <path d="M181 349.5A24 24 0 1 1 209 349.5L219 404H171Z" fill="none" stroke="#FFE3A8" stroke-width="5" filter="url(#{{ u }}kf)" style="opacity:0;animation:ecFade 1s .8s ease both,ecPulse 1.6s 1.8s ease-in-out infinite"></path>
+        <path d="M181 349.5A24 24 0 1 1 209 349.5L219 404H171Z" fill="none" stroke="#E9C77A" stroke-width="2.2"></path>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{ isCa }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs>
+          <radialGradient id="{{ u }}cg"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".65"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient>
+          <mask id="{{ u }}cm" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="844"><rect x="0" y="0" width="390" height="844" fill="#000000"></rect><circle cx="254" cy="610" r="620" fill="url(#{{ u }}cg)" style="transform-box:fill-box;transform-origin:center;animation:ecReveal 4.4s 1.2s cubic-bezier(.3,0,.2,1) both,ecFlickM .18s 5.6s ease-in-out infinite alternate"></circle></mask>
+          <radialGradient id="{{ u }}lg"><stop offset="0" stop-color="#FFC66A" stop-opacity=".85"></stop><stop offset="1" stop-color="#FFC66A" stop-opacity="0"></stop></radialGradient>
+          <filter id="{{ u }}st" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".035 .07" numOctaves="3" seed="4"></feTurbulence><feColorMatrix values="0 0 0 0 .34  0 0 0 0 .23  0 0 0 0 .13  0 0 0 1.2 -.3"></feColorMatrix></filter>
+          <filter id="{{ u }}cr" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+        </defs>
+        <g mask="url(#{{ u }}cm)">
+          <rect x="0" y="0" width="390" height="844" fill="#2A1D12"></rect>
+          <rect x="0" y="0" width="390" height="844" filter="url(#{{ u }}st)"></rect>
+          <path d="M118 844V430A77 100 0 0 1 272 430V844Z" fill="#080504"></path>
+          <path d="M160 844V488A35 52 0 0 1 230 488V844Z" fill="#020101"></path>
+          <path d="M118 844V430A77 100 0 0 1 272 430V844M160 844V488A35 52 0 0 1 230 488V844" fill="none" stroke="#A07C45" stroke-width="2"></path>
+          <polygon points="0,844 118,760 272,760 390,844" fill="rgba(160,124,69,.18)"></polygon>
+          <sc-for list="{{ niches }}" as="n" hint-placeholder-count="0"><rect x="{{ n.x }}" y="{{ n.y }}" width="{{ n.w }}" height="28" rx="3" fill="#0B0806" stroke="#8A6A3A" stroke-width="1.2" opacity="{{ n.o }}"></rect></sc-for>
+          <g transform="translate(66 236)" fill="none" stroke="#C9A25A" stroke-width="2.6" stroke-linecap="round"><path d="M0 -26V30M0 -26c14 0 18 14 0 18M-18 -6L18 22M18 -6L-18 22"></path></g>
+          <g transform="translate(66 236)" fill="none" stroke="#FFE3A0" stroke-width="5" stroke-linecap="round" filter="url(#{{ u }}cr)" style="opacity:0;animation:ecGlowL 1.4s 4.4s ease both"><path d="M0 -26V30M0 -26c14 0 18 14 0 18M-18 -6L18 22M18 -6L-18 22"></path></g>
+        </g>
+        <circle cx="254" cy="604" r="130" fill="url(#{{ u }}lg)" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecGrow 1.4s 1s ease-out both,ecPulse 1.4s 2.4s ease-in-out infinite"></circle>
+        <g style="opacity:0;animation:ecFade 1.5s 2.4s ease both"><sc-for list="{{ dust }}" as="d" hint-placeholder-count="0"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="#FFD9A0" style="animation:ecDust {{ d.l }} {{ d.d }} ease-in-out infinite"></circle></sc-for></g>
+        <g style="opacity:0;animation:ecFade .8s .5s ease both" stroke="#E9C77A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M146 642a12 12 0 1 1 6 -14" fill="none"></path>
+          <ellipse cx="190" cy="640" rx="44" ry="17" fill="#3A2814"></ellipse>
+          <ellipse cx="190" cy="633" rx="30" ry="8" fill="#4A341C"></ellipse>
+          <circle cx="190" cy="633" r="4" fill="#120B05"></circle>
+          <path d="M226 630q22-8 32 2q-4 12-32 12z" fill="#3A2814"></path>
+        </g>
+        <path d="M254 632c-8-8-8-20 0-34 8 14 8 26 0 34z" fill="#FFB040" style="transform-box:fill-box;transform-origin:50% 100%;opacity:0;animation:ecFlame .9s .8s ease-out both,ecFlick .3s 1.7s ease-in-out infinite alternate"></path>
+        <path d="M254 630c-4-4-4-11 0-18 4 7 4 14 0 18z" fill="#FFF6D6" style="transform-box:fill-box;transform-origin:50% 100%;opacity:0;animation:ecFlame .9s .9s ease-out both,ecFlick .24s 1.8s ease-in-out infinite alternate"></path>
+      </svg>
+      <sc-for list="{{ sparks }}" as="p" hint-placeholder-count="0"><span style="position:absolute;left:{{ p.x }};top:596px;width:3px;height:3px;border-radius:50%;background:#FFD58A;box-shadow:0 0 6px #FFB040;--dx:{{ p.dx }};opacity:0;animation:ecSpark {{ p.l }} {{ p.d }} ease-out infinite"></span></sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isMa }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,#2A2D5A 0%,#7A5C8E 38%,#E58C7A 68%,#F7C68A 100%);opacity:0;animation:ecFade 4.5s 1.2s ease both"></div>
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs><filter id="{{ u }}sf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"></feGaussianBlur></filter></defs>
+        <g style="animation:ecOut 1.6s 3s ease forwards"><sc-for list="{{ stars }}" as="t" hint-placeholder-count="0"><circle cx="{{ t.x }}" cy="{{ t.y }}" r="{{ t.r }}" fill="#FFFDF8" style="animation:ecTw {{ t.l }} {{ t.d }} ease-in-out infinite"></circle></sc-for></g>
+        <g style="animation:ecSunUp2 4.4s 2s cubic-bezier(.3,.1,.3,1) both"><circle cx="195" cy="610" r="70" fill="#FFD9A0" opacity=".6" filter="url(#{{ u }}sf)"></circle><circle cx="195" cy="610" r="32" fill="#FFE3A8"></circle></g>
+        <path fill-rule="evenodd" d="{{ skyl }}" fill="#1A1424"></path>
+        <circle cx="195" cy="300" r="110" fill="#FFE7B0" filter="url(#{{ u }}sf)" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecGlowUp 1.6s 6.2s ease both"></circle>
+      </svg>
+    </sc-if>
+
+    <sc-if value="{{ isN }}" hint-placeholder-val="{{ false }}">
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0">
+        <defs><filter id="{{ u }}nf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"></feGaussianBlur></filter></defs>
+        <sc-for list="{{ stars }}" as="t" hint-placeholder-count="0"><circle cx="{{ t.x }}" cy="{{ t.y }}" r="{{ t.r }}" fill="#FFFDF8" style="opacity:0;animation:ecTw {{ t.l }} {{ t.d }} ease-in-out infinite"></circle></sc-for>
+        <g style="animation:ecMoon 2.2s 1s cubic-bezier(.2,.8,.2,1) both"><circle cx="318" cy="104" r="54" fill="#DDE3FA" opacity=".35" filter="url(#{{ u }}nf)"></circle><path d="M308 72a34 34 0 1 0 38 48 28 28 0 1 1-38-48z" fill="#F3EEDC"></path></g>
+        <path fill-rule="evenodd" d="{{ skyl }}" fill="#0A0E1C"></path>
+        <sc-for list="{{ wins }}" as="w" hint-placeholder-count="0"><ellipse cx="{{ w.x }}" cy="{{ w.y }}" rx="3" ry="4" fill="#FFD98C" style="opacity:0;animation:ecFade .3s {{ w.d }} ease both"></ellipse></sc-for>
+        <circle cx="195" cy="300" r="100" fill="#C9D2F2" filter="url(#{{ u }}nf)" style="transform-box:fill-box;transform-origin:center;opacity:0;animation:ecGlowUp 1.6s 6.6s ease both"></circle>
+      </svg>
+    </sc-if>
+
+    <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;overflow:visible" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <sc-for list="{{ ghost }}" as="g" hint-placeholder-count="0"><path d="{{ g.d }}" stroke="{{ g.c }}" stroke-width="{{ g.w }}" stroke-dasharray="{{ g.da }}" style="opacity:0;animation:ecFade 1.2s {{ g.dl }} ease both"></path></sc-for>
+      <sc-for list="{{ draw }}" as="p" hint-placeholder-count="0"><path d="{{ p.d }}" pathLength="100" stroke="{{ p.c }}" stroke-width="{{ p.w }}" style="stroke-dasharray:100;stroke-dashoffset:100;animation:ecDraw {{ p.l }} {{ p.dl }} cubic-bezier(.4,0,.2,1) both"></path></sc-for>
+      <sc-for list="{{ dots }}" as="d" hint-placeholder-count="0"><g style="opacity:0;animation:ecFade .5s {{ d.d }} ease both"><circle cx="{{ d.x }}" cy="{{ d.y }}" r="{{ d.r }}" fill="{{ d.f }}" stroke="none" style="animation:ecDust {{ d.l }} {{ d.d2 }} ease-in-out infinite"></circle></g></sc-for>
+    </svg>
+    <sc-for list="{{ spk }}" as="k" hint-placeholder-count="0"><span style="position:absolute;left:{{ k.x }};top:{{ k.y }};width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#FFE7B0;box-shadow:0 0 8px #FFE7B0;--dx:{{ k.dx }};--dy:{{ k.dy }};opacity:0;animation:ecToC 1.2s {{ k.d }} cubic-bezier(.5,0,.6,1) both"></span></sc-for>
+   </div>
+  </div>
+
+  <sc-if value="{{ orb }}" hint-placeholder-val="{{ false }}">
+    <span style="position:absolute;left:195px;top:300px;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:radial-gradient(circle,#FFFFFF 0%,{{ orbC }} 35%,transparent 70%);--x0:{{ orbX }};--y0:{{ orbY }};opacity:0;animation:ecOrb {{ orbL }} {{ orbD }} cubic-bezier(.4,0,.2,1) both,ecOrbOut .4s {{ flD }} ease forwards"></span>
+  </sc-if>
+  <sc-if value="{{ has1 }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:28px;right:28px;top:{{ tY }};font:italic 400 24px/1.25 'Instrument Serif',serif;color:#F3E3B8;text-wrap:balance;opacity:0;animation:ecPh {{ t1L }} {{ t1D }} ease both">{{ txt1 }}</span></sc-if>
+  <sc-if value="{{ has2 }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:28px;right:28px;top:{{ tY }};font:italic 400 24px/1.25 'Instrument Serif',serif;color:#F3E3B8;text-wrap:balance;opacity:0;animation:ecPh {{ t2L }} {{ t2D }} ease both">{{ txt2 }}</span></sc-if>
+
+  <span style="position:absolute;left:115px;top:220px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#FFFFFF,rgba(255,255,255,.6) 30%,transparent 70%);opacity:0;animation:ecFlash 1.1s {{ flD }} ease-out both"></span>
+  <span style="position:absolute;left:120px;top:225px;width:150px;height:150px;border-radius:50%;border:2px solid {{ ring }};opacity:0;animation:ecShock 1.4s {{ flD }} ease-out both"></span>
+  <div style="position:absolute;left:97.5px;top:202.5px;width:195px;height:195px;filter:drop-shadow(0 0 24px {{ halo }});animation:{{ flyA }};z-index:5"><dc-import name="Piezas/Emblema Secreto" kind="{{ eKind }}" scale="1.3" delay="{{ eDel }}" hint-size="195px,195px"></dc-import></div>
+
+  <div style="position:absolute;left:26px;right:26px;top:432px;display:flex;flex-direction:column;align-items:center;gap:10px">
+    <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A;opacity:0;animation:ecUp .7s {{ x1 }} ease both">¡Has descubierto un Emblema Oculto!</span>
+    <span style="font:400 34px/1.05 'Instrument Serif',serif;text-wrap:balance;opacity:0;animation:ecUp .7s {{ x2 }} ease both">{{ title }}</span>
+    <span style="max-width:310px;font:italic 400 18px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.8);text-wrap:balance;opacity:0;animation:ecUp .7s {{ x3 }} ease both">{{ line }}</span>
+    <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;color:rgba(255,253,248,.55);opacity:0;animation:ecUp .7s {{ x3 }} ease both">{{ place }}</span>
+  </div>
+  <button onClick="{{ flyOut }}" style="position:absolute;left:26px;right:26px;bottom:56px;height:54px;border:none;border-radius:999px;background:linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A);color:#2A1D10;display:flex;align-items:center;justify-content:center;gap:8px;font:700 15px 'Geist';cursor:pointer;opacity:0;animation:ecUp .7s {{ x4 }} ease both">Seguir</button>
+  </div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;panteon&quot;,&quot;trevi&quot;,&quot;foro&quot;,&quot;museos&quot;,&quot;plaza&quot;,&quot;basilica&quot;,&quot;boca&quot;,&quot;cerradura&quot;,&quot;catacumbas&quot;,&quot;madrugador&quot;,&quot;nocturno&quot;],&quot;default&quot;:&quot;panteon&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;full&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+let UID=0;
+const s=n=>n.toFixed(2)+'s';
+const G='#E9C77A',GF='rgba(233,199,122,.55)';
+const D=(d,dl,l,w,c)=>({d,dl:s(dl),l:s(l||1.2),w:String(w||2),c:c||G});
+const GH=(d,dl,da,w,c)=>({d,dl:s(dl),da:da||'4 5',w:String(w||1.4),c:c||GF});
+const EK={coliseo:'mar',panteon:'ocu',trevi:'mon',foro:'foro',museos:'cre',plaza:'plaza',basilica:'tumba',boca:'boca',cerradura:'key',catacumbas:'lamp',madrugador:'alba',nocturno:'noche'};
+const TX={
+ coliseo:['Una maravilla del mundo','El anfiteatro más grande jamás construido.','Coliseo · Roma'],
+ panteon:['Bajo una cúpula de casi 2.000 años','La mayor cúpula de hormigón sin armar del mundo.','Panteón · Roma'],
+ trevi:['Volverás a Roma','Dice la leyenda que quien lanza una moneda de espaldas, vuelve.','Fontana de Trevi · Roma'],
+ foro:['Donde empezó todo','Aquí estaba el Miliario de Oro: de él partían los caminos del Imperio.','Foro Romano · Roma'],
+ museos:['Bajo el techo de Miguel Ángel','Miguel Ángel pintó la bóveda de la Sixtina en cuatro años, de 1508 a 1512.','Museos Vaticanos · Vaticano'],
+ plaza:['La frontera que no se ve','Acabas de cruzar una frontera sin darte cuenta.','Plaza de San Pedro · Vaticano'],
+ basilica:['Sobre la tumba de San Pedro','Bajo el altar mayor está, según la tradición, la tumba del apóstol.','Basílica de San Pedro · Vaticano'],
+ boca:['Has dicho la verdad','Cuenta la leyenda que muerde la mano de quien miente.','Boca de la Verdad · Roma'],
+ cerradura:['Has mirado por la cerradura','Por este agujero se ve la cúpula de San Pedro, enmarcada.','Ojo de la Cerradura · Aventino'],
+ catacumbas:['La Roma de debajo','Kilómetros de galerías donde se enterraron los primeros cristianos.','Catacumbas de San Calixto · Roma'],
+ madrugador:['Madrugador','Roma antes que nadie.','Fontana de Trevi · Roma'],
+ nocturno:['Nocturno','Roma con las luces encendidas.','Coliseo · Roma']};
+const skyline=()=>{const arch=[],wins=[];
+  for(let x=20;x<=104;x+=14){arch.push('M'+x+' 552a4 4 0 0 1 8 0v8h-8z');wins.push([x+4,557]);}
+  for(let x=20;x<=132;x+=14){arch.push('M'+x+' 580a4 4 0 0 1 8 0v10h-8z');wins.push([x+4,586]);}
+  for(let x=20;x<=132;x+=14){arch.push('M'+x+' 604a4 4 0 0 1 8 0v10h-8z');wins.push([x+4,610]);}
+  const holes='M168 570h6v48h-6zM182 570h6v48h-6zM196 570h6v48h-6zM248 590h5v28h-5zM260 590h5v28h-5zM272 590h5v28h-5zM284 590h5v28h-5z'+arch.join('');
+  const sk='M0 844V620H10V532Q70 508 122 522V540H136V556H150V620H158V562H210V620H238V586L270 566L302 586V578H296V572A42 42 0 0 1 380 572V578H374V620H390V844ZM334 530h8v-8h-8z'+holes;
+  [[171,594],[185,594],[199,594],[250.5,604],[262.5,604],[274.5,604],[286.5,604]].forEach(w=>wins.push(w));
+  return{sk,wins:wins.filter((_,k)=>k%2===0||k>=wins.length-7)};};
+const stars=(n,maxY)=>Array.from({length:n},(_,k)=>({x:(((k*k*7+k*37)%100)*3.9).toFixed(1),y:((4+((k*k*13+k*7)%46))*maxY/50).toFixed(1),r:String(.8+(k%3)*.5),l:s(2+(k%4)*.7),d:s((k%5)*.4)}));
+const toC=(pts,d0,step)=>pts.map(([x,y],k)=>({x:x+'px',y:y+'px',dx:(195-x)+'px',dy:(300-y)+'px',d:s(d0+k*step)}));
+class Component extends DCLogic {
+  flyOut=()=>{this.setState({fly:true});};
+  constructor(p){super(p);this.u='ec'+(++UID);const sus=!(p.suspense===false||p.suspense==='false');this.state={go:!sus,intro:sus};}
+  componentDidMount(){if(this.state.intro)this.t1=setTimeout(()=>this.start(),5000);}
+  componentWillUnmount(){clearTimeout(this.t1);}
+  start(){if(this.state.go)return;clearTimeout(this.t1);this.setState({go:true,intro:false});}
+  renderVals(){const K=this.props.kind||'panteon';const u=this.u;const T=TX[K]||TX.panteon;
+    const base={u,bg:'#0C0A08',shake:'none',draw:[],ghost:[],dots:[],spk:[],dust:[],caus:[],rays:[],floor:[],bub:[],trail:[],rip1:[],spl:[],mpan:[],steps:[],niches:[],cells:[],studs:[],kbeams:[],sparks:[],stars:[],wins:[],skyl:'',
+      orb:false,orbX:'0px',orbY:'0px',orbD:'6.6s',orbL:'1.2s',orbC:'#FFE7A8',has1:false,has2:false,txt1:'',txt2:'',t1D:'1s',t1L:'3s',t2D:'4.2s',t2L:'3s',tY:'740px',
+      dimD:'7.6s',flD:'8s',eDel:8,x1:'9.2s',x2:'9.45s',x3:'9.7s',x4:'10.1s',halo:'rgba(255,226,160,.55)',ring:'#F3D59A',
+      eKind:EK[K]||'ocu',title:T[0],line:T[1],place:T[2]};
+    Object.keys(EK).forEach(k=>{base['is'+{coliseo:'Co',panteon:'P',trevi:'T',foro:'F',museos:'M',plaza:'Pl',basilica:'B',boca:'Bo',cerradura:'C',catacumbas:'Ca',madrugador:'Ma',nocturno:'N'}[k]]=K===k;});
+    const ph=(a,ad,al,b,bd,bl,y)=>({has1:!!a,txt1:a||'',t1D:s(ad),t1L:s(al),has2:!!b,txt2:b||'',t2D:s(bd||0),t2L:s(bl||3),tY:y||'740px'});
+    let o={};
+    if(K==='coliseo'){
+      const draw=[D('M30 640V446Q195 392 360 446V640',.4,1.8,2.4),D('M30 446Q195 424 360 446',1.2,1.2,1.2,GF),D('M30 520Q195 498 360 520M30 584Q195 562 360 584',1.4,1.2,1.4),D('M14 640H376',.6,1.2,2)];
+      [[584,640,9],[520,584,9],[460,520,9]].forEach(([y0,y1,n],r)=>{for(let k=0;k<n;k++){const x=48+k*36;draw.push(D('M'+x+' '+(y1-2)+'V'+(y0+18)+'a10 10 0 0 1 20 0V'+(y1-2),1.9+r*.5+k*.07,.7,1.6));}});
+      const ppl=Array.from({length:30},(_,k)=>[30+((k*47)%330),668+((k*23)%60)]);
+      o={bg:'radial-gradient(circle at 50% 40%,#3A2A1C 0%,#130D08 72%)',draw,
+        ghost:[GH('M30 446V410Q195 360 360 410V446',3.9),GH('M60 410V392M110 400V380M160 394V374M230 394V374M280 400V380M330 410V392',4.1,'2 4')],
+        dots:ppl.map(([x,y],k)=>({x:String(x),y:String(y),r:String(1.5+(k%3)*.5),f:'#FFE7B0',d:s(4.2+k*.04),d2:s(4.4+(k%5)*.3),l:s(2.4+(k%4)*.5)})),
+        spk:toC(ppl.filter((_,k)=>k%2===0),6,.05),orb:true,orbD:'6.6s',orbL:'1.2s',...ph('Hace casi 2.000 años, aquí rugían 50.000 voces…',1,3,'Y tú estás en el mismo sitio.',4.4,3,'740px')};}
+    if(K==='panteon'){
+      const R=[62,104,152,208,272,346],N=28,P=(r,a)=>(195+r*Math.cos(a)).toFixed(1)+' '+(300+r*Math.sin(a)).toFixed(1);const draw=[],cells=[];
+      for(let i=0;i<5;i++){const ra=R[i],rb=R[i+1],dr=rb-ra;let out='',inn='',fill='';
+        for(let c=0;c<N;c++){const a0=(c+.14)*2*Math.PI/N,a1=(c+.86)*2*Math.PI/N,am=(a0+a1)/2,da=(a1-a0)/2,r0=ra+dr*.12,r1=rb-dr*.12;
+          const q=(f1,f2)=>'M'+P(r0+(r1-r0)*f1,am-da*(1-f1*.0)*f2)+'L'+P(r1-(r1-r0)*f1,am-da*f2)+'L'+P(r1-(r1-r0)*f1,am+da*f2)+'L'+P(r0+(r1-r0)*f1,am+da*(1-f1*.0)*f2)+'Z';
+          out+=q(0,1);inn+=q(.3,.55);fill+=q(.3,.55);}
+        draw.push(D('M'+(195+ra)+' 300a'+ra+' '+ra+' 0 1 0 '+(-2*ra)+' 0a'+ra+' '+ra+' 0 1 0 '+(2*ra)+' 0',.5+i*.42,1.3,1.2,GF),D(out,.7+i*.42,1.5,1.3),D(inn,1+i*.42,1.3,.9,GF));cells.push({d:fill,dl:s(1.4+i*.42)});}
+      draw.push(D('M'+(195+346)+' 300a346 346 0 1 0 -692 0a346 346 0 1 0 692 0',2.6,1.4,1.4,GF),D('M241 300a46 46 0 1 0 -92 0a46 46 0 1 0 92 0',.3,1,2.6));
+      o={bg:'#110C07',draw,cells,
+        dust:Array.from({length:18},(_,k)=>({x:String(150+((k*37)%90)),y:String(40+((k*71)%240)),r:String(1+(k%3)*.7),l:s(3+(k%4)),d:s((k%5)*.5)})),
+        orb:true,orbY:'0px',orbD:'6.6s',orbL:'1.3s',...ph('Mira hacia arriba…',1,3,'La luz entra por el óculo desde hace casi 2.000 años.',4.2,2.8,'760px')};}
+    if(K==='trevi'){
+      const pt=t=>{const P=[[200,104],[140,160],[250,200],[175,240]],Q=[[175,240],[150,280],[200,285],[195,300]];const B=(A,v)=>{const m=1-v;return[m*m*m*A[0][0]+3*m*m*v*A[1][0]+3*m*v*v*A[2][0]+v*v*v*A[3][0],m*m*m*A[0][1]+3*m*m*v*A[1][1]+3*m*v*v*A[2][1]+v*v*v*A[3][1]];};return t<.5?B(P,t*2):B(Q,(t-.5)*2);};
+      o={bg:'linear-gradient(180deg,#5FC6CF 0%,#1F8A9A 20%,#0F5466 52%,#06283A 100%)',
+        caus:[0,1,2,3,4].map(k=>{const y=40+k*26;let d='M-30 '+y;for(let x=-30;x<430;x+=36)d+=' q 18 '+(k%2?-9:9)+' 36 0';return{p:d,l:s(3+k*.5),d:s(k*.3)};}),
+        rays:[[110,40],[170,30],[235,36],[300,44],[60,52]].map(([x,w],k)=>({p:(x-w/2)+',90 '+(x+w/2)+',90 '+(x+w*2.6+40)+',860 '+(x-w*2.6+40)+',860',o:x+'px 90px',l:s(5+k*.8),d:s(k*.4)})),
+        floor:[[40,806],[92,816],[150,800],[210,812],[262,804],[318,814],[356,800],[120,830],[290,832]].map(([x,y],k)=>({x:String(x),y:String(y),l:s(2+k%3),d:s((k%4)*.5)})),
+        bub:Array.from({length:14},(_,k)=>({x:(20+((k*61)%350))+'px',y:(760+((k*37)%70))+'px',s:(3+(k%4)*2)+'px',l:s(5+(k%5)),d:s((k%7)*.6)})),
+        trail:Array.from({length:10},(_,k)=>{const t=(k+1)/11;const[x,y]=pt(t);return{x:(x+(k%2?6:-6)).toFixed(0)+'px',y:y.toFixed(0)+'px',s:(3+(k%3))+'px',d:s(3.4+t*3.4)};}),
+        rip1:[0,1,2].map(k=>({d:s(3.35+k*.3)})),
+        spl:Array.from({length:12},(_,k)=>{const a=k/12*Math.PI*2;return{x:(Math.cos(a)*(26+(k%3)*12)).toFixed(0)+'px',y:(Math.sin(a)*(18+(k%3)*10)+20).toFixed(0)+'px',s:(3+(k%3))+'px',d:s(3.4+(k%3)*.04)};}),
+        ...ph('De espaldas, con la mano derecha…',1,2.8,'…y Roma te espera de vuelta.',4.3,3,'560px'),
+        dimD:'8.1s',flD:'8.45s',eDel:8.45,x1:'9.9s',x2:'10.15s',x3:'10.4s',x4:'10.8s',halo:'rgba(160,240,245,.5)',ring:'#BFF3F4'};}
+    if(K==='foro'){
+      const draw=[D('M150 472H240',.4,.8,2),D('M160 472V462H230V472',.5,.6,1.6),D('M170 462V448H220V462',.7,.6,1.6),
+        D('M178 448V330M212 448V330',1,1.2,2.4),D('M186 440V338M195 440V338M204 440V338',1.4,1,1,GF),
+        D('M170 330H220V316H170Z',1.9,.6,2),D('M176 316V306H214V316',2.1,.5,1.6),D('M184 306V298H206V306',2.2,.4,1.4)];
+      const R=[-60,70,195,320,450];
+      R.forEach((xb,k)=>{const x0=195+(xb-195)*.04,lx0=x0-7,rx0=x0+7,lx1=xb-46,rx1=xb+46;const dl=2.8+Math.abs(k-2)*.25;
+        draw.push(D('M'+lx0.toFixed(1)+' 474L'+lx1+' 844',dl,1.6,1.8),D('M'+rx0.toFixed(1)+' 474L'+rx1+' 844',dl,1.6,1.8));
+        [.18,.36,.56,.78].forEach((t,j)=>{const y=474+(844-474)*t,lx=lx0+(lx1-lx0)*t,rx=rx0+(rx1-rx0)*t;draw.push(D('M'+lx.toFixed(1)+' '+y.toFixed(1)+'L'+rx.toFixed(1)+' '+y.toFixed(1),dl+.35+j*.25,.5,1,GF));});});
+      const ppl=[];R.forEach((xb,k)=>{[.3,.55,.8].forEach((t,j)=>{ppl.push([195+(xb-195)*t,474+(844-474)*t]);});});
+      o={bg:'radial-gradient(circle at 50% 46%,#2E2218 0%,#130D09 72%)',draw,
+        ghost:[GH('M30 472V300M58 472V300M86 472V300M24 300H92L58 270Z',1.2),GH('M300 472V330H372V472M300 352H372M318 472V400A18 18 0 0 1 354 400V472',1.3),GH('M100 472V360M120 472V380',1.4,'2 5')],
+        dots:ppl.map(([x,y],k)=>({x:x.toFixed(0),y:y.toFixed(0),r:String(2+(k%3)*.6),f:'#FFE7B0',d:s(4.4+k*.06),d2:s(4.6+(k%5)*.3),l:s(2.4+(k%4)*.5)})),
+        spk:toC(ppl.map(([x,y])=>[Math.round(x),Math.round(y)]),6,.05),orb:true,orbY:'90px',orbD:'6.6s',orbL:'1.2s',
+        ...ph('Aquí, en el corazón del Foro…',1,3,'Todos los caminos del Imperio empezaban en esta columna.',4.4,3,'200px')};}
+    if(K==='museos'){
+      const xs=[56,151,246],ys=[140,290,440];const C=['#C99A6E','#8EA3B0','#D9B88A','#A9785A','#B9C4B4','#D2A77C','#8E9DAA','#C8A06F','#B48B66'];
+      const draw=[D('M30 110H360V620H30Z',.3,1.8,2),D('M30 110L56 140M360 110L332 140M30 620L56 580M360 620L332 580',1.2,.8,1.2,GF)];const mpan=[];
+      ys.forEach((y,r)=>xs.forEach((x,c)=>{const k=r*3+c;draw.push(D('M'+x+' '+y+'h86v140h-86Z',.8+k*.15,.9,1.4));mpan.push({x:String(x),y:String(y),f:C[k],d:s(2.4+k*.12)});}));
+      o={bg:'radial-gradient(circle at 50% 40%,#2C2230 0%,#120E14 70%)',draw,mpan,...ph('Levanta la vista…',.8,2.6,'Dos dedos a punto de tocarse.',3.8,3,'700px')};}
+    if(K==='plaza'){
+      o={bg:'radial-gradient(circle at 50% 40%,#25283A 0%,#0F111C 72%)',
+        draw:[D('M156.6 207.2A120 94.4 0 0 0 156.6 392.8',.5,1.8,3),D('M233.4 207.2A120 94.4 0 0 1 233.4 392.8',.5,1.8,3),D('M177.4 206.4V160.8M212.6 206.4V160.8',1.6,.8,1.4),
+          D('M156.6 159.2h76.8M163 159.2v-16a32 32 0 0 1 64 0v16M195 111.2v-12.8M188.6 104.8h12.8M175.8 159.2v-12.8M214.2 159.2v-12.8',1.9,1.6,2.2)],
+        ghost:[GH('M163 231.2A91.2 70.4 0 0 0 163 368.8M227 231.2A91.2 70.4 0 0 1 227 368.8',2.4,'1 7',2.4,G),GH('M172 844V420M218 844V420',2.6,'6 8',1.2)],
+        steps:Array.from({length:13},(_,k)=>({x:String(k%2?204:186),y:String(812-k*34),d:s(3.4+k*.22)})),
+        orb:true,orbD:'6.8s',orbL:'1s',...ph('Unos pasos más…',1,2.6,'Sin darte cuenta, cambias de país.',4.4,3,'64px')};}
+    if(K==='basilica'){
+      const tw=(x,ph)=>{let d='M'+x+' 496';for(let k=0;k<8;k++)d+='q'+((k+ph)%2?-9:9)+' 12 0 24';return d;};
+      let val='M124 496';for(let k=0;k<8;k++)val+='q8.875 10 17.75 0';
+      o={bg:'radial-gradient(circle at 50% 30%,#2E2618 0%,#100D08 70%)',
+        draw:[D('M75 340A120 160 0 0 1 315 340',.4,1.8,2.4),D('M105 340A90 120 0 0 1 285 340',.8,1.4,1.2,GF),D('M195 180V340M135 205Q150 260 150 340M255 205Q240 260 240 340',1.1,1,1,GF),
+          D('M182 184V156H208V184M195 156V136M187 143h16',1.4,.9,1.6),D('M56 340H334M66 356H324',1.6,1,1.6),D('M82 356V700M308 356V700',1.8,1.4,2),D('M18 700H372',2,1,2),
+          D('M124 476H266V496H124Z',2.4,.9,1.8),D(val,2.6,.8,1.2),D('M150 476Q195 440 240 476M195 452V430M187 438h16',2.7,.9,1.6),
+          D(tw(142,0),2.8,1.4,2),D(tw(142,1),2.9,1.4,1.2,GF),D(tw(248,0),2.8,1.4,2),D(tw(248,1),2.9,1.4,1.2,GF),D('M132 690H156M238 690H262',3.2,.6,1.6),D('M168 660H222V690H168Z',3.1,.8,1.6)],
+        orb:true,orbY:'430px',orbD:'6.2s',orbL:'1.4s',orbC:'#FFD58A',...ph('Bajo el altar…',1,3,'Una tumba de casi 2.000 años.',4.6,2.8,'772px')};}
+    if(K==='boca'){
+      o={bg:'radial-gradient(circle at 50% 40%,#2A2420 0%,#0E0B09 72%)',shake:'ecShake .5s 5.25s ease both',
+        draw:[D('M195 180a150 150 0 1 1 -.1 0',.3,1.8,3),D('M195 196a134 134 0 1 1 -.1 0',.8,1.6,1.2,GF),D('M126 262Q150 246 176 258M214 258Q240 246 264 262',1.4,.8,2),
+          D('M130 286Q152 270 174 286Q152 300 130 286ZM216 286Q238 270 260 286Q238 300 216 286Z',1.6,.9,2),D('M195 290V352M176 356Q195 372 214 356',1.8,.8,2),
+          D('M110 410Q120 470 160 500M280 410Q270 470 230 500M140 470Q150 500 180 512M250 470Q240 500 210 512',2.1,1,1.2,GF)],
+        ...ph('Dicen que muerde a quien miente…',.6,3.2,'¿Te atreves?',4,2.2,'110px')};}
+    if(K==='cerradura'){
+      const studs=[];[[58,140,160,330],[230,140,332,330],[58,450,160,640],[230,450,332,640]].forEach(([a,b,c,d])=>{[[a+10,b+10],[c-10,b+10],[a+10,d-10],[c-10,d-10]].forEach(([x,y])=>studs.push({x:String(x),y:String(y)}));});
+      o={bg:'#0C0F0C',studs,kbeams:[0,1,2,3,4,5,6,7].map(k=>{const a=k*Math.PI/4+.2,w=.09;const p=(r,b)=>(195+r*Math.cos(b)).toFixed(0)+','+(372+r*Math.sin(b)).toFixed(0);return{p:p(20,a-w)+' '+p(20,a+w)+' '+p(300,a+w*2.4)+' '+p(300,a-w*2.4)};}),
+        dust:Array.from({length:16},(_,k)=>({x:String(120+((k*41)%150)),y:String(250+((k*67)%250)),r:String(1+(k%3)*.6),l:s(3+(k%4)),d:s((k%5)*.4)})),
+        ...ph('Una puerta en el Aventino…',.8,2.6,'Asómate.',3.2,1.6,'740px')};}
+    if(K==='catacumbas'){
+      const niches=[];for(let r=0;r<10;r++){const y=290+r*52;niches.push({x:'22',y:String(y),w:'38',o:'.9'},{x:'66',y:String(y),w:'38',o:'.75'},{x:'286',y:String(y),w:'38',o:'.75'},{x:'330',y:String(y),w:'38',o:'.9'});}
+      o={bg:'#050403',niches,orb:true,orbX:'59px',orbY:'298px',orbD:'6.4s',orbL:'1.3s',orbC:'#FFC66A',halo:'rgba(255,200,120,.5)',
+        dust:Array.from({length:18},(_,k)=>({x:String(150+((k*47)%200)),y:String(420+((k*61)%300)),r:String(.8+(k%3)*.5),l:s(3+(k%4)),d:s((k%5)*.4)})),
+        sparks:Array.from({length:8},(_,k)=>({x:(250+(k%3)*3)+'px',dx:((k%2?1:-1)*(6+k*3))+'px',l:s(1.4+(k%3)*.4),d:s(1.8+k*.35)})),
+        spk:toC(Array.from({length:6},(_,k)=>[254-k*10,590-k*50]),6.5,.08),...ph('Bajo tus pies, otra Roma…',1.6,3,'Kilómetros de galerías en la oscuridad.',4.8,2.6,'720px')};}
+    if(K==='madrugador'||K==='nocturno'){const S=skyline();o={skyl:S.sk};
+      if(K==='madrugador')Object.assign(o,{bg:'linear-gradient(180deg,#0B1028 0%,#1B2448 60%,#2B2F5C 100%)',stars:stars(26,440),halo:'rgba(255,215,170,.55)',ring:'#FBE3C4',...ph('Roma todavía duerme…',.8,3,'Y tú ya estás aquí.',4.2,3,'170px')});
+      else Object.assign(o,{bg:'linear-gradient(180deg,#060A1C 0%,#111A3A 60%,#1C2550 100%)',stars:stars(32,440),wins:S.wins.map(([x,y],k)=>({x:String(x),y:String(y),d:s(2.6+k*.14)})),halo:'rgba(190,200,240,.5)',ring:'#C9D2F2',...ph('Cae la noche…',.8,3,'Y Roma se enciende.',4.4,3,'200px')});}
+    const PHR=['¡Eh! Aquí hay algo…','Pero… ¿qué es esto?','Espera… algo brilla por aquí.','Esto no lo encuentra cualquiera…','Mira bien… ¿lo ves?'];
+    const ix=Object.keys(EK).indexOf(K);
+    return{flyA:this.state&&this.state.fly?'ecFlyB .8s cubic-bezier(.5,0,.7,.4) forwards':'none',...base,...o,phrase:PHR[(ix<0?0:ix)%5],go:this.state.go,intro:this.state.intro,introEnd:e=>{if(e.target===e.currentTarget&&e.animationName==='ecICore')this.start();},
+      iRings:[[.75,'1.5px'],[1.47,'2px'],[2.05,'2.5px'],[2.5,'3px'],[2.82,'3.5px']].map(([d,w])=>({d:s(d),w,l:s(1.1-d*.12)})),
+      iConv:Array.from({length:18},(_,k)=>{const a=k/18*Math.PI*2+(k%2)*.17,r=150+(k%3)*40;return{dx:(Math.cos(a)*r).toFixed(0)+'px',dy:(Math.sin(a)*r).toFixed(0)+'px',s:(2+(k%3))+'px',l:s(1.3+(k%4)*.25),d:s(.6+(k%6)*.28)};})};}
+}
+</script>
+</body>
+</html>

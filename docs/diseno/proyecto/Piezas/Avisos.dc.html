@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>@keyframes avUp{from{transform:translateY(100%)}to{transform:none}}@keyframes avDot{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px 40px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<sc-for list="{{ boards }}" as="b" hint-placeholder-count="4">
+ <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span></div>
+  <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+   <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:60"></div>
+   <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>10:05</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.5;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+   <header style="flex:none;display:flex;align-items:center;gap:4px;padding:4px 10px 10px 20px">
+    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.5 0.17 5)">{{ b.eye }}</span><span style="font:400 30px/1 'Instrument Serif',serif">{{ b.ttl }}</span></span>
+    <button onClick="{{ b.open }}" aria-label="Avisos" style="position:relative;width:44px;height:44px;border:none;border-radius:50%;background:{{ b.bellBg }};color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 21h4"></path></svg><sc-if value="{{ b.dot }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:9px;right:10px;width:10px;height:10px;border-radius:50%;background:oklch(0.55 0.17 5);box-shadow:0 0 0 2px #F5EFE4;animation:avDot 1.6s ease-in-out infinite"></span></sc-if></button>
+    <span style="width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center"><span style="width:34px;height:34px;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif">E</span></span>
+   </header>
+   <main style="flex:1;min-height:0;overflow:hidden;padding:4px 16px 0;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ stops }}" as="s" hint-placeholder-count="4"><div style="flex:none;border-radius:18px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:10px 12px;display:flex;align-items:center;gap:12px"><dc-import name="Piezas/Parada Foto" n="{{ s.n }}" seen="{{ s.seen }}" size="44" hint-size="44px,44px"></dc-import><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 18px/1.1 'Instrument Serif',serif">{{ s.n }}</span><span style="font:500 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ s.t }}</span></span></div></sc-for>
+   </main>
+   <nav style="flex:none;height:84px;background:#1C2230"></nav>
+
+   <sc-if value="{{ b.lock }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;z-index:40;background:linear-gradient(180deg,#2A3150,#141826);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;padding-top:110px;gap:4px"><span style="font:300 72px/1 'Geist'">9:41</span><span style="font:500 15px 'Geist';color:rgba(255,253,248,.75)">jueves, 10 de octubre</span><div style="margin-top:40px;width:358px;border-radius:22px;background:rgba(255,253,248,.16);padding:12px 14px;display:flex;gap:10px"><span style="width:38px;height:38px;flex:none;border-radius:10px;border:1.5px dashed rgba(255,253,248,.5);display:flex;align-items:center;justify-content:center;font:600 8px 'Geist Mono',monospace">LOGO</span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="display:flex;justify-content:space-between;font:600 13px 'Geist'"><span>Tu app de viajes</span><span style="font-weight:400;opacity:.6">ahora</span></span><span style="font:400 13.5px/1.35 'Geist'">Laura te ha enviado una recomendación</span></span></div></div></sc-if>
+   <sc-if value="{{ b.dayTag }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:16px;right:16px;top:118px;z-index:5;display:flex;flex-direction:column;gap:8px"><sc-for list="{{ days }}" as="d" hint-placeholder-count="3"><div onClick="{{ d.tap }}" style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:18px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);cursor:{{ d.cur }}"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ d.e }}</span><span style="font:400 21px/1 'Instrument Serif',serif">{{ d.n }}</span></span><sc-if value="{{ d.rec }}" hint-placeholder-val="{{ false }}"><span style="height:26px;padding:0 10px;border-radius:999px;background:#F3D59A;color:#2A1D10;display:flex;align-items:center;font:600 11.5px 'Geist'">1 recomendación</span></sc-if></div></sc-for></div></sc-if>
+   <sc-if value="{{ b.mine }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.45);z-index:20"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:21;border-radius:26px 26px 0 0;background:#FFFDF8;padding:12px 18px 30px;display:flex;flex-direction:column;gap:12px;animation:avUp .45s cubic-bezier(.2,.8,.2,1) both">
+     <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+     <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.5 0.17 5)">Tu propuesta</span>
+     <span style="display:flex;align-items:center;gap:10px"><span style="flex:1;font:400 25px/1.1 'Instrument Serif',serif">2 cambios</span><span style="height:26px;padding:0 10px;border-radius:999px;background:#F5EFE4;color:rgba(28,34,48,.7);display:flex;align-items:center;gap:6px;font:600 11.5px 'Geist'"><span style="width:7px;height:7px;border-radius:50%;background:oklch(0.8 0.14 70)"></span>Enviada · esperando a Elena</span></span>
+     <div style="border-radius:16px;background:#F5EFE4;padding:10px 12px;display:flex;flex-direction:column;gap:7px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Día 2 · jue 17</span><dc-import name="Piezas/Cambio Parada" a="Castillo de Sant’Angelo" b="Trastevere" size="small" hint-size="320px,90px"></dc-import></div>
+     <div style="border-radius:16px;background:#F5EFE4;padding:10px 12px;display:flex;flex-direction:column;gap:7px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Día 3 · vie 18</span><span style="display:flex;align-items:center;gap:8px;font:500 13.5px 'Geist';color:oklch(0.55 0.17 5);text-decoration:line-through"><span style="width:18px;height:18px;border-radius:50%;background:oklch(0.55 0.17 5);color:#fff;display:flex;align-items:center;justify-content:center;font:700 11px 'Geist';text-decoration:none">−</span>Termas de Caracalla</span></div>
+    </div>
+   </sc-if>
+   <sc-if value="{{ b.listOn }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ b.close }}" style="position:absolute;inset:0;background:rgba(28,34,48,.45);z-index:20"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:86%;border-radius:26px 26px 0 0;background:#FFFDF8;padding:12px 16px 26px;display:flex;flex-direction:column;gap:6px;animation:avUp .45s cubic-bezier(.2,.8,.2,1) both">
+     <span style="align-self:center;width:42px;height:4px;flex:none;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+     <span onClick="{{ b.close }}" style="position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+     <span style="padding:10px 4px 6px;font:400 26px/1 'Instrument Serif',serif">Avisos</span>
+     <div style="overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:6px">
+      <sc-for list="{{ b.items }}" as="i" hint-placeholder-count="6">
+       <div onClick="{{ i.tap }}" style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:16px;background:{{ i.bg }};cursor:{{ i.cur }}">
+        <span style="width:38px;height:38px;flex:none;border-radius:12px;background:{{ i.ib }};color:{{ i.ic }};display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif">{{ i.av }}</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:{{ i.f }};text-wrap:pretty">{{ i.t }}</span><span style="display:flex;align-items:center;gap:8px"><span style="font:500 11px 'Geist';color:rgba(28,34,48,.5)">{{ i.w }}</span><sc-if value="{{ i.hasTag }}" hint-placeholder-val="{{ false }}"><span style="height:20px;padding:0 8px;border-radius:999px;background:{{ i.tb }};color:{{ i.tf }};font:600 10.5px/20px 'Geist'">{{ i.tag }}</span></sc-if></span></span>
+        <sc-if value="{{ i.unread }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;flex:none;margin-top:6px;border-radius:50%;background:oklch(0.55 0.17 5)"></span></sc-if>
+       </div>
+      </sc-for>
+     </div>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.r2On }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.45);z-index:30"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:31;border-radius:26px 26px 0 0;background:#FFFDF8;padding:12px 18px 30px;display:flex;flex-direction:column;gap:12px;animation:avUp .45s cubic-bezier(.2,.8,.2,1) both">
+     <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+     <span onClick="{{ b.backL }}" style="position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+     <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.5 0.17 5)">Recomendación de Laura</span>
+     <span style="padding-right:34px;font:400 25px/1.12 'Instrument Serif',serif">Laura te recomienda un cambio</span>
+     <div style="border-radius:16px;background:#F5EFE4;padding:10px 12px;display:flex;flex-direction:column;gap:7px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Día 2 · jue 17</span><sc-for list="{{ keep }}" as="k" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:8px;font:500 13.5px 'Geist'"><span style="width:18px;height:18px;border-radius:50%;background:rgba(28,34,48,.2)"></span>{{ k }}</span></sc-for><dc-import name="Piezas/Cambio Parada" a="Castillo de Sant’Angelo" b="Trastevere" size="small" hint-size="320px,90px"></dc-import></div>
+     <button onClick="{{ b.ok }}" style="height:54px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:700 15px 'Geist';cursor:pointer">Aceptar</button>
+     <button onClick="{{ b.no }}" style="height:46px;border-radius:999px;border:1px solid rgba(28,34,48,.2);background:transparent;color:#1C2230;font:600 13.5px 'Geist';cursor:pointer">No, gracias</button>
+    </div>
+   </sc-if>
+  </div>
+ </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000}}">
+const N=[
+ {k:'rec',who:'E',av:'L',t:'Laura te recomienda un cambio en el día 2',w:'hace 5 min',rec:true},
+ {k:'join',who:'E',av:'L',t:'Laura se ha unido a tu viaje',w:'hace 1 h'},
+ {k:'acc',who:'L',av:'E',t:'Elena ha aceptado tu cambio en el día 3',w:'ayer'},
+ {k:'no',who:'L',av:'E',t:'Elena ha preferido dejar el día 1 como estaba',w:'ayer'},
+ {k:'d10',who:'E',av:'✈',t:'En 10 días empieza tu viaje a Roma',w:'6 oct'},
+ {k:'res',who:'B',av:'★',t:'Tu resumen del viaje está listo',w:'20 oct'},
+ {k:'rec3',who:'B',av:'?',t:'Te quedan 3 días para reclamar tus 2 sorpresas de Roma',w:'8 nov'}];
+class Component extends DCLogic {
+  state={v:{AV2:'list'},ans:{AV2:null},read:{}};
+  renderVals(){const s=this.state;
+    const mk=(id,cap,o)=>{const view=s.v[id]||o.view||'none';const ans=o.ans!==undefined?o.ans:s.ans[id];const rd=s.read[id]||o.read||{};
+      const who=o.who||'E';const items=N.filter(n=>n.who===who||n.who==='B').map((n,i)=>{const unread=!rd[n.k]&&i<(o.nUnread??2)&&!(n.rec&&ans);const tag=n.rec&&ans?(ans==='ok'?'Aceptada':'No aceptada'):'';
+        return{...n,unread,bg:unread?'oklch(0.8 0.14 70 / .14)':'transparent',f:unread?"600 14px/1.35 'Geist'":"500 14px/1.35 'Geist'",
+          ib:n.k==='rec'||n.k==='join'?'#F3D59A':n.k==='acc'||n.k==='no'?'#1C2230':'#F1EADC',ic:n.k==='acc'||n.k==='no'?'#FFFDF8':'#1C2230',
+          hasTag:!!tag,tag,tb:ans==='ok'?'oklch(0.96 0.035 150)':'#EDE8DE',tf:ans==='ok'?'oklch(0.36 0.09 150)':'rgba(28,34,48,.6)',
+          cur:n.rec?'pointer':'default',tap:()=>{if(n.rec&&!ans)this.setState(st=>({v:{...st.v,[id]:'r2'},read:{...st.read,[id]:{...(st.read[id]||{}),rec:true}}}));}};});
+      const anyUnread=items.some(x=>x.unread);
+      return{lock:!!o.lock,dayTag:!!o.dayTag,mine:!!o.mine,id,cap,eye:o.eye,ttl:o.ttl,dot:anyUnread&&view==='none',bellBg:view!=='none'?'rgba(28,34,48,.08)':'transparent',listOn:view==='list'||view==='r2',r2On:view==='r2',items,
+        open:()=>this.setState(st=>({v:{...st.v,[id]:'list'}})),close:()=>this.setState(st=>({v:{...st.v,[id]:'none'}})),backL:()=>this.setState(st=>({v:{...st.v,[id]:'list'}})),
+        ok:()=>this.setState(st=>({ans:{...st.ans,[id]:'ok'},v:{...st.v,[id]:'list'}})),no:()=>this.setState(st=>({ans:{...st.ans,[id]:'no'},v:{...st.v,[id]:'list'}}))};};
+    const st=(n,t)=>({n,t,seen:false});
+    const d8=s.v.AV8;
+    return{days:[['Día 1 · mié 16','Centro histórico',0],['Día 2 · jue 17','Vaticano',1],['Día 3 · vie 18','Roma antigua',0]].map(([e,n,r])=>({e,n,rec:!!r&&!s.ans.AV8,cur:r?'pointer':'default',tap:()=>{if(r&&!s.ans.AV8)this.setState(st=>({v:{...st.v,AV8:'r2'}}));}})),keep:['Museos Vaticanos','Plaza de San Pedro','Basílica de San Pedro'],
+      stops:[st('Museos Vaticanos','9:00 · 2 h'),st('Plaza de San Pedro','11:30 · 20 min'),st('Basílica de San Pedro','12:00 · 45 min'),st('Castillo de Sant’Angelo','15:00 · 1 h')],
+      boards:[mk('AV1','La campanita con su puntito · en RUTA',{eye:'Ruta · 16 – 19 oct',ttl:'Roma',view:'none'}),
+        mk('AV2','Al tocarla: la lista · toca la recomendación',{eye:'Ruta · 16 – 19 oct',ttl:'Roma'}),
+        mk('AV3','Ya contestada: «Aceptada»',{eye:'Ruta · 16 – 19 oct',ttl:'Roma',view:'list',ans:'ok',nUnread:0}),
+        mk('AV4','La misma campanita en HOY',{eye:'Hoy · jue 17',ttl:'Vaticano',view:'none'}),
+        mk('AV5','La campanita de Laura, la invitada',{eye:'Viaje de Elena',ttl:'Roma',view:'list',who:'L',nUnread:1}),
+        mk('AV6','El aviso en el móvil · al tocarlo, abre la campanita',{eye:'',ttl:'',view:'none',lock:true}),
+        mk('AV7','Lo que ve Laura en su [Ver]',{eye:'Viaje de Elena · día 2',ttl:'Vaticano',view:'none',mine:true,who:'L'}),
+        mk('AV8','El día que cambia, con su etiqueta · toca el día 2',{eye:'Ruta · 16 – 19 oct',ttl:'Roma',dayTag:true})]};}
+}
+</script>
+</body>
+</html>

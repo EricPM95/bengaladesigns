@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}button{font-family:inherit}a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}@keyframes ceOut{to{opacity:0}}
+@keyframes ceIn{to{opacity:1}}
+@keyframes cePh{0%{opacity:0;transform:translateY(12px);filter:blur(6px)}20%,78%{opacity:1;transform:none;filter:none}100%{opacity:0;transform:translateY(-8px)}}
+@keyframes ceRing{0%{opacity:0;transform:scale(.2)}8%{opacity:.95}100%{opacity:0;transform:scale(3.6)}}
+@keyframes ceConv{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.2)}}
+@keyframes ceCore{0%{opacity:0;transform:scale(.3)}14%{opacity:1;transform:scale(.8)}28%{transform:scale(1.5)}34%{transform:scale(.9)}50%{transform:scale(1.8)}56%{transform:scale(1)}68%{transform:scale(2.1)}73%{transform:scale(1.2)}82%{transform:scale(2.5)}88%{transform:scale(.5)}100%{opacity:1;transform:scale(10)}}
+@keyframes ceFlash{0%{opacity:0;transform:scale(.3)}18%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 10%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 90px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:640px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Prueba · emblemas secretos en cine</span>
+    <span style="font:400 46px/1 'Instrument Serif',serif">Cada emblema, su <em style="color:oklch(0.55 0.17 5)">película</em></span>
+    <span style="font:400 14px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Como el Coliseo, pero para los emblemas ocultos. La animación cuenta la historia del sitio y al final aparece el emblema de siempre, que es el que se colecciona.</span>
+  </div>
+  <section style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:760px"><span style="font:400 30px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">E0·C · </span>Coliseo · polvo de oro</span><span style="font:400 13.5px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Un diseño nuevo: cientos de partículas de oro vuelan desde la oscuridad y forman el Coliseo, que se vuelve sólido, se enciende y recibe un destello de luz. Luego todo el oro se concentra en un solo punto y estalla en el emblema y los fuegos. Unos 31 segundos, más lenta que los demás emblemas; se salta tocando.</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:40px 36px;align-items:flex-start">
+      <sc-for list="{{ maraC }}" as="m" hint-placeholder-count="8">
+        <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ m.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ m.cap }}</span></div>
+          <div data-screen-label="{{ m.id }} {{ m.cap }}" style="position:relative;width:390px;height:844px;flex:none;margin-top:4px;border-radius:50px;overflow:hidden;background:#070A16;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+            <sc-if value="{{ m.on }}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{ m.film }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Emblema Maravilla C" stage="{{ m.st }}" hint-size="390px,844px"></dc-import></sc-if>
+              <sc-if value="{{ m.seq }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;animation:{{ m.fOut }}"><dc-import name="Piezas/Emblema Maravilla C" stage="full" hint-size="390px,844px"></dc-import></div>
+                <div style="position:absolute;inset:0;background:#000000;opacity:0;animation:ceIn .9s 30.6s ease forwards,ceOut .3s 35.3s ease forwards;overflow:hidden">
+                  <span style="position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,transparent 30%,rgba(0,0,0,.9) 75%)"></span>
+                  <span style="position:absolute;left:28px;right:28px;top:300px;font:italic 400 34px/1.2 'Instrument Serif',serif;color:#F3E3B8;text-align:center;opacity:0;animation:cePh 2.4s 31.6s ease both">Y esto no acaba aquí…</span>
+                  <div style="position:absolute;left:195px;top:470px;width:0;height:0">
+                    <sc-for list="{{ beats7 }}" as="r" hint-placeholder-count="5"><span style="position:absolute;left:-40px;top:-40px;width:80px;height:80px;border-radius:50%;border:{{ r.w }} solid #F3D59A;box-shadow:0 0 12px rgba(243,213,154,.6);opacity:0;animation:ceRing {{ r.l }} {{ r.d }} cubic-bezier(.2,.7,.3,1) both"></span></sc-for>
+                    <sc-for list="{{ conv7 }}" as="p" hint-placeholder-count="7"><span style="position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#FFE7B0;box-shadow:0 0 10px #FFD58A;--dx:{{ p.dx }};--dy:{{ p.dy }};opacity:0;animation:ceConv 1.6s {{ p.d }} cubic-bezier(.5,0,.8,.6) both"></span></sc-for>
+                    <span style="position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#FFFFFF 30%,#FFE3A8 60%,#F3C46A);box-shadow:0 0 18px #FFD58A,0 0 40px rgba(255,200,120,.7);opacity:0;animation:ceCore 3.3s 32s ease-in-out both"></span>
+                  </div>
+                </div>
+                <span style="position:absolute;left:0;top:0;width:390px;height:844px;background:radial-gradient(circle at 50% 56%,#FFFFFF,rgba(255,240,210,.7) 30%,transparent 70%);opacity:0;animation:ceFlash 1.2s 35.25s ease-out both;pointer-events:none;z-index:2"></span>
+                <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#1E2440 0%,#0A0D1A 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 24px;opacity:0;animation:{{ m.mIn }}">
+                  <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A">Las 7 maravillas del mundo</span>
+                  <sc-if value="{{ m.medal }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Siete" gain="1" gainDelay="1.2" size="330" hint-size="330px,388px"></dc-import></sc-if>
+                  <span style="font:400 34px/1.05 'Instrument Serif',serif;color:#FFFDF8;text-align:center">Tu primera maravilla</span>
+                  <span style="font:italic 400 17px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.75)">1 de 7 maravillas</span>
+                </div>
+              </sc-if>
+            </sc-if>
+            <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+            <div style="position:absolute;left:0;right:0;top:0;height:52px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist';color:#FFFDF8;pointer-events:none"><span>10:43</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.6;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+          </div>
+          <sc-if value="{{ m.full }}" hint-placeholder-val="{{ false }}"><button onClick="{{ m.replay }}" style="align-self:flex-start;margin-top:8px;height:40px;padding:0 14px 0 11px;border-radius:999px;border:1px solid rgba(28,34,48,.18);background:#FFFDF8;color:#1C2230;display:flex;align-items:center;gap:7px;font:600 13px 'Geist';cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"></path></svg>Repetir animación</button></sc-if>
+          <span style="font:400 12.5px/1.5 'Geist';color:rgba(28,34,48,.68);text-wrap:pretty">{{ m.note }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <div style="display:flex;flex-wrap:wrap;gap:48px 44px;align-items:flex-start">
+    <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+      <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span></div>
+        <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;margin-top:4px;border-radius:50px;overflow:hidden;background:#0C0A08;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+          <sc-if value="{{ b.on }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Emblema Cine" kind="{{ b.k }}" full="{{ true }}" hint-size="390px,844px"></dc-import></sc-if>
+          <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+          <div style="position:absolute;left:0;right:0;top:0;height:52px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist';color:#FFFDF8"><span>{{ b.clock }}</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.6;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+        </div>
+        <button onClick="{{ b.replay }}" style="align-self:flex-start;margin-top:8px;height:40px;padding:0 14px 0 11px;border-radius:999px;border:1px solid rgba(28,34,48,.18);background:#FFFDF8;color:#1C2230;display:flex;align-items:center;gap:7px;font:600 13px 'Geist';cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"></path></svg>Repetir animación</button>
+        <span style="font:400 12.5px/1.5 'Geist';color:rgba(28,34,48,.68);text-wrap:pretty">{{ b.note }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state={off:{},medal:false};
+  componentDidMount(){this.armMedal();}
+  componentWillUnmount(){clearTimeout(this.mt);}
+  armMedal(){clearTimeout(this.mt);this.setState({medal:false});this.mt=setTimeout(()=>this.setState({medal:true}),35300);}
+  renderVals(){const s=this.state;
+    const B=(id,cap,k,clock,note)=>({id,cap,k,clock,note,on:!s.off[id],replay:()=>{this.setState(st=>({off:{...st.off,[id]:true}}));setTimeout(()=>this.setState(st=>({off:{...st.off,[id]:false}})),60);}});
+    const rp=id=>()=>{if(id==='E0C+')this.armMedal();this.setState(st=>({off:{...st.off,[id]:true}}));setTimeout(()=>this.setState(st=>({off:{...st.off,[id]:false}})),60);};
+    const MM=(id,cap,st,note)=>({id,cap,st,note,full:st==='full'||st==='seq',on:!s.off[id],replay:rp(id),film:st!=='seq',seq:st==='seq',medal:st==='seq'&&!!s.medal,fOut:'ceOut .8s 30.5s ease forwards',mIn:'ceIn .5s 35.3s ease forwards'});
+    const beats7=[[32.4,'1.5px'],[33.15,'2px'],[33.75,'2.5px'],[34.25,'3px'],[34.65,'3.5px']].map(([d,w])=>({d:d+'s',w,l:(1.2-(d-32.4)*.15).toFixed(2)+'s'}));
+    const conv7=Array.from({length:7},(_,k)=>{const a=-Math.PI/2+k/7*Math.PI*2,r=170;return{dx:(Math.cos(a)*r).toFixed(0)+'px',dy:(Math.sin(a)*r).toFixed(0)+'px',d:(32.6+k*.28).toFixed(2)+'s'};});
+    return{beats7,conv7,maraC:[MM('E0C+','Seguido de las 7 maravillas','seq','La película del Coliseo. Al acabar, unos segundos a oscuras: «Y esto no acaba aquí…», un latido que crece y 7 luces que se juntan. Estalla y entra la medalla de las 7 maravillas: su moneda pasa a oro y la medalla late.'),
+      MM('E0C','La animación entera','full','La frase y, desde la oscuridad, el polvo de oro forma el Coliseo. Se dibuja sólido, se encienden sus arcos y lo cruza un destello. El oro se recoge en un punto, late y estalla en el emblema y seis fuegos. Al final, «Tu primera maravilla» vuela al perfil y el emblema al botón.'),
+      MM('C·0','La segunda frase','p2','Tras «Casi 2.000 años esperándote…» y un segundo de calma, aparece letra a letra «El anfiteatro más grande jamás construido.».'),
+      MM('C·1','El polvo de oro llega','c1','Las partículas doradas vuelan hacia su sitio y el Coliseo se va formando poco a poco, de abajo arriba.')],
+      boards:[B('E1','Panteón · el óculo','panteon','12:10','La cúpula se dibuja anillo a anillo y entra el rayo de luz por el óculo, con polvo flotando. El óculo late tres veces y la luz baja hasta el emblema.'),
+      B('E2','Fontana de Trevi · la moneda','trevi','21:30','Estás bajo el agua mirando hacia arriba: rayos de luz y burbujas. Una moneda rompe la superficie, baja girando con su estela de burbujas y se queda brillando en el centro. Con un destello aparece el emblema.'),
+      B('E3','Foro Romano · donde empezó todo','foro','11:20','Al fondo, en fantasma, las ruinas del Foro. En el centro se levanta en oro el Miliario de Oro, la columna de la que partían los caminos. Desde su base se dibujan cinco calzadas con sus losas, que se abren hacia ti, y se llenan de lucecitas como viajeros. La luz sube por los caminos hasta la columna y aparece el emblema.'),
+      B('E4','Museos Vaticanos · la Creación','museos','15:40','Miras hacia arriba: la bóveda de la Sixtina se dibuja panel a panel y se llena de color. Dos manos llegan desde los lados hasta casi tocarse, salta la chispa, late y aparece el emblema.'),
+      B('E5','Plaza de San Pedro · la frontera','plaza','10:05','La plaza vista desde arriba: la columnata de Bernini se dibuja abrazando el obelisco, con la basílica al fondo. Unas huellas suben por la calle desde Italia; al pisar la raya blanca, la frontera brilla y aparece «VATICANO». Luego, el emblema.'),
+      B('E6','Basílica de San Pedro · la tumba','basilica','10:50','Dentro de la basílica: la cúpula y el baldaquino, con sus columnas retorcidas, se dibujan en oro y baja un rayo de luz hasta el altar. Bajo el suelo se enciende la tumba, su luz sube hasta el centro y aparece el emblema.'),
+      B('E7','Boca de la Verdad · la leyenda','boca','16:15','La cara de piedra se dibuja en oro. Una mano entra en la boca, los ojos se encienden… y la boca se cierra de golpe, con temblor. La mano sale entera: has dicho la verdad.'),
+      B('E8','Ojo de la Cerradura · la cúpula','cerradura','18:40','Una puerta verde cerrada con su cerradura brillando. La cámara se acerca hasta entrar por el ojo y, al fondo del paseo de setos, aparece la cúpula de San Pedro.'),
+      B('E9','Catacumbas · la lamparilla','catacumbas','11:30','Oscuridad total. Se enciende la llama de una lamparilla de aceite y su luz va descubriendo las galerías y los nichos. La llama sube hasta el centro y aparece el emblema.'),
+      B('E10','Madrugador · el amanecer','madrugador','6:45','Roma de noche, con estrellas. El cielo se va tiñendo de rosa y el sol sale despacio por detrás del Coliseo, el Foro y el Panteón. Su luz llena el centro y aparece el emblema.'),
+      B('E11','Nocturno · la ciudad se enciende','nocturno','23:10','Cielo de noche con estrellas que parpadean y sale la luna. Se encienden uno a uno los arcos del Coliseo, el Foro y el pórtico del Panteón y aparece el emblema.')]};}
+}
+</script>
+</body>
+</html>

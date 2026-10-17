@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="width:100%;box-sizing:border-box;border-radius:{{ rad }};background:#FFFFFF;border:1.5px solid rgba(28,34,48,.12);padding:{{ pad }};display:flex;flex-direction:column;gap:{{ gap }};font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+  <span style="display:flex;align-items:center;gap:6px;font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:oklch(0.5 0.12 65)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"></path></svg>Propuesta: cambiar</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <sc-if value="{{ big }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Parada Foto" n="{{ a }}" seen="{{ false }}" size="40" hint-size="40px,40px"></dc-import></sc-if>
+    <sc-if value="{{ small }}" hint-placeholder-val="{{ false }}"><span style="width:18px;height:18px;flex:none;border-radius:50%;background:oklch(0.55 0.17 5);color:#fff;display:flex;align-items:center;justify-content:center;font:700 11px 'Geist'">−</span></sc-if>
+    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:{{ fA }};color:oklch(0.55 0.17 5);text-decoration:line-through">{{ a }}</span><sc-if value="{{ hasAs }}" hint-placeholder-val="{{ false }}"><span style="font:500 11px 'Geist';color:rgba(28,34,48,.5)">{{ as }}</span></sc-if></span>
+  </div>
+  <div style="position:relative;height:1px;margin:2px 0 2px {{ col }};background:rgba(28,34,48,.1)"><span style="position:absolute;left:{{ ico }};top:-11px;width:22px;height:22px;border-radius:50%;background:#FFFFFF;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;justify-content:center;color:rgba(28,34,48,.6)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4v16M4 16l4 4 4-4M16 20V4M12 8l4-4 4 4"></path></svg></span></div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <sc-if value="{{ big }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Parada Foto" n="{{ b }}" seen="{{ false }}" size="40" hint-size="40px,40px"></dc-import></sc-if>
+    <sc-if value="{{ small }}" hint-placeholder-val="{{ false }}"><span style="width:18px;height:18px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;justify-content:center;font:700 11px 'Geist'">+</span></sc-if>
+    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:{{ fB }};color:oklch(0.38 0.1 150)">{{ b }}</span><sc-if value="{{ hasBs }}" hint-placeholder-val="{{ false }}"><span style="font:500 11px 'Geist';color:rgba(28,34,48,.5)">{{ bs }}</span></sc-if></span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:160},&quot;a&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Castillo de Sant’Angelo&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;b&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Trastevere&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;as&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;15:00 · 1 h&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;bs&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;15:00 · 1 h 30&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;big&quot;,&quot;small&quot;],&quot;default&quot;:&quot;big&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals(){const p=this.props;const sm=p.size==='small';
+    return{a:p.a||'',b:p.b||'',as:p.as||'',bs:p.bs||'',hasAs:!!p.as&&!sm,hasBs:!!p.bs&&!sm,big:!sm,small:sm,
+      rad:sm?'12px':'18px',pad:sm?'8px 10px':'10px 12px',gap:sm?'5px':'7px',col:sm?'28px':'50px',ico:sm?'-21px':'-41px',
+      fA:sm?"500 13px/1.3 'Geist'":"400 17px/1.1 'Instrument Serif',serif",fB:sm?"600 13px/1.3 'Geist'":"400 17px/1.1 'Instrument Serif',serif"};}
+}
+</script>
+</body>
+</html>

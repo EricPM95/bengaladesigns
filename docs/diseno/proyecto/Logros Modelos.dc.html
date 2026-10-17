@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="Piezas/iconos-sitios.js"></script>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes milDraw{0%{stroke-dashoffset:100;opacity:1}45%,80%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes milRoad{0%{stroke-dashoffset:100;opacity:0}10%{opacity:1}60%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:-18;opacity:0}}
+@keyframes sunIn{0%{transform:translate(-33px,4px)}25%{transform:translate(-16px,-1.5px)}50%{transform:translate(0,-3px)}75%{transform:translate(16px,-1.5px)}100%{transform:translate(33px,4px)}}
+@keyframes moonIn{0%{transform:translate(33px,4px)}25%{transform:translate(16px,-1.5px)}50%{transform:translate(0,-3px)}75%{transform:translate(-16px,-1.5px)}100%{transform:translate(-33px,4px)}}
+@keyframes monLit{0%,100%{opacity:.3;filter:none}50%{opacity:1;filter:drop-shadow(0 0 1.6px #FFE3B8)}}
+@keyframes monDark{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes nLights{0%,20%{opacity:0}45%,75%{opacity:1}100%{opacity:0}}
+@keyframes sunMove{0%{opacity:0;transform:translate(-7px,2px)}12%{opacity:1}50%{transform:translate(0,-1.5px)}88%{opacity:1}100%{opacity:0;transform:translate(7px,2px)}}
+@keyframes sunPath{0%{stroke-dashoffset:100;opacity:1}75%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes moonMove{0%{opacity:0;transform:translate(7px,2px)}12%{opacity:1}50%{transform:translate(0,-1.5px)}88%{opacity:1}100%{opacity:0;transform:translate(-7px,2px)}}
+@keyframes nightPath{0%{stroke-dashoffset:0;opacity:1}75%{stroke-dashoffset:-100;opacity:1}100%{stroke-dashoffset:-100;opacity:0}}
+@keyframes nStar{0%,30%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}90%{opacity:1}100%{opacity:0}}
+@keyframes colUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.6px)}}
+@keyframes mouthOC{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.15)}}
+@keyframes bswing{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+@keyframes kZoom{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+@keyframes frMarch{to{stroke-dashoffset:-6}}
+@keyframes emFloat{0%,100%{transform:translateY(2px)}50%{transform:translateY(-5px)}}
+@keyframes emStep{0%,55%,100%{transform:translateX(-3px)}25%{transform:translateX(5px)}}
+@keyframes emGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(255,236,190,0))}50%{transform:scale(1.07);filter:drop-shadow(0 0 9px rgba(255,236,190,1))}}
+@keyframes emBeat{0%,100%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(.97)}36%{transform:scale(1.08)}50%{transform:scale(1)}}
+@keyframes emRise{0%,100%{transform:translateY(5px);filter:brightness(.85)}50%{transform:translateY(-4px);filter:brightness(1.4)}}
+@keyframes emSway{0%,100%{transform:rotate(-9deg);opacity:.75}50%{transform:rotate(9deg);opacity:1}}
+@keyframes mPop{0%{opacity:0;transform:scale(.4) translateY(16px)}60%{opacity:1;transform:scale(1.08)}100%{transform:none}}
+@keyframes exTilt{0%{transform:rotateY(-26deg) rotateX(10deg)}50%{transform:rotateY(26deg) rotateX(-6deg)}100%{transform:rotateY(-26deg) rotateX(10deg)}}
+@keyframes exGlint{0%,100%{opacity:.15;transform:translateX(-30%)}50%{opacity:.75;transform:translateX(30%)}}
+@keyframes mSpin{0%{opacity:0;transform:scale(.3) rotate(-160deg)}65%{opacity:1;transform:scale(1.1) rotate(12deg)}100%{transform:none}}
+@keyframes mShine{0%{transform:translateX(-200%) skewX(-18deg)}50%,100%{transform:translateX(560%) skewX(-18deg)}}
+@keyframes iBeam{to{transform:rotate(360deg)}}
+@keyframes iSpin{0%{transform:rotateY(0)}100%{transform:rotateY(360deg)}}
+@keyframes pzPop{0%{transform:scale(1.35)}55%{transform:scale(.94)}100%{transform:scale(1)}}
+@keyframes jSp{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes iJewel{0%,100%{transform:scale(1);filter:none}50%{transform:scale(2);filter:brightness(1.5) drop-shadow(0 0 4px #fff)}}
+@keyframes mGlow{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:.85;transform:scale(1.08)}}
+@keyframes mHue{to{filter:hue-rotate(360deg)}}
+@keyframes mTw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes mDrop{0%{opacity:0;transform:translate(-50px,-70px) rotate(-30deg) scale(1.4)}60%{opacity:1;transform:translate(0,0) rotate(4deg) scale(.96)}100%{transform:none}}
+@keyframes mSect{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.04)}100%{transform:none}}
+@keyframes mRing{from{stroke-dashoffset:679}}
+@keyframes mPulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes piece{0%{opacity:0;transform:translate(var(--fx),var(--fy)) rotate(var(--fr)) scale(.7)}55%{opacity:1}82%{transform:translate(0,0) rotate(0) scale(1.05)}100%{opacity:1;transform:none}}
+@keyframes fuse{0%{opacity:0;transform:scale(0,1)}45%{opacity:1;transform:scale(1,1)}100%{opacity:0;transform:scale(1,1)}}
+@keyframes flash{0%{opacity:0;transform:scale(.2)}20%{opacity:.95}100%{opacity:0;transform:scale(4)}}
+@keyframes tick{0%{opacity:0;transform:scale(.3)}70%{transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}
+@keyframes hL{0%{opacity:0;transform:translateX(-16px)}20%{opacity:1}100%{transform:none}}
+@keyframes hR{0%{opacity:0;transform:translateX(16px)}20%{opacity:1}100%{transform:none}}
+@keyframes spk{0%{opacity:0;transform:scale(.2)}12%{opacity:1;transform:scale(1.8)}100%{opacity:0;transform:scale(4.5)}}
+@keyframes beam{0%{opacity:0;transform:scaleY(0)}100%{opacity:1;transform:scaleY(1)}}
+@keyframes bpulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes coin{0%{opacity:0;transform:translateY(-10px) rotate(0)}10%{opacity:1}36%{opacity:1;transform:translateY(27px) rotate(200deg) scaleY(.5)}38%,100%{opacity:0;transform:translateY(27px)}}
+@keyframes rip{0%,36%{opacity:0;transform:scale(.3)}40%{opacity:1}82%,100%{opacity:0;transform:scale(3.4)}}
+@keyframes zoomK{0%{opacity:1;transform:scale(.32)}100%{opacity:0;transform:scale(5.5)}}
+@keyframes domeIn{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:none}}
+@keyframes flame{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes flick{from{transform:scaleY(1) skewX(0)}to{transform:scaleY(.82) skewX(5deg)}}
+@keyframes lglow{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
+@keyframes unite{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}}
+@keyframes globeIn{0%{opacity:0;transform:scale(.2)}60%{opacity:1;transform:scale(1.08)}100%{transform:none}}
+@keyframes mRays{to{transform:rotate(360deg)}}
+@keyframes shardIn{0%{opacity:0;transform:var(--o)}55%{opacity:1}82%{transform:scale(1.03)}100%{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:var(--o)}50%{transform:var(--o) translateY(-4px)}}
+@keyframes crack{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+@keyframes cShock{0%{opacity:0;transform:scale(.8)}8%{opacity:.95}100%{opacity:0;transform:scale(3.2)}}
+@keyframes cxStar{0%{opacity:0;transform:scale(0) rotate(-90deg)}100%{opacity:1;transform:none}}
+@keyframes cxTo{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+@keyframes cxOut{to{opacity:0}}
+@keyframes iIn{0%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(.3) rotate(-90deg)}70%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes iRing{to{stroke-dashoffset:0}}
+@keyframes iCore{0%{opacity:0;transform:scale(.2) rotate(-120deg)}100%{opacity:1;transform:none}}
+@keyframes iGlow{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes zHalo{from{opacity:0;transform:scale(.6)}to{opacity:.8;transform:none}}
+@keyframes zTw{0%,100%{opacity:.1}50%{opacity:.9}}
+@keyframes zGold{from{opacity:0}to{opacity:.85}}
+@keyframes zLit{0%{opacity:0}40%{opacity:1;fill:#FFF6DA}100%{opacity:1}}
+@keyframes zLitB{0%{opacity:0}40%{opacity:.95}100%{opacity:.55}}
+@keyframes zArenaK{0%{opacity:0;transform:scale(.4)}40%{opacity:1}100%{opacity:.75;transform:none}}
+@keyframes zRayIn{0%{opacity:0;transform:scaleY(0)}40%{opacity:1}100%{opacity:.6;transform:scaleY(1)}}
+@keyframes zRayP{from{opacity:.6}to{opacity:.25}}
+@keyframes zRim{from{opacity:0}to{opacity:.85}}
+@keyframes zDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes zTorch{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1)}70%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(.6)}}
+@keyframes zFlick{from{transform:scaleY(.85) skewX(-4deg)}to{transform:scaleY(1.1) skewX(4deg)}}
+@keyframes zComet{0%{offset-distance:0%;opacity:0}8%{opacity:1}88%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@keyframes zTrail{0%{opacity:0;stroke-dashoffset:1}20%{opacity:.9}80%{opacity:.9;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:0}}
+@keyframes zPop{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1.4)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes zSpark{0%{opacity:0;transform:translateX(0)}8%{opacity:1}70%{opacity:.9}100%{opacity:0;transform:translate(var(--d),10px)}}
+@keyframes zPetal{0%{opacity:0;transform:translate(0,0)}12%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+@keyframes aIn{from{opacity:0}to{opacity:1}}
+@keyframes aOut{from{opacity:1}to{opacity:0}}
+@keyframes aClip{0%{clip-path:ellipse(258px 253px at 184px 181px)}30%{clip-path:ellipse(160px 130px at 184px 190px)}100%{clip-path:ellipse(56px 18px at 184px 171px)}}
+@keyframes aShrink{0%,30%{transform:none}100%{transform:scale(.16)}}
+@keyframes aRing{0%{opacity:0;left:-10px;top:6px;width:340px;height:280px}13%{opacity:1;left:0;top:16px;width:320px;height:260px}70%{opacity:1;left:104px;top:109px;width:112px;height:36px}100%{opacity:0;left:104px;top:109px;width:112px;height:36px}}
+@keyframes aScene{0%{opacity:0;transform:scale(1.08)}8%{opacity:1}74%{opacity:1;transform:none}100%{opacity:0;transform:scale(.42)}}
+@keyframes aShake{0%,100%{transform:none}15%{transform:translate(-5px,3px)}30%{transform:translate(4px,-4px)}45%{transform:translate(-3px,2px)}60%{transform:translate(3px,1px)}80%{transform:translate(-1px,-1px)}}
+@keyframes aSunP{0%{opacity:.6;transform:scale(.8)}45%{opacity:1;transform:scale(1.15)}100%{opacity:.85;transform:scale(1)}}
+@keyframes aSway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+@keyframes aBob{from{transform:translateY(0)}to{transform:translateY(-1.6px)}}
+@keyframes aCheer{0%{transform:none}30%{transform:translateY(-4px)}100%{transform:none}}
+@keyframes aHA{0%{transform:translateX(-44px)}34%{transform:translateX(-26px)}42%{transform:translateX(6px)}52%{transform:translateX(0)}64%{transform:translateX(-6px)}74%{transform:translateX(-14px)}78%{transform:translateX(-10px)}100%{transform:translateX(-6px)}}
+@keyframes aHB{0%{transform:translateX(-44px)}34%{transform:translateX(-26px)}42%{transform:translateX(6px)}52%{transform:translateX(0)}64%{transform:translateX(-2px)}72%{transform:translate(12px,-10px)}78%{transform:translateX(4px)}100%{transform:translateX(-2px)}}
+@keyframes aFlashC{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1.3)}100%{opacity:0;transform:scale(2.2)}}
+@keyframes aRayB{0%{opacity:0;transform:scaleX(.1)}30%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1.4) translateX(10px)}}
+@keyframes aMote{0%{opacity:0;transform:translate(0,0)}30%{opacity:.9}100%{opacity:0;transform:translate(12px,-40px)}}
+@keyframes cZoom{0%{transform:translateY(24px) scale(7)}100%{transform:none}}
+@keyframes gSpot{0%{opacity:0}12%{opacity:.75}62%{opacity:.75}100%{opacity:0}}
+@keyframes gLA{0%{transform:translateX(-1.5px)}18%{transform:translateX(1.4px)}26%{transform:translateX(0)}46%{transform:translateX(-1.8px)}64%{transform:translateX(-.6px)}80%{transform:translate(1.8px,-.4px)}100%{transform:translateX(0)}}
+@keyframes gLB{0%{transform:translateX(-1.5px)}18%{transform:translateX(-.8px)}26%{transform:translateX(0)}46%{transform:translateX(1.6px)}64%{transform:translateX(0)}80%{transform:translate(1.8px,-.4px)}100%{transform:translateX(0)}}
+@keyframes gSpark{0%{opacity:0;transform:scale(.2)}30%{opacity:1;transform:scale(1.4) rotate(20deg)}100%{opacity:0;transform:scale(.6) rotate(45deg)}}
+@keyframes gPuff{0%{opacity:0;transform:scale(.3)}30%{opacity:.8}100%{opacity:0;transform:translateY(-1.5px) scale(1.8)}}
+@keyframes gBig{0%{opacity:0}25%{opacity:.5}100%{opacity:0}}
+@keyframes cBlkL{0%{opacity:0;transform:translateY(34px) scaleY(.15)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes cBlkR{0%{opacity:0;transform:translateY(34px) scaleY(.15)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes cFlash{0%{opacity:0}35%{opacity:.75}100%{opacity:0}}
+@keyframes cPlinth{0%{opacity:0;transform:scaleX(.1)}100%{opacity:1;transform:none}}
+@keyframes cFade{from{opacity:0}to{opacity:1}}
+@keyframes cGlowIn{from{opacity:0;transform:scale(.6)}to{opacity:.6;transform:scale(1)}}
+@keyframes cShine{0%{transform:translateX(-80px) skewX(-20deg)}35%,100%{transform:translateX(260px) skewX(-20deg)}}
+@keyframes cDust{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-70px)}}
+@keyframes mBeam{0%{opacity:0;transform:scaleY(0)}22%{opacity:1;transform:scaleY(1)}70%{opacity:1}100%{opacity:0;transform:scaleY(1)}}
+@keyframes mDescend{0%{opacity:0;transform:translateY(-150px) scale(.5) rotate(-18deg)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes shock{0%{opacity:.95;transform:scale(.8)}100%{opacity:0;transform:scale(3.2)}}
+@keyframes holeBeat{0%,100%{stroke:rgba(243,227,184,.3);fill:rgba(255,253,248,.04)}40%{stroke:#F3E3B8;fill:rgba(243,227,184,.16)}}
+@keyframes mDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes lit{0%{opacity:0}100%{opacity:1}}
+@keyframes leaf{0%{opacity:0;transform:scale(0)}100%{opacity:1;transform:none}}
+@keyframes orbX{0%{opacity:0;transform:translateX(-72px) scaleX(.05)}6%{opacity:.5;transform:translateX(-66.5px) scaleX(.38)}12.5%{opacity:.85;transform:translateX(-51px) scaleX(.71)}18.75%{opacity:1;transform:translateX(-27.5px) scaleX(.92)}25%{transform:translateX(0) scaleX(1)}31.25%{transform:translateX(27.5px) scaleX(.92)}37.5%{opacity:.85;transform:translateX(51px) scaleX(.71)}44%{opacity:.5;transform:translateX(66.5px) scaleX(.38)}50%,100%{opacity:0;transform:translateX(72px) scaleX(.05)}}
+@keyframes mer{0%,100%{transform:scaleX(1)}50%{transform:scaleX(0)}}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 50% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 90px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:64px">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:760px">
+    <a href="Indice.dc.html" style="align-self:flex-start;font:600 12px 'Geist';text-decoration:none;color:rgba(28,34,48,.6)">← Índice</a>
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Logros · Modelos</span>
+    <span style="font:400 48px/1 'Instrument Serif',serif">Todos los <em style="color:oklch(0.55 0.17 5)">modelos</em></span>
+    <span style="font:400 14px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Sellos, colecciones, emblemas, maravillas, logros de viajero, exclusivos y la vuelta al mundo. Cada bloque tiene su animación y su botón para repetirla.</span>
+  </div>
+  <nav style="display:flex;flex-wrap:wrap;gap:8px;max-width:1000px"><a href="#m1" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">01 · Los sellos</a><a href="#m2" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">02 · Las 11 colecciones</a><a href="#m3" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">03 · Los 12 emblemas</a><a href="#m5" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">04 · Los logros de viajero</a><a href="#m6" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">05 · Los exclusivos</a><a href="#m7" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">06 · La vuelta al mundo</a><a href="#m8" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">07 · Las 7 maravillas</a><a href="#m9" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">08 · El Coliseo, de cerca</a><a href="#m10" style="height:34px;padding:0 13px;border-radius:999px;background:#FFFDF8;border:1px solid rgba(28,34,48,.1);display:flex;align-items:center;font:500 12.5px 'Geist';color:#1C2230;text-decoration:none">09 · La medalla de las 7 monedas</a></nav>
+
+  <sc-for list="{{ secs }}" as="s" hint-placeholder-count="7">
+  <section id="{{ s.id }}" style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px">
+      <span style="font:400 34px/1 'Instrument Serif',serif;color:oklch(0.55 0.17 5)">{{ s.n }}</span>
+      <span style="display:flex;flex-direction:column;gap:3px"><span style="font:400 30px/1 'Instrument Serif',serif">{{ s.t }}</span><span style="font:400 13px 'Geist';color:rgba(28,34,48,.6)">{{ s.d }}</span></span>
+      <button onClick="{{ s.rp }}" style="margin-left:auto;height:40px;padding:0 14px 0 11px;border-radius:999px;border:1px solid rgba(28,34,48,.18);background:#FFFDF8;color:#1C2230;display:flex;align-items:center;gap:7px;font:600 13px 'Geist';cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"></path></svg>Repetir animación</button>
+    </div>
+    <sc-if value="{{ s.on }}" hint-placeholder-val="{{ true }}">
+
+      <sc-if value="{{ s.isSellos }}" hint-placeholder-val="{{ false }}">
+        <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Roma · 8 imprescindibles</span>
+        <div style="display:flex;flex-wrap:wrap;gap:16px">
+          <sc-for list="{{ seals }}" as="g" hint-placeholder-count="5">
+            <div style="width:190px;padding:24px 12px 18px;border-radius:24px;background:{{ g.bg }};border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+              <span style="animation:mSpin 1.4s {{ g.d }} cubic-bezier(.2,.8,.2,1) both"><dc-import name="Piezas/Sello Logro" grade="{{ g.g }}" icon="coliseo" size="130" label="ROMA" hint-size="130px,130px"></dc-import></span>
+              <span style="display:flex;flex-direction:column;gap:3px"><span style="font:400 22px/1 'Instrument Serif',serif;color:{{ g.fg }}">{{ g.n }}</span><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.12em;color:{{ g.c }}">{{ g.k }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        <span style="padding-top:10px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Vaticano · 3 imprescindibles · empieza en plata</span>
+        <div style="display:flex;flex-wrap:wrap;gap:16px">
+          <sc-for list="{{ sealsV }}" as="g" hint-placeholder-count="4">
+            <div style="width:190px;padding:24px 12px 18px;border-radius:24px;background:{{ g.bg }};border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+              <span style="animation:mSpin 1.4s {{ g.d }} cubic-bezier(.2,.8,.2,1) both"><dc-import name="Piezas/Sello Logro" grade="{{ g.g }}" icon="cupula" shape="oval" size="130" label="VATICANO" hint-size="130px,130px"></dc-import></span>
+              <span style="display:flex;flex-direction:column;gap:3px"><span style="font:400 22px/1 'Instrument Serif',serif;color:{{ g.fg }}">{{ g.n }}</span><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.12em;color:{{ g.c }}">{{ g.k }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.isCols }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:28px">
+        <sc-for list="{{ colGroups }}" as="cg" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="display:flex;align-items:center;gap:12px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ cg.t }}</span><span style="flex:1;height:1px;background:rgba(28,34,48,.12)"></span><span style="font:600 10px 'Geist Mono',monospace;color:rgba(28,34,48,.45)">{{ cg.n }}</span></span>
+        <div style="display:flex;flex-wrap:wrap;gap:14px">
+          <sc-for list="{{ cg.cols }}" as="c" hint-placeholder-count="3">
+            <div style="width:214px;min-height:232px;padding:20px 12px 16px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+              <div style="flex:none;height:172px;display:flex;align-items:center;justify-content:center;animation:mPop 1s {{ c.d }} cubic-bezier(.2,.8,.2,1) both">
+                <sc-if value="{{ c.vati }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Principal" design="vati" size="150" delay="{{ c.vd }}" hint-size="150px,150px"></dc-import></sc-if>
+                <sc-if value="{{ c.impr }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;width:156px;height:156px;perspective:700px">
+                    <span style="position:absolute;inset:-22px;border-radius:50%;background:radial-gradient(circle,{{ c.glw }},transparent 65%);opacity:0;animation:lit 1s .1s ease both,mGlow 4s 6.4s ease-in-out infinite"></span>
+                    <svg width="156" height="156" viewBox="0 0 150 150" style="position:absolute;inset:0;overflow:visible;opacity:0;animation:lit .6s 3.8s ease both">
+                      <g style="transform-origin:75px 75px;animation:iBeam 26s 3.8s linear infinite"><sc-for list="{{ impB }}" as="b" hint-placeholder-count="8"><path d="{{ b }}" fill="rgba(255,236,214,.22)"></path></sc-for></g>
+                    </svg>
+                    <div style="position:absolute;inset:0;transform-style:preserve-3d;animation:iSpin 1.6s 5.2s cubic-bezier(.5,0,.3,1) both">
+                    <svg width="156" height="156" viewBox="0 0 150 150" style="position:absolute;inset:0;overflow:visible;filter:drop-shadow(0 14px 16px rgba(90,20,40,.35))">
+                      <defs>
+                        <linearGradient id="{{ c.tid }}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ c.t0 }}"></stop><stop offset=".55" stop-color="{{ c.t1 }}"></stop><stop offset="1" stop-color="{{ c.t2 }}"></stop></linearGradient>
+                        <linearGradient id="{{ c.cid }}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ c.c0 }}"></stop><stop offset=".45" stop-color="{{ c.c1 }}"></stop><stop offset="1" stop-color="{{ c.c2 }}"></stop></linearGradient>
+                        <linearGradient id="imBvL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".8"></stop><stop offset=".4" stop-color="#FFFFFF" stop-opacity=".16"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></linearGradient>
+                        <linearGradient id="imBvD" x1="0" y1="0" x2="1" y2="1"><stop offset=".42" stop-color="#2A1408" stop-opacity="0"></stop><stop offset="1" stop-color="#2A1408" stop-opacity=".55"></stop></linearGradient>
+                        <linearGradient id="imBvF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".45"></stop><stop offset=".5" stop-color="#FFFFFF" stop-opacity=".06"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity=".22"></stop></linearGradient>
+                        <sc-for list="{{ impMD }}" as="g" hint-placeholder-count="0"><linearGradient id="{{ g.id }}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ g.l }}"></stop><stop offset=".55" stop-color="{{ g.c }}"></stop><stop offset="1" stop-color="{{ g.d }}"></stop></linearGradient></sc-for>
+                        <sc-for list="{{ impGD }}" as="g" hint-placeholder-count="5"><radialGradient id="{{ g.id }}" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".35" stop-color="{{ g.c }}"></stop><stop offset="1" stop-color="{{ g.d }}"></stop></radialGradient></sc-for>
+                      </defs>
+                      <sc-for list="{{ c.tiles }}" as="p" hint-placeholder-count="8">
+                        <g style="--fx:{{ p.fx }};--fy:{{ p.fy }};transform-box:fill-box;transform-origin:center;animation:iIn 1s {{ p.d }} cubic-bezier(.3,1.25,.5,1) both">
+                          <path d="{{ p.tile }}" fill="{{ p.tf }}" stroke="#E4C78A" stroke-width="1.8" stroke-linejoin="round" style="filter:{{ c.tGlow }}"></path>
+                          <path d="{{ p.tile }}" fill="url(#imBvL)" opacity="{{ c.bvO }}"></path>
+                          <path d="{{ p.tile }}" fill="url(#imBvD)" opacity="{{ c.bvO }}"></path>
+                          <path d="{{ p.inner }}" fill="url(#imBvF)" stroke="{{ c.inS }}" stroke-width="{{ c.inW }}" opacity="1"></path>
+                          <g transform="{{ p.it }}" fill="none" stroke="{{ c.icS }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.i }}"></path></g>
+                          <circle cx="{{ p.gx }}" cy="{{ p.gy }}" r="{{ p.gr }}" fill="{{ p.gf }}" stroke="#E4C78A" stroke-width=".9" style="transform-box:fill-box;transform-origin:center;animation:{{ p.ga }}"></circle>
+                          <circle cx="{{ p.cx }}" cy="{{ p.cy }}" r="16" fill="#FFFFFF" style="opacity:0;transform-box:fill-box;transform-origin:center;animation:flash .6s {{ p.d2 }} ease-out both"></circle>
+                        </g>
+                      </sc-for>
+                      <path d="{{ impO }}" fill="none" stroke="#F3E3B8" stroke-width="2.6" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1;animation:iRing 1s 3s ease both"></path>
+                      <path d="{{ impI }}" fill="none" stroke="#F3E3B8" stroke-width="1.6" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1;animation:iRing .8s 3.2s ease both"></path>
+                      <g style="transform-box:fill-box;transform-origin:center;animation:mDescend 1s 3.5s cubic-bezier(.3,1.3,.5,1) both">
+                        <path d="{{ impCo }}" fill="{{ c.cfill }}" stroke="#E4C78A" stroke-width="2"></path>
+                        <path d="{{ impCf }}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width=".8"></path>
+                        <path d="{{ impCt }}" fill="rgba(255,255,255,.6)" stroke="rgba(255,240,244,.8)" stroke-width=".8"></path>
+                        <path d="M68 71l3-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path>
+                      </g>
+                    </svg>
+                    </div>
+                    <span style="position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:2px solid {{ c.sh1 }};opacity:0;animation:shock 1.2s 6.6s ease-out both"></span>
+                    <span style="position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:1.5px solid #F3E3B8;opacity:0;animation:shock 1.5s 6.8s ease-out both"></span>
+                    
+                  </div>
+                </sc-if>
+                <sc-if value="{{ c.cinta }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;width:196px;height:70px;filter:drop-shadow(0 10px 12px rgba(28,34,48,.25))">
+                    <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,91% 50%,100% 100%,0 100%,9% 50%);background:{{ c.rim }}"></span>
+                    <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,91% 50%,100% 100%,0 100%,9% 50%);transform:scale(.94,.84);background:{{ c.bg }};overflow:hidden"><span style="position:absolute;top:-20%;bottom:-20%;left:0;width:18%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:mShine 5s {{ c.d2 }} ease-in-out infinite"></span></span>
+                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:0 28px;color:{{ c.ink }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="{{ c.i }}"></path></svg><span style="font:400 15px/1.05 'Instrument Serif',serif;text-align:left;text-wrap:balance">{{ c.short }}</span></span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ c.solid }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:relative;width:{{ c.w }};height:{{ c.h }};filter:drop-shadow(0 12px 14px rgba(28,34,48,.28))">
+                    <span style="position:absolute;inset:0;clip-path:{{ c.clip }};border-radius:{{ c.rad }};background:{{ c.rim }}"></span>
+                    <span style="position:absolute;inset:0;clip-path:{{ c.clip }};border-radius:{{ c.rad }};transform:scale(.88);background:{{ c.bg }};overflow:hidden"><span style="position:absolute;top:-20%;bottom:-20%;left:0;width:26%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);animation:mShine 5s {{ c.d2 }} ease-in-out infinite"></span></span>
+                    <span style="position:absolute;inset:0;clip-path:{{ c.clip }};border-radius:{{ c.rad }};transform:scale(.8);box-shadow:inset 0 0 0 1px {{ c.line }}"></span>
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;clip-path:{{ c.clip }};border-radius:{{ c.rad }};transform:scale(.88)"><sc-for list="{{ c.seams }}" as="s" hint-placeholder-count="3"><path d="{{ s }}" fill="none" stroke="{{ c.line }}" stroke-width="1.2" vector-effect="non-scaling-stroke"></path></sc-for></svg>
+                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-bottom:{{ c.pb }};color:{{ c.ink }}"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.i }}"></path></svg></span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ c.joyasD }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;width:118px;height:118px;transform:rotate(45deg)">
+                    <sc-for list="{{ joyas }}" as="p" hint-placeholder-count="4">
+                      <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:57px;height:57px;border-radius:{{ p.rad }};background:linear-gradient(140deg,#FFFCF2 0%,#FFF9EA 30%,#EBDAB0 100%);border:1.5px solid #C9A65E;box-shadow:inset 0 0 0 2px rgba(255,250,232,.9),inset -5px -7px 12px rgba(150,115,50,.22),0 0 12px rgba(255,244,214,.8),0 10px 18px -8px rgba(60,40,10,.5);overflow:hidden;display:flex;align-items:center;justify-content:center;--fx:{{ p.fx }};--fy:{{ p.fy }};--fr:{{ p.fr }};animation:piece 1.1s {{ p.d }} cubic-bezier(.3,1.2,.5,1) both">
+                        <svg width="57" height="57" viewBox="0 0 57 57" style="position:absolute;inset:0"><path d="M11 11H46V46H11Z" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.95)" stroke-width="1"></path><path d="M0 0L11 11M57 0L46 11M57 57L46 46M0 57L11 46M11 11L46 46M46 11L11 46" stroke="rgba(201,166,94,.35)" stroke-width=".7"></path><path d="M0 0H57L46 11H11Z" fill="rgba(255,255,255,.65)"></path><path d="M0 0V57L11 46V11Z" fill="rgba(255,255,255,.35)"></path><path d="M57 0V57L46 46V11Z" fill="rgba(170,130,60,.16)"></path><path d="M0 57H57L46 46H11Z" fill="rgba(150,110,45,.24)"></path><path d="M11 11L28.5 11L11 28.5Z" fill="rgba(255,255,255,.7)"></path><path d="M46 46L28.5 46L46 28.5Z" fill="rgba(170,130,60,.15)"></path></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6A2C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="position:relative;transform:rotate(-45deg);filter:drop-shadow(0 1px 0 rgba(255,255,255,.9))"><path d="{{ p.i }}"></path></svg>
+                        <span style="position:absolute;left:{{ p.gl }};top:{{ p.gt }};width:12px;height:12px;border-radius:2px;background:radial-gradient(circle at 32% 28%,#FFFFFF 0 10%,{{ p.gem }} 46%,{{ p.gemD }} 100%);border:1px solid #C9A65E;box-shadow:0 0 6px {{ p.gem }}"></span>
+                        <span style="position:absolute;top:-30%;bottom:-30%;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:mShine 4s {{ p.d2 }} ease-in-out infinite"></span>
+                        <span style="position:absolute;inset:0;background:radial-gradient(circle,#FFFFFF,transparent 70%);animation:flash .6s {{ p.d2 }} ease-out both"></span>
+                      </span>
+                    </sc-for>
+                    <span style="position:absolute;left:0;right:0;top:57px;height:3px;background:linear-gradient(90deg,transparent,#FFF4D6,transparent);box-shadow:0 0 10px #FFE9B0;animation:fuse 1.2s 3s ease both"></span>
+                    <span style="position:absolute;top:0;bottom:0;left:57px;width:3px;background:linear-gradient(180deg,transparent,#FFF4D6,transparent);box-shadow:0 0 10px #FFE9B0;animation:fuse 1.2s 3.1s ease both"></span>
+                    <span style="position:absolute;inset:-4px;border-radius:18px;border:2px solid oklch(0.86 0.09 85);box-shadow:0 0 22px oklch(0.86 0.09 85 / .5);animation:pop .9s 3.4s ease both"></span>
+                    <span style="position:absolute;left:47px;top:47px;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#FFF4D6,#C9A35C);box-shadow:0 0 0 3px #161A28,0 0 16px #FFE9B0;animation:tick .8s 3.6s ease both"></span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ c.joyas }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;width:118px;height:118px;transform:rotate(45deg)">
+                    <sc-for list="{{ joyas }}" as="p" hint-placeholder-count="4">
+                      <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:57px;height:57px;border-radius:{{ p.rad }};background:linear-gradient(140deg,#FFF9EA,#EBDAB0);border:1.5px solid #C9A65E;box-shadow:inset 0 0 0 2px rgba(255,250,232,.8),0 10px 18px -8px rgba(60,40,10,.5);overflow:hidden;display:flex;align-items:center;justify-content:center;--fx:{{ p.fx }};--fy:{{ p.fy }};--fr:{{ p.fr }};animation:piece 1.1s {{ p.d }} cubic-bezier(.3,1.2,.5,1) both">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A6A2C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(-45deg)"><path d="{{ p.i }}"></path></svg>
+                        <span style="position:absolute;left:{{ p.gl }};top:{{ p.gt }};width:12px;height:12px;border-radius:2px;background:radial-gradient(circle at 32% 28%,#FFFFFF 0 10%,{{ p.gem }} 46%,{{ p.gemD }} 100%);border:1px solid #C9A65E;box-shadow:0 0 6px {{ p.gem }}"></span>
+                        <span style="position:absolute;inset:0;background:radial-gradient(circle,#FFFFFF,transparent 70%);animation:flash .6s {{ p.d2 }} ease-out both"></span>
+                      </span>
+                    </sc-for>
+                    <span style="position:absolute;left:0;right:0;top:57px;height:3px;background:linear-gradient(90deg,transparent,#FFF4D6,transparent);box-shadow:0 0 10px #FFE9B0;animation:fuse 1.2s 3s ease both"></span>
+                    <span style="position:absolute;top:0;bottom:0;left:57px;width:3px;background:linear-gradient(180deg,transparent,#FFF4D6,transparent);box-shadow:0 0 10px #FFE9B0;animation:fuse 1.2s 3.1s ease both"></span>
+                    <span style="position:absolute;inset:-4px;border-radius:18px;border:2px solid oklch(0.86 0.09 85);box-shadow:0 0 22px oklch(0.86 0.09 85 / .5);animation:pop .9s 3.4s ease both"></span>
+                    <span style="position:absolute;left:47px;top:47px;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#FFF4D6,#C9A35C);box-shadow:0 0 0 3px #161A28,0 0 16px #FFE9B0;animation:tick .8s 3.6s ease both"></span>
+                  </div>
+                </sc-if>
+              </div>
+              <span style="display:flex;flex-direction:column;gap:4px"><span style="font:400 18px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ c.n }}</span><span style="font:italic 400 14px/1.25 'Instrument Serif',serif;color:rgba(28,34,48,.7);text-wrap:balance">{{ c.line }}</span><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.06em;color:oklch(0.42 0.09 150)">{{ c.cnt }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        </div>
+        </sc-for>
+        <span style="padding-top:10px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Una insignia en sus tres estados · La Roma antigua · 6 pedazos, uno por sitio · toca un pedazo</span>
+        <div style="display:flex;flex-wrap:wrap;gap:14px">
+          <sc-for list="{{ colStates }}" as="c" hint-placeholder-count="3">
+            <div style="width:214px;padding:20px 14px 16px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+              <div style="position:relative;width:96px;height:116px;margin:16px 0 10px;filter:{{ c.shadow }}">
+                <span style="position:absolute;inset:0;border-radius:48px 48px 14px 14px;border:1.5px dashed rgba(28,34,48,.2)"></span>
+                <sc-for list="{{ c.shards }}" as="p" hint-placeholder-count="3">
+                  <div onClick="{{ p.tap }}" style="position:absolute;inset:0;clip-path:{{ p.clip }};--o:{{ p.o }};transform:{{ p.tf }};animation:{{ p.an }};cursor:pointer">
+                    <span style="position:absolute;inset:0;border-radius:48px 48px 14px 14px;background:{{ p.rim }}"></span>
+                    <span style="position:absolute;inset:0;border-radius:48px 48px 14px 14px;transform:scale(.88);background:{{ p.bg }};box-shadow:inset 0 0 0 1px rgba(255,248,226,.5)"></span>
+                    <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:{{ p.ink }}"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.loba }}"></path></svg></span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ c.done }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,#FFFFFF,transparent 65%);pointer-events:none;animation:flash 1s 2.8s ease-out both"></span></sc-if>
+                <sc-if value="{{ c.hasTip }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:50%;top:-30px;transform:translateX(-50%);white-space:nowrap;height:26px;padding:0 10px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;font:500 11.5px 'Geist';z-index:3;animation:pop .25s ease both">{{ c.tip }}</span></sc-if>
+              </div>
+              <span style="font:400 18px/1.1 'Instrument Serif',serif">{{ c.n }}</span>
+              <div style="width:140px;height:5px;border-radius:5px;background:rgba(28,34,48,.08);overflow:hidden"><div style="height:100%;width:{{ c.w }};border-radius:5px;background:{{ c.bar }}"></div></div>
+              <span style="font:600 10.5px 'Geist Mono',monospace;color:{{ c.cc }}">{{ c.cnt }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:34px;display:flex;flex-direction:column;gap:12px">
+          <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Las principales, pieza a pieza · un pedazo por sitio · toca un sitio para añadirlo</span>
+          <div style="display:flex;flex-wrap:wrap;gap:14px">
+            <sc-for list="{{ pz }}" as="z" hint-placeholder-count="3">
+              <div style="width:300px;padding:18px 16px 16px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;gap:14px">
+                <div style="height:186px;display:flex;align-items:center;justify-content:center">
+                  <sc-if value="{{ z.isI }}" hint-placeholder-val="{{ false }}">
+                    <svg width="160" height="160" viewBox="0 0 150 150" style="overflow:visible;filter:drop-shadow(0 12px 14px rgba(60,40,10,.25))">
+                      <sc-for list="{{ z.tiles }}" as="p" hint-placeholder-count="8">
+                        <g style="transform-box:fill-box;transform-origin:center;animation:{{ p.an }}">
+                          <path d="{{ p.tile }}" style="fill:{{ p.fill }};stroke:{{ p.st }};stroke-dasharray:{{ p.da }};stroke-width:1.6;stroke-linejoin:round;transition:fill .5s ease,stroke .5s ease"></path>
+                          <g transform="{{ p.it }}" fill="none" style="stroke:{{ p.ic }};transition:stroke .5s ease" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.i }}"></path></g>
+                          <circle cx="{{ p.gx }}" cy="{{ p.gy }}" r="3.4" fill="url(#impG4)" stroke="#E4C78A" stroke-width=".8" style="opacity:{{ p.po }};transition:opacity .5s .2s ease"></circle>
+                        </g>
+                      </sc-for>
+                      <path d="{{ impO }}" fill="none" style="stroke:{{ z.ring }};transition:stroke .6s ease" stroke-width="2.4" stroke-linejoin="round"></path>
+                      <g style="opacity:{{ z.crO }};transition:opacity .6s ease"><path d="{{ impCo }}" fill="url(#impCmx)" stroke="#E4C78A" stroke-width="2"></path><path d="{{ impCf }}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width=".8"></path></g>
+                      <sc-if value="{{ z.notFull }}" hint-placeholder-val="{{ true }}"><circle cx="75" cy="75" r="26" fill="#F5EFE4" stroke="#CDBFA6" stroke-width="1.4" stroke-dasharray="3 3"></circle><text x="75" y="80" text-anchor="middle" font-family="Instrument Serif" font-size="17" fill="#1C2230">{{ z.cnt }}</text></sc-if>
+                    </svg>
+                  </sc-if>
+                  <sc-if value="{{ z.isV }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Principal" design="vati" size="160" have="{{ z.n }}" hint-size="160px,160px"></dc-import></sc-if>
+                  <sc-if value="{{ z.isJ }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:112px;height:112px;transform:rotate(45deg)">
+                      <sc-for list="{{ z.jp }}" as="p" hint-placeholder-count="4">
+                        <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:54px;height:54px;border-radius:{{ p.rad }};background:{{ p.bg }};border:1.5px {{ p.bs }} {{ p.bc }};box-shadow:{{ p.sh }};overflow:hidden;display:flex;align-items:center;justify-content:center;transition:background .5s ease,box-shadow .5s ease;animation:{{ p.an }}">
+                          <sc-if value="{{ p.got }}" hint-placeholder-val="{{ false }}"><svg width="54" height="54" viewBox="0 0 57 57" style="position:absolute;inset:0"><path d="M11 11H46V46H11Z" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.95)" stroke-width="1"></path><path d="M0 0L11 11M57 0L46 11M57 57L46 46M0 57L11 46M11 11L46 46M46 11L11 46" stroke="rgba(201,166,94,.35)" stroke-width=".7"></path><path d="M0 0H57L46 11H11Z" fill="rgba(255,255,255,.65)"></path><path d="M0 0V57L11 46V11Z" fill="rgba(255,255,255,.35)"></path><path d="M57 0V57L46 46V11Z" fill="rgba(170,130,60,.16)"></path><path d="M0 57H57L46 46H11Z" fill="rgba(150,110,45,.24)"></path><path d="M11 11L28.5 11L11 28.5Z" fill="rgba(255,255,255,.7)"></path></svg>
+                            <span style="position:absolute;left:{{ p.gl }};top:{{ p.gt }};width:11px;height:11px;border-radius:2px;background:radial-gradient(circle at 32% 28%,#FFFFFF 0 10%,{{ p.gem }} 46%,{{ p.gemD }} 100%);border:1px solid #C9A65E;box-shadow:0 0 6px {{ p.gem }}"></span></sc-if>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="position:relative;stroke:{{ p.ic }};transform:rotate(-45deg);transition:stroke .5s ease" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.i }}"></path></svg>
+                        </span>
+                      </sc-for>
+                      <span style="position:absolute;inset:-4px;border-radius:18px;border:2px {{ z.jrS }} {{ z.jrC }};box-shadow:{{ z.jrSh }};transition:border-color .6s,box-shadow .6s"></span>
+                    </div>
+                  </sc-if>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <span style="display:flex;align-items:baseline;gap:8px"><span style="flex:1;font:400 20px/1.1 'Instrument Serif',serif">{{ z.name }}</span><span style="font:600 11.5px 'Geist Mono',monospace;color:{{ z.cntC }}">{{ z.cnt }}</span></span>
+                  <div style="display:flex;gap:3px"><sc-for list="{{ z.bar }}" as="b" hint-placeholder-count="4"><span style="flex:1;height:5px;border-radius:5px;background:{{ b }};transition:background .4s"></span></sc-for></div>
+                </div>
+                <div style="display:none"><sc-for list="{{ z.sites }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.tap }}" style="min-height:34px;padding:0 11px 0 7px;border-radius:999px;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};display:flex;align-items:center;gap:6px;font:500 12px 'Geist';cursor:pointer;transition:background .3s,color .3s"><span style="width:18px;height:18px;flex:none;border-radius:50%;background:{{ t.dBg }};border:{{ t.dBd }};color:#fff;display:flex;align-items:center;justify-content:center;font:700 10px 'Geist'">{{ t.mk }}</span>{{ t.n }}</button></sc-for></div>
+
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.isEmb }}" hint-placeholder-val="{{ false }}">
+        <div style="border-radius:32px;background:radial-gradient(circle at 50% 0%,#2E3550,#141826 70%);padding:30px 24px;display:flex;flex-wrap:wrap;gap:22px 14px;justify-content:center">
+          <sc-for list="{{ embs }}" as="e" hint-placeholder-count="12">
+            <div style="width:170px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+              <div style="position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center">
+                <span style="position:absolute;inset:14px;border-radius:50%;background:radial-gradient(circle,{{ e.halo }},transparent 70%);animation:mGlow 3.6s {{ e.d2 }} ease-in-out infinite"></span>
+                
+                <sc-if value="{{ e.mar }}" hint-placeholder-val="{{ false }}"><div style="position:relative;z-index:1;margin-top:-6px"><dc-import name="Piezas/Emblema Oro" won="{{ true }}" size="124" interactive="{{ true }}" flippable="{{ false }}" hint-size="124px,155px"></dc-import></div></sc-if>
+                <sc-if value="{{ e.nmar }}" hint-placeholder-val="{{ true }}"><div style="animation:mSpin 1.3s {{ e.d }} cubic-bezier(.2,.8,.2,1) both"><div style="position:relative;width:{{ e.w }};height:{{ e.h }};transform:{{ e.tf }}">
+                  <span style="position:absolute;inset:0;clip-path:{{ e.clip }};border-radius:{{ e.rad }};background:{{ e.rim }}"></span>
+                  <span style="position:absolute;inset:0;clip-path:{{ e.clip }};border-radius:{{ e.rad }};transform:scale(.9);background:linear-gradient(140deg,#2D3450,#141826);overflow:hidden"><span style="position:absolute;top:-20%;bottom:-20%;left:0;width:26%;background:linear-gradient(90deg,transparent,rgba(255,240,200,.28),transparent);animation:mShine 4.4s {{ e.d2 }} ease-in-out infinite"></span></span>
+                  <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:{{ e.it }};color:{{ e.ink }};animation:{{ e.ia }}">
+                    <sc-if value="{{ e.plain }}" hint-placeholder-val="{{ true }}"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ e.itf }}"><path d="{{ e.i }}"></path></svg></sc-if>
+                    <sc-if value="{{ e.mar }}" hint-placeholder-val="{{ false }}"><svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                      <sc-for list="{{ colWin }}" as="w" hint-placeholder-count="8"><rect x="{{ w.x }}" y="{{ w.y }}" width="{{ w.w }}" height="{{ w.h }}" rx=".6" fill="#FFE6A8" stroke="none" style="filter:drop-shadow(0 0 1.5px #FFD47A);animation:lit .5s {{ w.d }} ease both"></rect></sc-for>
+                      <path d="{{ ic.arco }}" pathLength="1" stroke-dasharray="1" style="animation:mDraw 2s {{ e.s1 }} ease-in-out both"></path>
+                    </svg></sc-if>
+                    <sc-if value="{{ e.cre }}" hint-placeholder-val="{{ false }}"><svg width="86" height="58" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+                      <g style="animation:hL 1.7s {{ e.s1 }} cubic-bezier(.4,0,.2,1) both"><path d="M-2 29h10c3 0 6-1 9-2.5L27 21M13 28c1 2.5 4 3.5 7 2.5M17 26.5l2.2 2.2"></path></g>
+                      <g style="animation:hR 1.7s {{ e.s1 }} cubic-bezier(.4,0,.2,1) both"><path d="M62 13H52c-3 0-6 1-9 2.5L33 21M47 14c-1-2.5-4-3.5-7-2.5M43 15.5l-2.2-2.2"></path></g>
+                      <circle cx="30" cy="21" r="2.6" fill="#FFF4D6" stroke="none" style="transform-box:fill-box;transform-origin:center;animation:spk 2.6s {{ e.s2 }} ease-out infinite"></circle>
+                    </svg></sc-if>
+                    <sc-if value="{{ e.ocu }}" hint-placeholder-val="{{ false }}"><svg width="76" height="70" viewBox="0 0 60 56" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                      <defs><linearGradient id="bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF4D6" stop-opacity=".95"></stop><stop offset="1" stop-color="#FFF4D6" stop-opacity="0"></stop></linearGradient></defs>
+                      <g style="transform-origin:30px 21px;animation:bswing 4.4s {{ e.s2 }} ease-in-out infinite"><polygon points="27,21 33,21 42,49 18,49" fill="url(#bm)" stroke="none" style="transform-box:fill-box;transform-origin:50% 0;animation:beam 1.5s {{ e.s1 }} ease-out both,bpulse 3s {{ e.s2 }} ease-in-out infinite"></polygon>
+                      <ellipse cx="30" cy="49" rx="12" ry="1.8" fill="#FFF4D6" stroke="none" style="transform-box:fill-box;transform-origin:center;animation:lglow 1s {{ e.s4 }} ease-out both"></ellipse></g>
+                      <path d="M6 44a24 24 0 0 1 48 0M2 44h56M6 50h48M11 50v-6M49 50v-6"></path>
+                      <ellipse cx="30" cy="20.4" rx="3.6" ry="1.2"></ellipse>
+                    </svg></sc-if>
+                    <sc-if value="{{ e.alba }}" hint-placeholder-val="{{ false }}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(-45deg);overflow:visible"><defs><clipPath id="sunClip"><polygon points="12,-18 42,12 12,42 -18,12"></polygon></clipPath></defs><g clip-path="url(#sunClip)"><g style="filter:drop-shadow(0 0 2px #FFE3B8);animation:sunIn 8s {{ e.s2 }} linear infinite"><circle cx="12" cy="7.5" r="2.4"></circle><path d="M12 3.6v.9M8.6 5l.6.6M15.4 5l-.6.6M7.3 7.5h.9M15.8 7.5h.9"></path></g><g style="animation:monLit 8s {{ e.s2 }} ease-in-out infinite"><path d="M2.5 19h19M3 19v-5.2q3.6-1.8 7.2-.6V19M4.6 19v-1.6M6.6 19v-1.6M8.6 19v-1.6M11.2 19v-3.8M12.8 19v-3.8M14.4 19v-3.8M10.8 15.2h4M15.6 19v-2.6l1.6-1.1 1.6 1.1M17.4 16.4a2.3 2.3 0 0 1 4.4 0V19"></path></g></g></svg></sc-if>
+                    <sc-if value="{{ e.noche }}" hint-placeholder-val="{{ false }}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(-45deg);overflow:visible"><defs><clipPath id="moonClip"><polygon points="12,-18 42,12 12,42 -18,12"></polygon></clipPath></defs><g clip-path="url(#moonClip)"><g style="filter:drop-shadow(0 0 2px #DDE3FA);animation:moonIn 8s {{ e.s2 }} linear infinite"><path d="M11.4 4.6a3.2 3.2 0 1 0 3.6 4.6 2.7 2.7 0 1 1-3.6-4.6z"></path></g><path d="M5.5 5.5l.3.8.8.3-.8.3-.3.8-.3-.8-.8-.3.8-.3zM18.6 4.6l.3.7.7.3-.7.3-.3.7-.3-.7-.7-.3.7-.3z" fill="currentColor" stroke="none" style="animation:nLights 8s {{ e.s2 }} ease-in-out infinite"></path><g style="animation:monDark 8s {{ e.s2 }} ease-in-out infinite"><path d="M2.5 19h19M3 19v-5.2q3.6-1.8 7.2-.6V19M4.6 19v-1.6M6.6 19v-1.6M8.6 19v-1.6M11.2 19v-3.8M12.8 19v-3.8M14.4 19v-3.8M10.8 15.2h4M15.6 19v-2.6l1.6-1.1 1.6 1.1M17.4 16.4a2.3 2.3 0 0 1 4.4 0V19"></path></g><path d="M5.1 15.4h.01M7.1 15.1h.01M9.1 15.2h.01M12 17.6h.01M13.6 17.6h.01M19.6 17.8h.01" stroke="#FFD98C" stroke-width="1.6" style="animation:nLights 8s {{ e.s2 }} ease-in-out infinite"></path></g></svg></sc-if>
+                    <sc-if value="{{ e.plaza }}" hint-placeholder-val="{{ false }}"><svg width="62" height="62" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+                      <path d="M15.2 8.4A15 11.8 0 0 0 15.2 31.6M24.8 8.4A15 11.8 0 0 1 24.8 31.6" stroke-width="2.6"></path>
+                      <path d="M16 11.4A11.4 8.8 0 0 0 16 28.6M24 11.4A11.4 8.8 0 0 1 24 28.6" stroke-width="1" stroke-dasharray=".1 2.2" opacity=".85"></path>
+                      <circle cx="20" cy="20" r="1.7" fill="currentColor" stroke="none"></circle>
+                      <path d="M17.8 8.3V2.6M22.2 8.3V2.6" stroke-width=".9" opacity=".7"></path>
+                      <g transform="translate(20 2.4) scale(.4) translate(-52 -47)" stroke-width="3.2"><path d="M40 47h24M42 47v-5a10 10 0 0 1 20 0v5M52 32v-4M50 30h4M46 47v-4M58 47v-4"></path></g>
+                      <path d="M11 33.4H29" stroke-width="1.4" stroke-dasharray="2 1.6" style="animation:frMarch 1.4s {{ e.s2 }} linear infinite"></path>
+                    </svg></sc-if>
+                    <sc-if value="{{ e.foro }}" hint-placeholder-val="{{ false }}"><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible"><path d="M10.6 17.6L3 21.6" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s2 }} ease-out infinite"></path><path d="M11.3 17.6L6.4 22.4" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s2 }} ease-out infinite"></path><path d="M7.6 19.6l1.6 1.2M5.4 20.6l1.4 1.3" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s2 }} ease-out infinite" stroke-width="1"></path><path d="M11.4 17.6L10.4 22.6" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s3 }} ease-out infinite"></path><path d="M12.6 17.6L13.6 22.6" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s3 }} ease-out infinite"></path><path d="M11.1 19.4h1.8M10.8 21h2.4" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s3 }} ease-out infinite" stroke-width="1"></path><path d="M13.4 17.6L21 21.6" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s4 }} ease-out infinite"></path><path d="M12.7 17.6L17.6 22.4" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s4 }} ease-out infinite"></path><path d="M16.4 19.6l-1.6 1.2M18.6 20.6l-1.4 1.3" pathLength="100" stroke-dasharray="100" style="stroke-dashoffset:100;animation:milDraw 3.6s {{ e.s4 }} ease-out infinite" stroke-width="1"></path><path d="M8.6 17.6h6.8M9.2 16.2h5.6v1.4H9.2zM10 16.2V8.4M14 16.2V8.4M11.3 15.6V9M12.7 15.6V9M9.2 8.4h5.6M8.8 7h6.4v1.4H8.8zM10.4 7V5.8h3.2V7"></path></svg></sc-if>
+                    <sc-if value="{{ e.boca }}" hint-placeholder-val="{{ false }}"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM7.5 9.5l2.5.5M16.5 9.5L14 10M12 11v2"></path><ellipse cx="12" cy="16" rx="2.5" ry="2" style="transform-box:fill-box;transform-origin:center;animation:mouthOC 2.8s {{ e.s2 }} ease-in-out infinite"></ellipse></svg></sc-if>
+                    <sc-if value="{{ e.mon }}" hint-placeholder-val="{{ false }}"><svg width="70" height="70" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                      <ellipse cx="30" cy="40" rx="6" ry="2" style="transform-box:fill-box;transform-origin:center;animation:rip 4s {{ e.s1 }} ease-out infinite"></ellipse>
+                      <ellipse cx="30" cy="40" rx="6" ry="2" style="transform-box:fill-box;transform-origin:center;animation:rip 4s {{ e.s3 }} ease-out infinite"></ellipse>
+                      <ellipse cx="30" cy="40" rx="6" ry="2" style="transform-box:fill-box;transform-origin:center;animation:rip 4s {{ e.s4 }} ease-out infinite"></ellipse>
+                      <path d="M3 40c4-2.5 8 2.5 13 0s8 2.5 13 0 8 2.5 13 0 8 2.5 13 0"></path><path d="M9 48c4-2 7 2 11 0s7 2 11 0 7 2 11 0" opacity=".5"></path>
+                      <g style="transform-box:fill-box;transform-origin:center;animation:coin 4s {{ e.s1 }} ease-in infinite"><circle cx="30" cy="12" r="6"></circle><circle cx="30" cy="12" r="3.2"></circle></g>
+                    </svg></sc-if>
+                    <sc-if value="{{ e.lamp }}" hint-placeholder-val="{{ false }}"><svg width="74" height="62" viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible">
+                      <defs><radialGradient id="lg"><stop offset="0" stop-color="#FFD58A" stop-opacity=".75"></stop><stop offset="1" stop-color="#FFD58A" stop-opacity="0"></stop></radialGradient></defs>
+                      <circle cx="49" cy="24" r="22" fill="url(#lg)" stroke="none" style="transform-box:fill-box;transform-origin:center;animation:lglow 1.6s {{ e.s3 }} ease-out both,bpulse 1.8s {{ e.s2 }} ease-in-out infinite"></circle>
+                      <path d="M8 38c2 6 26 6 32 1l10-5H40c-6-5-26-5-32 0zM8 38c-4 0-5 4-2 6M24 32v-3"></path>
+                      <path d="M50 33c-3.2-3-3.2-7.5 0-12.5 3.2 5 3.2 9.5 0 12.5z" fill="#FFD58A" stroke="none" style="transform-box:fill-box;transform-origin:50% 100%;animation:flame .9s {{ e.s1 }} ease-out both,flick .35s {{ e.s2 }} ease-in-out infinite alternate"></path>
+                    </svg></sc-if>
+                  </span>
+                  <sc-if value="{{ e.key }}" hint-placeholder-val="{{ false }}"><svg width="104" height="120" viewBox="0 0 104 120" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;inset:0;clip-path:{{ e.clip }};color:{{ e.ink }}">
+                    <g style="transform-origin:52px 44px;animation:kZoom 3.6s {{ e.s5 }} ease-in-out infinite"><g style="transform-box:fill-box;transform-origin:center;animation:domeIn 1.6s {{ e.s2 }} ease-out both"><path d="M34 118L46 52M70 118L58 52M26 118L42 56M78 118L62 56" opacity=".55"></path><path d="M40 47h24M42 47v-5a10 10 0 0 1 20 0v5M52 32v-4M50 30h4M46 47v-4M58 47v-4"></path></g>
+                    <path d="M52 4a32 32 0 0 1 21 56l14 56H17l14-56A32 32 0 0 1 52 4z" stroke-width="3" style="transform-box:view-box;transform-origin:52px 44px;animation:zoomK 1.9s {{ e.s1 }} cubic-bezier(.6,0,.9,.5) both"></path></g>
+                  </svg></sc-if>
+                </div></div></sc-if>
+              </div>
+              <span style="display:flex;flex-direction:column;gap:5px"><span style="font:400 18px/1.12 'Instrument Serif',serif;color:#FFFDF8;text-wrap:balance">{{ e.n }}</span><span style="font:italic 400 13.5px/1.3 'Instrument Serif',serif;color:rgba(255,253,248,.78);text-wrap:pretty">{{ e.line }}</span><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ e.ink }}">{{ e.p }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ s.isViaj }}" hint-placeholder-val="{{ false }}">
+        <span style="padding-top:8px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Países · la misma chapa, 9 escalones</span>
+        <div style="display:flex;flex-wrap:wrap;gap:16px">
+          <sc-for list="{{ evoP }}" as="c" hint-placeholder-count="9">
+            <div style="width:168px;padding:14px 10px 12px;border-radius:22px;background:{{ c.bg }};border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+              <dc-import name="Piezas/Chapa Viajero" kind="{{ c.kind }}" lv="{{ c.lv }}" max="{{ c.max }}" color="{{ c.color }}" ic="{{ c.ic }}" num="{{ c.num }}" anim="{{ true }}" delay="{{ c.dl }}" size="130" hint-size="130px,152px"></dc-import>
+              <span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:{{ c.tc }}">{{ c.k }}</span>
+              <sc-if value="{{ c.hasT }}" hint-placeholder-val="{{ true }}"><span style="font:400 17px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ c.t }}</span></sc-if>
+              <span style="font:400 11.5px/1.4 'Geist';color:rgba(28,34,48,.6);text-wrap:pretty">{{ c.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <span style="padding-top:8px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Patrimonios · el templo se completa</span>
+        <div style="display:flex;flex-wrap:wrap;gap:16px">
+          <sc-for list="{{ evoH }}" as="c" hint-placeholder-count="3">
+            <div style="width:168px;padding:14px 10px 12px;border-radius:22px;background:{{ c.bg }};border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+              <dc-import name="Piezas/Chapa Viajero" kind="{{ c.kind }}" lv="{{ c.lv }}" max="{{ c.max }}" color="{{ c.color }}" ic="{{ c.ic }}" num="{{ c.num }}" anim="{{ true }}" delay="{{ c.dl }}" size="130" hint-size="130px,152px"></dc-import>
+              <span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:{{ c.tc }}">{{ c.k }}</span>
+              <span style="font:400 17px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ c.t }}</span>
+              <span style="font:400 11.5px/1.4 'Geist';color:rgba(28,34,48,.6);text-wrap:pretty">{{ c.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <span style="padding-top:8px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Todos los logros de viajero, con sus escalones</span>
+        <sc-for list="{{ lvAll }}" as="r" hint-placeholder-count="12">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:16px 4px 18px;border-top:1px solid rgba(28,34,48,.1)">
+            <span style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="width:10px;height:10px;border-radius:50%;background:{{ r.gc }}"></span><span style="font:400 22px/1.1 'Instrument Serif',serif">{{ r.n }}</span><span style="font:500 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ r.grp }} · {{ r.steps }}</span></span>
+            <div style="display:flex;flex-wrap:wrap;gap:16px 18px;align-items:flex-end">
+              <sc-for list="{{ r.t }}" as="m" hint-placeholder-count="4">
+                <div style="width:150px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+                  <sc-if value="{{ r.notQ }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Logro Viajero" tier="{{ m.t }}" grow="{{ m.g }}" world="{{ r.w }}" hue="{{ r.h }}" size="124" num="{{ m.num }}" icon="{{ r.i }}" delay="{{ m.d }}" hint-size="124px,124px"></dc-import></sc-if>
+                  <sc-if value="{{ r.isQ }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Cuatro Estaciones" got="{{ m.got }}" size="124" delay="{{ m.d }}" hint-size="124px,124px"></dc-import></sc-if>
+                  <span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 12.5px 'Geist'">{{ m.lab }}</span><sc-if value="{{ m.hasLine }}" hint-placeholder-val="{{ false }}"><span style="font:italic 400 13px/1.2 'Instrument Serif',serif;color:rgba(28,34,48,.68)">{{ m.line }}</span></sc-if><span style="font:600 9px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(28,34,48,.5)">{{ m.mat }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <span style="padding-top:8px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Los de un solo paso</span>
+        <div style="display:flex;flex-wrap:wrap;gap:18px">
+          <div style="width:172px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><sc-if value="{{ dosOn }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Dos Paises" size="140" anim="{{ true }}" hint-size="140px,154px"></dc-import></sc-if><span style="font:400 17px/1.1 'Instrument Serif',serif">Dos países en un día</span><span style="font:italic 400 13px/1.25 'Instrument Serif',serif;color:rgba(28,34,48,.65)">Italia y el Vaticano, el mismo día.</span></div>
+          <div style="width:172px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><dc-import name="Piezas/Continentes" got="eu,na,sa" size="140" anim="{{ true }}" hint-size="140px,154px"></dc-import><span style="font:400 17px/1.1 'Instrument Serif',serif">Continentes</span><span style="font:italic 400 13px/1.25 'Instrument Serif',serif;color:rgba(28,34,48,.65)">Nuevo continente: Europa</span></div>
+          <div style="width:172px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><dc-import name="Piezas/Microestados" got="2" size="140" anim="{{ true }}" hint-size="140px,154px"></dc-import><span style="font:400 17px/1.1 'Instrument Serif',serif">Los pequeños gigantes</span><span style="font:italic 400 13px/1.25 'Instrument Serif',serif;color:rgba(28,34,48,.65)">2 de 6 microestados.</span></div>
+          <sc-for list="{{ unis }}" as="u" hint-placeholder-count="10">
+            <div style="width:172px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><dc-import name="Piezas/Logro Unico" kind="{{ u.k }}" size="140" anim="{{ true }}" hint-size="140px,154px"></dc-import><span style="font:600 9px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:{{ u.gc }}">{{ u.grp }}</span><span style="font:400 17px/1.1 'Instrument Serif',serif">{{ u.n }}</span><span style="font:400 11.5px/1.4 'Geist';color:rgba(28,34,48,.6);text-wrap:pretty">{{ u.t }}</span></div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ s.isExcl }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:28px;padding:24px;border-radius:28px;background:radial-gradient(circle at 50% 30%,#2A3150 0%,#121626 75%)">
+          <sc-for list="{{ excl }}" as="x" hint-placeholder-count="4">
+            <div style="width:170px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:#FFFDF8">
+              <div style="margin:6px 0 4px"><dc-import name="Piezas/Exclusivo Holo" kind="{{ x.k }}" size="150" delay="{{ x.dn }}" hint-size="150px,150px"></dc-import></div>
+              <span style="font:400 19px/1.1 'Instrument Serif',serif">{{ x.n }}</span>
+              <span style="font:400 12px/1.4 'Geist';color:rgba(255,253,248,.65);text-wrap:pretty">{{ x.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ s.isMundo }}" hint-placeholder-val="{{ false }}">
+        <span style="align-self:flex-start;height:28px;padding:0 12px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;font:600 11px 'Geist Mono',monospace;letter-spacing:.14em">PRÓXIMAMENTE</span>
+        <div data-soon="1" style="filter:grayscale(1);opacity:.55;pointer-events:none;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+          <sc-for list="{{ vmSteps }}" as="v" hint-placeholder-count="5">
+            <div style="width:190px;padding:14px 10px 14px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+              <dc-import name="Piezas/Vuelta Mundo" km="{{ v.km }}" size="170" anim="{{ true }}" hint-size="170px,170px"></dc-import>
+              <span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.12em;color:oklch(0.48 0.13 38)">{{ v.k }}</span>
+              <span style="font:400 17px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ v.n }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+
+
+  </section>
+
+  </sc-for>
+  <section id="m8" style="display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:760px"><span style="font:400 34px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">07 · </span>Las 7 maravillas del mundo</span><span style="font:400 13.5px/1.5 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Una sola medalla en 7 partes: cada maravilla vista se enciende en oro y las que faltan siguen apagadas. Con las 7, la medalla entera.</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+      <sc-for list="{{ m7 }}" as="w" hint-placeholder-count="7">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+          <div style="width:340px;height:420px;border-radius:32px;background:{{ w.bg }};display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px -30px rgba(28,34,48,.6)"><dc-import name="Piezas/Medalla Siete" n="{{ w.n }}" size="300" hint-size="300px,375px"></dc-import></div>
+          <span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.16em;color:#9C7634">{{ w.k }}</span>
+          <span style="font:400 21px/1.1 'Instrument Serif',serif">{{ w.t }}</span>
+          <span style="font:italic 400 14px/1.3 'Instrument Serif',serif;color:rgba(28,34,48,.65)">{{ w.l }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <section id="m9" style="display:flex;flex-direction:column;gap:12px"><span style="font:400 34px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">08 · </span>El Coliseo, de cerca</span><div style="margin:0 -48px"><dc-import name="Piezas/Emblemas Coleccion" hint-size="100%,2400px"></dc-import></div></section>
+  <section id="m10" style="display:flex;flex-direction:column;gap:12px"><span style="font:400 34px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">09 · </span>La medalla de las 7 monedas</span><div style="margin:0 -48px"><dc-import name="Piezas/Medalla 7 Maravillas" hint-size="100%,2400px"></dc-import></div></section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INK='#1C2230',GR='oklch(0.55 0.11 150)';
+const IC={ropa:'M2 21h20M3.5 21V6.5l5-2.5 5 2.5V21M3 6.8h11M6 9.5h1.5M9.5 9.5H11M6 13h1.5M9.5 13H11M7 21v-4a1.5 1.5 0 0 1 3 0v4M18 21v-6M14.6 12.6a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0-6.8 0M16.3 15.4L18 17l1.7-1.6',barcaccia:'M2.5 13.5Q4 16.8 12 16.8T21.5 13.5L19.5 16H4.5zM4 17.5q8 2.3 16 0M2 20.5q2.5-1.4 5 0t5 0 5 0 5 0M12 15.5V6M12 6c-1.6 1.2-3.2 3.4-3.6 6.5M12 6c1.6 1.2 3.2 3.4 3.6 6.5M12 6q-.6-1.6 0-3M12 6q.6-1.6 0-3',frontera:'M2 15h20M2 18h20M10.5 3c2 0 3.2 2 3.2 4.6s-.8 5-2.2 6.5-3.5 1-3.5-1 .6-3.4.6-5.2S8.6 3 10.5 3zM15.5 4h.01M17 6h.01M17.5 8.5h.01',
+panteon:'M3 21h18M4 18h16M5 18v-6M8.5 18v-6M12 18v-6M15.5 18v-6M19 18v-6M4 12h16L12 8zM8 9.5a4 4 0 0 1 8 0M12 5.5V4',
+farola:'M12 21V9M9 21h6M8 9h8l-1-3H9zM10 6l2-3 2 3M12 13h3M15 13v2',
+castillo:'M4 21h16M5 21v-7h14v7M5 14a7 3 0 0 1 14 0M8 11V8h8v3M12 8V5.5M10 4.2l2 1.3 2-1.3M12 5.5l-2.5-2M12 5.5l2.5-2M10 21v-3a2 2 0 0 1 4 0v3',
+triunfo:'M3 20h18M4 20V8h16v12M4 8V5h16v3M9.5 20v-5a2.5 2.5 0 0 1 5 0v5M5.5 20v-3a1 1 0 0 1 2 0v3M16.5 20v-3a1 1 0 0 1 2 0v3M6 11h12',
+escalinata:'M3 20h18M4 20v-3h4v-3h4v-3h4V8h4v12M12 8V4M10.5 4.5h3M6 14V9',
+vittoriano:'M2 20h20M3 17h18M5 17v-6M8 17v-6M11 17v-6M14 17v-6M17 17v-6M4 11h16M7 11l2-3h6l2 3M12 8V4M10 6l2-2 2 2',
+loba:'M3 12c2-3 5-4 9-4h4l2-3 1 3c1.5.5 2.5 1.5 3 3l-2 1h-2v7M16 19v-6M7 19v-5M5 19v-4c-1 0-2-1-2-2M9.5 18a1 1 0 1 0 0-.01M13 18a1 1 0 1 0 0-.01',
+baldaquino:'M4 21h16M3 7h18M4 7l1.5-3h13L20 7M12 4V1.5M3 7c1 1.3 2 1.3 3 0s2 1.3 3 0 2 1.3 3 0 2 1.3 3 0 2 1.3 3 0 2 1.3 3 0M5.5 9c3 2-3 4 0 6s-3 4 0 6M8.5 9c-3 2 3 4 0 6s3 4 0 6M15.5 9c3 2-3 4 0 6s-3 4 0 6M18.5 9c-3 2 3 4 0 6s3 4 0 6',
+llaves:'M7 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM17 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM8.4 6.4L19.5 17.5M15.6 6.4L4.5 17.5M17 15l1.5-1.5M7 15l-1.5-1.5M15.5 16.5L17 15M8.5 16.5L7 15M19.5 17.5l1 1M4.5 17.5l-1 1',
+secreta:'M5 21V3h10v18M15 3l4 2v14l-4 2M3 21h18M12.5 12h.01M21 8l2-1M21 12h2M21 16l2 1',
+cincel:'M16 2l6 6-3 3-6-6zM14.5 7.5L6.5 15.5M16.5 9.5L8.5 17.5M6.5 15.5L3 17l4 4 1.5-3.5M2 12.5l1.5.4M4.2 22.6l.4-1.5',
+piramide:'M3 20h18M5 20l3-4h8l3 4M8 16l2-4h4l2 4M10 12l1-3h2l1 3M11 9V7h2v2',
+cristo:'M12 2.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM3 8h18M12 6v14M9.5 20h5M9 8l3 2.5L15 8',
+muralla:'M2 20h20M4 20v-8h16v8M4 12V9h2v3M8 12V9h2v3M12 12V9h2v3M16 12V9h2v3M10 20v-4h4v4',
+machu:'M2 20l6-11 4 5 3-4 7 10zM6 20v-3h3v3M14 20v-2h3v2',
+petra:'M4 21h16M5 21V9h14v12M3 9h18M12 9L8 5h8zM8 21v-8M12 21v-8M16 21v-8',
+taj:'M4 21h16M6 21v-6h12v6M12 4c-3 2-4 4-4 7h8c0-3-1-5-4-7zM12 2v2M3 21v-9M21 21v-9M10.5 21v-3h3v3',
+col:'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z',
+pais:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7.5v9M12 7.5h4.5L15.5 9l1 1.5H12',
+gema:'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4l3 16M15 4l-3 16',
+plaza:'M12 3l1.5 3v11h-3V6zM4 20c2-2 5-3 8-3s6 1 8 3M8 17h8',
+iglesia:'M12 2v4M10 4h4M6 21V11l6-5 6 5v10M3 21h18M10 21v-5h4v5',
+farol:'M12 2v3M9 5h6l1 6H8zM10 11v4h4v-4M12 15v6M9 21h6',
+rio:'M3 8c3 0 3-2 6-2s3 2 6 2 3-2 6-2M3 13c3 0 3-2 6-2s3 2 6 2 3-2 6-2M3 18c3 0 3-2 6-2s3 2 6 2 3-2 6-2',
+pincel:'M15 4l5 5-9 9H6v-5zM13 6l5 5M6 18l-3 3',
+arco:'M3 20h18M5 20V10c2-3 12-3 14 0v10M5 14h14M9 10v10M12 9.5V20M15 10v10',
+obelisco:'M12 2l2 3v13h-4V5zM7 22h10M8 18h8v4H8z',
+fuente:'M4 20h16M6 20v-3h12v3M12 17V9M12 9c-2 0-4-1.5-4-4M12 9c2 0 4-1.5 4-4M9 13c-1.5 0-3-.8-3.5-2M15 13c1.5 0 3-.8 3.5-2',
+cuadro:'M4 5h16v14H4zM8 15l2.5-3 2 2.5 2-2 2.5 2.5',
+prism:'M6 8h4l1 9a3 3 0 1 1-6 0zM14 8h4l1 9a3 3 0 1 1-6 0zM10 11h4M8 8V5M16 8V5',
+cupula:'M3 20h18M5 20v-7a7 7 0 0 1 14 0v7M10.5 6.4h3M9 20v-4M15 20v-4',
+foro:'M4 20h16M6 20V9M10 20V7M14 20v-9M18 20V10M5 9h2M9 7h2M13 11h2M17 10h2',
+techo:'M3 5h18v4H3zM6 9v3M18 9v3M8 16l3-2 2 2 3-2M5 20h14',
+tumba:'M4 20h16M6 20v-6a6 6 0 0 1 12 0v6M12 8V4M10.5 5.5h3',
+moneda:'M12 20a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM6 4l1.5 2M18 4l-1.5 2M12 2v2',
+boca:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM7.5 9.5l2.5.5M16.5 9.5L14 10M12 11v2M9.5 16a2.5 2 0 1 0 5 0 2.5 2 0 0 0-5 0z',
+ojo:'M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+cata:'M3 20h18M5 20v-6a3 3 0 0 1 6 0v6M13 20v-6a3 3 0 0 1 6 0v6M3 8h18',
+alba:'M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 6v3M5 10.5l1.6 1.2M19 10.5l-1.6 1.2M8 21h8',
+noche:'M19.5 14.5A7.5 7.5 0 1 1 9.5 4.5a6 6 0 0 0 10 10zM17 3.5l.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5L15 5.5l1.5-.5z',
+globo:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z',
+pin:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+laurel:'M12 21V9M12 9c-3 0-5-2-5-5 3 0 5 2 5 5zM12 9c3 0 5-2 5-5-3 0-5 2-5 5zM12 14c-3 0-5-2-5-4.5 3 0 5 2 5 4.5zM12 14c3 0 5-2 5-4.5-3 0-5 2-5 4.5z',
+templo:'M3 21h18M5 18h14M6 18V10M10 18V10M14 18V10M18 18V10M4 10h16L12 4z',
+estacion:'M12 3v18M3 12h18M7 7l10 10M17 7L7 17',
+maleta:'M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5',
+fiel:'M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11',
+continente:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 6l2 3-1 3 3 2-1 4M15 5l-1 3 3 2 2-1',
+capital:'M4 20h16M6 20V11h12v9M9 20v-5h6v5M12 11V4M12 4h5l-1.5 1.5L17 7h-5',
+dospaises:'M5 21V4h8l-1.5 2.5L13 9H5M13 21V9h7l-1.5 2.5L20 14h-7',
+corona:'M4 18h16M5 18l-1-10 5 4 3-6 3 6 5-4-1 10',
+ecuador:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 7v2M12 15v2',
+meses:'M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5zM3.5 10h17M8 3v4M16 3v4M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01',
+navidad:'M12 3l5 7h-3l4 6h-3l3 4H6l3-4H6l4-6H7zM12 20v2',
+copa:'M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v7M8 21h8M16 5l3-2M17 8l3-1',
+tres:'M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5zM3.5 10h17M8 15h1.5M11.25 15h1.5M14.5 15H16',
+solasol:'M8 14a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 2v1.5M2 10h1.5M3.8 5.8l1 1M20 15.5A5 5 0 1 1 15 10.5a4 4 0 0 0 5 5z',
+alondra:'M3 14c3 0 5-2 7-5 1-1.5 3-2 4.5-1L18 6l-1.5 3c1 2 0 5-3 6l-4 1.5L6 19l1-3c-2 0-3.5-1-4-2zM14 9h.01',
+buho:'M6 5l3 2h6l3-2v8a6 6 0 0 1-12 0zM9.5 11h.01M14.5 11h.01M11 14l1 1 1-1M9 21h6',
+diaok:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.5l3 3 5-6',
+viajeok:'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8zM9.5 11.8l1.8 1.8 3.2-3.4',
+rayo:'M13 2L4 14h7l-1 8 9-12h-7z',
+mapa:'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',
+camara:'M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+lupa:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4M8.5 11h5M11 8.5v5',
+grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+ciudad:'M3 21h18M5 21V9l4-3v15M9 21V4h6v17M15 21V10h4v11M11.5 8h1M11.5 12h1M11.5 16h1',
+candado:'M6 11h12v10H6zM8.5 11V7a3.5 3.5 0 0 1 7-1M12 15v2',
+diam1:'M6 4h12l3 5-9 11L3 9zM3 9h18M12 12v4',
+fundador:'M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.3 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8zM8 21h8M12 17v4',
+pionero:'M5 21V4M5 4h12l-2.5 3.5L17 11H5',
+probador:'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9'};
+const HEX='polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)',OCT='polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)',SHIELD='polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)',
+CROSS='polygon(32% 0,68% 0,68% 32%,100% 32%,100% 68%,68% 68%,68% 100%,32% 100%,32% 68%,0 68%,0 32%,32% 32%)',
+STAR='polygon('+Array.from({length:16},(_,i)=>{const a=-Math.PI/2+i*Math.PI/8,r=i%2?37:50;return (50+r*Math.cos(a)).toFixed(1)+'% '+(50+r*Math.sin(a)).toFixed(1)+'%';}).join(',')+')',
+KEY='path("M52 4a32 32 0 0 1 21 56l14 56H17l14-56A32 32 0 0 1 52 4z")';
+const GOLD='linear-gradient(135deg,#F6E7BD,#B9944F 45%,#F0DCA6 70%,#A88541)';
+const SH={hexa:{w:'104px',h:'118px',clip:HEX,rad:'0',pb:'0'},escudo:{w:'104px',h:'120px',clip:SHIELD,rad:'0',pb:'18px'},arco:{w:'98px',h:'120px',clip:'none',rad:'49px 49px 14px 14px',pb:'0'},chapa:{w:'112px',h:'112px',clip:'none',rad:'32px',pb:'0'}};
+const COLS=[['Los imprescindibles de Roma','Imprescindibles de Roma','col','impr','oklch(0.55 0.17 5)',8],['Los imprescindibles de Roma · versión frambuesa','Imprescindibles de Roma','col','impr','oklch(0.55 0.17 5)',8,{pal:'fr'}],['Los imprescindibles de Roma','Imprescindibles de Roma','col','impr','',8,{pal:'mx'}],
+['El país más pequeño del mundo','','llaves','vati','oklch(0.78 0.12 90)',3,{"ink":"#3A2A0E","line":"rgba(58,42,14,.3)"}],
+['Las 4 joyas de Roma','','gema','joyas','',4],
+['Las 4 joyas de Roma','','gema','joyasD','',4],
+['El alma de Trastevere','','ropa','chapa','oklch(0.5 0.08 300)',4],
+['La Roma de Miguel Ángel','','cincel','escudo',"linear-gradient(115deg,transparent 0 30%,rgba(120,126,136,.28) 31%,transparent 33% 58%,rgba(120,126,136,.2) 59.5%,transparent 61%),linear-gradient(35deg,transparent 0 44%,rgba(140,146,156,.22) 45%,transparent 47%),linear-gradient(160deg,#FFFFFF,#ECEDEB 55%,#D9DBDD)",4,{ink:'#3C4048',line:'rgba(60,64,72,.28)',rim:'linear-gradient(135deg,#FAFAF8,#C6C9CE 45%,#F1F2F1 70%,#AEB2B8)'}],
+['La Roma de Bernini','','baldaquino','hexa','oklch(0.44 0.07 52)',5],
+['Tras los pasos de Caravaggio','Tras los pasos de Caravaggio','cuadro','cinta','radial-gradient(circle at 34% 28%,#7A5430,#1E140C 70%)',3],
+['La Roma antigua','','loba','arco','oklch(0.76 0.05 75)',6,{"ink":"#3A2A0E","line":"rgba(58,42,14,.3)"}],
+['Los miradores','','prism','hexa','linear-gradient(180deg,oklch(0.78 0.09 55),oklch(0.64 0.1 10) 55%,oklch(0.5 0.1 320))',3],
+['Plazas y fuentes de Roma','','barcaccia','chapa','linear-gradient(160deg,oklch(0.74 0.09 188),oklch(0.5 0.09 212))',7],
+['La Roma secreta','','secreta','escudo','radial-gradient(circle at 40% 28%,oklch(0.44 0.07 150),oklch(0.28 0.05 150) 75%)',5]];
+const CGRP=[['Las principales',[2,3]],['Las de empezar',[5,6]],['Las de artistas',[7,8,9]],['Las de explorar',[10,11,12,13]]];
+const EMB=[['Una maravilla del mundo','Coliseo','arco',{st:'mar',w:'98px',h:'116px',rad:'49px 49px 14px 14px',rim:'linear-gradient(135deg,#FFF6DC,#D9B86A 40%,#FFF1C6 62%,#B48F45)',halo:'oklch(0.9 0.09 85 / .6)'}],['Donde empezó todo','Foro Romano','foro',{st:'foro',w:'106px',h:'120px',clip:HEX}],['Bajo el techo de Miguel Ángel','Museos Vaticanos','techo',{st:'cre',w:'128px',h:'96px',rad:'16px'}],
+['La frontera que no se ve','Plaza de San Pedro','frontera',{st:'plaza',w:'104px',h:'120px',clip:SHIELD,it:'-10px'}],['Sobre la tumba de San Pedro','Basílica de San Pedro','tumba',{w:'112px',h:'112px',clip:CROSS}],
+['Bajo una cúpula de casi 2.000 años','Panteón','cupula',{st:'ocu',w:'112px',h:'112px',rad:'50%'}],['Volverás a Roma','Fontana de Trevi','moneda',{st:'mon',w:'100px',h:'120px',rad:'50% 50% 50% 50% / 58% 58% 42% 42%'}],
+['Has dicho la verdad','Boca de la Verdad','boca',{st:'boca',w:'122px',h:'122px',clip:STAR}],['Has mirado por la cerradura','Ojo de la Cerradura del Aventino','ojo',{st:'key',w:'104px',h:'120px',clip:KEY,it:'0',itop:1}],
+['La Roma de debajo','Catacumbas de San Calixto','cata',{st:'lamp',w:'112px',h:'112px',clip:OCT}],
+['Madrugador','Un imprescindible, al amanecer','alba',{st:'alba',w:'90px',h:'90px',rad:'24px',tf:'rotate(45deg)',itf:'rotate(-45deg)',rim:'#F3D2A6',halo:'rgba(255,215,170,.45)'}],
+['Nocturno','Un imprescindible, de noche','noche',{st:'noche',w:'90px',h:'90px',rad:'24px',tf:'rotate(45deg)',itf:'rotate(-45deg)',rim:'#C9D2F2',halo:'rgba(190,200,240,.45)'}]];
+const VC={mundo:['El mundo','oklch(0.58 0.14 38)','#FFF5E1'],tiempo:['El tiempo','oklch(0.76 0.12 82)','#4A2E10'],como:['Cómo viajas','oklch(0.58 0.1 118)','#FFF5E1'],col:['Coleccionista','oklch(0.46 0.1 340)','#FFF5E1']};
+// [name, det, kind, ic, lv, max, locked, tiers, ill]
+const NM={'Países':{1:'Primer sello',3:'Trotamundos',5:'Alma viajera',8:'Pasaporte en marcha',10:'Ciudadano del mundo',15:'Horizonte sin fin',20:'Veinte banderas',25:'Medio mundo en la maleta',30:'El mundo es tu casa'},'Destinos':{1:'Primera parada',3:'Ciudad tras ciudad',5:'Mapa en marcha',10:'Diez ciudades, diez historias',15:'Brújula incansable',20:'Sin fronteras'},'Capitales':{5:'Ruta de capitales',10:'Corazón de naciones',15:'Capital de capitales',25:'Embajada del mundo'},'Patrimonios de la Humanidad':{1:'Testigo de la historia',10:'Guardián del patrimonio',15:'Memoria del mundo'},'Viajes':{1:'El primer viaje',5:'Cinco maletas',10:'Maleta siempre lista'},'Cazador de emblemas':{5:'Cazador de emblemas',10:'Ojo de lince',15:'Nada se te escapa'},'Coleccionista':{5:'Coleccionista',10:'Álbum lleno',15:'Gran coleccionista'},'Conocedor de Roma':{25:'Conocedor de Roma',50:'Como en casa en Roma'}};
+const PT=[[1,0],[2,1],[3,2],[4,2],[4,3],[5,3],[6,3],[6,4],[7,5]],PN=['1','3','5','8','10','15','20','25','30'];
+const CLN={'Los imprescindibles de Roma':'Lo esencial, visto.','El país más pequeño del mundo':'El país entero.','El Vaticano':'El país entero.','Las 4 joyas de Roma':'Las cuatro joyas, en tu mano.','El alma de Trastevere':'Corazón trasteverino.','La Roma de Miguel Ángel':'Tras la huella del genio.','La Roma de Bernini':'La Roma que esculpió Bernini.','Tras los pasos de Caravaggio':'Luz y sombra.','La Roma antigua':'2.000 años de historia.','Los miradores':'Roma a tus pies.','Plazas y fuentes de Roma':'Agua y piedra.','La Roma secreta':'Lo que pocos ven.'};
+const ELN={'Una maravilla del mundo':'El mayor anfiteatro de la Antigüedad.','Donde empezó todo':'Aquí estaba el Miliario de Oro: de él partían los caminos del Imperio.','Bajo el techo de Miguel Ángel':'Miguel Ángel pintó la bóveda de la Sixtina en cuatro años, de 1508 a 1512.','La frontera que no se ve':'Acabas de cruzar una frontera sin darte cuenta.','Sobre la tumba de San Pedro':'Bajo el altar mayor está, según la tradición, la tumba del apóstol.','Bajo una cúpula de casi 2.000 años':'La mayor cúpula de hormigón sin armar del mundo.','Volverás a Roma':'Dice la leyenda que quien lanza una moneda de espaldas, vuelve.','Has dicho la verdad':'Cuenta la leyenda que muerde la mano de quien miente.','Has mirado por la cerradura':'Por este agujero se ve la cúpula de San Pedro, enmarcada.','La Roma de debajo':'Kilómetros de galerías donde se enterraron los primeros cristianos.','Madrugador':'Roma antes que nadie.','Nocturno':'Roma con las luces encendidas.'};
+const TRAV=[['mundo',[['Países','2 países · te falta 1 para Trotamundos','paises','globo',0,6,0,['1','3','5','8','10','15','20','25','30']],['Destinos','1 destino · te faltan 2 para Ciudad tras ciudad','destinos','pin',0,5,0,['1','3','5','10','15','20']],['Patrimonios de la Humanidad','2 · te faltan 8 para Guardián del patrimonio','patrimonio','',0,4,0,['1','10','15']],['Capitales','2 · te faltan 3 para Ruta de capitales','gen','capital',0,3,1,['5','10','15','25']],['Continentes','Nuevo continente: Europa','gen','continente',0,1,0],['Viajero nacional','También se viaja cerca: 3 destinos de tu país.','gen','pin',0,1,1],['Dos países en un día','Italia y el Vaticano, el mismo día.','single','',0,1,0,null,'dospaises'],['Al otro lado del ecuador','Has viajado al hemisferio sur.','single','',0,1,1,null,'ecuador']]],
+['tiempo',[['Viajes','1 viaje · te faltan 4 para Cinco maletas','gen','maleta',0,3,0,['1','5','10']],['Las cuatro estaciones','Has viajado en primavera, verano, otoño e invierno.','gen','estacion',0,1,0],['Un destino, cuatro estaciones','La misma ciudad en las 4','gen','estacion',0,1,1],['Los 12 meses','Has viajado en cada mes del año.','gen','meses',0,1,0],['Nunca es la última vez','Has vuelto a Roma.','gen','fiel',0,1,1],['Navidad fuera de casa','','single','',0,1,1,null,'navidad'],['Nochevieja fuera de casa','','single','',0,1,1,null,'nochevieja'],['De sol a sol','Madrugador y Nocturno el mismo día','single','',0,1,1,null,'solasol']]],
+['como',[['Día perfecto','Todas las paradas de un día','single','',0,1,0,null,'diaok'],['Viaje perfecto','Todos los días del viaje completados','single','',0,1,1,null,'viajeok'],['Imparable','3 días seguidos completados','single','',0,1,1,null,'imparable'],['Escapada','1 o 2 noches','single','',0,1,1,null,'escapada'],['Gran viaje','10 noches o más','single','',0,1,1,null,'granviaje'],['El fotógrafo','Foto en todas las paradas vistas','single','',0,1,1,null,'fotografo']]],
+['col',[['Cazador de emblemas','3 emblemas · te faltan 2 para Cazador de emblemas','gen','lupa',0,3,1,['5','10','15']],['Coleccionista','3 colecciones · te faltan 2 para Coleccionista','gen','grid',0,3,1,['5','10','15']],['Conocedor de Roma','28 sitios · te faltan 22 para Como en casa en Roma','gen','ciudad',0,2,0,['25','50']],['Roma al completo','Todas las colecciones de Roma','gen','ciudad',0,1,1],['Todos los secretos de Roma','Todos los emblemas de Roma','gen','candado',0,1,1]]]];
+const star5=(cx,cy,r)=>Array.from({length:10},(_,k)=>{const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*0.45:r;return (cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1);}).join(' ');
+const hex=(cx,cy,r)=>Array.from({length:6},(_,k)=>{const a=(-90+60*k)*Math.PI/180;return (cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1);}).join(' ');
+const pt=(a,r)=>[120+r*Math.cos(a*Math.PI/180),120+r*Math.sin(a*Math.PI/180)];
+const wedge=(a0,a1,r)=>{const[x0,y0]=pt(a0,r),[x1,y1]=pt(a1,r);return`M120 120L${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}Z`;};
+class Component extends DCLogic {
+  state={lvT:4,off:{},pz:{i:[0,2,4],v:[0],j:[0,2]},pzL:{}};
+  rp(k){this.setState(s=>({off:{...s.off,[k]:true}}));setTimeout(()=>this.setState(s=>({off:{...s.off,[k]:false}})),80);}
+  renderVals(){if(window.TRAZO_SITIOS){const S=window.TRAZO_SITIOS,K=window.TRAZO_SITIO_CLAVE;for(const n in K)if(typeof IC!=='undefined'&&S[n])IC[K[n]]=S[n];}else if(!this.__sw){this.__sw=1;setTimeout(()=>{this.__sw=0;this.forceUpdate();},150);}
+    const v=this._rv();if(this.props.hideV)v.secs=v.secs.filter(x=>x.id!=='m5');return v;}
+  _rv(){const s=this.state;
+    const sec=(id,n,t,d,flag)=>({id,n,t,d,on:!s.off[id],rp:()=>this.rp(id),isSellos:flag==='s',isCols:flag==='c',isEmb:flag==='e',isMara:flag==='m',isViaj:flag==='v',isExcl:flag==='x',isMundo:flag==='w'});
+    const mkImpr=(multi)=>{const P=(a,r)=>[75+r*Math.cos(a),75+r*Math.sin(a)],dg=Math.PI/180,R=72,r=30;const ics=[IC.arco,IC.foro,IC.fuente,IC.panteon,IC.obelisco,IC.escalinata,IC.castillo,IC.farola];const gem=multi==='w'?{0:5,1:2,2:6,3:7,4:0,5:3,6:1,7:4}:multi?{0:0,1:4,2:1,3:2,4:5,5:6,6:7,7:3}:{0:0,2:1,3:2};
+        return ics.map((i,k)=>{const a0=(-90-22.5+k*45)*dg,a1=a0+45*dg,am=(a0+a1)/2;const pts=[P(a0,R),P(a1,R),P(a1,r),P(a0,r)].map(p=>p.map(v=>v.toFixed(1)).join(' '));
+          const ins=[P(a0+3*dg,R-5),P(a1-3*dg,R-5),P(a1-6*dg,r+5),P(a0+6*dg,r+5)].map(p=>p.map(v=>v.toFixed(1)).join(' '));const [ix,iy]=P(am,48),[gx,gy]=P(am,63),[cx,cy]=P(am,51);const g=gem[k];
+          return{i:i||IC.col,tile:'M'+pts.join('L')+'Z',inner:'M'+ins.join('L')+'Z',it:'translate('+(ix-8.4).toFixed(1)+' '+(iy-8.4).toFixed(1)+') scale(.7)',gx:gx.toFixed(1),gy:gy.toFixed(1),gr:g!==undefined?(multi==='w'?4.6:g<4?4.2:3.6):2.6,gf:g!==undefined?'url(#impG'+g+')':'url(#impG4)',
+            ga:g!==undefined?'iJewel .8s '+(g<4?4.3+g*0.32:5.6+(g-4)*0.16).toFixed(2)+'s ease-in-out both':'none',cx:cx.toFixed(1),cy:cy.toFixed(1),fx:(Math.cos(am)*130).toFixed(0)+'px',fy:(Math.sin(am)*130).toFixed(0)+'px',d:(0.3+k*0.32).toFixed(2)+'s',d2:(1+k*0.32).toFixed(2)+'s'};});};
+    const PAL={tr:{tid:'impTtr',cid:'impCtr',t0:'#EFE4CF',t1:'#D8C6A4',t2:'#B49E78',c0:'#FFFFFF',c1:'#E9DDC6',c2:'#9C8660',icS:'#5A4426',inS:'rgba(255,255,255,.6)',glw:'rgba(250,240,218,.75)',sh1:'#D9C49C'},
+      mx:{tid:'impTmx',cid:'impCmx',t0:'#EFE4CF',t1:'#D8C6A4',t2:'#B49E78',c0:'#FFFFFF',c1:'#F3E3B8',c2:'#B9944F',icS:'#FFF7F0',inS:'rgba(255,244,236,.4)',glw:'oklch(0.78 0.12 340 / .45)',sh1:'#F3C3D0'},
+      fr:{tid:'impTfr',cid:'impCfr',t0:'oklch(0.68 0.17 5)',t1:'oklch(0.56 0.17 5)',t2:'oklch(0.44 0.16 5)',c0:'#FFD6DE',c1:'oklch(0.62 0.2 5)',c2:'oklch(0.36 0.15 5)',icS:'#FFF1E6',inS:'rgba(255,236,226,.35)',glw:'oklch(0.7 0.17 5 / .45)',sh1:'oklch(0.75 0.15 5)'}};
+    const cols=COLS.map(([n,short,i,shape,bg,tot,o],k)=>({n,short,i:IC[i],...(()=>{const P=PAL[(o&&o.pal)||'tr'];const pl=(o&&o.pal)||'tr',tf='url(#'+P.tid+')';return{...P,bvO:pl==='mx'?'1':'0',inW:pl==='mx'?'1.1':'.8',tGlow:pl==='mx'?'drop-shadow(0 0 6px rgba(255,236,214,.55))':'none',tiles:mkImpr(pl==='fr'?true:pl==='mx'?'w':false).map((t,j)=>({...t,tf:pl==='mx'?'url(#impM'+j+')':tf})),tfill:tf,cfill:'url(#'+P.cid+')'};})(),joyasD:shape==='joyasD',vati:shape==='vati',vd:(0.1+k*0.14).toFixed(2),cinta:shape==='cinta',joyas:shape==='joyas',impr:shape==='impr',solid:!!SH[shape],...(SH[shape]||{w:'0',h:'0',clip:'none',rad:'0',pb:'0'}),bg,rim:(o&&o.rim)||GOLD,ink:(o&&o.ink)||'#F7EBCB',line:(o&&o.line)||'rgba(247,235,203,.35)',cnt:tot+' de '+tot+' · Completa',line:(CLN[n]||CLN[n.split(' · ')[0]]||''),seams:Array.from({length:tot},(_,j)=>{const a=-Math.PI/2+j*2*Math.PI/tot+0.3;return 'M50 52L'+(50+60*Math.cos(a)).toFixed(1)+' '+(52+60*Math.sin(a)).toFixed(1);}),d:(0.1+k*0.14).toFixed(2)+'s',d2:(2+k*0.3).toFixed(1)+'s'}));
+    const colGroups=CGRP.map(([t,ix])=>({t,n:ix.length===1?'1 colección':ix.length+' colecciones',cols:ix.map(x=>cols[x])}));
+    const W=Math.sqrt(3)*38,cen=[[120,115],[120-W,115],[120+W,115],[120-W/2,58],[120+W/2,58],[120-W/2,172],[120+W/2,172]];
+    const own=cen[3];
+    const ids=[0,1,2,4,5,6];
+    const GRc='oklch(0.55 0.11 150)',RSc='oklch(0.55 0.17 5)';
+    const PZ=[['i','Los imprescindibles de Roma',['Coliseo','Foro Romano y Palatino','Fontana de Trevi','Panteón','Piazza Navona','Plaza de España',"Castillo de Sant’Angelo",'Trastevere']],['v','El país más pequeño del mundo',['Plaza de San Pedro','Basílica de San Pedro','Museos Vaticanos']],['j','Las 4 joyas de Roma',['Coliseo','Fontana de Trevi','Panteón','Museos Vaticanos']]];
+    const JP=[['0px','0px','14px 4px 4px 4px','39px','39px'],['58px','0px','4px 14px 4px 4px','6px','39px'],['0px','58px','4px 4px 4px 14px','39px','6px'],['58px','58px','4px 4px 14px 4px','6px','6px']];
+    const JI=[IC.arco,IC.fuente,IC.panteon,IC.techo],JG=[['#D21E45','#6A0A1E'],['#16A06A','#06482E'],['#2A5BC8','#0E2560'],['#EAA22A','#7A4A08']];
+    const impT=cols[2].tiles;
+    const pz=PZ.map(([k,name,sites])=>{const got=s.pz[k],N=sites.length,n=got.length,full=n===N,last=s.pzL[k];
+      const tog=j=>()=>this.setState(st=>{const g=st.pz[k];const on=g.includes(j);return{pz:{...st.pz,[k]:on?g.filter(x=>x!==j):[...g,j]},pzL:{...st.pzL,[k]:on?null:j}};});
+      return{name,n:String(n),isI:k==='i',isV:k==='v',isJ:k==='j',notFull:!full,cnt:n+' de '+N,cntC:full?GRc:RSc,
+        st:full?'✓ Colección completa':n===0?'Aún sin empezar':'Te falta'+(N-n===1?' 1 sitio':'n '+(N-n)+' sitios'),stC:full?'oklch(0.42 0.09 150)':'rgba(28,34,48,.6)',
+        bar:sites.map((_,j)=>got.includes(j)?GRc:'rgba(28,34,48,.1)'),
+        sites:sites.map((sn,j)=>{const on=got.includes(j);return{n:sn,tap:tog(j),mk:on?'✓':'+',bd:on?'oklch(0.55 0.11 150 / .35)':'rgba(28,34,48,.14)',bg:on?'oklch(0.96 0.035 150)':'#FFFFFF',fg:on?'oklch(0.32 0.08 150)':'#1C2230',dBg:on?GRc:'transparent',dBd:on?'none':'1.5px dashed rgba(28,34,48,.3)'};}),
+        fill:()=>{const nx=sites.findIndex((_,j)=>!got.includes(j));if(nx>=0)tog(nx)();},reset:()=>this.setState(st=>({pz:{...st.pz,[k]:[]},pzL:{...st.pzL,[k]:null}})),
+        ring:full?'#F3E3B8':'#CDBFA6',crO:full?'1':'0',
+        tiles:k==='i'?impT.map((t,j)=>{const on=got.includes(j);return{...t,fill:on?'url(#impM'+j+')':'#EFE9DD',st:on?'#E4C78A':'#CDBFA6',da:on?'none':'3 3',ic:on?'#FFF7F0':'rgba(28,34,48,.28)',po:on?'1':'0',an:on&&last===j?'pzPop .8s cubic-bezier(.3,1.4,.5,1) both':'none'};}):[],
+        jp:k==='j'?JP.map(([x,y,rad,gl,gt],j)=>{const on=got.includes(j);return{x,y,rad,gl,gt,i:JI[j],gem:JG[j][0],gemD:JG[j][1],got:on,bg:on?'linear-gradient(140deg,#FFFCF2 0%,#FFF9EA 30%,#EBDAB0 100%)':'#EFE9DD',bs:on?'solid':'dashed',bc:on?'#C9A65E':'#CDBFA6',
+          sh:on?'inset 0 0 0 2px rgba(255,250,232,.9),inset -5px -7px 12px rgba(150,115,50,.22),0 0 12px rgba(255,244,214,.8),0 10px 18px -8px rgba(60,40,10,.5)':'none',ic:on?'#8A6A2C':'rgba(28,34,48,.28)',an:on&&last===j?'pzPop .8s cubic-bezier(.3,1.4,.5,1) both':'none'};}):[],
+        jrS:full?'solid':'dashed',jrC:full?'oklch(0.86 0.09 85)':'rgba(28,34,48,.15)',jrSh:full?'0 0 22px oklch(0.86 0.09 85 / .5)':'none'};});
+    const MAT=['Papel prensado','Cuero cosido','Barro cocido','Mayólica','Mosaico romano','Marquetería','Mármol con incrustaciones'];
+    const LV=PN.map((u,k)=>[u+(u==='1'?' país':' países')+' · '+NM['Países'][u],['Papel prensado: sencilla, bonita y básica, con su icono.','Cuero cosido: borde con relieve y 3 diamantes, uno por país.','Barro cocido: una cinta con el número y más relieve.','Mayólica: la cinta se vuelve de esmalte brillante.','Mayólica con laureles y un anillo de 10 diamantes.','Mosaico romano: los laureles crecen y gana un segundo anillo.','Marquetería: más profundidad, como si fuera de varias capas.','Marquetería: la chapa se convierte en un pequeño mundo con tus países marcados.','Mármol con incrustaciones: el mundo gira despacio, con líneas de luz uniendo tus viajes.'][k]]);
+    const LVN=PN;const TT=[1,2,3,4,5,7];
+    const lvGlobe=IC.globo;
+    const spread=n=>n===1?[7]:Array.from({length:n},(_,k)=>Math.round(1+k*6/(n-1)));
+    const lvBig=LV.map((_,k)=>({t:String(PT[k][0]),g:String(PT[k][1]),on:s.lvT===k+1,num:LVN[k]}));
+    const lvCur={n:LV[s.lvT-1][0],d:LV[s.lvT-1][1]};
+    const lvSteps=LVN.map((n,k)=>{const a=s.lvT===k+1,got=k+1<=s.lvT;return{n,pick:()=>this.setState({lvT:k+1}),bd:a?'#1C2230':'rgba(28,34,48,.14)',bg:a?'#1C2230':got?'#F5EFE4':'#FFFFFF',fg:a?'#FFFDF8':'#1C2230'};});
+    const GRPC={'El mundo':'oklch(0.5 0.13 38)','El tiempo':'oklch(0.55 0.12 75)','Cómo viajas':'oklch(0.48 0.1 118)','Coleccionista':'oklch(0.45 0.12 330)'};
+    const QV={'A mi aire':[{1:'Mi propio rumbo',3:'Alma libre',5:'A solas con el mundo',10:'El mundo, a tu ritmo'},'a tu aire','M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5zM12 3v2M12 19v2M3 12h2M19 12h2'],
+      'En pareja':[{1:'Dos billetes',3:'Mapa para dos',5:'Cómplices de viaje',10:'Contigo, a cualquier parte'},'en pareja','M2.5 9.5L13 6.5l.9 3a1.5 1.5 0 0 0 0 2.9l.9 3L4.3 18.4l-.9-3a1.5 1.5 0 0 0 0-2.9zM8.6 7.8l2.6 8.8M15.6 7.8l5.9 1.7-.9 3a1.5 1.5 0 0 0 0 2.9l.9 3-8.6 2.4'],
+      'Con amigos':[{1:'La pandilla viaja',3:'Risas en ruta',5:'Equipo viajero',10:'Amigos para todos los viajes'},'con amigos','M3 5h5l-.5 5a2 2 0 0 1-4 0zM5.5 12v6M3.5 18h4M9.5 4h5l-.5 5a2 2 0 0 1-4 0zM12 11v7M10 18h4M16 5h5l-.5 5a2 2 0 0 1-4 0zM18.5 12v6M16.5 18h4M8.2 3.2l1 1M15.8 3.2l-1 1'],
+      'En familia':[{1:'Todos a bordo',3:'Maletas para todos',5:'Álbum de familia',10:'Una familia viajera'},'en familia','M2.5 9h8v11h-8zM4.5 9V7h4v2M12.5 6h9v14h-9zM15 6V4h4v2M16.5 9v8M5 13v3M2.5 20h19']};
+    const lvAll=[['Países','El mundo',40,IC.globo,PN,u=>NM['Países'][u]],['Destinos','El mundo',40,IC.pin,['1','3','5','10','15','20'],u=>NM['Destinos'][u]],['Patrimonios de la Humanidad','El mundo',40,IC.templo,['1','10','15'],u=>NM['Patrimonios de la Humanidad'][u]],['Capitales','El mundo',40,IC.capital,['5','10','15','25'],u=>NM['Capitales'][u]],
+      ['Viajes','El tiempo',80,IC.maleta,['1','5','10'],u=>NM['Viajes'][u]],['Las cuatro estaciones','El tiempo',80,IC.estacion,['1','2','3','4'],u=>u+' de 4',true],
+      ...Object.keys(QV).map(n=>[n,'Cómo viajas',118,QV[n][2],['1','3','5','10'],u=>QV[n][0][u],false,u=>u==='1'?'Tu primer viaje '+QV[n][1]:u+' viajes '+QV[n][1]]),
+      ['Cazador de emblemas','Coleccionista',330,IC.lupa,['5','10','15'],u=>NM['Cazador de emblemas'][u]],['Coleccionista','Coleccionista',330,IC.grid,['5','10','15'],u=>NM['Coleccionista'][u]],['Conocedor de Roma','Coleccionista',330,IC.ciudad,['25','50'],u=>NM['Conocedor de Roma'][u]]]
+      .map(([n,grp,h,i,steps,lab,q,ln])=>{const L=steps.length,P9=n==='Países';const ix=P9?PT.map(x=>x[1]):steps.map((_,k)=>L===1?5:Math.round(k*5/(L-1)));const tt=P9?PT.map(x=>x[0]):ix.map(j=>TT[j]);return{n,grp,gc:GRPC[grp],h:String(h),i,w:n==='Países'?'true':'',q:q?'true':'',isQ:!!q,notQ:!q,steps:steps.join(' · '),
+        t:steps.map((u,k)=>({t:String(tt[k]),g:String(ix[k]),num:q?u+'/4':u,lab:q?lab(u):u+' · '+lab(u),mat:q?['Primavera','+ Verano','+ Otoño','+ Invierno'][k]:MAT[tt[k]-1],line:ln?ln(u):'',hasLine:!!ln,got:q?u:'',d:(0.15+k*0.3).toFixed(2)}))};});
+    const lvGroups=[['El mundo','Ciudadano del mundo',40,lvGlobe,'10'],['El tiempo','Las cuatro estaciones',80,'M12 3v18M3 12h18M7 7l10 10M17 7L7 17','4/4',true],['Cómo viajas','Viajes','135','M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5','10'],['Coleccionista','Cazador de emblemas',330,'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4l3 16M15 4l-3 16','10']].map(([grp,n,h,i,num,q],k)=>({grp,n,h:String(h),i,num,q:q?'true':'',isQ:!!q,notQ:!q,t:'4',d:(0.2+k*0.3).toFixed(2)}));
+    const WT=['Tu primera maravilla','Maravilla tras maravilla','El mundo te deslumbra','Cuatro maravillas en la maleta','Mirada de leyenda','A una del sueño','Las siete maravillas'];
+    const wonders=WT.map((t,i)=>({n:String(i+1),k:(i+1)+' DE 7',t,l:i===6?'Has visto las siete maravillas del mundo.':(i+1)+' de 7 maravillas'}));
+    const mEmb=[['coliseo','COLISEO','El mayor anfiteatro de la Antigüedad.'],['muralla','GRAN MURALLA CHINA','Más de 20.000 km de muralla, levantada durante siglos.'],['petra','PETRA','La ciudad tallada en la roca.'],['cristo','CRISTO REDENTOR','30 metros de brazos abiertos sobre Río.'],['machu','MACHU PICCHU','La ciudad de los incas, a 2.430 metros de altura.'],['chichen','CHICHÉN ITZÁ','La pirámide maya por la que baja una serpiente de luz.'],['taj','TAJ MAHAL','Un mausoleo de mármol blanco levantado por amor.']].map(([k,s,l],i)=>({k,s,l,i:String(i+1)}));
+    return{mevo:wonders,mEmb,mEmbBig:[mEmb[1],mEmb[6]],wonders,wBigs:[wonders[0],wonders[3],wonders[6]],ic:IC,colGroups,pz,lvGlobe,lvAll,lvBig,unis:[['navidad','Navidad fuera de casa','El tiempo','Un árbol que se enciende luz a luz, la estrella y los regalos.'],['nochevieja','Nochevieja fuera de casa','El tiempo','Fuegos sobre la ciudad y el reloj a las doce.'],['solasol','De sol a sol','El tiempo','El sol cruza el cielo y al otro lado sale la luna.'],['ecuador','Al otro lado del ecuador','El mundo','Se dibuja el ecuador y el avión lo cruza de norte a sur.'],['diaok','Día perfecto','Cómo viajas','El camino del día se marca parada a parada.'],['viajeok','Viaje perfecto','Cómo viajas','Cada día del calendario, marcado. Arriba, los laureles.'],['escapada','Escapada','Cómo viajas','Una mochila pequeña y dos lunas.'],['granviaje','Gran viaje','Cómo viajas','Un avión que recorre una ruta larga, ciudad a ciudad.'],['imparable','Imparable','Cómo viajas','Tres días seguidos: tres llamas que se encienden y el rayo.'],['fotografo','El fotógrafo','Cómo viajas','El flash y las fotos que salen en abanico.']]
+        .map(([k,n,grp,t])=>({k,n,grp,t,gc:{'El tiempo':'oklch(0.55 0.12 75)','El mundo':'oklch(0.5 0.13 38)','Cómo viajas':'oklch(0.48 0.1 118)'}[grp]})),
+      dosOn:!s.dosOff,dosOff:!!s.dosOff,dosReplay:()=>{this.setState({dosOff:true});setTimeout(()=>this.setState({dosOff:false}),60);},lvCur,lvSteps,lvGroups,
+
+      m7:[['Tu primera maravilla','1 de 7 maravillas'],['Maravilla tras maravilla','2 de 7 maravillas'],['El mundo te deslumbra','3 de 7 maravillas'],['Cuatro maravillas en la maleta','4 de 7 maravillas'],['Mirada de leyenda','5 de 7 maravillas'],['A una del sueño','6 de 7 maravillas'],['Las siete maravillas','Has visto las siete maravillas del mundo.']].map(([t,l],i)=>({n:String(i+1),t,l,k:'ESCALÓN '+(i+1)+' DE 7',bg:i===6?'radial-gradient(circle at 50% 40%,#3A3420 0%,#14110A 72%)':'radial-gradient(circle at 50% 40%,#2A3150 0%,#121626 72%)'})),
+      secs:[sec('m1','01','Los sellos','Cinco estados: por conseguir, bronce, plata, oro y diamante.','s'),sec('m2','02','Las 11 colecciones','Cada insignia se parte en tantos pedazos como sitios tiene.','c'),
+        sec('m3','03','Los 12 emblemas','Secretos: cada uno con su dibujo y su forma. Madrugador y Nocturno, como estaban.','e'),
+        sec('m5','04','Los logros de viajero','Chapas esmaltadas, un color por grupo. Cada escalón hace crecer la misma chapa.','v'),sec('m6','05','Los exclusivos','Raros, con acabado holográfico.','x'),sec('m7','06','La vuelta al mundo','Próximamente: todavía no se puede conseguir.','w')],
+      seals:[['none','Por conseguir','0 DE 8'],['bronce','Primeros pasos en Roma','BRONCE · 1 DE 8'],['plata','Roma te atrapa','PLATA · 4 DE 8'],['oro','Roma en el corazón','ORO · 6 DE 8'],['diamante','Roma es tuya','DIAMANTE · 8 DE 8']].map(([g,n,k],i)=>({g,n,k,d:(0.15+i*0.35).toFixed(2)+'s',bg:g==='diamante'?'linear-gradient(160deg,#FFFDF8,#EEF2FB)':'#FFFDF8',fg:INK,c:{none:'rgba(28,34,48,.5)',bronce:'#A8734A',plata:'#8F969E',oro:'#B8964F',diamante:'#7F93C9'}[g]})),
+      sealsV:[['none','Por conseguir','0 DE 3'],['plata','Has cruzado la frontera','PLATA · 1 DE 3'],['oro','El Vaticano en el corazón','ORO · 2 DE 3'],['diamante','El Vaticano es tuyo','DIAMANTE · 3 DE 3']].map(([g,n,k],i)=>({g,n,k,d:(0.15+i*0.35).toFixed(2)+'s',bg:g==='diamante'?'linear-gradient(160deg,#FFFDF8,#EEF2FB)':'#FFFDF8',fg:INK,c:{none:'rgba(28,34,48,.5)',plata:'#8F969E',oro:'#B8964F',diamante:'#7F93C9'}[g]})),
+      c7:(()=>{const P=[[22,30],[70,6],[132,18],[198,8],[224,58],[176,206],[30,196]];
+        const stars=P.map(([x,y],k)=>({t:'translate('+x+' '+y+')',d:(0.25+k*0.42).toFixed(2)+'s',tx:(120-x)+'px',ty:(115-y)+'px'}));
+        const lines=P.slice(1).map(([x,y],k)=>({x1:P[k][0],y1:P[k][1],x2:x,y2:y,d:(0.55+k*0.42).toFixed(2)+'s'}));
+        const rings=[[2.5,'5.3s'],[1.5,'5.55s'],[1,'5.8s']].map(([w,d])=>({w,d}));
+        const CL=['#FFD27A','#FF9E7A','#FFF2CC','#F6C26B','#C9D6F2','#FFB8A0','#B8E6C8'];
+        const fw=[[30,-10,5.6],[210,-4,5.8],[120,-46,6.05],[0,70,6.3],[238,90,6.5],[70,-38,6.8],[172,-30,7.05]].map(([x,y,t],i)=>{const c=CL[i];return{t:'translate('+x+' '+y+')',ly:60+((i*13)%30),c,dl0:(t-0.45).toFixed(2)+'s',dl:t.toFixed(2)+'s',
+          sp:Array.from({length:16},(_,k)=>({r:'rotate('+(k*22.5+i*9)+')',d:(24+((k*7+i*5)%14))+'px',sz:k%3?0.9:1.5,c:k%4?c:'#FFFFFF'}))};});
+        return{stars,lines,rings,fw};})(),
+      cols,
+      impr:mkImpr(false),
+      impGD:[['#D21E45','#6A0A1E'],['#16A06A','#06482E'],['#2A5BC8','#0E2560'],['#EAA22A','#7A4A08'],['#FFF6E8','#C9B08A'],['#4CC3D4','#11606C'],['#9B5BD6','#45186E'],['#F58BA0','#9C2E4A']].map(([c,d],k)=>({id:'impG'+k,c,d})),
+      impO:(()=>{const p=[];for(let k=0;k<8;k++){const a=(-90-22.5+k*45)*Math.PI/180;p.push((75+72*Math.cos(a)).toFixed(1)+' '+(75+72*Math.sin(a)).toFixed(1));}return 'M'+p.join('L')+'Z';})(),
+      impI:(()=>{const p=[];for(let k=0;k<8;k++){const a=(-90-22.5+k*45)*Math.PI/180;p.push((75+30*Math.cos(a)).toFixed(1)+' '+(75+30*Math.sin(a)).toFixed(1));}return 'M'+p.join('L')+'Z';})(),
+      impCo:(()=>{const p=[];for(let k=0;k<8;k++){const a=(-90+k*45)*Math.PI/180;p.push((75+25*Math.cos(a)).toFixed(1)+' '+(75+25*Math.sin(a)).toFixed(1));}return 'M'+p.join('L')+'Z';})(),
+      impCt:(()=>{const p=[];for(let k=0;k<8;k++){const a=(-90+k*45)*Math.PI/180;p.push((75+12*Math.cos(a)).toFixed(1)+' '+(75+12*Math.sin(a)).toFixed(1));}return 'M'+p.join('L')+'Z';})(),
+      impCf:(()=>{let s='';for(let k=0;k<8;k++){const a=(-90+k*45)*Math.PI/180;s+='M'+(75+12*Math.cos(a)).toFixed(1)+' '+(75+12*Math.sin(a)).toFixed(1)+'L'+(75+25*Math.cos(a)).toFixed(1)+' '+(75+25*Math.sin(a)).toFixed(1);}return s;})(),
+      impB:Array.from({length:8},(_,k)=>{const a=(k*45)*Math.PI/180,w=4*Math.PI/180;return 'M75 75L'+(75+95*Math.cos(a-w)).toFixed(1)+' '+(75+95*Math.sin(a-w)).toFixed(1)+'L'+(75+95*Math.cos(a+w)).toFixed(1)+' '+(75+95*Math.sin(a+w)).toFixed(1)+'Z';}),
+      impMD:[5,35,70,140,185,230,280,330].map((h,k)=>({id:'impM'+k,l:'oklch(0.84 0.13 '+h+')',c:'oklch(0.66 0.18 '+h+')',d:'oklch(0.46 0.15 '+h+')'})),
+      jdG:[['#FF7A93','#D21E45','#5E0618',0,1],['#6BE6B0','#16A06A','#053F28',1,0],['#8AAEFF','#2A5BC8','#0B1F58',0,1],['#FFD98A','#EAA22A','#6E4205',1,0]].map(([l,c,d,x1,x2],k)=>({id:'jdG'+k,l,c,d,x1,x2})),
+      jdGems:[['M45 28L75 28L75 58L14 58Z','M45 28L75 28L72 36L40 36Z',IC.arco,52,45,'-80px','-70px'],['M75 28L105 28L136 58L75 58Z','M75 28L105 28L110 36L78 36Z',IC.fuente,98,45,'80px','-70px'],['M14 58L75 58L75 138Z','M14 58L75 58L70 66L24 66Z',IC.cupula,58,82,'-80px','80px'],['M75 58L136 58L75 138Z','M75 58L136 58L126 66L80 66Z',IC.techo,92,82,'80px','80px']]
+        .map(([p,hl,i,x,y,fx,fy],k)=>({p,hl,i,id:'jdG'+k,fx,fy,it:'translate('+(x-9)+' '+(y-9)+') scale(.75)',d:(0.3+k*0.45).toFixed(2)+'s',d2:(1.1+k*0.45).toFixed(2)+'s'})),
+      jdSp:[[52,33,'4.2s'],[118,52,'4.9s'],[80,96,'5.5s'],[30,62,'6.1s']].map(([x,y,d])=>({t:'translate('+x+' '+y+')',d})),
+      joyas:[[IC.arco,'0px','0px','-110px','-110px','-30deg','14px 4px 4px 4px'],[IC.fuente,'61px','0px','110px','-110px','30deg','4px 14px 4px 4px'],[IC.cupula,'0px','61px','-110px','110px','30deg','4px 4px 4px 14px'],[IC.techo,'61px','61px','110px','110px','-30deg','4px 4px 14px 4px']].map(([i,x,y,fx,fy,fr,rad],k)=>({i,x,y,fx,fy,fr,rad,gl:['39px','6px','39px','6px'][k],gt:['39px','39px','6px','6px'][k],gem:['#D21E45','#16A06A','#2A5BC8','#EAA22A'][k],gemD:['#6A0A1E','#06482E','#0E2560','#7A4A08'][k],d:(0.6+k*0.5).toFixed(1)+'s',d2:(1.3+k*0.5).toFixed(1)+'s'})),
+      colStates:(()=>{const SITES=['Coliseo','Foro Romano','Largo di Torre Argentina',"Castillo de Sant'Angelo",'Circo Máximo','Termas de Caracalla'];
+        const N=6,cx=50,cy=50;const wedge=j=>{const a0=-Math.PI/2+j*2*Math.PI/N+0.3,a1=a0+2*Math.PI/N;const pts=['50% 50%'];for(let t=0;t<=4;t++){const a=a0+(a1-a0)*t/4;pts.push((cx+90*Math.cos(a)).toFixed(1)+'% '+(cy+90*Math.sin(a)).toFixed(1)+'%');}return 'polygon('+pts.join(',')+')';};
+        const mk=(cnt,base,si)=>Array.from({length:N},(_,j)=>{const on=j<cnt,a=-Math.PI/2+(j+.5)*2*Math.PI/N+0.3;const o='translate('+(Math.cos(a)*22).toFixed(0)+'px,'+(Math.sin(a)*22).toFixed(0)+'px) rotate('+((j%2?1:-1)*10)+'deg)';
+          const sel=this.state.cs===si+':'+j;
+          return{clip:wedge(j),o,tf:on?'none':o,an:on?'shardIn 1.1s '+(base+j*0.35).toFixed(2)+'s cubic-bezier(.3,1.2,.5,1) both':'bob 3s '+(j*0.3).toFixed(1)+'s ease-in-out infinite',
+            rim:on?GOLD:'#DCD4C5',bg:on?'oklch(0.76 0.05 75)':'#EFE9DD',ink:on?'#3A2A0E':'rgba(28,34,48,.3)',site:SITES[j],tap:()=>this.setState(st=>({cs:st.cs===si+':'+j?null:si+':'+j})),sel};});
+        const st=(n,cnt,base,si,extra)=>{const sh=mk(cnt,base,si);const s=sh.find(x=>x.sel);return{n,shards:sh,hasTip:!!s,tip:s?s.site+(sh.indexOf(s)<cnt?' · visto':' · te falta'):'',...extra};};
+        return[st('Sin empezar',0,0,0,{cnt:'0 DE 6',w:'0%',bar:'transparent',cc:'rgba(28,34,48,.5)',shadow:'none',done:false}),
+          st('A medias',3,0.4,1,{cnt:'3 DE 6',w:'50%',bar:'oklch(0.55 0.17 5)',cc:'oklch(0.48 0.17 5)',shadow:'drop-shadow(0 8px 10px rgba(28,34,48,.18))',done:false}),
+          st('Completa',6,0.4,2,{cnt:'6 DE 6 · COMPLETA',w:'100%',bar:GR,cc:'oklch(0.42 0.09 150)',shadow:'drop-shadow(0 12px 14px rgba(28,34,48,.28))',done:true})];})(),
+      colStatesOld:[{n:'Sin empezar',cnt:'0 DE 6',w:'0%',bar:'transparent',cc:'rgba(28,34,48,.5)',rim:'#DCD4C5',bg:'#EFE9DD',bd:'1.5px dashed rgba(28,34,48,.2)',ink:'rgba(28,34,48,.3)',shadow:'none'},
+        {n:'En curso',cnt:'3 DE 6',w:'50%',bar:'oklch(0.55 0.17 5)',cc:'oklch(0.48 0.17 5)',rim:'linear-gradient(135deg,#E3DCCD,#C9C0AF)',bg:'linear-gradient(180deg,#E7E1D6 50%,oklch(0.52 0.11 40) 50%)',bd:'none',ink:'#FFFDF8',shadow:'drop-shadow(0 8px 10px rgba(28,34,48,.18))'},
+        {n:'Completa',cnt:'6 DE 6 · COMPLETA',w:'100%',bar:GR,cc:'oklch(0.42 0.09 150)',rim:GOLD,bg:'oklch(0.52 0.11 40)',bd:'none',ink:'#F7EBCB',shadow:'drop-shadow(0 12px 14px rgba(28,34,48,.28))'}],
+      embs:EMB.map(([n,p,i,o],k)=>({n,p,line:ELN[n]||'',ia:(()=>{const A=[['emGlow',3.2],null,null,null,['emGlow',2.8],null,null,null,null,null,null,null][k];return A?A[0]+' '+A[1]+'s '+(2.6+k*0.25).toFixed(2)+'s ease-in-out infinite':'none';})(),i:IC[i],w:o.w,h:o.h,clip:o.clip||'none',rad:o.rad||'0',tf:o.tf||'none',itf:o.itf||'none',it:o.it||'0',rim:o.rim||GOLD,ink:o.st==='mar'?'oklch(0.9 0.08 85)':(o.rim||'oklch(0.88 0.08 85)'),halo:o.halo||'oklch(0.86 0.09 85 / .35)',d:(0.1+k*0.25).toFixed(2)+'s',d2:(2+k*0.35).toFixed(2)+'s',s1:(1.4+k*0.25).toFixed(2)+'s',s2:(3.1+k*0.25).toFixed(2)+'s',s3:(1.65+k*0.25).toFixed(2)+'s',s4:(1.9+k*0.25).toFixed(2)+'s',
+        plain:!o.st,alba:o.st==='alba',noche:o.st==='noche',plaza:o.st==='plaza',foro:o.st==='foro',boca:o.st==='boca',s5:(4.9+k*0.25).toFixed(2)+'s',nmar:!(o.st==='mar'),mar:o.st==='mar',cre:o.st==='cre',ocu:o.st==='ocu',mon:o.st==='mon',key:o.st==='key',lamp:o.st==='lamp',...(o.itop?{it:'0'}:{})})),
+      wHoles:ids.map((j,k)=>({p:hex(cen[j][0],cen[j][1],36),d:(0.15+k*0.12).toFixed(2)+'s',dB:(3.3+k*0.28).toFixed(2)+'s'})),
+      beam:{x:'160px',h:'260px'},
+      zc:(()=>{const cx=120,cy=150,rx=100,ry=30,N=22,f1=v=>v.toFixed(1),backW=[],frontW=[];
+        for(let k=0;k<4;k++)for(let i=0;i<N;i++){const th=(i+0.5)/N*2*Math.PI,s=Math.sin(th),c=Math.cos(th);
+          const x=cx+rx*c,yb=cy+ry*s-k*26-3,w=Math.max(1.2,(k===3?4:7.5)*Math.abs(s)),h=k===3?5:16,x0=x-w/2,x1=x+w/2,yt=yb-h;let d;
+          if(k===3)d='M'+f1(x0)+' '+f1(yb)+'L'+f1(x0)+' '+f1(yt)+'L'+f1(x1)+' '+f1(yt)+'L'+f1(x1)+' '+f1(yb)+'Z';
+          else{const r=w/2,ra=Math.min(4,h/2);d='M'+f1(x0)+' '+f1(yb)+'L'+f1(x0)+' '+f1(yt+ra)+'A'+f1(r)+' '+f1(ra)+' 0 0 1 '+f1(x1)+' '+f1(yt+ra)+'L'+f1(x1)+' '+f1(yb)+'Z';}
+          let ang=Math.abs(th-Math.PI/2);if(ang>Math.PI)ang=2*Math.PI-ang;const dl=0.95+ang/Math.PI*1.45+k*0.32;
+          (s>0?frontW:backW).push({d,dl:dl.toFixed(2)+'s'});}
+        const front='M220 150A100 30 0 0 1 20 150L20 58A100 30 0 0 0 220 58Z',back='M20 58A100 30 0 0 1 220 58L220 150A100 30 0 0 0 20 150Z';
+        const corn=[1,2,3].map(k=>{const y=150-26*k;return 'M220 '+y+'A100 30 0 0 1 20 '+y;});
+        const rays=[-56,-40,-26,-12,0,12,26,40,56].map((a,i)=>({t:'rotate('+a+' 120 140)',dl:(3.5+Math.abs(a)/200).toFixed(2)+'s',dl2:(4.8+i*0.2).toFixed(1)+'s'}));
+        const petals=Array.from({length:26},(_,i)=>({r:(1.1+(i%3)*0.6).toFixed(1),c:i%3?'#F6D78E':'#FFF4D6',dx:(((i*47)%220)-110)+'px',dy:(-130+((i*61)%170))+'px',du:(2.2+(i%5)*0.25).toFixed(2)+'s',dl:(3.5+(i%6)*0.05).toFixed(2)+'s'}));
+        const stars=Array.from({length:20},(_,i)=>({x:f1(((i*53)%240)),y:f1(((i*37)%90)-20),r:(0.4+(i%3)*0.3).toFixed(1),du:(2+(i%4)*0.6).toFixed(1)+'s',dl:(-(i%7)*0.4).toFixed(1)+'s'}));
+        const COLS=['#FFD27A','#FF9E7A','#FFF2CC','#F6C26B','#FFB8A0'];
+        const fw=[[60,-6,3.65],[182,-14,3.85],[120,-34,4.1],[34,22,4.35],[206,16,4.55],[92,-22,4.85],[150,6,5.1]].map(([x,y,t],i)=>{const c=COLS[i%5];const n=14;
+          return{t:'translate('+x+' '+y+')',ly:(60+((i*13)%30)),c,dl0:(t-0.45).toFixed(2)+'s',dl:t.toFixed(2)+'s',
+            sp:Array.from({length:n},(_,k)=>({r:'rotate('+(k*360/n+(i*11))+')',d:(22+((k*7+i*5)%12))+'px',sz:(k%3?0.9:1.4),c:k%4?c:'#FFFFFF'}))};});
+        return{backW,frontW,front,back,corn,rays,petals,stars,fw};})(),
+      arena:(()=>{const f1=n=>n.toFixed(1),arches=[],crowd=[];
+        [[122,22,13],[152,22,13],[182,26,13]].forEach(([y,h,n])=>{const w=300/n;for(let i=0;i<n;i++){const r=w*0.3,x=i*w+w*0.2+(y===152?w*0.5:0);arches.push('M'+f1(x)+' '+f1(y+h)+'L'+f1(x)+' '+f1(y+r)+'A'+f1(r)+' '+f1(r)+' 0 0 1 '+f1(x+2*r)+' '+f1(y+r)+'L'+f1(x+2*r)+' '+f1(y+h)+'Z');}});
+        [[146,0],[176,1],[208,2]].forEach(([y,k])=>{for(let i=0;i<46;i++){const x=-6+i*6.8+(k%2?3.4:0);crowd.push({x:f1(x),y:f1(y-((i*7)%3)),r:f1(2+((i*13)%3)*0.3),du:(0.6+((i*17)%5)*0.12).toFixed(2)+'s',dl:(-((i*29)%10)*0.1).toFixed(1)+'s'});}});
+        const rays=[[80,40,-60],[130,26,10],[176,34,80],[226,30,150]].map(([x,w,x1])=>({d:'M'+x+' -20L'+(x+w)+' -20L'+(x1+w*3)+' 232L'+x1+' 232Z',dl:(-x/40).toFixed(1)+'s'}));
+        const burst=(x,y,s,dl)=>({t:'translate('+x+' '+y+') scale('+s+')',dl,lines:Array.from({length:12},(_,i)=>({r:'rotate('+(i*30+(i%2)*9)+')',w:(i%3?1.4:2.6)}))});
+        const kick=[[76,230,'.9s'],[96,232,'1.5s'],[204,231,'1s'],[222,232,'1.5s'],[120,232,'1.55s'],[180,232,'1.55s'],[186,231,'2.6s'],[214,232,'2.65s']].map(([x,y,dl],i)=>({x,y,r:(1.6+(i%3)*0.6).toFixed(1),dl}));
+        const motes=Array.from({length:18},(_,i)=>({x:f1(20+((i*47)%260)),y:f1(140+((i*31)%90)),r:(0.6+(i%3)*0.4).toFixed(1),du:(3+(i%4)*0.6).toFixed(1)+'s',dl:(0.3+i*0.17).toFixed(2)+'s'}));
+        return{arches,crowd,rays,bursts:[burst(150,96,1,'1.55s'),burst(158,104,.7,'2.64s')],kick,motes};})(),
+      colo:(()=>{const N=10,T0=-64*Math.PI/180,T1=64*Math.PI/180,th=i=>T0+(T1-T0)*i/N,X=t=>120+98*Math.sin(t),YB=t=>186+14*Math.cos(t);
+        const P=6,H=[24,24,22,17],off=k=>P+H.slice(0,k).reduce((a,b)=>a+b,0);
+        const miss=(i,k)=>(k===3&&i>=7)||(k===2&&i>=8);
+        const f1=n=>n.toFixed(1),blocks=[];let o=0;
+        for(let k=0;k<4;k++)for(let i=0;i<N;i++){if(miss(i,k))continue;const ta=th(i),tb=th(i+1),tm=(ta+tb)/2;
+          const xa=X(ta),xb=X(tb),ya=YB(ta)-off(k),yb=YB(tb)-off(k),h=H[k];
+          const outer='M'+f1(xa)+' '+f1(ya)+'L'+f1(xb)+' '+f1(yb)+'L'+f1(xb)+' '+f1(yb-h)+'L'+f1(xa)+' '+f1(ya-h)+'Z';
+          const w=xb-xa,ym=(ya+yb)/2,l=xa+w*(k===3?.36:.2),r=xb-w*(k===3?.36:.2),mx=(l+r)/2;let hole;
+          if(k===3)hole='M'+f1(l)+' '+f1(ym-h*.3)+'L'+f1(r)+' '+f1(ym-h*.3)+'L'+f1(r)+' '+f1(ym-h*.72)+'L'+f1(l)+' '+f1(ym-h*.72)+'Z';
+          else{const bot=ym-1.2,spr=ym-h*.5,top=ym-h*.86;hole='M'+f1(l)+' '+f1(bot)+'L'+f1(l)+' '+f1(spr)+'Q'+f1(l)+' '+f1(top)+' '+f1(mx)+' '+f1(top)+'Q'+f1(r)+' '+f1(top)+' '+f1(r)+' '+f1(spr)+'L'+f1(r)+' '+f1(bot)+'Z';}
+          const L=0.58+0.24*Math.cos(tm)-k*0.02;const dl=3.7+o*0.045;o++;
+          blocks.push({d:outer+hole,hole,f:'oklch('+L.toFixed(3)+' 0.105 82)',hf:'oklch('+(0.26+0.06*Math.cos(tm)).toFixed(3)+' 0.05 70)',anim:i%2?'cBlkR':'cBlkL',dl:dl.toFixed(2)+'s',dl2:(dl+0.42).toFixed(2)+'s'});}
+        const pts=[];for(let i=0;i<=N;i++)pts.push(th(i));
+        const plinth='M'+pts.map(t=>f1(X(t))+' '+f1(YB(t))).join('L')+'L'+[...pts].reverse().map(t=>f1(X(t))+' '+f1(YB(t)-P)).join('L')+'Z';
+        const topAt=(i,side)=>{const t=th(i);let kk=4;const seg=side==='a'?i:i-1;while(kk>0&&miss(seg,kk-1))kk--;return YB(t)-off(kk);};
+        const c0=Math.cos(T1),far=t=>YB(t)-off(4)-30*(Math.cos(t)-c0)/(1-c0);
+        const front=[];for(let i=N;i>=0;i--){const t=th(i);if(i===N){front.push([X(t),topAt(i,'b')]);continue;}front.push([X(t),topAt(i+1,'b')]);front.push([X(t),topAt(i,'a')]);}
+        const fine=[];for(let j=0;j<=24;j++)fine.push(T0+(T1-T0)*j/24);
+        const cavea='M'+fine.map(t=>f1(X(t))+' '+f1(far(t))).join('L')+'L'+front.map(([x,y])=>f1(x)+' '+f1(y)).join('L')+'Z';
+        const yF=far(0),yT=YB(0)-off(4),cy0=(yF+yT)/2,ry0=(yT-yF)/2;
+        const rows=[[.86,'none','2 3'],[.68,'rgba(40,28,10,.18)','2 3'],[.5,'rgba(40,28,10,.28)','2 3']].map(([q,fl,da])=>({cy:f1(cy0+ry0*(1-q)*0.35),rx:f1(96*q),ry:f1(ry0*q),f:fl,da}));
+        const arena={ay:f1(cy0+ry0*0.22),arx:f1(42),ary:f1(Math.max(5,ry0*0.32))};
+        const lip='M'+front.slice().reverse().map(([x,y])=>f1(x)+' '+f1(y-1.5)).join('L');
+        const dust=Array.from({length:14},(_,i)=>({x:f1(40+((i*53)%160)),y:f1(120+((i*29)%60)),r:(0.8+(i%3)*0.5).toFixed(1),du:(2.6+(i%4)*0.5).toFixed(1)+'s',dl:(5.8+i*0.27).toFixed(2)+'s'}));
+        const sparks=[['3.4s',0.9],['4.08s',1],['4.9s',1.6]].map(([d,s])=>({d,t:'translate(-1.4 -9.6) scale('+s+')'}));
+        const puffs=[[-6,'3.3s'],[-2.6,'4.1s'],[2.6,'3.4s'],[6,'4.9s']].map(([x,d])=>({x,d}));
+        return{blocks,plinth,cavea,rows,dust,lip,sparks,puffs,...arena};})(),
+      starsBg:Array.from({length:40},(_,i)=>({x:((i*37+11)%100)+'%',y:((i*53+7)%100)+'%',s:(1+i%3)+'px',d:(2+i%4)+'s',dl:((i*0.3)%3).toFixed(1)+'s'})),
+      dots7:Array.from({length:7},(_,i)=>({bg:i===0?'linear-gradient(135deg,#FFF4D2,#C9A35C)':'transparent',bd:i===0?'none':'1.5px solid rgba(243,227,184,.35)',sh:i===0?'0 0 12px #FFE9B0':'none',d:(6.4+i*0.12).toFixed(2)+'s'})),
+      orbit7:Array.from({length:7},(_,i)=>{const a=-Math.PI/2+i*2*Math.PI/7;return{p:star5(120+104*Math.cos(a),115+104*Math.sin(a),6)};}),
+      wreath:[...Array.from({length:8},(_,i)=>{const a=(210-i*13)*Math.PI/180;return [75+66*Math.cos(a),75-66*Math.sin(a),(-(210-i*13)+90+35),i];}),...Array.from({length:8},(_,i)=>{const a=(-30+i*13)*Math.PI/180;return [75+66*Math.cos(a),75-66*Math.sin(a),(-(-30+i*13)+90-35),i];})].map(([x,y,r,i])=>({x:x.toFixed(1),y:y.toFixed(1),r:'rotate('+r.toFixed(0)+' '+x.toFixed(1)+' '+y.toFixed(1)+')',d:(2.4+i*0.09).toFixed(2)+'s'})),
+      ring7:Array.from({length:7},(_,i)=>{const a=(-90+(i-3)*16)*Math.PI/180,on=i===3;return{p:star5(75+70*Math.cos(a),75+70*Math.sin(a),on?6:4),f:on?'#FFE9B0':'rgba(243,227,184,.3)',fl:on?'drop-shadow(0 0 4px #FFE9B0)':'none',d:(3.2+i*0.1).toFixed(2)+'s'};}),
+      colWin:[[5.7,10.8,2.4,2.6],[9.6,10.4,1.8,3],[12.6,10.4,1.8,3],[15.8,10.8,2.4,2.6],[5.7,14.8,2.4,4.6],[9.6,14.8,1.8,4.6],[12.6,14.8,1.8,4.6],[15.8,14.8,2.4,4.6]].map(([x,y,w,h],k)=>({x,y,w,h,d:(3+[0,1,2,3,7,6,5,4][k]*0.15).toFixed(2)+'s'})),
+      wOwn:{cx:own[0],cy:own[1],p:hex(own[0],own[1],36),p2:hex(own[0],own[1],30),t:`translate(${(own[0]-15).toFixed(1)},${(own[1]-15).toFixed(1)}) scale(1.25)`},
+      wAll:cen.map(([x,y],k)=>({p:hex(x,y,36),t:`translate(${(x-15).toFixed(1)},${(y-15).toFixed(1)}) scale(1.25)`,i:[IC.taj,IC.petra,IC.cristo,IC.arco,IC.piramide,IC.muralla,IC.machu][k],dx:(120-x).toFixed(1)+'px',dy:(115-y).toFixed(1)+'px',d:(0.3+[3,1,4,0,2,5,6][k]*0.4).toFixed(1)+'s'})),
+      mers:['0s','-9.33s','-18.67s'],
+      globeIc:[[IC.arco,-40],[IC.piramide,-12],[IC.cristo,14],[IC.muralla,38],[IC.machu,-28],[IC.petra,26],[IC.taj,0]].map(([i,y],k)=>({i,t:'translate(120 '+(115+y)+')',d:(-k*4).toFixed(1)+'s'})),
+      wBig:{p:hex(120,115,74),p2:hex(120,115,64),t:'translate(87,82) scale(2.75)'},
+      trav:TRAV.map(([gk,items])=>{const [n,c,ink]=VC[gk];return{n,c,ink,items:items.map(([tn,det,kind,ic,lv,max,locked,tiers,ill])=>({n:tn,det,hasDet:!!det,kind,ic,lv,max,locked:!!locked,ill:ill||'',isDos:ill==='dospaises',isUni:!!ill&&ill!=='dospaises',notDos:!ill,num:tiers?tiers[lv]:'',
+        fg:locked?'rgba(28,34,48,.55)':INK,bg:locked?'#F0EADF':'#FFFDF8',hasTiers:!!tiers,tiers:(tiers||[]).map((t,x)=>{const o=!locked&&x<=lv;return{t,bg:o?c:'transparent',bd:o?'none':'1px dashed rgba(28,34,48,.25)',fg:o?ink:'rgba(28,34,48,.5)'};})}))};}),
+      evoP:PN.map((num,x)=>[num,num+(num==='1'?' país':' países'),NM['Países'][num],['La chapa sencilla, bonita pero básica, con su icono.','Borde con relieve y 3 diamantes, uno por país.','Una cinta con el número y más relieve.','La cinta se vuelve de esmalte brillante.','Laureles y un anillo de 10 diamantes.','Los laureles crecen y gana un segundo anillo.','Más profundidad, como si fuera de varias capas.','Se convierte en un pequeño mundo con tus países marcados.','El mundo gira despacio, con líneas de luz uniendo tus viajes.'][x]]).map(([num,k2,t,d],x)=>({kind:'paises',lv:[0,1,2,2,3,3,3,4,5][x],extra:['','','','gloss','','ring2','ring2,depth','',''][x],max:6,color:VC.mundo[1],ic:'globo',num,k:k2,t,hasT:!!t,d,dl:(x*1.3).toFixed(1),tc:'oklch(0.48 0.13 38)',bg:x===8?'#FBF3E2':'#FFFDF8'})),
+      evoH:[['1','1 patrimonio','Testigo de la historia','Los escalones y dos columnas.'],['10','10 patrimonios','Guardián del patrimonio','Cuatro columnas, el arquitrabe y el frontón.'],['15','15 patrimonios','Memoria del mundo','El templo entero, con laureles y luz.']].map(([num,k2,t,d],x)=>({kind:'patrimonio',lv:[0,2,3][x],extra:'',max:4,color:VC.mundo[1],ic:'',num,k:k2,t,hasT:!!t,d,dl:(x*1.4).toFixed(1),tc:'oklch(0.48 0.13 38)',bg:x===3?'#FBF3E2':'#FFFDF8'})),
+      excl:[['Viajero fundador','El primer año de la app',IC.fundador,{w:'128px',h:'128px',clip:OCT}],['Pionero','Los primeros 100 viajeros de un destino nuevo',IC.pionero,{w:'124px',h:'140px',clip:SHIELD,pb:'20px'}],
+        ['Roma 2027','Solo existe ese año',null,{w:'134px',h:'134px',rad:'50%'}],['Probador','Antes de que la app salga al público',IC.probador,{w:'124px',h:'138px',clip:HEX}]].map(([n,t,i,o],k)=>({n,t,k:['fundador','pionero','roma','probador'][k],dn:(0.2+k*0.4).toFixed(1),i:i||'',isIc:!!i,isTxt:!i,w:o.w,h:o.h,clip:o.clip||'none',rad:o.rad||'0',pb:o.pb||'0',d:(0.2+k*0.4).toFixed(1)+'s',d2:(1.6+k*0.5).toFixed(1)+'s',
+        edge:Array.from({length:9},(_,j)=>({z:(-(j+1)*1.4).toFixed(1)+'px',bg:j<1?'linear-gradient(135deg,#E9EDF3,#8E98A7)':'linear-gradient(135deg,#B9C1CC,#4E5868 70%,#3A4252)'})),
+        sp:[['6%','4%','14px','0s'],['82%','14%','10px','.8s'],['74%','80%','12px','1.5s']].map(([x,y,s2,d])=>({x,y,s:s2,d}))})),
+      sects:[0,1,2,3,4].map(i=>({d:wedge(-90+i*72,-18+i*72,92),f:i<2?'url(#gw)':'#E7E1D6',dl:(0.5+i*0.45).toFixed(2)+'s'})),
+      partial:wedge(-90+144,-90+144+72*0.632,92),
+      ringOff:(679*(1-2.632/5)).toFixed(1),
+      sectTxt:['1.000','5.000','10.000','20.000','40.075'].map((t,i)=>{const[x,y]=pt(-90+i*72+36,72);return React.createElement('text',{key:i,x:x.toFixed(1),y:(y+3).toFixed(1),textAnchor:'middle',fontFamily:'Geist Mono',fontSize:8.5,fontWeight:600,fill:i<2?'#FFFDF8':'rgba(28,34,48,.55)'},t);}),
+      vmSteps:[['Los primeros mil',1000,'1.000 KM'],['Gran recorrido',5000,'5.000 KM'],['Un cuarto de vuelta al mundo',10000,'10.000 KM'],['Media vuelta al mundo',20000,'20.000 KM'],['La vuelta al mundo',40075,'40.075 KM']].map(([n,km,k])=>({n,km:String(km),k})),
+      sectLbl:['1.000','5.000','10.000','20.000','40.075'].map((t,i)=>{const[x,y]=pt(-90+i*72+36,72);return{t,x:x.toFixed(1),y:(y+3).toFixed(1),c:i<2?'#FFFDF8':'rgba(28,34,48,.55)'};}),
+      steps:[['Los primeros mil','1.000 km',2],['Gran recorrido','5.000 km',2],['Un cuarto de vuelta al mundo','10.000 km',1],['Media vuelta al mundo','20.000 km',0],['La vuelta al mundo','40.075 km',0]].map(([n,km,st],i,a)=>({n,km,hasBar:st===1,mk:st===2?'✓':'',dBg:st===2?GR:'transparent',dBd:st===2?'none':st===1?'2px solid oklch(0.55 0.17 5)':'1.5px dashed rgba(28,34,48,.3)',fg:st?INK:'rgba(28,34,48,.55)',bd:i<a.length-1?'rgba(28,34,48,.08)':'transparent',d:(0.6+i*0.25).toFixed(2)+'s'}))};
+  }
+}
+</script>
+</body>
+</html>

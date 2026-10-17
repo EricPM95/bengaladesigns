@@ -486,7 +486,7 @@ debe(/createPortal\(/.test(fuentePerfil) && /MapaMisViajes chinchetas=\{chinchet
   const usanBoton = ['src/components/route/fotos/BotonFotoParada.tsx', 'src/components/route/fotos/TusFotosDeHoy.tsx', 'src/components/route/fotos/TarjetaRecuerdos.tsx', 'src/components/perfil/AlbumDeViaje.tsx']
   for (const p of usanBoton) debe(/BotonFoto/.test(leer(p)), 'E', `${p} no sube las fotos con BotonFoto (que pasa por subirFoto)`)
   const subidores = fs.readdirSync('src', { recursive: true }).map(String).filter((p) => /\.tsx?$/.test(p) && /\bsubir(Foto|FotoPreparada|RespetandoLimite)\(/.test(leer(path.join('src', p))) && !/lib[\\/]fotosViaje\.ts$/.test(p))
-  debe(subidores.length === 1 && /BotonFoto\.tsx$/.test(subidores[0]), 'E', `hay formas de subir fotos que no pasan por BotonFoto: ${subidores.join(', ')}`)
+  debe(subidores.length === 2 && subidores.some((p) => /BotonFoto\.tsx$/.test(p)) && subidores.some((p) => /logros[\\/]visto[\\/]VistoFlujo\.tsx$/.test(p)), 'E', `hay formas de subir fotos que no pasan por BotonFoto (salvo la hoja del Visto, que la 8B guarda en el álbum con la misma subirFoto): ${subidores.join(', ')}`)
 }
 
 /* ---------------- Emojis ---------------- */

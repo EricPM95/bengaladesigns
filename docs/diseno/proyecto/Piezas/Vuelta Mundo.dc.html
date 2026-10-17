@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes vmIn{0%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+@keyframes vmSpin{from{transform:translateX(0)}to{transform:translateX(-400px)}}
+@keyframes vmTrail{from{stroke-dashoffset:var(--p)}to{stroke-dashoffset:0}}
+@keyframes vmFly{from{offset-distance:0%}to{offset-distance:var(--pp)}}
+@keyframes vmLoop{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes vmGem{0%{opacity:.25;transform:scale(1)}50%{opacity:1;transform:scale(1.9)}100%{opacity:1;transform:scale(1)}}
+@keyframes vmRays{to{transform:rotate(360deg)}}
+@keyframes vmPulse{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes vmBurst{0%{opacity:0;transform:scale(.1)}20%{opacity:1}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes vmRib{0%{opacity:0;transform:translateY(12px) scaleX(.3)}100%{opacity:1;transform:none}}
+@keyframes vmLaurel{0%{opacity:0;transform:scale(.2) rotate(-30deg)}100%{opacity:1;transform:none}}
+[data-st="1"] *{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+<div data-st="{{ st }}" style="position:relative;width:{{ w }};height:{{ w }};flex:none">
+  <svg width="100%" height="100%" viewBox="0 0 300 300" style="position:absolute;inset:0;overflow:visible">
+    <defs>
+      <radialGradient id="{{ id }}oc" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="#7FD3D6"></stop><stop offset=".55" stop-color="#2B8F9C"></stop><stop offset="1" stop-color="#0F4E5E"></stop></radialGradient>
+      <radialGradient id="{{ id }}sh" cx=".34" cy=".28" r=".9"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"></stop><stop offset=".35" stop-color="#FFFFFF" stop-opacity="0"></stop><stop offset=".78" stop-color="#062A33" stop-opacity=".1"></stop><stop offset="1" stop-color="#062A33" stop-opacity=".7"></stop></radialGradient>
+      <radialGradient id="{{ id }}at" cx=".5" cy=".5" r=".5"><stop offset=".78" stop-color="{{ atm }}" stop-opacity="0"></stop><stop offset=".9" stop-color="{{ atm }}" stop-opacity=".55"></stop><stop offset="1" stop-color="{{ atm }}" stop-opacity="0"></stop></radialGradient>
+      <linearGradient id="{{ id }}rg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F6C9A6"></stop><stop offset=".5" stop-color="#E08A5E"></stop><stop offset="1" stop-color="#B85A36"></stop></linearGradient>
+      <linearGradient id="{{ id }}gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1D2"></stop><stop offset=".5" stop-color="#F0B97E"></stop><stop offset="1" stop-color="#C46A3E"></stop></linearGradient>
+      <clipPath id="{{ id }}gc"><circle cx="150" cy="150" r="78"></circle></clipPath>
+      <clipPath id="{{ id }}bk"><rect x="-40" y="-40" width="380" height="190"></rect></clipPath>
+      <clipPath id="{{ id }}fr"><rect x="-40" y="150" width="380" height="190"></rect></clipPath>
+      <filter id="{{ id }}bl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+    </defs>
+
+    <g style="transform-origin:150px 150px;animation:vmRays 50s linear infinite"><sc-for list="{{ rayL }}" as="r" hint-placeholder-count="0"><path d="{{ r }}" fill="{{ rayC }}"></path></sc-for></g>
+    <circle cx="150" cy="150" r="120" fill="{{ halo }}" style="animation:vmPulse 3.4s ease-in-out infinite"></circle>
+
+    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+      <g style="transform-origin:150px 238px;opacity:0;animation:vmLaurel .9s {{ dEnd }} cubic-bezier(.3,1.4,.5,1) both">
+        <sc-for list="{{ leaves }}" as="l" hint-placeholder-count="16"><g transform="{{ l.t }}"><path d="M0 0c4-6 12-7 16-4-4 6-12 7-16 4z" fill="{{ l.c }}"></path></g></sc-for>
+      </g>
+    </sc-if>
+
+    <g transform="rotate(-16 150 150)">
+      <g clip-path="url(#{{ id }}bk)">
+        <path d="{{ orbit }}" fill="none" stroke="rgba(120,70,40,.28)" stroke-width="1.6" stroke-dasharray="2 5"></path>
+        <path d="{{ orbit }}" pathLength="100" fill="none" stroke="#F3A36F" stroke-width="7" stroke-linecap="round" filter="url(#{{ id }}bl)" opacity=".7" style="--p:{{ p }};stroke-dasharray:{{ p }} 200;animation:vmTrail {{ dur }} .8s cubic-bezier(.45,0,.2,1) both"></path>
+        <path d="{{ orbit }}" pathLength="100" fill="none" stroke="url(#{{ id }}rg)" stroke-width="3.2" stroke-linecap="round" style="--p:{{ p }};stroke-dasharray:{{ p }} 200;animation:vmTrail {{ dur }} .8s cubic-bezier(.45,0,.2,1) both"></path>
+        <sc-for list="{{ gems }}" as="g" hint-placeholder-count="5"><g transform="translate({{ g.x }} {{ g.y }})"><rect x="-5" y="-5" width="10" height="10" transform="rotate(45)" fill="{{ g.f }}" stroke="#FFF6EA" stroke-width="1.4" opacity="{{ g.o }}" style="transform-box:fill-box;transform-origin:center;animation:{{ g.a }}"></rect></g></sc-for>
+        <g style="offset-path:path('{{ orbit }}');offset-rotate:auto;--pp:{{ pp }};animation:{{ fly }}"><g transform="rotate(45) scale(.95) translate(-12 -12)"><path d="M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z" fill="#FFFDF8" stroke="#7E3519" stroke-width="1.4" stroke-linejoin="round"></path></g></g>
+      </g>
+    </g>
+
+    <g style="transform-origin:150px 150px;animation:vmIn 1s cubic-bezier(.2,.8,.2,1) both">
+      <circle cx="150" cy="150" r="92" fill="url(#{{ id }}at)"></circle>
+      <circle cx="150" cy="150" r="78" fill="url(#{{ id }}oc)"></circle>
+      <g clip-path="url(#{{ id }}gc)">
+        <g style="animation:vmSpin {{ spin }} linear infinite">
+          <sc-for list="{{ strips }}" as="s" hint-placeholder-count="2"><g transform="translate({{ s }} 0)">
+            <sc-for list="{{ lands }}" as="d" hint-placeholder-count="7"><path d="{{ d }}" fill="{{ land }}" stroke="{{ landS }}" stroke-width="1.2" stroke-linejoin="round"></path></sc-for>
+          </g></sc-for>
+        </g>
+        <g fill="none" stroke="rgba(255,255,255,.22)" stroke-width=".8"><ellipse cx="150" cy="150" rx="78" ry="26"></ellipse><path d="M72 150h156"></path><ellipse cx="150" cy="150" rx="30" ry="78"></ellipse><ellipse cx="150" cy="150" rx="62" ry="78"></ellipse></g>
+      </g>
+      <circle cx="150" cy="150" r="78" fill="url(#{{ id }}sh)"></circle>
+      <circle cx="150" cy="150" r="78" fill="none" stroke="{{ rim }}" stroke-width="2"></circle>
+    </g>
+
+    <g transform="rotate(-16 150 150)">
+      <g clip-path="url(#{{ id }}fr)">
+        <path d="{{ orbit }}" fill="none" stroke="rgba(120,70,40,.32)" stroke-width="1.6" stroke-dasharray="2 5"></path>
+        <path d="{{ orbit }}" pathLength="100" fill="none" stroke="#F3A36F" stroke-width="7" stroke-linecap="round" filter="url(#{{ id }}bl)" opacity=".7" style="--p:{{ p }};stroke-dasharray:{{ p }} 200;animation:vmTrail {{ dur }} .8s cubic-bezier(.45,0,.2,1) both"></path>
+        <path d="{{ orbit }}" pathLength="100" fill="none" stroke="url(#{{ id }}rg)" stroke-width="3.2" stroke-linecap="round" style="--p:{{ p }};stroke-dasharray:{{ p }} 200;animation:vmTrail {{ dur }} .8s cubic-bezier(.45,0,.2,1) both"></path>
+        <sc-for list="{{ gems }}" as="g" hint-placeholder-count="5"><g transform="translate({{ g.x }} {{ g.y }})"><rect x="-5" y="-5" width="10" height="10" transform="rotate(45)" fill="{{ g.f }}" stroke="#FFF6EA" stroke-width="1.4" opacity="{{ g.o }}" style="transform-box:fill-box;transform-origin:center;animation:{{ g.a }}"></rect></g></sc-for>
+        <g style="offset-path:path('{{ orbit }}');offset-rotate:auto;--pp:{{ pp }};animation:{{ fly }}"><g transform="rotate(45) scale(.95) translate(-12 -12)"><path d="M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z" fill="#FFFDF8" stroke="#7E3519" stroke-width="1.4" stroke-linejoin="round"></path></g></g>
+      </g>
+      <sc-for list="{{ gemLbl }}" as="g" hint-placeholder-count="5"><text x="{{ g.x }}" y="{{ g.y }}" text-anchor="middle" font-family="Geist Mono" font-weight="700" font-size="8" letter-spacing=".6" fill="{{ g.c }}" transform="{{ g.r }}" opacity="0" style="animation:vmRib .5s {{ g.d }} ease both">{{ g.t }}</text></sc-for>
+    </g>
+
+    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ bursts }}" as="b" hint-placeholder-count="5"><g transform="translate({{ b.x }} {{ b.y }})"><g style="opacity:0;animation:vmBurst 1.6s {{ b.d }} ease-out infinite">
+        <sc-for list="{{ b.r }}" as="r" hint-placeholder-count="10"><path d="{{ r }}" stroke="{{ b.c }}" stroke-width="2" stroke-linecap="round"></path></sc-for>
+      </g></g></sc-for>
+      <g style="transform-origin:150px 262px;opacity:0;animation:vmRib .7s {{ dRib }} cubic-bezier(.2,.8,.2,1) both">
+        <path d="M58 262l14-10v-6h156v6l14 10-14 10v6H72v-6z" fill="#8C3F22"></path>
+        <rect x="72" y="246" width="156" height="32" rx="3" fill="url(#{{ id }}gd)"></rect>
+        <text x="150" y="267" text-anchor="middle" font-family="Geist Mono" font-weight="700" font-size="10.5" letter-spacing="2" fill="#5A2410">40.075 KM</text>
+      </g>
+    </sc-if>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:320,&quot;height&quot;:320},&quot;km&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8160,&quot;tsType&quot;:&quot;number&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:300,&quot;tsType&quot;:&quot;number&quot;},&quot;anim&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+let UID=0;
+const TOT=40075,STEPS=[1000,5000,10000,20000,40075];
+const CX=150,CY=150,RX=134,RY=40;
+const pos=t=>{const a=(90+360*t)*Math.PI/180;return[CX+RX*Math.cos(a),CY+RY*Math.sin(a)];};
+const LANDS=['M40 92C60 80 96 84 104 100C110 114 92 122 86 134C80 146 70 150 60 144C46 136 30 120 28 106C27 98 32 95 40 92Z','M112 80c8-4 18-2 20 4s-6 10-14 10-12-8-6-14z','M82 156C94 152 104 160 104 172C104 188 96 204 88 218C84 224 78 222 78 214C78 198 72 186 72 174C72 164 74 158 82 156Z','M186 92C198 86 214 88 220 98C224 106 214 110 206 112C196 114 186 108 184 100Z','M190 122C206 116 226 120 232 136C238 152 230 170 220 186C212 198 204 200 200 190C196 176 190 164 186 150C182 138 182 126 190 122Z','M226 88C252 78 296 82 318 96C332 106 326 122 308 128C292 134 280 142 266 140C250 138 236 128 230 116C224 106 220 94 226 88Z','M300 170C314 164 332 168 336 180C338 190 326 196 314 194C302 192 294 182 300 170Z'];
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='vm'+(++UID);}
+  renderVals(){const p=this.props;const km=Math.min(TOT,Number(p.km)||0);const sz=Number(p.size)||260;const an=!(p.anim===false||p.anim==='false');
+    const f=km/TOT,done=km>=TOT,D=done?3.6:Math.max(1.2,3.2*f+0.6);
+    const orbit=`M${CX} ${CY+RY}A${RX} ${RY} 0 1 1 ${CX} ${CY-RY}A${RX} ${RY} 0 1 1 ${CX} ${CY+RY}`;
+    const gems=STEPS.map(s=>{const t=s/TOT,[x,y]=pos(t===1?0.9999:t),got=km>=s;return{x:x.toFixed(1),y:y.toFixed(1),f:got?'#FFE9B8':'#D9CFC0',o:got?'1':'.85',a:got?`vmGem .7s ${(0.8+D*t).toFixed(2)}s ease both`:'none'};});
+    const gemLbl=STEPS.slice(0,4).map((s,i)=>{const t=s/TOT,[x,y]=pos(t),got=km>=s;const out=y>CY?14:-9;return{x:x.toFixed(1),y:(y+out).toFixed(1),t:s>=10000?(s/1000)+'K':(s/1000)+'K',c:got?'#8C3F22':'rgba(90,60,40,.45)',r:`rotate(16 ${x.toFixed(1)} ${(y+out).toFixed(1)})`,d:(1+i*0.15).toFixed(2)+'s'};});
+    const leaves=[];[-1,1].forEach(s=>{for(let k=0;k<8;k++){const a=(200-k*14)*Math.PI/180;const x=150+s*-118*Math.cos(a),y=200+82*Math.sin(-a)*-1;leaves.push({t:`translate(${x.toFixed(1)} ${(238-k*16).toFixed(1)}) rotate(${s<0?(-120+k*12):(-60-k*12)})`,c:k%2?'#7FA463':'#9CB97C'});}});
+    const burst=(x,y,c,d)=>({x,y,c,d,r:Array.from({length:10},(_,i)=>{const a=i*36*Math.PI/180;return`M${(6*Math.cos(a)).toFixed(1)} ${(6*Math.sin(a)).toFixed(1)}L${(18*Math.cos(a)).toFixed(1)} ${(18*Math.sin(a)).toFixed(1)}`;})});
+    return{id:this.u,st:an?'0':'1',w:sz+'px',orbit,p:(f*100).toFixed(2),pp:(f*100).toFixed(2)+'%',dur:D.toFixed(2)+'s',
+      fly:done?`vmLoop 9s .8s linear infinite`:`vmFly ${D.toFixed(2)}s .8s cubic-bezier(.45,0,.2,1) both`,
+      gems,gemLbl,done,dEnd:(0.8+D).toFixed(2)+'s',dRib:(1.2+D).toFixed(2)+'s',leaves,
+      bursts:done?[burst(52,70,'#F3A36F','4.6s'),burst(250,64,'#7FD3D6','5s'),burst(36,190,'#F6C9A6','5.4s'),burst(266,196,'#E08A5E','5.8s'),burst(150,20,'#FFE9B8','6.2s')]:[],
+      strips:['0','400'],lands:LANDS,spin:done?'26s':'40s',
+      land:done?'#F6D9A8':'#F2E6CC',landS:done?'#D49A5A':'#C9B48C',rim:done?'#F0B97E':'rgba(255,255,255,.35)',atm:done?'#FFC98A':'#BFE9EA',
+      rayC:done?'rgba(240,170,110,.22)':'rgba(240,200,150,.14)',rayL:Array.from({length:18},(_,i)=>{const a=i*20*Math.PI/180,b=(i*20+8)*Math.PI/180,R=150;return 'M150 150L'+(150+R*Math.cos(a)).toFixed(1)+' '+(150+R*Math.sin(a)).toFixed(1)+'L'+(150+R*Math.cos(b)).toFixed(1)+' '+(150+R*Math.sin(b)).toFixed(1)+'Z';}),halo:done?'rgba(255,205,150,.35)':'rgba(255,240,215,.6)'};}
+}
+</script>
+</body>
+</html>

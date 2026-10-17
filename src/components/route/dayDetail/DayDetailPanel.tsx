@@ -1,3 +1,4 @@
+import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Coordinates, DayPlan, Stop } from '../../../lib/types'
@@ -1149,6 +1150,8 @@ export function DayDetailPanel({
               menu={<StopMenu dayId={day.id} city={day.city} stop={realStop} index={index} realStops={realStops} otherDays={otherDays} freeDay={dayType === 'manual'} />}
             />
           )}
+          {/* 8b, V6: lo que le falta a la parada ya vista (foto del pedazo, sorpresa o recuerdo). Con los logros apagados no pinta nada. */}
+          {realStop && <PendienteDeParada dayId={day.id} stopId={realStop.id} visto={Boolean((realStop as { checkedInAt?: string | null }).checkedInAt)} />}
         </div>
       </SortableStop>
     )

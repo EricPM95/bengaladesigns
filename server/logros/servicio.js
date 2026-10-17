@@ -132,6 +132,19 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return mostrados.map(({ cat: _cat, ...m }) => m)
   }
 
+  /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */
+  function queHayEn(c, viaje, sitio) {
+    if (!sitio) return { sitio_nombre: null, hay_pedazo: false, hay_emblema: false, foto_dentro: null }
+    const d = datos.destinos[viaje.destino]
+    const items = aItems(c.logros)
+    return {
+      sitio_nombre: nombreDeSitio(catalogos, viaje.destino, sitio),
+      hay_pedazo: d.colecciones.some((x) => x.sitios.includes(sitio) && !items.get(clave(viaje.destino, 'pedazo', x.id + ':' + sitio))),
+      hay_emblema: d.emblemas.some((e) => e.sitio === sitio && !items.get(clave(viaje.destino, 'emblema', e.id))),
+      foto_dentro: d.sitios[sitio]?.foto_dentro ?? null,
+    }
+  }
+
   /** La hora local de un instante (o de ahora) en el destino. */
   const horaLocalDe = (destino, instante = ahora()) => parteLocal(instante, datos.destinos[destino].timezone)
 
@@ -173,25 +186,26 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     if (!sitio && nombre) sitio = sitioDeParada({ name: nombre }, catalogos[viaje.destino])
     if (!sitio && !stop_id) return { ok: false, motivo: 'faltan_datos', nuevos: [] }
     const recibido = recibido_en ?? ahora().toISOString()
+    const hay = queHayEn(c, viaje, sitio)
     const info = sitio ? sitioInfo(viaje.destino, sitio) : { coords: null, radio_m: 150, nombre: stop_id }
     const e = evaluarVisto({ instante, recibidoEn: recibido, ubicacion, sitio: info, viaje, destino: datos.destinos[viaje.destino], nombreSitio: info.nombre, ajustes: datos.ajustes })
-    if (!e.cuenta) return { ok: true, cuenta: false, motivo: e.motivo, mensaje: e.mensaje, ubic: e.ubic, nuevos: [] }
+    if (!e.cuenta) return { ok: true, cuenta: false, motivo: e.motivo, mensaje: e.mensaje, ubic: e.ubic, ...hay, nuevos: [] }
     const fecha = parteLocal(instante, datos.destinos[viaje.destino].timezone).fecha
     const ya = c.hechos.find((h) => h.tipo === 'visto' && !h.deshecho_en && h.trip_id === trip_id && (stop_id ? h.stop_id === stop_id : h.sitio === sitio))
-    if (ya) return { ok: true, cuenta: true, repetido: true, ubic: ya.ubic, nuevos: [] }
+    if (ya) return { ok: true, cuenta: true, repetido: true, ubic: ya.ubic, ...hay, nuevos: [] }
     // Usar HOY de verdad (tocar [Visto]) es lo que gasta el día de prueba.
     // Cuenta la hora del Visto, no la de llegada (sin cobertura, llega más tarde). Si esa hora es de las 12:00 en adelante y es la primera vez, se hace la pregunta cuando llegue,
     // siempre que llegue el MISMO día (todavía puede contestar). Si ya ha pasado ese día, se gasta la prueba directamente.
     const loc = horaLocalDe(viaje.destino, instante)
     const enLinea = horaLocalDe(viaje.destino, recibido).fecha === fecha
     const pase = await puedeGanar(userId, c, viaje, fecha, { minutosLocales: loc.minutos, enLinea })
-    if (pase.motivo === 'pregunta_medio_dia') return { ok: true, cuenta: false, motivo: 'pregunta_medio_dia', pregunta: pase.pregunta, ubic: e.ubic, nuevos: [] }
-    if (!pase.puede) return { ok: true, cuenta: false, motivo: pase.motivo, mensaje: null, ubic: e.ubic, nuevos: [] }
+    if (pase.motivo === 'pregunta_medio_dia') return { ok: true, cuenta: false, motivo: 'pregunta_medio_dia', pregunta: pase.pregunta, ubic: e.ubic, ...hay, nuevos: [] }
+    if (!pase.puede) return { ok: true, cuenta: false, motivo: pase.motivo, mensaje: null, ubic: e.ubic, ...hay, nuevos: [] }
     const antes = calcularCon(c)
     const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'visto', sitio, stop_id, instante, recibido_en: recibido, ubic: e.ubic, valido: true, motivo: e.motivo, inicio: viaje.inicio, fin: viaje.fin })
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
     const nuevos = await respuestaDeNuevos(userId, antes, despues, c)
-    return { ok: true, cuenta: true, ubic: e.ubic, aviso: e.mensaje, sitio, nuevos, id: fila.id }
+    return { ok: true, cuenta: true, ubic: e.ubic, aviso: e.mensaje, sitio, ...queHayEn(c, viaje, sitio), hay_pedazo: hay.hay_pedazo && !nuevos.some((m) => m.tipo === 'suma'), nuevos, id: fila.id }
   }
 
   /* ── Una foto ── */

@@ -234,7 +234,7 @@ export function pendientes({ datos, destino, viaje, items, hoy }) {
         if (!p.sitio || !d.sitios[p.sitio]) continue
         const faltaPedazo = d.colecciones.some((c) => c.sitios.includes(p.sitio) && !items.get(clave(destino, 'pedazo', `${c.id}:${p.sitio}`)))
         const faltaEmblema = d.emblemas.some((e) => e.sitio === p.sitio && !items.get(clave(destino, 'emblema', e.id)))
-        if (faltaPedazo || faltaEmblema) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: p.sitio, falta: [faltaPedazo && 'pedazo', faltaEmblema && 'emblema'].filter(Boolean) })
+        if (faltaPedazo || faltaEmblema) lista.push({ fecha: dia.fecha, dia: dia.numero ?? null, sitio: p.sitio, stop_id: p.stop_id ?? null, nombre: p.nombre ?? null, foto_dentro: d.sitios[p.sitio].foto_dentro ?? null, falta: [faltaPedazo && 'pedazo', faltaEmblema && 'emblema'].filter(Boolean) })
       }
     }
   }

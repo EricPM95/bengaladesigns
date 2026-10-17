@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:44px 48px 90px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:72px">
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+  <section id="{{ sec.id }}" style="display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">{{ sec.eye }}</span>
+      <span style="font:400 40px/1.02 'Instrument Serif',serif">{{ sec.title }}</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:48px 44px;align-items:flex-start">
+    <sc-for list="{{ sec.boards }}" as="b" hint-placeholder-count="3">
+      <div id="{{ b.id }}" style="width:390px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span>
+          <span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span>
+        </div>
+        <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;margin-top:4px;border-radius:50px;overflow:hidden;background:{{ b.bg }};box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+          <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+          <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist';color:{{ b.fg }}"><span>9:41</span><span style="width:24px;height:12px;border:1px solid currentColor;border-radius:4px;padding:1.5px;display:flex;opacity:.6"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+
+          <sc-if value="{{ b.prof }}" hint-placeholder-val="{{ true }}">
+            <header style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:4px 12px 2px 20px">
+              <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Perfil</span>
+              <button onClick="{{ b.tap }}" aria-label="Cerrar" style="width:44px;height:44px;border-radius:50%;border:none;background:#EDE4D3;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            </header>
+            <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:2px 16px 110px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;gap:14px;padding:0 4px">
+                <h1 style="flex:1;margin:0;font:400 40px/1 'Instrument Serif',serif;letter-spacing:-.01em">Hola, <em>viajero</em></h1>
+                <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:400 26px/1 'Instrument Serif',serif;box-shadow:0 0 0 3px #F5EFE4,0 0 0 4.5px oklch(0.8 0.14 70)">V</span>
+              </div>
+
+              <div style="flex:none;border-radius:26px;overflow:hidden;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);box-shadow:0 1px 2px rgba(28,34,48,.05),0 14px 30px -22px rgba(28,34,48,.45)">
+                <div style="position:relative;height:236px;background:#E4ECE6;overflow:hidden">
+                  <svg width="358" height="236" viewBox="0 0 358 236" style="position:absolute;inset:0">
+                    <defs>
+                      <radialGradient id="g-sea" cx="40%" cy="28%" r="75%"><stop offset="0" stop-color="#F1F5F1"></stop><stop offset="1" stop-color="#C3D4C9"></stop></radialGradient>
+                      <radialGradient id="g-sh" cx="38%" cy="26%" r="78%"><stop offset=".5" stop-color="#1C2230" stop-opacity="0"></stop><stop offset="1" stop-color="#1C2230" stop-opacity=".2"></stop></radialGradient>
+                    </defs>
+                    <circle cx="179" cy="150" r="175" fill="url(#g-sea)"></circle>
+                    <path d="{{ grat }}" fill="none" stroke="rgba(28,34,48,.07)" stroke-width=".8"></path>
+                    <sc-for list="{{ b.feats }}" as="c" hint-placeholder-count="0"><path d="{{ c.d }}" fill="{{ c.f }}" stroke="{{ c.s }}" stroke-width=".6"></path></sc-for>
+                    <circle cx="179" cy="150" r="175" fill="url(#g-sh)"></circle>
+                    <sc-for list="{{ b.pins }}" as="p" hint-placeholder-count="0"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="3.6" fill="#1C2230" stroke="#FFFDF8" stroke-width="2"></circle></sc-for>
+                  </svg>
+                  <sc-if value="{{ b.isNew }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:absolute;left:50%;top:18px;transform:translateX(-50%);height:30px;padding:0 12px;border-radius:999px;background:rgba(255,253,248,.92);display:flex;align-items:center;font:500 12px 'Geist';white-space:nowrap;color:rgba(28,34,48,.7)">0 países pintados</span>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ b.hasStats }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);padding:12px 6px 14px">
+                    <sc-for list="{{ b.stats }}" as="s" hint-placeholder-count="3">
+                      <span style="display:flex;flex-direction:column;align-items:center;gap:2px;border-left:1px solid {{ s.bd }}">
+                        <span style="font:400 32px/1 'Instrument Serif',serif;color:{{ s.c }}">{{ s.n }}</span>
+                        <span style="font:500 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ s.l }}</span>
+                      </span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isNew }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:14px 18px 18px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+                    <span style="font:400 24px/1.1 'Instrument Serif',serif">Tu mapa está <em>en blanco</em></span>
+                    <span style="font:400 13px/1.45 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Cada viaje pinta su país. Empieza por los que ya hiciste.</span>
+                    <button onClick="{{ b.tap }}" style="margin-top:8px;height:46px;padding:0 18px 0 12px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;gap:8px;font:600 14px 'Geist';cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Añadir un viaje que ya hiciste</button>
+                  </div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ b.hasStats }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ b.tap }}" style="align-self:center;margin-top:-4px;height:40px;padding:0 14px 0 10px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:transparent;color:#1C2230;display:flex;align-items:center;gap:7px;font:500 13px 'Geist';cursor:pointer" style-hover="background:rgba(28,34,48,.05)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Añadir un viaje que ya hiciste</button>
+              </sc-if>
+
+              <button onClick="{{ b.tap }}" style="position:relative;flex:none;min-height:110px;display:flex;align-items:center;gap:14px;padding:16px 18px;border:none;border-radius:22px;background:#1C2230;color:#FFFDF8;text-align:left;overflow:hidden;cursor:pointer;box-shadow:0 16px 30px -18px rgba(28,34,48,.8)">
+                <span style="position:absolute;inset:6px;border-radius:17px;border:1px solid oklch(0.8 0.14 70 / .35);pointer-events:none"></span>
+                <span style="position:relative;width:54px;height:54px;flex:none;border-radius:50%;border:1.5px solid oklch(0.8 0.14 70);color:oklch(0.8 0.14 70);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9M12 3c-2.5 2.5-3.8 5.5-3.8 9s1.3 6.5 3.8 9"></path></svg></span>
+                <span style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                  <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.3em;color:oklch(0.8 0.14 70)">PASAPORTE</span>
+                  <span style="font:400 25px/1 'Instrument Serif',serif">Tu pasaporte</span>
+                  <span style="font:400 12px/1.35 'Geist';color:rgba(255,253,248,.72);max-width:150px;text-wrap:pretty">{{ b.passSub }}</span>
+                </span>
+                <sc-if value="{{ b.hasMini }}" hint-placeholder-val="{{ true }}">
+                  <span style="position:absolute;right:-26px;top:12px;width:132px;height:112px;border-radius:8px;background:#F3EBDB;transform:rotate(9deg);box-shadow:-6px 6px 16px -6px rgba(0,0,0,.5)">
+                    <sc-for list="{{ b.mini }}" as="s" hint-placeholder-count="2">
+                      <span style="position:absolute;left:{{ s.x }};top:{{ s.y }};transform:rotate({{ s.r }});cursor:{{ s.cur }};filter:{{ s.flt }}" onClick="{{ s.tap }}"><dc-import name="Piezas/Sello" shape="{{ s.shape }}" place="{{ s.place }}" date="{{ s.date }}" ink="{{ s.ink }}" mon="{{ s.mon }}" size="{{ s.size }}" hint-size="62px,62px"></dc-import><sc-if value="{{ s.empty }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:6px;top:4px;height:20px;padding:0 8px;border-radius:999px;background:oklch(0.55 0.17 5);color:#FFFFFF;font:700 9.5px/20px 'Geist Mono',monospace;letter-spacing:.08em">NUEVO</span></sc-if></span>
+                    </sc-for>
+                  </span>
+                </sc-if>
+              </button>
+
+              <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px">
+                  <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Mis viajes</span>
+                  <span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.45)">{{ b.nTrips }}</span>
+                </div>
+                <sc-if value="{{ b.isNew }}" hint-placeholder-val="{{ false }}">
+                  <span style="padding:16px;border-radius:18px;border:1.5px dashed rgba(28,34,48,.2);font:400 13px 'Geist';color:rgba(28,34,48,.6);text-align:center">Aún no tienes viajes</span>
+                </sc-if>
+                <sc-for list="{{ b.trips }}" as="t" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;min-height:62px;border-radius:18px;border:1px solid rgba(28,34,48,.08);background:#FFFFFF;overflow:hidden">
+                    <span style="align-self:stretch;width:46px;flex:none;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%);background:{{ t.flag }}"></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 8px 10px 6px"><span style="font:400 20px/1.05 'Instrument Serif',serif">{{ t.city }}</span><span style="font:500 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.58)">{{ t.when }}</span></span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin:0 12px 0 8px"><path d="M9 6l6 6-6 6"></path></svg>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 16px 30px;background:linear-gradient(180deg,rgba(245,239,228,0),#F5EFE4 34%)">
+              <button onClick="{{ b.tap }}" style="width:100%;height:58px;border:none;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:10px;font:600 16px 'Geist';cursor:pointer">
+                <span style="width:26px;height:26px;border-radius:50%;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>Nuevo viaje
+              </button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.pass }}" hint-placeholder-val="{{ false }}">
+            <header style="flex:none;display:flex;align-items:center;gap:12px;padding:4px 14px 14px 22px;color:#FFFDF8">
+              <span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:400 30px/1 'Instrument Serif',serif">Tu pasaporte</span><span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;color:oklch(0.8 0.14 70)">7 sellos · 6 países</span></span>
+              <button onClick="{{ b.tap }}" aria-label="Cerrar" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,253,248,.1);color:#FFFDF8;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            </header>
+            <div ref="{{ b.sref }}" onScroll="{{ b.onScroll }}" style="flex:none;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 28px 18px">
+              <sc-for list="{{ pages }}" as="p" hint-placeholder-count="2">
+                <div style="position:relative;flex:none;width:334px;height:590px;scroll-snap-align:center;border-radius:6px 16px 16px 6px;background:#F3EBDB;overflow:hidden;box-shadow:0 24px 40px -20px rgba(0,0,0,.7)">
+                  <svg width="334" height="590" viewBox="0 0 334 590" style="position:absolute;inset:0"><path d="{{ guil }}" fill="none" stroke="rgba(28,34,48,.055)" stroke-width=".8"></path></svg>
+                  <span style="position:absolute;left:0;top:0;bottom:0;width:22px;background:linear-gradient(90deg,rgba(28,34,48,.16),rgba(28,34,48,0))"></span>
+                  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:20px 20px 18px 26px">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.24em;color:rgba(28,34,48,.5)">PÁGINA {{ p.num }}</span>
+                      <span style="width:34px;height:22px;border-radius:4px;background:{{ p.flag }};box-shadow:inset 0 0 0 1px rgba(28,34,48,.12)"></span>
+                    </div>
+                    <span style="margin-top:10px;font:400 46px/1 'Instrument Serif',serif">{{ p.n }}</span>
+                    <span style="margin-top:10px;height:1px;background:rgba(28,34,48,.18)"></span>
+                    <div style="position:relative;flex:1;margin-top:12px">
+                      <sc-for list="{{ p.stamps }}" as="s" hint-placeholder-count="2">
+                        <span style="position:absolute;left:{{ s.x }};top:{{ s.y }};transform:rotate({{ s.r }})"><dc-import name="Piezas/Sello" shape="{{ s.shape }}" place="{{ s.place }}" date="{{ s.date }}" ink="{{ s.ink }}" mon="{{ s.mon }}" empty="{{ s.empty }}" size="{{ s.size }}" hint-size="150px,150px"></dc-import></span>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ p.hasMissing }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px dashed rgba(28,34,48,.22)">
+                        <span style="width:8px;height:8px;flex:none;border-radius:50%;background:oklch(0.55 0.17 5)"></span>
+                        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:italic 400 20px/1.1 'Instrument Serif',serif">¿Completas {{ p.n }}?</span><span style="font:400 12px 'Geist';color:rgba(28,34,48,.65)">{{ p.missing }}</span></span>
+                        <button onClick="{{ p.plan }}" style="flex:none;height:40px;padding:0 14px;border-radius:999px;border:1.5px solid #1C2230;background:transparent;color:#1C2230;font:600 12.5px 'Geist';cursor:pointer">Crear viaje</button>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ p.noMissing }}" hint-placeholder-val="{{ true }}">
+                      <span style="padding-top:12px;border-top:1px dashed rgba(28,34,48,.22);font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;color:rgba(28,34,48,.55)">{{ p.count }}</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+              <div style="display:flex;gap:6px">
+                <sc-for list="{{ b.dots }}" as="d" hint-placeholder-count="6"><span style="width:{{ d.w }};height:6px;border-radius:6px;background:{{ d.c }};transition:width .3s,background .3s"></span></sc-for>
+              </div>
+              <span style="display:flex;align-items:center;gap:8px;font:400 12px 'Geist';color:rgba(255,253,248,.6)"><svg width="18" height="12" viewBox="0 0 26 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2L3 6l5 4M18 2l5 4-5 4"></path></svg>Desliza para pasar de página</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.mom }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 48%,rgba(255,200,120,.18),rgba(28,34,48,0) 70%);pointer-events:none"></div>
+            <div style="position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 20px 30px;color:#FFFDF8">
+              <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.24em;color:oklch(0.8 0.14 70)">VIAJE TERMINADO</span>
+              <span style="margin-top:10px;font:400 32px/1.05 'Instrument Serif',serif;text-align:center;text-wrap:balance">Roma te deja <em>su sello</em></span>
+              <div style="position:relative;margin-top:26px;width:320px;height:440px;flex:none;border-radius:6px 16px 16px 6px;background:#F3EBDB;overflow:hidden;color:#1C2230;transform:{{ b.pageTf }};transition:transform .12s ease-out;box-shadow:0 24px 40px -20px rgba(0,0,0,.7)">
+                <svg width="334" height="590" viewBox="0 0 334 590" style="position:absolute;inset:0"><path d="{{ guil }}" fill="none" stroke="rgba(28,34,48,.055)" stroke-width=".8"></path></svg>
+                <span style="position:absolute;left:0;top:0;bottom:0;width:22px;background:linear-gradient(90deg,rgba(28,34,48,.16),rgba(28,34,48,0))"></span>
+                <div style="position:relative;padding:18px 18px 0 24px;display:flex;flex-direction:column">
+                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.24em;color:rgba(28,34,48,.5)">PÁGINA 01</span><span style="width:34px;height:22px;border-radius:4px;background:linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%);box-shadow:inset 0 0 0 1px rgba(28,34,48,.12)"></span></div>
+                  <span style="margin-top:8px;font:400 40px/1 'Instrument Serif',serif">Italia</span>
+                  <span style="margin-top:8px;height:1px;background:rgba(28,34,48,.18)"></span>
+                </div>
+                <span style="position:absolute;left:30px;top:116px;transform:rotate(-9deg)"><dc-import name="Piezas/Sello" shape="round" place="Roma" date="14 MAR 2025" ink="oklch(0.42 0.11 255)" mon="{{ mon.roma }}" size="{{ 122 }}" hint-size="122px,122px"></dc-import></span>
+                <span style="position:absolute;left:184px;top:122px;transform:rotate(4deg)"><dc-import name="Piezas/Sello" shape="oval" place="Florencia" empty="{{ true }}" size="{{ 118 }}" hint-size="118px,118px"></dc-import></span>
+                <sc-if value="{{ b.slotOn }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;left:86px;top:266px;width:150px;height:150px;transform:rotate(6deg);display:flex;align-items:center;justify-content:center">
+                    <span style="position:absolute;left:10px;top:24px;width:140px;height:112px;border-radius:8px;border:2px dashed oklch(0.72 0.14 70);background:oklch(0.8 0.14 70 / .1)"></span>
+                    <span style="position:relative;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;color:oklch(0.55 0.13 70)">TU SELLO</span>
+                  </span>
+                </sc-if>
+                <sc-if value="{{ b.shadowOn }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;left:100px;top:300px;width:136px;height:96px;border-radius:50%;background:rgba(28,34,48,.28);filter:blur(16px)"></span>
+                </sc-if>
+                <svg width="320" height="440" viewBox="0 0 320 440" style="position:absolute;inset:0;opacity:{{ b.splO }};transition:opacity .25s .38s;pointer-events:none">
+                  <sc-for list="{{ splats }}" as="s" hint-placeholder-count="0"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="oklch(0.42 0.1 155)" opacity="{{ s.o }}"></circle></sc-for>
+                </svg>
+                <span style="position:absolute;left:86px;top:266px;transform:{{ b.stTf }};filter:{{ b.stFl }};opacity:{{ b.stOp }};transition:{{ b.stTr }};transform-origin:50% 50%">
+                  <dc-import name="Piezas/Sello" shape="rect" place="Roma" date="13 OCT 2026" ink="oklch(0.42 0.1 155)" mon="{{ mon.roma }}" size="{{ 150 }}" hint-size="150px,150px"></dc-import>
+                </span>
+              </div>
+              <div style="flex:1"></div>
+              <sc-if value="{{ b.isBefore }}" hint-placeholder-val="{{ false }}">
+                <span style="font:400 14px/1.45 'Geist';color:rgba(255,253,248,.72);text-align:center;margin-bottom:14px">Toca para estampar tu sello de Roma</span>
+                <button onClick="{{ b.tap }}" style="width:100%;height:58px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer">Estampar mi sello</button>
+              </sc-if>
+              <sc-if value="{{ b.isDuring }}" hint-placeholder-val="{{ false }}">
+                <span style="height:130px"></span>
+              </sc-if>
+              <sc-if value="{{ b.isAfter }}" hint-placeholder-val="{{ false }}">
+                <span style="font:400 36px/1 'Instrument Serif',serif">¡Nuevo sello!</span>
+                <span style="margin-top:6px;margin-bottom:16px;font:500 12px 'Geist Mono',monospace;letter-spacing:.12em;color:oklch(0.8 0.14 70)">ROMA · OCT 2026</span>
+                <button onClick="{{ b.tap }}" style="width:100%;height:58px;border:none;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;font:600 16px 'Geist';cursor:pointer">Ver mi pasaporte</button>
+                <button onClick="{{ replay }}" style="margin-top:8px;height:36px;padding:0 12px;border:none;background:transparent;color:rgba(255,253,248,.55);font:italic 400 15px 'Instrument Serif',serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer">Repetir el golpe</button>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ b.toastOn }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;left:50%;bottom:110px;height:40px;padding:0 16px;border-radius:999px;background:#FFFDF8;color:#1C2230;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;animation:toast 2.2s ease both;z-index:40;box-shadow:0 10px 24px -10px rgba(0,0,0,.5)">{{ toastTxt }}</div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-for>
+    </div>
+  </section>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const INK='#1C2230',AMB='oklch(0.8 0.14 70)';
+const MON={
+roma:'M3 38 H57 M6 38 V15 Q30 4 54 15 V38 M6 23 H54 M6 30 H54 M11 38 V33 Q13.5 30.5 16 33 V38 M21 38 V33 Q23.5 30.5 26 33 V38 M34 38 V33 Q36.5 30.5 39 33 V38 M44 38 V33 Q46.5 30.5 49 33 V38 M11 23 V19 Q13.5 16.5 16 19 V23 M21 23 V18 Q23.5 15.5 26 18 V23 M34 23 V18 Q36.5 15.5 39 18 V23 M44 23 V19 Q46.5 16.5 49 19 V23',
+flor:'M6 38 H54 M10 38 V25 H44 V38 M16 25 Q27 3 38 25 M27 8 V3 M25 5 H29 M20 38 V32 Q22 29 24 32 V38 M30 38 V32 Q32 29 34 32 V38 M46 38 V14 H52 V38 M46 20 H52',
+paris:'M18 39 L28 5 H32 L42 39 M22 27 H38 M25 17 H35 M24 39 Q30 31 36 39 M30 5 V0',
+lisboa:'M18 38 V18 H42 V38 M14 38 H46 M22 18 V11 H38 V18 M26 11 V5 H34 V11 M24 26 H28 M32 26 H36 M28 38 V32 Q30 29 32 32 V38',
+atenas:'M5 38 H55 M8 34 H52 M11 34 V17 M19 34 V17 M27 34 V17 M35 34 V17 M43 34 V17 M50 34 V17 M8 17 H52 M6 13 L30 5 L54 13 Z',
+amster:'M3 38 V19 L9 12 L15 19 V38 M15 38 V15 L21 7 L27 15 V38 M27 38 V20 L33 14 L39 20 V38 M39 38 V16 L45 10 L51 16 V38 M1 38 H57 M7 25 H11 M19 21 H23 M31 27 H35 M43 23 H47',
+londres:'M24 38 V13 H36 V38 M21 38 H39 M24 13 L30 2 L36 13 M26 21 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M27 30 H33'};
+const IK={blue:'oklch(0.42 0.11 255)',green:'oklch(0.42 0.1 155)',brown:'oklch(0.42 0.07 45)',plum:'oklch(0.4 0.09 320)',teal:'oklch(0.44 0.08 200)'};
+const FLAG={it:'linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',fr:'linear-gradient(90deg,#2B4C9B 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',pt:'linear-gradient(90deg,#2E7D4F 0 40%,#CE3B3B 40%)',
+gr:'repeating-linear-gradient(180deg,#2B5FA8 0 11.1%,#F4F1EA 11.1% 22.2%)',nl:'linear-gradient(180deg,#B3283A 0 33%,#F4F1EA 33% 66%,#2B4C9B 66%)',uk:'linear-gradient(90deg,transparent 43%,#CE3B3B 43% 57%,transparent 57%),linear-gradient(180deg,#2B3F7A 40%,#CE3B3B 40% 60%,#2B3F7A 60%)'};
+const st=(shape,place,date,ink,mon,x,y,r,size,empty)=>({shape,place,date:date||'',ink:IK[ink]||'',mon:MON[mon]||'',x:x+'px',y:y+'px',r:r+'deg',size:size||150,empty:!!empty});
+const PAGES=[
+ {k:'it',n:'Italia',stamps:[st('round','Roma','14 MAR 2025','blue','roma',0,0,-9),st('rect','Roma','13 OCT 2026','green','roma',132,108,7),st('oval','Florencia','','','',6,222,-3,150,true)],missing:'Te falta Florencia'},
+ {k:'fr',n:'Francia',stamps:[st('oval','París','2 MAY 2024','plum','paris',64,90,-6,160)]},
+ {k:'pt',n:'Portugal',stamps:[st('rect','Lisboa','22 SEP 2023','brown','lisboa',60,80,5,160)]},
+ {k:'gr',n:'Grecia',stamps:[st('round','Atenas','8 JUN 2023','teal','atenas',66,86,-7,160)]},
+ {k:'nl',n:'Países Bajos',stamps:[st('oval','Ámsterdam','17 ABR 2024','blue','amster',62,90,4,160)]},
+ {k:'uk',n:'Reino Unido',stamps:[st('rect','Londres','3 DIC 2022','plum','londres',64,84,-5,160)]}];
+const SOFT=['oklch(0.74 0.14 65)','oklch(0.68 0.12 150)','oklch(0.66 0.1 240)','oklch(0.66 0.1 300)','oklch(0.72 0.13 35)','oklch(0.68 0.1 195)'];
+const VIS={new:{},it:{380:0},six:{380:0,250:1,620:2,300:3,528:4,826:5}};
+const CITY={Roma:[12.5,41.9],'París':[2.35,48.86],Lisboa:[-9.14,38.72],Atenas:[23.73,37.98],'Ámsterdam':[4.9,52.37],Londres:[-0.13,51.5]};
+const guil=(()=>{let d='';for(let k=0;k<9;k++){const R=50+k*17;for(let i=0;i<=200;i++){const a=i/200*Math.PI*2;const r=R+5*Math.sin(a*14+k*.7);d+=(i?'L':'M')+(167+r*Math.cos(a)).toFixed(1)+' '+(300+r*1.3*Math.sin(a)).toFixed(1);}d+='Z';}return d;})();
+const splats=[[96,300,3.2,.5],[248,330,2.4,.45],[90,388,1.8,.5],[236,404,3,.35],[160,268,1.6,.5],[262,296,1.4,.6],[110,420,2.2,.35]].map(([x,y,r,o])=>({x,y,r,o}));
+
+class Component extends DCLogic {
+  constructor(p){super(p);this.state={geo:null,pidx:{'2a':0,'2b':1},hit:true,shake:false,toast:null};this.rf={};this.el={};}
+  componentDidMount(){this.loadGeo();this.t0=setTimeout(()=>{const e=this.el['2b'];if(e)e.scrollLeft=348;},300);}
+  componentWillUnmount(){[this.tt,this.t0,this.t1,this.t2,this.t3].forEach(clearTimeout);}
+  async loadGeo(){try{
+    const imp=async(a,b)=>{try{return await import(a);}catch(e){return await import(b);}};
+    const[g,t]=await Promise.all([imp('https://cdn.jsdelivr.net/npm/d3-geo@3/+esm','https://esm.sh/d3-geo@3'),imp('https://cdn.jsdelivr.net/npm/topojson-client@3/+esm','https://esm.sh/topojson-client@3')]);
+    let w;try{w=await(await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')).json();}catch(e){w=await(await fetch('https://unpkg.com/world-atlas@2/countries-110m.json')).json();}
+    const proj=g.geoOrthographic().scale(175).translate([179,150]).rotate([-10,-46]).clipAngle(90);const path=g.geoPath(proj);
+    const feats=t.feature(w,w.objects.countries).features.map(f=>({id:+f.id,d:path(f)})).filter(f=>f.d);
+    const pins=Object.fromEntries(Object.entries(CITY).map(([k,ll])=>{const[x,y]=proj(ll);return[k,{x,y}];}));
+    this.setState({geo:{feats,grat:path(g.geoGraticule10()),pins}});}catch(e){console.warn('globo',e);}}
+  toast(fid,txt){this.setState({toast:{fid,txt}});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
+  base(id,cap,bg,fg){const s=this.state;return{id,cap,bg,fg,prof:false,pass:false,mom:false,toastOn:!!(s.toast&&s.toast.fid===id)};}
+  prof(id,cap,k){const s=this.state,G=s.geo,V=VIS[k];
+    const feats=G?G.feats.map(f=>{const v=V[f.id];return{d:f.d,f:v!==undefined?SOFT[v]:'#EFE8DA',s:v!==undefined?'rgba(28,34,48,.45)':'rgba(28,34,48,.2)'};}):[];
+    const cities=k==='it'?['Roma']:k==='six'?Object.keys(CITY):[];
+    const S=k==='it'?[['1','país'],['1','ciudad'],['8','días viajando']]:[['6','países'],['9','ciudades'],['41','días viajando']];
+    const mini=k==='it'?[st('round','Roma','14 MAR 2025','blue','roma',8,6,-8,62),st('rect','Roma','13 OCT 2026','green','roma',56,44,6,62)]:[st('rect','Roma','13 OCT 2026','green','roma',8,6,-6,62),st('oval','París','2 MAY 2024','plum','paris',54,46,8,62)];
+    const F=(c,w,f)=>({city:c,when:w,flag:FLAG[f]});
+    const trips=k==='it'?[F('Roma','13 – 16 oct 2026 · 4 días','it'),F('Roma','14 – 17 mar 2025 · 4 días','it')]:k==='six'?[F('Roma','13 – 16 oct 2026 · 4 días','it'),F('Ámsterdam','17 – 20 abr 2024 · 4 días','nl'),F('París','2 – 6 may 2024 · 5 días','fr')]:[];
+    return{...this.base(id,cap,'#F5EFE4',INK),prof:true,isNew:k==='new',hasStats:k!=='new',feats,
+      pins:G?cities.map(c=>G.pins[c]).filter(Boolean):[],
+      stats:S.map(([n,l],i)=>({n,l,c:i===0?'oklch(0.5 0.12 70)':INK,bd:i?'rgba(28,34,48,.1)':'transparent'})),
+      passSub:k==='new'?'Tu primer sello llega al acabar un viaje':k==='it'?'2 sellos':'7 sellos · 6 países',hasMini:k!=='new',mini,
+      trips,nTrips:k==='new'?'':k==='it'?'2':'8',tap:()=>this.toast(id,'Es un prototipo de diseño')};}
+  pass(id,cap){const s=this.state;const idx=s.pidx[id]||0;
+    return{...this.base(id,cap,INK,'#FFFDF8'),pass:true,
+      sref:this.rf[id]||(this.rf[id]=e=>{this.el[id]=e;}),
+      onScroll:e=>{const i=Math.round(e.target.scrollLeft/348);if(i!==(this.state.pidx[id]||0))this.setState(st=>({pidx:{...st.pidx,[id]:i}}));},
+      dots:PAGES.map((_,i)=>({w:i===idx?'20px':'6px',c:i===idx?AMB:'rgba(255,253,248,.3)'})),tap:()=>this.toast(id,'Volver al perfil')};}
+  mom(id,cap,ph){const s=this.state;const live=ph==='after';const landed=ph==='after'&&s.hit;
+    const fall='translate(-14px,-80px) rotate(-16deg) scale(1.85)';
+    return{...this.base(id,cap,INK,'#FFFDF8'),mom:true,isBefore:ph==='before',isDuring:ph==='during',isAfter:ph==='after',
+      slotOn:ph==='before',shadowOn:ph==='during'||(live&&!s.hit),
+      stTf:ph==='before'?fall:ph==='during'?fall:(s.hit?'rotate(6deg)':fall),
+      stFl:ph==='during'||(live&&!s.hit)?'drop-shadow(0 34px 24px rgba(0,0,0,.45))':'none',
+      stOp:ph==='before'?'0':'1',stTr:live&&s.hit?'transform .42s cubic-bezier(.55,0,.85,.25),filter .42s':'none',
+      splO:landed?'1':'0',pageTf:live&&s.shake?'translateY(4px) scale(.992)':'none',
+      tap:()=>this.toast(id,ph==='before'?'¡Pum!':'Abriendo tu pasaporte')};}
+  renderVals(){const s=this.state;
+    return{guil,mon:MON,splats,grat:s.geo?s.geo.grat:'',toastTxt:s.toast?s.toast.txt:'',
+      pages:PAGES.map((p,i)=>({n:p.n,num:'0'+(i+1),flag:FLAG[p.k],hasMissing:false,noMissing:true,missing:p.missing||'',
+        stamps:p.stamps.map(x=>({...x,cur:x.empty?'pointer':'default',flt:x.empty?'grayscale(1) opacity(.55)':'none',tap:()=>{if(x.empty)this.toast('2a',x.place+' ya está en la app · Crear viaje');}})),count:`${p.stamps.filter(x=>!x.empty).length} ${p.stamps.filter(x=>!x.empty).length===1?'SELLO':'SELLOS'}`,plan:()=>this.toast('2a','Crear un viaje a Florencia')})),
+      replay:()=>{clearTimeout(this.t1);clearTimeout(this.t2);clearTimeout(this.t3);this.setState({hit:false,shake:false});
+        this.t1=setTimeout(()=>this.setState({hit:true}),80);this.t2=setTimeout(()=>this.setState({shake:true}),500);this.t3=setTimeout(()=>this.setState({shake:false}),620);},
+      sections:[
+        {id:'s1',eye:'01 · Perfil',title:'El globo que se colorea',boards:[this.prof('1a','Viajero nuevo','new'),this.prof('1b','Un país · Italia','it'),this.prof('1c','Seis países','six')]},
+        {id:'s2',eye:'02 · Pasaporte',title:'Tu pasaporte de sellos',boards:[this.pass('2a','Italia · Roma dos veces · Florencia, nuevo en la app'),this.pass('2b','Francia · un sello')]},
+        {id:'s3',eye:'03 · El momento del sello',title:'Al acabar un viaje',boards:[this.mom('3a','Antes','before'),this.mom('3b','Durante · el golpe','during'),this.mom('3c','Después · prueba «Repetir el golpe»','after')]}]};}
+}
+</script>
+</body>
+</html>

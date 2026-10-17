@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:oklch(0.55 0.15 45)}a:hover{color:#1C2230}
+input[type=time]::-webkit-calendar-picker-indicator{opacity:.45;cursor:pointer}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fly{0%{offset-distance:0%}100%{offset-distance:100%}}
+.leaflet-container{font-family:'Geist',sans-serif;background:#E9E2D2}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 40%,#F1E8D6 0%,#E0D3BA 75%);display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start;justify-content:center;padding:48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+
+<div style="display:flex;flex-direction:column;gap:14px">
+  <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">12 · Explorar</span>
+  <div data-screen-label="12 Explorar" style="width:390px;height:844px;border-radius:52px;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);position:relative;overflow:hidden;background:#F5EFE4;isolation:isolate;display:flex;flex-direction:column">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'">
+      <span>9:41</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:4px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:6px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:8px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:11px;background:#1C2230;border-radius:1px"></span></span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></span>
+    </div>
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:10px;padding:0 16px 0 18px">
+      <span style="width:34px;height:34px;border-radius:50%;background:#1C2230;color:oklch(0.8 0.14 70);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg></span>
+      <span style="flex:1;font:400 26px/1 'Instrument Serif',serif;letter-spacing:-.01em">Route Planner</span>
+      <span style="height:34px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid rgba(28,34,48,.08);display:flex;align-items:center;gap:7px;font:600 13px 'Geist Mono',monospace;color:{{ pctC }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ pctC }}"></span>{{ pct }}</span>
+      <button aria-label="Ideas" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(28,34,48,.1);background:#fff;color:#1C2230;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"></path></svg></button>
+    </header>
+    <div style="position:relative;flex:none;height:230px">
+      <div ref="{{ mapRef }}" style="position:absolute;inset:0"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:50px;background:linear-gradient(180deg,rgba(245,239,228,0),rgba(245,239,228,.85));pointer-events:none;z-index:400"></div>
+      <button style="position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:500;height:40px;padding:0 18px;border-radius:999px;background:#FFFDF8;border:1.5px solid oklch(0.55 0.15 45);box-shadow:0 10px 28px -10px rgba(28,34,48,.35);display:flex;align-items:baseline;gap:6px;cursor:pointer;color:#1C2230;white-space:nowrap">
+        <span style="font:400 22px/1 'Instrument Serif',serif">Roma</span><span style="font:500 12.5px 'Geist';color:oklch(0.52 0.15 45)">· 20 – 23 oct</span>
+      </button>
+      <button aria-label="Plegar mapa" style="position:absolute;right:14px;top:14px;z-index:500;width:40px;height:40px;border-radius:50%;background:#FFFDF8;border:1.5px solid oklch(0.55 0.15 45);color:oklch(0.52 0.15 45);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+      <button aria-label="Información del mapa" style="position:absolute;right:14px;bottom:30px;z-index:500;width:26px;height:26px;border-radius:50%;background:#1C2230;color:#fff;border:none;font:italic 600 13px Georgia,serif;cursor:pointer">i</button>
+    </div>
+    <div style="position:relative;z-index:10;flex:1;min-height:0;margin-top:-22px;background:#F5EFE4;border-radius:26px 26px 0 0;box-shadow:0 -10px 30px -18px rgba(28,34,48,.3);display:flex;flex-direction:column">
+      <div style="height:20px;flex:none;display:flex;align-items:center;justify-content:center"><span style="width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.2)"></span></div>
+      <nav style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(28,34,48,.09);padding:0 8px">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.pick }}" style="position:relative;height:46px;border:none;background:transparent;font:{{ t.fw }} 15px 'Geist';color:{{ t.c }};cursor:pointer">{{ t.n }}<span style="position:absolute;left:14%;right:14%;bottom:-1px;height:2.5px;border-radius:3px;background:oklch(0.55 0.15 45);transform:{{ t.u }};transition:transform .35s cubic-bezier(.2,.8,.2,1)"></span></button>
+        </sc-for>
+      </nav>
+      <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:14px 14px 120px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6">
+            <button style="position:relative;height:132px;border-radius:20px;border:1px solid rgba(28,34,48,.08);background:#FFFFFF;box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35);overflow:hidden;text-align:left;padding:0;cursor:pointer;color:#1C2230;animation:pop .45s cubic-bezier(.2,.8,.2,1) both" style-active="transform:scale(.98)">
+              <span style="position:absolute;right:0;top:0;bottom:0;width:58%;clip-path:polygon(34px 0,100% 0,100% 100%,0 100%);background:{{ c.ph }}"></span>
+              <span style="position:absolute;right:0;top:0;bottom:0;width:58%;clip-path:polygon(34px 0,100% 0,100% 100%,0 100%);background:linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,0) 45%)"></span>
+              <span style="position:absolute;left:12px;top:12px;width:36px;height:36px;border-radius:12px;background:{{ c.col }};color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -6px {{ c.sh }}">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.icon }}"></path></svg>
+              </span>
+              <span style="position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-direction:column;gap:3px">
+                <span style="font:400 21px/1 'Instrument Serif',serif;text-shadow:0 0 12px #fff,0 0 4px #fff">{{ c.n }}</span>
+                <sc-if value="{{ c.isLink }}" hint-placeholder-val="{{ false }}">
+                  <span style="align-self:flex-start;font:600 12px 'Geist';color:oklch(0.5 0.15 45);background:#FFFDF8;padding:2px 6px 2px 0;border-radius:6px">{{ c.sub }} ↗</span>
+                </sc-if>
+                <sc-if value="{{ c.isCount }}" hint-placeholder-val="{{ true }}">
+                  <span style="align-self:flex-start;font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.65);background:#FFFDF8;padding:2px 6px 2px 0;border-radius:6px">{{ c.sub }}</span>
+                </sc-if>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      <nav style="position:absolute;left:18px;right:18px;bottom:22px;height:70px;border-radius:999px;background:#1C2230;box-shadow:0 18px 40px -16px rgba(28,34,48,.7);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;padding:0 10px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button aria-label="{{ n.l }}" style="position:relative;justify-self:center;width:{{ n.s }};height:{{ n.s }};border-radius:50%;border:none;background:{{ n.bg }};color:{{ n.c }};display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:{{ n.sh }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.i }}"></path></svg>
+            <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:2px;top:2px;width:16px;height:16px;border-radius:50%;background:oklch(0.74 0.17 60);color:#fff;font:700 10px 'Geist';display:flex;align-items:center;justify-content:center;border:2px solid #1C2230">!</span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+  <span style="align-self:flex-start;font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">13 · Reservas</span>
+  <div data-screen-label="13 Reservas" style="width:390px;height:844px;border-radius:52px;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);position:relative;overflow:hidden;background:#F5EFE4;isolation:isolate;display:flex;flex-direction:column">
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'">
+      <span>9:41</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:4px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:6px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:8px;background:#1C2230;border-radius:1px"></span><span style="width:3px;height:11px;background:#1C2230;border-radius:1px"></span></span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></span>
+    </div>
+    <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:4px 16px 40px;display:flex;flex-direction:column;gap:14px">
+      <div style="flex:none;display:flex;align-items:center;justify-content:space-between">
+        <button aria-label="Cerrar" style="width:42px;height:42px;border-radius:50%;border:1.5px solid oklch(0.55 0.15 45);background:#FFFDF8;color:oklch(0.52 0.15 45);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+        <span style="height:34px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid rgba(28,34,48,.08);display:flex;align-items:center;gap:7px;font:600 13px 'Geist Mono',monospace;color:{{ pctC }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ pctC }}"></span>{{ pct }}</span>
+      </div>
+      <div style="flex:none;position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(120deg,oklch(0.93 0.06 75),oklch(0.9 0.07 55));padding:16px 18px 16px 18px;display:flex;gap:12px;align-items:flex-start">
+        <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#1C2230;color:oklch(0.8 0.14 70);display:flex;align-items:center;justify-content:center;margin-top:2px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z"></path></svg></span>
+        <p style="margin:0;font:400 14px/1.5 'Geist';color:#3A2A14;text-wrap:pretty">Para darte una ruta personalizada adaptada a tu viaje, añade cuanto antes tu vuelo y tu alojamiento. Si todavía no los tienes, puedes reservarlos desde aquí. <strong style="font-weight:600">¡Corre que vuelan!</strong></p>
+      </div>
+
+      <div style="flex:none;display:flex;flex-direction:column;gap:4px;margin-top:6px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <span style="font:400 32px/1 'Instrument Serif',serif">Vuelos</span>
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:{{ flStatusC }}">{{ flStatus }}</span>
+        </div>
+        <span style="font:400 13.5px/1.45 'Geist';color:rgba(28,34,48,.65);text-wrap:pretty">Si ya tienes el billete, indica las horas de llegada y de salida para ajustar el primer y el último día.</span>
+      </div>
+
+      <sc-for list="{{ flights }}" as="f" hint-placeholder-count="2">
+        <div style="flex:none;position:relative;border-radius:22px;background:#FFFDF8;border:1px solid {{ f.bd }};box-shadow:0 1px 2px rgba(28,34,48,.05),0 14px 30px -20px rgba(28,34,48,.4);transition:border-color .4s">
+          <div style="padding:14px 16px 12px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font:400 34px/1 'Instrument Serif',serif">{{ f.from }}</span><span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">{{ f.fromN }}</span></div>
+            <div style="position:relative;height:40px">
+              <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"><path d="M4 32 Q50 -6 96 32" fill="none" stroke="rgba(28,34,48,.3)" stroke-width="1.3" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"></path><path d="M4 32 Q50 -6 96 32" fill="none" stroke="oklch(0.62 0.15 45)" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke" pathLength="100" stroke-dasharray="100" stroke-dashoffset="{{ f.dash }}" style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"></path></svg>
+              <span style="position:absolute;left:{{ f.px }};top:{{ f.py }};transform:translate(-50%,-50%) rotate({{ f.rot }});width:24px;height:24px;border-radius:50%;background:{{ f.pbg }};color:#fff;display:flex;align-items:center;justify-content:center;transition:left 1.2s cubic-bezier(.4,0,.2,1),top 1.2s cubic-bezier(.4,0,.2,1),background .4s,transform 1.2s"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-6z" transform="rotate(90 12 12)"></path></svg></span>
+              <span style="position:absolute;left:0;right:0;bottom:-4px;text-align:center;font:500 10px 'Geist Mono',monospace;color:rgba(28,34,48,.5)">{{ f.dur }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end"><span style="font:400 34px/1 'Instrument Serif',serif">{{ f.to }}</span><span style="font:400 11px 'Geist';color:rgba(28,34,48,.55)">{{ f.toN }}</span></div>
+          </div>
+          <div style="position:relative;height:0;border-top:1.5px dashed rgba(28,34,48,.14);margin:0 14px">
+            <span style="position:absolute;left:-24px;top:-10px;width:20px;height:20px;border-radius:50%;background:#F5EFE4;box-shadow:inset -1px 0 0 rgba(28,34,48,.08)"></span>
+            <span style="position:absolute;right:-24px;top:-10px;width:20px;height:20px;border-radius:50%;background:#F5EFE4;box-shadow:inset 1px 0 0 rgba(28,34,48,.08)"></span>
+          </div>
+          <div style="padding:12px 16px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <span style="font:600 13px 'Geist';color:#1C2230">{{ f.label }}</span>
+              <span style="font:500 10.5px 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(28,34,48,.5)">{{ f.date }}</span>
+            </div>
+            <label style="height:52px;min-width:150px;border-radius:14px;background:{{ f.ib }};border:1.5px solid {{ f.ibd }};display:flex;align-items:center;gap:8px;padding:0 10px 0 12px;cursor:pointer;transition:background .3s,border-color .3s">
+              <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(28,34,48,.5)">{{ f.kind }}</span>
+              <input type="time" value="{{ f.val }}" onChange="{{ f.on }}" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font:400 26px/1 'Instrument Serif',serif;color:#1C2230;color-scheme:light">
+            </label>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="flex:none;border-radius:22px;background:#1C2230;color:#F3EEE4;padding:16px 16px 14px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:400 22px/1 'Instrument Serif',serif">Tu primer y último día</span>
+          <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ adjC }}">{{ adjLabel }}</span>
+        </div>
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="2">
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+              <span style="font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(243,238,228,.6)">{{ b.day }}</span>
+              <span style="font:400 13px 'Geist';color:{{ b.txC }};text-align:right">{{ b.text }}</span>
+            </div>
+            <div style="position:relative;height:30px;border-radius:9px;background:repeating-linear-gradient(135deg,rgba(243,238,228,.12) 0 1px,transparent 1px 7px);overflow:visible">
+              <span style="position:absolute;top:0;bottom:0;left:{{ b.l }};width:{{ b.w }};border-radius:9px;background:linear-gradient(90deg,oklch(0.8 0.14 70),oklch(0.7 0.16 45));opacity:{{ b.o }};transition:left .9s cubic-bezier(.2,.8,.2,1),width .9s cubic-bezier(.2,.8,.2,1),opacity .4s"></span>
+              <sc-if value="{{ b.hasPin }}" hint-placeholder-val="{{ false }}">
+                <span style="position:absolute;top:-5px;bottom:-5px;left:{{ b.pin }};width:2px;margin-left:-1px;background:#F3EEE4;transition:left .9s cubic-bezier(.2,.8,.2,1)"></span>
+                <span style="position:absolute;top:-18px;left:{{ b.pin }};transform:translateX(-50%);font:600 10px 'Geist Mono',monospace;color:#F3EEE4;white-space:nowrap;transition:left .9s cubic-bezier(.2,.8,.2,1)">{{ b.pinL }}</span>
+              </sc-if>
+            </div>
+            <div style="display:flex;justify-content:space-between;font:500 9.5px 'Geist Mono',monospace;color:rgba(243,238,228,.45)"><span>08h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
+          </div>
+        </sc-for>
+      </div>
+
+      <span style="flex:none;margin-top:8px;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Imprescindibles</span>
+      <sc-for list="{{ must }}" as="r" hint-placeholder-count="1">
+        <div style="position:relative;height:84px;flex:none;display:flex;border-radius:18px;background:#FFFFFF;border:1px solid {{ r.bd }};box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35);transition:border-color .3s">
+          <div style="position:relative;width:74px;flex:none;border-radius:17px 0 0 17px;overflow:hidden">
+            <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:{{ r.col }}"></span>
+            <span style="position:absolute;left:0;top:0;bottom:0;width:58px;display:flex;align-items:center;justify-content:center;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.icon }}"></path></svg></span>
+          </div>
+          <div style="flex:1;min-width:0;padding:0 8px 0 10px;display:flex;flex-direction:column;justify-content:center;gap:3px">
+            <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(28,34,48,.5)">{{ r.eye }}</span>
+            <span style="font:400 18px/1.1 'Instrument Serif',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.n }}</span>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:5px;padding:0 12px 0 0">
+            <span style="font:500 11px 'Geist';color:rgba(28,34,48,.55)">Añadir</span>
+            <button onClick="{{ r.toggle }}" style="height:30px;padding:0 12px;border-radius:999px;border:1.5px solid {{ r.bbd }};background:{{ r.bbg }};color:{{ r.bfg }};font:600 12px 'Geist';white-space:nowrap;cursor:pointer;transition:background .3s,color .3s">{{ r.btn }}</button>
+          </div>
+        </div>
+      </sc-for>
+      <span style="flex:none;margin-top:8px;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Para tu viaje a Roma</span>
+      <sc-for list="{{ trip }}" as="r" hint-placeholder-count="4">
+        <div style="position:relative;height:84px;flex:none;display:flex;border-radius:18px;background:#FFFFFF;border:1px solid {{ r.bd }};box-shadow:0 1px 2px rgba(28,34,48,.05),0 10px 24px -18px rgba(28,34,48,.35);transition:border-color .3s">
+          <div style="position:relative;width:74px;flex:none;border-radius:17px 0 0 17px;overflow:hidden">
+            <span style="position:absolute;inset:0;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:{{ r.col }}"></span>
+            <span style="position:absolute;left:0;top:0;bottom:0;width:58px;display:flex;align-items:center;justify-content:center;color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.icon }}"></path></svg></span>
+          </div>
+          <div style="flex:1;min-width:0;padding:0 8px 0 10px;display:flex;flex-direction:column;justify-content:center;gap:3px">
+            <span style="font:500 10px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(28,34,48,.5)">{{ r.eye }}</span>
+            <span style="font:400 18px/1.1 'Instrument Serif',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.n }}</span>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:5px;padding:0 12px 0 0">
+            <span style="font:500 11px 'Geist';color:rgba(28,34,48,.55)">Añadir</span>
+            <button onClick="{{ r.toggle }}" style="height:30px;padding:0 12px;border-radius:999px;border:1.5px solid {{ r.bbd }};background:{{ r.bbg }};color:{{ r.bfg }};font:600 12px 'Geist';white-space:nowrap;cursor:pointer;transition:background .3s,color .3s">{{ r.btn }}</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC={
+museum:'M3 21h18M4 10h16M12 3l9 5H3zM6 10v9M10 10v9M14 10v9M18 10v9',
+camera:'M4 8h3l2-3h6l2 3h3v11H4zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+fork:'M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12',
+ticket:'M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4zM10 6v12',
+bus:'M5 4h14v12H5zM5 11h14M8 19v-3M16 19v-3M8 14h.01M16 14h.01',
+hotel:'M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3M2 21h20',
+shield:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+card:'M3 6h18v12H3zM3 10h18M7 15h4',
+home:'M3 11l9-7 9 7v10H3zM9 21v-6h6v6',
+plane:'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z',
+suitcase:'M4 8h16v12H4zM9 8V5h6v3M9 12v4M15 12v4',
+bag:'M6 8h12l-1 13H7zM9 8a3 3 0 0 1 6 0',
+user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
+map:'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14'};
+const DAYC=['oklch(0.6 0.13 150)','oklch(0.58 0.12 240)','oklch(0.68 0.14 65)','oklch(0.55 0.14 310)'];
+const PTS=[
+[[41.9065,12.4536],[41.9022,12.4539],[41.9031,12.4663],[41.9073,12.4466],[41.9010,12.4600],[41.8960,12.4600],[41.8990,12.4700],[41.8992,12.4731],[41.8986,12.4769],[41.9009,12.4833],[41.9061,12.4754],[41.9057,12.4823]],
+[[41.8898,12.4906],[41.8902,12.4922],[41.8925,12.4853],[41.8946,12.4831],[41.8950,12.4940],[41.9128,12.4852],[41.9142,12.4921],[41.9068,12.4887],[41.8976,12.4984],[41.8861,12.4851],[41.8790,12.4924],[41.9010,12.5010],[41.8859,12.5057],[41.8960,12.4799]],
+[[41.9115,12.4786],[41.9090,12.4800],[41.9070,12.4840],[41.9040,12.4880],[41.9020,12.4870],[41.9150,12.4890],[41.9100,12.4920],[41.9050,12.4950],[41.9000,12.4910],[41.8970,12.4890],[41.9130,12.4950],[41.9080,12.4980],[41.9180,12.4870],[41.9160,12.4800]],
+[[41.8847,12.4796],[41.8829,12.4776],[41.8913,12.4613],[41.8894,12.4700],[41.8887,12.4776],[41.8939,12.4728],[41.8960,12.5100],[41.8930,12.5160],[41.8990,12.5130],[41.9030,12.5090],[41.8880,12.5000],[41.8850,12.4950]]];
+const CATS=[
+{n:'Atracciones',sub:'77 lugares',i:'museum',c:'oklch(0.62 0.14 45)',w:'Colosseum'},
+{n:'Miradores',sub:'8 lugares',i:'camera',c:'linear-gradient(135deg,oklch(0.76 0.15 65),oklch(0.6 0.18 20))',sc:'oklch(0.66 0.17 38)',w:'Janiculum'},
+{n:'Restaurantes',sub:'67 sitios',i:'fork',c:'oklch(0.7 0.15 65)',w:'Carbonara'},
+{n:'Entradas',sub:'18 con entrada',i:'ticket',c:'oklch(0.6 0.18 10)',w:'Vatican_Museums'},
+{n:'Excursiones',sub:'7 opciones',i:'bus',c:'oklch(0.56 0.1 220)',w:"Villa_d'Este"},
+{n:'Hoteles',sub:'Buscar hotel',i:'hotel',c:'oklch(0.55 0.12 295)',w:'Hotel_de_Russie',link:true}];
+const PHOTOS={};
+const toM=v=>{if(!v)return null;const[h,m]=v.split(':').map(Number);return h*60+m;};
+const fmt=m=>{m=Math.max(0,Math.min(24*60-1,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
+const pc=m=>((Math.max(480,Math.min(1440,m))-480)/960*100)+'%';
+const qb=(t)=>{const u=1-t;const x=u*u*4+2*u*t*50+t*t*96,y=u*u*32+2*u*t*(-6)+t*t*32;return[x,y];};
+
+class Component extends DCLogic {
+  constructor(p){super(p);this.state={tab:'Explorar',arr:'',dep:'',added:{}};this.mapRef=React.createRef();}
+  componentDidMount(){
+    [...new Set(CATS.map(c=>c.w))].forEach(t=>fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)).then(r=>r.ok?r.json():{}).then(j=>{const u=(j.thumbnail&&j.thumbnail.source)||(j.originalimage&&j.originalimage.source);if(u){PHOTOS[t]=u.split('?')[0].replace('//thumb.wikimedia.org/','//upload.wikimedia.org/');this.forceUpdate();}}).catch(()=>{}));
+    const init=()=>{if(!window.L||!this.mapRef.current){this.it=setTimeout(init,120);return;}try{const L=window.L;
+      this.map=L.map(this.mapRef.current,{zoomControl:false,attributionControl:true,fadeAnimation:false,zoomAnimation:false,markerZoomAnimation:false,zoomSnap:.25});
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri, OpenStreetMap',maxZoom:19}).addTo(this.map);
+      this.map.getPane('tilePane').style.filter='sepia(.28) saturate(.7) brightness(1.04) contrast(.95)';
+      const rend=L.svg({padding:1});rend.addTo(this.map);const all=[];
+      PTS.forEach((g,d)=>{const col=DAYC[d];const pl=L.polyline(g,{renderer:rend,color:col,weight:4,opacity:.55,lineCap:'round',lineJoin:'round',interactive:false});const oc=pl._clipPoints;pl._clipPoints=function(){if(!this._renderer||!this._renderer._bounds){this._parts=[];return;}oc.call(this);};pl.addTo(this.map);
+        g.forEach((ll,i)=>{all.push(ll);L.marker(ll,{interactive:false,icon:L.divIcon({className:'',iconSize:[26,26],iconAnchor:[13,13],html:`<div style="width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid ${col};color:${col};box-shadow:0 4px 10px -3px rgba(28,34,48,.45);display:flex;align-items:center;justify-content:center;font:700 11px Geist,sans-serif">${i+1}</div>`})}).addTo(this.map);});});
+      const fit=()=>{this.map.invalidateSize();this.map.fitBounds(all,{padding:[22,22],paddingTopLeft:[22,60],paddingBottomRight:[22,36],animate:false});};
+      requestAnimationFrame(fit);setTimeout(fit,400);setTimeout(fit,1200);
+    }catch(e){console.warn('map',e&&e.message);}};init();}
+  componentWillUnmount(){clearTimeout(this.it);if(this.map)this.map.remove();}
+  renderVals(){
+    const s=this.state;const A=toM(s.arr),D=toM(s.dep);
+    const ITEMS=['seguro','t1','t2','aloj','n26'];
+    const done=(A!=null?1:0)+(D!=null?1:0)+ITEMS.filter(k=>s.added[k]).length;const p=Math.round(done/7*100);
+    const pctC=p===0?'oklch(0.58 0.2 25)':p===100?'oklch(0.52 0.13 150)':'oklch(0.6 0.15 55)';
+    const start=A!=null?A+75:null,end=D!=null?D-180:null;
+    const fl=(kind,label,date,from,fromN,to,toN,key,v)=>{const set=v!=null;const t=set?1:0;const[x,y]=qb(set?.98:0.02);const[x2,y2]=qb(set?1:0.04);const ang=Math.atan2(y2-y,(x2-x)||.01)*180/Math.PI;
+      return{kind,label,date,from,fromN,to,toN,val:s[key],dur:'1h 50min',on:e=>this.setState({[key]:e.target.value}),
+        dash:set?0:100,px:x+'%',py:(y/40*100)+'%',rot:(set?35:-35)+'deg',pbg:set?'oklch(0.62 0.15 45)':'rgba(28,34,48,.35)',
+        bd:set?'oklch(0.62 0.15 45 / .5)':'rgba(28,34,48,.08)',ib:set?'oklch(0.8 0.14 70 / .16)':'#F1EADC',ibd:set?'oklch(0.62 0.15 45)':'transparent'};};
+    const both=A!=null&&D!=null;
+    return{
+      mapRef:this.mapRef,pct:p+'%',pctC,
+      tabs:['Hoy','Ruta','Días','Explorar'].map(n=>({n,fw:s.tab===n?'600':'400',c:s.tab===n?'#1C2230':'rgba(28,34,48,.55)',u:s.tab===n?'scaleX(1)':'scaleX(0)',pick:()=>this.setState({tab:n})})),
+      cats:CATS.map(c=>({n:c.n,sub:c.sub,icon:IC[c.i],col:c.c,sh:c.sc||c.c,isLink:!!c.link,isCount:!c.link,ph:PHOTOS[c.w]?`url("${PHOTOS[c.w]}") center/cover, ${c.sc||c.c}`:`linear-gradient(135deg,${c.sc||c.c},#EFE7D8)`})),
+      nav:[{l:'Mis viajes',i:IC.suitcase},{l:'Compras',i:IC.bag},{l:'Perfil',i:IC.user,main:1},{l:'Mapa',i:IC.map},{l:'Reservas',i:IC.ticket,badge:1}].map(n=>({l:n.l,i:n.i,badge:!!n.badge,s:n.main?'54px':'44px',bg:n.main?'oklch(0.55 0.15 45)':'transparent',c:n.main?'#fff':'rgba(243,238,228,.8)',sh:n.main?'0 0 0 5px #1C2230,0 8px 20px -6px oklch(0.55 0.15 45)':'none'})),
+      flStatus:both?'Ruta al milímetro ✓':A!=null||D!=null?'1 de 2':'Sin añadir',flStatusC:both?'oklch(0.5 0.13 150)':'rgba(28,34,48,.5)',
+      flights:[fl('Llega','Vuelo de llegada','Jue · 20 oct','BCN','Barcelona','FCO','Roma','arr',A),fl('Sale','Vuelo de salida','Dom · 23 oct','FCO','Roma','BCN','Barcelona','dep',D)],
+      adjLabel:both?'Ajustado':'Por ajustar',adjC:both?'oklch(0.8 0.14 70)':'rgba(243,238,228,.5)',
+      bars:[
+        {day:'Día 1 · 20 oct',hasPin:A!=null,pin:pc(A||0),pinL:'✈ '+fmt(A||0),l:start!=null?pc(start):'0%',w:start!=null?`calc(100% - ${pc(start)})`:'100%',o:start!=null?1:.12,
+          text:start!=null?`Primer plan a las ${fmt(start)}`:'Añade tu hora de llegada',txC:start!=null?'#F3EEE4':'rgba(243,238,228,.55)'},
+        {day:'Día 4 · 23 oct',hasPin:D!=null,pin:pc(D||0),pinL:'✈ '+fmt(D||0),l:'0%',w:end!=null?pc(end):'100%',o:end!=null?1:.12,
+          text:end!=null?`Último plan hasta las ${fmt(end)}`:'Añade tu hora de salida',txC:end!=null?'#F3EEE4':'rgba(243,238,228,.55)'}],
+      ...(()=>{const row=(k,eye,n,icon,col,btn,doneLbl)=>{const a=!!s.added[k];return{eye,n,icon:IC[icon],col,btn:a?doneLbl:btn,bd:a?'oklch(0.55 0.13 150 / .45)':'rgba(28,34,48,.08)',bbg:a?'#1C2230':'oklch(0.93 0.06 55)',bfg:a?'#FFFDF8':'oklch(0.48 0.15 40)',bbd:a?'#1C2230':'oklch(0.8 0.1 50)',toggle:()=>this.setState(st=>({added:{...st.added,[k]:!st.added[k]}}))};};
+        return{must:[row('seguro','Viaja tranquilo','Seguro de viaje','shield','oklch(0.6 0.19 25)','Obtener con 5% dto.','✓ Añadido')],
+          trip:[row('t1','Transporte','Barcelona → Roma','plane','oklch(0.68 0.14 60)','Reservar','✓ Reservado'),row('t2','Transporte','Roma → Barcelona','plane','oklch(0.68 0.14 60)','Reservar','✓ Reservado'),row('aloj','Alojamiento','Alojamiento en Roma','home','oklch(0.62 0.14 45)','Reservar','✓ Reservado'),row('n26','Pagos sin comisión','Tarjeta N26','card','oklch(0.45 0.03 250)','Reservar','✓ Añadida')]};})()};
+  }
+}
+</script>
+</body>
+</html>

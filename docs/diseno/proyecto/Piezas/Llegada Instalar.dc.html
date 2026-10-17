@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>@keyframes liUp{from{transform:translateY(100%)}to{transform:none}}</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px 40px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+ <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span></div>
+  <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:{{ b.bg }};color:{{ b.fg }};box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+   <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:60"></div>
+   <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>{{ b.clock }}</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.5;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+   <sc-if value="{{ b.hoy }}" hint-placeholder-val="{{ false }}">
+    <header style="flex:none;display:flex;align-items:center;gap:6px;padding:4px 16px 12px 20px"><span style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:oklch(0.5 0.17 5)">Hoy · lun 20</span><span style="font:400 28px/1.02 'Instrument Serif',serif">{{ b.ttl }}</span></span><span style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 21h4"></path></svg></span></header>
+    <main style="flex:1;min-height:0;overflow:hidden;padding:2px 16px 0;display:flex;flex-direction:column;gap:10px">
+     <div style="flex:none;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:14px;display:flex;flex-direction:column;gap:8px">
+      <span style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:oklch(0.95 0.025 230);color:oklch(0.4 0.09 240);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z"></path></svg></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 19px/1.1 'Instrument Serif',serif">{{ b.fl }}</span><span style="font:500 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">{{ b.fs }}</span></span></span>
+      <sc-if value="{{ b.near }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;display:flex;align-items:center;gap:5px;font:600 12.5px 'Geist';text-decoration:underline;text-underline-offset:3px">Restaurantes cerca de tu alojamiento<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></span></sc-if>
+     </div>
+     <sc-if value="{{ b.late }}" hint-placeholder-val="{{ false }}"><div style="flex:none;border-radius:22px;background:#1C2230;color:#FFFDF8;padding:18px;display:flex;flex-direction:column;gap:12px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3D59A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.5A7.5 7.5 0 1 1 9.5 4.5a6 6 0 0 0 10 10z"></path></svg><span style="font:400 22px/1.2 'Instrument Serif',serif;text-wrap:pretty">Llegas tarde: hoy no te hemos puesto paradas, descansa. Si tienes hambre, aquí tienes los restaurantes de Roma.</span><span style="align-self:flex-start;height:44px;padding:0 16px;border-radius:999px;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;font:700 13.5px 'Geist'">Explorar restaurantes</span></div></sc-if>
+     <sc-for list="{{ b.stops }}" as="s" hint-placeholder-count="0"><div style="flex:none;border-radius:18px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:10px 12px;display:flex;align-items:center;gap:12px"><dc-import name="Piezas/Parada Foto" n="{{ s.n }}" seen="{{ false }}" size="44" hint-size="44px,44px"></dc-import><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 18px/1.1 'Instrument Serif',serif">{{ s.n }}</span><span style="font:500 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ s.t }}</span></span></div></sc-for>
+    </main>
+    <nav style="flex:none;height:84px;background:#1C2230"></nav>
+   </sc-if>
+   <sc-if value="{{ b.home }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:linear-gradient(180deg,#5E7FA8,#2E3E5E);display:grid;grid-template-columns:repeat(4,1fr);align-content:start;gap:26px 0;padding:90px 18px 0;justify-items:center"><sc-for list="{{ apps }}" as="a" hint-placeholder-count="12"><span style="display:flex;flex-direction:column;align-items:center;gap:6px;color:#FFFFFF;font:500 11px 'Geist'"><span style="width:62px;height:62px;border-radius:16px;background:{{ a.bg }};border:{{ a.bd }};display:flex;align-items:center;justify-content:center;font:600 9px 'Geist Mono',monospace;letter-spacing:.1em;color:#FFFDF8;box-shadow:{{ a.sh }}">{{ a.t }}</span>{{ a.n }}</span></sc-for></div></sc-if>
+   <sc-if value="{{ b.splash }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 40%,#2E3550 0%,#141826 70%);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><span style="width:96px;height:96px;border-radius:26px;border:1.5px dashed rgba(255,253,248,.4);display:flex;align-items:center;justify-content:center;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(255,253,248,.55)">LOGO</span><span style="font:400 32px/1 'Instrument Serif',serif">Tu app de viajes</span></div></sc-if>
+   <sc-if value="{{ b.sh }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.45);z-index:20"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:21;border-radius:26px 26px 0 0;background:#FFFDF8;padding:12px 18px 30px;display:flex;flex-direction:column;gap:14px;animation:liUp .5s cubic-bezier(.2,.8,.2,1) both">
+     <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+     <span style="position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+     <span style="display:flex;align-items:center;gap:12px;padding-right:36px"><span style="width:52px;height:52px;flex:none;border-radius:14px;border:1.5px dashed rgba(28,34,48,.3);display:flex;align-items:center;justify-content:center;font:600 8px 'Geist Mono',monospace;color:rgba(28,34,48,.5)">LOGO</span><span style="font:400 24px/1.1 'Instrument Serif',serif">{{ b.t }}</span></span>
+     <sc-if value="{{ b.hasX }}" hint-placeholder-val="{{ false }}"><span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.7)">{{ b.x }}</span></sc-if>
+     <sc-for list="{{ b.steps }}" as="p" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#F5EFE4"><span style="width:28px;height:28px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:600 13px 'Geist'">{{ p.n }}</span><span style="flex:1;font:500 14px/1.35 'Geist'">{{ p.t }}</span><span style="width:38px;height:38px;flex:none;border-radius:10px;background:#FFFFFF;border:1px solid rgba(28,34,48,.12);display:flex;align-items:center;justify-content:center;color:#2B6FD6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.i }}"></path></svg></span></div></sc-for>
+     <sc-for list="{{ b.btns }}" as="x" hint-placeholder-count="1"><span style="height:{{ x.h }};border-radius:999px;background:{{ x.bg }};color:{{ x.fg }};border:{{ x.bd }};display:flex;align-items:center;justify-content:center;font:{{ x.f }}">{{ x.n }}</span></sc-for>
+    </div>
+   </sc-if>
+  </div>
+  <sc-if value="{{ b.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font:400 12.5px/1.5 'Geist';color:rgba(28,34,48,.68);text-wrap:pretty">{{ b.note }}</span></sc-if>
+ </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;llegada&quot;,&quot;instalar&quot;],&quot;default&quot;:&quot;llegada&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const SHARE='M12 3v12M8 7l4-4 4 4M5 11v9h14v-9',ADD='M5 4h14v16H5zM12 8v8M8 12h8',DOTS='M12 5h.01M12 12h.01M12 19h.01',DL='M12 3v12M7 10l5 5 5-5M5 20h14';
+const P=(n,k)=>k==='p'?{n,h:'54px',bg:'oklch(0.8 0.14 70)',fg:'#17120a',bd:'none',f:"700 15px 'Geist'"}:{n,h:'46px',bg:'transparent',fg:'#1C2230',bd:'1px solid rgba(28,34,48,.2)',f:"600 13.5px 'Geist'"};
+class Component extends DCLogic {
+  renderVals(){const md=this.props.mode||'llegada';
+    const B=(id,cap,o)=>({id,cap,bg:'#F5EFE4',fg:'#1C2230',clock:'16:05',hoy:false,home:false,splash:false,sh:false,near:false,late:false,stops:[],steps:[],btns:[],hasX:false,x:'',t:'',fl:'',fs:'',ttl:'',hasNote:false,note:'',...o});
+    const st=(n,t)=>({n,t});
+    let boards=[];
+    if(md==='llegada')boards=[
+      B('3b','Llegada a otra hora · libre a las 16:00',{hoy:true,ttl:'Centro histórico',fl:'Llegas a Roma',fs:'Fiumicino · 14:20 · libre hacia las 16:00',near:true,stops:[st('Plaza Navona','16:30 · 25 min'),st('Panteón','17:10 · 30 min'),st('Fontana de Trevi','18:00 · 20 min')],hasNote:true,note:'Sin el bloque de comer. El enlace abre Explorar › Restaurantes con «Cerca de mí».'}),
+      B('3c','Llegada tarde · libre a las 23:00',{hoy:true,clock:'23:10',ttl:'Llegada',fl:'Llegas a Roma',fs:'Fiumicino · 21:40 · libre hacia las 23:00',late:true})];
+    if(md==='instalar')boards=[
+      B('I1','El icono en la pantalla de inicio',{home:true,clock:'9:41',fg:'#FFFFFF'}),
+      B('I2','La pantalla al abrirla',{splash:true,clock:'9:41',bg:'#141826',fg:'#FFFDF8'})];
+    const apps=Array.from({length:12},(_,i)=>i===6?{n:'Tu app',t:'LOGO',bg:'#1C2230',bd:'1.5px dashed rgba(255,253,248,.5)',sh:'0 0 0 3px rgba(243,213,154,.55)'}:{n:'',t:'',bg:'rgba(255,255,255,.22)',bd:'none',sh:'none'});
+    return{boards,apps};}
+}
+</script>
+</body>
+</html>

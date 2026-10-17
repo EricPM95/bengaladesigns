@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<svg width="{{ size }}" height="{{ size }}" viewBox="0 0 160 160" style="display:block;overflow:visible;opacity:{{ op }}">
+  <defs>
+    <filter id="sello-ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="w"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="2.6" result="d"></feDisplacementMap>
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="11" result="n"></feTurbulence>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -3.2 0 0 0 2.35" result="m"></feColorMatrix>
+      <feComposite in="d" in2="m" operator="in"></feComposite>
+    </filter>
+    <path id="sello-arc-t" d="M24 80 A56 56 0 0 1 136 80"></path>
+    <path id="sello-arc-b" d="M16 80 A64 64 0 0 0 144 80"></path>
+  </defs>
+  <g filter="{{ filt }}" stroke="{{ col }}" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <sc-if value="{{ round }}" hint-placeholder-val="{{ true }}">
+      <circle cx="80" cy="80" r="76" stroke-width="3.2" stroke-dasharray="{{ dash }}"></circle>
+      <circle cx="80" cy="80" r="70" stroke-width="1.2" stroke-dasharray="{{ dash }}"></circle>
+      {{ tTop }}
+      <sc-if value="{{ full }}" hint-placeholder-val="{{ true }}">
+        <circle cx="80" cy="80" r="49" stroke-width="1.2"></circle>
+        <circle cx="18" cy="80" r="2" fill="{{ col }}" stroke="none"></circle>
+        <circle cx="142" cy="80" r="2" fill="{{ col }}" stroke="none"></circle>
+        {{ tBot }}
+        <g transform="translate(50 60)" stroke-width="1.8"><path d="{{ mon }}"></path></g>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ rect }}" hint-placeholder-val="{{ false }}">
+      <rect x="10" y="24" width="140" height="112" rx="8" stroke-width="3.2" stroke-dasharray="{{ dash }}"></rect>
+      <rect x="16" y="30" width="128" height="100" rx="4" stroke-width="1.2" stroke-dasharray="{{ dash }}"></rect>
+      {{ tName }}
+      <sc-if value="{{ full }}" hint-placeholder-val="{{ true }}">
+        <path d="M30 108 H130" stroke-width="1"></path>
+        <g transform="translate(50 60)" stroke-width="1.8"><path d="{{ mon }}"></path></g>
+        {{ tDate }}
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ oval }}" hint-placeholder-val="{{ false }}">
+      <ellipse cx="80" cy="80" rx="76" ry="58" stroke-width="3.2" stroke-dasharray="{{ dash }}"></ellipse>
+      <ellipse cx="80" cy="80" rx="69" ry="51" stroke-width="1.2" stroke-dasharray="{{ dash }}"></ellipse>
+      {{ tName }}
+      <sc-if value="{{ full }}" hint-placeholder-val="{{ true }}">
+        <g transform="translate(50 56)" stroke-width="1.8"><path d="{{ mon }}"></path></g>
+        {{ tDate }}
+      </sc-if>
+    </sc-if>
+  </g>
+</svg>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;160px&quot;,&quot;height&quot;:&quot;160px&quot;},&quot;shape&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;round&quot;,&quot;rect&quot;,&quot;oval&quot;],&quot;default&quot;:&quot;round&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;place&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Roma&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;date&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;13 OCT 2026&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;ink&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;oklch(0.42 0.11 255)&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;mon&quot;:{&quot;editor&quot;:null,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;empty&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:140,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals(){const p=this.props;const sh=p.shape||'round';const e=!!p.empty;
+    return{round:sh==='round',rect:sh==='rect',oval:sh==='oval',full:!e,
+      col:e?'rgba(28,34,48,.4)':(p.ink||'oklch(0.42 0.11 255)'),dash:e?'3 5':'none',filt:e?'none':'url(#sello-ink)',
+      place:(p.place||'').toUpperCase(),date:p.date||'',mon:p.mon||'',size:p.size||140,op:e?1:.9,
+      nameY:0,...this.txt(sh,e,p)};}
+  txt(sh,e,p){const h=React.createElement,col=e?'rgba(28,34,48,.4)':(p.ink||'oklch(0.42 0.11 255)');
+    const base={fontFamily:'Geist Mono',fontWeight:600,fill:col,stroke:'none',textAnchor:'middle'};
+    const place=(p.place||'').toUpperCase(),date=p.date||'';
+    return{tTop:h('text',{...base,fontSize:12.5,letterSpacing:2.4},h('textPath',{href:'#sello-arc-t',startOffset:'50%'},place)),
+      tBot:h('text',{...base,fontSize:11,letterSpacing:1.6},h('textPath',{href:'#sello-arc-b',startOffset:'50%'},date)),
+      tName:h('text',{...base,x:80,y:e?(sh==='rect'?86:85):(sh==='rect'?50:48),fontSize:sh==='rect'?13:12.5,letterSpacing:sh==='rect'?2.6:2.4},place),
+      tDate:h('text',{...base,x:80,y:sh==='rect'?122:112,fontSize:sh==='rect'?11:10.5,letterSpacing:1.6},date)};}
+}
+</script>
+</body>
+</html>

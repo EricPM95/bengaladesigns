@@ -147,9 +147,9 @@ console.log('1d. El código partido: al abrir solo carga la primera pantalla')
 {
   const app = leer('src/App.tsx')
   for (const pantalla of ['RouteScreen', 'MyTripsScreen', 'PreparandoViaje', 'DevQuickRouteScreen']) {
-    debe(new RegExp(`const ${pantalla} = lazy\\(`).test(app) && !new RegExp(`^import \\{ ${pantalla} \\}`, 'm').test(app), 'partir', `${pantalla} se carga cuando se abre (lazy), no al abrir la app`)
+    debe(new RegExp(`const ${pantalla} = (lazy|pantallaPerezosa)\\(`).test(app) && !new RegExp(`^import \\{ ${pantalla} \\}`, 'm').test(app), 'partir', `${pantalla} se carga cuando se abre (lazy), no al abrir la app`)
   }
-  debe(/<Suspense[^>]*fallback=\{<Cargando \/>\}/.test(app) && /const Cargando = \(\) => <div className="h-dvh"/.test(app), 'partir', 'mientras llega una parte, un fondo del mismo tamaño (sin pantallas en blanco que salten)')
+  debe(/<Suspense[^>]*fallback=\{<Cargando \/>\}/.test(app) && /export function Cargando\(\)[\s\S]*h-dvh/.test(leer('src/components/layout/PantallaPerezosa.tsx')), 'partir', 'mientras llega una parte, un fondo del mismo tamaño (sin pantallas en blanco que salten)')
   debe(/RouteView/.test(leer('src/components/route/RouteScreen.tsx')) && !/RouteView/.test(app.replace(/RouteScreen/g, '')), 'partir', 'RouteView (RUTA, DÍAS, EXPLORAR, RESERVAS, HOY, mapas, fichas, Perfil) está en el archivo de la ruta')
   const vite = leer('vite.config.ts')
   debe(/vendor-mapbox/.test(vite) && /vendor-pdf/.test(vite) && /vendor-react/.test(vite) && /commonjsHelpers/.test(vite), 'partir', 'las librerías grandes (mapa, PDF) van en su propio archivo y React en el suyo')

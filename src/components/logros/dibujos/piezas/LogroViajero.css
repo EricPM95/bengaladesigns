@@ -1,0 +1,9 @@
+@keyframes lvIn{0%{opacity:0;transform:scale(.3) rotate(-25deg)}60%{opacity:1;transform:scale(1.08) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes lvSweep{0%{transform:translateX(-170%) rotate(20deg)}55%,100%{transform:translateX(330%) rotate(20deg)}}
+@keyframes lvRays{to{transform:rotate(360deg)}}
+@keyframes lvGlow{0%,100%{opacity:.4;transform:scale(.94)}50%{opacity:.9;transform:scale(1.06)}}
+@keyframes lvTw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes lvFade{from{opacity:0}to{opacity:1}}
+@keyframes lvDash{to{stroke-dashoffset:-12}}
+@keyframes lvWorld{from{transform:translateX(0)}to{transform:translateX(-66px)}}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

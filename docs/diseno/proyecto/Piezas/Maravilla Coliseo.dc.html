@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+@keyframes mTw{0%,100%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes zHalo{from{opacity:0;transform:scale(.6)}to{opacity:.8;transform:none}}
+@keyframes zTw{0%,100%{opacity:.1}50%{opacity:.9}}
+@keyframes cFade{from{opacity:0}to{opacity:1}}
+@keyframes zGold{from{opacity:0}to{opacity:.85}}
+@keyframes zLitB{0%{opacity:0}40%{opacity:.95}100%{opacity:.55}}
+@keyframes zArenaK{0%{opacity:0;transform:scale(.4)}40%{opacity:1}100%{opacity:.75;transform:none}}
+@keyframes zRayIn{0%{opacity:0;transform:scaleY(0)}40%{opacity:1}100%{opacity:.6;transform:scaleY(1)}}
+@keyframes cShine{0%{transform:translateX(-80px) skewX(-20deg)}35%,100%{transform:translateX(260px) skewX(-20deg)}}
+@keyframes zLit{0%{opacity:0}40%{opacity:1;fill:#FFF6DA}100%{opacity:1}}
+@keyframes zRim{from{opacity:0}to{opacity:.85}}
+@keyframes zDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes zTorch{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1)}70%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(.6)}}
+@keyframes zFlick{from{transform:scaleY(.85) skewX(-4deg)}to{transform:scaleY(1.1) skewX(4deg)}}
+@keyframes cShock{0%{opacity:0;transform:scale(.8)}8%{opacity:.95}100%{opacity:0;transform:scale(3.2)}}
+@keyframes zTrail{0%{opacity:0;stroke-dashoffset:1}20%{opacity:.9}80%{opacity:.9;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:0}}
+@keyframes zPop{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1.4)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes zSpark{0%{opacity:0;transform:translateX(0)}8%{opacity:1}70%{opacity:.9}100%{opacity:0;transform:translate(var(--d),10px)}}
+@keyframes zPetal{0%{opacity:0;transform:translate(0,0)}12%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+@keyframes zComet{0%{offset-distance:0%;opacity:0}8%{opacity:1}88%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@keyframes gBig{0%{opacity:0}25%{opacity:.5}100%{opacity:0}}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tick{0%{opacity:0;transform:scale(.3)}70%{transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}
+@keyframes mGlow{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:.85;transform:scale(1.08)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+<div style="position:relative;width:{{ cw }};height:{{ ch }};justify-content:{{ jc }};padding:26px 22px 28px;border-radius:{{ cr }};background:radial-gradient(circle at 50% 28%,#2B3354 0%,#121624 72%);color:#FFFDF8;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+            <sc-for list="{{ starsBg }}" as="t" hint-placeholder-count="40"><span style="position:absolute;left:{{ t.x }};top:{{ t.y }};width:{{ t.s }};height:{{ t.s }};border-radius:50%;background:#FFFDF8;animation:mTw {{ t.d }} {{ t.dl }} ease-in-out infinite"></span></sc-for>
+            <div style="position:relative;width:320px;height:306px">
+              <span style="position:absolute;left:50%;top:40%;width:330px;height:240px;margin:-120px 0 0 -165px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,206,130,.5),transparent 65%);filter:blur(10px);opacity:0;animation:zHalo 2.38s 9.95s ease both,mGlow 4s 12.84s ease-in-out infinite"></span>
+              <svg width="320" height="306" viewBox="0 0 240 230" style="position:absolute;inset:0;overflow:visible">
+                <defs>
+                  <linearGradient id="zStoneF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E2F20"></stop><stop offset="1" stop-color="#1A120A"></stop></linearGradient>
+                  <linearGradient id="zStoneB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A1E12"></stop><stop offset="1" stop-color="#110B05"></stop></linearGradient>
+                  <linearGradient id="zGoldF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF0C4"></stop><stop offset=".45" stop-color="#D3AE62"></stop><stop offset=".75" stop-color="#F3DCA0"></stop><stop offset="1" stop-color="#9A7434"></stop></linearGradient>
+                  <linearGradient id="zRay" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFE7AE" stop-opacity=".85"></stop><stop offset="1" stop-color="#FFE7AE" stop-opacity="0"></stop></linearGradient>
+                  <radialGradient id="zArena"><stop offset="0" stop-color="#FFE0A0"></stop><stop offset="1" stop-color="#FFB648" stop-opacity="0"></stop></radialGradient>
+                  <linearGradient id="zShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFF8E4" stop-opacity="0"></stop><stop offset=".5" stop-color="#FFF8E4" stop-opacity=".8"></stop><stop offset="1" stop-color="#FFF8E4" stop-opacity="0"></stop></linearGradient>
+                  <clipPath id="zClipF"><path d="{{ zc.front }}"></path></clipPath>
+                </defs>
+                <sc-for list="{{ zc.stars }}" as="s" hint-placeholder-count="20"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFF6E0" style="opacity:0;animation:zTw {{ s.du }} {{ s.dl }} ease-in-out infinite backwards"></circle></sc-for>
+                <g style="opacity:0;animation:cFade 1.7s 3.91s ease both">
+                  <path d="{{ zc.back }}" fill="url(#zStoneB)"></path>
+                  <path d="{{ zc.back }}" fill="url(#zGoldF)" fill-opacity=".55" style="opacity:0;animation:zGold 2.38s 11.48s ease both"></path>
+                </g>
+                <g style="filter:drop-shadow(0 0 2px #FFB648)">
+                  <sc-for list="{{ zc.backW }}" as="w" hint-placeholder-count="0"><path d="{{ w.d }}" fill="#E3A04A" style="opacity:0;animation:zLitB 1.02s {{ w.dl }} ease both"></path></sc-for>
+                </g>
+                <ellipse cx="120" cy="146" rx="60" ry="14" fill="url(#zArena)" style="opacity:0;animation:zArenaK 2.04s 9.95s ease both"></ellipse>
+                <sc-for list="{{ zc.rays }}" as="r" hint-placeholder-count="9"><g transform="{{ r.t }}"><path d="M117 140L123 140L136 -80L104 -80Z" fill="url(#zRay)" style="opacity:0;transform-origin:120px 140px;animation:zRayIn 2.21s {{ r.dl }} cubic-bezier(.2,.8,.2,1) both,zRayP 2.6s {{ r.dl2 }} ease-in-out infinite alternate"></path></g></sc-for>
+                <g style="opacity:0;animation:cFade 1.7s 4.08s ease both">
+                  <path d="{{ zc.front }}" fill="url(#zStoneF)"></path>
+                  <path d="{{ zc.front }}" fill="url(#zGoldF)" style="opacity:0;animation:zGold 2.38s 11.48s ease both"></path>
+                  <sc-for list="{{ zc.corn }}" as="c" hint-placeholder-count="3"><path d="{{ c }}" fill="none" stroke="rgba(255,222,160,.35)" stroke-width=".7"></path></sc-for>
+                  <g clip-path="url(#zClipF)"><rect x="0" y="40" width="60" height="160" fill="url(#zShine)" style="animation:cShine 5s 13.86s ease-in-out infinite backwards"></rect></g>
+                </g>
+                <g style="filter:drop-shadow(0 0 3px #FFB648)">
+                  <sc-for list="{{ zc.frontW }}" as="w" hint-placeholder-count="0"><path d="{{ w.d }}" fill="#FFCB72" style="opacity:0;animation:zLit 1.02s {{ w.dl }} ease both"></path></sc-for>
+                </g>
+                <ellipse cx="120" cy="58" rx="100" ry="30" fill="none" stroke="#F6DDA4" stroke-width="1" style="opacity:0;animation:zRim 1.7s 9.95s ease both"></ellipse>
+                <g style="filter:drop-shadow(0 0 3px #FFB648)">
+                  <path d="M120 180A100 30 0 0 0 220 150A100 30 0 0 0 120 120" pathLength="1" fill="none" stroke="#FFD27A" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:1;animation:zDraw 2.55s 1.53s cubic-bezier(.5,0,.3,1) both"></path>
+                  <path d="M120 180A100 30 0 0 1 20 150A100 30 0 0 1 120 120" pathLength="1" fill="none" stroke="#FFD27A" stroke-width="2" stroke-dasharray="1" style="stroke-dashoffset:1;animation:zDraw 2.55s 1.53s cubic-bezier(.5,0,.3,1) both"></path>
+                </g>
+                <g transform="translate(120 181)"><g style="opacity:0;transform-box:fill-box;transform-origin:center bottom;animation:zTorch 2.21s 0.17s ease both">
+                  <path d="M0 -14Q6 -6 3.5 -1Q0 2 -3.5 -1Q-6 -6 0 -14Z" fill="#FFB648" style="filter:drop-shadow(0 0 4px #FFB648)"></path>
+                  <path d="M0 -9Q3 -4 1.8 -1Q0 .8 -1.8 -1Q-3 -4 0 -9Z" fill="#FFF4D2" style="transform-box:fill-box;transform-origin:center bottom;animation:zFlick .16s linear infinite alternate"></path>
+                </g></g>
+                <ellipse cx="120" cy="58" rx="100" ry="30" fill="none" stroke="#FFF0C8" stroke-width="2" style="opacity:0;transform-box:fill-box;transform-origin:center;animation:cShock 2.72s 9.95s ease-out both"></ellipse>
+                <sc-for list="{{ zc.fw }}" as="w" hint-placeholder-count="5">
+                  <g transform="{{ w.t }}">
+                    <line x1="0" y1="{{ w.ly }}" x2="0" y2="0" stroke="{{ w.c }}" stroke-width="1.2" stroke-linecap="round" pathLength="1" stroke-dasharray="1" style="stroke-dashoffset:1;opacity:0;animation:zTrail 0.85s {{ w.dl0 }} ease-out both"></line>
+                    <circle cx="0" cy="0" r="7" fill="{{ w.c }}" style="opacity:0;filter:blur(3px);transform-box:fill-box;transform-origin:center;animation:zPop 1.02s {{ w.dl }} ease-out both"></circle>
+                    <sc-for list="{{ w.sp }}" as="s" hint-placeholder-count="14"><g transform="{{ s.r }}"><circle cx="0" cy="0" r="{{ s.sz }}" fill="{{ s.c }}" style="opacity:0;--d:{{ s.d }};animation:zSpark 2.55s {{ w.dl }} cubic-bezier(.15,.7,.3,1) both"></circle></g></sc-for>
+                  </g>
+                </sc-for>
+                <sc-for list="{{ zc.petals }}" as="p" hint-placeholder-count="26"><circle cx="120" cy="66" r="{{ p.r }}" fill="{{ p.c }}" style="opacity:0;--dx:{{ p.dx }};--dy:{{ p.dy }};animation:zPetal {{ p.du }} {{ p.dl }} cubic-bezier(.2,.7,.4,1) both"></circle></sc-for>
+              </svg>
+              <span style="position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:radial-gradient(circle,#FFF8E0,#FFB648);box-shadow:0 0 12px 5px rgba(255,190,90,.9);offset-path:path('M160 240A133.3 40 0 0 0 293.3 200A133.3 40 0 0 0 160 160');offset-rotate:0deg;opacity:0;animation:zComet 2.55s 1.53s cubic-bezier(.5,0,.3,1) both"></span>
+              <span style="position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:radial-gradient(circle,#FFF8E0,#FFB648);box-shadow:0 0 12px 5px rgba(255,190,90,.9);offset-path:path('M160 240A133.3 40 0 0 1 26.7 200A133.3 40 0 0 1 160 160');offset-rotate:0deg;opacity:0;animation:zComet 2.55s 1.53s cubic-bezier(.5,0,.3,1) both"></span>
+              <span style="position:absolute;inset:-60px;background:radial-gradient(circle at 50% 30%,#FFF6DA,rgba(255,246,218,0) 70%);pointer-events:none;opacity:0;animation:gBig 1.53s 9.95s ease-out both"></span>
+            </div>
+            <span style="position:relative;margin-top:-6px;font:italic 400 70px/.85 'Instrument Serif',serif;color:oklch(0.88 0.08 85);text-shadow:0 0 24px oklch(0.86 0.09 85 / .5);animation:pop 1.7s 13.18s ease both">I</span>
+            <span style="position:relative;font:400 31px/1.02 'Instrument Serif',serif;animation:pop 1.7s 13.86s ease both">Tu primera maravilla</span>
+            <span style="position:relative;font:600 11px 'Geist Mono',monospace;letter-spacing:.16em;color:oklch(0.86 0.09 85);animation:pop 1.7s 14.37s ease both">EL COLISEO · ROMA</span>
+            <div style="position:relative;display:flex;gap:9px;margin-top:6px">
+              <sc-for list="{{ dots7 }}" as="d" hint-placeholder-count="7"><span style="width:12px;height:12px;border-radius:3px;transform:rotate(45deg);background:{{ d.bg }};border:{{ d.bd }};box-shadow:{{ d.sh }};animation:tick 0.85s {{ d.d }} ease both"></span></sc-for>
+            </div>
+            <span style="position:relative;font:400 13px/1.45 'Geist';color:rgba(255,253,248,.7);animation:pop 1.7s 12.84s ease both">Solo hay 7 en el mundo. Te quedan 6.</span>
+            <sc-if value="{{ full }}" hint-placeholder-val="{{ false }}"><button style="position:relative;margin-top:14px;height:52px;padding:0 26px;border:none;border-radius:999px;background:linear-gradient(110deg,#D9BE85,#F3E3B8 50%,#D9BE85);color:#1C2230;display:flex;align-items:center;gap:8px;font:700 14.5px 'Geist';cursor:pointer;animation:pop 1.7s 15.56s ease both"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg>Seguir</button></sc-if>
+          </div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:440,&quot;height&quot;:600},&quot;full&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals(){const v=this._rv();const S=o=>{if(Array.isArray(o))return o.map(S);if(o&&typeof o==='object'){const r={};for(const k in o){const x=o[k];r[k]=(['dl','dl0','dl2','du'].includes(k)||(k==='d'&&o.bd!==undefined))&&typeof x==='string'&&/^-?[\d.]+s$/.test(x)?(+(parseFloat(x)*1.7).toFixed(2))+'s':S(x);}return r;}return o;};
+    const out={};for(const k in v)out[k]=k==='starsBg'?v[k]:S(v[k]);return out;}
+  _rv(){const full=!!(this.props.full===true||this.props.full==='true');
+    return{full,cw:full?'100%':'440px',ch:full?'100%':'auto',jc:full?'center':'flex-start',cr:full?'0':'34px',
+      starsBg:Array.from({length:40},(_,i)=>({x:((i*37+11)%100)+'%',y:((i*53+7)%100)+'%',s:(1+i%3)+'px',d:(2+i%4)+'s',dl:((i*0.3)%3).toFixed(1)+'s'})),
+      dots7:Array.from({length:7},(_,i)=>({bg:i===0?'linear-gradient(135deg,#FFF4D2,#C9A35C)':'transparent',bd:i===0?'none':'1.5px solid rgba(243,227,184,.35)',sh:i===0?'0 0 12px #FFE9B0':'none',d:(8.75+i*0.12).toFixed(2)+'s'})),
+      zc:(()=>{const cx=120,cy=150,rx=100,ry=30,N=22,f1=v=>v.toFixed(1),backW=[],frontW=[];
+        for(let k=0;k<4;k++)for(let i=0;i<N;i++){const th=(i+0.5)/N*2*Math.PI,s=Math.sin(th),c=Math.cos(th);
+          const x=cx+rx*c,yb=cy+ry*s-k*26-3,w=Math.max(1.2,(k===3?4:7.5)*Math.abs(s)),h=k===3?5:16,x0=x-w/2,x1=x+w/2,yt=yb-h;let d;
+          if(k===3)d='M'+f1(x0)+' '+f1(yb)+'L'+f1(x0)+' '+f1(yt)+'L'+f1(x1)+' '+f1(yt)+'L'+f1(x1)+' '+f1(yb)+'Z';
+          else{const r=w/2,ra=Math.min(4,h/2);d='M'+f1(x0)+' '+f1(yb)+'L'+f1(x0)+' '+f1(yt+ra)+'A'+f1(r)+' '+f1(ra)+' 0 0 1 '+f1(x1)+' '+f1(yt+ra)+'L'+f1(x1)+' '+f1(yb)+'Z';}
+          let ang=Math.abs(th-Math.PI/2);if(ang>Math.PI)ang=2*Math.PI-ang;const dl=0.95+ang/Math.PI*3+k*0.55;
+          (s>0?frontW:backW).push({d,dl:dl.toFixed(2)+'s'});}
+        const front='M220 150A100 30 0 0 1 20 150L20 58A100 30 0 0 0 220 58Z',back='M20 58A100 30 0 0 1 220 58L220 150A100 30 0 0 0 20 150Z';
+        const corn=[1,2,3].map(k=>{const y=150-26*k;return 'M220 '+y+'A100 30 0 0 1 20 '+y;});
+        const rays=[-56,-40,-26,-12,0,12,26,40,56].map((a,i)=>({t:'rotate('+a+' 120 140)',dl:(5.85+Math.abs(a)/200).toFixed(2)+'s',dl2:(7.15+i*0.2).toFixed(1)+'s'}));
+        const petals=Array.from({length:26},(_,i)=>({r:(1.1+(i%3)*0.6).toFixed(1),c:i%3?'#F6D78E':'#FFF4D6',dx:(((i*47)%220)-110)+'px',dy:(-130+((i*61)%170))+'px',du:(2.2+(i%5)*0.25).toFixed(2)+'s',dl:(5.85+(i%6)*0.05).toFixed(2)+'s'}));
+        const stars=Array.from({length:20},(_,i)=>({x:f1(((i*53)%240)),y:f1(((i*37)%90)-20),r:(0.4+(i%3)*0.3).toFixed(1),du:(2+(i%4)*0.6).toFixed(1)+'s',dl:(-(i%7)*0.4).toFixed(1)+'s'}));
+        const COLS=['#FFD27A','#FF9E7A','#FFF2CC','#F6C26B','#FFB8A0'];
+        const fw=[[60,-6,6],[182,-14,6.2],[120,-34,6.45],[34,22,6.7],[206,16,6.9],[92,-22,7.2],[150,6,7.45]].map(([x,y,t],i)=>{const c=COLS[i%5];const n=14;
+          return{t:'translate('+x+' '+y+')',ly:(60+((i*13)%30)),c,dl0:(t-0.45).toFixed(2)+'s',dl:t.toFixed(2)+'s',
+            sp:Array.from({length:n},(_,k)=>({r:'rotate('+(k*360/n+(i*11))+')',d:(22+((k*7+i*5)%12))+'px',sz:(k%3?0.9:1.4),c:k%4?c:'#FFFFFF'}))};});
+        return{backW,frontW,front,back,corn,rays,petals,stars,fw};})()};}
+}
+</script>
+</body>
+</html>

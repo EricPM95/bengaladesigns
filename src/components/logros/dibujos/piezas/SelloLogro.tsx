@@ -1,0 +1,61 @@
+// @ts-nocheck
+// Pieza portada del diseño de Claude Design (Piezas/Sello Logro.dc.html). Generado con dc2tsx; manda lo que se ve en el diseño.
+import React from 'react'
+import './SelloLogro.css'
+
+const DCLogic: any = React.Component
+const T = (v) => (<><div style={{ position: "relative", width: v.szW, height: v.sz, flex: "none" }} className="dib">{(v.aura) ? (<><span style={{ position: "absolute", inset: "-16%", borderRadius: "50%", background: "conic-gradient(from 0deg,#FFD9EC,#CFE9FF,#E3FFE0,#FFF1C9,#E7D6FF,#FFD9EC)", filter: "blur(12px)", animation: "slAura 5s ease-in-out infinite" }}></span></>) : null}<div style={{ position: "absolute", inset: "0", borderRadius: "50%", background: v.rim, boxShadow: v.sh }}></div><div style={{ position: "absolute", inset: v.inset, borderRadius: "50%", background: v.face, boxShadow: v.fsh, overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: v.gap, color: v.ink }}><span style={{ position: "absolute", inset: "0", background: v.tex, mixBlendMode: v.blend, opacity: v.texO }}></span>{(v.facets) ? (<><span style={{ position: "absolute", inset: "-20%", background: "repeating-conic-gradient(from 8deg,rgba(255,255,255,.55) 0 9deg,rgba(150,170,225,.16) 9deg 26deg,rgba(255,255,255,.3) 26deg 34deg,rgba(205,185,245,.2) 34deg 52deg)", animation: "slSpin 18s linear infinite" }}></span><span style={{ position: "absolute", inset: "0", background: "linear-gradient(120deg,#FFD6E8,#D6F0FF,#E6FFD9,#FFF2C9,#EAD6FF)", mixBlendMode: "soft-light", opacity: ".85", animation: "slHue 5s linear infinite" }}></span></>) : null}<svg viewBox="0 0 100 100" preserveAspectRatio={v.par} style={{ position: "absolute", inset: "0", width: "100%", height: "100%" }}>{(v.dents || []).map((d, __i) => (<React.Fragment key={__i}><ellipse cx={d.x} cy={d.y} rx={d.r} ry={d.r2} fill="rgba(60,30,10,.22)"></ellipse><ellipse cx={d.x2} cy={d.y2} rx={d.r} ry={d.r2} fill="rgba(255,225,190,.22)"></ellipse></React.Fragment>))}{(v.dotRing) ? (<><circle cx="50" cy="50" r="45" fill="none" stroke={v.dash} strokeWidth="1.6" strokeDasharray="0.1 3.1" strokeLinecap="round"></circle></>) : null}{(v.beads) ? (<><circle cx="50" cy="50" r="45.3" fill="none" stroke={v.beadD} strokeWidth="3.2" strokeDasharray="0.1 3.55" strokeLinecap="round"></circle><circle cx="49.6" cy="49.6" r="45.3" fill="none" stroke={v.beadL} strokeWidth="1.5" strokeDasharray="0.1 3.55" strokeLinecap="round"></circle></>) : null}{(v.rivets || []).map((r, __i) => (<React.Fragment key={__i}><circle cx={r.x} cy={r.y} r="1.35" fill="#7E858E"></circle><circle cx={r.x2} cy={r.y2} r=".7" fill="#FFFFFF"></circle></React.Fragment>))}<circle cx="50" cy="50" r="40.5" fill="none" stroke={v.dash} strokeWidth={v.lineW}></circle>{(v.dbl) ? (<><circle cx="50" cy="50" r="38.6" fill="none" stroke={v.dash} strokeWidth=".45"></circle></>) : null}{(v.stars || []).map((s, __i) => (<React.Fragment key={__i}><path d={s} fill={v.dash}></path></React.Fragment>))}{(v.hasLaurel) ? (<><path d={v.stem} fill="none" stroke={v.dash} strokeWidth=".9" strokeLinecap="round"></path></>) : null}{(v.leaves || []).map((l, __i) => (<React.Fragment key={__i}><ellipse cx={l.x} cy={l.y} rx={l.rx} ry={l.ry} transform={l.t} fill={v.dash}></ellipse></React.Fragment>))}{(v.berries || []).map((b, __i) => (<React.Fragment key={__i}><circle cx={b.x} cy={b.y} r="1" fill={v.dash}></circle></React.Fragment>))}</svg>{(v.shiny) ? (<><span style={{ position: "absolute", top: "-30%", bottom: "-30%", left: "0", width: "26%", background: `linear-gradient(90deg,transparent,rgba(255,255,255,${v.shA}),transparent)`, animation: `slShine ${v.shD} ease-in-out infinite` }}></span></>) : null}<svg width={v.iw} height={v.ih} viewBox={v.vb} fill="none" stroke="currentColor" strokeWidth={v.sw} strokeLinecap="round" strokeLinejoin="round" style={{ position: "relative", marginTop: v.mt, filter: v.iFlt }}><path d={v.path}></path></svg>{(v.hasLabel) ? (<><span style={{ position: "relative", font: `600 ${v.fs} 'Geist Mono',monospace`, letterSpacing: ".2em", textShadow: v.lSh }}>{v.label}</span></>) : null}</div>{(v.sparks || []).map((p, __i) => (<React.Fragment key={__i}><span style={{ position: "absolute", left: p.x, top: p.y, width: p.s, height: p.s, background: "#FFFFFF", filter: "drop-shadow(0 0 4px rgba(255,255,255,.95))", clipPath: "polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)", animation: `slTw ${p.t} ${p.d} ease-in-out infinite` }}></span></React.Fragment>))}</div></>)
+
+
+const HI='linear-gradient(135deg,rgba(255,255,255,.55),transparent 42%,rgba(0,0,0,.22)),';
+const G={
+none:{rim:'repeating-conic-gradient(#D9D0BF 0 5deg,#E5DED1 5deg 10deg)',face:'#EFE9DD',ink:'rgba(28,34,48,.32)',dash:'rgba(28,34,48,.2)',sh:'none',
+  fsh:'inset 0 0 0 1px rgba(28,34,48,.06)',tex:'none',blend:'normal',texO:0,inset:'6%',stars:1,laurel:0,dotRing:1,lineW:.6,iFlt:'none',lSh:'none'},
+bronce:{rim:'radial-gradient(circle at 78% 84%,rgba(96,150,118,.55),transparent 20%),radial-gradient(circle at 16% 26%,rgba(96,150,118,.4),transparent 16%),radial-gradient(circle at 30% 90%,rgba(96,150,118,.3),transparent 12%),'+HI+'radial-gradient(circle,#6A4226 64%,#C0916A 72%,#8A5C38 86%,#5E3A20 100%)',
+  face:'radial-gradient(circle at 34% 26%,#E8BE96,#B47E52 50%,#74482A)',ink:'#3A2210',dash:'rgba(58,34,16,.5)',sh:'0 14px 24px -12px rgba(90,55,30,.7)',
+  fsh:'inset 0 -10px 18px rgba(40,20,6,.35),inset 0 6px 10px rgba(255,220,180,.2),inset 0 0 0 1px rgba(40,20,6,.35)',
+  tex:'radial-gradient(rgba(50,25,8,.35) .7px,transparent 1.3px) 0 0/5px 5px,radial-gradient(rgba(255,225,190,.28) .7px,transparent 1.3px) 2.5px 2.5px/6px 6px',blend:'normal',texO:1,
+  inset:'8%',stars:1,laurel:0,dotRing:1,lineW:.8,dents:1,shA:.18,shD:'7s',
+  iFlt:'drop-shadow(0 -1px 0 rgba(30,14,4,.55)) drop-shadow(0 1px 0 rgba(255,215,175,.45))',lSh:'0 -1px 0 rgba(30,14,4,.45),0 1px 0 rgba(255,215,175,.4)'},
+plata:{rim:HI+'repeating-conic-gradient(#8F969F 0 1.5deg,#E1E5EA 1.5deg 3deg)',face:'radial-gradient(circle at 34% 26%,#FFFFFF,#CBD0D6 50%,#8A919A)',ink:'#2E343C',dash:'rgba(46,52,60,.4)',sh:'0 14px 24px -12px rgba(60,66,76,.65)',
+  fsh:'inset 0 0 0 1.5px rgba(255,255,255,.75),inset 0 0 0 2.5px rgba(60,66,76,.25),inset 0 -10px 16px rgba(0,0,0,.14),inset 0 8px 14px rgba(255,255,255,.3)',
+  tex:'repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.35) 0 .6px,rgba(80,88,98,.09) .6px 1.6px)',blend:'normal',texO:1,
+  inset:'6%',stars:3,laurel:2,dotRing:0,rivets:1,lineW:.6,shA:.55,shD:'5s',
+  iFlt:'drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 -1px 0 rgba(30,34,40,.3))',lSh:'0 1px 0 rgba(255,255,255,.8)'},
+oro:{rim:HI+'repeating-conic-gradient(#A0803F 0 4deg,#E6CC8E 4deg 6deg,#C2A060 6deg 10deg)',face:'radial-gradient(circle at 34% 26%,#FFF4D2,#D8B771 46%,#8F6C2E)',ink:'#4A3410',dash:'rgba(74,52,16,.48)',
+  sh:'0 0 0 1px rgba(255,240,200,.4),0 16px 28px -12px rgba(150,115,50,.75)',
+  fsh:'inset 0 0 0 2px rgba(255,242,205,.75),inset 0 0 0 3.2px rgba(110,78,26,.4),inset 0 -12px 18px rgba(70,46,10,.25),inset 0 8px 14px rgba(255,250,225,.45)',
+  tex:'repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,250,225,.28) 0 .9deg,transparent .9deg 3.6deg),repeating-radial-gradient(circle at 50% 50%,rgba(110,78,26,.12) 0 .8px,transparent .8px 3.4px)',blend:'normal',texO:1,
+  inset:'7%',stars:3,laurel:4,beads:1,beadD:'rgba(95,66,20,.65)',beadL:'rgba(255,246,214,.95)',dbl:1,dotRing:0,lineW:.7,shA:.75,shD:'3.8s',sp:3,
+  iFlt:'drop-shadow(0 1.5px 0 rgba(255,250,222,.95)) drop-shadow(0 -1px 1px rgba(80,52,10,.55)) drop-shadow(0 3px 3px rgba(80,52,10,.3))',lSh:'0 1px 0 rgba(255,248,220,.85),0 -1px 0 rgba(80,52,10,.3)'},
+diamante:{rim:'repeating-conic-gradient(#F2F6FF 0 7deg,#AEBFEA 7deg 14deg,#FFFFFF 14deg 15.5deg,#C9D5F4 15.5deg 22.5deg),radial-gradient(circle,#DDE6FA,#9FB2E2)',face:'radial-gradient(circle at 34% 24%,#FFFFFF,#DCE6F8 40%,#B7C6EC 75%,#9CAEE0)',ink:'#22305A',dash:'rgba(40,55,96,.4)',
+  sh:'0 0 0 1px rgba(255,255,255,.75),0 0 26px rgba(200,215,255,.75),0 18px 32px -12px rgba(110,130,190,.8)',
+  fsh:'inset 0 0 0 2px rgba(255,255,255,.9),inset 0 0 0 3.5px rgba(120,140,200,.35),inset 0 0 18px rgba(255,255,255,.6)',
+  tex:'none',blend:'normal',texO:0,inset:'7%',stars:5,laurel:5,berries:1,beads:1,beadD:'rgba(120,140,200,.5)',beadL:'#FFFFFF',dbl:1,dotRing:0,lineW:.7,shA:.95,shD:'2.6s',sp:8,aura:1,facets:1,
+  iFlt:'drop-shadow(0 0 2px rgba(255,255,255,.95)) drop-shadow(0 1px 0 #FFFFFF) drop-shadow(0 -1px 0 rgba(40,55,96,.35))',lSh:'0 0 6px rgba(255,255,255,.95)'}};
+const IC={coliseo:['0 0 54 34','M4 32h46M7 32V14c6-8 34-8 40 0v18M7 20h40M7 26h40M14 14v18M21 12v20M27 11v21M33 12v20M40 14v18',54/34],
+cupula:['0 0 24 24','M4 20h16M6 20v-6a6 6 0 0 1 12 0v6M12 8V4M10.5 5.5h3M9 20v-4M15 20v-4',1]};
+const SP=[['8%','6%',18,'0s','2.4s'],['80%','12%',13,'.7s','2.8s'],['74%','74%',20,'1.3s','2.2s'],['4%','68%',12,'1.9s','3s'],['44%','-6%',11,'.4s','2.6s'],['92%','44%',10,'1.1s','2.4s'],['36%','90%',14,'1.6s','2.9s'],['-4%','36%',9,'2.2s','2.5s']];
+const f1=n=>n.toFixed(2);
+const star=(cx,cy,R)=>{const p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?R*0.45:R;p.push(f1(cx+r*Math.cos(a))+' '+f1(cy+r*Math.sin(a)));}return 'M'+p.join('L')+'Z';};
+const STARS={1:[[50,10.4,2.6]],3:[[50,10,2.8],[41,11.8,1.9],[59,11.8,1.9]],5:[[50,9.8,3],[41.5,11.4,2.1],[58.5,11.4,2.1],[33.5,14.8,1.5],[66.5,14.8,1.5]]};
+class SelloLogro extends DCLogic {
+  renderVals(){const p=this.props;const g=G[p.grade]||G.none;const s=Number(p.size)||86;const ic=IC[p.icon]||IC.coliseo;
+    const iw=s*(p.icon==='cupula'?0.3:0.4),ih=iw/ic[2];const lab=p.label||'';
+    const n=g.laurel||0,leaves=[],berries=[];
+    for(let side of[-1,1])for(let i=0;i<n;i++){const t=(i+0.5)/n;const a=(200-t*70)*Math.PI/180;const cx=50+37*Math.cos(a),cy=50-37*Math.sin(a);
+      const x=50+side*(50-cx)*-1;const rot=side*(-(90-(200-t*70)+90));
+      leaves.push({x:f1(side<0?cx:100-cx),y:f1(cy),rx:'2.9',ry:'1.15',t:'rotate('+f1(side<0?rot:-rot)+' '+f1(side<0?cx:100-cx)+' '+f1(cy)+')'});
+      if(g.berries&&i%2)berries.push({x:f1((side<0?cx:100-cx)+side*2.4),y:f1(cy-1.6)});}
+    const stemPts=side=>{const a0=200*Math.PI/180,a1=130*Math.PI/180;const P=t=>{const a=a0+(a1-a0)*t;const x=50-37*Math.cos(a)*-1;return[side<0?x:100-x,50-37*Math.sin(a)];};const[p0,pm,p1]=[P(0),P(.5),P(1)];return 'M'+f1(p0[0])+' '+f1(p0[1])+'Q'+f1(2*pm[0]-(p0[0]+p1[0])/2)+' '+f1(2*pm[1]-(p0[1]+p1[1])/2)+' '+f1(p1[0])+' '+f1(p1[1]);};
+    const rivets=g.rivets?Array.from({length:12},(_,i)=>{const a=i*Math.PI/6+Math.PI/12;const x=50+44.2*Math.cos(a),y=50+44.2*Math.sin(a);return{x:f1(x),y:f1(y),x2:f1(x-.4),y2:f1(y-.4)};}):[];
+    const dents=g.dents?[[30,34,3.2],[64,28,2.4],[72,58,3],[26,62,2.2],[46,74,2.8],[58,44,1.8],[38,48,1.6],[70,40,1.4]].map(([x,y,r])=>({x,y,r,r2:f1(r*.75),x2:f1(x-.6),y2:f1(y-.6)})):[];
+    return{...g,aura:!!g.aura,facets:!!g.facets,beads:!!g.beads,beadD:g.beadD||'',beadL:g.beadL||'',dbl:!!g.dbl,dotRing:!!g.dotRing,
+      shiny:!!g.shA,shA:g.shA||0,shD:g.shD||'6s',sz:s+'px',szW:(p.shape==='oval'?(Number(p.size)||150)*0.76+'px':s+'px'),par:p.shape==='oval'?'none':'xMidYMid meet',gap:(s*0.035)+'px',mt:(-s*0.02)+'px',iw,ih,vb:ic[0],path:ic[1],sw:p.icon==='cupula'?1.6:2.2,fs:Math.max(6.5,s*0.064)+'px',label:lab,hasLabel:!!lab&&s>=50,
+      stars:(STARS[g.stars]||[]).map(([x,y,r])=>star(x,y,r)),hasLaurel:n>0,stem:n?stemPts(-1)+stemPts(1):'',leaves,berries,rivets,dents,
+      sparks:SP.slice(0,g.sp||0).map(([x,y,w,d,t])=>({x,y,s:(s*w/100)+'px',d,t}))};}
+}
+
+
+SelloLogro.prototype.render = function () { return T(this.renderVals()) }
+export default SelloLogro as unknown as React.ComponentType<any>

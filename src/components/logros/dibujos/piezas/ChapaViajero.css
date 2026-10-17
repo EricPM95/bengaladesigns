@@ -1,0 +1,9 @@
+@keyframes chIn{0%{opacity:0;transform:scale(.25) rotate(-25deg)}55%{opacity:1;transform:scale(1.1) rotate(4deg)}75%{transform:scale(.97)}100%{opacity:1;transform:none}}
+@keyframes chBurst{0%{opacity:.9;transform:scale(.5)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes chSpark{0%{opacity:0;transform:translate(0,0) scale(.2)}30%{opacity:1}100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(1)}}
+@keyframes chSweep{0%{transform:translateX(-140%) rotate(20deg)}45%,100%{transform:translateX(330%) rotate(20deg)}}
+@keyframes chRays{to{transform:rotate(360deg)}}
+@keyframes chMer{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.05)}}
+@keyframes chArc{from{stroke-dashoffset:60}to{stroke-dashoffset:0}}
+@keyframes chTw{0%,100%{opacity:.2}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

@@ -9,7 +9,7 @@ import { ACCENT, Em, GhostButton, INK, MONO, SEASON_FX, SeasonFx, THEME, Title }
 import '../trazo/trazo.css'
 
 /** Z-index del calendario: por encima de la cabecera, la barra de abajo, las hojas, los selectores (120) y los avisos. */
-export const DATES_CALENDAR_Z = 130
+export const DATES_CALENDAR_Z = 9500
 
 const PARTS = Array.from({ length: 26 }, () => [Math.random(), Math.random(), Math.random(), Math.random()])
 

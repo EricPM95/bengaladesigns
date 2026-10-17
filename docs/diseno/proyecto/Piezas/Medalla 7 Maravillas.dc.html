@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#0C1020;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#F3D59A}a:hover{color:#FFFDF8}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#1E2744 0%,#0C1020 72%);padding:44px 48px 90px;font-family:'Geist',system-ui,sans-serif;color:#FFFDF8;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:720px">
+    <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,213,154,.7)">Las 7 maravillas · una medalla en 7 partes</span>
+    <span style="font:400 46px/1 'Instrument Serif',serif">Cada maravilla, <em style="color:#F3D59A">su moneda</em></span>
+    <span style="font:400 14px/1.5 'Geist';color:rgba(255,253,248,.7);text-wrap:pretty">Siete monedas sueltas, una por maravilla, montadas en la medalla. Así ninguna pisa a otra: cada una se enciende sola cuando el viajero la ve. El orden es fijo, como el de las estrellas. Toca una moneda para ver su nombre.</span>
+  </div>
+
+  <section style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      <span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#F3D59A;color:#1C2230">Se completa</span>
+      <dc-import name="Piezas/Medalla Siete" anim="{{ true }}" size="380" hint-size="380px,447px"></dc-import>
+      <span style="max-width:360px;font:400 13px/1.5 'Geist';color:rgba(255,253,248,.7);text-align:center;text-wrap:pretty">Cada maravilla nueva: destello, la moneda pasa de apagada a oro, y la medalla gana rayos y brillo. Al completar las 7, las monedas se funden en una luz que late, estalla y aparece la medalla completa con fuegos.</span>
+    </div>
+    <sc-for list="{{ big }}" as="b" hint-placeholder-count="3">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+        <span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:rgba(255,253,248,.1);color:#F3D59A">{{ b.t }}</span>
+        <dc-import name="Piezas/Medalla Siete" n="{{ b.n }}" size="300" hint-size="300px,353px"></dc-import>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center"><span style="font:400 22px/1.1 'Instrument Serif',serif">{{ b.name }}</span><span style="font:italic 400 14px 'Instrument Serif',serif;color:rgba(255,253,248,.7)">{{ b.line }}</span></span>
+      </div>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){return{big:[[1,'1 de 7','Tu primera maravilla','1 de 7 maravillas'],[4,'4 de 7','Cuatro maravillas en la maleta','4 de 7 maravillas'],[7,'7 de 7','Las siete maravillas','Has visto las siete maravillas del mundo.']].map(([n,t,name,line])=>({n,t,name,line}))};}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+@keyframes vfUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes vfSheet{from{transform:translateY(100%)}to{transform:none}}
+@keyframes vfToast{0%{opacity:0;transform:translateY(16px)}8%,88%{opacity:1;transform:none}100%{opacity:0;transform:translateY(8px)}}
+@keyframes vfBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes vfPop{0%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:none}}
+@keyframes vfGlow{0%,100%{opacity:.45}50%{opacity:.9}}
+@keyframes vfRays{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px 40px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<sc-for list="{{ boards }}" as="b" hint-placeholder-count="4">
+ <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span></div>
+  <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:{{ b.bg }};color:{{ b.fg }};box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+   <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:60"></div>
+   <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>{{ b.clock }}</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.5;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+
+   <sc-if value="{{ b.hoy }}" hint-placeholder-val="{{ false }}">
+    <header style="flex:none;padding:4px 20px 10px;display:flex;flex-direction:column;gap:4px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.5 0.17 5)">Hoy · {{ b.day }}</span><span style="font:400 30px/1 'Instrument Serif',serif">Centro histórico</span></header>
+    <main style="flex:1;min-height:0;overflow:hidden;padding:4px 16px 0;display:flex;flex-direction:column;gap:8px">
+     <sc-for list="{{ b.stops }}" as="s" hint-placeholder-count="4">
+      <div style="flex:none;border-radius:18px;background:#FFFDF8;border:1px solid {{ s.bd }};padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+       <div style="display:flex;align-items:center;gap:12px">
+        <span style="width:44px;height:44px;flex:none;border-radius:12px;background:{{ s.ph }}"></span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:400 18px/1.1 'Instrument Serif',serif;color:{{ s.nc }}">{{ s.n }}</span><span style="font:500 11.5px 'Geist';color:{{ s.sc }}">{{ s.st }}</span></span>
+        <sc-if value="{{ s.todo }}" hint-placeholder-val="{{ false }}"><span style="height:34px;padding:0 13px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;font:600 12.5px 'Geist'">Visto</span></sc-if>
+       </div>
+       <sc-if value="{{ s.hasP }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:12px;background:{{ s.pbg }}">
+         <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:500 12.5px/1.3 'Geist';color:{{ s.pfg }}">{{ s.p }}</span><sc-if value="{{ s.hasCd }}" hint-placeholder-val="{{ false }}"><span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.5 0.17 5)">{{ s.cd }}</span></sc-if></span>
+         <span style="width:38px;height:38px;flex:none;border-radius:50%;background:{{ s.cb }};color:{{ s.cf }};display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.cam }}"></path></svg></span>
+        </div>
+       </sc-if>
+      </div>
+     </sc-for>
+    </main>
+    <nav style="flex:none;height:84px;background:#1C2230"></nav>
+   </sc-if>
+
+   <sc-if value="{{ b.toastOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:14px;right:14px;bottom:100px;border-radius:16px;background:#1C2230;color:#FFFDF8;overflow:hidden;box-shadow:0 14px 30px -12px rgba(0,0,0,.6);animation:vfToast 5s 1s ease both;animation-iteration-count:infinite">
+     <div style="display:flex;align-items:center;gap:10px;padding:14px 10px 14px 16px"><span style="width:22px;height:22px;border-radius:50%;background:oklch(0.55 0.11 150);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span style="flex:1;font:500 13.5px 'Geist'">Fontana de Trevi marcada como visto</span><span style="height:34px;padding:0 12px;border-radius:999px;color:oklch(0.8 0.14 70);display:flex;align-items:center;font:700 13px 'Geist'">Deshacer</span></div>
+     <span style="display:block;height:3px;background:oklch(0.8 0.14 70);transform-origin:0 50%;animation:vfBar 5s 1s linear both;animation-iteration-count:infinite"></span>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.sheetOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.42);z-index:20"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:21;display:flex;flex-direction:column;gap:10px;animation:vfSheet .5s cubic-bezier(.2,.8,.2,1) both">
+     <sc-if value="{{ b.won }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;margin:0 12px;border-radius:26px;background:radial-gradient(120% 90% at 50% 0%,#3A3550 0%,#1C2230 65%);color:#FFFDF8;padding:18px;display:flex;align-items:center;gap:14px;overflow:hidden">
+       <span style="position:absolute;left:-30px;top:-40px;width:160px;height:160px;border-radius:50%;background:repeating-conic-gradient(oklch(0.82 0.12 80 / .16) 0 8deg,transparent 8deg 22deg);animation:vfRays 20s linear infinite"></span>
+       <span style="position:relative;width:70px;height:70px;flex:none;animation:vfPop .7s .3s cubic-bezier(.3,1.5,.5,1) both"><svg width="70" height="70" viewBox="0 0 70 70"><defs><linearGradient id="{{ b.id }}pz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE7A8"></stop><stop offset="1" stop-color="#B8903E"></stop></linearGradient></defs><path d="M35 4L64 20V50L35 66L6 50V20Z" fill="url(#{{ b.id }}pz)" stroke="#FFF3D0" stroke-width="1.5"></path><g transform="translate(23 23)" fill="none" stroke="#4A3612" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.obelisco }}" transform="scale(1)"></path></g></svg></span>
+       <span style="position:relative;flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.86 0.12 85)">Nuevo pedazo</span><span style="font:400 22px/1.05 'Instrument Serif',serif">Plaza Navona</span><span style="font:500 12px 'Geist';color:rgba(255,253,248,.72)">Los imprescindibles de Roma · 3 de 8</span></span>
+      </div>
+     </sc-if>
+     <div style="position:relative;overflow:hidden;border-radius:26px 26px 0 0;background:{{ b.cBg }};color:{{ b.cFg }};padding:12px 18px 32px;display:flex;flex-direction:column;gap:12px;box-shadow:0 -12px 34px -18px rgba(0,0,0,.5)">
+      <sc-if value="{{ b.rays }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-70px;top:-80px;width:240px;height:240px;border-radius:50%;background:repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg);-webkit-mask-image:radial-gradient(circle,#000 20%,transparent 68%);mask-image:radial-gradient(circle,#000 20%,transparent 68%);animation:vfRays 24s linear infinite;pointer-events:none"></span></sc-if>
+      <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:{{ b.grab }}"></span>
+      <span style="position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;background:{{ b.xBg }};color:{{ b.cFg }};display:flex;align-items:center;justify-content:center;z-index:2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+      <div style="position:relative;display:flex;align-items:flex-start;gap:14px;padding-right:34px">
+       <sc-if value="{{ b.rombo }}" hint-placeholder-val="{{ false }}"><span style="width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center"><span style="width:46px;height:46px;border-radius:12px;transform:rotate(45deg);background:linear-gradient(140deg,#F7E6BE,#D9B86A 55%,#B8903E);box-shadow:0 0 22px rgba(243,213,154,.55),inset 0 1px 0 rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(-45deg);font:400 26px/1 'Instrument Serif',serif;color:#3A2A10">?</span></span></span></sc-if>
+       <sc-if value="{{ b.sq }}" hint-placeholder-val="{{ true }}"><span style="width:52px;height:52px;flex:none;border-radius:14px;background:{{ b.iBg }};color:{{ b.iFg }};display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.icon }}"></path></svg></span></sc-if>
+       <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><sc-if value="{{ b.hasEye }}" hint-placeholder-val="{{ false }}"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:{{ b.eyeC }}">{{ b.eye }}</span></sc-if><span style="font:400 22px/1.1 'Instrument Serif',serif;text-wrap:balance">{{ b.t }}</span><sc-if value="{{ b.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font:400 13px/1.45 'Geist';color:{{ b.subC }};text-wrap:pretty">{{ b.sub }}</span></sc-if></span>
+      </div>
+      <sc-if value="{{ b.hasBtns }}" hint-placeholder-val="{{ false }}">
+       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <sc-for list="{{ b.btns }}" as="x" hint-placeholder-count="2"><span style="height:48px;border-radius:999px;background:{{ x.bg }};color:{{ x.fg }};border:{{ x.bd }};display:flex;align-items:center;justify-content:center;gap:7px;font:600 13.5px 'Geist'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ x.i }}"></path></svg>{{ x.n }}</span></sc-for>
+       </div>
+      </sc-if>
+      <span style="align-self:center;padding:2px 0;font:400 12px 'Geist';color:{{ b.linkC }};text-decoration:underline;text-underline-offset:3px">¿No estás aquí? Desmarcar visto</span>
+     </div>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.galOn }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.42);z-index:20"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:21;border-radius:28px 28px 0 0;background:#FFFDF8;padding:12px 18px 30px;display:flex;flex-direction:column;gap:10px">
+     <span style="align-self:center;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.18)"></span>
+     <span style="margin-top:4px;font:400 24px/1 'Instrument Serif',serif">Fontana de Trevi</span>
+     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#F5EFE4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.gal }}"></path></svg><span style="font:500 13px 'Geist'">Elige una foto del 10 al 14 de octubre</span></div>
+     <sc-for list="{{ b.errs }}" as="e" hint-placeholder-count="3">
+      <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;background:oklch(0.55 0.17 5 / .07);border:1px solid oklch(0.55 0.17 5 / .3)">
+       <div style="display:flex;align-items:center;gap:10px"><span style="width:44px;height:44px;flex:none;border-radius:10px;background:{{ e.ph }};opacity:.7"></span><span style="flex:1;font:500 13.5px/1.4 'Geist';text-wrap:pretty">{{ e.t }}</span></div>
+       <span style="align-self:flex-start;height:38px;padding:0 14px;border-radius:999px;border:1px solid rgba(28,34,48,.16);background:#FFFFFF;display:flex;align-items:center;font:600 12.5px 'Geist'">Elegir otra foto</span>
+      </div>
+     </sc-for>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.ayer }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(28,34,48,.42);z-index:20"></div>
+    <div style="position:absolute;left:12px;right:12px;bottom:24px;z-index:21;border-radius:28px;background:radial-gradient(120% 80% at 50% 0%,#3A3550 0%,#1C2230 65%);color:#FFFDF8;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;overflow:hidden;animation:vfSheet .5s cubic-bezier(.2,.8,.2,1) both">
+     <span style="font:400 30px/1.05 'Instrument Serif',serif">Lo de ayer también cuenta.</span>
+     <span style="font:400 14px/1.5 'Geist';color:rgba(255,253,248,.8)">Ayer tenías en tu ruta: Fontana de Trevi, Panteón, Piazza Navona…</span>
+     <div style="display:flex;gap:6px"><sc-for list="{{ ayer }}" as="a" hint-placeholder-count="4"><span style="flex:1;height:64px;border-radius:12px;background:{{ a }};opacity:.85"></span></sc-for></div>
+     <span style="font:400 14px/1.5 'Geist';color:rgba(255,253,248,.8)">Sube tus fotos y descubre lo que ganaste.</span>
+     <span style="height:52px;border-radius:999px;background:linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A);color:#2A1D10;display:flex;align-items:center;justify-content:center;gap:8px;font:700 15px 'Geist'"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.gal }}"></path></svg>Subir mis fotos</span>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.serie }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ next }}" style="position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#2E3550 0%,#141826 70%);color:#FFFDF8;cursor:pointer">
+     <div style="position:absolute;left:24px;right:24px;top:60px;display:flex;gap:4px"><sc-for list="{{ sDots }}" as="d" hint-placeholder-count="7"><span style="flex:1;height:3px;border-radius:3px;background:{{ d }}"></span></sc-for></div>
+     <span style="position:absolute;right:18px;top:74px;height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,253,248,.3);display:flex;align-items:center;font:600 12px 'Geist'" onClick="{{ skipAll }}">Saltar todo</span>
+     <sc-if value="{{ sIsS }}" hint-placeholder-val="{{ true }}">
+      <div data-k="{{ si }}" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 28px;text-align:center;animation:vfUp .5s ease both">
+       <span style="position:absolute;top:190px;left:50%;width:300px;height:300px;margin-left:-150px;border-radius:50%;background:repeating-conic-gradient({{ sc.ray }} 0 7deg,transparent 7deg 22deg);-webkit-mask-image:radial-gradient(circle,#000 25%,transparent 68%);mask-image:radial-gradient(circle,#000 25%,transparent 68%);animation:vfRays 24s linear infinite"></span>
+       <span style="position:relative;height:170px;display:flex;align-items:center;justify-content:center;animation:vfPop .8s .1s cubic-bezier(.3,1.4,.5,1) both">
+        <sc-if value="{{ sc.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="{{ sc.k }}" scale="1" delay="0" hint-size="150px,150px"></dc-import></sc-if>
+        <sc-if value="{{ sc.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="plata" icon="coliseo" size="150" label="ROMA" hint-size="150px,150px"></dc-import></sc-if>
+        <sc-if value="{{ sc.isL }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Logro Viajero" tier="2" grow="2" hue="40" size="150" num="3" icon="{{ ic.pin }}" delay="0" hint-size="150px,150px"></dc-import></sc-if>
+        <sc-if value="{{ sc.isP }}" hint-placeholder-val="{{ false }}"><svg width="140" height="140" viewBox="0 0 70 70"><defs><linearGradient id="vfsp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE7A8"></stop><stop offset="1" stop-color="#B8903E"></stop></linearGradient></defs><path d="M35 4L64 20V50L35 66L6 50V20Z" fill="url(#vfsp)" stroke="#FFF3D0" stroke-width="1.2"></path><g transform="translate(23 23)" fill="none" stroke="#4A3612" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ sc.pi }}"></path></g></svg></sc-if>
+       </span>
+       <span style="position:relative;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:oklch(0.86 0.12 85)">{{ sc.eye }}</span>
+       <span style="position:relative;font:400 34px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ sc.t }}</span>
+       <span style="position:relative;font:italic 400 17px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.78)">{{ sc.s }}</span>
+       <span style="position:absolute;bottom:40px;font:400 11.5px 'Geist';color:rgba(255,253,248,.45)">Toca para seguir · {{ sNum }}</span>
+      </div>
+     </sc-if>
+     <sc-if value="{{ sIsR }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:96px 0 0 0;background:#F5EFE4;color:#1C2230;border-radius:28px 28px 0 0;overflow:hidden;animation:vfSheet .5s cubic-bezier(.2,.8,.2,1) both"><div style="height:100%;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.55 0.17 5)">Tu día · lun 13 oct</span>
+      <span style="font:400 30px/1.05 'Instrument Serif',serif">Hoy has ganado 6 cosas</span>
+      <div style="display:flex;flex-direction:column;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:4px 12px">
+       <sc-for list="{{ resRows }}" as="r" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px;min-height:54px;border-bottom:1px solid {{ r.bd }}"><span style="width:38px;height:38px;flex:none;border-radius:12px;background:{{ r.bg }};color:#FFF6DC;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.d }}"></path></svg></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 16px/1.15 'Instrument Serif',serif">{{ r.n }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ r.s }}</span></span></div></sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:18px;background:oklch(0.55 0.17 5 / .08);border:1px solid oklch(0.55 0.17 5 / .28)"><span style="width:34px;height:34px;flex:none;border-radius:10px;background:linear-gradient(140deg,#2A3146,#141826);color:#F3D59A;display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif">?</span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:500 13.5px 'Geist'">Te quedan 2 sorpresas por reclamar</span><span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.55 0.17 5)">Tienes hasta el 13 de noviembre</span></span></div>
+      <span style="margin-top:auto;margin-bottom:14px;height:50px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:600 14.5px 'Geist'">Seguir</span>
+     </div></div></sc-if>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.res }}" hint-placeholder-val="{{ false }}"><div style="flex:1;min-height:0;overflow:hidden"><div style="height:100%;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.55 0.17 5)">Tu día · lun 13 oct</span>
+      <span style="font:400 30px/1.05 'Instrument Serif',serif">Hoy has ganado 6 cosas</span>
+      <div style="display:flex;flex-direction:column;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:4px 12px">
+       <sc-for list="{{ resRows }}" as="r" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px;min-height:54px;border-bottom:1px solid {{ r.bd }}"><span style="width:38px;height:38px;flex:none;border-radius:12px;background:{{ r.bg }};color:#FFF6DC;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.d }}"></path></svg></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 16px/1.15 'Instrument Serif',serif">{{ r.n }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ r.s }}</span></span></div></sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:18px;background:oklch(0.55 0.17 5 / .08);border:1px solid oklch(0.55 0.17 5 / .28)"><span style="width:34px;height:34px;flex:none;border-radius:10px;background:linear-gradient(140deg,#2A3146,#141826);color:#F3D59A;display:flex;align-items:center;justify-content:center;font:400 18px/1 'Instrument Serif',serif">?</span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:500 13.5px 'Geist'">Te quedan 2 sorpresas por reclamar</span><span style="font:600 10.5px 'Geist Mono',monospace;color:oklch(0.55 0.17 5)">Tienes hasta el 13 de noviembre</span></span></div>
+      <span style="margin-top:auto;margin-bottom:14px;height:50px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;font:600 14.5px 'Geist'">Seguir</span>
+     </div></div></sc-if>
+
+   <sc-if value="{{ b.viaje }}" hint-placeholder-val="{{ false }}">
+    <main style="flex:1;min-height:0;overflow:hidden;padding:4px 16px 0;display:flex;flex-direction:column;gap:12px">
+     <div style="position:relative;flex:none;border-radius:26px;background:#1C2230;color:#FFFDF8;padding:18px;display:flex;flex-direction:column;gap:6px;overflow:hidden">
+      <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,253,248,.6)">{{ b.vEye }}</span>
+      <span style="font:400 32px/1 'Instrument Serif',serif">Tu viaje a <em style="color:oklch(0.78 0.11 15)">Roma</em></span>
+      <span style="font:500 12px 'Geist Mono',monospace;color:rgba(255,253,248,.7)">10 – 14 oct 2026</span>
+     </div>
+     <span style="padding:4px 4px 0;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Lo que has conseguido</span>
+     <div style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <sc-for list="{{ got }}" as="g" hint-placeholder-count="4"><span style="aspect-ratio:1;border-radius:16px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px"><span style="width:36px;height:36px;border-radius:50%;background:{{ g.bg }};color:{{ g.fg }};display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.i }}"></path></svg></span><span style="font:500 10.5px/1.2 'Geist';text-align:center">{{ g.n }}</span></span></sc-for>
+     </div>
+     <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:22px;background:oklch(0.55 0.17 5 / .07);border:1px solid oklch(0.55 0.17 5 / .28)">
+      <span style="display:flex;align-items:baseline;gap:8px"><span style="flex:1;font:400 22px/1.1 'Instrument Serif',serif">Te quedan 2 sorpresas</span><span style="height:24px;padding:0 9px;border-radius:999px;background:oklch(0.55 0.17 5);color:#fff;font:600 11px/24px 'Geist'">{{ b.cd }}</span></span>
+      <sc-for list="{{ pend }}" as="p" hint-placeholder-count="2">
+       <div style="display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;border-radius:14px;background:#FFFDF8">
+        <span style="width:40px;height:40px;flex:none;border-radius:11px;background:linear-gradient(140deg,#2A3146,#141826);display:flex;align-items:center;justify-content:center;font:400 20px/1 'Instrument Serif',serif;color:#F3D59A">?</span>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:500 13.5px 'Geist'">{{ p.n }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.6)">Te espera una sorpresa: sube tu foto</span></span>
+        <span style="width:38px;height:38px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.cam }}"></path></svg></span>
+       </div>
+      </sc-for>
+      <span style="font:400 12px 'Geist';color:rgba(28,34,48,.62)">{{ b.vNote }}</span>
+     </div>
+    </main>
+   </sc-if>
+
+   <sc-if value="{{ b.lock }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#2A3150,#141826);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;padding-top:110px;gap:4px">
+     <span style="font:300 72px/1 'Geist'">9:41</span><span style="font:500 15px 'Geist';color:rgba(255,253,248,.75)">sábado, 8 de noviembre</span>
+     <div style="margin-top:40px;width:358px;border-radius:22px;background:rgba(255,253,248,.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:12px 14px;display:flex;gap:10px;animation:vfUp .6s .6s ease both">
+      <span style="width:38px;height:38px;flex:none;border-radius:10px;background:oklch(0.8 0.14 70);display:flex;align-items:center;justify-content:center;font:400 22px/1 'Instrument Serif',serif;color:#17120a">T</span>
+      <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="display:flex;justify-content:space-between;font:600 13px 'Geist'"><span>Trazo</span><span style="font-weight:400;opacity:.6">ahora</span></span><span style="font:400 13.5px/1.35 'Geist'">Te quedan 3 días para reclamar tus 2 sorpresas de Roma</span></span>
+     </div>
+     <span style="margin-top:14px;font:400 12px 'Geist';color:rgba(255,253,248,.5)">Si no hay permiso de avisos, llega por email</span>
+    </div>
+   </sc-if>
+  </div>
+  <sc-if value="{{ b.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font:400 12.5px/1.5 'Geist';color:rgba(28,34,48,.68);text-wrap:pretty">{{ b.note }}</span></sc-if>
+ </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;hoy&quot;,&quot;mom&quot;,&quot;perfil&quot;],&quot;default&quot;:&quot;hoy&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const IC={cam:'M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+gal:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5h.01',loc:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+far:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM9.5 7.5l5 5M14.5 7.5l-5 5',pin:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+obelisco:'M12 2l2 3v13h-4V5zM7 22h10M8 18h8v4H8z',fuente:'M4 20h16M6 20v-3h12v3M12 17V9M12 9c-2 0-4-1.5-4-4M12 9c2 0 4-1.5 4-4',
+gem:'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4l3 16M15 4l-3 16',star:'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z'};
+const INK='#1C2230',GR='oklch(0.55 0.11 150)',RS='oklch(0.55 0.17 5)';
+const PH=['linear-gradient(140deg,#E7B98A,#9C5E3A)','linear-gradient(140deg,#B8D4D8,#4E8A94)','linear-gradient(140deg,#D9C9A4,#8E7450)','linear-gradient(140deg,#E2C6A8,#A8734A)'];
+const SER=[
+ {isP:true,pi:IC.obelisco,eye:'Nuevo pedazo',t:'Plaza Navona',s:'Los imprescindibles de Roma · 3 de 8',ray:'oklch(0.86 0.09 85 / .2)'},
+ {isP:true,pi:IC.fuente,eye:'Nuevo pedazo',t:'Fontana de Trevi',s:'Las 4 joyas de Roma · 2 de 4',ray:'oklch(0.86 0.09 85 / .2)'},
+ {isE:true,k:'mon',eye:'¡Has descubierto un Emblema Oculto!',t:'Volverás a Roma',s:'Fontana de Trevi',ray:'oklch(0.86 0.09 85 / .24)'},
+ {isS:true,eye:'Tu sello de Roma',t:'Roma te atrapa',s:'Sube a plata · 4 de 8',ray:'rgba(220,225,232,.22)'},
+ {isL:true,eye:'Logro de viajero',t:'Ciudad tras ciudad',s:'3 destinos visitados',ray:'oklch(0.75 0.12 40 / .22)'},
+ {isE:true,k:'ocu',eye:'¡Has descubierto un Emblema Oculto!',t:'Bajo una cúpula de casi 2.000 años',s:'Panteón',ray:'oklch(0.86 0.09 85 / .24)'}];
+class Component extends DCLogic {
+  state={si:0};
+  componentDidMount(){if((this.props.mode||'hoy')==='mom')this.iv=setInterval(()=>this.setState(s=>({si:(s.si+1)%8})),2600);}
+  componentWillUnmount(){clearInterval(this.iv);}
+  renderVals(){const md=this.props.mode||'hoy';const s=this.state;
+    const B=(id,cap,o)=>({id,cap,bg:'#F5EFE4',fg:INK,clock:'12:10',hoy:false,toastOn:false,sheetOn:false,won:false,galOn:false,ayer:false,serie:false,res:false,viaje:false,lock:false,day:'lun 13',stops:[],hasEye:false,hasSub:false,hasBtns:false,btns:[],errs:[],note:'',hasNote:!!(o&&o.note),...o});
+    const stop=(n,st,o)=>({n,st,bd:'rgba(28,34,48,.07)',ph:PH[(n.length)%4],nc:INK,sc:'rgba(28,34,48,.6)',todo:false,hasP:false,p:'',pbg:'',pfg:INK,cb:INK,cf:'#FFFDF8',hasCd:false,cd:'',...o});
+    const list=[stop('Piazza Navona','10:00 · 25 min',{todo:true}),stop('Panteón','10:40 · 30 min',{todo:true}),stop('Fontana de Trevi','11:30 · 20 min',{todo:true}),stop('Plaza de España','12:10 · 20 min',{todo:true})];
+    const card=(o)=>({sheetOn:true,hoy:true,stops:list,...o});
+    const light={rombo:false,sq:true,rays:false,grab:'rgba(28,34,48,.18)',xBg:'#F1EADC',cBg:'#FFFDF8',cFg:INK,subC:'rgba(28,34,48,.68)',linkC:'rgba(28,34,48,.5)',iBg:'#F1EADC',iFg:INK,eyeC:'rgba(28,34,48,.55)'};
+    const dark={rombo:true,sq:false,rays:true,grab:'rgba(255,253,248,.25)',xBg:'rgba(255,253,248,.12)',cBg:'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)',cFg:'#FFFDF8',subC:'rgba(255,253,248,.82)',linkC:'rgba(255,253,248,.55)',iBg:'linear-gradient(140deg,#2A3146,#141826)',iFg:'#F3D59A',eyeC:'oklch(0.86 0.12 85)'};
+    const bCam={n:'Hacer foto',i:IC.cam,bg:INK,fg:'#FFFDF8',bd:'none'},bGal={n:'De la galería',i:IC.gal,bg:'#FFFFFF',fg:INK,bd:'1px solid rgba(28,34,48,.16)'};
+    const bCamG={...bCam,bg:'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)',fg:'#2A1D10'},bGalD={...bGal,bg:'transparent',fg:'#FFFDF8',bd:'1px solid rgba(255,253,248,.3)'};
+    const pend=(p,cd,o)=>({hasP:true,p,pbg:'oklch(0.55 0.17 5 / .07)',pfg:INK,hasCd:!!cd,cd:cd||'',...o});
+    let boards=[];
+    if(md==='hoy')boards=[
+      B('V1','Al tocar Visto · 5 segundos para deshacer',{hoy:true,toastOn:true,stops:[list[0],list[1],stop('Fontana de Trevi','✓ Visto',{sc:'oklch(0.42 0.09 150)',bd:'oklch(0.55 0.11 150 / .3)'}),list[3]]}),
+      B('V2','Pedazo ganado con la ubicación',card({...light,won:true,t:'Guarda un recuerdo de Plaza Navona',hasSub:true,sub:'La foto es para tu álbum: el pedazo ya es tuyo.',icon:IC.cam,hasBtns:true,btns:[bCam,bGal]})),
+      B('V3','Sin ubicación',card({...light,t:'Activa tu ubicación o haz una foto para ganar tu pedazo',hasSub:true,sub:'Con la foto de hoy en Plaza Navona, el pedazo es tuyo.',icon:IC.loc,iBg:'oklch(0.8 0.14 70 / .2)',hasBtns:true,btns:[{n:'Activar ubicación',i:IC.loc,bg:INK,fg:'#FFFDF8',bd:'none'},{...bGal,n:'Hacer foto',i:IC.cam}]})),
+      B('V4','Lejos del sitio',card({...light,t:'Parece que no estás en Plaza Navona. Tu pedazo te espera allí.',hasSub:true,sub:'La parada queda como vista.',icon:IC.far,iBg:'oklch(0.55 0.17 5 / .1)',iFg:RS})),
+      B('V5','Basílica de San Pedro · Emblema Oculto',card({...dark,hasEye:true,eye:'Emblema Oculto',t:'¡Aquí se esconde un Emblema Oculto!',hasSub:true,sub:'Sube una foto en la Basílica de San Pedro y descúbrelo.',icon:IC.gem,hasBtns:true,btns:[{...bCamG,n:'Hacer la foto'},{...bGalD,n:'Elegir de la galería'}],day:'jue 16'})),
+      B('V6','La parada con lo que le falta',{hoy:true,note:'También en DÍAS. Durante el viaje no hay cuenta atrás: los 30 días empiezan al acabar el viaje.',stops:[
+        stop('Basílica de San Pedro','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Te espera una sorpresa: sube tu foto','',{pbg:'linear-gradient(120deg,#2A3146,#1C2230)',pfg:'#FFFDF8',cb:'linear-gradient(110deg,#E4C58A,#F7E6BE)',cf:'#2A1D10'})}),
+        stop('Plaza Navona','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Haz una foto y gana tu pedazo','')}),
+        stop('Panteón','✓ Visto',{sc:'oklch(0.42 0.09 150)',...pend('Guarda un recuerdo','',{pbg:'#F5EFE4',cb:'#FFFFFF',cf:INK})}),list[3]]}),
+      B('V7','Fotos que no valen',{hoy:true,stops:list,galOn:true,errs:[['Esta foto es del 2 de septiembre. Elige una del 10 al 14 de octubre.',PH[0]],['Esta foto no está hecha con una cámara.','repeating-linear-gradient(0deg,#DDE3EA 0 6px,#C9D2DC 6px 12px)'],['Esta foto no es de la Fontana de Trevi.',PH[2]]].map(([t,ph])=>({t,ph}))}),
+      B('V8','Lo de ayer también cuenta',{hoy:true,stops:list,ayer:true,day:'mar 14',note:'Sale al empezar el día de prueba o al comprar el pase, si ya había paradas en la ruta.'})];
+    if(md==='mom')boards=[B('M1','6 sorpresas seguidas, una a una',{serie:true,bg:'#141826',fg:'#FFFDF8',note:'Tocando se pasa a la siguiente; con [Saltar todo], directo al resumen. Aquí avanza solo para verlo.'}),
+      B('M2','El resumen del día',{res:true,note:'El mismo resumen que sale al acabar la ruta de cada día.'}),
+      B('M3','El resumen del viaje · lo pendiente',{viaje:true,vEye:'Viaje terminado',cd:'30 días',vNote:'Te quedan 30 días para reclamarlas.'})];
+    if(md==='perfil')boards=[B('P5','Mis viajes · Roma, con 2 sorpresas pendientes',{viaje:true,vEye:'Mis viajes',cd:'10 días',vNote:'Te quedan 10 días para reclamar tu premio.'}),B('P6','El aviso, 3 días antes',{lock:true,bg:'#141826',fg:'#FFFDF8'})];
+    const N=SER.length;const si=s.si;const isR=si>=N;const sc=SER[Math.min(si,N-1)];
+    return{ic:IC,boards,ayer:PH,got:[['Plaza Navona',IC.obelisco,'#F3E3B8','#5A4426'],['Fontana de Trevi',IC.fuente,'#F3E3B8','#5A4426'],['Volverás a Roma',IC.gem,'#1C2230','#F3D59A'],['Sello en plata',IC.star,'#E5E8EC','#3A4048']].map(([n,i,bg,fg])=>({n,i,bg,fg})),
+      pend:[{n:'Basílica de San Pedro'},{n:'Castillo de Sant’Angelo'}],
+      sDots:Array.from({length:N+1},(_,i)=>i<=si?'#F3D59A':'rgba(255,253,248,.2)'),si:String(si),sIsS:!isR,sIsR:isR,sc,sNum:(si+1)+' de '+N,
+      next:()=>this.setState(st=>({si:Math.min(N,st.si+1)})),skipAll:e=>{e.stopPropagation();this.setState({si:N});},
+      resRows:[['Plaza Navona','Los imprescindibles · 3 de 8',IC.obelisco,'#B8964F'],['Fontana de Trevi','Las 4 joyas · 2 de 4',IC.fuente,'#B8964F'],['Volverás a Roma','Emblema Oculto',IC.gem,'#2A3146'],['Roma te atrapa','Tu sello sube a plata',IC.star,'#8F969E'],['Ciudad tras ciudad','Logro de viajero',IC.pin,'oklch(0.58 0.14 38)'],['Bajo una cúpula de casi 2.000 años','Emblema Oculto',IC.gem,'#2A3146']].map(([n,s,d,bg],i,a)=>({n,s,d,bg,bd:i<a.length-1?'rgba(28,34,48,.07)':'transparent'}))};}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}a{color:#1C2230;text-decoration:none}a:hover{color:oklch(0.55 0.17 5)}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;font-family:'Geist',system-ui,sans-serif;color:#1C2230;padding:56px 24px 90px;display:flex;justify-content:center">
+  <div style="width:100%;max-width:760px;display:flex;flex-direction:column;gap:10px">
+    <a href="Indice.dc.html" style="font:600 12px 'Geist';color:rgba(28,34,48,.6)">← Índice</a>
+    <span style="font:400 46px/1 'Instrument Serif',serif">Archivo</span>
+    <span style="font:400 13.5px/1.5 'Geist';color:rgba(28,34,48,.65)">Versiones viejas de la app. No las usa ninguna página. Se borrarán cuando las revises.</span>
+    <sc-for list="{{ items }}" as="i" hint-placeholder-count="9">
+      <a href="{{ i.h }}" style="padding:14px 18px;border-radius:16px;background:#FFFDF8;display:flex;flex-direction:column;gap:3px"><span style="font:500 15px 'Geist'">{{ i.n }}</span><span style="font:400 12.5px/1.45 'Geist';color:rgba(28,34,48,.6)">{{ i.t }}</span></a>
+    </sc-for>
+  <span style="padding-top:22px;font:400 28px/1 'Instrument Serif',serif">Pantallas archivadas del Pase</span><span style="font:400 13px/1.5 'Geist';color:rgba(28,34,48,.62)">P2, P4, P5, R3 y N1: ya no se usan. P4 lo sustituye la pantalla 12 de App · HOY.</span></div>
+<div style="margin:0 -24px"><dc-import name="Piezas/Pase Cuenta" mode="archivo" hint-size="100%,960px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){return{items:[
+    ['Trazo App','Trazo App.dc.html','La primera versión del formulario para crear el viaje. La buena es Trazo App Piscina.'],
+    ['Trazo App Azul','Trazo App Azul.dc.html','Una prueba del formulario en azul. Sustituida por la Piscina.'],
+    ['Trazo App Dia','Trazo App Dia.dc.html','El formulario en modo día. Sustituido por la Piscina.'],
+    ['Trazo Explorar','Trazo Explorar.dc.html','La primera versión de Explorar. La buena es la v2, con el corazón en la esquina.'],
+    ['Reservas v2','Reservas v2.dc.html','Una versión anterior de Reservas. Las buenas son la v4 y Multidestino.'],
+    ['Trazo Reservas','Trazo Reservas.dc.html','La primera versión de Reservas.'],
+    ['Trazo Reservas (archivo para descargar)','Trazo Reservas.html','Una exportación de esa primera versión de Reservas.'],
+    ['Canvas','Canvas.dc.html','Una página vacía.'],
+    ['Perfil antiguo (Hola viajero)','Perfil antiguo (Hola viajero).dc.html','El Perfil de antes, con el globo arriba y «Nuevo viaje». El bueno es el de Elena, en Logros · Pantallas.'],
+    ['Logros Boton con 5a','Logros Boton con 5a.dc.html','La «colección por dentro» del botón flotante (5a). Sustituida por el álbum de cromos (A) de Logros Pantallas.'],
+    ['Iconos y HOY','Iconos y HOY.dc.html','Su parte de HOY es la primera versión, sustituida por HOY v2. Sus iconos se quedan en las piezas.']
+  ].map(([n,h,t])=>({n,h:'Archivo/'+h,t}))};}
+}
+</script>
+</body>
+</html>

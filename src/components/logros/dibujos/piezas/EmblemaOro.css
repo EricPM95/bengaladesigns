@@ -1,0 +1,5 @@
+@keyframes eoRays{to{transform:rotate(360deg)}}
+@keyframes eoSpin{0%,12%{transform:rotateY(0)}45%,62%{transform:rotateY(180deg)}95%,100%{transform:rotateY(360deg)}}
+@keyframes eoSheen{0%{transform:translateX(-160%) skewX(-18deg)}38%,100%{transform:translateX(320%) skewX(-18deg)}}
+@keyframes eoStar{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+@media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

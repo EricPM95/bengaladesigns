@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E7DCC6;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+a{color:#1C2230}a:hover{color:oklch(0.55 0.17 5)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes eq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 60% at 50% 20%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 24px 80px;font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex;justify-content:center">
+  <div data-screen-label="Ficha del lugar" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:#DDE7DF;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+    <div style="position:absolute;left:0;right:0;top:0;height:380px;background:#F2EFE7;overflow:hidden">
+      <svg width="390" height="380" viewBox="0 0 390 380" style="position:absolute;inset:0">
+        <path d="M232 30 C282 14 340 44 330 96 C312 130 262 122 244 92Z" fill="#DCE8CF"></path>
+        <path d="M60 210 C88 196 112 226 104 268 C94 296 66 290 58 262Z" fill="#DCE8CF"></path>
+        <path d="M74 182 L100 176 L118 192 L110 216 L84 220 L70 202Z" fill="none" stroke="rgba(28,34,48,.35)" stroke-width="1.4"></path>
+        <g stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"><path d="M-10 90 L400 150"></path><path d="M-10 280 L400 210"></path><path d="M120 -10 L170 390"></path><path d="M280 -10 L320 390"></path></g>
+        <g stroke="#E6E0D3" stroke-width="1.5" fill="none"><path d="M-10 170 L400 120"></path><path d="M-10 330 L400 270"></path><path d="M210 -10 L240 390"></path><path d="M60 -10 L30 390"></path></g>
+        <path d="M150 -10 C172 70 120 130 152 196 S216 270 182 330 S150 380 160 400" fill="none" stroke="#B9D7E5" stroke-width="10" stroke-linecap="round"></path>
+        <g font-family="Geist Mono" font-size="9" letter-spacing="1.3" fill="rgba(28,34,48,.35)"><text x="58" y="120">PRATI</text><text x="56" y="238">VATICANO</text><text x="290" y="70">PARIOLI</text><text x="292" y="180">TRIESTE</text><text x="200" y="306">CIRCO MÁXIMO</text></g>
+      </svg>
+      <sc-for list="{{ pins }}" as="p" hint-placeholder-count="10">
+        <span style="position:absolute;left:{{ p.x }};top:{{ p.y }};width:{{ p.s }};height:{{ p.s }};margin:{{ p.m }};border-radius:50%;background:{{ p.bg }};color:{{ p.fg }};box-shadow:0 0 0 2.5px #FFFDF8,0 4px 10px -4px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center;font:600 {{ p.fs }} 'Geist';z-index:{{ p.z }}">{{ p.n }}</span>
+      </sc-for>
+      <span style="position:absolute;left:208px;top:150px;transform:translate(-50%,-100%);height:28px;padding:0 10px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;font:500 12px 'Geist';white-space:nowrap;margin-top:-20px;z-index:3">Fontana de Trevi</span>
+      <button onClick="{{ back }}" aria-label="Atrás" style="position:absolute;left:18px;top:58px;width:44px;height:44px;border-radius:50%;border:none;background:#FFFDF8;color:#1C2230;box-shadow:0 8px 18px -10px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></button>
+      <span style="position:absolute;right:18px;top:64px;height:32px;padding:0 13px;border-radius:999px;background:#FFFDF8;box-shadow:0 8px 18px -10px rgba(28,34,48,.5);display:flex;align-items:center;font:600 12.5px 'Geist';z-index:4">Sáb, 31 oct</span>
+    </div>
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:30"></div>
+    <div style="position:absolute;left:0;right:0;top:0;height:52px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>9:41</span><span style="width:24px;height:12px;border:1px solid rgba(28,34,48,.45);border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:#1C2230;border-radius:2px"></span></span></div>
+
+    <div style="position:absolute;left:0;right:0;top:330px;bottom:0;border-radius:28px 28px 0 0;background:#F5EFE4;box-shadow:0 -12px 30px -14px rgba(28,34,48,.4);display:flex;flex-direction:column;overflow:hidden">
+      <span style="position:absolute;top:8px;left:50%;margin-left:-21px;width:42px;height:4px;border-radius:4px;background:rgba(28,34,48,.2);z-index:5"></span>
+      <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:22px 16px 110px;display:flex;flex-direction:column;gap:16px">
+
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:0 2px">
+          <div style="position:relative;width:84px;height:84px;flex:none">
+            <span style="position:absolute;inset:0;border-radius:20px;overflow:hidden;clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 22px) 100%,0 100%);background:repeating-linear-gradient(135deg,#E9DFCB 0 8px,#E3D8C2 8px 16px);display:flex;align-items:center;justify-content:center;font:600 8.5px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.45)">FOTO</span>
+            <button onClick="{{ addPhoto }}" aria-label="Añadir foto" style="position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;border:none;background:#FFFDF8;color:#1C2230;box-shadow:0 0 0 1px rgba(28,34,48,.1),0 6px 12px -6px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg></button>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;padding-top:2px">
+            <h1 style="margin:0;font:400 27px/1.04 'Instrument Serif',serif;letter-spacing:-.01em;text-wrap:balance">Fontana de Trevi, sin gente</h1>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px">
+              <span style="height:26px;padding:0 9px 0 7px;border-radius:999px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:5px;font:600 11.5px 'Geist'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>45 min</span>
+              <span style="height:26px;padding:0 9px 0 7px;border-radius:999px;background:oklch(0.96 0.035 150);border:1px solid oklch(0.55 0.11 150 / .3);color:oklch(0.36 0.09 150);display:flex;align-items:center;gap:5px;font:600 11.5px 'Geist'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Acceso libre</span>
+            </div>
+            <button onClick="{{ like }}" aria-pressed="{{ likedA }}" aria-label="Recomendar" style="align-self:flex-start;height:28px;margin-top:-2px;padding:0 10px 0 7px;border-radius:999px;border:1px solid {{ likeBd }};background:{{ likeBg }};display:flex;align-items:center;gap:6px;cursor:pointer;transition:background .3s,border-color .3s">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="{{ heartFill }}" stroke="oklch(0.55 0.17 5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ heartTf }};transition:transform .35s cubic-bezier(.3,1.6,.5,1)"><path d="M12 20s-7.5-4.5-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.5 12 20 12 20z"></path></svg>
+              <span style="font:500 11.5px 'Geist';color:#1C2230;white-space:nowrap"><strong style="font-weight:700">{{ likeN }}</strong> viajeros lo recomiendan</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="position:sticky;top:-20px;z-index:4;margin:0 -16px;padding:8px 16px;background:#F5EFE4">
+          <div style="position:relative;display:grid;grid-template-columns:repeat(4,1fr);height:44px;padding:4px;border-radius:999px;background:#EDE4D3">
+            <span style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 4);border-radius:999px;background:#1C2230;transform:{{ knob }};transition:transform .4s cubic-bezier(.2,.8,.2,1)"></span>
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <button onClick="{{ t.pick }}" aria-pressed="{{ t.on }}" style="position:relative;border:none;background:transparent;font:600 13.5px 'Geist';color:{{ t.c }};cursor:pointer;transition:color .3s">{{ t.n }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ isLog }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
+            <span style="padding:0 4px;font:400 13px/1.45 'Geist';color:rgba(28,34,48,.65)">La Fontana de Trevi suma en 3 colecciones</span>
+            <sc-for list="{{ fcols }}" as="c" hint-placeholder-count="3">
+              <div style="border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:12px;display:flex;flex-direction:column;gap:10px">
+                <div onClick="{{ c.tog }}" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+                  <span style="width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center"><dc-import name="Piezas/Insignia Pieza" kind="{{ c.kind }}" have="{{ c.have }}" neu="-1" dark="false" delay="0" scale="0.42" n="{{ c.n2 }}" pal="{{ c.pal }}" icons="{{ c.ics }}" center="{{ c.cen }}" hint-size="63px,63px"></dc-import></span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 18px/1.1 'Instrument Serif',serif">{{ c.n }}</span><span style="font:600 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.6)">{{ c.cnt }}</span></span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:{{ c.rot }};transition:transform .25s"><path d="M6 9l6 6 6-6"></path></svg>
+                </div>
+                <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid rgba(28,34,48,.07)"><span style="font:500 12px 'Geist';color:oklch(0.48 0.17 5)">{{ c.miss }}</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ c.sites }}" as="x" hint-placeholder-count="4"><span style="height:28px;padding:0 10px 0 6px;border-radius:999px;background:{{ x.bg }};border:{{ x.bd }};color:{{ x.fg }};display:flex;align-items:center;gap:5px;font:500 11.5px 'Geist'"><span style="width:16px;height:16px;border-radius:50%;background:{{ x.db }};color:#fff;display:flex;align-items:center;justify-content:center;font:700 9px 'Geist'">{{ x.mk }}</span>{{ x.n }}</span></sc-for></div></div></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isRes }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:18px;animation:pop .35s ease both">
+            <p style="margin:0;padding:0 4px;font:400 22px/1.3 'Instrument Serif',serif;text-wrap:pretty">A primera hora, con menos gente, la fuente es otra: oyes el agua y haces la foto que luego nadie consigue. Además bajas junto al agua sin pagar, porque la tasa de 2 € empieza a las 9:00. Tira la moneda de espaldas: dicen que así vuelves.</p>
+            <p style="margin:0;padding:0 4px;font:400 14px/1.6 'Geist';color:rgba(28,34,48,.7);text-wrap:pretty">La fuente más famosa del mundo. 26 metros de altura, 50 de ancho — un escenario barroco tallado en la fachada de un palacio donde Neptuno domina las aguas desde su carro tirado por tritones y caballos marinos. Cada día se recogen unos 3.000€ en monedas del fondo, que se donan a Cáritas para proyectos sociales en Roma. La tradición: tira una moneda con la mano derecha por encima del hombro izquierdo y volverás a Roma.</p>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="padding:0 4px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Qué vas a ver</span>
+              <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:4px 14px">
+                <sc-for list="{{ see }}" as="s" hint-placeholder-count="3">
+                  <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid {{ s.bd }}">
+                    <span style="width:24px;height:24px;flex:none;border-radius:50%;border:1.5px solid rgba(28,34,48,.25);display:flex;align-items:center;justify-content:center;font:400 14px/1 'Instrument Serif',serif">{{ s.n }}</span>
+                    <span style="flex:1;font:400 14px/1.5 'Geist';text-wrap:pretty">{{ s.t }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:20px;background:oklch(0.95 0.03 80);border:1px solid oklch(0.8 0.1 75 / .35)">
+              <span style="width:36px;height:36px;flex:none;border-radius:12px;background:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 7.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 18.5h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8"></path></svg></span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font:400 19px/1.1 'Instrument Serif',serif">Por el camino</span><span style="font:400 13.5px/1.5 'Geist';color:rgba(28,34,48,.75);text-wrap:pretty">De camino, en Via del Corso, cerca de Trevi, hay una tienda de chocolate y helado artesanos si te apetece un capricho.</span></span>
+            </div>
+
+            <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 14px 10px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>
+                <span style="flex:1;font:400 21px/1 'Instrument Serif',serif">Horario</span>
+              </div>
+              <div style="margin:0 14px;padding:10px 12px;border-radius:14px;background:oklch(0.96 0.035 150);display:flex;align-items:center;gap:8px;font:500 13px/1.35 'Geist';color:oklch(0.34 0.09 150)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Gratis y sin gente: antes de las 9:00 no se paga</div>
+              <div style="padding:6px 14px 0">
+                <sc-for list="{{ hours }}" as="h" hint-placeholder-count="2">
+                  <div style="display:grid;grid-template-columns:110px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid rgba(28,34,48,.07)">
+                    <span style="font:500 12.5px/1.35 'Geist';color:rgba(28,34,48,.62)">{{ h.d }}</span>
+                    <span style="display:flex;flex-direction:column;gap:1px"><span style="font:500 15px 'Geist Mono',monospace">{{ h.h }}</span><span style="font:400 11.5px 'Geist';color:rgba(28,34,48,.55)">{{ h.l }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <p style="margin:0;padding:12px 14px 4px;font:400 13px/1.55 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">No es una entrada: la fuente se ve gratis desde la plaza a cualquier hora. Para bajar a la zona junto al agua hay una tasa de 2 € de 9:00 a 22:00 (algunos días laborables, desde las 11:30). Antes y después, libre. Los residentes en Roma y los niños pequeños no pagan. Compruébalo en la web del Ayuntamiento.</p>
+              <p style="margin:0;padding:4px 14px 14px;font:400 11px/1.45 'Geist';color:rgba(28,34,48,.5)">Los horarios pueden cambiar según temporada. Consulta la web oficial antes de tu visita.</p>
+            </div>
+
+            <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 14px 6px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.8 8.2l-2.3 5.3-5.3 2.3 2.3-5.3z"></path></svg>
+                <span style="flex:1;font:400 21px/1 'Instrument Serif',serif">Cómo llegar</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 14px">
+                <span style="width:32px;height:32px;flex:none;border-radius:10px;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path></svg></span>
+                <span style="flex:1;font:400 14px 'Geist'">Piazza di Trevi, 00187 Roma</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-top:1px solid rgba(28,34,48,.07)">
+                <span style="width:32px;height:32px;flex:none;border-radius:10px;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.1V7a4 4 0 0 0 8 0V3.1M9 15l-1-1M15 15l1-1M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5zM8 19l-2 3M16 19l2 3"></path></svg></span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;border-radius:6px;background:oklch(0.55 0.14 40);color:#fff;display:flex;align-items:center;justify-content:center;font:700 12px 'Geist'">A</span><span style="font:500 14px 'Geist'">Barberini</span></span><span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.6)">A 5 min caminando por Via del Tritone</span></span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px 12px;border-top:1px solid rgba(28,34,48,.07)">
+                <span style="width:32px;height:32px;flex:none;border-radius:10px;background:#F5EFE4;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6v6M15 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2s-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3M9 18h5M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM16 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path></svg></span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:6px">
+                  <span style="display:flex;flex-wrap:wrap;gap:4px"><sc-for list="{{ buses }}" as="n" hint-placeholder-count="7"><span style="height:22px;padding:0 7px;border-radius:6px;border:1px solid rgba(28,34,48,.18);font:600 11.5px/20px 'Geist Mono',monospace">{{ n }}</span></sc-for></span>
+                  <span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.6)">Via del Tritone / Via della Stamperia</span>
+                </span>
+              </div>
+              <button onClick="{{ howTo }}" style="width:calc(100% - 28px);margin:4px 14px 14px;height:46px;border-radius:999px;border:none;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center;gap:8px;font:600 14px 'Geist';cursor:pointer">Cómo llegar<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isEnt }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;animation:pop .35s ease both">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:20px;background:oklch(0.96 0.035 150);border:1px solid oklch(0.55 0.11 150 / .3)">
+              <span style="width:36px;height:36px;flex:none;border-radius:50%;background:oklch(0.55 0.11 150);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 20px/1.1 'Instrument Serif',serif;color:oklch(0.3 0.08 150)">No necesitas entrada</span><span style="font:400 13px/1.45 'Geist';color:oklch(0.36 0.07 150)">La fuente se ve gratis desde la plaza a cualquier hora.</span></span>
+            </div>
+            <div style="border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:14px;display:flex;flex-direction:column;gap:8px">
+              <span style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font:400 19px/1.1 'Instrument Serif',serif">Bajar junto al agua</span><span style="font:400 26px/1 'Instrument Serif',serif">2 €</span></span>
+              <span style="font:400 13px/1.5 'Geist';color:rgba(28,34,48,.72)">De 9:00 a 22:00 (algunos días laborables, desde las 11:30). Antes y después, libre. Los residentes en Roma y los niños pequeños no pagan.</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isTips }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;animation:pop .35s ease both">
+            <sc-for list="{{ tips }}" as="t" hint-placeholder-count="3">
+              <div style="display:flex;gap:12px;padding:14px;border-radius:20px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07)">
+                <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2v2h5v-2c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"></path></svg></span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 18px/1.15 'Instrument Serif',serif">{{ t.h }}</span><span style="font:400 13px/1.5 'Geist';color:rgba(28,34,48,.7)">{{ t.t }}</span></span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="position:absolute;left:12px;right:12px;bottom:22px;z-index:6;height:62px;border-radius:22px;background:#1C2230;color:#FFFDF8;display:flex;align-items:center;gap:12px;padding:0 10px 0 8px;box-shadow:0 16px 30px -14px rgba(28,34,48,.7)">
+        <button onClick="{{ play }}" aria-label="{{ playLbl }}" style="width:46px;height:46px;flex:none;border-radius:50%;border:none;background:oklch(0.8 0.14 70);color:#17120a;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="{{ playIcon }}"></path></svg></button>
+        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+          <span style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font:400 17px/1 'Instrument Serif',serif">Escuchar la historia</span><span style="font:500 11px 'Geist Mono',monospace;color:rgba(255,253,248,.6)">{{ time }}</span></span>
+          <span style="height:3px;border-radius:3px;background:rgba(255,253,248,.18);overflow:hidden"><span style="display:block;height:100%;width:{{ prog }};background:oklch(0.8 0.14 70);transition:width .9s linear"></span></span>
+        </span>
+      </div>
+
+      <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;bottom:100px;height:40px;padding:0 16px;border-radius:999px;background:#1C2230;color:#F3EEE4;display:flex;align-items:center;font:500 13px 'Geist';white-space:nowrap;animation:toast 2.2s ease both;z-index:40">{{ toastTxt }}</div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DUR=130;
+class Component extends DCLogic {
+  state={tab:0,playing:false,t:0,toast:null,liked:false};
+  componentWillUnmount(){clearInterval(this.iv);clearTimeout(this.tt);}
+  toast(txt){this.setState({toast:txt});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),2200);}
+  togglePlay(){if(this.state.playing){clearInterval(this.iv);this.setState({playing:false});return;}
+    this.setState(s=>({playing:true,t:s.t>=DUR?0:s.t}));
+    this.iv=setInterval(()=>this.setState(s=>{if(s.t+1>=DUR){clearInterval(this.iv);return{t:DUR,playing:false};}return{t:s.t+1};}),1000);}
+  renderVals(){const s=this.state;const fmt=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0');
+    const see=['La figura central de Neptuno (Océano) dominando las aguas desde su carro','Los dos tritones con los caballos marinos — uno calmado, otro agitado, simbolizando los estados del mar','Las alegorías de la Abundancia y la Salubridad en los nichos laterales'];
+    const P=[[196,138,'8'],[226,140,'7'],[174,154,'12'],[192,166,'17'],[218,170,'6'],[202,182,'16'],[170,182,'13'],[218,196,'4'],[196,214,'3'],[202,246,'19'],[230,262,'18']];
+    return{
+      pins:P.map(([x,y,n])=>{const sel=n==='3';return{x:x+'px',y:y+'px',n,s:sel?'30px':'24px',m:sel?'-15px 0 0 -15px':'-12px 0 0 -12px',bg:sel?'oklch(0.55 0.17 5)':'#FFFFFF',fg:sel?'#fff':'#1C2230',fs:sel?'13px':'11px',z:sel?'2':'1'};}),
+      back:()=>this.toast('Volver a la ruta'),
+      like:()=>this.setState(st=>({liked:!st.liked})),likedA:s.liked?'true':'false',
+      likeN:(1284+(s.liked?1:0)).toLocaleString('es-ES'),likeSub:s.liked?'Tú también lo recomiendas':'Toca el corazón si te gustó',likeSubC:s.liked?'oklch(0.5 0.17 5)':'rgba(28,34,48,.55)',
+      likeBd:s.liked?'oklch(0.55 0.17 5 / .4)':'rgba(28,34,48,.14)',likeBg:s.liked?'oklch(0.55 0.17 5 / .08)':'transparent',
+      heartBg:s.liked?'oklch(0.55 0.17 5)':'oklch(0.55 0.17 5 / .1)',heartFg:s.liked?'#FFFFFF':'oklch(0.55 0.17 5)',heartFill:s.liked?'oklch(0.55 0.17 5)':'none',heartTf:s.liked?'scale(1.15)':'scale(1)',
+      tabs:['Resumen','Entradas','Tips','Logros'].map((n,i)=>({n,on:s.tab===i?'true':'false',c:s.tab===i?'#FFFDF8':'rgba(28,34,48,.65)',pick:()=>this.setState({tab:i})})),
+      knob:`translateX(${s.tab*100}%)`,isRes:s.tab===0,isEnt:s.tab===1,isTips:s.tab===2,isLog:s.tab===3,
+      fcols:(()=>{const GR='oklch(0.55 0.11 150)';const site=(n,on,me)=>({n,mk:on?'✓':'',db:on?GR:'rgba(28,34,48,.18)',bg:me?'oklch(0.8 0.14 70 / .16)':on?'oklch(0.96 0.035 150)':'#FFFFFF',bd:me?'1.5px solid oklch(0.8 0.14 70)':'1px solid rgba(28,34,48,.1)',fg:on?'oklch(0.36 0.09 150)':'#1C2230'});
+        return[{n:'Los imprescindibles de Roma',kind:'impr',have:'3',n2:'8',pal:'',ics:'',cen:'',cnt:'3 de 8',sites:[site('Coliseo',1),site('Foro Romano',1),site('Fontana de Trevi',0,1),site('Panteón',1),site('Piazza Navona',0),site('Plaza de España',0),site('Castillo de Sant’Angelo',0),site('Trastevere',0)]},
+          {n:'Las 4 joyas de Roma',kind:'joyas',have:'2',n2:'4',pal:'',ics:'',cen:'',cnt:'2 de 4',sites:[site('Coliseo',1),site('Fontana de Trevi',0,1),site('Panteón',1),site('Museos Vaticanos',0)]},
+          {n:'Plazas y fuentes de Roma',kind:'gen',have:'1',n2:'7',pal:'turq',ics:'obelisco,fuente,escalinata,templo,fuente,fuente,fuente',cen:'barca',cnt:'1 de 7',sites:[site('Piazza Navona',1),site('Piazza del Popolo',0),site('Plaza de España',0),site('Plaza Venecia',0),site('Fontana de Trevi',0,1),site('Acqua Paola',0),site('Fuente del Tritón',0)]}].map((c,i)=>{const o=(s.lo||{0:true})[i];const left=+c.n2-+c.have;return{...c,open:!!o,rot:o?'rotate(180deg)':'none',miss:left===1?'Te falta 1 sitio':'Te faltan '+left+' sitios',tog:()=>this.setState(st=>{const lo={...(st.lo||{0:true})};lo[i]=!lo[i];return{lo};})};});})(),
+      see:see.map((t,i)=>({t,n:String(i+1),bd:i<see.length-1?'rgba(28,34,48,.07)':'transparent'})),
+      hours:[{d:'Todo el año · lunes',h:'11:30 – 22:00',l:'Última entrada 21:00'},{d:'Todo el año · mar – dom',h:'09:00 – 22:00',l:'Última entrada 21:00'}],
+      buses:['52','53','62','63','71','85','492'],
+      tips:[{h:'Ve antes de las 9:00',t:'Con menos gente oyes el agua, haces la foto que luego nadie consigue y bajas junto al agua sin pagar.'},
+        {h:'Tira la moneda de espaldas',t:'Con la mano derecha por encima del hombro izquierdo: dicen que así vuelves a Roma.'},
+        {h:'Tus monedas ayudan',t:'Cada día se recogen unos 3.000 € del fondo, que se donan a Cáritas para proyectos sociales en Roma.'}],
+      play:()=>this.togglePlay(),playLbl:s.playing?'Pausar':'Escuchar',
+      playIcon:s.playing?'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z':'M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z',
+      time:s.t>0?`${fmt(s.t)} / ${fmt(DUR)}`:fmt(DUR),prog:`${(s.t/DUR)*100}%`,
+      addPhoto:()=>this.toast('Añadir foto'),howTo:()=>this.toast('Abriendo el mapa…'),
+      toastOn:!!s.toast,toastTxt:s.toast||''};}
+}
+</script>
+</body>
+</html>

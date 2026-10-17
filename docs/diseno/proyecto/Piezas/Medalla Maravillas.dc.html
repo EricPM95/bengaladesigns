@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes mmStar{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.22)}}
+@keyframes mmSheen{0%{transform:translateX(-160%) skewX(-18deg)}38%,100%{transform:translateX(320%) skewX(-18deg)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="position:relative;width:{{ w }};height:{{ h }};flex:none;filter:drop-shadow(0 18px 26px rgba(0,0,0,.55))">
+  <img src="assets/medalla-7-maravillas-limpia.png?v=6" alt="Las 7 maravillas del mundo" style="position:absolute;inset:0;width:100%;height:100%;display:block">
+  <sc-for list="{{ off }}" as="o" hint-placeholder-count="6"><img src="{{ o }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none"></sc-for>
+  <span style="position:absolute;left:{{ sl }};top:{{ st }};width:{{ sw }};height:{{ sw }};border-radius:50%;overflow:hidden;pointer-events:none;mix-blend-mode:screen"><span style="position:absolute;top:-20%;bottom:-20%;left:0;width:22%;background:linear-gradient(90deg,transparent,rgba(255,240,200,.35),transparent);animation:mmSheen 5s 1s ease-in-out infinite"></span></span>
+  <svg viewBox="0 0 516 601" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="7"><path d="{{ s.d }}" fill="{{ s.f }}" stroke="{{ s.st }}" stroke-width="2.4" stroke-linejoin="round" style="transform-box:fill-box;transform-origin:center;filter:{{ s.flt }};animation:{{ s.a }}"></path></sc-for>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:340,&quot;height&quot;:400},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:300,&quot;tsType&quot;:&quot;number&quot;},&quot;n&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:7,&quot;tsType&quot;:&quot;number&quot;},&quot;got&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const star=(cx,cy,r)=>{let d='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;d+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1);}return d+'Z';};
+const ORDER=['coliseo','chichen','cristo','muralla','machu','petra','taj'];
+class Component extends DCLogic {
+  renderVals(){const p=this.props;const w=Number(p.size)||300;const n=Math.max(0,Math.min(7,Number(p.n)||1));
+    const got=p.got?String(p.got).split(',').map(s=>s.trim()).filter(Boolean):ORDER.slice(0,n);const cnt=got.length;
+    const CX=258,CY=282,R=236;
+    const stars=Array.from({length:7},(_,i)=>{const a=Math.PI+(i+1)/8*Math.PI;const s0=Math.floor((7-cnt)/2);const on=i>=s0&&i<s0+cnt;
+      const x=CX+R*Math.cos(a),y=CY+R*Math.sin(a)*.98;
+      return{d:star(x,y,on?21:16),f:on?'#FFE6A0':'#141A30',st:on?'#FFF8E0':'rgba(200,170,105,.6)',flt:on?'drop-shadow(0 0 8px rgba(255,214,140,.9))':'none',a:on?'mmStar 2.4s '+(i*.2).toFixed(1)+'s ease-in-out infinite':'none'};});
+    const off=ORDER.filter(k=>!got.includes(k)).map(k=>'assets/mm-off-'+k+'.png?v=2');
+    const k=w/516;
+    return{w:w+'px',h:(601*k).toFixed(1)+'px',stars,off,sl:(46*k).toFixed(1)+'px',st:(70*k).toFixed(1)+'px',sw:(424*k).toFixed(1)+'px'};}
+}
+</script>
+</body>
+</html>

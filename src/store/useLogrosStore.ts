@@ -13,6 +13,9 @@ interface LogrosState {
   pregunta: { texto: string; opciones: { id: string; texto: string }[] } | null
   /** Hay algo ganado cuya animación no se vio (el puntito del botón flotante). */
   puntito: boolean
+  /** Hay una hoja del Visto abierta (la del pedazo, la de la foto…): las sorpresas esperan a que se cierre para salir. Lo pone quien abre y cierra esas hojas. */
+  hojaAbierta: boolean
+  ponerHojaAbierta: (abierta: boolean) => void
   recibir: (respuesta: RespuestaDeHecho | null) => void
   tomarMomentos: () => Momento[]
   limpiarAviso: () => void
@@ -25,6 +28,8 @@ export const useLogrosStore = create<LogrosState>((set, get) => ({
   aviso: null,
   pregunta: null,
   puntito: false,
+  hojaAbierta: false,
+  ponerHojaAbierta: (abierta) => set({ hojaAbierta: abierta }),
   recibir: (r) => {
     if (!r) return
     set((s) => ({
