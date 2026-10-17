@@ -72,8 +72,9 @@ export function repartoDelPago(precios, { plan, personas, comprador, invitados =
 /* ------------------------------------------------------------------ */
 
 /**
- * Cuánto tiene libre cada día de un viaje. Día 1: desde que llega (hora del vuelo + traslado y maleta). Último día: hasta que sale (hora del vuelo menos el aeropuerto).
- * @param {{ dias: Array<{ numero: number, fecha: string }>, llegada?: string|null, vuelta?: string|null }} viaje
+ * Cuánto tiene libre cada día de un viaje. Día 1: desde que queda libre según el motor (hora de llegada + traslado del punto + maleta); último día: hasta que tiene que salir según el motor
+ * (hora del billete menos lo que hay que salir antes en ese aeropuerto o estación). Sin esa hora del motor, el respaldo de data/pase/ajustes.json.
+ * @param {{ dias: Array<{ numero: number, fecha: string }>, llegada?: string|null, vuelta?: string|null, libre_llegada_min?: number|null, salir_min?: number|null }} viaje
  * @returns {Array<{ numero: number, fecha: string, desde: number, hasta: number, libre: number }>} en minutos del día
  */
 export function diasLibres(viaje, ajustes) {
@@ -84,8 +85,9 @@ export function diasLibres(viaje, ajustes) {
   const vuelta = aMinutos(viaje.vuelta)
   const ultimo = dias[dias.length - 1].numero
   return dias.map((d) => {
-    const desde = d.numero === dias[0].numero && llegada != null ? llegada + ajustes.libre_tras_llegada_min : inicio
-    const hasta = d.numero === ultimo && vuelta != null ? vuelta - ajustes.salida_antes_de_vuelo_min : 1440
+    // La hora de verdad es la del motor (`libre_llegada_min`, `salir_min`: según el aeropuerto o la estación y el medio); los minutos de los ajustes son solo el respaldo.
+    const desde = d.numero === dias[0].numero && llegada != null ? (Number.isFinite(viaje.libre_llegada_min) ? viaje.libre_llegada_min : llegada + ajustes.libre_tras_llegada_min) : inicio
+    const hasta = d.numero === ultimo && vuelta != null ? (Number.isFinite(viaje.salir_min) ? viaje.salir_min : vuelta - ajustes.salida_antes_de_vuelo_min) : 1440
     return { numero: d.numero, fecha: d.fecha, desde, hasta, libre: Math.max(0, hasta - Math.max(desde, 0)) }
   })
 }

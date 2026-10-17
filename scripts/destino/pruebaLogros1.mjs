@@ -13,7 +13,7 @@ import { cargarDatos, cargarCatalogo, validarDatos, coordenadasDeSitio } from '.
 import { calcular, clave, momentoDeLaHora, parteLocal } from '../../server/logros/motor.js'
 import { evaluarFoto, evaluarVisto, instanteDeToma, rangoLargo, metros, diasParaReclamar } from '../../server/logros/fotos.js'
 import { cobroActivo, diasLibres, elegirDiaDePrueba, estadoDePrueba, planParaPersonas, precioDelPase, puedeGanarLogros, repartoDelPago, tocaPreguntar, viajeDePrueba } from '../../server/logros/pase.js'
-import { crearServicioLogros, simular, contextoDeViaje } from '../../server/logros/servicio.js'
+import { crearServicioLogros, simular, contextoDeViaje, horasDelViaje } from '../../server/logros/servicio.js'
 import { capacidad, logrosVisibles, logrosYVisibilidad, llevarAVitrina } from '../../server/logros/vistas.js'
 import { enviarAvisosPendientes, pushActivo, textoDeAviso } from '../../server/logros/avisos.js'
 import { esAdmin, logrosActivos, registrarRutasLogros } from '../../server/logros/rutas.js'
@@ -930,6 +930,87 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   reloj = new Date('2026-10-12T12:00:00Z')
 }
 
+// ── La hora libre del día de llegada, la de la ruta (según el aeropuerto o la estación) ──
+{
+  const R2 = datos.destinos.roma
+  const aj = datos.pase.ajustes
+  const dias = (n) => Array.from({ length: n }, (_, i) => ({ numero: i + 1, fecha: `2026-10-${10 + i}` }))
+  const plan = (hora, medio, punto) => ({ answers: { planLlegada: { entrada: { hora, medio, punto_id: punto } } } })
+  const libre = (hora, medio, punto) => horasDelViaje(plan(hora, medio, punto), R2, catalogo)
+  const fco = libre('08:35', 'avion', 'fco')
+  const cia = libre('08:35', 'avion', 'cia')
+  const tren = libre('08:35', 'tren', 'termini')
+  debe(fco.libre_llegada_min === 8 * 60 + 35 + 60 + 30 && cia.libre_llegada_min === 8 * 60 + 35 + 50 + 30 && tren.libre_llegada_min === 8 * 60 + 35 + 15 + 30, 'hora_motor', 'la hora libre es la del motor: llegada + traslado del punto + maleta (Fiumicino 60, Ciampino 50, Termini 15)')
+  debe([fco, cia, tren].every((x) => x.libre_origen === 'motor'), 'hora_motor', 'las tres vienen del motor, no del respaldo')
+  const diaDe = (viaje) => elegirDiaDePrueba({ dias: dias(5), ...viaje }, aj).numero
+  debe(diaDe({ llegada: '08:35', libre_llegada_min: fco.libre_llegada_min }) === 2, 'hora_motor', 'llegada a Fiumicino a las 8:35: queda libre a las 10:05 → la prueba es el día siguiente')
+  debe(diaDe({ llegada: '08:35', libre_llegada_min: cia.libre_llegada_min }) === 1, 'hora_motor', 'la misma hora en Ciampino: queda libre a las 9:55 → la prueba es el día de llegada')
+  debe(diaDe({ llegada: '08:35', libre_llegada_min: tren.libre_llegada_min }) === 1, 'hora_motor', 'y en tren a Termini (libre a las 9:20): el día de llegada')
+  debe(diaDe({ llegada: '08:35' }) === 2, 'hora_motor', 'con los 90 minutos fijos de antes, las tres habrían dado el día siguiente (por eso había que leer la hora de la ruta)')
+  // Respaldo: si el motor no da la hora (en coche, sin datos del destino), se usan los 90 minutos
+  const coche = horasDelViaje({ answers: { planLlegada: { entrada: { hora: '08:35', medio: 'coche', punto_id: 'ztl' } } } }, R2, catalogo)
+  debe(coche.libre_llegada_min === null && coche.libre_origen === 'respaldo', 'hora_motor', 'en coche el motor no da la hora: se marca como respaldo')
+  debe(diasLibres({ dias: dias(5), llegada: '08:35', libre_llegada_min: coche.libre_llegada_min }, aj)[0].desde === 8 * 60 + 35 + aj.libre_tras_llegada_min, 'hora_motor', 'y entonces se usan los 90 minutos de antes')
+  debe(horasDelViaje({ answers: {} }, R2, catalogo).libre_origen === null, 'hora_motor', 'sin vuelo puesto no hay hora que buscar')
+  const sinDatos = horasDelViaje(plan('08:35', 'avion', 'fco'), { ...R2, llegadaInfo: null }, catalogo)
+  debe(sinDatos.libre_origen === 'respaldo', 'hora_motor', 'sin los datos de llegada del destino: respaldo')
+  // El último día: lo que hay que salir antes cambia con el aeropuerto o la estación
+  const vuelta = (hora, medio, punto) => horasDelViaje({ answers: { departureFlightTime: hora, returnTransportOptionId: medio, departurePointId: punto } }, R2, catalogo)
+  debe(vuelta('20:00', 'flight', 'fco').salir_min === 20 * 60 - 180 && vuelta('20:00', 'flight', 'cia').salir_min === 20 * 60 - 170 && vuelta('18:00', 'train', 'termini').salir_min === 18 * 60 - 45 && vuelta('20:00', 'flight', 'fco').salir_origen === 'motor', 'hora_motor', 'la hora de salir el último día es la del motor: Fiumicino 3 h, Ciampino 2 h 50, tren 45 min antes')
+  const ultimo = diasLibres({ dias: dias(3), llegada: '08:00', libre_llegada_min: 8 * 60 + 90, vuelta: '20:00', salir_min: vuelta('20:00', 'flight', 'cia').salir_min }, aj)[2]
+  debe(ultimo.hasta === 20 * 60 - 170, 'hora_motor', 'el último día acaba cuando hay que salir de verdad (Ciampino), no 3 horas antes siempre')
+  // De la ruta guardada del viajero al día de prueba, de punta a punta
+  const ruta = (hora, medio, punto) => ({ ...rutaRoma('2026-10-10', '2026-10-14', RUTA_BASE.days.map((d) => d.stops.map((st) => catalogo.places.find((x) => x.name === st.name).id))), answers: { dateRange: { start: '2026-10-10', end: '2026-10-14' }, companion: 'couple', planLlegada: { entrada: { hora, medio, punto_id: punto } } } })
+  const ctxFco = contextoDeViaje({ id: 'v1', route: ruta('08:35', 'avion', 'fco') }, datos, catalogos)
+  const ctxCia = contextoDeViaje({ id: 'v2', route: ruta('08:35', 'avion', 'cia') }, datos, catalogos)
+  debe(ctxFco.libre_llegada_min === 605 && ctxCia.libre_llegada_min === 595 && elegirDiaDePrueba(ctxFco, aj).numero === 2 && elegirDiaDePrueba(ctxCia, aj).numero === 1, 'hora_motor', 'el viaje del viajero trae la hora libre del motor y de ella sale el día de prueba (Fiumicino día 2, Ciampino día 1)')
+}
+
+// ── La pregunta de las 12:00 también sin cobertura ──
+{
+  const conCobro = crearServicioLogros({ repo: repoPG, datos, catalogos, ahora: () => reloj, cobro: true, azar: () => 0 })
+  const VV = (p, sitio, instante, recibido) => conCobro.visto(p.uid, { trip_id: p.trip, sitio, instante, recibido_en: recibido, ubicacion: coords(sitio) })
+  const filaDe = async (p) => (await S('select * from public.hoy_prueba where user_id = $1', [p.uid]))[0] ?? null
+
+  // Un Visto sin señal de las 13:00 (hora de Roma) que llega a las 15:00 del mismo día: se pregunta cuando llega, y cuenta la hora del Visto
+  const a = await persona('offline12-a@correo.es')
+  reloj = new Date('2026-10-10T13:00:00Z') // 15:00 en Roma
+  const r1 = await VV(a, 'coliseo', '2026-10-10T11:00:00Z', '2026-10-10T13:00:00Z') // Visto a las 13:00, llega a las 15:00
+  debe(r1.cuenta === false && r1.motivo === 'pregunta_medio_dia' && r1.pregunta.texto.startsWith('Te queda medio día'), 'offline12', 'un Visto de las 13:00 sin señal que llega a las 15:00 el mismo día: no gasta la prueba, hace la pregunta de las 12:00')
+  debe((await filaDe(a)) === null && (await repoPG.hechosDe(a.uid)).length === 0, 'offline12', 'y mientras no conteste no se gasta nada ni se guarda el Visto')
+  const hoy = await conCobro.responderPrueba(a.uid, { trip_id: a.trip, respuesta: 'hoy' })
+  debe(hoy.ok === true && hoy.reenviar_vistos === true && (await filaDe(a)).gastada_en != null, 'offline12', '[Hoy]: se gasta y el móvil vuelve a mandar el Visto')
+  const r2 = await VV(a, 'coliseo', '2026-10-10T11:00:00Z', '2026-10-10T13:05:00Z')
+  const hecho = (await repoPG.hechosDe(a.uid))[0]
+  debe(r2.cuenta === true && hecho.instante === new Date('2026-10-10T11:00:00Z').toISOString(), 'offline12', 'al reenviarlo cuenta con la hora del Visto (las 13:00), no con la de llegada')
+
+  // [Mañana]: la prueba pasa al día siguiente y lo de hoy se gana mañana con las fotos
+  const b = await persona('offline12-b@correo.es')
+  reloj = new Date('2026-10-10T13:00:00Z')
+  await VV(b, 'coliseo', '2026-10-10T11:00:00Z', '2026-10-10T13:00:00Z')
+  const man = await conCobro.responderPrueba(b.uid, { trip_id: b.trip, respuesta: 'manana' })
+  debe(man.ok === true && man.prueba.fecha === '2026-10-11' && (await filaDe(b)).gastada_en == null, 'offline12', '[Mañana]: la prueba pasa al día siguiente sin gastarse')
+
+  // Un Visto de las 9:00 que llega a las 15:00: su hora es de antes de las 12:00 → se gasta la prueba directamente
+  const c = await persona('offline12-c@correo.es')
+  reloj = new Date('2026-10-10T13:00:00Z')
+  const r3 = await VV(c, 'coliseo', '2026-10-10T07:00:00Z', '2026-10-10T13:00:00Z') // Visto a las 9:00, llega a las 15:00
+  debe(r3.cuenta === true && (await filaDe(c))?.gastada_en != null, 'offline12', 'un Visto de las 9:00 que llega a las 15:00: manda la hora del Visto (antes de las 12:00), se gasta la prueba sin preguntar')
+
+  // Ya ha pasado ese día cuando llega: se gasta la prueba como antes, sin preguntar
+  const d = await persona('offline12-d@correo.es')
+  reloj = new Date('2026-10-11T13:00:00Z')
+  const r4 = await VV(d, 'coliseo', '2026-10-10T11:00:00Z', '2026-10-11T13:00:00Z') // Visto del día 10 a las 13:00, llega el 11
+  debe(r4.cuenta === true && r4.motivo !== 'pregunta_medio_dia' && (await filaDe(d))?.gastada_en != null, 'offline12', 'si ya ha pasado ese día cuando llega, la prueba se gasta directamente (ya no puede contestar «hoy o mañana»)')
+  debe(r4.nuevos.length > 0, 'offline12', 'y el Visto da lo suyo con la hora en que se hizo')
+
+  // En el móvil: el Visto espera la respuesta en la cola y no se pierde ni se manda dos veces
+  const logros = fs.readFileSync('src/lib/logros.ts', 'utf8')
+  debe(/enEspera/.test(logros) && /pregunta_medio_dia/.test(logros) && /export async function responderPregunta/.test(logros) && /filter\(\(h\) => !h\.enEspera\)/.test(logros), 'offline12', 'el móvil guarda el Visto en espera hasta que conteste: [Hoy] lo manda, [Mañana] lo descarta')
+  debe(/pregunta_medio_dia/.test(fs.readFileSync('src/store/useLogrosStore.ts', 'utf8')), 'offline12', 'la pregunta llega al almacén de logros para que la enseñe la pantalla')
+  reloj = new Date('2026-10-12T12:00:00Z')
+}
+
 // ── Entrar con una cuenta que ya existía: la prueba gastada pasa con ella ──
 {
   const real = await nuevoUsuario('real-prueba@correo.es')
@@ -1084,7 +1165,11 @@ console.log('4. Las rutas y el panel de Eric')
   debe(esAdmin({ id: 'x', email: 'Eric@ejemplo.es' }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es, otra@ejemplo.es' }) === true && esAdmin({ id: 'x', email: 'otro@ejemplo.es' }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }) === false && esAdmin({ id: 'x', email: 'eric@ejemplo.es', is_anonymous: true }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }) === false && esAdmin({ id: 'x', email: 'eric@ejemplo.es' }, {}) === false, 'admin', 'la cuenta de administrador sale de una variable del servidor; sin variable, nadie')
   const codigo = ['motor', 'servicio', 'rutas', 'datos', 'avisos', 'pase', 'vistas', 'momentos', 'fotos', 'repo'].map((f) => fs.readFileSync(`server/logros/${f}.js`, 'utf8')).join('\n')
   debe(!/@[a-z0-9-]+\.(com|es|org)/i.test(codigo.replace(/mailto:/g, '')), 'admin', 'ningún email escrito en el código')
-  debe(!/shared\/routeEngine|server\/engine/.test(codigo.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')), 'motor', 'los logros no importan el motor de rutas')
+  // El motor solo se LEE: de él salen la hora libre del día de llegada y la de salir el último día (dos funciones suyas); no se escribe ni se importa nada más.
+  const sinComentarios = codigo.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+  const importsDelMotor = [...sinComentarios.matchAll(/import[^;\n]*from '([^']*(?:routeEngine|server\/engine)[^']*)'/g)].map((m) => m[1])
+  debe(importsDelMotor.sort().join() === '../../shared/routeEngine/llegadaDia1.js,../../shared/routeEngine/vueltaDia.js', 'motor', `los logros solo leen dos funciones del motor (libreDeLlegada y datosDeVuelta): ${importsDelMotor.join()}`)
+  debe(!/routeEngine[^\n]*\b(writeFile|appendFile)\b/.test(sinComentarios) && !/fs\.write[^\n]*(routeEngine|server\/engine)/.test(sinComentarios), 'motor', 'y no escriben nada en el motor')
   // Nunca enseña las fotos de nadie
   const rutasCodigo = fs.readFileSync('server/logros/rutas.js', 'utf8')
   debe(!/storage|trip_photos|signedUrl|createSignedUrl/i.test(rutasCodigo), 'admin', 'el panel nunca enseña las fotos de nadie')

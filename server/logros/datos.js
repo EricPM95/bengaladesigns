@@ -20,6 +20,9 @@ export function cargarDatos() {
   for (const clave of DESTINOS_CON_LOGROS) {
     destinos[clave] = leer(`../../data/logros/${clave}.json`)
     // Los sitios del catálogo (para «Conocedor de la ciudad»: cuentan todos, no solo los que tienen logro).
+    // Los puntos de llegada y de salida del destino (aeropuertos, estaciones…): de ahí sale la hora a la que el motor da libre al viajero (solo se lee; no se toca el motor).
+    const rutaLlegada = new URL(`../../data/dias/${clave}/_llegada.json`, import.meta.url)
+    Object.defineProperty(destinos[clave], 'llegadaInfo', { value: fs.existsSync(rutaLlegada) ? JSON.parse(fs.readFileSync(rutaLlegada, 'utf8')) : null, enumerable: false })
     Object.defineProperty(destinos[clave], 'sitios_catalogo', { value: (cargarCatalogo(clave).places ?? []).map((x) => x.id), enumerable: false })
   }
   return {

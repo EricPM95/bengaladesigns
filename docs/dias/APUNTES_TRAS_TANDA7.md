@@ -732,3 +732,10 @@ Detalle en REVISION_DESIGN_PASO3.md. Lo que cambia reglas:
 - [Compartir viaje] en RUTA.
 - En las listas de paradas, la foto pequeña del sitio en vez del círculo con ✓ (Code: miniaturas de cada foto).
 - Regla de textos: fuera los que explican lo que ya se ve.
+
+## 34. Tras la Tanda 8a2 (17-oct, 12:16)
+- Hecho por Code (f33511b6): Patrimonios por murallas (82 sitios), el Vaticano capital, el día de prueba nuevo, los precios, «ya no encaja» fuera, «Sustituir el anterior» sin borrar, miniaturas (92, 4,3 KB de media), regla de /admin/logros en vercel.json, web-push y claves VAPID en .env.local.
+- Revisado por Claude: la lista de Patrimonios está bien (Testaccio, Cementerio Protestante, Borgo y Pincio, dentro; Villa Borghese, GNAM y Coppedè, fuera).
+- Va a la 8a3: la hora libre del día de llegada sale de la ruta (no 90 minutos fijos), la pregunta de las 12:00 también con los Vistos que llegan tarde, y partir el código de la app para que abra antes.
+- **La campanita (Eric, 12:06–12:09):** todos los avisos llegan a nuestro botón de Avisos (la campana que ya está en la cabecera) y al móvil. Fuera las tarjetas que preguntan por los avisos. La ventana de permiso del móvil sale una vez: tras [Compartir viaje], tras [Enviar a Elena] o al acabar el primer día. Para las cuentas, parte 3: la lista de avisos con leídos y sin leer, el aviso de nueva recomendación y el de la respuesta.
+- La recomendación «cambiar X por Y» se guarda como pareja (Code ya lo añadió en la 8a2); Design la enseña en un recuadro.

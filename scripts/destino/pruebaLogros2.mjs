@@ -143,6 +143,27 @@ console.log('1c. Vercel y los avisos al móvil')
   debe(!/BEGIN (EC )?PRIVATE KEY/.test(leer('server/logros/avisos.js')) && !/VAPID_PRIVATE_KEY=\w{20,}/.test(leer('docs/dias/INFORME_TANDA8A.md')), 'push', 'ninguna clave en el código ni en los informes')
 }
 
+console.log('1d. El código partido: al abrir solo carga la primera pantalla')
+{
+  const app = leer('src/App.tsx')
+  for (const pantalla of ['RouteScreen', 'MyTripsScreen', 'PreparandoViaje', 'DevQuickRouteScreen']) {
+    debe(new RegExp(`const ${pantalla} = lazy\\(`).test(app) && !new RegExp(`^import \\{ ${pantalla} \\}`, 'm').test(app), 'partir', `${pantalla} se carga cuando se abre (lazy), no al abrir la app`)
+  }
+  debe(/<Suspense[^>]*fallback=\{<Cargando \/>\}/.test(app) && /const Cargando = \(\) => <div className="h-dvh"/.test(app), 'partir', 'mientras llega una parte, un fondo del mismo tamaño (sin pantallas en blanco que salten)')
+  debe(/RouteView/.test(leer('src/components/route/RouteScreen.tsx')) && !/RouteView/.test(app.replace(/RouteScreen/g, '')), 'partir', 'RouteView (RUTA, DÍAS, EXPLORAR, RESERVAS, HOY, mapas, fichas, Perfil) está en el archivo de la ruta')
+  const vite = leer('vite.config.ts')
+  debe(/vendor-mapbox/.test(vite) && /vendor-pdf/.test(vite) && /vendor-react/.test(vite) && /commonjsHelpers/.test(vite), 'partir', 'las librerías grandes (mapa, PDF) van en su propio archivo y React en el suyo')
+  // Lo que carga al abrir: nada de mapa, PDF, ni lo de arrastrar
+  const dist = 'dist'
+  if (fs.existsSync(path.join(dist, 'index.html'))) {
+    const html = leer(path.join(dist, 'index.html'))
+    const alAbrir = [...html.matchAll(/(?:src|href)="\/assets\/([^"]+\.js)"/g)].map((m) => m[1])
+    debe(alAbrir.length >= 2 && !alAbrir.some((f) => /mapbox|pdf|dnd|RouteScreen|fechas/.test(f)), 'partir', `al abrir solo se cargan: ${alAbrir.join(', ')}`)
+    const peso = alAbrir.reduce((n, f) => n + fs.statSync(path.join(dist, 'assets', f)).size, 0)
+    debe(peso < 1024 * 1024, 'partir', `y pesan menos de 1 MB sin comprimir (${Math.round(peso / 1024)} KB; antes, 3.393 KB)`)
+  } else debe(true, 'partir', '(sin `dist`: se mira después de `vite build`)')
+}
+
 console.log('2. Que apagado no cambia nada')
 {
   const app = leer('src/App.tsx')

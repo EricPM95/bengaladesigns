@@ -9,23 +9,28 @@ import type { Momento, RespuestaDeHecho } from '../lib/logros'
 interface LogrosState {
   momentos: Momento[]
   aviso: string | null
+  /** La pregunta de las 12:00 («Te queda medio día…» con [Hoy] y [Mañana]), si toca contestarla. Las pantallas la enseñan y llaman a `responderPregunta`. */
+  pregunta: { texto: string; opciones: { id: string; texto: string }[] } | null
   /** Hay algo ganado cuya animación no se vio (el puntito del botón flotante). */
   puntito: boolean
   recibir: (respuesta: RespuestaDeHecho | null) => void
   tomarMomentos: () => Momento[]
   limpiarAviso: () => void
+  limpiarPregunta: () => void
   ponerPuntito: (hay: boolean) => void
 }
 
 export const useLogrosStore = create<LogrosState>((set, get) => ({
   momentos: [],
   aviso: null,
+  pregunta: null,
   puntito: false,
   recibir: (r) => {
     if (!r) return
     set((s) => ({
       momentos: r.nuevos?.length ? [...s.momentos, ...r.nuevos] : s.momentos,
       aviso: r.aviso ?? r.mensaje ?? s.aviso,
+      pregunta: r.motivo === 'pregunta_medio_dia' && r.pregunta ? r.pregunta : s.pregunta,
       puntito: s.puntito || Boolean(r.nuevos?.length),
     }))
   },
@@ -35,5 +40,6 @@ export const useLogrosStore = create<LogrosState>((set, get) => ({
     return m
   },
   limpiarAviso: () => set({ aviso: null }),
+  limpiarPregunta: () => set({ pregunta: null }),
   ponerPuntito: (hay) => set({ puntito: hay }),
 }))

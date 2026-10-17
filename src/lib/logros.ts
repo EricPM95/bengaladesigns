@@ -62,6 +62,8 @@ export interface RespuestaDeHecho {
   motivo?: string | null
   mensaje?: string | null
   aviso?: string | null
+  /** Solo con `motivo: 'pregunta_medio_dia'`. */
+  pregunta?: { texto: string; opciones: { id: string; texto: string }[] }
   ubic?: 'cerca' | 'lejos' | 'sin'
   nuevos: Momento[]
 }
@@ -116,10 +118,14 @@ export function ubicacionDeAhora(esperaMs = 4000): Promise<Ubicacion | null> {
 /* Los hechos, con cola para cuando no hay cobertura                   */
 /* ------------------------------------------------------------------ */
 
-export type HechoPendiente =
+export type HechoPendiente = (
   | { tipo: 'visto'; cuerpo: { trip_id: string; stop_id?: string | null; nombre?: string | null; sitio?: string | null; instante: string; ubicacion: Ubicacion | null } }
   | { tipo: 'deshacer'; cuerpo: { trip_id: string; stop_id?: string | null; nombre?: string | null } }
   | { tipo: 'foto'; cuerpo: Record<string, unknown> }
+) & {
+  /** Esperando la respuesta a «Te queda medio día…»: no se vuelve a mandar hasta que conteste ([Hoy] lo manda; [Mañana] lo descarta: lo de hoy se gana mañana con «Lo de ayer también cuenta»). */
+  enEspera?: boolean
+}
 
 const RUTA: Record<HechoPendiente['tipo'], string> = { visto: '/api/logros/visto', deshacer: '/api/logros/deshacer', foto: '/api/logros/foto' }
 
@@ -143,7 +149,11 @@ function guardarCola(cola: HechoPendiente[]) {
 /** Manda un hecho. Si no hay cobertura (o el servidor no responde), se guarda en el móvil y se manda después, con la hora de cuando pasó. */
 export async function mandarHecho(hecho: HechoPendiente): Promise<RespuestaDeHecho | null> {
   const r = await llamar<RespuestaDeHecho>(RUTA[hecho.tipo], { cuerpo: hecho.cuerpo })
-  if (r) return r
+  if (r) {
+    // La pregunta de las 12:00: el Visto no se ha guardado; se queda aquí hasta que conteste.
+    if (r.motivo === 'pregunta_medio_dia') guardarCola([...leerCola(), { ...hecho, enEspera: true }])
+    return r
+  }
   guardarCola([...leerCola(), hecho])
   return null
 }
@@ -158,8 +168,16 @@ export async function vaciarCola(): Promise<RespuestaDeHecho[]> {
     const cola = leerCola()
     const sobran: HechoPendiente[] = []
     for (const hecho of cola) {
+      if (hecho.enEspera) {
+        sobran.push(hecho)
+        continue
+      }
       const r = await llamar<RespuestaDeHecho>(RUTA[hecho.tipo], { cuerpo: hecho.cuerpo })
-      if (r) respuestas.push(r)
+      if (r?.motivo === 'pregunta_medio_dia') {
+        // Llegó tarde pero el mismo día: ahora toca hacer la pregunta (la hora que cuenta es la del Visto).
+        sobran.push({ ...hecho, enEspera: true })
+        respuestas.push(r)
+      } else if (r) respuestas.push(r)
       else sobran.push(hecho)
     }
     guardarCola(sobran)
@@ -170,6 +188,22 @@ export async function vaciarCola(): Promise<RespuestaDeHecho[]> {
 }
 
 export const hayPendientes = () => leerCola().length
+
+/**
+ * La respuesta a «Te queda medio día. ¿Usas hoy tu día de prueba o lo guardas para mañana?». [Hoy]: se gasta la prueba y se mandan los Vistos que esperaban. [Mañana]: la prueba pasa
+ * al día siguiente y los Vistos de hoy que esperaban se descartan (se ganan mañana con las fotos de la galería, «Lo de ayer también cuenta»).
+ */
+export async function responderPregunta(tripId: string, respuesta: 'hoy' | 'manana'): Promise<{ ok: boolean; respuestas: RespuestaDeHecho[]; motivo?: string } | null> {
+  const r = await llamar<{ ok: boolean; motivo?: string }>('/api/pase/prueba/responder', { cuerpo: { trip_id: tripId, respuesta } })
+  if (!r) return null
+  if (!r.ok) return { ok: false, respuestas: [], motivo: r.motivo }
+  if (respuesta === 'manana') {
+    guardarCola(leerCola().filter((h) => !h.enEspera))
+    return { ok: true, respuestas: [] }
+  }
+  guardarCola(leerCola().map(({ enEspera: _enEspera, ...h }) => h as HechoPendiente))
+  return { ok: true, respuestas: await vaciarCola() }
+}
 
 /** Un Visto: con la hora de ahora y la ubicación de este momento. */
 export async function enviarVisto(p: { tripId: string; stopId: string; nombre: string }): Promise<RespuestaDeHecho | null> {

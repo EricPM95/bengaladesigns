@@ -9,6 +9,8 @@
  * No toca el motor de rutas.
  */
 
+import { libreDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
+import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
 import { GLOBAL, calcular, clave, diferencia, diasEntre, parteLocal, sumarDias } from './motor.js'
 import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
@@ -27,6 +29,30 @@ function cuentaComoParada(stop) {
 export function sitioDeParada(stop, catalogo) {
   const nombre = String(stop.name ?? '').replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim()
   return (catalogo.places ?? []).find((p) => p.name === nombre)?.id ?? null
+}
+
+const esHora = (h) => /^\d{1,2}:\d{2}$/.test(String(h ?? ''))
+
+/**
+ * La hora a la que queda libre el viajero el día de llegada y la hora a la que tiene que salir el último día, según el motor (solo se LEEN sus funciones, no se toca el motor):
+ *   - llegada: `libreDeLlegada` = hora de llegada + traslado del punto (Fiumicino 60 min, Ciampino 50, Termini 15…) + 30 de maleta;
+ *   - vuelta: `datosDeVuelta` = hora del billete − lo que hay que salir antes (Fiumicino 3 h, Ciampino 2 h 50, tren 45 min…).
+ * Devuelve { llegada, vuelta, libre_llegada_min, libre_origen, salir_min, salir_origen }; el origen es 'motor' o 'respaldo' (el motor no da la hora: sin plan de llegada, en coche, sin datos…).
+ */
+export function horasDelViaje(route, destino, catalogo) {
+  const a = route?.answers ?? {}
+  const entradaDelPlan = a.planLlegada?.entrada
+  const llegada = esHora(entradaDelPlan?.hora) ? entradaDelPlan.hora : esHora(a.arrivalFlightTime) ? a.arrivalFlightTime : null
+  const vuelta = esHora(a.planVuelta?.hora) ? a.planVuelta.hora : esHora(a.departureFlightTime) ? a.departureFlightTime : null
+  const info = { llegadaInfo: destino.llegadaInfo ?? null }
+  let libre = null
+  if (llegada) libre = libreDeLlegada(catalogo, info, { hora: llegada, medio: entradaDelPlan?.medio ?? 'avion', puntoId: entradaDelPlan?.punto_id ?? a.arrivalPointId ?? null })
+  let salir = null
+  if (vuelta && destino.llegadaInfo) {
+    const d = datosDeVuelta({ modo: a.planVuelta?.medio ?? a.returnTransportOptionId ?? 'avion', hora: vuelta, puntoId: a.departurePointId ?? null }, destino.llegadaInfo)
+    if (d && Number.isFinite(d.horaMin) && Number.isFinite(d.margen)) salir = d.horaMin - d.margen
+  }
+  return { llegada, vuelta, libre_llegada_min: libre, libre_origen: llegada ? (libre != null ? 'motor' : 'respaldo') : null, salir_min: salir, salir_origen: vuelta ? (salir != null ? 'motor' : 'respaldo') : null }
 }
 
 /**
@@ -50,9 +76,9 @@ export function contextoDeViaje({ id, route }, datos, catalogos, { esDuo = false
     fin: rango.end,
     // Con el Pase Dúo, el viaje es «en pareja» para los dos.
     con_quien: esDuo ? 'pareja' : (CON_QUIEN[route?.answers?.companion] ?? null),
-    // Las horas del vuelo (si las puso): de ellas sale el día de prueba de HOY.
-    llegada: /^\d{1,2}:\d{2}$/.test(String(route?.answers?.arrivalFlightTime ?? '')) ? route.answers.arrivalFlightTime : null,
-    vuelta: /^\d{1,2}:\d{2}$/.test(String(route?.answers?.departureFlightTime ?? '')) ? route.answers.departureFlightTime : null,
+    // Las horas del billete (si las puso) y, de ellas, cuándo queda libre el día de llegada y cuándo hay que salir el último día: las MISMAS que calcula el motor para la ruta (según
+    // el aeropuerto, la estación y el medio). De ahí sale el día de prueba de HOY. Si el motor no da la hora, se usan los respaldos de data/pase/ajustes.json (`libre_origen`).
+    ...horasDelViaje(route, destino, catalogo),
     origen_pais: null,
     dias,
   }
@@ -122,7 +148,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
 
   /**
    * ¿Puede esta cuenta ganar logros ese día en ese viaje? Con `usar` (un Visto o «Cómo llegar»: usar HOY de verdad) la prueba se GASTA aquí, salvo que toque la pregunta de las 12:00.
-   * `usar.minutosLocales`: la hora local del uso; `usar.enLinea`: false si el Visto llega tarde (sin cobertura): entonces no se pregunta, se gasta.
+   * `usar.minutosLocales`: la hora local del USO (la del Visto, no la de llegada); `usar.enLinea`: false si el Visto llega cuando ya ha pasado ese día: entonces no se pregunta, se gasta.
    */
   async function puedeGanar(userId, c, viaje, fecha, usar = null) {
     if (!cobro) return { puede: true, motivo: 'cobro_apagado' }
@@ -154,8 +180,10 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const ya = c.hechos.find((h) => h.tipo === 'visto' && !h.deshecho_en && h.trip_id === trip_id && (stop_id ? h.stop_id === stop_id : h.sitio === sitio))
     if (ya) return { ok: true, cuenta: true, repetido: true, ubic: ya.ubic, nuevos: [] }
     // Usar HOY de verdad (tocar [Visto]) es lo que gasta el día de prueba.
+    // Cuenta la hora del Visto, no la de llegada (sin cobertura, llega más tarde). Si esa hora es de las 12:00 en adelante y es la primera vez, se hace la pregunta cuando llegue,
+    // siempre que llegue el MISMO día (todavía puede contestar). Si ya ha pasado ese día, se gasta la prueba directamente.
     const loc = horaLocalDe(viaje.destino, instante)
-    const enLinea = Math.abs(new Date(recibido) - new Date(instante)) < 15 * 60 * 1000
+    const enLinea = horaLocalDe(viaje.destino, recibido).fecha === fecha
     const pase = await puedeGanar(userId, c, viaje, fecha, { minutosLocales: loc.minutos, enLinea })
     if (pase.motivo === 'pregunta_medio_dia') return { ok: true, cuenta: false, motivo: 'pregunta_medio_dia', pregunta: pase.pregunta, ubic: e.ubic, nuevos: [] }
     if (!pase.puede) return { ok: true, cuenta: false, motivo: pase.motivo, mensaje: null, ubic: e.ubic, nuevos: [] }

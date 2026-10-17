@@ -45,3 +45,9 @@ Para escribir el mensaje a Design cuando acabemos todas las páginas. Lo decidid
 - Libre antes de las 10:00 el día de llegada: la prueba es ese día. Más tarde: al día siguiente. Sin vuelo puesto: el día 1.
 - Si no hay ningún día libre antes de las 10:00 (2 días con llegada tarde): el día con más horas libres.
 - Problema de Eric: la prueba toca el día 1 (sin vuelo) y llega por la tarde. Propuesta de Claude: la prueba solo se gasta al usar HOY (Visto o Cómo llegar, como ya estaba). Si pone el vuelo antes de usarla, se recalcula. Si la primera vez que usa HOY ese día es a partir de las 12:00, pregunta una vez: «Te queda medio día. ¿Usas hoy tu día de prueba o lo guardas para mañana?» [Hoy] [Mañana]. Lo de hoy cuenta mañana con «Lo de ayer también cuenta».
+
+## Arreglos del paso 3 (zip 3, 17-oct, 11:42)
+- Eric: le gusta casi todo. Un cambio: al cambiar una parada por otra, las dos juntas en un recuadro («Propuesta: cambiar», ⇄), en el modo recomendación, en las tres hojas de R2 y en [Ver]. Mensaje: MENSAJE_DESIGN_CAMBIOS_PAREJA_17OCT.md.
+- Para Code (cuentas, parte 3): la recomendación guarda «cambiar X por Y» como una pareja, no como quitar + añadir sueltos.
+- (12:04) Cómo se entera el admin de una recomendación y el invitado de la respuesta, y el permiso de avisos también al compartir el viaje: MENSAJE_DESIGN_AVISO_RECOMENDACION_17OCT.md. Para Code (cuentas, parte 3): avisos «nueva recomendación» y «respuesta», el puntito y la tarjeta.
+- (12:06, Eric) LA CAMPANITA: todos los avisos llegan a una campanita en la cabecera (RUTA, DÍAS, HOY) y al móvil. Fuera las tarjetas que preguntan por los avisos (N1). La ventana de permiso del móvil sale una vez, tras [Compartir viaje] o [Enviar a Elena], o al acabar el primer día. Mensaje rehecho: MENSAJE_DESIGN_AVISO_RECOMENDACION_17OCT.md. Para Code (cuentas, parte 3): la tabla de avisos de la campanita, leídos y sin leer.

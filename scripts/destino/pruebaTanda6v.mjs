@@ -241,7 +241,8 @@ const diaDe = (route, nombre) => {
   debe(avisos(v('14:30')).length === 0, '5 solape', 'la campana sigue avisando al arreglarlo')
   const codigoAviso = fs.readFileSync('src/components/route/reservas/AvisoSolape.tsx', 'utf8')
   debe(/Ver mis reservas/.test(codigoAviso) && /setMode\('bookings'\)/.test(codigoAviso), '5 solape', 'la hoja del aviso no lleva [Ver mis reservas]')
-  debe(/<AvisoSolape \/>/.test(fs.readFileSync('src/App.tsx', 'utf8')), '5 solape', 'la hoja del aviso no está montada en la app')
+  // (Tanda 8A3: la pantalla de la ruta, con la hoja del aviso, está en su propio archivo y App.tsx la carga al abrirla.)
+  debe(/<AvisoSolape \/>/.test(fs.readFileSync('src/components/route/RouteScreen.tsx', 'utf8')) && /RouteScreen/.test(fs.readFileSync('src/App.tsx', 'utf8')), '5 solape', 'la hoja del aviso no está montada en la app')
 }
 
 // ── 6. La versión gratis nunca enseña «¿Ajustamos tu ruta a tu vuelo?» ───────────────────────────────────────────────────────────────────────

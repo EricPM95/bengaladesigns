@@ -1,28 +1,31 @@
-import { useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { lazy, Suspense, useEffect } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
 import { TrazoFlow } from './components/trazo/TrazoFlow'
-import { PreparandoViaje } from './components/loading/PreparandoViaje'
 import { useRouteGeneration } from './lib/useRouteGeneration'
-import { RouteView } from './components/route/RouteView'
 import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
-import { DevQuickRouteScreen } from './components/dev/DevQuickRouteScreen'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { AvisoInstalar } from './components/logros/AvisoInstalar'
 import { CampaignLinks } from './components/sync/CampaignLinks'
-import { MyTripsScreen } from './components/myTrips/MyTripsScreen'
-import { AvisoSolape } from './components/route/reservas/AvisoSolape'
-import { AlojamientoHost } from './components/route/alojamiento/AlojamientoHost'
-import { PantallaPresupuesto } from './components/route/presupuesto/PantallaPresupuesto'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
 import { FotoVuela } from './components/perfil/FotoVuela'
 import { RehacerRuta } from './components/route/RehacerRuta'
 import { HojaResumenVuelo } from './components/route/reservas/HojaResumenVuelo'
 import { AvisosDeVueloWatcher } from './components/route/AvisosDeVueloWatcher'
+
+// Lo que no es de la primera pantalla se carga cuando se abre (Tanda 8A3): la ruta con todas sus pestañas y mapas, Mis viajes, «Preparando tu viaje…» y la pantalla de desarrollo.
+const cargarRouteScreen = () => import('./components/route/RouteScreen')
+const RouteScreen = lazy(cargarRouteScreen)
+const MyTripsScreen = lazy(() => import('./components/myTrips/MyTripsScreen').then((m) => ({ default: m.MyTripsScreen })))
+const PreparandoViaje = lazy(() => import('./components/loading/PreparandoViaje').then((m) => ({ default: m.PreparandoViaje })))
+const DevQuickRouteScreen = lazy(() => import('./components/dev/DevQuickRouteScreen').then((m) => ({ default: m.DevQuickRouteScreen })))
+
+/** Mientras llega una parte: el mismo fondo de la app, de pantalla completa, sin saltos ni pantallas en blanco. */
+const Cargando = () => <div className="h-dvh" aria-hidden="true" />
 
 function PreparandoViajeContainer() {
   const destination = useRouteStore((state) => state.destination)
@@ -45,23 +48,6 @@ function PreparandoViajeContainer() {
   )
 }
 
-function RouteScreen() {
-  return (
-    <motion.div
-      key="route"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="h-dvh"
-    >
-      <RouteView />
-      <AvisoSolape />
-      <AlojamientoHost />
-      <PantallaPresupuesto />
-    </motion.div>
-  )
-}
-
 function App() {
   const screen = useRouteStore((state) => state.screen)
   const setDestination = useRouteStore((state) => state.setDestination)
@@ -72,6 +58,11 @@ function App() {
   const setTravelPassConfirmed = useRouteStore((state) => state.setTravelPassConfirmed)
   const updateAnswers = useRouteStore((state) => state.updateAnswers)
   const setScreen = useRouteStore((state) => state.setScreen)
+
+  // Mientras se prepara el viaje (tarda un buen rato), ya se va bajando la pantalla de la ruta: cuando termina, está lista.
+  useEffect(() => {
+    if (screen === 'loading' || screen === 'myTrips') void cargarRouteScreen()
+  }, [screen])
 
   useEffect(() => {
     const sharedTrip = decodeTripFromUrl()
@@ -111,10 +102,26 @@ function App() {
       <AnimatePresence mode="wait">
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
         {(screen === 'destination' || screen === 'questionnaire') && <TrazoFlow key="trazo" />}
-        {screen === 'myTrips' && <MyTripsScreen key="myTrips" />}
-        {screen === 'loading' && <PreparandoViajeContainer key="loading" />}
-        {screen === 'route' && <RouteScreen />}
-        {screen === 'devQuickRoute' && import.meta.env.DEV && <DevQuickRouteScreen />}
+        {screen === 'myTrips' && (
+          <Suspense key="myTrips" fallback={<Cargando />}>
+            <MyTripsScreen />
+          </Suspense>
+        )}
+        {screen === 'loading' && (
+          <Suspense key="loading" fallback={<Cargando />}>
+            <PreparandoViajeContainer />
+          </Suspense>
+        )}
+        {screen === 'route' && (
+          <Suspense key="route" fallback={<Cargando />}>
+            <RouteScreen />
+          </Suspense>
+        )}
+        {screen === 'devQuickRoute' && import.meta.env.DEV && (
+          <Suspense key="dev" fallback={<Cargando />}>
+            <DevQuickRouteScreen />
+          </Suspense>
+        )}
       </AnimatePresence>
     </Layout>
   )
