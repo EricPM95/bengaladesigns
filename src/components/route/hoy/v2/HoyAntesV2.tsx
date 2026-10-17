@@ -129,8 +129,9 @@ export function CabeceraHoy({ ojo, titulo, sub }: { ojo: string; titulo: string;
 
 export function ojoDeViaje(route: Route, startIso: string | null): string {
   if (!startIso) return route.destination
-  const total = Math.max(1, route.days.length)
-  return `${route.destination} · ${formatHeaderDateRangeShortEs(startIso, addDaysToIso(startIso, total - 1)).replace(/\./g, '')}`
+  // Las MISMAS fechas que la cabecera de la app (answers.dateRange); sin ellas, el primer día más los días de la ruta.
+  const fin = route.answers.dateRange?.end ?? addDaysToIso(startIso, Math.max(1, route.days.length) - 1)
+  return `${route.destination} · ${formatHeaderDateRangeShortEs(startIso, fin).replace(/\./g, '')}`
 }
 
 export { formatWeekdayAbbrEs }

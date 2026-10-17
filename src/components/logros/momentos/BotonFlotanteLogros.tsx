@@ -70,7 +70,7 @@ function Boton({ soloEn }: { soloEn: string[] }): ReactNode {
     <button
       type="button"
       data-boton-logros="1"
-      aria-label={estado ? `Tus logros en ${estado.ciudad}${puntito ? ' (hay algo nuevo)' : ''}` : 'Tus logros'}
+      aria-label={`${estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}${puntito ? ' (hay algo nuevo)' : ''}`}
       onClick={() => useMomentosUI.getState().abrirHojaLogros()}
       className="mo"
       style={{ position: 'fixed', right: 14, bottom: 'calc(env(safe-area-inset-bottom,0px) + 88px)', width: 58, height: 58, padding: 0, border: 'none', borderRadius: '50%', background: '#FFFDF8', cursor: 'pointer', zIndex: 40, boxShadow: '0 0 0 1px rgba(28,34,48,.08),0 12px 22px -10px rgba(28,34,48,.6)' }}

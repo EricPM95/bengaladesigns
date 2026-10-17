@@ -1,0 +1,39 @@
+/* Las animaciones de las 11 escenas de emblemas (las de «Emblema Cine» del diseño). Las que ya existían en momentos.css no se repiten; ecDust2 es la versión del diseño con luz que late. */
+@keyframes ecOrbit{to{transform:rotate(360deg)}}
+@keyframes ecFadeTo{to{opacity:.55}}
+@keyframes ecFlickM{from{opacity:1}to{opacity:.86}}
+@keyframes ecSpark{0%{opacity:0;transform:none}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-110px)}}
+@keyframes ecDust2{0%,100%{transform:translate(0,0);opacity:.25}50%{transform:translate(6px,-10px);opacity:1}}
+@keyframes ecBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes ecGrow{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes ecGlowUp{0%{opacity:0;transform:scale(.3)}100%{opacity:.85;transform:scale(1)}}
+@keyframes ecGlowL{0%{opacity:0}40%{opacity:1}100%{opacity:.85}}
+@keyframes ecPulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes ecOut{to{opacity:0}}
+@keyframes ecRip{0%{opacity:0;transform:scale(.08)}2%{opacity:.95;transform:scale(.08)}100%{opacity:0;transform:scale(1)}}
+@keyframes ecSpl{0%{opacity:0;transform:translate(0,0)}10%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+@keyframes ecToC{0%{opacity:0;transform:none}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}
+@keyframes ecFlip{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.15)}}
+@keyframes ecWave{0%,100%{transform:translateX(0)}50%{transform:translateX(14px)}}
+@keyframes ecRay{0%,100%{transform:rotate(-4deg);opacity:.7}50%{transform:rotate(4deg);opacity:1}}
+@keyframes ecBub{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-520px)}}
+@keyframes ecTrail{0%{opacity:0;transform:translateY(0) scale(.4)}20%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.2)}}
+@keyframes ecSink{0%{opacity:0;offset-distance:0%}5%{opacity:1}100%{opacity:1;offset-distance:100%}}
+@keyframes ecHL{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
+@keyframes ecHR{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
+@keyframes ecFillTo{to{fill-opacity:.5}}
+@keyframes ecStep{0%{opacity:0;transform:scale(.4)}40%{opacity:1;transform:scale(1)}100%{opacity:.55;transform:scale(1)}}
+@keyframes ecMarch{to{stroke-dashoffset:-26}}
+@keyframes ecShake{0%,100%{transform:none}20%{transform:translate(-7px,2px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-1px)}}
+@keyframes ecHandIn{0%{opacity:0;transform:translate(60px,280px)}100%{opacity:1;transform:none}}
+@keyframes ecHandOut{to{opacity:0;transform:translate(60px,280px)}}
+@keyframes ecLipT{0%,100%{transform:none}25%,62%{transform:translateY(24px)}}
+@keyframes ecLipB{0%,100%{transform:none}25%,62%{transform:translateY(-24px)}}
+@keyframes ecMouth{0%,100%{transform:scaleY(1)}25%,62%{transform:scaleY(.12)}}
+@keyframes ecZoomD{0%{transform:scale(1)}85%{opacity:1}100%{transform:scale(16);opacity:0}}
+@keyframes ecViewIn{from{transform:scale(1.8)}to{transform:scale(1)}}
+@keyframes ecFlame{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes ecFlick{from{transform:scaleY(1) skewX(0)}to{transform:scaleY(.85) skewX(5deg)}}
+@keyframes ecReveal{from{transform:scale(.05)}to{transform:scale(1)}}
+@keyframes ecSunUp2{0%{opacity:0;transform:translateY(0)}12%{opacity:1}100%{opacity:1;transform:translateY(-310px)}}
+@keyframes ecMoon{0%{opacity:0;transform:translate(60px,120px)}100%{opacity:1;transform:none}}

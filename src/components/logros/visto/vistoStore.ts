@@ -53,6 +53,15 @@ function leer(): Record<string, PendienteLocal> {
     return {}
   }
 }
+const CLAVE_CON_FOTO = 'trazo:logros:con-foto'
+function leerConFoto(): Record<string, true> {
+  try {
+    return JSON.parse(window.localStorage.getItem(CLAVE_CON_FOTO) ?? '{}') ?? {}
+  } catch {
+    return {}
+  }
+}
+
 function guardar(p: Record<string, PendienteLocal>) {
   try {
     window.localStorage.setItem(CLAVE_PENDIENTES, JSON.stringify(p))
@@ -78,6 +87,9 @@ interface VistoState {
   /** Un mensaje corto de una foto guardada («Foto guardada»). */
   nota: string | null
   pendientes: Record<string, PendienteLocal>
+  /** Paradas con foto ya subida para los logros: con la foto, lo ganado ya no se deshace (apartado 25). */
+  conFoto: Record<string, true>
+  marcarConFoto: (stopId: string) => void
   poner: (parcial: Partial<VistoState>) => void
   anotarPendiente: (stopId: string, p: PendienteLocal) => void
   quitarPendiente: (stopId: string) => void
@@ -96,6 +108,17 @@ export const useVistoStore = create<VistoState>((set) => ({
   servidor: {},
   nota: null,
   pendientes: typeof window === 'undefined' ? {} : leer(),
+  conFoto: typeof window === 'undefined' ? {} : leerConFoto(),
+  marcarConFoto: (stopId) =>
+    set((s) => {
+      const siguientes = { ...s.conFoto, [stopId]: true as const }
+      try {
+        window.localStorage.setItem(CLAVE_CON_FOTO, JSON.stringify(siguientes))
+      } catch {
+        /* sin almacenamiento */
+      }
+      return { conFoto: siguientes }
+    }),
   poner: (parcial) => {
     set(parcial)
     sincronizarBloqueo()

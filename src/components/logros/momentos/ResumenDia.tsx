@@ -46,7 +46,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
       const e = estadoInicial ?? (await pedirEstado(tripId))
       if (!vivo) return
       setEstado(e)
-      const r = await pedirResumen(tripId, e?.viaje.hoy ?? null)
+      const r = await pedirResumen(tripId, e?.viaje?.hoy ?? null)
       if (vivo) setResumen(r)
     })()
     return () => {
@@ -54,12 +54,14 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
     }
   }, [tripId, estadoInicial])
 
-  const cuentas = resumen?.por_categoria ?? contarMomentos(ganado)
+  // Lo del día que cuenta el servidor y, por si aún no lo ha apuntado, lo que se acaba de enseñar: de cada cosa, la cuenta más alta.
+  const cuentas = { ...(resumen?.por_categoria ?? {}) }
+  for (const [k, v] of Object.entries(contarMomentos(ganado))) cuentas[k] = Math.max(cuentas[k] ?? 0, v)
   const lineas = ORDEN.filter((k) => (cuentas[k] ?? 0) > 0)
   const ciudad = estado?.ciudad ?? ''
   const sello = estado?.sellos[0]
   const pendiente = (resumen?.pendiente ?? estado?.pendiente)?.texto ?? null
-  const acabado = estado ? estado.viaje.hoy > estado.viaje.fin : false
+  const acabado = estado?.viaje?.hoy && estado.viaje.fin ? estado.viaje.hoy > estado.viaje.fin : false
   return (
     <div className="mo" role="dialog" aria-modal="true" aria-label="Resumen del día" style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',system-ui,sans-serif", display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
       <div style={{ padding: 'calc(env(safe-area-inset-top,0px) + 34px) 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
@@ -84,7 +86,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
         </ul>
       )}
       <div style={{ padding: '18px 24px 0', display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'center' }}>
-        {estado && <span style={{ font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{estado.secretos.texto}</span>}
+        {estado?.secretos.texto && <span style={{ font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{estado.secretos.texto}</span>}
         {pendiente && <span style={{ font: "600 13.5px 'Geist'", color: 'oklch(0.55 0.17 5)' }}>{pendiente}</span>}
       </div>
       <div style={{ flex: 1 }} />

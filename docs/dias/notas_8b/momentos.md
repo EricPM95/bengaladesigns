@@ -76,3 +76,33 @@ Capturas en `docs/dias/capturas_8b/` (nombres con la letra del diseño: A, B, C,
 - Compartir un logro no lleva la foto del viajero (el diseño tiene un recuadro «TU FOTO»); lleva el dibujo grande. El marcador «LOGO» y el nombre del viajero no los pinto.
 - En compartir, los textos de dentro de los dibujos (como «ROMA» del sello) usan una letra de repuesto porque el navegador no carga fuentes web dentro de la imagen.
 - No he probado en un móvil de verdad la vibración, `navigator.share` con archivo ni el audio.
+
+---
+
+# 8B2 · Arreglos de los momentos
+
+## Qué he cambiado
+1. **El orden ya no se toca en el móvil.** `plan.ts` solo AGRUPA lo que llega del servidor, en su orden (`ajustes.json › orden_momentos`, el único sitio): todos los pedazos nuevos en una sola pantalla; cada colección completada, una pantalla; el Emblema Oculto; el sello si sube; «Y además…»; y al final el resumen del día. Los `suma_sello` no tienen pantalla.
+2. **Excepción de las maravillas.** Justo tras el emblema de una maravilla (Coliseo) va una pantalla entera con la medalla de las 7 apagada que enciende su pedazo: «Maravilla del mundo · Tu primera maravilla · 1 de 7» + [Seguir]. Quité la tarjetita «Tu primera maravilla» de la película (`escenas/coliseo.tsx`, solo ese bloque; ahora los textos se quedan y [Seguir] sale a los ~25 s) y de «Y además…».
+3. **Pedazos con su dibujo de verdad.** Pantalla de pedazos: cada insignia sale con lo que ya tenía y, a los ~1 s, se enciende el pedazo nuevo con latido y destello (`InsigniaEncendiendo`). Etiqueta siempre «Un pedazo nuevo» / «Pedazos nuevos» (fuera «Una foto, 3 colecciones»). Si llegan dos pedazos de la misma colección en una ronda sale una sola fila (esto lo añadió el agente del Visto; lo conservé). La colección completada: pantalla propia con la insignia cerrándose y «N DE N · COMPLETA». En «Y además…» las miniaturas son chapas reales; una maravilla se dibuja con la medalla.
+4. **Suspense** (`Suspense3` en `EscenaDeEmblema.tsx`): añadidos los rayos que giran (van creciendo con la espera) y el viñeteado. Solo con `primeraVez` y `frase`.
+5. **Resumen del viaje y los demás: nunca «undefined».** `pedirEstado` completa siempre las listas y la ciudad vacía; `ResumenViaje`, `ResumenDia`, `HojaLogros` y el botón escriben «Tu viaje», «Tus logros» o «N secretos por descubrir» si falta la ciudad, y esconden la línea si falta el dato; sin `viaje` no se pinta la fecha. El resumen del día coge, de cada cosa, la cuenta más alta entre lo del servidor y lo que se acaba de enseñar. Sin el número de secretos, la sección no sale (nunca se inventa uno).
+6. Demo: `window.__momentos.serieColiseo()` (3 pedazos, emblema + maravilla, sello que nace, país, destino, Patrimonio, viajero) y `serieS2()` (3 pedazos + colección completada + sello que sube a plata), `datos(acabado, tipo, nImp)`. El orden de `logrosDemo.ts` ya lo había puesto el agente del Visto.
+   Solo en desarrollo: `window.__retrasoInsignia = 99` deja las insignias apagadas para capturar el principio.
+
+## Textos nuevos
+«Pedazos nuevos» · «Un pedazo nuevo» · «¡Colección completa!» · «N DE N · COMPLETA» · «Maravilla del mundo» · «Tu primera maravilla» · «N de 7» · «Tu viaje» · «N secretos por descubrir».
+
+## Capturas (`docs/dias/capturas_8b/`, sustituyen a las de la 8B; las del Visto/HOY no las toqué)
+- `CS-coliseo-00…20`: la serie entera del Coliseo: HOY v2 con [Visto] (00), aviso (01), hoja del Emblema Oculto (02), cámara (03), pedazos (04), pedazos que vuelan al botón (05), película (06 frase, 07 polvo de oro, 08 se enciende, 09 estalla, 10 fuegos, 11 final con [Seguir]), medalla 1 de 7 (12-14), sello que nace (15-17), «Y además…» (18-19), resumen del día (20).
+- `S2-01…10`: varios pedazos (antes, se encienden, final), colección completada, sello que sube a plata (tiembla, estalla, plata) y resumen.
+- `C-suspense-1/2`: la espera con rayos y viñeteado.
+- Las capturas de los pedazos y la película se tomaron congelando el tiempo (`getAnimations`), por eso los fuegos y las partículas están en un instante exacto.
+- En 04 y las del Coliseo, los pedazos/película salen de mi serie de demo; el [Visto] real del demo (Visto agent) solo devuelve un pedazo (no da el emblema), por eso la serie se completa con `serieColiseo()` tras la foto.
+
+## Qué queda / riesgos
+- «El final de las 7 maravillas» (película) sigue sin hacer, anotado.
+- Con la medalla, el «pedazo que se enciende» es la propia animación de `MedallaMaravillas` al pasar de `[]` a `[id]`; con más maravillas no se sabe cuáles estaban ya encendidas (el momento solo trae la nueva) y la medalla sale con solo esa.
+- El texto «N DE 8» bajo la insignia sale con la cuenta DESPUÉS del pedazo mientras la insignia pasa de N-1 a N; es a propósito.
+- Probé a mano que `ResumenViaje` aguanta un estado sin ciudad (revisado el código, y con el demo del Visto sin lista de secretos); con el servidor real no he podido probarlo (sin cuenta real).
+- Al capturar, las hojas del Visto y el demo del Visto reinician la página con las recargas de otros agentes: la serie hay que repetirla de un tirón.

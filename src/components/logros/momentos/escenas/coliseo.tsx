@@ -155,9 +155,8 @@ export default function PeliculaColiseo({ nombre, linea, onSeguir, onSaltarTodo 
   }
   const tEmb = 23.6
   const tTextos = 24
-  const tFuera = 26.6
-  const tCard = 26.9
-  const tBoton = 27.6
+  const tFuera = 999 // (8B2) los textos se quedan: «Tu primera maravilla» ya no va en la película, sale en su propia pantalla
+  const tBoton = 25.6
   const [verBoton, setVerBoton] = useState(reducido)
   useEffect(() => {
     if (reducido) return undefined
@@ -218,18 +217,6 @@ export default function PeliculaColiseo({ nombre, linea, onSeguir, onSaltarTodo 
           </div>
           <Textos nombre={nombre ?? t.nombre} linea={linea ?? t.linea} desde={tTextos} hasta={tFuera} />
           <Destellos desde={tNum(13.85) - off} n={44} />
-          {/* «Y además… Tu primera maravilla» */}
-          <div data-vuelo="perfil" style={{ position: 'absolute', left: 50, right: 50, top: 604, height: 84, borderRadius: 22, background: 'rgba(255,253,248,.1)', border: '1px solid rgba(243,213,154,.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px 0 12px', textAlign: 'left', opacity: 0, animation: `mcPop .7s calc(${tCard}s - var(--off)) cubic-bezier(.2,.8,.2,1) both` }}>
-            <span style={{ position: 'relative', width: 60, height: 60, flex: 'none', borderRadius: '50%', background: 'radial-gradient(circle at 35% 28%,#FFF6DC,#D9B86A 55%,#9C7634)', boxShadow: 'inset 0 0 0 3px rgba(255,255,255,.35),0 6px 14px -6px rgba(0,0,0,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A4012' }}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20h18M5 20V9M19 20V9M5 9a7 3 0 0 1 14 0M8 20v-8M12 20v-8M16 20v-8" /></svg>
-              <span style={{ position: 'absolute', bottom: -6, height: 16, padding: '0 6px', borderRadius: 999, background: '#2A1D10', color: '#F3D59A', font: "700 9px/16px 'Geist Mono',monospace" }}>1/7</span>
-            </span>
-            <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: '#F3D59A' }}>Y además…</span>
-              <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>Tu primera maravilla</span>
-              <span style={{ font: "400 11.5px 'Geist'", color: 'rgba(255,253,248,.65)' }}>Las 7 maravillas del mundo · 1 de 7</span>
-            </span>
-          </div>
           {/* La oscuridad y las dos frases del principio */}
           <div style={{ position: 'absolute', inset: 0, background: '#000', animation: 'mcOut .9s calc(10.9s - var(--off)) ease both', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', left: 24, right: 24, top: 330, font: "italic 400 42px/1.15 'Instrument Serif',serif", color: '#F3E3B8', textWrap: 'balance', animation: 'mcOut .6s calc(4.7s - var(--off)) ease both' }}>

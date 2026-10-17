@@ -30,6 +30,9 @@ Todo lo de la Tanda 8 está en `APUNTES_TRAS_TANDA7.md` y `BRIEF_DISENO_LOGROS.m
 - **8c · las pantallas de los logros.**
 - Después: cuentas, parte 3 (pantallas reales y el cobro del pase).
 
+## Antes de la prueba con las 100 personas (Eric, 17-oct)
+- Tres agentes revisan toda la app en busca de errores: textos y avisos que no cuadran con su sitio, fotos de otro sitio, mapas, fechas y números (APUNTES §38).
+
 ## Además, cuando toque
 - Volver a sacar VIAJES_REVISION con el motor nuevo (después de la 7b).
 - Copiar al PC: PENDIENTES_RECOMPENSAS, PENDIENTES_ESCUCHAR, PENDIENTES_6K, APUNTES_TRAS_TANDA7, BRIEF_DISENO_LOGROS, PROMPT_TANDA7b y este archivo. Nunca mientras Code está en mitad de una tanda.

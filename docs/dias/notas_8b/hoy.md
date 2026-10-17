@@ -47,3 +47,18 @@ Archivos nuevos en `src/components/route/hoy/v2/`:
 - «Tu ruta empieza en…» necesita que `paradasParaElTitulo` dé la primera parada real; probado con datos de prueba.
 - «La maleta» del día de vuelta sale de los datos de llegada/vuelta del destino (solo si hay).
 - No he probado la compra, el servidor del pase ni el Visto con cuenta real (solo `?pase=` y datos de prueba).
+
+---
+
+# 8B2 (arreglos de Eric)
+1. **Avisos del día con cruz** (zona de toque de 44 px): al cerrar uno no vuelve ESE día; se guarda por viaje + día en `localStorage` (`trazo:hoy:avisos-cerrados:<viaje>:<día>`, con try/catch).
+2. **Fuera «Tu ruta empieza en…».**
+3. **Fuera la etiqueta «Saltada»:** la parada ya sale tachada y con [Recuperar].
+4. **Mapa pequeño:** alejado (zoom 13: se leen «Vatican City», «Saint Peter's Basilica», «Castle of…»). El texto «© Mapbox © OpenStreetMap» ya no tapa el mapa: va con la «i» (la zona de toque es de 44 px); al tocarla sale el texto pequeño. La imagen se pide con `attribution=false` y el crédito sigue accesible.
+5. **Título del día de llegada:** «Centro histórico» (si el título del día es el trayecto «Madrid → Roma», se usa el nombre de la zona del día, y el trayecto va pequeño debajo). El «Madrid → Roma» de mi primera captura era porque aún no habían llegado los datos del destino.
+6. **HOY de después:** con los logros encendidos (`HoyDespuesV2.tsx`) abre el resumen del viaje de «Logros · Momentos» (`useMomentosUI.abrirResumenViaje()`; una vez por viaje y sesión) y deja [Ver el resumen de mi viaje]. Con los logros apagados, el de siempre. La pieza del resumen, en la captura, todavía la está terminando el agente de momentos (sale «undefined esconde 12 secretos»): no es de HOY.
+7. **Fotos:** ver `docs/dias/notas_8b/fotos.md` y `scripts/destino/auditoriaFotos.mjs`. La foto de Navona = Trevi era mi dato de prueba, no el mapeo.
+8. **Fechas:** todo usa `route.answers.dateRange` (la cabecera de la app). El «17 – 19 oct» de mi tarjeta salía de contar solo los días de ruta sin el de vuelta; ahora 1a dice «17 – 20 oct» arriba y en el modo de pruebas, y «Tu viaje a Roma · 4 días · 3 noches · 17 – 20 oct» en el HOY de después. La ruta rápida de desarrollo no cambia (ya ponía inicio + días − 1).
+9. **Con `?hoy2=on` el HOY viejo no sale por ningún camino** (`HoyView` es el único sitio que lo monta). La fila vieja «Visto: … Añadir foto» ya se oculta con logros (cambio del agente del Visto, en mi archivo).
+10. **Capturas nuevas** (JPG, sustituyen a las de antes): 1a, 2, 2b (aviso cerrado + crédito del mapa), 3, 3b, lista (parada saltada sin etiqueta), despues, despues-resumen.
+- Aviso: en el panel del navegador otro agente me navegó mi pestaña (`tab-3`); acabé con una pestaña nueva (`tab-6`).

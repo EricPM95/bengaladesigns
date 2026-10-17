@@ -1,6 +1,7 @@
 /** Solo desarrollo: «?dibujos=1» enseña todos los dibujos de los logros en cuadrícula, para compararlos con «Logros · Modelos». */
 import { useState } from 'react'
-import { Sello, Insignia, Emblema, Chapa, MedallaMaravillas, sitiosDeColeccion } from '../components/logros/dibujos'
+import { Sello, Insignia, Emblema, Chapa, MedallaMaravillas } from '../components/logros/dibujos'
+import { sitiosDeColeccion } from '../components/logros/dibujos/Insignia'
 import { ESCALONES_DE, LOGROS_CON_CHAPA } from '../components/logros/dibujos/Chapa'
 import viajero from '../../data/logros/viajero.json'
 import roma from '../../data/logros/roma.json'

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { displayStopName } from '../../../lib/format'
+import { Insignia } from '../dibujos/InsigniaPerezosa'
 import { Trazo, TRAZO } from './trazos'
 import type { DestinoDeFoto, Hoja } from './vistoStore'
 
@@ -63,24 +64,13 @@ const BTN_GAL: CSSProperties = { background: '#FFFFFF', color: TINTA, border: '1
 const BTN_CAM_ORO: CSSProperties = { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', border: 'none' }
 const BTN_GAL_OSCURO: CSSProperties = { background: 'transparent', color: '#FFFDF8', border: '1px solid rgba(255,253,248,.3)' }
 
-/** El pedazo ganado (V2): la tarjeta oscura de arriba con el hexágono dorado. */
-function PedazoGanado({ nombre, coleccion, linea }: { nombre: string; coleccion: string; linea: string | null }) {
+/** El pedazo ganado (V2): la tarjeta oscura de arriba con la INSIGNIA de su colección y el pedazo de este sitio encendido (el dibujo de verdad de «Logros · Modelos»). */
+function PedazoGanado({ nombre, coleccion, coleccionId, ganados, linea }: { nombre: string; coleccion: string; coleccionId: string | null; ganados: string[]; linea: string | null }) {
   return (
     <div className="relative mx-3 flex items-center gap-3.5 overflow-hidden rounded-[26px] p-[18px] text-[#FFFDF8]" style={{ background: 'radial-gradient(120% 90% at 50% 0%,#3A3550 0%,#1C2230 65%)' }}>
       <span className="absolute -left-[30px] -top-10 h-40 w-40 rounded-full" style={{ background: 'repeating-conic-gradient(oklch(0.82 0.12 80 / .16) 0 8deg,transparent 8deg 22deg)', animation: 'vistoRays 20s linear infinite' }} />
-      <span className="relative h-[70px] w-[70px] flex-none" style={{ animation: 'vistoPop .7s .3s cubic-bezier(.3,1.5,.5,1) both' }}>
-        <svg width="70" height="70" viewBox="0 0 70 70" aria-hidden="true">
-          <defs>
-            <linearGradient id="vistoPz" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#FFE7A8" />
-              <stop offset="1" stopColor="#B8903E" />
-            </linearGradient>
-          </defs>
-          <path d="M35 4L64 20V50L35 66L6 50V20Z" fill="url(#vistoPz)" stroke="#FFF3D0" strokeWidth="1.5" />
-          <g transform="translate(23 23)" fill="none" stroke="#4A3612" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d={TRAZO.check} transform="translate(0 0) scale(1)" />
-          </g>
-        </svg>
+      <span data-visto="insignia" className="relative flex h-[84px] w-[84px] flex-none items-center justify-center" style={{ animation: 'vistoPop .7s .3s cubic-bezier(.3,1.5,.5,1) both' }}>
+        {coleccionId && <Insignia coleccion={coleccionId} ganados={ganados} tam={84} animada />}
       </span>
       <span className="relative flex flex-1 flex-col gap-1">
         <span style={{ font: `600 10px ${MONO}`, letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.86 0.12 85)' }}>Nuevo pedazo</span>
@@ -105,7 +95,7 @@ export interface AccionesDeHoja {
 /** V2, V3, V4, V5 y «Guarda un recuerdo»: la hoja que sale tras el aviso de 5 segundos. */
 export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: AccionesDeHoja }) {
   const { tipo } = hoja
-  const nombre = hoja.nombreSitio || displayStopName(hoja.parada.nombre)
+  const nombre = displayStopName(hoja.parada.nombre)
   const oscura = tipo === 'oculto'
   const caja: CSSProperties = oscura
     ? { background: 'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)', color: '#FFFDF8' }
@@ -119,7 +109,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
   let botones: ReactNode = null
   if (tipo === 'ganado') {
     titulo = `Guarda un recuerdo de ${nombre}`
-    subtitulo = 'La foto es para tu álbum: el pedazo ya es tuyo.'
+    subtitulo = 'Tu pedazo ya es tuyo. La foto es para tu álbum.'
     botones = (
       <>
         <Boton icono={TRAZO.cam} texto="Hacer foto" onClick={acciones.onCamara} estilo={BTN_CAM} />
@@ -138,7 +128,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
       </>
     )
   } else if (tipo === 'lejos') {
-    titulo = hoja.mensaje ?? `Parece que no estás en ${nombre}. Tu pedazo te espera allí.`
+    titulo = `Parece que no estás en ${nombre}. Tu pedazo te espera allí.`
     subtitulo = 'La parada queda como vista.'
     icono = TRAZO.lejos
     iconoFondo = 'oklch(0.55 0.17 5 / .1)'
@@ -164,7 +154,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
   }
   return (
     <Capa onCerrar={acciones.onCerrar} etiqueta={titulo}>
-      {tipo === 'ganado' && hoja.pedazo && <PedazoGanado nombre={nombre} coleccion={hoja.pedazo.nombre} linea={hoja.pedazo.linea ?? null} />}
+      {tipo === 'ganado' && hoja.pedazo && <PedazoGanado nombre={nombre} coleccion={hoja.pedazo.nombre} coleccionId={typeof hoja.pedazo.coleccion === 'string' ? hoja.pedazo.coleccion : null} ganados={Array.isArray(hoja.pedazo.sitios) ? (hoja.pedazo.sitios as string[]) : []} linea={hoja.pedazo.linea ?? null} />}
       <div data-visto={`hoja-${tipo}`} className="relative flex flex-col gap-3 overflow-hidden rounded-t-[26px] px-[18px] pb-8 pt-3" style={{ ...caja, boxShadow: '0 -12px 34px -18px rgba(0,0,0,.5)' }}>
         {oscura && <span className="pointer-events-none absolute -right-[70px] -top-20 h-60 w-60 rounded-full" style={{ background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', maskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', animation: 'vistoRays 24s linear infinite' }} />}
         <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: oscura ? 'rgba(255,253,248,.25)' : 'rgba(28,34,48,.18)' }} />
@@ -255,7 +245,7 @@ export function HojaDePermisos({ onContinuar }: { onContinuar: () => void }) {
 /** A2: la franja de «Sin conexión». */
 export function FranjaSinConexion() {
   return createPortal(
-    <div data-visto="sin-conexion" role="status" className="pointer-events-none fixed inset-x-3.5 top-[64px] z-[70] mx-auto flex max-w-[480px] items-center gap-2 rounded-xl px-3 py-[7px] text-[#FFFDF8]" style={{ background: TINTA, font: "500 12px/1.35 'Geist'" }}>
+    <div data-visto="sin-conexion" role="status" className="pointer-events-none fixed inset-x-3.5 bottom-[92px] z-[70] mx-auto flex max-w-[480px] items-center gap-2 rounded-xl px-3 py-[7px] text-[#FFFDF8]" style={{ background: TINTA, font: "500 12px/1.35 'Geist'" }}>
       <span style={{ animation: 'vistoBlink 2s ease-in-out infinite', display: 'flex' }}>
         <Trazo d={TRAZO.sinSenal} tam={15} />
       </span>

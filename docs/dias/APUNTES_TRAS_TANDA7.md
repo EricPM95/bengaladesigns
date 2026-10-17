@@ -758,3 +758,19 @@ Detalle en REVISION_DESIGN_PASO3.md. Lo que cambia reglas:
   5. Seguro justo después de guardar el vuelo. Texto honesto (la tarjeta sanitaria europea cubre la sanidad pública, no la cancelación, el equipaje ni la repatriación). Preguntar al gestor o al programa si recomendar seguros tiene reglas propias en España.
 - Reglas: sin nombres de empresas, se puede cerrar, como mucho uno por pantalla, con su código de afiliado. Falta el código de Booking.
 - (15:18, Eric) **Los dibujos de todos los logros salen de Logros · Modelos.** Si otra página no coincide, manda Modelos. Y las pantallas de los momentos, de Logros · Momentos (Modelos: cómo es cada dibujo; Momentos: cómo aparece). Va en el prompt de la 8b y en el de la 8c.
+
+## 37. Revisión de la Tanda 8b (Eric y Claude, 17-oct, 19:17–20:18)
+- Va a la 8b2. Lo de Eric:
+  1. el mapa pequeño de la foto: más alejado, con algo reconocible, y el aviso del mapa en pequeño;
+  2. una cruz en los avisos del día («… cierra hoy a las …»); cerrado, no vuelve ese día;
+  3. fuera «Tu ruta empieza en…»;
+  4. fuera la etiqueta «Saltada»;
+  5. el pedazo nuevo, con su insignia y su pedazo encendiéndose (Modelos y Momentos), no un hexágono con ✓. El pedazo se gana sin foto con la ubicación (regla del 16-oct); la hoja lo dice claro: «Tu pedazo ya es tuyo. La foto es para tu álbum.»;
+  6. fuera «Una foto, 3 colecciones».
+- **El orden de las sorpresas (Eric, 20:15), siempre:** los pedazos nuevos, todos en una pantalla → cada colección completada, una pantalla por colección → el Emblema Oculto → el sello, si sube → «Y además…» (país, destino, Patrimonio, logros de viajero) → el resumen del día. Excepción: en el Coliseo, «Tu primera maravilla» va justo después de su emblema. El orden, en un solo sitio (el servidor).
+- Lo de Claude: la foto de Piazza Navona es la de Trevi; el Visto y las fotos salen sobre el HOY viejo; las capturas V4 y V5 están repetidas; las fechas de la 1a no cuadran; el título del día de llegada; en V3 el texto dice Plaza Navona en el Panteón.
+- Lo que Code dejó sin hacer: las 11 escenas como las de Design, desmarcar desde «···», el HOY de después del viaje.
+- **La película de «El final de las 7 maravillas», para más adelante** (propuesta de Claude): nadie puede conseguirla hasta que haya los 7 destinos.
+
+## 38. Al final, antes de la prueba con las 100 personas (Eric, 17-oct, 20:18)
+- Lanzar 3 agentes por toda la app para buscar todo tipo de errores: que los avisos y los textos coincidan con cada sitio, que cada foto sea de su sitio, los mapas, las fechas, los números…

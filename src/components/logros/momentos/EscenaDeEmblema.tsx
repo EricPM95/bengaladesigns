@@ -68,6 +68,9 @@ function Suspense3({ frase, alTerminar }: { frase: string; alTerminar: () => voi
   }, [alTerminar])
   return (
     <div className="mo" onClick={alTerminar} style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#0C0A08', color: '#FFFDF8', cursor: 'pointer', overflow: 'hidden' }} aria-live="polite">
+      {/* Los rayos que giran (van creciendo con la espera) y el viñeteado que oscurece los bordes, como en «Logros · Momentos» */}
+      <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', left: '50%', top: '55%', width: 760, height: 760, margin: '-380px 0 0 -380px', borderRadius: '50%', background: 'repeating-conic-gradient(rgba(243,213,154,.16) 0 5deg,transparent 5deg 18deg)', WebkitMaskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', maskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', opacity: 0, animation: 'ecIRays 3.2s ease-in both, moRays 14s linear infinite' }} />
+      <span aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 55%,transparent 38%,rgba(0,0,0,.72) 100%)', pointerEvents: 'none' }} />
       <span style={{ position: 'absolute', left: 24, right: 24, top: '28%', textAlign: 'center', font: "italic 400 34px/1.15 'Instrument Serif',serif", color: '#F3E3B8', textWrap: 'balance', opacity: 0, animation: 'ecIPhrase 3.2s ease both' }}>{frase}</span>
       <div style={{ position: 'absolute', left: '50%', top: '55%', width: 0, height: 0 }}>
         {aros.map((d, i) => (

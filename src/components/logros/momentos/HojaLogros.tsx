@@ -26,7 +26,7 @@ export default function HojaLogros(): ReactNode {
     }
   }, [tripId])
   const cerrar = () => useMomentosUI.getState().cerrarHojaLogros()
-  const acabado = estado ? estado.viaje.hoy > estado.viaje.fin : false
+  const acabado = estado?.viaje?.hoy && estado.viaje.fin ? estado.viaje.hoy > estado.viaje.fin : false
   return (
     <div className="mo" style={{ position: 'fixed', inset: 0, zIndex: 9000, fontFamily: "'Geist',system-ui,sans-serif" }}>
       <div onClick={cerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)', animation: 'moFade .3s ease both' }} />
@@ -36,7 +36,7 @@ export default function HojaLogros(): ReactNode {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
         <div style={{ textAlign: 'center', marginTop: 14 }}>
-          <span style={{ font: "400 28px/1 'Instrument Serif',serif" }}>{estado ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}</span>
+          <span style={{ font: "400 28px/1 'Instrument Serif',serif" }}>{estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}</span>
         </div>
         {!estado ? (
           <p style={{ textAlign: 'center', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)', margin: '24px 0' }}>{cargado ? 'Todavía no hay logros que enseñar.' : 'Un momento…'}</p>
@@ -63,7 +63,7 @@ export default function HojaLogros(): ReactNode {
                 </div>
               ))}
             </div>
-            <p style={{ textAlign: 'center', font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)', margin: '16px 0 4px' }}>{estado.secretos.texto}</p>
+            {estado.secretos.texto && <p style={{ textAlign: 'center', font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)', margin: '16px 0 4px' }}>{estado.secretos.texto}</p>}
             {estado.pendiente.texto && <p style={{ textAlign: 'center', font: "600 13px 'Geist'", color: 'oklch(0.55 0.17 5)', margin: '4px 0' }}>{estado.pendiente.texto}</p>}
             {acabado && (
               <button

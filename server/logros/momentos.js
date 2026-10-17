@@ -1,8 +1,8 @@
 /**
  * LOS MOMENTOS (Tanda 8A): de lo nuevo que ha ganado alguien tras un Visto o una foto, la lista en el orden en que se enseña. Las pantallas llegan en la 8b.
  *
- * El orden sale de `data/logros/ajustes.json › orden_momentos` (emblema, lo que suma, colecciones completadas, sello, país y destino nuevos, maravilla y Patrimonio,
- * logros de viajero). Si Design pone otro orden en «Logros · Momentos», se cambia ahí, sin tocar el código.
+ * El orden sale de `data/logros/ajustes.json › orden_momentos` (lo que suma, colecciones completadas, emblema, sello, país y destino nuevos, maravilla y Patrimonio,
+ * logros de viajero), el ÚNICO sitio donde se decide (Tanda 8B2); la maravilla de un emblema de maravilla va pegada a él. Si Design pone otro orden en «Logros · Momentos», se cambia ahí, sin tocar el código.
  * Cada momento lleva `primera_vez`. La frase de suspense de antes del emblema sale SOLO la primera vez, al azar y sin repetir la última que vio esa persona;
  * al volver a verlo guardado, sin frase.
  */
@@ -48,7 +48,7 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
       const em = d.emblemas.find((x) => x.id === it.escalon)
       const f = elegirFrase(ajustes.frases_suspense, frase, azar)
       frase = f
-      salida.push({ tipo: 'emblema', cat: 'emblema', clave: it.clave, id: em.id, destino: it.destino, nombre: em.nombre, linea: em.linea, momento: em.tipo === 'momento', primera_vez: true, frase: f, en: it.en })
+      salida.push({ tipo: 'emblema', cat: 'emblema', clave: it.clave, id: em.id, destino: it.destino, nombre: em.nombre, linea: em.linea, momento: em.tipo === 'momento', maravilla: d.sitios?.[em.sitio]?.maravilla ?? null, primera_vez: true, frase: f, en: it.en })
     } else if (cat === 'pedazo') {
       const [col, sitio] = it.escalon.split(':')
       if (!pedazosPorColeccion.has(col)) pedazosPorColeccion.set(col, { destino: it.destino, sitios: [] })
@@ -107,8 +107,16 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
   void GLOBAL
   // El orden de los momentos: primero por categoría (ajustes.orden_momentos; lo que suma va con los pedazos), después por la hora.
   const pos = (m) => orden(m.cat)
-  return salida
+  const ordenados = salida
     .map((m, i) => ({ m, i }))
     .sort((a, b) => pos(a.m) - pos(b.m) || (a.m.en && b.m.en ? new Date(a.m.en) - new Date(b.m.en) : 0) || a.i - b.i)
     .map(({ m }) => m)
+  // Excepción, las maravillas del mundo (Tanda 8B2): su momento va justo después del emblema de ese sitio («Tu primera maravilla · 1 de 7»), no con el «Y además…».
+  for (const maravilla of ordenados.filter((m) => m.tipo === 'maravilla')) {
+    const emblema = ordenados.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id)
+    if (emblema < 0) continue
+    ordenados.splice(ordenados.indexOf(maravilla), 1)
+    ordenados.splice(ordenados.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id) + 1, 0, maravilla)
+  }
+  return ordenados
 }

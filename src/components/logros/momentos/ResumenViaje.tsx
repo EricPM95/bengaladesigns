@@ -64,8 +64,8 @@ export default function ResumenViaje(): ReactNode {
       ) : (
         <>
           <div style={{ padding: 'calc(env(safe-area-inset-top,0px) + 40px) 24px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 10 }}>
-            <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Tu viaje a {estado.ciudad} · {rangoDeFechas(estado.viaje.inicio, estado.viaje.fin)}</span>
-            {resumen && <span style={{ font: "400 28px/1.12 'Instrument Serif',serif", textWrap: 'balance', animation: 'moUp .6s ease both' }}>{resumen.texto_viaje} Echa un vistazo a todo lo que conseguiste.</span>}
+            <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>{estado.ciudad ? `Tu viaje a ${estado.ciudad}` : 'Tu viaje'}{estado.viaje?.inicio && estado.viaje?.fin ? ` · ${rangoDeFechas(estado.viaje.inicio, estado.viaje.fin)}` : ''}</span>
+            {resumen?.texto_viaje && <span style={{ font: "400 28px/1.12 'Instrument Serif',serif", textWrap: 'balance', animation: 'moUp .6s ease both' }}>{resumen.texto_viaje} Echa un vistazo a todo lo que conseguiste.</span>}
             {sello?.grado && (
               <>
                 <div style={{ marginTop: 8, animation: 'moIn .8s .2s both' }}><Sello id={sello.id} grado={sello.grado as GradoDeSello} tam={112} /></div>
@@ -89,9 +89,9 @@ export default function ResumenViaje(): ReactNode {
               </div>
             </>
           )}
-          {secretos && (
+          {secretos && (secretos.total > 0 || secretos.encontrados > 0) && (
             <>
-              <Titulo>{secretos.encontrados > 0 ? secretos.texto : `Roma esconde ${secretos.total} secretos`}</Titulo>
+              <Titulo>{secretos.encontrados > 0 ? secretos.texto || `${secretos.encontrados} de ${secretos.total} secretos encontrados` : estado.ciudad ? `${estado.ciudad} esconde ${secretos.total} secretos` : `${secretos.total} secretos por descubrir`}</Titulo>
               <div style={{ padding: '10px 20px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {secretos.encontrados_lista.map((e) => (
                   <span key={e.id} style={{ width: 63, height: 63, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Emblema id={e.id} tam={63} /></span>

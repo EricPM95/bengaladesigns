@@ -89,11 +89,12 @@ function paradaDe(dayId: string, stopId: string, tripId: string): ParadaVista | 
 
 /** Qué tarjeta toca según lo que contesta el servidor (la tabla de «Cómo se gana cada cosa al tocar Visto»). null = ninguna. */
 export function hojaSegunRespuesta(r: RespuestaDeHecho | null, parada: ParadaVista): Hoja | null {
-  const nombreSitio = r?.sitio_nombre || displayStopName(parada.nombre)
+  // El nombre que sale en los textos es SIEMPRE el de la parada que se acaba de marcar (nunca el de otra).
+  const nombreSitio = displayStopName(parada.nombre)
   const base = { parada, nombreSitio, fotoDentro: r?.foto_dentro ?? null }
   if (!r) return { ...base, tipo: 'recuerdo' }
   if (r.motivo === 'pregunta_medio_dia' || r.repetido) return null
-  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: r.mensaje ?? null }
+  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `Parece que no estás en ${nombreSitio}. Tu pedazo te espera allí.` }
   if (r.motivo === 'lejos') return { ...base, tipo: 'recuerdo' }
   if (r.cuenta === false) return { ...base, tipo: 'recuerdo' }
   if (r.hay_emblema) return { ...base, tipo: 'oculto' }
@@ -203,12 +204,15 @@ async function resolverFoto(destino: DestinoDeFoto, archivo: File, origen: 'app'
   const datos = { tripId: parada.tripId, stopId: parada.stopId, nombre: parada.nombre }
   const r = origen === 'app' ? await enviarFotoDeLaCamara(datos) : await enviarFotoDeGaleria({ ...datos, archivo })
   if (r && r.valida === false) {
-    poner({ galeria: { ...destino, error: r.mensaje ?? 'Esta foto no vale. Elige otra.', subiendo: false } })
+    // Con el nombre de la parada de esta foto (nunca el de otra).
+    const mensaje = r.motivo === 'otro_sitio' ? `Esta foto no es de ${destino.nombreSitio}.` : (r.mensaje ?? 'Esta foto no vale. Elige otra.')
+    poner({ galeria: { ...destino, error: mensaje, subiendo: false } })
     return
   }
   // El álbum va aparte y sin esperar: si no hay red o Supabase, la foto de los logros ya está mandada.
   void subirAlAlbum(destino, archivo)
   quitarPendiente(parada.stopId)
+  useVistoStore.getState().marcarConFoto(parada.stopId)
   void refrescarPendientes(parada.tripId)
   if (r) {
     useLogrosStore.getState().recibir(r)
@@ -431,13 +435,13 @@ if (import.meta.env.DEV && demoActivo()) {
     const w = window as unknown as { __demo?: Record<string, unknown> }
     if (!w.__demo) return
     w.__demo.loDeAyer = () => mostrarLoDeAyer(useRouteStore.getState().route?.id ?? '', true)
-    w.__demo.abrirHojaDeVisto = (tipo: Hoja['tipo'], stopIndex = 0) => {
+    w.__demo.abrirHojaDeVisto = (tipo: Hoja['tipo'], stopIndex = 0, fotoDentro: string | null = null) => {
       const route = useRouteStore.getState().route
       const dia = route?.days[0]
       const stop = dia?.stops[stopIndex]
       if (!route || !dia || !stop) return false
       const parada: ParadaVista = { tripId: route.id, dayId: dia.id, dayNumber: dia.dayNumber, stopId: stop.id, nombre: stop.name }
-      abrirHoja({ tipo, parada, nombreSitio: displayStopName(stop.name), pedazo: tipo === 'ganado' ? ({ tipo: 'suma', nombre: 'Los imprescindibles de Roma', linea: '3 de 8', primera_vez: true } as never) : null, mensaje: tipo === 'lejos' ? `Parece que no estás en ${displayStopName(stop.name)}. Tu pedazo te espera allí.` : null })
+      abrirHoja({ tipo, parada, nombreSitio: displayStopName(stop.name), fotoDentro, pedazo: tipo === 'ganado' ? ({ tipo: 'suma', nombre: 'Los imprescindibles de Roma', linea: '3 de 8', primera_vez: true } as never) : null, mensaje: tipo === 'lejos' ? `Parece que no estás en ${displayStopName(stop.name)}. Tu pedazo te espera allí.` : null })
       return true
     }
   })

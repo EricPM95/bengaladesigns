@@ -74,3 +74,6 @@
 @keyframes mcRing{to{transform:rotate(360deg)}}
 @keyframes mcTw{0%,100%{opacity:.35}50%{opacity:1}}
 @keyframes moConv{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(0,0) scale(1.2)}}
+@keyframes moLate2{0%{transform:scale(1)}40%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes moDestello{0%{opacity:0;transform:scale(.6)}30%{opacity:1}100%{opacity:0;transform:scale(1.4)}}
+@keyframes ecIRays{0%{opacity:0}60%{opacity:.5}92%{opacity:.9}100%{opacity:1}}

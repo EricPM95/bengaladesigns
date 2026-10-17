@@ -132,6 +132,7 @@ console.log('4. Lo que no debe llegar a producción ni pesar al abrir')
     }
     const dentro = abren.join('\n')
     debe(!/Casi 2\.000 años esperándote/.test(dentro) && !/Tu día en /.test(dentro), 'carga', 'al abrir no entran ni la película del Coliseo ni los resúmenes')
+    debe(!/cuatro_joyas|baldaquino|dib-quieto|mm-off/.test(dentro), 'carga', 'al abrir no entran los dibujos de los logros (insignias, sellos, emblemas, medalla): la hoja del Visto importa solo InsigniaPerezosa')
     const bytes = urls.filter((u) => u.endsWith('.js')).reduce((s, u) => s + fs.statSync('dist' + u).size, 0)
     const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync('dist' + u)).length, 0)
     console.log(`   al abrir: ${(bytes / 1024).toFixed(1)} KB de JavaScript (${(gz / 1024).toFixed(1)} KB comprimido) en ${urls.length} archivos`)
@@ -139,6 +140,56 @@ console.log('4. Lo que no debe llegar a producción ni pesar al abrir')
     const medalla = archivos('public/medalla', /\.(webp|png)$/).reduce((s, f) => s + fs.statSync(f).size, 0)
     debe(medalla < 220 * 1024, 'peso', 'la medalla de las 7 maravillas pesa menos de unos 200 KB')
   } else console.log('   (sin dist/: no se comprueba la versión de producción; ejecuta antes «npx vite build»)')
+}
+
+console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia, la medalla 1 de 7 y los avisos con cruz')
+{
+  const ajustes = JSON.parse(leer('data/logros/ajustes.json'))
+  debe(ajustes.orden_momentos.join() === 'pedazo,coleccion,emblema,sello,pais,destino_nuevo,continente,maravilla,patrimonio,viajero', 'orden', 'el orden de las sorpresas, en un solo sitio (el servidor): pedazos, colecciones, emblema, sello, «Y además…»')
+  const servidor = sinComentarios(leer('server/logros/momentos.js'))
+  debe(/m\.tipo === 'emblema' && m\.maravilla === maravilla\.id/.test(servidor), 'orden', 'el servidor pega la maravilla a su emblema')
+  const plan = sinComentarios(leer('src/components/logros/momentos/plan.ts'))
+  debe(!/\.sort\(|orden_momentos|ORDEN\b/.test(plan), 'orden', 'el móvil no reordena (plan.ts solo agrupa lo que manda el servidor)')
+  const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-pantallas8b2-'))
+  const salida = path.join(carpeta, 'plan.cjs')
+  await build({ entryPoints: [path.resolve('src/components/logros/momentos/plan.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error' })
+  const P = createRequire(import.meta.url)(salida)
+  const m = (tipo, extra = {}) => ({ tipo, nombre: tipo, primera_vez: true, ...extra })
+  const lista = [
+    m('suma', { coleccion: 'imprescindibles' }), m('suma', { coleccion: 'cuatro_joyas' }), m('suma_sello', { sello: 'roma' }),
+    m('coleccion', { id: 'roma_antigua' }), m('coleccion', { id: 'miradores' }),
+    m('emblema', { id: 'coliseo', maravilla: 'coliseo' }), m('maravilla', { id: 'coliseo' }),
+    m('sello', { sello: 'roma', grado: 'plata' }),
+    m('pais'), m('patrimonio'), m('viajero'),
+  ]
+  const pantallas = P.planificar(lista)
+  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,coleccion,coleccion,emblema,maravilla,sello,ademas', 'orden', `las pantallas, en este orden: pedazos (todos juntos), una por colección completada, emblema, medalla de la maravilla, sello, «Y además…» (salió: ${pantallas.map((p) => p.tipo).join()})`)
+  debe(pantallas[0].momentos.length === 2 && pantallas[6].momentos.length === 3, 'orden', 'todos los pedazos nuevos en una sola pantalla y «Y además…» con país, Patrimonio y logro de viajero')
+  debe(!pantallas.some((p) => p.tipo === 'ademas' && p.momentos.some((x) => x.tipo === 'maravilla')), 'orden', 'la maravilla no va como tarjetita dentro de «Y además…»')
+  debe(P.planificar([m('maravilla', { id: 'gran_muralla' })]).map((p) => p.tipo).join() === 'maravilla', 'orden', 'una maravilla sola tiene su pantalla entera')
+  const momentos = archivos('src/components/logros/momentos').map((f) => sinComentarios(leer(f))).join('\n')
+  debe(!/Una foto, \$\{/.test(momentos) && !/Una foto, \d/.test(momentos) && !/Una foto,/.test(momentos), 'texto', 'fuera «Una foto, 3 colecciones»')
+  const pant = leer('src/components/logros/momentos/pantallas.tsx')
+  debe(/<Insignia /.test(pant) && /<MedallaMaravillas/.test(pant), 'dibujos', 'el pedazo lleva su insignia y la maravilla su medalla (nunca un icono genérico)')
+  debe(/Tu primera maravilla/.test(pant) || /primera maravilla/i.test(pant), 'maravilla', '«Tu primera maravilla · 1 de 7» en su pantalla entera')
+  const coliseo = leer('src/components/logros/momentos/escenas/coliseo.tsx')
+  debe(!/Tu primera maravilla/.test(sinComentarios(coliseo)), 'maravilla', 'la película del Coliseo ya no lleva dentro la tarjetita «Tu primera maravilla»')
+  const hojas = leer('src/components/logros/visto/Hojas.tsx')
+  debe(/<Insignia /.test(hojas) && /Tu pedazo ya es tuyo\. La foto es para tu álbum\./.test(hojas), 'v2', 'la hoja del pedazo (V2) lleva la insignia y dice que el pedazo ya es suyo')
+  const durante = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
+  debe(/Cerrar este aviso/.test(durante) && /h-11 w-11/.test(durante), 'avisos', 'los avisos del día llevan una cruz de 44 px')
+  const v2 = archivos('src/components/route/hoy/v2').map((f) => sinComentarios(leer(f))).join('\n')
+  debe(!/Tu ruta empieza/.test(v2) && !/>\s*Saltada\s*</.test(v2) && !/'Saltada'/.test(v2), 'hoy', 'fuera «Tu ruta empieza en…» y la etiqueta «Saltada»')
+  const visto = archivos('src/components/logros/visto').map((f) => sinComentarios(leer(f))).join('\n')
+  debe(!/sitio_nombre/.test(visto.replace(/\/\/.*$/gm, '').split('\n').filter((l) => /\$\{|<span|<p|texto|titulo/.test(l)).join('\n')), 'textos', 'los textos de las hojas llevan el nombre de la parada, no el `sitio_nombre` del servidor')
+  const despues = leer('src/components/route/hoy/v2/HoyDespuesV2.tsx')
+  debe(/abrirResumenViaje/.test(despues), 'despues', 'el HOY de después del viaje usa la pieza del resumen del viaje')
+  debe(fs.existsSync('scripts/destino/auditoriaFotos.mjs'), 'fotos', 'el script de auditoría de fotos está')
+  const escenas = ['panteon', 'fontana_de_trevi', 'foro_romano', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'madrugador', 'nocturno']
+  debe(escenas.every((e) => fs.existsSync(`src/components/logros/momentos/escenas/${e}.tsx`)), 'escenas', 'las 11 escenas siguen cada una en su archivo (carga perezosa)')
+  const horas = []
+  for (const e of ['madrugador', 'nocturno']) for (const x of sinComentarios(leer(`src/components/logros/momentos/escenas/${e}.tsx`)).matchAll(/\b([01]?\d|2[0-3]):[0-5]\d\b/g)) horas.push(`${e}: ${x[0]}`)
+  debe(horas.length === 0, 'horas', `las escenas de Madrugador y Nocturno no enseñan ninguna hora: ${horas.join(' | ')}`)
 }
 
 const ok = fallos.length === 0

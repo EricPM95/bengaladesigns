@@ -5,7 +5,7 @@ import { useLogrosStore } from '../../../../store/useLogrosStore'
 import { getTodayTripStatus } from '../../../../lib/todayMode'
 import { responderPregunta } from '../../../../lib/logros'
 import { usePaseEstado } from '../../../../lib/paseEstado'
-import { HoyDespues } from '../HoyDespues'
+import { HoyDespuesV2 } from './HoyDespuesV2'
 import { CabeceraHoy, HoyAntesV2, ojoDeViaje } from './HoyAntesV2'
 import { HoyDuranteV2 } from './HoyDuranteV2'
 import { HojaPregunta } from './HojasV2'
@@ -36,7 +36,7 @@ export function HoyV2({ route, onPonFechas }: { route: Route; onPonFechas: () =>
       ) : estado.phase === 'during' ? (
         <HoyDuranteV2 route={route} day={estado.context.day} dateIso={estado.context.dateIso} pase={pase} />
       ) : (
-        <HoyDespues route={route} startIso={estado.startIso} />
+        <HoyDespuesV2 route={route} startIso={estado.startIso} />
       )}
       {pregunta && estado?.phase === 'during' && <HojaPregunta texto={pregunta.texto} onResponder={responder} />}
     </div>

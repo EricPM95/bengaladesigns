@@ -8,7 +8,7 @@
   "estaciones": { "primavera": [3, 4, 5], "verano": [6, 7, 8], "otono": [9, 10, 11], "invierno": [12, 1, 2] },
   "dias_escalon_nuevo": 30,
   "dias_destino_nuevo": 60,
-  "orden_momentos": ["emblema", "pedazo", "coleccion", "sello", "pais", "destino_nuevo", "continente", "maravilla", "patrimonio", "viajero"],
+  "orden_momentos": ["pedazo", "coleccion", "emblema", "sello", "pais", "destino_nuevo", "continente", "maravilla", "patrimonio", "viajero"],
   "frases_suspense": [
     "¡Eh! Aquí hay algo…",
     "Pero… ¿qué es esto?",

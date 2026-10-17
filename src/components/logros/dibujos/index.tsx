@@ -7,15 +7,14 @@
  * Cada familia se importa donde se use; las piezas pesadas (chapas, emblema del Coliseo, medalla) se cargan perezosamente al dibujarse.
  */
 import type { ReactNode } from 'react'
+import { Insignia as InsigniaPerezosa } from './InsigniaPerezosa'
 import { Sello as SelloDibujo } from './Sello'
 import type { GradoDeSello } from './Sello'
-import { InsigniaDibujo } from './Insignia'
 import { EmblemaDibujo } from './Emblema'
 import { ChapaDibujo } from './Chapa'
 import { MedallaDibujo } from './Medalla'
 
 export type { GradoDeSello }
-export { sitiosDeColeccion } from './Insignia'
 
 /** El sello coleccionable de una ciudad (sin fondo, solo su figura). `id`: 'roma' | 'vaticano' (ids de `data/logros/roma.json › sellos`). Opcional: `apagado` (el «por conseguir») y `animado` (por defecto sí). */
 export function Sello({ id, grado, tam = 96, apagado = false, animado = true }: { id: string; grado: GradoDeSello; tam?: number; apagado?: boolean; animado?: boolean }): ReactNode {
@@ -24,7 +23,7 @@ export function Sello({ id, grado, tam = 96, apagado = false, animado = true }: 
 
 /** La insignia de una colección con sus pedazos. `coleccion`: id de `data/logros/roma.json › colecciones`; `ganados`: ids de los sitios ya vistos (los pedazos de color); sin `ganados` sale en gris. `completa` la enseña entera. Opcional: `animada`. */
 export function Insignia({ coleccion, ganados = [], completa = false, tam = 120, animada = false }: { coleccion: string; ganados?: string[]; completa?: boolean; tam?: number; animada?: boolean }): ReactNode {
-  return <InsigniaDibujo coleccion={coleccion} ganados={ganados} completa={completa} tam={tam} animada={animada} />
+  return <InsigniaPerezosa coleccion={coleccion} ganados={ganados} completa={completa} tam={tam} animada={animada} />
 }
 
 /** El emblema oculto. `id`: id de `data/logros/roma.json › emblemas` (coliseo, foro_romano, … madrugador, nocturno). `animado`: la animación en bucle de «encontrado»; sin ella, estático. `silueta`: el «?» de los que faltan. Pensado para fondo oscuro. `fecha` (AAAA-MM-DD): el día en que se encontró; solo la moneda de oro del Coliseo la enseña (sin ella, la de hoy). */

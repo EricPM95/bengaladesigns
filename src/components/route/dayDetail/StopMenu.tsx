@@ -1,3 +1,4 @@
+import { DesmarcarDelMenu } from '../../logros/visto/DesmarcarDelMenu'
 import { useState } from 'react'
 import type { Stop } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -119,6 +120,9 @@ export function StopMenu({ dayId, city, stop, index, realStops, otherDays, freeD
                 Devolverla a la ruta
               </button>
             )}
+
+            {/* 8b2: «Desmarcar visto» mientras no haya foto (con los logros apagados no pinta nada). */}
+            {view === 'menu' && <DesmarcarDelMenu dayId={dayId} stop={stop} className={menuItemClass} onHecho={close} />}
 
             {view === 'menu' && stop.reservedId && (
               <div className="space-y-0.5">

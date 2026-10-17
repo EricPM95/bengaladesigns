@@ -6,7 +6,7 @@ import { moverParadaAOtroDia } from '../../../../lib/cambiarParada'
 import { useDestinationExcursions } from '../../../../lib/destinationExcursions'
 import { dayOfReservation } from '../../../../lib/bookings'
 import { addDaysToIso, formatWeekdayAbbrEs } from '../../../../lib/dateRange'
-import { esDiaDeLlegada, nombreDelDia, paradasParaElTitulo } from '../../../../lib/tituloDelDia'
+import { esDiaDeLlegada, nombreDelDia, viajeDelDia } from '../../../../lib/tituloDelDia'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { displayStopName, formatDuration } from '../../../../lib/format'
 import { hasRealCoordinates, haversineMeters } from '../../../../lib/distanceMock'
@@ -48,6 +48,24 @@ const METROS_POR_MINUTO = 80
 const lonLat = (p: Coordinates) => `${p.lng.toFixed(5)},${p.lat.toFixed(5)}`
 const OJO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgba(28,34,48,.55)' }
 
+/** Los avisos cerrados con la cruz: por viaje y día, en el móvil; no vuelven a salir ESE día. */
+const claveCerrados = (rutaId: string, diaId: string) => `trazo:hoy:avisos-cerrados:${rutaId}:${diaId}`
+function leerCerrados(rutaId: string, diaId: string): string[] {
+  try {
+    const lista = JSON.parse(window.localStorage.getItem(claveCerrados(rutaId, diaId)) ?? '[]')
+    return Array.isArray(lista) ? lista.filter((x) => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+function guardarCerrados(rutaId: string, diaId: string, ids: string[]) {
+  try {
+    window.localStorage.setItem(claveCerrados(rutaId, diaId), JSON.stringify(ids))
+  } catch {
+    /* sin almacenamiento: vale hasta cerrar la pantalla */
+  }
+}
+
 function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada | null; cerradoEsteDia: boolean }) {
   if (cerradoEsteDia && !horario?.cerrado) horario = { abre: null, cierra: null, ultimaEntrada: null, cerrado: true, tramos: [], texto: CERRADO_ESTE_DIA }
   if (!horario) return null
@@ -62,17 +80,27 @@ function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada 
 function FotoYMapa({ parada, desde }: { parada: Stop; desde: Coordinates | null }) {
   const [falloMapa, setFalloMapa] = useState(false)
   const [falloFoto, setFalloFoto] = useState(false)
+  const [verCredito, setVerCredito] = useState(false)
   const real = hasRealCoordinates(parada.coordinates)
   let mapa: string | null = null
   if (TOKEN && real && !falloMapa) {
-    const [pines, padding] = desde ? [`pin-s+8E96A8(${lonLat(desde)}),pin-l+B8325F(${lonLat(parada.coordinates)})/auto`, 'padding=20&'] : [`pin-l+B8325F(${lonLat(parada.coordinates)})/${lonLat(parada.coordinates)},15`, '']
-    mapa = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/192x128@2x?${padding}access_token=${TOKEN}`
+    // Más lejos (zoom 13): se ven nombres, plazas y el río. El aviso va aparte, pequeño, con su «i» (`attribution=false`: el texto sigue disponible al tocarla).
+    const pines = desde ? `pin-s+8E96A8(${lonLat(desde)}),pin-l+B8325F(${lonLat(parada.coordinates)})` : `pin-l+B8325F(${lonLat(parada.coordinates)})`
+    mapa = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pines}/${lonLat(parada.coordinates)},13/192x128@2x?attribution=false&access_token=${TOKEN}`
   }
   return (
     <div className="relative h-[150px] flex-none overflow-hidden rounded-[21px]" style={{ background: 'repeating-linear-gradient(135deg,#2A3141 0 12px,#252C3B 12px 24px)' }}>
       {parada.photoUrl && !falloFoto && <img src={parada.photoUrl} alt="" className="h-full w-full object-cover" onError={() => setFalloFoto(true)} />}
       {mapa && (
-        <img src={mapa} alt="Mapa hasta la siguiente parada" className="absolute bottom-2.5 right-2.5 h-16 w-24 rounded-[14px] object-cover" style={{ border: '2px solid rgba(255,253,248,.9)' }} loading="lazy" onError={() => setFalloMapa(true)} />
+        <div className="absolute bottom-2.5 right-2.5 h-16 w-24 overflow-hidden rounded-[14px]" style={{ border: '2px solid rgba(255,253,248,.9)' }}>
+          <img src={mapa} alt="Mapa hasta la siguiente parada" className="h-full w-full object-cover" loading="lazy" onError={() => setFalloMapa(true)} />
+          <button type="button" onClick={() => setVerCredito((v) => !v)} aria-label="Datos del mapa" aria-expanded={verCredito} className="absolute bottom-0 right-0 flex h-11 w-11 items-end justify-end">
+            <span className="flex h-[18px] w-[18px] items-center justify-center rounded-tl-md bg-white/85 text-[10px] font-bold italic leading-none text-[#1C2230]/70">i</span>
+          </button>
+          {verCredito && (
+            <span className="absolute inset-x-0 bottom-0 bg-white/90 px-1 py-px text-[7px] leading-tight text-[#1C2230]/80">© Mapbox © OpenStreetMap</span>
+          )}
+        </div>
       )}
     </div>
   )
@@ -195,7 +223,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const sinParadasDeVuelta = esVuelta && paradas.length === 0
   const tarjetaVuelve = tarjetaHoyVuelvesDelDia(route, day)
   const diaCompleto = esDiaCompleto(route, day, reservations)
-  const cierres = avisosDeCierre(vigentes.filter((s) => !s.closedThisDay), horarioDe, (s) => displayStopName(s.name))
+  const [cerrados, setCerrados] = useState<string[]>(() => leerCerrados(route.id, day.id))
+  const cierres = avisosDeCierre(vigentes.filter((s) => !s.closedThisDay), horarioDe, (s) => displayStopName(s.name)).filter((a) => !cerrados.includes(a.id))
+  const cerrarAviso = (id: string) => setCerrados((antes) => { const ahora = [...antes, id]; guardarCerrados(route.id, day.id, ahora); return ahora })
 
   const pedirUbicacion = () => {
     if (!('geolocation' in navigator)) return setUbicacionEstado('no')
@@ -244,7 +274,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   // ── La cabecera: «jue 23» y el título del día (si es día de viaje, su trayecto al lado) ──
   const ojo = `${formatWeekdayAbbrEs(dateIso)} ${Number(dateIso.slice(8, 10))}`
-  const cabecera = info.cargado || esVuelta ? <CabeceraHoy ojo={ojo} titulo={tituloDeHoy.titulo} sub={tituloDeHoy.viaje} /> : <CabeceraHoy ojo={ojo} titulo=" " />
+  const tituloLimpio = tituloDeHoy.titulo.includes('→') ? (day.curatedTitle ?? day.city) : tituloDeHoy.titulo
+  const cabecera = info.cargado || esVuelta ? <CabeceraHoy ojo={ojo} titulo={tituloLimpio} sub={tituloDeHoy.viaje ?? viajeDelDia(route, day)} /> : <CabeceraHoy ojo={ojo} titulo=" " />
 
   // ── El pase: con cobro y sin pase, el día de llegada es la tarjeta P3 y, si la prueba ya se gastó, solo la tarjeta de la 12 ──
   const sinPase = pase.cobro && !pase.conPase
@@ -281,7 +312,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   }
 
   const filas = filasDelDia(day, paradas)
-  const primeraReal = paradasParaElTitulo(day)[0]?.name ?? null
   const arrivalDay = day.arrivalDay
   const comidaAlLlegar = esLlegada && (Boolean(day.meals.some((m) => m.noRestaurant)) || Boolean(arrivalDay?.comida_al_llegar))
   const llegadaTarde = esLlegada && Boolean(arrivalDay?.sin_paradas) && Boolean(arrivalDay?.de_noche)
@@ -299,6 +329,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
             <Icono nombre="reloj" size={16} />
           </span>
           <span className="min-w-0 flex-1 text-[13px] font-medium leading-[1.35]">{a.texto}</span>
+          <button type="button" onClick={() => cerrarAviso(a.id)} aria-label="Cerrar este aviso" className="flex h-11 w-11 flex-none items-center justify-center rounded-full text-[#1C2230]/55">
+            <Icono nombre="cerrar" size={14} grosor={2} />
+          </button>
         </div>
       ))}
       {entradasDeHoy.map((entrada) => (
@@ -380,18 +413,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               Explorar restaurantes
             </button>
           </div>
-          {primeraReal && (
-            <div className="flex flex-none flex-col gap-2.5 rounded-[20px] p-3.5" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)' }}>
-              <span className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-white" style={{ background: VERDE }}>
-                  <Icono nombre="mapa" size={15} grosor={1.9} />
-                </span>
-                <span style={{ font: "400 19px/1.15 'Instrument Serif',serif", color: 'oklch(0.3 0.08 150)' }}>
-                  Tu ruta empieza en <em>{displayStopName(primeraReal)}</em>.
-                </span>
-              </span>
-            </div>
-          )}
         </>
       )}
 
@@ -534,7 +555,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                     </span>
                     {!saltada && <EtiquetaBarrioDeSitio destination={route.destination} name={stop.name} className="self-start" />}
                     <span className="flex flex-wrap gap-1">
-                      {saltada && <span className="h-5 rounded-full bg-[#EDE6D8] px-[7px] text-[10px] font-semibold leading-5 text-text/60">Saltada</span>}
                       {stop.addedByUser && <span className="h-5 rounded-full px-[7px] text-[10px] font-semibold leading-[18px]" style={{ border: '1px dashed oklch(0.55 0.17 5 / .5)', color: 'oklch(0.5 0.17 5)' }}>Añadida</span>}
                     </span>
                     <ExtraDeParada parada={stop} dayId={day.id} vista={vista} contexto="fila" />

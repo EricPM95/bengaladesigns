@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
 import type { Momento } from '../../../lib/logros'
 import { Chapa, Insignia, MedallaMaravillas, Sello, type GradoDeSello } from '../dibujos'
 import type { EstadoLogros } from './api'
@@ -82,37 +82,78 @@ function unaPorColeccion<T extends { id: string; n: number; completa: boolean; v
   return [...por.values()]
 }
 
-/* ── Los pedazos y las colecciones completadas ── */
-function PantallaColecciones({ pantalla, estado, onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
-  const filas = unaPorColeccion(pantalla.momentos.map((m) => {
-    const completa = m.tipo === 'coleccion'
-    const id = completa ? s(m, 'id') : s(m, 'coleccion')
-    const col = estado?.colecciones.find((x) => x.id === id)
-    const vistos = col ? col.sitios.filter((x) => x.visto).map((x) => x.sitio) : ((m.sitios as string[] | undefined) ?? [])
-    const total = completa ? (col?.total ?? 0) : Number(m.total ?? 0)
-    const n = completa ? total : Number(m.n ?? 0)
-    return { id, nombre: s(m, 'nombre'), completa, vistos, total, n, linea: completa ? s(m, 'linea') : '' }
-  }))
-  const solo = filas.length === 1
-  const todasCompletas = filas.every((f) => f.completa)
-  const ojo = todasCompletas ? '¡Colección completa!' : solo ? 'Un pedazo nuevo' : `Una foto, ${filas.length} colecciones`
-  const cuenta = (f: (typeof filas)[number]) => (f.completa ? `${f.total || f.n} DE ${f.total || f.n} · COMPLETA` : `${f.n} DE ${f.total}`)
-  const ultimo = 0.6 + (filas.length - 1) * 0.8
+/* ── Los pedazos nuevos (todos en una pantalla) y las colecciones completadas (una por colección) ── */
+/** La insignia de una colección con su pedazo nuevo encendiéndose: sale con lo que ya tenía y, a los ~0,9 s, se enciende el nuevo con un destello. */
+function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam, retraso = 0.9 }: { coleccion: string; vistos: string[]; nuevos: string[]; completa?: boolean; tam: number; retraso?: number }): ReactNode {
+  const antes = vistos.filter((x) => !nuevos.includes(x))
+  const [encendido, setEncendido] = useState(false)
+  // (solo desarrollo) `window.__retrasoInsignia = 99` deja la insignia apagada para poder capturar el principio.
+  const espera = import.meta.env.DEV ? ((window as unknown as { __retrasoInsignia?: number }).__retrasoInsignia ?? retraso) : retraso
+  useEffect(() => {
+    const h = window.setTimeout(() => setEncendido(true), espera * 1000)
+    return () => window.clearTimeout(h)
+  }, [espera])
   return (
-    <PantallaOscura etiqueta={ojo} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={`${(solo ? 1.8 : ultimo + 2.2).toFixed(1)}s`}>
-      <Rayos color={todasCompletas ? 'rgba(159,224,180,.16)' : 'rgba(255,225,170,.16)'} halo={todasCompletas ? 'rgba(159,224,180,.4)' : 'rgba(255,215,160,.32)'} />
+    <span style={{ position: 'relative', display: 'inline-flex', animation: encendido ? 'moLate2 .7s ease both' : 'none' }}>
+      <Insignia coleccion={coleccion} ganados={encendido ? vistos : antes} completa={completa && encendido} tam={tam} animada />
+      <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', inset: -tam * 0.1, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,236,190,.65),transparent 62%)', opacity: 0, animation: `moDestello 1s ${retraso}s ease-out both` }} />
+    </span>
+  )
+}
+
+const sitiosVistos = (estado: EstadoLogros | null, id: string, respaldo: string[]): string[] => {
+  const col = estado?.colecciones.find((x) => x.id === id)
+  return col ? col.sitios.filter((x) => x.visto).map((x) => x.sitio) : respaldo
+}
+
+function PantallaPedazos({ pantalla, estado, onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
+  const nuevosDe = (id: string) => pantalla.momentos.filter((m) => s(m, 'coleccion') === id).flatMap((m) => (m.sitios as string[] | undefined) ?? [])
+  const filas = unaPorColeccion(
+    pantalla.momentos.map((m) => {
+      const nuevos = (m.sitios as string[] | undefined) ?? []
+      return { id: s(m, 'coleccion'), nombre: s(m, 'nombre'), completa: false, nuevos, vistos: sitiosVistos(estado, s(m, 'coleccion'), nuevos), n: Number(m.n ?? 0), total: Number(m.total ?? 0) }
+    }),
+  ).map((f) => ({ ...f, nuevos: nuevosDe(f.id) }))
+  const solo = filas.length === 1
+  const ojo = solo ? 'Un pedazo nuevo' : 'Pedazos nuevos'
+  return (
+    <PantallaOscura etiqueta={ojo} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn={solo ? '2.6s' : `${(1.8 + filas.length * 0.6).toFixed(1)}s`}>
+      <Rayos color="rgba(255,225,170,.16)" halo="rgba(255,215,160,.32)" />
       <Centro estilo={{ gap: solo ? 10 : 14 }}>
-        <Ojo en=".3s" color={todasCompletas ? '#9FE0B4' : ORO}>{ojo}</Ojo>
+        <Ojo en=".3s">{ojo}</Ojo>
         <Vuelo estilo={{ flexDirection: solo ? 'column' : 'row', flexWrap: 'wrap', gap: solo ? 8 : 18, justifyContent: 'center', maxWidth: 360, padding: '0 14px' }}>
           {filas.map((f, i) => (
-            <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: solo ? 'auto' : 150, opacity: 0, animation: `moIn .9s ${(0.4 + i * 0.8).toFixed(1)}s cubic-bezier(.3,1.3,.5,1) both` }}>
-              <Insignia coleccion={f.id} ganados={f.vistos} completa={f.completa} tam={solo ? 220 : 124} />
+            <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: solo ? 'auto' : 150, opacity: 0, animation: `moIn .8s ${(0.2 + i * 0.5).toFixed(1)}s cubic-bezier(.3,1.3,.5,1) both` }}>
+              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={1 + i * 0.5} />
               <span style={{ font: `400 ${solo ? 30 : 17}px/1.05 'Instrument Serif',serif`, textWrap: 'balance' }}>{f.nombre}</span>
-              <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: f.completa ? '#9FE0B4' : '#F3B7C4' }}>{cuenta(f)}</span>
+              <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3B7C4' }}>{`${f.n} DE ${f.total}`}</span>
             </div>
           ))}
         </Vuelo>
-        {solo && filas[0].linea && <Sub en="2.2s">{filas[0].linea}</Sub>}
+      </Centro>
+    </PantallaOscura>
+  )
+}
+
+function PantallaColeccion({ pantalla, estado, onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
+  const m = pantalla.momentos[0]
+  const id = s(m, 'id')
+  const col = estado?.colecciones.find((x) => x.id === id)
+  const vistos = sitiosVistos(estado, id, [])
+  const total = col?.total ?? vistos.length
+  // Antes de cerrarse el círculo, falta solo el último pedazo.
+  const ultimo = vistos.length > 0 ? [vistos[vistos.length - 1]] : []
+  return (
+    <PantallaOscura etiqueta="Colección completa" onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn="4.2s">
+      <Rayos color="rgba(159,224,180,.16)" halo="rgba(159,224,180,.4)" />
+      <Centro>
+        <Ojo en=".3s" color="#9FE0B4">¡Colección completa!</Ojo>
+        <Vuelo>
+          <InsigniaEncendiendo coleccion={id} vistos={vistos} nuevos={ultimo} completa tam={230} retraso={1.2} />
+        </Vuelo>
+        <Titulo en="2.4s">{m.nombre}</Titulo>
+        <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#9FE0B4', opacity: 0, animation: 'moUp .7s 2.6s ease both' }}>{`${total || vistos.length} DE ${total || vistos.length} · COMPLETA`}</span>
+        {m.linea && <Sub en="2.9s">{m.linea}</Sub>}
       </Centro>
     </PantallaOscura>
   )
@@ -163,24 +204,29 @@ function PantallaSellado({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePant
   )
 }
 
-/* ── Maravilla del mundo (cuando sale sola) ── */
+/* ── Maravilla del mundo: una pantalla entera con la medalla de las 7 encendiendo su pedazo (va justo después del emblema de la maravilla) ── */
 function PantallaMaravilla({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePantalla): ReactNode {
   const m = pantalla.momentos[0]
   const n = Number(m.n ?? 1)
+  const [encendida, setEncendida] = useState(false)
+  useEffect(() => {
+    const h = window.setTimeout(() => setEncendida(true), 1300)
+    return () => window.clearTimeout(h)
+  }, [])
   return (
-    <PantallaOscura etiqueta={m.nombre} fondo={FONDO_NOCHE} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn="3.4s">
+    <PantallaOscura etiqueta={n === 1 ? 'Tu primera maravilla, 1 de 7' : `${m.nombre}, ${n} de 7`} fondo={FONDO_NOCHE} onSeguir={onSeguir} onSaltarTodo={onSaltarTodo} paso={paso} ctaEn="3.6s">
       <Estrellas n={30} />
       <Rayos />
-      <Fuegos desde={0.4} />
+      <Fuegos desde={1.4} />
       <Centro>
         <Vuelo estilo={{ marginBottom: 6 }}>
-          <div style={{ opacity: 0, animation: 'moIn 1s .5s both' }}>
-            <MedallaMaravillas encendidas={[s(m, 'id')]} tam={230} />
+          <div style={{ opacity: 0, animation: 'moIn 1s .2s both' }}>
+            <MedallaMaravillas encendidas={encendida ? [s(m, 'id')] : []} tam={250} />
           </div>
         </Vuelo>
-        <Ojo en="2.2s">Maravilla del mundo</Ojo>
-        <Titulo en="2.4s">{n === 1 ? 'Tu primera maravilla' : m.nombre}</Titulo>
-        <Sub en="2.6s">{n === 1 ? `${m.nombre} · 1 de 7` : `${n} de 7`}</Sub>
+        <Ojo en="2.4s">Maravilla del mundo</Ojo>
+        <Titulo en="2.6s">{n === 1 ? 'Tu primera maravilla' : m.nombre}</Titulo>
+        <Sub en="2.8s">{`${n} de 7`}</Sub>
       </Centro>
     </PantallaOscura>
   )
@@ -228,7 +274,7 @@ function PantallaAdemas({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePanta
             const ch = chapaDe(m)
             return (
               <div key={`${m.tipo}${i}`} style={{ display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', opacity: 0, animation: `moUp .7s ${(0.5 + i * 0.3).toFixed(1)}s ease both` }}>
-                <Chapa logro={ch.logro} escalon={ch.escalon} tam={78} />
+                {m.tipo === 'maravilla' ? <MedallaMaravillas encendidas={[s(m, 'id')]} tam={78} animada={false} /> : <Chapa logro={ch.logro} escalon={ch.escalon} tam={78} />}
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                   <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: ORO }}>{TITULO_CHAPA[m.tipo] ?? 'Logro'}</span>
                   <span style={{ font: "400 22px/1.05 'Instrument Serif',serif" }}>{m.nombre}</span>
@@ -247,8 +293,10 @@ export function PantallaDeMomento(p: PropsDePantalla): ReactNode {
   switch (p.pantalla.tipo) {
     case 'sello':
       return <PantallaSello {...p} />
-    case 'colecciones':
-      return <PantallaColecciones {...p} />
+    case 'pedazos':
+      return <PantallaPedazos {...p} />
+    case 'coleccion':
+      return <PantallaColeccion {...p} />
     case 'emblema':
       return <PantallaEmblema {...p} />
     case 'pais':

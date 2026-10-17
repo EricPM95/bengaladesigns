@@ -31,11 +31,23 @@ export interface ResumenLogros {
 /** Para las pruebas en desarrollo (`window.__momentos`): si hay datos puestos a mano, se usan en vez de llamar al servidor. */
 export const datosDePrueba: { estado: EstadoLogros | null; resumen: ResumenLogros | null } = { estado: null, resumen: null }
 
+/** El servidor de pruebas (y un servidor viejo) pueden mandar el estado sin alguna lista: aquí siempre salen todas. */
+function completar(e: EstadoLogros): EstadoLogros {
+  return {
+    ...e,
+    sellos: e.sellos ?? [],
+    colecciones: e.colecciones ?? [],
+    ciudad: e.ciudad ?? '',
+    secretos: { total: e.secretos?.total ?? 0, encontrados: e.secretos?.encontrados ?? 0, texto: e.secretos?.texto ?? '', encontrados_lista: e.secretos?.encontrados_lista ?? [] },
+    pendiente: { sorpresas: e.pendiente?.sorpresas ?? 0, pedazos: e.pendiente?.pedazos ?? 0, dias_para_reclamar: e.pendiente?.dias_para_reclamar ?? null, texto: e.pendiente?.texto ?? null },
+  }
+}
+
 export async function pedirEstado(tripId: string | null): Promise<EstadoLogros | null> {
-  if (datosDePrueba.estado) return datosDePrueba.estado
+  if (datosDePrueba.estado) return completar(datosDePrueba.estado)
   if (!tripId) return null
   const r = await llamar<EstadoLogros>(`/api/logros/estado?trip_id=${encodeURIComponent(tripId)}`)
-  return r?.ok ? r : null
+  return r?.ok ? completar(r) : null
 }
 
 export async function pedirResumen(tripId: string | null, dia: string | null): Promise<ResumenLogros | null> {
