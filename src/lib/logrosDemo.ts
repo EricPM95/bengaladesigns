@@ -64,12 +64,26 @@ const sumaSello = (nombre: string, n: number, total: number, sello: string): Mom
 const emblema = (id: string, nombre: string, linea: string, maravilla: string | null = null): Momento =>
   ({ tipo: 'emblema', cat: 'emblema', clave: `roma|emblema|${id}`, id, destino: 'roma', nombre, linea, momento: false, maravilla, primera_vez: true, frase: '¡Eh! Aquí hay algo…', en: new Date().toISOString() }) as Momento
 
+/** Lo que da el Coliseo como PRIMER sitio del viaje (8B3, igual que el servidor): 1 pedazo en cada una de sus 3 colecciones, el sello de Roma que nace en bronce («1 de 8»), país nuevo Italia (el 1.º) y destino nuevo Roma (el 1.º). La Basílica después sería el país 2, Ciudad del Vaticano. */
+function primeraVezEnRoma(): Momento[] {
+  const en = new Date().toISOString()
+  return [
+    suma('Los imprescindibles de Roma', 1, 8, ['coliseo'], 'imprescindibles'),
+    suma('Las 4 joyas de Roma', 1, 4, ['coliseo'], 'cuatro_joyas'),
+    suma('La Roma antigua', 1, 6, ['coliseo'], 'roma_antigua'),
+    sumaSello('Roma', 1, 8, 'roma'),
+    { tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:bronce', sello: 'roma', destino: 'roma', grado: 'bronce', nombre: 'Primeros pasos en Roma', linea: 'Has visto tu primer imprescindible.', primera_vez: true, en } as Momento,
+    { tipo: 'pais', cat: 'pais', clave: 'global|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', primera_vez: true, en } as Momento,
+    { tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: 'global|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', primera_vez: true, en } as Momento,
+  ]
+}
+
 const GUIONES: [RegExp, Guion][] = [
   [/fontana de trevi|trevi/, { sitio: 'fontana_de_trevi', nombre: 'Fontana de Trevi', ubic: 'cerca', hay_pedazo: false, hay_emblema: false, nuevosVisto: () => [suma('Las 4 joyas de Roma', 2, 4, ['fontana_de_trevi'], 'cuatro_joyas'), sumaSello('Roma', 2, 8, 'roma')] }],
   [/plaza navona|piazza navona|navona/, { sitio: 'piazza_navona', nombre: 'Plaza Navona', ubic: 'sin', hay_pedazo: true, hay_emblema: false }],
   [/panteon/, { sitio: 'panteon', nombre: 'Panteón', ubic: 'lejos', hay_pedazo: true, hay_emblema: false }],
   [/basilica de san pedro|san pedro/, { sitio: 'basilica_de_san_pedro', nombre: 'Basílica de San Pedro', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosFoto: () => [emblema('basilica_san_pedro', 'Sobre la tumba de San Pedro', 'Bajo el altar mayor está, según la tradición, la tumba del apóstol.')] }],
-  [/coliseo|colosseo|colosseum/, { sitio: 'coliseo', nombre: 'Coliseo', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosVisto: () => [suma('Los imprescindibles de Roma', 3, 8, ['coliseo'], 'imprescindibles'), sumaSello('Roma', 3, 8, 'roma')], nuevosFoto: () => [emblema('coliseo', 'Una maravilla del mundo', 'El mayor anfiteatro de la Antigüedad.', 'coliseo'), { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en: new Date().toISOString() } as Momento] }],
+  [/coliseo|colosseo|colosseum/, { sitio: 'coliseo', nombre: 'Coliseo', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosVisto: () => primeraVezEnRoma(), nuevosFoto: () => [emblema('coliseo', 'Una maravilla del mundo', 'El mayor anfiteatro de la Antigüedad.', 'coliseo'), { tipo: 'maravilla', cat: 'maravilla', clave: 'global|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'Coliseo', linea: 'Una de las nuevas siete maravillas del mundo.', primera_vez: true, en: new Date().toISOString() } as Momento] }],
   [/foro romano|foro/, { sitio: 'foro_romano_y_palatino', nombre: 'Foro Romano', ubic: 'cerca', hay_pedazo: false, hay_emblema: false, nuevosVisto: () => [
     suma('La Roma antigua', 6, 6, ['foro_romano_y_palatino'], 'roma_antigua'),
     sumaSello('Roma', 4, 8, 'roma'),
@@ -97,6 +111,8 @@ function visto(c: Record<string, unknown>): RespuestaDeHecho {
   if (g?.ubic === 'lejos') return { ok: true, cuenta: false, motivo: 'lejos', mensaje: `Parece que no estás en ${nombre}. Tu pedazo te espera allí.`, ubic: 'lejos', ...base, nuevos: [] }
   demo.vistos.add(clave)
   const ubic = g?.ubic ?? 'cerca'
+  // Un pedazo ganado al tocar Visto (con ubicación cerca) ya no queda pendiente: «Lo de ayer» y la tira de la parada tienen que decir lo mismo que la hoja.
+  if (ubic === 'cerca' && g?.nuevosVisto) demo.ganado.add('pedazo|' + g.sitio)
   return { ok: true, cuenta: true, ubic, aviso: ubic === 'sin' ? 'Activa tu ubicación o haz una foto para ganar tu pedazo.' : null, ...base, sitio: g?.sitio, nuevos: ubic === 'cerca' ? (g?.nuevosVisto?.() ?? []) : [] }
 }
 
@@ -134,7 +150,7 @@ function loDeAyer() {
     for (const stop of day.stops ?? []) {
       const g = guionDe(stop.name)
       if (!g || demo.ganado.has(`foto|${g.sitio}`)) continue
-      const falta = [g.hay_pedazo || g.nuevosVisto ? 'pedazo' : null, g.hay_emblema ? 'emblema' : null].filter(Boolean)
+      const falta = [(g.hay_pedazo || g.nuevosVisto) && !demo.ganado.has('pedazo|' + g.sitio) ? 'pedazo' : null, g.hay_emblema ? 'emblema' : null].filter(Boolean)
       if (falta.length) lista.push({ fecha: viajeActual().inicio, dia: day.dayNumber, sitio: g.sitio, stop_id: stop.id, nombre: stop.name, foto_dentro: g.foto_dentro ?? null, falta })
     }
   }

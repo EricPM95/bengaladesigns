@@ -3,11 +3,14 @@
   "carpeta": "/fotos/roma",
   "sin_foto": [
     "Pasear por San Giovanni",
-    "Terraza del Altar de la Patria"
+    "Terraza del Altar de la Patria",
+    "Columna de Trajano"
   ],
   "_sin_foto": "Lugares que van sin foto (el color neutro de la app) hasta que el usuario pase una buena: nunca una buscada sola en Unsplash o Wikipedia. Via Margutta: la foto de un perro (paso 5.6). Pasear por San Giovanni: la que salía era de noche y una parada de día no lleva fotos de noche (paso 5.3). El Coliseo y el Puente Sant'Angelo ya llevan foto de día (elegida el 2-oct-2026 entre las candidatas); la nocturna de cada uno lleva la suya. · 3-oct-2026 (revisión de fotos de Roma): sin foto hasta elegir una buena — no son el sitio (Santa Cecilia, Cementerio Protestante, Mercado de Testaccio, 100 Presepi, Pasear por la Roma Antigua), no son fotos (Domus Aurea, Ostia Antica —excursión—, Pasear por el Esquilino, Galería Nacional de Arte Moderno, Luces de Navidad del Tridente, Nápoles —su nombre de foto es «Naples Italy»—), noches que salen de día (Altar de la Patria, Mirador del Janículo y Terraza del Pincio «(noche)») y Barrio Judío (no se reconoce). Los restaurantes y cafés no se tocan. El Free Tour lleva la foto de la Plaza de España, su punto de encuentro (photo_from en roma.json): decisión del usuario del 11-oct-2026 (antes, el 3-oct, era la de Piazza Navona). · Armando al Pantheon, Trattoria Monti y Felice a Testaccio: sin foto (3-oct-2026) para no repetir la del Panteón, Monti y Testaccio; las fotos de esos tres lugares no se tocan. · 3-oct-2026: TODOS los restaurantes, cafés y heladerías de Roma (el array restaurants de roma.json) van sin foto, también en Explorar y en las tarjetas de comida y cena: ninguno lleva la foto de un sitio que no es suyo. Las fotos de los lugares no se tocan. Si se añade un restaurante nuevo a roma.json, hay que apuntarlo aquí. · 3-oct-2026 (después): los restaurantes, cafés y heladerías ya NO se apuntan aquí. Todo lo que está en la lista `restaurants` de un destino (roma.json y los demás) va sin foto solo, por regla del servidor (isRestaurantName en server/index.js): al añadir uno nuevo o un destino nuevo, nunca busca foto. La tarjeta general «Restaurantes» de Explorar (la foto genérica de una trattoria) no es un restaurante y se queda con su foto.",
   "_fotos_rechazadas": "Tanda 6y2: fotos de Wikipedia que NO son el sitio. Estos lugares van SIN foto (el color neutro de la app) hasta que Eric elija una buena: el servidor no busca nada para ellos ni en Unsplash ni en Wikipedia ni en la caché ni en la foto de su zona (una foto propia suya, si la hay en `fotos`, sí sale). Para sacarlos de la lista: poner la foto propia (docs/dias/FOTOS_ROMA_CANDIDATAS.html tiene 3 candidatas por lugar) y borrar la línea de aquí. Un solo sitio: `fotoOculta` en server/engine/writtenDays.js.",
   "fotos_rechazadas": [
+    {"lugar":"Museos Vaticanos y Capilla Sixtina","motivo":"8B3: Wikipedia servía el interior de la Capilla Sixtina (Sistina-interno.jpg); sin foto hasta tener una propia de fachada o patios."},
+    {"lugar":"Museos Vaticanos","motivo":"8B3: Wikipedia servía el escudo de los Museos (un SVG); sin foto hasta tener una propia."},
     {"lugar":"Cripta de los Capuchinos","motivo":"Wikipedia servía la «Kapuzinergruft» de Viena (Wien_-_Kapuzinergruft…): una cripta de otra ciudad."},
     {"lugar":"Trastevere al atardecer","motivo":"Wikipedia servía el reloj del Quirinal (6h-orologioQuirinale.jpg), que no es Trastevere."},
     {"lugar":"Via dei Coronari","motivo":"Compartía con Borgo Pio la foto del Passetto di Borgo (Passetto_di_Borgo_from_Castel_Sant'Angelo…): no es la calle."},
@@ -1259,7 +1262,6 @@
     {
       "archivo": "dia_foros_de_trajano.jpg",
       "lugares": [
-        "Columna de Trajano",
         "Mercados de Trajano",
         "Foros de Trajano"
       ],

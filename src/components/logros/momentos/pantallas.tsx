@@ -84,7 +84,7 @@ function unaPorColeccion<T extends { id: string; n: number; completa: boolean; v
 
 /* ── Los pedazos nuevos (todos en una pantalla) y las colecciones completadas (una por colección) ── */
 /** La insignia de una colección con su pedazo nuevo encendiéndose: sale con lo que ya tenía y, a los ~0,9 s, se enciende el nuevo con un destello. */
-function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam, retraso = 0.9 }: { coleccion: string; vistos: string[]; nuevos: string[]; completa?: boolean; tam: number; retraso?: number }): ReactNode {
+function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam, retraso = 0.9, pie }: { coleccion: string; vistos: string[]; nuevos: string[]; completa?: boolean; tam: number; retraso?: number; pie?: { nombre: string; n: number; total: number; grande: boolean } }): ReactNode {
   const antes = vistos.filter((x) => !nuevos.includes(x))
   const [encendido, setEncendido] = useState(false)
   // (solo desarrollo) `window.__retrasoInsignia = 99` deja la insignia apagada para poder capturar el principio.
@@ -94,10 +94,19 @@ function InsigniaEncendiendo({ coleccion, vistos, nuevos, completa = false, tam,
     return () => window.clearTimeout(h)
   }, [espera])
   return (
-    <span style={{ position: 'relative', display: 'inline-flex', animation: encendido ? 'moLate2 .7s ease both' : 'none' }}>
-      <Insignia coleccion={coleccion} ganados={encendido ? vistos : antes} completa={completa && encendido} tam={tam} animada />
-      <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', inset: -tam * 0.1, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,236,190,.65),transparent 62%)', opacity: 0, animation: `moDestello 1s ${retraso}s ease-out both` }} />
-    </span>
+    <>
+      <span style={{ position: 'relative', display: 'inline-flex', animation: encendido ? 'moLate2 .7s ease both' : 'none' }}>
+        <Insignia coleccion={coleccion} ganados={encendido ? vistos : antes} completa={completa && encendido} tam={tam} animada />
+        <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', inset: -tam * 0.1, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,236,190,.65),transparent 62%)', opacity: 0, animation: `moDestello 1s ${retraso}s ease-out both` }} />
+      </span>
+      {pie && (
+        <>
+          <span style={{ font: `400 ${pie.grande ? 30 : 17}px/1.05 'Instrument Serif',serif`, textWrap: 'balance' }}>{pie.nombre}</span>
+          {/* La cuenta de debajo dice lo mismo que la insignia: antes de encenderse, una menos por cada pedazo nuevo. */}
+          <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3B7C4' }}>{`${encendido ? pie.n : Math.max(0, pie.n - nuevos.length)} DE ${pie.total}`}</span>
+        </>
+      )}
+    </>
   )
 }
 
@@ -124,9 +133,7 @@ function PantallaPedazos({ pantalla, estado, onSeguir, onSaltarTodo, paso }: Pro
         <Vuelo estilo={{ flexDirection: solo ? 'column' : 'row', flexWrap: 'wrap', gap: solo ? 8 : 18, justifyContent: 'center', maxWidth: 360, padding: '0 14px' }}>
           {filas.map((f, i) => (
             <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: solo ? 'auto' : 150, opacity: 0, animation: `moIn .8s ${(0.2 + i * 0.5).toFixed(1)}s cubic-bezier(.3,1.3,.5,1) both` }}>
-              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={1 + i * 0.5} />
-              <span style={{ font: `400 ${solo ? 30 : 17}px/1.05 'Instrument Serif',serif`, textWrap: 'balance' }}>{f.nombre}</span>
-              <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3B7C4' }}>{`${f.n} DE ${f.total}`}</span>
+              <InsigniaEncendiendo coleccion={f.id} vistos={f.vistos} nuevos={f.nuevos} tam={solo ? 220 : 124} retraso={1 + i * 0.5} pie={{ nombre: f.nombre, n: f.n, total: f.total, grande: solo }} />
             </div>
           ))}
         </Vuelo>
@@ -210,7 +217,9 @@ function PantallaMaravilla({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePa
   const n = Number(m.n ?? 1)
   const [encendida, setEncendida] = useState(false)
   useEffect(() => {
-    const h = window.setTimeout(() => setEncendida(true), 1300)
+    // (solo desarrollo) `window.__retrasoMedalla = 99` deja la medalla apagada para capturar el principio.
+    const espera = import.meta.env.DEV ? ((window as unknown as { __retrasoMedalla?: number }).__retrasoMedalla ?? 1.3) : 1.3
+    const h = window.setTimeout(() => setEncendida(true), espera * 1000)
     return () => window.clearTimeout(h)
   }, [])
   return (
@@ -221,7 +230,7 @@ function PantallaMaravilla({ pantalla, onSeguir, onSaltarTodo, paso }: PropsDePa
       <Centro>
         <Vuelo estilo={{ marginBottom: 6 }}>
           <div style={{ opacity: 0, animation: 'moIn 1s .2s both' }}>
-            <MedallaMaravillas encendidas={encendida ? [s(m, 'id')] : []} tam={250} />
+            <MedallaMaravillas encendidas={encendida ? [s(m, 'id')] : []} tam={250} destello={encendida ? s(m, 'id') : null} />
           </div>
         </Vuelo>
         <Ojo en="2.4s">Maravilla del mundo</Ojo>

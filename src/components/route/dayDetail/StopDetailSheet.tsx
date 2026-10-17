@@ -461,10 +461,12 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                           {etiquetaReloj}
                         </Pildora>
                       )}
-                      <Pildora tono="oscura" datos="tiempo">
-                        <Icono nombre="arena" size={12} grosor={2} />
-                        {formatDuration(stop.durationMinutes)}
-                      </Pildora>
+                      {stop.durationMinutes > 0 && (
+                        <Pildora tono="oscura" datos="tiempo">
+                          <Icono nombre="arena" size={12} grosor={2} />
+                          {formatDuration(stop.durationMinutes)}
+                        </Pildora>
+                      )}
                     </div>
                     {/* El corazón de «me gusta»: la misma cuenta que el de EXPLORAR (src/store/useMeGustaStore.ts). Solo en los sitios del catálogo del destino. */}
                     {!stop.isFreeTour && !stop.isBreak && !stop.isFreeWalk && <MeGusta destino={city} nombre={stop.name} variante="ficha" />}

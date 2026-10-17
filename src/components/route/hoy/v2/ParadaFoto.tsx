@@ -1,4 +1,6 @@
 import { urlMiniatura } from '../../../../lib/miniatura'
+import type { Stop } from '../../../../lib/types'
+import { useFotoDeParada } from './useFotoDeParada'
 
 /** Color suave según el nombre, para los sitios sin foto propia (como la pieza «Parada con foto» del diseño). */
 function tono(nombre: string): string {
@@ -9,7 +11,7 @@ function tono(nombre: string): string {
 
 /** La pieza «Parada con foto» (Piezas/Parada Foto): la miniatura del sitio; a color con ✓ si está vista, más apagada si está por ver. */
 export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista }: { nombre: string; photoUrl?: string | null; vista: boolean; size?: number; marca?: boolean }) {
-  const mini = urlMiniatura(photoUrl)
+  const mini = urlMiniatura(photoUrl) ?? (photoUrl || null)
   const hu = tono(nombre)
   const fondo = `linear-gradient(150deg,oklch(0.86 0.06 ${hu}),oklch(0.6 0.08 ${hu}) 60%,oklch(0.38 0.06 ${hu}))`
   const ck = Math.round(size * 0.42)
@@ -30,4 +32,10 @@ export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista }
       )}
     </span>
   )
+}
+
+/** La misma pieza para una parada de la ruta: pide su foto al servidor si viene sin ella. */
+export function ParadaFotoDeParada({ parada, ciudad, dateIso, vista, size = 40 }: { parada: Stop; ciudad: string; dateIso: string | null; vista: boolean; size?: number }) {
+  const url = useFotoDeParada(parada, ciudad, dateIso)
+  return <ParadaFoto nombre={parada.name} photoUrl={url} vista={vista} size={size} />
 }

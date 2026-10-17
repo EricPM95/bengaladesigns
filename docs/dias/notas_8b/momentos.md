@@ -106,3 +106,24 @@ Capturas en `docs/dias/capturas_8b/` (nombres con la letra del diseño: A, B, C,
 - El texto «N DE 8» bajo la insignia sale con la cuenta DESPUÉS del pedazo mientras la insignia pasa de N-1 a N; es a propósito.
 - Probé a mano que `ResumenViaje` aguanta un estado sin ciudad (revisado el código, y con el demo del Visto sin lista de secretos); con el servidor real no he podido probarlo (sin cuenta real).
 - Al capturar, las hojas del Visto y el demo del Visto reinician la página con las recargas de otros agentes: la serie hay que repetirla de un tirón.
+
+---
+
+# 8B3 · Números, país, medalla y serie con viaje único
+
+## Qué he cambiado
+- **País (B):** «Tu país número 2: Vaticano» era MI dato de prueba (`demoMomentos.ts › pais`). Ahora todas las series siguen al servidor: tras el Coliseo, país 1 Italia y destino 1 Roma; nada de Vaticano. En `logrosDemo.ts` (agente del Visto) cambié solo la entrada del Coliseo: `nuevosVisto` ahora es `primeraVezEnRoma()` (3 pedazos 1/8, 1/4, 1/6, sello en bronce, país 1 Italia, destino 1 Roma); lo demás de ese archivo no lo toqué.
+- **Números que cuadran (C):** los escenarios de demo (`'coliseo' | 's2' | 'viaje'`) calculan sello, insignias, secretos y fechas (17–20 oct, hoy 17) desde cero. La cuenta de debajo de cada insignia (`N DE T`) dice lo mismo que la insignia: una menos antes de encenderse. El sello del Coliseo («Has visto tu primer imprescindible») ya coincide con «1 de 8». El resumen del día cuenta SOLO lo de esa ronda o lo del servidor, sin mezclar (quité el «cuenta más alta»); las series propias no preguntan al servidor del demo.
+- **Dos respuestas, una ronda:** lo del [Visto] y lo de la foto llegan en dos respuestas. El anfitrión espera 0,9 s antes de arrancar la ronda y `ordenarComoElServidor()` (en `plan.ts`) ordena el conjunto con LA MISMA lista `data/logros/ajustes.json › orden_momentos` (se lee el archivo, no se copia) y deja la maravilla pegada a su emblema (igual que el servidor). Con una sola respuesta no cambia nada. Así sale: pedazos → emblema → medalla → sello → «Y además…» → resumen, también con el [Visto] real.
+- **Medalla (D):** `dibujos/Medalla.tsx` (de otro agente, cambio mío): las capas apagadas ahora van más oscuras y grises (`brightness .62 saturate .55`), y `MedallaMaravillas` tiene la prop nueva `destello` (id de la maravilla que se acaba de encender): fogonazo y aro de luz sobre SU pedazo. La pantalla de maravilla empieza con las 7 apagadas y a los 1,3 s enciende solo la suya. Capturas 13a–13d.
+- **Película (E):** la frase «Casi 2.000 años esperándote…» sale siempre, también con `EscenaDeEmblema primeraVez={false}` (comprobado, captura 06b).
+- **Dev:** `window.__retrasoMedalla = 99` y `window.__retrasoInsignia = 99` dejan apagado el principio para capturarlo. `__momentos.lanzar('medalla')` enseña la pantalla de la medalla sola.
+- **Robustez:** nunca «undefined»: ciudad, secretos, fechas y listas con valores por defecto (8B2, ampliado).
+
+## Capturas (`docs/dias/capturas_8b/`, sustituyen a las de antes; sin copias byte a byte en toda la carpeta)
+`CS-coliseo-00…18` (+ `06b`, `13a–13e`): viaje único Roma 17–20 oct, «Centro histórico», Coliseo con su foto de verdad; desde [Visto] y la foto hasta el resumen del día. `S2-01…10`: el Panteón como 4.º imprescindible (sello bronce→plata) y cierre de «Las 4 joyas», sin emblema ni maravilla, con su resumen. `C-suspense-1`.
+
+## Riesgos
+- Las recargas de otros agentes reinician la página; hay que repetir la serie de un tirón.
+- El demo del Visto solo da por el Coliseo lo que dice su guion; otros sitios (Trevi, Foro…) siguen con los números fijos que tenían (dependen del orden en que se toquen).
+- Probé `ResumenViaje` con estado completo y con estado sin ciudad/secretos; con servidor y cuenta reales no.

@@ -39,7 +39,8 @@ import type { MasVisita } from '../../../../lib/masVisitas'
 import { AZUL, FRAMBUESA, VERDE, TINTA } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
 import { ExtraDeParada } from './ExtraDeParada'
-import { ParadaFoto } from './ParadaFoto'
+import { ParadaFotoDeParada } from './ParadaFoto'
+import { useFotoDeParada } from './useFotoDeParada'
 import { HojaMasParaTuDia, HojaQueHacemos, HojaSobreEsteLugar } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
 
@@ -77,7 +78,8 @@ function LineaDeHorario({ horario, cerradoEsteDia }: { horario: HorarioDeParada 
 }
 
 /** La foto de arriba de la tarjeta: la foto del sitio con el mapa pequeño en la esquina (una imagen estática de Mapbox, no un mapa vivo). */
-function FotoYMapa({ parada, desde }: { parada: Stop; desde: Coordinates | null }) {
+function FotoYMapa({ parada, desde, ciudad, dateIso }: { parada: Stop; desde: Coordinates | null; ciudad: string; dateIso: string }) {
+  const foto = useFotoDeParada(parada, ciudad, dateIso)
   const [falloMapa, setFalloMapa] = useState(false)
   const [falloFoto, setFalloFoto] = useState(false)
   const [verCredito, setVerCredito] = useState(false)
@@ -90,7 +92,7 @@ function FotoYMapa({ parada, desde }: { parada: Stop; desde: Coordinates | null 
   }
   return (
     <div className="relative h-[150px] flex-none overflow-hidden rounded-[21px]" style={{ background: 'repeating-linear-gradient(135deg,#2A3141 0 12px,#252C3B 12px 24px)' }}>
-      {parada.photoUrl && !falloFoto && <img src={parada.photoUrl} alt="" className="h-full w-full object-cover" onError={() => setFalloFoto(true)} />}
+      {foto && !falloFoto && <img src={foto} alt="" className="h-full w-full object-cover" onError={() => setFalloFoto(true)} />}
       {mapa && (
         <div className="absolute bottom-2.5 right-2.5 h-16 w-24 overflow-hidden rounded-[14px]" style={{ border: '2px solid rgba(255,253,248,.9)' }}>
           <img src={mapa} alt="Mapa hasta la siguiente parada" className="h-full w-full object-cover" loading="lazy" onError={() => setFalloMapa(true)} />
@@ -421,16 +423,18 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* 2: la siguiente parada, en grande */}
       {!sinParadasDeVuelta && siguiente && (
         <div className="flex flex-none flex-col gap-3 rounded-[28px] bg-[#1C2230] px-2 pb-3 pt-2 text-[#FFFDF8]" style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }} data-hoy-siguiente>
-          <FotoYMapa parada={siguiente} desde={origen} />
+          <FotoYMapa parada={siguiente} desde={origen} ciudad={day.city} dateIso={dateIso} />
           <div className="flex flex-col gap-2 px-2">
             <span style={{ font: "400 32px/1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{displayStopName(siguiente.name)}</span>
             <LineaDeHorario horario={horarioDe(siguiente)} cerradoEsteDia={Boolean(siguiente.closedThisDay)} />
             <EtiquetaBarrioDeSitio destination={route.destination} name={siguiente.name} oscuro className="self-start" />
             <span className="flex flex-wrap items-center gap-1.5">
-              <span className="flex h-[30px] items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[12px] font-medium" style={{ background: 'rgba(255,253,248,.1)' }}>
-                <Icono nombre="arena" size={13} grosor={2} />
-                {formatDuration(siguiente.durationMinutes)}
+              {siguiente.durationMinutes > 0 && (
+                <span className="flex h-[30px] items-center gap-1.5 rounded-full pl-2 pr-2.5 text-[12px] font-medium" style={{ background: 'rgba(255,253,248,.1)' }}>
+                  <Icono nombre="arena" size={13} grosor={2} />
+                  {formatDuration(siguiente.durationMinutes)}
               </span>
+              )}
               <button type="button" onClick={pedirUbicacion} disabled={ubicacionEstado === 'pidiendo'} className="flex h-[30px] items-center gap-1.5 rounded-full border border-[#FFFDF8]/25 pl-2 pr-2.5 text-[12px] font-medium disabled:opacity-60">
                 <Icono nombre="ubicacion" size={13} grosor={1.9} />
                 {ubicacionEstado === 'pidiendo' ? 'Buscando…' : minutos !== null ? `${minutos} min andando` : ubicacionEstado === 'no' ? 'Sin ubicación' : 'Ubicación'}
@@ -548,7 +552,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               const reserva = reservaDe(stop)
               return (
                 <div key={stop.id} data-saltada={saltada ? 'true' : undefined} className="flex min-h-[52px] items-center gap-[11px]" style={{ borderBottom: borde }}>
-                  <ParadaFoto nombre={displayStopName(stop.name)} photoUrl={stop.photoUrl} vista={vista} size={40} />
+                  <ParadaFotoDeParada parada={stop} ciudad={day.city} dateIso={dateIso} vista={vista} size={40} />
                   <span className="flex min-w-0 flex-1 flex-col gap-[3px] py-1.5">
                     <span className={saltada ? 'line-through' : undefined} style={{ font: ahora ? "400 18px/1.15 'Instrument Serif',serif" : "400 14px/1.3 'Geist'", color: saltada ? 'rgba(28,34,48,.42)' : vista ? 'oklch(0.42 0.09 150)' : TINTA, textWrap: 'balance' as never }}>
                       {displayStopName(stop.name)}

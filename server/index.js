@@ -5438,6 +5438,24 @@ function versionedPhotoUrl(url) {
   }
 }
 
+/**
+ * (Tanda 8B3) Los sitios MÁS IMPORTANTES de un destino curado (nivel 1 en su JSON: en Roma Coliseo, Foro, Arco de Constantino, Trevi, Panteón, Navona, Plaza de España, Museos Vaticanos,
+ * Basílica y Plaza de San Pedro, Altar de la Patria) nunca llevan la foto de Wikipedia (ha traído una iglesia catalana por el Panteón): o la propia, o la de Unsplash que ya mencione el sitio, o ninguna.
+ */
+function esSitioImportante(name, city) {
+  const base = String(name).replace(/\s*\((?:noche|por fuera|por dentro)\)$/i, '')
+  return Boolean(findPipelineV2Data(city)?.places?.some((place) => place.name === base && place.level === 1))
+}
+function fotoSinWikipediaSiEsImportante(foto, name, city) {
+  return foto?.photo_source === 'wikipedia' && esSitioImportante(name, city) ? { photo_source: 'none' } : foto
+}
+/** (Tanda 8B3) ¿Todas las fotos propias de este sitio son de unas fechas (Navidad)? Entonces, fuera de ellas, el sitio va sin foto (`ownPhotoFor` ya no la da). */
+function soloFotoDeFechas(name, city) {
+  const table = photosFor(findPipelineV2Key(city) ?? '')
+  const suyas = (table?.fotos ?? []).filter((foto) => (foto.lugares ?? []).includes(name))
+  return suyas.length > 0 && suyas.every((foto) => foto.fechas)
+}
+
 function ownPhotoFor(name, city, dateIso) {
   const table = photosFor(findPipelineV2Key(city) ?? '')
   if (!table) return null
@@ -5494,7 +5512,7 @@ app.post('/api/pool-photos', async (req, res) => {
   const destKey = findPipelineV2Key(destination)
   const photos = {}
   const missing = []
-  const isHidden = (name) => fotoOculta(destKey ?? '', name) || isRestaurantName(destination, name)
+  const isHidden = (name) => fotoOculta(destKey ?? '', name) || isRestaurantName(destination, name) || soloFotoDeFechas(name, destination)
   for (const name of list) {
     // (Una foto propia —también la de un hueco que acaba de llegar— va antes que el «sin foto».)
     const own = ownPhotoFor(name, destination, date)
@@ -5507,7 +5525,7 @@ app.post('/api/pool-photos', async (req, res) => {
     const { data, error } = await supabaseAdmin.from('place_photo_cache').select('place_name,photo_source,photo_url,unsplash_small').eq('city', cityKey).in('place_name', paraLeer)
     if (error) console.warn('[foto] no se pudo leer la caché en lote:', error.message)
     for (const row of data ?? []) {
-      const url = row.photo_source === 'unsplash' ? row.unsplash_small ?? row.photo_url : row.photo_source === 'wikipedia' ? row.photo_url : null
+      const url = row.photo_source === 'unsplash' ? row.unsplash_small ?? row.photo_url : row.photo_source === 'wikipedia' && !esSitioImportante(row.place_name, destination) ? row.photo_url : null
       if (url) photos[row.place_name] = { url, source: row.photo_source }
     }
   }
@@ -5518,7 +5536,7 @@ app.post('/api/pool-photos', async (req, res) => {
       toSearch.slice(i, i + 4).map(async (name) => {
         try {
           const result = await resolvePlacePhoto(name, destination, {})
-          const url = result.photo_source === 'unsplash' ? result.unsplash_small ?? result.photo_url : result.photo_source === 'wikipedia' ? result.photo_url : null
+          const url = result.photo_source === 'unsplash' ? result.unsplash_small ?? result.photo_url : result.photo_source === 'wikipedia' && !esSitioImportante(name, destination) ? result.photo_url : null
           if (url) photos[name] = { url, source: result.photo_source }
         } catch (error) {
           console.warn('[foto] fallo en el lote con', name, error?.message)
@@ -5563,16 +5581,14 @@ app.post('/api/place-photo', async (req, res) => {
       res.json(withWikimediaCredit(await resolveNightPhoto(name, city, nightBase, { force: Boolean(force) }), city))
       return
     }
-    const foto = await resolvePlacePhoto(name, city, { force: Boolean(force), wikipediaTitleOverride })
-    // Sin foto propia ni de Unsplash o Wikipedia: la de su barrio o su zona; si tampoco hay, sin foto.
-    if (!foto || foto.photo_source === 'none') {
-      const deLaZona = excludeOwn ? null : zonePhotoFor(name, city, date)
-      if (deLaZona) {
-        res.json(deLaZona)
-        return
-      }
+    // (8B3) Una foto de unas fechas (Navidad) fuera de ellas: sin foto, nunca otra buscada.
+    if (!excludeOwn && soloFotoDeFechas(name, city)) {
+      res.json({ photo_source: 'none' })
+      return
     }
-    res.json(withWikimediaCredit(foto, city))
+    const foto = await resolvePlacePhoto(name, city, { force: Boolean(force), wikipediaTitleOverride })
+    // (8B3) Sin foto antes que una equivocada: ya no se usa la foto de otro sitio de su zona (`zonePhotoFor`), y los sitios importantes nunca llevan la de Wikipedia.
+    res.json(fotoSinWikipediaSiEsImportante(withWikimediaCredit(foto, city), name, city))
   } catch (error) {
     // Nunca debe romper una pantalla: sin foto, el componente enseña su icono de categoría.
     console.error('[foto] fallo resolviendo la foto de', name, error)

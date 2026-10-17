@@ -30,8 +30,8 @@ export function SpareStopsSection({ stops, onAdd }: SpareStopsSectionProps) {
               <div className="min-w-0 flex-1">
                 <p className="font-display text-[16px] leading-[1.2] text-text [overflow-wrap:anywhere]">{displayStopName(stop.name)}</p>
                 <p className="mt-0.5 text-[12px] leading-[1.35] text-text/60">
-                  {formatDuration(stop.durationMinutes)}
-                  {` · ${stop.spareReason ?? 'Para otro momento'}`}
+                  {stop.durationMinutes > 0 ? `${formatDuration(stop.durationMinutes)} · ` : ''}
+                  {stop.spareReason ?? 'Para otro momento'}
                 </p>
               </div>
               <button

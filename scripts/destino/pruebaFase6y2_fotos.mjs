@@ -85,7 +85,7 @@ console.log('El servidor, por dentro')
   const pool = s.slice(s.indexOf("app.post('/api/pool-photos'"), s.indexOf('function withWikimediaCredit'))
   ok(/isHidden = \(name\) => fotoOculta\(/.test(pool) && pool.indexOf('isHidden(name)') < pool.indexOf('place_photo_cache'), '2c /api/pool-photos no descarta los sitios sin foto antes de la caché')
   const ruta = s.slice(s.indexOf("app.post('/api/place-photo'"), s.indexOf('"Quiero entrar"'))
-  ok(/fotoOculta\(findPipelineV2Key\(city\)/.test(ruta) && ruta.indexOf('fotoOculta') < ruta.indexOf('nightBaseOf(') && ruta.indexOf('fotoOculta') < ruta.indexOf('zonePhotoFor('), '2d /api/place-photo no corta antes de la foto de noche y la de la zona')
+  ok(/fotoOculta\(findPipelineV2Key\(city\)/.test(ruta) && ruta.indexOf('fotoOculta') < ruta.indexOf('nightBaseOf(') && (ruta.indexOf('zonePhotoFor(') === -1 || ruta.indexOf('fotoOculta') < ruta.indexOf('zonePhotoFor(')), '2d /api/place-photo no corta antes de la foto de noche y la de la zona')
   ok(ruta.indexOf('ownPhotoFor(') < ruta.indexOf('fotoOculta('), '2e una foto propia ya no va antes que el «sin foto»')
   ok(!/\.sin_foto/.test(s.replace(/\/\/.*$/gm, '')), '2f queda una regla de sin_foto fuera de fotoOculta (dos sitios para lo mismo)')
 }

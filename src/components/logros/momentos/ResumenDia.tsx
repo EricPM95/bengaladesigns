@@ -54,9 +54,8 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar }: { ganado
     }
   }, [tripId, estadoInicial])
 
-  // Lo del día que cuenta el servidor y, por si aún no lo ha apuntado, lo que se acaba de enseñar: de cada cosa, la cuenta más alta.
-  const cuentas = { ...(resumen?.por_categoria ?? {}) }
-  for (const [k, v] of Object.entries(contarMomentos(ganado))) cuentas[k] = Math.max(cuentas[k] ?? 0, v)
+  // Solo lo que ha salido ese día: lo que cuenta el servidor y, si aún no ha contestado, lo que se acaba de enseñar. Nunca se mezclan.
+  const cuentas: Record<string, number> = resumen ? { ...resumen.por_categoria } : contarMomentos(ganado)
   const lineas = ORDEN.filter((k) => (cuentas[k] ?? 0) > 0)
   const ciudad = estado?.ciudad ?? ''
   const sello = estado?.sellos[0]

@@ -37,6 +37,6 @@ export function Chapa({ logro, escalon, tam = 88, bloqueado = false, animada = f
 }
 
 /** La medalla de las 7 maravillas. `encendidas`: ids de las maravillas vistas (coliseo, gran_muralla, petra, …); las demás, apagadas. `tam` es el ancho; el alto es 1,16 veces el ancho. */
-export function MedallaMaravillas({ encendidas = [], tam = 220, animada = true }: { encendidas?: string[]; tam?: number; animada?: boolean }): ReactNode {
-  return <MedallaDibujo encendidas={encendidas} tam={tam} animada={animada} />
+export function MedallaMaravillas({ encendidas = [], tam = 220, animada = true, destello = null }: { encendidas?: string[]; tam?: number; animada?: boolean; destello?: string | null }): ReactNode {
+  return <MedallaDibujo encendidas={encendidas} tam={tam} animada={animada} destello={destello} />
 }

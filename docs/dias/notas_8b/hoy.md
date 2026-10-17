@@ -62,3 +62,13 @@ Archivos nuevos en `src/components/route/hoy/v2/`:
 9. **Con `?hoy2=on` el HOY viejo no sale por ningún camino** (`HoyView` es el único sitio que lo monta). La fila vieja «Visto: … Añadir foto» ya se oculta con logros (cambio del agente del Visto, en mi archivo).
 10. **Capturas nuevas** (JPG, sustituyen a las de antes): 1a, 2, 2b (aviso cerrado + crédito del mapa), 3, 3b, lista (parada saltada sin etiqueta), despues, despues-resumen.
 - Aviso: en el panel del navegador otro agente me navegó mi pestaña (`tab-3`); acabé con una pestaña nueva (`tab-6`).
+
+---
+
+# 8B3
+- **Avisos de otro día (B):** los avisos de cierre salen solo de `day.stops` (las paradas del día de hoy: `avisosDeCierre` recibe `vigentes` de ese día). Con el viaje único el día 1 (sáb 17) da exactamente 3: Coliseo 18:30, Panteón 19:00 y Basílica de San Pedro 20:00, que son paradas de ese día. El «Basílica … 20:00» del domingo que se veía en V2 era de la ruta de prueba del Visto, que ponía esa parada en el día 1. Con otro día, otros avisos (probado con el día 2 de las pruebas anteriores: solo sus paradas).
+- **«0min» (C):** ningún chip enseña una duración de 0: ficha (`StopDetailSheet`), tarjeta de DÍAS (`StopAccordion`, dos sitios), «Si te sobra tiempo» (`SpareStopsSection`), la tarjeta de HOY v2 y «Más para tu día». Ediciones mínimas en esos tres archivos compartidos.
+- **Fotos (D):** ver `docs/dias/notas_8b/fotos.md`, sección 8B3. HOY v2 pide la foto al servidor si la parada viene sin ella (`v2/useFotoDeParada.ts`) y la lista de paradas enseña también las fotos de Unsplash/Wikipedia (antes solo las propias).
+- **Viaje único (A):** usado `await window.__rutaPrueba()`. Edité `src/dev/rutaDePrueba.ts` (tuyo): ahora llama a `enrichRoutePhotos(ruta)` para que las paradas lleven foto como en un viaje de verdad.
+- **Capturas nuevas** (JPG, del viaje único, sin duplicados entre ellas): 1a, 2 (sáb 17 con los 3 avisos), hoy-coliseo (el Coliseo como siguiente parada, con su foto y sin «0min»), lista (cinco fotos correctas). Comprobación de duplicados: quedan dos pares idénticos que NO son míos: `CS-coliseo-01-visto-aviso.jpg` = `V5.jpg` y `V6.jpg` = `plazo.jpg`.
+- Pestaña del panel: acabé en `tab-4` (otro agente volvió a cambiarme la anterior); el api-server lo reinicié yo al tocar `server/index.js` y los datos.

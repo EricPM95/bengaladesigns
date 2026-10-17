@@ -52,6 +52,7 @@ export async function pedirEstado(tripId: string | null): Promise<EstadoLogros |
 
 export async function pedirResumen(tripId: string | null, dia: string | null): Promise<ResumenLogros | null> {
   if (datosDePrueba.resumen) return datosDePrueba.resumen
+  if (datosDePrueba.estado) return null // series de prueba propias: el resumen sale de lo que se acaba de enseñar
   if (!tripId) return null
   const r = await llamar<ResumenLogros>(`/api/logros/resumen?trip_id=${encodeURIComponent(tripId)}${dia ? `&dia=${encodeURIComponent(dia)}` : ''}`)
   return r?.ok ? r : null

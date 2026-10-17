@@ -5,7 +5,7 @@ import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { marcarAnimacionVista, pedirEstado, type EstadoLogros } from './api'
 import { PantallaDeMomento } from './pantallas'
-import { clavesDe, destinoDelVuelo, planificar, sonidoDePantalla } from './plan'
+import { clavesDe, destinoDelVuelo, ordenarComoElServidor, planificar, sonidoDePantalla } from './plan'
 import { ResumenDia } from './ResumenDia'
 import { volar, type DestinoVuelo } from './vuelo'
 
@@ -17,7 +17,7 @@ import { volar, type DestinoVuelo } from './vuelo'
  * Lo que se ha visto entero se marca como visto en el servidor (el botón late y no hay puntito); lo que se salta deja el puntito.
  */
 export default function Reproductor({ momentos, onTerminar }: { momentos: Momento[]; onTerminar: () => void }): ReactNode {
-  const pantallas = useMemo(() => planificar(momentos), [momentos])
+  const pantallas = useMemo(() => planificar(ordenarComoElServidor(momentos)), [momentos])
   const tripId = useSyncStore((s) => s.activeTripId)
   const [i, setI] = useState(0)
   const [enResumen, setEnResumen] = useState(pantallas.length === 0)

@@ -46,9 +46,14 @@ function Encendido() {
 
   // Las sorpresas esperan a que se cierre la hoja del Visto; si llegan más mientras se enseñan, esperan a la siguiente ronda.
   useEffect(() => {
-    if (!hayMomentos || hojaAbierta || ronda) return
-    const nuevos = useLogrosStore.getState().tomarMomentos()
-    if (nuevos.length > 0) ui.getState().empezarRonda(nuevos)
+    if (!hayMomentos || hojaAbierta || ronda) return undefined
+    // Un momento de espera: lo del [Visto] y lo de la foto llegan en dos respuestas casi juntas y salen en la misma ronda.
+    const h = window.setTimeout(() => {
+      if (useLogrosStore.getState().hojaAbierta || ui.getState().ronda) return
+      const nuevos = useLogrosStore.getState().tomarMomentos()
+      if (nuevos.length > 0) ui.getState().empezarRonda(nuevos)
+    }, 900)
+    return () => window.clearTimeout(h)
   }, [hayMomentos, hojaAbierta, ronda, ui])
 
   // El resumen del día, al acabar la ruta: cuando la última parada del día de hoy pasa a vista (o saltada), una sola vez por día. Las sorpresas que haya salen antes (el resumen espera a que acabe la ronda).

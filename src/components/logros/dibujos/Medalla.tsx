@@ -18,7 +18,11 @@ const estrella = (cx: number, cy: number, r: number) => {
   return d + 'Z'
 }
 
-export function MedallaDibujo({ encendidas = [], tam = 220, animada = true }: { encendidas?: string[]; tam?: number; animada?: boolean }) {
+/** Dónde está cada maravilla dentro de la imagen de 516 × 601: [centro x, centro y, tamaño] (de «Medalla Siete»). */
+const POS: Record<string, [number, number, number]> = { coliseo: [152, 263, 141], gran_muralla: [273, 223, 192], petra: [373, 341, 168], cristo_redentor: [383, 245, 121], machu_picchu: [153, 342, 150], chichen_itza: [261, 372, 165], taj_mahal: [274, 290, 159] }
+
+/** `destello`: el id de la maravilla que se acaba de encender (8B3): su pedazo recibe un fogonazo y un aro de luz, para que se vea CUÁL se enciende. */
+export function MedallaDibujo({ encendidas = [], tam = 220, animada = true, destello = null }: { encendidas?: string[]; tam?: number; animada?: boolean; destello?: string | null }) {
   const vistas = ORDEN.filter((k) => encendidas.includes(k))
   const cnt = vistas.length
   const k = tam / 516
@@ -34,7 +38,14 @@ export function MedallaDibujo({ encendidas = [], tam = 220, animada = true }: { 
   return (
     <span className={animada ? 'dib-mov' : 'dib-quieto'} style={{ position: 'relative', display: 'inline-block', width: tam, height: 601 * k, flex: 'none', filter: 'drop-shadow(0 18px 26px rgba(0,0,0,.55))' }}>
       <img src="/medalla/medalla-7-maravillas-limpia.webp" alt="Las 7 maravillas del mundo" style={capa} loading="lazy" decoding="async" />
-      {apagadas.map((id) => <img key={id} src={`/medalla/mm-off-${CAPA[id]}.webp`} alt="" style={capa} loading="lazy" decoding="async" />)}
+      {/* Las apagadas, más oscuras y grises (8B3): así el pedazo encendido se distingue de golpe. */}
+      {apagadas.map((id) => <img key={id} src={`/medalla/mm-off-${CAPA[id]}.webp`} alt="" style={{ ...capa, filter: 'brightness(.62) saturate(.55)' }} loading="lazy" decoding="async" />)}
+      {destello && POS[destello] && (
+        <>
+          <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', left: (POS[destello][0] - POS[destello][2]) * k, top: (POS[destello][1] - POS[destello][2]) * k, width: POS[destello][2] * 2 * k, height: POS[destello][2] * 2 * k, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,236,170,.9),rgba(255,200,110,.35) 45%,transparent 70%)', mixBlendMode: 'screen', opacity: 0, animation: 'mmFogonazo 1.6s ease-out both', pointerEvents: 'none' }} />
+          <span aria-hidden className="mo-con-mov" style={{ position: 'absolute', left: (POS[destello][0] - POS[destello][2] * 0.5) * k, top: (POS[destello][1] - POS[destello][2] * 0.5) * k, width: POS[destello][2] * k, height: POS[destello][2] * k, borderRadius: '50%', border: '3px solid #FFE6A0', opacity: 0, animation: 'mmAro 1.4s .1s ease-out both', pointerEvents: 'none' }} />
+        </>
+      )}
       <span style={{ position: 'absolute', left: 46 * k, top: 70 * k, width: 424 * k, height: 424 * k, borderRadius: '50%', overflow: 'hidden', pointerEvents: 'none', mixBlendMode: 'screen' }}>
         <span style={{ position: 'absolute', top: '-20%', bottom: '-20%', left: 0, width: '22%', background: 'linear-gradient(90deg,transparent,rgba(255,240,200,.35),transparent)', animation: 'mmSheen 5s 1s ease-in-out infinite' }} />
       </span>

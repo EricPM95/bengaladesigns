@@ -149,7 +149,7 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
   const servidor = sinComentarios(leer('server/logros/momentos.js'))
   debe(/m\.tipo === 'emblema' && m\.maravilla === maravilla\.id/.test(servidor), 'orden', 'el servidor pega la maravilla a su emblema')
   const plan = sinComentarios(leer('src/components/logros/momentos/plan.ts'))
-  debe(!/\.sort\(|orden_momentos|ORDEN\b/.test(plan), 'orden', 'el móvil no reordena (plan.ts solo agrupa lo que manda el servidor)')
+  debe(!/\[\s*'(pedazo|emblema|coleccion)'/.test(plan) && /ajustes\.json/.test(plan), 'orden', 'el móvil no lleva su propio orden escrito: solo agrupa lo que manda el servidor (y, para juntar el Visto y la foto en una ronda, lee la MISMA lista de ajustes.json)')
   const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-pantallas8b2-'))
   const salida = path.join(carpeta, 'plan.cjs')
   await build({ entryPoints: [path.resolve('src/components/logros/momentos/plan.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error' })
@@ -190,6 +190,24 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
   const horas = []
   for (const e of ['madrugador', 'nocturno']) for (const x of sinComentarios(leer(`src/components/logros/momentos/escenas/${e}.tsx`)).matchAll(/\b([01]?\d|2[0-3]):[0-5]\d\b/g)) horas.push(`${e}: ${x[0]}`)
   debe(horas.length === 0, 'horas', `las escenas de Madrugador y Nocturno no enseñan ninguna hora: ${horas.join(' | ')}`)
+}
+
+console.log('6. Tanda 8B3: ni dos capturas iguales, ni números que no cuadran')
+{
+  // Ninguna captura idéntica a otra (byte a byte): cada una con SU pantalla.
+  const dirCapturas = 'docs/dias/capturas_8b'
+  const porHash = new Map()
+  const crypto = await import('node:crypto')
+  for (const f of fs.readdirSync(dirCapturas).filter((x) => /\.(jpe?g|png)$/i.test(x))) {
+    const h = crypto.createHash('sha256').update(fs.readFileSync(path.join(dirCapturas, f))).digest('hex')
+    porHash.set(h, [...(porHash.get(h) ?? []), f])
+  }
+  const repetidas = [...porHash.values()].filter((l) => l.length > 1).map((l) => l.join(' = '))
+  debe(repetidas.length === 0, 'capturas', `ninguna captura repetida (dos nombres, mismo archivo): ${repetidas.join(' | ')}`)
+  const demo = leer('src/lib/logrosDemo.ts') + '\n' + leer('src/components/logros/momentos/demoMomentos.ts')
+  debe(!/Tu país número 2: Vaticano/.test(demo), 'demo', 'el modo de pruebas no dice «Tu país número 2: Vaticano» al marcar el Coliseo (el servidor da «Tu país número 1: Italia»)')
+  const hojas = archivos('src/components/logros/visto').map((f) => sinComentarios(leer(f))).join('\n')
+  debe(!/Con la foto de hoy en Plaza Navona/.test(hojas), 'textos', 'ningún texto de las hojas lleva un sitio fijo')
 }
 
 const ok = fallos.length === 0

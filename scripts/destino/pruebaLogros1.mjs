@@ -415,6 +415,29 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   debe(r1.nuevos.some((m) => m.tipo === 'patrimonio' && m.id === 'ciudad_del_vaticano'), 'viajero', 'y su Patrimonio (la Ciudad del Vaticano)')
 }
 
+// ── El país del primer Visto (Tanda 8B3): el Coliseo es Italia, no el Vaticano ──
+{
+  const p = await persona('pais-coliseo@correo.es')
+  const c = await V(p, 'coliseo', dia(1, '09:00'))
+  const pc = c.nuevos.filter((m) => m.tipo === 'pais')
+  debe(pc.length === 1 && pc[0].pais === 'Italia' && pc[0].n === 1 && pc[0].nombre === 'Tu país número 1: Italia', 'pais', 'el primer Visto en el Coliseo da «Tu país número 1: Italia» (nunca el Vaticano)')
+  const dn = c.nuevos.filter((m) => m.tipo === 'destino_nuevo')
+  debe(dn.length === 1 && dn[0].n === 1 && dn[0].destino === 'roma', 'pais', 'y «Tu destino número 1: Roma», una sola vez')
+  const c2 = await V(p, 'fontana_de_trevi', dia(1, '10:00'))
+  debe(!c2.nuevos.some((m) => m.tipo === 'pais' || m.tipo === 'destino_nuevo'), 'pais', 'el segundo sitio del mismo día no repite país ni destino')
+  const v = await V(p, 'basilica_de_san_pedro', dia(1, '12:00'))
+  const pv = v.nuevos.filter((m) => m.tipo === 'pais')
+  debe(pv.length === 1 && pv[0].pais === 'Ciudad del Vaticano' && pv[0].n === 2 && !v.nuevos.some((m) => m.tipo === 'destino_nuevo'), 'pais', 'la Basílica da «Tu país número 2: Ciudad del Vaticano» y no un destino nuevo')
+  // El resumen del día cuenta solo lo de ese día (Tanda 8B3).
+  const dia2 = await V(p, 'panteon', dia(2, '10:00'))
+  const r1d = await servicio.resumenDe(p.uid, p.trip, { dia: '2026-10-10' })
+  const r2d = await servicio.resumenDe(p.uid, p.trip, { dia: '2026-10-11' })
+  const claves = (r) => r.ganado.map((x) => x.logro + ':' + x.escalon)
+  debe(r1d.ganado.length > 0 && r2d.ganado.length > 0 && !claves(r1d).some((k) => claves(r2d).includes(k)), 'resumen', 'el resumen de cada día cuenta solo lo que salió ese día, sin arrastrar lo de otros días')
+  debe(r1d.por_categoria.emblema === undefined && r2d.por_categoria.emblema === undefined && !claves(r2d).some((k) => k.includes('coliseo')), 'resumen', 'sin foto no hay emblema en el resumen, y el del día 2 no trae lo del Coliseo del día 1')
+  void dia2
+}
+
 // ── Pedazo: con ubicación cerca, sin ubicación, lejos y con foto ──
 {
   const p = await persona('pedazo@correo.es')

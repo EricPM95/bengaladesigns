@@ -1,4 +1,5 @@
 import type { Momento } from '../../../lib/logros'
+import ajustes from '../../../../data/logros/ajustes.json'
 
 /**
  * El reparto en pantallas de las sorpresas (Tanda 8B2). Pura: sin React. NO reordena: el orden lo manda el servidor (`ajustes.json › orden_momentos`, el único
@@ -21,6 +22,27 @@ const FAMILIA_ADEMAS = new Set(['patrimonio', 'viajero', 'destino_nuevo', 'pais'
 export const GRADOS = ['bronce', 'plata', 'oro', 'diamante'] as const
 
 const texto = (m: Momento, k: string): string => String(m[k] ?? '')
+
+/**
+ * Cada respuesta del servidor ya llega en su orden. Pero lo ganado al tocar [Visto] y lo ganado con la foto llegan en dos respuestas, y se enseñan juntos: para que el orden siga
+ * siendo UNO solo, aquí se ordena el conjunto con la MISMA lista del servidor (`data/logros/ajustes.json › orden_momentos`, leída tal cual, no copiada). Con una sola respuesta no cambia nada.
+ */
+export function ordenarComoElServidor(momentos: Momento[]): Momento[] {
+  const orden: string[] = ajustes.orden_momentos
+  const rango = (m: Momento) => {
+    const i = orden.indexOf(String(m.cat ?? m.tipo))
+    return i < 0 ? orden.length : i
+  }
+  const lista = momentos.map((m, i) => ({ m, i })).sort((a, b) => rango(a.m) - rango(b.m) || a.i - b.i).map(({ m }) => m)
+  // La excepción de las maravillas (igual que el servidor): su momento va pegado justo después del emblema de esa maravilla.
+  for (const maravilla of lista.filter((m) => m.tipo === 'maravilla')) {
+    const e = lista.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id)
+    if (e < 0) continue
+    lista.splice(lista.indexOf(maravilla), 1)
+    lista.splice(lista.findIndex((m) => m.tipo === 'emblema' && m.maravilla === maravilla.id) + 1, 0, maravilla)
+  }
+  return lista
+}
 
 export function planificar(momentos: Momento[]): Pantalla[] {
   const salida: Pantalla[] = []

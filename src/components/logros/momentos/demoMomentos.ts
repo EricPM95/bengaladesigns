@@ -18,25 +18,48 @@ import { useMomentosUI } from './useMomentosUI'
  */
 const en = '2026-10-14T09:12:00.000Z'
 
-const estadoBase = (acabado: boolean, nImp = 4): EstadoLogros => ({
-  ok: true,
-  destino: 'roma',
-  ciudad: 'Roma',
-  sellos: [
-    { id: 'roma', nombre: 'Roma', grado: nImp >= 4 ? 'plata' : 'bronce', nombre_grado: nImp >= 4 ? 'Roma te atrapa' : 'Primeros pasos en Roma', linea: `${nImp} de 8 imprescindibles.`, n: nImp, total: 8, siguiente: { grado: 'oro', faltan: 2, nombre: 'Roma en el corazón' }, alcanzados: ['bronce', 'plata'] },
-    { id: 'vaticano', nombre: 'El Vaticano', grado: null, nombre_grado: null, linea: null, n: 0, total: 3, siguiente: { grado: 'plata', faltan: 1, nombre: 'Has cruzado la frontera' }, alcanzados: [] },
-  ],
-  colecciones: [
-    { id: 'imprescindibles', nombre: 'Los imprescindibles de Roma', n: nImp, total: 8, completa: false, en_tu_ruta: true, nuevo_hoy: true, sitios: ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona', 'plaza_de_espana', 'castillo_de_santangelo', 'trastevere'].map((s, i) => ({ sitio: s, visto: i < nImp })) },
-    { id: 'cuatro_joyas', nombre: 'Las 4 joyas de Roma', n: 4, total: 4, completa: true, en_tu_ruta: false, nuevo_hoy: false, sitios: ['coliseo', 'fontana_de_trevi', 'panteon', 'museos_vaticanos'].map((s) => ({ sitio: s, visto: true })) },
-    { id: 'roma_antigua', nombre: 'La Roma antigua', n: 2, total: 6, completa: false, en_tu_ruta: true, nuevo_hoy: false, sitios: ['coliseo', 'foro_romano_y_palatino', 'largo_di_torre_argentina', 'castillo_de_santangelo', 'circo_maximo', 'termas_de_caracalla'].map((s, i) => ({ sitio: s, visto: i < 2 })) },
-    { id: 'miradores', nombre: 'Los miradores', n: 0, total: 3, completa: false, en_tu_ruta: false, nuevo_hoy: false, sitios: ['janiculo', 'pincio', 'naranjos'].map((s) => ({ sitio: s, visto: false })) },
-  ],
-  secretos: { total: 12, encontrados: 3, texto: '3 de 12 secretos encontrados', encontrados_lista: [{ id: 'coliseo', nombre: 'Una maravilla del mundo', linea: '', en }, { id: 'panteon', nombre: 'Bajo una cúpula de casi 2.000 años', linea: '', en }, { id: 'fontana_de_trevi', nombre: 'Volverás a Roma', linea: '', en }] },
-  pendiente: { sorpresas: 2, pedazos: 1, dias_para_reclamar: acabado ? 27 : null, texto: acabado ? 'Te quedan 27 días para reclamar tus 2 sorpresas de Roma' : 'Te espera una sorpresa: sube tu foto' },
-  puntito: false,
-  viaje: { id: 'demo', inicio: '2026-10-13', fin: '2026-10-17', hoy: acabado ? '2026-10-20' : '2026-10-15' },
-})
+/**
+ * Los números de verdad de un viaje, desde cero (8B3). Un escenario dice qué había ya VISTO ANTES de la serie; la serie suma encima y el estado que se enseña (insignias, sello,
+ * secretos) es el de DESPUÉS. Así el sello, las insignias, los textos de debajo y el resumen dicen lo mismo.
+ *   'coliseo': el Coliseo es el primer sitio del viaje. Tras la serie: imprescindibles 1/8 (sello en bronce), joyas 1/4, antigua 1/6, 1 secreto (el Coliseo).
+ *   's2':      antes ya estaban Coliseo, Foro, Trevi y Museos; el Panteón es el 4.º imprescindible (sello a plata) y cierra las 4 joyas. Sin emblema (se ve con ubicación, sin foto).
+ *   'viaje':   un viaje ya acabado, con varias cosas ganadas (para el resumen del viaje y compartir).
+ */
+type Escenario = 'coliseo' | 's2' | 'viaje'
+const IMPRESCINDIBLES = ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona', 'plaza_de_espana', 'castillo_de_santangelo', 'trastevere']
+const JOYAS = ['coliseo', 'fontana_de_trevi', 'panteon', 'museos_vaticanos']
+const ANTIGUA = ['coliseo', 'foro_romano_y_palatino', 'largo_di_torre_argentina', 'castillo_de_santangelo', 'circo_maximo', 'termas_de_caracalla']
+const col = (id: string, nombre: string, sitios: string[], vistos: string[], extra: { en_tu_ruta?: boolean } = {}) => ({ id, nombre, n: vistos.length, total: sitios.length, completa: vistos.length === sitios.length, en_tu_ruta: extra.en_tu_ruta ?? true, nuevo_hoy: true, sitios: sitios.map((x) => ({ sitio: x, visto: vistos.includes(x) })) })
+const secretos = (ids: string[]) => ({ total: 12, encontrados: ids.length, texto: ids.length ? `${ids.length} de 12 secretos encontrados` : 'Roma esconde 12 secretos', encontrados_lista: ids.map((id) => ({ id, nombre: '', linea: '', en })) })
+const GRADOS_SELLO = [[1, 'bronce', 'Primeros pasos en Roma'], [4, 'plata', 'Roma te atrapa'], [6, 'oro', 'Roma en el corazón'], [8, 'diamante', 'Roma es tuya']] as const
+
+const estadoBase = (acabado: boolean, escenario: Escenario = 'viaje'): EstadoLogros => {
+  const imp = escenario === 'coliseo' ? ['coliseo'] : escenario === 's2' ? ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon'] : IMPRESCINDIBLES.slice(0, 6)
+  const joyas = escenario === 'coliseo' ? ['coliseo'] : escenario === 's2' ? JOYAS : ['coliseo', 'fontana_de_trevi', 'panteon']
+  const antigua = escenario === 'coliseo' ? ['coliseo'] : ['coliseo', 'foro_romano_y_palatino']
+  const g = [...GRADOS_SELLO].filter(([desde]) => imp.length >= desde).pop()
+  const hoy = acabado ? '2026-10-25' : '2026-10-17'
+  const lista = escenario === 'coliseo' ? ['coliseo'] : escenario === 's2' ? ['coliseo'] : ['coliseo', 'panteon', 'fontana_de_trevi']
+  return {
+    ok: true,
+    destino: 'roma',
+    ciudad: 'Roma',
+    sellos: [
+      { id: 'roma', nombre: 'Roma', grado: g ? g[1] : null, nombre_grado: g ? g[2] : null, linea: g ? `${imp.length === 1 ? 'Has visto tu primer imprescindible.' : `${imp.length} de 8 imprescindibles.`}` : null, n: imp.length, total: 8, siguiente: null, alcanzados: GRADOS_SELLO.filter(([d]) => imp.length >= d).map(([, x]) => x) },
+      { id: 'vaticano', nombre: 'El Vaticano', grado: null, nombre_grado: null, linea: null, n: 0, total: 3, siguiente: null, alcanzados: [] },
+    ],
+    colecciones: [
+      col('imprescindibles', 'Los imprescindibles de Roma', IMPRESCINDIBLES, imp),
+      col('cuatro_joyas', 'Las 4 joyas de Roma', JOYAS, joyas),
+      col('roma_antigua', 'La Roma antigua', ANTIGUA, antigua),
+      col('miradores', 'Los miradores', ['janiculo', 'pincio', 'naranjos'], [], { en_tu_ruta: false }),
+    ],
+    secretos: secretos(lista),
+    pendiente: { sorpresas: 0, pedazos: 0, dias_para_reclamar: acabado ? 27 : null, texto: acabado ? 'Te quedan 27 días para reclamar tus 2 sorpresas de Roma' : null },
+    puntito: false,
+    viaje: { id: 'demo', inicio: '2026-10-17', fin: '2026-10-20', hoy },
+  }
+}
 
 const resumenBase = (tipo: 'wow' | 'con_ganas', acabado: boolean): ResumenLogros => ({
   ok: true,
@@ -55,6 +78,7 @@ const m = (o: Partial<Momento> & { tipo: Momento['tipo'] }): Momento => ({ nombr
 
 const MOMENTOS: Record<string, () => Momento[]> = {
   sello: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:bronce', sello: 'roma', destino: 'roma', grado: 'bronce', nombre: 'Primeros pasos en Roma', linea: 'Has visto tu primer imprescindible.', en })],
+  sello_s2: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:plata', sello: 'roma', destino: 'roma', grado: 'plata', nombre: 'Roma te atrapa', linea: '4 de 8 imprescindibles.', en })],
   sello_evo: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:plata', sello: 'roma', destino: 'roma', grado: 'plata', nombre: 'Roma te atrapa', linea: '4 de 8 imprescindibles.', en })],
   sello_diamante: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:diamante', sello: 'roma', destino: 'roma', grado: 'diamante', nombre: 'Roma es tuya', linea: 'Todos los imprescindibles de Roma.', en })],
   sello_vaticano: () => [m({ tipo: 'sello', cat: 'sello', clave: 'vaticano|sello|vaticano:plata', sello: 'vaticano', destino: 'vaticano', grado: 'plata', nombre: 'Has cruzado la frontera', linea: 'Has visto tu primer sitio del Vaticano.', en })],
@@ -67,24 +91,26 @@ const MOMENTOS: Record<string, () => Momento[]> = {
   coleccion: () => [m({ tipo: 'coleccion', cat: 'coleccion', clave: 'roma|coleccion|cuatro_joyas', id: 'cuatro_joyas', destino: 'roma', nombre: 'Las 4 joyas de Roma', linea: 'Cuatro joyas, cuatro recuerdos para siempre.', en })],
   coliseo: () => [m({ tipo: 'emblema', cat: 'emblema', clave: 'roma|emblema|coliseo', id: 'coliseo', destino: 'roma', nombre: 'Una maravilla del mundo', linea: 'El mayor anfiteatro de la Antigüedad.', momento: false, maravilla: 'coliseo', frase: '¡Eh! Aquí hay algo…', en }), m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
   emblema: () => MOMENTOS['emblema:panteon'](),
-  pais: () => [m({ tipo: 'pais', cat: 'pais', clave: '*|pais|Vaticano', pais: 'Vaticano', n: 2, nombre: 'Tu país número 2: Vaticano', en })],
+  pais: () => [m({ tipo: 'pais', cat: 'pais', clave: '*|pais|Italia', pais: 'Italia', n: 1, nombre: 'Tu país número 1: Italia', en })],
   destino: () => [m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en })],
+  medalla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|coliseo', id: 'coliseo', n: 1, nombre: 'El Coliseo', linea: 'El mayor anfiteatro de la Antigüedad.', en })],
   maravilla: () => [m({ tipo: 'maravilla', cat: 'maravilla', clave: '*|maravilla|gran_muralla', id: 'gran_muralla', n: 2, nombre: 'La Gran Muralla', linea: 'Más de 20.000 km de muralla, levantada durante siglos.', en })],
   patrimonio: () => [m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', en })],
   viajero: () => [m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|3', logro: 'paises', escalon: '3', destino: '*', nombre: 'Trotamundos', linea: 'Países distintos que has visitado con la app.', en })],
   ademas: () => [
     m({ tipo: 'patrimonio', cat: 'patrimonio', clave: 'roma|patrimonio|centro_historico_de_roma', id: 'centro_historico_de_roma', nombre: 'Centro histórico de Roma', en }),
     m({ tipo: 'destino_nuevo', cat: 'destino_nuevo', clave: '*|destino_nuevo|roma', destino: 'roma', n: 1, nombre: 'Tu destino número 1: Roma', en }),
-    m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|3', logro: 'paises', escalon: '3', destino: '*', nombre: 'Trotamundos', linea: 'Países distintos que has visitado con la app.', en }),
+    m({ tipo: 'viajero', cat: 'viajero', clave: '*|viajero:paises|1', logro: 'paises', escalon: '1', destino: '*', nombre: 'Primer sello', linea: 'Países distintos que has visitado con la app.', en }),
   ],
 }
 for (const id of ['foro_romano', 'museos_vaticanos', 'plaza_san_pedro', 'basilica_san_pedro', 'panteon', 'fontana_de_trevi', 'boca_de_la_verdad', 'ojo_cerradura', 'catacumbas', 'madrugador', 'nocturno']) {
   MOMENTOS[`emblema:${id}`] = () => [m({ tipo: 'emblema', cat: 'emblema', clave: `roma|emblema|${id}`, id, destino: 'roma', nombre: '', linea: '', momento: id === 'madrugador' || id === 'nocturno', frase: 'Pero… ¿qué es esto?', en })]
 }
 
-function ponerDatos(acabado = false, tipo: 'wow' | 'con_ganas' = 'wow', nImp = 4) {
-  datosDePrueba.estado = estadoBase(acabado, nImp)
-  datosDePrueba.resumen = resumenBase(tipo, acabado)
+function ponerDatos(acabado = false, tipo: 'wow' | 'con_ganas' = 'wow', escenario: Escenario = 'viaje') {
+  datosDePrueba.estado = estadoBase(acabado, escenario)
+  // El resumen del día sale de lo que se enseña en cada serie; solo el del viaje lleva el suyo hecho.
+  datosDePrueba.resumen = escenario === 'viaje' ? resumenBase(tipo, acabado) : null
   datosDePruebaViajero.v = {
     ok: true,
     logros: [
@@ -105,28 +131,26 @@ function lanzar(tipo: string, opciones: { primeraVez?: boolean } = {}) {
 const api = {
   lanzar,
   repetir: (id: string) => lanzar(`emblema:${id}`.replace('emblema:coliseo', 'coliseo'), { primeraVez: false }),
-  serieCompleta: () => {
-    ponerDatos()
-    // El orden del servidor: pedazos, colección, emblema (+ su maravilla), sello, país, destino, Patrimonio, viajero.
-    const todo = [...MOMENTOS.suma_varias(), ...MOMENTOS.coleccion(), ...MOMENTOS.coliseo().slice(0, 2), ...MOMENTOS.sello_evo(), ...MOMENTOS.pais(), ...MOMENTOS.ademas()]
-    useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
-    return todo.length
-  },
-  /** C0: lo que da el Coliseo al hacer la foto, en el orden del servidor: 3 pedazos, el emblema con su maravilla, el sello que nace, país, destino, Patrimonio y viajero. */
+  /** Un Visto que lo da todo, en el orden del servidor y con los números de verdad: el Coliseo como PRIMER sitio del viaje. */
+  serieCompleta: () => api.serieColiseo(),
+  /** C0: el Coliseo como primer sitio de Roma, igual que el servidor: 1 pedazo en sus 3 colecciones, el emblema con su maravilla, el sello que nace en bronce («1 de 8»), país 1 Italia y destino 1 Roma. */
   serieColiseo: () => {
-    ponerDatos(false, 'wow', 3)
-    datosDePrueba.resumen = null // el resumen del día cuenta lo que se acaba de enseñar
-    const sumas = MOMENTOS.suma_varias().map((x) => (x.coleccion === 'imprescindibles' ? { ...x, n: 3 } : x))
-    const todo = [...sumas, ...MOMENTOS.coliseo().slice(0, 2), ...MOMENTOS.sello(), ...MOMENTOS.pais(), ...MOMENTOS.ademas()]
+    ponerDatos(false, 'wow', 'coliseo')
+    datosDePrueba.resumen = null // el resumen del día cuenta solo lo que sale en la serie
+    const sumas = MOMENTOS.suma_varias()
+    const todo = [...sumas, ...MOMENTOS.coliseo().slice(0, 2), ...MOMENTOS.sello(), ...MOMENTOS.pais(), ...MOMENTOS.destino()]
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
     return todo.length
   },
-  /** S2: varios pedazos + una colección completada + el sello que sube (sin emblema). */
+  /** S2: el Panteón como 4.º imprescindible (sello de bronce a plata) y última joya (cierra «Las 4 joyas»). Sin emblema ni maravilla: se ve con ubicación, sin foto. */
   serieS2: () => {
-    ponerDatos(false, 'wow', 4)
+    ponerDatos(false, 'wow', 's2')
     datosDePrueba.resumen = null
-    const sumas = MOMENTOS.suma_varias().map((x) => (x.coleccion === 'imprescindibles' ? { ...x, n: 4, sitios: ['panteon'], linea: '4 de 8' } : x.coleccion === 'cuatro_joyas' ? { ...x, n: 4, sitios: ['panteon'], linea: '4 de 4' } : { ...x, n: 2, sitios: ['foro_romano_y_palatino'], linea: '2 de 6' }))
-    const todo = [...sumas, ...MOMENTOS.coleccion(), ...MOMENTOS.sello_evo()]
+    const sumas = [
+      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'imprescindibles', destino: 'roma', nombre: 'Los imprescindibles de Roma', n: 4, total: 8, sitios: ['panteon'], linea: '4 de 8' }),
+      m({ tipo: 'suma', cat: 'pedazo', coleccion: 'cuatro_joyas', destino: 'roma', nombre: 'Las 4 joyas de Roma', n: 4, total: 4, sitios: ['panteon'], linea: '4 de 4' }),
+    ]
+    const todo = [...sumas, ...MOMENTOS.coleccion(), ...MOMENTOS.sello_s2()]
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
     return todo.length
   },
@@ -160,7 +184,7 @@ const api = {
     u.ponerPrimerDia(false)
   },
   primerDia: () => useMomentosUI.getState().ponerPrimerDia(true),
-  /** `datos(false, 'wow', 3)`: el estado de ejemplo con 3 imprescindibles (coincide con el demo del Visto: Coliseo = 3 de 8). */
+  /** `datos(false, 'wow', 'coliseo' | 's2' | 'viaje')`: el estado de ejemplo de un escenario (ver arriba). */
   datos: ponerDatos,
   puntito: (v = true) => useLogrosStore.getState().ponerPuntito(v),
   tipos: Object.keys(MOMENTOS),

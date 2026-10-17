@@ -21,3 +21,34 @@ No era un fallo del mapeo: **era mi dato de prueba**. Al inyectar paradas en la 
 
 ## Qué NO he tocado
 Ninguna foto, ni `_fotos.json`, ni `roma.json`, ni el servidor. Lo de arriba son propuestas.
+
+---
+
+# 8B3 (decisiones de Eric aplicadas)
+Ninguna foto borrada. Cambia qué foto sale en cada sitio. Reglas en `server/index.js` (`/api/place-photo` y `/api/pool-photos`) y datos en `data/dias/roma/_fotos.json`. El motor no se ha tocado. Comprobado con peticiones reales a `localhost:8787` tras reiniciar el api-server.
+
+| Sitio | Antes | Ahora | Cómo |
+|---|---|---|---|
+| **Coliseo** | su foto propia `dia_coliseo.jpg` (el servidor SÍ la daba) pero el viaje de pruebas llevaba las paradas SIN foto y nadie la pedía; en HOY salía un cuadrado de color | su foto propia | HOY v2 ahora pide la foto al servidor por el nombre cuando la parada viene sin ella (`useFotoDeParada`); `rutaDePrueba` llama a `enrichRoutePhotos` como un viaje de verdad. La «reja con árboles» de V7 era otra foto (un dato de prueba del Visto) |
+| **Via del Babuino** | foto de la Fontana de Trevi (regla de la zona) | sin foto | se quita la regla de la zona (`zonePhotoFor` ya no se usa) |
+| **Terraza de Largo Gaetana Agnesi** | foto del Altar de la Patria (zona) | sin foto | idem |
+| **Colle Oppio** | foto del Altar de la Patria (zona) | sin foto | idem |
+| **Mirador de San Pietro in Montorio** | foto del Mirador del Janículo (zona) | sin foto | idem |
+| **Museos Vaticanos y Capilla Sixtina** | Wikipedia: interior de la Capilla Sixtina | sin foto | `fotos_rechazadas` (también «Museos Vaticanos», que traía el escudo en SVG) |
+| **Panteón** | a veces Wikipedia (`SantRomaSau`, una iglesia catalana) | nunca Wikipedia: la de Unsplash que ya menciona el sitio, o ninguna | regla de sitios importantes |
+| **Piazza Navona** (de día) | su única foto propia es de Navidad de noche (1-dic a 5-ene); fuera de ellas salía una de Unsplash | fuera de fechas, sin foto; en Navidad, la suya | `soloFotoDeFechas` |
+| **Mercadillo de Navidad de Piazza Navona** | fuera de fechas, una de Unsplash | fuera de fechas, sin foto | idem |
+| **Columna de Trajano** | compartía `dia_foros_de_trajano.jpg` con los Mercados | sin foto (los Mercados y los Foros se quedan con la suya) | se quita de `lugares` de esa foto y se añade a `sin_foto` |
+
+**Reglas nuevas en el servidor:** (1) los sitios importantes = nivel 1 en el JSON del destino: nunca la foto de Wikipedia (ni la que viniera guardada en la caché); (2) un sitio cuyas fotos propias son todas de unas fechas va sin foto fuera de ellas; (3) fuera la foto de otro sitio de la zona.
+
+## Sitios importantes (nivel 1) que NO tienen foto propia: hay que buscarlas
+1. **Foro Romano y Palatino** (hoy: Unsplash que menciona el sitio)
+2. **Arco de Constantino** (hoy: Unsplash)
+3. **Panteón** (hoy: Unsplash)
+4. **Piazza Navona** (hoy: sin foto fuera de Navidad)
+5. **Museos Vaticanos y Capilla Sixtina** (hoy: sin foto)
+Con foto propia: Coliseo, Fontana de Trevi, Plaza de España, Basílica de San Pedro, Plaza de San Pedro, Altar de la Patria.
+
+## La auditoría ahora falla si algo vuelve
+`node scripts/destino/auditoriaFotos.mjs roma --servidor http://localhost:8787` sale con código 1 si: un sitio importante lleva Wikipedia o foto de otro sitio; hay fotos repetidas en sitios distintos; una foto de unas fechas se sirve fuera de ellas (se prueba con 6 fechas del año, también sin servidor); o un sitio lleva la foto de otro de su zona. Resultado hoy: 0 repetidas, 0 de Navidad fuera de fechas, 0 importantes con Wikipedia. Sin `--servidor` solo comprueba lo que no depende de Unsplash o Wikipedia.

@@ -9,6 +9,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { CamaraApp } from './CamaraApp'
 import { fechasDelViaje, hoyLocal, lineaDeGaleria, textoDelPlazo } from './fechas'
 import { AvisoDeVisto, EstilosDelVisto, FranjaSinConexion, HojaDePermisos, HojaDelVisto, HojaFotoDentro, HojaGaleria, HojaLoDeAyer, NotaCorta, type ParadaDeAyer } from './Hojas'
+import { faltaDe, hojaSegunRespuesta as decidirHoja } from './decidir'
 import { abrirHoja, cerrarHoja, useVistoStore, type DestinoDeFoto, type Hoja, type ParadaVista, type QueFalta } from './vistoStore'
 
 /**
@@ -87,24 +88,12 @@ function paradaDe(dayId: string, stopId: string, tripId: string): ParadaVista | 
   return dia && parada ? { tripId, dayId, dayNumber: dia.dayNumber, stopId, nombre: parada.name } : null
 }
 
-/** Qué tarjeta toca según lo que contesta el servidor (la tabla de «Cómo se gana cada cosa al tocar Visto»). null = ninguna. */
+/** Qué tarjeta toca según lo que contesta el servidor (lógica pura en decidir.ts). Sin respuesta, ninguna: no se enseña un texto que luego cambiaría. */
 export function hojaSegunRespuesta(r: RespuestaDeHecho | null, parada: ParadaVista): Hoja | null {
-  // El nombre que sale en los textos es SIEMPRE el de la parada que se acaba de marcar (nunca el de otra).
-  const nombreSitio = displayStopName(parada.nombre)
-  const base = { parada, nombreSitio, fotoDentro: r?.foto_dentro ?? null }
-  if (!r) return { ...base, tipo: 'recuerdo' }
-  if (r.motivo === 'pregunta_medio_dia' || r.repetido) return null
-  if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `Parece que no estás en ${nombreSitio}. Tu pedazo te espera allí.` }
-  if (r.motivo === 'lejos') return { ...base, tipo: 'recuerdo' }
-  if (r.cuenta === false) return { ...base, tipo: 'recuerdo' }
-  if (r.hay_emblema) return { ...base, tipo: 'oculto' }
-  if (r.ubic === 'sin' && r.hay_pedazo) return { ...base, tipo: 'sin_ubicacion' }
-  const pedazo = r.nuevos?.find((m) => m.tipo === 'suma') ?? null
-  if (pedazo) return { ...base, tipo: 'ganado', pedazo }
-  return { ...base, tipo: 'recuerdo' }
+  const d = decidirHoja(r, parada.nombre)
+  return d ? { tipo: d.tipo, parada, nombreSitio: d.nombreSitio, pedazo: d.pedazo as Hoja['pedazo'], mensaje: d.mensaje, fotoDentro: d.fotoDentro } : null
 }
 
-const FALTA_DE: Record<Hoja['tipo'], QueFalta | null> = { oculto: 'sorpresa', sin_ubicacion: 'pedazo', ganado: 'recuerdo', recuerdo: 'recuerdo', lejos: null }
 
 /**
  * Lo que pasa al tocar [Visto] con los logros encendidos: permisos (la primera vez), el aviso de 5 segundos con [Deshacer], el envío al servidor y, pasados los 5 segundos, la tarjeta que toque.
@@ -114,6 +103,10 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
   const parada = paradaDe(p.dayId, p.stopId, p.tripId)
   if (!parada) return
   const { poner } = useVistoStore.getState()
+  // Desde el toque hasta la respuesta del servidor la parada NO enseña ninguna tira: se borra lo que hubiera de antes (de otra vez, o de la lista del servidor) para que nunca salga un texto que luego cambia.
+  useVistoStore.getState().quitarPendiente(p.stopId)
+  const { [p.stopId]: _viejo, ...restoServidor } = useVistoStore.getState().servidor
+  poner({ servidor: restoServidor })
   await asegurarPermisos()
   const id = ++contadorDeAvisos
   let deshecho = false
@@ -143,7 +136,7 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
   }
   const hoja = hojaSegunRespuesta(r, parada)
   if (!hoja) return
-  const falta = FALTA_DE[hoja.tipo]
+  const falta = faltaDe(hoja.tipo)
   if (falta) useVistoStore.getState().anotarPendiente(p.stopId, { tripId: p.tripId, falta, nombre: parada.nombre, fotoDentro: hoja.fotoDentro ?? null })
   abrirHoja(hoja)
 }
@@ -337,7 +330,7 @@ export function VistoFlujo({ tripId }: { tripId: string | null }) {
     useVistoStore.getState().quitarPendiente(h.parada.stopId)
     const nueva = hojaSegunRespuesta(r, h.parada)
     if (nueva) {
-      const falta = FALTA_DE[nueva.tipo]
+      const falta = faltaDe(nueva.tipo)
       if (falta) useVistoStore.getState().anotarPendiente(h.parada.stopId, { tripId: h.parada.tripId, falta, nombre: h.parada.nombre, fotoDentro: nueva.fotoDentro ?? null })
       abrirHoja(nueva)
     }

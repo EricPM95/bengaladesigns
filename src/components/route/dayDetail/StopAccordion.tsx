@@ -71,7 +71,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
         numberColors={numberColors}
         name={displayStopName(stop.name)}
         sub={stop.arrivalText ?? null}
-        meta={[{ icon: 'hour', text: formatDuration(stop.durationMinutes) }]}
+        meta={stop.durationMinutes > 0 ? [{ icon: 'hour', text: formatDuration(stop.durationMinutes) }] : []}
         noPhoto
         onOpen={onOpen}
         menu={menu}
@@ -92,7 +92,7 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   const cerradoEsteDia = Boolean(stop.closedThisDay)
   if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && (stop.visitMode !== 'fuera' || horario.cerrado)) meta.push({ icon: 'clock', text: horario.texto, warn: horario.cerrado })
   if (cerradoEsteDia) meta.push({ text: 'Cerrado este día', warn: true })
-  else meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
+  else if (stop.durationMinutes > 0) meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
   // Por fuera porque cierra: el motivo, en rojo (si cierra ese día ya lo dice «Cerrado hoy», una sola vez). (Por falta de tiempo no es un problema: va en la ficha.)
   if (stop.visitMode === 'fuera' && !cerradoEsteDia) {
     const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'

@@ -99,7 +99,7 @@ export function HojaMasParaTuDia({ visitas, anadidas, onAnadir, onCerrar }: { vi
               <ParadaFoto nombre={v.stop.name} photoUrl={v.stop.photoUrl} vista marca={false} size={56} />
               <span className="flex min-w-0 flex-1 flex-col gap-1">
                 <span style={{ font: "400 18px/1.1 'Instrument Serif',serif" }}>{displayStopName(v.stop.name)}</span>
-                <span className="text-[11.5px] font-medium text-[#1C2230]/60">{formatDuration(v.stop.durationMinutes)}</span>
+                {v.stop.durationMinutes > 0 && <span className="text-[11.5px] font-medium text-[#1C2230]/60">{formatDuration(v.stop.durationMinutes)}</span>}
               </span>
               {hecha ? (
                 <span className="pr-1 text-[12px] font-semibold" style={{ color: 'oklch(0.4 0.1 150)' }}>

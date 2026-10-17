@@ -49,7 +49,8 @@ const tabla = JSON.parse(leer('data/dias/roma/_fotos.json'))
 const W = await import('../../server/engine/writtenDays.js')
 {
   const lista = tabla.fotos_rechazadas ?? []
-  ok(lista.length === DIEZ.length, `1a fotos_rechazadas tiene ${lista.length} sitios y deberían ser ${DIEZ.length}`)
+  // Las 10 de siempre + las 2 de Museos Vaticanos (Tanda 8B3: fuera la foto de dentro de la Capilla Sixtina).
+  ok(lista.length === DIEZ.length + 2 && lista.filter((r) => /Museos Vaticanos/.test(r.lugar)).length === 2, `1a fotos_rechazadas tiene ${lista.length} sitios y deberían ser ${DIEZ.length + 2} (las 10 y las 2 de Museos Vaticanos)`)
   ok(DIEZ.every((n) => lista.some((r) => r.lugar === n)), `1b faltan en la lista: ${DIEZ.filter((n) => !lista.some((r) => r.lugar === n)).join(' | ')}`)
   ok(lista.every((r) => typeof r.motivo === 'string' && r.motivo.trim().length > 20), '1c algún sitio no lleva su motivo escrito')
   const motivo = (n) => lista.find((r) => r.lugar === n)?.motivo ?? ''

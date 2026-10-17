@@ -3,7 +3,8 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { textoDelPlazo } from './fechas'
 import { Trazo, TRAZO } from './trazos'
 import { fotoDeParada } from './VistoFlujo'
-import { useVistoStore, type QueFalta } from './vistoStore'
+import { TEXTO_DE_FALTA, tiraDeParada } from './decidir'
+import { useVistoStore } from './vistoStore'
 
 /**
  * V6: LA PARADA CON LO QUE LE FALTA (diseño «La parada con lo que le falta»). Una tira bajo la parada ya vista, con su botón de cámara:
@@ -14,11 +15,7 @@ import { useVistoStore, type QueFalta } from './vistoStore'
  * Sale en HOY y en DÍAS: se monta con UNA línea bajo la fila de la parada: `<PendienteDeParada dayId={day.id} stopId={stop.id} visto={Boolean(stop.checkedInAt)} />`.
  * Con los logros apagados (o sin nada que reclamar) no pinta nada.
  */
-const TEXTO: Record<QueFalta, string> = {
-  sorpresa: 'Te espera una sorpresa: sube tu foto',
-  pedazo: 'Haz una foto y gana tu pedazo',
-  recuerdo: 'Guarda un recuerdo',
-}
+const TEXTO = TEXTO_DE_FALTA
 
 export function PendienteDeParada({ dayId, stopId, visto }: { dayId: string; stopId: string; visto: boolean }) {
   if (!logrosActivos()) return null
@@ -31,7 +28,7 @@ function Tira({ dayId, stopId, visto }: { dayId: string; stopId: string; visto: 
   const servidor = useVistoStore((s) => s.servidor[stopId])
   const dia = route?.days.find((d) => d.id === dayId)
   const parada = dia?.stops.find((x) => x.id === stopId)
-  const pendiente = visto ? (local ?? servidor) : undefined
+  const pendiente = visto ? tiraDeParada(local, servidor) : undefined
   if (!route || !dia || !parada || !pendiente) return null
   const falta = pendiente.falta
   const sorpresa = falta === 'sorpresa'
