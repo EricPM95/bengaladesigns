@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:{{ sz }};height:{{ sz }};flex:none">
+  <svg width="100%" height="100%" viewBox="0 0 120 120" style="overflow:visible;filter:drop-shadow(0 4px 6px rgba(20,16,30,.35))">
+    <defs>
+      <linearGradient id="{{ u }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ c0 }}"></stop><stop offset=".5" stop-color="{{ c1 }}"></stop><stop offset="1" stop-color="{{ c2 }}"></stop></linearGradient>
+      <linearGradient id="{{ u }}h" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="{{ c2 }}"></stop><stop offset=".5" stop-color="{{ c0 }}"></stop><stop offset="1" stop-color="{{ c1 }}"></stop></linearGradient>
+      <clipPath id="{{ u }}c"><circle cx="60" cy="60" r="43"></circle></clipPath>
+    </defs>
+    <sc-for list="{{ rays }}" as="r" hint-placeholder-count="0"><path d="{{ r }}" stroke="{{ c0 }}" stroke-width="1.6" stroke-linecap="round" opacity=".55"></path></sc-for>
+    <circle cx="60" cy="60" r="55" fill="url(#{{ u }}g)"></circle>
+    <circle cx="60" cy="60" r="55" fill="none" stroke="rgba(255,255,255,.75)" stroke-width=".8"></circle>
+    <circle cx="60" cy="60" r="47" fill="url(#{{ u }}h)"></circle>
+    <circle cx="60" cy="60" r="44" fill="#1C2230"></circle>
+    <g clip-path="url(#{{ u }}c)"><rect x="17" y="17" width="86" height="86" fill="#252D44"></rect><circle cx="60" cy="48" r="15" fill="#F3E3C8"></circle><path d="M24 104c2-22 16-30 36-30s34 8 36 30z" fill="#F3E3C8"></path></g>
+    <circle cx="60" cy="60" r="43" fill="none" stroke="{{ c0 }}" stroke-width=".9" opacity=".8"></circle>
+    <sc-for list="{{ studs }}" as="s" hint-placeholder-count="4"><g transform="translate({{ s.x }} {{ s.y }}) rotate({{ s.r }})"><path d="M0 -4.2L3 0 0 4.2-3 0Z" fill="{{ c0 }}" stroke="{{ c2 }}" stroke-width=".7"></path></g></sc-for>
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="5"><g transform="translate({{ s.x }} {{ s.y }}) scale({{ s.k }})"><path d="M0 -6L1.7 -1.9L6 -1.5L2.7 1.3L3.8 5.5L0 3.2L-3.8 5.5L-2.7 1.3L-6 -1.5L-1.7 -1.9Z" fill="{{ s.f }}" stroke="{{ s.s }}" stroke-width=".8" stroke-linejoin="round"></path></g></sc-for>
+  </svg>
+  <sc-if value="{{ leg }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-4%;top:-4%;min-width:34%;height:28%;padding:0 8%;border-radius:999px;background:#1C2230;color:#F3D59A;box-shadow:0 0 0 2px #F3D59A;display:flex;align-items:center;justify-content:center;font:700 {{ lf }} 'Geist Mono',monospace">{{ legT }}</span></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:140,&quot;height&quot;:140},&quot;rank&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:0,&quot;max&quot;:9,&quot;tsType&quot;:&quot;number&quot;},&quot;lvl&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:120,&quot;tsType&quot;:&quot;number&quot;},&quot;extra&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;}}">
+let UID=0;
+const RK=[['#E8E2FF','#A99BE0','#5A4C9E'],['#D6F5D2','#5FB36A','#2A6A38'],['#CFF6F1','#3FBFB3','#176A66'],['#D6E8FF','#5A92E6','#24488E'],['#FFE0BF','#F29A3C','#9A4E0C'],['#F7D9C4','#D97A4E','#8A3A1C'],['#F1E2BC','#C79A4A','#7A5418'],['#EBD3FF','#A864DC','#5A2A8E'],['#C9D4F5','#3B55B8','#141F5A'],['#FFF1B8','#E3B13F','#8A5E12']];
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='mr'+(++UID);}
+  renderVals(){const p=this.props;const r=Math.max(0,Math.min(9,parseInt(p.rank)||0));const l=Math.max(1,Math.min(5,parseInt(p.lvl)||1));const c=RK[r];const sz=(Number(p.size)||120)+'px';
+    const studs=Array.from({length:4+r},(_,i)=>{const a=i/(4+r)*Math.PI*2-Math.PI/2;return{x:(60+51*Math.cos(a)).toFixed(1),y:(60+51*Math.sin(a)).toFixed(1),r:(a*180/Math.PI+90).toFixed(0)};});
+    const stars=Array.from({length:5},(_,i)=>{const a=(65+i*12.5)*Math.PI/180;const on=i<l;return{x:(60+60*Math.cos(a)).toFixed(1),y:(60+60*Math.sin(a)).toFixed(1),k:on?1:.8,f:on?'#FFF1B8':'#1C2230',s:on?'#B5821C':'rgba(255,255,255,.45)'};});
+    const rays=r>=6?Array.from({length:r>=9?24:16},(_,i)=>{const n=r>=9?24:16,a=i/n*Math.PI*2;return'M'+(60+58*Math.cos(a)).toFixed(1)+' '+(60+58*Math.sin(a)).toFixed(1)+'L'+(60+(r>=9?69:65)*Math.cos(a)).toFixed(1)+' '+(60+(r>=9?69:65)*Math.sin(a)).toFixed(1);}):[];
+    const ex=parseInt(p.extra)||0;
+    return{u:this.u,sz,c0:c[0],c1:c[1],c2:c[2],studs,stars,rays,leg:r===9&&ex>0,legT:'★'+ex,lf:Math.max(7,Math.round((Number(p.size)||120)*.09))+'px'};}
+}
+</script>
+</body>
+</html>

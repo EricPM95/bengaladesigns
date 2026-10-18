@@ -11,6 +11,7 @@ import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
+import { PantallasHost } from './components/logros/pantallas/PantallasHost'
 import { AvisoInstalar } from './components/logros/AvisoInstalar'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
@@ -93,6 +94,7 @@ function App() {
       <VistosPorPersona />
       <LogrosPorVisto />
       <MomentosHost />
+      <PantallasHost />
       <AvisoInstalar />
       <PrecioVuela />
       <FotoVuela />

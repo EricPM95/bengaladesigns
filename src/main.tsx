@@ -12,6 +12,9 @@ import { lazy, Suspense } from 'react'
 // Solo en desarrollo: window.__rutaPrueba() crea el viaje de pruebas de siempre (src/dev/rutaDePrueba.ts).
 if (import.meta.env.DEV) void import('./dev/rutaDePrueba.ts')
 
+// Solo en desarrollo (8C2): window.__escaparate abre cada pantalla de los logros en un estado conocido, para las capturas (src/dev/escaparate.ts).
+if (import.meta.env.DEV) void import('./dev/escaparate.ts')
+
 // Solo en desarrollo: ?dibujos=1 enseña todos los dibujos de los logros (src/dev/DibujosPrueba.tsx), cargado a demanda.
 const DibujosPrueba = import.meta.env.DEV && new URLSearchParams(window.location.search).get('dibujos') ? lazy(() => import('./dev/DibujosPrueba.tsx').then((m) => ({ default: m.DibujosPrueba }))) : null
 

@@ -77,3 +77,5 @@
 @keyframes moLate2{0%{transform:scale(1)}40%{transform:scale(1.1)}100%{transform:scale(1)}}
 @keyframes moDestello{0%{opacity:0;transform:scale(.6)}30%{opacity:1}100%{opacity:0;transform:scale(1.4)}}
 @keyframes ecIRays{0%{opacity:0}60%{opacity:.5}92%{opacity:.9}100%{opacity:1}}
+@keyframes moPop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes moGrow{from{width:0}}

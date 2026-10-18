@@ -1,0 +1,23 @@
+/* «¿Dónde has estado ya?» y el pasaporte (Tanda 8C2): las claves de animación de `Piezas/Logros J Donde has estado` y de `Piezas/Perfil` del diseño, tal cual (con el prefijo mu). */
+@keyframes muUp { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+@keyframes muPop { 0% { opacity: 0; transform: scale(.3) } 65% { opacity: 1; transform: scale(1.12) } 100% { opacity: 1; transform: scale(1) } }
+@keyframes muRays { to { transform: rotate(360deg) } }
+@keyframes muGlow { 0%, 100% { opacity: .4 } 50% { opacity: .9 } }
+@keyframes muSlam { 0% { opacity: 0; transform: translateY(-260px) scale(2.6) rotate(-14deg); filter: drop-shadow(0 60px 30px rgba(0,0,0,.35)) } 62% { opacity: 1; transform: translateY(-40px) scale(1.5) rotate(-6deg); filter: drop-shadow(0 30px 20px rgba(0,0,0,.3)) } 88% { transform: translateY(0) scale(.92) rotate(6deg); filter: drop-shadow(0 2px 2px rgba(0,0,0,.2)) } 94% { transform: scale(1.03) rotate(7deg) } 100% { opacity: 1; transform: scale(1) rotate(7deg); filter: none } }
+@keyframes muRing { 0% { opacity: .9; transform: scale(.6) } 100% { opacity: 0; transform: scale(1.9) } }
+@keyframes muDrop { 0% { opacity: 1; transform: translate(0, 0) } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) } }
+@keyframes muInk { 0% { background: rgba(28,34,48,.12) } 100% { background: rgba(28,34,48,0) } }
+@keyframes muStamp { 0% { opacity: 0; transform: scale(1.8) rotate(-8deg) } 60% { opacity: 1; transform: scale(.94) } 100% { opacity: 1; transform: none } }
+@keyframes muSwap { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+@keyframes muCovUp { 0% { transform: none } 100% { transform: translateY(-100%) } }
+@keyframes muFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes muSheet { from { transform: translateY(100%) } to { transform: none } }
+@keyframes muCovBg { to { opacity: 0; visibility: hidden } }
+
+/* Con «reducir movimiento» todo sale ya puesto: nada se mueve. */
+@media (prefers-reduced-motion: reduce) {
+  [data-mundo] * { animation-duration: .001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important }
+}
+[data-mundo] button { font-family: inherit; -webkit-tap-highlight-color: transparent }
+[data-mundo] input::placeholder { color: rgba(28,34,48,.4) }
+[data-mundo] ::-webkit-scrollbar { display: none }

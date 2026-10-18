@@ -6,6 +6,7 @@ import { useSyncStore } from '../../../store/useSyncStore'
 import { getTodayTripContext, resolveRealStops } from '../../../lib/todayMode'
 import { isNumberedStop } from '../../../lib/stopKind'
 import { useCuenta } from '../../cuenta/useCuenta'
+import { ExpHost } from './ExpHost'
 import { useMomentosUI } from './useMomentosUI'
 
 /**
@@ -98,6 +99,7 @@ function Encendido() {
       {compartir && <Compartir />}
       {hojaLogros && <HojaLogros />}
       {primerDia && !ronda && <PrimerDia />}
+      <ExpHost />
     </Suspense>
   )
 }

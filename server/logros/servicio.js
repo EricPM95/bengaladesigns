@@ -17,7 +17,7 @@ import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
-import { coleccionesDeSitio, construirVitrina, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen } from './vistas.js'
+import { coleccionesDeSitio, construirVitrina, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
 
 const CON_QUIEN = { solo: 'solo', couple: 'pareja', group: 'amigos', family: 'familia' }
 
@@ -406,9 +406,16 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const itemsMapa = aItems(c.logros)
     const hoy = hoyEn(viaje.destino)
     const est = estadoDestino({ datos, destino: viaje.destino, items: itemsMapa, viaje, hoy })
+    // (8C2) Cada sitio de cada colección, con su nombre y si está en la ruta del viaje y dónde (para «Cómo llegar» y «Añadir a mi ruta» de la hoja de logros).
+    const enRuta = sitiosDeLaRuta(viaje)
+    const colecciones = est.colecciones.map((c) => ({
+      ...c,
+      sitios: c.sitios.map((s) => ({ ...s, nombre: nombreDeSitio(catalogos, viaje.destino, s.sitio), en_ruta: enRuta.has(s.sitio), ...(coordenadasDeSitio(catalogos, viaje.destino, s.sitio) ?? {}) })),
+    }))
     return {
       ok: true,
       ...est,
+      colecciones,
       exp: resumenDeExp(expFinal(expCalculada(c, calcularCon(c), c.hechos).total, c.perfil?.exp_max ?? 0), datos.exp),
       pendiente: pendientes({ datos, destino: viaje.destino, viaje, items: itemsMapa, hoy }),
       // El puntito del botón: algo ganado cuya animación no se vio (se saltó).
@@ -501,7 +508,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { cargar, expDe, sorteoDe, registrarInvitacion, resolverInvitacion, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { aItems, cargar, expDe, sorteoDe, registrarInvitacion, resolverInvitacion, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

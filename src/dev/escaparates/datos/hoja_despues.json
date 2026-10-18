@@ -1,0 +1,758 @@
+{
+ "ok": true,
+ "destino": "roma",
+ "ciudad": "Roma",
+ "sellos": [
+  {
+   "id": "roma",
+   "nombre": "Roma",
+   "grado": "oro",
+   "nombre_grado": "Roma en el corazón",
+   "linea": "6 de 8 imprescindibles.",
+   "n": 6,
+   "total": 8,
+   "siguiente": {
+    "grado": "diamante",
+    "faltan": 2,
+    "nombre": "Roma es tuya"
+   },
+   "alcanzados": [
+    "bronce",
+    "plata",
+    "oro"
+   ]
+  },
+  {
+   "id": "vaticano",
+   "nombre": "El Vaticano",
+   "grado": "diamante",
+   "nombre_grado": "El Vaticano es tuyo",
+   "linea": "Los tres sitios del Vaticano.",
+   "n": 3,
+   "total": 3,
+   "siguiente": null,
+   "alcanzados": [
+    "plata",
+    "oro",
+    "diamante"
+   ]
+  }
+ ],
+ "colecciones": [
+  {
+   "id": "pais_mas_pequeno",
+   "grupo": "principales",
+   "orden": 2,
+   "nombre": "El país más pequeño del mundo",
+   "al_completar": "El país entero",
+   "sitios": [
+    {
+     "sitio": "museos_vaticanos_y_capilla_sixtina",
+     "visto": true,
+     "nombre": "Museos Vaticanos y Capilla Sixtina",
+     "en_ruta": true,
+     "lat": 41.9065,
+     "lng": 12.4536
+    },
+    {
+     "sitio": "basilica_de_san_pedro",
+     "visto": true,
+     "nombre": "Basílica de San Pedro",
+     "en_ruta": true,
+     "lat": 41.9021,
+     "lng": 12.4555
+    },
+    {
+     "sitio": "plaza_de_san_pedro",
+     "visto": true,
+     "nombre": "Plaza de San Pedro",
+     "en_ruta": true,
+     "lat": 41.9022,
+     "lng": 12.4573
+    }
+   ],
+   "n": 3,
+   "total": 3,
+   "completa": true,
+   "en_tu_ruta": false,
+   "nuevo_hoy": false
+  },
+  {
+   "id": "cuatro_joyas",
+   "grupo": "de_empezar",
+   "orden": 3,
+   "nombre": "Las 4 joyas de Roma",
+   "al_completar": "Las cuatro joyas, en tu mano",
+   "sitios": [
+    {
+     "sitio": "coliseo",
+     "visto": true,
+     "nombre": "Coliseo",
+     "en_ruta": true,
+     "lat": 41.8902,
+     "lng": 12.4922
+    },
+    {
+     "sitio": "fontana_de_trevi",
+     "visto": true,
+     "nombre": "Fontana de Trevi",
+     "en_ruta": true,
+     "lat": 41.9009,
+     "lng": 12.4833
+    },
+    {
+     "sitio": "panteon",
+     "visto": true,
+     "nombre": "Panteón",
+     "en_ruta": true,
+     "lat": 41.8986,
+     "lng": 12.4769
+    },
+    {
+     "sitio": "museos_vaticanos_y_capilla_sixtina",
+     "visto": true,
+     "nombre": "Museos Vaticanos y Capilla Sixtina",
+     "en_ruta": true,
+     "lat": 41.9065,
+     "lng": 12.4536
+    }
+   ],
+   "n": 4,
+   "total": 4,
+   "completa": true,
+   "en_tu_ruta": false,
+   "nuevo_hoy": false
+  },
+  {
+   "id": "imprescindibles",
+   "grupo": "principales",
+   "orden": 1,
+   "nombre": "Los imprescindibles de Roma",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "coliseo",
+     "visto": true,
+     "nombre": "Coliseo",
+     "en_ruta": true,
+     "lat": 41.8902,
+     "lng": 12.4922
+    },
+    {
+     "sitio": "foro_romano_y_palatino",
+     "visto": true,
+     "nombre": "Foro Romano y Palatino",
+     "en_ruta": true,
+     "lat": 41.8925,
+     "lng": 12.4853
+    },
+    {
+     "sitio": "fontana_de_trevi",
+     "visto": true,
+     "nombre": "Fontana de Trevi",
+     "en_ruta": true,
+     "lat": 41.9009,
+     "lng": 12.4833
+    },
+    {
+     "sitio": "panteon",
+     "visto": true,
+     "nombre": "Panteón",
+     "en_ruta": true,
+     "lat": 41.8986,
+     "lng": 12.4769
+    },
+    {
+     "sitio": "piazza_navona",
+     "visto": true,
+     "nombre": "Piazza Navona",
+     "en_ruta": true,
+     "lat": 41.8992,
+     "lng": 12.473
+    },
+    {
+     "sitio": "plaza_de_espana",
+     "visto": true,
+     "nombre": "Plaza de España",
+     "en_ruta": true,
+     "lat": 41.906,
+     "lng": 12.4825
+    },
+    {
+     "sitio": "castillo_de_santangelo",
+     "visto": false,
+     "nombre": "Castillo de Sant'Angelo",
+     "en_ruta": true,
+     "lat": 41.9031,
+     "lng": 12.4663
+    },
+    {
+     "sitio": "trastevere",
+     "visto": false,
+     "nombre": "Trastevere",
+     "en_ruta": true,
+     "lat": 41.8893,
+     "lng": 12.47
+    }
+   ],
+   "n": 6,
+   "total": 8,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "miguel_angel",
+   "grupo": "de_artistas",
+   "orden": 5,
+   "nombre": "La Roma de Miguel Ángel",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "museos_vaticanos_y_capilla_sixtina",
+     "visto": true,
+     "nombre": "Museos Vaticanos y Capilla Sixtina",
+     "en_ruta": true,
+     "lat": 41.9065,
+     "lng": 12.4536
+    },
+    {
+     "sitio": "basilica_de_san_pedro",
+     "visto": true,
+     "nombre": "Basílica de San Pedro",
+     "en_ruta": true,
+     "lat": 41.9021,
+     "lng": 12.4555
+    },
+    {
+     "sitio": "plaza_del_campidoglio",
+     "visto": false,
+     "nombre": "Plaza del Campidoglio",
+     "en_ruta": true,
+     "lat": 41.8933,
+     "lng": 12.4828
+    },
+    {
+     "sitio": "iglesia_de_santa_maria_sopra_minerva",
+     "visto": false,
+     "nombre": "Iglesia de Santa Maria sopra Minerva",
+     "en_ruta": true,
+     "lat": 41.8977,
+     "lng": 12.477
+    }
+   ],
+   "n": 2,
+   "total": 4,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "caravaggio",
+   "grupo": "de_artistas",
+   "orden": 7,
+   "nombre": "Tras los pasos de Caravaggio",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "iglesia_de_san_luigi_dei_francesi",
+     "visto": true,
+     "nombre": "Iglesia de San Luigi dei Francesi",
+     "en_ruta": true,
+     "lat": 41.8997,
+     "lng": 12.4747
+    },
+    {
+     "sitio": "santa_maria_del_popolo",
+     "visto": false,
+     "nombre": "Santa Maria del Popolo",
+     "en_ruta": true,
+     "lat": 41.9115,
+     "lng": 12.4764
+    },
+    {
+     "sitio": "galeria_borghese",
+     "visto": true,
+     "nombre": "Galería Borghese",
+     "en_ruta": true,
+     "lat": 41.9142,
+     "lng": 12.4921
+    }
+   ],
+   "n": 2,
+   "total": 3,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "roma_antigua",
+   "grupo": "de_explorar",
+   "orden": 8,
+   "nombre": "La Roma antigua",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "coliseo",
+     "visto": true,
+     "nombre": "Coliseo",
+     "en_ruta": true,
+     "lat": 41.8902,
+     "lng": 12.4922
+    },
+    {
+     "sitio": "foro_romano_y_palatino",
+     "visto": true,
+     "nombre": "Foro Romano y Palatino",
+     "en_ruta": true,
+     "lat": 41.8925,
+     "lng": 12.4853
+    },
+    {
+     "sitio": "largo_di_torre_argentina",
+     "visto": true,
+     "nombre": "Largo di Torre Argentina",
+     "en_ruta": true,
+     "lat": 41.8956,
+     "lng": 12.4767
+    },
+    {
+     "sitio": "castillo_de_santangelo",
+     "visto": false,
+     "nombre": "Castillo de Sant'Angelo",
+     "en_ruta": true,
+     "lat": 41.9031,
+     "lng": 12.4663
+    },
+    {
+     "sitio": "circo_maximo",
+     "visto": true,
+     "nombre": "Circo Máximo",
+     "en_ruta": true,
+     "lat": 41.8859,
+     "lng": 12.4853
+    },
+    {
+     "sitio": "termas_de_caracalla",
+     "visto": false,
+     "nombre": "Termas de Caracalla",
+     "en_ruta": true,
+     "lat": 41.8794,
+     "lng": 12.4931
+    }
+   ],
+   "n": 4,
+   "total": 6,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "miradores",
+   "grupo": "de_explorar",
+   "orden": 9,
+   "nombre": "Los miradores",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "mirador_del_janiculo",
+     "visto": true,
+     "nombre": "Mirador del Janículo",
+     "en_ruta": true,
+     "lat": 41.8912,
+     "lng": 12.4596
+    },
+    {
+     "sitio": "terraza_del_pincio",
+     "visto": false,
+     "nombre": "Terraza del Pincio",
+     "en_ruta": true,
+     "lat": 41.9111,
+     "lng": 12.4779
+    },
+    {
+     "sitio": "jardin_de_los_naranjos",
+     "visto": true,
+     "nombre": "Jardín de los Naranjos",
+     "en_ruta": true,
+     "lat": 41.8851,
+     "lng": 12.4804
+    }
+   ],
+   "n": 2,
+   "total": 3,
+   "completa": false,
+   "en_tu_ruta": true
+  },
+  {
+   "id": "alma_trastevere",
+   "grupo": "de_empezar",
+   "orden": 4,
+   "nombre": "El alma de Trastevere",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "isla_tiberina",
+     "visto": false,
+     "nombre": "Isla Tiberina",
+     "en_ruta": false,
+     "lat": 41.8897,
+     "lng": 12.4776
+    },
+    {
+     "sitio": "iglesia_de_santa_maria_in_trastevere",
+     "visto": false,
+     "nombre": "Iglesia de Santa Maria in Trastevere",
+     "en_ruta": false,
+     "lat": 41.8894,
+     "lng": 12.4697
+    },
+    {
+     "sitio": "san_pietro_in_montorio_y_tempietto_de_bramante",
+     "visto": false,
+     "nombre": "San Pietro in Montorio y Tempietto de Bramante",
+     "en_ruta": false,
+     "lat": 41.8886,
+     "lng": 12.4667
+    },
+    {
+     "sitio": "trastevere",
+     "visto": false,
+     "nombre": "Trastevere",
+     "en_ruta": true,
+     "lat": 41.8893,
+     "lng": 12.47
+    }
+   ],
+   "n": 0,
+   "total": 4,
+   "completa": false,
+   "en_tu_ruta": false
+  },
+  {
+   "id": "bernini",
+   "grupo": "de_artistas",
+   "orden": 6,
+   "nombre": "La Roma de Bernini",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "piazza_navona",
+     "visto": true,
+     "nombre": "Piazza Navona",
+     "en_ruta": true,
+     "lat": 41.8992,
+     "lng": 12.473
+    },
+    {
+     "sitio": "elefantino_de_bernini",
+     "visto": false,
+     "nombre": "Elefantino de Bernini",
+     "en_ruta": false,
+     "lat": 41.898,
+     "lng": 12.4776
+    },
+    {
+     "sitio": "plaza_de_san_pedro",
+     "visto": true,
+     "nombre": "Plaza de San Pedro",
+     "en_ruta": true,
+     "lat": 41.9022,
+     "lng": 12.4573
+    },
+    {
+     "sitio": "basilica_de_san_pedro",
+     "visto": true,
+     "nombre": "Basílica de San Pedro",
+     "en_ruta": true,
+     "lat": 41.9021,
+     "lng": 12.4555
+    },
+    {
+     "sitio": "puente_santangelo",
+     "visto": false,
+     "nombre": "Puente Sant'Angelo",
+     "en_ruta": false,
+     "lat": 41.9032,
+     "lng": 12.4657
+    }
+   ],
+   "n": 3,
+   "total": 5,
+   "completa": false,
+   "en_tu_ruta": false
+  },
+  {
+   "id": "plazas_y_fuentes",
+   "grupo": "de_explorar",
+   "orden": 10,
+   "nombre": "Plazas y fuentes de Roma",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "piazza_navona",
+     "visto": true,
+     "nombre": "Piazza Navona",
+     "en_ruta": true,
+     "lat": 41.8992,
+     "lng": 12.473
+    },
+    {
+     "sitio": "piazza_del_popolo",
+     "visto": false,
+     "nombre": "Piazza del Popolo",
+     "en_ruta": false,
+     "lat": 41.9106,
+     "lng": 12.4764
+    },
+    {
+     "sitio": "plaza_de_espana",
+     "visto": true,
+     "nombre": "Plaza de España",
+     "en_ruta": true,
+     "lat": 41.906,
+     "lng": 12.4825
+    },
+    {
+     "sitio": "plaza_venecia",
+     "visto": false,
+     "nombre": "Plaza Venecia",
+     "en_ruta": false,
+     "lat": 41.8955,
+     "lng": 12.4823
+    },
+    {
+     "sitio": "fontana_de_trevi",
+     "visto": true,
+     "nombre": "Fontana de Trevi",
+     "en_ruta": true,
+     "lat": 41.9009,
+     "lng": 12.4833
+    },
+    {
+     "sitio": "fontana_dellacqua_paola",
+     "visto": false,
+     "nombre": "Fontana dell'Acqua Paola",
+     "en_ruta": false,
+     "lat": 41.8881,
+     "lng": 12.4655
+    },
+    {
+     "sitio": "fuente_del_triton",
+     "visto": false,
+     "nombre": "Fuente del Tritón",
+     "en_ruta": false,
+     "lat": 41.9036,
+     "lng": 12.4883
+    }
+   ],
+   "n": 3,
+   "total": 7,
+   "completa": false,
+   "en_tu_ruta": false
+  },
+  {
+   "id": "roma_secreta",
+   "grupo": "de_explorar",
+   "orden": 11,
+   "nombre": "La Roma secreta",
+   "al_completar": null,
+   "sitios": [
+    {
+     "sitio": "ojo_de_la_cerradura_del_aventino",
+     "visto": false,
+     "nombre": "Ojo de la Cerradura del Aventino",
+     "en_ruta": false,
+     "lat": 41.8829,
+     "lng": 12.4784
+    },
+    {
+     "sitio": "piramide_cestia",
+     "visto": false,
+     "nombre": "Pirámide Cestia",
+     "en_ruta": false,
+     "lat": 41.8764,
+     "lng": 12.4808
+    },
+    {
+     "sitio": "basilica_de_san_clemente",
+     "visto": false,
+     "nombre": "Basílica de San Clemente",
+     "en_ruta": false,
+     "lat": 41.8894,
+     "lng": 12.4975
+    },
+    {
+     "sitio": "san_pietro_in_montorio_y_tempietto_de_bramante",
+     "visto": false,
+     "nombre": "San Pietro in Montorio y Tempietto de Bramante",
+     "en_ruta": false,
+     "lat": 41.8886,
+     "lng": 12.4667
+    },
+    {
+     "sitio": "fuente_de_las_tortugas",
+     "visto": false,
+     "nombre": "Fuente de las Tortugas",
+     "en_ruta": false,
+     "lat": 41.8938,
+     "lng": 12.4776
+    }
+   ],
+   "n": 0,
+   "total": 5,
+   "completa": false,
+   "en_tu_ruta": false
+  }
+ ],
+ "secretos": {
+  "total": 12,
+  "encontrados": 10,
+  "texto": "10 de 12 secretos encontrados",
+  "encontrados_lista": [
+   {
+    "id": "coliseo",
+    "nombre": "Una maravilla del mundo",
+    "linea": "El mayor anfiteatro de la Antigüedad.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "foro_romano",
+    "nombre": "Donde empezó todo",
+    "linea": "Aquí latía la antigua Roma: se votaba, se juzgaba y se comerciaba.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "museos_vaticanos",
+    "nombre": "Bajo el techo de Miguel Ángel",
+    "linea": "Miguel Ángel pintó la bóveda de la Sixtina en cuatro años, de 1508 a 1512.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "plaza_san_pedro",
+    "nombre": "La frontera que no se ve",
+    "linea": "Acabas de cruzar una frontera sin darte cuenta.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "basilica_san_pedro",
+    "nombre": "Sobre la tumba de San Pedro",
+    "linea": "Bajo el altar mayor está, según la tradición, la tumba del apóstol.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "panteon",
+    "nombre": "Bajo una cúpula de casi 2.000 años",
+    "linea": "La mayor cúpula de hormigón sin armar del mundo.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "fontana_de_trevi",
+    "nombre": "Volverás a Roma",
+    "linea": "Dice la leyenda que quien lanza una moneda de espaldas, vuelve.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "boca_de_la_verdad",
+    "nombre": "Has dicho la verdad",
+    "linea": "Cuenta la leyenda que muerde la mano de quien miente.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "madrugador",
+    "nombre": "Madrugador",
+    "linea": "Roma antes que nadie.",
+    "en": "2026-11-04T08:00:00.000Z"
+   },
+   {
+    "id": "nocturno",
+    "nombre": "Nocturno",
+    "linea": "Roma con las luces encendidas.",
+    "en": "2026-11-04T08:00:00.000Z"
+   }
+  ]
+ },
+ "con_tu_ruta_puedes_completar": 7,
+ "pendiente": {
+  "pendientes": [
+   {
+    "dia": null,
+    "sitio": "castillo_de_santangelo",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "trastevere",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "termas_de_caracalla",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "plaza_del_campidoglio",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "iglesia_de_santa_maria_sopra_minerva",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "santa_maria_del_popolo",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   },
+   {
+    "dia": null,
+    "sitio": "terraza_del_pincio",
+    "stop_id": null,
+    "nombre": null,
+    "foto_dentro": null,
+    "falta": [
+     "pedazo"
+    ]
+   }
+  ],
+  "sorpresas": 0,
+  "pedazos": 7,
+  "dias_para_reclamar": 27,
+  "plazo_pasado": false,
+  "texto": "Te quedan 27 días para reclamar tus 7 pedazos de Roma"
+ },
+ "puntito": false,
+ "viaje": {
+  "id": "viaje-ejemplo",
+  "inicio": "2026-10-29",
+  "fin": "2026-11-01",
+  "hoy": "2026-11-04"
+ }
+}

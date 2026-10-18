@@ -1,18 +1,23 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { usePerfilUi } from '../../store/usePerfilUi'
 import { empezarViajeNuevo } from '../../lib/nuevoViaje'
+import { logrosActivos } from '../../lib/logros'
 import { useNumeroFotos } from '../../lib/useNumeroFotos'
 import { chinchetasDeViajes, cifrasDelPerfil, viajePorId, viajesDelPerfil, type ResumenViaje } from '../../lib/viajesPerfil'
 import { Icono } from '../ui/Icono'
 import { Creditos } from '../perfil/Creditos'
 import { CuentaEnPerfil } from '../cuenta/CuentaEnPerfil'
+import { CabeceraDeSiempre } from '../perfil/CabeceraDeSiempre'
 import { FichaDeViaje } from '../perfil/FichaDeViaje'
 import { FilaDeViaje } from '../perfil/FilaDeViaje'
 import { MapaMisViajes } from '../perfil/MapaMisViajes'
 import { NewTripSheet } from './NewTripSheet'
+
+/** (8C2) El Perfil con el marco de rango, la barra de EXP, la vitrina y el pasaporte: solo con los logros encendidos, y se baja solo entonces. */
+const CuerpoConLogros = lazy(() => import('../logros/pantallas/perfil/CuerpoConLogros'))
 
 const ETIQUETA = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em' } as const
 
@@ -47,6 +52,28 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
     hydrateTrip(viaje.guardado)
   }
 
+  // El Perfil de siempre (con los logros apagados es el único; con ellos encendidos es el de mientras llegan los datos o si no hay cuenta).
+  const cuerpoDeSiempre = (
+    <>
+      <CabeceraDeSiempre />
+      <MapaMisViajes chinchetas={chinchetas} cifras={cifras} onElegir={abrirAlbum} />
+      <div className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between px-1">
+          <h3 className="m-0 uppercase text-text/55" style={ETIQUETA}>
+            Mis viajes
+          </h3>
+          <span className="text-text/45" style={{ font: "500 11px 'Geist Mono',monospace" }} data-numero-de-viajes>
+            {viajes.length}
+          </span>
+        </div>
+        {viajes.length === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
+        {viajes.map((viaje) => (
+          <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} onAbrirViaje={() => abrirViaje(viaje)} />
+        ))}
+      </div>
+    </>
+  )
+
   return (
     <>
       {open &&
@@ -64,29 +91,13 @@ export function PerfilSheet({ open, onClose }: { open: boolean; onClose: () => v
                 </button>
               </header>
               <div className="flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto px-4 pb-5 pt-0.5" style={{ scrollbarWidth: 'none' }}>
-                <div className="flex items-center gap-3.5 px-1">
-                  <h2 className="m-0 flex-1 font-display text-[40px] leading-none tracking-[-.01em] text-text">
-                    Hola, <em>viajero</em>
-                  </h2>
-                  <span aria-hidden="true" className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-full bg-[#1C2230] font-display text-[26px] leading-none text-[#FFFDF8]" style={{ boxShadow: '0 0 0 3px rgb(var(--bg)), 0 0 0 4.5px oklch(0.8 0.14 70)' }}>
-                    V
-                  </span>
-                </div>
-                <MapaMisViajes chinchetas={chinchetas} cifras={cifras} onElegir={abrirAlbum} />
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-baseline justify-between px-1">
-                    <h3 className="m-0 uppercase text-text/55" style={ETIQUETA}>
-                      Mis viajes
-                    </h3>
-                    <span className="text-text/45" style={{ font: "500 11px 'Geist Mono',monospace" }} data-numero-de-viajes>
-                      {viajes.length}
-                    </span>
-                  </div>
-                  {viajes.length === 0 && <p className="px-1 text-[13px] text-text/60">Aún no tienes viajes guardados en este dispositivo.</p>}
-                  {viajes.map((viaje) => (
-                    <FilaDeViaje key={viaje.id} viaje={viaje} fotos={fotos ? (fotos.get(viaje.id) ?? 0) : null} abierto={viaje.id === rutaAbierta?.id} onAbrir={() => abrirAlbum(viaje.id)} onAbrirViaje={() => abrirViaje(viaje)} />
-                  ))}
-                </div>
+                {logrosActivos() ? (
+                  <Suspense fallback={cuerpoDeSiempre}>
+                    <CuerpoConLogros cuerpoDeSiempre={cuerpoDeSiempre} viajes={viajes} chinchetas={chinchetas} cifras={cifras} fotos={fotos} rutaAbiertaId={rutaAbierta?.id ?? null} onAbrirAlbum={abrirAlbum} onAbrirViaje={abrirViaje} />
+                  </Suspense>
+                ) : (
+                  cuerpoDeSiempre
+                )}
                 <CuentaEnPerfil />
                 <button type="button" onClick={() => setCreditosOpen(true)} className="self-start p-1 text-[12px] text-text/50 underline underline-offset-[3px]">
                   Créditos

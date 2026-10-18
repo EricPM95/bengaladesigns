@@ -90,7 +90,7 @@ console.log('3. Reglas que no se pueden saltar')
   const dias = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
   debe(!/<Emblema\b/.test(dias), 'emblemas', 'DÍAS no dibuja ningún emblema')
   const hoja = archivos('src/components/logros/momentos').find((f) => /HojaLogros/.test(f))
-  debe(hoja && !/<Emblema\b/.test(sinComentarios(leer(hoja))), 'emblemas', 'la hoja del botón flotante no enseña emblemas (los de la 8c, ya encontrados)')
+  debe(hoja && (!/<Emblema/.test(sinComentarios(leer(hoja))) || (/encontrados_lista/.test(leer(hoja)) && !/silueta/.test(sinComentarios(leer(hoja))))), 'emblemas', 'la hoja del botón flotante solo dibuja emblemas ya encontrados (los que faltan, solo «?»; 8C2)')
   const visibles = [...archivos('src/components/logros/momentos'), ...archivos('src/components/logros/visto'), ...archivos('src/components/route/hoy/v2')]
   const horas = []
   for (const f of visibles) {
@@ -373,7 +373,7 @@ console.log('9. Tanda 8C1: dibujos del Dashboard, hoja de secretos, título de H
   debe(pant.includes('<Chapa logro={ch.logro}') && leer('src/components/logros/momentos/ResumenViaje.tsx').includes('<Chapa logro={n.id}'), 'dibujos', '«Y además…», los avisos de lo ganado y el resumen del viaje usan las chapas nuevas')
   // La hoja de logros
   const hoja = leer('src/components/logros/momentos/HojaLogros.tsx')
-  debe(hoja.includes('lineaDeSecretos(') && !/de 12 secretos/.test(sinComentarios(hoja).replace(/«N de 12 secretos»/g, '')), 'hoja', 'la hoja de logros dice lo mismo que el resumen: «Roma aún esconde N secretos.»')
+  debe(/tituloDeSecretos|lineaDeSecretos/.test(hoja) && !/de 12 secretos/.test(sinComentarios(hoja).replace(/«N de 12 secretos»/g, '')), 'hoja', 'la hoja de logros dice lo mismo que el resumen: «Roma aún esconde N secretos.» (8C2: desde hoja/textosHoja.ts)')
   // El título del día de HOY
   const hoyV2 = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
   debe(hoyV2.includes('nombreDelDia(route, day,') && hoyV2.includes('tituloLimpio'), 'hoy', 'el título del día de HOY v2 sale de nombreDelDia: el mismo que DÍAS (con el nombre del viajero si lo cambió)')
@@ -388,7 +388,7 @@ console.log('9. Tanda 8C1: dibujos del Dashboard, hoja de secretos, título de H
   // El servidor manda la EXP; ninguna pantalla nueva
   debe(leer('src/components/logros/momentos/api.ts').includes('ResumenDeExp') && leer('src/lib/logros.ts').includes('sube_de_nivel'), 'exp', 'el móvil sabe leer la EXP, el nivel y «sube de nivel» (sin pantalla nueva)')
   const nuevasPantallas = fs.readdirSync('src/components/logros/momentos').filter((f) => /Exp|Nivel|Tienda|Rango/i.test(f))
-  debe(nuevasPantallas.length === 0, 'exp', 'ninguna pantalla nueva de la EXP en esta tanda (la barra de nivel, los marcos, la subida de nivel y la tienda llegarán con Design)')
+  debe(nuevasPantallas.length === 0 || nuevasPantallas.every((f) => /^ExpHost|^pasoTrasLaExp/.test(f)), 'exp', 'en momentos solo está el orquestador de la EXP (ExpHost); las pantallas están en pantallas/perfil (8C2)')
 }
 
 const ok = fallos.length === 0

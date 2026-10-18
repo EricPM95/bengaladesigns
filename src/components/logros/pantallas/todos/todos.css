@@ -1,0 +1,14 @@
+/* «Mi vitrina» y «Todos mis logros» (Tanda 8C2). Solo CSS: sin vídeos ni GIF. Con «reducir movimiento» todo sale ya puesto. */
+@keyframes vtFade{from{opacity:0}to{opacity:1}}
+@keyframes vtUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes vtSheet{from{transform:translateY(100%)}to{transform:none}}
+@keyframes vtPop{0%{opacity:0;transform:scale(.4)}65%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes vtRays{to{transform:rotate(360deg)}}
+@keyframes vtBurst{0%{opacity:0;transform:scale(.3)}25%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+@keyframes vtSpot{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes vtToast{0%{opacity:0;transform:translate(-50%,10px)}12%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+.vt{font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.vt *{box-sizing:border-box}
+.vt button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+.vt-oculto::-webkit-scrollbar{display:none}
+@media (prefers-reduced-motion: reduce){.vt *,.vt{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}

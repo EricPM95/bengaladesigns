@@ -1,0 +1,18 @@
+/* La EXP a la vista (Tanda 8C2, «Experiencia» de Design): subir de nivel y cambiar de rango. Una sola pasada (sin bucle); con «reducir movimiento» el componente pinta el final ya puesto. */
+@keyframes pfEntra{from{opacity:0}to{opacity:1}}
+@keyframes pfRayos{to{transform:rotate(360deg)}}
+@keyframes pfMarcoEntra{0%{opacity:0;transform:scale(.5)}10%{opacity:1;transform:scale(1.04)}14%,100%{opacity:1;transform:scale(1)}}
+@keyframes pfBarra{0%,10%{width:var(--b0)}32%{width:100%}33%{width:0}42%,100%{width:var(--b1)}}
+@keyframes pfNivelVa{0%,31%{opacity:1;transform:none}34%,100%{opacity:0;transform:translateY(-16px)}}
+@keyframes pfNivelViene{0%,32%{opacity:0;transform:translateY(16px) scale(.6)}40%{opacity:1;transform:scale(1.25)}48%,100%{opacity:1;transform:scale(1)}}
+@keyframes pfDestello{0%,31%{opacity:0;transform:scale(.3)}34%{opacity:.9}52%,100%{opacity:0;transform:scale(3.4)}}
+@keyframes pfEstrellaVuela{0%,33%{opacity:0;transform:translateY(-230px) scale(3.4) rotate(-40deg)}34%{opacity:1}46%{opacity:1;transform:translateY(0) scale(1) rotate(0)}50%,100%{opacity:0;transform:translateY(0) scale(1.4)}}
+@keyframes pfMarcoViejo{0%,45%{opacity:1}47%,100%{opacity:0}}
+@keyframes pfMarcoNuevo{0%,45%{opacity:0}48%,100%{opacity:1}}
+@keyframes pfChispa{0%,45%{opacity:0;transform:translate(0,0) scale(.3)}50%{opacity:1}70%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}}
+@keyframes pfRangoViejo{0%{opacity:0;transform:scale(.6)}10%{opacity:1;transform:scale(1)}16%,22%{transform:scale(1.08) rotate(-2deg)}19%{transform:scale(1.08) rotate(2deg)}28%{opacity:1;transform:perspective(700px) rotateY(0) scale(1.12);filter:brightness(1.6)}34%,100%{opacity:0;transform:perspective(700px) rotateY(88deg) scale(.8);filter:brightness(2.4)}}
+@keyframes pfRangoNuevo{0%,30%{opacity:0;transform:perspective(700px) rotateY(-88deg) scale(.6)}44%{opacity:1;transform:perspective(700px) rotateY(0) scale(1.14)}52%,100%{opacity:1;transform:perspective(700px) rotateY(0) scale(1)}}
+@keyframes pfRangoFogonazo{0%,30%{opacity:0;transform:scale(.2)}34%{opacity:1}50%,100%{opacity:0;transform:scale(3.8)}}
+@keyframes pfRangoAro{0%,31%{opacity:0;transform:scale(.3)}34%{opacity:.9}60%,100%{opacity:0;transform:scale(3.2)}}
+@keyframes pfLetra{0%,44%{opacity:0;transform:translateY(14px);filter:blur(6px)}52%,100%{opacity:1;transform:none;filter:none}}
+@keyframes pfBrillo{0%,28%{opacity:.4}34%{opacity:1}100%{opacity:.55}}

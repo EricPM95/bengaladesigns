@@ -32,6 +32,7 @@ import { diaCorto, diaProsa, elDia, fechaDelDia, fichaDelDia } from '../../lib/n
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
 import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
+import { logrosActivos } from '../../lib/logros'
 import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
 import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
@@ -187,7 +188,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   }
 
   return (
-    <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pb-6 pt-4">
+    <div ref={listRef} className={`flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3.5 pt-4 ${logrosActivos() ? 'pb-28' : 'pb-6'}`}>
       <MissingAccommodationBanner route={route} />
       {dayReorderWarning && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2.5">

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { pedirEstado } from './api'
-import { imagenDeLogro, imagenDeViaje } from './imagen'
+import { datosDelPie, imagenDeLogro, imagenDeViaje } from './imagen'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 
@@ -22,10 +22,11 @@ export default function Compartir(): ReactNode {
     void (async () => {
       let b: Blob | null = null
       try {
-        if (qué?.tipo === 'logro') b = await imagenDeLogro(qué.momento)
+        const pie = await datosDelPie().catch(() => null)
+        if (qué?.tipo === 'logro') b = await imagenDeLogro(qué.momento, new Date(), pie)
         else if (qué?.tipo === 'viaje') {
           const e = await pedirEstado(tripId)
-          b = e ? await imagenDeViaje(e) : null
+          b = e ? await imagenDeViaje(e, pie) : null
         }
       } catch {
         b = null

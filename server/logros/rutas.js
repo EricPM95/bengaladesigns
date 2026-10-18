@@ -29,6 +29,7 @@ import { cargarCatalogo, validarDatos } from './datos.js'
 import { simular } from './servicio.js'
 import { logrosYVisibilidad, llevarAVitrina } from './vistas.js'
 import { enviarAvisosPendientes, pushActivo } from './avisos.js'
+import { registrarPantallas } from './pantallas/index.js'
 
 export function logrosActivos(env = process.env) {
   const on = (v) => String(v ?? '').toLowerCase() === 'true'
@@ -68,6 +69,9 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
       if (!esAdmin(usuario, env)) return res.status(403).json({ ok: false, error: 'Solo para el administrador.' })
       return manejador(req, res, usuario)
     })
+
+  // (8C2) Lo que piden las pantallas de la 8C2 (server/logros/pantallas/): cada archivo suyo registra sus rutas.
+  registrarPantallas(app, { conUsuario, servicio, repo, datos, catalogos, ahora })
 
   app.get('/api/logros/interruptor', (_req, res) => res.json({ activos: true }))
   // La clave PÚBLICA de los avisos al móvil (la pública es pública por diseño: la necesita el móvil para suscribirse). La privada no sale nunca del servidor.

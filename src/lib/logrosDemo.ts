@@ -21,6 +21,7 @@ import { useLogrosStore } from '../store/useLogrosStore'
 import { useRouteStore } from '../store/useRouteStore'
 import { deSitio, enSitio } from './articulos'
 import type { Momento, RespuestaDeHecho } from './logros'
+import { anotarExp } from './logrosDemo_exp'
 
 const quitarTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s*\((noche|por fuera)\)\s*$/i, '').trim()
 
@@ -177,14 +178,21 @@ function porCategoria(): Record<string, number> {
   return cuenta
 }
 
+/** (8C2) Los demos de las pantallas nuevas: cada archivo `logrosDemo_*.ts` exporta `responder(ruta, url, cuerpo, opciones)` y devuelve `undefined` si no es suyo. Se miran antes que los de aquí. */
+const demosDeLaOchoC2 = import.meta.glob<{ responder: (ruta: string, url: URL, c: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }) => unknown }>('./logrosDemo_*.ts', { eager: true })
+
 export async function responder(ruta: string, opciones: { metodo?: string; cuerpo?: unknown } = {}): Promise<unknown> {
   await new Promise((r) => setTimeout(r, 250))
   if (demo.sinCobertura) return null
   const url = new URL(ruta, 'http://demo.local')
   const p = url.pathname
   const c = (opciones.cuerpo ?? {}) as Record<string, unknown>
-  if (p === '/api/logros/visto') return entregar(visto(c))
-  if (p === '/api/logros/foto') return demo.foto === 'sin_cobertura' ? ((demo.foto = null), null) : entregar(foto(c))
+  for (const m of Object.values(demosDeLaOchoC2)) {
+    const r = m.responder(p, url, c, opciones)
+    if (r !== undefined) return r
+  }
+  if (p === '/api/logros/visto') return anotarExp(entregar(visto(c)))
+  if (p === '/api/logros/foto') return demo.foto === 'sin_cobertura' ? ((demo.foto = null), null) : anotarExp(entregar(foto(c)))
   if (p === '/api/logros/deshacer') {
     demo.vistos.delete(String(c.stop_id ?? c.nombre))
     return { ok: true, quitados: [] }
@@ -242,7 +250,7 @@ const api = {
     const todos = momentosDeSerie()
     const lista = que === 'serieCompleta' ? todos : todos.filter((m) => m.tipo === que || (que === 'suma' && m.tipo === 'suma_sello'))
     entregar({ ok: true, nuevos: lista })
-    useLogrosStore.getState().recibir({ ok: true, cuenta: true, nuevos: lista })
+    void anotarExp({ ok: true, cuenta: true, nuevos: lista }).then((r) => useLogrosStore.getState().recibir(r))
     return lista.map((m) => m.tipo)
   },
   estadoPase(e: EstadoPase) {

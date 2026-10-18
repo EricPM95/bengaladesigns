@@ -75,6 +75,25 @@ export interface Momento {
   [otro: string]: unknown
 }
 
+/** (8C2) La EXP que ha dado un hecho, tal como la manda el servidor: lo ganado, y el nivel y el rango de antes y de después (la barra, el nivel y el rango salen siempre de aquí). */
+export interface ExpDeRespuesta {
+  ganada: number
+  antes: ResumenDeExpMovil
+  despues: ResumenDeExpMovil
+  sube_de_nivel: boolean
+}
+export interface ResumenDeExpMovil {
+  exp: number
+  nivel: number
+  rango: string
+  rango_ix: number
+  estrellas: number
+  leyenda_estrellas: number
+  exp_en_nivel: number
+  exp_para_siguiente: number
+  falta: number
+}
+
 export interface RespuestaDeHecho {
   ok: boolean
   cuenta?: boolean
@@ -94,6 +113,8 @@ export interface RespuestaDeHecho {
   repetido?: boolean
   sitio?: string | null
   nuevos: Momento[]
+  /** (8C2) La EXP ganada con este hecho. Se suma en  y sale UNA sola vez, al acabar las sorpresas (nunca durante ellas ni en el resumen del día). */
+  exp?: ExpDeRespuesta | null
 }
 
 async function cabeceras(): Promise<Record<string, string> | null> {

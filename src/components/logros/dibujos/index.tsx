@@ -19,9 +19,9 @@ export { IDS_MARAVILLAS } from './MedallaSiete'
 
 export type { GradoDeSello }
 
-/** El sello coleccionable de una ciudad (sin fondo, solo su figura). `id`: 'roma' | 'vaticano' (ids de `data/logros/roma.json › sellos`). Opcional: `apagado` (el «por conseguir») y `animado` (por defecto sí). */
-export function Sello({ id, grado, tam = 96, apagado = false, animado = true }: { id: string; grado: GradoDeSello; tam?: number; apagado?: boolean; animado?: boolean }): ReactNode {
-  return <SelloDibujo id={id} grado={grado} tam={tam} apagado={apagado} animado={animado} />
+/** El sello coleccionable de una ciudad (sin fondo, solo su figura). `id`: 'roma' | 'vaticano' (ids de `data/logros/roma.json › sellos`). Opcional: `apagado` (el «por conseguir»), `animado` (por defecto sí) y `etiqueta` (el nombre de la ciudad escrito en el sello; por defecto sí, los sellos pequeños van sin ella). */
+export function Sello({ id, grado, tam = 96, apagado = false, animado = true, etiqueta = true }: { id: string; grado: GradoDeSello; tam?: number; apagado?: boolean; animado?: boolean; etiqueta?: boolean }): ReactNode {
+  return <SelloDibujo id={id} grado={grado} tam={tam} apagado={apagado} animado={animado} etiqueta={etiqueta} />
 }
 
 /** La insignia de una colección con sus pedazos. `coleccion`: id de `data/logros/roma.json › colecciones`; `ganados`: ids de los sitios ya vistos (los pedazos de color); sin `ganados` sale en gris. `completa` la enseña entera. Opcional: `animada`. */

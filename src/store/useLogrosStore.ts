@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Momento, RespuestaDeHecho } from '../lib/logros'
+import type { ExpDeRespuesta, Momento, RespuestaDeHecho } from '../lib/logros'
 
 /**
  * LO ÚLTIMO QUE HA GANADO LA PERSONA (Tanda 8A). Aquí caen las respuestas del servidor tras un Visto o una foto: la lista de momentos, en orden, y el último aviso
@@ -15,6 +15,9 @@ interface LogrosState {
   puntito: boolean
   /** Hay una hoja del Visto abierta (la del pedazo, la de la foto…): las sorpresas esperan a que se cierre para salir. Lo pone quien abre y cierra esas hojas. */
   hojaAbierta: boolean
+  /** (8C2) La EXP ganada que aún no se ha enseñado, ya sumada («+405 EXP»): la cuenta siempre el servidor. Se enseña una sola vez, cuando acaban las sorpresas y las películas (`ExpHost`). */
+  exp: ExpDeRespuesta | null
+  tomarExp: () => ExpDeRespuesta | null
   ponerHojaAbierta: (abierta: boolean) => void
   recibir: (respuesta: RespuestaDeHecho | null) => void
   tomarMomentos: () => Momento[]
@@ -29,6 +32,12 @@ export const useLogrosStore = create<LogrosState>((set, get) => ({
   pregunta: null,
   puntito: false,
   hojaAbierta: false,
+  exp: null,
+  tomarExp: () => {
+    const e = get().exp
+    set({ exp: null })
+    return e
+  },
   ponerHojaAbierta: (abierta) => set({ hojaAbierta: abierta }),
   recibir: (r) => {
     if (!r) return
@@ -37,6 +46,8 @@ export const useLogrosStore = create<LogrosState>((set, get) => ({
       aviso: r.aviso ?? r.mensaje ?? s.aviso,
       pregunta: r.motivo === 'pregunta_medio_dia' && r.pregunta ? r.pregunta : s.pregunta,
       puntito: s.puntito || Boolean(r.nuevos?.length),
+      // La EXP se suma: lo de antes es del primero y lo de después, del último (la barra sale del nivel de antes al de después).
+      exp: r.exp && r.exp.ganada > 0 ? (s.exp ? { ...r.exp, ganada: s.exp.ganada + r.exp.ganada, antes: s.exp.antes, sube_de_nivel: s.exp.sube_de_nivel || r.exp.sube_de_nivel } : r.exp) : s.exp,
     }))
   },
   tomarMomentos: () => {

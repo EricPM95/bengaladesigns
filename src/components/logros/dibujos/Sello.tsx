@@ -4,11 +4,12 @@ import './dibujos.css'
 
 export type GradoDeSello = 'bronce' | 'plata' | 'oro' | 'diamante'
 
-export function Sello({ id, grado, tam = 96, apagado = false, animado = true }: { id: string; grado: GradoDeSello; tam?: number; apagado?: boolean; animado?: boolean }) {
+/** `etiqueta` (por defecto sí): el nombre de la ciudad escrito en el sello; en los sellos pequeños (el botón, la fila de al lado) va sin ella, como en el diseño. */
+export function Sello({ id, grado, tam = 96, apagado = false, animado = true, etiqueta = true }: { id: string; grado: GradoDeSello; tam?: number; apagado?: boolean; animado?: boolean; etiqueta?: boolean }) {
   const vaticano = id === 'vaticano'
   return (
     <span className={animado ? 'dib-mov' : 'dib-quieto'} style={{ display: 'inline-flex' }}>
-      <SelloLogro grade={apagado ? 'none' : grado} icon={vaticano ? 'cupula' : 'coliseo'} shape={vaticano ? 'oval' : 'round'} size={tam} label={vaticano ? 'VATICANO' : id.toUpperCase()} />
+      <SelloLogro grade={apagado ? 'none' : grado} icon={vaticano ? 'cupula' : 'coliseo'} shape={vaticano ? 'oval' : 'round'} size={tam} label={etiqueta ? (vaticano ? 'VATICANO' : id.toUpperCase()) : ''} />
     </span>
   )
 }

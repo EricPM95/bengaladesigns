@@ -1,0 +1,12 @@
+/* Las pantallas de un destino (8C2): la página del destino, una colección por dentro y «Mi colección». */
+@keyframes dstFade{from{opacity:0}to{opacity:1}}
+@keyframes dstSube{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.dst{font-family:'Geist',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+.dst button{font-family:inherit}
+.dst ::-webkit-scrollbar{display:none}
+.dst-fondo{animation:dstFade .3s ease both}
+.dst-hoja{animation:dstSube .45s cubic-bezier(.2,.8,.2,1) both}
+/* «Reducir movimiento»: todo sale sin moverse. */
+@media (prefers-reduced-motion: reduce){
+  .dst *,.dst *::before,.dst *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}

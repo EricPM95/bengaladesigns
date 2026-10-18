@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+@keyframes xpSorp{0%{opacity:0}6%,40%{opacity:1}46%,100%{opacity:0;visibility:hidden}}
+@keyframes xpToastL{0%,45%{opacity:0;transform:translateY(120px)}52%,92%{opacity:1;transform:none}100%{opacity:0;transform:translateY(120px)}}
+@keyframes xpChipL{0%,52%{opacity:0;transform:translateY(8px) scale(.8)}58%{opacity:1;transform:none}78%{opacity:1;transform:translateY(-6px)}90%,100%{opacity:0;transform:translateY(-22px)}}
+@keyframes xpShineL{0%,56%{transform:translateX(-120%)}80%,100%{transform:translateX(320%)}}
+@keyframes xpToast{0%{opacity:0;transform:translateY(120px)}8%,88%{opacity:1;transform:none}100%{opacity:0;transform:translateY(120px)}}
+@keyframes xpChip{0%,16%{opacity:0;transform:translateY(8px) scale(.8)}24%{opacity:1;transform:none}60%{opacity:1;transform:translateY(-6px)}72%,100%{opacity:0;transform:translateY(-22px)}}
+@keyframes xpShine{0%,14%{transform:translateX(-120%)}40%,100%{transform:translateX(320%)}}
+@keyframes xpUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes xpRays{to{transform:rotate(360deg)}}
+@keyframes xpFade{0%{opacity:0}8%,90%{opacity:1}100%{opacity:0}}
+@keyframes xpMarcoIn{0%{opacity:0;transform:scale(.5)}10%{opacity:1;transform:scale(1.04)}14%,100%{transform:scale(1)}}
+@keyframes xpBarL{0%,10%{width:68%}32%{width:100%}33%{width:0}42%,100%{width:10%}}
+@keyframes xpNA{0%,31%{opacity:1;transform:none}34%,100%{opacity:0;transform:translateY(-16px)}}
+@keyframes xpNB{0%,32%{opacity:0;transform:translateY(16px) scale(.6)}40%{opacity:1;transform:scale(1.25)}48%,100%{opacity:1;transform:scale(1)}}
+@keyframes xpFlash{0%,31%{opacity:0;transform:scale(.3)}34%{opacity:.9}52%,100%{opacity:0;transform:scale(3.4)}}
+@keyframes xpStarFly{0%,33%{opacity:0;transform:translateY(-230px) scale(3.4) rotate(-40deg)}34%{opacity:1}46%{opacity:1;transform:translateY(0) scale(1) rotate(0)}50%,100%{opacity:0;transform:translateY(0) scale(1.4)}}
+@keyframes xpA{0%,45%{opacity:1}47%,100%{opacity:0}}
+@keyframes xpB{0%,45%{opacity:0}48%,100%{opacity:1}}
+@keyframes xpSpark{0%,45%{opacity:0;transform:translate(0,0) scale(.3)}50%{opacity:1}70%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}}
+@keyframes rcOld{0%{opacity:0;transform:scale(.6)}10%{opacity:1;transform:scale(1)}16%,22%{transform:scale(1.08) rotate(-2deg)}19%{transform:scale(1.08) rotate(2deg)}28%{opacity:1;transform:perspective(700px) rotateY(0) scale(1.12);filter:brightness(1.6)}34%,100%{opacity:0;transform:perspective(700px) rotateY(88deg) scale(.8);filter:brightness(2.4)}}
+@keyframes rcNew{0%,30%{opacity:0;transform:perspective(700px) rotateY(-88deg) scale(.6)}44%{opacity:1;transform:perspective(700px) rotateY(0) scale(1.14)}52%,100%{opacity:1;transform:perspective(700px) rotateY(0) scale(1)}}
+@keyframes rcFlash{0%,30%{opacity:0;transform:scale(.2)}34%{opacity:1}50%,100%{opacity:0;transform:scale(3.8)}}
+@keyframes rcRing{0%,31%{opacity:0;transform:scale(.3)}34%{opacity:.9}60%,100%{opacity:0;transform:scale(3.2)}}
+@keyframes rcLet{0%,44%{opacity:0;transform:translateY(14px);filter:blur(6px)}52%,100%{opacity:1;transform:none;filter:none}}
+@keyframes rcGlow{0%,28%{opacity:.4}34%{opacity:1}100%{opacity:.55}}
+</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:44px 40px;align-items:flex-start;padding:24px 48px 40px;font-family:'Geist',system-ui,sans-serif;color:#1C2230">
+<sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+ <div style="width:390px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:10px"><span style="font:600 12px 'Geist Mono',monospace;padding:4px 10px;border-radius:999px;background:#1C2230;color:#F3EEE4">{{ b.id }}</span><span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.75)">{{ b.cap }}</span></div>
+  <div data-screen-label="{{ b.id }} {{ b.cap }}" style="position:relative;width:390px;height:844px;flex:none;border-radius:50px;overflow:hidden;background:{{ b.bg }};color:{{ b.fg }};box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+   <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:116px;height:33px;border-radius:20px;background:#000;z-index:60"></div>
+   <div style="height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font:600 15px 'Geist'"><span>10:05</span><span style="width:24px;height:12px;border:1px solid currentColor;opacity:.5;border-radius:4px;padding:1.5px;display:flex"><span style="flex:1;background:currentColor;border-radius:2px"></span></span></div>
+
+   <sc-if value="{{ b.paradas }}" hint-placeholder-val="{{ false }}">
+    <header style="padding:4px 20px 10px;display:flex;flex-direction:column;gap:4px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.5 0.17 5)">Hoy · lun 13</span><span style="font:400 30px/1 'Instrument Serif',serif">Centro histórico</span></header>
+    <div style="padding:4px 16px;display:flex;flex-direction:column;gap:8px">
+     <sc-for list="{{ stops }}" as="s" hint-placeholder-count="3"><div style="border-radius:18px;background:#FFFDF8;border:1px solid {{ s.bd }};padding:10px 12px;display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:12px;background:{{ s.ph }}"></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:400 18px/1.1 'Instrument Serif',serif">{{ s.n }}</span><span style="font:500 11.5px 'Geist';color:{{ s.c }}">{{ s.t }}</span></span></div></sc-for>
+    </div>
+    <div style="flex:1"></div>
+    <nav style="flex:none;height:84px;background:#1C2230;display:grid;grid-template-columns:repeat(5,1fr);padding:12px 6px 0;color:rgba(255,253,248,.55);font:500 10.5px 'Geist';text-align:center"><span style="color:#FFFDF8">Hoy</span><span>Ruta</span><span>Días</span><span>Explorar</span><span>Reservas</span></nav>
+    <span style="position:absolute;right:14px;bottom:98px;width:58px;height:58px;border-radius:50%;background:#FFFDF8;box-shadow:0 10px 22px -10px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;transform:scale({{ b.fabK }})"><dc-import name="Piezas/Sello Logro" grade="bronce" icon="coliseo" size="38" label="" hint-size="38px,38px"></dc-import></span>
+    <sc-if value="{{ b.fly }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:{{ b.fx }}px;top:{{ b.fy }}px;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF6D2,#E2B65A 60%,#8C6420);box-shadow:0 0 14px rgba(255,214,130,.9);transform:scale({{ b.fs }});z-index:35"></span></sc-if>
+   </sc-if>
+
+   <sc-if value="{{ b.paradas }}" hint-placeholder-val="{{ false }}"></sc-if>
+   <sc-if value="{{ b.sorp }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:30;opacity:{{ b.sOp }};background:radial-gradient(circle at 50% 38%,#2E3550 0%,#141826 70%);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:0 28px 120px;text-align:center">
+     <span style="height:170px;display:flex;align-items:center;justify-content:center">
+      <sc-if value="{{ b.isF }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="mar" scale="1.1" delay="0" hint-size="165px,165px"></dc-import></sc-if>
+      <sc-if value="{{ b.isP }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Coleccion" col="impr" set="0,1,2,3" sites="" size="160" hint-size="160px,160px"></dc-import></sc-if>
+      <sc-if value="{{ b.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="mon" scale="1.1" delay="0" hint-size="165px,165px"></dc-import></sc-if>
+      <sc-if value="{{ b.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="oro" icon="coliseo" size="160" label="ROMA" hint-size="160px,160px"></dc-import></sc-if>
+      <sc-if value="{{ b.isM }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Siete" n="1" size="150" hint-size="150px,180px"></dc-import></sc-if>
+     </span>
+     <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A">{{ b.eye }}</span>
+     <span style="font:400 34px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ b.t }}</span>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:14px;right:14px;bottom:170px;z-index:40;opacity:{{ b.tOp }};transform:translateY({{ b.tY }}px)">
+     <span style="position:absolute;right:16px;top:-30px;height:28px;padding:0 12px;border-radius:999px;background:#F3D59A;color:#2A1D10;display:flex;align-items:center;font:800 13px 'Geist Mono',monospace;box-shadow:0 8px 16px -8px rgba(0,0,0,.6);opacity:{{ b.cOp }};transform:translateY({{ b.cY }}px)">+{{ b.gain }} EXP</span>
+     <div style="position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(150deg,#232B45,#141826);border:1.5px solid rgba(243,213,154,.55);box-shadow:0 22px 40px -16px rgba(0,0,0,.7);padding:12px 18px 12px 12px;display:flex;align-items:center;gap:14px">
+      <span style="position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(100deg,transparent,rgba(255,244,210,.22),transparent);transform:translateX({{ b.shX }}%);pointer-events:none"></span>
+      <dc-import name="Piezas/Marco Estatus" rank="{{ b.tr }}" lvl="{{ b.tl }}" size="64" hint-size="64px,70px"></dc-import>
+      <span style="flex:1;display:flex;flex-direction:column;gap:7px;color:#FFFDF8">
+       <span style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span style="font:600 13px 'Geist'">{{ b.tn }}</span><span style="font:700 16px 'Geist Mono',monospace;color:#F3D59A">{{ b.num }}<span style="font-size:11px;color:rgba(243,213,154,.6)"> / {{ b.max }}</span></span></span>
+         <span style="height:9px;border-radius:9px;background:rgba(255,253,248,.14);overflow:hidden"><span style="display:block;height:100%;width:{{ b.bar }};border-radius:9px;background:linear-gradient(90deg,#E3B13F,#FFF1B8)"></span></span>
+         <span style="font:400 11.5px 'Geist';color:rgba(255,253,248,.62)">{{ b.left }}</span>
+      </span>
+     </div>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.lvlUp }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#2E3550 0%,#141826 72%);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 28px;text-align:center;animation:xpFade 8s ease both;animation-iteration-count:infinite">
+     <span style="position:absolute;top:96px;left:50%;width:420px;height:420px;margin-left:-210px;border-radius:50%;background:repeating-conic-gradient(rgba(243,213,154,.14) 0 7deg,transparent 7deg 22deg);-webkit-mask-image:radial-gradient(circle,#000 22%,transparent 66%);mask-image:radial-gradient(circle,#000 22%,transparent 66%);animation:xpRays 26s linear infinite"></span>
+     <div style="position:relative;width:250px;height:273px;animation:xpMarcoIn 8s ease both;animation-iteration-count:infinite">
+      <span style="position:absolute;left:0;top:0;animation:xpA 8s ease both;animation-iteration-count:infinite"><dc-import name="Piezas/Marco Estatus" rank="1" lvl="2" size="250" hint-size="250px,273px"></dc-import></span>
+      <span style="position:absolute;left:0;top:0;opacity:0;animation:xpB 8s ease both;animation-iteration-count:infinite"><dc-import name="Piezas/Marco Estatus" rank="1" lvl="3" size="250" hint-size="250px,273px"></dc-import></span>
+      <span style="position:absolute;left:125px;top:257px;width:0;height:0">
+       <span style="position:absolute;left:-26px;top:-26px;width:52px;height:52px;opacity:0;animation:xpStarFly 8s ease-in both;animation-iteration-count:infinite"><svg width="52" height="52" viewBox="-10 -10 20 20"><defs><radialGradient id="xpsg"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".5" stop-color="#FFF1B8"></stop><stop offset="1" stop-color="#E3B13F"></stop></radialGradient></defs><path d="M0 -9L2.5 -3L9 -2.3L4 2L5.6 8.4L0 5L-5.6 8.4L-4 2L-9 -2.3L-2.5 -3Z" fill="url(#xpsg)" stroke="#B5821C" stroke-width=".8" stroke-linejoin="round"></path></svg></span>
+       <sc-for list="{{ sparks }}" as="s" hint-placeholder-count="14"><span style="position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:{{ s.c }};box-shadow:0 0 8px #FFE7B0;--dx:{{ s.dx }};--dy:{{ s.dy }};opacity:0;animation:xpSpark 8s ease-out both;animation-iteration-count:infinite"></span></sc-for>
+      </span>
+     </div>
+     <span style="width:250px;height:9px;border-radius:9px;background:rgba(255,253,248,.14);overflow:hidden"><span style="display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#E3B13F,#FFF1B8);animation:xpBarL 8s ease both;animation-iteration-count:infinite"></span></span>
+     <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A">¡Subes de nivel!</span>
+     <span style="position:relative;height:52px;width:100%"><span style="position:absolute;inset:0;font:400 46px/1.1 'Instrument Serif',serif;animation:xpNA 8s ease both;animation-iteration-count:infinite">Nivel 7</span><span style="position:absolute;inset:0;font:400 46px/1.1 'Instrument Serif',serif;opacity:0;animation:xpNB 8s ease both;animation-iteration-count:infinite">Nivel 8</span></span>
+     <span style="position:absolute;bottom:40px;font:400 11.5px 'Geist';color:rgba(255,253,248,.45)">Toca para seguir</span>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.rankUp }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#2E3550 0%,#10131F 74%);color:#FFFDF8;overflow:hidden;animation:xpFade 9s ease both;animation-iteration-count:infinite">
+     <span style="position:absolute;top:70px;left:50%;width:520px;height:520px;margin-left:-260px;border-radius:50%;background:repeating-conic-gradient(rgba(243,213,154,.18) 0 5deg,transparent 5deg 16deg);-webkit-mask-image:radial-gradient(circle,#000 18%,transparent 64%);mask-image:radial-gradient(circle,#000 18%,transparent 64%);animation:xpRays 20s linear infinite,rcGlow 9s ease both;animation-iteration-count:infinite"></span>
+     <div style="position:absolute;left:50%;top:150px;width:0;height:0">
+      <span style="position:absolute;left:-125px;top:-136px;animation:rcOld 9s ease both;animation-iteration-count:infinite"><dc-import name="Piezas/Marco Estatus" rank="0" lvl="5" size="250" hint-size="250px,273px"></dc-import></span>
+      <span style="position:absolute;left:-125px;top:-136px;opacity:0;animation:rcNew 9s ease both;animation-iteration-count:infinite"><dc-import name="Piezas/Marco Estatus" rank="1" lvl="1" size="250" hint-size="250px,273px"></dc-import></span>
+      <span style="position:absolute;left:-150px;top:-150px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#FFFFFF,rgba(255,240,200,.7) 36%,transparent 70%);opacity:0;animation:rcFlash 9s ease-out both;animation-iteration-count:infinite"></span>
+      <sc-for list="{{ rings }}" as="r" hint-placeholder-count="3"><span style="position:absolute;left:-90px;top:-90px;width:180px;height:180px;border-radius:50%;border:{{ r.w }} solid #F3D59A;box-shadow:0 0 18px rgba(243,213,154,.6);opacity:0;animation:rcRing 9s {{ r.d }} ease-out both;animation-iteration-count:infinite"></span></sc-for>
+      <sc-for list="{{ sparks2 }}" as="s" hint-placeholder-count="20"><span style="position:absolute;left:-3px;top:-3px;width:{{ s.z }};height:{{ s.z }};border-radius:50%;background:{{ s.c }};box-shadow:0 0 10px #FFE7B0;--dx:{{ s.dx }};--dy:{{ s.dy }};opacity:0;animation:xpSpark 9s ease-out both;animation-iteration-count:infinite"></span></sc-for>
+     </div>
+     <div style="position:absolute;left:24px;right:24px;top:470px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+      <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A;animation:rcLet 9s ease both;animation-iteration-count:infinite">Nuevo rango</span>
+      <span style="font:400 40px/1.1 'Instrument Serif',serif;text-wrap:balance"><sc-for list="{{ letters }}" as="c" hint-placeholder-count="20"><span style="display:inline-block;white-space:pre;opacity:0;animation:rcLet 9s {{ c.d }} ease both;animation-iteration-count:infinite">{{ c.ch }}</span></sc-for></span>
+      <span style="font:italic 400 17px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.75);animation:rcLet 9s 0.35s ease both;animation-iteration-count:infinite">Nivel 6</span>
+     </div>
+     <span style="position:absolute;left:0;right:0;bottom:40px;text-align:center;font:400 11.5px 'Geist';color:rgba(255,253,248,.45)">Toca para seguir</span>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.leg }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,#2E3550 0%,#141826 72%);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 28px;text-align:center">
+     <dc-import name="Piezas/Marco Estatus" rank="9" lvl="5" extra="3" size="250" hint-size="250px,273px"></dc-import>
+     <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#F3D59A">Más allá del nivel 50</span>
+     <span style="font:400 40px/1.1 'Instrument Serif',serif">Leyenda ★3</span>
+     <span style="font:italic 400 17px/1.35 'Instrument Serif',serif;color:rgba(255,253,248,.75)">Una estrella más, sin final</span>
+    </div>
+   </sc-if>
+
+   <sc-if value="{{ b.perfil }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:10px 16px;display:flex;flex-direction:column;gap:14px">
+     <div style="display:flex;align-items:center;gap:16px;padding:6px 4px"><dc-import name="Piezas/Marco Estatus" rank="1" lvl="3" size="110" hint-size="110px,120px"></dc-import><span style="flex:1;display:flex;flex-direction:column;gap:5px"><span style="font:400 34px/1 'Instrument Serif',serif">Elena</span><span style="font:600 13px 'Geist'">Nivel 8 · Explorador</span></span></div>
+     <div style="border-radius:22px;background:#1C2230;color:#FFFDF8;padding:16px;display:flex;flex-direction:column;gap:10px"><span style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 26px/1 'Instrument Serif',serif">1.240 EXP</span><span style="font:500 11.5px 'Geist Mono',monospace;color:#F3D59A">720 / 900</span></span><span style="height:8px;border-radius:8px;background:rgba(255,253,248,.15);overflow:hidden"><span style="display:block;width:80%;height:100%;border-radius:8px;background:linear-gradient(90deg,#E3B13F,#FFF1B8)"></span></span><span style="font:400 12px 'Geist';color:rgba(255,253,248,.65)">Te faltan 180 EXP para el nivel 9</span></div>
+    </main>
+   </sc-if>
+
+   <sc-if value="{{ b.marcos }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:6px 16px 20px;display:flex;flex-direction:column;gap:2px;overflow:hidden">
+     <sc-for list="{{ ranks }}" as="r" hint-placeholder-count="10"><div style="display:flex;align-items:center;gap:8px;min-height:68px"><span style="width:84px;font:500 11.5px/1.15 'Geist'">{{ r.n }}<br><span style="font:500 9.5px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ r.lv }}</span></span><span style="flex:1;display:flex;justify-content:space-between"><sc-for list="{{ r.f }}" as="f" hint-placeholder-count="5"><dc-import name="Piezas/Marco Estatus" rank="{{ r.i }}" lvl="{{ f }}" size="52" hint-size="52px,57px"></dc-import></sc-for></span></div></sc-for>
+    </main>
+   </sc-if>
+  </div>
+ </div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;exp&quot;,&quot;nivel&quot;,&quot;marcos&quot;,&quot;perfil&quot;],&quot;default&quot;:&quot;exp&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const RN=['Soñador','Explorador','Viajero','Trotamundos','Aventurero','Nómada','Cartógrafo','Embajador','Navegante','Leyenda'];
+const CYC=7;
+const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+const rnd=k=>{const x=Math.sin(k*12.9898+78.233)*43758.5453;return x-Math.floor(x);};
+const fmt=n=>String(Math.round(n));
+class Component extends DCLogic {
+  state={t:0};
+  componentDidMount(){this.t0=performance.now();if((this.props.mode||'exp')==='exp')this.iv=setInterval(()=>this.setState({t:(performance.now()-this.t0)/1000}),60);}
+  componentWillUnmount(){clearInterval(this.iv);}
+  renderVals(){const md=this.props.mode||'exp';const t=this.state.t;
+    const B=(id,cap,o)=>({id,cap,bg:'#F5EFE4',fg:'#1C2230',tOp:'0',tY:'0',cOp:'0',cY:'0',shX:'-120',sOp:'0',fly:false,fx:'0',fy:'0',fs:'1',fabK:'1',isF:false,isP:false,paradas:false,sorp:false,toast:false,lvlUp:false,rankUp:false,leg:false,perfil:false,marcos:false,isE:false,isS:false,isM:false,eye:'',t:'',...o});
+    const DK={bg:'#141826',fg:'#FFFDF8'};
+    const cl=(x,lo,hi)=>Math.max(0,Math.min(1,(x-lo)/(hi-lo)));
+    const SEQ={P:{isP:true,eye:'Nuevo pedazo',t:'Plaza Navona'},S:{isS:true,eye:'Tu sello de Roma',t:'Roma en el corazón'},E:{isE:true,eye:'¡Has encontrado un Emblema Oculto!',t:'Volverás a Roma'},M:{isM:true,eye:'Tu primera maravilla',t:'1 de 7 maravillas'},F:{isF:true,eye:'Una maravilla del mundo',t:'Casi 2.000 años esperándote…'}};
+    const flow=(id,cap,o)=>{const{seq,dur,gain,tr,tl,tn,cur,max,after,tail}=o;const S=seq.length*dur,cyc=S+(after?4.2+(after==='rank'?9.4:8.4):tail);const tt=t%cyc;
+      const idx=Math.min(seq.length-1,Math.floor(tt/dur));const inS=tt<S;const edge=Math.min(tt-idx*dur,(idx+1)*dur-tt);const sOp=inS?(cl(edge,0,.3)):0;
+      const k=ease(cl(tt,S+1.5,S+3.2));const n=cur+gain*k;const tIn=cl(tt,S+1.2,S+1.55),tOut=after?1-cl(tt,S+3.7,S+4):1-cl(tt,S+5.2,S+5.6);const tOp=Math.min(tIn,tOut);
+      const cIn=cl(tt,S+1.4,S+1.8),cOut=1-cl(tt,S+3.1,S+3.6);
+      const fl=cl(tt,S,S+.85);const fe=ease(fl);const flying=tt>=S&&tt<S+.9;
+      const fab=1+.28*Math.sin(Math.PI*cl(tt,S+.85,S+1.25));
+      const full=Math.min(max,n);
+      return B(id,cap,{paradas:true,sorp:inS,...SEQ[seq[idx]],sOp:sOp.toFixed(2),
+        fly:flying,fx:(195+(347-195)*fe).toFixed(0),fy:(420+(717-420)*fe).toFixed(0),fs:(1-.4*fl).toFixed(2),fabK:fab.toFixed(3),
+        toast:true,tr,tl,tn,num:fmt(full),max:String(max),bar:(full/max*100).toFixed(1)+'%',gain:String(gain),left:full>=max?'¡Nivel completado!':'Te faltan '+fmt(max-n)+' EXP para el siguiente nivel',
+        tOp:tOp.toFixed(2),tY:((1-tIn)*60).toFixed(0),cOp:Math.min(cIn,cOut).toFixed(2),cY:(-ease(cl(tt,S+1.4,S+3.6))*22).toFixed(0),shX:(-120+440*cl(tt,S+1.8,S+2.8)).toFixed(0),
+        lvlUp:after==='lvl'&&tt>=S+4,rankUp:after==='rank'&&tt>=S+4,...(after?{bg:'#F5EFE4'}:{})});};
+    const STOPS0=[];
+    let boards=[];
+    if(md==='exp')boards=[
+      flow('E1','Un Visto normal: pedazos y sello, y al volver a la app, la EXP sumada',{seq:['P','S'],dur:1.5,gain:140,tr:'1',tl:'3',tn:'Nivel 8 · Explorador',cur:720,max:900,tail:3.6}),
+      flow('E2','El Coliseo: película y sorpresas, y al volver, todo sumado',{seq:['F','E','M'],dur:2,gain:405,tr:'1',tl:'3',tn:'Nivel 8 · Explorador',cur:300,max:900,tail:3.6}),
+      flow('E3','Con esa EXP se sube de nivel, justo después del +EXP',{seq:['P','S'],dur:1.5,gain:405,tr:'1',tl:'2',tn:'Nivel 7 · Explorador',cur:720,max:900,after:'lvl'}),
+      flow('E4','Con esa EXP se cambia de rango, justo después del +EXP',{seq:['P','S'],dur:1.5,gain:405,tr:'0',tl:'5',tn:'Nivel 5 · Soñador',cur:720,max:900,after:'rank'})];
+    if(md==='nivel')boards=[B('X5','Subir de nivel · se suma una estrella',{...DK,lvlUp:true}),B('X6','Cambiar de rango · Soñador a Explorador',{...DK,rankUp:true}),B('X7','Leyenda ★ después del nivel 50',{...DK,leg:true})];
+    if(md==='marcos')boards=[B('X8','Los 10 marcos de rango y sus 5 niveles',{marcos:true})];
+    if(md==='perfil')boards=[B('X9','El Perfil con su nivel',{perfil:true})];
+    const sparks=Array.from({length:14},(_,i)=>{const a=i/14*Math.PI*2,r=60+rnd(i)*40;return{dx:(Math.cos(a)*r).toFixed(0)+'px',dy:(Math.sin(a)*r-20).toFixed(0)+'px',c:i%2?'#FFF1B8':'#FFFFFF'};});
+    const sparks2=Array.from({length:20},(_,i)=>{const a=i/20*Math.PI*2+rnd(i+5)*.2,r=130+rnd(i)*110;return{dx:(Math.cos(a)*r).toFixed(0)+'px',dy:(Math.sin(a)*r).toFixed(0)+'px',c:i%3?'#FFF1B8':'#FFFFFF',z:(4+Math.round(rnd(i+9)*4))+'px'};});
+    const txt='Ahora eres Explorador';
+    return{boards,stops:[{n:'Plaza de España',t:'✓ Visto',bd:'rgba(28,34,48,.07)',c:'oklch(0.42 0.09 150)',ph:'linear-gradient(140deg,#E7B98A,#9C5E3A)'},{n:'Fontana de Trevi',t:'✓ Visto',bd:'oklch(0.55 0.11 150 / .3)',c:'oklch(0.42 0.09 150)',ph:'linear-gradient(140deg,#B8D4D8,#4E8A94)'},{n:'Panteón',t:'10:40 · 30 min',bd:'rgba(28,34,48,.07)',c:'rgba(28,34,48,.6)',ph:'linear-gradient(140deg,#D9C9A4,#8E7450)'}],
+      sparks,sparks2,rings:[['3px','0s'],['2px','.18s'],['1.5px','.36s']].map(([w,d])=>({w,d})),
+      letters:[...txt].map((ch,i)=>({ch,d:(0.1+i*0.045).toFixed(2)+'s'})),
+      ranks:RN.map((n,i)=>({n,i:String(i),lv:'Niveles '+(i*5+1)+'–'+(i*5+5),f:[1,2,3,4,5]}))};}
+}
+</script>
+</body>
+</html>

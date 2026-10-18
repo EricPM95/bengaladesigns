@@ -6,13 +6,26 @@ export interface EstadoLogros {
   destino: string
   ciudad: string
   sellos: { id: string; nombre: string; grado: string | null; nombre_grado: string | null; linea: string | null; n: number; total: number; siguiente: { grado: string; faltan: number; nombre: string } | null; alcanzados: string[] }[]
-  colecciones: { id: string; nombre: string; n: number; total: number; completa: boolean; en_tu_ruta: boolean; nuevo_hoy: boolean; sitios: { sitio: string; visto: boolean }[] }[]
+  colecciones: ColeccionDeEstado[]
+  /** (8C2) Cuántas de las colecciones puede completar con su ruta (null antes de tener ruta). */
+  con_tu_ruta_puedes_completar?: number | null
   secretos: { total: number; encontrados: number; texto: string; encontrados_lista: { id: string; nombre: string; linea: string; en: string }[] }
   pendiente: Pendiente
   puntito: boolean
   /** (8C1) EXP total, nivel, rango, EXP dentro del nivel y la que falta para el siguiente (la calcula siempre el servidor; nunca baja). */
   exp?: ResumenDeExp
   viaje: { id: string; inicio: string; fin: string; hoy: string }
+}
+/** (8C2) Una colección del destino, con sus sitios: el nombre, si está en la ruta del viaje y sus coordenadas (para «Cómo llegar»). */
+export interface ColeccionDeEstado {
+  id: string
+  nombre: string
+  n: number
+  total: number
+  completa: boolean
+  en_tu_ruta: boolean
+  nuevo_hoy: boolean
+  sitios: { sitio: string; visto: boolean; nombre?: string; en_ruta?: boolean; lat?: number; lng?: number }[]
 }
 export interface ResumenDeExp {
   exp: number
