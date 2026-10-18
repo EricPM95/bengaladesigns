@@ -21,6 +21,7 @@ export const APARTADOS_DE_PRIVACIDAD: ApartadoDePrivacidad[] = [
   { id: 'con-quien', titulo: 'Con quién lo compartimos', pregunta: 'Los servicios de fuera que tratan datos para que la app funcione (lista de abajo).' },
   { id: 'como-borrarlo', titulo: 'Cómo borrarlo', pregunta: 'Cómo borrar tu cuenta y todo lo tuyo desde la app, y qué se borra.' },
   { id: 'tus-derechos', titulo: 'Tus derechos', pregunta: 'Acceder, corregir, llevarte tus datos y reclamar.' },
+  { id: 'condiciones', titulo: 'Condiciones de uso y de compra', pregunta: 'Las reglas de uso de la app y de la compra del pase: qué incluye, el derecho de desistimiento en lo digital, las devoluciones y cómo reclamar.' },
   { id: 'a-quien-escribir', titulo: 'A quién escribir', pregunta: 'El correo para dudas de privacidad.' },
 ]
 
@@ -43,5 +44,7 @@ export const SERVICIOS_DE_FUERA: ServicioDeFuera[] = [
   { nombre: 'Banco Central Europeo', para: 'Da el cambio de moneda del día para el presupuesto.', datos: 'Ninguno tuyo.' },
   { nombre: 'Wikimedia y Unsplash', para: 'Fotos de los sitios, con su crédito.', datos: 'Ninguno tuyo.' },
   { nombre: 'Stay22, Booking.com, Civitatis, DiscoverCars, Holafly, iati y N26', para: 'Enlaces de afiliado para reservar alojamiento, entradas, coche, eSIM, seguro y tarjeta. Al pulsar uno sales de la app.', datos: 'Un código de campaña del viaje (sin tu nombre ni tu email).' },
+  { nombre: 'Stripe', para: 'Cobra el pase con tarjeta (también con Apple Pay y Google Pay) y manda el recibo. La app nunca ve los datos de tu tarjeta.', datos: 'Tu email, el importe y el pase que compras.' },
+  { nombre: 'El servicio de avisos de tu móvil (Apple, Google o Mozilla, según tu móvil)', para: 'Hace llegar al móvil los avisos de la app, solo si los activas.', datos: 'Una dirección anónima de tu móvil para avisos y el texto del aviso.' },
   { nombre: 'Un servicio de envío de correos (por elegir)', para: 'Manda los enlaces para entrar a tu email.', datos: 'Tu email.' },
 ]

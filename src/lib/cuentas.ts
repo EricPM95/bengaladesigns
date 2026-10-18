@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabaseClient'
-import { canjearInvitacion, codigoDeLaDireccion, guardarInvitacionPendiente, invitacionPendiente, olvidarInvitacionPendiente } from './invitaciones'
+import { canjearInvitacion, codigoDeLaDireccion, guardarInvitacionPendiente, invitacionAceptada, invitacionPendiente, olvidarInvitacionPendiente } from './invitaciones'
 
 /**
  * LAS CUENTAS, PARTE 1 (docs/dias/PLAN_CUENTAS.md). Entrar con el email (enlace mágico) o con Google, pasar a la cuenta lo que el móvil tenía, cerrar sesión y
@@ -271,7 +271,7 @@ export function completarEntrada(sesion: Session): Promise<void> {
       // Una invitación a un viaje abierta antes de tener cuenta (o ahora): se canjea y la persona entra en el viaje como invitada.
       let entroEnUnViaje = false
       const codigo = invitacionPendiente()
-      if (codigo) {
+      if (codigo && invitacionAceptada()) {
         const resultado = await canjearInvitacion(codigo)
         olvidarInvitacionPendiente()
         if (resultado.error) guardarAvisoDeInvitacion(resultado.error)

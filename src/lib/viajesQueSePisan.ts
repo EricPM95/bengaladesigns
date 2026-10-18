@@ -40,3 +40,47 @@ export function viajesQueSePisan<T extends Pick<SavedTrip, 'route' | 'guardadoEn
     return r != null && r.inicio <= nuevo.fin && nuevo.inicio <= r.fin
   })
 }
+
+export interface ViajeDeLaPareja {
+  id: string
+  destino: string
+  inicio: string
+  fin: string
+}
+
+/**
+ * (Cuentas parte 3, P8b y P9) Las parejas de viajes PROPIOS al mismo destino cuyas fechas se pisan, sin contar los guardados aparte ni los de otra persona. Con el pase de ese destino
+ * activo para los dos, la app pregunta cuál se hace («Tienes dos viajes a Roma. ¿Cuál haces?»); el que no se elige pasa a «Viajes guardados», sin borrarse.
+ * Sale una pareja por destino (la primera): con tres viajes que se pisan se resuelve de dos en dos.
+ */
+export function parejasQueSePisan<T extends Pick<SavedTrip, 'route' | 'guardadoEn' | 'esInvitado' | 'id'>>(viajes: T[]): [ViajeDeLaPareja, ViajeDeLaPareja][] {
+  const propios = viajes
+    .filter((v) => !estaGuardadoAparte(v) && !v.esInvitado)
+    .map((v) => ({ id: v.id, destino: v.route?.destination ?? '', rango: rangoDe(v) }))
+    .filter((v): v is { id: string; destino: string; rango: { inicio: string; fin: string } } => v.rango != null && v.destino !== '')
+    .sort((a, b) => a.rango.inicio.localeCompare(b.rango.inicio) || a.id.localeCompare(b.id))
+  const salida: [ViajeDeLaPareja, ViajeDeLaPareja][] = []
+  const yaPorDestino = new Set<string>()
+  for (let i = 0; i < propios.length; i++) {
+    const a = propios[i]
+    if (yaPorDestino.has(norm(a.destino))) continue
+    const b = propios.slice(i + 1).find((x) => norm(x.destino) === norm(a.destino) && x.rango.inicio <= a.rango.fin && a.rango.inicio <= x.rango.fin)
+    if (!b) continue
+    yaPorDestino.add(norm(a.destino))
+    salida.push([
+      { id: a.id, destino: a.destino, ...a.rango },
+      { id: b.id, destino: b.destino, ...b.rango },
+    ])
+  }
+  return salida
+}
+
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+
+/** «16 al 19 de octubre» (mismo mes) o «28 de octubre al 2 de noviembre»: como se dice, para los botones de P8b y P9. */
+export function rangoEnPalabras(inicio: string, fin: string): string {
+  const [, mi, di] = inicio.split('-').map(Number)
+  const [, mf, df] = fin.split('-').map(Number)
+  if (mi === mf) return di === df ? `${di} de ${MESES[mi - 1]}` : `${di} al ${df} de ${MESES[mi - 1]}`
+  return `${di} de ${MESES[mi - 1]} al ${df} de ${MESES[mf - 1]}`
+}

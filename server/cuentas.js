@@ -13,7 +13,7 @@
 export const BUCKET_FOTOS = 'fotos-viaje'
 const SIN_CLAVE = 'Las cuentas todavía no están preparadas en el servidor (falta la clave de servicio de Supabase).'
 
-const tokenDe = (req) => {
+export const tokenDe = (req) => {
   const cabecera = String(req.get?.('authorization') ?? req.headers?.authorization ?? '')
   return cabecera.startsWith('Bearer ') ? cabecera.slice(7).trim() || null : null
 }

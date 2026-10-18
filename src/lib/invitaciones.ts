@@ -23,9 +23,17 @@ export interface VistaDeInvitacion {
   valida: boolean
   motivo?: MotivoNoValida
   destino?: string | null
+  /** (0026) Quién invita: su nombre de pila (o null si no lo tiene puesto). */
+  invitador?: string | null
+  /** (0026) Las fechas del viaje, para enseñarlas antes de entrar. */
+  inicio?: string | null
+  fin?: string | null
+  /** (0026) La invitación va con un pase: entrar no cuesta nada. */
+  con_pase?: boolean
 }
 
 const CLAVE_PENDIENTE = 'trazo:invitacion'
+const CLAVE_ACEPTADA = 'trazo:invitacion:aceptada'
 const SIN_NUBE = 'Las invitaciones necesitan conexión con el servidor; ahora mismo no está disponible.'
 
 /** Pura: el código tal como se escribe (mayúsculas, sin espacios ni guiones). */
@@ -48,10 +56,34 @@ export function textoDeInvitacionNoValida(motivo: MotivoNoValida | undefined): s
   return 'No encontramos esa invitación. Revisa el código.'
 }
 
+/** Pura: el titular de «lo que ve quien recibe el enlace» (P7b): «Laura te invita a su Pase de Roma» (con pase) o «Laura te invita a su viaje a Roma». */
+export function titularDeInvitacion(v: VistaDeInvitacion): string {
+  const quien = v.invitador && v.invitador.trim() ? v.invitador.trim() : 'Alguien'
+  const destino = v.destino?.trim() || 'su viaje'
+  return v.con_pase ? `${quien} te invita a su Pase de ${destino}` : `${quien} te invita a su viaje a ${destino}`
+}
+
+/** (P7b) Al tocar [Unirme] se apunta que la invitación está aceptada: solo entonces se canjea después de entrar. Abrir el enlace por sí solo no mete a nadie en un viaje. */
+export function aceptarInvitacionPendiente(): void {
+  try {
+    window.localStorage.setItem(CLAVE_ACEPTADA, '1')
+  } catch {
+    /* sin almacenamiento: tendrá que escribir el código a mano */
+  }
+}
+export function invitacionAceptada(): boolean {
+  try {
+    return window.localStorage.getItem(CLAVE_ACEPTADA) === '1'
+  } catch {
+    return false
+  }
+}
+
 /** Se guarda el código de una invitación abierta antes de tener cuenta, para canjearla justo después de entrar. */
 export function guardarInvitacionPendiente(codigo: string): void {
   try {
     window.localStorage.setItem(CLAVE_PENDIENTE, normalizarCodigo(codigo))
+    window.localStorage.removeItem(CLAVE_ACEPTADA) // (un enlace nuevo no hereda la aceptación de otro)
   } catch {
     /* sin almacenamiento: tendrá que escribir el código a mano */
   }
@@ -66,6 +98,7 @@ export function invitacionPendiente(): string | null {
 export function olvidarInvitacionPendiente(): void {
   try {
     window.localStorage.removeItem(CLAVE_PENDIENTE)
+    window.localStorage.removeItem(CLAVE_ACEPTADA)
   } catch {
     /* nada que quitar */
   }

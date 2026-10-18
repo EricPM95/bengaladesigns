@@ -11,9 +11,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-    <title>Route Planner</title>
+    <title>%MARCA_NOMBRE%</title>
   </head>
   <body>
+    <!-- La pantalla al abrir (I2, cuentas parte 3): el nombre sale de data/marca.json (plugin de vite.config.ts); el hueco del logo, vacío y preparado. La quita main.tsx al pintar la app. -->
+    <div id="apertura" aria-hidden="true" style="position:fixed;inset:0;z-index:2147483000;background:radial-gradient(120% 70% at 50% 40%,#2E3550 0%,%MARCA_COLOR_APERTURA% 70%);color:#FFFDF8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .35s">
+      %MARCA_LOGO%
+      <span style="font:400 32px/1 'Instrument Serif',serif">%MARCA_NOMBRE%</span>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

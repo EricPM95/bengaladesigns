@@ -8,6 +8,7 @@ import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
+import { PagoHost } from './components/pase/PagoHost'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
@@ -91,6 +92,7 @@ function App() {
     <Layout>
       <TripSync />
       <PuertaDeCuenta />
+      <PagoHost />
       <VistosPorPersona />
       <LogrosPorVisto />
       <MomentosHost />

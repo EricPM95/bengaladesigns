@@ -304,3 +304,22 @@ body:has(.map-cover-overlay) .mapboxgl-ctrl-bottom-right {
   border-color: rgb(var(--text));
 }
 .date-field-calendar .rdp-chevron { fill: rgb(var(--text)); }
+
+/* Las hojas de las cuentas (Hoja.tsx, cuentas parte 3): el fondo aparece y la hoja sube. Con «reducir movimiento», sin animación. */
+@keyframes hoja-sube {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes hoja-pop {
+  0% { opacity: 0; transform: scale(0.5); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: none; }
+}
+.hoja-fondo { animation: trazo-fade 220ms ease-out both; }
+.hoja-panel { animation: hoja-sube 450ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.hoja-pop { animation: hoja-pop 600ms cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .hoja-fondo,
+  .hoja-panel,
+  .hoja-pop { animation: none; }
+}

@@ -8,10 +8,10 @@ import { APARTADOS_DE_PRIVACIDAD, SERVICIOS_DE_FUERA, TEXTO_PENDIENTE } from '..
  */
 export function PrivacidadScreen({ onVolver }: { onVolver: () => void }) {
   return createPortal(
-    <div role="dialog" aria-modal="true" aria-label="Privacidad" data-privacidad className="fixed inset-0 z-[80] flex flex-col bg-bg text-text">
+    <div role="dialog" aria-modal="true" aria-label="Privacidad y condiciones" data-privacidad className="fixed inset-0 z-[100] flex flex-col bg-bg text-text">
       <header className="flex h-14 shrink-0 items-center justify-between pl-5 pr-3 pt-[env(safe-area-inset-top)]">
         <h1 className="m-0 uppercase text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em' }}>
-          Privacidad
+          Privacidad y condiciones
         </h1>
         <button type="button" onClick={onVolver} aria-label="Cerrar" title="Cerrar" className="flex h-11 w-11 items-center justify-center rounded-full">
           <Icono nombre="cerrar" size={18} />

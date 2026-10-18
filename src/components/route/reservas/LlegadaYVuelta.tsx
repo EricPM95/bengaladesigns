@@ -4,6 +4,7 @@ import type { DestinationExcursions } from '../../../lib/destinationExcursions'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { HojaZona } from './AlojamientoReservas'
 import { puntoCorto, type ArrivalInfo } from '../../../lib/arrivalReturn'
+import { TarjetaPaseReservas } from '../../pase/TarjetaPaseReservas'
 import { legLine, legOf, legsTag, legWord, type LegKind, type LegState } from '../../../lib/reservasLegs'
 import { shortDateEs } from '../../../lib/bookings'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -516,6 +517,8 @@ export function LlegadaYVuelta({
           </>
         )}
       </BloqueShell>
+      {/* P1 (cuentas parte 3): con el vuelo guardado y sin el pase de este destino, debajo del vuelo: «Con el Pase de Roma, tu primer día se ajusta solo». Con el cobro apagado, nada. */}
+      {ida.done && ida.time && ida.mode !== 'coche' && <TarjetaPaseReservas hora={ida.time} destino={route.destination} noun={legWord(ida.mode).noun} />}
       {hojaLeg?.que === 'hora' && (
         <HojaHoraLlegada
           leg={hojaLeg.leg === 'arrival' ? ida : vuelta}

@@ -74,10 +74,17 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       return fila?.frase ?? null
     },
     async pasesDe(userId) {
-      const propios = ok(await admin.from('passes').select('id, destino, tipo').or(`comprador_id.eq.${userId},para_id.eq.${userId}`), 'pasesDe')
+      // Los pases anulados (pago devuelto, migración 0026) ya no valen. Sin la migración aplicada no existe la columna `estado` y valen todos, como antes.
+      const traer = async (filtrar, donde) => {
+        const conEstado = filtrar(admin.from('passes').select('id, destino, tipo').eq('estado', 'activo'))
+        const r = await conEstado
+        if (r.error && /estado/.test(r.error.message)) return ok(await filtrar(admin.from('passes').select('id, destino, tipo')), donde)
+        return ok(r, donde)
+      }
+      const propios = await traer((c) => c.or(`comprador_id.eq.${userId},para_id.eq.${userId}`), 'pasesDe')
       const unidos = ok(await admin.from('pass_members').select('pass_id').eq('user_id', userId), 'pasesDe(miembro)')
       let ajenos = []
-      if (unidos.length > 0) ajenos = ok(await admin.from('passes').select('id, destino, tipo').in('id', unidos.map((u) => u.pass_id)), 'pasesDe(ajenos)')
+      if (unidos.length > 0) ajenos = await traer((c) => c.in('id', unidos.map((u) => u.pass_id)), 'pasesDe(ajenos)')
       return [...propios, ...ajenos]
     },
     async pruebaDe(userId) {

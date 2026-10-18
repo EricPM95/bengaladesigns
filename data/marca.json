@@ -1,14 +1,31 @@
 {
-  "_nota": "El nombre de la app y sus colores, en UN solo sitio (Tanda 8A). El nombre todavía no está decidido (hoy «Routy», pendiente de la búsqueda de marcas): se cambia aquí y se vuelve a desplegar. De aquí salen el manifiesto para instalar la web (GET /api/manifest.webmanifest) y los textos del aviso «Añádela a tu pantalla de inicio».",
+  "_nota": "El nombre de la app y sus colores, en UN solo sitio (Tanda 8A). El nombre todavía no está decidido (hoy «Routy», pendiente de la búsqueda de marcas): se cambia aquí y se vuelve a desplegar. De aquí salen el manifiesto para instalar la web (GET /api/manifest.webmanifest) y los textos del aviso «Añádela a tu pantalla de inicio». (Cuentas parte 3) «logo»: la ruta del logo cuando exista (null = el hueco vacío, ya preparado en la pantalla de entrar, la de apertura y los avisos). «color_apertura»: el fondo de la pantalla al abrir (I2).",
   "nombre": "Routy",
   "nombre_corto": "Routy",
   "descripcion": "Tu viaje, día a día.",
+  "logo": null,
+  "color_apertura": "#141826",
   "color_tema": "#BD3964",
   "color_fondo": "#FFFFFF",
   "iconos": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "icono_apple": "/icons/apple-touch-icon.png"
 }

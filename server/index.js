@@ -51,7 +51,7 @@ import { cargarDatos as cargarDatosLogros, cargarCatalogo as cargarCatalogoLogro
 import { crearServicioLogros } from './logros/servicio.js'
 import { repoSupabase } from './logros/repo.js'
 import { registrarRutasLogros, logrosActivos } from './logros/rutas.js'
-import { cobroActivo } from './logros/pase.js'
+import { cobroListo, crearServicioPagos, modoDePago, pasarelaDeMentira, pasarelaStripe, registrarRutasPagos } from './pagos.js'
 import { precioTienda } from '../shared/dinero/formato.js'
 import { compareInside } from './engine/insideSwitch.js'
 import { keptRouteClosures } from './engine/dateNotices.js'
@@ -123,7 +123,8 @@ for (const { nombre, sinElla } of VARIABLES_SERVIDOR) {
 const anthropic = new Anthropic()
 const app = express()
 // (6 MB: la captura o el PDF de una confirmación de reserva viaja en base64, ver /api/read-booking.)
-app.use(express.json({ limit: '6mb' }))
+// (El aviso de Stripe lleva firma: se comprueba con el cuerpo TAL CUAL llegó, por eso se guarda aparte en `req.rawBody` solo para esa ruta.)
+app.use(express.json({ limit: '6mb', verify: (req, _res, buf) => { if (req.originalUrl?.startsWith('/api/pago/webhook')) req.rawBody = buf } }))
 // El Free Tour del viaje (Tanda 6u): el de una reserva con hora manda sobre el de la hoja; se pone en las respuestas UNA vez, aquí, y todo el servidor lo lee de ellas.
 // (`answers_sin_reservas`: las de antes de aplicar las reservas; el plan de reservas las necesita para calcular el «antes».)
 app.use((req, _res, next) => {
@@ -4567,14 +4568,25 @@ registrarRutasCivitatis(app, civitatis)
 // El manifiesto para instalar la web en el móvil (Tanda 8A): sale de data/marca.json (el nombre y los colores, en un solo sitio). Solo lo pide la app con el interruptor de los logros encendido.
 app.get('/api/manifest.webmanifest', (_req, res) => {
   const marca = JSON.parse(readFileSync(join(__dirname, '../data/marca.json'), 'utf8'))
-  res.type('application/manifest+json').json({ name: marca.nombre, short_name: marca.nombre_corto, description: marca.descripcion, start_url: '/', scope: '/', display: 'standalone', orientation: 'portrait', lang: 'es', background_color: marca.color_fondo, theme_color: marca.color_tema, icons: marca.iconos })
+  res.type('application/manifest+json').json({ name: marca.nombre, short_name: marca.nombre_corto, description: marca.descripcion, start_url: '/', scope: '/', display: 'standalone', orientation: 'portrait', lang: 'es', background_color: marca.color_apertura ?? marca.color_fondo, theme_color: marca.color_tema, icons: marca.iconos })
 })
 // Los logros (Tanda 8A): apagados salvo LOGROS_ACTIVOS=true Y las cuentas encendidas. Apagados, estas rutas ni existen. Todo lo decide el servidor (server/logros/).
 if (logrosActivos() && salesAdmin) {
   const datosLogros = cargarDatosLogros()
   const catalogosLogros = Object.fromEntries(Object.keys(datosLogros.destinos).map((clave) => [clave, cargarCatalogoLogros(clave)]))
   const repoLogros = repoSupabase(salesAdmin, { destinosConPionero: Object.values(datosLogros.destinos).filter((d) => d.pionero?.activo).map((d) => d.clave) })
-  registrarRutasLogros(app, { admin: salesAdmin, repo: repoLogros, servicio: crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroActivo() }) })
+  registrarRutasLogros(app, { admin: salesAdmin, repo: repoLogros, servicio: crearServicioLogros({ repo: repoLogros, datos: datosLogros, catalogos: catalogosLogros, cobro: cobroListo() }) })
+}
+
+// El cobro del pase (cuentas parte 3): solo con PASES_COBRO_ACTIVO=true Y con algo con qué cobrar (las claves de Stripe, o el pago de mentira en desarrollo). Si no, todo abierto, como hoy,
+// y la app sabe que no hay hoja de compra (/api/pase/config dice cobro: false). El pase lo crea SOLO el servidor, cuando el servicio de pago confirma el cobro.
+if (cobroListo() && salesAdmin) {
+  const preciosPase = JSON.parse(readFileSync(join(__dirname, '../data/pase/precios.json'), 'utf8'))
+  const destinosConPase = Object.values(cargarDatosLogros().destinos).map((d) => d.destino)
+  const pasarela = modoDePago() === 'mentira' ? pasarelaDeMentira({ origen: process.env.APP_URL ?? 'http://localhost:5173' }) : pasarelaStripe({ clave: process.env.STRIPE_SECRET_KEY, secretoAviso: process.env.STRIPE_WEBHOOK_SECRET })
+  registrarRutasPagos(app, { admin: salesAdmin, servicio: crearServicioPagos({ admin: salesAdmin, precios: preciosPase, destinos: destinosConPase, pasarela }) })
+} else {
+  app.get('/api/pase/config', (_req, res) => res.json({ ok: true, cobro: false, modo: null }))
 }
 
 app.post('/api/destination-excursions', async (req, res) => {

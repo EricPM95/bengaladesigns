@@ -32,3 +32,20 @@ createRoot(document.getElementById('root')!).render(
     </ErrorBoundary>
   </StrictMode>,
 )
+
+// La pantalla al abrir (I2) vive en index.html para verse antes de que cargue nada. Se quita en cuanto la app ha pintado, con un respiro mínimo para que no parpadee.
+// En desarrollo se quita al momento (si no, taparía las capturas y las pruebas); `?apertura=1` la deja puesta para verla.
+{
+  const apertura = document.getElementById('apertura')
+  const dejar = import.meta.env.DEV && new URLSearchParams(window.location.search).get('apertura') === '1'
+  if (import.meta.env.DEV && apertura) (window as unknown as { __aperturaHtml?: string }).__aperturaHtml = apertura.outerHTML // (para la captura de I2)
+  if (apertura && !dejar) {
+    const reducir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const quitar = () => {
+      apertura.style.opacity = '0'
+      window.setTimeout(() => apertura.remove(), reducir ? 0 : 380)
+    }
+    if (import.meta.env.DEV || reducir) quitar()
+    else window.setTimeout(quitar, 450)
+  }
+}

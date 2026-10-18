@@ -9,7 +9,7 @@ import { APARTADOS_DE_PRIVACIDAD, SERVICIOS_DE_FUERA, TEXTO_PENDIENTE } from '..
 import { PuertaDeCuenta } from '../../src/components/cuenta/PuertaDeCuenta'
 import { CuentaEnPerfil } from '../../src/components/cuenta/CuentaEnPerfil'
 import { PrivacidadScreen } from '../../src/components/cuenta/PrivacidadScreen'
-import { EntrarProvisional } from '../../src/components/cuenta/EntrarProvisional'
+import { EntrarCuenta } from '../../src/components/cuenta/EntrarCuenta'
 import { VistosPorPersona } from '../../src/components/cuenta/VistosPorPersona'
 import { resolverRecomendacion, vistaPrevia, ordenTrasMover, indiceTrasParada, textoDeRecomendacion } from '../../src/lib/aplicarRecomendacion'
 import { conVistosDe, cambiosDeVistos } from '../../src/lib/vistosPorPersona'
@@ -49,5 +49,5 @@ export const M = {
   textoDeInvitacionNoValida,
   useRouteStore,
   pintaVistos: () => renderToStaticMarkup(createElement(VistosPorPersona)),
-  pintaEntrar: () => renderToStaticMarkup(createElement(EntrarProvisional, { onSaltar: () => undefined })),
+  pintaEntrar: () => renderToStaticMarkup(createElement(EntrarCuenta)),
 }
