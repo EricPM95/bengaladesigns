@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { cambiosDeLaPropuesta, etiquetaDeDia, textoDelCambio, textoDeCuantos, verboDelCambio, type CambioPropuesto } from '../../lib/propuesta'
+import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { BotonHoja, Hoja } from '../ui/Hoja'
@@ -85,7 +86,7 @@ export function HojaVerPropuesta({ cambiosEnviados = null, onCerrar, nombreDelAd
         </p>
       )}
       {!enviada && (
-        <BotonHoja tipo="principal" disabled={enviando || filas.length === 0} onClick={() => void enviar()} datos="enviar-propuesta">
+        <BotonHoja tipo="principal" disabled={enviando || filas.length === 0} onClick={() => { void pedirPermisoUnaVez(); void enviar() }} datos="enviar-propuesta">
           Enviar a {nombreAdmin}
         </BotonHoja>
       )}

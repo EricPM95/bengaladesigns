@@ -710,6 +710,205 @@ console.log('3b. Compartir y recomendar con la base de datos de verdad (reglas d
   debe((await como(otra, () => q('select 1 from public.trip_recommendations'))).length === 0, 'recomendar', 'una tercera persona no ve las recomendaciones')
 }
 
+/* ═══════════════ PARTE 4 · La campanita de Avisos ═══════════════ */
+console.log('4. La campanita de Avisos (los textos, la lista y el permiso)')
+{
+  const M = encendido
+  // Los textos, tal como están en el diseño.
+  const T = (tipo, payload) => M.textoDelAviso({ tipo, payload })
+  debe(T('recomendacion', { autor: 'Laura', tipo_rec: 'cambio', dia: 2 }) === 'Laura te recomienda un cambio en el día 2', 'AV2', '«Laura te recomienda un cambio en el día 2»')
+  debe(T('recomendacion', { autor: 'Laura', tipo_rec: 'dia', dia: 3 }) === 'Laura te recomienda cambios en el día 3', 'AV2', '«Laura te recomienda cambios en el día 3»')
+  debe(T('recomendacion', { autor: 'Laura', tipo_rec: 'ruta', dia: null }) === 'Laura te recomienda otra ruta', 'AV2', '«Laura te recomienda otra ruta»')
+  debe(T('aceptada', { admin: 'Elena', tipo_rec: 'cambio', dia: 2 }) === 'Elena ha aceptado tu cambio en el día 2', 'AV5', '«Elena ha aceptado tu cambio en el día 2»')
+  debe(T('rechazada', { admin: 'Elena', tipo_rec: 'cambio', dia: 2 }) === 'Elena ha preferido dejar el día 2 como estaba', 'AV5', '«Elena ha preferido dejar el día 2 como estaba»')
+  debe(T('unido', { nombre: 'Laura' }) === 'Laura se ha unido a tu viaje', 'AV2', '«Laura se ha unido a tu viaje»')
+  debe(T('d10', { destino: 'Roma', dias: 10 }) === 'En 10 días empieza tu viaje a Roma' && T('d10', { destino: 'Roma', dias: 1 }) === 'Mañana empieza tu viaje a Roma', 'AV2', '«En 10 días empieza tu viaje a Roma»')
+  debe(T('resumen', {}) === 'Tu resumen del viaje está listo', 'AV2', '«Tu resumen del viaje está listo»')
+  debe(T('sorpresas', { texto: 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma' }) === 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma', 'AV2', '«Te quedan 3 días para reclamar tus 2 sorpresas de Roma»')
+  debe(T('recomendacion', { autor: null, tipo_rec: 'cambio', dia: 2 }).startsWith('Viajero te recomienda'), 'AV2', 'sin nombre puesto, «Viajero»')
+  const p8 = M.textoDelPush({ tipo: 'd10', payload: { destino: 'Roma', dias: 10, con_pase: true, inicio: '2026-10-16', fin: '2026-10-19' } })
+  debe(p8 === 'En 10 días empieza tu viaje a Roma. Tu Pase de Roma está activo para el viaje del 16 al 19 de octubre.', 'P8', 'P8: el aviso de los 10 días en el móvil, con lo del pase')
+  debe(M.textoDelPush({ tipo: 'd10', payload: { destino: 'Roma', dias: 10, con_pase: false } }) === 'En 10 días empieza tu viaje a Roma', 'P8', 'sin pase, el aviso de los 10 días no habla del pase')
+  debe(M.quienDelAviso({ tipo: 'recomendacion', payload: { autor: 'Laura' } }) === 'Laura' && M.quienDelAviso({ tipo: 'd10', payload: {} }) === null, 'AV2', 'la inicial del círculo es de quien lo hace; los avisos de fecha no llevan persona')
+  debe(M.haceCuanto('2026-10-10T10:00:00Z', Date.parse('2026-10-10T10:05:00Z')) === 'hace 5 min' && M.haceCuanto('2026-10-10T10:00:00Z', Date.parse('2026-10-10T11:10:00Z')) === 'hace 1 h' && M.haceCuanto('2026-10-09T10:00:00Z', Date.parse('2026-10-10T12:00:00Z')) === 'ayer' && M.haceCuanto('2026-10-06T10:00:00Z', Date.parse('2026-10-10T12:00:00Z')) === '6 oct' && M.haceCuanto('2026-10-10T10:00:00Z', Date.parse('2026-10-10T10:00:10Z')) === 'ahora', 'AV2', 'cuánto hace de cada aviso: «hace 5 min», «hace 1 h», «ayer», «6 oct»')
+  debe(M.avisoDeLaDireccion('?aviso=0f8fad5b-d9cb-469f-a165-70867728950e') === '0f8fad5b-d9cb-469f-a165-70867728950e' && M.avisoDeLaDireccion('?aviso=<script>') === null && M.avisoDeLaDireccion('') === null, 'AV6', 'el aviso del móvil lleva su identificador en la dirección (solo uno que parezca un identificador)')
+
+  // La lista: lo no leído, destacado; lo leído, no; «Aceptada» / «No aceptada».
+  const ahora = Date.parse('2026-10-10T10:10:00Z')
+  const av = (id, tipo, leido, extra = {}) => ({ id, tipo, texto: M.textoDelAviso({ tipo, payload: extra.payload ?? {} }), quien: M.quienDelAviso({ tipo, payload: extra.payload ?? {} }), creado_en: '2026-10-10T10:05:00Z', leido, payload: {}, etiqueta: null, ...extra })
+  const lista = M.pintaListaDeAvisos({ avisos: [av('a1', 'recomendacion', false, { payload: { autor: 'Laura', tipo_rec: 'cambio', dia: 2 } }), av('a2', 'unido', true, { payload: { nombre: 'Laura' } }), av('a3', 'recomendacion', true, { payload: { autor: 'Laura', tipo_rec: 'cambio', dia: 3 }, etiqueta: 'Aceptada' }), av('a4', 'recomendacion', true, { payload: { autor: 'Laura', tipo_rec: 'dia', dia: 4 }, etiqueta: 'No aceptada' }), av('a5', 'd10', false, { payload: { destino: 'Roma', dias: 10 } })], onTocar: () => undefined, ahora })
+  debe(/data-aviso="a1"[^>]*data-sin-leer="1"/.test(lista) && !/data-aviso="a2"[^>]*data-sin-leer/.test(lista), 'AV2', 'lo no leído, destacado; lo leído, no')
+  debe((lista.match(/aria-label="Sin leer"/g) ?? []).length === 2, 'AV2', 'cada aviso sin leer lleva su puntito')
+  debe(/Aceptada/.test(lista) && /No aceptada/.test(lista) && /data-aviso="a3"[^>]*>/.test(lista) && !/role="button"[^>]*data-aviso="a3"/.test(lista), 'AV3', 'AV3: una recomendación ya contestada queda «Aceptada» o «No aceptada» y deja de ser tocable')
+  debe(/role="button"[^>]*data-aviso="a1"/.test(lista), 'AV2', 'tocar una recomendación abre R2')
+  debe(/hace 5 min/.test(lista), 'AV2', 'cada aviso dice cuánto hace')
+
+  // El permiso del móvil: una sola vez y nunca en iPhone sin la web instalada.
+  const base = { plataforma: 'android', instalada: false, disponible: true, preguntado: false, permiso: 'default', servidorListo: true }
+  debe(M.tocaPedirPermiso(base) === true, 'permiso', 'toca pedir el permiso la primera vez')
+  debe(M.tocaPedirPermiso({ ...base, preguntado: true }) === false, 'permiso', 'una sola vez: si ya se preguntó, no')
+  debe(M.tocaPedirPermiso({ ...base, plataforma: 'ios', instalada: false }) === false, 'permiso', 'en iPhone con la web sin instalar en la pantalla de inicio, NO se pide el permiso')
+  debe(M.tocaPedirPermiso({ ...base, plataforma: 'ios', instalada: true }) === true, 'permiso', 'en iPhone con la web instalada, sí')
+  debe(M.tocaPedirPermiso({ ...base, permiso: 'denied' }) === false && M.tocaPedirPermiso({ ...base, permiso: 'granted' }) === false, 'permiso', 'si el permiso ya está decidido, no se vuelve a preguntar')
+  debe(M.tocaPedirPermiso({ ...base, servidorListo: false }) === false && M.tocaPedirPermiso({ ...base, disponible: false }) === false, 'permiso', 'sin avisos en el servidor (PUSH_ACTIVO apagado) o sin soporte del navegador, no se pide')
+  const fuentePermiso = fs.readFileSync('src/lib/permisoAvisos.ts', 'utf8')
+  debe(/if \(permiso === 'default'\) return 'no_toca'/.test(fuentePermiso) && /const clave = claveEnCache/.test(fuentePermiso), 'permiso', 'si el navegador no llegó a preguntar (sin toque), no se gasta la única vez; la clave ya está lista para preguntar en el mismo toque')
+  const fuenteBotones = fs.readFileSync('src/components/propuesta/BotonesDeViaje.tsx', 'utf8')
+  const fuenteBarra = fs.readFileSync('src/components/propuesta/BarraDePropuesta.tsx', 'utf8')
+  const fuenteHost = fs.readFileSync('src/components/avisos/AvisosHost.tsx', 'utf8')
+  debe(/void pedirPermisoUnaVez\(\)/.test(fuenteBotones) && /pedirPermisoUnaVez\(\); void enviar\(\)/.test(fuenteBarra) && /hoyEnLocal\(\) <= inicio/.test(fuenteHost), 'permiso', 'la ventana del móvil sale tras [Compartir viaje], tras [Enviar a Elena] o al acabar el primer día')
+  debe(!/N1|¿Te avisamos/.test(fs.readFileSync('src/components/avisos/AvisosHost.tsx', 'utf8') + fuentePermiso), 'permiso', 'fuera las tarjetas que preguntan si queremos avisos (N1)')
+  const sw = fs.readFileSync('public/sw.js', 'utf8')
+  debe(/datos\.titulo/.test(sw) && !/Tu viaje/.test(sw) && /ventanas\[0\]\.postMessage\(\{ tipo: 'aviso', id \}\)/.test(sw) && /openWindow\(url\)/.test(sw), 'AV6', 'el aviso del móvil lleva el título que manda el servidor (el nombre de la app, de data/marca.json) y, al tocarlo, abre la app con la campanita en ese aviso')
+  const vercel = JSON.parse(fs.readFileSync('vercel.json', 'utf8'))
+  debe(vercel.crons?.[0]?.path === '/api/cron/avisos' && /^\d+ \d+ \* \* \*$/.test(vercel.crons[0].schedule), 'cron', 'la tarea programada de Vercel: una vez al día (lo que deja el plan gratis)')
+  const header = fs.readFileSync('src/components/layout/Header.tsx', 'utf8')
+  debe(/useAvisosStore/.test(header) && /sinLeerLocales \+ sinLeerDeLaCuenta/.test(header), 'AV1', 'el puntito de la campanita cuenta lo no leído de la cuenta y los avisos de siempre')
+  const notices = fs.readFileSync('src/components/layout/NoticesSheet.tsx', 'utf8')
+  debe(/<ListaDeAvisos/.test(notices) && /items\.map/.test(notices), 'AV2', 'los avisos de siempre siguen saliendo en la misma campanita, junto a los de la cuenta')
+  debe(/<Header /.test(fs.readFileSync('src/components/route/RouteView.tsx', 'utf8')) && !/<Header /.test(fs.readFileSync('src/components/route/hoy/HoyView.tsx', 'utf8')), 'AV4', 'AV4: la campanita de HOY es la misma de la cabecera de RUTA y DÍAS (una sola, en el mismo sitio)')
+}
+
+console.log('4b. Los avisos en el servidor (disparadores, avisos con fecha, nunca de noche, un solo aviso, el móvil)')
+const avisosMod = await import('../../server/avisos.js')
+{
+  const maria = await nuevoUsuario('maria4@correo.es', false, 'María Díaz')
+  const lola4 = await nuevoUsuario('lola4@correo.es', false, 'Lola')
+  const viaje4 = await como(maria, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [maria, JSON.stringify({ destination: 'Roma', answers: { dateRange: { start: '2026-10-16', end: '2026-10-19' } }, days: [{ id: 'd1', dayNumber: 1, stops: [] }, { id: 'd2', dayNumber: 2, stops: [] }] })]))[0].id)
+  const invitacion4 = await como(maria, async () => (await q('select public.crear_invitacion($1, null, 2) as r', [viaje4]))[0].r)
+  await como(lola4, () => q('select public.canjear_invitacion($1)', [invitacion4.codigo]))
+  const avisosDe = (uid) => q('select tipo, clave, payload, leido_en, push_en from public.avisos where user_id = $1 order by creado_en, clave', [uid])
+  const deMaria = await avisosDe(maria)
+  debe(deMaria.length === 1 && deMaria[0].tipo === 'unido' && deMaria[0].payload.nombre === 'Lola' && deMaria[0].leido_en === null, 'avisos', 'cuando alguien entra en el viaje, el administrador recibe «Lola se ha unido a tu viaje» (sin leer)')
+  const resp = JSON.stringify({ dayId: 'd2', accion: 'quitar', stopId: 'x' })
+  const rec1 = await como(lola4, async () => (await q("insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'cambio', $2::jsonb) returning id", [viaje4, resp]))[0].id)
+  const aviso1 = (await avisosDe(maria)).find((a) => a.tipo === 'recomendacion')
+  debe(aviso1 && aviso1.payload.autor === 'Lola' && aviso1.payload.dia === 2 && aviso1.payload.tipo_rec === 'cambio' && aviso1.payload.rec_id === rec1, 'avisos', 'una recomendación avisa al administrador, con quién, de qué tipo y el número del día')
+  debe((await avisosDe(lola4)).length === 0, 'avisos', 'quien recomienda no recibe aviso de lo suyo')
+  const servicioA = avisosMod.crearServicioAvisos({ admin, destinos: { roma: { destino: 'Roma', timezone: 'Europe/Rome' } }, ahora: () => new Date('2026-10-06T10:00:00Z'), log: { warn() {} } })
+  let lst = await servicioA.listar(maria)
+  debe(lst.avisos.some((a) => a.texto === 'Lola te recomienda un cambio en el día 2') && lst.sin_leer === 3 && lst.avisos.length === 3, 'avisos', 'GET /api/avisos: el texto ya escrito y 3 sin leer (la recomendación, la unión y el de los 10 días)')
+  debe(lst.avisos.some((a) => a.tipo === 'd10' && a.texto === 'En 10 días empieza tu viaje a Roma'), 'avisos', 'el 6 de octubre a las 12:00 en Roma, «En 10 días empieza tu viaje a Roma» (el viaje empieza el 16)')
+  const lst2 = await servicioA.listar(maria)
+  debe(lst2.avisos.filter((a) => a.tipo === 'd10').length === 1, 'avisos', 'cada aviso con fecha sale UNA sola vez, aunque se mire cien veces')
+  // La recomendación se contesta: la campanita de Lola, y el aviso de María queda leído y con su etiqueta.
+  await como(maria, () => q("update public.trip_recommendations set estado = 'aceptada' where id = $1", [rec1]))
+  const deLola = await servicioA.listar(lola4)
+  debe(deLola.avisos.length === 1 && deLola.avisos[0].texto === 'Maria ha aceptado tu cambio en el día 2'.replace('Maria', 'María') && deLola.avisos[0].tipo === 'aceptada' && deLola.avisos[0].quien === 'María', 'avisos', 'AV5: Lola ve «María ha aceptado tu cambio en el día 2»')
+  const m2 = await servicioA.listar(maria)
+  const avRec = m2.avisos.find((a) => a.tipo === 'recomendacion')
+  debe(avRec.leido === true && avRec.etiqueta === 'Aceptada', 'avisos', 'AV3: el aviso del administrador queda «Aceptada» y leído al contestar')
+  debe(m2.sin_leer === 2, 'avisos', 'lo contestado no cuenta como sin leer (quedan la unión y el de los 10 días)')
+  const rec2 = await como(lola4, async () => (await q("insert into public.trip_recommendations (trip_id, tipo, payload) values ($1, 'ruta', $2::jsonb) returning id", [viaje4, JSON.stringify({ days: [] })]))[0].id)
+  await como(maria, () => q("update public.trip_recommendations set estado = 'rechazada' where id = $1", [rec2]))
+  const l2 = await servicioA.listar(lola4)
+  debe(l2.avisos[0].tipo === 'rechazada' && l2.avisos[0].texto === 'María ha preferido dejar tu ruta como estaba' && l2.avisos[0].tipo !== undefined, 'avisos', 'AV5: «María ha preferido dejar tu ruta como estaba» cuando la ruta entera no se acepta')
+  debe((await servicioA.marcarLeidos(maria, [m2.avisos[0].id])).ok === true && (await servicioA.listar(maria)).avisos.find((a) => a.id === m2.avisos[0].id).leido === true, 'avisos', 'marcar como leído funciona y es solo de esa persona')
+  debe((await como(lola4, () => q('select count(*)::int as n from public.avisos where user_id = $1', [maria])))[0].n === 0, 'avisos', 'nadie ve los avisos de otra persona')
+  debe((await como(lola4, () => lanza(() => q("update public.avisos set leido_en = now() where user_id = $1", [lola4])))) !== null || (await q('select 1 from public.avisos where user_id = $1 and leido_en is not null', [lola4])).length === 0, 'avisos', 'los avisos no se escriben desde el móvil: solo los disparadores y el servidor')
+
+  // Los avisos con fecha: nunca de noche, uno solo, sin guardados.
+  const noche = avisosMod.crearServicioAvisos({ admin, destinos: { roma: { destino: 'Roma', timezone: 'Europe/Rome' } }, ahora: () => new Date('2026-10-06T22:30:00Z'), log: { warn() {} } })
+  const tom = await nuevoUsuario('tom4@correo.es', false, 'Tom')
+  await como(tom, () => q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb)', [tom, JSON.stringify({ destination: 'Roma', answers: { dateRange: { start: '2026-10-16', end: '2026-10-18' } }, days: [] })]))
+  debe((await noche.prepararDeUsuario(tom, new Date('2026-10-06T22:30:00Z'))) === 0 && (await avisosDe(tom)).length === 0, 'noche', 'NUNCA DE NOCHE: a las 00:30 de Roma no se crea el aviso')
+  debe((await noche.prepararDeUsuario(tom, new Date('2026-10-06T06:30:00Z'))) === 0, 'noche', 'ni a las 08:30 (antes de las 9:00)')
+  debe((await noche.prepararDeUsuario(tom, new Date('2026-10-06T18:30:00Z'))) === 1, 'noche', 'a las 20:30 de Roma (todavía dentro de la ventana) sí se crea')
+  const creadoTarde = (await avisosDe(tom)).length
+  debe(creadoTarde === 1, 'noche', 'y se crea una sola vez')
+  const ventana = avisosMod.dentroDeLaVentana
+  debe(ventana(new Date('2026-10-06T07:00:00Z'), 'Europe/Rome') === true && ventana(new Date('2026-10-06T19:00:00Z'), 'Europe/Rome') === false && ventana(new Date('2026-10-06T07:30:00Z'), 'America/Mexico_City') === false && ventana(new Date('2026-10-06T16:00:00Z'), 'America/Mexico_City') === true, 'noche', 'la ventana es de las 9:00 a las 21:00 de la hora de cada viajero (probado con Roma y con México)')
+  debe(ventana(new Date('2026-10-06T10:00:00Z'), 'zona-que-no-existe') === true, 'noche', 'con una zona rara, se usa la de siempre en vez de romper')
+  const tom2 = await nuevoUsuario('tom5@correo.es', false, 'Tom')
+  await como(tom2, () => q('insert into public.trips (traveler_id, route, guardado_en) values ($1, $2::jsonb, now())', [tom2, JSON.stringify({ destination: 'Roma', answers: { dateRange: { start: '2026-10-16', end: '2026-10-18' } }, days: [] })]))
+  debe((await servicioA.prepararDeUsuario(tom2, new Date('2026-10-06T10:00:00Z'))) === 0, 'avisos', 'un viaje guardado aparte no avisa')
+  const tom3 = await nuevoUsuario('tom6@correo.es', false, 'Tom')
+  await como(tom3, () => q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb)', [tom3, JSON.stringify({ destination: 'Roma', answers: { dateRange: { start: '2026-10-30', end: '2026-11-02' } }, days: [] })]))
+  debe((await servicioA.prepararDeUsuario(tom3, new Date('2026-10-06T10:00:00Z'))) === 0, 'avisos', 'a más de 10 días no se avisa todavía')
+  // Con pase y con dos viajes que se pisan.
+  const pepa = await nuevoUsuario('pepa4@correo.es', false, 'Pepa')
+  const rutaPepa = (a, b) => JSON.stringify({ destination: 'Roma', answers: { dateRange: { start: a, end: b } }, days: [] })
+  const tA = await como(pepa, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [pepa, rutaPepa('2026-10-16', '2026-10-19')]))[0].id)
+  const tB = await como(pepa, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [pepa, rutaPepa('2026-10-16', '2026-10-20')]))[0].id)
+  await servidor(() => q("select public.registrar_pago('cs_pepa', 'pi_pepa', 'mentira', $1, 'Roma', 'uno', 1, 699, 'eur', $2)", [pepa, tA]))
+  await servicioA.prepararDeUsuario(pepa, new Date('2026-10-06T10:00:00Z'))
+  const d10Pepa = (await avisosDe(pepa)).filter((a) => a.tipo === 'd10')
+  debe(d10Pepa.length === 2 && d10Pepa.every((a) => a.payload.con_pase === true && a.payload.otro && a.payload.dias === 10), 'P8b', 'con el pase y dos viajes que se pisan, el aviso de los 10 días lleva el otro viaje (para P8b)')
+  // Los avisos de logros (resumen y «te quedan N días») pasan a la campanita, una vez y no de noche.
+  const nel = await nuevoUsuario('nel4@correo.es', false, 'Nel')
+  const tN = await como(nel, async () => (await q('insert into public.trips (traveler_id, route) values ($1, $2::jsonb) returning id', [nel, rutaPepa('2026-09-20', '2026-09-22')]))[0].id)
+  await servidor(() => q("insert into public.logro_avisos (user_id, trip_id, tipo, enviar_en, payload) values ($1, $2, 'resumen_viaje', '2026-09-23T08:00:00Z', '{}'::jsonb), ($1, $2, 'quedan_dias', '2026-10-17T08:00:00Z', $3::jsonb)", [nel, tN, JSON.stringify({ destino: 'Roma', dias: 3, texto: 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma' })]))
+  const sNel = avisosMod.crearServicioAvisos({ admin, destinos: { roma: { destino: 'Roma', timezone: 'Europe/Rome' } }, ahora: () => new Date('2026-09-23T10:00:00Z'), log: { warn() {} } })
+  const lNel = await sNel.listar(nel)
+  debe(lNel.avisos.length === 1 && lNel.avisos[0].tipo === 'resumen' && lNel.avisos[0].texto === 'Tu resumen del viaje está listo', 'avisos', 'el resumen del viaje llega a la campanita al día siguiente, a su hora')
+  const lNel2 = await sNel.listar(nel)
+  debe(lNel2.avisos.length === 1 && (await q("select count(*)::int as n from public.logro_avisos where enviado_en is not null and user_id = $1", [nel]))[0].n === 1, 'avisos', 'una sola vez (y la cola de los logros lo da por entregado)')
+  const sNel2 = avisosMod.crearServicioAvisos({ admin, destinos: { roma: { destino: 'Roma', timezone: 'Europe/Rome' } }, ahora: () => new Date('2026-10-17T10:00:00Z'), log: { warn() {} } })
+  const lNel3 = await sNel2.listar(nel)
+  debe(lNel3.avisos.some((a) => a.tipo === 'sorpresas' && a.texto === 'Te quedan 3 días para reclamar tus 2 sorpresas de Roma'), 'avisos', '«Te quedan 3 días para reclamar tus 2 sorpresas de Roma»')
+
+  // El aviso en el móvil.
+  await servidor(() => q("insert into public.push_suscripciones (user_id, endpoint, claves) values ($1, 'https://push.test/maria', '{\"p256dh\":\"a\",\"auth\":\"b\"}'::jsonb), ($2, 'https://push.test/caduca', '{\"p256dh\":\"a\",\"auth\":\"b\"}'::jsonb)", [maria, tom]))
+  await q("update public.travelers set zona = 'Europe/Rome' where id in ($1, $2)", [maria, tom])
+  const enviados = []
+  const falso = { setVapidDetails() {}, sendNotification: async (sub, cuerpo) => { if (sub.endpoint.includes('caduca')) throw Object.assign(new Error('gone'), { statusCode: 410 }); enviados.push({ sub, cuerpo: JSON.parse(cuerpo) }) } }
+  const entorno = { PUSH_ACTIVO: 'true', VAPID_PUBLIC_KEY: 'pub', VAPID_PRIVATE_KEY: 'priv', VAPID_CONTACTO: 'mailto:x@y.es' }
+  const mk = (hora, env = entorno) => avisosMod.crearServicioAvisos({ admin, env, ahora: () => new Date(hora), cargarWebPush: async () => ({ default: falso }), log: { warn() {} } })
+  debe((await mk('2026-10-06T10:00:00Z', {}).enviarPush()).motivo === 'apagado' && enviados.length === 0, 'push', 'con PUSH_ACTIVO apagado no se manda nada (la campanita funciona igual)')
+  debe((await mk('2026-10-06T10:00:00Z', { PUSH_ACTIVO: 'true' }).enviarPush()).motivo === 'faltan_claves_vapid', 'push', 'sin las claves VAPID, tampoco')
+  const deNoche = await mk('2026-10-06T22:30:00Z').enviarPush()
+  debe(deNoche.enviados === 0 && enviados.length === 0 && (await q('select 1 from public.avisos where push_en is not null')).length === 0, 'noche', 'NUNCA DE NOCHE: a las 00:30 de Roma no sale ningún aviso al móvil, y no se marcan como enviados (saldrán de día)')
+  const dia = await mk('2026-10-06T10:00:00Z').enviarPush()
+  debe(dia.enviados >= 1 && enviados.every((e) => e.cuerpo.titulo === JSON.parse(fs.readFileSync('data/marca.json', 'utf8')).nombre), 'push', 'de día sale el aviso al móvil, con el nombre de la app de data/marca.json como título')
+  debe(enviados.every((e) => /^\/\?aviso=[0-9a-f-]{36}$/.test(e.cuerpo.url)) && enviados.some((e) => /Lola te recomienda|Lola se ha unido|Maria|María/.test(e.cuerpo.cuerpo) || e.cuerpo.cuerpo.length > 5), 'push', 'cada aviso del móvil lleva su dirección (/?aviso=ID): al tocarlo se abre la campanita en ese aviso')
+  const otraVez = await mk('2026-10-06T10:05:00Z').enviarPush()
+  debe(otraVez.enviados === 0, 'push', 'cada aviso sale una sola vez')
+  debe((await q("select 1 from public.push_suscripciones where endpoint like '%caduca'")).length === 0, 'push', 'una suscripción caducada (410) se borra')
+  debe(!enviados.some((e) => e.sub.endpoint.includes('lola4')), 'push', 'quien no dio permiso (sin suscripción) no recibe nada en el móvil')
+  const mail = avisosMod.emailDeAvisosEncendido
+  debe(mail({}) === false && mail({ AVISOS_EMAIL_ACTIVO: 'true' }) === false && mail({ AVISOS_EMAIL_ACTIVO: 'true', CORREO_API_KEY: 'k' }) === true, 'email', 'el email para quien no dé permiso está preparado y APAGADO (falta el servicio de correos)')
+  debe(avisosMod.pushEncendido({}) === false, 'push', 'el aviso del móvil nace apagado (PUSH_ACTIVO)')
+
+  // La tarea programada y las rutas.
+  const sCron = avisosMod.crearServicioAvisos({ admin, destinos: { roma: { destino: 'Roma', timezone: 'Europe/Rome' } }, env: entorno, ahora: () => new Date('2026-10-06T10:00:00Z'), cargarWebPush: async () => ({ default: falso }), log: { warn() {} } })
+  const tarea = await sCron.tareaProgramada(new Date('2026-10-06T10:00:00Z'))
+  debe(tarea.ok === true && tarea.personas >= 3, 'cron', 'la tarea programada mira a las personas con viaje próximo, avisos de logros vencidos o avisos sin mandar')
+  const appA = express()
+  appA.use(express.json())
+  fichas.set('tok-maria4', maria)
+  fichas.set('tok-anon4', anonimo)
+  avisosMod.registrarRutasAvisos(appA, { admin, servicio: sCron, env: { CRON_SECRET: 'secreto-cron', ...entorno } })
+  const sA = await new Promise((ok) => {
+    const s = appA.listen(0, () => ok(s))
+  })
+  const urlA = `http://127.0.0.1:${sA.address().port}`
+  const pide = async (ruta, { metodo = 'GET', token, cuerpo } = {}) => {
+    const r = await fetch(urlA + ruta, { method: metodo, headers: { ...(cuerpo ? { 'Content-Type': 'application/json' } : {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: cuerpo ? JSON.stringify(cuerpo) : undefined })
+    return { estado: r.status, json: await r.json().catch(() => null) }
+  }
+  debe((await pide('/api/avisos')).estado === 401 && (await pide('/api/avisos', { token: 'tok-anon4' })).estado === 403, 'rutas', 'sin sesión 401; con una sesión anónima 403 (los avisos van con la cuenta)')
+  const rl = await pide('/api/avisos', { token: 'tok-maria4' })
+  debe(rl.estado === 200 && rl.json.ok === true && Array.isArray(rl.json.avisos) && typeof rl.json.sin_leer === 'number', 'rutas', 'GET /api/avisos devuelve la lista y cuántos hay sin leer')
+  const rm = await pide('/api/avisos/leidos', { metodo: 'POST', token: 'tok-maria4', cuerpo: {} })
+  debe(rm.estado === 200 && (await pide('/api/avisos', { token: 'tok-maria4' })).json.sin_leer === 0, 'rutas', 'POST /api/avisos/leidos sin lista los marca todos')
+  debe((await pide('/api/avisos/push/clave')).json.clave === 'pub', 'rutas', 'la clave pública del aviso del móvil solo sale con el envío encendido')
+  debe((await pide('/api/cron/avisos')).estado === 404 && (await pide('/api/cron/avisos', { token: 'otra' })).estado === 404 && (await pide('/api/cron/avisos', { token: 'secreto-cron' })).json.ok === true, 'cron', 'la tarea programada solo contesta con el secreto de Vercel; sin él, la ruta no existe')
+  sA.close()
+  const sinCron = express()
+  avisosMod.registrarRutasAvisos(sinCron, { admin, servicio: sCron, env: {} })
+  const sB = await new Promise((ok) => {
+    const s = sinCron.listen(0, () => ok(s))
+  })
+  debe((await (await fetch(`http://127.0.0.1:${sB.address().port}/api/cron/avisos`)).status) === 404, 'cron', 'sin CRON_SECRET en el servidor, la ruta de la tarea no existe')
+  sB.close()
+
+  // Borrar la cuenta: se van sus avisos y sus permisos del móvil.
+  fichas.set('tok-tom4', tom)
+  const antesTom = (await q('select count(*)::int as n from public.avisos where user_id = $1', [tom]))[0].n
+  const borrado = await borrarCuenta(admin, 'tok-tom4')
+  debe(antesTom >= 1 && borrado.estado === 200 && (await q('select count(*)::int as n from public.avisos where user_id = $1', [tom]))[0].n === 0 && (await q('select count(*)::int as n from public.push_suscripciones where user_id = $1', [tom]))[0].n === 0, 'borrar', 'al borrar la cuenta se van sus avisos y sus permisos de avisos del móvil')
+}
+
 /* ═══════════════ Resumen ═══════════════ */
 fs.rmSync(carpeta, { recursive: true, force: true })
 console.log(`\nPrueba de las cuentas (parte 3): ${comprobaciones} comprobaciones · ${fallos.length} fallos`)

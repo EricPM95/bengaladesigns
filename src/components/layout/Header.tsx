@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useAvisosStore } from '../../store/useAvisosStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { BotonCartera } from '../presupuesto/BotonCartera'
 import { useAppNotices } from '../../hooks/useAppNotices'
@@ -24,8 +24,14 @@ interface HeaderProps {
 export function Header({ onOpenDates }: HeaderProps) {
   const route = useRouteStore((state) => state.route)
   const setMode = useRouteStore((state) => state.setMode)
-  const { items, unreadCount } = useAppNotices()
-  const [noticesOpen, setNoticesOpen] = useState(false)
+  const { items, unreadCount: sinLeerLocales } = useAppNotices()
+  // La campanita de la cuenta (cuentas parte 3): los avisos del servidor suman al puntito y la campanita se abre también desde fuera (el aviso del móvil, al tocarlo).
+  const sinLeerDeLaCuenta = useAvisosStore((state) => state.sinLeer)
+  const noticesOpen = useAvisosStore((state) => state.abierta)
+  const abrirAvisos = useAvisosStore((state) => state.abrir)
+  const cerrarAvisos = useAvisosStore((state) => state.cerrar)
+  const setNoticesOpen = (abrir: boolean) => (abrir ? abrirAvisos() : cerrarAvisos())
+  const unreadCount = sinLeerLocales + sinLeerDeLaCuenta
   const perfilAbierto = usePerfilUi((state) => state.abierto)
   const abrirPerfil = usePerfilUi((state) => state.abrir)
   const cerrarPerfil = usePerfilUi((state) => state.cerrar)

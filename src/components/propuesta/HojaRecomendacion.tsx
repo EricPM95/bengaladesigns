@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { resolverRecomendacion, vistaPrevia, type CambioDeUnDia, type DiaPosible, type Recomendacion } from '../../lib/aplicarRecomendacion'
 import { etiquetaDeDia, lineasDelDia, titularDeRecomendacion, type Linea } from '../../lib/propuesta'
+import { mandarAvisosPendientes } from '../../lib/permisoAvisos'
 import { aceptarRecomendacion, rechazarRecomendacion } from '../../lib/recomendacionesViaje'
 import type { Route } from '../../lib/types'
 import { nombreDe, useViajeCompartido } from '../../store/useViajeCompartido'
@@ -159,5 +160,8 @@ export function HojaRecomendacionAbierta({ rec, onCerrar }: { rec: Recomendacion
   const route = useRouteStore((s) => s.route)
   const cargar = useViajeCompartido((s) => s.cargar)
   if (!route) return null
-  return <HojaRecomendacion rec={rec} route={route} onCerrar={onCerrar} alResponder={() => void cargar(rec.tripId)} />
+  return <HojaRecomendacion rec={rec} route={route} onCerrar={onCerrar} alResponder={() => {
+    void cargar(rec.tripId)
+    mandarAvisosPendientes()
+  }} />
 }

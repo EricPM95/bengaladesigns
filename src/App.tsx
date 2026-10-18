@@ -10,6 +10,7 @@ import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
 import { PagoHost } from './components/pase/PagoHost'
 import { PropuestaHost } from './components/propuesta/PropuestaHost'
+import { AvisosHost } from './components/avisos/AvisosHost'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
@@ -95,6 +96,7 @@ function App() {
       <PuertaDeCuenta />
       <PagoHost />
       <PropuestaHost />
+      <AvisosHost />
       <VistosPorPersona />
       <LogrosPorVisto />
       <MomentosHost />

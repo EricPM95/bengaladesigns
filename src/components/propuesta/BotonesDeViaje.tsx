@@ -8,6 +8,7 @@ import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
 import { misPases } from '../../lib/pagoPase'
+import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 
 /**
  * LOS BOTONES DE RUTA (RS1 y RW3, cuentas parte 3): arriba de la pestaña RUTA, a la derecha.
@@ -44,6 +45,8 @@ function BotonesEncendidos() {
   }
   if (cuenta.tipo !== 'cuenta' || !tripId) return null
   const compartir = async () => {
+    // La ventana del móvil que pide permiso para los avisos sale AQUÍ, una sola vez en la vida, en este mismo toque.
+    void pedirPermisoUnaVez()
     setOcupado(true)
     // Con un Pase Dúo o Grupo de este destino, la misma hoja que P7; si no, la de compartir el viaje.
     const pases = await misPases()

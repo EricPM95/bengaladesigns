@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { construirRecomendacion, deshacerCambio, type CambioPropuesto } from '../lib/propuesta'
+import { mandarAvisosPendientes } from '../lib/permisoAvisos'
 import { recomendar } from '../lib/recomendacionesViaje'
 import type { Route } from '../lib/types'
 import { useRouteStore } from './useRouteStore'
@@ -76,7 +77,8 @@ export const usePropuestaStore = create<PropuestaState>((set, get) => ({
       set({ enviando: false, error })
       return false
     }
-    // Mandada: la copia se tira y se vuelve a la ruta del administrador.
+    // Mandada: el servidor avisa a la otra persona (campanita y móvil) y la copia se tira: se vuelve a la ruta del administrador.
+    mandarAvisosPendientes()
     useRouteStore.setState({ route: copia(base) })
     set({ activa: false, ambito: null, base: null, verAbierto: false, enviada: true, enviando: false, error: null })
     return true

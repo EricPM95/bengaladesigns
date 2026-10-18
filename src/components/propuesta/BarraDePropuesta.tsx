@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useModoInvitado } from '../../hooks/useModoInvitado'
 import { resolverRecomendacion, vistaPrevia } from '../../lib/aplicarRecomendacion'
 import { cambiosDeLaPropuesta, cambiosDeUnaRecomendacion, textoDeCuantos } from '../../lib/propuesta'
+import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useSyncStore } from '../../store/useSyncStore'
@@ -51,7 +52,7 @@ function BarraAbierta() {
           <button type="button" onClick={() => verLista(true)} style={{ height: 44, padding: '0 13px', borderRadius: 999, border: '1px solid rgba(255,253,248,.3)', background: 'transparent', color: 'inherit', font: "600 12.5px 'Geist'", cursor: 'pointer' }}>
             Ver
           </button>
-          <button type="button" disabled={enviando} onClick={() => void enviar()} style={{ height: 44, padding: '0 13px', borderRadius: 999, border: 'none', background: 'oklch(0.8 0.14 70)', color: '#17120a', font: "700 12.5px 'Geist'", cursor: 'pointer', opacity: enviando ? 0.6 : 1 }}>
+          <button type="button" disabled={enviando} onClick={() => { void pedirPermisoUnaVez(); void enviar() }} style={{ height: 44, padding: '0 13px', borderRadius: 999, border: 'none', background: 'oklch(0.8 0.14 70)', color: '#17120a', font: "700 12.5px 'Geist'", cursor: 'pointer', opacity: enviando ? 0.6 : 1 }}>
             Enviar a {nombreAdmin}
           </button>
         </>

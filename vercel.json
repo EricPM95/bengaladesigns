@@ -1,18 +1,35 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/admin/logros", "destination": "/index.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    },
+    {
+      "source": "/admin/logros",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/fotos/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/audios/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" },
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     }
   ],
@@ -21,5 +38,11 @@
       "maxDuration": 300,
       "includeFiles": "data/**"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/avisos",
+      "schedule": "0 9 * * *"
+    }
+  ]
 }

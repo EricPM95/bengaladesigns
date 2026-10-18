@@ -47,7 +47,7 @@ export async function crearBaseDePrueba({ migraciones = MIGRACIONES, alFallar = 
     grant execute on all functions in schema storage to anon, authenticated, service_role;
   `)
   // (las funciones que las migraciones reservaron al servidor)
-  for (const f of ['reclamar_anonimo(uuid, uuid)', 'preparar_borrado(uuid)', 'registrar_pago(text, text, text, uuid, text, text, integer, integer, text, uuid)', 'devolver_pago(text)', 'guardar_recibo(text, text)', 'pases_de(uuid)', 'intencion_de_pago(text)']) await db.exec(`revoke execute on function public.${f} from authenticated`)
+  for (const f of ['reclamar_anonimo(uuid, uuid)', 'preparar_borrado(uuid)', 'registrar_pago(text, text, text, uuid, text, text, integer, integer, text, uuid)', 'devolver_pago(text)', 'guardar_recibo(text, text)', 'pases_de(uuid)', 'intencion_de_pago(text)', 'crear_aviso(uuid, text, text, jsonb)', 'avisos_de(uuid)', 'marcar_avisos_leidos(uuid, uuid[])', 'viajes_para_avisos(uuid)', 'logro_avisos_vencidos(uuid, timestamptz)', 'logro_aviso_en_campanita(uuid)', 'avisos_para_push(integer)', 'marcar_push(uuid)', 'borrar_suscripcion(text)', 'usuarios_para_avisos(date, date)']) await db.exec(`revoke execute on function public.${f} from authenticated`)
   return montar(db, aplicadas)
 }
 

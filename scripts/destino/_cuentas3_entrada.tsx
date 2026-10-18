@@ -20,6 +20,10 @@ import { eur, filasDeCompra, limitesDelGrupo, totalDe, textoDeCompartirPase, nom
 import { parejasQueSePisan, rangoEnPalabras } from '../../src/lib/viajesQueSePisan'
 import { lineasDeCambio, lineasDelDia, cambiosDeLaPropuesta, construirRecomendacion, deshacerCambio, etiquetaDeDia, textoDeCuantos, titularDeRecomendacion, textoDelCambio, sinCambios, cambiosDeUnaRecomendacion } from '../../src/lib/propuesta'
 import { resolverRecomendacion, vistaPrevia } from '../../src/lib/aplicarRecomendacion'
+import { haceCuanto, avisoDeLaDireccion } from '../../src/lib/avisos'
+import { tocaPedirPermiso } from '../../src/lib/permisoAvisos'
+import { ListaDeAvisos } from '../../src/components/avisos/ListaDeAvisos'
+import { textoDelAviso, textoDelPush, quienDelAviso } from '../../shared/avisos/textos.js'
 import { CambioParada } from '../../src/components/propuesta/CambioParada'
 import { HojaVerPropuesta, FilaDeCambio } from '../../src/components/propuesta/HojaVerPropuesta'
 import { HojaRecomendacion } from '../../src/components/propuesta/HojaRecomendacion'
@@ -89,6 +93,13 @@ export const M = {
   pintaEnviada: (nombre: string) => renderToStaticMarkup(createElement(PropuestaEnviada, { nombre, onVolver: () => undefined })),
   pintaMenuParada: () => renderToStaticMarkup(createElement(MenuInvitadoParada, { nombre: 'Coliseo', ciudad: 'Roma', onVerFicha: () => undefined })),
   pintaMenuDia: () => renderToStaticMarkup(createElement(MenuInvitadoDia, { onVerEnMapa: () => undefined })),
+  haceCuanto,
+  avisoDeLaDireccion,
+  tocaPedirPermiso,
+  textoDelAviso,
+  textoDelPush,
+  quienDelAviso,
+  pintaListaDeAvisos: (props: Record<string, unknown>) => renderToStaticMarkup(createElement(ListaDeAvisos, props as never)),
   pintaPagoHost: () => renderToStaticMarkup(createElement(PagoHost)),
   pintaTextoPase: (texto: string) => renderToStaticMarkup(createElement(TextoConPase, { texto })),
 }
