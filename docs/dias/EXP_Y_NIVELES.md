@@ -31,7 +31,9 @@ Decidido por Eric. En la versión 1 solo cuentan los logros con la etiqueta VERS
   Los nombres son una propuesta. Se puede guiñar a Phileas Fogg o a «La vuelta al mundo», pero nunca usar «Willy Fog», que tiene dueño.
 - **Cada rango tiene su marco**, y cada nivel le añade una estrella (de 1 a 5) y lleva su número.
 - **Después del 50:** Leyenda ★1, ★2…, una estrella cada 3.000 EXP, sin final.
-- **Lo que cuesta cada nivel:** 500, 700, 900… (200 más cada vez) hasta el nivel 11. Desde ahí, todos piden 2.500.
+- **Lo que cuesta cada nivel (Eric, 18-oct):** 500, 900, 1.300, 1.700, 2.100 (400 más cada vez) y, desde el nivel 6, todos piden 2.500.
+  - Para llegar: nivel 2 con 500 EXP, nivel 3 con 1.400, nivel 4 con 2.700, nivel 5 con 4.400, nivel 6 con 6.500 y nivel 7 con 9.000.
+  - Con las cuentas de la 8C1: un viaje normal a Roma (1.785) queda en el nivel 3 y Roma al 100 % (3.930) en el nivel 4.
 - **Así sale:**
   - un viaje normal a Roma, nivel 3;
   - Roma al 100 %, nivel 4;
@@ -103,4 +105,8 @@ Roma al 100 %: unos 2.870 EXP en la versión 1 (sin el continente ni «Todos los
 - La pantalla de subir de nivel y la de cambiar de rango.
 - La tienda (las cosas por rango).
 - La página del sorteo.
-- Dónde se ve la EXP ganada: en el resumen del día y en el del viaje.
+- **Dónde se ve la EXP ganada (Eric, 18-oct):**
+  - **No** en el resumen del día.
+  - La animación de la EXP va flotando en la parte de abajo de la pantalla, sin tapar [Seguir], la barra de abajo ni el botón flotante de los logros.
+  - **Una sola vez, al volver a la app (Eric, 18-oct):** nada de EXP durante las sorpresas ni durante las películas (Emblema Oculto, maravilla del mundo y «El final de las 7 maravillas»). Cuando se acaban y vuelve a verse la app, sale una sola animación con toda la EXP ganada sumada (por ejemplo, «+405 EXP»). Si con eso se sube de nivel, sale también ahí.
+  - Falta por decidir si sale en el resumen del viaje.

@@ -66,11 +66,11 @@
   },
 
   "niveles": {
-    "_nota": "50 niveles en 10 rangos de 5. Subir cuesta 500, 700, 900… (200 más cada vez) hasta el nivel 11; desde el 11, 2.500 cada uno. Después del 50, Leyenda con una estrella cada 3.000 EXP, sin final. Los nombres de los rangos son una propuesta.",
+    "_nota": "50 niveles en 10 rangos de 5. Subir cuesta 500, 900, 1.300, 1.700 y 2.100 (400 más cada vez) hasta el nivel 6; desde el 6, 2.500 cada uno. Después del 50, Leyenda con una estrella cada 3.000 EXP, sin final. Los nombres de los rangos son una propuesta.",
     "rangos": ["Soñador", "Explorador", "Viajero", "Trotamundos", "Aventurero", "Nómada", "Cartógrafo", "Embajador", "Navegante", "Leyenda"],
     "niveles_por_rango": 5,
     "maximo": 50,
-    "coste": { "primero": 500, "suma": 200, "hasta_nivel": 11, "fijo": 2500 },
+    "coste": { "primero": 500, "suma": 400, "hasta_nivel": 6, "fijo": 2500 },
     "estrella_cada": 3000
   },
 

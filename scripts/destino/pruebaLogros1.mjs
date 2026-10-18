@@ -1305,15 +1305,15 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
 
   // Los niveles, en sus límites
   const N = (x) => E.nivelDeExp(x, datos.exp)
-  debe(N(499).nivel === 1 && N(500).nivel === 2 && N(1199).nivel === 2 && N(1200).nivel === 3 && N(0).nivel === 1, 'niveles', 'límites: 499 es nivel 1, 500 nivel 2, 1.199 nivel 2, 1.200 nivel 3')
-  debe([500, 700, 900].every((c, i) => E.costeDeNivel(i + 1, datos.exp) === c) && E.costeDeNivel(10, datos.exp) === 2300 && E.costeDeNivel(11, datos.exp) === 2500 && E.costeDeNivel(30, datos.exp) === 2500, 'niveles', 'subir cuesta 500, 700, 900… (200 más cada vez) y desde el nivel 11, 2.500 cada uno')
-  debe(N(13999).nivel === 10 && N(14000).nivel === 11 && N(16499).nivel === 11 && N(16500).nivel === 12 && E.expDeNivel(50, datos.exp) === 111500, 'niveles', 'el cambio a 2.500: el nivel 11 empieza en 14.000, el 12 en 16.500, el 50 en 111.500')
-  debe(N(111499).nivel === 49 && N(111500).nivel === 50 && N(111500).leyenda_estrellas === 0 && N(114499).leyenda_estrellas === 0 && N(114500).leyenda_estrellas === 1 && N(114500).nivel === 50 && N(117500).leyenda_estrellas === 2 && N(120500).leyenda_estrellas === 3 && N(111500 + 3000 * 40).leyenda_estrellas === 40, 'niveles', 'del 50 a Leyenda ★1: una estrella cada 3.000 EXP (114.500 → ★1, 117.500 → ★2) sin final')
+  debe(N(499).nivel === 1 && N(500).nivel === 2 && N(1399).nivel === 2 && N(1400).nivel === 3 && N(2699).nivel === 3 && N(2700).nivel === 4 && N(0).nivel === 1, 'niveles', 'límites: 499 es nivel 1, 500 nivel 2, 1.399 nivel 2, 1.400 nivel 3, 2.699 nivel 3, 2.700 nivel 4')
+  debe([500, 900, 1300, 1700, 2100].every((c, i) => E.costeDeNivel(i + 1, datos.exp) === c) && E.costeDeNivel(6, datos.exp) === 2500 && E.costeDeNivel(7, datos.exp) === 2500 && E.costeDeNivel(30, datos.exp) === 2500, 'niveles', 'subir cuesta 500, 900, 1.300, 1.700 y 2.100 y, desde el nivel 6, 2.500 cada nivel')
+  debe(N(6499).nivel === 5 && N(6500).nivel === 6 && N(8999).nivel === 6 && N(9000).nivel === 7 && E.expDeNivel(6, datos.exp) === 6500 && E.expDeNivel(7, datos.exp) === 9000 && E.expDeNivel(50, datos.exp) === 116500, 'niveles', 'el paso a 2.500: el nivel 6 empieza en 6.500, el 7 en 9.000 y el 50 en 116.500')
+  debe(N(116499).nivel === 49 && N(116500).nivel === 50 && N(116500).leyenda_estrellas === 0 && N(119499).leyenda_estrellas === 0 && N(119500).leyenda_estrellas === 1 && N(119500).nivel === 50 && N(122500).leyenda_estrellas === 2 && N(125500).leyenda_estrellas === 3 && N(116500 + 3000 * 40).leyenda_estrellas === 40, 'niveles', 'del 50 a Leyenda ★1: el 50 en 116.500 y Leyenda ★1 en 119.500 (3.000 después), una estrella cada 3.000 EXP sin final')
   debe(datos.exp.niveles.rangos.join() === 'Soñador,Explorador,Viajero,Trotamundos,Aventurero,Nómada,Cartógrafo,Embajador,Navegante,Leyenda' && [1, 5, 6, 10, 11, 15, 16, 20, 21, 26, 31, 36, 41, 46, 50].map((n) => N(E.expDeNivel(n, datos.exp)).rango).join() === 'Soñador,Soñador,Explorador,Explorador,Viajero,Viajero,Trotamundos,Trotamundos,Aventurero,Nómada,Cartógrafo,Embajador,Navegante,Leyenda,Leyenda', 'niveles', '10 rangos de 5 niveles, con sus nombres')
-  const m = N(1400)
-  debe(m.nivel === 3 && m.exp_en_nivel === 200 && m.coste_nivel === 900 && m.falta === 700 && m.estrellas_en_rango === 3, 'niveles', 'lo que se manda al móvil: 1.400 EXP → nivel 3, 200 dentro del nivel, faltan 700 para el siguiente')
+  const m = N(1600)
+  debe(m.nivel === 3 && m.exp_en_nivel === 200 && m.coste_nivel === 1300 && m.falta === 1100 && m.estrellas_en_rango === 3, 'niveles', 'lo que se manda al móvil: 1.600 EXP → nivel 3, 200 dentro del nivel, faltan 1.100 para el siguiente')
   const tablaDistinta = { ...datos.exp, niveles: { ...datos.exp.niveles, coste: { ...datos.exp.niveles.coste, primero: 100 } } }
-  debe(E.nivelDeExp(499, tablaDistinta).nivel > 2, 'niveles', 'los costes salen del archivo de datos (cambiarlo cambia los niveles, sin tocar código)')
+  debe(E.nivelDeExp(499, tablaDistinta).nivel > N(499).nivel, 'niveles', 'los costes salen del archivo de datos (cambiarlo cambia los niveles, sin tocar código)')
 
   // El avance de «Las cuatro estaciones» y «Los 12 meses»
   const { avanceViajero } = await import('../../server/logros/motor.js')
@@ -1335,7 +1335,8 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
   const aCategorias = (r) => r.por_categoria
   console.log('   EXP de Roma · viaje normal (9 sitios, 3 días):', normal.total, 'nivel', E.nivelDeExp(normal.total, datos.exp).nivel, JSON.stringify(aCategorias(normal)))
   console.log('   EXP de Roma · al 100 % (todos los sitios de las colecciones y emblemas):', roma100.total, 'nivel', E.nivelDeExp(roma100.total, datos.exp).nivel, JSON.stringify(aCategorias(roma100)))
-  debe(E.nivelDeExp(normal.total, datos.exp).nivel === 3 && normal.total > 1200 && normal.total < 2100, 'roma', `un viaje normal a Roma (9 sitios, 3 días): nivel 3 (${normal.total} EXP)`)
+  debe(E.nivelDeExp(normal.total, datos.exp).nivel === 3 && normal.total >= 1400 && normal.total < 2700, 'roma', `un viaje normal a Roma (9 sitios, 3 días): nivel 3 (${normal.total} EXP)`)
+  debe(E.nivelDeExp(roma100.total, datos.exp).nivel === 4, 'roma', `Roma al 100 %: nivel 4 (${roma100.total} EXP, el 4 va de 2.700 a 4.399)`)
   const base100 = ['pedazo', 'coleccion', 'sello', 'emblema', 'pais', 'destino_nuevo', 'maravilla', 'patrimonio'].reduce((s, k) => s + (aCategorias(roma100)[k] ?? 0), 0)
   debe(base100 === 2185 && roma100.total > base100, 'roma', `Roma al 100 %: lo que dan los pedazos, colecciones, sellos, emblemas, países, destino, maravilla y Patrimonios son 2.185 EXP; con los logros de viajero, las paradas y el viaje acabado, ${roma100.total}`)
 
@@ -1387,12 +1388,12 @@ console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, l
 
   // El sorteo
   const S1 = (exp, viajes) => E.entraEnElSorteo({ exp, viajesAcabadosDelAnio: viajes, tabla: datos.exp })
-  debe(S1(1200, 1) === true && S1(1500, 2) === true && S1(1200, 0) === false && S1(1199, 1) === false && S1(500, 3) === false, 'sorteo', 'nivel 3 con un viaje acabado este año, sí; nivel 3 sin viaje este año, no; nivel 2, no')
+  debe(S1(1400, 1) === true && S1(1500, 2) === true && S1(1400, 0) === false && S1(1399, 1) === false && S1(500, 3) === false, 'sorteo', 'nivel 3 con un viaje acabado este año, sí; nivel 3 sin viaje este año, no; nivel 2, no')
   const nivel3ConViaje = await persona('sor-si@correo.es')
   for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel3ConViaje, s, dia(1 + (i > 2 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
-  await repoPG.guardarPerfil(nivel3ConViaje.uid, { exp_max: 1300 })
+  await repoPG.guardarPerfil(nivel3ConViaje.uid, { exp_max: 1500 })
   const nivel3SinViaje = await persona('sor-sin-viaje@correo.es')
-  await repoPG.guardarPerfil(nivel3SinViaje.uid, { exp_max: 1300 })
+  await repoPG.guardarPerfil(nivel3SinViaje.uid, { exp_max: 1500 })
   const nivel2 = await persona('sor-nivel2@correo.es')
   for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel2, s, dia(1 + (i > 2 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
   const so = await servicio.sorteoDe(2026, [nivel3ConViaje.uid, nivel3SinViaje.uid, nivel2.uid])

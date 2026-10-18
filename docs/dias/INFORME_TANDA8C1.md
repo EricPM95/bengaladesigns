@@ -24,7 +24,7 @@ Destinos 25 «Pasión por el mundo» y 30 «Alma de explorador» · Patrimonios 
 - **Cómo se calcula:** se suma lo que ya ha conseguido el viajero (sus hechos y lo ganado): paradas vistas con ubicación o foto (5, máximo 50 al día), pedazos, colecciones (10 por pedazo), emblemas, maravillas, sellos (los del Vaticano aparte), país, destino, Patrimonio, viaje acabado (5 paradas o más y el último día ya pasado: 100) y los logros de viajero con su escalera de EXP. Los viajes de antes de la app dan 0; lo apagado, 0.
 - **Nunca baja:** la mayor EXP que ha tenido se guarda (`logro_perfil.exp_max`, migración 0025) y el total es siempre lo mayor entre lo calculado y eso. Probado: se baja la tabla y a nadie le sale menos.
 - **Con fecha:** cada EXP lleva su fecha; el servidor la tiene por año (`por_anio`) para el sorteo y la tienda.
-- **Niveles:** 50 en 10 rangos de 5 (Soñador, Explorador, Viajero, Trotamundos, Aventurero, Nómada, Cartógrafo, Embajador, Navegante, Leyenda); subir cuesta 500, 700, 900… (+200) hasta el nivel 11 y desde ahí 2.500. El nivel 50 se alcanza con 111.500 EXP; **Leyenda ★1 a los 114.500** (una estrella cada 3.000, sin final): así he entendido «después del 50».
+- **Niveles:** 50 en 10 rangos de 5 (Soñador, Explorador, Viajero, Trotamundos, Aventurero, Nómada, Cartógrafo, Embajador, Navegante, Leyenda); subir cuesta 500, 900, 1.300, 1.700 y 2.100 y, desde el nivel 6, 2.500 cada nivel (cambio de Eric, 18-oct). El nivel 50 se alcanza con 116.500 EXP; **Leyenda ★1 a los 119.500** (una estrella cada 3.000, sin final): así he entendido «después del 50».
 - **Lo que manda el servidor al móvil:** `GET /api/logros/exp` y `estado` → EXP total, nivel, rango, estrellas, EXP dentro del nivel, coste del nivel y lo que falta. En cada Visto o foto: `exp` por momento, `sube_de_nivel` por momento, y `exp` de la respuesta (`ganada`, `antes`, `despues`, `sube_de_nivel`). El móvil ya sabe leerlo; **no hay pantalla** (llegará con Design).
 - **Invitaciones:** la regla está hecha y probada (100 EXP al que invita cuando su amigo **acaba su primer viaje**, no al crear la cuenta; máximo 10 al año, por año natural). Falta lo de abajo.
 - **Sorteo (solo la regla):** nivel 3 o más y al menos un viaje acabado ese año. En `/?admin=logros`, pestaña **Sorteo**: cuántos entran y la lista, solo con el id corto de cada cuenta (ningún nombre ni correo).
@@ -50,7 +50,7 @@ Destinos 25 «Pasión por el mundo» y 30 «Alma de explorador» · Patrimonios 
 ## Las cuentas de EXP de Roma
 Con la tabla de `EXP_Y_NIVELES.md` tal cual (mismas funciones en la prueba y en el panel):
 - **Un viaje normal** (3 días y 2 noches, 9 sitios: Coliseo, Foro, Trevi, Panteón, Navona, Plaza de España, Museos Vaticanos, San Pedro y su plaza, con foto en todos): **1.785 EXP, nivel 3** (de 1.200 a 2.099). El documento decía «unos 1.400, nivel 3»: el nivel sale igual; la cifra es mayor porque con 9 sitios ya sale el sello de Roma en oro y el del Vaticano en diamante (500), los emblemas (175), los dos países (100) y 375 de logros de viajero (Escapada, El fotógrafo, {Ciudad} {año} y los primeros escalones), más 100 del viaje acabado. Desglose: sellos 500 · logros de viajero 375 · emblemas 175 · maravilla 150 · pedazos 115 · países 100 · viaje acabado 100 · Patrimonios 80 · destino 75 · colecciones 70 · paradas 45.
-- **Roma al 100 %** (los 37 sitios de las colecciones y los emblemas, con Madrugador y Nocturno, un viaje de 10 noches): **3.930 EXP, nivel 5** (el 5 empieza en 3.200). El documento decía «unos 2.870, nivel 4». Desglose: pedazos 260 · colecciones 520 · sellos 700 · emblemas 300 · países 100 · destino 75 · maravilla 150 · Patrimonios 80 = **2.185** (lo que el documento cuenta seguro); + logros de viajero **1.450** (Cazador de emblemas y Coleccionista, 5 y 10: 500; Conocedor 25: 175; Diamante a la primera 150; {Ciudad} al completo 100; Gran viaje 100; De sol a sol 100; El fotógrafo 75; Dos países en un día 50; {Ciudad} {año} 50; y 25 de cada primer escalón de Países, Destinos, Maravillas, Patrimonios, Viajes y Con quién viajas: 150) + paradas vistas **195** (39 paradas) + viaje acabado **100**. Los 685 que el documento le deja sobre 2.185 no cubren todos esos logros; si «Roma al 100 %» no debe incluir Cazador, Coleccionista, Conocedor y los demás, dímelo y lo ajusto en `exp.json`.
+- **Roma al 100 %** (los 37 sitios de las colecciones y los emblemas, con Madrugador y Nocturno, un viaje de 10 noches): **3.930 EXP, nivel 4** (el 4 va de 2.700 a 4.399). El documento decía «unos 2.870, nivel 4». Desglose: pedazos 260 · colecciones 520 · sellos 700 · emblemas 300 · países 100 · destino 75 · maravilla 150 · Patrimonios 80 = **2.185** (lo que el documento cuenta seguro); + logros de viajero **1.450** (Cazador de emblemas y Coleccionista, 5 y 10: 500; Conocedor 25: 175; Diamante a la primera 150; {Ciudad} al completo 100; Gran viaje 100; De sol a sol 100; El fotógrafo 75; Dos países en un día 50; {Ciudad} {año} 50; y 25 de cada primer escalón de Países, Destinos, Maravillas, Patrimonios, Viajes y Con quién viajas: 150) + paradas vistas **195** (39 paradas) + viaje acabado **100**. Los 685 que el documento le deja sobre 2.185 no cubren todos esos logros; si «Roma al 100 %» no debe incluir Cazador, Coleccionista, Conocedor y los demás, dímelo y lo ajusto en `exp.json`.
 - **Sin el continente ni «Todos los secretos»** (apagados), como pedías.
 
 ## Lo que falta para las invitaciones
@@ -65,7 +65,7 @@ La regla, la tabla (`logro_referidos`) y las funciones están hechas y probadas,
 
 ## Capturas nuevas (`docs/dias/capturas_8b/`)
 - `8C1-ademas-logros-de-viajero-dibujos-nuevos.jpg`: «Y además…» con cinco logros de viajero (Pasión por el mundo, Viajero de ida y vuelta, Ojo de lince, Tres ciudades de oro, Las cuatro estaciones).
-- `8C1-exp-roma-viaje-normal-nivel-3.jpg` y `8C1-exp-roma-al-100-nivel-5.jpg`: el modo de pruebas con la EXP, el nivel y el rango.
+- `8C1-exp-roma-viaje-normal-nivel-3.jpg` y `8C1-exp-roma-al-100-nivel-4.jpg`: el modo de pruebas con la EXP, el nivel y el rango.
 La prueba sigue fallando si dos capturas son idénticas.
 
 ## Pruebas
@@ -77,7 +77,10 @@ La prueba sigue fallando si dos capturas son idénticas.
 ## Riesgos
 - La EXP se calcula en cada Visto/foto y al pedirla, leyendo todos los hechos de la cuenta; hoy sobra, con miles de cuentas convendría guardar los totales. El sorteo recorre todas las cuentas con hechos (pensado para el panel de Eric, no para el móvil).
 - «Nunca baja» se apoya en `exp_max`; sin la migración 0025 aplicada no se guarda el máximo (se calcula desde los hechos, que no desaparecen).
-- «Leyenda ★1» a los 114.500 es mi lectura de «después del 50»; si quieres la primera estrella nada más llegar al 50, es un cambio en `exp.json`/`nivelDeExp`.
+- «Leyenda ★1» a los 119.500 (3.000 tras el 50) es mi lectura de «después del 50»; si quieres la primera estrella nada más llegar al 50, es un cambio en `exp.json`/`nivelDeExp`.
 - Si se cambia la tabla a la baja, el que la cruce ve en pantalla EXP «ganada» menor que la de los momentos (el total no baja, el de los momentos sí es el de la tabla nueva).
 - El conversor de piezas es mío (no el de Design): lo comprueba la prueba (mismas animaciones, sin internet), pero no he comparado pixel a pixel con el Dashboard.
 - Sin probar en un móvil real ni con Supabase real.
+
+## Cambio posterior: costes de los niveles
+Costes nuevos en `data/logros/exp.json`: 500, 900, 1.300, 1.700, 2.100 y 2.500 desde el nivel 6 (niveles: 2 en 500, 3 en 1.400, 4 en 2.700, 5 en 4.400, 6 en 6.500, 50 en 116.500, Leyenda ★1 en 119.500). Roma: viaje normal 1.785 EXP (nivel 3) y al 100 % 3.930 (nivel 4). `pruebaLogros1`: 433/0. Capturas del panel de la EXP rehechas.
