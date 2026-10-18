@@ -9,7 +9,8 @@
  *   GET  /api/logros/ficha?trip_id&sitio   las colecciones de un sitio (la pestaña de la ficha)
  *   GET  /api/logros/lo-de-ayer?trip_id    las paradas de días anteriores que aún no tienen su pedazo o su emblema, y los días que quedan
  *   GET  /api/logros/resumen?trip_id[&dia] el resumen del día o del viaje
- *   GET  /api/logros/viajero               los logros de viajero que se ven hoy
+ *   GET  /api/logros/viajero               los logros de viajero que se ven hoy (solo los de la Versión 1)
+ *   GET  /api/logros/exp                   la EXP de esta cuenta: total, nivel, rango, EXP dentro del nivel y la que falta (8C1; nunca baja)
  *   GET  /api/logros/pasaporte             «Tus países» y «Por descubrir», con los números
  *   GET  /api/logros/vitrina · PUT /api/logros/vitrina { balda, clave, quitar? } o { titulo }
  *   PUT  /api/logros/previos      { paises:[], dias }   los países de antes: solo pintan el globo y los números, no dan logros
@@ -80,6 +81,7 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
   app.get('/api/logros/lo-de-ayer', conUsuario(async (req, res, u) => res.json(await servicio.loDeAyer(u.id, String(req.query.trip_id ?? '')))))
   app.get('/api/logros/resumen', conUsuario(async (req, res, u) => res.json(await servicio.resumenDe(u.id, String(req.query.trip_id ?? ''), { dia: req.query.dia ? String(req.query.dia) : null }))))
   app.get('/api/logros/viajero', conUsuario(async (_req, res, u) => res.json(await servicio.logrosDeViajero(u.id))))
+  app.get('/api/logros/exp', conUsuario(async (_req, res, u) => res.json(await servicio.expDe(u.id))))
   app.get('/api/logros/pasaporte', conUsuario(async (_req, res, u) => res.json(await servicio.pasaporteDe(u.id))))
   app.get('/api/logros/vitrina', conUsuario(async (_req, res, u) => res.json(await servicio.vitrinaDe(u.id))))
 
@@ -137,6 +139,7 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
       destinos: datos.destinos,
       avisos: validarDatos(datos, catalogosTodos),
       viajero: logrosYVisibilidad(datos, ahora()),
+      viajero_apagados: datos.viajero.logros_apagados ?? [],
       ajustes: datos.ajustes,
       personas,
       interruptores: { logros: true, push: pushActivo(env), cobro: String(env.PASES_COBRO_ACTIVO ?? '') === 'true' },
@@ -153,6 +156,12 @@ export function registrarRutasLogros(app, { admin, servicio, repo, env = process
     if (!objetivo) return res.status(404).json({ ok: false, error: 'No hay ninguna cuenta con ese email.' })
     await repo.darProbador(objetivo.id, ahora().toISOString())
     res.json({ ok: true })
+  }))
+  // El sorteo del año (solo la regla, sin pantalla): nivel 3 o más y al menos un viaje acabado con la app ese año. Sin nombres ni correos: solo el id de cada cuenta.
+  app.get('/api/admin/logros/sorteo', conAdmin(async (req, res) => {
+    const anio = Number(req.query.anio) || ahora().getUTCFullYear()
+    const cuentas = repo.cuentasConHechos ? await repo.cuentasConHechos() : []
+    res.json({ ...(await servicio.sorteoDe(anio, cuentas)), regla: datos.exp.sorteo })
   }))
   app.post('/api/admin/logros/enviar-avisos', conAdmin(async (_req, res) => res.json({ ok: true, ...(await enviarAvisosPendientes({ repo, ahora: ahora(), env })) })))
   return true

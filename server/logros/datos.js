@@ -10,6 +10,9 @@
  */
 
 import fs from 'node:fs'
+import { soloActivos } from './viajeroActivo.js'
+
+export { soloActivos }
 
 const leer = (ruta) => JSON.parse(fs.readFileSync(new URL(ruta, import.meta.url), 'utf8'))
 
@@ -27,7 +30,8 @@ export function cargarDatos() {
   }
   return {
     destinos,
-    viajero: leer('../../data/logros/viajero.json'),
+    viajero: soloActivos(leer('../../data/logros/viajero.json')),
+    exp: leer('../../data/logros/exp.json'),
     ajustes: leer('../../data/logros/ajustes.json'),
     // El pase: los precios y cómo se elige el día de prueba (data/pase/).
     pase: { precios: leer('../../data/pase/precios.json'), ajustes: leer('../../data/pase/ajustes.json') },

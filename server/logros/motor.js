@@ -56,6 +56,26 @@ export function estacionDeMes(mes, ajustes) {
   return Object.entries(ajustes.estaciones).find(([, meses]) => meses.includes(mes))?.[0] ?? null
 }
 
+/**
+ * El avance de los logros que se ven poco a poco (8C1, del Dashboard): «Las cuatro estaciones» (1 de 4 … 4 de 4) y «Los 12 meses» (cada mes es un pedazo).
+ * De los hechos que cuentan: `estaciones` las que ya ha viajado (primavera, verano…) y `meses` los meses (1 a 12). Sin ninguna pista de qué día fue.
+ */
+export function avanceViajero({ datos, hechos, viajes }) {
+  const cuentan = hechosQueCuentan(hechos ?? [], viajes ?? {}, datos)
+  const estaciones = new Set()
+  const meses = new Set()
+  for (const h of cuentan) {
+    const est = estacionDeMes(h.loc.mes, datos.ajustes)
+    if (est) estaciones.add(est)
+    meses.add(h.loc.mes)
+  }
+  const todas = Object.keys(datos.ajustes.estaciones)
+  return {
+    cuatro_estaciones: { n: estaciones.size, total: todas.length, hechas: todas.filter((e) => estaciones.has(e)) },
+    doce_meses: { n: meses.size, total: 12, meses: [...meses].sort((x, y) => x - y) },
+  }
+}
+
 /** ¿La foto es de Madrugador o de Nocturno? (Solo por su hora local.) null si no es ninguna de las dos. */
 export function momentoDeLaHora(loc, ajustes) {
   const antes = aMinutos(ajustes.madrugador_antes_de)
@@ -72,6 +92,19 @@ export function momentoDeLaHora(loc, ajustes) {
 
 export const GLOBAL = '*'
 export const clave = (destino, logro, escalon = '') => `${destino}|${logro}|${escalon}`
+
+/**
+ * ¿Está encendido este logro en esta versión? (8C1) Un logro de viajero apagado (`activo: false` en viajero.json) no se gana, no se ve y no da EXP, ni aunque ya
+ * estuviera guardado de antes. `continente` es de «Continentes». Todo lo demás (pedazos, sellos, emblemas, países…) está siempre encendido.
+ */
+export function logroActivo(datos, logro) {
+  if (logro.startsWith('viajero:')) {
+    const id = logro.slice('viajero:'.length)
+    return datos.viajero.logros.some((def) => def.id === id)
+  }
+  if (logro === 'continente') return datos.viajero.logros.some((def) => def.id === 'continentes')
+  return true
+}
 
 /** El tipo de momento de una cosa ganada, para ordenar lo que sale tras un Visto o una foto. */
 export function categoriaDe(logro) {
@@ -244,7 +277,8 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
     return s?.capital ? `${s.pais}|${datos.destinos[h.destino].ciudad}` : null
   })
   const porContinente = primeras((h) => V.paises[sitioDe(h)?.pais]?.continente ?? null)
-  for (const [c, h] of porContinente) dar(GLOBAL, 'continente', c, h.trip_id, h.instante)
+  // (8C1) «Continente nuevo» es del logro «Continentes», que en la Versión 1 está apagado: sin él no se gana.
+  if (V.logros.some((def) => def.id === 'continentes')) for (const [c, h] of porContinente) dar(GLOBAL, 'continente', c, h.trip_id, h.instante)
   const porMaravilla = primeras((h) => sitioDe(h)?.maravilla ?? null)
   for (const [m, h] of porMaravilla) dar(GLOBAL, 'maravilla', m, h.trip_id, h.instante)
   const porPatrimonio = primeras((h) => sitioDe(h)?.patrimonio ?? null)

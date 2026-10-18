@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:{{ sz }};height:{{ sz }};flex:none">
+<svg width="100%" height="100%" viewBox="-30 -30 460 460" style="overflow:visible;display:block">
+ <defs>
+  <linearGradient id="{{ u }}R1" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="{{ P.r0 }}"></stop><stop offset=".3" stop-color="{{ P.r1 }}"></stop><stop offset=".58" stop-color="{{ P.r2 }}"></stop><stop offset=".82" stop-color="{{ P.r1 }}"></stop><stop offset="1" stop-color="{{ P.r3 }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}R2" x1=".9" y1="0" x2=".1" y2="1"><stop offset="0" stop-color="{{ P.r3 }}"></stop><stop offset=".4" stop-color="{{ P.r2 }}"></stop><stop offset=".72" stop-color="{{ P.r0 }}"></stop><stop offset="1" stop-color="{{ P.r3 }}"></stop></linearGradient>
+  <radialGradient id="{{ u }}F" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="{{ P.f0 }}"></stop><stop offset=".55" stop-color="{{ P.f1 }}"></stop><stop offset="1" stop-color="{{ P.f2 }}"></stop></radialGradient>
+  <linearGradient id="{{ u }}P" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="{{ P.p0 }}"></stop><stop offset=".45" stop-color="{{ P.p1 }}"></stop><stop offset="1" stop-color="{{ P.p2 }}"></stop></linearGradient>
+  <radialGradient id="{{ u }}Gl" cx=".3" cy=".18" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".6"></stop><stop offset=".5" stop-color="#fff" stop-opacity=".1"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></radialGradient>
+  <radialGradient id="{{ u }}H" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="{{ P.h }}" stop-opacity=".65"></stop><stop offset="1" stop-color="{{ P.h }}" stop-opacity="0"></stop></radialGradient>
+  <linearGradient id="{{ u }}Lf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ P.l0 }}"></stop><stop offset=".5" stop-color="{{ P.l1 }}"></stop><stop offset="1" stop-color="{{ P.l2 }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}Og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ og0 }}"></stop><stop offset=".5" stop-color="{{ og1 }}"></stop><stop offset="1" stop-color="{{ og2 }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}G1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ G.a }}"></stop><stop offset="1" stop-color="{{ G.b }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}G2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{ G.c }}"></stop><stop offset="1" stop-color="{{ G.d }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}G3" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="{{ G.e }}"></stop><stop offset="1" stop-color="{{ G.f }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}G4" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="{{ G.g }}"></stop><stop offset="1" stop-color="{{ G.h }}"></stop></linearGradient>
+  <radialGradient id="{{ u }}Bd" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"></stop><stop offset=".5" stop-color="{{ P.r1 }}"></stop><stop offset="1" stop-color="{{ P.r3 }}"></stop></radialGradient>
+  <filter id="{{ u }}Bv" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="b"></feGaussianBlur><feSpecularLighting in="b" surfaceScale="10" specularConstant="1.25" specularExponent="18" lighting-color="#FFFFFF" result="sp"><feDistantLight azimuth="235" elevation="46"></feDistantLight></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"></feComposite><feDiffuseLighting in="b" surfaceScale="5" diffuseConstant="1" lighting-color="#FFFFFF" result="df"><feDistantLight azimuth="235" elevation="55"></feDistantLight></feDiffuseLighting><feComposite in="df" in2="SourceAlpha" operator="in" result="df2"></feComposite><feComposite in="SourceGraphic" in2="df2" operator="arithmetic" k1="1.15" k2="0" k3="0" k4="0" result="lit"></feComposite><feComposite in="lit" in2="sp2" operator="arithmetic" k1="0" k2="1" k3="1.2" k4="0"></feComposite></filter>
+  <radialGradient id="{{ u }}Dm" cx=".33" cy=".24" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".3"></stop><stop offset=".45" stop-color="#fff" stop-opacity="0"></stop><stop offset=".78" stop-color="#000" stop-opacity=".12"></stop><stop offset="1" stop-color="#000" stop-opacity=".45"></stop></radialGradient>
+  <filter id="{{ u }}Bs" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"></feGaussianBlur><feSpecularLighting in="b" surfaceScale="6" specularConstant="1.2" specularExponent="16" lighting-color="#FFFFFF" result="sp"><feDistantLight azimuth="235" elevation="44"></feDistantLight></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"></feComposite><feComposite in="SourceGraphic" in2="sp2" operator="arithmetic" k1="0" k2="1" k3=".95" k4="0"></feComposite></filter>
+  <filter id="{{ u }}Sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#10131E" flood-opacity=".5"></feDropShadow></filter>
+  <filter id="{{ u }}S2" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity=".6"></feDropShadow></filter>
+  <filter id="{{ u }}Gw" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="g"></feGaussianBlur><feMerge><feMergeNode in="g"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
+  <filter id="{{ u }}Bl"><feGaussianBlur stdDeviation="7"></feGaussianBlur></filter>
+  <filter id="{{ u }}Br" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".006 .5" numOctaves="2" seed="11" result="n"></feTurbulence><feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.4 0 0 0 -.62" result="w"></feColorMatrix><feComposite in="w" in2="SourceAlpha" operator="in"></feComposite></filter>
+  <clipPath id="{{ u }}Fc"><circle cx="200" cy="200" r="112"></circle></clipPath>
+ </defs>
+
+ <sc-if value="{{ glow }}" hint-placeholder-val="{{ false }}"><circle cx="200" cy="200" r="205" fill="url(#{{ u }}H)" opacity=".7"></circle></sc-if>
+ <sc-if value="{{ orbit }}" hint-placeholder-val="{{ false }}"><g transform="translate(200 200) rotate(-22)"><path d="M-192 0A192 76 0 0 1 192 0" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="11" stroke-linecap="round"></path><path d="M-192 0A192 76 0 0 1 192 0" fill="none" stroke="url(#{{ u }}Og)" stroke-width="7" stroke-linecap="round"></path><path d="M-192 -2A192 76 0 0 1 192 -2" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" opacity=".8"></path></g></sc-if>
+ <sc-if value="{{ leaves }}" hint-placeholder-val="{{ false }}"><g filter="url(#{{ u }}Sh)"><sc-for list="{{ lv }}" as="l" hint-placeholder-count="28"><g transform="{{ l.t }}"><path d="M0 0C9 -12 9 -34 0 -46C-9 -34 -9 -12 0 0Z" fill="url(#{{ u }}Lf)" stroke="rgba(0,0,0,.45)" stroke-width=".8" filter="url(#{{ u }}Bs)"></path><path d="M0 -4V-40" stroke="rgba(0,0,0,.35)" stroke-width=".9"></path></g></sc-for></g></sc-if>
+
+ <g filter="url(#{{ u }}Sh)"><g filter="url(#{{ u }}Bv)"><circle cx="200" cy="200" r="146" fill="url(#{{ u }}R1)"></circle><circle cx="200" cy="200" r="124" fill="url(#{{ u }}R2)"></circle></g>
+  <g style="mix-blend-mode:overlay" opacity=".3"><circle cx="200" cy="200" r="146" fill="#fff" filter="url(#{{ u }}Br)"></circle></g>
+  <circle cx="200" cy="200" r="132" fill="none" stroke="rgba(10,14,28,.5)" stroke-width="3"></circle>
+  <circle cx="200" cy="200" r="141" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"></circle>
+  <path d="M82 118A130 130 0 0 1 150 68" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".5" filter="url(#{{ u }}Gw)"></path></g>
+ <sc-for list="{{ beads }}" as="b" hint-placeholder-count="32"><g transform="translate({{ b.x }} {{ b.y }})"><circle r="4.2" cx="1.4" cy="2.2" fill="rgba(0,0,0,.5)"></circle><circle r="3.9" fill="url(#{{ u }}Bd)"></circle><circle r="1.4" cx="-1.3" cy="-1.4" fill="#fff" opacity=".85"></circle></g></sc-for>
+ <g filter="url(#{{ u }}S2)"><g filter="url(#{{ u }}Bs)"><circle cx="200" cy="200" r="116" fill="{{ P.rim }}"></circle></g></g>
+ <circle cx="200" cy="200" r="112" fill="url(#{{ u }}F)"></circle>
+ <g clip-path="url(#{{ u }}Fc)">
+  <circle cx="200" cy="200" r="112" fill="url(#{{ u }}H)" opacity=".75"></circle>
+  <circle cx="200" cy="200" r="118" fill="none" stroke="#000" stroke-width="16" opacity=".7" filter="url(#{{ u }}Bl)"></circle>
+  <path d="M96 262A112 112 0 0 0 262 304" fill="none" stroke="#fff" stroke-width="3" opacity=".22" stroke-linecap="round"></path>
+  <g stroke="#fff" stroke-opacity=".07" stroke-width=".8"><sc-for list="{{ rays }}" as="r" hint-placeholder-count="90"><path d="{{ r }}"></path></sc-for></g>
+  <g fill="none" stroke="{{ P.line }}" stroke-opacity=".3" stroke-width="1"><circle cx="200" cy="200" r="90"></circle><circle cx="200" cy="200" r="64"></circle><circle cx="200" cy="200" r="38"></circle><path d="M200 88V312M88 200H312M121 121L279 279M279 121L121 279"></path></g>
+  <g fill="#fff" filter="url(#{{ u }}Gw)" opacity=".85"><sc-for list="{{ sp }}" as="s" hint-placeholder-count="6"><path d="{{ s }}"></path></sc-for></g>
+  <sc-if value="{{ isGlobe }}" hint-placeholder-val="{{ false }}"><g filter="url(#{{ u }}S2)"><circle cx="200" cy="196" r="64" fill="rgba(0,0,0,.4)"></circle>
+    <g filter="url(#{{ u }}Bs)"><path d="{{ land }}" fill="url(#{{ u }}P)" stroke="rgba(0,0,0,.45)" stroke-width=".8"></path></g>
+    <g fill="none" stroke="url(#{{ u }}P)" stroke-linecap="round" opacity=".55" stroke-width="1.6"><ellipse cx="200" cy="196" rx="30" ry="64"></ellipse><path d="M200 132V260M136 196H264"></path><path d="M146 162Q200 176 254 162M146 230Q200 216 254 230"></path></g>
+    <g filter="url(#{{ u }}Bs)"><circle cx="200" cy="196" r="66" fill="none" stroke="url(#{{ u }}P)" stroke-width="7"></circle></g></g>
+  <path d="M158 156a52 52 0 0 1 36-26" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="3.4" stroke-linecap="round"></path></sc-if>
+  <sc-if value="{{ isIc }}" hint-placeholder-val="{{ false }}"><ellipse cx="200" cy="272" rx="40" ry="9" fill="#000" opacity=".45" filter="url(#{{ u }}Bl)"></ellipse><g filter="url(#{{ u }}S2)"><g filter="url(#{{ u }}Bs)" transform="translate(200 192) scale(5.3) translate(-12 -12)" fill="none" stroke="url(#{{ u }}P)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ icd }}"></path></g></g>
+  <path d="M156 152a52 52 0 0 1 36-24" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="3.4" stroke-linecap="round"></path></sc-if>
+  <sc-if value="{{ isPin }}" hint-placeholder-val="{{ true }}"><g><path d="M112 266Q148 214 200 234" fill="none" stroke="{{ P.trail }}" stroke-width="2.4" stroke-dasharray="1.5 7" stroke-linecap="round" stroke-opacity=".9"></path>
+  <ellipse cx="200" cy="266" rx="36" ry="9" fill="#000" opacity=".5" filter="url(#{{ u }}Bl)"></ellipse>
+  <g filter="url(#{{ u }}S2)"><g filter="url(#{{ u }}Bs)"><path d="M200 272C170 234 154 214 154 186a46 46 0 0 1 92 0c0 28-16 48-46 86z" fill="url(#{{ u }}P)"></path></g></g>
+  <circle cx="200" cy="186" r="19" fill="{{ P.f2 }}"></circle><circle cx="200" cy="186" r="19" fill="none" stroke="{{ P.p0 }}" stroke-width="2"></circle><circle cx="200" cy="186" r="9" fill="{{ P.p0 }}"></circle><circle cx="200" cy="186" r="14" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="1"></circle>
+  <path d="M168 162a40 40 0 0 1 36-24" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="3.4" stroke-linecap="round"></path></g></sc-if>
+  <sc-if value="{{ facets }}" hint-placeholder-val="{{ false }}"><g style="mix-blend-mode:screen"><sc-for list="{{ fc }}" as="w" hint-placeholder-count="24"><path d="{{ w.d }}" fill="{{ w.f }}" fill-opacity="{{ w.o }}" stroke="rgba(255,255,255,.35)" stroke-width=".7"></path></sc-for></g></sc-if>
+  <circle cx="200" cy="200" r="112" fill="url(#{{ u }}Dm)"></circle>
+  <ellipse cx="170" cy="120" rx="80" ry="40" fill="url(#{{ u }}Gl)" transform="rotate(-24 170 120)"></ellipse>
+ </g>
+ <circle cx="200" cy="200" r="112" fill="none" stroke="rgba(8,10,20,.85)" stroke-width="3"></circle>
+ <circle cx="200" cy="200" r="109" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"></circle>
+
+ <g filter="url(#{{ u }}S2)"><g filter="url(#{{ u }}Bs)">
+  <sc-for list="{{ gems }}" as="g" hint-placeholder-count="8"><g transform="{{ g.t }}"><polygon points="200,14 226,56 200,98 174,56" fill="url(#{{ u }}G1)"></polygon><polygon points="200,14 226,56 200,56" fill="rgba(255,255,255,.34)"></polygon><polygon points="200,56 226,56 200,98" fill="url(#{{ u }}G3)"></polygon><polygon points="174,56 200,56 200,98" fill="url(#{{ u }}G4)"></polygon><polygon points="200,14 200,56 174,56" fill="url(#{{ u }}G2)" opacity=".6"></polygon><polygon points="200,34 214,56 200,78 186,56" fill="rgba(255,255,255,.3)" stroke="rgba(255,255,255,.55)" stroke-width=".8"></polygon><polygon points="200,56 226,56 200,98" fill="rgba(0,0,0,.18)"></polygon><polygon points="200,14 226,56 200,98 174,56" fill="none" stroke="rgba(10,6,0,.55)" stroke-width="1.8"></polygon><path d="M200 20L221 56L200 92L179 56Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1"></path><path d="M193 38l2.4 5.6 5.6 2.4-5.6 2.4-2.4 5.6-2.4-5.6-5.6-2.4 5.6-2.4z" fill="#fff" opacity=".95"></path></g></sc-for>
+ </g></g>
+ <sc-if value="{{ orbit }}" hint-placeholder-val="{{ false }}"><g transform="translate(200 200) rotate(-22)"><path d="M-192 0A192 76 0 0 0 192 0" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="11" stroke-linecap="round"></path><path d="M-192 0A192 76 0 0 0 192 0" fill="none" stroke="url(#{{ u }}Og)" stroke-width="7" stroke-linecap="round"></path><path d="M-192 2A192 76 0 0 0 192 2" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" opacity=".8"></path>
+  <g transform="translate(112 68) rotate(24) scale(2.3)" filter="url(#{{ u }}S2)"><g filter="url(#{{ u }}Bs)"><path d="M-20 -1.6L12 -3C18 -3 24 -1.4 27 0C24 1.4 18 3 12 3L-20 1.6Z" fill="url(#{{ u }}Og)" stroke="rgba(0,0,0,.5)" stroke-width=".5"></path><path d="M-2 -2L-14 -21L-7 -21L9 -2.4Z" fill="url(#{{ u }}Og)" stroke="rgba(0,0,0,.5)" stroke-width=".5"></path><path d="M-2 2L-14 21L-7 21L9 2.4Z" fill="url(#{{ u }}Og)" stroke="rgba(0,0,0,.5)" stroke-width=".5"></path><path d="M-18 -1L-25 -9L-21 -9L-12 -1.4Z" fill="url(#{{ u }}Og)" stroke="rgba(0,0,0,.5)" stroke-width=".5"></path><path d="M-18 1L-25 9L-21 9L-12 1.4Z" fill="url(#{{ u }}Og)" stroke="rgba(0,0,0,.5)" stroke-width=".5"></path></g></g>
+  <g fill="#FFFFFF" filter="url(#{{ u }}Gw)"><path d="M-168 52l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"></path><path d="M60 78l2.4 5 5 2.4-5 2.4-2.4 5-2.4-5-5-2.4 5-2.4z"></path><path d="M178 -24l2 4 4 2-4 2-2 4-2-4-4-2 4-2z"></path></g></g></sc-if>
+</svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:260,&quot;height&quot;:260},&quot;stage&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;min&quot;:1,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:220,&quot;tsType&quot;:&quot;number&quot;}}">
+let UID=0;
+const mk=(r,rim,f,p,h,line,l,gem,o)=>({r0:r[0],r1:r[1],r2:r[2],r3:r[3],rim,f0:f[0],f1:f[1],f2:f[2],p0:p[0],p1:p[1],p2:p[2],h,line,trail:p[0],l0:l[0],l1:l[1],l2:l[2],gem,...o});
+const GOLD=['#FFF1B8','#E3B13F','#8A5E12'],SILV=['#FFFFFF','#C9CFD8','#6A727E'];
+const GM={cobre:['#FFC995','#C47A44','#D68E58','#8A4F26','#7B4423','#B66F3B','#5E3218','#A4602F'],plata:['#FFFFFF','#B9BFC8','#E4E8EE','#8A929E','#9AA2AE','#CBD0D8','#747C88','#B2B9C3'],oro:['#FFF1B8','#D9A530','#F4CE6C','#A97A14','#B98A1C','#EBC254','#8A5E0C','#C99A26'],
+ azul:['#C8E6FF','#2A7BFF','#7DBCFF','#1550C0','#3A8CFF','#9DD0FF','#0F3C96','#2B72E8'],cian:['#D8FFFA','#16D3C4','#7BEFE4','#0A9A90','#33DFD0','#A6F6EF','#067A72','#14B8AA'],
+ rosa:['#FFD6F2','#E24BC0','#FF9BE0','#A81F86','#F06AD0','#FFB8EA','#7E1666','#C93AA8'],rojo:['#FFC2C2','#E0262E','#FF7A80','#A3101A','#EE4A52','#FF9EA3','#780A12','#C81E28'],diam:['#FFFFFF','#8FD3FF','#F2FAFF','#3E8FE0','#D9C8FF','#FFFFFF','#2A6CB8','#7CC8F5'],multi:['#FFFFFF','#B58CFF','#7AE8FF','#3A7BFF','#FF9BE8','#FFE9A0','#6A3FD0','#2FC9D8']};
+const ST=[null,
+ mk(['#FFD7AE','#D9935B','#A9622F','#6B3A1B'],'#5A3019',['#7A4426','#4A2813','#2A1409'],['#FFE2BC','#E9A66C','#7C4120'],'#FFC890','#C98550',GOLD,'cobre',{gems:4,leaves:false,orbit:false}),
+ mk(['#FFFFFF','#D2D7DE','#8D95A1','#5C636E'],'#444B57',['#6A7384','#3A414E','#1C212B'],['#FFFFFF','#C9CFD8','#6A727E'],'#DDE6F5','#C0C8D4',SILV,'plata',{gems:4}),
+ mk(['#FFF1B8','#EDBE50','#B5821C','#7A520C'],'#6A4A12',['#D9A23A','#A87420','#6E4A0C'],['#FFF8D0','#F4CE6C','#9A6A12'],'#FFD882','#FFE6A0',GOLD,'oro',{gems:4,leaves:true}),
+ mk(['#FFFFFF','#CBD1DA','#848C98','#575E6A'],'#243F78',['#3A66B8','#18367A','#0A1A3E'],['#FFE9A8','#F2C75A','#9A6A12'],'#8FB6F4','#9DB9E8',SILV,'azul',{gems:8,leaves:true}),
+ mk(['#FFF1B8','#EDBE50','#B5821C','#7A520C'],'#0A4A34',['#1FA574','#0D6A4A','#053524'],['#FFF1C2','#F4D06A','#9A6A12'],'#5EEBB4','#E9D58A',GOLD,'cian',{gems:8,leaves:false,orbit:true}),
+ mk(['#FFE0F8','#E58AD2','#A8408F','#6E1D5E'],'#5A1F78',['#C25AD8','#7B2C9C','#3A1252'],['#FFF1FF','#F6C4F2','#A04A98'],'#FF9BE8','#FFB8F0',SILV,'rosa',{gems:8,leaves:true,orbit:true}),
+ mk(['#FFF1B8','#EDBE50','#B5821C','#7A520C'],'#5A0E14',['#E0383E','#A01620','#520A10'],['#FFF1C2','#F4D06A','#9A6A12'],'#FF8A8A','#FFD08A',GOLD,'rojo',{gems:8,leaves:true,orbit:true}),
+ mk(['#FFFFFF','#BFD3E8','#6E8DB0','#2E4260'],'#1E3A66',['#3E8CD8','#1B4E9A','#08234F'],['#FFFFFF','#DDF1FF','#7FB4E0'],'#8FD0FF','#CFEAFF',['#FFFFFF','#DDF1FF','#8FB8DA'],'diam',{gems:8,leaves:true,orbit:true,glow:true,facets:true}),
+ mk(['#FFFFFF','#BFD3E8','#6E8DB0','#2E4260'],'#1E3A66',['#3E8CD8','#1B4E9A','#08234F'],['#FFFFFF','#DDF1FF','#7FB4E0'],'#8FD0FF','#CFEAFF',['#FFFFFF','#DDF1FF','#8FB8DA'],'diam',{gems:8,leaves:true,orbit:true,glow:true,facets:true}),
+ mk(['#FFF1B8','#EDBE50','#B5821C','#7A520C'],'#2A1A6E',['#9C6BF0','#3D3FC4','#140E52'],['#FFF1C2','#F4D06A','#9A6A12'],'#C9A0FF','#E9D58A',GOLD,'multi',{gems:8,leaves:true,orbit:true,glow:true,facets:true,rainbow:true})];
+let GEOP=null;
+const landPath=()=>GEOP||(GEOP=(async()=>{const imp=async(a,b)=>{try{return await import(a);}catch(e){return await import(b);}};
+  const[g,t]=await Promise.all([imp('https://cdn.jsdelivr.net/npm/d3-geo@3/+esm','https://esm.sh/d3-geo@3'),imp('https://cdn.jsdelivr.net/npm/topojson-client@3/+esm','https://esm.sh/topojson-client@3')]);
+  let w;try{w=await(await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')).json();}catch(e){w=await(await fetch('https://unpkg.com/world-atlas@2/land-110m.json')).json();}
+  const proj=g.geoOrthographic().scale(64).translate([200,196]).rotate([-14,-24]).clipAngle(90);return g.geoPath(proj)(t.feature(w,w.objects.land));})());
+class Component extends DCLogic {
+  state={land:''};
+  constructor(p){super(p);this.u='md'+(++UID)+'_';}
+  componentDidMount(){if(this.props.icon==='globo')landPath().then(d=>{this.setState({land:d});}).catch(()=>{});}
+  renderVals(){const p=this.props;const s=Math.max(1,Math.min(10,parseInt(p.stage)||1));let P=ST[s];if(p.metal==='rosa'){const M={'#FFF1B8':'#FFF0EA','#EDBE50':'#FFB8A4','#B5821C':'#E07A66','#7A520C':'#9A4636','#FFF1C2':'#FFF2EC','#F4D06A':'#FFC2B0','#9A6A12':'#C25C48','#E9D58A':'#FFD6C8','#E3B13F':'#FFAE98','#8A5E12':'#B04E3E'};P=JSON.parse(JSON.stringify(P).replace(/#[0-9A-Fa-f]{6}/g,h=>M[h.toUpperCase()]||h));}
+    const sz=(Number(p.size)||200)+'px';
+    const c=GM[P.gem];const G={a:c[0],b:c[1],c:c[2],d:c[3],e:c[4],f:c[5],g:c[6],h:c[7]};
+    const gems=[];[0,90,180,270].forEach(r=>gems.push({t:'rotate('+r+' 200 200) translate(200 56) scale(.62) translate(-200 -56)'}));
+    if(P.gems===8)[45,135,225,315].forEach(r=>gems.push({t:'rotate('+r+' 200 200) translate(200 58) scale(.42) translate(-200 -58)'}));
+    const lv=[];if(P.leaves){const N=14;for(let i=0;i<N;i++){const t=i/(N-1);const ang=(98+t*150)*Math.PI/180;const R0=150;const x=200+R0*Math.cos(ang),y=200+R0*Math.sin(ang);const rot=98+t*150+180-28;const sc=(1.0-0.22*t).toFixed(2);
+      lv.push({t:'translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+rot.toFixed(1)+') scale('+sc+')'});lv.push({t:'translate('+(400-x).toFixed(1)+' '+y.toFixed(1)+') rotate('+(-rot).toFixed(1)+') scale('+sc+')'});}}
+    const beads=Array.from({length:32},(_,i)=>{const a=i/32*Math.PI*2;return{x:(200+138.5*Math.cos(a)).toFixed(1),y:(200+138.5*Math.sin(a)).toFixed(1)};});
+    const rays=Array.from({length:90},(_,i)=>{const a=i/90*Math.PI*2;return'M'+(200+16*Math.cos(a)).toFixed(1)+' '+(200+16*Math.sin(a)).toFixed(1)+'L'+(200+112*Math.cos(a)).toFixed(1)+' '+(200+112*Math.sin(a)).toFixed(1);});
+    const star=(x,y,k)=>'M'+x+' '+(y-3*k)+'l'+(.8*k)+' '+(2.2*k)+' '+(2.2*k)+' '+(.8*k)+'-'+(2.2*k)+' '+(.8*k)+'-'+(.8*k)+' '+(2.2*k)+'-'+(.8*k)+'-'+(2.2*k)+'-'+(2.2*k)+'-'+(.8*k)+' '+(2.2*k)+'-'+(.8*k)+'z';
+    const sp=s>=4?[star(132,138,1.5),star(272,124,1.2),star(120,236,1),star(282,244,1.4),star(236,112,.9),star(160,282,1)]:[];
+    const fc=[];if(P.facets){const C=P.rainbow?['#FF7AD9','#7AB8FF','#7AFFE0','#FFE07A','#C07AFF','#7AFF9E']:['#FFFFFF','#8FD3FF','#FFB8F0','#A9B8FF','#9FFFE0','#FFFFFF'];const K=P.rainbow?2.2:1;const pt=(a,r)=>(200+r*Math.cos(a)).toFixed(1)+' '+(200+r*Math.sin(a)).toFixed(1);
+      for(let i=0;i<12;i++){const a0=i*Math.PI/6,a1=(i+1)*Math.PI/6;fc.push({d:'M200 200L'+pt(a0,112)+'L'+pt(a1,112)+'Z',f:C[i%6],o:Math.min(.6,(i%2?.1:.22)*K)});}
+      for(let i=0;i<12;i++){const a0=i*Math.PI/6+Math.PI/12,a1=a0+Math.PI/6;fc.push({d:'M'+pt(a0,40)+'L'+pt(a0+Math.PI/12,112)+'L'+pt(a1,40)+'Z',f:C[(i+2)%6],o:Math.min(.5,(i%2?.16:.07)*K)});}}
+    const ro=p.metal==='rosa';return{og0:ro?'#FFF0EA':'#FFF1B8',og1:ro?'#FFAE98':'#E3B13F',og2:ro?'#B04E3E':'#8A5E12',u:this.u,sz,P,G,fc,facets:!!P.facets,gems,lv,beads,rays,sp,isGlobe:p.icon==='globo',land:this.state.land,isIc:p.icon==='path',icd:p.icd||'',isPin:p.icon!=='globo'&&p.icon!=='path',leaves:!!P.leaves,orbit:!!P.orbit,glow:!!P.glow||s>=6};}
+}
+</script>
+</body>
+</html>

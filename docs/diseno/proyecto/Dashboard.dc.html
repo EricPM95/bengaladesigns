@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F1E8D6;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}button,input{font-family:inherit}a{color:#1C2230;text-decoration:none}a:hover{color:oklch(0.55 0.17 5)}
+input::placeholder{color:rgba(28,34,48,.42)}
+@keyframes dbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 80% 50% at 50% 0%,#F6EEDD 0%,#E8DCC4 80%);font-family:'Geist',system-ui,sans-serif;color:#1C2230;display:flex">
+
+  <aside style="position:sticky;top:0;align-self:flex-start;width:280px;flex:none;height:100vh;padding:32px 20px;border-right:1px solid rgba(28,34,48,.1);display:flex;flex-direction:column;gap:18px;background:rgba(255,253,248,.55)">
+    <a href="Indice.dc.html" style="font:600 12px 'Geist';color:rgba(28,34,48,.6)">← Índice</a>
+    <span style="display:flex;flex-direction:column;gap:4px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Trazo · Logros</span><span style="font:400 38px/1 'Instrument Serif',serif">Dashboard</span></span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:4px;border-radius:999px;background:#E6DAC2">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.pick }}" style="height:38px;border:none;border-radius:999px;background:{{ t.bg }};color:{{ t.fg }};font:600 13px 'Geist';cursor:pointer;transition:background .25s">{{ t.n }}</button></sc-for>
+    </div>
+    <sc-if value="{{ isDest }}" hint-placeholder-val="{{ true }}">
+      <label style="height:44px;display:flex;align-items:center;gap:8px;padding:0 14px;border-radius:14px;background:#FFFDF8;border:1.5px solid {{ qBd }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+        <input value="{{ q }}" onChange="{{ setQ }}" placeholder="Busca un destino" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font:500 14px 'Geist';color:#1C2230">
+      </label>
+      <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:4px">
+        <sc-for list="{{ countries }}" as="c" hint-placeholder-count="2">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="display:flex;align-items:center;gap:8px;padding:8px 6px 4px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)"><span style="width:20px;height:14px;border-radius:3px;background:{{ c.fl }};box-shadow:inset 0 0 0 1px rgba(28,34,48,.15)"></span>{{ c.n }}</span>
+            <sc-for list="{{ c.dests }}" as="d" hint-placeholder-count="1">
+              <button onClick="{{ d.pick }}" style="min-height:44px;display:flex;align-items:center;gap:10px;padding:0 10px;border:none;border-radius:12px;background:{{ d.bg }};color:{{ d.fg }};text-align:left;cursor:{{ d.cur }}">
+                <span style="flex:1;font:{{ d.fw }} 14px 'Geist'">{{ d.n }}</span>
+                <span style="font:500 11px 'Geist Mono',monospace;opacity:.7">{{ d.k }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noRes }}" hint-placeholder-val="{{ false }}"><span style="padding:12px 6px;font:400 13px 'Geist';color:rgba(28,34,48,.6)">Ningún destino con ese nombre.</span></sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isViaj }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="padding:0 4px;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(28,34,48,.55)">Ordenar</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:3px;border-radius:12px;background:#E6DAC2">
+          <sc-for list="{{ ords }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.pick }}" style="min-height:36px;border:none;border-radius:9px;background:{{ o.bg }};color:{{ o.fg }};font:600 12px 'Geist';cursor:pointer">{{ o.n }}</button></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <sc-for list="{{ vNav }}" as="g" hint-placeholder-count="5"><a href="{{ g.h }}" style="min-height:42px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:12px;font:500 14px 'Geist'"><span style="width:10px;height:10px;border-radius:50%;background:{{ g.c }}"></span><span style="flex:1">{{ g.n }}</span><span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ g.k }}</span></a></sc-for>
+      </div>
+    </sc-if>
+  </aside>
+
+  <main style="flex:1;min-width:0;padding:36px 44px 90px;display:flex;flex-direction:column;gap:30px">
+    <sc-if value="{{ isDest }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 28px">
+        <span style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px"><span style="display:flex;align-items:center;gap:8px;font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)"><span style="width:20px;height:14px;border-radius:3px;background:linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)"></span>Italia</span><span style="font:400 56px/1 'Instrument Serif',serif">Roma</span></span>
+        <div style="display:flex;gap:8px">
+          <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4"><span style="min-width:96px;padding:12px 14px;border-radius:18px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);display:flex;flex-direction:column;gap:2px"><span style="font:400 30px/1 'Instrument Serif',serif">{{ s.n }}</span><span style="font:500 11.5px 'Geist';color:rgba(28,34,48,.6)">{{ s.l }}</span></span></sc-for>
+        </div>
+      </div>
+      <sc-for list="{{ dSecs }}" as="sec" hint-placeholder-count="4">
+        <section style="display:flex;flex-direction:column;gap:14px;animation:dbIn .45s ease both">
+          <div style="display:flex;align-items:baseline;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(28,34,48,.12)"><span style="font:400 30px/1 'Instrument Serif',serif">{{ sec.t }}</span><span style="font:500 12px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ sec.k }}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:12px">
+            <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="6">
+              <div style="border-radius:22px;background:{{ it.bg }};border:1px solid rgba(28,34,48,.07);padding:18px 12px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:{{ it.fg }}">
+                <span style="height:130px;display:flex;align-items:center;justify-content:center">
+                  <sc-if value="{{ it.isS }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="{{ it.g }}" icon="{{ it.i }}" shape="{{ it.sh }}" size="118" label="{{ it.l }}" hint-size="118px,118px"></dc-import></sc-if>
+                  <sc-if value="{{ it.isP }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Coleccion" col="{{ it.col }}" set="{{ it.set }}" sites="" size="{{ 128 }}" hint-size="128px,128px"></dc-import></sc-if>
+                  <sc-if value="{{ it.isE }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Emblema Secreto" kind="{{ it.k }}" scale="0.84" delay="0" hint-size="126px,126px"></dc-import></sc-if>
+                </span>
+                <span style="font:400 18px/1.15 'Instrument Serif',serif;text-wrap:balance">{{ it.n }}</span>
+                <span style="font:500 11.5px/1.35 'Geist';opacity:.65;text-wrap:balance">{{ it.s }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isViaj }}" hint-placeholder-val="{{ false }}">
+      <span style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(28,34,48,.55)">Para cualquier destino</span><span style="font:400 56px/1 'Instrument Serif',serif">Logros de viajero</span></span>
+      <sc-for list="{{ vSecs }}" as="g" hint-placeholder-count="4">
+        <section id="{{ g.id }}" style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid rgba(28,34,48,.12)"><span style="width:12px;height:12px;border-radius:50%;background:{{ g.c }}"></span><span style="font:400 30px/1 'Instrument Serif',serif">{{ g.n }}</span></div>
+          <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+            <div style="border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+                <span style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:4px">
+                  <span style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font:400 22px/1.1 'Instrument Serif',serif">{{ r.n }}</span><span style="font:500 11.5px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ r.sub }}</span></span>
+                  <span style="font:400 13.5px/1.45 'Geist';color:rgba(28,34,48,.72);text-wrap:pretty">{{ r.how }}</span>
+                </span>
+                <span style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                  <sc-if value="{{ r.v1 }}" hint-placeholder-val="{{ false }}"><span style="height:34px;padding:0 14px;border-radius:10px;background:#1C2230;color:#F3D59A;display:flex;align-items:center;gap:7px;font:700 13px 'Geist';letter-spacing:.08em;box-shadow:0 0 0 2px #F3D59A"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>VERSIÓN 1</span></sc-if>
+                  <span style="height:26px;padding:0 10px;border-radius:999px;background:#F5EFE4;display:flex;align-items:center;gap:7px;font:600 11.5px 'Geist'"><span style="display:flex;gap:3px"><sc-for list="{{ r.dots }}" as="d" hint-placeholder-count="5"><span style="width:7px;height:7px;border-radius:50%;background:{{ d }}"></span></sc-for></span>{{ r.dl }}</span>
+                  <sc-if value="{{ r.showG }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font:500 11.5px 'Geist';color:rgba(28,34,48,.6)"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.gc }}"></span>{{ r.gn }}</span></sc-if>
+                </span>
+              </div>
+              <div style="display:flex;gap:14px;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px">
+                <sc-for list="{{ r.t }}" as="m" hint-placeholder-count="4">
+                  <div style="flex:none;width:118px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+                    <sc-if value="{{ m.lv }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Logro Viajero" tier="{{ m.tier }}" grow="{{ m.g }}" hue="{{ r.h }}" size="104" num="{{ m.num }}" icon="{{ r.i }}" world="{{ r.w }}" delay="0" hint-size="104px,104px"></dc-import></sc-if>
+                    
+                    <sc-if value="{{ m.med }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Siete" n="{{ m.num }}" size="104" hint-size="104px,122px"></dc-import></sc-if>
+                    <sc-if value="{{ m.ex }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Exclusivo Holo" kind="{{ m.k }}" size="104" delay="0" hint-size="104px,104px"></dc-import></sc-if>
+                    <sc-if value="{{ m.img }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Premium" metal="{{ m.met }}" shape="{{ m.shp }}" icon="{{ m.ico }}" face="{{ m.fc }}" laurel="{{ m.lau }}" gems="{{ m.gm }}" rays="{{ m.ry }}" size="{{ 112 }}" hint-size="112px,112px"></dc-import></sc-if>
+                    <sc-if value="{{ m.mg }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Grado" grade="{{ m.grade }}" shape="{{ m.shape }}" icon="{{ m.ic }}" fx="{{ m.fx }}" lau="{{ m.lau }}" size="{{ 104 }}" hint-size="104px,104px"></dc-import></sc-if>
+                    <sc-if value="{{ m.mes }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Doce Meses" got="{{ m.got }}" size="{{ 104 }}" hint-size="104px,104px"></dc-import></sc-if>
+                    <sc-if value="{{ m.uni }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Logro Unico" kind="{{ m.k }}" size="104" anim="{{ false }}" hint-size="104px,115px"></dc-import></sc-if>
+                    <sc-if value="{{ m.dos }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Dos Paises" size="104" anim="{{ false }}" hint-size="104px,115px"></dc-import></sc-if>
+                    <sc-if value="{{ m.micro }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Microestados" got="{{ m.num }}" size="104" anim="{{ false }}" hint-size="104px,115px"></dc-import></sc-if>
+                    <sc-if value="{{ m.cont }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Continentes" got="{{ m.k }}" size="104" anim="{{ false }}" hint-size="104px,115px"></dc-import></sc-if>
+                    <sc-if value="{{ m.est }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Cuatro Estaciones" got="{{ m.num }}" size="104" delay="0" hint-size="104px,104px"></dc-import></sc-if>
+                    <sc-if value="{{ m.dest }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Destino" stage="{{ m.stage }}" icon="{{ m.icon }}" icd="{{ m.icd }}" metal="{{ m.metal }}" size="112" hint-size="112px,112px"></dc-import></sc-if>
+                    <sc-if value="{{ m.vm }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Vuelta Mundo" km="{{ m.km }}" size="110" anim="{{ false }}" hint-size="110px,110px"></dc-import></sc-if>
+                    <span style="font:500 12px/1.25 'Geist';text-wrap:balance">{{ m.lab }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </section>
+      </sc-for>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC={globo:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z',pin:'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+capital:'M3 8l4.5 4.5L12 5l4.5 7.5L21 8l-2 11H5zM5 19h14M12 9.5v3',templo:'M12 3l9 5H3zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18',maleta:'M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5',
+lupa:'M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15zM20.5 20.5l-5-5M10.5 6.2l2.6 4.3-2.6 4.3-2.6-4.3zM7.9 10.5h5.2',grid:'M3.5 6.5l8.5-3 8.5 3v11l-8.5 3-8.5-3zM3.5 6.5L12 9.5l8.5-3M12 9.5v11M7.5 12.2l1.8.6M7.5 15.2l1.8.6M15 12.8l1.8-.6',ciudad:'M2.5 20.5h19M4 20.5V10l4-2.5v13M8 20.5V12h5v8.5M13 20.5V6.5l4-2.5v16.5M17 20.5v-8h3.5v8M10 14.5h1.5M10 17h1.5M14.5 9h1M14.5 12h1M14.5 15h1',
+brujula:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 5.5l2.6 6.5-2.6 6.5-2.6-6.5zM9.4 12h5.2M12 12h.01',pareja:'M9 19.5s-6-3.8-6-8.6a3.3 3.3 0 0 1 6-1.8 3.3 3.3 0 0 1 6 1.8c0 4.8-6 8.6-6 8.6zM16.2 14.6s-4.2-2.7-4.2-6a2.3 2.3 0 0 1 4.2-1.3 2.3 2.3 0 0 1 4.2 1.3c0 3.3-4.2 6-4.2 6z',
+amigos:'M1.5 8h5l-.55 4.6a2 2 0 0 1-3.9 0zM4 14.2V19M2.4 19h3.2M9.5 5h5l-.55 4.6a2 2 0 0 1-3.9 0zM12 11.2V19M10.4 19h3.2M17.5 8h5l-.55 4.6a2 2 0 0 1-3.9 0zM20 14.2V19M18.4 19h3.2M12 2.2v1.4M9.2 3l.8 1M14.8 3l-.8 1',familia:'M2 11h8v9H2zM4 11V9h4v2M11.5 13h6v7h-6zM13.5 13v-1.6h2V13M19 16h3v4h-3zM5 14.5h2',
+km:'M4 12h16M4 12a8 8 0 0 1 16 0M12 4v4M12 16v4'};
+const MAT=['Papel prensado','Cuero cosido','Barro cocido','Mayólica','Mosaico romano','Marquetería','Mármol con incrustaciones'];
+const PC=o=>({metal:'',dest:false,stage:'1',icon:'pin',icd:'',p1:false,p2:false,p3:false,p4:false,p5:false,p6:false,p7:false,p8:false,p9:false,img:false,mg:false,mes:false,lv:false,med:false,ex:false,uni:false,dos:false,micro:false,cont:false,est:false,vm:false,...o});
+const step=(n,i,steps,names,w)=>{const L=steps.length,ix=steps.map((_,k)=>L===1?5:Math.round(k*5/(L-1)));return{n,i,w:w?'true':'',sub:steps.join(' · '),t:steps.map((u,k)=>PC({dest:true,icon:'path',icd:i,stage:String(k+1),lab:u+' · '+names[k]}))};};
+const U=(n,k,sub,lab)=>({n,i:'',w:'',sub:sub||'Un solo paso',t:[PC({uni:true,k,lab:lab||n})]});
+const one=(n,i,lab)=>({n,i,w:'',sub:'Un solo paso',t:[PC({lv:true,tier:'3',g:'2',num:'',lab:lab||n})]});
+const MULTI={'Al otro lado del ecuador':'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 15v5M9.5 18l2.5 2 2.5-2','Viajero nacional':'M12 21s-6-5-6-10a6 6 0 0 1 12 0c0 5-6 10-6 10zM9.5 11.5l2.5-2.2 2.5 2.2v3h-5z','Los 12 meses':'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4M9 14h.01M12 14h.01M15 14h.01M9 17h.01M12 17h.01','Un destino, cuatro estaciones':'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 3v18M3 12h18M12 15.6s-2.4-2-2.4-3.9a2.4 2.4 0 0 1 4.8 0c0 1.9-2.4 3.9-2.4 3.9z','Navidad fuera de casa':'M12 3l5 6h-3l4 5h-4l3 4H7l3-4H6l4-5H7zM12 18v3','Nochevieja fuera de casa':'M12 3v5M12 16v5M3 12h5M16 12h5M5.6 5.6l3.5 3.5M14.9 14.9l3.5 3.5M18.4 5.6l-3.5 3.5M9.1 14.9l-3.5 3.5','Tres viajes en un año':'M5 7.5h14a1.5 1.5 0 0 1 1.5 1.5v9.5A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 5 7.5zM9 7.5V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.5M9 14h.01M12 14h.01M15 14h.01','De sol a sol':'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2','Alondra':'M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 6v3M5 10.5l1.6 1.2M19 10.5l-1.6 1.2','Búho':'M19.5 14.5A7.5 7.5 0 1 1 9.5 4.5a6 6 0 0 0 10 10z','Día perfecto':'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.5l3 3 5-6','Viaje perfecto':'M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z','Imparable':'M13 3L5 14h6l-1 7 8-11h-6z','Escapada':'M7 8h10v12H7zM9 8V5a3 3 0 0 1 6 0v3M7 13h10','Gran viaje':'M10.5 20.5L12 16l-4-4-5 1.5-1-1 5-3.5L6 4l1.5-1 4 4.5L18 2a2 2 0 0 1 3 3l-5.5 6.5 4.5 4-1 1.5-5-1-3.5 5z','El fotógrafo':'M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z','Diamante a la primera':'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4l3 16M15 4l-3 16','Roma al completo':'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z','Todos los secretos de Roma':'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4','Tres ciudades de oro':'M3 21h18M5 21V8l5-3v16M10 21V11h9v10','Tres ciudades de diamante':'M6 4h12l3 5-9 11L3 9zM3 9h18M9 4l3 16M15 4l-3 16','Nunca es la última vez':'M20 12a8 8 0 1 1-3-6.2M20 4v5h-5'};
+const VG=[
+ ['mundo','El mundo','oklch(0.58 0.14 38)',40,[
+   {n:'Países',i:'',w:'',sub:'1 · 3 · 5 · 8 · 10 · 15 · 20 · 25 · 30',t:['Primer sello','Trotamundos','Alma viajera','Pasaporte en marcha','Ciudadano del mundo','Horizonte sin fin','Veinte banderas','Medio mundo en la maleta','El mundo es tu casa'].map((l,k)=>PC({dest:true,icon:'globo',stage:String(k+1),lab:['1','3','5','8','10','15','20','25','30'][k]+' · '+l}))},
+   {n:'Destinos',i:'',w:'',sub:'1 · 3 · 5 · 10 · 15 · 20 · 25 · 30',t:[['1','Primera parada'],['3','Ciudad tras ciudad'],['5','Mapa en marcha'],['10','Diez ciudades, diez historias'],['15','Brújula incansable'],['20','Sin fronteras'],['25','Pasión por el mundo'],['30','Alma de explorador']].map(([n,l],k)=>PC({dest:true,stage:String(k+1),lab:n+' · '+l}))},
+   step('Capitales',IC.capital,['5','10','15','25'],['Ruta de capitales','Corazón de naciones','Capital de capitales','Embajada del mundo']),
+   {n:'Patrimonios de la Humanidad',i:'',w:'',sub:'1 · 5 · 10 · 15 · 25',t:[['1','Testigo de la historia',1],['5','Pasos por la historia',2],['10','Guardián del patrimonio',3],['15','Memoria del mundo',4],['25','Heredero del mundo',5]].map(([n,l,s])=>PC({dest:true,icon:'path',icd:IC.templo,stage:String(s),lab:n+' · '+l}))},
+   {n:'La vuelta al mundo',i:'',w:'',sub:'Próximamente',t:[[1000,'Los primeros mil'],[5000,'Gran recorrido'],[10000,'Un cuarto de vuelta al mundo'],[20000,'Media vuelta al mundo'],[40075,'La vuelta al mundo']].map(([km,lab])=>PC({vm:true,km:String(km),lab:km.toLocaleString('es-ES')+' km · '+lab}))},
+   {n:'Continentes',i:'',w:'',sub:'Uno por cada continente nuevo',t:[['eu','1'],['eu,na','2'],['eu,na,sa','3'],['eu,na,sa,af','4'],['eu,na,sa,af,as','5'],['eu,na,sa,af,as,oc','6']].map(([k,n])=>PC({cont:true,k,lab:n+' de 6'}))},
+   {n:'Dos países en un día',i:'',w:'',sub:'Un solo paso',t:[PC({dest:true,icon:'path',icd:'M8 21s-4.5-3.8-4.5-8a4.5 4.5 0 0 1 9 0c0 4.2-4.5 8-4.5 8zM16 21s-4.5-3.8-4.5-8a4.5 4.5 0 0 1 9 0c0 4.2-4.5 8-4.5 8zM8 12.6h.01M16 12.6h.01',stage:'10',lab:'Italia y el Vaticano, el mismo día'})]},
+   {n:'Los pequeños gigantes',i:'',w:'',sub:'Microestados de Europa',t:[1,2,3,4,5,6].map(n=>PC({micro:true,num:String(n),lab:n+' de 6 microestados'}))},
+   U('Al otro lado del ecuador','ecuador'),U('Viajero nacional','nacional','3 destinos de tu país')]],
+ ['maravillas','Las 7 maravillas','#B8964F',80,[{n:'Las 7 maravillas del mundo',i:'',w:'',sub:'1 · 2 · 3 · 4 · 5 · 6 · 7',t:['Tu primera maravilla','Maravilla tras maravilla','El mundo te deslumbra','Cuatro maravillas en la maleta','Mirada de leyenda','A una del sueño','Las siete maravillas'].map((lab,k)=>PC({med:true,num:String(k+1),lab:(k+1)+' · '+lab}))}]],
+ ['tiempo','El tiempo','oklch(0.62 0.13 75)',80,[step('Viajes',IC.maleta,['1','5','10','15','20','25','30'],['El primer viaje','Cinco maletas','Maleta siempre lista','Viajero de ida y vuelta','Veinte maletas','Vida de viajero','Treinta viajes, treinta recuerdos']),{n:'Las cuatro estaciones',i:'',w:'',sub:'1 · 2 · 3 · 4',t:[1,2,3,4].map(n=>PC({est:true,num:String(n),lab:n+' de 4'}))},{n:'Los 12 meses',i:'',w:'',sub:'Cada pedazo, un mes',t:[['10','1 de 12'],['10,11,12','3 de 12'],['3,4,5,6,7,10,11,12','8 de 12'],['1,2,3,4,5,6,7,10,11,12','10 de 12'],['1,2,3,4,5,6,7,8,9,10,11,12','12 de 12']].map(([got,lab])=>PC({mes:true,got,lab}))},U('Nunca es la última vez','nunca','Vuelves a una ciudad'),U('Un destino, cuatro estaciones','undestino4'),U('Navidad fuera de casa','navidad'),U('Nochevieja fuera de casa','nochevieja'),one('Tres viajes en un año',IC.maleta),U('De sol a sol','solasol'),one('Alondra',IC.globo),one('Búho',IC.globo)]],
+ ['como','Cómo viajas','oklch(0.55 0.1 118)',118,[step('A mi aire',IC.brujula,['1','3','5','10'],['Mi propio rumbo','Alma libre','A solas con el mundo','El mundo, a tu ritmo']),step('En pareja',IC.pareja,['1','3','5','10'],['Dos billetes','Mapa para dos','Cómplices de viaje','Contigo, a cualquier parte']),step('Con amigos',IC.amigos,['1','3','5','10'],['La pandilla viaja','Risas en ruta','Equipo viajero','Amigos para todos los viajes']),step('En familia',IC.familia,['1','3','5','10'],['Todos a bordo','Maletas para todos','Álbum de familia','Una familia viajera']),U('Día perfecto','diaok'),U('Viaje perfecto','viajeok'),U('Imparable','imparable'),U('Escapada','escapada'),U('Gran viaje','granviaje'),U('El fotógrafo','fotografo'),one('Diamante a la primera',IC.grid)]],
+ ['colec','Coleccionista','oklch(0.5 0.12 330)',330,[step('Cazador de emblemas',IC.lupa,['5','10','15'],['Cazador de emblemas','Ojo de lince','Nada se te escapa']),step('Coleccionista',IC.grid,['5','10','15'],['Coleccionista','Álbum lleno','Gran coleccionista']),step('Conocedor de la ciudad',IC.ciudad,['25','50'],['Conocedor de Roma','Como en casa en Roma']),U('Roma al completo','ciudad','Todas las colecciones de una ciudad'),{n:'Todos los secretos de Roma',i:'',w:'',sub:'Todos los emblemas de una ciudad',t:[PC({dest:true,icon:'path',icd:'M12 3.2l1.5 4.3 4.5.3-3.5 2.9 1.2 4.4L12 12.5 8.3 15.1l1.2-4.4L6 7.8l4.5-.3zM12 15.5a1.6 1.6 0 0 0-1 2.9l-.5 3h3l-.5-3a1.6 1.6 0 0 0-1-2.9z',stage:'10',metal:'rosa',lab:'Todos los secretos de Roma'})]},one('Tres ciudades de oro',IC.grid),one('Tres ciudades de diamante',IC.grid)]],
+ ['excl','Exclusivos','#7F93C9',250,[{n:'Exclusivos',i:'',w:'',sub:'Holográficos · no se repiten',t:[['fundador','Viajero fundador'],['pionero','Pionero'],['roma','Roma 2027'],['probador','Probador']].map(([k,lab])=>PC({ex:true,k,lab}))}]]];
+const DEST=[{pais:'Italia',fl:'linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',dests:[['Roma','roma',true],['Florencia','',false],['Pisa','',false],['Venecia','',false]]},{pais:'Francia',fl:'linear-gradient(90deg,#2B4C9B 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',dests:[['París','',false]]}];
+const norm=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const HOW={'Países':['Visita países nuevos con la app.',2],'Destinos':['Haz viajes a ciudades nuevas.',2],'Capitales':['Visita capitales de país.',3],'Patrimonios de la Humanidad':['Visita sitios Patrimonio de la Humanidad.',3],'La vuelta al mundo':['Suma kilómetros en tus viajes.',5],'Continentes':['Viaja a un continente nuevo.',4],'Dos países en un día':['Visita dos países el mismo día.',3],'Los pequeños gigantes':['Visita los microestados de Europa.',4],'Al otro lado del ecuador':['Viaja al hemisferio sur.',4],'Viajero nacional':['Visita 3 destinos de tu propio país.',2],
+'Las 7 maravillas del mundo':['Visita las siete maravillas del mundo.',5],'Viajes':['Completa viajes con la app.',1],'Las cuatro estaciones':['Viaja en primavera, verano, otoño e invierno.',3],'Los 12 meses':['Viaja en cada mes del año.',5],'Nunca es la última vez':['Vuelve a una ciudad donde ya estuviste.',2],'Un destino, cuatro estaciones':['Visita la misma ciudad en las cuatro estaciones.',5],'Navidad fuera de casa':['Pasa el día de Navidad de viaje.',3],'Nochevieja fuera de casa':['Pasa la Nochevieja de viaje.',3],'Tres viajes en un año':['Haz 3 viajes en el mismo año.',3],'De sol a sol':['Consigue Madrugador y Nocturno el mismo día.',3],'Alondra':['Empieza tu ruta muy temprano.',2],'Búho':['Acaba tu ruta muy tarde.',2],
+'A mi aire':['Viaja solo.',1],'En pareja':['Viaja en pareja.',1],'Con amigos':['Viaja con amigos.',1],'En familia':['Viaja en familia.',1],'Día perfecto':['Ve todas las paradas de un día.',2],'Viaje perfecto':['Completa todos los días de un viaje.',4],'Imparable':['Completa 3 días seguidos.',2],'Escapada':['Haz un viaje de 1 o 2 noches.',1],'Gran viaje':['Haz un viaje de 10 noches o más.',4],'El fotógrafo':['Haz foto en todas las paradas vistas de un viaje.',3],'Diamante a la primera':['Consigue un sello de diamante en tu primer viaje a una ciudad.',5],
+'Cazador de emblemas':['Encuentra Emblemas Ocultos.',3],'Coleccionista':['Completa colecciones.',3],'Conocedor de la ciudad':['Ve muchos sitios de una misma ciudad.',4],'Roma al completo':['Completa todas las colecciones de una ciudad.',5],'Todos los secretos de Roma':['Encuentra todos los emblemas de una ciudad.',5],'Tres ciudades de oro':['Consigue el sello de oro en 3 ciudades.',4],'Tres ciudades de diamante':['Consigue el sello de diamante en 3 ciudades.',5],'Exclusivos':['Solo en ocasiones especiales: no se pueden buscar.',5]};
+const DL=['','Muy fácil','Fácil','Media','Difícil','Muy difícil'];
+class Component extends DCLogic {
+  state={tab:'d',q:'',ord:'g'};
+  renderVals(){const s=this.state;const isDest=s.tab==='d';
+    const grade=[['none','Por conseguir'],['bronce','Primeros pasos en Roma'],['plata','Roma te atrapa'],['oro','Roma en el corazón'],['diamante','Roma es tuya']];
+    const vgr=[['plata','Has cruzado la frontera'],['oro','El Vaticano en el corazón'],['diamante','El Vaticano es tuyo']];
+    const CO=[['Los imprescindibles de Roma','impr','8','','','','Lo esencial, visto.'],['El país más pequeño del mundo','vati','3','','','','El país entero.'],['Las 4 joyas de Roma','joyas','4','','','','Las cuatro joyas, en tu mano.'],['El alma de Trastevere','tras','4','','','','Corazón trasteverino.'],
+      ['La Roma de Miguel Ángel','gen','4','marmol','cupula,mano,cincel,escalinata','cincel','Tras la huella del genio.'],['La Roma de Bernini','gen','5','bernini','fuente,balda,cupula,cuadro,mano','balda','La Roma que esculpió Bernini.'],['Tras los pasos de Caravaggio','gen','3','cara','cuadro,cuadro,cuadro','cuadro','Luz y sombra.'],
+      ['La Roma antigua','gen','6','piedra','arco,foro,templo,castillo,circo,termas','loba','2.000 años de historia.'],['Los miradores','gen','3','mira','sol,arbol,banco','prism','Roma a tus pies.'],['Plazas y fuentes de Roma','gen','7','turq','obelisco,fuente,escalinata,templo,fuente,fuente,fuente','barca','Agua y piedra.'],['La Roma secreta','gen','5','verde','puerta,piramide,cupula,templo,tortuga','puerta','Lo que pocos ven.']];
+    const EM=[['mar','Una maravilla del mundo','Coliseo'],['foro','Donde empezó todo','Foro Romano'],['cre','Bajo el techo de Miguel Ángel','Museos Vaticanos'],['plaza','Un país nuevo: el más pequeño del mundo','Plaza de San Pedro'],['tumba','Sobre la tumba de San Pedro','Basílica de San Pedro'],['ocu','Bajo una cúpula de casi 2.000 años','Panteón'],['mon','Volverás a Roma','Fontana de Trevi'],['boca','Has dicho la verdad','Boca de la Verdad'],['key','Has mirado por la cerradura','Ojo de la Cerradura'],['lamp','La Roma de debajo','Catacumbas'],['alba','Madrugador','Roma antes que nadie.'],['noche','Nocturno','Roma con las luces encendidas.']];
+    const base={isS:false,isV:false,isP:false,isE:false,bg:'#FFFDF8',fg:'#1C2230'};
+    const dSecs=[
+      {t:'Sello de Roma',k:'5 grados',items:grade.map(([g,n])=>({...base,isS:true,g,i:'coliseo',sh:'round',l:'ROMA',n,s:g==='none'?'Gris':g[0].toUpperCase()+g.slice(1)}))},
+      {t:'Sello del Vaticano',k:'3 grados',items:vgr.map(([g,n])=>({...base,isS:true,g,i:'cupula',sh:'oval',l:'VATICANO',n,s:g[0].toUpperCase()+g.slice(1)}))},
+      {t:'Colecciones',k:'11',items:CO.map(([n,kind,n2,pal,ics,cen,line],i)=>{const col=['impr','vati','joyas','tras','mig','ber','car','ant','mir','pyf','sec'][i];return{...base,isP:true,col,set:Array.from({length:+n2},(_,j)=>j).join(','),n,s:n2+' sitios · '+line};})},
+      {t:'Emblemas Ocultos',k:'12',items:EM.map(([k,n,s2])=>({...base,isE:true,k,n,s:s2,bg:'#1C2230',fg:'#FFFDF8'}))}];
+    const q=norm(s.q);
+    const countries=DEST.map(c=>({n:c.pais,fl:c.fl,dests:c.dests.filter(([n])=>!q||norm(n).includes(q)||norm(c.pais).includes(q)).map(([n,k,live])=>({n,k:live?'':'pronto',bg:live?'#1C2230':'transparent',fg:live?'#FFFDF8':'rgba(28,34,48,.45)',fw:live?'600':'500',cur:live?'pointer':'default',pick:()=>{}}))})).filter(c=>c.dests.length);
+    return{tabs:[['d','Por destino'],['v','De viajero']].map(([k,n])=>({n,bg:s.tab===k?'#1C2230':'transparent',fg:s.tab===k?'#FFFDF8':'rgba(28,34,48,.65)',pick:()=>this.setState({tab:k})})),
+      isDest,isViaj:!isDest,q:s.q,qBd:s.q?'#1C2230':'rgba(28,34,48,.12)',setQ:e=>this.setState({q:e.target.value}),countries,noRes:!countries.length,
+      stats:[['2','sellos'],['11','colecciones'],['12','emblemas'],['1','maravilla']].map(([n,l])=>({n,l})),dSecs,
+      ...(()=>{const all=[];VG.forEach(([id,gn,c,h,rows])=>rows.forEach(r0=>{let r=r0;const[how,d]=HOW[r.n]||['',3];const V1=['Viaje perfecto','Gran viaje','Conocedor de la ciudad','Tres ciudades de oro','Las 7 maravillas del mundo','Los 12 meses','Un destino, cuatro estaciones','Roma al completo','Diamante a la primera','Tres ciudades de diamante','Exclusivos'];
+          const v1=d<=3||V1.includes(r.n);
+          const GR=['bronce','plata','oro','noche','magenta','esmeralda','holo'];
+          const SH={'Destinos':'oct','Capitales':'hex','Cazador de emblemas':'hex','Coleccionista':'oct'};
+          const LAU={'Patrimonios de la Humanidad':1,'Destinos':1,'Capitales':1};
+          const NIC='M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM9.6 10.2a2.6 2.6 0 1 0 2.4-2.7h-1.2M11.2 6.3l1.1 1.2-1.1 1.2';
+          if(r.n==='Conocedor de la ciudad')r={...r,t:r.t.map((m,k)=>({...m,stage:['5','10'][k]}))};
+          if(v1&&r.t.some(m=>m.lv)&&r.t.length>1)r={...r,t:r.t.map((m,k)=>({...m,lv:false,mg:true,grade:r.n==='Conocedor de la ciudad'?['oro','noche'][k]:GR[Math.min(k,6)],shape:SH[r.n]||'round',ic:r.i,fx:String(k),lau:k>=1?'1':''}))};
+          if(v1&&r.t.length===1&&r.t[0].lv&&(r.n==='Tres ciudades de oro'||r.n==='Tres ciudades de diamante'))r={...r,t:[{...r.t[0],lv:false,mg:true,grade:r.n==='Tres ciudades de oro'?'oro':'diamante',shape:'hex',ic:'M3 20.5h18M4.5 20.5v-6l2.3-1.6 2.3 1.6v6M9.5 20.5V9.5l2.5-1.8 2.5 1.8v11M14.9 20.5v-6l2.3-1.6 2.3 1.6v6M12 4l.8 1.7 1.7.8-1.7.8L12 9l-.8-1.7-1.7-.8 1.7-.8z',fx:r.n==='Tres ciudades de oro'?'2':'6',lau:'1'}]};
+          if(v1&&r.t.length===1&&MULTI[r.n]&&!r.t[0].dest&&!r.t[0].med&&!r.t[0].ex)r={...r,t:[PC({dest:true,icon:'path',icd:MULTI[r.n],stage:'10',lab:r.t[0].lab})]};
+          all.push({...r,how,d,dl:DL[d],v1,dots:[1,2,3,4,5].map(k=>k<=d?c:'rgba(28,34,48,.15)'),h:String(h),gc:c,gn,showG:s.ord==='d'});}));
+        const ords=[['g','Por grupos'],['d','Por dificultad']].map(([k,n])=>({n,bg:s.ord===k?'#1C2230':'transparent',fg:s.ord===k?'#FFFDF8':'rgba(28,34,48,.65)',pick:()=>this.setState({ord:k})}));
+        if(s.ord==='d'){const lv=[1,2,3,4,5].map(d=>({id:'d'+d,n:DL[d],c:['','oklch(0.62 0.1 150)','oklch(0.66 0.12 120)','oklch(0.72 0.13 80)','oklch(0.62 0.15 45)','oklch(0.55 0.17 5)'][d],h:'40',rows:all.filter(r=>r.d===d)})).filter(x=>x.rows.length);
+          return{ords,vNav:lv.map(x=>({h:'#'+x.id,n:x.n,c:x.c,k:String(x.rows.length)})),vSecs:lv};}
+        return{ords,vNav:VG.map(([id,n,c,h,rows])=>({h:'#'+id,n,c,k:String(rows.length)})),vSecs:VG.map(([id,n,c,h])=>({id,n,c,h:String(h),rows:all.filter(r=>r.gn===n)}))};})()};}
+}
+</script>
+</body>
+</html>

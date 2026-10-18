@@ -77,6 +77,8 @@ recorrer('src')
 for (const archivo of archivos) {
   const texto = leer(archivo)
   const nombre = archivo.replace(/\\/g, '/')
+  // (8C1) Los iconos del Dashboard de Design (logros de viajero) son suyos: el avión de «Gran viaje» es de un logro, no de un medio de transporte.
+  if (nombre.endsWith('dibujos/iconosDashboard.ts')) continue
   for (const viejo of VIEJOS) debe(!texto.includes(viejo), '4 viejo', `${nombre}: aún lleva un trazo de transporte antiguo`)
   debe(!EMOJI_TRANSPORTE.test(texto), '4 emoji', `${nombre}: lleva un emoji de transporte`)
   // Un <svg> suelto (fuera de iconos.ts y de Icono.tsx) con un avión/tren/bus/coche: nombre de componente o de variable.

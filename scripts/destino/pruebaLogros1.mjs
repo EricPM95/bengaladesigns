@@ -76,14 +76,14 @@ console.log('1. Los datos de los logros')
   debe(R.pionero.activo === true && R.pionero.limite === 100, 'datos', 'Pionero encendido en Roma, los 100 primeros')
   const V = datos.viajero
   debe(V.logros.find((l) => l.id === 'paises').escalones.map((e) => e.n).join() === '1,3,5,8,10,15,20,25,30', 'datos', 'escalones de Países')
-  debe(V.logros.find((l) => l.id === 'destinos').escalones.map((e) => e.n).join() === '1,3,5,10,15,20' && V.logros.find((l) => l.id === 'capitales').escalones.map((e) => e.n).join() === '5,10,15,25', 'datos', 'escalones de Destinos y Capitales')
-  debe(V.logros.find((l) => l.id === 'patrimonios').escalones.map((e) => e.n).join() === '1,10,15' && V.logros.find((l) => l.id === 'cazador_emblemas').escalones.map((e) => e.n).join() === '5,10,15' && V.logros.find((l) => l.id === 'coleccionista').escalones.map((e) => e.n).join() === '5,10,15', 'datos', 'escalones de Patrimonios, Cazador y Coleccionista')
-  debe(V.logros.find((l) => l.id === 'maravillas').escalones.length === 7 && V.logros.find((l) => l.id === 'viajes').escalones.map((e) => e.n).join() === '1,5,10', 'datos', 'las 7 maravillas y los viajes 1, 5, 10')
+  debe(V.logros.find((l) => l.id === 'destinos').escalones.map((e) => e.n).join() === '1,3,5,10,15,20,25,30' && V.logros.find((l) => l.id === 'capitales').escalones.map((e) => e.n).join() === '5,10,15,25', 'datos', 'escalones de Destinos (con 25 y 30 del Dashboard) y Capitales')
+  debe(V.logros.find((l) => l.id === 'patrimonios').escalones.map((e) => e.n).join() === '1,5,10,15,25' && V.logros.find((l) => l.id === 'cazador_emblemas').escalones.map((e) => e.n).join() === '5,10,15' && V.logros.find((l) => l.id === 'coleccionista').escalones.map((e) => e.n).join() === '5,10,15', 'datos', 'escalones de Patrimonios, Cazador y Coleccionista')
+  debe(V.logros.find((l) => l.id === 'maravillas').escalones.length === 7 && V.logros.find((l) => l.id === 'viajes').escalones.map((e) => e.n).join() === '1,5,10,15,20,25,30', 'datos', 'las 7 maravillas y los viajes 1, 5, 10, 15, 20, 25 y 30 (Dashboard, 8C1)')
   debe(['solo', 'pareja', 'amigos', 'familia'].every((v) => V.logros.find((l) => l.valor === v)?.escalones.map((e) => e.n).join() === '1,3,5,10'), 'datos', 'Con quién viajas: cuatro chapas de 1, 3, 5 y 10')
   debe(V.logros.find((l) => l.id === 'conocedor').escalones.map((e) => e.n).join() === '25,50', 'datos', 'Conocedor: 25 y 50')
   const ids = V.logros.map((l) => l.id)
   debe(new Set(ids).size === ids.length, 'datos', 'ningún logro de viajero repetido')
-  for (const id of ['dos_paises_en_un_dia', 'de_sol_a_sol', 'alondra', 'buho', 'escapada', 'gran_viaje', 'imparable', 'el_fotografo', 'nunca_ultima_vez', 'tres_oro', 'tres_diamante', 'fundador', 'pionero', 'edicion_anio', 'probador', 'cuatro_estaciones', 'destino_cuatro_estaciones', 'doce_meses', 'navidad_fuera', 'nochevieja_fuera', 'tres_viajes_ano', 'dia_perfecto', 'viaje_perfecto', 'ciudad_completa', 'todos_secretos', 'diamante_primera']) debe(ids.includes(id), 'datos', `falta el logro ${id}`)
+  for (const id of ['dos_paises_en_un_dia', 'de_sol_a_sol', 'alondra', 'buho', 'escapada', 'gran_viaje', 'imparable', 'el_fotografo', 'nunca_ultima_vez', 'tres_oro', 'tres_diamante', 'fundador', 'pionero', 'edicion_anio', 'probador', 'cuatro_estaciones', 'destino_cuatro_estaciones', 'doce_meses', 'navidad_fuera', 'nochevieja_fuera', 'tres_viajes_ano', 'dia_perfecto', 'viaje_perfecto', 'ciudad_completa', 'diamante_primera']) debe(ids.includes(id), 'datos', `falta el logro ${id}`)
   debe(!/\bqa\.|password|secret_|api[_-]?key|token/i.test(JSON.stringify(datos)), 'datos', 'ninguna clave en los datos')
   // Los nombres y las líneas, de NOMBRES_LOGROS.md
   debe(R.sellos[0].grados.map((g) => g.nombre).join('|') === 'Primeros pasos en Roma|Roma te atrapa|Roma en el corazón|Roma es tuya' && R.sellos[1].grados.map((g) => g.nombre).join('|') === 'Has cruzado la frontera|El Vaticano en el corazón|El Vaticano es tuyo', 'datos', 'los nombres de cada grado, de NOMBRES_LOGROS.md')
@@ -210,7 +210,7 @@ await db.exec(`
   alter table storage.objects enable row level security;
   create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
 `)
-const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023|0024)_/.test(f)).sort()
+const migraciones = fs.readdirSync('supabase/migrations').filter((f) => /^(0001|0002|0003|0012|0018|0020|0021|0023|0024|0025)_/.test(f)).sort()
 for (const archivo of migraciones) {
   try {
     await db.exec(fs.readFileSync(path.join('supabase/migrations', archivo), 'utf8'))
@@ -319,14 +319,24 @@ const repoPG = {
       [u, f.trip_id, f.fecha, f.gastada_en, f.pospuesta, f.pregunta_hecha],
     ),
   perfilDe: async (u) => {
-    const f = (await S('select previos, vitrina from public.logro_perfil where user_id = $1', [u]))[0]
-    return { previos: f?.previos ?? { paises: [], dias: 0 }, vitrina: f?.vitrina ?? { baldas: {}, titulo: null } }
+    const f = (await S('select previos, vitrina, exp_max from public.logro_perfil where user_id = $1', [u]))[0]
+    return { previos: f?.previos ?? { paises: [], dias: 0 }, vitrina: f?.vitrina ?? { baldas: {}, titulo: null }, exp_max: f?.exp_max ?? 0 }
   },
   guardarPerfil: async (u, p) => {
     await S('insert into public.logro_perfil (user_id) values ($1) on conflict (user_id) do nothing', [u])
     if (p.previos) await S('update public.logro_perfil set previos = $2::jsonb where user_id = $1', [u, JSON.stringify(p.previos)])
     if (p.vitrina) await S('update public.logro_perfil set vitrina = $2::jsonb where user_id = $1', [u, JSON.stringify(p.vitrina)])
+    if (p.exp_max != null) await S('update public.logro_perfil set exp_max = $2 where user_id = $1', [u, p.exp_max])
   },
+  referidosDe: (u) => S('select invitado_id as invitado, creado_en, viaje_acabado_en from public.logro_referidos where invitador_id = $1', [u]),
+  invitadorDe: async (u) => (await S('select invitador_id, viaje_acabado_en from public.logro_referidos where invitado_id = $1', [u]))[0] ?? null,
+  apuntarInvitacion: async (a, b) => {
+    if (a === b) return false
+    await S('insert into public.logro_referidos (invitador_id, invitado_id) values ($1, $2) on conflict (invitado_id) do nothing', [a, b])
+    return true
+  },
+  marcarInvitacionCumplida: (u, cuando) => S('update public.logro_referidos set viaje_acabado_en = $2 where invitado_id = $1 and viaje_acabado_en is null', [u, cuando]),
+  cuentasConHechos: async () => [...new Set((await S('select user_id from public.logro_hechos where deshecho_en is null')).map((f) => f.user_id))],
   marcarAnimacion: async (u, claves, vista) => {
     for (const c of claves) await S('update public.achievements set animacion_vista = $5 where user_id = $1 and destino = $2 and logro = $3 and escalon = $4', [u, c.destino, c.logro, String(c.escalon), vista])
   },
@@ -1064,7 +1074,7 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   debe(id('paises').escalones.map((e) => e.n).join() === '1' && id('destinos').escalones.map((e) => e.n).join() === '1' && !id('capitales'), 'visibles', 'con solo Roma: Países y Destinos solo el 1, Capitales no se ve')
   debe(id('patrimonios').escalones.map((e) => e.n).join() === '1' && id('maravillas').escalones.map((e) => e.n).join() === '1', 'visibles', 'Patrimonios y maravillas, solo el 1')
   debe(id('cazador_emblemas').escalones.map((e) => e.n).join() === '5,10' && id('coleccionista').escalones.map((e) => e.n).join() === '5,10', 'visibles', 'Cazador y Coleccionista, hasta 10 (Roma tiene 12 emblemas y 11 colecciones)')
-  debe(id('conocedor').escalones.map((e) => e.n).join() === '25,50' && id('viajes').escalones.length === 3, 'visibles', 'Conocedor 25 y 50 (cuentan todos los sitios de la ciudad); los viajes enteros')
+  debe(id('conocedor').escalones.map((e) => e.n).join() === '25,50' && id('viajes').escalones.length === 7, 'visibles', 'Conocedor 25 y 50 (cuentan todos los sitios de la ciudad); los viajes enteros')
   debe(!id('tres_oro') && !id('tres_diamante') && !id('pequenos_gigantes') && !id('otro_lado_ecuador') && !id('viajero_nacional') && !id('probador'), 'visibles', 'lo que pide más ciudades o países no se ve todavía')
   debe(vis.every((l) => !l.nuevo), 'visibles', 'con un solo destino, nada es «Nuevo escalón»')
   // Cuando se añade un destino, sus escalones salen con «Nuevo escalón»
@@ -1133,7 +1143,7 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   debe(darse !== null, 'seguridad', 'ni se da un logro')
   const animar = await como(a.uid, () => q("update public.achievements set animacion_vista = true where user_id = $1 returning id", [a.uid]))
   debe(animar.length === 0, 'seguridad', 'ni cambia lo ganado (la animación vista la marca el servidor)')
-  const vit = await como(a.uid, () => q("insert into public.logro_perfil (user_id, vitrina) values ($1, '{\"baldas\":{},\"titulo\":null}'::jsonb) returning user_id", [a.uid]))
+  const vit = await como(a.uid, () => q("insert into public.logro_perfil (user_id, vitrina) values ($1, '{\"baldas\":{},\"titulo\":null}'::jsonb) on conflict (user_id) do update set vitrina = excluded.vitrina returning user_id", [a.uid]))
   debe(vit.length === 1, 'seguridad', 'sí guarda su vitrina en su cuenta')
   const ajeno = await como(b.uid, () => q('select * from public.logro_perfil'))
   debe(ajeno.length === 0, 'seguridad', 'y nadie más la ve')
@@ -1198,7 +1208,7 @@ console.log('4. Las rutas y el panel de Eric')
     debe(vit.estado === 200 && vit.cuerpo.titulo === '*|maravilla|coliseo', 'rutas', 'el título de la vitrina se guarda en la cuenta')
   }
   debe(esAdmin({ id: 'x', email: 'Eric@ejemplo.es' }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es, otra@ejemplo.es' }) === true && esAdmin({ id: 'x', email: 'otro@ejemplo.es' }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }) === false && esAdmin({ id: 'x', email: 'eric@ejemplo.es', is_anonymous: true }, { LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }) === false && esAdmin({ id: 'x', email: 'eric@ejemplo.es' }, {}) === false, 'admin', 'la cuenta de administrador sale de una variable del servidor; sin variable, nadie')
-  const codigo = ['motor', 'servicio', 'rutas', 'datos', 'avisos', 'pase', 'vistas', 'momentos', 'fotos', 'repo'].map((f) => fs.readFileSync(`server/logros/${f}.js`, 'utf8')).join('\n')
+  const codigo = ['motor', 'servicio', 'rutas', 'datos', 'avisos', 'pase', 'vistas', 'momentos', 'fotos', 'repo', 'exp'].map((f) => fs.readFileSync(`server/logros/${f}.js`, 'utf8')).join('\n')
   debe(!/@[a-z0-9-]+\.(com|es|org)/i.test(codigo.replace(/mailto:/g, '')), 'admin', 'ningún email escrito en el código')
   // El motor solo se LEE: de él salen la hora libre del día de llegada y la de salir el último día (dos funciones suyas); no se escribe ni se importa nada más.
   const sinComentarios = codigo.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
@@ -1211,6 +1221,202 @@ console.log('4. Las rutas y el panel de Eric')
   // Con el interruptor apagado el servidor no monta nada
   const index = fs.readFileSync('server/index.js', 'utf8')
   debe(/if \(logrosActivos\(\) && salesAdmin\)/.test(index), 'interruptor', 'el servidor solo monta los logros con el interruptor encendido')
+}
+
+/* ─────────────────────────── 5. Tanda 8C1: Versión 1, escalones del Dashboard y EXP ─────────────────────────── */
+console.log('5. Tanda 8C1: la Versión 1, los escalones del Dashboard, la EXP, los niveles, las invitaciones y el sorteo')
+{
+  const { soloActivos } = await import('../../server/logros/datos.js')
+  const E = await import('../../server/logros/exp.js')
+  const crudo = JSON.parse(fs.readFileSync('data/logros/viajero.json', 'utf8'))
+  const ids1 = datos.viajero.logros.map((l) => l.id)
+  const APAGADOS = ['continentes', 'pequenos_gigantes', 'otro_lado_ecuador', 'todos_secretos']
+  const V1 = ['paises', 'destinos', 'capitales', 'patrimonios', 'dos_paises_en_un_dia', 'viajero_nacional', 'maravillas', 'viajes', 'cuatro_estaciones', 'doce_meses', 'nunca_ultima_vez', 'destino_cuatro_estaciones', 'navidad_fuera', 'nochevieja_fuera', 'tres_viajes_ano', 'de_sol_a_sol', 'alondra', 'buho', 'con_quien_solo', 'con_quien_pareja', 'con_quien_amigos', 'con_quien_familia', 'dia_perfecto', 'viaje_perfecto', 'imparable', 'escapada', 'gran_viaje', 'el_fotografo', 'diamante_primera', 'cazador_emblemas', 'coleccionista', 'conocedor', 'ciudad_completa', 'tres_oro', 'tres_diamante', 'fundador', 'pionero', 'edicion_anio', 'probador']
+  // La Versión 1
+  debe(ids1.length === V1.length && V1.every((id) => ids1.includes(id)), 'version1', `los 39 logros de la Versión 1 están encendidos (y solo ellos): ${ids1.length}`)
+  debe(APAGADOS.every((id) => !ids1.includes(id) && crudo.logros.find((l) => l.id === id)?.activo === false), 'version1', 'los 4 de más adelante (Continentes, Pequeños gigantes, Al otro lado del ecuador, Todos los secretos) siguen en los datos, apagados con `activo: false`')
+  debe(JSON.stringify(datos.viajero.logros_apagados.slice().sort()) === JSON.stringify(APAGADOS.slice().sort()), 'version1', 'el panel sabe cuáles están apagados')
+  debe(!logrosVisibles(datos, new Date('2026-12-01')).some((l) => APAGADOS.includes(l.id)) && !(await servicio.logrosDeViajero((await persona('v1-ver@correo.es')).uid)).logros.some((l) => APAGADOS.includes(l.id)), 'version1', 'los apagados no se ven en ningún sitio (ni en la lista de logros de viajero)')
+  // Encender uno es cambiar un dato, sin tocar código: con `activo` quitado ya se gana y da EXP.
+  const encendido = { ...datos, viajero: soloActivos({ ...crudo, logros: crudo.logros.map((l) => (l.id === 'continentes' ? { ...l, activo: undefined, version: 1 } : l)) }) }
+  debe(encendido.viajero.logros.some((l) => l.id === 'continentes'), 'version1', 'encender un logro es cambiar su dato en viajero.json (sin tocar código)')
+  const hechoRoma = { id: 'h1', tipo: 'foto', trip_id: 'v', destino: 'roma', sitio: 'coliseo', stop_id: 's1', instante: '2026-10-10T09:00:00Z', recibido_en: '2026-10-10T09:00:00Z', ubic: 'cerca', valido: true, inicio: '2026-10-10', fin: '2026-10-14' }
+  const viajeV = { id: 'v', destino: 'roma', inicio: '2026-10-10', fin: '2026-10-14', con_quien: 'pareja', noches: 4, dias: [] }
+  const conLogros = calcular({ datos: encendido, hechos: [hechoRoma], viajes: { v: viajeV }, cuenta: {}, ahora: new Date('2026-11-01') })
+  const sinLogros = calcular({ datos, hechos: [hechoRoma], viajes: { v: viajeV }, cuenta: {}, ahora: new Date('2026-11-01') })
+  debe([...conLogros.values()].some((i) => i.logro === 'continente') && ![...sinLogros.values()].some((i) => i.logro === 'continente'), 'version1', 'con «Continentes» apagado no se gana el continente; encendido, sí')
+  const itemContinente = { logro: 'continente', escalon: 'Europa', destino: '*' }
+  debe(E.expDeItem(datos, itemContinente) === 0 && E.expDeItem(encendido, itemContinente) === 150, 'exp', 'lo apagado da 0 EXP; encendido, 150 (continente nuevo)')
+  debe(E.expDeItem(datos, { logro: 'viajero:todos_secretos', escalon: '', destino: 'roma' }) === 0 && E.expDeItem(datos, { logro: 'viajero:pequenos_gigantes', escalon: '', destino: '*' }) === 0, 'exp', 'Todos los secretos y Los pequeños gigantes (apagados) no dan EXP, ni aunque estuvieran guardados')
+  // Una cuenta con un logro apagado ya guardado de antes: no se ve ni da EXP
+  const vieja = await persona('v1-vieja@correo.es')
+  await S("insert into public.achievements (user_id, logro, escalon, destino, ganado_en) values ($1, 'viajero:todos_secretos', '', 'roma', now()), ($1, 'continente', 'Europa', '*', now())", [vieja.uid])
+  const cv = await servicio.cargar(vieja.uid)
+  const resV = await servicio.resumenDe(vieja.uid, vieja.trip)
+  debe(!JSON.stringify(resV).includes('todos_secretos') && !JSON.stringify(resV).includes('Europa'), 'version1', 'lo apagado que ya estuviera guardado tampoco sale en el resumen')
+  debe((await servicio.expDe(vieja.uid)).exp === 0 && cv.logros.length === 2, 'exp', 'ni da EXP (0)')
+
+  // Escalones y nombres nuevos del Dashboard
+  const esc = (id) => datos.viajero.logros.find((l) => l.id === id).escalones
+  debe(esc('destinos').slice(-2).map((e) => `${e.n}:${e.nombre}`).join() === '25:Pasión por el mundo,30:Alma de explorador', 'dashboard', 'Destinos: 25 «Pasión por el mundo» y 30 «Alma de explorador»')
+  debe(esc('patrimonios').map((e) => `${e.n}:${e.nombre}`).join() === '1:Testigo de la historia,5:Pasos por la historia,10:Guardián del patrimonio,15:Memoria del mundo,25:Heredero del mundo', 'dashboard', 'Patrimonios: 1, 5 «Pasos por la historia», 10, 15 y 25 «Heredero del mundo»')
+  debe(esc('viajes').map((e) => `${e.n}:${e.nombre}`).join() === '1:El primer viaje,5:Cinco maletas,10:Maleta siempre lista,15:Viajero de ida y vuelta,20:Veinte maletas,25:Vida de viajero,30:Treinta viajes, treinta recuerdos', 'dashboard', 'Viajes: 1, 5, 10, 15 «Viajero de ida y vuelta», 20, 25 y 30')
+  debe(esc('cazador_emblemas').map((e) => e.nombre).join() === 'Cazador de emblemas,Ojo de lince,Nada se te escapa' && esc('coleccionista').map((e) => e.nombre).join() === 'Coleccionista,Álbum lleno,Gran coleccionista' && esc('conocedor').map((e) => e.nombre).join() === 'Conocedor de {ciudad},Como en casa en {ciudad}', 'dashboard', 'Cazador, Coleccionista y Conocedor con los nombres del Dashboard')
+  const lg = (id) => datos.viajero.logros.find((l) => l.id === id)
+  debe(lg('alondra').linea === 'Empieza tu ruta muy temprano.' && lg('buho').linea === 'Acaba tu ruta muy tarde.' && lg('alondra').n === 10 && lg('buho').n === 10 && lg('alondra').momento === 'madrugador' && lg('buho').momento === 'nocturno', 'dashboard', 'Alondra y Búho: las líneas del Dashboard y la regla de siempre (10 días Madrugador / 10 días Nocturno)')
+  debe(!/\d{1,2}:\d{2}/.test(lg('alondra').linea + lg('buho').linea + (lg('alondra').como ?? '') + (lg('buho').como ?? '')), 'dashboard', 'y nunca una hora a la vista')
+  debe(datos.viajero.logros.every((l) => typeof l.como === 'string' && l.como.length > 5), 'dashboard', 'cada logro lleva su línea de «cómo se gana» del Dashboard')
+  // Cada escalón con EXP en la tabla (ninguno olvidado)
+  const sinExp = []
+  for (const l of datos.viajero.logros) {
+    const t = datos.exp.viajero[l.id]
+    if (t == null) sinExp.push(l.id)
+    else if (l.escalones) for (const e of l.escalones) if (typeof t !== 'object' || t[String(e.n)] == null) sinExp.push(`${l.id}:${e.n}`)
+  }
+  debe(sinExp.length === 0, 'exp', `todos los logros y escalones encendidos tienen su EXP en data/logros/exp.json (faltan: ${sinExp.join(', ')})`)
+
+  // La EXP de cada cosa (EXP_Y_NIVELES.md)
+  const X = (logro, escalon = '', destino = 'roma') => E.expDeItem(datos, { logro, escalon, destino })
+  debe(X('pedazo', 'imprescindibles:coliseo') === 5 && X('emblema', 'coliseo') === 25 && X('maravilla', 'coliseo', '*') === 150 && X('pais', 'Italia', '*') === 50 && X('destino_nuevo', 'roma', '*') === 75 && X('patrimonio', 'centro_historico_de_roma', '*') === 40, 'exp', 'pedazo 5 · emblema 25 · maravilla 150 · país 50 · destino 75 · patrimonio 40')
+  debe(X('coleccion', 'imprescindibles') === 80 && X('coleccion', 'cuatro_joyas') === 40, 'exp', 'colección completa: 10 por pedazo (imprescindibles 8 → 80; las 4 joyas → 40)')
+  debe(['bronce', 'plata', 'oro', 'diamante'].map((g) => X('sello', `roma:${g}`)).join() === '50,75,125,200' && ['plata', 'oro', 'diamante'].map((g) => X('sello', `vaticano:${g}`)).join() === '50,75,125', 'exp', 'sello de ciudad 50/75/125/200 y del Vaticano 50/75/125')
+  const esca = (id, ns) => ns.map((n) => X(`viajero:${id}`, String(n), '*')).join()
+  debe(esca('paises', [1, 3, 5, 8, 10, 15, 20, 25, 30]) === '25,50,75,125,175,250,350,450,600', 'exp', 'Países: toda la escalera, de 25 a 600')
+  debe(esca('destinos', [1, 3, 5, 10, 15, 20, 25, 30]) === '25,50,75,125,175,250,350,450' && esca('capitales', [5, 10, 15, 25]) === '75,125,175,250', 'exp', 'Destinos (25 y 30: 350 y 450) y Capitales')
+  debe(esca('maravillas', [1, 2, 3, 4, 5, 6, 7]) === '25,50,75,125,175,250,1000' && esca('patrimonios', [1, 5, 10, 15, 25]) === '25,75,175,250,350', 'exp', 'Maravillas 1 a 6 y las siete (1.000) · Patrimonios 1, 5, 10, 15, 25')
+  debe(esca('viajes', [1, 5, 10, 15, 20, 25, 30]) === '25,125,250,350,450,600,750', 'exp', 'Viajes 1, 5, 10, 15, 20, 25 y 30: 25 a 750')
+  debe(esca('con_quien_solo', [1, 3, 5, 10]) === '25,75,125,250' && esca('conocedor', [25, 50]) === '175,350' && esca('cazador_emblemas', [5, 10, 15]) === '75,175,250' && esca('coleccionista', [5, 10, 15]) === '75,175,250', 'exp', 'Con quién viajas, Conocedor, Cazador y Coleccionista')
+  const unicos = { escapada: 25, dos_paises_en_un_dia: 50, viajero_nacional: 75, dia_perfecto: 75, el_fotografo: 75, nunca_ultima_vez: 75, gran_viaje: 100, navidad_fuera: 100, nochevieja_fuera: 100, de_sol_a_sol: 100, ciudad_completa: 100, tres_viajes_ano: 150, imparable: 150, diamante_primera: 150, viaje_perfecto: 250, alondra: 250, buho: 250, tres_oro: 250, cuatro_estaciones: 500, tres_diamante: 500, destino_cuatro_estaciones: 750, doce_meses: 1000, fundador: 100, pionero: 100, probador: 100, edicion_anio: 50 }
+  debe(Object.entries(unicos).every(([id, n]) => X(`viajero:${id}`, '', '*') === n), 'exp', 'los de un solo paso: 25, 50, 75, 100, 150, 250, 500, 750, 1.000; los exclusivos 100 (Fundador, Pionero, Probador) y 50 ({Ciudad} {año})')
+
+  // Paradas vistas (5, máximo 50 al día), viajes acabados y viajes de antes de la app
+  const enUnDia = Array.from({ length: 14 }, (_, i) => ({ ...hechoRoma, id: `d${i}`, sitio: 'coliseo', stop_id: `p${i}`, instante: `2026-10-10T${String(8 + (i % 12)).padStart(2, '0')}:${i < 12 ? '00' : '30'}:00Z`, recibido_en: `2026-10-10T${String(8 + (i % 12)).padStart(2, '0')}:00:00Z` }))
+  const rParadas = E.calcularExp({ datos, items: new Map(), hechos: enUnDia, viajes: { v: viajeV }, ahora: new Date('2026-10-12') })
+  debe(rParadas.entradas.filter((x) => x.tipo === 'parada').length === 10 && rParadas.total === 50, 'exp', 'parada vista: 5 cada una, como mucho 50 al día (14 paradas el mismo día dan 50)')
+  const sinUbic = [{ ...hechoRoma, tipo: 'visto', ubic: 'sin' }]
+  debe(E.calcularExp({ datos, items: new Map(), hechos: sinUbic, viajes: { v: viajeV }, ahora: new Date('2026-10-12') }).total === 0, 'exp', 'un Visto sin ubicación ni foto no da EXP de parada (solo cuenta lo comprobado)')
+  const cinco = Array.from({ length: 5 }, (_, i) => ({ ...hechoRoma, id: `c${i}`, stop_id: `q${i}`, sitio: 'coliseo', instante: `2026-10-1${i}T09:00:00Z`, recibido_en: `2026-10-1${i}T09:00:00Z` }))
+  debe(E.viajesAcabados({ datos, hechos: cinco, viajes: { v: viajeV }, ahora: new Date('2026-10-20') }).length === 1 && E.viajesAcabados({ datos, hechos: cinco, viajes: { v: viajeV }, ahora: new Date('2026-10-12') }).length === 0 && E.viajesAcabados({ datos, hechos: cinco.slice(0, 4), viajes: { v: viajeV }, ahora: new Date('2026-10-20') }).length === 0, 'exp', 'viaje acabado (100): 5 paradas vistas o más y el último día ya pasado; con 4, o sin acabar, no')
+  const prev = await persona('exp-previos@correo.es')
+  await V(prev, 'coliseo', dia(1))
+  const sinPrev = (await servicio.expDe(prev.uid)).exp
+  await repoPG.guardarPerfil(prev.uid, { previos: { paises: ['Francia', 'Alemania', 'Portugal', 'España'], dias: 90 } })
+  debe((await servicio.expDe(prev.uid)).exp === sinPrev, 'exp', 'los viajes de antes de la app («¿Dónde has estado ya?») dan 0 EXP')
+
+  // Los niveles, en sus límites
+  const N = (x) => E.nivelDeExp(x, datos.exp)
+  debe(N(499).nivel === 1 && N(500).nivel === 2 && N(1199).nivel === 2 && N(1200).nivel === 3 && N(0).nivel === 1, 'niveles', 'límites: 499 es nivel 1, 500 nivel 2, 1.199 nivel 2, 1.200 nivel 3')
+  debe([500, 700, 900].every((c, i) => E.costeDeNivel(i + 1, datos.exp) === c) && E.costeDeNivel(10, datos.exp) === 2300 && E.costeDeNivel(11, datos.exp) === 2500 && E.costeDeNivel(30, datos.exp) === 2500, 'niveles', 'subir cuesta 500, 700, 900… (200 más cada vez) y desde el nivel 11, 2.500 cada uno')
+  debe(N(13999).nivel === 10 && N(14000).nivel === 11 && N(16499).nivel === 11 && N(16500).nivel === 12 && E.expDeNivel(50, datos.exp) === 111500, 'niveles', 'el cambio a 2.500: el nivel 11 empieza en 14.000, el 12 en 16.500, el 50 en 111.500')
+  debe(N(111499).nivel === 49 && N(111500).nivel === 50 && N(111500).leyenda_estrellas === 0 && N(114499).leyenda_estrellas === 0 && N(114500).leyenda_estrellas === 1 && N(114500).nivel === 50 && N(117500).leyenda_estrellas === 2 && N(120500).leyenda_estrellas === 3 && N(111500 + 3000 * 40).leyenda_estrellas === 40, 'niveles', 'del 50 a Leyenda ★1: una estrella cada 3.000 EXP (114.500 → ★1, 117.500 → ★2) sin final')
+  debe(datos.exp.niveles.rangos.join() === 'Soñador,Explorador,Viajero,Trotamundos,Aventurero,Nómada,Cartógrafo,Embajador,Navegante,Leyenda' && [1, 5, 6, 10, 11, 15, 16, 20, 21, 26, 31, 36, 41, 46, 50].map((n) => N(E.expDeNivel(n, datos.exp)).rango).join() === 'Soñador,Soñador,Explorador,Explorador,Viajero,Viajero,Trotamundos,Trotamundos,Aventurero,Nómada,Cartógrafo,Embajador,Navegante,Leyenda,Leyenda', 'niveles', '10 rangos de 5 niveles, con sus nombres')
+  const m = N(1400)
+  debe(m.nivel === 3 && m.exp_en_nivel === 200 && m.coste_nivel === 900 && m.falta === 700 && m.estrellas_en_rango === 3, 'niveles', 'lo que se manda al móvil: 1.400 EXP → nivel 3, 200 dentro del nivel, faltan 700 para el siguiente')
+  const tablaDistinta = { ...datos.exp, niveles: { ...datos.exp.niveles, coste: { ...datos.exp.niveles.coste, primero: 100 } } }
+  debe(E.nivelDeExp(499, tablaDistinta).nivel > 2, 'niveles', 'los costes salen del archivo de datos (cambiarlo cambia los niveles, sin tocar código)')
+
+  // El avance de «Las cuatro estaciones» y «Los 12 meses»
+  const { avanceViajero } = await import('../../server/logros/motor.js')
+  const mesesDe = (...ms) => ms.map((mes, i) => ({ ...hechoRoma, id: `mes${i}`, stop_id: `m${i}`, instante: `2026-${String(mes).padStart(2, '0')}-10T09:00:00Z`, recibido_en: `2026-${String(mes).padStart(2, '0')}-10T09:00:00Z`, inicio: `2026-${String(mes).padStart(2, '0')}-09`, fin: `2026-${String(mes).padStart(2, '0')}-12` }))
+  const viajesDeMeses = Object.fromEntries([3, 7, 10, 12].map((mes, i) => [`v${i}`, { ...viajeV, id: `v${i}`, inicio: `2026-${String(mes).padStart(2, '0')}-09`, fin: `2026-${String(mes).padStart(2, '0')}-12` }]))
+  const hm = [3, 7, 10, 12].map((mes, i) => ({ ...mesesDe(mes)[0], id: `mm${i}`, trip_id: `v${i}`, stop_id: `z${i}` }))
+  const av = avanceViajero({ datos, hechos: hm, viajes: viajesDeMeses })
+  debe(av.doce_meses.n === 4 && av.doce_meses.total === 12 && av.doce_meses.meses.join() === '3,7,10,12' && av.cuatro_estaciones.n === 4 && av.cuatro_estaciones.total === 4, 'dashboard', 'se ve el avance: Los 12 meses (cada mes, un pedazo) y Las cuatro estaciones (1 de 4… 4 de 4)')
+  const avUno = avanceViajero({ datos, hechos: hm.slice(0, 1), viajes: viajesDeMeses })
+  debe(avUno.cuatro_estaciones.n === 1 && avUno.doce_meses.n === 1, 'dashboard', 'con un solo viaje: 1 de 4 y 1 de 12')
+  const personaAv = await persona('avance-viajero@correo.es')
+  await V(personaAv, 'coliseo', dia(1))
+  const lv = await servicio.logrosDeViajero(personaAv.uid)
+  debe(lv.logros.find((l) => l.id === 'cuatro_estaciones')?.avance?.n === 1 && lv.logros.find((l) => l.id === 'doce_meses')?.avance?.n === 1 && lv.logros.every((l) => typeof l.como === 'string'), 'dashboard', 'la lista de logros de viajero del servidor trae el avance y la línea de «cómo se gana»')
+  // Cuentas de Roma (para el informe): un viaje normal de 3 días y Roma al 100 % (server/logros/escenarios.js, el mismo que usa el modo de pruebas del móvil)
+  const { escenarioDeRoma } = await import('../../server/logros/escenarios.js')
+  const normal = escenarioDeRoma(datos, 'normal')
+  const roma100 = escenarioDeRoma(datos, 'roma100')
+  const aCategorias = (r) => r.por_categoria
+  console.log('   EXP de Roma · viaje normal (9 sitios, 3 días):', normal.total, 'nivel', E.nivelDeExp(normal.total, datos.exp).nivel, JSON.stringify(aCategorias(normal)))
+  console.log('   EXP de Roma · al 100 % (todos los sitios de las colecciones y emblemas):', roma100.total, 'nivel', E.nivelDeExp(roma100.total, datos.exp).nivel, JSON.stringify(aCategorias(roma100)))
+  debe(E.nivelDeExp(normal.total, datos.exp).nivel === 3 && normal.total > 1200 && normal.total < 2100, 'roma', `un viaje normal a Roma (9 sitios, 3 días): nivel 3 (${normal.total} EXP)`)
+  const base100 = ['pedazo', 'coleccion', 'sello', 'emblema', 'pais', 'destino_nuevo', 'maravilla', 'patrimonio'].reduce((s, k) => s + (aCategorias(roma100)[k] ?? 0), 0)
+  debe(base100 === 2185 && roma100.total > base100, 'roma', `Roma al 100 %: lo que dan los pedazos, colecciones, sellos, emblemas, países, destino, maravilla y Patrimonios son 2.185 EXP; con los logros de viajero, las paradas y el viaje acabado, ${roma100.total}`)
+
+  // Nunca baja: se cambia la tabla y a nadie le sale menos
+  const pn = await persona('exp-nunca-baja@correo.es')
+  for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon'].entries()) await V(pn, s, dia(1, `${String(9 + i).padStart(2, "0")}:00`))
+  const e1 = await servicio.expDe(pn.uid)
+  debe(e1.exp > 0 && (await repoPG.perfilDe(pn.uid)).exp_max === e1.exp, 'exp', `la EXP se guarda (${e1.exp}) y se puede volver a calcular desde los hechos`)
+  const baja = crearServicioLogros({ repo: repoPG, datos: { ...datos, exp: { ...datos.exp, pedazo: 0, emblema: 0, maravilla: 0, pais: 0, destino_nuevo: 0, patrimonio: 0, sello: { por_defecto: { bronce: 0, plata: 0, oro: 0, diamante: 0 } }, paradas: { ...datos.exp.paradas, por_parada: 0 } } }, catalogos, ahora: () => reloj, cobro: false, azar: () => 0 })
+  const e2 = await baja.expDe(pn.uid)
+  debe(e2.calculada < e1.exp && e2.exp === e1.exp && e2.nivel === e1.nivel, 'exp', `si la tabla baja y le saldría menos (${e2.calculada}), se queda con lo que tenía (${e2.exp})`)
+  debe((await servicio.expDe(pn.uid)).exp === e1.exp, 'exp', 'y con la tabla de siempre, igual')
+  // Cada momento trae su EXP y si se sube de nivel
+  const pm = await persona('exp-momentos@correo.es')
+  const r1 = await V(pm, 'coliseo', dia(1, '09:00'))
+  const sumaMomentos = r1.nuevos.reduce((s, x) => s + x.exp, 0)
+  debe(r1.nuevos.every((x) => Number.isFinite(x.exp) && typeof x.sube_de_nivel === 'boolean') && r1.exp && r1.exp.ganada >= sumaMomentos && r1.exp.despues.exp === r1.exp.antes.exp + r1.exp.ganada, 'exp', 'cada momento trae su EXP y si se sube de nivel, y la respuesta el total ganado')
+  debe(r1.nuevos.find((x) => x.tipo === 'maravilla')?.exp === 150 && r1.nuevos.find((x) => x.tipo === 'pais')?.exp === 50 && r1.nuevos.find((x) => x.tipo === 'sello')?.exp === 50 && r1.nuevos.find((x) => x.tipo === 'suma')?.exp === 5 * (r1.nuevos.find((x) => x.tipo === 'suma')?.sitios?.length ?? 1), 'exp', 'la maravilla del Coliseo da 150 (su escalón «Tu primera maravilla» da 25 aparte, como momento de viajero); el país 50; el sello en bronce 50; cada pedazo 5')
+  debe(r1.exp.antes.nivel === 1 && r1.exp.despues.nivel >= 2 && r1.exp.sube_de_nivel === true && r1.nuevos.some((x) => x.sube_de_nivel), 'exp', `con el primer Visto en el Coliseo (${r1.exp.ganada} EXP) se sube de nivel (${r1.exp.antes.nivel} → ${r1.exp.despues.nivel}) y un momento lo marca`)
+  debe(r1.nuevos.filter((x) => x.sube_de_nivel).length === 1 || r1.nuevos.filter((x) => x.sube_de_nivel).length === 2, 'exp', 'la subida de nivel la marca el momento en que se cruza (y no los siguientes)')
+  const rep = await V(pm, 'coliseo', dia(1, '09:00'))
+  debe(rep.repetido === true && rep.nuevos.length === 0 && !rep.exp, 'exp', 'repetir un Visto no da EXP otra vez')
+  const est = await servicio.estado(pm.uid, pm.trip)
+  debe(est.exp && est.exp.exp === r1.exp.despues.exp && ['nivel', 'rango', 'exp_en_nivel', 'falta', 'exp_para_siguiente'].every((k) => k in est.exp), 'exp', 'el estado manda al móvil: EXP total, nivel, rango, EXP dentro del nivel y la que falta')
+
+  // Las invitaciones
+  const invitador = await persona('inv-invitador@correo.es')
+  const invitado = await persona('inv-invitado@correo.es')
+  const expAntes = (await servicio.expDe(invitador.uid)).exp
+  debe((await servicio.registrarInvitacion(invitador.uid, invitado.uid)).ok === true && (await servicio.registrarInvitacion(invitador.uid, invitador.uid)).ok === false, 'invitaciones', 'se apunta quién invitó a quién (nadie se invita a sí mismo)')
+  debe((await servicio.expDe(invitador.uid)).exp === expAntes, 'invitaciones', 'crear la cuenta no da EXP al que invita')
+  for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon'].entries()) await V(invitado, s, dia(1 + (i > 1 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
+  await servicio.expDe(invitado.uid)
+  debe((await servicio.expDe(invitador.uid)).exp === expAntes, 'invitaciones', 'ni con 4 paradas vistas (el viaje no es de 5)')
+  await V(invitado, 'piazza_navona', dia(3, '09:00'))
+  reloj = new Date('2026-10-20T12:00:00Z')
+  const sinAcabar = await servicio.expDe(invitador.uid)
+  await servicio.expDe(invitado.uid)
+  const conInv = await servicio.expDe(invitador.uid)
+  debe(sinAcabar.exp === expAntes && conInv.exp === expAntes + 100, 'invitaciones', `100 EXP al que invita cuando su amigo acaba su primer viaje con la app (no antes): ${expAntes} → ${conInv.exp}`)
+  await servicio.expDe(invitado.uid)
+  debe((await servicio.expDe(invitador.uid)).exp === conInv.exp, 'invitaciones', 'y solo una vez')
+  const referidos12 = Array.from({ length: 12 }, (_, i) => ({ invitado: `u${i}`, viaje_acabado_en: `2026-0${1 + (i % 9)}-15T10:00:00Z` }))
+  const r12 = E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2026-12-31'), referidos: referidos12 })
+  debe(r12.total === 1000 && E.invitacionesQueCuentan(referidos12, 2026, datos.exp) === 10, 'invitaciones', 'como mucho 10 amigos al año: 12 amigos que acaban su viaje dan 1.000 EXP, no 1.200')
+  const dosAnios = [...referidos12.slice(0, 10), { invitado: 'x', viaje_acabado_en: '2027-02-01T10:00:00Z' }]
+  debe(E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2027-12-31'), referidos: dosAnios }).total === 1100, 'invitaciones', 'el tope es por año: el año siguiente vuelve a contar')
+  debe(E.calcularExp({ datos, items: new Map(), hechos: [], viajes: {}, ahora: new Date('2026-12-31'), referidos: [{ invitado: 'z', viaje_acabado_en: null }] }).total === 0, 'invitaciones', 'un amigo que todavía no ha acabado su viaje no da nada')
+
+  // El sorteo
+  const S1 = (exp, viajes) => E.entraEnElSorteo({ exp, viajesAcabadosDelAnio: viajes, tabla: datos.exp })
+  debe(S1(1200, 1) === true && S1(1500, 2) === true && S1(1200, 0) === false && S1(1199, 1) === false && S1(500, 3) === false, 'sorteo', 'nivel 3 con un viaje acabado este año, sí; nivel 3 sin viaje este año, no; nivel 2, no')
+  const nivel3ConViaje = await persona('sor-si@correo.es')
+  for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel3ConViaje, s, dia(1 + (i > 2 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
+  await repoPG.guardarPerfil(nivel3ConViaje.uid, { exp_max: 1300 })
+  const nivel3SinViaje = await persona('sor-sin-viaje@correo.es')
+  await repoPG.guardarPerfil(nivel3SinViaje.uid, { exp_max: 1300 })
+  const nivel2 = await persona('sor-nivel2@correo.es')
+  for (const [i, s] of ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon', 'piazza_navona'].entries()) await V(nivel2, s, dia(1 + (i > 2 ? 1 : 0), `${String(9 + i).padStart(2, "0")}:00`))
+  const so = await servicio.sorteoDe(2026, [nivel3ConViaje.uid, nivel3SinViaje.uid, nivel2.uid])
+  const ids = so.lista.map((x) => x.user_id)
+  debe(ids.includes(nivel3ConViaje.uid) && !ids.includes(nivel3SinViaje.uid), 'sorteo', 'nivel 3 con un viaje acabado este año: entra · nivel 3 sin viaje este año: no entra')
+  debe(!ids.includes(nivel2.uid) || (await servicio.expDe(nivel2.uid)).nivel >= 3, 'sorteo', 'nivel 2: no entra')
+  debe((await servicio.sorteoDe(2027, [nivel3ConViaje.uid])).entran === 0, 'sorteo', 'el año siguiente, sin viaje acabado ese año, ya no entra')
+  const mont = {}
+  registrarRutasLogros({ get: (r, h) => (mont[`GET ${r}`] = h), post: (r, h) => (mont[`POST ${r}`] = h), put: (r, h) => (mont[`PUT ${r}`] = h) }, { admin: { auth: { getUser: async (t) => (t === 'a' ? { data: { user: { id: nivel3ConViaje.uid, email: 'eric@ejemplo.es', is_anonymous: false } } } : t === 'u' ? { data: { user: { id: nivel3ConViaje.uid, email: 'x@y.z', is_anonymous: false } } } : { error: { message: 'no' } }) } }, servicio, repo: repoPG, env: { LOGROS_ACTIVOS: 'true', CUENTAS_ACTIVAS: 'true', LOGROS_ADMIN_EMAILS: 'eric@ejemplo.es' }, ahora: () => reloj })
+  const call = async (ruta, token, query = {}) => {
+    let estado = 200
+    let cuerpo = null
+    const res = { status: (e) => ((estado = e), res), json: (c) => ((cuerpo = c), res) }
+    await mont[ruta]({ headers: { authorization: `Bearer ${token}` }, get: () => `Bearer ${token}`, body: {}, query }, res)
+    return { estado, cuerpo }
+  }
+  const adm = await call('GET /api/admin/logros/sorteo', 'a', { anio: '2026' })
+  debe(adm.estado === 200 && adm.cuerpo.entran >= 1 && adm.cuerpo.lista.every((x) => !('email' in x) && !('nombre' in x)) && (await call('GET /api/admin/logros/sorteo', 'u')).estado === 403, 'sorteo', 'el panel de Eric cuenta cuántos entran este año y da la lista (solo ids, sin nombres ni correos); una cuenta normal no entra (403)')
+  const mi = await call('GET /api/logros/exp', 'u')
+  debe(mi.estado === 200 && mi.cuerpo.ok && mi.cuerpo.nivel >= 1 && 'falta' in mi.cuerpo, 'exp', 'GET /api/logros/exp manda la EXP, el nivel, el rango y lo que falta')
+  const panel8 = await call('GET /api/admin/logros/datos', 'a')
+  debe(panel8.cuerpo.viajero_apagados.length === 4, 'version1', 'el panel de Eric enseña cuáles están apagados')
+  const coste = fs.readFileSync('server/logros/exp.js', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+  debe(!/\b(500|700|2500|3000|150)\b/.test(coste), 'exp', 'ninguna cifra de la EXP escrita en el código: todo sale de data/logros/exp.json')
 }
 
 console.log(`\nLa prueba de los logros: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)

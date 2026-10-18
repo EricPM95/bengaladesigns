@@ -11,7 +11,8 @@
 
 import { libreDeLlegada } from '../../shared/routeEngine/llegadaDia1.js'
 import { datosDeVuelta } from '../../shared/routeEngine/vueltaDia.js'
-import { GLOBAL, calcular, clave, diferencia, diasEntre, parteLocal, sumarDias } from './motor.js'
+import { GLOBAL, avanceViajero, calcular, clave, diferencia, diasEntre, logroActivo, parteLocal, sumarDias } from './motor.js'
+import { calcularExp, entraEnElSorteo, expDeMomento, expFinal, resumenDeExp, viajesAcabados } from './exp.js'
 import { coordenadasDeSitio, nombreDeSitio } from './datos.js'
 import { dondeEstoy, evaluarFoto, evaluarVisto } from './fotos.js'
 import { armarMomentos } from './momentos.js'
@@ -101,13 +102,15 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
       const ctx = contextoDeViaje(fila, datos, catalogos, { esDuo: fila.es_duo === true })
       if (ctx) viajes[fila.id] = ctx
     }
-    return { hechos, viajes, logros, cuenta, pionero, probador }
+    // (8C1) La EXP que ya tenía (nunca baja) y los amigos que ha invitado.
+    const [perfil, referidos] = await Promise.all([repo.perfilDe(userId), repo.referidosDe ? repo.referidosDe(userId) : []])
+    return { hechos, viajes, logros, cuenta, pionero, probador, perfil, referidos }
   }
   const calcularCon = (c, hechos = c.hechos, pionero = c.pionero) => calcular({ datos, hechos, viajes: c.viajes, cuenta: c.cuenta, ahora: ahora(), pionero, probador: aIso(c.probador) })
   const aMapa = (filas) => new Map(filas.map((f) => [clave(f.destino, f.logro, f.escalon), f]))
   const aIso = (v) => (v instanceof Date ? v.toISOString() : v)
   /** Lo ganado (filas de la base) como el cerebro lo entiende: clave → { logro, escalon, destino, trip_id, en }. */
-  const aItems = (logros) => new Map(logros.map((f) => [clave(f.destino, f.logro, f.escalon), { clave: clave(f.destino, f.logro, f.escalon), logro: f.logro, escalon: String(f.escalon), destino: f.destino, trip_id: f.trip_id ?? null, en: aIso(f.ganado_en), animacion_vista: f.animacion_vista }]))
+  const aItems = (logros) => new Map(logros.filter((f) => logroActivo(datos, f.logro)).map((f) => [clave(f.destino, f.logro, f.escalon), { clave: clave(f.destino, f.logro, f.escalon), logro: f.logro, escalon: String(f.escalon), destino: f.destino, trip_id: f.trip_id ?? null, en: aIso(f.ganado_en), animacion_vista: f.animacion_vista }]))
 
   /** Concede lo nuevo (ya calculado) guardándolo; devuelve solo lo que de verdad se ha insertado (nunca da dos veces lo mismo). */
   async function conceder(userId, nuevos, extra = {}) {
@@ -119,7 +122,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
   }
 
   /** Lo que hay que enseñar tras un hecho: lo nuevo, con su frase de suspense (solo la primera vez). */
-  async function respuestaDeNuevos(userId, antes, despues, c) {
+  async function respuestaDeNuevos(userId, antes, despues, c, hechosDespues = c.hechos) {
     const nuevos = diferencia(antes, despues, datos.ajustes)
     const ultima = await repo.ultimaFrase(userId)
     const momentos = armarMomentos({ datos, nuevos, despues, antes, ultimaFrase: ultima, azar })
@@ -128,8 +131,85 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const claves = new Set(concedidos.map((it) => it.clave))
     // Lo que ya estaba guardado (por ejemplo, ganado antes de que cambiaran los datos) no se enseña otra vez.
     const mostrados = momentos.filter((m) => !m.clave || claves.has(m.clave))
-    void c
-    return mostrados.map(({ cat: _cat, ...m }) => m)
+    // (8C1) La EXP de cada momento y si con ella se sube de nivel (la pantalla de subir de nivel llegará con Design). La EXP de las paradas vistas y de los viajes acabados,
+    // que no son momentos, va delante. Nunca baja: se cuenta contra lo mayor entre lo calculado y lo que ya estaba guardado.
+    const guardada = c.perfil?.exp_max ?? 0
+    const total0 = expFinal(expCalculada(c, antes, c.hechos).total, guardada)
+    const total1 = expFinal(expCalculada(c, despues, hechosDespues).total, guardada)
+    if (total1 > guardada) await guardarMaximo(userId, total1)
+    const salida = mostrados.map(({ cat: _cat, ...m }) => ({ ...m, exp: expDeMomento(datos, m) }))
+    const deMomentos = salida.reduce((s, m) => s + m.exp, 0)
+    let acumulado = total0 + Math.max(0, total1 - total0 - deMomentos)
+    let nivelPrevio = resumenDeExp(total0, datos.exp).nivel
+    let sube = resumenDeExp(acumulado, datos.exp).nivel > nivelPrevio
+    nivelPrevio = resumenDeExp(acumulado, datos.exp).nivel
+    for (const m of salida) {
+      acumulado += m.exp
+      const n = resumenDeExp(acumulado, datos.exp).nivel
+      m.sube_de_nivel = n > nivelPrevio
+      sube ||= m.sube_de_nivel
+      nivelPrevio = n
+    }
+    const exp = { ganada: Math.max(0, total1 - total0), antes: resumenDeExp(total0, datos.exp), despues: resumenDeExp(total1, datos.exp), sube_de_nivel: resumenDeExp(total1, datos.exp).nivel > resumenDeExp(total0, datos.exp).nivel }
+    return { nuevos: salida, exp }
+  }
+
+  /** Guarda la mayor EXP (0025). Sin la migración aplicada no se puede guardar: no es grave, la EXP se calcula igual desde los hechos. */
+  async function guardarMaximo(userId, total) {
+    try {
+      await repo.guardarPerfil(userId, { exp_max: total })
+    } catch (error) {
+      console.warn('[logros] no se ha podido guardar la EXP máxima (¿falta la migración 0025?):', error.message)
+    }
+  }
+
+  /** Apunta que `invitadorId` invitó a `invitadoId` (solo el primero, nunca uno mismo). Todavía no hay enlace de invitación que llame a esto: ver el informe de la 8C1. */
+  async function registrarInvitacion(invitadorId, invitadoId) {
+    if (!repo.apuntarInvitacion) return { ok: false, motivo: 'sin_migracion' }
+    const hecho = await repo.apuntarInvitacion(invitadorId, invitadoId)
+    return { ok: hecho }
+  }
+
+  /**
+   * Si esta persona fue invitada y ya ha acabado su primer viaje con la app, lo apunta (en ese momento el que la invitó gana sus 100 EXP, con el tope anual).
+   * Crear la cuenta NO cuenta; solo acabar el primer viaje (el mismo «viaje acabado» de la EXP: 5 paradas vistas o más y el último día ya pasado).
+   */
+  async function resolverInvitacion(invitadoId, c) {
+    if (!repo.invitadorDe) return { ok: true, cumplida: false }
+    const fila = await repo.invitadorDe(invitadoId)
+    if (!fila || fila.viaje_acabado_en) return { ok: true, cumplida: Boolean(fila?.viaje_acabado_en) }
+    const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }).sort((a, b) => a.fin.localeCompare(b.fin))
+    if (acabados.length === 0) return { ok: true, cumplida: false }
+    await repo.marcarInvitacionCumplida(invitadoId, `${acabados[0].fin}T23:59:59Z`)
+    return { ok: true, cumplida: true }
+  }
+
+  /** Lo calculado ahora (de los hechos y lo ganado): total, por año y cada EXP con su fecha. */
+  const expCalculada = (c, items, hechos) => calcularExp({ datos, items, hechos, viajes: c.viajes, ahora: ahora(), referidos: c.referidos ?? [] })
+
+  /** La EXP de una cuenta: lo calculado, sin bajar nunca de lo que ya tenía guardado. */
+  async function expDe(userId) {
+    const c = await cargar(userId)
+    const calculado = expCalculada(c, calcularCon(c), c.hechos)
+    const guardada = c.perfil?.exp_max ?? 0
+    const total = expFinal(calculado.total, guardada)
+    if (total > guardada) await guardarMaximo(userId, total)
+    await resolverInvitacion(userId, c)
+    return { ok: true, ...resumenDeExp(total, datos.exp), por_anio: calculado.por_anio, calculada: calculado.total, guardada_antes: guardada }
+  }
+
+  /** El sorteo de un año (solo la regla): quién entra, entre las cuentas dadas. Sin nombres ni correos: solo el id de cada cuenta. */
+  async function sorteoDe(anio, userIds) {
+    const lista = []
+    for (const id of userIds) {
+      const c = await cargar(id)
+      const items = calcularCon(c)
+      const total = expFinal(expCalculada(c, items, c.hechos).total, c.perfil?.exp_max ?? 0)
+      const acabados = viajesAcabados({ datos, hechos: c.hechos, viajes: c.viajes, ahora: ahora() }).filter((v) => v.fin.slice(0, 4) === String(anio)).length
+      const entra = entraEnElSorteo({ exp: total, viajesAcabadosDelAnio: acabados, tabla: datos.exp })
+      lista.push({ user_id: id, exp: total, nivel: resumenDeExp(total, datos.exp).nivel, viajes_acabados: acabados, entra })
+    }
+    return { ok: true, anio: Number(anio), cuentas: lista.length, entran: lista.filter((x) => x.entra).length, lista: lista.filter((x) => x.entra) }
   }
 
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */
@@ -204,8 +284,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const antes = calcularCon(c)
     const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'visto', sitio, stop_id, instante, recibido_en: recibido, ubic: e.ubic, valido: true, motivo: e.motivo, inicio: viaje.inicio, fin: viaje.fin })
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
-    const nuevos = await respuestaDeNuevos(userId, antes, despues, c)
-    return { ok: true, cuenta: true, ubic: e.ubic, aviso: e.mensaje, sitio, ...queHayEn(c, viaje, sitio), hay_pedazo: hay.hay_pedazo && !nuevos.some((m) => m.tipo === 'suma'), nuevos, id: fila.id }
+    const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, fila])
+    return { ok: true, cuenta: true, ubic: e.ubic, aviso: e.mensaje, sitio, ...queHayEn(c, viaje, sitio), hay_pedazo: hay.hay_pedazo && !nuevos.some((m) => m.tipo === 'suma'), nuevos, exp, id: fila.id }
   }
 
   /* ── Una foto ── */
@@ -227,8 +307,8 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const antes = calcularCon(c)
     const fila = await repo.insertarHecho({ user_id: userId, trip_id, destino: viaje.destino, tipo: 'foto', sitio, stop_id, instante: e.instante, recibido_en: recibido, ubic: e.ubic, valido: true, origen, foto_id, inicio: viaje.inicio, fin: viaje.fin })
     const despues = calcularCon(c, [...c.hechos, fila], await repo.ordenPionero(userId))
-    const nuevos = await respuestaDeNuevos(userId, antes, despues, c)
-    return { ok: true, valida: true, cuenta: true, nuevos, id: fila.id }
+    const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, fila])
+    return { ok: true, valida: true, cuenta: true, nuevos, exp, id: fila.id }
   }
 
   /* ── El pase y la prueba de HOY ── */
@@ -329,6 +409,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return {
       ok: true,
       ...est,
+      exp: resumenDeExp(expFinal(expCalculada(c, calcularCon(c), c.hechos).total, c.perfil?.exp_max ?? 0), datos.exp),
       pendiente: pendientes({ datos, destino: viaje.destino, viaje, items: itemsMapa, hoy }),
       // El puntito del botón: algo ganado cuya animación no se vio (se saltó).
       puntito: c.logros.some((f) => f.animacion_vista === false && (f.destino === viaje.destino || f.destino === GLOBAL)),
@@ -380,10 +461,14 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     const c = await cargar(userId)
     const ganados = new Map(c.logros.map((f) => [clave(f.destino, f.logro, f.escalon), f]))
     const visibles = logrosVisibles(datos, ahora())
+    const avance = avanceViajero({ datos, hechos: c.hechos, viajes: c.viajes })
     return {
       ok: true,
       logros: visibles.map((def) => ({
         id: def.id,
+        // (8C1) Lo que se ve poco a poco: «Las cuatro estaciones» (1 de 4…) y «Los 12 meses» (cada mes, un pedazo).
+        avance: avance[def.id] ?? undefined,
+        como: def.como ?? null,
         grupo: def.grupo,
         nombre: def.nombre ?? null,
         linea: def.linea ?? null,
@@ -416,7 +501,7 @@ export function crearServicioLogros({ repo, datos, catalogos, ahora = () => new 
     return repo.encolarAvisos(puestos)
   }
 
-  return { cargar, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
+  return { cargar, expDe, sorteoDe, registrarInvitacion, resolverInvitacion, visto, foto, deshacer, recalcular, estado, ficha, loDeAyer, resumenDe, pasaporteDe, vitrinaDe, logrosDeViajero, prepararAvisos, calcularCon, puedeGanar, estadoDelPase, usarHoy, responderPrueba, precioDe, datos, catalogos }
 }
 
 /** El instante (ISO, UTC) en que son las `hhmm` de esa fecha en la hora del destino. */

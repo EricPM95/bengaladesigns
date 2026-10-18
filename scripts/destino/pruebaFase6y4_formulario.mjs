@@ -85,6 +85,8 @@ const recorrer = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((
   let dondeMax = ''
   for (const ruta of recorrer('src')) {
     if (/DatesCalendarModal/.test(ruta)) continue
+    // (8C1) Los paneles de pruebas de desarrollo (src/dev) no cuentan: no llegan a producción.
+    if (ruta.split('\\').join('/').includes('src/dev/')) continue
     const codigo = sinComentarios(fuente(ruta))
     for (const m of codigo.matchAll(/z-\[(\d+)\]|zIndex: *(\d+)/g)) {
       const z = Number(m[1] ?? m[2])

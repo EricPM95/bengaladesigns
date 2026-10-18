@@ -339,6 +339,58 @@ console.log('8. Tanda 8B5: fotos elegidas, medalla nueva, Patrimonio con número
   debe(tabla.fotos.some((x) => x.archivo === 'navidad_noche_piazza_navona_desde_arriba.jpg' && x.fechas), 'fotos', 'la foto de Navidad de Piazza Navona sigue con sus fechas')
 }
 
+console.log('9. Tanda 8C1: dibujos del Dashboard, hoja de secretos, título de HOY, modo de pruebas de la EXP')
+{
+  const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-pantallas8c1-'))
+  const salida = path.join(carpeta, 'c1.cjs')
+  const abs = (f) => path.resolve(f).split(path.sep).join('/')
+  fs.writeFileSync(path.join(carpeta, 'entrada.ts'), `export { LOGROS_CON_CHAPA, ESCALONES_DE } from '${abs('src/components/logros/dibujos/Chapa.tsx')}'\n`)
+  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', jsx: 'automatic', loader: { '.css': 'empty' }, define: { 'import.meta.env': '{"DEV":false}' } })
+  const C = createRequire(import.meta.url)(salida)
+  const viajero = JSON.parse(leer('data/logros/viajero.json'))
+  const activos = viajero.logros.filter((l) => l.activo !== false).map((l) => l.id)
+  const sinDibujo = activos.filter((id) => !C.LOGROS_CON_CHAPA.includes(id))
+  debe(sinDibujo.length === 0, 'dibujos', `cada logro encendido tiene su dibujo del Dashboard (sin dibujo: ${sinDibujo.join(', ')})`)
+  const desfase = activos.filter((id) => C.ESCALONES_DE[id] && JSON.stringify(C.ESCALONES_DE[id]) !== JSON.stringify(viajero.logros.find((l) => l.id === id).escalones.map((e) => e.n)))
+  debe(desfase.length === 0, 'dibujos', `los escalones de cada chapa son los de viajero.json (desfase: ${desfase.join(', ')})`)
+  const ch = leer('src/components/logros/dibujos/Chapa.tsx')
+  for (const pieza of ['MedallaDestino', 'MedallaGrado', 'DoceMeses', 'CuatroEstaciones', 'ExclusivoHolo']) debe(ch.includes(`piezas/${pieza}'`) && fs.existsSync(`src/components/logros/dibujos/piezas/${pieza}.tsx`), 'dibujos', `${pieza} (Dashboard) se usa en las chapas`)
+  debe(!ch.includes('LogroViajero') && !ch.includes('ChapaViajero'), 'dibujos', 'las chapas de antes (Logro Viajero y Chapa Viajero) ya no se usan')
+  debe(/lazy\(\(\) => import\('\.\/piezas\/MedallaDestino'\)\)/.test(ch), 'dibujos', 'cada dibujo se carga solo al abrirlo (lazy)')
+  const piezas = fs.readdirSync('src/components/logros/dibujos/piezas').filter((f) => f.endsWith('.tsx')).map((f) => leer(`src/components/logros/dibujos/piezas/${f}`)).join('\n')
+  debe(!/https?:\/\/(cdn\.jsdelivr|esm\.sh|unpkg)/.test(piezas), 'dibujos', 'ningún dibujo pide nada a internet al dibujarse (el globo lleva la tierra precalculada)')
+  debe(fs.existsSync('src/components/logros/dibujos/piezas/tierraPath.ts') && leer('src/components/logros/dibujos/piezas/MedallaDestino.tsx').includes("import('./tierraPath')"), 'dibujos', 'la tierra del globo está en el código (tierraPath.ts)')
+  for (const [pieza, dc] of [['MedallaGrado', 'Medalla Grado'], ['MedallaDestino', 'Medalla Destino'], ['DoceMeses', 'Doce Meses'], ['CuatroEstaciones', 'Cuatro Estaciones']]) {
+    const dise = leer(`docs/diseno/proyecto/Piezas/${dc}.dc.html`)
+    const keyframes = [...dise.matchAll(/@keyframes\s+([A-Za-z0-9_]+)/g)].map((m) => m[1])
+    const css = leer(`src/components/logros/dibujos/piezas/${pieza}.css`)
+    debe(keyframes.every((k) => css.includes(`@keyframes ${k}`)), 'dibujos', `${pieza}: lleva todas las animaciones de «${dc}»`)
+  }
+  const dash = leer('src/components/logros/dibujos/iconosDashboard.ts')
+  debe(dash.includes('IC_ESCALONES') && dash.includes('IC_UNICOS') && dash.includes("'Alondra'"), 'dibujos', 'los iconos del Dashboard están copiados')
+  // Las pantallas que enseñan logros usan la chapa nueva
+  const pant = leer('src/components/logros/momentos/pantallas.tsx')
+  debe(pant.includes('<Chapa logro={ch.logro}') && leer('src/components/logros/momentos/ResumenViaje.tsx').includes('<Chapa logro={n.id}'), 'dibujos', '«Y además…», los avisos de lo ganado y el resumen del viaje usan las chapas nuevas')
+  // La hoja de logros
+  const hoja = leer('src/components/logros/momentos/HojaLogros.tsx')
+  debe(hoja.includes('lineaDeSecretos(') && !/de 12 secretos/.test(sinComentarios(hoja).replace(/«N de 12 secretos»/g, '')), 'hoja', 'la hoja de logros dice lo mismo que el resumen: «Roma aún esconde N secretos.»')
+  // El título del día de HOY
+  const hoyV2 = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
+  debe(hoyV2.includes('nombreDelDia(route, day,') && hoyV2.includes('tituloLimpio'), 'hoy', 'el título del día de HOY v2 sale de nombreDelDia: el mismo que DÍAS (con el nombre del viajero si lo cambió)')
+  const titulo = leer('src/lib/tituloDelDia.ts')
+  debe(titulo.includes('if (day.nameByUser ||') && titulo.indexOf('day.nameByUser') < titulo.indexOf('esDiaDeExcursion(day)) return sinTrayecto(grupos.excursion'), 'hoy', 'y si el viajero le cambió el nombre, manda el suyo')
+  // El modo de pruebas de la EXP
+  const dm = leer('src/components/logros/momentos/demoMomentos.ts')
+  debe(dm.includes('exp: (preset') && dm.includes('serieViajeros') && fs.existsSync('src/dev/ExpPrueba.tsx'), 'exp', 'el modo de pruebas enseña la EXP, el nivel y el rango de un viajero de ejemplo (window.__momentos.exp) y «Y además…» con los dibujos nuevos (serieViajeros)')
+  const ep = leer('src/dev/ExpPrueba.tsx')
+  debe(ep.includes('escenarioDeRoma') && ep.includes("'roma100'") && ep.includes("'normal'"), 'exp', 'con las cuentas de Roma: un viaje normal y Roma al 100 %')
+  debe(!/ExpPrueba/.test(leer('src/main.tsx')) && /import\('\.\.\/\.\.\/\.\.\/dev\/ExpPrueba'\)/.test(dm), 'exp', 'el panel de la EXP solo se carga a demanda en desarrollo (no pesa al abrir)')
+  // El servidor manda la EXP; ninguna pantalla nueva
+  debe(leer('src/components/logros/momentos/api.ts').includes('ResumenDeExp') && leer('src/lib/logros.ts').includes('sube_de_nivel'), 'exp', 'el móvil sabe leer la EXP, el nivel y «sube de nivel» (sin pantalla nueva)')
+  const nuevasPantallas = fs.readdirSync('src/components/logros/momentos').filter((f) => /Exp|Nivel|Tienda|Rango/i.test(f))
+  debe(nuevasPantallas.length === 0, 'exp', 'ninguna pantalla nueva de la EXP en esta tanda (la barra de nivel, los marcos, la subida de nivel y la tienda llegarán con Design)')
+}
+
 const ok = fallos.length === 0
 console.log(`\n${comprobaciones} comprobaciones. ${ok ? '0 fallos.' : `${fallos.length} FALLOS:`}`)
 for (const f of fallos) console.log(` ✗ [${f.regla}] ${f.texto}`)

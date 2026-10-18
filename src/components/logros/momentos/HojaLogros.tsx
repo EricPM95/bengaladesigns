@@ -2,12 +2,13 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { pedirEstado, type EstadoLogros } from './api'
+import { lineaDeSecretos } from './textosResumen'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 
 /**
  * LA HOJA SENCILLA DEL BOTÓN FLOTANTE (Tanda 8B). Abre lo que ya hay: los sellos con su grado, las colecciones (las completas primero, luego las de su ruta, luego
- * las demás, como las manda el servidor) con su avance y «N de 12 secretos» sin decir cuáles. Nunca enseña los emblemas. La hoja de verdad (insignias con sus
+ * las demás, como las manda el servidor) con su avance y «Roma aún esconde N secretos.» sin decir cuáles. Nunca enseña los emblemas. La hoja de verdad (insignias con sus
  * pedazos, pantalla de cada colección, emblemas guardados que se repiten) es de la tanda 8c: aquí solo hay lo mínimo para que el botón abra algo.
  */
 export default function HojaLogros(): ReactNode {
@@ -63,7 +64,7 @@ export default function HojaLogros(): ReactNode {
                 </div>
               ))}
             </div>
-            {estado.secretos.texto && <p style={{ textAlign: 'center', font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)', margin: '16px 0 4px' }}>{estado.secretos.texto}</p>}
+            {lineaDeSecretos(estado.ciudad, estado.secretos.total, estado.secretos.encontrados) && <p style={{ textAlign: 'center', font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)', margin: '16px 0 4px' }}>{lineaDeSecretos(estado.ciudad, estado.secretos.total, estado.secretos.encontrados)}</p>}
             {estado.pendiente.texto && <p style={{ textAlign: 'center', font: "600 13px 'Geist'", color: 'oklch(0.55 0.17 5)', margin: '4px 0' }}>{estado.pendiente.texto}</p>}
             {acabado && (
               <button

@@ -154,6 +154,23 @@ const api = {
     useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
     return todo.length
   },
+  /** (8C1) «Y además…» con los dibujos nuevos de los logros de viajero (los del Dashboard): destinos 25, viajes 15, Ojo de lince, Tres ciudades de oro y Las cuatro estaciones. */
+  serieViajeros: () => {
+    ponerDatos(false, 'wow', 'viaje')
+    datosDePrueba.resumen = null
+    const v = (logro: string, escalon: string, nombre: string, linea: string) => m({ tipo: 'viajero', cat: 'viajero', clave: `*|viajero:${logro}|${escalon}`, logro, escalon, destino: '*', nombre, linea, exp: 0, en })
+    const todo = [
+      v('destinos', '25', 'Pasión por el mundo', 'Haz viajes a ciudades nuevas.'),
+      v('viajes', '15', 'Viajero de ida y vuelta', 'Completa viajes con la app.'),
+      v('cazador_emblemas', '10', 'Ojo de lince', 'Encuentra Emblemas Ocultos.'),
+      v('tres_oro', '', 'Tres ciudades de oro', 'Consigue el sello de oro en 3 ciudades.'),
+      v('cuatro_estaciones', '', 'Las cuatro estaciones', 'Viaja en primavera, verano, otoño e invierno.'),
+    ]
+    useLogrosStore.getState().recibir({ ok: true, nuevos: todo })
+    return todo.length
+  },
+  /** (8C1) La EXP, el nivel y el rango de un viajero de ejemplo: `exp('normal' | 'roma100' | 'cero' | 'n10' | 'n50' | 'leyenda')`. Panel de pruebas, no una pantalla de la app (esas llegarán con Design). */
+  exp: (preset = 'normal') => void import('../../../dev/ExpPrueba').then((m) => m.abrirExpPrueba(preset)),
   /** F7: la séptima maravilla, con «El final de las 7 maravillas» (la única animación de la medalla). */
   serieFinal7: () => {
     ponerDatos(false, 'wow', 'viaje')

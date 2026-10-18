@@ -26,11 +26,12 @@ interface Panel {
   destinos: Record<string, DatosDestino>
   avisos: Aviso[]
   viajero: { id: string; grupo: string; nombre: string; visible: boolean; escalones: { n: number; nombre: string; visible: boolean }[] }[]
+  viajero_apagados?: string[]
   personas: { destino: string; logro: string; escalon: string; personas: number }[]
   interruptores: { logros: boolean; push: boolean; cobro: boolean }
 }
 
-const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Probador'] as const
+const PESTANAS = ['Resumen', 'Sellos y colecciones', 'Emblemas', 'Patrimonios', 'Logros de viajero', 'Simulador', 'Personas', 'Sorteo', 'Probador'] as const
 
 export function AdminLogros() {
   const [panel, setPanel] = useState<Panel | null>(null)
@@ -108,6 +109,7 @@ export function AdminLogros() {
         )}
         {pestana === 'Logros de viajero' && (
           <section>
+            <p className="mb-2 text-text/60">Versión 1: solo se ganan, se ven y dan EXP los de abajo. Apagados (en data/logros/viajero.json, `activo: false`): {(panel.viajero_apagados ?? []).join(', ') || 'ninguno'}.</p>
             <ul className="space-y-1">{panel.viajero.map((l) => <li key={l.id} className={l.visible ? '' : 'text-text/45'}><b>{l.nombre}</b> ({l.grupo}) · {l.visible ? 'se ve hoy' : 'todavía no se ve'}{l.escalones.length > 0 && ` · escalones: ${l.escalones.map((e) => `${e.n}${e.visible ? '' : '✗'}`).join(', ')}`}</li>)}</ul>
           </section>
         )}
@@ -116,6 +118,7 @@ export function AdminLogros() {
           <section><p className="text-text/60">Cuánta gente tiene cada cosa (solo números).</p>
             <table className="mt-2 w-full text-left text-[13px]"><tbody>{panel.personas.map((p, i) => <tr key={i} className="border-t border-text/10"><td className="py-1">{p.destino}</td><td>{p.logro}</td><td>{p.escalon}</td><td className="text-right font-semibold">{p.personas}</td></tr>)}</tbody></table></section>
         )}
+        {pestana === 'Sorteo' && <Sorteo />}
         {pestana === 'Probador' && <Probador />}
       </div>
     </main>
@@ -156,6 +159,28 @@ function Probador() {
       <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email de la cuenta" className="mt-2 w-full rounded border border-text/20 px-2 py-1.5" />
       <button type="button" onClick={() => void dar()} className="mt-2 rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-white">Dar Probador</button>
       {resultado && <p className="mt-2">{resultado}</p>}
+    </section>
+  )
+}
+
+/** El sorteo del año (8C1, solo la regla): cuántas cuentas entran y la lista (solo el id de cada cuenta: sin nombres ni correos). Provisional. */
+function Sorteo() {
+  const [anio, setAnio] = useState(String(new Date().getFullYear()))
+  const [r, setR] = useState<{ ok: boolean; anio: number; cuentas: number; entran: number; lista: { user_id: string; exp: number; nivel: number; viajes_acabados: number }[]; regla: { nivel_minimo: number; viajes_acabados_minimos_al_anio: number } } | null>(null)
+  const ver = async () => setR(await llamar('/api/admin/logros/sorteo?anio=' + encodeURIComponent(anio)))
+  return (
+    <section data-admin-sorteo>
+      <p className="text-text/60">Entra quien tenga nivel 3 o más y haya acabado al menos un viaje con la app ese año. Solo la regla: sin pantalla de sorteo.</p>
+      <div className="mt-2 flex gap-2">
+        <input value={anio} onChange={(e) => setAnio(e.target.value)} className="w-24 rounded border border-text/20 px-2 py-1" />
+        <button type="button" onClick={() => void ver()} className="rounded-full bg-accent px-4 py-1.5 text-[14px] font-semibold text-white">Ver quién entra</button>
+      </div>
+      {r?.ok && (
+        <div className="mt-3">
+          <p><b>{r.entran}</b> de {r.cuentas} cuentas entran en {r.anio} (nivel {r.regla.nivel_minimo}+ y {r.regla.viajes_acabados_minimos_al_anio}+ viaje acabado).</p>
+          <ul className="mt-2 space-y-0.5 font-mono text-[12.5px]">{r.lista.map((x) => <li key={x.user_id}>{x.user_id.slice(0, 8)} · nivel {x.nivel} · {x.exp} EXP · {x.viajes_acabados} viaje(s)</li>)}</ul>
+        </div>
+      )}
     </section>
   )
 }

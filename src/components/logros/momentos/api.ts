@@ -10,7 +10,20 @@ export interface EstadoLogros {
   secretos: { total: number; encontrados: number; texto: string; encontrados_lista: { id: string; nombre: string; linea: string; en: string }[] }
   pendiente: Pendiente
   puntito: boolean
+  /** (8C1) EXP total, nivel, rango, EXP dentro del nivel y la que falta para el siguiente (la calcula siempre el servidor; nunca baja). */
+  exp?: ResumenDeExp
   viaje: { id: string; inicio: string; fin: string; hoy: string }
+}
+export interface ResumenDeExp {
+  exp: number
+  nivel: number
+  rango: string
+  rango_ix: number
+  estrellas: number
+  leyenda_estrellas: number
+  exp_en_nivel: number
+  exp_para_siguiente: number
+  falta: number
 }
 export interface Pendiente {
   sorpresas: number

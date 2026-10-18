@@ -87,11 +87,40 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       ok(await admin.from('hoy_prueba').upsert({ user_id: userId, ...fila, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }), 'guardarPrueba')
     },
     async perfilDe(userId) {
-      const fila = ok(await admin.from('logro_perfil').select('previos, vitrina').eq('user_id', userId).maybeSingle(), 'perfilDe')
-      return { previos: fila?.previos ?? { paises: [], dias: 0 }, vitrina: fila?.vitrina ?? { baldas: {}, titulo: null } }
+      // `exp_max` (0025): la mayor EXP que ha tenido; sin la migración aplicada, 0 (la EXP se calcula igual, solo que no se guarda el máximo).
+      let fila = null
+      const r = await admin.from('logro_perfil').select('previos, vitrina, exp_max').eq('user_id', userId).maybeSingle()
+      if (r.error && /exp_max/.test(r.error.message)) fila = ok(await admin.from('logro_perfil').select('previos, vitrina').eq('user_id', userId).maybeSingle(), 'perfilDe')
+      else fila = ok(r, 'perfilDe')
+      return { previos: fila?.previos ?? { paises: [], dias: 0 }, vitrina: fila?.vitrina ?? { baldas: {}, titulo: null }, exp_max: fila?.exp_max ?? 0 }
     },
     async guardarPerfil(userId, parcial) {
       ok(await admin.from('logro_perfil').upsert({ user_id: userId, ...parcial, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }), 'guardarPerfil')
+    },
+    /** Los amigos que ha invitado esta persona (0025): [{ invitado, creado_en, viaje_acabado_en }]. Sin la migración, ninguno. */
+    async referidosDe(userId) {
+      const r = await admin.from('logro_referidos').select('invitado_id, creado_en, viaje_acabado_en').eq('invitador_id', userId)
+      if (r.error) return []
+      return (r.data ?? []).map((x) => ({ invitado: x.invitado_id, creado_en: x.creado_en, viaje_acabado_en: x.viaje_acabado_en }))
+    },
+    /** Quién invitó a esta persona (0025), o null. */
+    async invitadorDe(userId) {
+      const r = await admin.from('logro_referidos').select('invitador_id, viaje_acabado_en').eq('invitado_id', userId).maybeSingle()
+      return r.error ? null : r.data
+    },
+    /** Apunta que `invitador` invitó a `invitado` (solo el primero; nadie se invita a sí mismo). */
+    async apuntarInvitacion(invitadorId, invitadoId) {
+      if (invitadorId === invitadoId) return false
+      ok(await admin.from('logro_referidos').upsert({ invitador_id: invitadorId, invitado_id: invitadoId }, { onConflict: 'invitado_id', ignoreDuplicates: true }), 'apuntarInvitacion')
+      return true
+    },
+    async marcarInvitacionCumplida(invitadoId, cuando) {
+      ok(await admin.from('logro_referidos').update({ viaje_acabado_en: cuando }).eq('invitado_id', invitadoId).is('viaje_acabado_en', null), 'marcarInvitacionCumplida')
+    },
+    /** Las cuentas con algún hecho (para el sorteo): sus ids. */
+    async cuentasConHechos() {
+      const filas = ok(await admin.from('logro_hechos').select('user_id').is('deshecho_en', null), 'cuentasConHechos')
+      return [...new Set((filas ?? []).map((f) => f.user_id))]
     },
     async marcarAnimacion(userId, claves, vista) {
       for (const c of claves) ok(await admin.from('achievements').update({ animacion_vista: vista }).eq('user_id', userId).eq('destino', c.destino).eq('logro', c.logro).eq('escalon', String(c.escalon)), 'marcarAnimacion')

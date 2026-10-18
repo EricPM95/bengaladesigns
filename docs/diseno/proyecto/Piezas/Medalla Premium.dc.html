@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<svg width="{{ sz }}" height="{{ sz }}" viewBox="0 0 200 200" style="display:block;overflow:visible">
+ <defs>
+  <linearGradient id="{{ u }}rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ m0 }}"></stop><stop offset=".28" stop-color="{{ m1 }}"></stop><stop offset=".55" stop-color="{{ m2 }}"></stop><stop offset=".72" stop-color="{{ m1 }}"></stop><stop offset="1" stop-color="{{ m3 }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}rim2" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="{{ m0 }}"></stop><stop offset=".4" stop-color="{{ m1 }}"></stop><stop offset="1" stop-color="{{ m3 }}"></stop></linearGradient>
+  <linearGradient id="{{ u }}ic" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="{{ i0 }}"></stop><stop offset=".45" stop-color="{{ i1 }}"></stop><stop offset="1" stop-color="{{ i2 }}"></stop></linearGradient>
+  <radialGradient id="{{ u }}face" cx=".42" cy=".34" r=".78"><stop offset="0" stop-color="{{ f0 }}"></stop><stop offset=".7" stop-color="{{ f1 }}"></stop><stop offset="1" stop-color="{{ f2 }}"></stop></radialGradient>
+  <linearGradient id="{{ u }}gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></linearGradient>
+  <linearGradient id="{{ u }}gem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset=".35" stop-color="{{ g0 }}"></stop><stop offset=".65" stop-color="{{ g1 }}"></stop><stop offset="1" stop-color="#FFFFFF"></stop></linearGradient>
+  <filter id="{{ u }}emb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="b"></feGaussianBlur><feSpecularLighting in="b" surfaceScale="4.5" specularConstant="1.05" specularExponent="22" lighting-color="#FFFFFF" result="s"><feDistantLight azimuth="225" elevation="42"></feDistantLight></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"></feComposite><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".85" k4="0" result="lit"></feComposite><feDropShadow in="lit" dx="1.2" dy="1.8" stdDeviation="1.2" flood-color="#1A0E04" flood-opacity=".55"></feDropShadow></filter>
+  <filter id="{{ u }}sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity=".35"></feDropShadow></filter>
+  <clipPath id="{{ u }}cf"><path d="{{ pFace }}"></path></clipPath>
+ </defs>
+ <g filter="url(#{{ u }}sh)">
+  <sc-if value="{{ hasRays }}" hint-placeholder-val="{{ false }}"><g opacity=".55"><sc-for list="{{ rays }}" as="r" hint-placeholder-count="0"><path d="{{ r }}" fill="url(#{{ u }}ic)"></path></sc-for></g></sc-if>
+  <g filter="url(#{{ u }}emb)"><sc-for list="{{ leaves }}" as="l" hint-placeholder-count="0"><path d="{{ l }}" fill="url(#{{ u }}ic)"></path></sc-for></g>
+  <path d="{{ pOut }}" fill="url(#{{ u }}rim)" filter="url(#{{ u }}emb)"></path>
+  <path d="{{ pGroove }}" fill="{{ m3 }}" opacity=".85"></path>
+  <path d="{{ pIn }}" fill="url(#{{ u }}rim2)"></path>
+  <path d="{{ pFace }}" fill="url(#{{ u }}face)"></path>
+  <g clip-path="url(#{{ u }}cf)">
+   <sc-for list="{{ stars }}" as="s" hint-placeholder-count="0"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFF6DC" opacity="{{ s.o }}"></circle></sc-for>
+   <path d="{{ pRing }}" fill="none" stroke="{{ i1 }}" stroke-width="1.2" opacity=".55"></path>
+   <g transform="translate(100 100) scale({{ isc }}) translate(-12 -12)" filter="url(#{{ u }}emb)">
+    <path d="{{ icFill }}" fill="url(#{{ u }}ic)"></path>
+    <path d="{{ icLine }}" fill="none" stroke="url(#{{ u }}ic)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path>
+   </g>
+   <ellipse cx="88" cy="58" rx="58" ry="30" fill="url(#{{ u }}gl)" opacity=".5"></ellipse>
+  </g>
+  <sc-for list="{{ gems }}" as="g" hint-placeholder-count="0"><g transform="translate({{ g.x }} {{ g.y }}) rotate(45)"><rect x="-{{ g.s }}" y="-{{ g.s }}" width="{{ g.w }}" height="{{ g.w }}" fill="url(#{{ u }}gem)" stroke="{{ m1 }}" stroke-width="1.6"></rect><path d="M-{{ g.s }} 0L{{ g.s }} 0M0 -{{ g.s }}L0 {{ g.s }}" stroke="#FFFFFF" stroke-width=".7" opacity=".7"></path></g></sc-for>
+  <sc-for list="{{ spark }}" as="s" hint-placeholder-count="0"><path d="M{{ s.x }} {{ s.y }}m0 -{{ s.r }}l{{ s.q }} {{ s.p }} {{ s.p }} {{ s.q }} -{{ s.p }} {{ s.q }} -{{ s.q }} {{ s.p }} -{{ s.q }} -{{ s.p }} -{{ s.p }} -{{ s.q }} {{ s.p }} -{{ s.q }}z" fill="#FFFFFF" opacity=".95"></path></sc-for>
+ </g>
+</svg>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:200,&quot;height&quot;:200},&quot;metal&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;bronce&quot;,&quot;cobre&quot;,&quot;plata&quot;,&quot;oro&quot;,&quot;platino&quot;],&quot;default&quot;:&quot;oro&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;shape&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;circle&quot;,&quot;hex&quot;,&quot;oct&quot;],&quot;default&quot;:&quot;circle&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;icon&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;globo&quot;,&quot;pin&quot;,&quot;mapa&quot;,&quot;capital&quot;,&quot;columna&quot;,&quot;maleta&quot;,&quot;arbol&quot;,&quot;rosa&quot;,&quot;billete&quot;,&quot;copas&quot;,&quot;estacion&quot;,&quot;vuelta&quot;],&quot;default&quot;:&quot;globo&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;face&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#1E2E52&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;laurel&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;},&quot;gems&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;},&quot;rays&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:160,&quot;tsType&quot;:&quot;number&quot;}}">
+let UID=0;
+const MET={bronce:['#F6D2AE','#C9895A','#8E5530','#4A2612'],cobre:['#FFE1D2','#D9998A','#A45E50','#5A2C22'],plata:['#FFFFFF','#D6DAE0','#9DA5B1','#4E5662'],oro:['#FFF5CC','#EAC46A','#B98C30','#6A4A12'],platino:['#FFFFFF','#E8ECF8','#B6C0DE','#6E78A0']};
+const ICM={oro:['#FFF5CC','#E3B95A','#9C7228'],plata:['#FFFFFF','#CFD5DD','#8B94A2'],bronce:['#FBE0C4','#D19A6A','#8A532E'],cobre:['#FFE6D8','#DCA092','#9B5446'],platino:['#FFF8E2','#E9CC86','#A88440']};
+const IC={
+ globo:['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z','M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9M12 3c-2.6 2.6-3.8 5.6-3.8 9s1.2 6.4 3.8 9M4.5 7.5h15M4.5 16.5h15',.35],
+ pin:['M12 22s-7-6-7-12a7 7 0 0 1 14 0c0 6-7 12-7 12zM12 12.6a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2z','',1],
+ mapa:['','M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14',1],
+ capital:['M3 9l9-5 9 5z','M4 21h16M5 18h14M6 18v-7M10 18v-7M14 18v-7M18 18v-7M4 10h16',1],
+ columna:['','M7 21h10M8 18h8M9 18V8M15 18V8M12 18V8M7 8h10M6 5h12l-1 3H7z',1],
+ maleta:['M4 8h16a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 8z','M9 8V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V8M8 8v12M16 8v12',1],
+ arbol:['','M12 21V11M12 11c-3 0-5-2-5-4.5S9 2 12 2s5 2 5 4.5S15 11 12 11zM12 15l-3-2M12 14l3-2M8 21h8',1],
+ rosa:['M12 1.5l2.2 8.3L22.5 12l-8.3 2.2L12 22.5l-2.2-8.3L1.5 12l8.3-2.2z','M12 7l1.2 3.8L17 12l-3.8 1.2L12 17l-1.2-3.8L7 12l3.8-1.2z',1],
+ billete:['M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4zM12 15.5c-2.6-1.6-3.6-2.9-3.6-4.1a1.8 1.8 0 0 1 3.6-.6 1.8 1.8 0 0 1 3.6.6c0 1.2-1 2.5-3.6 4.1z','',1],
+ copas:['','M4 3h5l-.4 5a2.1 2.1 0 0 1-4.2 0zM6.5 10v8M4.5 18h4M15 3h5l-.4 5a2.1 2.1 0 0 1-4.2 0zM17.5 10v8M15.5 18h4M10.5 6l3 0',1],
+ estacion:['M12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z','M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',1],
+ vuelta:['','M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11',1]};
+const rnd=k=>{const x=Math.sin(k*12.9898+78.233)*43758.5453;return x-Math.floor(x);};
+const f1=v=>v.toFixed(1);
+const shape=(kind,r)=>{const P=n=>{let d='';for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n+(n===8?Math.PI/8:0);d+=(i?'L':'M')+f1(100+r*Math.cos(a))+' '+f1(100+r*Math.sin(a));}return d+'Z';};
+  if(kind==='hex')return P(6);if(kind==='oct')return P(8);
+  return 'M'+(100-r)+' 100A'+r+' '+r+' 0 1 0 '+(100+r)+' 100A'+r+' '+r+' 0 1 0 '+(100-r)+' 100Z';};
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='mp'+(++UID);}
+  renderVals(){const p=this.props;const met=p.metal||'oro';const M=MET[met]||MET.oro;const I=ICM[met]||ICM.oro;const sh=p.shape||'circle';
+    const face=(p.face||'#1E2E52');const lau=+p.laurel||0,gm=+p.gems||0,rays=+p.rays||0;
+    const ic=IC[p.icon]||IC.globo;const isc=(sh==='circle'?2.45:2.3);
+    const leaves=[];if(lau){const n=lau>1?9:7,R=88;[-1,1].forEach(sd=>{for(let i=0;i<n;i++){const t=i/(n-1),a=(sd<0?Math.PI*(0.62+t*0.5):Math.PI*(0.38-t*0.5));const x=100+R*Math.cos(a),y=100+R*Math.sin(a);const rot=a*180/Math.PI+(sd<0?-70:70);const L=lau>1?11:9.5,W=lau>1?4.6:4;
+      leaves.push('M'+f1(x)+' '+f1(y)+'m'+f1(-L*Math.cos(rot*Math.PI/180))+' '+f1(-L*Math.sin(rot*Math.PI/180))+'q'+f1(L*Math.cos(rot*Math.PI/180)+W*Math.cos((rot+90)*Math.PI/180))+' '+f1(L*Math.sin(rot*Math.PI/180)+W*Math.sin((rot+90)*Math.PI/180))+' '+f1(2*L*Math.cos(rot*Math.PI/180))+' '+f1(2*L*Math.sin(rot*Math.PI/180))+'q'+f1(-L*Math.cos(rot*Math.PI/180)+W*Math.cos((rot+90)*Math.PI/180))+' '+f1(-L*Math.sin(rot*Math.PI/180)+W*Math.sin((rot+90)*Math.PI/180))+' '+f1(-2*L*Math.cos(rot*Math.PI/180))+' '+f1(-2*L*Math.sin(rot*Math.PI/180))+'z');}});}
+    const rayP=[];if(rays){const n=rays>1?24:16;for(let i=0;i<n;i++){const a=i*2*Math.PI/n,b=.045,r1=rays>1?104:98;rayP.push('M'+f1(100+70*Math.cos(a-b))+' '+f1(100+70*Math.sin(a-b))+'L'+f1(100+r1*Math.cos(a))+' '+f1(100+r1*Math.sin(a))+'L'+f1(100+70*Math.cos(a+b))+' '+f1(100+70*Math.sin(a+b))+'Z');}}
+    const gpos=[[100,10],[10,100],[190,100],[100,190]];const gems=gm?gpos.slice(0,gm===1?1:gm===2?3:4).map(([x,y],k)=>{const s=k===0?7.5:5.5;return{x,y,s,w:2*s};}):[];
+    const starry=['#1E2E52','#1F3A5C','#2A3150','#1C2E4A','#3C2A5E','#2A4E7A'].includes(face);
+    const stars=starry?Array.from({length:22},(_,k)=>({x:f1(40+rnd(k)*120),y:f1(40+rnd(k+40)*120),r:f1(.5+rnd(k+80)*1.1),o:f1(.35+rnd(k+9)*.6)})):[];
+    const spark=rays>1?[[30,40,7],[172,48,6],[160,170,5],[36,160,6]].map(([x,y,r])=>({x,y,r,p:f1(r*.28),q:f1(r*.72)})):[];
+    const sz=+p.size||120;
+    const shade=(hex,k)=>{const n=parseInt(hex.slice(1),16);const c=[n>>16,(n>>8)&255,n&255].map(v=>Math.max(0,Math.min(255,Math.round(v*k))));return '#'+c.map(v=>v.toString(16).padStart(2,'0')).join('');};
+    return{u:this.u,sz,m0:M[0],m1:M[1],m2:M[2],m3:M[3],i0:I[0],i1:I[1],i2:I[2],g0:met==='oro'||met==='platino'?'#DDEBFF':'#E9EEF5',g1:met==='bronce'||met==='cobre'?'#F6C7B0':'#A9C4F0',
+      f0:shade(face,1.55),f1:face,f2:shade(face,.55),
+      pOut:shape(sh,86),pGroove:shape(sh,77),pIn:shape(sh,75),pFace:shape(sh,67),pRing:shape(sh,62),
+      icFill:ic[0],icLine:ic[1],isc,leaves,rays:rayP,hasRays:!!rayP.length,gems,stars,spark};}
+}
+</script>
+</body>
+</html>

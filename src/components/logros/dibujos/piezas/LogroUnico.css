@@ -16,4 +16,5 @@
 @keyframes luGlow{0%,100%{opacity:.3}50%{opacity:.8}}
 @keyframes luRib{0%{opacity:0;transform:translateY(10px) scaleX(.4)}100%{opacity:1;transform:none}}
 [data-st="1"] *{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 @media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

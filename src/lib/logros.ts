@@ -69,6 +69,9 @@ export interface Momento {
   /** Solo en los emblemas: la frase de suspense, la primera vez. */
   frase?: string | null
   clave?: string
+  /** (8C1) La EXP que da este momento y si con ella se sube de nivel (la pantalla de subir de nivel llegará con Design). */
+  exp?: number
+  sube_de_nivel?: boolean
   [otro: string]: unknown
 }
 

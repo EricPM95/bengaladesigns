@@ -8,4 +8,6 @@
 @keyframes ceTw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
 @keyframes ceSweep{0%{transform:translateX(-180%) rotate(20deg)}55%,100%{transform:translateX(340%) rotate(20deg)}}
 @keyframes ceSpin{to{transform:rotate(360deg)}}
+@keyframes ceFl{0%,100%{opacity:0;transform:scale(.3) rotate(0)}45%,55%{opacity:1;transform:scale(1) rotate(12deg)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 @media (prefers-reduced-motion: reduce){.dib *,.dib *::before,.dib *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important}}

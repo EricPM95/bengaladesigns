@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:{{ sz }};height:{{ sz }};flex:none">
+<svg width="100%" height="100%" viewBox="-10 -10 220 220" style="overflow:visible;display:block">
+ <defs>
+  <linearGradient id="{{ u }}r" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="#FFF1B8"></stop><stop offset=".3" stop-color="#EDBE50"></stop><stop offset=".58" stop-color="#B5821C"></stop><stop offset=".82" stop-color="#EDBE50"></stop><stop offset="1" stop-color="#7A520C"></stop></linearGradient>
+  <linearGradient id="{{ u }}r2" x1=".9" y1="0" x2=".1" y2="1"><stop offset="0" stop-color="#7A520C"></stop><stop offset=".45" stop-color="#B5821C"></stop><stop offset=".75" stop-color="#FFF1B8"></stop><stop offset="1" stop-color="#7A520C"></stop></linearGradient>
+  <radialGradient id="{{ u }}f" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="#2B3F78"></stop><stop offset=".55" stop-color="#141E46"></stop><stop offset="1" stop-color="#070B1E"></stop></radialGradient>
+  <radialGradient id="{{ u }}h" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF1B8" stop-opacity=".7"></stop><stop offset="1" stop-color="#FFF1B8" stop-opacity="0"></stop></radialGradient>
+  <radialGradient id="{{ u }}dm" cx=".33" cy=".24" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".28"></stop><stop offset=".45" stop-color="#fff" stop-opacity="0"></stop><stop offset=".8" stop-color="#000" stop-opacity=".14"></stop><stop offset="1" stop-color="#000" stop-opacity=".45"></stop></radialGradient>
+  <filter id="{{ u }}bv" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b"></feGaussianBlur><feSpecularLighting in="b" surfaceScale="9" specularConstant="1.25" specularExponent="16" lighting-color="#FFFFFF" result="s"><feDistantLight azimuth="235" elevation="46"></feDistantLight></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"></feComposite><feDiffuseLighting in="b" surfaceScale="6" diffuseConstant="1" lighting-color="#FFFFFF" result="df"><feDistantLight azimuth="235" elevation="54"></feDistantLight></feDiffuseLighting><feComposite in="df" in2="SourceAlpha" operator="in" result="df2"></feComposite><feComposite in="SourceGraphic" in2="df2" operator="arithmetic" k1="1.14" k2="0" k3="0" k4="0" result="lit"></feComposite><feComposite in="lit" in2="s2" operator="arithmetic" k1="0" k2="1" k3="1.15" k4="0"></feComposite></filter>
+  <filter id="{{ u }}bs" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1" result="b"></feGaussianBlur><feSpecularLighting in="b" surfaceScale="4" specularConstant="1.2" specularExponent="14" lighting-color="#FFFFFF" result="s"><feDistantLight azimuth="235" elevation="44"></feDistantLight></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"></feComposite><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".95" k4="0"></feComposite></filter>
+  <filter id="{{ u }}sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#10131E" flood-opacity=".5"></feDropShadow></filter>
+  <filter id="{{ u }}s2" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="1.5" dy="3" stdDeviation="2" flood-color="#000" flood-opacity=".55"></feDropShadow></filter>
+  <filter id="{{ u }}gw" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2" result="g"></feGaussianBlur><feMerge><feMergeNode in="g"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
+ </defs>
+ <circle cx="100" cy="100" r="108" fill="url(#{{ u }}h)" opacity="{{ glow }}"></circle>
+ <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}"><g opacity=".8" filter="url(#{{ u }}gw)"><sc-for list="{{ rays }}" as="r" hint-placeholder-count="12"><path d="{{ r }}" fill="#FFF3C0"></path></sc-for></g></sc-if>
+ <g filter="url(#{{ u }}sh)"><g filter="url(#{{ u }}bv)"><circle cx="100" cy="100" r="98" fill="url(#{{ u }}r)"></circle><circle cx="100" cy="100" r="84" fill="url(#{{ u }}r2)"></circle></g></g>
+ <circle cx="100" cy="100" r="91" fill="none" stroke="rgba(10,14,28,.5)" stroke-width="2"></circle>
+ <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1"></circle>
+ <circle cx="100" cy="100" r="80" fill="url(#{{ u }}f)"></circle>
+ <g stroke="#fff" stroke-opacity=".06" stroke-width=".7"><sc-for list="{{ fine }}" as="r" hint-placeholder-count="60"><path d="{{ r }}"></path></sc-for></g>
+ <sc-for list="{{ gems }}" as="g" hint-placeholder-count="12">
+  <g transform="{{ g.t }}">
+   <sc-if value="{{ g.on }}" hint-placeholder-val="{{ false }}"><g filter="url(#{{ u }}s2)"><g filter="url(#{{ u }}bs)">
+     <polygon points="0,-20 13,-4 0,20 -13,-4" fill="{{ g.c1 }}"></polygon>
+     <polygon points="0,-20 0,-4 -13,-4" fill="{{ g.c2 }}"></polygon>
+     <polygon points="0,-20 13,-4 0,-4" fill="{{ g.c0 }}"></polygon>
+     <polygon points="0,-4 13,-4 0,20" fill="{{ g.c3 }}"></polygon>
+     <polygon points="0,-4 -13,-4 0,20" fill="{{ g.c4 }}"></polygon>
+     <polygon points="-6,-6 6,-6 0,8" fill="rgba(255,255,255,.22)"></polygon>
+     <text transform="translate(0 0) {{ g.rt }}" text-anchor="middle" dominant-baseline="central" font-family="Geist Mono" font-size="9.5" font-weight="700" fill="#fff" stroke="rgba(10,6,0,.7)" stroke-width="1.6" paint-order="stroke" style="paint-order:stroke">{{ g.l }}</text>
+     <polygon points="0,-20 13,-4 0,20 -13,-4" fill="none" stroke="rgba(8,6,0,.55)" stroke-width="1.3"></polygon>
+     <polygon points="0,-17 10,-4.5 0,16 -10,-4.5" fill="none" stroke="rgba(255,255,255,.45)" stroke-width=".7"></polygon>
+     <path d="M-3.5 -10l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#fff" opacity=".95"></path>
+   </g></g></sc-if>
+   <sc-if value="{{ g.off }}" hint-placeholder-val="{{ true }}"><polygon points="0,-20 13,-4 0,20 -13,-4" fill="rgba(255,255,255,.04)" stroke="rgba(243,213,154,.42)" stroke-width="1.2" stroke-dasharray="2.2 2.6"></polygon><text transform="rotate(0) {{ g.rt }}" text-anchor="middle" dominant-baseline="central" font-family="Geist Mono" font-size="9" font-weight="700" fill="rgba(243,213,154,.5)">{{ g.l }}</text></sc-if>
+  </g>
+ </sc-for>
+ <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(8,10,20,.8)" stroke-width="2"></circle>
+ <g filter="url(#{{ u }}sh)"><g filter="url(#{{ u }}bv)"><circle cx="100" cy="100" r="35" fill="url(#{{ u }}r)"></circle></g></g>
+ <circle cx="100" cy="100" r="29" fill="url(#{{ u }}f)" stroke="rgba(8,10,20,.7)" stroke-width="1.6"></circle>
+ <g filter="url(#{{ u }}s2)"><g filter="url(#{{ u }}bs)" transform="translate(100 101) scale(1.55) translate(-12 -12)" fill="none" stroke="url(#{{ u }}r)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14v15H5zM5 10h14M9 3v4M15 3v4M9 14h.01M12 14h.01M15 14h.01M9 17h.01M12 17h.01"></path></g></g>
+ <circle cx="100" cy="100" r="80" fill="url(#{{ u }}dm)" style="pointer-events:none"></circle>
+ <path d="M30 70A74 74 0 0 1 72 28" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"></path>
+ <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}"><g fill="#fff" filter="url(#{{ u }}gw)"><path d="M10 40l2.4 5.6 5.6 2.4-5.6 2.4L10 56l-2.4-5.6L2 48l5.6-2.4z"></path><path d="M188 52l2 4.6 4.6 2-4.6 2-2 4.6-2-4.6-4.6-2 4.6-2z"></path><path d="M178 172l2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2 5-2.2z"></path></g></sc-if>
+</svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:160,&quot;height&quot;:160},&quot;got&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;1,2,3,4,5,6,7,8,9,10,11,12&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:140,&quot;tsType&quot;:&quot;number&quot;}}">
+let UID=0;
+const C=['#3F8CFF','#6F86FF','#35D67C','#FF5FB0','#B5E22E','#FFD21F','#FF9418','#FF5522','#C0702A','#7E4A26','#8C1D3A','#8FBDFF'];
+const L=['E','F','M','A','M','J','J','A','S','O','N','D'];
+const mix=(h,t,to)=>{const n=parseInt(h.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255,T=to==='w'?255:0;const m=v=>Math.round(v+(T-v)*t);return'#'+[m(r),m(g),m(b)].map(v=>v.toString(16).padStart(2,'0')).join('');};
+class Component extends DCLogic {
+  constructor(p){super(p);this.u='dm'+(++UID);}
+  renderVals(){const p=this.props;const got=String(p.got||'').split(',').map(Number).filter(Boolean);
+    const gems=C.map((c,i)=>{const on=got.includes(i+1);const a=-90+i*30;return{t:'translate('+(100+60*Math.cos(a*Math.PI/180)).toFixed(1)+' '+(100+60*Math.sin(a*Math.PI/180)).toFixed(1)+') rotate('+(a+90)+')',rt:'rotate('+(-(a+90))+')',l:L[i],on,off:!on,c0:mix(c,.45,'w'),c1:c,c2:mix(c,.7,'w'),c3:mix(c,.35,'k'),c4:mix(c,.55,'k')};});
+    const rays=Array.from({length:12},(_,i)=>{const a=i*Math.PI/6,b=a+Math.PI/16;return'M100 100L'+(100+112*Math.cos(a)).toFixed(1)+' '+(100+112*Math.sin(a)).toFixed(1)+'L'+(100+112*Math.cos(b)).toFixed(1)+' '+(100+112*Math.sin(b)).toFixed(1)+'Z';});
+    const fine=Array.from({length:60},(_,i)=>{const a=i/60*Math.PI*2;return'M'+(100+36*Math.cos(a)).toFixed(1)+' '+(100+36*Math.sin(a)).toFixed(1)+'L'+(100+79*Math.cos(a)).toFixed(1)+' '+(100+79*Math.sin(a)).toFixed(1);});
+    return{u:this.u,sz:(Number(p.size)||104)+'px',gems,rays,fine,done:got.length===12,glow:got.length===12?'1':'0'};}
+}
+</script>
+</body>
+</html>

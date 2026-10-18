@@ -18,7 +18,7 @@ const Fila = ({ children }: { children: React.ReactNode }) => <div style={{ disp
 
 export function DibujosPrueba() {
   const [animado, setAnimado] = useState(false)
-  const ids = (viajero as { logros: { id: string }[] }).logros.map((l) => l.id)
+  const ids = (viajero as { logros: { id: string; activo?: boolean }[] }).logros.filter((l) => l.activo !== false).map((l) => l.id)
   const sinChapa = ids.filter((i) => !LOGROS_CON_CHAPA.includes(i))
   const colecciones = (roma as { colecciones: { id: string }[] }).colecciones.map((c) => c.id)
   return (
@@ -54,7 +54,13 @@ export function DibujosPrueba() {
         ))}
       </Fila>
 
-      <Titulo t="Chapas de los 43 logros (primer escalón y último)" />
+      <Titulo t="Todos los escalones de cada familia (Medalla Destino, de grado en grado)" />
+      {Object.entries(ESCALONES_DE).filter(([id]) => ids.includes(id) && id !== 'maravillas').map(([id, ns]) => (
+        <div key={id}><div style={{ fontSize: 12, margin: '8px 0 2px' }}>{id}</div><Fila>{ns.map((n) => <Cel key={n} pie={`${id} ${n}`}><Chapa logro={id} escalon={n} tam={96} /></Cel>)}</Fila></div>
+      ))}
+      <Titulo t="Los 12 meses y las cuatro estaciones (el avance)" />
+      <Fila>{['10', '10,11,12', '3,4,5,6,7,10,11,12', '1,2,3,4,5,6,7,8,9,10,11,12'].map((g) => <Cel key={g} pie={`meses ${g.split(',').length}`}><Chapa logro="doce_meses" progreso={g} tam={100} /></Cel>)}{[1, 2, 3, 4].map((n) => <Cel key={n} pie={`estaciones ${n}`}><Chapa logro="cuatro_estaciones" progreso={n} tam={100} /></Cel>)}</Fila>
+      <Titulo t="Chapas de los logros de la Versión 1 (primer escalón y último)" />
       <Fila>
         {ids.map((id) => {
           const esc = ESCALONES_DE[id]

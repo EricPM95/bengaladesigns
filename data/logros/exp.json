@@ -1,0 +1,78 @@
+{
+  "_nota": "La EXPERIENCIA (Tanda 8C1, docs/dias/EXP_Y_NIVELES.md). TODO lo que se puede afinar está aquí: lo que da cada cosa, los niveles, los rangos y las estrellas. La EXP la calcula SIEMPRE el servidor sumando lo que cada viajero ya ha conseguido (hechos y logros guardados); solo cuenta lo comprobado (ubicación o foto); los viajes de antes de la app y los logros apagados dan 0. Nunca baja: si esta tabla cambia y a alguien le saldría menos, se queda con lo que tenía (server/logros/exp.js, `exp_max`).",
+
+  "paradas": { "por_parada": 5, "maximo_al_dia": 50, "_nota": "Parada vista (con ubicación o foto): 5, como mucho 50 al día." },
+  "pedazo": 5,
+  "coleccion_por_pedazo": 10,
+  "emblema": 25,
+  "maravilla": 150,
+  "pais": 50,
+  "destino_nuevo": 75,
+  "continente": 150,
+  "patrimonio": 40,
+  "viaje_acabado": { "exp": 100, "paradas_minimas": 5 },
+  "viaje_previo": 0,
+  "sello": {
+    "por_defecto": { "bronce": 50, "plata": 75, "oro": 125, "diamante": 200 },
+    "vaticano": { "plata": 50, "oro": 75, "diamante": 125 }
+  },
+  "invitacion": { "exp": 100, "maximo_al_anio": 10, "_nota": "100 EXP al que invita cuando el amigo invitado acaba su primer viaje con la app (no al crear la cuenta). Como mucho 10 amigos al año." },
+
+  "escalera": [25, 50, 75, 125, 175, 250, 350, 450, 600],
+  "viajero": {
+    "paises": { "1": 25, "3": 50, "5": 75, "8": 125, "10": 175, "15": 250, "20": 350, "25": 450, "30": 600 },
+    "destinos": { "1": 25, "3": 50, "5": 75, "10": 125, "15": 175, "20": 250, "25": 350, "30": 450 },
+    "capitales": { "5": 75, "10": 125, "15": 175, "25": 250 },
+    "maravillas": { "1": 25, "2": 50, "3": 75, "4": 125, "5": 175, "6": 250, "7": 1000 },
+    "patrimonios": { "1": 25, "5": 75, "10": 175, "15": 250, "25": 350 },
+    "viajes": { "1": 25, "5": 125, "10": 250, "15": 350, "20": 450, "25": 600, "30": 750 },
+    "con_quien_solo": { "1": 25, "3": 75, "5": 125, "10": 250 },
+    "con_quien_pareja": { "1": 25, "3": 75, "5": 125, "10": 250 },
+    "con_quien_amigos": { "1": 25, "3": 75, "5": 125, "10": 250 },
+    "con_quien_familia": { "1": 25, "3": 75, "5": 125, "10": 250 },
+    "conocedor": { "25": 175, "50": 350 },
+    "cazador_emblemas": { "5": 75, "10": 175, "15": 250 },
+    "coleccionista": { "5": 75, "10": 175, "15": 250 },
+
+    "escapada": 25,
+    "dos_paises_en_un_dia": 50,
+    "viajero_nacional": 75,
+    "dia_perfecto": 75,
+    "el_fotografo": 75,
+    "nunca_ultima_vez": 75,
+    "gran_viaje": 100,
+    "navidad_fuera": 100,
+    "nochevieja_fuera": 100,
+    "de_sol_a_sol": 100,
+    "ciudad_completa": 100,
+    "tres_viajes_ano": 150,
+    "imparable": 150,
+    "diamante_primera": 150,
+    "viaje_perfecto": 250,
+    "alondra": 250,
+    "buho": 250,
+    "tres_oro": 250,
+    "cuatro_estaciones": 500,
+    "tres_diamante": 500,
+    "destino_cuatro_estaciones": 750,
+    "doce_meses": 1000,
+
+    "fundador": 100,
+    "pionero": 100,
+    "probador": 100,
+    "edicion_anio": 50,
+
+    "_apagados": "Estos no dan EXP porque están apagados en la Versión 1 (no están en `viajero.json` como activos): continentes (150 por continente nuevo), pequenos_gigantes 500, otro_lado_ecuador 150, todos_secretos 100, la vuelta al mundo. Al encenderlos, ponerles aquí su EXP."
+  },
+
+  "niveles": {
+    "_nota": "50 niveles en 10 rangos de 5. Subir cuesta 500, 700, 900… (200 más cada vez) hasta el nivel 11; desde el 11, 2.500 cada uno. Después del 50, Leyenda con una estrella cada 3.000 EXP, sin final. Los nombres de los rangos son una propuesta.",
+    "rangos": ["Soñador", "Explorador", "Viajero", "Trotamundos", "Aventurero", "Nómada", "Cartógrafo", "Embajador", "Navegante", "Leyenda"],
+    "niveles_por_rango": 5,
+    "maximo": 50,
+    "coste": { "primero": 500, "suma": 200, "hasta_nivel": 11, "fijo": 2500 },
+    "estrella_cada": 3000
+  },
+
+  "sorteo": { "nivel_minimo": 3, "viajes_acabados_minimos_al_anio": 1 }
+}
