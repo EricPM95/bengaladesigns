@@ -47,6 +47,7 @@ console.log('Tips')
     'MealDetailSheet.tsx', // ídem
     'StopDetailSheet.tsx', // ídem (y en AddStopScreen / PlaceExplorerScreen, que son portales)
     'RestaurantDetailSheet.tsx', // dentro de PlaceExplorerScreen (portal)
+    'MenusDelInvitado.tsx', // el menú del invitado (fondo transparente que cierra el menú), como StopMenu
   ]
   const todos = ficheros('src/components').filter((f) => /fixed inset-0/.test(leer(f)) && !/createPortal/.test(leer(f)))
   const nuevos = todos.filter((f) => !SIN_PORTAL_CONOCIDAS.some((c) => f.endsWith(c)))

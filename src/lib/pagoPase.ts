@@ -1,3 +1,4 @@
+import { formatoImporte } from './dinero'
 import { abrirEnlace, llamarServidor } from './servidor'
 
 /**
@@ -40,8 +41,8 @@ export interface FilaDeCompra {
   total: number
 }
 
-/** 10,99 → «10,99 €» (con coma, como se escribe en español). */
-export const eur = (valor: number): string => `${(Math.round(valor * 100) / 100).toFixed(2).replace('.', ',')} €`
+/** 10,99 → «10,99 €» (con coma, como se escribe en español; el formato es el de siempre, el de dinero.ts). */
+export const eur = (valor: number): string => formatoImporte({ amount: Math.round(valor * 100) / 100, currency: 'EUR' })
 
 /** Los límites del Pase Grupo (de data/pase/precios.json: «3 o más», con su máximo de personas). */
 export function limitesDelGrupo(planes: PlanDePrecios[]): { desde: number; hasta: number } {

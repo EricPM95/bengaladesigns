@@ -3,6 +3,7 @@ import { HojaVerPropuesta } from '../../components/propuesta/HojaVerPropuesta'
 import { etiquetaDeDia } from '../../lib/propuesta'
 import type { Stop } from '../../lib/types'
 import { usePagoStore } from '../../store/usePagoStore'
+import { useAvisosStore } from '../../store/useAvisosStore'
 import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { useR2Store } from '../../store/useR2Store'
 import { useRouteStore } from '../../store/useRouteStore'
@@ -51,6 +52,7 @@ async function prepararViaje(rol: 'admin' | 'invitado', modo: Modo = 'days') {
   useSyncStore.setState({ activeTripId: 'demo-viaje' })
   usePropuestaStore.setState({ activa: false, base: null, verAbierto: false, enviada: false, error: null })
   useR2Store.getState().cerrar()
+  useAvisosStore.getState().poner([]) // sin campanita con puntito: es de las capturas de avisos (AV1), no de estas
   useViajeCompartido.getState().poner({ tripId: 'demo-viaje', gente, recomendaciones: [] })
   await espera(500)
 }
@@ -272,7 +274,7 @@ const lista: Escaparate[] = [
       const d = diaDe(2)
       const i = d.stops.length - 1
       useViajeCompartido.getState().poner({ recomendaciones: [recDe('cambio', { dayId: d.id, accion: 'cambiar', stopId: d.stops[i].id, stop: paradaNueva(d.stops[i], 'Trastevere') })] })
-      await espera(800)
+      await abrirDia(2)
     },
     cerrar: cerrarTodo,
   },

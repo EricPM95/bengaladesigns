@@ -175,7 +175,7 @@ function VolviendoDelPago({ sesion }: { sesion: string }) {
   }, [sesion, abrir])
 
   const titulo = estado === 'esperando' ? 'Estamos confirmando tu pago…' : estado === 'rechazado' ? 'El pago no se ha completado' : 'Tu pago está tardando más de lo normal'
-  const texto = estado === 'esperando' ? 'Un momento, no cierres la app.' : estado === 'rechazado' ? 'No te hemos cobrado nada. Puedes volver a intentarlo.' : 'En cuanto llegue, tu pase aparecerá en Mis pases. Si te han cobrado, no hace falta que pagues otra vez.'
+  const texto = estado === 'esperando' ? 'Un momento, estamos confirmando el pago.' : estado === 'rechazado' ? 'No te hemos cobrado nada. Puedes volver a intentarlo.' : 'En cuanto llegue, tu pase aparecerá en Mis pases. Si te han cobrado, no hace falta que pagues otra vez.'
   return (
     <Hoja onCerrar={estado === 'esperando' ? undefined : cerrar} sinCerrar={estado === 'esperando'} titulo={titulo} datos="pago-volviendo" z={92}>
       <span data-pago-estado={estado} style={{ font: "400 13.5px/1.5 'Geist'", opacity: 0.75 }}>

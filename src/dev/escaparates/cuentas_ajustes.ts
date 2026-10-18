@@ -79,6 +79,16 @@ const lista: Escaparate[] = [
     cerrar: () => (window as unknown as { __escaparate?: { limpiar: () => void } }).__escaparate?.limpiar(),
   },
   {
+    id: 'c3-Pasaporte',
+    que: 'El pasaporte: un sello por ciudad de cada viaje, con su fecha (parte 8a)',
+    abrir: async () => {
+      const api = (window as unknown as { __escaparate?: { abrir: (id: string) => Promise<void> } }).__escaparate
+      await api?.abrir('P2')
+      await espera(600)
+    },
+    cerrar: () => (window as unknown as { __escaparate?: { limpiar: () => void } }).__escaparate?.limpiar(),
+  },
+  {
     id: 'c3-Perfil-foto-nombre',
     que: 'El Perfil con foto y nombre',
     abrir: async () => {

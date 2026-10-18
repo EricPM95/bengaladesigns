@@ -4,6 +4,7 @@
 // Lo del navegador se empaqueta con esbuild y se prueba en Node; lo de la base de datos corre las migraciones DE VERDAD sobre un Postgres de prueba (PGlite) con las
 // reglas de seguridad activas; el cobro se prueba con un Stripe de mentira (la firma del aviso se comprueba de verdad). Lo que PGlite no es (Supabase, Google, Stripe de
 // verdad, el móvil) se prueba con `scripts/cuentas/comprobarSupabase.mjs` cuando Eric ponga las claves.
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -627,7 +628,7 @@ console.log('3. Recomendar cambios: la propuesta, la pareja, R2 y el modo recome
   debe(/Recomendación de Laura/.test(h2a) && /Laura te recomienda un cambio</.test(h2a) && /Día 2 · /.test(h2a) && /data-linea="igual"/.test(h2a) && /data-cambio-parada="pequena"/.test(h2a) && />Aceptar</.test(h2a) && />No, gracias</.test(h2a), 'R2a', 'R2a: «Laura te recomienda un cambio», el día, la pareja, [Aceptar] y [No, gracias]')
   debe(!/Día 1 · /.test(h2a) && !/Día 3 · /.test(h2a), 'R2a', 'R2a no enseña los días que no cambian')
   const h2b = M.pintaR2({ nombreDelAutor: "Laura", rec: rec(rd.tipo, rd.payload), route: base })
-  debe(/Laura te recomienda cambios en el día 3/.test(h2b) && (h2b.match(/data-cambio-parada/g) ?? []).length === 2, 'R2b', 'R2b: «cambios en el día 3» con dos parejas')
+  debe(/Laura te recomienda cambios en (el día 3|el \p{L}+ \d+)/u.test(h2b) && (h2b.match(/data-cambio-parada/g) ?? []).length === 2, 'R2b', 'R2b: «cambios en el día 3» con dos parejas')
   const h2c = M.pintaR2({ nombreDelAutor: "Laura", rec: rec(rr.tipo, rr.payload), route: base })
   debe(/Laura te recomienda otra ruta/.test(h2c) && (h2c.match(/data-dia-que-cambia/g) ?? []).length === 2 && /data-linea="entra"/.test(h2c), 'R2c', 'R2c: «otra ruta», solo los dos días que cambian, con lo que entra en verde')
   const h2d = M.pintaR2({ nombreDelAutor: "Laura", rec: rec('dia', { accion: 'sustituir', dayId: 'dX', day: dia('dX', 4, [st('q1', 'Trastevere'), st('q2', 'Castillo')]) }), route: base })
@@ -1067,6 +1068,23 @@ console.log('7. Invitar a un amigo (la EXP de la 8C1) y borrar la cuenta con su 
   debe(meti !== null, 'foto', 'nadie puede subir una foto a la carpeta de otra persona')
   const mia = await como(nueva, () => lanza(() => q("insert into storage.objects (bucket_id, name, owner) values ('perfiles', $1, $2)", [`${nueva}/foto-1.jpg`, nueva])))
   debe(mia === null, 'foto', 'cada persona sí puede subir la suya a su carpeta')
+}
+
+/* ═══════════════ Capturas: todas, con el nombre de su pantalla, y ninguna repetida ═══════════════ */
+{
+  const dir = 'docs/dias/capturas_cuentas3'
+  const pedidas = ['A1', 'A2', 'A3', 'A4', 'I1', 'I2', 'P1', 'P6', 'P7', 'P7b', 'P8', 'P8b', 'P9', 'RS1', 'RS2', 'R1', 'RW1', 'RW2', 'RW3', 'RM', 'RV', 'RSent', 'R2a', 'R2b', 'R2c', 'R2d', 'AV1', 'AV2', 'AV3', 'AV4', 'AV5', 'AV6', 'AV7', 'L-P3', 'L-P4', 'L-P5', 'L-P6', 'Perfil-foto-nombre', 'Pasaporte', '1a-hoy']
+  const hay = fs.existsSync(dir) ? fs.readdirSync(dir) : []
+  const faltan = pedidas.filter((n) => !hay.some((x) => x.replace(/.(jpg|png|webp)$/i, '') === n))
+  debe(faltan.length === 0, 'capturas', `estan todas las capturas pedidas (faltan: ${faltan.join(', ') || 'ninguna'})`)
+  const vistas = new Map()
+  const repetidas = []
+  for (const x of hay.filter((n) => /.(jpg|png|webp)$/i.test(n))) {
+    const h = crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, x))).digest('hex')
+    if (vistas.has(h)) repetidas.push(`${vistas.get(h)} = ${x}`)
+    else vistas.set(h, x)
+  }
+  debe(repetidas.length === 0, 'capturas', `ninguna captura repetida (dos nombres, mismo archivo): ${repetidas.join(' | ')}`)
 }
 
 /* ═══════════════ Resumen ═══════════════ */

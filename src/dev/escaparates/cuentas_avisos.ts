@@ -95,7 +95,7 @@ function PantallaDeBloqueo({ cuerpo, fecha }: { cuerpo: string; fecha: string })
 }
 
 const lista: Escaparate[] = [
-  { id: 'c3-AV1', que: 'La campanita con su puntito, en RUTA', abrir: () => preparar('route', delAdmin()), cerrar: limpiar },
+  { id: 'c3-AV1', que: 'La campanita con su puntito (en DIAS: es la misma en RUTA, HOY y DIAS)', abrir: () => preparar('days', delAdmin()), cerrar: limpiar },
   {
     id: 'c3-AV2',
     que: 'Al tocarla: la lista, con lo no leído destacado',

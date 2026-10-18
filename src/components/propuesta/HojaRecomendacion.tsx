@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { resolverRecomendacion, vistaPrevia, type CambioDeUnDia, type DiaPosible, type Recomendacion } from '../../lib/aplicarRecomendacion'
 import { etiquetaDeDia, lineasDelDia, titularDeRecomendacion, type Linea } from '../../lib/propuesta'
+import { ElDia, elDia } from '../../lib/nombreDeDia'
 import { mandarAvisosPendientes } from '../../lib/permisoAvisos'
 import { aceptarRecomendacion, rechazarRecomendacion } from '../../lib/recomendacionesViaje'
 import type { Route } from '../../lib/types'
@@ -61,8 +62,8 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
   const p = rec.payload as { dayId?: string; day?: { id?: string } }
   const diaDeLaRec = route.days.find((d) => d.id === (p.dayId ?? p.day?.id))
   const titulo = pideDia
-    ? `El día ${diaDeLaRec?.dayNumber ?? ''} ya no está en tu viaje. ¿En qué día lo pones?`.replace('El día  ya', 'Ese día ya')
-    : titularDeRecomendacion(nombre, rec.tipo, rec.tipo === 'dia' && diaDeLaRec ? `el día ${diaDeLaRec.dayNumber}` : null)
+    ? `${diaDeLaRec ? ElDia(route, diaDeLaRec.dayNumber) : 'Ese día'} ya no está en tu viaje. ¿En qué día lo pones?`
+    : titularDeRecomendacion(nombre, rec.tipo, rec.tipo === 'dia' && diaDeLaRec ? elDia(route, diaDeLaRec.dayNumber) : null)
 
   const aceptar = async () => {
     setOcupado(true)
