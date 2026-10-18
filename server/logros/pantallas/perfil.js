@@ -67,7 +67,8 @@ export function numerosDePasaporte({ datos, items, previos, ahora, catalogo }) {
   const visitados = new Set(base.tus_paises.map((p) => p.pais))
   const ciudadesConSello = new Set([...items.values()].filter((it) => it.logro === 'sello').map((it) => `${it.destino}|${String(it.escalon).split(':')[0]}`))
   const recuerdos = recuerdosDe(previos, catalogo, visitados)
-  return { paises: base.numeros.paises, sellos: ciudadesConSello.size + recuerdos.length }
+  // `ciudades` es la MISMA cuenta que la cabecera del pasaporte (ciudades distintas con destino nuevo): volver a Roma suma sello, no ciudad.
+  return { paises: base.numeros.paises, ciudades: base.numeros.ciudades, sellos: ciudadesConSello.size + recuerdos.length }
 }
 
 /** Lo que el Perfil recibe, a partir de lo ya calculado. `exp`: lo que devuelve `servicio.expDe`. `guardada`: `perfil.vitrina` de la cuenta. */

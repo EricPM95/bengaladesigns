@@ -72,7 +72,7 @@ export default async function ({ debe, leer, sinComentarios }) {
   D.reiniciarPerfilDemo()
   const perfil = D.responder('/api/logros/perfil', u, {}, {})
   const pas = M.responder('/api/logros/pasaporte2', pedir('/api/logros/pasaporte2'), {}, {})
-  debe(perfil.pasaporte.paises === pas.numeros.paises && perfil.pasaporte.sellos === pas.numeros.sellos, 'viajero', `el Perfil (${perfil.pasaporte.paises} países · ${perfil.pasaporte.sellos} sellos) dice lo mismo que el pasaporte (${pas.numeros.paises} · ${pas.numeros.sellos})`)
+  debe(perfil.pasaporte.paises === pas.numeros.paises && perfil.pasaporte.sellos === pas.numeros.sellos && perfil.pasaporte.ciudades === pas.numeros.ciudades, 'viajero', `el Perfil (${perfil.pasaporte.paises} países · ${perfil.pasaporte.sellos} sellos · ${perfil.pasaporte.ciudades} ciudades) dice lo mismo que el pasaporte (${pas.numeros.paises} · ${pas.numeros.sellos})`)
   const prev = M.responder('/api/logros/previos', pedir('/api/logros/previos'), {}, {})
   debe(perfil.previos.paises === prev.paises.length, 'viajero', 'los países de antes de la app del Perfil son los del demo del mundo')
   // Si se marcan más países en «¿Dónde has estado ya?», el Perfil y el pasaporte cambian juntos.

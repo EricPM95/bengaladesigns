@@ -165,6 +165,12 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   const pg = P.paginasDelPasaporte({ datos, base, previos: { paises: ['España', 'Italia'], dias: 0 }, catalogo: cat, hechos, viajes, acabados })
   debe(pg.map((p) => `${p.pais}:${p.estado}`).join('|') === 'Italia:visitado|Ciudad del Vaticano:visitado|España:recuerdo', 'pasaporte', `las páginas salen en orden: los visitados, el Vaticano aparte, los de antes de la app (${pg.map((p) => `${p.pais}:${p.estado}`).join('|')})`)
   debe(pg[0].sellos.length === 1 && pg[0].sellos[0].ciudad === 'Roma' && pg[0].sellos[0].fecha === '2026-10-14' && !pg[0].sellos[0].vacio, 'pasaporte', 'Italia tiene su sello de Roma con la fecha del último día del viaje')
+    // Volver a Roma suma SELLO (uno por ciudad de cada viaje, con su fecha), no ciudad.
+  const viajes2 = { ...viajes, t2: { destino: 'roma', inicio: '2027-03-01', fin: '2027-03-03' } }
+  const hecho2 = { ...hecho(idItalia), id: 'h2', trip_id: 't2', instante: '2027-03-02T09:00:00Z', recibido_en: '2027-03-02T09:00:00Z' }
+  const pg2 = P.paginasDelPasaporte({ datos, base, previos: { paises: [] }, catalogo: cat, hechos: [...hechos, hecho2], viajes: viajes2, acabados: [...acabados, { trip_id: 't2', fin: '2027-03-03' }] })
+  const romas = pg2[0].sellos.filter((s) => !s.vacio && s.ciudad === 'Roma')
+  debe(romas.length === 2 && romas[0].fecha === '2026-10-14' && romas[1].fecha === '2027-03-03', 'pasaporte', 'dos viajes a Roma = dos sellos de Roma, cada uno con su fecha')
   debe(pg[1].sellos.length === 1 && pg[1].sellos[0].ciudad === 'Ciudad del Vaticano' && pg[1].sellos[0].trip_id === 't1', 'pasaporte', 'el Vaticano tiene su propia página y su propio sello')
   debe(pg[2].sellos.length === 0 && pg[2].iso === 'es', 'recuerdo', 'España (de antes de la app) no tiene sellos de viaje: su página es el sello recuerdo')
   debe(!pg.some((p) => p.pais === 'Italia' && p.estado === 'recuerdo'), 'recuerdo', 'Italia, ya visitada con la app, no sale otra vez como recuerdo')

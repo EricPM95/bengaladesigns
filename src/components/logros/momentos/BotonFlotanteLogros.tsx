@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { logrosActivos } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -64,6 +64,59 @@ export function BotonFlotanteLogros({ soloEn = ['route', 'days', 'today'] }: { s
   return <Boton soloEn={soloEn} />
 }
 
+/** Lo que el botón no puede tapar en HOY: los botones de las tarjetas ([Visto], [No me da tiempo], [Seguir]…). */
+const BOTONES_DE_HOY = '[data-hoy-siguiente] button, [data-hoy-siguiente] a, [data-hoy-llegada-tarde] button, [data-hoy-todo-visto] button, [data-hoy-llegada] button'
+
+/**
+ * En HOY, cuánto hay que subir el botón para que no tape ningún botón de las tarjetas: si lo pisa, se coloca justo encima del más alto que pise (hasta 3 pasadas). Se
+ * recalcula al mover la pantalla, al girar y cada medio segundo (la tarjeta cambia de alto sola). Fuera de HOY no hace nada.
+ */
+function useSubirParaNoTapar(activo: boolean, base: number, lado: number): number | null {
+  const [alto, setAlto] = useState<number | null>(null)
+  const cuadro = useRef(0)
+  useEffect(() => {
+    if (!activo) {
+      setAlto(null)
+      return undefined
+    }
+    const medir = () => {
+      cuadro.current = 0
+      const vh = window.innerHeight
+      const botones = Array.from(document.querySelectorAll(BOTONES_DE_HOY)).map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0)
+      const sonda = document.createElement('div')
+      sonda.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding-bottom:env(safe-area-inset-bottom,0px)'
+      document.body.appendChild(sonda)
+      const safe = parseFloat(getComputedStyle(sonda).paddingBottom) || 0
+      sonda.remove()
+      let bottom = base + safe
+      const inicio = bottom
+      for (let i = 0; i < 3; i++) {
+        const arriba = vh - bottom - lado
+        const abajo = vh - bottom
+        const pisan = botones.filter((r) => r.bottom > arriba - 6 && r.top < abajo + 6 && r.right > window.innerWidth - 14 - lado - 6)
+        if (pisan.length === 0) break
+        bottom = vh - Math.min(...pisan.map((r) => r.top)) + 10
+      }
+      const nuevo = bottom === inicio ? null : bottom
+      setAlto((a) => (a === nuevo || (a !== null && nuevo !== null && Math.abs(a - nuevo) < 1) ? a : nuevo))
+    }
+    const pedir = () => {
+      if (!cuadro.current) cuadro.current = window.requestAnimationFrame(medir)
+    }
+    medir()
+    const t = window.setInterval(pedir, 500)
+    window.addEventListener('scroll', pedir, true)
+    window.addEventListener('resize', pedir)
+    return () => {
+      window.clearInterval(t)
+      window.removeEventListener('scroll', pedir, true)
+      window.removeEventListener('resize', pedir)
+      if (cuadro.current) window.cancelAnimationFrame(cuadro.current)
+    }
+  }, [activo, base, lado])
+  return alto
+}
+
 function Boton({ soloEn }: { soloEn: string[] }): ReactNode {
   const primero = useSoyElPrimero()
   const modo = useRouteStore((s) => s.mode)
@@ -79,12 +132,11 @@ function Boton({ soloEn }: { soloEn: string[] }): ReactNode {
     }
   }, [tripId, ronda, puntito])
 
+  const alto = useSubirParaNoTapar(modo === 'today', 120, 58)
   if (!primero || !soloEn.includes(String(modo))) return null
   const sello = estado?.sellos[0]
   const grado = (sello?.grado ?? null) as GradoDeSello | null
   const fraccion = sello && sello.total > 0 ? sello.n / sello.total : 0
-  // En HOY sube un poco, para no tapar [✓ Visto] ni lo de debajo de la tarjeta.
-  const alto = modo === 'today' ? 120 : 88
   return (
     <button
       type="button"
@@ -93,7 +145,7 @@ function Boton({ soloEn }: { soloEn: string[] }): ReactNode {
       aria-label={`${estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}${puntito ? ' (hay algo nuevo)' : ''}`}
       onClick={() => useMomentosUI.getState().abrirHojaLogros()}
       className="mo"
-      style={{ position: 'fixed', right: 14, bottom: `calc(env(safe-area-inset-bottom,0px) + ${alto}px)`, width: 58, height: 58, padding: 0, border: 'none', borderRadius: '50%', background: '#FFFDF8', cursor: 'pointer', zIndex: 40, boxShadow: '0 0 0 1px rgba(28,34,48,.08),0 12px 22px -10px rgba(28,34,48,.6)' }}
+      style={{ position: 'fixed', right: 14, bottom: alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + ${modo === 'today' ? 120 : 88}px)`, width: 58, height: 58, padding: 0, border: 'none', borderRadius: '50%', background: '#FFFDF8', cursor: 'pointer', zIndex: 40, boxShadow: '0 0 0 1px rgba(28,34,48,.08),0 12px 22px -10px rgba(28,34,48,.6)' }}
     >
       <BotonVisual sello={sello?.id ?? 'roma'} grado={grado} fraccion={fraccion} puntito={puntito} />
     </button>

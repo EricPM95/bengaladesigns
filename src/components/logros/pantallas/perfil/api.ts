@@ -31,7 +31,7 @@ export interface PerfilLogros {
   titulo: TituloDeViajero | null
   titulos: TituloDeViajero[]
   vitrina: { logros: number; recientes: PiezaReciente[] }
-  pasaporte: { paises: number; sellos: number }
+  pasaporte: { paises: number; ciudades: number; sellos: number }
   /** Los países que marcó en «¿Dónde has estado ya?»: los viajes de antes de la app. */
   previos: { paises: number }
 }

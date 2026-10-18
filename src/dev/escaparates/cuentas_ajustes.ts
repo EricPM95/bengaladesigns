@@ -69,6 +69,16 @@ const lista: Escaparate[] = [
     cerrar: cerrar('c3-L-P6'),
   },
   {
+    id: 'c3-1a-hoy',
+    que: 'HOY con el boton de logros: no tapa [No me da tiempo] (parte 8b)',
+    abrir: async () => {
+      const api = (window as unknown as { __escaparate?: { abrir: (id: string) => Promise<void> } }).__escaparate
+      await api?.abrir('1a-hoy')
+      await espera(600)
+    },
+    cerrar: () => (window as unknown as { __escaparate?: { limpiar: () => void } }).__escaparate?.limpiar(),
+  },
+  {
     id: 'c3-Perfil-foto-nombre',
     que: 'El Perfil con foto y nombre',
     abrir: async () => {

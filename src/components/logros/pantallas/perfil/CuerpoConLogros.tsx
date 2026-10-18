@@ -134,7 +134,7 @@ export default function CuerpoConLogros({ cuerpoDeSiempre, viajes, chinchetas, c
         <span className="flex flex-1 flex-col gap-0.5">
           <span className="font-display text-[20px] leading-none">Mi pasaporte</span>
           <span data-numeros-pasaporte style={{ font: "500 11px 'Geist Mono',monospace", color: 'rgba(243,213,154,.7)' }}>
-            {plural(perfil.pasaporte.paises, 'país', 'países')} · {plural(perfil.pasaporte.sellos, 'sello', 'sellos')}
+            {plural(perfil.pasaporte.paises, 'país', 'países')} · {plural(perfil.pasaporte.ciudades, 'ciudad', 'ciudades')}
           </span>
         </span>
         <span className="flex h-[30px] flex-none items-center gap-1 whitespace-nowrap rounded-full border pl-3 pr-2 text-[12px] font-semibold" style={{ borderColor: 'rgba(243,213,154,.45)', background: 'rgba(243,213,154,.12)' }}>

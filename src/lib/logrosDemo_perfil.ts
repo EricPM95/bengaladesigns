@@ -39,14 +39,14 @@ export const TITULOS_DE_EJEMPLO: TituloDeViajero[] = titulosGanados({ datos: dat
 
 /** El viajero de ejemplo: nivel 8 (el mismo del diseño), con título, su vitrina y su pasaporte (los del demo del mundo). */
 export function perfilDeEjemplo(): PerfilLogros {
-  const { paises, sellos, previos } = numerosDelPasaporte()
+  const { paises, ciudades, sellos, previos } = numerosDelPasaporte()
   return {
     ok: true,
     exp: expDeEjemplo(expEnNivel(8, 220)),
     titulo: TITULOS_DE_EJEMPLO.find((t) => t.id === 'cazador_emblemas') ?? TITULOS_DE_EJEMPLO[0] ?? null,
     titulos: TITULOS_DE_EJEMPLO,
     vitrina: resumenDeVitrina({ items: itemsDeLosGanados() }),
-    pasaporte: { paises, sellos },
+    pasaporte: { paises, ciudades, sellos },
     previos: { paises: previos },
   }
 }
